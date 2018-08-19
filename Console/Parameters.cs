@@ -35,17 +35,17 @@ namespace Trivial.Console
             Value = str.ToString();
         }
 
-        public string Key { get; private set; }
+        public string Key { get; }
 
-        public string OriginalKey { get; private set; }
+        public string OriginalKey { get; }
 
-        public string Value { get; private set; }
+        public string Value { get; }
 
-        public bool IsEmpty { get; private set; }
+        public bool IsEmpty { get; }
 
-        public IReadOnlyList<string> Values { get; private set; }
+        public IReadOnlyList<string> Values { get; }
 
-        public int Count { get; private set; }
+        public int Count { get; }
 
         public string this[int index]
         {
@@ -199,27 +199,27 @@ namespace Trivial.Console
             }
         }
 
-        public string Key { get; private set; }
+        public string Key { get; }
 
-        public IReadOnlyList<string> AllKeys { get; private set; }
+        public IReadOnlyList<string> AllKeys { get; }
 
-        public bool IsEmpty { get; private set; }
+        public bool IsEmpty { get; }
 
-        public IReadOnlyList<string> AdditionalKeys { get; private set; }
+        public IReadOnlyList<string> AdditionalKeys { get; }
 
-        public IReadOnlyList<Parameter> Items { get; private set; }
+        public IReadOnlyList<Parameter> Items { get; }
 
-        public Parameter FirstItem { get; private set; }
+        public Parameter FirstItem { get; }
 
-        public int ItemCount { get; private set; }
+        public int ItemCount { get; }
 
-        public string FirstValue { get; private set; }
+        public string FirstValue { get; }
 
-        public IReadOnlyList<string> FirstValues { get; private set; }
+        public IReadOnlyList<string> FirstValues { get; }
 
-        public string MergedValue { get; private set; }
+        public string MergedValue { get; }
 
-        public IReadOnlyList<string> MergedValues { get; private set; }
+        public IReadOnlyList<string> MergedValues { get; }
 
         public string Value(ParameterMode mode = ParameterMode.First)
         {

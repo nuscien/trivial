@@ -14,7 +14,7 @@ namespace Trivial.Console
 
         private List<Parameter> parameters = new List<Parameter>();
 
-        public Arguments(string[] args)
+        public Arguments(IEnumerable<string> args)
         {
             this.args = args.ToList();
             Init();
@@ -276,20 +276,6 @@ namespace Trivial.Console
 
                 parameters.Add(new Parameter(args[i], rest));
             }
-        }
-
-        private string AppendString(int start, bool empty)
-        {
-            if (args.Count <= start || args[start].IndexOf("-") == 0) return empty ? string.Empty : null;
-            var result = new StringBuilder(args[start]);
-            for (var i = start + 1; i < args.Count; i++)
-            {
-                if (args[i].IndexOf("-") == 0) break;
-                result.Append(' ');
-                result.Append(args[i]);
-            }
-
-            return result.ToString();
         }
     }
 }

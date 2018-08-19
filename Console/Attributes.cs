@@ -11,8 +11,7 @@ namespace Trivial.Console
         All = 2
     }
 
-
-    public class ArgumentAttribute
+    public class ArgumentAttribute: Attribute
     {
         public string Name { get; set; }
 
