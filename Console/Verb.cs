@@ -150,41 +150,9 @@ namespace Trivial.Console
     public class HelpVerb : Verb
     {
         /// <summary>
-        /// The inner messages store.
+        /// All the other verbs.
         /// </summary>
-        internal class Item
-        {
-            /// <summary>
-            /// Initializes a new instance of the HelpVerb.Item class.
-            /// </summary>
-            /// <param name="key">The verb key.</param>
-            /// <param name="value">The verb description.</param>
-            public Item(string key, string value)
-            {
-                Key = key;
-                Value = value;
-            }
-
-            /// <summary>
-            /// Gets the verb key.
-            /// </summary>
-            public string Key { get; }
-
-            /// <summary>
-            /// Gets the verb description.
-            /// </summary>
-            public string Value { get; }
-        }
-
-        /// <summary>
-        /// The default verb handler message.
-        /// </summary>
-        private string defaultUsage;
-
-        /// <summary>
-        /// The handler messages of all other verbs.
-        /// </summary>
-        private List<Item> items = new List<Item>();
+        private Dispatcher dispatcher = null;
 
         /// <summary>
         /// Gets or sets the description message.
@@ -194,13 +162,7 @@ namespace Trivial.Console
         /// <summary>
         /// Gets the descripiton of the verb handler.
         /// </summary>
-        public override string Description
-        {
-            get
-            {
-                return DescriptionMessage;
-            }
-        }
+        public override string Description => DescriptionMessage;
 
         /// <summary>
         /// Gets the additional description which will be appended to the last.
@@ -214,13 +176,7 @@ namespace Trivial.Console
         public override void Init(Dispatcher dispatcher)
         {
             base.Init(dispatcher);
-            var defaultVerb = dispatcher.DefaultVerb;
-            if (defaultVerb != null) defaultUsage = defaultVerb.Description;
-            foreach (var item in dispatcher.VerbsRegistered())
-            {
-                if (string.IsNullOrWhiteSpace(item.MatchDescription)) continue;
-                items.Add(new Item(item.MatchDescription, item.Verb.Description));
-            }
+            this.dispatcher = dispatcher;
         }
 
         /// <summary>
@@ -228,14 +184,25 @@ namespace Trivial.Console
         /// </summary>
         public override void Process()
         {
-            Utilities.WriteLine(defaultUsage);
-            foreach (var item in items)
+            var hasArg = Arguments.Count > 1 && !string.IsNullOrWhiteSpace(Arguments[1]);
+            if (!hasArg) Utilities.WriteLine(GetMessage(dispatcher.DefaultVerbFactory, false));
+            foreach (var item in hasArg ? dispatcher.VerbFactorysRegistered(Arguments[1]) : dispatcher.VerbFactorysRegistered())
             {
-                Utilities.WriteLine(item.Key);
-                if (item.Value != null) Utilities.WriteLine(item.Value.Replace("{0}", item.Key));
+                var msg = GetMessage(item.VerbFactory, hasArg);
+                if (string.IsNullOrWhiteSpace(msg)) continue;
+                Utilities.WriteLine(item.MatchDescription);
+                Utilities.WriteLine(msg.Replace("{0}", item.MatchDescription));
             }
 
-            Utilities.WriteLine(FurtherDescription);
+            if (!hasArg) Utilities.WriteLine(FurtherDescription);
+        }
+
+        private string GetMessage(Func<Verb> verb, bool details)
+        {
+            if (verb == null) return null;
+            var v = verb();
+            if (v == null) return null;
+            return details ? v.GetHelp() : v.Description;
         }
     }
 

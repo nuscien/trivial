@@ -5,7 +5,7 @@
 Just add following namespace to your code file to use.
 
 ```csharp
-using Trivial.Console
+using Trivial.Console;
 ```
 
 # Parse
@@ -53,13 +53,7 @@ class FirstVerb: Verb
     [Argument("name")]
     public string Name { get; set; }
 
-    public override string Description
-    {
-        get
-        {
-            return "Test 1";
-        }
-    }
+    public override string Description => "Test 1";
 
     public override void Process()
     {
@@ -75,18 +69,13 @@ And you can also define a verb handler with async process method.
 ```csharp
 class SecondVerb: AsyncVerb
 {
-    public override string Description
-    {
-        get
-        {
-            return "Test 2";
-        }
-    }
+    public override string Description => "Test 2";
 
     public override async Task Process()
     {
+        Console.WriteLine("This is the verb handler 2. Step 1.");
         await Task.Run(() => {
-            Console.WriteLine("This is the verb handler 2.");
+            Console.WriteLine("This is the verb handler 2. Step 2.");
         });
     }
 }
@@ -98,9 +87,18 @@ Then you can use dispatcher to dispatch the correct verb handler to process.
 void Main(string[] args)
 {
     var dispatcher = new Dispatcher();
-    dispatcher.Register("one", FirstVerb);
-    dispatcher.Register("two", SecondVerb);
+    dispatcher.Register<FirstVerb>("one");
+    dispatcher.Register<SecondVerb>("two");
 
     dispatcher.Process(args);
+
+	// a.exe one --name Test
+	// Console -> This is the verb handler 1.
+	// Console -> Name is Test.
+	// Console -> Name is Test.
+
+	// a.ext two
+	// Console -> This is the verb handler 2. Step 1.
+	// Console -> This is the verb handler 2. Step 2.
 }
 ```

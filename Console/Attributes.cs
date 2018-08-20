@@ -9,8 +9,19 @@ namespace Trivial.Console
     /// </summary>
     public enum ParameterModes
     {
+        /// <summary>
+        /// The first parameter.
+        /// </summary>
         First = 0,
+
+        /// <summary>
+        /// The last parameter.
+        /// </summary>
         Last = 1,
+
+        /// <summary>
+        /// Parameters merged.
+        /// </summary>
         All = 2
     }
 

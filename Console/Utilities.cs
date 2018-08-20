@@ -5,6 +5,9 @@ using System.Text;
 
 namespace Trivial.Console
 {
+    /// <summary>
+    /// The utilities.
+    /// </summary>
     public static class Utilities
     {
         /// <summary>
@@ -25,14 +28,9 @@ namespace Trivial.Console
         /// <param name="dispatcher">The dispatcher.</param>
         /// <param name="furtherDesc">Additional description which will be appended to the last.</param>
         /// <returns>The help verb instance.</returns>
-        public static HelpVerb RegisterHelp(this Dispatcher dispatcher, string furtherDesc = null)
+        public static void RegisterHelp(this Dispatcher dispatcher, string furtherDesc = null)
         {
-            var verb = new HelpVerb
-            {
-                FurtherDescription = furtherDesc
-            };
-            dispatcher.Register(new[] { "help", "?", "gethelp", "get-help" }, verb);
-            return verb;
+            dispatcher.Register<HelpVerb>(new[] { "help", "?", "gethelp", "get-help" });
         }
 
         /// <summary>
@@ -41,14 +39,9 @@ namespace Trivial.Console
         /// <param name="dispatcher">The dispatcher.</param>
         /// <param name="back">true if only for turning back; otherwise, false.</param>
         /// <returns>The exit verb instance.</returns>
-        public static ExitVerb RegisterExit(this Dispatcher dispatcher, bool back = false)
+        public static void RegisterExit(this Dispatcher dispatcher, bool back = false)
         {
-            var verb = new ExitVerb
-            {
-                Back = back
-            };
-            dispatcher.Register(new[] { "exit", "quit", "bye", "goodbye" }, verb);
-            return verb;
+            dispatcher.Register<ExitVerb>(new[] { "exit", "quit", "bye", "goodbye" });
         }
 
         /// <summary>

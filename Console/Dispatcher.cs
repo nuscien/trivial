@@ -20,24 +20,24 @@ namespace Trivial.Console
             /// Initializes a new instance of the Dispatcher.Item class.
             /// </summary>
             /// <param name="match">The match function.</param>
-            /// <param name="verb">The verb handler.</param>
+            /// <param name="verbFactory">The factory of the verb handler.</param>
             /// <param name="matchDesc">The title of the match function.</param>
-            public Item(Func<string, bool> match, Verb verb, string matchDesc = null)
+            public Item(Func<string, Verb, bool> match, Func<Verb> verbFactory, string matchDesc = null)
             {
                 Match = match;
-                Verb = verb;
+                VerbFactory = verbFactory;
                 MatchDescription = matchDesc;
             }
 
             /// <summary>
             /// Gets the match handler.
             /// </summary>
-            public Func<string, bool> Match { get; }
+            public Func<string, Verb, bool> Match { get; }
 
             /// <summary>
-            /// Gets the verb handler.
+            /// Gets the factory of the verb handler.
             /// </summary>
-            public Verb Verb { get; }
+            public Func<Verb> VerbFactory { get; }
 
             /// <summary>
             /// Gets the match description.
@@ -54,6 +54,7 @@ namespace Trivial.Console
             /// Initializes a new instance of the Dispatcher.ProcessEventArgs class.
             /// </summary>
             /// <param name="args">The arguments.</param>
+            /// <param name="verb">The verb handler.</param>
             public ProcessEventArgs(Arguments args, Verb verb)
             {
                 Arguments = args;
@@ -66,7 +67,7 @@ namespace Trivial.Console
             public Arguments Arguments { get; }
 
             /// <summary>
-            /// Gets the verb handler processing.
+            /// Gets the verb handler.
             /// </summary>
             public Verb Verb { get; }
         }
@@ -84,12 +85,12 @@ namespace Trivial.Console
         /// <summary>
         /// Gets or sets the default verb handler.
         /// </summary>
-        public Verb DefaultVerb { get; set; }
+        public Func<Verb> DefaultVerbFactory { get; set; }
 
         /// <summary>
         /// Gets or sets the unhandled verb handler.
         /// </summary>
-        public Verb UnhandledVerb { get; set; }
+        public Func<Verb> UnhandledVerbFactory { get; set; }
 
         /// <summary>
         /// Gets the verb handler which is processing currently now.
@@ -115,9 +116,23 @@ namespace Trivial.Console
         /// Gets the verb handlers registered.
         /// </summary>
         /// <returns>A list of verb handler and their match conditions.</returns>
-        public IList<Item> VerbsRegistered()
+        public IList<Item> VerbFactorysRegistered()
         {
             return items.ToList();
+        }
+
+        /// <summary>
+        /// Gets the verb handlers registered.
+        /// </summary>
+        /// <param name="key">The verb key to match.</param>
+        /// <returns>A list of verb handler and their match conditions.</returns>
+        public IEnumerable<Item> VerbFactorysRegistered(string key)
+        {
+            return items.ToList().Where(item =>
+            {
+                if (item.MatchDescription == null) return false;
+                return item.MatchDescription == key || item.MatchDescription.IndexOf(key + " ") == 0;
+            });
         }
 
         /// <summary>
@@ -179,45 +194,98 @@ namespace Trivial.Console
         }
 
         /// <summary>
-        /// Register a verb handler.
+        /// Register the default verb handler.
         /// </summary>
-        /// <param name="match">The match condition.</param>
-        /// <param name="verb">The verb handler.</param>
-        /// <param name="matchDesc">The match description.</param>
-        public void Register(Regex match, Verb verb, string matchDesc = null)
+        /// <typeparam name="T">The type of the verb handler.</typeparam>
+        public void RegisterDefault<T>() where T : Verb
         {
-            if (match == null || verb == null) return;
-            items.Add(new Item(match.IsMatch, verb, string.IsNullOrWhiteSpace(matchDesc) ? matchDesc : match.ToString()));
+            DefaultVerbFactory = Activator.CreateInstance<T>;
+        }
+
+        /// <summary>
+        /// Register the unhandled verb handler.
+        /// </summary>
+        /// <typeparam name="T">The type of the verb handler.</typeparam>
+        public void RegisterUnhandled<T>() where T : Verb
+        {
+            UnhandledVerbFactory = Activator.CreateInstance<T>;
         }
 
         /// <summary>
         /// Register a verb handler.
         /// </summary>
         /// <param name="match">The match condition.</param>
-        /// <param name="verb">The verb handler.</param>
+        /// <param name="verbFactory">The verb factory.</param>
         /// <param name="matchDesc">The match description.</param>
-        public void Register(Func<string, bool> match, Verb verb, string matchDesc = null)
+        public void Register(Regex match, Func<Verb> verbFactory, string matchDesc = null)
         {
-            if (match == null || verb == null) return;
-            items.Add(new Item(match, verb));
+            if (match == null || verbFactory == null) return;
+            items.Add(new Item((key, verb) =>
+            {
+                return match.IsMatch(key);
+            }, verbFactory, string.IsNullOrWhiteSpace(matchDesc) ? matchDesc : match.ToString()));
+        }
+
+        /// <summary>
+        /// Register a verb handler.
+        /// </summary>
+        /// <typeparam name="T">The type of the verb handler.</typeparam>
+        /// <param name="match">The match condition.</param>
+        /// <param name="matchDesc">The match description.</param>
+        public void Register<T>(Regex match, string matchDesc = null) where T: Verb
+        {
+            Register(match, Activator.CreateInstance<T>, matchDesc);
+        }
+
+        /// <summary>
+        /// Register a verb handler.
+        /// </summary>
+        /// <param name="match">The match condition.</param>
+        /// <param name="verbFactory">The verb factory.</param>
+        /// <param name="matchDesc">The match description.</param>
+        public void Register(Func<string, Verb, bool> match, Func<Verb> verbFactory, string matchDesc = null)
+        {
+            if (match == null || verbFactory == null) return;
+            items.Add(new Item(match, verbFactory));
+        }
+
+        /// <summary>
+        /// Register a verb handler.
+        /// </summary>
+        /// <typeparam name="T">The type of the verb handler.</typeparam>
+        /// <param name="match">The match condition.</param>
+        /// <param name="matchDesc">The match description.</param>
+        public void Register<T>(Func<string, Verb, bool> match, string matchDesc = null) where T : Verb
+        {
+            Register(match, Activator.CreateInstance<T>, matchDesc);
         }
 
         /// <summary>
         /// Register a verb handler.
         /// </summary>
         /// <param name="match">The verb key.</param>
-        /// <param name="verb">The verb handler.</param>
-        public void Register(string match, Verb verb)
+        /// <param name="verbFactory">The verb factory.</param>
+        public void Register(string match, Func<Verb> verbFactory)
         {
-            Register(new[] { match }, verb);
+            Register(new[] { match }, verbFactory);
+        }
+
+        /// <summary>
+        /// Register a verb handler.
+        /// </summary>
+        /// <typeparam name="T">The type of the verb handler.</typeparam>
+        /// <param name="match">The verb key.</param>
+        public void Register<T>(string match) where T : Verb
+        {
+            Register(new[] { match }, Activator.CreateInstance<T>);
         }
 
         /// <summary>
         /// Register a verb handler.
         /// </summary>
         /// <param name="match">The verb keys.</param>
-        /// <param name="verb">The verb handler.</param>
-        public void Register(IEnumerable<string> match, Verb verb)
+        /// <param name="verbFactory">The verb factory.</param>
+        public void Register(IEnumerable<string> match, Func<Verb> verbFactory)
         {
             if (match == null) return;
             var list = match.Where(item =>
@@ -228,7 +296,7 @@ namespace Trivial.Console
                 return Parameter.FormatKey(item, false);
             }).ToList();
             if (list.Count == 0) return;
-            items.Add(new Item(key =>
+            items.Add(new Item((key, verb) =>
             {
                 foreach (var item in list)
                 {
@@ -241,7 +309,17 @@ namespace Trivial.Console
                 }
 
                 return false;
-            }, verb, list[0]));
+            }, verbFactory, list[0]));
+        }
+
+        /// <summary>
+        /// Register a verb handler.
+        /// </summary>
+        /// <typeparam name="T">The type of the verb handler.</typeparam>
+        /// <param name="match">The verb key.</param>
+        public void Register<T>(IEnumerable<string> match) where T : Verb
+        {
+            Register(match, Activator.CreateInstance<T>);
         }
 
         /// <summary>
@@ -253,19 +331,19 @@ namespace Trivial.Console
         {
             var verb = args.Verb != null ? args.Verb.ToString() : string.Empty;
             Verb processed = null;
-            if (string.IsNullOrEmpty(verb)) processed = PrepareVerb(DefaultVerb, args);
+            if (string.IsNullOrEmpty(verb)) processed = PrepareVerb(DefaultVerbFactory, args);
             if (processed == null)
             {
                 foreach (var item in items)
                 {
-                    if (!item.Match(args.Verb.ToString())) continue;
-                    processed = PrepareVerb(item.Verb, args);
+                    if (!item.Match(args.Verb.ToString(), processed)) continue;
+                    processed = PrepareVerb(item.VerbFactory, args);
                     if (processed == null) continue;
                     break;
                 }
             }
 
-            if (processed == null) processed = PrepareVerb(UnhandledVerb, args);
+            if (processed == null) processed = PrepareVerb(UnhandledVerbFactory, args);
             return processed;
         }
 
@@ -273,15 +351,17 @@ namespace Trivial.Console
         /// Prepares the verb handler instance by given arguments.
         /// </summary>
         /// <param name="args">The arguments.</param>
-        /// <param name="verb">The initialized verb handler instance.</param>
+        /// <param name="verbFactory">The initialized verb handler instance.</param>
         /// <returns>The verb handler instance filled with the arguments.</returns>
-        private Verb PrepareVerb(Verb verb, Arguments args)
+        private Verb PrepareVerb(Func<Verb> verbFactory, Arguments args)
         {
-            if (verb == null) return null;
-            verb.Arguments = args ?? throw new ArgumentNullException("args");
-            args.Deserialize(verb);
-            if (!verb.IsValid()) return null;
-            return verb;
+            if (verbFactory == null) return null;
+            var v = verbFactory();
+            if (v == null) return null;
+            v.Arguments = args ?? throw new ArgumentNullException("args");
+            args.Deserialize(v);
+            if (!v.IsValid()) return null;
+            return v;
         }
 
         /// <summary>

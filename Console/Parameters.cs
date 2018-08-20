@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Security;
 using System.Text;
 
 namespace Trivial.Console
@@ -16,7 +17,7 @@ namespace Trivial.Console
         /// Initializes a new instance of the Parameter class.
         /// </summary>
         /// <param name="key">The parameter key.</param>
-        /// <param name="rest">The words of value.</param>
+        /// <param name="values">The words of value.</param>
         public Parameter(string key, IEnumerable<string> values)
         {
             OriginalKey = key;
@@ -162,7 +163,7 @@ namespace Trivial.Console
         /// <returns>The result value converted.</returns>
         public Uri ParseToUri()
         {
-            return new Uri(Value);
+            return !string.IsNullOrWhiteSpace(Value) ? new Uri(Value) : null;
         }
 
         /// <summary>
@@ -171,7 +172,31 @@ namespace Trivial.Console
         /// <returns>The result value converted.</returns>
         public FileInfo ParseToFileInfo()
         {
-            return new FileInfo(Value);
+            if (string.IsNullOrWhiteSpace(Value)) return null;
+            try
+            {
+                return new FileInfo(Value);
+            }
+            catch (ArgumentException)
+            {
+            }
+            catch (SecurityException)
+            {
+            }
+            catch (UnauthorizedAccessException)
+            {
+            }
+            catch (PathTooLongException)
+            {
+            }
+            catch (NotSupportedException)
+            {
+            }
+            catch (FileNotFoundException)
+            {
+            }
+
+            return null;
         }
 
         /// <summary>
@@ -180,7 +205,31 @@ namespace Trivial.Console
         /// <returns>The result value converted.</returns>
         public DirectoryInfo ParseToDirectoryInfo()
         {
-            return new DirectoryInfo(Value);
+            if (string.IsNullOrWhiteSpace(Value)) return null;
+            try
+            {
+                return new DirectoryInfo(Value);
+            }
+            catch (ArgumentException)
+            {
+            }
+            catch (SecurityException)
+            {
+            }
+            catch (UnauthorizedAccessException)
+            {
+            }
+            catch (PathTooLongException)
+            {
+            }
+            catch (NotSupportedException)
+            {
+            }
+            catch (DirectoryNotFoundException)
+            {
+            }
+
+            return null;
         }
 
         /// <summary>
@@ -269,6 +318,7 @@ namespace Trivial.Console
             {
                 if (key.IndexOf("--") == 0) return key.Substring(2).ToLower();
                 if (key.IndexOf('-') == 0) return key.Substring(1).ToLower();
+                if (key.IndexOf('/') == 0) return key.Substring(1).ToLower();
             }
 
             return key.ToLower();
@@ -440,6 +490,7 @@ namespace Trivial.Console
         /// Converts the value to its 32-bit signed integer equivalent.
         /// </summary>
         /// <param name="result">The result value converted when this method returns.</param>
+        /// <param name="mode">The parameter resolving mode.</param>
         /// <returns>true if the value was converted successfully; otherwise, false.</returns>
         public bool TryToParse(out int result, ParameterModes mode = ParameterModes.First)
         {
@@ -450,6 +501,7 @@ namespace Trivial.Console
         /// Converts the value to its 64-bit signed integer equivalent.
         /// </summary>
         /// <param name="result">The result value converted when this method returns.</param>
+        /// <param name="mode">The parameter resolving mode.</param>
         /// <returns>true if the value was converted successfully; otherwise, false.</returns>
         public bool TryToParse(out long result, ParameterModes mode = ParameterModes.First)
         {
@@ -460,6 +512,7 @@ namespace Trivial.Console
         /// Converts the value to its single-precision floating-point number equivalent.
         /// </summary>
         /// <param name="result">The result value converted when this method returns.</param>
+        /// <param name="mode">The parameter resolving mode.</param>
         /// <returns>true if the value was converted successfully; otherwise, false.</returns>
         public bool TryToParse(out float result, ParameterModes mode = ParameterModes.First)
         {
@@ -470,6 +523,7 @@ namespace Trivial.Console
         /// Converts the value to its double-precision floating-point number equivalent.
         /// </summary>
         /// <param name="result">The result value converted when this method returns.</param>
+        /// <param name="mode">The parameter resolving mode.</param>
         /// <returns>true if the value was converted successfully; otherwise, false.</returns>
         public bool TryToParse(out double result, ParameterModes mode = ParameterModes.First)
         {
@@ -480,6 +534,7 @@ namespace Trivial.Console
         /// Converts the value to its GUID equivalent.
         /// </summary>
         /// <param name="result">The result value converted when this method returns.</param>
+        /// <param name="mode">The parameter resolving mode.</param>
         /// <returns>true if the value was converted successfully; otherwise, false.</returns>
         public bool TryToParse(out Guid result, ParameterModes mode = ParameterModes.First)
         {
@@ -490,6 +545,7 @@ namespace Trivial.Console
         /// Converts the value to its date and time equivalent.
         /// </summary>
         /// <param name="result">The result value converted when this method returns.</param>
+        /// <param name="mode">The parameter resolving mode.</param>
         /// <returns>true if the value was converted successfully; otherwise, false.</returns>
         public bool TryToParse(out DateTime result, ParameterModes mode = ParameterModes.First)
         {
@@ -500,6 +556,7 @@ namespace Trivial.Console
         /// Converts the value to its date and time with offset relative to UTC equivalent.
         /// </summary>
         /// <param name="result">The result value converted when this method returns.</param>
+        /// <param name="mode">The parameter resolving mode.</param>
         /// <returns>true if the value was converted successfully; otherwise, false.</returns>
         public bool TryToParse(out DateTimeOffset result, ParameterModes mode = ParameterModes.First)
         {
@@ -509,28 +566,83 @@ namespace Trivial.Console
         /// <summary>
         /// Converts the value to its URI equivalent.
         /// </summary>
+        /// <param name="mode">The parameter resolving mode.</param>
         /// <returns>The result value converted.</returns>
         public Uri ParseToUri(ParameterModes mode = ParameterModes.First)
         {
-            return new Uri(Value(mode));
+            var v = Value(mode);
+            if (string.IsNullOrWhiteSpace(v)) return null;
+            return new Uri(v);
         }
 
         /// <summary>
         /// Converts the value to its file information object equivalent.
         /// </summary>
+        /// <param name="mode">The parameter resolving mode.</param>
         /// <returns>The result value converted.</returns>
         public FileInfo ParseToFileInfo(ParameterModes mode = ParameterModes.First)
         {
-            return new FileInfo(Value(mode));
+            var v = Value(mode);
+            if (string.IsNullOrWhiteSpace(v)) return null;
+            try
+            {
+                return new FileInfo(v);
+            }
+            catch (ArgumentException)
+            {
+            }
+            catch (SecurityException)
+            {
+            }
+            catch (UnauthorizedAccessException)
+            {
+            }
+            catch (PathTooLongException)
+            {
+            }
+            catch (NotSupportedException)
+            {
+            }
+            catch (FileNotFoundException)
+            {
+            }
+
+            return null;
         }
 
         /// <summary>
         /// Converts the value to its directory information object equivalent.
         /// </summary>
+        /// <param name="mode">The parameter resolving mode.</param>
         /// <returns>The result value converted.</returns>
         public DirectoryInfo ParseToDirectoryInfo(ParameterModes mode = ParameterModes.First)
         {
-            return new DirectoryInfo(Value(mode));
+            var v = Value(mode);
+            if (string.IsNullOrWhiteSpace(v)) return null;
+            try
+            {
+                return new DirectoryInfo(v);
+            }
+            catch (ArgumentException)
+            {
+            }
+            catch (SecurityException)
+            {
+            }
+            catch (UnauthorizedAccessException)
+            {
+            }
+            catch (PathTooLongException)
+            {
+            }
+            catch (NotSupportedException)
+            {
+            }
+            catch (DirectoryNotFoundException)
+            {
+            }
+
+            return null;
         }
 
         /// <summary>

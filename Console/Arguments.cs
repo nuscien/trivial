@@ -255,7 +255,7 @@ namespace Trivial.Console
         /// <typeparam name="T">The type of the object.</typeparam>
         /// <param name="obj">An object.</param>
         /// <param name="overrideProperty">true if override the properties which they have values; otherwise, false.</param>
-        public void Deserialize<T>(T obj, bool overrideProperty = true)
+        public void Deserialize<T>(T obj, bool overrideProperty = true) where T : class
         {
             foreach (var item in typeof(T).GetProperties())
             {
@@ -331,7 +331,7 @@ namespace Trivial.Console
         /// </summary>
         /// <typeparam name="T">The type of the object.</typeparam>
         /// <returns>An object with properties from this instance.</returns>
-        public T Deserialize<T>()
+        public T Deserialize<T>() where T : class
         {
             var obj = Activator.CreateInstance<T>();
             Deserialize(obj);
@@ -357,10 +357,10 @@ namespace Trivial.Console
             var list = new List<int>();
             for (var i = 0; i < args.Count; i++)
             {
-                if (args[i].IndexOf('-') == 0) list.Add(i);
+                if (args[i].IndexOf('-') == 0 || args[i].IndexOf('/') == 0) list.Add(i);
             }
 
-            if (args[0].IndexOf('-') != 0)
+            if (args[0].IndexOf('-') != 0 && args[0].IndexOf('/') != 0)
             {
                 var len = args.Count;
                 if (list.Count > 0) len = list[0];
