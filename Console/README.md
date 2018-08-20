@@ -53,7 +53,7 @@ class FirstVerb: Verb
     [Argument("name")]
     public string Name { get; set; }
 
-    public string Description
+    public override string Description
     {
         get
         {
@@ -61,7 +61,7 @@ class FirstVerb: Verb
         }
     }
 
-    public void Process()
+    public override void Process()
     {
         Console.WriteLine("This is the verb handler 1.");
         Console.WriteLine("Name is {0}.", Name);
@@ -75,7 +75,7 @@ And you can also define a verb handler with async process method.
 ```csharp
 class SecondVerb: AsyncVerb
 {
-    public string Description
+    public override string Description
     {
         get
         {
@@ -83,7 +83,7 @@ class SecondVerb: AsyncVerb
         }
     }
 
-    public async Task Process()
+    public override async Task Process()
     {
         await Task.Run(() => {
             Console.WriteLine("This is the verb handler 2.");
