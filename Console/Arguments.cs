@@ -8,18 +8,35 @@ using System.Text;
 
 namespace Trivial.Console
 {
+    /// <summary>
+    /// The console arguments object with parsing and deserializing.
+    /// </summary>
     public class Arguments: IEquatable<Arguments>, IEquatable<string>, IReadOnlyList<string>
     {
+        /// <summary>
+        /// Original arguments list.
+        /// </summary>
         private List<string> args;
 
+        /// <summary>
+        /// The parameters.
+        /// </summary>
         private List<Parameter> parameters = new List<Parameter>();
 
+        /// <summary>
+        /// Initializes a new instance of the Arguments class.
+        /// </summary>
+        /// <param name="args">The original arguments.</param>
         public Arguments(IEnumerable<string> args)
         {
             this.args = args.ToList();
             Init();
         }
 
+        /// <summary>
+        /// Initializes a new instance of the Arguments class.
+        /// </summary>
+        /// <param name="args">The original arguments.</param>
         public Arguments(string args)
         {
             var list = args.Split(new[] { ' ', '\t', '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
@@ -55,6 +72,11 @@ namespace Trivial.Console
             Init();
         }
 
+        /// <summary>
+        /// Gets the item of arguments splitted by white space.
+        /// </summary>
+        /// <param name="index">The index of the word of the arguments.</param>
+        /// <returns>A word in the arguments.</returns>
         public string this[int index]
         {
             get
@@ -63,6 +85,11 @@ namespace Trivial.Console
             }
         }
 
+        /// <summary>
+        /// Gets the parameter value of arguments.
+        /// </summary>
+        /// <param name="key">The parameter key.</param>
+        /// <returns>A parameter value.</returns>
         public string this[string key]
         {
             get
@@ -78,15 +105,33 @@ namespace Trivial.Console
             }
         }
 
+        /// <summary>
+        /// Gets the count of word in the arguments.
+        /// </summary>
         public int Count { get; private set; }
 
+        /// <summary>
+        /// Gets the verb parameter.
+        /// </summary>
         public Parameter Verb { get; private set; }
 
+        /// <summary>
+        /// Gets the specific parameters by key.
+        /// </summary>
+        /// <param name="key">The parameter key.</param>
+        /// <param name="additionalKeys">The additional keys including alias and short name.</param>
+        /// <returns>A set of parameter.</returns>
         public Parameters Get(string key, params string[] additionalKeys)
         {
             return Get(key, additionalKeys);
         }
 
+        /// <summary>
+        /// Gets the specific parameters by key.
+        /// </summary>
+        /// <param name="key">The parameter key.</param>
+        /// <param name="additionalKeys">The additional keys including alias and short name.</param>
+        /// <returns>A set of parameter.</returns>
         public Parameters Get(string key, IEnumerable<string> additionalKeys)
         {
             if (string.IsNullOrWhiteSpace(key)) return new Parameters(string.Empty, new List<Parameter>() {
@@ -106,6 +151,11 @@ namespace Trivial.Console
             }), rest);
         }
 
+        /// <summary>
+        /// Get the first parameter of the specific key.
+        /// </summary>
+        /// <param name="key">The parameter key.</param>
+        /// <returns>A parameter matched.</returns>
         public Parameter GetFirst(params string[] key)
         {
             var keys = key.Where(item =>
@@ -124,16 +174,30 @@ namespace Trivial.Console
             return null;
         }
 
-        public bool Has(string key)
+        /// <summary>
+        /// Checks if there is a parameter which is matched the specific key.
+        /// </summary>
+        /// <param name="key">The parameter key.</param>
+        /// <returns>true if has such parameter; otherwise, false.</returns>
+        public bool Has(params string[] key)
         {
-            key = key.ToLower();
-            if (string.IsNullOrWhiteSpace(key)) return Verb != null;
-            return parameters.Count(item =>
+            foreach (var k in key)
             {
-                return item.Key == key;
-            }) > 0;
+                var str = Parameter.FormatKey(k, false);
+                if (string.IsNullOrWhiteSpace(str)) return Verb != null;
+                foreach (var p in parameters)
+                {
+                    if (p.Key == str) return true;
+                }
+            }
+
+            return false;
         }
 
+        /// <summary>
+        /// Converts the value of this instance to the arguments string.
+        /// </summary>
+        /// <returns>A string whose value is the same as this instance.</returns>
         public override string ToString()
         {
             var str = new StringBuilder();
@@ -146,27 +210,51 @@ namespace Trivial.Console
             return str.ToString();
         }
 
+        /// <summary>
+        /// Returns the hash code for this instance.
+        /// </summary>
+        /// <returns>A 32-bit signed integer hash code.</returns>
         public override int GetHashCode()
         {
             return ToString().GetHashCode();
         }
 
+        /// <summary>
+        /// Determines whether the value of this instance and the specified one have the same value.
+        /// </summary>
+        /// <param name="other">The object to compare.</param>
+        /// <returns>true if this instance is the value of the same as the specific one; otherwise, false.</returns>
         public bool Equals(Arguments other)
         {
             if (other == null) return false;
             return ToString() == other.ToString();
         }
 
+        /// <summary>
+        /// Determines whether this instance and the specified one have the same value.
+        /// </summary>
+        /// <param name="other">The object to compare.</param>
+        /// <returns>true if this instance is the value of the same as the specific one; otherwise, false.</returns>
         public bool Equals(string other)
         {
             return ToString() == other;
         }
 
+        /// <summary>
+        /// Returns an enumerator that iterates through this instance.
+        /// </summary>
+        /// <returns>A enumerator.</returns>
         public IEnumerator<string> GetEnumerator()
         {
             return args.GetEnumerator();
         }
 
+        /// <summary>
+        /// Deserializes the value of this instance to a specific object.
+        /// </summary>
+        /// <typeparam name="T">The type of the object.</typeparam>
+        /// <param name="obj">An object.</param>
+        /// <param name="overrideProperty">true if override the properties which they have values; otherwise, false.</param>
         public void Deserialize<T>(T obj, bool overrideProperty = true)
         {
             foreach (var item in typeof(T).GetProperties())
@@ -184,7 +272,11 @@ namespace Trivial.Console
                 var p = Get(attName, restNames);
                 if (p.ItemCount == 0) continue;
                 var itemType = item.GetType();
-                if (itemType == typeof(string))
+                if (item == null && itemType.IsClass)
+                {
+                    item.SetValue(obj, null);
+                }
+                else if (itemType == typeof(string))
                 {
                     item.SetValue(obj, p.Value(att.Mode));
                 }
@@ -234,6 +326,11 @@ namespace Trivial.Console
             }
         }
 
+        /// <summary>
+        /// Deserializes the value of this instance to an object.
+        /// </summary>
+        /// <typeparam name="T">The type of the object.</typeparam>
+        /// <returns>An object with properties from this instance.</returns>
         public T Deserialize<T>()
         {
             var obj = Activator.CreateInstance<T>();
@@ -241,11 +338,18 @@ namespace Trivial.Console
             return obj;
         }
 
+        /// <summary>
+        /// Returns an enumerator that iterates through this instance.
+        /// </summary>
+        /// <returns>A enumerator.</returns>
         IEnumerator IEnumerable.GetEnumerator()
         {
             return args.GetEnumerator();
         }
 
+        /// <summary>
+        /// Initializes this instance.
+        /// </summary>
         private void Init()
         {
             Count = args.Count;
@@ -269,7 +373,7 @@ namespace Trivial.Console
                 var len = args.Count;
                 if (len > i + 1)
                 {
-                    if (list.Count > i) len = list[i + 1];
+                    if (args.Count > i) len = list[i + 1];
                     len -= i + 1;
                     rest = args.Skip(i + 1).Take(len);
                 }
