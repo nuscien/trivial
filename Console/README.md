@@ -85,7 +85,7 @@ class SecondVerb: AsyncVerb
 
     public async Task Process()
     {
-        return await Task.Run(() => {
+        await Task.Run(() => {
             Console.WriteLine("This is the verb handler 2.");
         });
     }
