@@ -77,6 +77,11 @@ namespace Trivial.Console
         public List<Item> Pending { get; } = new List<Item>();
 
         /// <summary>
+        /// Gets the line index writen.
+        /// </summary>
+        public int Line { get; private set; }
+
+        /// <summary>
         /// Gets or sets a value indicating whether write to standard output stream immediately.
         /// </summary>
         public bool AutoFlush {
@@ -206,6 +211,7 @@ namespace Trivial.Console
         public string ReadLine()
         {
             Flush();
+            Line++;
             return System.Console.ReadLine();
         }
 
@@ -216,17 +222,9 @@ namespace Trivial.Console
         public int Read()
         {
             Flush();
-            return System.Console.Read();
-        }
-
-        /// <summary>
-        /// Reads the next character from the standard input stream.
-        /// </summary>
-        /// <returns>The next character from the input stream, or negative one (-1) if there are currently no more characters to be read.</returns>
-        public ConsoleKeyInfo ReadKey()
-        {
-            Flush();
-            return System.Console.ReadKey();
+            var key = System.Console.Read();
+            if (key == 13) Line++;
+            return key;
         }
 
         /// <summary>
@@ -240,7 +238,9 @@ namespace Trivial.Console
         public ConsoleKeyInfo ReadKey(bool intercept = false)
         {
             Flush();
-            return System.Console.ReadKey(intercept);
+            var key = System.Console.ReadKey(intercept);
+            if (key.Key == ConsoleKey.Enter) Line++;
+            return key;
         }
 
         /// <summary>
@@ -259,6 +259,7 @@ namespace Trivial.Console
             Flush();
             System.Console.ResetColor();
             System.Console.WriteLine();
+            Line++;
             line.Clear();
         }
 
