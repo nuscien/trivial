@@ -22,7 +22,7 @@ namespace Trivial.Console
             /// <param name="match">The match function.</param>
             /// <param name="verbFactory">The factory of the verb handler.</param>
             /// <param name="matchDesc">The title of the match function.</param>
-            public Item(Func<string, Verb, bool> match, Func<Verb> verbFactory, string matchDesc = null)
+            public Item(Func<string, bool> match, Func<Verb> verbFactory, string matchDesc = null)
             {
                 Match = match;
                 VerbFactory = verbFactory;
@@ -32,7 +32,7 @@ namespace Trivial.Console
             /// <summary>
             /// Gets the match handler.
             /// </summary>
-            public Func<string, Verb, bool> Match { get; }
+            public Func<string, bool> Match { get; }
 
             /// <summary>
             /// Gets the factory of the verb handler.
@@ -220,10 +220,7 @@ namespace Trivial.Console
         public void Register(Regex match, Func<Verb> verbFactory, string matchDesc = null)
         {
             if (match == null || verbFactory == null) return;
-            items.Add(new Item((key, verb) =>
-            {
-                return match.IsMatch(key);
-            }, verbFactory, string.IsNullOrWhiteSpace(matchDesc) ? matchDesc : match.ToString()));
+            items.Add(new Item(match.IsMatch, verbFactory, string.IsNullOrWhiteSpace(matchDesc) ? matchDesc : match.ToString()));
         }
 
         /// <summary>
@@ -243,7 +240,7 @@ namespace Trivial.Console
         /// <param name="match">The match condition.</param>
         /// <param name="verbFactory">The verb factory.</param>
         /// <param name="matchDesc">The match description.</param>
-        public void Register(Func<string, Verb, bool> match, Func<Verb> verbFactory, string matchDesc = null)
+        public void Register(Func<string, bool> match, Func<Verb> verbFactory, string matchDesc = null)
         {
             if (match == null || verbFactory == null) return;
             items.Add(new Item(match, verbFactory));
@@ -255,7 +252,7 @@ namespace Trivial.Console
         /// <typeparam name="T">The type of the verb handler.</typeparam>
         /// <param name="match">The match condition.</param>
         /// <param name="matchDesc">The match description.</param>
-        public void Register<T>(Func<string, Verb, bool> match, string matchDesc = null) where T : Verb
+        public void Register<T>(Func<string, bool> match, string matchDesc = null) where T : Verb
         {
             Register(match, Activator.CreateInstance<T>, matchDesc);
         }
@@ -296,16 +293,12 @@ namespace Trivial.Console
                 return Parameter.FormatKey(item, false);
             }).ToList();
             if (list.Count == 0) return;
-            items.Add(new Item((key, verb) =>
+            items.Add(new Item(key =>
             {
                 foreach (var item in list)
                 {
-                    var v = verb.Arguments.Verb;
-                    if (v == null) return false;
-                    if (v.Key == item) return true;
-                    var verbStr = v.ToString();
-                    if (verbStr == item) return true;
-                    return verbStr.IndexOf(match + " ") == 0;
+                    if (key == item) return true;
+                    return key != null && key.IndexOf(item + " ") == 0;
                 }
 
                 return false;
@@ -336,7 +329,7 @@ namespace Trivial.Console
             {
                 foreach (var item in items)
                 {
-                    if (!item.Match(args.Verb.ToString(), processed)) continue;
+                    if (!item.Match(verb)) continue;
                     processed = PrepareVerb(item.VerbFactory, args);
                     if (processed == null) continue;
                     break;
@@ -405,6 +398,7 @@ namespace Trivial.Console
             Processing?.Invoke(this, new ProcessEventArgs(args, verb));
             try
             {
+                if (!verb.IsCancelled && !isCanceled) verb.Init(this);
                 if (!verb.IsCancelled && !isCanceled) verb.Process();
                 else if (resetCancelState) isCanceled = false;
             }

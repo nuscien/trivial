@@ -184,13 +184,14 @@ namespace Trivial.Console
         /// </summary>
         public override void Process()
         {
+            if (dispatcher == null) return;
             var hasArg = Arguments.Count > 1 && !string.IsNullOrWhiteSpace(Arguments[1]);
             if (!hasArg) Utilities.WriteLine(GetMessage(dispatcher.DefaultVerbFactory, false));
             foreach (var item in hasArg ? dispatcher.VerbFactorysRegistered(Arguments[1]) : dispatcher.VerbFactorysRegistered())
             {
                 var msg = GetMessage(item.VerbFactory, hasArg);
                 if (string.IsNullOrWhiteSpace(msg)) continue;
-                Utilities.WriteLine(item.MatchDescription);
+                System.Console.WriteLine(item.MatchDescription);
                 Utilities.WriteLine(msg.Replace("{0}", item.MatchDescription));
             }
 
