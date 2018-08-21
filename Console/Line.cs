@@ -252,7 +252,8 @@ namespace Trivial.Console
         }
 
         /// <summary>
-        /// Writes the current line terminator to the standard output stream.
+        /// Writes the pending string and the current line terminator to the standard output stream.
+        /// And then reset the pending information in this instance for the new line.
         /// </summary>
         public void End()
         {
@@ -272,7 +273,7 @@ namespace Trivial.Console
         }
 
         /// <summary>
-        /// Clears the pending string.
+        /// Clears the pending string and flushed string.
         /// </summary>
         public void Clear()
         {
