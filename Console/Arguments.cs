@@ -116,6 +116,17 @@ namespace Trivial.Console
         public Parameter Verb { get; private set; }
 
         /// <summary>
+        /// Gets a value indicating whether has the verb.
+        /// </summary>
+        public bool HasVerb
+        {
+            get
+            {
+                return Verb != null;
+            }
+        }
+
+        /// <summary>
         /// Gets the specific parameters by key.
         /// </summary>
         /// <param name="key">The parameter key.</param>
@@ -175,7 +186,7 @@ namespace Trivial.Console
         }
 
         /// <summary>
-        /// Checks if there is a parameter which is matched the specific key.
+        /// Determines whether there is a parameter which is matched the specific key.
         /// </summary>
         /// <param name="key">The parameter key.</param>
         /// <returns>true if has such parameter; otherwise, false.</returns>
@@ -192,6 +203,16 @@ namespace Trivial.Console
             }
 
             return false;
+        }
+
+        /// <summary>
+        /// Determines whether a word is in the arguments.
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        public bool Contains(string key)
+        {
+            return args.Contains(key);
         }
 
         /// <summary>

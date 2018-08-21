@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -97,6 +98,9 @@ namespace Trivial.Console
         /// <summary>
         /// Processes.
         /// </summary>
+        /// <exception cref="AggregateException">An exception was thrown during the execution of the task.</exception>
+        /// <exception cref="TaskCanceledException">The task was canceled.</exception>
+        /// <exception cref="ObjectDisposedException">The task has been disposed.</exception>
         public override void Process()
         {
             var task = ProcessAsync();
@@ -114,18 +118,8 @@ namespace Trivial.Console
         /// <summary>
         /// Processes.
         /// </summary>
-        /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>The task.</returns>
-        protected abstract Task ProcessAsync(CancellationToken cancellationToken);
-
-        /// <summary>
-        /// Processes.
-        /// </summary>
-        /// <returns>The task.</returns>
-        public Task ProcessAsync()
-        {
-            return ProcessAsync(CancellationToken);
-        }
+        public abstract Task ProcessAsync();
 
         /// <summary>
         /// Occurs when it is cancelled.
@@ -133,6 +127,7 @@ namespace Trivial.Console
         /// <param name="ex">The task cancelled exception.</param>
         public virtual void ProcessCancelled(TaskCanceledException ex)
         {
+            throw ex;
         }
 
         /// <summary>
@@ -141,6 +136,7 @@ namespace Trivial.Console
         /// <param name="ex">The exception. Its inner exceptions property contains information about the exception or exceptions.</param>
         public virtual void ProcessFailed(AggregateException ex)
         {
+            throw ex;
         }
     }
 
@@ -186,16 +182,16 @@ namespace Trivial.Console
         {
             if (dispatcher == null) return;
             var hasArg = Arguments.Count > 1 && !string.IsNullOrWhiteSpace(Arguments[1]);
-            if (!hasArg) Utilities.WriteLine(GetMessage(dispatcher.DefaultVerbFactory, false));
+            if (!hasArg) WriterUtilities.WriteDoubleLine(GetMessage(dispatcher.DefaultVerbFactory, false));
             foreach (var item in hasArg ? dispatcher.VerbFactorysRegistered(Arguments[1]) : dispatcher.VerbFactorysRegistered())
             {
                 var msg = GetMessage(item.VerbFactory, hasArg);
                 if (string.IsNullOrWhiteSpace(msg)) continue;
                 System.Console.WriteLine(item.MatchDescription);
-                Utilities.WriteLine(msg.Replace("{0}", item.MatchDescription));
+                WriterUtilities.WriteDoubleLine(msg.Replace("{0}", item.MatchDescription));
             }
 
-            if (!hasArg) Utilities.WriteLine(FurtherDescription);
+            if (!hasArg) WriterUtilities.WriteDoubleLine(FurtherDescription);
         }
 
         private string GetMessage(Func<Verb> verb, bool details)
@@ -255,7 +251,59 @@ namespace Trivial.Console
         /// </summary>
         public override void Process()
         {
-            if (!Back) Utilities.WriteLine(ByeMessage);
+            if (!Back) WriterUtilities.WriteDoubleLine(ByeMessage);
+        }
+    }
+
+    /// <summary>
+    /// The utilities.
+    /// </summary>
+    public static class VerbExtension
+    {
+        /// <summary>
+        /// Registers a help verb.
+        /// </summary>
+        /// <param name="dispatcher">The dispatcher.</param>
+        /// <param name="furtherDesc">Additional description which will be appended to the last.</param>
+        /// <returns>The help verb instance.</returns>
+        public static void RegisterHelp(this Dispatcher dispatcher, string furtherDesc = null)
+        {
+            dispatcher.Register<HelpVerb>(new[] { "help", "?", "gethelp", "get-help" });
+        }
+
+        /// <summary>
+        /// Registers a exit verb.
+        /// </summary>
+        /// <param name="dispatcher">The dispatcher.</param>
+        /// <param name="back">true if only for turning back; otherwise, false.</param>
+        /// <returns>The exit verb instance.</returns>
+        public static void RegisterExit(this Dispatcher dispatcher, bool back = false)
+        {
+            dispatcher.Register<ExitVerb>(new[] { "exit", "quit", "bye", "goodbye" });
+        }
+
+        /// <summary>
+        /// Processes a command.
+        /// </summary>
+        /// <param name="cmd">The command string.</param>
+        /// <returns>The output string.</returns>
+        public static string Command(string cmd)
+        {
+            var p = new Process();
+            p.StartInfo.FileName = "cmd.exe";
+            p.StartInfo.UseShellExecute = false;
+            p.StartInfo.RedirectStandardInput = true;
+            p.StartInfo.RedirectStandardOutput = true;
+            p.StartInfo.RedirectStandardError = true;
+            p.StartInfo.CreateNoWindow = true;
+            p.Start();
+
+            p.StandardInput.WriteLine(cmd + "&exit");
+            p.StandardInput.AutoFlush = true;
+            var output = p.StandardOutput.ReadToEnd();
+            p.WaitForExit();
+            p.Close();
+            return output;
         }
     }
 }

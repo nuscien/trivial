@@ -316,6 +316,14 @@ namespace Trivial.Console
         }
 
         /// <summary>
+        /// Clear all the verb factories registered.
+        /// </summary>
+        public void ClearRegistered()
+        {
+            items.Clear();
+        }
+
+        /// <summary>
         /// Prepares the verb handler instance by given arguments.
         /// </summary>
         /// <param name="args">The arguments.</param>
@@ -386,6 +394,9 @@ namespace Trivial.Console
                 {
                 }
                 catch (ArgumentException)
+                {
+                }
+                catch (OperationCanceledException)
                 {
                 }
                 finally

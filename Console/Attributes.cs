@@ -28,6 +28,7 @@ namespace Trivial.Console
     /// <summary>
     /// The argument mapping attribute.
     /// </summary>
+    [AttributeUsage(AttributeTargets.Property)]
     public class ArgumentAttribute: Attribute
     {
         /// <summary>
