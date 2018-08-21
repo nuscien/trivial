@@ -9,7 +9,7 @@ namespace Trivial.Console
     /// <summary>
     /// A client to control a line to write.
     /// </summary>
-    public class LineWriter
+    public class Line
     {
         /// <summary>
         /// The element to output.
@@ -77,9 +77,9 @@ namespace Trivial.Console
         public List<Item> Pending { get; } = new List<Item>();
 
         /// <summary>
-        /// Gets the line index writen.
+        /// Gets the line index writen by this instance.
         /// </summary>
-        public int Line { get; private set; }
+        public int LineIndex { get; private set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether write to standard output stream immediately.
@@ -169,7 +169,7 @@ namespace Trivial.Console
             if (AutoFlush)
             {
                 line.Append(str);
-                WriterUtilities.Write(foregroundColor, str);
+                LineUtilities.Write(foregroundColor, str);
             }
             else
             {
@@ -191,7 +191,7 @@ namespace Trivial.Console
             if (AutoFlush)
             {
                 line.Append(str);
-                WriterUtilities.Write(foregroundColor, backgroundColor, str);
+                LineUtilities.Write(foregroundColor, backgroundColor, str);
             }
             else
             {
@@ -211,7 +211,7 @@ namespace Trivial.Console
         public string ReadLine()
         {
             Flush();
-            Line++;
+            LineIndex++;
             return System.Console.ReadLine();
         }
 
@@ -223,7 +223,7 @@ namespace Trivial.Console
         {
             Flush();
             var key = System.Console.Read();
-            if (key == 13) Line++;
+            if (key == 13) LineIndex++;
             return key;
         }
 
@@ -239,7 +239,7 @@ namespace Trivial.Console
         {
             Flush();
             var key = System.Console.ReadKey(intercept);
-            if (key.Key == ConsoleKey.Enter) Line++;
+            if (key.Key == ConsoleKey.Enter) LineIndex++;
             return key;
         }
 
@@ -259,7 +259,7 @@ namespace Trivial.Console
             Flush();
             System.Console.ResetColor();
             System.Console.WriteLine();
-            Line++;
+            LineIndex++;
             line.Clear();
         }
 
@@ -277,7 +277,7 @@ namespace Trivial.Console
         public void Clear()
         {
             Pending.Clear();
-            WriterUtilities.Backspace(line.Length);
+            LineUtilities.Backspace(line.Length);
             line.Clear();
         }
 
@@ -291,7 +291,7 @@ namespace Trivial.Console
             {
                 var itemStr = item.Value.ToString();
                 str.Append(itemStr);
-                if (item != null) WriterUtilities.Write(item.ForegroundColor, item.BackgroundColor, itemStr);
+                if (item != null) LineUtilities.Write(item.ForegroundColor, item.BackgroundColor, itemStr);
             }
 
             Pending.Clear();
@@ -328,7 +328,7 @@ namespace Trivial.Console
                 line.Clear();
             }
 
-            WriterUtilities.Backspace(count);
+            LineUtilities.Backspace(count);
         }
 
         /// <summary>
@@ -391,7 +391,7 @@ namespace Trivial.Console
     /// <summary>
     /// The utilities.
     /// </summary>
-    public static class WriterUtilities
+    public static class LineUtilities
     {
         /// <summary>
         /// Enters a backspace to console to remove the last charactor.
@@ -444,7 +444,7 @@ namespace Trivial.Console
         /// </summary>
         /// <param name="value">The value to write.</param>
         /// <param name="arg">An array of objects to write using format.</param>
-        public static void WriteDoubleLine(string value, params object[] arg)
+        public static void WriteDoubleLines(string value, params object[] arg)
         {
             if (string.IsNullOrEmpty(value)) return;
             System.Console.WriteLine(value, arg);

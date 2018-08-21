@@ -182,16 +182,16 @@ namespace Trivial.Console
         {
             if (dispatcher == null) return;
             var hasArg = Arguments.Count > 1 && !string.IsNullOrWhiteSpace(Arguments[1]);
-            if (!hasArg) WriterUtilities.WriteDoubleLine(GetMessage(dispatcher.DefaultVerbFactory, false));
+            if (!hasArg) LineUtilities.WriteDoubleLines(GetMessage(dispatcher.DefaultVerbFactory, false));
             foreach (var item in hasArg ? dispatcher.VerbFactorysRegistered(Arguments[1]) : dispatcher.VerbFactorysRegistered())
             {
                 var msg = GetMessage(item.VerbFactory, hasArg);
                 if (string.IsNullOrWhiteSpace(msg)) continue;
                 System.Console.WriteLine(item.MatchDescription);
-                WriterUtilities.WriteDoubleLine(msg.Replace("{0}", item.MatchDescription));
+                LineUtilities.WriteDoubleLines(msg.Replace("{0}", item.MatchDescription));
             }
 
-            if (!hasArg) WriterUtilities.WriteDoubleLine(FurtherDescription);
+            if (!hasArg) LineUtilities.WriteDoubleLines(FurtherDescription);
         }
 
         private string GetMessage(Func<Verb> verb, bool details)
@@ -251,7 +251,7 @@ namespace Trivial.Console
         /// </summary>
         public override void Process()
         {
-            if (!Back) WriterUtilities.WriteDoubleLine(ByeMessage);
+            if (!Back) LineUtilities.WriteDoubleLines(ByeMessage);
         }
     }
 
