@@ -381,11 +381,11 @@ namespace Trivial.Console
 
             var verb = PrepareVerb(args);
             if (verb == null) return null;
-            if (ProcessingVerb != null && !ProcessingVerb.IsCancelled)
+            if (ProcessingVerb != null && !ProcessingVerb.HasDisposed)
             {
                 try
                 {
-                    ProcessingVerb.Cancel();
+                    if (!ProcessingVerb.IsCancelled) ProcessingVerb.Cancel();
                 }
                 catch (NullReferenceException)
                 {
@@ -401,27 +401,32 @@ namespace Trivial.Console
                 }
                 finally
                 {
-                    ProcessingVerb = null;
+                    ProcessingVerb.Dispose();
                 }
             }
 
+            if (ProcessingVerb == verb) return null;
             ProcessingVerb = verb;
             Processing?.Invoke(this, new ProcessEventArgs(args, verb));
             try
             {
-                if (!verb.IsCancelled && !isCanceled) verb.Init(this);
-                if (!verb.IsCancelled && !isCanceled) verb.Process();
+                if (!verb.IsCancelled && !isCanceled && !verb.HasDisposed) verb.Init(this);
+                if (!verb.IsCancelled && !isCanceled && !verb.HasDisposed) verb.Process();
                 else if (resetCancelState) isCanceled = false;
             }
             catch (OperationCanceledException)
             {
             }
+            catch (InvalidOperationException)
+            {
+            }
             finally
             {
+                Processed?.Invoke(this, new ProcessEventArgs(args, verb));
+                verb.Dispose();
                 ProcessingVerb = null;
             }
 
-            Processed?.Invoke(this, new ProcessEventArgs(args, verb));
             return verb;
         }
     }

@@ -134,7 +134,7 @@ namespace Trivial.Console
         /// <returns>A set of parameter.</returns>
         public Parameters Get(string key, params string[] additionalKeys)
         {
-            return Get(key, additionalKeys);
+            return Get(key, additionalKeys as IEnumerable<string>);
         }
 
         /// <summary>
@@ -278,7 +278,8 @@ namespace Trivial.Console
         /// <param name="overrideProperty">true if override the properties which they have values; otherwise, false.</param>
         public void Deserialize<T>(T obj, bool overrideProperty = true) where T : class
         {
-            foreach (var item in typeof(T).GetProperties())
+            if (obj == null) return;
+            foreach (var item in obj.GetType().GetProperties())
             {
                 if (!item.CanWrite) continue;
                 if (item.CanRead && !overrideProperty && item.GetValue(obj) != null) continue;
@@ -290,9 +291,10 @@ namespace Trivial.Console
                 var restNames = new List<string>();
                 if (att.Short) restNames.Add(attName.Substring(0, 1));
                 if (!string.IsNullOrWhiteSpace(att.SecondaryName)) restNames.Add(att.SecondaryName);
+                if (!string.IsNullOrWhiteSpace(att.AnotherSecondaryName)) restNames.Add(att.AnotherSecondaryName);
                 var p = Get(attName, restNames);
                 if (p.ItemCount == 0) continue;
-                var itemType = item.GetType();
+                var itemType = item.PropertyType;
                 if (item == null && itemType.IsClass)
                 {
                     item.SetValue(obj, null);
@@ -300,6 +302,10 @@ namespace Trivial.Console
                 else if (itemType == typeof(string))
                 {
                     item.SetValue(obj, p.Value(att.Mode));
+                }
+                else if (itemType == typeof(bool))
+                {
+                    if (p.TryToParse(out bool itemValue, att.Mode)) item.SetValue(obj, itemValue);
                 }
                 else if (itemType == typeof(int))
                 {
@@ -388,18 +394,15 @@ namespace Trivial.Console
                 Verb = new Parameter(args[0], args.Take(len).Skip(1));
             }
 
-            foreach (var i in list)
+            for (var i = 0; i < list.Count; i++)
             {
+                var index = list[i];
                 IEnumerable<string> rest = null;
                 var len = args.Count;
-                if (len > i + 1)
-                {
-                    if (args.Count > i) len = list[i + 1];
-                    len -= i + 1;
-                    rest = args.Skip(i + 1).Take(len);
-                }
-
-                parameters.Add(new Parameter(args[i], rest));
+                if (i + 1 < list.Count) len = list[i + 1];
+                len -= index + 1;
+                if (len > 0) rest = args.Skip(index + 1).Take(len);
+                parameters.Add(new Parameter(args[index], rest));
             }
         }
     }

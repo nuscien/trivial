@@ -88,6 +88,18 @@ namespace Trivial.Console
         }
 
         /// <summary>
+        /// Converts the value to its boolean equivalent.
+        /// </summary>
+        /// <param name="result">The result value converted when this method returns.</param>
+        /// <returns>true if the value was converted successfully; otherwise, false.</returns>
+        public bool TryToParse(out bool result)
+        {
+            if (!string.IsNullOrWhiteSpace(Value)) return bool.TryParse(Value, out result);
+            result = true;
+            return true;
+        }
+
+        /// <summary>
         /// Converts the value to its 32-bit signed integer equivalent.
         /// </summary>
         /// <param name="result">The result value converted when this method returns.</param>
@@ -359,6 +371,7 @@ namespace Trivial.Console
                 FirstValue = string.Empty;
                 MergedValues = (new List<string>()).AsReadOnly();
                 MergedValue = string.Empty;
+                return;
             }
 
             FirstValues = Items[0].Values;
@@ -371,6 +384,9 @@ namespace Trivial.Console
                 if (mergedStr.Length > 0) mergedStr.Append(' ');
                 mergedStr.Append(item.Value);
             }
+
+            MergedValues = mergedList.AsReadOnly();
+            MergedValue = mergedStr.ToString();
         }
 
         /// <summary>
@@ -484,6 +500,20 @@ namespace Trivial.Console
         public IReadOnlyList<string> Values(int index)
         {
             return Items[index].Values;
+        }
+
+        /// <summary>
+        /// Converts the value to its boolean equivalent.
+        /// </summary>
+        /// <param name="result">The result value converted when this method returns.</param>
+        /// <param name="mode">The parameter resolving mode.</param>
+        /// <returns>true if the value was converted successfully; otherwise, false.</returns>
+        public bool TryToParse(out bool result, ParameterModes mode = ParameterModes.First)
+        {
+            var str = Value(mode);
+            if (!string.IsNullOrWhiteSpace(str)) return bool.TryParse(str, out result);
+            result = true;
+            return true;
         }
 
         /// <summary>

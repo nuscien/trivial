@@ -7,7 +7,7 @@ using System.Text;
 namespace Trivial.Console
 {
     /// <summary>
-    /// A client to control a line to write.
+    /// A client to control a line to write and read.
     /// </summary>
     public class Line
     {
@@ -258,6 +258,7 @@ namespace Trivial.Console
         public void End()
         {
             Flush();
+            if (line.Length < 1) return;
             System.Console.ResetColor();
             System.Console.WriteLine();
             LineIndex++;
@@ -450,6 +451,49 @@ namespace Trivial.Console
             if (string.IsNullOrEmpty(value)) return;
             System.Console.WriteLine(value, arg);
             System.Console.WriteLine();
+        }
+    }
+
+    /// <summary>
+    /// The utilities for execution.
+    /// </summary>
+    public static class CommandUtilities
+    {
+        /// <summary>
+        /// Open the file explorer.
+        /// </summary>
+        /// <param name="dir">The directory</param>
+        /// <returns>true if a process resource is started; false if no new process resource is started.</returns>
+        public static bool Directory(string dir)
+        {
+            var p = new Process();
+            p.StartInfo.FileName = "explorer.exe";
+            p.StartInfo.Arguments = dir;
+            return p.Start();
+        }
+
+        /// <summary>
+        /// Processes a command.
+        /// </summary>
+        /// <param name="cmd">The command string.</param>
+        /// <returns>The output string.</returns>
+        public static string Execute(string cmd)
+        {
+            var p = new Process();
+            p.StartInfo.FileName = "cmd.exe";
+            p.StartInfo.UseShellExecute = false;
+            p.StartInfo.RedirectStandardInput = true;
+            p.StartInfo.RedirectStandardOutput = true;
+            p.StartInfo.RedirectStandardError = true;
+            p.StartInfo.CreateNoWindow = true;
+            p.Start();
+
+            p.StandardInput.WriteLine(cmd + "&exit");
+            p.StandardInput.AutoFlush = true;
+            var output = p.StandardOutput.ReadToEnd();
+            p.WaitForExit();
+            p.Close();
+            return output;
         }
     }
 }

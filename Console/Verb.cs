@@ -11,7 +11,7 @@ namespace Trivial.Console
     /// The verb handler.
     /// It can be used for sub-application.
     /// </summary>
-    public abstract class Verb
+    public abstract class Verb : IDisposable
     {
         /// <summary>
         /// The cancllation token source.
@@ -31,24 +31,17 @@ namespace Trivial.Console
         /// <summary>
         /// Gets a value indicating whether it is cancelled.
         /// </summary>
-        public bool IsCancelled
-        {
-            get
-            {
-                return cancel.IsCancellationRequested;
-            }
-        }
+        public bool IsCancelled => cancel.IsCancellationRequested;
 
         /// <summary>
         /// Gets the cancellation token.
         /// </summary>
-        public CancellationToken CancellationToken
-        {
-            get
-            {
-                return cancel.Token;
-            }
-        }
+        public CancellationToken CancellationToken => cancel.Token;
+
+        /// <summary>
+        /// Gets the default console line client.
+        /// </summary>
+        public Line ConsoleLine { get; } = new Line();
 
         /// <summary>
         /// Initializes this instance.
@@ -88,6 +81,49 @@ namespace Trivial.Console
         {
             return null;
         }
+
+        /// <summary>
+        /// Throws an operation canceled exception if this token has had cancellation requested.
+        /// </summary>
+        /// <exception cref="OperationCanceledException">The token has had cancellation requested.</exception>
+        /// <exception cref="ObjectDisposedException">The associated cancellation token source has been disposed.</exception>
+        public void ThrowIfCancellationRequested()
+        {
+            CancellationToken.ThrowIfCancellationRequested();
+        }
+
+        #region IDisposable Support
+
+        /// <summary>
+        /// A value to mark if the instance is disposed.
+        /// </summary>
+        public bool HasDisposed { get; private set; }
+
+        /// <summary>
+        /// Disposes this instance.
+        /// </summary>
+        /// <param name="disposing">true if also dispose the managed resources; otherwise, false.</param>
+        protected virtual void Dispose(bool disposing)
+        {
+            if (HasDisposed) return;
+            if (disposing)
+            {
+                ConsoleLine.End();
+                Arguments = null;
+                cancel.Dispose();
+            }
+
+            HasDisposed = true;
+        }
+
+        /// <summary>
+        /// Disposes this instance.
+        /// </summary>
+        public void Dispose()
+        {
+            Dispose(true);
+        }
+        #endregion
     }
 
     /// <summary>
@@ -280,30 +316,6 @@ namespace Trivial.Console
         public static void RegisterExit(this Dispatcher dispatcher, bool back = false)
         {
             dispatcher.Register<ExitVerb>(new[] { "exit", "quit", "bye", "goodbye" });
-        }
-
-        /// <summary>
-        /// Processes a command.
-        /// </summary>
-        /// <param name="cmd">The command string.</param>
-        /// <returns>The output string.</returns>
-        public static string Command(string cmd)
-        {
-            var p = new Process();
-            p.StartInfo.FileName = "cmd.exe";
-            p.StartInfo.UseShellExecute = false;
-            p.StartInfo.RedirectStandardInput = true;
-            p.StartInfo.RedirectStandardOutput = true;
-            p.StartInfo.RedirectStandardError = true;
-            p.StartInfo.CreateNoWindow = true;
-            p.Start();
-
-            p.StandardInput.WriteLine(cmd + "&exit");
-            p.StandardInput.AutoFlush = true;
-            var output = p.StandardOutput.ReadToEnd();
-            p.WaitForExit();
-            p.Close();
-            return output;
         }
     }
 }

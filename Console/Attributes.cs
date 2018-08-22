@@ -67,6 +67,11 @@ namespace Trivial.Console
         public string SecondaryName { get; set; }
 
         /// <summary>
+        /// Gets or sets another optional secondary attribute name.
+        /// </summary>
+        public string AnotherSecondaryName { get; set; }
+
+        /// <summary>
         /// Gets or sets the parameter resolving mode.
         /// </summary>
         public ParameterModes Mode { get; set; }
