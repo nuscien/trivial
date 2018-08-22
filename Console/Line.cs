@@ -255,10 +255,11 @@ namespace Trivial.Console
         /// Writes the pending string and the current line terminator to the standard output stream.
         /// And then reset the pending information in this instance for the new line.
         /// </summary>
-        public void End()
+        /// <param name="evenEmpty">true if still write a new line when there is nothing output; otherwise, false.</param>
+        public void End(bool evenEmpty = false)
         {
             Flush();
-            if (line.Length < 1) return;
+            if (line.Length < 1 && !evenEmpty) return;
             System.Console.ResetColor();
             System.Console.WriteLine();
             LineIndex++;

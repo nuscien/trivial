@@ -24,9 +24,48 @@ namespace Trivial.Console
         public abstract string Description { get; }
 
         /// <summary>
-        /// The input arguments.
+        /// Gets the input arguments.
         /// </summary>
         public Arguments Arguments { get; internal set; }
+
+        /// <summary>
+        /// Gets a value indicating whether the parameter is existed in arguments.
+        /// </summary>
+        /// <param name="key">The parameter key in arguments.</param>
+        /// <returns>true if has this key; otherwise, false.</returns>
+        public bool HasParameter(params string[] key) => Arguments?.Has(key) ?? false;
+
+        /// <summary>
+        /// Gets the parameters from arguments.
+        /// </summary>
+        /// <param name="key">The parameter key in arguments.</param>
+        /// <param name="additionalKeys">The additional keys.</param>
+        /// <returns>true if has this key; otherwise, false.</returns>
+        public Parameters GetParameters(string key, params string[] additionalKeys) => Arguments?.Get(key, additionalKeys);
+
+        /// <summary>
+        /// Gets a value indicating whether the verb is existed in arguments.
+        /// </summary>
+        public bool HasVerbParameter => Arguments?.HasVerb ?? false;
+
+        /// <summary>
+        /// Gets the word in parameter.
+        /// </summary>
+        /// <param name="index">The index.</param>
+        /// <returns>A word in parameter.</returns>
+        public string GetWordInParameter(int index) => Arguments?[index];
+
+        /// <summary>
+        /// Gets the word in parameter.
+        /// </summary>
+        /// <param name="key">The parameter key in arguments.</param>
+        /// <returns>A word in parameter.</returns>
+        public string GetParameterString(string key) => Arguments?[key];
+
+        /// <summary>
+        /// Gets the verb in arguments.
+        /// </summary>
+        public Parameter VerbParameter => Arguments?.Verb;
 
         /// <summary>
         /// Gets a value indicating whether it is cancelled.
@@ -154,7 +193,7 @@ namespace Trivial.Console
         /// <summary>
         /// Processes.
         /// </summary>
-        /// <returns>The task.</returns>
+        /// <returns>The async processing task.</returns>
         public abstract Task ProcessAsync();
 
         /// <summary>
