@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Text;
 
@@ -101,13 +102,7 @@ namespace Trivial.Console
         /// Gets the length of the current line output.
         /// This does not contain the pending value.
         /// </summary>
-        public int FlushedLength
-        {
-            get
-            {
-                return line.Length;
-            }
-        }
+        public int FlushedLength => line.Length;
 
         /// <summary>
         /// Gets the length of the pending value.
@@ -129,13 +124,7 @@ namespace Trivial.Console
         /// <summary>
         /// Gets the length of the current line output and the pending value.
         /// </summary>
-        public int Length
-        {
-            get
-            {
-                return line.Length + PendingLength;
-            }
-        }
+        public int Length => line.Length + PendingLength;
 
         /// <summary>
         /// Writes the specified string value to the standard output stream.
@@ -207,9 +196,11 @@ namespace Trivial.Console
         /// <summary>
         /// Reads the next line of characters from the standard input stream.
         /// </summary>
+        /// <param name="question">The optional question message to output.</param>
         /// <returns>The next line of characters from the input stream, or null if no more lines are available.</returns>
-        public string ReadLine()
+        public string ReadLine(string question = null)
         {
+            if (question != null) Write(question);
             Flush();
             LineIndex++;
             return System.Console.ReadLine();
@@ -404,7 +395,17 @@ namespace Trivial.Console
         {
             for (var i = 0; i < count; i++)
             {
-                System.Console.Write('\u0008');
+                System.Console.Write('\b');
+            }
+
+            for (var i = 0; i < count; i++)
+            {
+                System.Console.Write(' ');
+            }
+
+            for (var i = 0; i < count; i++)
+            {
+                System.Console.Write('\b');
             }
         }
 
@@ -461,9 +462,9 @@ namespace Trivial.Console
     public static class CommandUtilities
     {
         /// <summary>
-        /// Open the file explorer.
+        /// Open a directory in file system.
         /// </summary>
-        /// <param name="dir">The directory</param>
+        /// <param name="dir">The directory path.</param>
         /// <returns>true if a process resource is started; false if no new process resource is started.</returns>
         public static bool Directory(string dir)
         {
@@ -474,11 +475,22 @@ namespace Trivial.Console
         }
 
         /// <summary>
+        /// Open a directory in file system.
+        /// </summary>
+        /// <param name="dir">The directory information instance.</param>
+        /// <returns>true if a process resource is started; false if no new process resource is started.</returns>
+        public static bool Directory(DirectoryInfo dir)
+        {
+            return Directory(dir.ToString());
+        }
+
+        /// <summary>
         /// Processes a command.
         /// </summary>
         /// <param name="cmd">The command string.</param>
+        /// <param name="exit">true if add exit command to the end; otherwise, false.</param>
         /// <returns>The output string.</returns>
-        public static string Execute(string cmd)
+        public static string Execute(string cmd, bool exit = false)
         {
             var p = new Process();
             p.StartInfo.FileName = "cmd.exe";
@@ -489,7 +501,14 @@ namespace Trivial.Console
             p.StartInfo.CreateNoWindow = true;
             p.Start();
 
-            p.StandardInput.WriteLine(cmd + "&exit");
+            if (exit)
+            {
+                var lastCharIndex = cmd.Length - 1;
+                if (cmd.LastIndexOf("&") == lastCharIndex) cmd = cmd.Substring(0, lastCharIndex);
+                cmd += "&exit";
+            }
+
+            p.StandardInput.WriteLine(cmd);
             p.StandardInput.AutoFlush = true;
             var output = p.StandardOutput.ReadToEnd();
             p.WaitForExit();
