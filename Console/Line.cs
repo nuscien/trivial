@@ -4,6 +4,8 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Trivial.Console
 {
@@ -207,18 +209,6 @@ namespace Trivial.Console
         }
 
         /// <summary>
-        /// Reads the next line of characters from the standard input stream.
-        /// </summary>
-        /// <returns>The next line of characters from the input stream, or null if no more lines are available.</returns>
-        public int Read()
-        {
-            Flush();
-            var key = System.Console.Read();
-            if (key == 13) LineIndex++;
-            return key;
-        }
-
-        /// <summary>
         /// Obtains the next character or function key pressed by the user.
         /// </summary>
         /// <param name="intercept">Determines whether to display the pressed key in the console window. true to not display the pressed key; otherwise, false.</param>
@@ -393,20 +383,11 @@ namespace Trivial.Console
         /// <param name="count">The count of the charactor to remove from end.</param>
         public static void Backspace(int count = 1)
         {
-            for (var i = 0; i < count; i++)
-            {
-                System.Console.Write('\b');
-            }
-
-            for (var i = 0; i < count; i++)
-            {
-                System.Console.Write(' ');
-            }
-
-            for (var i = 0; i < count; i++)
-            {
-                System.Console.Write('\b');
-            }
+            var str = new StringBuilder();
+            str.Append('\b', count);
+            str.Append(' ', count);
+            str.Append('\b', count);
+            System.Console.Write(str.ToString());
         }
 
         /// <summary>
@@ -453,67 +434,6 @@ namespace Trivial.Console
             if (string.IsNullOrEmpty(value)) return;
             System.Console.WriteLine(value, arg);
             System.Console.WriteLine();
-        }
-    }
-
-    /// <summary>
-    /// The utilities for execution.
-    /// </summary>
-    public static class CommandUtilities
-    {
-        /// <summary>
-        /// Open a directory in file system.
-        /// </summary>
-        /// <param name="dir">The directory path.</param>
-        /// <returns>true if a process resource is started; false if no new process resource is started.</returns>
-        public static bool Directory(string dir)
-        {
-            var p = new Process();
-            p.StartInfo.FileName = "explorer.exe";
-            p.StartInfo.Arguments = dir;
-            return p.Start();
-        }
-
-        /// <summary>
-        /// Open a directory in file system.
-        /// </summary>
-        /// <param name="dir">The directory information instance.</param>
-        /// <returns>true if a process resource is started; false if no new process resource is started.</returns>
-        public static bool Directory(DirectoryInfo dir)
-        {
-            return Directory(dir.ToString());
-        }
-
-        /// <summary>
-        /// Processes a command.
-        /// </summary>
-        /// <param name="cmd">The command string.</param>
-        /// <param name="exit">true if add exit command to the end; otherwise, false.</param>
-        /// <returns>The output string.</returns>
-        public static string Execute(string cmd, bool exit = false)
-        {
-            var p = new Process();
-            p.StartInfo.FileName = "cmd.exe";
-            p.StartInfo.UseShellExecute = false;
-            p.StartInfo.RedirectStandardInput = true;
-            p.StartInfo.RedirectStandardOutput = true;
-            p.StartInfo.RedirectStandardError = true;
-            p.StartInfo.CreateNoWindow = true;
-            p.Start();
-
-            if (exit)
-            {
-                var lastCharIndex = cmd.Length - 1;
-                if (cmd.LastIndexOf("&") == lastCharIndex) cmd = cmd.Substring(0, lastCharIndex);
-                cmd += "&exit";
-            }
-
-            p.StandardInput.WriteLine(cmd);
-            p.StandardInput.AutoFlush = true;
-            var output = p.StandardOutput.ReadToEnd();
-            p.WaitForExit();
-            p.Close();
-            return output;
         }
     }
 }

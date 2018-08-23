@@ -116,9 +116,9 @@ namespace Trivial.Console
         /// Gets details help message.
         /// </summary>
         /// <returns>The string of the usage documentation content.</returns>
-        public virtual string GetHelp()
+        public virtual void GetHelp()
         {
-            return null;
+            if (!string.IsNullOrWhiteSpace(Description)) System.Console.WriteLine(Description);
         }
 
         /// <summary>
@@ -126,7 +126,7 @@ namespace Trivial.Console
         /// </summary>
         /// <exception cref="OperationCanceledException">The token has had cancellation requested.</exception>
         /// <exception cref="ObjectDisposedException">The associated cancellation token source has been disposed.</exception>
-        public void ThrowIfCancellationRequested()
+        protected void ThrowIfCancellationRequested()
         {
             CancellationToken.ThrowIfCancellationRequested();
         }
@@ -257,24 +257,30 @@ namespace Trivial.Console
         {
             if (dispatcher == null) return;
             var hasArg = Arguments.Count > 1 && !string.IsNullOrWhiteSpace(Arguments[1]);
-            if (!hasArg) LineUtilities.WriteDoubleLines(GetMessage(dispatcher.DefaultVerbFactory, false));
+            if (!hasArg)
+            {
+                WriteMessage(dispatcher.DefaultVerbFactory, false);
+                System.Console.WriteLine();
+            }
+
             foreach (var item in hasArg ? dispatcher.VerbFactorysRegistered(Arguments[1]) : dispatcher.VerbFactorysRegistered())
             {
-                var msg = GetMessage(item.VerbFactory, hasArg);
-                if (string.IsNullOrWhiteSpace(msg)) continue;
                 System.Console.WriteLine(item.MatchDescription);
-                LineUtilities.WriteDoubleLines(msg.Replace("{0}", item.MatchDescription));
+                if (hasArg) System.Console.WriteLine();
+                WriteMessage(item.VerbFactory, hasArg);
+                System.Console.WriteLine();
             }
 
             if (!hasArg) LineUtilities.WriteDoubleLines(FurtherDescription);
         }
 
-        private string GetMessage(Func<Verb> verb, bool details)
+        private void WriteMessage(Func<Verb> verb, bool details)
         {
-            if (verb == null) return null;
+            if (verb == null) return;
             var v = verb();
-            if (v == null) return null;
-            return details ? v.GetHelp() : v.Description;
+            if (v == null) return;
+            if (details) v.GetHelp();
+            else if (!string.IsNullOrWhiteSpace(v.Description)) System.Console.WriteLine(v.Description);
         }
     }
 
