@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Security;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -64,6 +65,11 @@ namespace Trivial.Console
             public StringBuilder Value { get; } = new StringBuilder();
         }
 
+        private int initLeft = -1;
+        private int initTop = -1;
+        private int curLeft = -1;
+        private int curTop = -1;
+
         /// <summary>
         /// The value writen.
         /// </summary>
@@ -101,6 +107,11 @@ namespace Trivial.Console
         }
 
         /// <summary>
+        /// Gets or sets a value indicating whether need remeber the cursor position and set back when it has moved.
+        /// </summary>
+        public bool RememberCursorPosition { get; set; }
+
+        /// <summary>
         /// Gets the length of the current line output.
         /// This does not contain the pending value.
         /// </summary>
@@ -129,6 +140,15 @@ namespace Trivial.Console
         public int Length => line.Length + PendingLength;
 
         /// <summary>
+        /// Moves to the latest cursor position.
+        /// </summary>
+        public void MoveToLatestCursorPosition()
+        {
+            if (curTop != System.Console.CursorTop) System.Console.CursorTop = curTop;
+            if (curLeft != System.Console.CursorLeft) System.Console.CursorLeft = curLeft;
+        }
+
+        /// <summary>
         /// Writes the specified string value to the standard output stream.
         /// </summary>
         /// <param name="value">The value to write.</param>
@@ -139,7 +159,9 @@ namespace Trivial.Console
             if (AutoFlush)
             {
                 line.Append(str);
+                InitPosition();
                 System.Console.Write(str);
+                SaveCursorPosition();
             }
             else
             {
@@ -160,7 +182,9 @@ namespace Trivial.Console
             if (AutoFlush)
             {
                 line.Append(str);
+                InitPosition();
                 LineUtilities.Write(foregroundColor, str);
+                SaveCursorPosition();
             }
             else
             {
@@ -182,7 +206,9 @@ namespace Trivial.Console
             if (AutoFlush)
             {
                 line.Append(str);
+                InitPosition();
                 LineUtilities.Write(foregroundColor, backgroundColor, str);
+                SaveCursorPosition();
             }
             else
             {
@@ -205,6 +231,7 @@ namespace Trivial.Console
             if (question != null) Write(question);
             Flush();
             LineIndex++;
+            initLeft = -1;
             return System.Console.ReadLine();
         }
 
@@ -220,7 +247,16 @@ namespace Trivial.Console
         {
             Flush();
             var key = System.Console.ReadKey(intercept);
-            if (key.Key == ConsoleKey.Enter) LineIndex++;
+            if (key.Key == ConsoleKey.Enter)
+            {
+                LineIndex++;
+                initLeft = -1;
+            }
+            else
+            {
+                SaveCursorPosition();
+            }
+
             return key;
         }
 
@@ -240,11 +276,15 @@ namespace Trivial.Console
         public void End(bool evenEmpty = false)
         {
             Flush();
+            initLeft = -1;
             if (line.Length < 1 && !evenEmpty) return;
             System.Console.ResetColor();
             System.Console.WriteLine();
             LineIndex++;
             line.Clear();
+            initTop = System.Console.CursorTop;
+            curTop = System.Console.CursorTop;
+            curLeft = System.Console.CursorLeft;
         }
 
         /// <summary>
@@ -261,7 +301,18 @@ namespace Trivial.Console
         public void Clear()
         {
             Pending.Clear();
+            if (initLeft >= 0) InitPosition();
             LineUtilities.Backspace(line.Length);
+            if (initLeft >= 0)
+            {
+                if (System.Console.CursorTop == initTop && System.Console.CursorLeft > initLeft)
+                {
+                    LineUtilities.Backspace(System.Console.CursorLeft - initLeft);
+                }
+
+                SaveCursorPosition();
+            }
+
             line.Clear();
         }
 
@@ -271,6 +322,7 @@ namespace Trivial.Console
         public void Flush()
         {
             var str = new StringBuilder();
+            InitPosition();
             foreach (var item in Pending)
             {
                 var itemStr = item.Value.ToString();
@@ -278,6 +330,7 @@ namespace Trivial.Console
                 if (item != null) LineUtilities.Write(item.ForegroundColor, item.BackgroundColor, itemStr);
             }
 
+            SaveCursorPosition();
             Pending.Clear();
             line.Append(str);
         }
@@ -288,7 +341,7 @@ namespace Trivial.Console
         /// <param name="count">The count of the charactor to remove from end.</param>
         public void Backspace(int count = 1)
         {
-            if (count < 0) return;
+            if (count <= 0) return;
             Pending.RemoveAll(item => item == null);
             while (count > 0 && Pending.Count > 0)
             {
@@ -303,6 +356,7 @@ namespace Trivial.Console
                 Pending.RemoveAt(Pending.Count - 1);
             }
 
+            if (count <= 0) return;
             if (line.Length >= count)
             {
                 line.Remove(line.Length - count, count);
@@ -312,7 +366,9 @@ namespace Trivial.Console
                 line.Clear();
             }
 
+            InitPosition();
             LineUtilities.Backspace(count);
+            SaveCursorPosition();
         }
 
         /// <summary>
@@ -370,6 +426,70 @@ namespace Trivial.Console
             Pending.RemoveAll(item => item == null);
             return Pending.Count > 0 ? Pending[Pending.Count - 1] : null;
         }
+
+        /// <summary>
+        /// Pre-handles before to write anything.
+        /// </summary>
+        private void InitPosition()
+        {
+            try
+            {
+                if (initLeft >= 0)
+                {
+                    if (RememberCursorPosition)
+                    {
+                        if (curTop != System.Console.CursorTop) System.Console.CursorTop = curTop;
+                        if (curLeft != System.Console.CursorLeft) System.Console.CursorLeft = curLeft;
+                    }
+
+                    return;
+                }
+
+                initLeft = System.Console.CursorLeft;
+                initTop = System.Console.CursorTop;
+                if (System.Console.CursorTop != curTop) return;
+                if (System.Console.CursorLeft != curLeft) System.Console.CursorLeft = curLeft;
+                return;
+            }
+            catch (SecurityException)
+            {
+            }
+            catch (ArgumentException)
+            {
+            }
+            catch (IOException)
+            {
+            }
+            catch (InvalidOperationException)
+            {
+            }
+
+            initLeft = -1;
+        }
+
+        /// <summary>
+        /// Post-handles before to write anything.
+        /// </summary>
+        private void SaveCursorPosition()
+        {
+            try
+            {
+                curLeft = System.Console.CursorLeft;
+                curTop = System.Console.CursorTop;
+            }
+            catch (SecurityException)
+            {
+            }
+            catch (ArgumentException)
+            {
+            }
+            catch (IOException)
+            {
+            }
+            catch (InvalidOperationException)
+            {
+            }
+        }
     }
 
     /// <summary>
@@ -422,6 +542,30 @@ namespace Trivial.Console
             System.Console.Write(value, arg);
             if (foregroundColor.HasValue) System.Console.ForegroundColor = fore;
             if (backgroundColor.HasValue) System.Console.BackgroundColor = back;
+        }
+        /// <summary>
+        /// Writes the specified string value, followed by the current line terminator, to the standard output stream.
+        /// </summary>
+        /// <param name="foregroundColor">The foreground color of the console.</param>
+        /// <param name="value">The value to write.</param>
+        /// <param name="arg">An array of objects to write using format.</param>
+        public static void WriteLine(ConsoleColor foregroundColor, string value, params object[] arg)
+        {
+            Write(foregroundColor, value, arg);
+            System.Console.WriteLine();
+        }
+
+        /// <summary>
+        /// Writes the specified string value, followed by the current line terminator, to the standard output stream.
+        /// </summary>
+        /// <param name="foregroundColor">The foreground color of the console.</param>
+        /// <param name="backgroundColor">The background color of the console.</param>
+        /// <param name="value">The value to write.</param>
+        /// <param name="arg">An array of objects to write using format.</param>
+        public static void WriteLine(ConsoleColor? foregroundColor, ConsoleColor? backgroundColor, string value, params object[] arg)
+        {
+            Write(foregroundColor, backgroundColor, value, arg);
+            System.Console.WriteLine();
         }
 
         /// <summary>

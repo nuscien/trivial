@@ -295,10 +295,19 @@ namespace Trivial.Console
             if (list.Count == 0) return;
             items.Add(new Item(key =>
             {
-                foreach (var item in list)
+                if (key == null)
                 {
-                    if (key == item) return true;
-                    return key != null && key.IndexOf(item + " ") == 0;
+                    foreach (var item in list)
+                    {
+                        if (string.IsNullOrEmpty(item)) return true;
+                    }
+                }
+                else
+                {
+                    foreach (var item in list)
+                    {
+                        if (key == item || key.IndexOf(item + " ") == 0) return true;
+                    }
                 }
 
                 return false;

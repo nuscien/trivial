@@ -168,6 +168,7 @@ namespace Trivial.Console
 
         /// <summary>
         /// Open a directory in file system.
+        /// Only for Windows NT OS.
         /// </summary>
         /// <param name="dir">The directory path.</param>
         /// <returns>true if a process resource is started; false if no new process resource is started.</returns>
@@ -181,6 +182,7 @@ namespace Trivial.Console
 
         /// <summary>
         /// Open a directory in file system.
+        /// Only for Windows NT OS.
         /// </summary>
         /// <param name="dir">The directory information instance.</param>
         /// <returns>true if a process resource is started; false if no new process resource is started.</returns>
