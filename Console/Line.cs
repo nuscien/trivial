@@ -505,9 +505,33 @@ namespace Trivial.Console
         {
             var str = new StringBuilder();
             str.Append('\b', count);
-            str.Append(' ', count);
+            str.Append('\0', count);
             str.Append('\b', count);
             System.Console.Write(str.ToString());
+        }
+
+        /// <summary>
+        /// Clear current line.
+        /// </summary>
+        public static void ClearLine(int? row = null)
+        {
+            try
+            {
+                System.Console.SetCursorPosition(System.Console.BufferWidth - 1, row.HasValue ? row.Value : System.Console.CursorTop);
+                Backspace(System.Console.CursorLeft);
+            }
+            catch (SecurityException)
+            {
+            }
+            catch (ArgumentException)
+            {
+            }
+            catch (IOException)
+            {
+            }
+            catch (InvalidOperationException)
+            {
+            }
         }
 
         /// <summary>
@@ -569,7 +593,7 @@ namespace Trivial.Console
         }
 
         /// <summary>
-        /// Write a line and an empty line to the standard output stream.
+        /// Writes a line and an empty line to the standard output stream.
         /// </summary>
         /// <param name="value">The value to write.</param>
         /// <param name="arg">An array of objects to write using format.</param>
@@ -578,6 +602,351 @@ namespace Trivial.Console
             if (string.IsNullOrEmpty(value)) return;
             System.Console.WriteLine(value, arg);
             System.Console.WriteLine();
+        }
+
+        /// <summary>
+        /// Writes a collection of item for selecting.
+        /// </summary>
+        /// <param name="collection">The collection and options.</param>
+        /// <returns>The result of selection.</returns>
+        public static SelectionResult<object> Select(Selection collection)
+        {
+            return Select<object>(collection);
+        }
+
+        /// <summary>
+        /// Writes a collection of item for selecting.
+        /// </summary>
+        /// <typeparam name="T">The type of data.</typeparam>
+        /// <param name="collection">The collection and options.</param>
+        /// <returns>The result of selection.</returns>
+        public static SelectionResult<T> Select<T>(Selection<T> collection)
+        {
+            if (collection == null) return null;
+            var maxWidth = System.Console.BufferWidth;
+            var itemLen = collection.Column.HasValue ? (int)Math.Floor(maxWidth * 1.0 / collection.Column.Value) : maxWidth;
+            if (collection.MaxLength.HasValue) itemLen = Math.Min(collection.MaxLength.Value, itemLen);
+            if (collection.MinLength.HasValue) itemLen = Math.Max(collection.MinLength.Value, itemLen);
+            var columns = (int)Math.Floor(maxWidth * 1.0 / itemLen);
+            if (collection.Column.HasValue && columns > collection.Column.Value) columns = collection.Column.Value;
+            var itemLen2 = Math.Max(1, itemLen - 1);
+            if (System.Console.CursorLeft > 0) System.Console.WriteLine();
+            var top = System.Console.CursorTop;
+            var offset = 0;
+            var selected = 0;
+            var oldSelected = -1;
+            var list = collection.CopyList();
+            var keys = new Dictionary<char, Tuple<string, T, string, char?>>();
+            foreach (var item in list)
+            {
+                if (!item.Item4.HasValue) continue;
+                keys[item.Item4.Value] = item;
+            }
+
+            list = list.Where(item =>
+            {
+                return !string.IsNullOrEmpty(item.Item3 ?? item.Item1);
+            }).ToList();
+            if (list.Count == 0 || itemLen < 1) return new SelectionResult<T>(string.Empty, SelectionResultTypes.Canceled);
+            var pageSize = collection.MaxRow.HasValue ? collection.MaxRow.Value * columns : list.Count;
+            var prefix = collection.Prefix;
+            var selectedPrefix = collection.SelectedPrefix;
+            var tips = collection.Tips;
+            var tipsP = collection.PagingTips;
+            var question = collection.Question;
+            var questionM = collection.ManualQuestion;
+            var fore = collection.ForegroundColor;
+            var back = collection.BackgroundColor;
+            var foreSel = collection.SelectedForegroundColor;
+            var backSel = collection.SelectedBackgroundColor;
+            var foreQ = collection.QuestionForegroundColor;
+            var backQ = collection.QuestionBackgroundColor;
+            var foreTip = collection.TipsForegroundColor;
+            var backTip = collection.TipsBackgroundColor;
+            var forePag = collection.PagingForegroundColor;
+            var backPag = collection.PagingBackgroundColor;
+            var foreDef = collection.DefaultValueForegroundColor;
+            var backDef = collection.DefaultValueBackgroundColor;
+            var inputTop = -1;
+            var inputLeft = -1;
+
+            void change(int selIndex)
+            {
+                var selItem = list[selIndex];
+                var k = selIndex - offset;
+                var rowI = (int)Math.Floor(k * 1.0 / columns);
+                var curLeft = (k % columns) * itemLen;
+                var str = ((selIndex == selected ? selectedPrefix : prefix) ?? string.Empty) + (selItem.Item3 ?? selItem.Item1);
+                if (str.Length > itemLen2) str = str.Substring(0, itemLen2);
+                var curLeft2 = curLeft + itemLen2;
+                var curLeftDiff = itemLen2;
+                System.Console.SetCursorPosition(curLeft, top + rowI);
+                var strOffset = (int)Math.Floor(str.Length * 1.0 / 2);
+                if (selIndex == selected) Write(foreSel, backSel, str.Substring(0, strOffset));
+                else Write(fore, back, str.Substring(0, strOffset));
+                for (var i = strOffset; i < str.Length; i++)
+                {
+                    curLeftDiff = System.Console.CursorLeft - curLeft2;
+                    if (curLeftDiff > 0)
+                    {
+                        Backspace(curLeftDiff);
+                        break;
+                    }
+                    else if (curLeftDiff == 0)
+                    {
+                        break;
+                    }
+
+                    var charactor = str[i];
+                    if (selIndex == selected) Write(foreSel, backSel, charactor.ToString());
+                    else Write(fore, back, charactor.ToString());
+                }
+
+                curLeftDiff = System.Console.CursorLeft - curLeft2;
+                if (curLeftDiff < 0)
+                {
+                    var spaces = new StringBuilder();
+                    spaces.Append('\0', -curLeftDiff);
+                    if (selIndex == selected) Write(foreSel, backSel, spaces.ToString());
+                    else Write(fore, back, spaces.ToString());
+                }
+            }
+
+            void select()
+            {
+                if (oldSelected != selected)
+                {
+                    if (selected < 0) selected = 0;
+                    else if (selected >= list.Count) selected = list.Count - 1;
+                    if (selected < offset || selected >= offset + pageSize || inputTop < 0)
+                    {
+                        render();
+                        return;
+                    }
+
+                    if (oldSelected >= 0 && oldSelected >= offset && oldSelected < offset + pageSize) change(oldSelected);
+                    change(selected);
+                }
+
+                System.Console.SetCursorPosition(inputLeft, inputTop);
+                var sel = list[selected];
+                if (question != null) Write(foreDef, backDef, sel.Item3 ?? sel.Item1);
+                oldSelected = selected;
+            }
+
+            void render()
+            {
+                if (selected < 0) selected = 0;
+                else if (selected >= list.Count) selected = list.Count - 1;
+                if (selected < offset || selected >= offset + pageSize) offset = (int)Math.Floor(selected * 1.0 / pageSize) * pageSize;
+                var k = 0;
+                System.Console.SetCursorPosition(0, top);
+                ClearLine();
+                Selection.Some(list, (item, i, j) =>
+                {
+                    if (j >= pageSize) return true;
+                    k = j;
+                    var str = ((selected == i ? selectedPrefix : prefix) ?? string.Empty) + (item.Item3 ?? item.Item1);
+                    var index = j % columns;
+                    var row = (int)Math.Floor(j * 1.0 / columns);
+                    if (str.Length > itemLen2) str = str.Substring(0, itemLen2);
+                    var curLeft = index * itemLen;
+                    var curLeft2 = curLeft + itemLen2;
+                    var curTop = top + row;
+                    System.Console.SetCursorPosition(curLeft, curTop);
+                    if (selected == i) Write(foreSel, backSel, str);
+                    else Write(fore, back, str);
+                    if (System.Console.CursorTop != curTop)
+                    {
+                        Backspace(System.Console.CursorLeft);
+                        System.Console.SetCursorPosition(maxWidth - 1, curTop);
+                    }
+
+                    if (System.Console.CursorLeft > curLeft2)
+                    {
+                        Backspace(System.Console.CursorLeft - curLeft2);
+                    }
+                    else if (System.Console.CursorLeft < curLeft2)
+                    {
+                        var spaces = new StringBuilder();
+                        spaces.Append('\0', curLeft2 - System.Console.CursorLeft);
+                        if (selected == i) Write(foreSel, backSel, spaces.ToString());
+                        else Write(fore, back, spaces.ToString());
+                    }
+
+                    if (index == columns - 1)
+                    {
+                        System.Console.WriteLine();
+                        ClearLine();
+                    }
+
+                    return false;
+                }, offset);
+                if ((k + 1) % columns > 0)
+                {
+                    System.Console.WriteLine();
+                    ClearLine();
+                }
+
+                if (tipsP != null && pageSize < list.Count)
+                {
+                    WriteLine(fore, back, tipsP.Replace("{0}", offset.ToString()).Replace("{1}", (offset + k).ToString()));
+                    ClearLine();
+                }
+
+                if (inputTop > 0)
+                {
+                    var curTop = System.Console.CursorTop;
+                    for (var i = inputTop; i >= curTop; i--)
+                    {
+                        ClearLine(i);
+                    }
+                }
+
+                if (question != null) Write(foreQ, backQ, question);
+                inputTop = System.Console.CursorTop;
+                inputLeft = System.Console.CursorLeft;
+                var sel = list[selected];
+                if (question != null) Write(foreDef, backDef, sel.Item3 ?? sel.Item1);
+                oldSelected = selected;
+            }
+
+            render();
+            var tipsTop = -1;
+            var tipsTop2 = -1;
+            if (!string.IsNullOrWhiteSpace(tips))
+            {
+                var curTop = System.Console.CursorTop;
+                var curLeft = System.Console.CursorLeft;
+                System.Console.WriteLine();
+                System.Console.WriteLine();
+                tipsTop = System.Console.CursorTop;
+                Write(foreTip, backTip, tips);
+                tipsTop2 = Math.Max(tipsTop, System.Console.CursorTop);
+                System.Console.SetCursorPosition(curLeft, curTop);
+            }
+
+            while (true)
+            {
+                var key = System.Console.ReadKey();
+                if (inputTop > 0 && System.Console.CursorTop >= inputTop)
+                {
+                    for (var i = System.Console.CursorTop; i > inputTop; i--)
+                    {
+                        ClearLine(i);
+                    }
+
+                    if (inputLeft >= 0 && System.Console.CursorLeft != inputLeft)
+                    {
+                        System.Console.SetCursorPosition(maxWidth - 1, inputTop);
+                        Backspace(System.Console.CursorLeft - inputLeft);
+                    }
+                }
+
+                if (tipsTop > 0)
+                {
+                    for (var i = tipsTop; i <= tipsTop2; i++)
+                    {
+                        ClearLine(i);
+                    }
+                }
+
+                if (inputTop > 0) System.Console.SetCursorPosition(inputLeft, inputTop);
+                if (key.Key == ConsoleKey.Enter)
+                {
+                    var sel = list[selected];
+                    if (question != null) System.Console.WriteLine(sel.Item1);
+                    return new SelectionResult<T>(sel.Item1, sel.Item2, sel.Item3);
+                }
+                else if (key.Key == ConsoleKey.Escape)
+                {
+                    if (questionM == null)
+                    {
+                        if (question != null) System.Console.WriteLine();
+                        return new SelectionResult<T>(string.Empty, SelectionResultTypes.Canceled);
+                    }
+
+                    Backspace(System.Console.CursorLeft);
+                    Write(foreQ, backQ, questionM);
+                    var inputStr = System.Console.ReadLine();
+                    return new SelectionResult<T>(inputStr, SelectionResultTypes.Typed);
+                }
+                else if (key.Key == ConsoleKey.PageUp)
+                {
+                    if (offset < 1)
+                    {
+                        select();
+                        continue;
+                    }
+
+                    offset -= pageSize;
+                    if (offset < 0) offset = 0;
+                    selected = offset;
+                    render();
+                }
+                else if (key.Key == ConsoleKey.PageDown)
+                {
+                    if (offset + pageSize >= list.Count)
+                    {
+                        select();
+                        continue;
+                    }
+
+                    offset += pageSize;
+                    selected = offset;
+                    render();
+                }
+                else if (key.Key == ConsoleKey.UpArrow)
+                {
+                    if (selected - columns >= 0) selected -= columns;
+                    select();
+                }
+                else if (key.Key == ConsoleKey.DownArrow)
+                {
+                    if (selected + columns < list.Count) selected += columns;
+                    select();
+                }
+                else if (key.Key == ConsoleKey.LeftArrow)
+                {
+                    if (selected - 1 >= 0) selected--;
+                    select();
+                }
+                else if (key.Key == ConsoleKey.RightArrow)
+                {
+                    if (selected + 1 < list.Count) selected++;
+                    select();
+                }
+                else if (key.Key == ConsoleKey.Home)
+                {
+                    var rowI = (int)Math.Floor(selected * 1.0 / columns);
+                    selected = rowI * columns;
+                    select();
+                }
+                else if (key.Key == ConsoleKey.End)
+                {
+                    var rowI = (int)Math.Floor(selected * 1.0 / columns);
+                    var toSel = (rowI + 1) * columns - 1;
+                    if (toSel < list.Count) selected = toSel;
+                    else selected = list.Count - 1;
+                    select();
+                }
+                else if (keys.ContainsKey(key.KeyChar))
+                {
+                    var sel = keys[key.KeyChar];
+                    if (question != null) System.Console.WriteLine(sel.Item1);
+                    return new SelectionResult<T>(sel.Item1, sel.Item2, sel.Item3);
+                }
+                else if (key.Key == ConsoleKey.Spacebar)
+                {
+                    var sel = list[selected];
+                    if (question != null) System.Console.WriteLine(sel.Item1);
+                    return new SelectionResult<T>(sel.Item1, sel.Item2, sel.Item3);
+                }
+                else
+                {
+                    select();
+                }
+            }
         }
     }
 }

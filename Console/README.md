@@ -102,3 +102,78 @@ void Main(string[] args)
 	// Console -> This is the verb handler 2. Step 2.
 }
 ```
+
+# Utilities
+
+You can write a specified string value to the standard output stream and then change it.
+And you can have a way to list a lot of items so that user can select one of them just by arrow key.
+
+To create an instance for write a string with ability to manage it later, you can create a class by following sample.
+
+```csharp
+var Main(string[] args)
+{
+    var line = new Line();
+    
+    // Write something.
+    line.Write("Loading {0}......", "something");
+
+    // Remove some charactors and add other string with color.
+    line.Backspace(3);
+    line.Write(ConsoleColor.Green, "  Done!");
+
+    // And you can append other string following above in the same line and in the default color.
+    line.Write(" This is only for test.");
+
+    // Add terminator.
+    line.End();
+
+    // You cannot add further terminator if there is no any string output.
+    line.End();
+
+    // So following will be in a new line.
+    line.Write("Next line. ");
+
+    // We can turn off the auto flush so that all strings write later will be in an output queue.
+    line.AutoFlush = false;
+    line.Write(ConsoleColor.Red, ConsoleColor.Yellow, "Red foreground and yellow background");
+    line.End();
+    line.Write("This will not be output immediately, neither.");
+
+    // Now let's write them.
+    line.Flush();
+
+    // Following will not output until we call Flush member method or set AutoFlush property as true.
+    line.Write(" Hello?");
+    line.AutoFlush = true;
+    line.End();
+}
+```
+
+If you have a list and want user select, you can code like following sample.
+
+```csharp
+var Main(string[] args)
+{
+    var col = new Selection<string>();
+    col.Add("char a", "a", "char [a]", 'a');
+    col.Add("char b", "b", "char [b]", 'b');
+    for (var i = 0; i < 120; i++)
+    {
+        col.Add("num " + i, i.ToString());
+    }
+
+    col.SelectedForegroundColor = ConsoleColor.White;
+    col.SelectedBackgroundColor = ConsoleColor.Blue;
+    col.DefaultValueForegroundColor = ConsoleColor.Cyan;
+    col.TipsForegroundColor = ConsoleColor.Yellow;
+    col.SelectedPrefix = "√ ";
+    col.Prefix = " ";
+    col.MaxRow = 10;
+    col.Column = 5;
+    col.ManualQuestion = "Type: ";
+    var result = LineUtilities.Select(col);
+
+    Console.WriteLine("The result is {0}.", result.Value);
+}
+```

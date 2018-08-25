@@ -173,21 +173,10 @@ namespace Trivial.Console
         /// <summary>
         /// Processes.
         /// </summary>
-        /// <exception cref="AggregateException">An exception was thrown during the execution of the task.</exception>
-        /// <exception cref="TaskCanceledException">The task was canceled.</exception>
-        /// <exception cref="ObjectDisposedException">The task has been disposed.</exception>
+        /// <exception cref="AggregateException">An exception was thrown during the execution of the task, or the task was cancelled, or the task has been disposed.</exception>
         public override void Process()
         {
-            var task = ProcessAsync();
-            try
-            {
-                task.Wait();
-            }
-            catch (AggregateException ex)
-            {
-                if (task.IsCanceled) ProcessCancelled(ex.InnerException as TaskCanceledException);
-                else ProcessFailed(ex);
-            }
+            ProcessAsync().Wait();
         }
 
         /// <summary>
@@ -195,24 +184,6 @@ namespace Trivial.Console
         /// </summary>
         /// <returns>The async processing task.</returns>
         public abstract Task ProcessAsync();
-
-        /// <summary>
-        /// Occurs when it is cancelled.
-        /// </summary>
-        /// <param name="ex">The task cancelled exception.</param>
-        public virtual void ProcessCancelled(TaskCanceledException ex)
-        {
-            throw ex;
-        }
-
-        /// <summary>
-        /// Occurs when it is failed to process.
-        /// </summary>
-        /// <param name="ex">The exception. Its inner exceptions property contains information about the exception or exceptions.</param>
-        public virtual void ProcessFailed(AggregateException ex)
-        {
-            throw ex;
-        }
     }
 
     /// <summary>

@@ -29,7 +29,7 @@ namespace Trivial.Console
     /// The argument mapping attribute.
     /// </summary>
     [AttributeUsage(AttributeTargets.Property)]
-    public class ArgumentAttribute: Attribute
+    public sealed class ArgumentAttribute: Attribute
     {
         /// <summary>
         /// Initializes a new instance of the ArgumentAttribute class.
