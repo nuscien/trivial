@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <AssemblyName>Trivial.Core</AssemblyName>
+    <RootNamespace>Trivial</RootNamespace>
+    <PackageId>Trivial</PackageId>
+    <Company>Nanchang Jinchen Software Co., Ltd.</Company>
+    <Version>0.1.0</Version>
+    <Authors>Kingcean Tuan</Authors>
+    <Product>Trivial</Product>
+    <Description>The core library of Trivial.</Description>
+    <PackageLicenseUrl>https://github.com/nuscien/trivial/blob/master/LICENSE</PackageLicenseUrl>
+    <Copyright>Copyright (c) 2018 Kingcean Tuan.</Copyright>
+    <PackageProjectUrl>https://github.com/nuscien/trivial/blob/master/Core</PackageProjectUrl>
+  </PropertyGroup>
+
+</Project>

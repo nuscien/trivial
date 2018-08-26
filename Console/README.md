@@ -92,14 +92,14 @@ void Main(string[] args)
 
     dispatcher.Process(args);
 
-	// a.exe one --name Test
-	// Console -> This is the verb handler 1.
-	// Console -> Name is Test.
-	// Console -> Name is Test.
+    // a.exe one --name Test
+    // Console -> This is the verb handler 1.
+    // Console -> Name is Test.
+    // Console -> Name is Test.
 
-	// a.ext two
-	// Console -> This is the verb handler 2. Step 1.
-	// Console -> This is the verb handler 2. Step 2.
+    // a.ext two
+    // Console -> This is the verb handler 2. Step 1.
+    // Console -> This is the verb handler 2. Step 2.
 }
 ```
 
@@ -192,7 +192,7 @@ var Main(string[] args)
     // You can define the column count for the list.
     col.Column = 5;
 
-    // You can define the maxinum rows to displayed.
+    // You can define the maximum rows to displayed.
     // A paging will be displayed if the count of the list is greater than it.
     col.MaxRow = 10;
 

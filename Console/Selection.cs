@@ -68,22 +68,22 @@ namespace Trivial.Console
         private List<Tuple<string, T, string, char?>> list = new List<Tuple<string, T, string, char?>>();
 
         /// <summary>
-        /// Gets or sets the mininum length for each item.
+        /// Gets or sets the minimum length for each item.
         /// </summary>
         public int? MinLength { get; set; }
 
         /// <summary>
-        /// Gets or sets the maxinum length for each item.
+        /// Gets or sets the maximum length for each item.
         /// </summary>
         public int? MaxLength { get; set; }
 
         /// <summary>
-        /// Gets or sets the maxinum column count to display.
+        /// Gets or sets the maximum column count to display.
         /// </summary>
         public int? Column { get; set; }
 
         /// <summary>
-        /// Gets or sets maxinum row count per page.
+        /// Gets or sets maximum row count per page.
         /// null for disable paging.
         /// </summary>
         public int? MaxRow { get; set; }
