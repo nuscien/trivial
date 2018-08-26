@@ -669,6 +669,11 @@ namespace Trivial.Console
             var backDef = collection.DefaultValueBackgroundColor;
             var inputTop = -1;
             var inputLeft = -1;
+            if (!fore.HasValue && !back.HasValue && !foreSel.HasValue && !backSel.HasValue && prefix == null && selectedPrefix == null)
+            {
+                foreSel = System.Console.BackgroundColor;
+                backSel = System.Console.ForegroundColor;
+            }
 
             void change(int selIndex)
             {
@@ -790,7 +795,12 @@ namespace Trivial.Console
 
                 if (tipsP != null && pageSize < list.Count)
                 {
-                    WriteLine(fore, back, tipsP.Replace("{0}", offset.ToString()).Replace("{1}", (offset + k).ToString()));
+                    WriteLine(fore, back, tipsP
+                        .Replace("{from}", offset.ToString())
+                        .Replace("{end}", (offset + k).ToString())
+                        .Replace("{count}", k.ToString())
+                        .Replace("{size}", pageSize.ToString())
+                        .Replace("{total}", list.Count.ToString()));
                     ClearLine();
                 }
 
@@ -852,11 +862,11 @@ namespace Trivial.Console
                 }
 
                 if (inputTop > 0) System.Console.SetCursorPosition(inputLeft, inputTop);
-                if (key.Key == ConsoleKey.Enter)
+                if (key.Key == ConsoleKey.Enter || key.Key == ConsoleKey.Select)
                 {
                     var sel = list[selected];
                     if (question != null) System.Console.WriteLine(sel.Item1);
-                    return new SelectionResult<T>(sel.Item1, sel.Item2, sel.Item3);
+                    return new SelectionResult<T>(sel.Item1, selected, sel.Item2, sel.Item3);
                 }
                 else if (key.Key == ConsoleKey.Escape)
                 {
@@ -871,8 +881,30 @@ namespace Trivial.Console
                     var inputStr = System.Console.ReadLine();
                     return new SelectionResult<T>(inputStr, SelectionResultTypes.Typed);
                 }
+                else if (key.Key == ConsoleKey.Pause)
+                {
+                    if (question != null) System.Console.WriteLine();
+                    return new SelectionResult<T>(string.Empty, SelectionResultTypes.Canceled);
+                }
+                else if (key.Key == ConsoleKey.F5)
+                {
+                    if (key.Modifiers.HasFlag(ConsoleModifiers.Control))
+                    {
+                        selected = 0;
+                    }
+
+                    render();
+                }
                 else if (key.Key == ConsoleKey.PageUp)
                 {
+                    if (key.Modifiers.HasFlag(ConsoleModifiers.Control))
+                    {
+                        var selLeft = selected % columns;
+                        selected = offset + selLeft;
+                        select();
+                        continue;
+                    }
+
                     if (offset < 1)
                     {
                         select();
@@ -886,6 +918,21 @@ namespace Trivial.Console
                 }
                 else if (key.Key == ConsoleKey.PageDown)
                 {
+                    if (key.Modifiers.HasFlag(ConsoleModifiers.Control))
+                    {
+                        var selLeft = selected % columns;
+                        var sel2 = offset + pageSize - columns + selLeft;
+                        while (sel2 > list.Count)
+                        {
+                            sel2 -= columns;
+                        }
+
+                        if (sel2 < offset) sel2 = offset;
+                        selected = sel2;
+                        select();
+                        continue;
+                    }
+
                     if (offset + pageSize >= list.Count)
                     {
                         select();
@@ -918,29 +965,45 @@ namespace Trivial.Console
                 }
                 else if (key.Key == ConsoleKey.Home)
                 {
-                    var rowI = (int)Math.Floor(selected * 1.0 / columns);
-                    selected = rowI * columns;
+                    if (key.Modifiers.HasFlag(ConsoleModifiers.Control))
+                    {
+                        selected = 0;
+                    }
+                    else
+                    {
+                        var rowI = (int)Math.Floor(selected * 1.0 / columns);
+                        selected = rowI * columns;
+                    }
+
                     select();
                 }
                 else if (key.Key == ConsoleKey.End)
                 {
-                    var rowI = (int)Math.Floor(selected * 1.0 / columns);
-                    var toSel = (rowI + 1) * columns - 1;
-                    if (toSel < list.Count) selected = toSel;
-                    else selected = list.Count - 1;
+                    if (key.Modifiers.HasFlag(ConsoleModifiers.Control))
+                    {
+                        selected = list.Count - 1;
+                    }
+                    else
+                    {
+                        var rowI = (int)Math.Floor(selected * 1.0 / columns);
+                        var toSel = (rowI + 1) * columns - 1;
+                        if (toSel < list.Count) selected = toSel;
+                        else selected = list.Count - 1;
+                    }
+
                     select();
                 }
                 else if (keys.ContainsKey(key.KeyChar))
                 {
                     var sel = keys[key.KeyChar];
                     if (question != null) System.Console.WriteLine(sel.Item1);
-                    return new SelectionResult<T>(sel.Item1, sel.Item2, sel.Item3);
+                    return new SelectionResult<T>(sel.Item1, selected, sel.Item2, sel.Item3);
                 }
                 else if (key.Key == ConsoleKey.Spacebar)
                 {
                     var sel = list[selected];
                     if (question != null) System.Console.WriteLine(sel.Item1);
-                    return new SelectionResult<T>(sel.Item1, sel.Item2, sel.Item3);
+                    return new SelectionResult<T>(sel.Item1, selected, sel.Item2, sel.Item3);
                 }
                 else
                 {

@@ -7,11 +7,11 @@
     <Authors>Kingcean Tuan</Authors>
     <Company>Nanchang Jinchen Software Co., Ltd</Company>
     <Copyright>Copyright (c) 2018 Kingcean Tuan.</Copyright>
-    <AssemblyVersion>0.2.0.825</AssemblyVersion>
-    <FileVersion>0.2.0.825</FileVersion>
+    <AssemblyVersion>0.2.1.826</AssemblyVersion>
+    <FileVersion>0.2.1.826</FileVersion>
     <Description>The useful utilities for console application.</Description>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>0.2.0</Version>
+    <Version>0.2.1</Version>
     <PackageLicenseUrl>https://github.com/nuscien/trivial/blob/master/LICENSE</PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/nuscien/trivial/tree/master/Console</PackageProjectUrl>
     <PackageTags>Console</PackageTags>

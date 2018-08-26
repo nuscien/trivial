@@ -98,7 +98,7 @@ namespace Trivial.Console
         /// Gets or sets the paging tips.
         /// null for disable tips.
         /// </summary>
-        public string PagingTips { get; set; } = "← [PgUp] | {0} - {1} | [PgDn] →";
+        public string PagingTips { get; set; } = "← [PgUp] | {from} - {end} / {total} | [PgDn] →";
 
         /// <summary>
         /// Gets or sets the question message before selection.
@@ -218,6 +218,7 @@ namespace Trivial.Console
         public SelectionResult(string value, SelectionResultTypes type)
         {
             Value = value;
+            Index = -1;
             Data = default(T);
             InputType = type;
         }
@@ -226,11 +227,13 @@ namespace Trivial.Console
         /// Initializes a new instance of the SelectionResult class.
         /// </summary>
         /// <param name="value">The value input.</param>
+        /// <param name="index">The index of item displayed.</param>
         /// <param name="data">The item data.</param>
         /// <param name="title">The title displayed in item.</param>
-        public SelectionResult(string value, T data, string title)
+        public SelectionResult(string value, int index, T data, string title)
         {
             Value = value;
+            Index = index;
             Data = data;
             Title = title;
             InputType = SelectionResultTypes.Selected;
@@ -240,6 +243,11 @@ namespace Trivial.Console
         /// Gets a value indicating whether it is cancelled.
         /// </summary>
         public bool IsCanceled => InputType == SelectionResultTypes.Canceled;
+
+        /// <summary>
+        /// Gets the index of item displayed.
+        /// </summary>
+        public int Index { get; }
 
         /// <summary>
         /// Gets the value input.
