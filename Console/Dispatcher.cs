@@ -177,7 +177,7 @@ namespace Trivial.Console
                 if (isCanceled) break;
                 var args = new Arguments(str);
                 var verb = Process(args, false);
-                if (isCanceled || !loop || verb is BaseExitVerb) break;
+                if (isCanceled || !loop || verb is ExitVerb) break;
             }
 
             isCanceled = false;

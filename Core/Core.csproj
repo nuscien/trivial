@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <AssemblyName>Trivial.Core</AssemblyName>
+    <AssemblyName>Trivial</AssemblyName>
     <RootNamespace>Trivial</RootNamespace>
     <PackageId>Trivial</PackageId>
     <Company>Nanchang Jinchen Software Co., Ltd.</Company>
@@ -12,7 +12,17 @@
     <Description>The core library of Trivial.</Description>
     <PackageLicenseUrl>https://github.com/nuscien/trivial/blob/master/LICENSE</PackageLicenseUrl>
     <Copyright>Copyright (c) 2018 Kingcean Tuan.</Copyright>
-    <PackageProjectUrl>https://github.com/nuscien/trivial/blob/master/Core</PackageProjectUrl>
+    <PackageProjectUrl>https://github.com/nuscien/trivial/wiki/core</PackageProjectUrl>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DocumentationFile>..\bin\Debug\netstandard2.0\Trivial.xml</DocumentationFile>
+    <OutputPath>..\bin\Debug\</OutputPath>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <OutputPath>..\bin\Release\</OutputPath>
+    <DocumentationFile>..\bin\Release\netstandard2.0\Trivial.xml</DocumentationFile>
   </PropertyGroup>
 
 </Project>

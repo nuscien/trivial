@@ -256,54 +256,20 @@ namespace Trivial.Console
     }
 
     /// <summary>
-    /// Base exit verb handler.
-    /// </summary>
-    public abstract class BaseExitVerb : Verb
-    {
-    }
-
-    /// <summary>
     /// Exit verb handler.
     /// </summary>
-    public class ExitVerb : BaseExitVerb
+    public class ExitVerb : Verb
     {
-        /// <summary>
-        /// Gets or sets a value indicating whether it is only for turning back parent dispatcher.
-        /// </summary>
-        public bool Back { get; set; }
-
-        /// <summary>
-        /// Gets or sets the description string for back.
-        /// </summary>
-        public string BackMessage { get; set; } = "Close the current conversation.";
-
-        /// <summary>
-        /// Gets or sets the description string for exit.
-        /// </summary>
-        public string ExitMessage { get; set; } = "Exit this application.";
-
-        /// <summary>
-        /// Gets or sets the exit string.
-        /// </summary>
-        public string ByeMessage { get; set; } = "Bye!";
-
         /// <summary>
         /// Gets the descripiton of the verb handler.
         /// </summary>
-        public override string Description
-        {
-            get
-            {
-                return Back ? BackMessage : ExitMessage;
-            }
-        }
+        public override string Description => "End the current conversation.";
 
         /// <summary>
         /// Processes.
         /// </summary>
         public override void Process()
         {
-            if (!Back) LineUtilities.WriteDoubleLines(ByeMessage);
         }
     }
 
@@ -316,22 +282,42 @@ namespace Trivial.Console
         /// Registers a help verb.
         /// </summary>
         /// <param name="dispatcher">The dispatcher.</param>
-        /// <param name="furtherDesc">Additional description which will be appended to the last.</param>
         /// <returns>The help verb instance.</returns>
-        public static void RegisterHelp(this Dispatcher dispatcher, string furtherDesc = null)
+        public static void RegisterHelp(this Dispatcher dispatcher)
         {
             dispatcher.Register<HelpVerb>(new[] { "help", "?", "gethelp", "get-help" });
+        }
+
+        /// <summary>
+        /// Registers a help verb.
+        /// </summary>
+        /// <param name="dispatcher">The dispatcher.</param>
+        /// <typeparam name="T">The type of help verb.</typeparam>
+        /// <returns>The help verb instance.</returns>
+        public static void RegisterHelp<T>(this Dispatcher dispatcher) where T : HelpVerb
+        {
+            dispatcher.Register<T>(new[] { "help", "?", "gethelp", "get-help" });
         }
 
         /// <summary>
         /// Registers a exit verb.
         /// </summary>
         /// <param name="dispatcher">The dispatcher.</param>
-        /// <param name="back">true if only for turning back; otherwise, false.</param>
         /// <returns>The exit verb instance.</returns>
-        public static void RegisterExit(this Dispatcher dispatcher, bool back = false)
+        public static void RegisterExit(this Dispatcher dispatcher)
         {
             dispatcher.Register<ExitVerb>(new[] { "exit", "quit", "bye", "goodbye" });
+        }
+
+        /// <summary>
+        /// Registers a exit verb.
+        /// </summary>
+        /// <typeparam name="T">The type of exit verb.</typeparam>
+        /// <param name="dispatcher">The dispatcher.</param>
+        /// <returns>The exit verb instance.</returns>
+        public static void RegisterExit<T>(this Dispatcher dispatcher) where T : ExitVerb
+        {
+            dispatcher.Register<T>(new[] { "exit", "quit", "bye", "goodbye" });
         }
     }
 }

@@ -95,6 +95,11 @@ namespace Trivial.Console
         public string Tips { get; set; } = "Tips: [↑][↓][←][→] Select; [ENTER] OK.";
 
         /// <summary>
+        /// Gets or sets the tips in line 2.
+        /// </summary>
+        public string TipsLine2 { get; set; }
+
+        /// <summary>
         /// Gets or sets the paging tips.
         /// null for disable tips.
         /// </summary>
@@ -188,8 +193,20 @@ namespace Trivial.Console
         /// <param name="value">The value to output.</param>
         /// <param name="data">The optional data.</param>
         /// <param name="title">The description displayed in item.</param>
-        /// <param name="key">The hot key mapped.</param>
+        /// <param name="key">The hotkey mapped.</param>
         public void Add(string value, T data = default(T), string title = null, char? key = null)
+        {
+            list.Add(new Tuple<string, T, string, char?>(value, data, title, key));
+        }
+
+        /// <summary>
+        /// Adds an item.
+        /// </summary>
+        /// <param name="value">The value to output.</param>
+        /// <param name="data">The optional data.</param>
+        /// <param name="key">The hotkey mapped.</param>
+        /// <param name="title">The description displayed in item.</param>
+        public void Add(string value, T data, char key, string title = null)
         {
             list.Add(new Tuple<string, T, string, char?>(value, data, title, key));
         }

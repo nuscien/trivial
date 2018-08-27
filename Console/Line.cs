@@ -652,6 +652,7 @@ namespace Trivial.Console
             var prefix = collection.Prefix;
             var selectedPrefix = collection.SelectedPrefix;
             var tips = collection.Tips;
+            var tips2 = collection.TipsLine2;
             var tipsP = collection.PagingTips;
             var question = collection.Question;
             var questionM = collection.ManualQuestion;
@@ -735,7 +736,7 @@ namespace Trivial.Console
 
                 System.Console.SetCursorPosition(inputLeft, inputTop);
                 var sel = list[selected];
-                if (question != null) Write(foreDef, backDef, sel.Item3 ?? sel.Item1);
+                if (question != null) Write(foreDef, backDef, sel.Item1);
                 oldSelected = selected;
             }
 
@@ -796,8 +797,8 @@ namespace Trivial.Console
                 if (tipsP != null && pageSize < list.Count)
                 {
                     WriteLine(fore, back, tipsP
-                        .Replace("{from}", offset.ToString())
-                        .Replace("{end}", (offset + k).ToString())
+                        .Replace("{from}", (offset + 1).ToString())
+                        .Replace("{end}", (offset + k + 1).ToString())
                         .Replace("{count}", k.ToString())
                         .Replace("{size}", pageSize.ToString())
                         .Replace("{total}", list.Count.ToString()));
@@ -817,24 +818,36 @@ namespace Trivial.Console
                 inputTop = System.Console.CursorTop;
                 inputLeft = System.Console.CursorLeft;
                 var sel = list[selected];
-                if (question != null) Write(foreDef, backDef, sel.Item3 ?? sel.Item1);
+                if (question != null) Write(foreDef, backDef, sel.Item1);
                 oldSelected = selected;
             }
 
-            render();
             var tipsTop = -1;
             var tipsTop2 = -1;
-            if (!string.IsNullOrWhiteSpace(tips))
+            void showTips()
             {
+                if (string.IsNullOrWhiteSpace(tips)) return;
                 var curTop = System.Console.CursorTop;
                 var curLeft = System.Console.CursorLeft;
                 System.Console.WriteLine();
                 System.Console.WriteLine();
                 tipsTop = System.Console.CursorTop;
-                Write(foreTip, backTip, tips);
+                if (string.IsNullOrWhiteSpace(tips2))
+                {
+                    Write(foreTip, backTip, tips);
+                }
+                else
+                {
+                    WriteLine(foreTip, backTip, tips);
+                    Write(foreTip, backTip, tips2);
+                }
+
                 tipsTop2 = Math.Max(tipsTop, System.Console.CursorTop);
                 System.Console.SetCursorPosition(curLeft, curTop);
             }
+
+            render();
+            showTips();
 
             while (true)
             {
@@ -859,6 +872,8 @@ namespace Trivial.Console
                     {
                         ClearLine(i);
                     }
+
+                    tipsTop = -1;
                 }
 
                 if (inputTop > 0) System.Console.SetCursorPosition(inputLeft, inputTop);
@@ -868,7 +883,7 @@ namespace Trivial.Console
                     if (question != null) System.Console.WriteLine(sel.Item1);
                     return new SelectionResult<T>(sel.Item1, selected, sel.Item2, sel.Item3);
                 }
-                else if (key.Key == ConsoleKey.Escape)
+                else if (key.Key == ConsoleKey.Backspace || key.Key == ConsoleKey.Delete)
                 {
                     if (questionM == null)
                     {
@@ -881,10 +896,22 @@ namespace Trivial.Console
                     var inputStr = System.Console.ReadLine();
                     return new SelectionResult<T>(inputStr, SelectionResultTypes.Typed);
                 }
-                else if (key.Key == ConsoleKey.Pause)
+                else if (key.Key == ConsoleKey.Escape || key.Key == ConsoleKey.Pause)
                 {
                     if (question != null) System.Console.WriteLine();
                     return new SelectionResult<T>(string.Empty, SelectionResultTypes.Canceled);
+                }
+                else if (key.Key == ConsoleKey.F1)
+                {
+                    if (keys.ContainsKey('?'))
+                    {
+                        var sel = keys['?'];
+                        if (question != null) System.Console.WriteLine(sel.Item1);
+                        return new SelectionResult<T>(sel.Item1, selected, sel.Item2, sel.Item3);
+                    }
+
+                    showTips();
+                    select();
                 }
                 else if (key.Key == ConsoleKey.F5)
                 {

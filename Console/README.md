@@ -1,4 +1,4 @@
-﻿You can use the library for your console application to parse the arguments and manage the verbs.
+﻿You can use the library for your console application to parse the arguments, write the selection, dispatch verbs, etc.
 
 # Import
 
