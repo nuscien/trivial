@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace Trivial.Console
@@ -92,7 +93,7 @@ namespace Trivial.Console
         /// Gets or sets the tips.
         /// null for disable tips.
         /// </summary>
-        public string Tips { get; set; } = "Tips: [↑][↓][←][→] Select; [ENTER] OK.";
+        public string Tips { get; set; } = Resource.SelectionTips;
 
         /// <summary>
         /// Gets or sets the tips in line 2.
@@ -103,13 +104,13 @@ namespace Trivial.Console
         /// Gets or sets the paging tips.
         /// null for disable tips.
         /// </summary>
-        public string PagingTips { get; set; } = "← [PgUp] | {from} - {end} / {total} | [PgDn] →";
+        public string PagingTips { get; set; } = Resource.PagingTips;
 
         /// <summary>
         /// Gets or sets the question message before selection.
         /// null for disable additional question line.
         /// </summary>
-        public string Question { get; set; } = "Select: ";
+        public string Question { get; set; } = Resource.ToSelect;
 
         /// <summary>
         /// Gets or sets the question message for manual typing.
@@ -209,6 +210,27 @@ namespace Trivial.Console
         public void Add(string value, T data, char key, string title = null)
         {
             list.Add(new Tuple<string, T, string, char?>(value, data, title, key));
+        }
+
+        /// <summary>
+        /// Adds an item.
+        /// </summary>
+        /// <param name="key">The hotkey mapped.</param>
+        /// <param name="value">The value to output.</param>
+        /// <param name="title">The description displayed in item.</param>
+        /// <param name="data">The optional data.</param>
+        public void Add(char key, string value, string title = null, T data = default(T))
+        {
+            list.Add(new Tuple<string, T, string, char?>(value, data, title, key));
+        }
+
+        /// <summary>
+        /// Adds items to the end.
+        /// </summary>
+        /// <param name="values">The values to output.</param>
+        public void AddRange(IEnumerable<string> values)
+        {
+            list.AddRange(values.Select(item => new Tuple<string, T, string, char?>(item, default(T), null, null)));
         }
 
         /// <summary>

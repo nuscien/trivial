@@ -678,17 +678,19 @@ namespace Trivial.Console
 
             void change(int selIndex)
             {
+                var isSel = selIndex == selected;
+                if (selIndex < 0) selIndex = selected;
                 var selItem = list[selIndex];
                 var k = selIndex - offset;
                 var rowI = (int)Math.Floor(k * 1.0 / columns);
                 var curLeft = (k % columns) * itemLen;
-                var str = ((selIndex == selected ? selectedPrefix : prefix) ?? string.Empty) + (selItem.Item3 ?? selItem.Item1);
+                var str = ((isSel ? selectedPrefix : prefix) ?? string.Empty) + (selItem.Item3 ?? selItem.Item1);
                 if (str.Length > itemLen2) str = str.Substring(0, itemLen2);
                 var curLeft2 = curLeft + itemLen2;
                 var curLeftDiff = itemLen2;
                 System.Console.SetCursorPosition(curLeft, top + rowI);
                 var strOffset = (int)Math.Floor(str.Length * 1.0 / 2);
-                if (selIndex == selected) Write(foreSel, backSel, str.Substring(0, strOffset));
+                if (isSel) Write(foreSel, backSel, str.Substring(0, strOffset));
                 else Write(fore, back, str.Substring(0, strOffset));
                 for (var i = strOffset; i < str.Length; i++)
                 {
@@ -704,7 +706,7 @@ namespace Trivial.Console
                     }
 
                     var charactor = str[i];
-                    if (selIndex == selected) Write(foreSel, backSel, charactor.ToString());
+                    if (isSel) Write(foreSel, backSel, charactor.ToString());
                     else Write(fore, back, charactor.ToString());
                 }
 
@@ -713,9 +715,11 @@ namespace Trivial.Console
                 {
                     var spaces = new StringBuilder();
                     spaces.Append('\0', -curLeftDiff);
-                    if (selIndex == selected) Write(foreSel, backSel, spaces.ToString());
+                    if (isSel) Write(foreSel, backSel, spaces.ToString());
                     else Write(fore, back, spaces.ToString());
                 }
+
+                if (inputTop >= 0) System.Console.SetCursorPosition(inputLeft, inputTop);
             }
 
             void select()
@@ -887,10 +891,12 @@ namespace Trivial.Console
                 {
                     if (questionM == null)
                     {
+                        change(-1);
                         if (question != null) System.Console.WriteLine();
                         return new SelectionResult<T>(string.Empty, SelectionResultTypes.Canceled);
                     }
 
+                    change(-1);
                     Backspace(System.Console.CursorLeft);
                     Write(foreQ, backQ, questionM);
                     var inputStr = System.Console.ReadLine();
@@ -898,6 +904,7 @@ namespace Trivial.Console
                 }
                 else if (key.Key == ConsoleKey.Escape || key.Key == ConsoleKey.Pause)
                 {
+                    change(-1);
                     if (question != null) System.Console.WriteLine();
                     return new SelectionResult<T>(string.Empty, SelectionResultTypes.Canceled);
                 }
@@ -905,11 +912,17 @@ namespace Trivial.Console
                 {
                     if (keys.ContainsKey('?'))
                     {
+                        change(-1);
                         var sel = keys['?'];
                         if (question != null) System.Console.WriteLine(sel.Item1);
                         return new SelectionResult<T>(sel.Item1, selected, sel.Item2, sel.Item3);
                     }
 
+                    showTips();
+                    select();
+                }
+                else if (key.Key == ConsoleKey.F12)
+                {
                     showTips();
                     select();
                 }
@@ -1023,7 +1036,23 @@ namespace Trivial.Console
                 else if (keys.ContainsKey(key.KeyChar))
                 {
                     var sel = keys[key.KeyChar];
-                    if (question != null) System.Console.WriteLine(sel.Item1);
+                    var isUnselected = true;
+                    for (var i = 0; i < list.Count; i++)
+                    {
+                        if (list[i] != sel) continue;
+                        isUnselected = false;
+                        selected = i;
+                        select();
+                        if (question != null) System.Console.WriteLine();
+                        break;
+                    }
+
+                    if (isUnselected)
+                    {
+                        change(-1);
+                        if (question != null) System.Console.WriteLine(sel.Item1);
+                    }
+
                     return new SelectionResult<T>(sel.Item1, selected, sel.Item2, sel.Item3);
                 }
                 else if (key.Key == ConsoleKey.Spacebar)

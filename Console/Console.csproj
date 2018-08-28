@@ -7,11 +7,11 @@
     <Authors>Kingcean Tuan</Authors>
     <Company>Nanchang Jinchen Software Co., Ltd</Company>
     <Copyright>Copyright (c) 2018 Kingcean Tuan.</Copyright>
-    <AssemblyVersion>0.2.2.827</AssemblyVersion>
-    <FileVersion>0.2.2.827</FileVersion>
+    <AssemblyVersion>0.2.3.828</AssemblyVersion>
+    <FileVersion>0.2.3.828</FileVersion>
     <Description>The useful utilities for console application.</Description>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>0.2.2</Version>
+    <Version>0.2.3</Version>
     <PackageLicenseUrl>https://github.com/nuscien/trivial/blob/master/LICENSE</PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/nuscien/trivial/wiki/console</PackageProjectUrl>
     <PackageTags>Console</PackageTags>
@@ -26,5 +26,20 @@
     <OutputPath>..\bin\Release\</OutputPath>
     <DocumentationFile>..\bin\Release\netstandard2.0\Trivial.Console.xml</DocumentationFile>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Update="Resource.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resource.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Update="Resource.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resource.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
 
 </Project>

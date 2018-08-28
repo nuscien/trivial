@@ -199,7 +199,7 @@ namespace Trivial.Console
         /// <summary>
         /// Gets or sets the description message.
         /// </summary>
-        public string DescriptionMessage { get; set; } = "Get help.";
+        public string DescriptionMessage { get; set; } = Resource.GetHelp;
 
         /// <summary>
         /// Gets the descripiton of the verb handler.
@@ -263,7 +263,7 @@ namespace Trivial.Console
         /// <summary>
         /// Gets the descripiton of the verb handler.
         /// </summary>
-        public override string Description => "End the current conversation.";
+        public override string Description => Resource.EndConversation;
 
         /// <summary>
         /// Processes.
