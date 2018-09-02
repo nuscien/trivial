@@ -26,7 +26,7 @@ namespace Trivial.Tasks
         /// <summary>
         /// Only process the first one after no more coming.
         /// </summary>
-        //Lock = 3
+        Lock = 3
     }
 
     /// <summary>
@@ -106,11 +106,6 @@ namespace Trivial.Tasks
         /// The count of latest request.
         /// </summary>
         private int latestRequestCount = 0;
-
-        /// <summary>
-        /// A date before which all request will be ignored.
-        /// </summary>
-        private DateTime ignoreBefore = DateTime.Now;
 
         /// <summary>
         /// The cache of the latest event arguments.
@@ -207,11 +202,13 @@ namespace Trivial.Tasks
                 var latestReqDate = LatestRequestDate;
                 var timeout = Timeout;
                 var firstReq = FirstDurationRequestDate ?? latestReqDate ?? now;
-                if (!timeout.HasValue || !latestReqDate.HasValue || (timeout.Value > now - latestReqDate.Value))
+
+                if (Duration.HasValue && Duration.Value < now - firstReq)
                 {
                     latestRequestCount = 0;
                     FirstDurationRequestDate = now;
-                } else if (Duration.HasValue && Duration.Value > now - firstReq)
+                }
+                else if (!timeout.HasValue || !latestReqDate.HasValue || timeout.Value < now - latestReqDate.Value)
                 {
                     latestRequestCount = 0;
                     FirstDurationRequestDate = now;
@@ -220,16 +217,40 @@ namespace Trivial.Tasks
                 LatestRequestDate = now;
                 var count = ++latestRequestCount;
                 var minCount = MinCount;
-                if (minCount.HasValue && minCount.Value > count) return false;
+                if (minCount.HasValue && minCount.Value > count)
+                {
+                    latestArgs = null;
+                    return false;
+                }
+
                 var maxCount = MaxCount;
-                if (maxCount.HasValue && maxCount.Value < count) return false;
+                if (maxCount.HasValue && maxCount.Value < count)
+                {
+                    latestArgs = null;
+                    return false;
+                }
+
                 if (count > 1 && mode == ConcurrencyFilters.Mono) return false;
-                args = new HitEventArgs<T>(count, now, latestReqDate, firstReq, arg);
+                var lArgs = latestArgs;
+                if (mode == ConcurrencyFilters.Lock && lArgs != null && count > 1)
+                {
+                    args = new HitEventArgs<T>(lArgs.Count, lArgs.RequestDate, lArgs.PreviousRequestDate, lArgs.FirstRequestDate, lArgs.Argument);
+                }
+                else
+                {
+                    args = new HitEventArgs<T>(count, now, latestReqDate, firstReq, arg);
+                }
+
                 latestArgs = args;
             }
 
             if (Delay.HasValue) await Task.Delay(Delay.Value);
-            if (mode == ConcurrencyFilters.All || latestArgs != args || IsPaused) return false;
+            if (mode != ConcurrencyFilters.All)
+            {
+                if (latestArgs != args) return false;
+            }
+
+            if (IsPaused) return false;
             LatestProcessDate = DateTime.Now;
             TotalCount++;
             Processed?.Invoke(this, args);
