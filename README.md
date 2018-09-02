@@ -1,3 +1,7 @@
+## [Trivial.Tasks](./Tasks)
+
+Debounce, throttle, multiple and times tasks.
+
 ## [Trivial.Console](./Console)
 
-You can use the library for your console application to parse the arguments and manage the verbs.
+Parse the arguments, manage the verbs and write a selection in your console application.
