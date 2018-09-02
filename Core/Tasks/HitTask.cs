@@ -125,7 +125,7 @@ namespace Trivial.Tasks
         /// <summary>
         /// Gets or sets the minimum hit count.
         /// </summary>
-        public int? MinCount { get; set; }
+        public int MinCount { get; set; }
 
         /// <summary>
         /// Gets or sets the delay time span to process the task.
@@ -217,7 +217,7 @@ namespace Trivial.Tasks
                 LatestRequestDate = now;
                 var count = ++latestRequestCount;
                 var minCount = MinCount;
-                if (minCount.HasValue && minCount.Value > count)
+                if (minCount > count)
                 {
                     latestArgs = null;
                     return false;
@@ -443,7 +443,7 @@ namespace Trivial.Tasks
         /// <param name="max">The maxmum hit count.</param>
         /// <param name="timeout">The time span between each hit.</param>
         /// <returns>The hit task instance.</returns>
-        public static HitTask Mutliple(Action action, int min, int max, TimeSpan timeout)
+        public static HitTask Mutliple(Action action, int min, int? max, TimeSpan timeout)
         {
             var task = new HitTask
             {
@@ -466,7 +466,7 @@ namespace Trivial.Tasks
         /// <param name="max">The maxmum hit count.</param>
         /// <param name="timeout">The time span between each hit.</param>
         /// <returns>The hit task instance.</returns>
-        public static HitTask Mutliple(HitEventHandler action, int min, int max, TimeSpan timeout)
+        public static HitTask Mutliple(HitEventHandler action, int min, int? max, TimeSpan timeout)
         {
             var task = new HitTask
             {
@@ -490,7 +490,7 @@ namespace Trivial.Tasks
         /// <param name="max">The maxmum hit count.</param>
         /// <param name="timeout">The time span between each hit.</param>
         /// <returns>The hit task instance.</returns>
-        public static HitTask<T> Mutliple<T>(Action<T> action, int min, int max, TimeSpan timeout)
+        public static HitTask<T> Mutliple<T>(Action<T> action, int min, int? max, TimeSpan timeout)
         {
             var task = new HitTask<T>
             {
@@ -514,7 +514,7 @@ namespace Trivial.Tasks
         /// <param name="max">The maxmum hit count.</param>
         /// <param name="timeout">The time span between each hit.</param>
         /// <returns>The hit task instance.</returns>
-        public static HitTask<T> Mutliple<T>(HitEventHandler<T> action, int min, int max, TimeSpan timeout)
+        public static HitTask<T> Mutliple<T>(HitEventHandler<T> action, int min, int? max, TimeSpan timeout)
         {
             var task = new HitTask<T>
             {
@@ -538,7 +538,7 @@ namespace Trivial.Tasks
         /// <param name="max">The maxmum hit count.</param>
         /// <param name="timeout">The time span between each hit.</param>
         /// <returns>The hit task instance.</returns>
-        public static HitTask Times(Action action, int min, int max, TimeSpan timeout)
+        public static HitTask Times(Action action, int min, int? max, TimeSpan timeout)
         {
             var task = new HitTask
             {
@@ -563,7 +563,7 @@ namespace Trivial.Tasks
         /// <param name="max">The maxmum hit count.</param>
         /// <param name="timeout">The time span between each hit.</param>
         /// <returns>The hit task instance.</returns>
-        public static HitTask Times(HitEventHandler action, int min, int max, TimeSpan timeout)
+        public static HitTask Times(HitEventHandler action, int min, int? max, TimeSpan timeout)
         {
             var task = new HitTask
             {
@@ -589,7 +589,7 @@ namespace Trivial.Tasks
         /// <param name="max">The maxmum hit count.</param>
         /// <param name="timeout">The time span between each hit.</param>
         /// <returns>The hit task instance.</returns>
-        public static HitTask<T> Times<T>(Action<T> action, int min, int max, TimeSpan timeout)
+        public static HitTask<T> Times<T>(Action<T> action, int min, int? max, TimeSpan timeout)
         {
             var task = new HitTask<T>
             {
@@ -615,7 +615,7 @@ namespace Trivial.Tasks
         /// <param name="max">The maxmum hit count.</param>
         /// <param name="timeout">The time span between each hit.</param>
         /// <returns>The hit task instance.</returns>
-        public static HitTask<T> Times<T>(HitEventHandler<T> action, int min, int max, TimeSpan timeout)
+        public static HitTask<T> Times<T>(HitEventHandler<T> action, int min, int? max, TimeSpan timeout)
         {
             var task = new HitTask<T>
             {

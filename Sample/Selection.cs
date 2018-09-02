@@ -1,0 +1,39 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+using SysConsole = System.Console;
+using TrivialConsole = Trivial.Console;
+
+namespace Trivial.Sample
+{
+    class SelectionVerb : TrivialConsole.Verb
+    {
+        public override string Description => "Selection";
+
+        public override void Process()
+        {
+            for (var i = 0; i < 50; i++)
+            {
+                SysConsole.WriteLine(i);
+            }
+
+            var col = new TrivialConsole.Selection
+            {
+                Column = 5,
+                MaxRow = 10,
+                ManualQuestion = "Type: ",
+                TipsLine2 = "Hey..."
+            };
+            col.Add('a', "aaa", string.Empty);
+            col.Add('b', "bbb");
+            col.Add('?', "help", string.Empty);
+            for (var i = 0; i < 120; i++)
+            {
+                col.Add(i.ToString());
+            }
+
+            var result = TrivialConsole.LineUtilities.Select(col);
+            SysConsole.WriteLine("-> {0} | Press any key to exit...", result.Value);
+        }
+    }
+}
