@@ -475,8 +475,8 @@ namespace Trivial.Maths
         /// <returns>A System.String containing this interval.</returns>
         public override string ToString()
         {
-            var leftStr = LeftBounded ? MinValue.ToString() : NumberUtility.NegativeInfiniteSymbol;
-            var rightStr = RightBounded ? MaxValue.ToString() : NumberUtility.PositiveInfiniteSymbol;
+            var leftStr = LeftBounded ? MinValue.ToString() : Numbers.Symbols.NegativeInfiniteSymbol;
+            var rightStr = RightBounded ? MaxValue.ToString() : Numbers.Symbols.PositiveInfiniteSymbol;
             var longStr = string.Format("{0} - {1}", leftStr, rightStr);
             var sep = false;
             if (longStr.IndexOfAny(new[] { ',', ';' }) > -1) sep = true;

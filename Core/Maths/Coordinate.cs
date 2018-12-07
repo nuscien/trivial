@@ -18,14 +18,20 @@ namespace Trivial.Maths
     public class PolarPoint
     {
         /// <summary>
-        /// The parameter name of theta.
+        /// Polar coordinate point symbols.
         /// </summary>
-        public const string ThetaSymbol = "θ";
+        public static class Symbols
+        {
+            /// <summary>
+            /// The parameter name of theta.
+            /// </summary>
+            public const string ThetaSymbol = "θ";
 
-        /// <summary>
-        /// The parameter name of radius.
-        /// </summary>
-        public const string RadiusSymbol = "r";
+            /// <summary>
+            /// The parameter name of radius.
+            /// </summary>
+            public const string RadiusSymbol = "r";
+        }
 
         /// <summary>
         /// Initializes a new instance of the PolarPoint class.
@@ -92,7 +98,7 @@ namespace Trivial.Maths
                 theta = string.Format(quoteStr, theta.Replace("\"", "\\\""));
             }
 
-            return string.Format("{0} = {1}{2} {3} = {4}", RadiusSymbol, radius, sep ? ";" : ",", ThetaSymbol, theta);
+            return string.Format("{0} = {1}{2} {3} = {4}", Symbols.RadiusSymbol, radius, sep ? ";" : ",", Symbols.ThetaSymbol, theta);
         }
     }
 

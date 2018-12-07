@@ -1,0 +1,270 @@
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Security;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Trivial.IO
+{
+    /// <summary>
+    /// The class for prime number.
+    /// </summary>
+    public static class FileExtension
+    {
+        /// <summary>
+        /// Copies the directory.
+        /// </summary>
+        /// <param name="source">The source directory.</param>
+        /// <param name="destPath">The destinate directory path.</param>
+        /// <returns>true if copy succeeded; otherwise, false.</returns>
+        public static Task<bool> CopyToAsync(this DirectoryInfo source, string destPath)
+        {
+            return Task.Run(() =>
+            {
+                return CopyTo(source, destPath);
+            });
+        }
+
+        /// <summary>
+        /// Copies the directory.
+        /// </summary>
+        /// <param name="source">The source directory.</param>
+        /// <param name="destPath">The destinate directory path.</param>
+        /// <returns>true if copy succeeded; otherwise, false.</returns>
+        public static bool CopyTo(this DirectoryInfo source, string destPath)
+        {
+            try
+            {
+                if (!source.Exists) return false;
+                if (!Directory.Exists(destPath))
+                {
+                    Directory.CreateDirectory(destPath);
+                }
+
+                foreach (var item in source.GetFiles())
+                {
+                    item.CopyTo(Path.Combine(destPath, item.Name), true);
+                }
+
+                foreach (var item in source.GetDirectories())
+                {
+                    source = item;
+                    CopyTo(item, Path.Combine(destPath, item.Name));
+                }
+
+                return true;
+            }
+            catch (IOException)
+            {
+            }
+            catch (UnauthorizedAccessException)
+            {
+            }
+            catch (ArgumentException)
+            {
+            }
+            catch (SecurityException)
+            {
+            }
+            catch (InvalidOperationException)
+            {
+            }
+            catch (NullReferenceException)
+            {
+            }
+
+            return false;
+        }
+        /// <summary>
+        /// Gets the string of the file size.
+        /// </summary>
+        /// <param name="size">The file size.</param>
+        /// <param name="unit">The unit.</param>
+        /// <returns>A string.</returns>
+        public static string FileSize(int size, string unit = "B")
+        {
+            return FileSize((long)size, unit);
+        }
+
+        /// <summary>
+        /// Gets the string of the file size.
+        /// </summary>
+        /// <param name="size">The file size.</param>
+        /// <param name="unit">The unit.</param>
+        /// <returns>A string.</returns>
+        public static string FileSize(long size, string unit = "B")
+        {
+            var prefix = string.Empty;
+            if (size < 0)
+            {
+                prefix = "-";
+                size = -size;
+            }
+
+            if (size > 1000000000000000000) return prefix + (size / 1152921504606846976.0).ToString("F1") + "E" + unit;
+            if (size > 1000000000000000) return prefix + (size / 1125899906842624.0).ToString("F1") + "P" + unit;
+            if (size > 1000000000000) return prefix + (size / 1099511627776.0).ToString("F1") + "T" + unit;
+            if (size > 1000000000) return prefix + (size / 1073741824.0).ToString("F1") + "G" + unit;
+            if (size > 1000000) return prefix + (size / 1048576.0).ToString("F1") + "M" + unit;
+            if (size > 990) return prefix + (size / 1024.0).ToString("F1") + "K" + unit;
+            return prefix + size.ToString() + unit;
+        }
+
+        /// <summary>
+        /// Gets the string of the file size.
+        /// </summary>
+        /// <param name="size">The file size.</param>
+        /// <param name="unit">The unit.</param>
+        /// <returns>A string.</returns>
+        public static string FileSize(ulong size, string unit = "B")
+        {
+            if (size > 1000000000000000000) return (size / 1152921504606846976.0).ToString("F1") + "E" + unit;
+            if (size > 1000000000000000) return (size / 1125899906842624.0).ToString("F1") + "P" + unit;
+            if (size > 1000000000000) return (size / 1099511627776.0).ToString("F1") + "T" + unit;
+            if (size > 1000000000) return (size / 1073741824.0).ToString("F1") + "G" + unit;
+            if (size > 1000000) return (size / 1048576.0).ToString("F1") + "M" + unit;
+            if (size > 990) return (size / 1024.0).ToString("F1") + "K" + unit;
+            return size.ToString() + unit;
+        }
+
+        /// <summary>
+        /// Creates a file info instance.
+        /// </summary>
+        /// <param name="file">The file path.</param>
+        /// <returns>A file info instance.</returns>
+        public static FileInfo CreateFileInfo(string file)
+        {
+            if (string.IsNullOrWhiteSpace(file)) return null;
+            try
+            {
+                return new FileInfo(file);
+            }
+            catch (UnauthorizedAccessException)
+            {
+            }
+            catch (IOException)
+            {
+            }
+            catch (ArgumentException)
+            {
+            }
+            catch (NotSupportedException)
+            {
+            }
+            catch (SecurityException)
+            {
+            }
+            catch (InvalidOperationException)
+            {
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// Gets the specific directory path.
+        /// </summary>
+        /// <param name="path">The path.</param>
+        /// <param name="path2">The second path to combine.</param>
+        /// <param name="path3">The third path to combine.</param>
+        /// <param name="path4">The forth path to combine.</param>
+        /// <returns>The path.</returns>
+        public static string GetLocalPath(string path, string path2 = null, string path3 = null, string path4 = null)
+        {
+            if (string.IsNullOrWhiteSpace(path)) return null;
+            if (!string.IsNullOrWhiteSpace(path2)) path = Path.Combine(path, path2);
+            if (!string.IsNullOrWhiteSpace(path3)) path = Path.Combine(path, path3);
+            if (!string.IsNullOrWhiteSpace(path4)) path = Path.Combine(path, path4);
+            if (path.IndexOf("%") != 0) return path;
+            var arr = new Dictionary<string, Environment.SpecialFolder>
+            {
+                { "appdata", Environment.SpecialFolder.ApplicationData },
+                { "localappdata", Environment.SpecialFolder.LocalApplicationData },
+                { "ProgramFiles", Environment.SpecialFolder.ProgramFiles },
+                { "ProgramFiles(x86)", Environment.SpecialFolder.ProgramFilesX86 },
+                { "CommonProgramFiles", Environment.SpecialFolder.CommonProgramFiles },
+                { "CommonProgramFiles(x86)", Environment.SpecialFolder.CommonProgramFilesX86 },
+                { "CommonProgramFilesW6432", Environment.SpecialFolder.CommonProgramFiles },
+                { "windir", Environment.SpecialFolder.Windows },
+                { "SystemRoot", Environment.SpecialFolder.Windows },
+                { "UserProfile", Environment.SpecialFolder.UserProfile }
+            };
+            var endSign = path.IndexOf("%\\", 2) - 1;
+            if (endSign < 3) return null;
+            var sign = path.Substring(1, endSign);
+            if (!arr.ContainsKey(sign)) return null;
+            try
+            {
+                return Environment.GetFolderPath(arr[sign]) + path.Substring(sign.Length + 2);
+            }
+            catch (ArgumentException)
+            {
+            }
+            catch (PlatformNotSupportedException)
+            {
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// Gets the log full file of web native.
+        /// </summary>
+        /// <returns>The file information instance.</returns>
+        public static DirectoryInfo GetLocalDir(string folder, string folderName = null, string folderName2 = null, string folderName3 = null)
+        {
+            var path = GetLocalPath(folder, folderName, folderName2, folderName3);
+            if (string.IsNullOrWhiteSpace(path)) return null;
+            try
+            {
+                return new DirectoryInfo(path);
+            }
+            catch (ArgumentException)
+            {
+            }
+            catch (SecurityException)
+            {
+            }
+            catch (UnauthorizedAccessException)
+            {
+            }
+            catch (NotSupportedException)
+            {
+            }
+            catch (InvalidOperationException)
+            {
+            }
+            catch (PathTooLongException)
+            {
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// Gets the log full file of web native.
+        /// </summary>
+        /// <returns>The file information instance.</returns>
+        public static FileInfo GetLocalFile(string fileName)
+        {
+            var path = GetLocalPath(fileName);
+            if (string.IsNullOrWhiteSpace(path)) return null;
+            path = Path.Combine(path, fileName);
+            return CreateFileInfo(path);
+        }
+
+        /// <summary>
+        /// Gets the log full file of web native.
+        /// </summary>
+        /// <returns>The file information instance.</returns>
+        public static FileInfo GetLocalFile(string folder, string fileName)
+        {
+            var path = GetLocalPath(folder);
+            if (string.IsNullOrWhiteSpace(path) || string.IsNullOrWhiteSpace(fileName)) return null;
+            path = Path.Combine(path, fileName);
+            return CreateFileInfo(path);
+        }
+
+    }
+}

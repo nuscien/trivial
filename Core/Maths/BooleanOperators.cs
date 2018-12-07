@@ -11,9 +11,9 @@
 namespace Trivial.Maths
 {
     /// <summary>
-    /// The utility for boolean operators.
+    /// The symbols for boolean operators.
     /// </summary>
-    public static class BooleanOperatorUtility
+    public static class BooleanSymbols
     {
         /// <summary>
         /// The operator sign of not.

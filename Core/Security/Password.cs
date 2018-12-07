@@ -11,6 +11,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security;
 using System.Text;
 
 namespace Trivial.Security
@@ -23,12 +24,12 @@ namespace Trivial.Security
         /// <summary>
         /// Gets or sets the new password.
         /// </summary>
-        public string NewPassword { get; set; }
+        public SecureString NewPassword { get; set; }
 
         /// <summary>
         /// Gets or sets the old password.
         /// </summary>
-        public string OldPassword { get; set; }
+        public SecureString OldPassword { get; set; }
 
         /// <summary>
         /// Gets or sets the owner identifier. Null for current user or default instance.

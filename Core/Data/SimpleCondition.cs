@@ -210,17 +210,17 @@ namespace Trivial.Data
             switch (op)
             {
                 case DbCompareOperator.Equal:
-                    return BooleanOperatorUtility.EqualSign;
+                    return BooleanSymbols.EqualSign;
                 case DbCompareOperator.Greater:
-                    return BooleanOperatorUtility.GreaterSign;
+                    return BooleanSymbols.GreaterSign;
                 case DbCompareOperator.GreaterOrEqual:
-                    return BooleanOperatorUtility.GreaterOrEqualSign;
+                    return BooleanSymbols.GreaterOrEqualSign;
                 case DbCompareOperator.Less:
-                    return BooleanOperatorUtility.LessSign;
+                    return BooleanSymbols.LessSign;
                 case DbCompareOperator.LessOrEqual:
-                    return BooleanOperatorUtility.LessOrEqualSign;
+                    return BooleanSymbols.LessOrEqualSign;
                 case DbCompareOperator.NotEqual:
-                    return BooleanOperatorUtility.NotEqualSign;
+                    return BooleanSymbols.NotEqualSign;
                 default:
                     return op.ToString();
             }

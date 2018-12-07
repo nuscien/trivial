@@ -23,49 +23,55 @@ namespace Trivial.Maths
         private const string ErrStr = "{0} should be less than 60, and greater than or equals 0.";
 
         /// <summary>
-        /// The unit of degree.
+        /// Angle symbols.
         /// </summary>
-        public const string DegreeUnit = "°";
+        public static class Symbols
+        {
+            /// <summary>
+            /// The unit of degree.
+            /// </summary>
+            public const string DegreeUnit = "°";
 
-        /// <summary>
-        /// The unit of arcminute.
-        /// </summary>
-        public const string ArcminuteUnit = @"'";
+            /// <summary>
+            /// The unit of arcminute.
+            /// </summary>
+            public const string ArcminuteUnit = @"'";
 
-        /// <summary>
-        /// The unit of arcsecond.
-        /// </summary>
-        public const string ArcsecondUnit = @"""";
+            /// <summary>
+            /// The unit of arcsecond.
+            /// </summary>
+            public const string ArcsecondUnit = @"""";
 
-        /// <summary>
-        /// The sign of angle.
-        /// </summary>
-        public const string Sign = "∠";
+            /// <summary>
+            /// The sign of angle.
+            /// </summary>
+            public const string Sign = "∠";
 
-        /// <summary>
-        /// The sign of right angle.
-        /// </summary>
-        public const string RightAngleSign = "∟";
+            /// <summary>
+            /// The sign of right angle.
+            /// </summary>
+            public const string RightAngleSign = "∟";
 
-        /// <summary>
-        /// The sign of radian.
-        /// </summary>
-        public const string RadianSign = "⌒";
+            /// <summary>
+            /// The sign of radian.
+            /// </summary>
+            public const string RadianSign = "⌒";
 
-        /// <summary>
-        /// The sign of circle center.
-        /// </summary>
-        public const string CircleCenterSign = "⊙";
+            /// <summary>
+            /// The sign of circle center.
+            /// </summary>
+            public const string CircleCenterSign = "⊙";
 
-        /// <summary>
-        /// The sign of triangle.
-        /// </summary>
-        public const string TriangleSign = "∆";
+            /// <summary>
+            /// The sign of triangle.
+            /// </summary>
+            public const string TriangleSign = "∆";
 
-        /// <summary>
-        /// The sign of right-angled triangle.
-        /// </summary>
-        public const string RightAngledTriangleSign = "⊿";
+            /// <summary>
+            /// The sign of right-angled triangle.
+            /// </summary>
+            public const string RightAngledTriangleSign = "⊿";
+        }
 
         /// <summary>
         /// The degree value.
@@ -372,12 +378,12 @@ namespace Trivial.Maths
 
             if (split.Length < 2)
             {
-                split = s.Split(new[] {DegreeUnit, ArcminuteUnit, ArcsecondUnit}, StringSplitOptions.RemoveEmptyEntries);
+                split = s.Split(new[] {Symbols.DegreeUnit, Symbols.ArcminuteUnit, Symbols.ArcsecondUnit }, StringSplitOptions.RemoveEmptyEntries);
             }
 
             if (split.Length < 2)
             {
-                var degrees = float.Parse(s.Replace(";", string.Empty).Replace(",", string.Empty).Replace(DegreeUnit, string.Empty).Replace(ArcminuteUnit, string.Empty).Replace(ArcsecondUnit, string.Empty));
+                var degrees = float.Parse(s.Replace(";", string.Empty).Replace(",", string.Empty).Replace(Symbols.DegreeUnit, string.Empty).Replace(Symbols.ArcminuteUnit, string.Empty).Replace(Symbols.ArcsecondUnit, string.Empty));
                 return new Angle { Degrees = degrees };
             }
 
@@ -641,7 +647,7 @@ namespace Trivial.Maths
         /// <returns>A System.String containing this angle.</returns>
         public override string ToString()
         {
-            return string.Format("{0}{1}{2}{3}{4}{5}{6}", Positive ? string.Empty : "-", _degree, DegreeUnit, Arcminute, ArcminuteUnit, Arcsecond, ArcsecondUnit);
+            return string.Format("{0}{1}{2}{3}{4}{5}{6}", Positive ? string.Empty : "-", _degree, Symbols.DegreeUnit, Arcminute, Symbols.ArcminuteUnit, Arcsecond, Symbols.ArcsecondUnit);
         }
     }
 }

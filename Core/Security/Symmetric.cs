@@ -10,6 +10,7 @@
 
 using System;
 using System.IO;
+using System.Security;
 using System.Security.Cryptography;
 using System.Text;
 
@@ -41,7 +42,7 @@ namespace Trivial.Security
             {
                 if (alg == null) return null;
                 alg.Key = key;
-                alg.IV = iv != null ? iv : key;
+                alg.IV = iv ?? key;
 
                 // Create a decrytor to perform the stream transform.
                 ICryptoTransform encryptor = alg.CreateEncryptor(alg.Key, alg.IV);
