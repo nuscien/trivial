@@ -1325,7 +1325,7 @@ namespace Trivial.Maths
         /// <summary>
         /// Number 200.
         /// </summary>
-        public string TwoHundred => "两" + HundredClass;
+        public string TwoHundred => (IsUpperCase ? Two : "两") + HundredClass;
 
         /// <summary>
         /// Number 500.
@@ -1340,7 +1340,7 @@ namespace Trivial.Maths
         /// <summary>
         /// Number 2,000.
         /// </summary>
-        public string TwoThousand => "两" + ThousandClass;
+        public string TwoThousand => (IsUpperCase ? Two : "两") + ThousandClass;
 
         /// <summary>
         /// Number 5,000.
@@ -1471,11 +1471,12 @@ namespace Trivial.Maths
                 }
             }
 
-            var result = str
+            if (IsUpperCase) return str.ToString();
+            str = str
                 .Replace(Two + HundredClass, TwoHundred)
                 .Replace(Two + ThousandClass, TwoThousand)
-                .Replace(Zero + Two + TenThousandClass, Zero + "两" + TenThousandClass)
-                .ToString();
+                .Replace(Zero + Two + TenThousandClass, Zero + "两" + TenThousandClass);
+            var result = str.ToString();
             return result.IndexOf(One + TenClass) == 0 ? result.Substring(1) : result;
         }
     }

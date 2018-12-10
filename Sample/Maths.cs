@@ -90,8 +90,8 @@ namespace Trivial.Sample
             ConsoleLine.End();
             WriteNumber(9876543210, Maths.Numbers.UpperCaseChinese);
             WriteNumber(2305843009213693951, Maths.Numbers.UpperCaseChinese);
-            WriteNumber(100000000000001, Maths.Numbers.Chinese);
-            WriteNumber(-9876543210, Maths.Numbers.Chinese);
+            WriteNumber(100000000000001, Maths.Numbers.UpperCaseChinese);
+            WriteNumber(-9876543210, Maths.Numbers.UpperCaseChinese);
             ConsoleLine.End(true);
         }
 
