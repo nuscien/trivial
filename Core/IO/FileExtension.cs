@@ -53,7 +53,7 @@ namespace Trivial.IO
         /// </summary>
         /// <param name="source">The source directory.</param>
         /// <param name="destPath">The destinate directory path.</param>
-        /// <returns>true if copy succeeded; otherwise, false.</returns>
+        /// <returns>The destination directory.</returns>
         public static Task<DirectoryInfo> CopyToAsync(this DirectoryInfo source, string destPath)
         {
             return Task.Run(() =>
@@ -68,7 +68,7 @@ namespace Trivial.IO
         /// <param name="source">The source directory.</param>
         /// <param name="destPath">The destinate directory path.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
-        /// <returns>true if copy succeeded; otherwise, false.</returns>
+        /// <returns>The destination directory.</returns>
         public static Task<DirectoryInfo> CopyToAsync(this DirectoryInfo source, string destPath, CancellationToken cancellationToken)
         {
             return Task.Run(() =>
@@ -226,7 +226,7 @@ namespace Trivial.IO
         /// Creates a file info instance.
         /// </summary>
         /// <param name="file">The file path.</param>
-        /// <returns>A file info instance.</returns>
+        /// <returns>A file info instance; or null, if failed.</returns>
         public static FileInfo TryCreateFileInfo(string file)
         {
             if (string.IsNullOrWhiteSpace(file)) return null;
@@ -315,7 +315,7 @@ namespace Trivial.IO
         /// <summary>
         /// Gets the log full file of web native.
         /// </summary>
-        /// <returns>The file information instance.</returns>
+        /// <returns>The file information instance; or null, if failed.</returns>
         public static DirectoryInfo TryGetLocalDir(string folder, string folderName = null, string folderName2 = null, string folderName3 = null)
         {
             var path = GetLocalPath(folder, folderName, folderName2, folderName3);
@@ -374,7 +374,7 @@ namespace Trivial.IO
         /// <summary>
         /// Gets the log full file of web native.
         /// </summary>
-        /// <returns>The file information instance.</returns>
+        /// <returns>The file information instance; or null, if failed.</returns>
         public static FileInfo TryGetLocalFile(string fileName)
         {
             var path = GetLocalPath(fileName);
@@ -386,7 +386,7 @@ namespace Trivial.IO
         /// <summary>
         /// Gets the log full file of web native.
         /// </summary>
-        /// <returns>The file information instance.</returns>
+        /// <returns>The file information instance; or null, if failed.</returns>
         public static FileInfo TryGetLocalFile(string folder, string fileName)
         {
             var path = GetLocalPath(folder);
