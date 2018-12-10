@@ -84,7 +84,7 @@ namespace Trivial.Maths
         {
             if (value < 2) return 1;
             var resultNum = (long)value;
-            for (long step = 2; step < value; step++)
+            for (uint step = 2; step < value; step++)
             {
                 resultNum *= step;
             }
@@ -96,37 +96,17 @@ namespace Trivial.Maths
         /// Gets a result of factorial for a specific number.
         /// </summary>
         /// <param name="value">A number to calculate.</param>
-        /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>A number of result.</returns>
-        public static async Task<long> FactorialAsync(uint value, CancellationToken cancellationToken)
+        public static double FactorialApproximate(uint value)
         {
             if (value < 2) return 1;
-            var resultNum = (long)value;
-            for (long i = 2; i < value;)
+            var resultNum = (double)value;
+            for (double step = 2; step < value; step++)
             {
-                cancellationToken.ThrowIfCancellationRequested();
-                var max = Math.Min(value, i + 1000000);
-                await Task.Run(() =>
-                {
-                    while (i < max)
-                    {
-                        resultNum *= i;
-                        i++;
-                    }
-                });
+                resultNum *= step;
             }
 
             return resultNum;
-        }
-
-        /// <summary>
-        /// Gets a result of factorial for a specific number.
-        /// </summary>
-        /// <param name="value">A number to calculate.</param>
-        /// <returns>A number of result.</returns>
-        public static Task<long> FactorialAsync(uint value)
-        {
-            return FactorialAsync(value, CancellationToken.None);
         }
 
         /// <summary>
@@ -154,75 +134,10 @@ namespace Trivial.Maths
         /// Gets a value indicating whether a number is a prime number.
         /// </summary>
         /// <param name="value">The value to test.</param>
-        /// <param name="cancellationToken">The cancellation token.</param>
-        /// <returns>true if it is a prime number; otherwise, false.</returns>
-        public static async Task<bool> IsPrimeAsync(uint value, CancellationToken cancellationToken)
-        {
-            if (value < 2 || value % 2 == 0 || value % 3 == 0 || value % 5 == 0 || value % 7 == 0 || value % 11 == 0 || value % 13 == 0 || value % 17 == 0 || value % 19 == 0) return false;
-            if (value <= 370) return true;
-            var sq = (uint)Math.Floor(Math.Sqrt(value));
-            for (uint i = 23; i < sq;)
-            {
-                cancellationToken.ThrowIfCancellationRequested();
-                var max = Math.Min(sq, i + 6000000L);
-                var isPrime = await Task.Run(() =>
-                {
-                    while (i < max)
-                    {
-                        if (value % i == 0) return false;
-                        i += 2;
-                        if (value % i == 0) return false;
-                        i += 4;
-                    }
-
-                    return true;
-                });
-
-                if (!isPrime) return false;
-            }
-
-            return true;
-        }
-
-        /// <summary>
-        /// Gets a value indicating whether a number is a prime number.
-        /// </summary>
-        /// <param name="value">The value to test.</param>
-        /// <returns>true if it is a prime number; otherwise, false.</returns>
-        public static Task<bool> IsPrimeAsync(uint value)
-        {
-            return IsPrimeAsync(value);
-        }
-
-        /// <summary>
-        /// Gets a value indicating whether a number is a prime number.
-        /// </summary>
-        /// <param name="value">The value to test.</param>
         /// <returns>true if it is a prime number; otherwise, false.</returns>
         public static bool IsPrime(int value)
         {
             return IsPrime((uint)Math.Abs(value));
-        }
-
-        /// <summary>
-        /// Gets a value indicating whether a number is a prime number.
-        /// </summary>
-        /// <param name="value">The value to test.</param>
-        /// <param name="cancellationToken">The cancellation token.</param>
-        /// <returns>true if it is a prime number; otherwise, false.</returns>
-        public static Task<bool> IsPrimeAsync(int value, CancellationToken cancellationToken)
-        {
-            return IsPrimeAsync((ulong)Math.Abs(value), cancellationToken);
-        }
-
-        /// <summary>
-        /// Gets a value indicating whether a number is a prime number.
-        /// </summary>
-        /// <param name="value">The value to test.</param>
-        /// <returns>true if it is a prime number; otherwise, false.</returns>
-        public static Task<bool> IsPrimeAsync(int value)
-        {
-            return IsPrimeAsync((ulong)Math.Abs(value), CancellationToken.None);
         }
 
         /// <summary>
@@ -260,7 +175,7 @@ namespace Trivial.Maths
             for (uint i = 23; i < sq;)
             {
                 cancellationToken.ThrowIfCancellationRequested();
-                var max = Math.Min(sq, i + 6000000L);
+                var max = Math.Min(sq, i + 30000000L);
                 var isPrime = await Task.Run(() =>
                 {
                     while (i < max)

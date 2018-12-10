@@ -109,7 +109,7 @@ namespace Trivial.Security
         /// </summary>
         /// <param name="plainText">The original input value to get hash.</param>
         /// <returns>A hash string value of the given string.</returns>
-        public static string GetSha512Hash(string plainText)
+        public static string GetSha512Hash(this string plainText)
         {
             // Create a new instance of the SHA512CryptoServiceProvider object.
             return GetHash(SHA512.Create, plainText);
@@ -158,6 +158,18 @@ namespace Trivial.Security
         }
 
         /// <summary>
+        /// Verifies a SHA1 hash against a string.
+        /// </summary>
+        /// <param name="plainText">The original input value to test.</param>
+        /// <param name="hash">A hash string for comparing.</param>
+        /// <returns>true if hash is a hash value of input; otherwise, false.</returns>
+        public static bool VerifySha1Hash(string plainText, string hash)
+        {
+            // Return the result after StringComparer comparing.
+            return 0 == StringComparer.OrdinalIgnoreCase.Compare(GetSha1Hash(plainText), hash?.ToUpper());
+        }
+
+        /// <summary>
         /// Verifies a SHA512 hash against a string.
         /// </summary>
         /// <param name="plainText">The original input value to test.</param>
@@ -166,7 +178,7 @@ namespace Trivial.Security
         public static bool VerifySha512Hash(string plainText, string hash)
         {
             // Return the result after StringComparer comparing.
-            return 0 == StringComparer.OrdinalIgnoreCase.Compare(GetMd5Hash(plainText), hash?.ToUpper());
+            return 0 == StringComparer.OrdinalIgnoreCase.Compare(GetSha512Hash(plainText), hash?.ToUpper());
         }
 
         /// <summary>
@@ -194,17 +206,6 @@ namespace Trivial.Security
             return alg != null ?
                 StringComparer.OrdinalIgnoreCase.Equals(GetHash(alg, plainText), hash?.ToUpper()) :
                 StringComparer.OrdinalIgnoreCase.Equals(plainText, hash);
-        }
-
-        /// <summary>
-        /// Gets the SHA512 hash string value of the string instance.
-        /// </summary>
-        /// <param name="plainText">The original input value to get hash.</param>
-        /// <returns>A hash string value of the given string.</returns>
-        public static string Sha512HashString(this string plainText)
-        {
-            // Get hash string.
-            return GetHash(SHA512.Create, plainText);
         }
     }
 }

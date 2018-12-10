@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Security;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Trivial.IO
@@ -17,13 +18,34 @@ namespace Trivial.IO
         /// </summary>
         /// <param name="source">The source directory.</param>
         /// <param name="destPath">The destinate directory path.</param>
-        /// <returns>true if copy succeeded; otherwise, false.</returns>
-        public static Task<bool> CopyToAsync(this DirectoryInfo source, string destPath)
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>The destination directory.</returns>
+        private static DirectoryInfo CopyTo(DirectoryInfo source, string destPath, CancellationToken cancellationToken)
         {
-            return Task.Run(() =>
+            foreach (var item in source.GetFiles())
             {
-                return CopyTo(source, destPath);
-            });
+                item.CopyTo(Path.Combine(destPath, item.Name), true);
+            }
+
+            cancellationToken.ThrowIfCancellationRequested();
+            foreach (var item in source.GetDirectories())
+            {
+                source = item;
+                CopyTo(item, Path.Combine(destPath, item.Name), cancellationToken);
+            }
+
+            return new DirectoryInfo(destPath);
+        }
+
+        /// <summary>
+        /// Copies the directory.
+        /// </summary>
+        /// <param name="source">The source directory.</param>
+        /// <param name="destPath">The destinate directory path.</param>
+        /// <returns>The destination directory.</returns>
+        public static DirectoryInfo CopyTo(this DirectoryInfo source, string destPath)
+        {
+            return CopyTo(source, destPath, CancellationToken.None);
         }
 
         /// <summary>
@@ -32,7 +54,37 @@ namespace Trivial.IO
         /// <param name="source">The source directory.</param>
         /// <param name="destPath">The destinate directory path.</param>
         /// <returns>true if copy succeeded; otherwise, false.</returns>
-        public static bool CopyTo(this DirectoryInfo source, string destPath)
+        public static Task<DirectoryInfo> CopyToAsync(this DirectoryInfo source, string destPath)
+        {
+            return Task.Run(() =>
+            {
+                return CopyTo(source, destPath, CancellationToken.None);
+            });
+        }
+
+        /// <summary>
+        /// Copies the directory.
+        /// </summary>
+        /// <param name="source">The source directory.</param>
+        /// <param name="destPath">The destinate directory path.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>true if copy succeeded; otherwise, false.</returns>
+        public static Task<DirectoryInfo> CopyToAsync(this DirectoryInfo source, string destPath, CancellationToken cancellationToken)
+        {
+            return Task.Run(() =>
+            {
+                return CopyTo(source, destPath, cancellationToken);
+            });
+        }
+
+        /// <summary>
+        /// Copies the directory.
+        /// </summary>
+        /// <param name="source">The source directory.</param>
+        /// <param name="destPath">The destinate directory path.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>true if copy succeeded; otherwise, false.</returns>
+        private static bool TryCopyTo(DirectoryInfo source, string destPath, CancellationToken cancellationToken)
         {
             try
             {
@@ -47,10 +99,11 @@ namespace Trivial.IO
                     item.CopyTo(Path.Combine(destPath, item.Name), true);
                 }
 
+                cancellationToken.ThrowIfCancellationRequested();
                 foreach (var item in source.GetDirectories())
                 {
                     source = item;
-                    CopyTo(item, Path.Combine(destPath, item.Name));
+                    TryCopyTo(item, Path.Combine(destPath, item.Name), cancellationToken);
                 }
 
                 return true;
@@ -76,6 +129,47 @@ namespace Trivial.IO
 
             return false;
         }
+
+        /// <summary>
+        /// Copies the directory.
+        /// </summary>
+        /// <param name="source">The source directory.</param>
+        /// <param name="destPath">The destinate directory path.</param>
+        /// <returns>true if copy succeeded; otherwise, false.</returns>
+        public static bool TryCopyTo(this DirectoryInfo source, string destPath)
+        {
+            return TryCopyTo(source, destPath, CancellationToken.None);
+        }
+
+        /// <summary>
+        /// Copies the directory.
+        /// </summary>
+        /// <param name="source">The source directory.</param>
+        /// <param name="destPath">The destinate directory path.</param>
+        /// <returns>true if copy succeeded; otherwise, false.</returns>
+        public static Task<bool> TryCopyToAsync(this DirectoryInfo source, string destPath)
+        {
+            return Task.Run(() =>
+            {
+                return TryCopyTo(source, destPath, CancellationToken.None);
+            });
+        }
+
+        /// <summary>
+        /// Copies the directory.
+        /// </summary>
+        /// <param name="source">The source directory.</param>
+        /// <param name="destPath">The destinate directory path.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>true if copy succeeded; otherwise, false.</returns>
+        public static Task<bool> TryCopyToAsync(this DirectoryInfo source, string destPath, CancellationToken cancellationToken)
+        {
+            return Task.Run(() =>
+            {
+                return TryCopyTo(source, destPath, cancellationToken);
+            });
+        }
+
         /// <summary>
         /// Gets the string of the file size.
         /// </summary>
@@ -133,7 +227,7 @@ namespace Trivial.IO
         /// </summary>
         /// <param name="file">The file path.</param>
         /// <returns>A file info instance.</returns>
-        public static FileInfo CreateFileInfo(string file)
+        public static FileInfo TryCreateFileInfo(string file)
         {
             if (string.IsNullOrWhiteSpace(file)) return null;
             try
@@ -215,6 +309,16 @@ namespace Trivial.IO
         public static DirectoryInfo GetLocalDir(string folder, string folderName = null, string folderName2 = null, string folderName3 = null)
         {
             var path = GetLocalPath(folder, folderName, folderName2, folderName3);
+            return new DirectoryInfo(path);
+        }
+
+        /// <summary>
+        /// Gets the log full file of web native.
+        /// </summary>
+        /// <returns>The file information instance.</returns>
+        public static DirectoryInfo TryGetLocalDir(string folder, string folderName = null, string folderName2 = null, string folderName3 = null)
+        {
+            var path = GetLocalPath(folder, folderName, folderName2, folderName3);
             if (string.IsNullOrWhiteSpace(path)) return null;
             try
             {
@@ -249,9 +353,9 @@ namespace Trivial.IO
         public static FileInfo GetLocalFile(string fileName)
         {
             var path = GetLocalPath(fileName);
-            if (string.IsNullOrWhiteSpace(path)) return null;
+            if (string.IsNullOrWhiteSpace(path)) throw new ArgumentNullException(nameof(fileName));
             path = Path.Combine(path, fileName);
-            return CreateFileInfo(path);
+            return new FileInfo(path);
         }
 
         /// <summary>
@@ -261,10 +365,34 @@ namespace Trivial.IO
         public static FileInfo GetLocalFile(string folder, string fileName)
         {
             var path = GetLocalPath(folder);
-            if (string.IsNullOrWhiteSpace(path) || string.IsNullOrWhiteSpace(fileName)) return null;
+            if (string.IsNullOrWhiteSpace(path)) throw new ArgumentNullException(nameof(folder));
+            if (string.IsNullOrWhiteSpace(fileName)) throw new ArgumentNullException(nameof(fileName));
             path = Path.Combine(path, fileName);
-            return CreateFileInfo(path);
+            return new FileInfo(path);
         }
 
+        /// <summary>
+        /// Gets the log full file of web native.
+        /// </summary>
+        /// <returns>The file information instance.</returns>
+        public static FileInfo TryGetLocalFile(string fileName)
+        {
+            var path = GetLocalPath(fileName);
+            if (string.IsNullOrWhiteSpace(path)) return null;
+            path = Path.Combine(path, fileName);
+            return TryCreateFileInfo(path);
+        }
+
+        /// <summary>
+        /// Gets the log full file of web native.
+        /// </summary>
+        /// <returns>The file information instance.</returns>
+        public static FileInfo TryGetLocalFile(string folder, string fileName)
+        {
+            var path = GetLocalPath(folder);
+            if (string.IsNullOrWhiteSpace(path) || string.IsNullOrWhiteSpace(fileName)) return null;
+            path = Path.Combine(path, fileName);
+            return TryCreateFileInfo(path);
+        }
     }
 }

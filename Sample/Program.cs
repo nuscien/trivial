@@ -10,6 +10,7 @@ namespace Trivial.Sample
             var dispatcher = new Dispatcher();
             dispatcher.Register<SelectionVerb>("selection");
             dispatcher.Register<HitTasksVerb>("hittask");
+            dispatcher.Register<MathsVerb>("maths");
             dispatcher.RegisterHelp();
             dispatcher.RegisterExit();
             if (args.Length > 0)
@@ -18,7 +19,7 @@ namespace Trivial.Sample
             }
             else
             {
-                System.Console.WriteLine("Type 'help' to get help");
+                System.Console.WriteLine("Type 'help' to get help.");
                 dispatcher.Process(true);
                 System.Console.WriteLine("Bye!");
             }

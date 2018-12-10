@@ -772,6 +772,11 @@ namespace Trivial.Maths
         public string OneHundred => "a hundred";
 
         /// <summary>
+        /// Number 200.
+        /// </summary>
+        public string TwoHundred => "two hundred";
+
+        /// <summary>
         /// Number 500.
         /// </summary>
         public string FiveHundred => "five hundred";
@@ -780,6 +785,11 @@ namespace Trivial.Maths
         /// Number 1,000.
         /// </summary>
         public string OneThousand => "a thousand";
+
+        /// <summary>
+        /// Number 2,000.
+        /// </summary>
+        public string TwoThousand => "two thousand";
 
         /// <summary>
         /// Number 5,000.
@@ -855,7 +865,7 @@ namespace Trivial.Maths
         public string ToString(long number, bool digitOnly = false)
         {
             var prefix = number < 0 ? (NegativeSign + " ") : string.Empty;
-            return prefix + ToString((ulong)number, digitOnly);
+            return prefix + ToString((ulong)Math.Abs(number), digitOnly);
         }
 
         /// <summary>
@@ -870,20 +880,34 @@ namespace Trivial.Maths
             if (digitOnly)
             {
                 var numStr = number.ToString();
-                for (var i = 0; i < numStr.Length - 1; i++)
+                if (numStr.Length < 6) return GetAllDigitsString(number.ToString(), 6);
+                if (numStr.Length == 6 || numStr.Length == 9) return GetAllDigitsString(number.ToString(), 3);
+                switch (numStr.Length % 4)
                 {
-                    str.Append(GetDigitString(int.Parse(numStr[i].ToString())));
-                    if (i % 3 == 0) str.Append(", ");
-                    else str.Append(" ");
+                    case 2:
+                        return string.Format("{0}, {1}, {2}",
+                            GetAllDigitsString(numStr.Substring(0, 3), 3),
+                            GetAllDigitsString(numStr.Substring(3, numStr.Length - 6), 4),
+                            GetAllDigitsString(numStr.Substring(numStr.Length - 3), 3));
+                    case 3:
+                        return GetAllDigitsString(numStr.Substring(0, 3), 3) + ", " + GetAllDigitsString(numStr.Substring(4), 4);
+                    default:
+                        return GetAllDigitsString(numStr, 4);
                 }
-
-                str.Append(numStr[numStr.Length - 1]);
-                return str.ToString();
             }
 
             if (number < 1000)
             {
                 if (number == 100) return OneHundred;
+                var remainder = number % 100;
+                if (remainder > 10)
+                {
+                    var a = (int)(number - remainder) / 100;
+                    if (a > 0) str.Append(GetDigitString(a) + " ");
+                    str.Append(Get2DigitsString((int)remainder));
+                    return str.ToString();
+                }
+
                 return Get3DigitsString((int)number);
             }
 
@@ -895,10 +919,23 @@ namespace Trivial.Maths
                     return GetDigitString((int)number / 1000) + " " + ThousandClass;
                 }
 
-                var a = number % 100;
-                var b = number - a;
-                str.Append(a % 10 == 0 ? (GetDigitString((int)a) + " k") : Get2DigitsString((int)a));
-                str.Append(b < 10 ? " and " : " ");
+                var b = number % 100;
+                var a = (number - b) / 100;
+                if (a == 10)
+                {
+                    str.Append(OneThousand + " and ");
+                }
+                else if (a % 10 > 0)
+                {
+                    str.Append(Get2DigitsString((int)a));
+                    str.Append(b < 10 ? " zero " : " ");
+                }
+                else
+                {
+                    str.Append(GetDigitString((int)a / 10) + " k");
+                    str.Append(b < 10 ? " and " : " ");
+                }
+
                 str.Append(Get2DigitsString((int)b));
                 return str.ToString();
             }
@@ -906,14 +943,15 @@ namespace Trivial.Maths
             if (number >= 1_000_000_000_000_000)
             {
                 var numStr = number.ToString();
-                for (var i = 0; i < numStr.Length - 1; i++)
+                var last = numStr.Length - 1;
+                for (var i = 0; i < last; i++)
                 {
-                    str.Append(GetDigitString(int.Parse(numStr[i].ToString())));
+                    str.Append(GetDigitString(numStr, i));
                     if ((numStr.Length - i) % 3 == 1) str.Append(", ");
                     else str.Append(" ");
                 }
 
-                str.Append(numStr[numStr.Length - 1]);
+                str.Append(GetDigitString(numStr, last));
                 return str.ToString();
             }
 
@@ -921,14 +959,23 @@ namespace Trivial.Maths
             var highNum = number;
             while (highNum > 0)
             {
-                var remainder = number % 1000;
-                arr.Add(Get3DigitsString((int)remainder));
-                highNum = (number - remainder) / 1000;
+                var remainder = highNum % 1000;
+                highNum = (highNum - remainder) / 1000;
+                if (remainder == 0)
+                {
+                    arr.Add(string.Empty);
+                    continue;
+                }
+
+                var partStr = Get3DigitsString((int)remainder);
+                if (remainder < 100 && highNum > 0) partStr = "and " + partStr;
+                arr.Add(partStr);
             }
 
             for (var i = arr.Count - 1; i > 0; i--)
             {
                 var item = arr[i];
+                if (string.IsNullOrWhiteSpace(item)) continue;
                 str.Append(item);
                 str.Append(" ");
                 switch (i)
@@ -1042,13 +1089,14 @@ namespace Trivial.Maths
                     str = Thirty;
                     break;
                 case 2:
-                    str = Twelve;
+                    str = Twenty;
                     break;
                 default:
                     return string.Empty;
             }
 
-            return str + "-" + GetDigitString(remainder);
+            if (remainder > 0) str += "-" + GetDigitString(remainder);
+            return str;
         }
 
         private string Get3DigitsString(int number)
@@ -1061,8 +1109,29 @@ namespace Trivial.Maths
             str.Append(HundredClass);
             if (remainder == 0) return str.ToString();
             str.Append(" and ");
-            str.Append(Get2DigitsString(number));
+            str.Append(Get2DigitsString(remainder));
             return str.ToString();
+        }
+
+        private string GetAllDigitsString(string number, int count)
+        {
+            var str = new StringBuilder();
+            var last = number.Length - 1;
+            var split = count - 1;
+            for (var i = 0; i < last; i++)
+            {
+                str.Append(GetDigitString(number, i));
+                if (i % count == split) str.Append(", ");
+                else str.Append(" ");
+            }
+
+            str.Append(GetDigitString(number, last));
+            return str.ToString();
+        }
+
+        private string GetDigitString(string number, int index)
+        {
+            return GetDigitString(int.Parse(number[index].ToString()));
         }
     }
 
@@ -1254,6 +1323,11 @@ namespace Trivial.Maths
         public string OneHundred => One + HundredClass;
 
         /// <summary>
+        /// Number 200.
+        /// </summary>
+        public string TwoHundred => "两" + HundredClass;
+
+        /// <summary>
         /// Number 500.
         /// </summary>
         public string FiveHundred => Five + HundredClass;
@@ -1262,6 +1336,11 @@ namespace Trivial.Maths
         /// Number 1,000.
         /// </summary>
         public string OneThousand => One + ThousandClass;
+
+        /// <summary>
+        /// Number 2,000.
+        /// </summary>
+        public string TwoThousand => "两" + ThousandClass;
 
         /// <summary>
         /// Number 5,000.
@@ -1321,7 +1400,7 @@ namespace Trivial.Maths
         public string ToString(long number, bool digitOnly = false)
         {
             var prefix = number < 0 ? NegativeSign : string.Empty;
-            return prefix + ToString((ulong)number, digitOnly);
+            return prefix + ToString((ulong)Math.Abs(number), digitOnly);
         }
 
         /// <summary>
@@ -1373,12 +1452,15 @@ namespace Trivial.Maths
                     }
 
                     str.Append(digits[int.Parse(c)]);
-                    var j = i % 4;
+                    var j = 3 - i % 4;
                     if (j > 0) str.Append(digits[9 + j]);
                 }
 
-                if (i % 4 != 1) continue;
+                if (i % 4 != 3 || i == num.Length - 1) continue;
+                classPos--;
                 isZero = false;
+                var lastChar = str[str.Length - 1];
+                if (lastChar == digits[13] || lastChar == digits[14]) continue;
                 if (classPos % 2 == 1)
                 {
                     str.Append(digits[13]);
@@ -1387,11 +1469,14 @@ namespace Trivial.Maths
                 {
                     str.Append(digits[14], classPos / 2);
                 }
-
-                classPos--;
             }
 
-            return str.ToString();
+            var result = str
+                .Replace(Two + HundredClass, TwoHundred)
+                .Replace(Two + ThousandClass, TwoThousand)
+                .Replace(Zero + Two + TenThousandClass, Zero + "两" + TenThousandClass)
+                .ToString();
+            return result.IndexOf(One + TenClass) == 0 ? result.Substring(1) : result;
         }
     }
 
@@ -1579,27 +1664,27 @@ namespace Trivial.Maths
         /// <summary>
         /// Roman number digits.
         /// </summary>
-        public static readonly RomanNumber RomanNumbers = new RomanNumber();
+        public static readonly RomanNumber Roman = new RomanNumber();
 
         /// <summary>
         /// Roman number digits.
         /// </summary>
-        public static readonly RomanNumber LowerCaseRomanNumbers = new RomanNumber(true);
+        public static readonly RomanNumber LowerCaseRoman = new RomanNumber(true);
 
         /// <summary>
         /// English number digits.
         /// </summary>
-        public static readonly EnglishNumber EnglishNumbers = new EnglishNumber();
+        public static readonly EnglishNumber English = new EnglishNumber();
 
         /// <summary>
         /// Chinese number digits.
         /// </summary>
-        public static readonly ChineseNumber ChineseNumbers = new ChineseNumber();
+        public static readonly ChineseNumber Chinese = new ChineseNumber();
 
         /// <summary>
         /// Chinese number digits.
         /// </summary>
-        public static readonly ChineseNumber UpperCaseChineseNumbers = new ChineseNumber(true);
+        public static readonly ChineseNumber UpperCaseChinese = new ChineseNumber(true);
 
         /// <summary>
         /// Gets the string of a specific number.
