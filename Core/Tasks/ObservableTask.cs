@@ -74,12 +74,7 @@ namespace Trivial.Tasks
         /// <summary>
         /// The result cache.
         /// </summary>
-        private T result = default(T);
-
-        /// <summary>
-        /// The progress in percent.
-        /// </summary>
-        private double progress = 0;
+        private T result = default;
 
         /// <summary>
         /// The exception.
@@ -132,22 +127,9 @@ namespace Trivial.Tasks
         public bool IsFailed => State == TaskState.Faulted;
 
         /// <summary>
-        /// Gets the progress in percent.
+        /// Gets the progress from 0 to 1.
         /// </summary>
-        public double Progress
-        {
-            get
-            {
-                return progress;
-            }
-
-            protected set
-            {
-                if (value < 0) progress = 0;
-                else if (value > 100) progress = 100;
-                else progress = value;
-            }
-        }
+        public Progress<double> Progress { get; } = new Progress<double>();
 
         /// <summary>
         /// Gets whether cancellation has been requested for this System.Threading.CancellationTokenSource.
@@ -288,12 +270,29 @@ namespace Trivial.Tasks
         protected abstract Task<T> OnProcessAsync();
 
         /// <summary>
+        /// Reports progress.
+        /// </summary>
+        /// <param name="value">The value. Should be [0, 1]; or [0, total], if argument total is set.</param>
+        /// <param name="total">Optional total value. Default is 1.</param>
+        /// <returns>The value set.</returns>
+        protected double ReportProgress(double value, double total = 1)
+        {
+            value = value / total;
+            var progress = Progress as IProgress<double>;
+            if (value < 0) value = 0;
+            else if (value > 1) value = 1;
+            progress.Report(value);
+            return value;
+        }
+
+        /// <summary>
         /// Processes.
         /// </summary>
         /// <returns>The processing task instance.</returns>
         private async Task<T> ProcessImplAsync()
         {
             ThrowIfCancellationRequested();
+            ReportProgress(0);
             try
             {
                 OnInitAsync();
@@ -348,7 +347,7 @@ namespace Trivial.Tasks
             }
 
             State = TaskState.Done;
-            progress = 100;
+            ReportProgress(1);
             Finished?.Invoke(this, new ResultEventArgs<T>(result));
             return result;
         }

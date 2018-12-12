@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace Trivial.IO
 {
     /// <summary>
-    /// The class for prime number.
+    /// File extension.
     /// </summary>
     public static class FileExtension
     {
@@ -18,9 +18,9 @@ namespace Trivial.IO
         /// </summary>
         /// <param name="source">The source directory.</param>
         /// <param name="destPath">The destinate directory path.</param>
-        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <param name="cancellationToken">The optional cancellation token.</param>
         /// <returns>The destination directory.</returns>
-        private static DirectoryInfo CopyTo(DirectoryInfo source, string destPath, CancellationToken cancellationToken)
+        private static DirectoryInfo CopyTo(DirectoryInfo source, string destPath, CancellationToken cancellationToken = default)
         {
             foreach (var item in source.GetFiles())
             {
@@ -43,6 +43,12 @@ namespace Trivial.IO
         /// <param name="source">The source directory.</param>
         /// <param name="destPath">The destinate directory path.</param>
         /// <returns>The destination directory.</returns>
+        /// <exception cref="ArgumentNullException">The argument is null.</exception>
+        /// <exception cref="ArgumentException">The argument is invalid.</exception>
+        /// <exception cref="SecurityException">The caller does not have the required permission.</exception>
+        /// <exception cref="IOException">An I/O error.</exception>
+        /// <exception cref="DirectoryNotFoundException">The specified path is invalid, such as being on an unmapped drive.</exception>
+        /// <exception cref="NotSupportedException">The path of the file refers to a non-file device, such as "con:", "com1:", "lpt1:".</exception>
         public static DirectoryInfo CopyTo(this DirectoryInfo source, string destPath)
         {
             return CopyTo(source, destPath, CancellationToken.None);
@@ -53,23 +59,15 @@ namespace Trivial.IO
         /// </summary>
         /// <param name="source">The source directory.</param>
         /// <param name="destPath">The destinate directory path.</param>
+        /// <param name="cancellationToken">The opitional cancellation token.</param>
         /// <returns>The destination directory.</returns>
-        public static Task<DirectoryInfo> CopyToAsync(this DirectoryInfo source, string destPath)
-        {
-            return Task.Run(() =>
-            {
-                return CopyTo(source, destPath, CancellationToken.None);
-            });
-        }
-
-        /// <summary>
-        /// Copies the directory.
-        /// </summary>
-        /// <param name="source">The source directory.</param>
-        /// <param name="destPath">The destinate directory path.</param>
-        /// <param name="cancellationToken">The cancellation token.</param>
-        /// <returns>The destination directory.</returns>
-        public static Task<DirectoryInfo> CopyToAsync(this DirectoryInfo source, string destPath, CancellationToken cancellationToken)
+        /// <exception cref="ArgumentNullException">The argument is null.</exception>
+        /// <exception cref="ArgumentException">The argument is invalid.</exception>
+        /// <exception cref="SecurityException">The caller does not have the required permission.</exception>
+        /// <exception cref="IOException">An I/O error.</exception>
+        /// <exception cref="DirectoryNotFoundException">The specified path is invalid, such as being on an unmapped drive.</exception>
+        /// <exception cref="NotSupportedException">The path of the file refers to a non-file device, such as "con:", "com1:", "lpt1:".</exception>
+        public static Task<DirectoryInfo> CopyToAsync(this DirectoryInfo source, string destPath, CancellationToken cancellationToken = default)
         {
             return Task.Run(() =>
             {
@@ -146,23 +144,9 @@ namespace Trivial.IO
         /// </summary>
         /// <param name="source">The source directory.</param>
         /// <param name="destPath">The destinate directory path.</param>
+        /// <param name="cancellationToken">The optional cancellation token.</param>
         /// <returns>true if copy succeeded; otherwise, false.</returns>
-        public static Task<bool> TryCopyToAsync(this DirectoryInfo source, string destPath)
-        {
-            return Task.Run(() =>
-            {
-                return TryCopyTo(source, destPath, CancellationToken.None);
-            });
-        }
-
-        /// <summary>
-        /// Copies the directory.
-        /// </summary>
-        /// <param name="source">The source directory.</param>
-        /// <param name="destPath">The destinate directory path.</param>
-        /// <param name="cancellationToken">The cancellation token.</param>
-        /// <returns>true if copy succeeded; otherwise, false.</returns>
-        public static Task<bool> TryCopyToAsync(this DirectoryInfo source, string destPath, CancellationToken cancellationToken)
+        public static Task<bool> TryCopyToAsync(this DirectoryInfo source, string destPath, CancellationToken cancellationToken = default)
         {
             return Task.Run(() =>
             {
@@ -306,6 +290,10 @@ namespace Trivial.IO
         /// Gets the log full file of web native.
         /// </summary>
         /// <returns>The file information instance.</returns>
+        /// <exception cref="ArgumentNullException">The argument is null.</exception>
+        /// <exception cref="ArgumentException">The argument is invalid.</exception>
+        /// <exception cref="SecurityException">The caller does not have the required permission.</exception>
+        /// <exception cref="NotSupportedException">The path of the file refers to a non-file device, such as "con:", "com1:", "lpt1:".</exception>
         public static DirectoryInfo GetLocalDir(string folder, string folderName = null, string folderName2 = null, string folderName3 = null)
         {
             var path = GetLocalPath(folder, folderName, folderName2, folderName3);
@@ -350,6 +338,10 @@ namespace Trivial.IO
         /// Gets the log full file of web native.
         /// </summary>
         /// <returns>The file information instance.</returns>
+        /// <exception cref="ArgumentNullException">The argument is null.</exception>
+        /// <exception cref="ArgumentException">The argument is invalid.</exception>
+        /// <exception cref="SecurityException">The caller does not have the required permission.</exception>
+        /// <exception cref="NotSupportedException">The path of the file refers to a non-file device, such as "con:", "com1:", "lpt1:".</exception>
         public static FileInfo GetLocalFile(string fileName)
         {
             var path = GetLocalPath(fileName);
@@ -362,6 +354,10 @@ namespace Trivial.IO
         /// Gets the log full file of web native.
         /// </summary>
         /// <returns>The file information instance.</returns>
+        /// <exception cref="ArgumentNullException">The argument is null.</exception>
+        /// <exception cref="ArgumentException">The argument is invalid.</exception>
+        /// <exception cref="SecurityException">The caller does not have the required permission.</exception>
+        /// <exception cref="NotSupportedException">The path of the file refers to a non-file device, such as "con:", "com1:", "lpt1:".</exception>
         public static FileInfo GetLocalFile(string folder, string fileName)
         {
             var path = GetLocalPath(folder);

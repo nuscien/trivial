@@ -77,7 +77,7 @@ Arithmetic.IsPrime(2147483647); // True
 Arithmetic.IsPrime(21474836479); // False
 await Arithmetic.IsPrimeAsync(2305843009213693951); // False
 
-Maths.Arithmetic.Factorial(10); // 3628800
+Arithmetic.Factorial(10); // 3628800
 ```
 
 ## Numbers
@@ -87,27 +87,26 @@ You can get the number symbols as you want.
 You can also get the number string in English words.
 
 ```csharp
-Maths.Numbers.English.ToString(12345);
-// twelve thousand three hundred and forty-five
+EnglishNumber.Default.ToString(12345.67);
+// twelve thousand three hundred and forty-five point six seven
 
-Maths.Numbers.English.ToString(12345, true);
+EnglishNumber.Default.ToString(12345, true);
 // one two three four five
 ```
 
 And also for Chinese.
 
 ```csharp
-Maths.Numbers.Chinese.ToString(12345);
-// 一万两千三百四十五
+ChineseNumber.Simplified.ToString(12345.67);
+// 一万两千三百四十五点六七
 
-Maths.Numbers.Chinese.ToString(12345, true);
+ChineseNumber.Simplified.ToString(12345, true);
 // 一二三四五
 
-Maths.Numbers.UpperCaseChinese.ToString(12345);
+ChineseNumber.SimplifiedUppercase.ToString(12345);
 // 壹萬贰仟叄佰肆拾伍
 
 ```
-
 
 # Security
 

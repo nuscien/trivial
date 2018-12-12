@@ -46,11 +46,45 @@ namespace Trivial.Tasks
         public IReadOnlyList<DateTime> ProcessTime => list.AsReadOnly();
 
         /// <summary>
+        /// Gets or sets a value indicating whether enable the retry policy.
+        /// </summary>
+        public bool IsEnabled { get; set; } = true;
+
+        /// <summary>
+        /// Tests whether need retry.
+        /// </summary>
+        /// <returns>true if need retry; otherwise, false.</returns>
+        /// <remarks>Strongly suggest call Next() member method directly and test if the value returned has value.</remarks>
+        public bool Need()
+        {
+            if (!IsEnabled) return false;
+            try
+            {
+                return GetNextSpan().HasValue;
+            }
+            catch (InvalidOperationException)
+            {
+            }
+            catch (ArgumentException)
+            {
+            }
+            catch (NullReferenceException)
+            {
+            }
+            catch (IndexOutOfRangeException)
+            {
+            }
+
+            return false;
+        }
+
+        /// <summary>
         /// Gets the waiting time span for next retry; or null, if no more retry.
         /// </summary>
         /// <returns>A time span for next retry; or null, if no more retry.</returns>
         public TimeSpan? Next()
         {
+            if (!IsEnabled) return null;
             try
             {
                 var span = GetNextSpan();

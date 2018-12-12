@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="MultipleElements.cs" company="Nanchang Jinchen Software Co., Ltd.">
+// <copyright file="Interval.cs" company="Nanchang Jinchen Software Co., Ltd.">
 //   Copyright (c) 2010 Nanchang Jinchen Software Co., Ltd. All rights reserved.
 // </copyright>
 // <summary>
@@ -475,8 +475,8 @@ namespace Trivial.Maths
         /// <returns>A System.String containing this interval.</returns>
         public override string ToString()
         {
-            var leftStr = LeftBounded ? MinValue.ToString() : Numbers.Symbols.NegativeInfiniteSymbol;
-            var rightStr = RightBounded ? MaxValue.ToString() : Numbers.Symbols.PositiveInfiniteSymbol;
+            var leftStr = LeftBounded ? MinValue.ToString() : NumberSymbols.NegativeInfiniteSymbol;
+            var rightStr = RightBounded ? MaxValue.ToString() : NumberSymbols.PositiveInfiniteSymbol;
             var longStr = string.Format("{0} - {1}", leftStr, rightStr);
             var sep = false;
             if (longStr.IndexOfAny(new[] { ',', ';' }) > -1) sep = true;

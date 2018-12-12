@@ -17,6 +17,8 @@ namespace Trivial.Sample
             ConsoleLine.End();
             WriteIsPrime(524287);
             WriteIsPrime(524291);
+            System.Console.WriteLine("Next prime of 256 is {0}.", await Maths.Arithmetic.NextPrimeAsync(256));
+            System.Console.WriteLine("Previous prime of 256 is {0}.", await Maths.Arithmetic.PreviousPrimeAsync(256));
             await WriteIsPrimeAsync(2147483647, CancellationToken.None);
             await WriteIsPrimeAsync(21474836479, CancellationToken.None);
             try
@@ -42,56 +44,94 @@ namespace Trivial.Sample
             // English numbers.
             ConsoleLine.Write(ConsoleColor.Magenta, "English numbers");
             ConsoleLine.End();
-            WriteNumber(9876543210, Maths.Numbers.English);
-            WriteNumber(2305843009213693951, Maths.Numbers.English);
-            WriteNumber(1000000001, Maths.Numbers.English);
-            WriteNumber(10086, Maths.Numbers.English);
-            WriteNumber(9000, Maths.Numbers.English);
-            WriteNumber(2018, Maths.Numbers.English);
-            WriteNumber(2004, Maths.Numbers.English);
-            WriteNumber(1999, Maths.Numbers.English);
-            WriteNumber(1024, Maths.Numbers.English);
-            WriteNumber(1000, Maths.Numbers.English);
-            WriteNumber(240, Maths.Numbers.English);
-            WriteNumber(101, Maths.Numbers.English);
-            WriteNumber(100, Maths.Numbers.English);
-            WriteNumber(17, Maths.Numbers.English);
-            WriteNumber(10, Maths.Numbers.English);
-            WriteNumber(7, Maths.Numbers.English);
-            WriteNumber(0, Maths.Numbers.English);
-            WriteNumber(-12345, Maths.Numbers.English);
+            WriteNumber(9876543210, Maths.EnglishNumber.Default);
+            WriteNumber(2305843009213693951, Maths.EnglishNumber.Default);
+            WriteNumber(1000000001, Maths.EnglishNumber.Default);
+            WriteNumber(10086, Maths.EnglishNumber.Default);
+            WriteNumber(9000, Maths.EnglishNumber.Default);
+            WriteNumber(2018, Maths.EnglishNumber.Default);
+            WriteNumber(2004, Maths.EnglishNumber.Default);
+            WriteNumber(1999, Maths.EnglishNumber.Default);
+            WriteNumber(1024, Maths.EnglishNumber.Default);
+            WriteNumber(1000, Maths.EnglishNumber.Default);
+            WriteNumber(240, Maths.EnglishNumber.Default);
+            WriteNumber(101, Maths.EnglishNumber.Default);
+            WriteNumber(100, Maths.EnglishNumber.Default);
+            WriteNumber(17, Maths.EnglishNumber.Default);
+            WriteNumber(10, Maths.EnglishNumber.Default);
+            WriteNumber(7, Maths.EnglishNumber.Default);
+            WriteNumber(0, Maths.EnglishNumber.Default);
+            WriteNumber(-12345, Maths.EnglishNumber.Default);
+            WriteNumber(3.14159265, Maths.EnglishNumber.Default);
+            WriteNumber(1.23e45, Maths.EnglishNumber.Default);
+            WriteNumber(-10001.4567, Maths.EnglishNumber.Default);
+            WriteNumber(-6.7800e90, Maths.EnglishNumber.Default);
             ConsoleLine.End(true);
 
             // Chinese numbers.
-            ConsoleLine.Write(ConsoleColor.Magenta, "Chinese numbers");
+            ConsoleLine.Write(ConsoleColor.Magenta, "Simplified Chinese number");
             ConsoleLine.End();
-            WriteNumber(9876543210, Maths.Numbers.Chinese);
-            WriteNumber(2305843009213693951, Maths.Numbers.Chinese);
-            WriteNumber(1000000001, Maths.Numbers.Chinese);
-            WriteNumber(10086, Maths.Numbers.Chinese);
-            WriteNumber(9000, Maths.Numbers.Chinese);
-            WriteNumber(2018, Maths.Numbers.Chinese);
-            WriteNumber(2004, Maths.Numbers.Chinese);
-            WriteNumber(1999, Maths.Numbers.Chinese);
-            WriteNumber(1024, Maths.Numbers.Chinese);
-            WriteNumber(1000, Maths.Numbers.Chinese);
-            WriteNumber(240, Maths.Numbers.Chinese);
-            WriteNumber(101, Maths.Numbers.Chinese);
-            WriteNumber(100, Maths.Numbers.Chinese);
-            WriteNumber(17, Maths.Numbers.Chinese);
-            WriteNumber(10, Maths.Numbers.Chinese);
-            WriteNumber(7, Maths.Numbers.Chinese);
-            WriteNumber(0, Maths.Numbers.Chinese);
-            WriteNumber(-12345, Maths.Numbers.Chinese);
+            WriteNumber(9876543210, Maths.ChineseNumber.Simplified);
+            WriteNumber(2305843009213693951, Maths.ChineseNumber.Simplified);
+            WriteNumber(1000000001, Maths.ChineseNumber.Simplified);
+            WriteNumber(10086, Maths.ChineseNumber.Simplified);
+            WriteNumber(9000, Maths.ChineseNumber.Simplified);
+            WriteNumber(2018, Maths.ChineseNumber.Simplified);
+            WriteNumber(2004, Maths.ChineseNumber.Simplified);
+            WriteNumber(1999, Maths.ChineseNumber.Simplified);
+            WriteNumber(1024, Maths.ChineseNumber.Simplified);
+            WriteNumber(1000, Maths.ChineseNumber.Simplified);
+            WriteNumber(240, Maths.ChineseNumber.Simplified);
+            WriteNumber(101, Maths.ChineseNumber.Simplified);
+            WriteNumber(100, Maths.ChineseNumber.Simplified);
+            WriteNumber(17, Maths.ChineseNumber.Simplified);
+            WriteNumber(10, Maths.ChineseNumber.Simplified);
+            WriteNumber(7, Maths.ChineseNumber.Simplified);
+            WriteNumber(0, Maths.ChineseNumber.Simplified);
+            WriteNumber(-12345, Maths.ChineseNumber.Simplified);
+            WriteNumber(3.14159265, Maths.ChineseNumber.Simplified);
+            WriteNumber(1.23e45, Maths.ChineseNumber.Simplified);
+            WriteNumber(-10001.4567, Maths.ChineseNumber.Simplified);
+            WriteNumber(-6.7800e90, Maths.ChineseNumber.Simplified);
             ConsoleLine.End(true);
 
-            // Chinese numbers in upper case.
-            ConsoleLine.Write(ConsoleColor.Magenta, "Chinese numbers (upper)");
+            // Simplified Chinese uppercase numbers.
+            ConsoleLine.Write(ConsoleColor.Magenta, "Simplified Chinese uppercase number");
             ConsoleLine.End();
-            WriteNumber(9876543210, Maths.Numbers.UpperCaseChinese);
-            WriteNumber(2305843009213693951, Maths.Numbers.UpperCaseChinese);
-            WriteNumber(100000000000001, Maths.Numbers.UpperCaseChinese);
-            WriteNumber(-9876543210, Maths.Numbers.UpperCaseChinese);
+            WriteNumber(9876543210, Maths.ChineseNumber.SimplifiedUppercase);
+            WriteNumber(2305843009213693951, Maths.ChineseNumber.SimplifiedUppercase);
+            WriteNumber(100000000000001, Maths.ChineseNumber.SimplifiedUppercase);
+            WriteNumber(-9876543210, Maths.ChineseNumber.SimplifiedUppercase);
+            WriteNumber(3.14159265, Maths.ChineseNumber.SimplifiedUppercase);
+            WriteNumber(1.23e45, Maths.ChineseNumber.SimplifiedUppercase);
+            WriteNumber(-10001.4567, Maths.ChineseNumber.SimplifiedUppercase);
+            WriteNumber(-6.7800e90, Maths.ChineseNumber.SimplifiedUppercase);
+            ConsoleLine.End(true);
+
+            // Traditional Chinese numbers.
+            ConsoleLine.Write(ConsoleColor.Magenta, "Traditional Chinese number");
+            ConsoleLine.End();
+            WriteNumber(9876543210, Maths.ChineseNumber.Traditional);
+            WriteNumber(2305843009213693951, Maths.ChineseNumber.Traditional);
+            WriteNumber(100000000000001, Maths.ChineseNumber.Traditional);
+            WriteNumber(-9876543210, Maths.ChineseNumber.Traditional);
+            WriteNumber(3.14159265, Maths.ChineseNumber.Traditional);
+            WriteNumber(1.23e45, Maths.ChineseNumber.Traditional);
+            WriteNumber(-10001.4567, Maths.ChineseNumber.Traditional);
+            WriteNumber(-6.7800e90, Maths.ChineseNumber.Traditional);
+            ConsoleLine.End(true);
+
+            // Traditional Chinese uppercase numbers.
+            ConsoleLine.Write(ConsoleColor.Magenta, "Traditional Chinese uppercase number");
+            ConsoleLine.End();
+            WriteNumber(9876543210, Maths.ChineseNumber.TraditionalUppercase);
+            WriteNumber(2305843009213693951, Maths.ChineseNumber.TraditionalUppercase);
+            WriteNumber(100000000000001, Maths.ChineseNumber.TraditionalUppercase);
+            WriteNumber(-9876543210, Maths.ChineseNumber.TraditionalUppercase);
+            WriteNumber(3.14159265, Maths.ChineseNumber.TraditionalUppercase);
+            WriteNumber(1.23e45, Maths.ChineseNumber.TraditionalUppercase);
+            WriteNumber(-10001.4567, Maths.ChineseNumber.TraditionalUppercase);
+            WriteNumber(-6.7800e90, Maths.ChineseNumber.TraditionalUppercase);
             ConsoleLine.End(true);
         }
 
@@ -107,9 +147,15 @@ namespace Trivial.Sample
             ConsoleLine.End();
         }
 
-        private void WriteNumber(long value, Maths.IIntegerLocalization localInt)
+        private void WriteNumber(long value, Maths.INumberLocalization localInt)
         {
             ConsoleLine.Write("{0}: {1}; {2}.", value, localInt.ToString(value), localInt.ToString(value, true));
+            ConsoleLine.End();
+        }
+
+        private void WriteNumber(double value, Maths.INumberLocalization localInt)
+        {
+            ConsoleLine.Write("{0}: {1}.", value, localInt.ToString(value));
             ConsoleLine.End();
         }
     }
