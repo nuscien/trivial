@@ -162,16 +162,16 @@ namespace Trivial.Maths
         /// <returns>The previous prime number.</returns>
         public static async Task<ulong> PreviousPrimeAsync(ulong value, CancellationToken cancellationToken = default)
         {
-            if (value < 23)
+            if (value < 24)
             {
-                if (value < 2) return 1;
-                if (value < 3) return 2;
-                if (value < 5) return 3;
-                if (value < 7) return 5;
-                if (value < 11) return 7;
-                if (value < 13) return 11;
-                if (value < 17) return 13;
-                if (value < 19) return 17;
+                if (value <= 2) return 1;
+                if (value <= 3) return 2;
+                if (value <= 5) return 3;
+                if (value <= 7) return 5;
+                if (value <= 11) return 7;
+                if (value <= 13) return 11;
+                if (value <= 17) return 13;
+                if (value <= 19) return 17;
                 return 19;
             }
 

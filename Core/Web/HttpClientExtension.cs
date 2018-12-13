@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Json;
 using System.Security;
@@ -16,6 +17,11 @@ namespace Trivial.Web
     /// </summary>
     public static class HttpClientExtension
     {
+        /// <summary>
+        /// Default block size.
+        /// </summary>
+        public const int DefaultBlockSize = 4194304; // 4M
+
         /// <summary>
         /// Serialize the HTTP content into a stream of bytes and copies it to the stream object provided as the stream parameter.
         /// </summary>
@@ -160,6 +166,90 @@ namespace Trivial.Web
             if (serializer == null) throw new ArgumentNullException(nameof(serializer));
             var str = await httpContent.ReadAsStringAsync();
             return serializer(str);
+        }
+    }
+
+    /// <summary>
+    /// JSON format serialization HTTP client.
+    /// </summary>
+    /// <typeparam name="T">The type of the result.</typeparam>
+    public class JsonHttpClient<T>
+    {
+        private readonly HttpRequestMessage request = new HttpRequestMessage();
+
+        /// <summary>
+        /// Gets or sets the retry policy.
+        /// </summary>
+        public Tasks.IRetryPolicy RetryPolicy { get; set; }
+
+        /// <summary>
+        /// Gets or sets the JSON serializer.
+        /// </summary>
+        public Func<string, T> Serializer { get; set; }
+
+        /// <summary>
+        /// Gets or sets the HTTP client.
+        /// </summary>
+        public HttpClient Client { get; set; }
+
+        /// <summary>
+        /// Gets or sets the HTTP method.
+        /// </summary>
+        public HttpMethod Method
+        {
+            get => request.Method;
+            set => request.Method = value;
+        }
+
+        /// <summary>
+        /// Gets the HTTP request headers.
+        /// </summary>
+        public HttpRequestHeaders Headers => request.Headers;
+
+        /// <summary>
+        /// Gets or sets the request URI.
+        /// </summary>
+        public Uri Uri
+        {
+            get => request.RequestUri;
+            set => request.RequestUri = value;
+        }
+
+        /// <summary>
+        /// Gets or sets the HTTP version.
+        /// </summary>
+        public Version Version
+        {
+            get => request.Version;
+            set => request.Version = value;
+        }
+
+        /// <summary>
+        /// Gets or sets the request content.
+        /// </summary>
+        public HttpContent RequestContent
+        {
+            get => request.Content;
+            set => request.Content = value;
+        }
+
+        /// <summary>
+        /// Sends request.
+        /// </summary>
+        /// <param name="cancellationToken">The optional cancellation token.</param>
+        /// <returns>A result serialized.</returns>
+        public async Task<T> Process(CancellationToken cancellationToken = default)
+        {
+            var client = Client ?? new HttpClient();
+            var result = await Tasks.RetryExtension.ProcessAsync(RetryPolicy, async (CancellationToken cancellation) =>
+            {
+                var resp = await client.SendAsync(request, cancellationToken);
+                var obj = Serializer != null
+                    ? await HttpClientExtension.SerializeAsync(resp.Content, Serializer)
+                    : await HttpClientExtension.SerializeJsonAsync<T>(resp.Content);
+                return obj;
+            }, cancellationToken);
+            return result.Result;
         }
     }
 }

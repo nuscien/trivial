@@ -180,7 +180,7 @@ namespace Trivial.Tasks
         /// <summary>
         /// Sends request to process.
         /// </summary>
-        public bool Process(T arg = default(T))
+        public bool Process(T arg = default)
         {
             var task = ProcessAsync(arg);
             task.Wait();
@@ -191,7 +191,7 @@ namespace Trivial.Tasks
         /// Sends request to process.
         /// </summary>
         /// <returns>The processing task instance.</returns>
-        public async Task<bool> ProcessAsync(T arg = default(T))
+        public async Task<bool> ProcessAsync(T arg = default)
         {
             if (IsIgnoring) return false;
             var now = DateTime.Now;

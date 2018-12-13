@@ -408,9 +408,12 @@ namespace Trivial.Maths
             {
                 str.Append("乘以");
                 str.Append(TenClass);
-                str.Append("的");
-                str.Append(ToString(exponentialPart));
-                str.Append("次方");
+                if (exponentialPart > 1)
+                {
+                    str.Append("的");
+                    str.Append(ToString(exponentialPart));
+                    str.Append("次方");
+                }
             }
 
             return str.ToString();

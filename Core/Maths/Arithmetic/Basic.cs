@@ -52,5 +52,29 @@ namespace Trivial.Maths
 
             return resultNum;
         }
+
+        /// <summary>
+        /// Calculates the value times 1024 of the specific power.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <param name="e">The exponential.</param>
+        /// <returns>The result calculated.</returns>
+        /// <remarks>You can use this to calculate such as 80K or 4M.</remarks>
+        public static int Times1024(int value, int e = 1)
+        {
+            return value * (1024 ^ e);
+        }
+
+        /// <summary>
+        /// Calculates the value times 1024 of the specific power.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <param name="e">The exponential.</param>
+        /// <returns>The result calculated.</returns>
+        /// <remarks>You can use this to calculate such as 80K or 4M.</remarks>
+        public static long Times1024(long value, int e = 1)
+        {
+            return value * (1024L ^ e);
+        }
     }
 }

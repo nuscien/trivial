@@ -15,7 +15,7 @@ namespace Trivial.IO
         /// <summary>
         /// The default buffer size.
         /// </summary>
-        public const int DefaultBufferSize = 81920;
+        public const int DefaultBufferSize = 81920; // 80K
 
         /// <summary>
         /// Asynchronously reads the bytes from the current stream and writes them to another stream, using a specified buffer size.

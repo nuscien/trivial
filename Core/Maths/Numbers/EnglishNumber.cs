@@ -454,9 +454,13 @@ namespace Trivial.Maths
 
             if (exponentialPart > 0)
             {
-                str.Append(" times ten of ");
-                str.Append(ToString(exponentialPart));
-                str.Append(" power");
+                str.Append(" times ten");
+                if (exponentialPart > 1)
+                {
+                    str.Append(" of ");
+                    str.Append(ToString(exponentialPart));
+                    str.Append(" power");
+                }
             }
 
             return str.ToString();
