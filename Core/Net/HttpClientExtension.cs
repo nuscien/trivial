@@ -167,6 +167,43 @@ namespace Trivial.Web
             var str = await httpContent.ReadAsStringAsync();
             return serializer(str);
         }
+
+        /// <summary>
+        /// Sends an HTTP request as an asynchronous operation.
+        /// </summary>
+        /// <param name="httpClient">The HTTP client.</param>
+        /// <param name="request">The HTTP request message to send.</param>
+        /// <param name="retryPolicy">The retry policy.</param>
+        /// <param name="retryCheck">A function to check whether the exception thrown should raise retry logic.</param>
+        /// <param name="completionOption">When the operation should complete.</param>
+        /// <param name="cancellationToken">The optional cancellation token to cancel operation.</param>
+        /// <returns>The retry result.</returns>
+        public static async Task<Tasks.RetryResult<HttpResponseMessage>> SendAsync(this HttpClient httpClient, HttpRequestMessage request, Tasks.IRetryPolicy retryPolicy, Func<Exception, bool> retryCheck, HttpCompletionOption completionOption, CancellationToken cancellationToken = default)
+        {
+            if (httpClient == null) throw new ArgumentNullException(nameof(httpClient));
+            return await Tasks.RetryExtension.ProcessAsync(retryPolicy, async (CancellationToken cancellation) =>
+            {
+                return await httpClient.SendAsync(request, completionOption, cancellation);
+            }, retryCheck, cancellationToken);
+        }
+
+        /// <summary>
+        /// Sends an HTTP request as an asynchronous operation.
+        /// </summary>
+        /// <param name="httpClient">The HTTP client.</param>
+        /// <param name="request">The HTTP request message to send.</param>
+        /// <param name="retryPolicy">The retry policy.</param>
+        /// <param name="retryCheck">A function to check whether the exception thrown should raise retry logic.</param>
+        /// <param name="cancellationToken">The optional cancellation token to cancel operation.</param>
+        /// <returns>The retry result.</returns>
+        public static async Task<Tasks.RetryResult<HttpResponseMessage>> SendAsync(this HttpClient httpClient, HttpRequestMessage request, Tasks.IRetryPolicy retryPolicy, Func<Exception, bool> retryCheck, CancellationToken cancellationToken = default)
+        {
+            if (httpClient == null) throw new ArgumentNullException(nameof(httpClient));
+            return await Tasks.RetryExtension.ProcessAsync(retryPolicy, async (CancellationToken cancellation) =>
+            {
+                return await httpClient.SendAsync(request, cancellation);
+            }, retryCheck, cancellationToken);
+        }
     }
 
     /// <summary>

@@ -110,12 +110,12 @@ ChineseNumber.SimplifiedUppercase.ToString(12345);
 
 ```
 
-## [Web](https://github.com/nuscien/trivial/wiki/web)
+## [Net](https://github.com/nuscien/trivial/wiki/net)
 
-Contains the helper functions and extension functions for web.
+Contains the helper functions and extension functions for network, such as HTTP client.
 
 ```csharp
-using Trivial.Web;
+using Trivial.Net;
 ```
 
 ## [Security](https://github.com/nuscien/trivial/wiki/security)
