@@ -15,12 +15,10 @@ namespace Trivial.Sample
             // Prime.
             ConsoleLine.Write(ConsoleColor.Magenta, "Arithmetic");
             ConsoleLine.End();
-            WriteIsPrime(524287);
-            WriteIsPrime(524291);
-            System.Console.WriteLine("Next prime of 256 is {0}.", await Maths.Arithmetic.NextPrimeAsync(256));
-            System.Console.WriteLine("Previous prime of 256 is {0}.", await Maths.Arithmetic.PreviousPrimeAsync(256));
+            await WriteIsPrimeAsync(524287);
+            await WriteIsPrimeAsync(968455);
             await WriteIsPrimeAsync(2147483647, CancellationToken.None);
-            await WriteIsPrimeAsync(21474836479, CancellationToken.None);
+            await WriteIsPrimeAsync(21474836477, CancellationToken.None);
             try
             {
                 var cancellation = new CancellationTokenSource();
@@ -135,9 +133,15 @@ namespace Trivial.Sample
             ConsoleLine.End(true);
         }
 
-        private void WriteIsPrime(int value)
+        private async Task WriteIsPrimeAsync(int value)
         {
-            ConsoleLine.Write("{0} is {1}a prime number.", value, Maths.Arithmetic.IsPrime(value) ? string.Empty : "NOT ");
+            ConsoleLine.Write(
+                "{0} is {1}a prime number. Prev {2}, next {3}.",
+                value,
+                Maths.Arithmetic.IsPrime(value) ? string.Empty : "NOT ",
+                await Maths.Arithmetic.PreviousPrimeAsync(value),
+                await Maths.Arithmetic.NextPrimeAsync(value)
+                );
             ConsoleLine.End();
         }
 

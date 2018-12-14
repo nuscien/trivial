@@ -29,7 +29,7 @@ namespace Trivial.Security
         /// <param name="key">The secret key for the symmetric algorithm.</param>
         /// <param name="iv">The initialization vector (System.Security.Cryptography.SymmetricAlgorithm.IV) for the symmetric algorithm. If iv is null, the value will be filled by the one of key,</param>
         /// <returns>A encrypted string value as Base64 format of the given string; or null, if h or input is null.</returns>
-        public static string Encrypt<T>(Func<T> h, string plainText, byte[] key, byte[] iv = null) where T : SymmetricAlgorithm
+        public static string Encrypt<T>(this Func<T> h, string plainText, byte[] key, byte[] iv = null) where T : SymmetricAlgorithm
         {
             // Check if the arguments is not null.
             if (h == null || string.IsNullOrEmpty(plainText) || key == null || key.Length <= 0 || iv == null || iv.Length <= 0) return null;
@@ -71,12 +71,12 @@ namespace Trivial.Security
         /// <summary>
         /// Gets a encrypted string value of a specific string instance by symmetric algorithm.
         /// </summary>
-        /// <param name="h">The hash algorithm object maker.</param>
+        /// <param name="h">The symmetric algorithm object maker.</param>
         /// <param name="plainText">The original input value to encrypt.</param>
         /// <param name="key">The secret key for the symmetric algorithm.</param>
         /// <param name="iv">The initialization vector (System.Security.Cryptography.SymmetricAlgorithm.IV) for the symmetric algorithm. If iv is null, the value will be filled by the one of key,</param>
         /// <returns>A encrypted string value as Base64 format of the given string; or null, if h or input is null.</returns>
-        public static string Encrypt<T>(Func<T> h, string plainText, string key, string iv = null) where T : SymmetricAlgorithm
+        public static string Encrypt<T>(this Func<T> h, string plainText, string key, string iv = null) where T : SymmetricAlgorithm
         {
             // Check if the arguments is not null.
             if (h == null || string.IsNullOrEmpty(plainText) || string.IsNullOrEmpty(key)) return null;
@@ -92,12 +92,12 @@ namespace Trivial.Security
         /// <summary>
         /// Gets a decrypted string value from a specific cipher text by symmetric algorithm.
         /// </summary>
-        /// <param name="h">The hash algorithm object maker.</param>
+        /// <param name="h">The symmetric algorithm object maker.</param>
         /// <param name="cipherText">The input value to decrypt as Base64 format.</param>
         /// <param name="key">The secret key for the symmetric algorithm.</param>
         /// <param name="iv">The initialization vector (System.Security.Cryptography.SymmetricAlgorithm.IV) for the symmetric algorithm. If iv is null, the value will be filled by the one of key,</param>
         /// <returns>A decrypted string value of the given string; or null, if h or input is null.</returns>
-        public static string Decrypt<T>(Func<T> h, string cipherText, byte[] key, byte[] iv) where T : SymmetricAlgorithm
+        public static string Decrypt<T>(this Func<T> h, string cipherText, byte[] key, byte[] iv) where T : SymmetricAlgorithm
         {
             // Check if the arguments is not null.
             if (h == null || string.IsNullOrEmpty(cipherText) || key == null || key.Length <= 0 || iv == null || iv.Length <= 0) return null;
@@ -138,12 +138,12 @@ namespace Trivial.Security
         /// <summary>
         /// Gets a decrypted string value from a specific cipher text by symmetric algorithm.
         /// </summary>
-        /// <param name="h">The hash algorithm object maker.</param>
+        /// <param name="h">The symmetric algorithm object maker.</param>
         /// <param name="cipherText">The input value to decrypt as Base64 format.</param>
         /// <param name="key">The secret key for the symmetric algorithm.</param>
         /// <param name="iv">The initialization vector (System.Security.Cryptography.SymmetricAlgorithm.IV) for the symmetric algorithm. If iv is null, the value will be filled by the one of key,</param>
         /// <returns>A decrypted string value of the given string; or null, if h or input is null.</returns>
-        public static string Decrypt<T>(Func<T> h, string cipherText, string key, string iv) where T : SymmetricAlgorithm
+        public static string Decrypt<T>(this Func<T> h, string cipherText, string key, string iv) where T : SymmetricAlgorithm
         {
             // Check if the arguments is not null.
             if (h == null || string.IsNullOrEmpty(cipherText) || string.IsNullOrEmpty(key)) return null;
@@ -154,34 +154,6 @@ namespace Trivial.Security
 
             // Return original plain text string.
             return Decrypt(h, cipherText, keyBytes, ivBytes);
-        }
-
-        /// <summary>
-        /// Gets a encrypted string value of a specific string instance by symmetric algorithm.
-        /// </summary>
-        /// <param name="h">The hash algorithm object maker.</param>
-        /// <param name="plainText">The original input value to encrypt.</param>
-        /// <param name="key">The secret key for the symmetric algorithm.</param>
-        /// <param name="iv">The initialization vector (System.Security.Cryptography.SymmetricAlgorithm.IV) for the symmetric algorithm. If iv is null, the value will be filled by the one of key,</param>
-        /// <returns>A encrypted string value as Base64 format of the given string; or null, if h or input is null.</returns>
-        public static string EncryptString<T>(this Func<T> h, string plainText, string key, string iv = null) where T : SymmetricAlgorithm
-        {
-            // Return encrypted string as Base64 format.
-            return Encrypt(h, plainText, key, iv);
-        }
-
-        /// <summary>
-        /// Gets a decrypted string value from a specific cipher text by symmetric algorithm.
-        /// </summary>
-        /// <param name="h">The hash algorithm object maker.</param>
-        /// <param name="cipherText">The input value to decrypt as Base64 format.</param>
-        /// <param name="key">The secret key for the symmetric algorithm.</param>
-        /// <param name="iv">The initialization vector (System.Security.Cryptography.SymmetricAlgorithm.IV) for the symmetric algorithm. If iv is null, the value will be filled by the one of key,</param>
-        /// <returns>A decrypted string value of the given string; or null, if h or input is null.</returns>
-        public static string DecryptString<T>(Func<T> h, string cipherText, string key, string iv) where T : SymmetricAlgorithm
-        {
-            // Return encrypted string as Base64 format.
-            return Decrypt(h, cipherText, key, iv);
         }
     }
 }

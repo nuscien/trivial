@@ -1,6 +1,8 @@
-﻿You can use the library for your console application to parse the arguments, write the selection, dispatch verbs, etc.
+﻿# [Trivial.Console](https://github.com/nuscien/trivial/wiki/console)
 
-# Import
+You can use the library for your console application to parse the arguments, write the selection, dispatch verbs, etc.
+
+## Import
 
 Just add following namespace to your code file to use.
 
@@ -8,7 +10,7 @@ Just add following namespace to your code file to use.
 using Trivial.Console;
 ```
 
-# Parse
+## Parse
 
 You can parse the arguments which is in string array or just in string to a readable object by programming.
 
@@ -42,7 +44,7 @@ void Main(string[] args)
 }
 ```
 
-# Verb
+## Verb
 
 If your application contains a set of functionalities, you may need verbs to help you to build a more flexible console application.
 Each verb can has its own business logic. The arguments will be filled into the property with attribute `ArgumentAttribute`.
@@ -103,7 +105,7 @@ void Main(string[] args)
 }
 ```
 
-# Line
+## Line
 
 You can write a specified string value to the standard output stream and then change it. Following is a sample.
 
@@ -147,7 +149,7 @@ var Main(string[] args)
 }
 ```
 
-# Select
+## Select
 
 You can have a way to list a lot of items so that user can select one of them just by arrow key.
 

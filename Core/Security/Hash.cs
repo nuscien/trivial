@@ -20,12 +20,12 @@ namespace Trivial.Security
     public static class HashExtension
     {
         /// <summary>
-        /// Gets a hash string value of a specific string instance.
+        /// Computes a hash string value of a specific string instance.
         /// </summary>
         /// <param name="alg">The hash algorithm instance.</param>
         /// <param name="plainText">The original input value to get hash.</param>
         /// <returns>A hash string value of the given string; or null, if h or input is null.</returns>
-        public static string GetHash<T>(T alg, string plainText) where T : HashAlgorithm
+        public static string ComputeHashString<T>(this T alg, string plainText) where T : HashAlgorithm
         {
             // Check if the arguments is not null.
             if (alg == null || plainText == null) return null;
@@ -50,12 +50,12 @@ namespace Trivial.Security
         }
 
         /// <summary>
-        /// Gets a hash string value of a specific string instance.
+        /// Computes a hash string value of a specific string instance.
         /// </summary>
         /// <param name="h">The hash algorithm object maker.</param>
         /// <param name="plainText">The original input value to get hash.</param>
         /// <returns>A hash string value of the given string; or null, if h or input is null.</returns>
-        public static string GetHash<T>(Func<T> h, string plainText) where T : HashAlgorithm
+        public static string ComputeHashString<T>(Func<T> h, string plainText) where T : HashAlgorithm
         {
             // Check if the arguments is not null.
             if (h == null || plainText == null) return null;
@@ -83,50 +83,50 @@ namespace Trivial.Security
         }
 
         /// <summary>
-        /// Gets a MD5 hash string value of a specific string instance.
+        /// Computes a MD5 hash string value of a specific string instance.
         /// </summary>
         /// <param name="plainText">The original input value to get hash.</param>
         /// <returns>A hash string value of the given string.</returns>
-        public static string GetMd5Hash(string plainText)
+        public static string ComputeMd5String(string plainText)
         {
             // Create a new instance of the MD5CryptoServiceProvider object.
-            return GetHash(MD5.Create, plainText);
+            return ComputeHashString(MD5.Create, plainText);
         }
 
         /// <summary>
-        /// Gets a SHA1 hash string value of a specific string instance.
+        /// Computes a SHA1 hash string value of a specific string instance.
         /// </summary>
         /// <param name="plainText">The original input value to get hash.</param>
         /// <returns>A hash string value of the given string.</returns>
-        public static string GetSha1Hash(string plainText)
+        public static string ComputeSha1String(string plainText)
         {
             // Create a new instance of the SHA512CryptoServiceProvider object.
-            return GetHash(SHA1.Create, plainText);
+            return ComputeHashString(SHA1.Create, plainText);
         }
 
         /// <summary>
-        /// Gets a SHA512 hash string value of a specific string instance.
+        /// Computes a SHA512 hash string value of a specific string instance.
         /// </summary>
         /// <param name="plainText">The original input value to get hash.</param>
         /// <returns>A hash string value of the given string.</returns>
-        public static string GetSha512Hash(this string plainText)
+        public static string ComputeSha512String(this string plainText)
         {
             // Create a new instance of the SHA512CryptoServiceProvider object.
-            return GetHash(SHA512.Create, plainText);
+            return ComputeHashString(SHA512.Create, plainText);
         }
 
         /// <summary>
-        /// Verifies a MD5 hash against a string.
+        /// Verifies a hash against a string.
         /// </summary>
         /// <param name="h">The hash algorithm object maker.</param>
         /// <param name="plainText">The original input value to test.</param>
         /// <param name="hash">A hash string for comparing.</param>
         /// <returns>true if hash is a hash value of input; otherwise, false.</returns>
-        public static bool VerifyHash<T>(Func<T> h, string plainText, string hash) where T : HashAlgorithm
+        public static bool Verify<T>(this Func<T> h, string plainText, string hash) where T : HashAlgorithm
         {
             // Return the result after StringComparer comparing.
             return h != null ?
-                StringComparer.OrdinalIgnoreCase.Equals(GetHash(h, plainText), hash?.ToUpper()) :
+                StringComparer.OrdinalIgnoreCase.Equals(ComputeHashString(h, plainText), hash?.ToUpper()) :
                 StringComparer.OrdinalIgnoreCase.Equals(plainText, hash);
         }
 
@@ -137,7 +137,7 @@ namespace Trivial.Security
         /// <param name="plainText">The original input value to test.</param>
         /// <param name="hash">A hash string for comparing.</param>
         /// <returns>true if hash is a hash value of input; otherwise, false.</returns>
-        public static bool VerifyHash(Func<string, string> alg, string plainText, string hash)
+        public static bool Verify(Func<string, string> alg, string plainText, string hash)
         {
             // Return the result after StringComparer comparing.
             return alg != null ?
@@ -151,10 +151,10 @@ namespace Trivial.Security
         /// <param name="plainText">The original input value to test.</param>
         /// <param name="hash">A hash string for comparing.</param>
         /// <returns>true if hash is a hash value of input; otherwise, false.</returns>
-        public static bool VerifyMd5Hash(string plainText, string hash)
+        public static bool VerifyMd5(string plainText, string hash)
         {
             // Return the result after StringComparer comparing.
-            return 0 == StringComparer.OrdinalIgnoreCase.Compare(GetMd5Hash(plainText), hash?.ToUpper());
+            return 0 == StringComparer.OrdinalIgnoreCase.Compare(ComputeMd5String(plainText), hash?.ToUpper());
         }
 
         /// <summary>
@@ -163,10 +163,10 @@ namespace Trivial.Security
         /// <param name="plainText">The original input value to test.</param>
         /// <param name="hash">A hash string for comparing.</param>
         /// <returns>true if hash is a hash value of input; otherwise, false.</returns>
-        public static bool VerifySha1Hash(string plainText, string hash)
+        public static bool VerifySha1(string plainText, string hash)
         {
             // Return the result after StringComparer comparing.
-            return 0 == StringComparer.OrdinalIgnoreCase.Compare(GetSha1Hash(plainText), hash?.ToUpper());
+            return 0 == StringComparer.OrdinalIgnoreCase.Compare(ComputeSha1String(plainText), hash?.ToUpper());
         }
 
         /// <summary>
@@ -175,37 +175,10 @@ namespace Trivial.Security
         /// <param name="plainText">The original input value to test.</param>
         /// <param name="hash">A hash string for comparing.</param>
         /// <returns>true if hash is a hash value of input; otherwise, false.</returns>
-        public static bool VerifySha512Hash(string plainText, string hash)
+        public static bool VerifySha512(string plainText, string hash)
         {
             // Return the result after StringComparer comparing.
-            return 0 == StringComparer.OrdinalIgnoreCase.Compare(GetSha512Hash(plainText), hash?.ToUpper());
-        }
-
-        /// <summary>
-        /// Gets the SHA512 hash string value of the string instance.
-        /// </summary>
-        /// <param name="alg">One of algorithms about hash.</param>
-        /// <param name="plainText">The original input value to get hash.</param>
-        /// <returns>A hash string value of the given string.</returns>
-        public static string GetHashString<T>(this T alg, string plainText) where T : HashAlgorithm
-        {
-            // Get hash string.
-            return GetHash(alg, plainText);
-        }
-
-        /// <summary>
-        /// Verifies a specific hash against a string.
-        /// </summary>
-        /// <param name="alg">One of algorithms about hash.</param>
-        /// <param name="plainText">The original input value to test.</param>
-        /// <param name="hash">A hash string for comparing.</param>
-        /// <returns>true if hash is a hash value of input; otherwise, false.</returns>
-        public static bool VerifyHashString<T>(this T alg, string plainText, string hash) where T : HashAlgorithm
-        {
-            // Return the result after StringComparer comparing.
-            return alg != null ?
-                StringComparer.OrdinalIgnoreCase.Equals(GetHash(alg, plainText), hash?.ToUpper()) :
-                StringComparer.OrdinalIgnoreCase.Equals(plainText, hash);
+            return 0 == StringComparer.OrdinalIgnoreCase.Compare(ComputeSha512String(plainText), hash?.ToUpper());
         }
     }
 }

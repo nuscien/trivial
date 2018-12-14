@@ -1,6 +1,8 @@
-﻿This library includes task utilities.
+﻿# [Trivial](https://github.com/nuscien/trivial/wiki/core)
 
-# Tasks
+This library includes utilities and services for tasks, IO, security, etc.
+
+## [Tasks](https://github.com/nuscien/trivial/wiki/tasks)
 
 Just add following namespace to your code file to use.
 
@@ -8,9 +10,9 @@ Just add following namespace to your code file to use.
 using Trivial.Tasks;
 ```
 
-## Debounce
+### Debounce
 
-Maybe a handler will be asked to process several times in a short time but you just want to process once at the last time because the previous ones are obsolete, e.g. real-time search. You can use following method to do so.
+Maybe a handler will be asked to process several times in a short time but you just want to process once at the last time because the previous ones are obsolete. A sample is real-time search. You can use following method to do so.
 
 ```csharp
 var task = HitTask.Debound(() => {
@@ -21,7 +23,7 @@ var task = HitTask.Debound(() => {
 task.ProcessAsync();
 ```
 
-## Throttle
+### Throttle
 
 A handler to be frozen for a while after it has processed.
 
@@ -34,7 +36,7 @@ var task = HitTask.Throttle(() => {
 task.ProcessAsync();
 ```
 
-## Multiple
+### Multiple
 
 A handler to process for the specific times and it will be reset after a while.
 
@@ -47,9 +49,9 @@ var task = HitTask.Multiple(() => {
 task.ProcessAsync();
 ```
 
-## Times
+### Times
 
-A handler to process for the specific times only and it will be reset after a while, e.g. double click.
+A handler to process for the specific times only and it will be reset after a while. A sample is double click.
 
 ```csharp
 var task = HitTask.Times(() => {
@@ -60,7 +62,7 @@ var task = HitTask.Times(() => {
 task.ProcessAsync();
 ```
 
-# Mathematics
+## [Mathematics](https://github.com/nuscien/trivial/wiki/maths)
 
 Just add following namespace to your code file to use.
 
@@ -68,7 +70,7 @@ Just add following namespace to your code file to use.
 using Trivial.Maths;
 ```
 
-## Arithmetic
+### Arithmetic
 
 There a lot of arithmetic functions.
 
@@ -80,7 +82,7 @@ await Arithmetic.IsPrimeAsync(2305843009213693951); // False
 Arithmetic.Factorial(10); // 3628800
 ```
 
-## Numbers
+### Numbers
 
 You can get the number symbols as you want.
 
@@ -108,10 +110,26 @@ ChineseNumber.SimplifiedUppercase.ToString(12345);
 
 ```
 
-# Security
+## [Web](https://github.com/nuscien/trivial/wiki/web)
+
+Contains the helper functions and extension functions for web.
+
+```csharp
+using Trivial.Web;
+```
+
+## [Security](https://github.com/nuscien/trivial/wiki/security)
 
 Just add following namespace to your code file to use.
 
 ```csharp
 using Trivial.Security;
+```
+
+## [IO](https://github.com/nuscien/trivial/wiki/io)
+
+Contains the helper functions and extension functions for file and stream.
+
+```csharp
+using Trivial.IO;
 ```

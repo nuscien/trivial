@@ -41,13 +41,15 @@ namespace Trivial.IO
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>The task object representing the asynchronous operation.</returns>
         /// <exception cref="ArgumentNullException">The argument is null.</exception>
+        /// <exception cref="ArgumentException">The source stream should be readable; or the destination stream should be writable.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">The buffer size is negative.</exception>
         public static async Task CopyToAsync(this Stream source, Stream destination, int bufferSize, IProgress<long> progress, CancellationToken cancellationToken = default)
         {
             if (source == null) throw new ArgumentNullException(nameof(source));
-            if (!source.CanRead) throw new ArgumentException("The stream should be readable.", nameof(source));
+            if (!source.CanRead) throw new ArgumentException("The source stream should be readable.", nameof(source));
             if (destination == null) throw new ArgumentNullException(nameof(destination));
-            if (!destination.CanWrite) throw new ArgumentException("The stream should be writable.", nameof(destination));
-            if (bufferSize < 0) throw new ArgumentOutOfRangeException(nameof(bufferSize));
+            if (!destination.CanWrite) throw new ArgumentException("The destination stream should be writable.", nameof(destination));
+            if (bufferSize < 0) throw new ArgumentOutOfRangeException("The buffer size should not be negative", nameof(bufferSize));
 
             var buffer = new byte[bufferSize];
             long totalBytesRead = 0;
