@@ -8,7 +8,7 @@ Trivial libraries contain a lot of utilities, models and components, which are u
 
 - [Task and retry policy](https://github.com/nuscien/trivial/wiki/tasks)
 - [Maths and numbers](https://github.com/nuscien/trivial/wiki/maths)
-- [Web](https://github.com/nuscien/trivial/wiki/web)
+- [Network](https://github.com/nuscien/trivial/wiki/net)
 - [Secure](https://github.com/nuscien/trivial/wiki/secure)
 - [File and stream](https://github.com/nuscien/trivial/wiki/io)
 
