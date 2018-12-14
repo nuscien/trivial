@@ -5,7 +5,7 @@ using System.Net.Http;
 using System.Text;
 using System.Web;
 
-namespace Trivial.Web
+namespace Trivial.Net
 {
     /// <summary>
     /// The HTTP URI struct.
@@ -203,7 +203,7 @@ namespace Trivial.Web
     /// <summary>
     /// The query data in URI.
     /// </summary>
-    public class QueryData : Collection.KeyValuePairs<string, string>
+    public class QueryData : Collection.StringKeyValuePairs
     {
         /// <summary>
         /// Gets or sets the default encoding.

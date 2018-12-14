@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Web;
 
 namespace Trivial.Collection
 {
@@ -78,6 +79,57 @@ namespace Trivial.Collection
         public Dictionary<TKey, IEnumerable<TValue>> ToDictionary()
         {
             return ToGroup().ToDictionary(item => item.Key, item => item as IEnumerable<TValue>);
+        }
+    }
+
+    /// <summary>
+    /// The key value pairs with string key and string value.
+    /// </summary>
+    public class StringKeyValuePairs : KeyValuePairs<string, string>
+    {
+        /// <summary>
+        /// Gets the equal sign for key and value.
+        /// </summary>
+        public virtual string EqualSign => "=";
+
+        /// <summary>
+        /// Gets the separator.
+        /// </summary>
+        public virtual string Separator => "&";
+
+        /// <summary>
+        /// Encodes the key.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <returns>The key encoded.</returns>
+        protected virtual string EncodeKey(string key)
+        {
+            return HttpUtility.UrlEncode(key);
+        }
+
+        /// <summary>
+        /// Encodes the value.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <returns>The value encoded.</returns>
+        protected virtual string EncodeValue(string value)
+        {
+            return HttpUtility.UrlEncode(value);
+        }
+
+        /// <summary>
+        /// Returns a string that represents the current object.
+        /// </summary>
+        /// <returns>A query string.</returns>
+        public override string ToString()
+        {
+            var arr = new List<string>();
+            foreach (var item in this)
+            {
+                arr.Add(string.Format("{0}{2}{1}", EncodeKey(item.Key), EncodeValue(item.Value), EqualSign));
+            }
+
+            return string.Join(Separator, arr);
         }
     }
 }
