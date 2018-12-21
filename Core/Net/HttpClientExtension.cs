@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Runtime.Serialization;
@@ -169,22 +170,196 @@ namespace Trivial.Net
         }
 
         /// <summary>
-        /// Sends an HTTP request as an asynchronous operation.
+        /// Serialize the HTTP JSON content into an object as the specific type.
         /// </summary>
-        /// <param name="httpClient">The HTTP client.</param>
-        /// <param name="request">The HTTP request message to send.</param>
-        /// <param name="retryPolicy">The retry policy.</param>
-        /// <param name="retryCheck">A function to check whether the exception thrown should raise retry logic.</param>
-        /// <param name="completionOption">When the operation should complete.</param>
-        /// <param name="cancellationToken">The optional cancellation token to cancel operation.</param>
-        /// <returns>The retry result.</returns>
-        public static async Task<Tasks.RetryResult<HttpResponseMessage>> SendAsync(this HttpClient httpClient, HttpRequestMessage request, Tasks.IRetryPolicy retryPolicy, Func<Exception, bool> retryCheck, HttpCompletionOption completionOption, CancellationToken cancellationToken = default)
+        /// <typeparam name="T">The type of the result expected.</typeparam>
+        /// <param name="webResponse">The web response.</param>
+        /// <returns>The result serialized.</returns>
+        /// <exception cref="ArgumentNullException">The argument is null.</exception>
+        public static T SerializeJson<T>(this WebResponse webResponse)
         {
-            if (httpClient == null) throw new ArgumentNullException(nameof(httpClient));
-            return await Tasks.RetryExtension.ProcessAsync(retryPolicy, async (CancellationToken cancellation) =>
+            if (webResponse == null) throw new ArgumentNullException(nameof(webResponse));
+            using (var stream = webResponse.GetResponseStream())
             {
-                return await httpClient.SendAsync(request, completionOption, cancellation);
-            }, retryCheck, cancellationToken);
+                var serializer = new DataContractJsonSerializer(typeof(T));
+                return (T)serializer.ReadObject(stream);
+            }
+        }
+
+        /// <summary>
+        /// Serialize the HTTP XML content into an object as the specific type.
+        /// </summary>
+        /// <typeparam name="T">The type of the result expected.</typeparam>
+        /// <param name="webResponse">The web response.</param>
+        /// <returns>The result serialized.</returns>
+        /// <exception cref="ArgumentNullException">The argument is null.</exception>
+        public static T SerializeXml<T>(this WebResponse webResponse)
+        {
+            if (webResponse == null) throw new ArgumentNullException(nameof(webResponse));
+            using (var stream = webResponse.GetResponseStream())
+            {
+                var serializer = new DataContractSerializer(typeof(T));
+                return (T)serializer.ReadObject(stream);
+            }
+        }
+
+        /// <summary>
+        /// Serialize the HTTP content into an object by the specific serializer.
+        /// </summary>
+        /// <param name="webResponse">The web response.</param>
+        /// <param name="serializer">The serializer to read the object from the stream downloaded.</param>
+        /// <returns>The result serialized.</returns>
+        /// <exception cref="ArgumentNullException">The argument is null.</exception>
+        public static object Serialize(this WebResponse webResponse, XmlObjectSerializer serializer)
+        {
+            if (webResponse == null) throw new ArgumentNullException(nameof(webResponse));
+            if (serializer == null) throw new ArgumentNullException(nameof(serializer));
+            using (var stream = webResponse.GetResponseStream())
+            {
+                return serializer.ReadObject(stream);
+            }
+        }
+
+        /// <summary>
+        /// Serialize the HTTP content into an object by the specific serializer.
+        /// </summary>
+        /// <param name="webResponse">The web response.</param>
+        /// <param name="serializer">The serializer to read the object from the stream downloaded.</param>
+        /// <param name="encoding">The character encoding to use.</param>
+        /// <returns>The result serialized.</returns>
+        /// <exception cref="ArgumentNullException">The argument is null.</exception>
+        public static async Task<T> SerializeAsync<T>(this WebResponse webResponse, Func<string, T> serializer, Encoding encoding = null)
+        {
+            if (webResponse == null) throw new ArgumentNullException(nameof(webResponse));
+            if (serializer == null) throw new ArgumentNullException(nameof(serializer));
+            using (var stream = webResponse.GetResponseStream())
+            {
+                var reader = new StreamReader(stream, encoding ?? Encoding.UTF8);
+                var str = await reader.ReadToEndAsync();
+                return serializer(str);
+            }
+        }
+
+        /// <summary>
+        /// Creates a stream content from a JSON of the specific object.
+        /// </summary>
+        /// <typeparam name="T">The type of the graph.</typeparam>
+        /// <param name="value">The graph.</param>
+        /// <returns>The HTTP content based on a stream from a JSON of the specific object.</returns>
+        public static StreamContent CreateJsonStreamContent<T>(T value)
+        {
+            var serializer = new DataContractJsonSerializer(typeof(T));
+            var stream = new MemoryStream();
+            serializer.WriteObject(stream, value);
+            var content = new StreamContent(stream);
+            return content;
+        }
+
+        /// <summary>
+        /// Adds a file to a collection of System.Net.Http.HttpContent objects that get serialized to multipart/form-data MIME type.
+        /// </summary>
+        /// <param name="content">The HTTP content of multipart form data.</param>
+        /// <param name="name">The name for the HTTP content to add.</param>
+        /// <param name="file">The file info instance.</param>
+        /// <param name="fileName">The file name for the HTTP content to add to the collection.</param>
+        public static void Add(this MultipartFormDataContent content, string name, FileInfo file, string fileName = null)
+        {
+            if (content == null || file == null) return;
+            var stream = new StreamContent(file.OpenRead());
+            content.Add(stream, name, fileName ?? file.Name);
+        }
+
+        /// <summary>
+        /// Adds a file to a collection of System.Net.Http.HttpContent objects that get serialized to multipart/form-data MIME type.
+        /// </summary>
+        /// <param name="content">The HTTP content of multipart form data.</param>
+        /// <param name="name">The name for the HTTP content to add.</param>
+        /// <param name="stream">The stream.</param>
+        /// <param name="fileName">The file name for the HTTP content to add to the collection.</param>
+        public static void Add(this MultipartFormDataContent content, string name, Stream stream, string fileName = null)
+        {
+            if (content == null || stream == null || !stream.CanRead) return;
+            content.Add(new StreamContent(stream), name, fileName);
+        }
+
+        /// <summary>
+        /// Adds a string to a collection of System.Net.Http.HttpContent objects that get serialized to multipart/form-data MIME type.
+        /// </summary>
+        /// <param name="content">The HTTP content of multipart form data.</param>
+        /// <param name="name">The name for the HTTP content to add.</param>
+        /// <param name="value">The property value.</param>
+        /// <param name="encoding">The character encoding to use.</param>
+        public static void Add(this MultipartFormDataContent content, string name, string value, Encoding encoding = null)
+        {
+            if (content == null) return;
+            content.Add(new StringContent(value, encoding ?? Encoding.UTF8), name);
+        }
+
+        /// <summary>
+        /// Adds a string to a collection of System.Net.Http.HttpContent objects that get serialized to multipart/form-data MIME type.
+        /// </summary>
+        /// <param name="content">The HTTP content of multipart form data.</param>
+        /// <param name="name">The name for the HTTP content to add.</param>
+        /// <param name="value">The property value.</param>
+        /// <param name="encoding">The character encoding to use.</param>
+        public static void Add(this MultipartFormDataContent content, string name, int value, Encoding encoding = null)
+        {
+            if (content == null) return;
+            content.Add(new StringContent(value.ToString(), encoding ?? Encoding.UTF8), name);
+        }
+
+        /// <summary>
+        /// Adds a string to a collection of System.Net.Http.HttpContent objects that get serialized to multipart/form-data MIME type.
+        /// </summary>
+        /// <param name="content">The HTTP content of multipart form data.</param>
+        /// <param name="name">The name for the HTTP content to add.</param>
+        /// <param name="value">The property value.</param>
+        /// <param name="encoding">The character encoding to use.</param>
+        public static void Add(this MultipartFormDataContent content, string name, long value, Encoding encoding = null)
+        {
+            if (content == null) return;
+            content.Add(new StringContent(value.ToString(), encoding ?? Encoding.UTF8), name);
+        }
+
+        /// <summary>
+        /// Adds a string to a collection of System.Net.Http.HttpContent objects that get serialized to multipart/form-data MIME type.
+        /// </summary>
+        /// <param name="content">The HTTP content of multipart form data.</param>
+        /// <param name="name">The name for the HTTP content to add.</param>
+        /// <param name="value">The property value.</param>
+        /// <param name="encoding">The character encoding to use.</param>
+        public static void Add(this MultipartFormDataContent content, string name, double value, Encoding encoding = null)
+        {
+            if (content == null) return;
+            content.Add(new StringContent(value.ToString(), encoding ?? Encoding.UTF8), name);
+        }
+
+        /// <summary>
+        /// Adds a string to a collection of System.Net.Http.HttpContent objects that get serialized to multipart/form-data MIME type.
+        /// </summary>
+        /// <param name="content">The HTTP content of multipart form data.</param>
+        /// <param name="name">The name for the HTTP content to add.</param>
+        /// <param name="value">The property value.</param>
+        /// <param name="encoding">The character encoding to use.</param>
+        public static void Add(this MultipartFormDataContent content, string name, DateTime value, Encoding encoding = null)
+        {
+            if (content == null) return;
+            content.Add(new StringContent(Web.WebExtension.ParseDate(value).ToString(), encoding ?? Encoding.UTF8), name);
+        }
+
+        /// <summary>
+        /// Adds a string to a collection of System.Net.Http.HttpContent objects that get serialized to multipart/form-data MIME type.
+        /// </summary>
+        /// <param name="content">The HTTP content of multipart form data.</param>
+        /// <param name="collections">The collection to add.</param>
+        /// <param name="encoding">The character encoding to use.</param>
+        public static void Add(this MultipartFormDataContent content, IDictionary<string, string> collections, Encoding encoding = null)
+        {
+            if (content == null || collections == null) return;
+            foreach (var item in collections)
+            {
+                content.Add(new StringContent(item.Value, encoding ?? Encoding.UTF8), item.Key);
+            }
         }
 
         /// <summary>
@@ -193,16 +368,35 @@ namespace Trivial.Net
         /// <param name="httpClient">The HTTP client.</param>
         /// <param name="request">The HTTP request message to send.</param>
         /// <param name="retryPolicy">The retry policy.</param>
-        /// <param name="retryCheck">A function to check whether the exception thrown should raise retry logic.</param>
+        /// <param name="needRetry">A function to check whether the exception thrown should raise retry logic.</param>
+        /// <param name="completionOption">When the operation should complete.</param>
         /// <param name="cancellationToken">The optional cancellation token to cancel operation.</param>
         /// <returns>The retry result.</returns>
-        public static async Task<Tasks.RetryResult<HttpResponseMessage>> SendAsync(this HttpClient httpClient, HttpRequestMessage request, Tasks.IRetryPolicy retryPolicy, Func<Exception, bool> retryCheck, CancellationToken cancellationToken = default)
+        public static async Task<Tasks.RetryResult<HttpResponseMessage>> SendAsync(this HttpClient httpClient, HttpRequestMessage request, Tasks.IRetryPolicy retryPolicy, Func<Exception, bool> needRetry, HttpCompletionOption completionOption, CancellationToken cancellationToken = default)
+        {
+            if (httpClient == null) throw new ArgumentNullException(nameof(httpClient));
+            return await Tasks.RetryExtension.ProcessAsync(retryPolicy, async (CancellationToken cancellation) =>
+            {
+                return await httpClient.SendAsync(request, completionOption, cancellation);
+            }, needRetry, cancellationToken);
+        }
+
+        /// <summary>
+        /// Sends an HTTP request as an asynchronous operation.
+        /// </summary>
+        /// <param name="httpClient">The HTTP client.</param>
+        /// <param name="request">The HTTP request message to send.</param>
+        /// <param name="retryPolicy">The retry policy.</param>
+        /// <param name="needRetry">A function to check whether the exception thrown should raise retry logic.</param>
+        /// <param name="cancellationToken">The optional cancellation token to cancel operation.</param>
+        /// <returns>The retry result.</returns>
+        public static async Task<Tasks.RetryResult<HttpResponseMessage>> SendAsync(this HttpClient httpClient, HttpRequestMessage request, Tasks.IRetryPolicy retryPolicy, Func<Exception, bool> needRetry, CancellationToken cancellationToken = default)
         {
             if (httpClient == null) throw new ArgumentNullException(nameof(httpClient));
             return await Tasks.RetryExtension.ProcessAsync(retryPolicy, async (CancellationToken cancellation) =>
             {
                 return await httpClient.SendAsync(request, cancellation);
-            }, retryCheck, cancellationToken);
+            }, needRetry, cancellationToken);
         }
     }
 
@@ -210,7 +404,7 @@ namespace Trivial.Net
     /// JSON format serialization HTTP client.
     /// </summary>
     /// <typeparam name="T">The type of the result.</typeparam>
-    public class JsonHttpClient<T>
+    public abstract class BaseJsonHttpClient<T>
     {
         private readonly HttpRequestMessage request = new HttpRequestMessage();
 
@@ -285,8 +479,37 @@ namespace Trivial.Net
                     ? await HttpClientExtension.SerializeAsync(resp.Content, Serializer)
                     : await HttpClientExtension.SerializeJsonAsync<T>(resp.Content);
                 return obj;
-            }, cancellationToken);
+            }, NeedRetry, cancellationToken);
             return result.Result;
+        }
+
+        /// <summary>
+        /// Tests if need retry for the exception catched.
+        /// </summary>
+        /// <param name="exception">The exception thrown to test.</param>
+        /// <returns>true if need retry; otherwise, false.</returns>
+        protected abstract bool NeedRetry(Exception exception);
+    }
+
+    /// <summary>
+    /// JSON format serialization HTTP client.
+    /// </summary>
+    /// <typeparam name="T">The type of the result.</typeparam>
+    public class JsonHttpClient<T> : BaseJsonHttpClient<T>
+    {
+        /// <summary>
+        /// Gets or sets the handler to catch the exception and indicate whether need retry.
+        /// </summary>
+        public Func<Exception, bool> NeedRetryHandler { get; set; }
+
+        /// <summary>
+        /// Tests if need retry for the exception catched.
+        /// </summary>
+        /// <param name="exception">The exception thrown to test.</param>
+        /// <returns>true if need retry; otherwise, false.</returns>
+        protected override bool NeedRetry(Exception exception)
+        {
+            return NeedRetryHandler != null ? NeedRetry(exception) : false;
         }
     }
 }

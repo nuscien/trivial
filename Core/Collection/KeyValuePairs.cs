@@ -18,8 +18,10 @@ namespace Trivial.Collection
         /// </summary>
         /// <param name="key">The key.</param>
         /// <param name="value">The value.</param>
-        public void Add(TKey key, TValue value)
+        /// <param name="clearOthers">true if clear the others of the property before adding; otherwise, false.</param>
+        public void Add(TKey key, TValue value, bool clearOthers = false)
         {
+            if (clearOthers) Remove(key);
             Add(new KeyValuePair<TKey, TValue>(key, value));
         }
 
@@ -54,20 +56,71 @@ namespace Trivial.Collection
         }
 
         /// <summary>
+        /// Tries to get the value of the specific key.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <param name="index">The index of the value.</param>
+        /// <param name="value">The value output.</param>
+        /// <returns>true if has; otherwise, false.</returns>
+        public bool TryGetValue(TKey key, int index, out TValue value)
+        {
+            var list = Values(key).ToList();
+            if (list.Count <= index)
+            {
+                value = default;
+                return false;
+            }
+
+            value = list[index];
+            return true;
+        }
+
+        /// <summary>
+        /// Determines whether the instance contains the specified
+        /// </summary>
+        /// <param name="key">The key to locate in the instance.</param>
+        /// <returns>true if the instance contains an element with the specified key; otherwise, false.</returns>
+        public bool ContainsKey(TKey key)
+        {
+            if (key == null)
+            {
+                foreach (var item in this)
+                {
+                    if (item.Key == null) return true;
+                }
+            }
+            else
+            {
+                foreach (var item in this)
+                {
+                    if (key.Equals(item.Key)) return true;
+                }
+            }
+
+            return false;
+        }
+
+        /// <summary>
         /// Removes all the elements by the specific key.
         /// </summary>
-        /// <param name="key">The key to remove.</param>
+        /// <param name="keys">The keys to remove.</param>
         /// <returns>The number of elements removed from the key value pairs.</returns>
-        public int Remove(TKey key)
+        public int Remove(params TKey[] keys)
         {
-            return key == null ? RemoveAll(item => item.Key == null) : RemoveAll(item => key.Equals(item.Key));
+            var count = 0;
+            foreach (var key in keys)
+            {
+                count = key == null ? RemoveAll(item => item.Key == null) : RemoveAll(item => key.Equals(item.Key));
+            }
+
+            return count;
         }
 
         /// <summary>
         /// Groups the key value pairs.
         /// </summary>
         /// <returns>The groups.</returns>
-        public IEnumerable<IGrouping<TKey, TValue>> ToGroup()
+        public IEnumerable<IGrouping<TKey, TValue>> ToGroups()
         {
             return this.GroupBy(item => item.Key, item => item.Value);
         }
@@ -78,7 +131,7 @@ namespace Trivial.Collection
         /// <returns>A dictionary with key and the value collection.</returns>
         public Dictionary<TKey, IEnumerable<TValue>> ToDictionary()
         {
-            return ToGroup().ToDictionary(item => item.Key, item => item as IEnumerable<TValue>);
+            return ToGroups().ToDictionary(item => item.Key, item => item as IEnumerable<TValue>);
         }
     }
 

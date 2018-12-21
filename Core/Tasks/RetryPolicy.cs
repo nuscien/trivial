@@ -143,14 +143,14 @@ namespace Trivial.Tasks
         /// </summary>
         /// <param name="policy">The retry policy.</param>
         /// <param name="action">The action to process.</param>
-        /// <param name="throwExceptionDirectly">A handler to check if need throw exception instead of retry.</param>
+        /// <param name="needRetry">A handler to check if need retry.</param>
         /// <param name="cancellationToken">The optional cancellation token.</param>
         /// <returns>The retry result.</returns>
-        public static async Task<RetryResult> ProcessAsync(this IRetryPolicy policy, Action action, Func<Exception, bool> throwExceptionDirectly, CancellationToken cancellationToken = default)
+        public static async Task<RetryResult> ProcessAsync(this IRetryPolicy policy, Action action, Func<Exception, bool> needRetry, CancellationToken cancellationToken = default)
         {
             var result = new RetryResult();
             if (action == null) return result;
-            if (throwExceptionDirectly == null) throwExceptionDirectly = ex => true;
+            if (needRetry == null) needRetry = ex => false;
             var retry = policy?.CreateInstance() ?? new InternalRetryInstance();
             while (true)
             {
@@ -164,7 +164,7 @@ namespace Trivial.Tasks
                 catch (Exception ex)
                 {
                     result.Fail(ex);
-                    if (throwExceptionDirectly(ex)) throw;
+                    if (!needRetry(ex)) throw;
                 }
 
                 var span = retry.Next();
@@ -195,14 +195,14 @@ namespace Trivial.Tasks
         /// </summary>
         /// <param name="policy">The retry policy.</param>
         /// <param name="action">The async action to process.</param>
-        /// <param name="throwExceptionDirectly">A handler to check if need throw exception instead of retry.</param>
+        /// <param name="needRetry">A handler to check if need retry.</param>
         /// <param name="cancellationToken">The optional cancellation token.</param>
         /// <returns>The retry result.</returns>
-        public static async Task<RetryResult> ProcessAsync(this IRetryPolicy policy, Func<CancellationToken, Task> action, Func<Exception, bool> throwExceptionDirectly, CancellationToken cancellationToken = default)
+        public static async Task<RetryResult> ProcessAsync(this IRetryPolicy policy, Func<CancellationToken, Task> action, Func<Exception, bool> needRetry, CancellationToken cancellationToken = default)
         {
             var result = new RetryResult();
             if (action == null) return result;
-            if (throwExceptionDirectly == null) throwExceptionDirectly = ex => true;
+            if (needRetry == null) needRetry = ex => false;
             var retry = policy?.CreateInstance() ?? new InternalRetryInstance();
             while (true)
             {
@@ -215,7 +215,7 @@ namespace Trivial.Tasks
                 catch (Exception ex)
                 {
                     result.Fail(ex);
-                    if (throwExceptionDirectly(ex)) throw;
+                    if (!needRetry(ex)) throw;
                 }
 
                 var span = retry.Next();
@@ -259,14 +259,14 @@ namespace Trivial.Tasks
         /// </summary>
         /// <param name="policy">The retry policy.</param>
         /// <param name="action">The async action which will return a result to process.</param>
-        /// <param name="throwExceptionDirectly">A handler to check if need throw exception instead of retry.</param>
+        /// <param name="needRetry">A handler to check if need retry.</param>
         /// <param name="cancellationToken">The optional cancellation token.</param>
         /// <returns>The retry result.</returns>
-        public static async Task<RetryResult<T>> ProcessAsync<T>(this IRetryPolicy policy, Func<CancellationToken, Task<T>> action, Func<Exception, bool> throwExceptionDirectly, CancellationToken cancellationToken = default)
+        public static async Task<RetryResult<T>> ProcessAsync<T>(this IRetryPolicy policy, Func<CancellationToken, Task<T>> action, Func<Exception, bool> needRetry, CancellationToken cancellationToken = default)
         {
             var result = new RetryResult<T>();
             if (action == null) return result;
-            if (throwExceptionDirectly == null) throwExceptionDirectly = ex => true;
+            if (needRetry == null) needRetry = ex => false;
             var retry = policy?.CreateInstance() ?? new InternalRetryInstance();
             while (true)
             {
@@ -280,7 +280,7 @@ namespace Trivial.Tasks
                 catch (Exception ex)
                 {
                     result.Fail(ex);
-                    if (throwExceptionDirectly(ex)) throw;
+                    if (!needRetry(ex)) throw;
                 }
 
                 var span = retry.Next();

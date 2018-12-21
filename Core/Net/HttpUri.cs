@@ -10,7 +10,7 @@ namespace Trivial.Net
     /// <summary>
     /// The HTTP URI struct.
     /// </summary>
-    public class HttpUri : IEquatable<HttpUri>
+    public class HttpUri : IEquatable<HttpUri>, IEquatable<Uri>, IEquatable<string>
     {
         private string host;
         private string path;
@@ -39,7 +39,7 @@ namespace Trivial.Net
                 }
 
                 value = value.Trim();
-                if (value.IndexOf("://") == 0 || value.IndexOf("//") == 0) value = value.Substring(value.IndexOf("//") + 2);
+                if (value.IndexOf("://") >= 0 || value.IndexOf("//") >= 0) value = value.Substring(value.IndexOf("//") + 2);
                 var i = value.Length;
                 var last = new[] { "/", "\\", ":", "?", "#" };
                 foreach (var item in last)
@@ -48,7 +48,9 @@ namespace Trivial.Net
                     if (j >= 0 && j < i) i = j;
                 }
 
-                host = value.Substring(0, i);
+                var atPos = value.IndexOf("@") + 1;
+                if (atPos > i) atPos = 0;
+                host = value.Substring(atPos, i);
             }
         }
 
@@ -86,11 +88,15 @@ namespace Trivial.Net
 
                 value = value.Substring(0, i);
                 var start = value.IndexOf(":");
-                if (start >= 0) value = value.Substring(start + 1);
+                if (start >= 0)
+                {
+                    start = value.IndexOf("/", start);
+                    value = value.Substring(start);
+                }
+
                 path = value;
             }
         }
-
 
         /// <summary>
         /// Gets the query.
@@ -105,11 +111,31 @@ namespace Trivial.Net
         /// <summary>
         /// Determines whether the specified object is equal to the current object.
         /// </summary>
-        /// <param name="other"></param>
-        /// <returns></returns>
+        /// <param name="other">The instance to compare.</param>
+        /// <returns>true if they are equal; otherwise, false.</returns>
         public bool Equals(HttpUri other)
         {
             return other != null && other.ToString() == ToString();
+        }
+
+        /// <summary>
+        /// Determines whether the specified object is equal to the current object.
+        /// </summary>
+        /// <param name="other">The instance to compare.</param>
+        /// <returns>true if they are equal; otherwise, false.</returns>
+        public bool Equals(Uri other)
+        {
+            return other != null && other.ToString() == ToString();
+        }
+
+        /// <summary>
+        /// Determines whether the specified object is equal to the current object.
+        /// </summary>
+        /// <param name="other">The instance to compare.</param>
+        /// <returns>true if they are equal; otherwise, false.</returns>
+        public bool Equals(string other)
+        {
+            return other != null && other == ToString();
         }
 
         /// <summary>
@@ -119,14 +145,30 @@ namespace Trivial.Net
         public override string ToString()
         {
             var str = new StringBuilder();
-            str.Append(IsSecure ? "https" : "http");
-            str.Append(Host);
-            str.Append("/");
             str.AppendFormat("{0}://{1}", IsSecure ? "https" : "http", Host);
-            if (!Port.HasValue || (IsSecure && Port == 443) || (IsSecure && Port == 80)) str.AppendFormat(":{0}", Port);
-            str.AppendFormat("/{0}", Path);
-            if (Query.Count > 0) str.Append(Query.ToString());
-            if (!string.IsNullOrWhiteSpace(Hash)) str.AppendFormat("#{0}", Hash);
+            if (Port.HasValue && Port != (IsSecure ? 443 : 80)) str.AppendFormat(":{0}", Port);
+            if (!string.IsNullOrWhiteSpace(Path))
+            {
+                if (Path[0] != '/') str.Append('/');
+                str.Append(Path);
+            }
+            else
+            {
+                str.Append('/');
+            }
+
+            if (Query.Count > 0)
+            {
+                str.Append('?');
+                str.Append(Query.ToString());
+            }
+
+            if (!string.IsNullOrWhiteSpace(Hash))
+            {
+                if (Hash[0] != '#') str.Append('#');
+                str.Append(Hash);
+            }
+
             return str.ToString();
         }
 
@@ -168,7 +210,16 @@ namespace Trivial.Net
             }
 
             uri.Host = url;
-            uri.Path = url;
+            var pathPos = url.IndexOf("/", hostPos > 0 ? hostPos : 0);
+            var portPos = url.LastIndexOf(":");
+            if (portPos > 0 && portPos > hostPos)
+            {
+                portPos++;
+                var portStr = url.Substring(portPos, (pathPos > 0 ? pathPos : url.Length) - portPos);
+                if (!string.IsNullOrWhiteSpace(portStr) && int.TryParse(portStr, out int port) && port >= 0) uri.Port = (uint)port;
+            }
+
+            if (pathPos >= 0) uri.Path = url.Substring(pathPos);
             var queryPos = url.IndexOf("?");
             var hashPos = url.IndexOf("#");
             if (hashPos >= 0)
@@ -196,7 +247,7 @@ namespace Trivial.Net
         /// <param name="uri">The instance to convert.</param>
         public static implicit operator HttpUri(Uri uri)
         {
-            return uri != null ? Parse(uri.AbsoluteUri.ToString()) : null; ;
+            return uri != null ? Parse(uri.ToString()) : null;
         }
     }
 
