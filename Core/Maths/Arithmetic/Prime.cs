@@ -311,7 +311,7 @@ namespace Trivial.Maths
         /// <returns>The least common multiple.</returns>
         public static int Lcm(int a, int b)
         {
-            return a * b / Gcd(a, b);
+            return a / Gcd(a, b) * b;
         }
 
         /// <summary>
@@ -322,7 +322,7 @@ namespace Trivial.Maths
         /// <returns>The least common multiple.</returns>
         public static long Lcm(long a, long b)
         {
-            return a * b / Gcd(a, b);
+            return a / Gcd(a, b) * b;
         }
     }
 }

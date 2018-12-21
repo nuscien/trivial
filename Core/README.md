@@ -80,6 +80,9 @@ Arithmetic.IsPrime(21474836479); // False
 await Arithmetic.IsPrimeAsync(2305843009213693951); // False
 
 Arithmetic.Factorial(10); // 3628800
+
+Arithmetic.Gcd(192, 128); // 64
+Arithmetic.Lcm(192, 128); // 384
 ```
 
 ### Numbers
