@@ -32,6 +32,16 @@ namespace Trivial.Sample
                 ConsoleLine.End();
             }
 
+            // GCD and LCM.
+            ConsoleLine.Write("gcd({0}, {1}) = {2}.", 192, 128, Maths.Arithmetic.Gcd(192, 128));
+            ConsoleLine.End();
+            ConsoleLine.Write("gcd({0}, {1}) = {2}.", 67, 31, Maths.Arithmetic.Gcd(67, 31));
+            ConsoleLine.End();
+            ConsoleLine.Write("lcm({0}, {1}) = {2}.", 192, 128, Maths.Arithmetic.Lcm(192, 128));
+            ConsoleLine.End();
+            ConsoleLine.Write("lcm({0}, {1}) = {2}.", 67, 31, Maths.Arithmetic.Lcm(67, 31));
+            ConsoleLine.End();
+
             // Factorial.
             ConsoleLine.Write("20! = {0}.", Maths.Arithmetic.Factorial(20));
             ConsoleLine.End();
