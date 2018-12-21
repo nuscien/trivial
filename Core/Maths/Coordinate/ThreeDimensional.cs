@@ -45,8 +45,8 @@ namespace Trivial.Maths
         /// </summary>
         public TUnit X
         {
-            get { return ItemA; }
-            set { ItemA = value; }
+            get => base.ItemA;
+            set => base.ItemA = value;
         }
 
         /// <summary>
@@ -54,8 +54,8 @@ namespace Trivial.Maths
         /// </summary>
         public TUnit Y
         {
-            get { return ItemB; }
-            set { ItemB = value; }
+            get => base.ItemB;
+            set => base.ItemB = value;
         }
 
         /// <summary>
@@ -63,310 +63,26 @@ namespace Trivial.Maths
         /// </summary>
         public TUnit Z
         {
-            get { return ItemC; }
-            set { ItemC = value; }
+            get => base.ItemC;
+            set => base.ItemC = value;
         }
 
-        /// <summary>
-        /// Pluses two points in coordinate.
-        /// leftValue + rightValue
-        /// </summary>
-        /// <param name="leftValue">The left value for addition operator.</param>
-        /// <param name="rightValue">The right value for addition operator.</param>
-        /// <returns>A result after addition.</returns>
-        public static ThreeDimensionalPoint<int> Add(ThreeDimensionalPoint<int> leftValue, ThreeDimensionalPoint<int> rightValue)
+        private new TUnit ItemA
         {
-            if (leftValue == null)
-                throw new ArgumentNullException("leftValue");
-            if (rightValue == null)
-                throw new ArgumentNullException("rightValue");
-            return new ThreeDimensionalPoint<int>
-                       {
-                           X = leftValue.X + rightValue.X,
-                           Y = leftValue.Y + rightValue.Y,
-                           Z = leftValue.Z + rightValue.Z
-                       };
+            get => base.ItemA;
+            set => base.ItemA = value;
         }
 
-        /// <summary>
-        /// Pluses two points in coordinate.
-        /// leftValue + rightValue
-        /// </summary>
-        /// <param name="leftValue">The left value for addition operator.</param>
-        /// <param name="rightValue">The right value for addition operator.</param>
-        /// <returns>A result after addition.</returns>
-        public static ThreeDimensionalPoint<long> Add(ThreeDimensionalPoint<long> leftValue, ThreeDimensionalPoint<long> rightValue)
+        private new TUnit ItemB
         {
-            if (leftValue == null)
-                throw new ArgumentNullException("leftValue");
-            if (rightValue == null)
-                throw new ArgumentNullException("rightValue");
-            return new ThreeDimensionalPoint<long>
-            {
-                X = leftValue.X + rightValue.X,
-                Y = leftValue.Y + rightValue.Y,
-                Z = leftValue.Z + rightValue.Z
-            };
+            get => base.ItemB;
+            set => base.ItemB = value;
         }
 
-        /// <summary>
-        /// Pluses two points in coordinate.
-        /// leftValue + rightValue
-        /// </summary>
-        /// <param name="leftValue">The left value for addition operator.</param>
-        /// <param name="rightValue">The right value for addition operator.</param>
-        /// <returns>A result after addition.</returns>
-        public static ThreeDimensionalPoint<float> Add(ThreeDimensionalPoint<float> leftValue, ThreeDimensionalPoint<float> rightValue)
+        private new TUnit ItemC
         {
-            if (leftValue == null)
-                throw new ArgumentNullException("leftValue");
-            if (rightValue == null)
-                throw new ArgumentNullException("rightValue");
-            return new ThreeDimensionalPoint<float>
-            {
-                X = leftValue.X + rightValue.X,
-                Y = leftValue.Y + rightValue.Y,
-                Z = leftValue.Z + rightValue.Z
-            };
-        }
-
-        /// <summary>
-        /// Pluses two points in coordinate.
-        /// leftValue + rightValue
-        /// </summary>
-        /// <param name="leftValue">The left value for addition operator.</param>
-        /// <param name="rightValue">The right value for addition operator.</param>
-        /// <returns>A result after addition.</returns>
-        public static ThreeDimensionalPoint<double> Add(ThreeDimensionalPoint<double> leftValue, ThreeDimensionalPoint<double> rightValue)
-        {
-            if (leftValue == null)
-                throw new ArgumentNullException("leftValue");
-            if (rightValue == null)
-                throw new ArgumentNullException("rightValue");
-            return new ThreeDimensionalPoint<double>
-            {
-                X = leftValue.X + rightValue.X,
-                Y = leftValue.Y + rightValue.Y,
-                Z = leftValue.Z + rightValue.Z
-            };
-        }
-
-        /// <summary>
-        /// Minuses two points in coordinate.
-        /// leftValue - rightValue
-        /// </summary>
-        /// <param name="leftValue">The left value for subtration operator.</param>
-        /// <param name="rightValue">The right value for subtration operator.</param>
-        /// <returns>A result after subtration.</returns>
-        public static ThreeDimensionalPoint<int> Minus(ThreeDimensionalPoint<int> leftValue, ThreeDimensionalPoint<int> rightValue)
-        {
-            if (leftValue == null)
-                throw new ArgumentNullException("leftValue");
-            if (rightValue == null)
-                throw new ArgumentNullException("rightValue");
-            return new ThreeDimensionalPoint<int>
-            {
-                X = leftValue.X - rightValue.X,
-                Y = leftValue.Y - rightValue.Y,
-                Z = leftValue.Z - rightValue.Z
-            };
-        }
-
-        /// <summary>
-        /// Minuses two points in coordinate.
-        /// leftValue - rightValue
-        /// </summary>
-        /// <param name="leftValue">The left value for subtration operator.</param>
-        /// <param name="rightValue">The right value for subtration operator.</param>
-        /// <returns>A result after subtration.</returns>
-        public static ThreeDimensionalPoint<long> Minus(ThreeDimensionalPoint<long> leftValue, ThreeDimensionalPoint<long> rightValue)
-        {
-            if (leftValue == null)
-                throw new ArgumentNullException("leftValue");
-            if (rightValue == null)
-                throw new ArgumentNullException("rightValue");
-            return new ThreeDimensionalPoint<long>
-            {
-                X = leftValue.X - rightValue.X,
-                Y = leftValue.Y - rightValue.Y,
-                Z = leftValue.Z - rightValue.Z
-            };
-        }
-
-        /// <summary>
-        /// Minuses two points in coordinate.
-        /// leftValue - rightValue
-        /// </summary>
-        /// <param name="leftValue">The left value for subtration operator.</param>
-        /// <param name="rightValue">The right value for subtration operator.</param>
-        /// <returns>A result after subtration.</returns>
-        public static ThreeDimensionalPoint<float> Minus(ThreeDimensionalPoint<float> leftValue, ThreeDimensionalPoint<float> rightValue)
-        {
-            if (leftValue == null)
-                throw new ArgumentNullException("leftValue");
-            if (rightValue == null)
-                throw new ArgumentNullException("rightValue");
-            return new ThreeDimensionalPoint<float>
-            {
-                X = leftValue.X - rightValue.X,
-                Y = leftValue.Y - rightValue.Y,
-                Z = leftValue.Z - rightValue.Z
-            };
-        }
-
-        /// <summary>
-        /// Minuses two points in coordinate.
-        /// leftValue - rightValue
-        /// </summary>
-        /// <param name="leftValue">The left value for addition operator.</param>
-        /// <param name="rightValue">The right value for addition operator.</param>
-        /// <returns>A result after addition.</returns>
-        public static ThreeDimensionalPoint<double> Minus(ThreeDimensionalPoint<double> leftValue, ThreeDimensionalPoint<double> rightValue)
-        {
-            if (leftValue == null)
-                throw new ArgumentNullException("leftValue");
-            if (rightValue == null)
-                throw new ArgumentNullException("rightValue");
-            return new ThreeDimensionalPoint<double>
-            {
-                X = leftValue.X - rightValue.X,
-                Y = leftValue.Y - rightValue.Y,
-                Z = leftValue.Z - rightValue.Z
-            };
-        }
-
-        /// <summary>
-        /// Negates a specific point in coordinate.
-        /// </summary>
-        /// <param name="value">A value to create mirror.</param>
-        /// <returns>A result mirrored with the specific point in coordinate.</returns>
-        public static ThreeDimensionalPoint<int> Negate(ThreeDimensionalPoint<int> value)
-        {
-            if (value == null)
-                throw new ArgumentNullException("value");
-            return new ThreeDimensionalPoint<int>
-            {
-                X = -value.X,
-                Y = -value.Y,
-                Z = -value.Z
-            };
-        }
-
-        /// <summary>
-        /// Negates a specific point in coordinate.
-        /// </summary>
-        /// <param name="value">A value to create mirror.</param>
-        /// <returns>A result mirrored with the specific point in coordinate.</returns>
-        public static ThreeDimensionalPoint<long> Negate(ThreeDimensionalPoint<long> value)
-        {
-            if (value == null)
-                throw new ArgumentNullException("value");
-            return new ThreeDimensionalPoint<long>
-            {
-                X = -value.X,
-                Y = -value.Y,
-                Z = -value.Z
-            };
-        }
-
-        /// <summary>
-        /// Negates a specific point in coordinate.
-        /// </summary>
-        /// <param name="value">A value to create mirror.</param>
-        /// <returns>A result mirrored with the specific point in coordinate.</returns>
-        public static ThreeDimensionalPoint<float> Negate(ThreeDimensionalPoint<float> value)
-        {
-            if (value == null)
-                throw new ArgumentNullException("value");
-            return new ThreeDimensionalPoint<float>
-            {
-                X = -value.X,
-                Y = -value.Y,
-                Z = -value.Z
-            };
-        }
-
-        /// <summary>
-        /// Negates a specific point in coordinate.
-        /// </summary>
-        /// <param name="value">A value to create mirror.</param>
-        /// <returns>A result mirrored with the specific point in coordinate.</returns>
-        public static ThreeDimensionalPoint<double> Negate(ThreeDimensionalPoint<double> value)
-        {
-            if (value == null)
-                throw new ArgumentNullException("value");
-            return new ThreeDimensionalPoint<double>
-            {
-                X = -value.X,
-                Y = -value.Y,
-                Z = -value.Z
-            };
-        }
-
-        /// <summary>
-        /// Gets the distance between specific two points.
-        /// </summary>
-        /// <param name="pointA">One of points to begin.</param>
-        /// <param name="pointB">Another point to end.</param>
-        /// <returns>A distance between two points.</returns>
-        public double GetDistance(ThreeDimensionalPoint<int> pointA, ThreeDimensionalPoint<int> pointB)
-        {
-            if (pointA == null)
-                throw new ArgumentNullException("pointA");
-            if (pointB == null)
-                throw new ArgumentNullException("pointB");
-            return Math.Sqrt((pointB.X - pointA.X) ^ 2 + (pointB.Y - pointA.Y) ^ 2 + (pointB.Z - pointA.Z) ^ 2);
-        }
-
-        /// <summary>
-        /// Gets the distance between specific two points.
-        /// </summary>
-        /// <param name="pointA">One of points to begin.</param>
-        /// <param name="pointB">Another point to end.</param>
-        /// <returns>A distance between two points.</returns>
-        public double GetDistance(ThreeDimensionalPoint<long> pointA, ThreeDimensionalPoint<long> pointB)
-        {
-            if (pointA == null)
-                throw new ArgumentNullException("pointA");
-            if (pointB == null)
-                throw new ArgumentNullException("pointB");
-            return Math.Sqrt((pointB.X - pointA.X) ^ 2 + (pointB.Y - pointA.Y) ^ 2 + (pointB.Z - pointA.Z) ^ 2);
-        }
-
-        /// <summary>
-        /// Gets the distance between specific two points.
-        /// </summary>
-        /// <param name="pointA">One of points to begin.</param>
-        /// <param name="pointB">Another point to end.</param>
-        /// <returns>A distance between two points.</returns>
-        public double GetDistance(ThreeDimensionalPoint<float> pointA, ThreeDimensionalPoint<float> pointB)
-        {
-            if (pointA == null)
-                throw new ArgumentNullException("pointA");
-            if (pointB == null)
-                throw new ArgumentNullException("pointB");
-            var numA = pointB.X - pointA.X;
-            var numB = pointB.Y - pointA.Y;
-            var numC = pointB.Z - pointA.Z;
-            return Math.Sqrt(numA * numA + numB * numB + numC * numC);
-        }
-
-        /// <summary>
-        /// Gets the distance between specific two points.
-        /// </summary>
-        /// <param name="pointA">One of points to begin.</param>
-        /// <param name="pointB">Another point to end.</param>
-        /// <returns>A distance between two points.</returns>
-        public double GetDistance(ThreeDimensionalPoint<double> pointA, ThreeDimensionalPoint<double> pointB)
-        {
-            if (pointA == null)
-                throw new ArgumentNullException("pointA");
-            if (pointB == null)
-                throw new ArgumentNullException("pointB");
-            var numA = pointB.X - pointA.X;
-            var numB = pointB.Y - pointA.Y;
-            var numC = pointB.Z - pointA.Z;
-            return Math.Sqrt(numA * numA + numB * numB + numC * numC);
+            get => base.ItemC;
+            set => base.ItemC = value;
         }
 
         /// <summary>

@@ -47,8 +47,8 @@ namespace Trivial.Maths
         /// </summary>
         public TUnit X
         {
-            get { return ItemA; }
-            set { ItemA = value; }
+            get => base.ItemA;
+            set => base.ItemA = value;
         }
 
         /// <summary>
@@ -56,8 +56,8 @@ namespace Trivial.Maths
         /// </summary>
         public TUnit Y
         {
-            get { return ItemB; }
-            set { ItemB = value; }
+            get => base.ItemB;
+            set => base.ItemB = value;
         }
 
         /// <summary>
@@ -65,8 +65,8 @@ namespace Trivial.Maths
         /// </summary>
         public TUnit Z
         {
-            get { return ItemC; }
-            set { ItemC = value; }
+            get => base.ItemC;
+            set => base.ItemC = value;
         }
 
         /// <summary>
@@ -74,256 +74,32 @@ namespace Trivial.Maths
         /// </summary>
         public TUnit T
         {
-            get { return ItemD; }
-            set { ItemD = value; }
+            get => base.ItemD;
+            set => base.ItemD = value;
         }
 
-        /// <summary>
-        /// Pluses two points in coordinate.
-        /// leftValue + rightValue
-        /// </summary>
-        /// <param name="leftValue">The left value for addition operator.</param>
-        /// <param name="rightValue">The right value for addition operator.</param>
-        /// <returns>A result after addition.</returns>
-        public static FourDimensionalPoint<int> Add(FourDimensionalPoint<int> leftValue, FourDimensionalPoint<int> rightValue)
+        private new TUnit ItemA
         {
-            if (leftValue == null)
-                throw new ArgumentNullException("leftValue");
-            if (rightValue == null)
-                throw new ArgumentNullException("rightValue");
-            return new FourDimensionalPoint<int>
-            {
-                X = leftValue.X + rightValue.X,
-                Y = leftValue.Y + rightValue.Y,
-                Z = leftValue.Z - rightValue.Z,
-                T = leftValue.T + rightValue.T
-            };
+            get => base.ItemA;
+            set => base.ItemA = value;
         }
 
-        /// <summary>
-        /// Pluses two points in coordinate.
-        /// leftValue + rightValue
-        /// </summary>
-        /// <param name="leftValue">The left value for addition operator.</param>
-        /// <param name="rightValue">The right value for addition operator.</param>
-        /// <returns>A result after addition.</returns>
-        public static FourDimensionalPoint<long> Add(FourDimensionalPoint<long> leftValue, FourDimensionalPoint<long> rightValue)
+        private new TUnit ItemB
         {
-            if (leftValue == null)
-                throw new ArgumentNullException("leftValue");
-            if (rightValue == null)
-                throw new ArgumentNullException("rightValue");
-            return new FourDimensionalPoint<long>
-            {
-                X = leftValue.X + rightValue.X,
-                Y = leftValue.Y + rightValue.Y,
-                Z = leftValue.Z - rightValue.Z,
-                T = leftValue.T + rightValue.T
-            };
+            get => base.ItemB;
+            set => base.ItemB = value;
         }
 
-        /// <summary>
-        /// Pluses two points in coordinate.
-        /// leftValue + rightValue
-        /// </summary>
-        /// <param name="leftValue">The left value for addition operator.</param>
-        /// <param name="rightValue">The right value for addition operator.</param>
-        /// <returns>A result after addition.</returns>
-        public static FourDimensionalPoint<float> Add(FourDimensionalPoint<float> leftValue, FourDimensionalPoint<float> rightValue)
+        private new TUnit ItemC
         {
-            if (leftValue == null)
-                throw new ArgumentNullException("leftValue");
-            if (rightValue == null)
-                throw new ArgumentNullException("rightValue");
-            return new FourDimensionalPoint<float>
-            {
-                X = leftValue.X + rightValue.X,
-                Y = leftValue.Y + rightValue.Y,
-                Z = leftValue.Z - rightValue.Z,
-                T = leftValue.T + rightValue.T
-            };
+            get => base.ItemC;
+            set => base.ItemC = value;
         }
 
-        /// <summary>
-        /// Pluses two points in coordinate.
-        /// leftValue + rightValue
-        /// </summary>
-        /// <param name="leftValue">The left value for addition operator.</param>
-        /// <param name="rightValue">The right value for addition operator.</param>
-        /// <returns>A result after addition.</returns>
-        public static FourDimensionalPoint<double> Add(FourDimensionalPoint<double> leftValue, FourDimensionalPoint<double> rightValue)
+        private new TUnit ItemD
         {
-            if (leftValue == null)
-                throw new ArgumentNullException("leftValue");
-            if (rightValue == null)
-                throw new ArgumentNullException("rightValue");
-            return new FourDimensionalPoint<double>
-            {
-                X = leftValue.X + rightValue.X,
-                Y = leftValue.Y + rightValue.Y,
-                Z = leftValue.Z - rightValue.Z,
-                T = leftValue.T + rightValue.T
-            };
-        }
-
-        /// <summary>
-        /// Minuses two points in coordinate.
-        /// leftValue - rightValue
-        /// </summary>
-        /// <param name="leftValue">The left value for subtration operator.</param>
-        /// <param name="rightValue">The right value for subtration operator.</param>
-        /// <returns>A result after subtration.</returns>
-        public static FourDimensionalPoint<int> Minus(FourDimensionalPoint<int> leftValue, FourDimensionalPoint<int> rightValue)
-        {
-            if (leftValue == null)
-                throw new ArgumentNullException("leftValue");
-            if (rightValue == null)
-                throw new ArgumentNullException("rightValue");
-            return new FourDimensionalPoint<int>
-            {
-                X = leftValue.X - rightValue.X,
-                Y = leftValue.Y - rightValue.Y,
-                Z = leftValue.Z - rightValue.Z,
-                T = leftValue.T - rightValue.T
-            };
-        }
-
-        /// <summary>
-        /// Minuses two points in coordinate.
-        /// leftValue - rightValue
-        /// </summary>
-        /// <param name="leftValue">The left value for subtration operator.</param>
-        /// <param name="rightValue">The right value for subtration operator.</param>
-        /// <returns>A result after subtration.</returns>
-        public static FourDimensionalPoint<long> Minus(FourDimensionalPoint<long> leftValue, FourDimensionalPoint<long> rightValue)
-        {
-            if (leftValue == null)
-                throw new ArgumentNullException("leftValue");
-            if (rightValue == null)
-                throw new ArgumentNullException("rightValue");
-            return new FourDimensionalPoint<long>
-            {
-                X = leftValue.X - rightValue.X,
-                Y = leftValue.Y - rightValue.Y,
-                Z = leftValue.Z - rightValue.Z,
-                T = leftValue.T - rightValue.T
-            };
-        }
-
-        /// <summary>
-        /// Minuses two points in coordinate.
-        /// leftValue - rightValue
-        /// </summary>
-        /// <param name="leftValue">The left value for subtration operator.</param>
-        /// <param name="rightValue">The right value for subtration operator.</param>
-        /// <returns>A result after subtration.</returns>
-        public static FourDimensionalPoint<float> Minus(FourDimensionalPoint<float> leftValue, FourDimensionalPoint<float> rightValue)
-        {
-            if (leftValue == null)
-                throw new ArgumentNullException("leftValue");
-            if (rightValue == null)
-                throw new ArgumentNullException("rightValue");
-            return new FourDimensionalPoint<float>
-            {
-                X = leftValue.X - rightValue.X,
-                Y = leftValue.Y - rightValue.Y,
-                Z = leftValue.Z - rightValue.Z,
-                T = leftValue.T - rightValue.T
-            };
-        }
-
-        /// <summary>
-        /// Minuses two points in coordinate.
-        /// leftValue - rightValue
-        /// </summary>
-        /// <param name="leftValue">The left value for addition operator.</param>
-        /// <param name="rightValue">The right value for addition operator.</param>
-        /// <returns>A result after addition.</returns>
-        public static FourDimensionalPoint<double> Minus(FourDimensionalPoint<double> leftValue, FourDimensionalPoint<double> rightValue)
-        {
-            if (leftValue == null)
-                throw new ArgumentNullException("leftValue");
-            if (rightValue == null)
-                throw new ArgumentNullException("rightValue");
-            return new FourDimensionalPoint<double>
-            {
-                X = leftValue.X - rightValue.X,
-                Y = leftValue.Y - rightValue.Y,
-                Z = leftValue.Z - rightValue.Z,
-                T = leftValue.T - rightValue.T
-            };
-        }
-
-        /// <summary>
-        /// Negates a specific point in coordinate.
-        /// </summary>
-        /// <param name="value">A value to create mirror.</param>
-        /// <returns>A result mirrored with the specific point in coordinate.</returns>
-        public static FourDimensionalPoint<int> Negate(FourDimensionalPoint<int> value)
-        {
-            if (value == null)
-                throw new ArgumentNullException("value");
-            return new FourDimensionalPoint<int>
-            {
-                X = -value.X,
-                Y = -value.Y,
-                Z = -value.Z,
-                T = -value.T
-            };
-        }
-
-        /// <summary>
-        /// Negates a specific point in coordinate.
-        /// </summary>
-        /// <param name="value">A value to create mirror.</param>
-        /// <returns>A result mirrored with the specific point in coordinate.</returns>
-        public static FourDimensionalPoint<long> Negate(FourDimensionalPoint<long> value)
-        {
-            if (value == null)
-                throw new ArgumentNullException("value");
-            return new FourDimensionalPoint<long>
-            {
-                X = -value.X,
-                Y = -value.Y,
-                Z = -value.Z,
-                T = -value.T
-            };
-        }
-
-        /// <summary>
-        /// Negates a specific point in coordinate.
-        /// </summary>
-        /// <param name="value">A value to create mirror.</param>
-        /// <returns>A result mirrored with the specific point in coordinate.</returns>
-        public static FourDimensionalPoint<float> Negate(FourDimensionalPoint<float> value)
-        {
-            if (value == null)
-                throw new ArgumentNullException("value");
-            return new FourDimensionalPoint<float>
-            {
-                X = -value.X,
-                Y = -value.Y,
-                Z = -value.Z,
-                T = -value.T
-            };
-        }
-
-        /// <summary>
-        /// Negates a specific point in coordinate.
-        /// </summary>
-        /// <param name="value">A value to create mirror.</param>
-        /// <returns>A result mirrored with the specific point in coordinate.</returns>
-        public static FourDimensionalPoint<double> Negate(FourDimensionalPoint<double> value)
-        {
-            if (value == null)
-                throw new ArgumentNullException("value");
-            return new FourDimensionalPoint<double>
-            {
-                X = -value.X,
-                Y = -value.Y,
-                Z = -value.Z,
-                T = -value.T
-            };
+            get => base.ItemD;
+            set => base.ItemD = value;
         }
  
         /// <summary>
@@ -348,7 +124,74 @@ namespace Trivial.Maths
                 t = string.Format(quoteStr, t.Replace("\"", "\\\""));
             }
 
-            return string.Format("X = {0}{1} Y = {2}{1} Z = {3}", x, sep ? ";" : ",", y, z, t);
+            return string.Format("X = {0}{1} Y = {2}{1} Z = {3} T = {4}", x, sep ? ";" : ",", y, z, t);
+        }
+    }
+
+    /// <summary>
+    /// The generic 4D (time and space) coordinate point.
+    /// </summary>
+    /// <typeparam name="TSpaceUnit">The type of space unit.</typeparam>
+    /// <typeparam name="TTimeUnit">The type of time unit.</typeparam>
+    public class FourDimensionalPoint<TSpaceUnit, TTimeUnit> : ThreeDimensionalPoint<TSpaceUnit>
+        where TSpaceUnit : struct, IComparable<TSpaceUnit>, IEquatable<TSpaceUnit>
+        where TTimeUnit : struct, IComparable<TTimeUnit>, IEquatable<TTimeUnit>
+    {
+        /// <summary>
+        /// Initializes a new instance of the FourDimensionalPoint class.
+        /// </summary>
+        /// <remarks>You can use this to initialize an instance for the class.</remarks>
+        public FourDimensionalPoint()
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the FourDimensionalPoint class.
+        /// </summary>
+        /// <param name="x">The value of X.</param>
+        /// <param name="y">The value of Y.</param>
+        /// <param name="z">The value of Z.</param>
+        /// <param name="t">The value of T.</param>
+        /// <remarks>You can use this to initialize an instance for the class.</remarks>
+        public FourDimensionalPoint(TSpaceUnit x, TSpaceUnit y, TSpaceUnit z, TTimeUnit t)
+        {
+            X = x;
+            Y = y;
+            Z = z;
+            T = t;
+        }
+
+        /// <summary>
+        /// Gets or sets the value of T (time). The value is same as ItemD.
+        /// </summary>
+        public TTimeUnit T
+        {
+            get; set;
+        }
+
+        /// <summary>
+        /// Returns the point string value of this instance.
+        /// </summary>
+        /// <returns>A System.String containing this point.</returns>
+        public override string ToString()
+        {
+            var x = X.ToString();
+            var y = Y.ToString();
+            var z = Z.ToString();
+            var t = T.ToString();
+            var longStr = string.Format("{0} - {1} - {2} - {3}", x, y, z, t);
+            var sep = false;
+            if (longStr.IndexOfAny(new[] { ',', ';' }) > -1) sep = true;
+            if (!sep && longStr.IndexOf(';') > -1)
+            {
+                const string quoteStr = "\"{0}\"";
+                x = string.Format(quoteStr, x.Replace("\"", "\\\""));
+                y = string.Format(quoteStr, y.Replace("\"", "\\\""));
+                z = string.Format(quoteStr, z.Replace("\"", "\\\""));
+                t = string.Format(quoteStr, t.Replace("\"", "\\\""));
+            }
+
+            return string.Format("X = {0}{1} Y = {2}{1} Z = {3} T = {4}", x, sep ? ";" : ",", y, z, t);
         }
     }
 }
