@@ -166,6 +166,35 @@ namespace Trivial.Geography
     public class PlaneGeolocation : IEquatable<PlaneGeolocation>
     {
         /// <summary>
+        /// Initializes a new instance of the PlaneGeolocation class.
+        /// </summary>
+        public PlaneGeolocation()
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the PlaneGeolocation class.
+        /// </summary>
+        /// <param name="latitude">The latitude.</param>
+        /// <param name="longitude">The longitude.</param>
+        public PlaneGeolocation(Latitude latitude, Longitude longitude)
+        {
+            Latitude = latitude;
+            Longitude = longitude;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the PlaneGeolocation class.
+        /// </summary>
+        /// <param name="latitude">The latitude.</param>
+        /// <param name="longitude">The longitude.</param>
+        /// <param name="radiusDeviation">The radius deviation in meters.</param>
+        public PlaneGeolocation(Latitude latitude, Longitude longitude, double radiusDeviation) : this(latitude, longitude)
+        {
+            RadiusDeviation = radiusDeviation;
+        }
+
+        /// <summary>
         /// Gets or sets the radius deviation in meters.
         /// </summary>
         public double RadiusDeviation { get; set; }
@@ -260,7 +289,77 @@ namespace Trivial.Geography
     public class Geolocation : PlaneGeolocation, IEquatable<Geolocation>
     {
         /// <summary>
-        /// Gets or sets the description.
+        /// Initializes a new instance of the Geolocation class.
+        /// </summary>
+        public Geolocation()
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the Geolocation class.
+        /// </summary>
+        /// <param name="latitude">The latitude.</param>
+        /// <param name="longitude">The longitude.</param>
+        public Geolocation(Latitude latitude, Longitude longitude) : base(latitude, longitude)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the Geolocation class.
+        /// </summary>
+        /// <param name="latitude">The latitude.</param>
+        /// <param name="longitude">The longitude.</param>
+        /// <param name="altitude">The altitude.</param>
+        public Geolocation(Latitude latitude, Longitude longitude, double altitude) : base(latitude, longitude)
+        {
+            Altitude = altitude;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the Geolocation class.
+        /// </summary>
+        /// <param name="latitude">The latitude.</param>
+        /// <param name="longitude">The longitude.</param>
+        /// <param name="altitude">The altitude.</param>
+        /// <param name="desc">The place description.</param>
+        public Geolocation(Latitude latitude, Longitude longitude, double altitude, string desc) : base(latitude, longitude)
+        {
+            Altitude = altitude;
+            Description = desc;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the Geolocation class.
+        /// </summary>
+        /// <param name="latitude">The latitude.</param>
+        /// <param name="longitude">The longitude.</param>
+        /// <param name="altitude">The altitude.</param>
+        /// <param name="radiusDeviation">The radius deviation in meters.</param>
+        /// <param name="altitudeDeviation">The altitude deviation in meters.</param>
+        public Geolocation(Latitude latitude, Longitude longitude, double altitude, double radiusDeviation, double altitudeDeviation) : base(latitude, longitude, radiusDeviation)
+        {
+            Altitude = altitude;
+            AltitudeDeviation = altitudeDeviation;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the Geolocation class.
+        /// </summary>
+        /// <param name="latitude">The latitude.</param>
+        /// <param name="longitude">The longitude.</param>
+        /// <param name="altitude">The altitude.</param>
+        /// <param name="desc">The place description.</param>
+        /// <param name="radiusDeviation">The radius deviation in meters.</param>
+        /// <param name="altitudeDeviation">The altitude deviation in meters.</param>
+        public Geolocation(Latitude latitude, Longitude longitude, double altitude, string desc, double radiusDeviation, double altitudeDeviation) : base(latitude, longitude, radiusDeviation)
+        {
+            Altitude = altitude;
+            AltitudeDeviation = altitudeDeviation;
+            Description = desc;
+        }
+
+        /// <summary>
+        /// Gets or sets the place description.
         /// </summary>
         public string Description { get; set; }
 

@@ -159,4 +159,4 @@ using Trivial.Geography;
 
 ### Geolocation
 
-You can use `Geolocation` class for geolocation information.
+You can use `Geolocation`, `Latitude`, `Longitude` and other models for geolocation information.
