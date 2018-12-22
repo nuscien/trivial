@@ -85,10 +85,9 @@ namespace Trivial.Maths
     /// </summary>
     public class DoubleOneDimensionalPoint
         : OneDimensionalPoint<double>,
-        IAdditionCapable<DoubleOneDimensionalPoint>,
-        ISubtractionCapable<DoubleOneDimensionalPoint>,
-        INegationCapable<DoubleOneDimensionalPoint>,
+        IAdvancedAdditionCapable<DoubleOneDimensionalPoint>,
         IComparable<OneDimensionalPoint<double>>,
+        IComparable<OneDimensionalPoint<int>>,
         IComparable<double>,
         IComparable<int>
     {
@@ -108,6 +107,17 @@ namespace Trivial.Maths
         public DoubleOneDimensionalPoint(double x) : base(x)
         {
         }
+
+        /// <summary>
+        /// Gets a value indicating whether the current element is negative.
+        /// true if it is positve or zero; otherwise, false.
+        /// </summary>
+        public bool IsNegative => X < 0;
+
+        /// <summary>
+        /// Gets a value indicating whether the current element is a unit element of zero.
+        /// </summary>
+        public bool IsZero => X == 0;
 
         /// <summary>
         /// Pluses another value to return. Current value will not be changed.
@@ -207,6 +217,16 @@ namespace Trivial.Maths
         }
 
         /// <summary>
+        /// Gets a unit element for addition and subtraction.
+        /// 0
+        /// </summary>
+        /// <returns>An element zero for the value.</returns>
+        public DoubleOneDimensionalPoint GetElementZero()
+        {
+            return new DoubleOneDimensionalPoint(0);
+        }
+
+        /// <summary>
         /// Compares the current object with another object of the same type.
         /// </summary>
         /// <returns>
@@ -218,7 +238,24 @@ namespace Trivial.Maths
         /// <param name="other">An object to compare with this object.</param>
         public int CompareTo(OneDimensionalPoint<double> other)
         {
-            return X.CompareTo(other == null ? 0 : other.X);
+            if (other == null) return X.CompareTo(null);
+            return X.CompareTo(other.X);
+        }
+
+        /// <summary>
+        /// Compares the current object with another object of the same type.
+        /// </summary>
+        /// <returns>
+        /// A value that indicates the relative order of the objects being compared. The return value has the following meanings:
+        /// Value Meaning Less than zero This object is less than the <paramref name="other"/> parameter.
+        /// Zero This object is equal to <paramref name="other"/>.
+        /// Greater than zero This object is greater than <paramref name="other"/>. 
+        /// </returns>
+        /// <param name="other">An object to compare with this object.</param>
+        public int CompareTo(OneDimensionalPoint<int> other)
+        {
+            if (other == null) return X.CompareTo(null);
+            return X.CompareTo(other.X);
         }
 
         /// <summary>
@@ -264,6 +301,15 @@ namespace Trivial.Maths
         /// Converts a number to one dimensional point.
         /// </summary>
         /// <param name="value">The point.</param>
+        public static implicit operator DoubleOneDimensionalPoint(long value)
+        {
+            return new DoubleOneDimensionalPoint(value);
+        }
+
+        /// <summary>
+        /// Converts a number to one dimensional point.
+        /// </summary>
+        /// <param name="value">The point.</param>
         public static implicit operator DoubleOneDimensionalPoint(int value)
         {
             return new DoubleOneDimensionalPoint(value);
@@ -297,9 +343,8 @@ namespace Trivial.Maths
     /// </summary>
     public class Int32OneDimensionalPoint
         : OneDimensionalPoint<int>,
-        IAdditionCapable<Int32OneDimensionalPoint>,
-        ISubtractionCapable<Int32OneDimensionalPoint>,
-        INegationCapable<Int32OneDimensionalPoint>,
+        IAdvancedAdditionCapable<Int32OneDimensionalPoint>,
+        IComparable<OneDimensionalPoint<double>>,
         IComparable<OneDimensionalPoint<int>>,
         IComparable<double>,
         IComparable<int>
@@ -320,6 +365,17 @@ namespace Trivial.Maths
         public Int32OneDimensionalPoint(int x) : base(x)
         {
         }
+
+        /// <summary>
+        /// Gets a value indicating whether the current element is negative.
+        /// true if it is positve or zero; otherwise, false.
+        /// </summary>
+        public bool IsNegative => X < 0;
+
+        /// <summary>
+        /// Gets a value indicating whether the current element is a unit element of zero.
+        /// </summary>
+        public bool IsZero => X == 0;
 
         /// <summary>
         /// Pluses another value to return. Current value will not be changed.
@@ -393,6 +449,32 @@ namespace Trivial.Maths
         }
 
         /// <summary>
+        /// Gets a unit element for addition and subtraction.
+        /// 0
+        /// </summary>
+        /// <returns>An element zero for the value.</returns>
+        public Int32OneDimensionalPoint GetElementZero()
+        {
+            return new Int32OneDimensionalPoint(0);
+        }
+
+        /// <summary>
+        /// Compares the current object with another object of the same type.
+        /// </summary>
+        /// <returns>
+        /// A value that indicates the relative order of the objects being compared. The return value has the following meanings:
+        /// Value Meaning Less than zero This object is less than the <paramref name="other"/> parameter.
+        /// Zero This object is equal to <paramref name="other"/>.
+        /// Greater than zero This object is greater than <paramref name="other"/>. 
+        /// </returns>
+        /// <param name="other">An object to compare with this object.</param>
+        public int CompareTo(OneDimensionalPoint<double> other)
+        {
+            if (other == null) return X.CompareTo(null);
+            return X.CompareTo(other.X);
+        }
+
+        /// <summary>
         /// Compares the current object with another object of the same type.
         /// </summary>
         /// <returns>
@@ -404,7 +486,8 @@ namespace Trivial.Maths
         /// <param name="other">An object to compare with this object.</param>
         public int CompareTo(OneDimensionalPoint<int> other)
         {
-            return X.CompareTo(other == null ? 0 : other.X);
+            if (other == null) return X.CompareTo(null);
+            return X.CompareTo(other.X);
         }
 
         /// <summary>

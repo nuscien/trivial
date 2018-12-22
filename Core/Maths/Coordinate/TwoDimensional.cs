@@ -13,6 +13,57 @@ using System;
 namespace Trivial.Maths
 {
     /// <summary>
+    /// Quadrants.
+    /// </summary>
+    public enum Quadrants
+    {
+        /// <summary>
+        /// Origin, X is 0 and Y is 0.
+        /// </summary>
+        Origin = 0,
+
+        /// <summary>
+        /// Quadrant I, X is positive and Y is postivie.
+        /// </summary>
+        I = 1,
+
+        /// <summary>
+        /// Quadrant II, X is positive and Y is negative.
+        /// </summary>
+        II = 2,
+
+        /// <summary>
+        /// Quadrant III, X is negative and Y is negative.
+        /// </summary>
+        III = 3,
+
+        /// <summary>
+        /// Quadrant IV, X is negative and Y is positive.
+        /// </summary>
+        IV = 4,
+
+        /// <summary>
+        /// The positive X-axis part.
+        /// </summary>
+        PositiveXAxis = 5,
+
+        /// <summary>
+        /// The negative X-axis part.
+        /// </summary>
+        NegativeXAxis = 6,
+
+        /// <summary>
+        /// The positive Y-axis part.
+        /// </summary>
+        PositiveYAxis = 7,
+
+        /// <summary>
+        /// The negative Y-axis part.
+        /// </summary>
+        NegativeYAxis = 8,
+    }
+
+    /// <summary>
     /// The generic 2D (plane) coordinate point.
     /// </summary>
     /// <typeparam name="TUnit">The type of unit.</typeparam>
@@ -130,6 +181,30 @@ namespace Trivial.Maths
         /// <remarks>You can use this to initialize an instance for the class.</remarks>
         public DoubleTwoDimensionalPoint(double x, double y) : base(x, y)
         {
+        }
+
+        /// <summary>
+        /// Gets the quadrant.
+        /// </summary>
+        public Quadrants Quadrant
+        {
+            get
+            {
+                if (X == 0)
+                {
+                    if (Y == 0) return Quadrants.Origin;
+                    return Y > 0 ? Quadrants.PositiveYAxis : Quadrants.NegativeYAxis;
+                }
+
+                if (X > 0)
+                {
+                    if (Y == 0) return Quadrants.PositiveXAxis;
+                    return Y > 0 ? Quadrants.I : Quadrants.IV;
+                }
+
+                if (Y == 0) return Quadrants.NegativeXAxis;
+                return Y > 0 ? Quadrants.II : Quadrants.III;
+            }
         }
 
         /// <summary>
@@ -273,6 +348,30 @@ namespace Trivial.Maths
         /// <remarks>You can use this to initialize an instance for the class.</remarks>
         public Int32TwoDimensionalPoint(int x, int y) : base(x, y)
         {
+        }
+
+        /// <summary>
+        /// Gets the quadrant.
+        /// </summary>
+        public Quadrants Quadrant
+        {
+            get
+            {
+                if (X == 0)
+                {
+                    if (Y == 0) return Quadrants.Origin;
+                    return Y > 0 ? Quadrants.PositiveYAxis : Quadrants.NegativeYAxis;
+                }
+
+                if (X > 0)
+                {
+                    if (Y == 0) return Quadrants.PositiveXAxis;
+                    return Y > 0 ? Quadrants.I : Quadrants.IV;
+                }
+
+                if (Y == 0) return Quadrants.NegativeXAxis;
+                return Y > 0 ? Quadrants.II : Quadrants.III;
+            }
         }
 
         /// <summary>

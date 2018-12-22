@@ -193,5 +193,160 @@ namespace Trivial.Maths
 
             return string.Format("X = {0}{1} Y = {2}{1} Z = {3} T = {4}", x, sep ? ";" : ",", y, z, t);
         }
+
+        /// <summary>
+        /// Determines whether the specified object is equal to the current object.
+        /// </summary>
+        /// <param name="other">The object to compare with the current object.</param>
+        /// <returns>true if the specified object is equal to the current object; otherwise, false.</returns>
+        public virtual bool Equals(FourDimensionalPoint<TSpaceUnit, TTimeUnit> other)
+        {
+            return other != null && X.Equals(other.X) && Y.Equals(other.Y) && Z.Equals(other.Z) && T.Equals(other.T);
+        }
+    }
+
+    /// <summary>
+    /// The point of the 4D (time and space) mathematics coordinate and time span.
+    /// </summary>
+    public class SpaceTimePoint : FourDimensionalPoint<double, TimeSpan>
+    {
+        /// <summary>
+        /// Initializes a new instance of the SpaceTimePoint class.
+        /// </summary>
+        /// <remarks>You can use this to initialize an instance for the class.</remarks>
+        public SpaceTimePoint()
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the SpaceTimePoint class.
+        /// </summary>
+        /// <param name="x">The value of X.</param>
+        /// <param name="y">The value of Y.</param>
+        /// <param name="z">The value of Z.</param>
+        /// <param name="t">The value of T.</param>
+        /// <remarks>You can use this to initialize an instance for the class.</remarks>
+        public SpaceTimePoint(double x, double y, double z, TimeSpan t) : base(x, y, z, t)
+        {
+        }
+
+        /// <summary>
+        /// Pluses another value to return. Current value will not be changed.
+        /// this + value
+        /// </summary>
+        /// <param name="value">The value to be plused.</param>
+        /// <returns>A result after leftValue plus rightValue.</returns>
+        public SpaceTimePoint Plus(FourDimensionalPoint<double, TimeSpan> value)
+        {
+            return value != null
+                ? new SpaceTimePoint(X + value.X, Y + value.Y, Z + value.Z, T + value.T)
+                : new SpaceTimePoint(X, Y, Z, T);
+        }
+
+        /// <summary>
+        /// Pluses another value to return. Current value will not be changed.
+        /// this + value
+        /// </summary>
+        /// <param name="value">The value to be plused.</param>
+        /// <returns>A result after leftValue plus rightValue.</returns>
+        public SpaceTimePoint Plus(FourDimensionalPoint<int, TimeSpan> value)
+        {
+            return value != null
+                ? new SpaceTimePoint(X + value.X, Y + value.Y, Z + value.Z, T + value.T)
+                : new SpaceTimePoint(X, Y, Z, T);
+        }
+
+        /// <summary>
+        /// Pluses another value to return. Current value will not be changed.
+        /// this + value
+        /// </summary>
+        /// <param name="value">The value to be plused.</param>
+        /// <returns>A result after leftValue plus rightValue.</returns>
+        public SpaceTimePoint Plus(SpaceTimePoint value)
+        {
+            return value != null
+                ? new SpaceTimePoint(X + value.X, Y + value.Y, Z + value.Z, T + value.T)
+                : new SpaceTimePoint(X, Y, Z, T);
+        }
+
+        /// <summary>
+        /// Minuses another value to return. Current value will not be changed.
+        /// this - value
+        /// </summary>
+        /// <param name="value">The value to be minuses.</param>
+        /// <returns>A result after leftValue minus rightValue.</returns>
+        public SpaceTimePoint Minus(FourDimensionalPoint<double, TimeSpan> value)
+        {
+            return value != null
+                ? new SpaceTimePoint(X - value.X, Y - value.Y, Z - value.Z, T - value.T)
+                : new SpaceTimePoint(X, Y, Z, T);
+        }
+
+        /// <summary>
+        /// Minuses another value to return. Current value will not be changed.
+        /// this - value
+        /// </summary>
+        /// <param name="value">The value to be minuses.</param>
+        /// <returns>A result after leftValue minus rightValue.</returns>
+        public SpaceTimePoint Minus(FourDimensionalPoint<int, TimeSpan> value)
+        {
+            return value != null
+                ? new SpaceTimePoint(X - value.X, Y - value.Y, Z - value.Z, T - value.T)
+                : new SpaceTimePoint(X, Y, Z, T);
+        }
+
+        /// <summary>
+        /// Minuses another value to return. Current value will not be changed.
+        /// this - value
+        /// </summary>
+        /// <param name="value">The value to be minuses.</param>
+        /// <returns>A result after leftValue minus rightValue.</returns>
+        public SpaceTimePoint Minus(SpaceTimePoint value)
+        {
+            return value != null
+                ? new SpaceTimePoint(X - value.X, Y - value.Y, Z - value.Z, T - value.T)
+                : new SpaceTimePoint(X, Y, Z, T);
+        }
+
+        /// <summary>
+        /// Negates the current value to return. Current value will not be changed.
+        /// -this
+        /// </summary>
+        /// <returns>A result after negation.</returns>
+        public SpaceTimePoint Negate()
+        {
+            return new SpaceTimePoint(-X, -Y, -Z, -T);
+        }
+
+        /// <summary>
+        /// Creates a new object that is a copy of the current instance.
+        /// </summary>
+        /// <returns>A new object that is a copy of this instance.</returns>
+        public override object Clone()
+        {
+            return new SpaceTimePoint(X, Y, Z, T);
+        }
+
+        /// <summary>
+        /// Pluses two points in coordinate.
+        /// </summary>
+        /// <param name="leftValue">The left value for addition operator.</param>
+        /// <param name="rightValue">The right value for addition operator.</param>
+        /// <returns>A result after addition.</returns>
+        public static SpaceTimePoint operator +(SpaceTimePoint leftValue, SpaceTimePoint rightValue)
+        {
+            return (leftValue ?? new SpaceTimePoint()).Plus(rightValue);
+        }
+
+        /// <summary>
+        /// Pluses two points in coordinate.
+        /// </summary>
+        /// <param name="leftValue">The left value for addition operator.</param>
+        /// <param name="rightValue">The right value for addition operator.</param>
+        /// <returns>A result after addition.</returns>
+        public static SpaceTimePoint operator -(SpaceTimePoint leftValue, SpaceTimePoint rightValue)
+        {
+            return (leftValue ?? new SpaceTimePoint()).Minus(rightValue);
+        }
     }
 }

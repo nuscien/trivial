@@ -47,7 +47,7 @@ namespace Trivial.Maths
         /// <param name="r">The length between center point and the specific point.</param>
         /// <param name="theta">The value of angel.</param>
         /// <remarks>You can use this to initialize an instance for the class.</remarks>
-        public PolarPoint(float r, Angle theta)
+        public PolarPoint(double r, Angle theta)
         {
             Radius = r;
             Theta = theta;
@@ -56,7 +56,7 @@ namespace Trivial.Maths
         /// <summary>
         /// Gets or sets the length between center point and the specific point (r).
         /// </summary>
-        public float Radius
+        public double Radius
         {
             get;
             set;
@@ -84,9 +84,9 @@ namespace Trivial.Maths
         /// Returns a tuple that represents the values of current coordinate point object.
         /// </summary>
         /// <returns>The tuple representation of this coordinate point object.</returns>
-        public Tuple<float, Angle> ToTuple()
+        public Tuple<double, Angle> ToTuple()
         {
-            return new Tuple<float, Angle>(Radius, Theta);
+            return new Tuple<double, Angle>(Radius, Theta);
         }
 
         /// <summary>

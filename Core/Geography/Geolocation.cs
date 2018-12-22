@@ -56,7 +56,6 @@ namespace Trivial.Geography
     /// </summary>
     public class Latitude : Maths.Angle
     {
-
         /// <summary>
         /// Initializes a new instance of the Latitude class.
         /// </summary>
@@ -108,7 +107,6 @@ namespace Trivial.Geography
     /// </summary>
     public class Longitude : Maths.Angle
     {
-
         /// <summary>
         /// Initializes a new instance of the Longitude class.
         /// </summary>
