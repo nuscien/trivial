@@ -16,7 +16,7 @@ namespace Trivial.Maths
     /// The generic 2D (plane) coordinate point.
     /// </summary>
     /// <typeparam name="TUnit">The type of unit.</typeparam>
-    public class TwoDimensionalPoint<TUnit> : TwoElements<TUnit> where TUnit : struct, IComparable<TUnit>, IEquatable<TUnit>
+    public class TwoDimensionalPoint<TUnit> : TwoElements<TUnit>, IEquatable<TwoElements<TUnit>> where TUnit : struct, IComparable<TUnit>, IEquatable<TUnit>
     {
         /// <summary>
         /// Initializes a new instance of the TwoDimensionalPoint class.
@@ -69,6 +69,25 @@ namespace Trivial.Maths
         }
 
         /// <summary>
+        /// Creates a new object that is a copy of the current instance.
+        /// </summary>
+        /// <returns>A new object that is a copy of this instance.</returns>
+        public override object Clone()
+        {
+            return new TwoDimensionalPoint<TUnit>(X, Y);
+        }
+
+        /// <summary>
+        /// Indicates whether the current object is equal to another object of the same type.
+        /// </summary>
+        /// <param name="other">An object to compare with this object.</param>
+        /// <returns> true if the current object is equal to the other parameter; otherwise, false.</returns>
+        public bool Equals(TwoElements<TUnit> other)
+        {
+            return other != null && X.Equals(other.ItemA) && Y.Equals(other.ItemB);
+        }
+
+        /// <summary>
         /// Returns the point string value of this instance.
         /// </summary>
         /// <returns>A System.String containing this point.</returns>
@@ -87,6 +106,266 @@ namespace Trivial.Maths
             }
 
             return string.Format("X = {0}{1} Y = {2}", x, sep ? ";" : ",", y);
+        }
+    }
+
+    /// <summary>
+    /// The point of 2D (plane) mathematics coordinate.
+    /// </summary>
+    public class DoubleTwoDimensionalPoint : TwoDimensionalPoint<double>, IAdditionCapable<DoubleTwoDimensionalPoint>, ISubtractionCapable<DoubleTwoDimensionalPoint>, INegationCapable<DoubleTwoDimensionalPoint>
+    {
+        /// <summary>
+        /// Initializes a new instance of the DoubleTwoDimensionalPoint class.
+        /// </summary>
+        /// <remarks>You can use this to initialize an instance for the class.</remarks>
+        public DoubleTwoDimensionalPoint()
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the DoubleTwoDimensionalPoint class.
+        /// </summary>
+        /// <param name="x">The value of X.</param>
+        /// <param name="y">The value of Y.</param>
+        /// <remarks>You can use this to initialize an instance for the class.</remarks>
+        public DoubleTwoDimensionalPoint(double x, double y) : base(x, y)
+        {
+        }
+
+        /// <summary>
+        /// Pluses another value to return. Current value will not be changed.
+        /// this + value
+        /// </summary>
+        /// <param name="value">The value to be plused.</param>
+        /// <returns>A result after leftValue plus rightValue.</returns>
+        public DoubleTwoDimensionalPoint Plus(TwoDimensionalPoint<double> value)
+        {
+            return value != null
+                ? new DoubleTwoDimensionalPoint(X + value.X, Y + value.Y)
+                : new DoubleTwoDimensionalPoint(X, Y);
+        }
+
+        /// <summary>
+        /// Pluses another value to return. Current value will not be changed.
+        /// this + value
+        /// </summary>
+        /// <param name="value">The value to be plused.</param>
+        /// <returns>A result after leftValue plus rightValue.</returns>
+        public DoubleTwoDimensionalPoint Plus(TwoDimensionalPoint<int> value)
+        {
+            return value != null
+                ? new DoubleTwoDimensionalPoint(X + value.X, Y + value.Y)
+                : new DoubleTwoDimensionalPoint(X, Y);
+        }
+
+        /// <summary>
+        /// Pluses another value to return. Current value will not be changed.
+        /// this + value
+        /// </summary>
+        /// <param name="value">The value to be plused.</param>
+        /// <returns>A result after leftValue plus rightValue.</returns>
+        public DoubleTwoDimensionalPoint Plus(DoubleTwoDimensionalPoint value)
+        {
+            return value != null
+                ? new DoubleTwoDimensionalPoint(X + value.X, Y + value.Y)
+                : new DoubleTwoDimensionalPoint(X, Y);
+        }
+
+        /// <summary>
+        /// Minuses another value to return. Current value will not be changed.
+        /// this - value
+        /// </summary>
+        /// <param name="value">The value to be minuses.</param>
+        /// <returns>A result after leftValue minus rightValue.</returns>
+        public DoubleTwoDimensionalPoint Minus(TwoDimensionalPoint<double> value)
+        {
+            return value != null
+                ? new DoubleTwoDimensionalPoint(X - value.X, Y - value.Y)
+                : new DoubleTwoDimensionalPoint(X, Y);
+        }
+
+        /// <summary>
+        /// Minuses another value to return. Current value will not be changed.
+        /// this - value
+        /// </summary>
+        /// <param name="value">The value to be minuses.</param>
+        /// <returns>A result after leftValue minus rightValue.</returns>
+        public DoubleTwoDimensionalPoint Minus(TwoDimensionalPoint<int> value)
+        {
+            return value != null
+                ? new DoubleTwoDimensionalPoint(X - value.X, Y - value.Y)
+                : new DoubleTwoDimensionalPoint(X, Y);
+        }
+
+        /// <summary>
+        /// Minuses another value to return. Current value will not be changed.
+        /// this - value
+        /// </summary>
+        /// <param name="value">The value to be minuses.</param>
+        /// <returns>A result after leftValue minus rightValue.</returns>
+        public DoubleTwoDimensionalPoint Minus(DoubleTwoDimensionalPoint value)
+        {
+            return value != null
+                ? new DoubleTwoDimensionalPoint(X - value.X, Y - value.Y)
+                : new DoubleTwoDimensionalPoint(X, Y);
+        }
+
+        /// <summary>
+        /// Negates the current value to return. Current value will not be changed.
+        /// -this
+        /// </summary>
+        /// <returns>A result after negation.</returns>
+        public DoubleTwoDimensionalPoint Negate()
+        {
+            return new DoubleTwoDimensionalPoint(-X, -Y);
+        }
+
+        /// <summary>
+        /// Creates a new object that is a copy of the current instance.
+        /// </summary>
+        /// <returns>A new object that is a copy of this instance.</returns>
+        public override object Clone()
+        {
+            return new DoubleTwoDimensionalPoint(X, Y);
+        }
+
+        /// <summary>
+        /// Pluses two points in coordinate.
+        /// </summary>
+        /// <param name="leftValue">The left value for addition operator.</param>
+        /// <param name="rightValue">The right value for addition operator.</param>
+        /// <returns>A result after addition.</returns>
+        public static DoubleTwoDimensionalPoint operator +(DoubleTwoDimensionalPoint leftValue, DoubleTwoDimensionalPoint rightValue)
+        {
+            return (leftValue ?? new DoubleTwoDimensionalPoint()).Plus(rightValue);
+        }
+
+        /// <summary>
+        /// Pluses two points in coordinate.
+        /// </summary>
+        /// <param name="leftValue">The left value for addition operator.</param>
+        /// <param name="rightValue">The right value for addition operator.</param>
+        /// <returns>A result after addition.</returns>
+        public static DoubleTwoDimensionalPoint operator -(DoubleTwoDimensionalPoint leftValue, DoubleTwoDimensionalPoint rightValue)
+        {
+            return (leftValue ?? new DoubleTwoDimensionalPoint()).Minus(rightValue);
+        }
+    }
+
+    /// <summary>
+    /// The point of 2D (plane) integer coordinate.
+    /// </summary>
+    public class Int32TwoDimensionalPoint : TwoDimensionalPoint<int>, IAdditionCapable<Int32TwoDimensionalPoint>, ISubtractionCapable<Int32TwoDimensionalPoint>, INegationCapable<Int32TwoDimensionalPoint>
+    {
+        /// <summary>
+        /// Initializes a new instance of the Int32TwoDimensionalPoint class.
+        /// </summary>
+        /// <remarks>You can use this to initialize an instance for the class.</remarks>
+        public Int32TwoDimensionalPoint()
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the Int32TwoDimensionalPoint class.
+        /// </summary>
+        /// <param name="x">The value of X.</param>
+        /// <param name="y">The value of Y.</param>
+        /// <remarks>You can use this to initialize an instance for the class.</remarks>
+        public Int32TwoDimensionalPoint(int x, int y) : base(x, y)
+        {
+        }
+
+        /// <summary>
+        /// Pluses another value to return. Current value will not be changed.
+        /// this + value
+        /// </summary>
+        /// <param name="value">The value to be plused.</param>
+        /// <returns>A result after leftValue plus rightValue.</returns>
+        public Int32TwoDimensionalPoint Plus(TwoDimensionalPoint<int> value)
+        {
+            return value != null
+                ? new Int32TwoDimensionalPoint(X + value.X, Y + value.Y)
+                : new Int32TwoDimensionalPoint(X, Y);
+        }
+
+        /// <summary>
+        /// Pluses another value to return. Current value will not be changed.
+        /// this + value
+        /// </summary>
+        /// <param name="value">The value to be plused.</param>
+        /// <returns>A result after leftValue plus rightValue.</returns>
+        public Int32TwoDimensionalPoint Plus(Int32TwoDimensionalPoint value)
+        {
+            return value != null
+                ? new Int32TwoDimensionalPoint(X + value.X, Y + value.Y)
+                : new Int32TwoDimensionalPoint(X, Y);
+        }
+
+        /// <summary>
+        /// Minuses another value to return. Current value will not be changed.
+        /// this - value
+        /// </summary>
+        /// <param name="value">The value to be minuses.</param>
+        /// <returns>A result after leftValue minus rightValue.</returns>
+        public Int32TwoDimensionalPoint Minus(TwoDimensionalPoint<int> value)
+        {
+            return value != null
+                ? new Int32TwoDimensionalPoint(X - value.X, Y - value.Y)
+                : new Int32TwoDimensionalPoint(X, Y);
+        }
+
+        /// <summary>
+        /// Minuses another value to return. Current value will not be changed.
+        /// this - value
+        /// </summary>
+        /// <param name="value">The value to be minuses.</param>
+        /// <returns>A result after leftValue minus rightValue.</returns>
+        public Int32TwoDimensionalPoint Minus(Int32TwoDimensionalPoint value)
+        {
+            return value != null
+                ? new Int32TwoDimensionalPoint(X - value.X, Y - value.Y)
+                : new Int32TwoDimensionalPoint(X, Y);
+        }
+
+        /// <summary>
+        /// Negates the current value to return. Current value will not be changed.
+        /// -this
+        /// </summary>
+        /// <returns>A result after negation.</returns>
+        public Int32TwoDimensionalPoint Negate()
+        {
+            return new Int32TwoDimensionalPoint(-X, -Y);
+        }
+
+        /// <summary>
+        /// Creates a new object that is a copy of the current instance.
+        /// </summary>
+        /// <returns>A new object that is a copy of this instance.</returns>
+        public override object Clone()
+        {
+            return new Int32TwoDimensionalPoint(X, Y);
+        }
+
+        /// <summary>
+        /// Pluses two points in coordinate.
+        /// </summary>
+        /// <param name="leftValue">The left value for addition operator.</param>
+        /// <param name="rightValue">The right value for addition operator.</param>
+        /// <returns>A result after addition.</returns>
+        public static Int32TwoDimensionalPoint operator +(Int32TwoDimensionalPoint leftValue, Int32TwoDimensionalPoint rightValue)
+        {
+            return (leftValue ?? new Int32TwoDimensionalPoint()).Plus(rightValue);
+        }
+
+        /// <summary>
+        /// Pluses two points in coordinate.
+        /// </summary>
+        /// <param name="leftValue">The left value for addition operator.</param>
+        /// <param name="rightValue">The right value for addition operator.</param>
+        /// <returns>A result after addition.</returns>
+        public static Int32TwoDimensionalPoint operator -(Int32TwoDimensionalPoint leftValue, Int32TwoDimensionalPoint rightValue)
+        {
+            return (leftValue ?? new Int32TwoDimensionalPoint()).Minus(rightValue);
         }
     }
 }

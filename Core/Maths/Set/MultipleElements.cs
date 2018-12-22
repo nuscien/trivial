@@ -19,7 +19,7 @@ namespace Trivial.Maths
     /// A collection with multiple elements.
     /// </summary>
     /// <typeparam name="T">The type of elements.</typeparam>
-    public abstract class BaseMultipleElements<T> : IReadOnlyList<T>, IEquatable<SingleElement<T>>, IEquatable<IEnumerable<T>>
+    public abstract class BaseMultipleElements<T> : IReadOnlyList<T>, IEquatable<BaseMultipleElements<T>>, IEquatable<IEnumerable<T>>, ICloneable
     {
         /// <summary>
         /// Gets the number of elements in the collection.
@@ -50,7 +50,7 @@ namespace Trivial.Maths
         /// </summary>
         /// <param name="other">The object to compare with the current object.</param>
         /// <returns>true if the specified object is equal to the current object; otherwise, false.</returns>
-        public bool Equals(SingleElement<T> other)
+        public bool Equals(BaseMultipleElements<T> other)
         {
             if (other == null) return false;
             var a = ToList();
@@ -84,6 +84,40 @@ namespace Trivial.Maths
 
             return true;
         }
+
+        /// <summary>
+        /// Compares two multiple elements to indicate if they are same.
+        /// leftValue == rightValue
+        /// </summary>
+        /// <param name="leftValue">The left value to compare.</param>
+        /// <param name="rightValue">The right value to compare.</param>
+        /// <returns>A result after subtration.</returns>
+        public static bool operator ==(BaseMultipleElements<T> leftValue, BaseMultipleElements<T> rightValue)
+        {
+            if (leftValue == null && rightValue == null) return true;
+            if (leftValue == null || rightValue == null) return false;
+            return leftValue.Equals(rightValue);
+        }
+
+        /// <summary>
+        /// Compares two multiple elements to indicate if they are different.
+        /// leftValue != rightValue
+        /// </summary>
+        /// <param name="leftValue">The left value to compare.</param>
+        /// <param name="rightValue">The right value to compare.</param>
+        /// <returns>A result after subtration.</returns>
+        public static bool operator !=(BaseMultipleElements<T> leftValue, BaseMultipleElements<T> rightValue)
+        {
+            if (leftValue == null && rightValue == null) return false;
+            if (leftValue == null || rightValue == null) return true;
+            return !leftValue.Equals(rightValue);
+        }
+
+        /// <summary>
+        /// Creates a new object that is a copy of the current instance.
+        /// </summary>
+        /// <returns>A new object that is a copy of this instance.</returns>
+        public abstract object Clone();
 
         /// <summary>
         /// Serves as the default hash function.
@@ -169,6 +203,18 @@ namespace Trivial.Maths
         {
             return new List<T> { ItemA };
         }
+
+        /// <summary>
+        /// Creates a new object that is a copy of the current instance.
+        /// </summary>
+        /// <returns>A new object that is a copy of this instance.</returns>
+        public override object Clone()
+        {
+            return new SingleElement<T>
+            {
+                ItemA = ItemA
+            };
+        }
     }
 
     /// <summary>
@@ -228,6 +274,19 @@ namespace Trivial.Maths
         public override IList<T> ToList()
         {
             return new List<T> { ItemA, ItemB };
+        }
+
+        /// <summary>
+        /// Creates a new object that is a copy of the current instance.
+        /// </summary>
+        /// <returns>A new object that is a copy of this instance.</returns>
+        public override object Clone()
+        {
+            return new TwoElements<T>
+            {
+                ItemA = ItemA,
+                ItemB = ItemB
+            };
         }
     }
 
@@ -290,6 +349,20 @@ namespace Trivial.Maths
         {
             return new List<T> { ItemA, ItemB, ItemC };
         }
+
+        /// <summary>
+        /// Creates a new object that is a copy of the current instance.
+        /// </summary>
+        /// <returns>A new object that is a copy of this instance.</returns>
+        public override object Clone()
+        {
+            return new ThreeElements<T>
+            {
+                ItemA = ItemA,
+                ItemB = ItemB,
+                ItemC = ItemC
+            };
+        }
     }
 
     /// <summary>
@@ -351,6 +424,21 @@ namespace Trivial.Maths
         public override IList<T> ToList()
         {
             return new List<T> { ItemA, ItemB, ItemC, ItemD };
+        }
+
+        /// <summary>
+        /// Creates a new object that is a copy of the current instance.
+        /// </summary>
+        /// <returns>A new object that is a copy of this instance.</returns>
+        public override object Clone()
+        {
+            return new FourElements<T>
+            {
+                ItemA = ItemA,
+                ItemB = ItemB,
+                ItemC = ItemC,
+                ItemD = ItemD
+            };
         }
     }
 
@@ -416,6 +504,22 @@ namespace Trivial.Maths
         {
             return new List<T> { ItemA, ItemB, ItemC, ItemD, ItemE };
         }
+
+        /// <summary>
+        /// Creates a new object that is a copy of the current instance.
+        /// </summary>
+        /// <returns>A new object that is a copy of this instance.</returns>
+        public override object Clone()
+        {
+            return new FiveElements<T>
+            {
+                ItemA = ItemA,
+                ItemB = ItemB,
+                ItemC = ItemC,
+                ItemD = ItemD,
+                ItemE = ItemE
+            };
+        }
     }
 
     /// <summary>
@@ -479,6 +583,23 @@ namespace Trivial.Maths
         public override IList<T> ToList()
         {
             return new List<T> { ItemA, ItemB, ItemC, ItemD, ItemE, ItemF };
+        }
+
+        /// <summary>
+        /// Creates a new object that is a copy of the current instance.
+        /// </summary>
+        /// <returns>A new object that is a copy of this instance.</returns>
+        public override object Clone()
+        {
+            return new SixElements<T>
+            {
+                ItemA = ItemA,
+                ItemB = ItemB,
+                ItemC = ItemC,
+                ItemD = ItemD,
+                ItemE = ItemE,
+                ItemF = ItemF
+            };
         }
     }
 
@@ -545,6 +666,24 @@ namespace Trivial.Maths
         {
             return new List<T> { ItemA, ItemB, ItemC, ItemD, ItemE, ItemF, ItemG };
         }
+
+        /// <summary>
+        /// Creates a new object that is a copy of the current instance.
+        /// </summary>
+        /// <returns>A new object that is a copy of this instance.</returns>
+        public override object Clone()
+        {
+            return new SevenElements<T>
+            {
+                ItemA = ItemA,
+                ItemB = ItemB,
+                ItemC = ItemC,
+                ItemD = ItemD,
+                ItemE = ItemE,
+                ItemF = ItemF,
+                ItemG = ItemG
+            };
+        }
     }
 
     /// <summary>
@@ -610,6 +749,25 @@ namespace Trivial.Maths
         public override IList<T> ToList()
         {
             return new List<T> { ItemA, ItemB, ItemC, ItemD, ItemE, ItemF, ItemG, ItemH };
+        }
+
+        /// <summary>
+        /// Creates a new object that is a copy of the current instance.
+        /// </summary>
+        /// <returns>A new object that is a copy of this instance.</returns>
+        public override object Clone()
+        {
+            return new EightElements<T>
+            {
+                ItemA = ItemA,
+                ItemB = ItemB,
+                ItemC = ItemC,
+                ItemD = ItemD,
+                ItemE = ItemE,
+                ItemF = ItemF,
+                ItemG = ItemG,
+                ItemH = ItemH
+            };
         }
     }
 
@@ -678,6 +836,26 @@ namespace Trivial.Maths
         {
             return new List<T> { ItemA, ItemB, ItemC, ItemD, ItemE, ItemF, ItemG, ItemH, ItemI };
         }
+
+        /// <summary>
+        /// Creates a new object that is a copy of the current instance.
+        /// </summary>
+        /// <returns>A new object that is a copy of this instance.</returns>
+        public override object Clone()
+        {
+            return new NineElements<T>
+            {
+                ItemA = ItemA,
+                ItemB = ItemB,
+                ItemC = ItemC,
+                ItemD = ItemD,
+                ItemE = ItemE,
+                ItemF = ItemF,
+                ItemG = ItemG,
+                ItemH = ItemH,
+                ItemI = ItemI
+            };
+        }
     }
 
     /// <summary>
@@ -745,6 +923,27 @@ namespace Trivial.Maths
         public override IList<T> ToList()
         {
             return new List<T> { ItemA, ItemB, ItemC, ItemD, ItemE, ItemF, ItemG, ItemH, ItemI, ItemJ };
+        }
+
+        /// <summary>
+        /// Creates a new object that is a copy of the current instance.
+        /// </summary>
+        /// <returns>A new object that is a copy of this instance.</returns>
+        public override object Clone()
+        {
+            return new TenElements<T>
+            {
+                ItemA = ItemA,
+                ItemB = ItemB,
+                ItemC = ItemC,
+                ItemD = ItemD,
+                ItemE = ItemE,
+                ItemF = ItemF,
+                ItemG = ItemG,
+                ItemH = ItemH,
+                ItemI = ItemI,
+                ItemJ = ItemJ
+            };
         }
     }
 
@@ -815,6 +1014,28 @@ namespace Trivial.Maths
         {
             return new List<T> { ItemA, ItemB, ItemC, ItemD, ItemE, ItemF, ItemG, ItemH, ItemI, ItemJ, ItemK };
         }
+
+        /// <summary>
+        /// Creates a new object that is a copy of the current instance.
+        /// </summary>
+        /// <returns>A new object that is a copy of this instance.</returns>
+        public override object Clone()
+        {
+            return new ElevenElements<T>
+            {
+                ItemA = ItemA,
+                ItemB = ItemB,
+                ItemC = ItemC,
+                ItemD = ItemD,
+                ItemE = ItemE,
+                ItemF = ItemF,
+                ItemG = ItemG,
+                ItemH = ItemH,
+                ItemI = ItemI,
+                ItemJ = ItemJ,
+                ItemK = ItemK
+            };
+        }
     }
 
     /// <summary>
@@ -884,6 +1105,29 @@ namespace Trivial.Maths
         public override IList<T> ToList()
         {
             return new List<T> { ItemA, ItemB, ItemC, ItemD, ItemE, ItemF, ItemG, ItemH, ItemI, ItemJ, ItemK, ItemL };
+        }
+
+        /// <summary>
+        /// Creates a new object that is a copy of the current instance.
+        /// </summary>
+        /// <returns>A new object that is a copy of this instance.</returns>
+        public override object Clone()
+        {
+            return new TwelveElements<T>
+            {
+                ItemA = ItemA,
+                ItemB = ItemB,
+                ItemC = ItemC,
+                ItemD = ItemD,
+                ItemE = ItemE,
+                ItemF = ItemF,
+                ItemG = ItemG,
+                ItemH = ItemH,
+                ItemI = ItemI,
+                ItemJ = ItemJ,
+                ItemK = ItemK,
+                ItemL = ItemL
+            };
         }
     }
 }

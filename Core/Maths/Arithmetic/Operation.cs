@@ -21,7 +21,7 @@ namespace Trivial.Maths
     public interface IAdditionCapable<T>
     {
         /// <summary>
-        /// Pluses another value.
+        /// Pluses another value to return. Current value will not be changed.
         /// this + value
         /// </summary>
         /// <param name="value">A given value to be added.</param>
@@ -36,7 +36,7 @@ namespace Trivial.Maths
     public interface ISubtractionCapable<T>
     {
         /// <summary>
-        /// Minuses another value.
+        /// Minuses another value to return. Current value will not be changed.
         /// this - value
         /// </summary>
         /// <param name="value">A given value to be added.</param>
@@ -51,7 +51,7 @@ namespace Trivial.Maths
     public interface INegationCapable<out T>
     {
         /// <summary>
-        /// Negates the current value.
+        /// Negates the current value to return. Current value will not be changed.
         /// -this
         /// </summary>
         /// <returns>A result after negation.</returns>
@@ -119,13 +119,13 @@ namespace Trivial.Maths
         }
 
         /// <summary>
-        /// Minuses from leftValue to rightValue.
-        /// leftValue - rightValue
+        /// Pluses from leftValue to rightValue.
+        /// leftValue + rightValue
         /// </summary>
         /// <typeparam name="T">The type of value.</typeparam>
-        /// <param name="leftValue">The left value to minus.</param>
-        /// <param name="rightValue">The right value to be minused.</param>
-        /// <returns>A result after leftValue minus rightValue.</returns>
+        /// <param name="leftValue">The left value to plus.</param>
+        /// <param name="rightValue">The right value to be plused.</param>
+        /// <returns>A result after leftValue plus rightValue.</returns>
         public static T Plus<T>(IAdditionCapable<T> leftValue, T rightValue)
         {
             if (leftValue == null) throw new ArgumentNullException(nameof(leftValue));

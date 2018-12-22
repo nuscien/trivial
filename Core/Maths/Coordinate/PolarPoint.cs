@@ -15,7 +15,7 @@ namespace Trivial.Maths
     /// <summary>
     /// The polar coordinate point.
     /// </summary>
-    public class PolarPoint
+    public class PolarPoint : IEquatable<PolarPoint>, ICloneable
     {
         /// <summary>
         /// Polar coordinate point symbols.
@@ -72,6 +72,15 @@ namespace Trivial.Maths
         }
 
         /// <summary>
+        /// Creates a new object that is a copy of the current instance.
+        /// </summary>
+        /// <returns>A new object that is a copy of this instance.</returns>
+        public object Clone()
+        {
+            return new PolarPoint(Radius, Theta);
+        }
+
+        /// <summary>
         /// Returns a tuple that represents the values of current coordinate point object.
         /// </summary>
         /// <returns>The tuple representation of this coordinate point object.</returns>
@@ -99,6 +108,44 @@ namespace Trivial.Maths
             }
 
             return string.Format("{0} = {1}{2} {3} = {4}", Symbols.RadiusSymbol, radius, sep ? ";" : ",", Symbols.ThetaSymbol, theta);
+        }
+
+        /// <summary>
+        /// Indicates whether the current object is equal to another object of the same type.
+        /// </summary>
+        /// <param name="other">An object to compare with this object.</param>
+        /// <returns> true if the current object is equal to the other parameter; otherwise, false.</returns>
+        public bool Equals(PolarPoint other)
+        {
+            return other != null && Radius == other.Radius && Theta == other.Theta;
+        }
+
+        /// <summary>
+        /// Compares two points to indicate if they are same.
+        /// leftValue == rightValue
+        /// </summary>
+        /// <param name="leftValue">The left value to compare.</param>
+        /// <param name="rightValue">The right value to compare.</param>
+        /// <returns>A result after subtration.</returns>
+        public static bool operator ==(PolarPoint leftValue, PolarPoint rightValue)
+        {
+            if (leftValue == null && rightValue == null) return true;
+            if (leftValue == null || rightValue == null) return false;
+            return leftValue.Theta == rightValue.Theta && leftValue.Radius == rightValue.Radius;
+        }
+
+        /// <summary>
+        /// Compares two points to indicate if they are different.
+        /// leftValue != rightValue
+        /// </summary>
+        /// <param name="leftValue">The left value to compare.</param>
+        /// <param name="rightValue">The right value to compare.</param>
+        /// <returns>A result after subtration.</returns>
+        public static bool operator !=(PolarPoint leftValue, PolarPoint rightValue)
+        {
+            if (leftValue == null && rightValue == null) return false;
+            if (leftValue == null || rightValue == null) return true;
+            return leftValue.Theta != rightValue.Theta || leftValue.Radius != rightValue.Radius;
         }
     }
 }

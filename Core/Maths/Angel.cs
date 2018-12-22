@@ -15,7 +15,7 @@ namespace Trivial.Maths
     /// <summary>
     /// The struct of degree (angle).
     /// </summary>
-    public struct Angle : IComparable, IComparable<Angle>, IEquatable<Angle>, IComparable<double>, IEquatable<double>, IComparable<int>, IEquatable<int>, IAdvancedAdditionCapable<Angle>
+    public class Angle : IComparable, IComparable<Angle>, IEquatable<Angle>, IComparable<double>, IEquatable<double>, IComparable<int>, IEquatable<int>, IAdvancedAdditionCapable<Angle>
     {
         /// <summary>
         /// The error string during value is out of argument.
@@ -119,6 +119,31 @@ namespace Trivial.Maths
         public static Angle Full { get { return new Angle { Degree = 380 }; } }
 
         /// <summary>
+        /// Initializes a new instance of the Angle class.
+        /// </summary>
+        public Angle()
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the Angle class.
+        /// </summary>
+        public Angle(double degrees)
+        {
+            Degrees = degrees;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the Angle class.
+        /// </summary>
+        public Angle(int degree, int minute, float second)
+        {
+            Degree = degree;
+            Arcminute = minute;
+            Arcsecond = second;
+        }
+
+        /// <summary>
         /// Gets or sets a value indicating whether it is positive.
         /// </summary>
         public bool Positive
@@ -163,7 +188,20 @@ namespace Trivial.Maths
             
             set
             {
-                if (value >= 60 || value < 0) throw new ArgumentOutOfRangeException("value", string.Format(ErrStr, "value"));
+                if (value >= 60 || value < 0)
+                {
+                    var remainder = value % 60;
+                    var d = (value - remainder) / 60;
+                    if (remainder < 0)
+                    {
+                        d--;
+                        value += 60;
+                    }
+
+                    value = remainder;
+                    Degree += d;
+                }
+
                 _arcmin = value;
             }
         }
@@ -199,7 +237,7 @@ namespace Trivial.Maths
             set
             {
                 Degree = Math.Abs((int)value);
-                Positive = (value >= 0);
+                Positive = value >= 0;
                 var restValue = (float)Math.Abs(value - Degree) * 60;
                 Arcminute = (int)restValue;
                 Arcsecond = (restValue - Arcminute) * 60;
@@ -311,6 +349,24 @@ namespace Trivial.Maths
         }
 
         /// <summary>
+        /// Converts a number to latitude.
+        /// </summary>
+        /// <param name="value">The raw value.</param>
+        public static implicit operator Angle(double value)
+        {
+            return new Angle(value);
+        }
+
+        /// <summary>
+        /// Converts a number to latitude.
+        /// </summary>
+        /// <param name="value">The raw value.</param>
+        public static implicit operator Angle(int value)
+        {
+            return new Angle(value);
+        }
+
+        /// <summary>
         /// Negates a specific angle.
         /// </summary>
         /// <param name="value">A value to create mirror.</param>
@@ -318,9 +374,9 @@ namespace Trivial.Maths
         public static Angle operator -(Angle value)
         {
             return new Angle
-                       {
-                           Degrees = -value.Degrees
-                       };
+            {
+                Degrees = -value.Degrees
+            };
         }
 
         /// <summary>
@@ -333,9 +389,9 @@ namespace Trivial.Maths
         public static Angle operator +(Angle leftValue, Angle rightValue)
         {
             return new Angle
-                       {
-                           Degrees = leftValue.Degrees + rightValue.Degrees,
-                       };
+            {
+                Degrees = leftValue.Degrees + rightValue.Degrees,
+            };
         }
 
         /// <summary>
@@ -351,6 +407,90 @@ namespace Trivial.Maths
             {
                 Degrees = leftValue.Degrees - rightValue.Degrees,
             };
+        }
+
+        /// <summary>
+        /// Compares two angles to indicate if they are same.
+        /// leftValue == rightValue
+        /// </summary>
+        /// <param name="leftValue">The left value to compare.</param>
+        /// <param name="rightValue">The right value to compare.</param>
+        /// <returns>A result after subtration.</returns>
+        public static bool operator ==(Angle leftValue, Angle rightValue)
+        {
+            if (leftValue == null && rightValue == null) return true;
+            if (leftValue == null || rightValue == null) return false;
+            return leftValue.Degrees == rightValue.Degrees;
+        }
+
+        /// <summary>
+        /// Compares two angles to indicate if they are different.
+        /// leftValue != rightValue
+        /// </summary>
+        /// <param name="leftValue">The left value to compare.</param>
+        /// <param name="rightValue">The right value to compare.</param>
+        /// <returns>A result after subtration.</returns>
+        public static bool operator !=(Angle leftValue, Angle rightValue)
+        {
+            if (leftValue == null && rightValue == null) return false;
+            if (leftValue == null || rightValue == null) return true;
+            return leftValue.Degrees != rightValue.Degrees;
+        }
+
+        /// <summary>
+        /// Compares if left is smaller than right.
+        /// </summary>
+        /// <param name="leftValue">The left value to compare.</param>
+        /// <param name="rightValue">The right value to compare.</param>
+        /// <returns>A result after subtration.</returns>
+        public static bool operator <(Angle leftValue, Angle rightValue)
+        {
+            if (leftValue == null && rightValue == null) return false;
+            if (leftValue == null) return false;
+            if (rightValue == null) return true;
+            return leftValue.Degrees < rightValue.Degrees;
+        }
+
+        /// <summary>
+        /// Compares if left is greater than right.
+        /// </summary>
+        /// <param name="leftValue">The left value to compare.</param>
+        /// <param name="rightValue">The right value to compare.</param>
+        /// <returns>A result after subtration.</returns>
+        public static bool operator >(Angle leftValue, Angle rightValue)
+        {
+            if (leftValue == null && rightValue == null) return false;
+            if (leftValue == null) return true;
+            if (rightValue == null) return false;
+            return leftValue.Degrees < rightValue.Degrees;
+        }
+
+        /// <summary>
+        /// Compares if left is smaller than or equals to right.
+        /// </summary>
+        /// <param name="leftValue">The left value to compare.</param>
+        /// <param name="rightValue">The right value to compare.</param>
+        /// <returns>A result after subtration.</returns>
+        public static bool operator <=(Angle leftValue, Angle rightValue)
+        {
+            if (leftValue == null && rightValue == null) return true;
+            if (leftValue == null) return false;
+            if (rightValue == null) return true;
+            return leftValue.Degrees <= rightValue.Degrees;
+        }
+
+        /// <summary>
+        /// Compares if left is greater than or equals to right.
+        /// </summary>
+        /// <param name="leftValue">The left value to compare.</param>
+        /// <param name="rightValue">The right value to compare.</param>
+        /// <returns>A result after subtration.</returns>
+        public static bool operator >=(Angle leftValue, Angle rightValue)
+        {
+            if (leftValue == null && rightValue == null) return true;
+            if (leftValue == null) return true;
+            if (rightValue == null) return false;
+            return leftValue.Degrees <= rightValue.Degrees;
         }
 
         /// <summary>
@@ -499,11 +639,15 @@ namespace Trivial.Maths
         /// Compares the current object with another object of the same type.
         /// </summary>
         /// <returns>
-        /// A value that indicates the relative order of the objects being compared. The return value has the following meanings: Value Meaning Less than zero This object is less than the <paramref name="other"/> parameter.Zero This object is equal to <paramref name="other"/>. Greater than zero This object is greater than <paramref name="other"/>. 
+        /// A value that indicates the relative order of the objects being compared. The return value has the following meanings:
+        /// Value Meaning Less than zero This object is less than the <paramref name="other"/> parameter.
+        /// Zero This object is equal to <paramref name="other"/>.
+        /// Greater than zero This object is greater than <paramref name="other"/>. 
         /// </returns>
         /// <param name="other">An object to compare with this object.</param>
         public int CompareTo(Angle other)
         {
+            if (other == null) return Degrees.CompareTo(null);
             return Degrees.CompareTo(other.Degrees);
         }
 
@@ -647,6 +791,16 @@ namespace Trivial.Maths
         /// <returns>A System.String containing this angle.</returns>
         public override string ToString()
         {
+            if (Arcsecond == 0)
+            {
+                if (Arcminute == 0)
+                {
+                    return string.Format("{0}{1}{2}", Positive ? string.Empty : "-", _degree, Symbols.DegreeUnit);
+                }
+
+                return string.Format("{0}{1}{2}{3}{4}", Positive ? string.Empty : "-", _degree, Symbols.DegreeUnit, Arcminute, Symbols.ArcminuteUnit);
+            }
+
             return string.Format("{0}{1}{2}{3}{4}{5}{6}", Positive ? string.Empty : "-", _degree, Symbols.DegreeUnit, Arcminute, Symbols.ArcminuteUnit, Arcsecond, Symbols.ArcsecondUnit);
         }
     }

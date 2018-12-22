@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Trivial.Maths.Arithmetic
+namespace Trivial.Maths
 {
     /// <summary>
     /// The utility for arithmetic.
@@ -10,6 +10,74 @@ namespace Trivial.Maths.Arithmetic
     public static partial class Arithmetic
     {
         #region 1D
+
+        /// <summary>
+        /// Pluses two points in coordinate.
+        /// leftValue + rightValue
+        /// </summary>
+        /// <param name="leftValue">The left value for addition operator.</param>
+        /// <param name="rightValue">The right value for addition operator.</param>
+        /// <returns>A result after addition.</returns>
+        public static OneDimensionalPoint<int> Plus(OneDimensionalPoint<int> leftValue, OneDimensionalPoint<int> rightValue)
+        {
+            if (leftValue == null) leftValue = new OneDimensionalPoint<int>();
+            if (rightValue == null) rightValue = new OneDimensionalPoint<int>();
+            return new OneDimensionalPoint<int>
+            {
+                X = leftValue.X + rightValue.X
+            };
+        }
+
+        /// <summary>
+        /// Pluses two points in coordinate.
+        /// leftValue + rightValue
+        /// </summary>
+        /// <param name="leftValue">The left value for addition operator.</param>
+        /// <param name="rightValue">The right value for addition operator.</param>
+        /// <returns>A result after addition.</returns>
+        public static OneDimensionalPoint<long> Plus(OneDimensionalPoint<long> leftValue, OneDimensionalPoint<long> rightValue)
+        {
+            if (leftValue == null) leftValue = new OneDimensionalPoint<long>();
+            if (rightValue == null) rightValue = new OneDimensionalPoint<long>();
+            return new OneDimensionalPoint<long>
+            {
+                X = leftValue.X + rightValue.X
+            };
+        }
+
+        /// <summary>
+        /// Pluses two points in coordinate.
+        /// leftValue + rightValue
+        /// </summary>
+        /// <param name="leftValue">The left value for addition operator.</param>
+        /// <param name="rightValue">The right value for addition operator.</param>
+        /// <returns>A result after addition.</returns>
+        public static OneDimensionalPoint<float> Plus(OneDimensionalPoint<float> leftValue, OneDimensionalPoint<float> rightValue)
+        {
+            if (leftValue == null) leftValue = new OneDimensionalPoint<float>();
+            if (rightValue == null) rightValue = new OneDimensionalPoint<float>();
+            return new OneDimensionalPoint<float>
+            {
+                X = leftValue.X + rightValue.X
+            };
+        }
+
+        /// <summary>
+        /// Pluses two points in coordinate.
+        /// leftValue + rightValue
+        /// </summary>
+        /// <param name="leftValue">The left value for addition operator.</param>
+        /// <param name="rightValue">The right value for addition operator.</param>
+        /// <returns>A result after addition.</returns>
+        public static OneDimensionalPoint<double> Plus(OneDimensionalPoint<double> leftValue, OneDimensionalPoint<double> rightValue)
+        {
+            if (leftValue == null) leftValue = new OneDimensionalPoint<double>();
+            if (rightValue == null) rightValue = new OneDimensionalPoint<double>();
+            return new OneDimensionalPoint<double>
+            {
+                X = leftValue.X + rightValue.X
+            };
+        }
 
         /// <summary>
         /// Minuses two points in coordinate.

@@ -16,7 +16,7 @@ namespace Trivial.Maths
     /// The generic 1D (line) coordinate point.
     /// </summary>
     /// <typeparam name="TUnit">The type of unit.</typeparam>
-    public class OneDimensionalPoint<TUnit> : SingleElement<TUnit> where TUnit : struct, IComparable<TUnit>, IEquatable<TUnit>
+    public class OneDimensionalPoint<TUnit> : SingleElement<TUnit>, IEquatable<SingleElement<TUnit>> where TUnit : struct, IComparable<TUnit>, IEquatable<TUnit>
     {
         /// <summary>
         /// Initializes a new instance of the OneDimensionalPoint class.
@@ -52,71 +52,22 @@ namespace Trivial.Maths
         }
 
         /// <summary>
-        /// Pluses two points in coordinate.
-        /// leftValue + rightValue
+        /// Creates a new object that is a copy of the current instance.
         /// </summary>
-        /// <param name="leftValue">The left value for addition operator.</param>
-        /// <param name="rightValue">The right value for addition operator.</param>
-        /// <returns>A result after addition.</returns>
-        public static OneDimensionalPoint<int> Add(OneDimensionalPoint<int> leftValue, OneDimensionalPoint<int> rightValue)
+        /// <returns>A new object that is a copy of this instance.</returns>
+        public override object Clone()
         {
-            if (leftValue == null) leftValue = new OneDimensionalPoint<int>();
-            if (rightValue == null) rightValue = new OneDimensionalPoint<int>();
-            return new OneDimensionalPoint<int>
-            {
-                X = leftValue.X + rightValue.X
-            };
+            return new OneDimensionalPoint<TUnit>(X);
         }
 
         /// <summary>
-        /// Pluses two points in coordinate.
-        /// leftValue + rightValue
+        /// Indicates whether the current object is equal to another object of the same type.
         /// </summary>
-        /// <param name="leftValue">The left value for addition operator.</param>
-        /// <param name="rightValue">The right value for addition operator.</param>
-        /// <returns>A result after addition.</returns>
-        public static OneDimensionalPoint<long> Add(OneDimensionalPoint<long> leftValue, OneDimensionalPoint<long> rightValue)
+        /// <param name="other">An object to compare with this object.</param>
+        /// <returns> true if the current object is equal to the other parameter; otherwise, false.</returns>
+        public bool Equals(SingleElement<TUnit> other)
         {
-            if (leftValue == null) leftValue = new OneDimensionalPoint<long>();
-            if (rightValue == null) rightValue = new OneDimensionalPoint<long>();
-            return new OneDimensionalPoint<long>
-            {
-                X = leftValue.X + rightValue.X
-            };
-        }
-
-        /// <summary>
-        /// Pluses two points in coordinate.
-        /// leftValue + rightValue
-        /// </summary>
-        /// <param name="leftValue">The left value for addition operator.</param>
-        /// <param name="rightValue">The right value for addition operator.</param>
-        /// <returns>A result after addition.</returns>
-        public static OneDimensionalPoint<float> Add(OneDimensionalPoint<float> leftValue, OneDimensionalPoint<float> rightValue)
-        {
-            if (leftValue == null) leftValue = new OneDimensionalPoint<float>();
-            if (rightValue == null) rightValue = new OneDimensionalPoint<float>();
-            return new OneDimensionalPoint<float>
-            {
-                X = leftValue.X + rightValue.X
-            };
-        }
-
-        /// <summary>
-        /// Pluses two points in coordinate.
-        /// leftValue + rightValue
-        /// </summary>
-        /// <param name="leftValue">The left value for addition operator.</param>
-        /// <param name="rightValue">The right value for addition operator.</param>
-        /// <returns>A result after addition.</returns>
-        public static OneDimensionalPoint<double> Add(OneDimensionalPoint<double> leftValue, OneDimensionalPoint<double> rightValue)
-        {
-            if (leftValue == null) leftValue = new OneDimensionalPoint<double>();
-            if (rightValue == null) rightValue = new OneDimensionalPoint<double>();
-            return new OneDimensionalPoint<double>
-            {
-                X = leftValue.X + rightValue.X
-            };
+            return other != null && X.Equals(other.ItemA);
         }
 
         /// <summary>
@@ -126,6 +77,395 @@ namespace Trivial.Maths
         public override string ToString()
         {
             return X.ToString();
+        }
+    }
+
+    /// <summary>
+    /// The point of 1D (line) mathematics coordinate.
+    /// </summary>
+    public class DoubleOneDimensionalPoint
+        : OneDimensionalPoint<double>,
+        IAdditionCapable<DoubleOneDimensionalPoint>,
+        ISubtractionCapable<DoubleOneDimensionalPoint>,
+        INegationCapable<DoubleOneDimensionalPoint>,
+        IComparable<OneDimensionalPoint<double>>,
+        IComparable<double>,
+        IComparable<int>
+    {
+        /// <summary>
+        /// Initializes a new instance of the DoubleOneDimensionalPoint class.
+        /// </summary>
+        /// <remarks>You can use this to initialize an instance for the class.</remarks>
+        public DoubleOneDimensionalPoint()
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the DoubleOneDimensionalPoint class.
+        /// </summary>
+        /// <param name="x">The value of X.</param>
+        /// <remarks>You can use this to initialize an instance for the class.</remarks>
+        public DoubleOneDimensionalPoint(double x) : base(x)
+        {
+        }
+
+        /// <summary>
+        /// Pluses another value to return. Current value will not be changed.
+        /// this + value
+        /// </summary>
+        /// <param name="value">The value to be plused.</param>
+        /// <returns>A result after leftValue plus rightValue.</returns>
+        public DoubleOneDimensionalPoint Plus(OneDimensionalPoint<double> value)
+        {
+            return value != null
+                ? new DoubleOneDimensionalPoint(X + value.X)
+                : new DoubleOneDimensionalPoint(X);
+        }
+
+        /// <summary>
+        /// Pluses another value to return. Current value will not be changed.
+        /// this + value
+        /// </summary>
+        /// <param name="value">The value to be plused.</param>
+        /// <returns>A result after leftValue plus rightValue.</returns>
+        public DoubleOneDimensionalPoint Plus(OneDimensionalPoint<int> value)
+        {
+            return value != null
+                ? new DoubleOneDimensionalPoint(X + value.X)
+                : new DoubleOneDimensionalPoint(X);
+        }
+
+        /// <summary>
+        /// Pluses another value to return. Current value will not be changed.
+        /// this + value
+        /// </summary>
+        /// <param name="value">The value to be plused.</param>
+        /// <returns>A result after leftValue plus rightValue.</returns>
+        public DoubleOneDimensionalPoint Plus(DoubleOneDimensionalPoint value)
+        {
+            return value != null
+                ? new DoubleOneDimensionalPoint(X + value.X)
+                : new DoubleOneDimensionalPoint(X);
+        }
+
+        /// <summary>
+        /// Minuses another value to return. Current value will not be changed.
+        /// this - value
+        /// </summary>
+        /// <param name="value">The value to be minuses.</param>
+        /// <returns>A result after leftValue minus rightValue.</returns>
+        public DoubleOneDimensionalPoint Minus(OneDimensionalPoint<double> value)
+        {
+            return value != null
+                ? new DoubleOneDimensionalPoint(X - value.X)
+                : new DoubleOneDimensionalPoint(X);
+        }
+
+        /// <summary>
+        /// Minuses another value to return. Current value will not be changed.
+        /// this - value
+        /// </summary>
+        /// <param name="value">The value to be minuses.</param>
+        /// <returns>A result after leftValue minus rightValue.</returns>
+        public DoubleOneDimensionalPoint Minus(OneDimensionalPoint<int> value)
+        {
+            return value != null
+                ? new DoubleOneDimensionalPoint(X - value.X)
+                : new DoubleOneDimensionalPoint(X);
+        }
+
+        /// <summary>
+        /// Minuses another value to return. Current value will not be changed.
+        /// this - value
+        /// </summary>
+        /// <param name="value">The value to be minuses.</param>
+        /// <returns>A result after leftValue minus rightValue.</returns>
+        public DoubleOneDimensionalPoint Minus(DoubleOneDimensionalPoint value)
+        {
+            return value != null
+                ? new DoubleOneDimensionalPoint(X - value.X)
+                : new DoubleOneDimensionalPoint(X);
+        }
+
+        /// <summary>
+        /// Negates the current value to return. Current value will not be changed.
+        /// -this
+        /// </summary>
+        /// <returns>A result after negation.</returns>
+        public DoubleOneDimensionalPoint Negate()
+        {
+            return new DoubleOneDimensionalPoint(-X);
+        }
+
+        /// <summary>
+        /// Creates a new object that is a copy of the current instance.
+        /// </summary>
+        /// <returns>A new object that is a copy of this instance.</returns>
+        public override object Clone()
+        {
+            return new DoubleOneDimensionalPoint(X);
+        }
+
+        /// <summary>
+        /// Compares the current object with another object of the same type.
+        /// </summary>
+        /// <returns>
+        /// A value that indicates the relative order of the objects being compared. The return value has the following meanings:
+        /// Value Meaning Less than zero This object is less than the <paramref name="other"/> parameter.
+        /// Zero This object is equal to <paramref name="other"/>.
+        /// Greater than zero This object is greater than <paramref name="other"/>. 
+        /// </returns>
+        /// <param name="other">An object to compare with this object.</param>
+        public int CompareTo(OneDimensionalPoint<double> other)
+        {
+            return X.CompareTo(other == null ? 0 : other.X);
+        }
+
+        /// <summary>
+        /// Compares the current object with another object of the same type.
+        /// </summary>
+        /// <returns>
+        /// A value that indicates the relative order of the objects being compared. The return value has the following meanings:
+        /// Value Meaning Less than zero This object is less than the <paramref name="other"/> parameter.
+        /// Zero This object is equal to <paramref name="other"/>.
+        /// Greater than zero This object is greater than <paramref name="other"/>. 
+        /// </returns>
+        /// <param name="other">An object to compare with this object.</param>
+        public int CompareTo(double other)
+        {
+            return X.CompareTo(other);
+        }
+
+        /// <summary>
+        /// Compares the current object with another object of the same type.
+        /// </summary>
+        /// <returns>
+        /// A value that indicates the relative order of the objects being compared. The return value has the following meanings:
+        /// Value Meaning Less than zero This object is less than the <paramref name="other"/> parameter.
+        /// Zero This object is equal to <paramref name="other"/>.
+        /// Greater than zero This object is greater than <paramref name="other"/>. 
+        /// </returns>
+        /// <param name="other">An object to compare with this object.</param>
+        public int CompareTo(int other)
+        {
+            return X.CompareTo(other);
+        }
+
+        /// <summary>
+        /// Converts a number to one dimensional point.
+        /// </summary>
+        /// <param name="value">The point.</param>
+        public static implicit operator DoubleOneDimensionalPoint(double value)
+        {
+            return new DoubleOneDimensionalPoint(value);
+        }
+
+        /// <summary>
+        /// Converts a number to one dimensional point.
+        /// </summary>
+        /// <param name="value">The point.</param>
+        public static implicit operator DoubleOneDimensionalPoint(int value)
+        {
+            return new DoubleOneDimensionalPoint(value);
+        }
+
+        /// <summary>
+        /// Pluses two points in coordinate.
+        /// </summary>
+        /// <param name="leftValue">The left value for addition operator.</param>
+        /// <param name="rightValue">The right value for addition operator.</param>
+        /// <returns>A result after addition.</returns>
+        public static DoubleOneDimensionalPoint operator +(DoubleOneDimensionalPoint leftValue, DoubleOneDimensionalPoint rightValue)
+        {
+            return (leftValue ?? new DoubleOneDimensionalPoint()).Plus(rightValue);
+        }
+
+        /// <summary>
+        /// Pluses two points in coordinate.
+        /// </summary>
+        /// <param name="leftValue">The left value for addition operator.</param>
+        /// <param name="rightValue">The right value for addition operator.</param>
+        /// <returns>A result after addition.</returns>
+        public static DoubleOneDimensionalPoint operator -(DoubleOneDimensionalPoint leftValue, DoubleOneDimensionalPoint rightValue)
+        {
+            return (leftValue ?? new DoubleOneDimensionalPoint()).Minus(rightValue);
+        }
+    }
+
+    /// <summary>
+    /// The point of 1D (line) integer coordinate.
+    /// </summary>
+    public class Int32OneDimensionalPoint
+        : OneDimensionalPoint<int>,
+        IAdditionCapable<Int32OneDimensionalPoint>,
+        ISubtractionCapable<Int32OneDimensionalPoint>,
+        INegationCapable<Int32OneDimensionalPoint>,
+        IComparable<OneDimensionalPoint<int>>,
+        IComparable<double>,
+        IComparable<int>
+    {
+        /// <summary>
+        /// Initializes a new instance of the Int32OneDimensionalPoint class.
+        /// </summary>
+        /// <remarks>You can use this to initialize an instance for the class.</remarks>
+        public Int32OneDimensionalPoint()
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the Int32OneDimensionalPoint class.
+        /// </summary>
+        /// <param name="x">The value of X.</param>
+        /// <remarks>You can use this to initialize an instance for the class.</remarks>
+        public Int32OneDimensionalPoint(int x) : base(x)
+        {
+        }
+
+        /// <summary>
+        /// Pluses another value to return. Current value will not be changed.
+        /// this + value
+        /// </summary>
+        /// <param name="value">The value to be plused.</param>
+        /// <returns>A result after leftValue plus rightValue.</returns>
+        public Int32OneDimensionalPoint Plus(OneDimensionalPoint<int> value)
+        {
+            return value != null
+                ? new Int32OneDimensionalPoint(X + value.X)
+                : new Int32OneDimensionalPoint(X);
+        }
+
+        /// <summary>
+        /// Pluses another value to return. Current value will not be changed.
+        /// this + value
+        /// </summary>
+        /// <param name="value">The value to be plused.</param>
+        /// <returns>A result after leftValue plus rightValue.</returns>
+        public Int32OneDimensionalPoint Plus(Int32OneDimensionalPoint value)
+        {
+            return value != null
+                ? new Int32OneDimensionalPoint(X + value.X)
+                : new Int32OneDimensionalPoint(X);
+        }
+
+        /// <summary>
+        /// Minuses another value to return. Current value will not be changed.
+        /// this - value
+        /// </summary>
+        /// <param name="value">The value to be minuses.</param>
+        /// <returns>A result after leftValue minus rightValue.</returns>
+        public Int32OneDimensionalPoint Minus(OneDimensionalPoint<int> value)
+        {
+            return value != null
+                ? new Int32OneDimensionalPoint(X - value.X)
+                : new Int32OneDimensionalPoint(X);
+        }
+
+        /// <summary>
+        /// Minuses another value to return. Current value will not be changed.
+        /// this - value
+        /// </summary>
+        /// <param name="value">The value to be minuses.</param>
+        /// <returns>A result after leftValue minus rightValue.</returns>
+        public Int32OneDimensionalPoint Minus(Int32OneDimensionalPoint value)
+        {
+            return value != null
+                ? new Int32OneDimensionalPoint(X - value.X)
+                : new Int32OneDimensionalPoint(X);
+        }
+
+        /// <summary>
+        /// Negates the current value to return. Current value will not be changed.
+        /// -this
+        /// </summary>
+        /// <returns>A result after negation.</returns>
+        public Int32OneDimensionalPoint Negate()
+        {
+            return new Int32OneDimensionalPoint(-X);
+        }
+
+        /// <summary>
+        /// Creates a new object that is a copy of the current instance.
+        /// </summary>
+        /// <returns>A new object that is a copy of this instance.</returns>
+        public override object Clone()
+        {
+            return new Int32OneDimensionalPoint(X);
+        }
+
+        /// <summary>
+        /// Compares the current object with another object of the same type.
+        /// </summary>
+        /// <returns>
+        /// A value that indicates the relative order of the objects being compared. The return value has the following meanings:
+        /// Value Meaning Less than zero This object is less than the <paramref name="other"/> parameter.
+        /// Zero This object is equal to <paramref name="other"/>.
+        /// Greater than zero This object is greater than <paramref name="other"/>. 
+        /// </returns>
+        /// <param name="other">An object to compare with this object.</param>
+        public int CompareTo(OneDimensionalPoint<int> other)
+        {
+            return X.CompareTo(other == null ? 0 : other.X);
+        }
+
+        /// <summary>
+        /// Compares the current object with another object of the same type.
+        /// </summary>
+        /// <returns>
+        /// A value that indicates the relative order of the objects being compared. The return value has the following meanings:
+        /// Value Meaning Less than zero This object is less than the <paramref name="other"/> parameter.
+        /// Zero This object is equal to <paramref name="other"/>.
+        /// Greater than zero This object is greater than <paramref name="other"/>. 
+        /// </returns>
+        /// <param name="other">An object to compare with this object.</param>
+        public int CompareTo(double other)
+        {
+            return ((double)X).CompareTo(other);
+        }
+
+        /// <summary>
+        /// Compares the current object with another object of the same type.
+        /// </summary>
+        /// <returns>
+        /// A value that indicates the relative order of the objects being compared. The return value has the following meanings:
+        /// Value Meaning Less than zero This object is less than the <paramref name="other"/> parameter.
+        /// Zero This object is equal to <paramref name="other"/>.
+        /// Greater than zero This object is greater than <paramref name="other"/>. 
+        /// </returns>
+        /// <param name="other">An object to compare with this object.</param>
+        public int CompareTo(int other)
+        {
+            return X.CompareTo(other);
+        }
+
+        /// <summary>
+        /// Converts a number to one dimensional point.
+        /// </summary>
+        /// <param name="value">The point.</param>
+        public static implicit operator Int32OneDimensionalPoint(int value)
+        {
+            return new Int32OneDimensionalPoint(value);
+        }
+
+        /// <summary>
+        /// Pluses two points in coordinate.
+        /// </summary>
+        /// <param name="leftValue">The left value for addition operator.</param>
+        /// <param name="rightValue">The right value for addition operator.</param>
+        /// <returns>A result after addition.</returns>
+        public static Int32OneDimensionalPoint operator +(Int32OneDimensionalPoint leftValue, Int32OneDimensionalPoint rightValue)
+        {
+            return (leftValue ?? new Int32OneDimensionalPoint()).Plus(rightValue);
+        }
+
+        /// <summary>
+        /// Pluses two points in coordinate.
+        /// </summary>
+        /// <param name="leftValue">The left value for addition operator.</param>
+        /// <param name="rightValue">The right value for addition operator.</param>
+        /// <returns>A result after addition.</returns>
+        public static Int32OneDimensionalPoint operator -(Int32OneDimensionalPoint leftValue, Int32OneDimensionalPoint rightValue)
+        {
+            return (leftValue ?? new Int32OneDimensionalPoint()).Minus(rightValue);
         }
     }
 }
