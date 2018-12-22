@@ -74,24 +74,59 @@ namespace Trivial.Maths
         }
 
         /// <summary>
-        /// The degree value.
+        /// The modes to rectify.
         /// </summary>
-        private int _degree;
+        public enum RectifyModes
+        {
+            /// <summary>
+            /// Nothing to do.
+            /// </summary>
+            None = 0,
+
+            /// <summary>
+            /// Cycle.
+            /// </summary>
+            Cycle = 1,
+
+            /// <summary>
+            /// Bounce.
+            /// </summary>
+            Bounce = 2
+        }
 
         /// <summary>
-        /// The arcminute value.
+        /// The boundary options.
         /// </summary>
-        private int _arcmin;
+        public class BoundaryOptions
+        {
+            /// <summary>
+            /// Initializes a new instance of the BoundaryOptions class.
+            /// </summary>
+            /// <param name="max">The maximum degree.</param>
+            /// <param name="negative">true if the minimum degree is the negatived of the maximum one; otherwise, false, the minimum is 0.</param>
+            /// <param name="rectify">The mode to rectify.</param>
+            public BoundaryOptions(int max, bool negative, RectifyModes rectify)
+            {
+                MaxDegree = max;
+                Negative = negative;
+                RectifyMode = rectify;
+            }
 
-        /// <summary>
-        /// The arcsecond value.
-        /// </summary>
-        private float _arcsec;
+            /// <summary>
+            /// The maximum degree supported.
+            /// </summary>
+            public int MaxDegree { get; }
 
-        /// <summary>
-        /// A value indicating whether it is negative.
-        /// </summary>
-        private bool _negative;
+            /// <summary>
+            /// Gets a value indicating whether set the mirror mode.
+            /// </summary>
+            public bool Negative { get; }
+
+            /// <summary>
+            /// The mode to rectify if the value is out of the scope.
+            /// </summary>
+            public RectifyModes RectifyMode { get; }
+        }
 
         /// <summary>
         /// Gets an angle with 0 degree.
@@ -119,6 +154,26 @@ namespace Trivial.Maths
         public static Angle Full { get { return new Angle { Degree = 380 }; } }
 
         /// <summary>
+        /// The degree value.
+        /// </summary>
+        private int _degree;
+
+        /// <summary>
+        /// The arcminute value.
+        /// </summary>
+        private int _arcmin;
+
+        /// <summary>
+        /// The arcsecond value.
+        /// </summary>
+        private float _arcsec;
+
+        /// <summary>
+        /// A value indicating whether it is negative.
+        /// </summary>
+        private bool _negative;
+
+        /// <summary>
         /// Initializes a new instance of the Angle class.
         /// </summary>
         public Angle()
@@ -128,20 +183,16 @@ namespace Trivial.Maths
         /// <summary>
         /// Initializes a new instance of the Angle class.
         /// </summary>
-        public Angle(double degrees)
+        /// <param name="boundary">The boundary options.</param>
+        public Angle(BoundaryOptions boundary)
         {
-            Degrees = degrees;
+            Boundary = boundary;
         }
 
         /// <summary>
-        /// Initializes a new instance of the Angle class.
+        /// Gets the boundary options.
         /// </summary>
-        public Angle(int degree, int minute, float second)
-        {
-            Degree = degree;
-            Arcminute = minute;
-            Arcsecond = second;
-        }
+        public virtual BoundaryOptions Boundary { get; }
 
         /// <summary>
         /// Gets or sets a value indicating whether it is positive.
@@ -160,6 +211,11 @@ namespace Trivial.Maths
         }
 
         /// <summary>
+        /// Gets or sets the absolute degree of the angle.
+        /// </summary>
+        public int AbsDegree => _degree;
+
+        /// <summary>
         /// Gets or sets the degree of the angle.
         /// </summary>
         public int Degree
@@ -171,8 +227,73 @@ namespace Trivial.Maths
 
             set
             {
+                if (Boundary != null && Boundary.MaxDegree > 0)
+                {
+                    switch (Boundary.RectifyMode)
+                    {
+                        case RectifyModes.Bounce:
+                            {
+                                if (!Boundary.Negative)
+                                {
+                                    value = value % (Boundary.MaxDegree * 2);
+                                    value = -value;
+                                }
+                                else
+                                {
+                                    value = (value + Boundary.MaxDegree) % (Boundary.MaxDegree * 4) - Boundary.MaxDegree;
+                                    if (value > Boundary.MaxDegree)
+                                    {
+                                        value = Boundary.MaxDegree * 2 - value;
+                                    }
+                                    else if (value == Boundary.MaxDegree && _arcmin > 0 && _arcsec > 0)
+                                    {
+                                        value = Boundary.MaxDegree - 1;
+                                        _arcmin = 60 - _arcmin - (_arcsec > 0 ? 1 : 0);
+                                        _arcsec = 60 - _arcsec;
+                                    }
+                                    else if (value < -Boundary.MaxDegree)
+                                    {
+                                        value = Boundary.MaxDegree * 2 + value;
+                                    }
+                                    else if (value == -Boundary.MaxDegree && _arcmin > 0 && _arcsec > 0)
+                                    {
+                                        value = Boundary.MaxDegree + 1;
+                                        _arcmin = 60 - _arcmin - (_arcsec > 0 ? 1 : 0);
+                                        _arcsec = 60 - _arcsec;
+                                    }
+                                }
+
+                                break;
+                            }
+                        case RectifyModes.Cycle:
+                            {
+                                if (!Boundary.Negative)
+                                {
+                                    value = value % Boundary.MaxDegree;
+                                    if (value < 0) value += Boundary.MaxDegree;
+                                }
+                                else
+                                {
+                                    value = (value + Boundary.MaxDegree) % (Boundary.MaxDegree * 2) - Boundary.MaxDegree;
+                                }
+
+                                break;
+                            }
+                        case RectifyModes.None:
+                            {
+                                if (value > Boundary.MaxDegree)
+                                    throw new ArgumentOutOfRangeException(nameof(Degree), string.Format("Cannot be greater than {0} degrees.", Boundary.MaxDegree));
+                                if (Boundary.Negative && value < -Boundary.MaxDegree)
+                                    throw new ArgumentOutOfRangeException(nameof(Degree), string.Format("Cannot be less than -{0} degrees.", Boundary.MaxDegree));
+                                if (!Boundary.Negative && value < 0)
+                                    throw new ArgumentOutOfRangeException(nameof(Degree), "Cannot be less than 0 degree.");
+                                break;
+                            }
+                    }
+                }
+
                 _degree = Math.Abs(value);
-                Positive = (value >= 0);
+                Positive = value >= 0;
             }
         }
 
@@ -188,21 +309,16 @@ namespace Trivial.Maths
             
             set
             {
-                if (value >= 60 || value < 0)
+                var remainder = value % 60;
+                var d = (value - remainder) / 60;
+                if (remainder < 0)
                 {
-                    var remainder = value % 60;
-                    var d = (value - remainder) / 60;
-                    if (remainder < 0)
-                    {
-                        d--;
-                        value += 60;
-                    }
-
-                    value = remainder;
-                    Degree += d;
+                    d--;
+                    remainder += 60;
                 }
 
-                _arcmin = value;
+                _arcmin = remainder;
+                Degree += d;
             }
         }
 
@@ -224,7 +340,12 @@ namespace Trivial.Maths
         }
 
         /// <summary>
-        /// Gets or sets to degrees with float format.
+        /// Gets the absolute total degrees with float format.
+        /// </summary>
+        public double AbsDegrees => _degree + Arcminute / 60.0 + Arcsecond / 3600.0;
+
+        /// <summary>
+        /// Gets or sets the total degrees with float format.
         /// </summary>
         /// <returns>A single float for the angle.</returns>
         public double Degrees
@@ -289,7 +410,7 @@ namespace Trivial.Maths
         /// </summary>
         public bool IsAcute
         {
-            get { return Degree < 90 && Degree > 0; }
+            get { return Degree < 90 && Degree >= 0; }
         }
 
         /// <summary>
@@ -313,7 +434,7 @@ namespace Trivial.Maths
         /// </summary>
         public bool IsObtuse
         {
-            get { return Degree < 180 && Degree > 90; }
+            get { return Degree < 180 && Degrees > 90; }
         }
 
         /// <summary>
@@ -321,16 +442,13 @@ namespace Trivial.Maths
         /// </summary>
         public bool IsReflex
         {
-            get { return Degree < 360 && Degree > 180; }
+            get { return Degree < 360 && Degrees > 180; }
         }
 
         /// <summary>
         /// Gets a value indicating whether the angle is a negative angle.
         /// </summary>
-        public bool IsNegative
-        {
-            get { return Degree < 0; }
-        }
+        public bool IsNegative => _negative;
 
         /// <summary>
         /// Gets a value indicating whether the angle is a zero degree angle.
@@ -345,7 +463,7 @@ namespace Trivial.Maths
         /// </summary>
         public bool LessThanRound
         {
-            get { return Degree < 360 && Degree > 0; }
+            get { return Degree < 360 && Degree >= 0; }
         }
 
         /// <summary>
@@ -354,7 +472,7 @@ namespace Trivial.Maths
         /// <param name="value">The raw value.</param>
         public static implicit operator Angle(double value)
         {
-            return new Angle(value);
+            return new Angle { Degrees = value };
         }
 
         /// <summary>
@@ -363,7 +481,7 @@ namespace Trivial.Maths
         /// <param name="value">The raw value.</param>
         public static implicit operator Angle(int value)
         {
-            return new Angle(value);
+            return new Angle { Degree = value };
         }
 
         /// <summary>
@@ -705,7 +823,7 @@ namespace Trivial.Maths
         /// true if the current object is equal to the <paramref name="other"/> parameter; otherwise, false.
         /// </returns>
         /// <param name="other">An object to compare with this object.</param>
-        public bool Equals(Angle other)
+        public virtual bool Equals(Angle other)
         {
             return (Degree == other.Degree) && (Arcminute == other.Arcminute) && Arcsecond.Equals(other.Arcsecond);
         }
@@ -717,7 +835,7 @@ namespace Trivial.Maths
         /// true if the current object is equal to the <paramref name="other"/> parameter; otherwise, false.
         /// </returns>
         /// <param name="other">An object to compare with this object.</param>
-        public bool Equals(double other)
+        public virtual bool Equals(double other)
         {
             return Degrees.Equals(other);
         }
@@ -729,7 +847,7 @@ namespace Trivial.Maths
         /// true if the current object is equal to the <paramref name="other"/> parameter; otherwise, false.
         /// </returns>
         /// <param name="other">An object to compare with this object.</param>
-        public bool Equals(int other)
+        public virtual bool Equals(int other)
         {
             return Degrees.Equals(other);
         }
@@ -776,6 +894,19 @@ namespace Trivial.Maths
         }
 
         /// <summary>
+        /// Gets the absolute value.
+        /// Math.Abs(this)
+        /// </summary>
+        /// <returns>A absolute result.</returns>
+        public Angle Abs()
+        {
+            return new Angle
+            {
+                Degrees = Math.Abs(Degrees)
+            };
+        }
+
+        /// <summary>
         /// Gets a unit element for addition and subtraction.
         /// 0
         /// </summary>
@@ -791,17 +922,26 @@ namespace Trivial.Maths
         /// <returns>A System.String containing this angle.</returns>
         public override string ToString()
         {
+            return (Positive ? string.Empty : "-") + ToAbsAngleString();
+        }
+
+        /// <summary>
+        /// Returns the angle string value of this instance.
+        /// </summary>
+        /// <returns>A System.String containing this angle.</returns>
+        public string ToAbsAngleString()
+        {
             if (Arcsecond == 0)
             {
                 if (Arcminute == 0)
                 {
-                    return string.Format("{0}{1}{2}", Positive ? string.Empty : "-", _degree, Symbols.DegreeUnit);
+                    return string.Format("{0}{1}", _degree, Symbols.DegreeUnit);
                 }
 
-                return string.Format("{0}{1}{2}{3}{4}", Positive ? string.Empty : "-", _degree, Symbols.DegreeUnit, Arcminute, Symbols.ArcminuteUnit);
+                return string.Format("{0}{1}{2}{3}", _degree, Symbols.DegreeUnit, Arcminute, Symbols.ArcminuteUnit);
             }
 
-            return string.Format("{0}{1}{2}{3}{4}{5}{6}", Positive ? string.Empty : "-", _degree, Symbols.DegreeUnit, Arcminute, Symbols.ArcminuteUnit, Arcsecond, Symbols.ArcsecondUnit);
+            return string.Format("{0}{1}{2}{3}{4}{5}", _degree, Symbols.DegreeUnit, Arcminute, Symbols.ArcminuteUnit, Arcsecond, Symbols.ArcsecondUnit);
         }
     }
 }
