@@ -113,7 +113,19 @@ ChineseNumber.SimplifiedUppercase.ToString(12345);
 
 ```
 
-## [Net](https://github.com/nuscien/trivial/wiki/net)
+### Models
+
+You can use following models directly.
+
+- `Angle` Angle.
+- `NullableValueSimpleInterval<T>` Interval, such as [20, 100).
+- `OneDimensionalPoint` The point in 1D (line) coordinates.
+- `TwoDimensionalPoint` The point in 2D (plane) coordinates.
+- `ThreeDimensionalPoint` The point in 3D (stereoscophic) coordinates.
+- `FourDimensionalPoint` The point in 4D (spacetime) coordinates.
+- `PolarPoint` The point in polar coordinates.
+
+## [Network](https://github.com/nuscien/trivial/wiki/net)
 
 Contains the helper functions and extension functions for network, such as HTTP client.
 
@@ -136,3 +148,15 @@ Contains the helper functions and extension functions for file and stream.
 ```csharp
 using Trivial.IO;
 ```
+
+## [Geography](https://github.com/nuscien/trivial/wiki/geo)
+
+Contains the models of geography.
+
+```csharp
+using Trivial.Geography;
+```
+
+### Geolocation
+
+You can use `Geolocation` class for geolocation information.

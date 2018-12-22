@@ -208,13 +208,13 @@ namespace Trivial.Maths
     /// <summary>
     /// The point of the 4D (time and space) mathematics coordinate and time span.
     /// </summary>
-    public class SpaceTimePoint : FourDimensionalPoint<double, TimeSpan>
+    public class SpacetimePoint : FourDimensionalPoint<double, TimeSpan>
     {
         /// <summary>
         /// Initializes a new instance of the SpaceTimePoint class.
         /// </summary>
         /// <remarks>You can use this to initialize an instance for the class.</remarks>
-        public SpaceTimePoint()
+        public SpacetimePoint()
         {
         }
 
@@ -226,7 +226,7 @@ namespace Trivial.Maths
         /// <param name="z">The value of Z.</param>
         /// <param name="t">The value of T.</param>
         /// <remarks>You can use this to initialize an instance for the class.</remarks>
-        public SpaceTimePoint(double x, double y, double z, TimeSpan t) : base(x, y, z, t)
+        public SpacetimePoint(double x, double y, double z, TimeSpan t) : base(x, y, z, t)
         {
         }
 
@@ -236,11 +236,11 @@ namespace Trivial.Maths
         /// </summary>
         /// <param name="value">The value to be plused.</param>
         /// <returns>A result after leftValue plus rightValue.</returns>
-        public SpaceTimePoint Plus(FourDimensionalPoint<double, TimeSpan> value)
+        public SpacetimePoint Plus(FourDimensionalPoint<double, TimeSpan> value)
         {
             return value != null
-                ? new SpaceTimePoint(X + value.X, Y + value.Y, Z + value.Z, T + value.T)
-                : new SpaceTimePoint(X, Y, Z, T);
+                ? new SpacetimePoint(X + value.X, Y + value.Y, Z + value.Z, T + value.T)
+                : new SpacetimePoint(X, Y, Z, T);
         }
 
         /// <summary>
@@ -249,11 +249,11 @@ namespace Trivial.Maths
         /// </summary>
         /// <param name="value">The value to be plused.</param>
         /// <returns>A result after leftValue plus rightValue.</returns>
-        public SpaceTimePoint Plus(FourDimensionalPoint<int, TimeSpan> value)
+        public SpacetimePoint Plus(FourDimensionalPoint<int, TimeSpan> value)
         {
             return value != null
-                ? new SpaceTimePoint(X + value.X, Y + value.Y, Z + value.Z, T + value.T)
-                : new SpaceTimePoint(X, Y, Z, T);
+                ? new SpacetimePoint(X + value.X, Y + value.Y, Z + value.Z, T + value.T)
+                : new SpacetimePoint(X, Y, Z, T);
         }
 
         /// <summary>
@@ -262,11 +262,11 @@ namespace Trivial.Maths
         /// </summary>
         /// <param name="value">The value to be plused.</param>
         /// <returns>A result after leftValue plus rightValue.</returns>
-        public SpaceTimePoint Plus(SpaceTimePoint value)
+        public SpacetimePoint Plus(SpacetimePoint value)
         {
             return value != null
-                ? new SpaceTimePoint(X + value.X, Y + value.Y, Z + value.Z, T + value.T)
-                : new SpaceTimePoint(X, Y, Z, T);
+                ? new SpacetimePoint(X + value.X, Y + value.Y, Z + value.Z, T + value.T)
+                : new SpacetimePoint(X, Y, Z, T);
         }
 
         /// <summary>
@@ -275,11 +275,11 @@ namespace Trivial.Maths
         /// </summary>
         /// <param name="value">The value to be minuses.</param>
         /// <returns>A result after leftValue minus rightValue.</returns>
-        public SpaceTimePoint Minus(FourDimensionalPoint<double, TimeSpan> value)
+        public SpacetimePoint Minus(FourDimensionalPoint<double, TimeSpan> value)
         {
             return value != null
-                ? new SpaceTimePoint(X - value.X, Y - value.Y, Z - value.Z, T - value.T)
-                : new SpaceTimePoint(X, Y, Z, T);
+                ? new SpacetimePoint(X - value.X, Y - value.Y, Z - value.Z, T - value.T)
+                : new SpacetimePoint(X, Y, Z, T);
         }
 
         /// <summary>
@@ -288,11 +288,11 @@ namespace Trivial.Maths
         /// </summary>
         /// <param name="value">The value to be minuses.</param>
         /// <returns>A result after leftValue minus rightValue.</returns>
-        public SpaceTimePoint Minus(FourDimensionalPoint<int, TimeSpan> value)
+        public SpacetimePoint Minus(FourDimensionalPoint<int, TimeSpan> value)
         {
             return value != null
-                ? new SpaceTimePoint(X - value.X, Y - value.Y, Z - value.Z, T - value.T)
-                : new SpaceTimePoint(X, Y, Z, T);
+                ? new SpacetimePoint(X - value.X, Y - value.Y, Z - value.Z, T - value.T)
+                : new SpacetimePoint(X, Y, Z, T);
         }
 
         /// <summary>
@@ -301,11 +301,11 @@ namespace Trivial.Maths
         /// </summary>
         /// <param name="value">The value to be minuses.</param>
         /// <returns>A result after leftValue minus rightValue.</returns>
-        public SpaceTimePoint Minus(SpaceTimePoint value)
+        public SpacetimePoint Minus(SpacetimePoint value)
         {
             return value != null
-                ? new SpaceTimePoint(X - value.X, Y - value.Y, Z - value.Z, T - value.T)
-                : new SpaceTimePoint(X, Y, Z, T);
+                ? new SpacetimePoint(X - value.X, Y - value.Y, Z - value.Z, T - value.T)
+                : new SpacetimePoint(X, Y, Z, T);
         }
 
         /// <summary>
@@ -313,9 +313,9 @@ namespace Trivial.Maths
         /// -this
         /// </summary>
         /// <returns>A result after negation.</returns>
-        public SpaceTimePoint Negate()
+        public SpacetimePoint Negate()
         {
-            return new SpaceTimePoint(-X, -Y, -Z, -T);
+            return new SpacetimePoint(-X, -Y, -Z, -T);
         }
 
         /// <summary>
@@ -324,7 +324,7 @@ namespace Trivial.Maths
         /// <returns>A new object that is a copy of this instance.</returns>
         public override object Clone()
         {
-            return new SpaceTimePoint(X, Y, Z, T);
+            return new SpacetimePoint(X, Y, Z, T);
         }
 
         /// <summary>
@@ -333,9 +333,9 @@ namespace Trivial.Maths
         /// <param name="leftValue">The left value for addition operator.</param>
         /// <param name="rightValue">The right value for addition operator.</param>
         /// <returns>A result after addition.</returns>
-        public static SpaceTimePoint operator +(SpaceTimePoint leftValue, SpaceTimePoint rightValue)
+        public static SpacetimePoint operator +(SpacetimePoint leftValue, SpacetimePoint rightValue)
         {
-            return (leftValue ?? new SpaceTimePoint()).Plus(rightValue);
+            return (leftValue ?? new SpacetimePoint()).Plus(rightValue);
         }
 
         /// <summary>
@@ -344,9 +344,9 @@ namespace Trivial.Maths
         /// <param name="leftValue">The left value for addition operator.</param>
         /// <param name="rightValue">The right value for addition operator.</param>
         /// <returns>A result after addition.</returns>
-        public static SpaceTimePoint operator -(SpaceTimePoint leftValue, SpaceTimePoint rightValue)
+        public static SpacetimePoint operator -(SpacetimePoint leftValue, SpacetimePoint rightValue)
         {
-            return (leftValue ?? new SpaceTimePoint()).Minus(rightValue);
+            return (leftValue ?? new SpacetimePoint()).Minus(rightValue);
         }
     }
 }

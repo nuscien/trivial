@@ -141,6 +141,20 @@ namespace Trivial.Sample
             WriteNumber(-10001.4567, Maths.ChineseNumber.TraditionalUppercase);
             WriteNumber(-6.7800e90, Maths.ChineseNumber.TraditionalUppercase);
             ConsoleLine.End(true);
+
+            // Location
+            var a = new Geography.Geolocation
+            {
+                Altitude = 10
+            };
+            a.Latitude.Degree = 148;
+            a.Latitude.Arcminute = 100;
+            a.Latitude.Arcsecond = 17;
+            a.Longitude.Degree = 120;
+            ConsoleLine.Write("{0} {1}", a.Latitude.Zone, a.Longitude.Zone);
+            ConsoleLine.End();
+            ConsoleLine.Write(a.ToString());
+            ConsoleLine.End();
         }
 
         private async Task WriteIsPrimeAsync(int value)
