@@ -147,5 +147,45 @@ namespace Trivial.Maths
             if (leftValue == null || rightValue == null) return true;
             return leftValue.Theta != rightValue.Theta || leftValue.Radius != rightValue.Radius;
         }
+
+        /// <summary>
+        /// Converts a number to a polar point.
+        /// </summary>
+        /// <param name="value">The point.</param>
+        public static implicit operator PolarPoint(TwoDimensionalPoint<double> value)
+        {
+            if (value == null) return null;
+            return new PolarPoint(Math.Sqrt(value.X * value.X + value.Y * value.Y), new Angle { Degrees = Math.Sin(value.X / value.Y) });
+        }
+
+        /// <summary>
+        /// Converts a number to a polar point.
+        /// </summary>
+        /// <param name="value">The point.</param>
+        public static implicit operator PolarPoint(TwoDimensionalPoint<long> value)
+        {
+            if (value == null) return null;
+            return new PolarPoint(Math.Sqrt(value.X * 1.0 * value.X + value.Y * 1.0 * value.Y), new Angle { Degrees = Math.Sin(value.X * 1.0 / value.Y) });
+        }
+
+        /// <summary>
+        /// Converts a number to a polar point.
+        /// </summary>
+        /// <param name="value">The point.</param>
+        public static implicit operator PolarPoint(TwoDimensionalPoint<int> value)
+        {
+            if (value == null) return null;
+            return new PolarPoint(Math.Sqrt(value.X * 1.0 * value.X + value.Y * 1.0 * value.Y), new Angle { Degrees = Math.Asin(value.X * 1.0 / value.Y) });
+        }
+
+        /// <summary>
+        /// Converts a number to a polar point.
+        /// </summary>
+        /// <param name="value">The point.</param>
+        public static explicit operator DoubleTwoDimensionalPoint(PolarPoint value)
+        {
+            if (value == null) return null;
+            return new DoubleTwoDimensionalPoint(value.Theta.Cos() * value.Radius, value.Theta.Sin() * value.Radius);
+        }
     }
 }

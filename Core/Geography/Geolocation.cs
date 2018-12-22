@@ -98,7 +98,7 @@ namespace Trivial.Geography
         public override string ToString()
         {
             if (IsZero) return Maths.NumberSymbols.NumberZero + Symbols.DegreeUnit;
-            return string.Format("{0}°{1}", Degrees, Positive ? "N" : "S");
+            return ToAbsAngleString() + (Positive ? "N" : "S");
         }
     }
 
@@ -156,7 +156,7 @@ namespace Trivial.Geography
             var degrees = Degrees;
             if (IsZero) return Maths.NumberSymbols.NumberZero + Symbols.DegreeUnit;
             if (degrees == 180 || degrees == -180) return "180" + Symbols.DegreeUnit;
-            return string.Format("{0}°{1}", degrees, Positive ? "E" : "W");
+            return ToAbsAngleString() + (Positive ? "E" : "W");
         }
     }
 
@@ -441,7 +441,7 @@ namespace Trivial.Geography
         /// <returns>A System.String containing this geolocation instance.</returns>
         public override string ToString()
         {
-            return string.Format("Latitude = {0}; Longtitude = {1}; Altitude = {2}", Latitude, Longitude, Altitude);
+            return string.Format("Latitude = {0}; Longtitude = {1}; Altitude = {2}m", Latitude, Longitude, Altitude);
         }
     }
 }
