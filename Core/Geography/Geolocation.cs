@@ -56,181 +56,146 @@ namespace Trivial.Geography
     /// <summary>
     /// Latitude.
     /// </summary>
-    public class Latitude : Angle.Model
+    public struct Latitude : IEquatable<Latitude>
     {
         /// <summary>
-        /// Initializes a new instance of the Latitude class.
+        /// Latitude model.
         /// </summary>
-        public Latitude() : base(new Angle.BoundaryOptions(90, true, Angle.RectifyModes.Bounce))
+        public class Model : Angle.Model
         {
-        }
-
-        /// <summary>
-        /// Gets or sets the latitue zone.
-        /// </summary>
-        public Latitudes Zone
-        {
-            get
+            /// <summary>
+            /// Initializes a new instance of the Latitude.Model class.
+            /// </summary>
+            public Model() : base(new Angle.BoundaryOptions(90, true, Angle.RectifyModes.Bounce))
             {
-                if (IsZero) return Latitudes.Equator;
-                return Positive ? Latitudes.North : Latitudes.South;
             }
 
-            set
+            /// <summary>
+            /// Gets or sets the latitue zone.
+            /// </summary>
+            public Latitudes Type
             {
-                switch (value)
+                get
                 {
-                    case Latitudes.Equator:
-                        Degrees = 0;
-                        break;
-                    case Latitudes.North:
-                        if (IsNegative) Degree = -Degree;
-                        break;
-                    case Latitudes.South:
-                        if (Positive) Degree = -Degree;
-                        break;
+                    if (IsZero) return Latitudes.Equator;
+                    return Positive ? Latitudes.North : Latitudes.South;
+                }
+
+                set
+                {
+                    switch (value)
+                    {
+                        case Latitudes.Equator:
+                            Degrees = 0;
+                            break;
+                        case Latitudes.North:
+                            if (IsNegative) Degree = -Degree;
+                            break;
+                        case Latitudes.South:
+                            if (Positive) Degree = -Degree;
+                            break;
+                    }
                 }
             }
-        }
 
-        /// <summary>
-        /// Returns the latitude string value of this instance.
-        /// </summary>
-        /// <returns>A System.String containing this latitude.</returns>
-        public override string ToString()
-        {
-            if (IsZero) return NumberSymbols.NumberZero + Angle.Symbols.DegreeUnit;
-            return this.ToAbsAngleString() + (Positive ? "N" : "S");
-        }
-    }
-
-    /// <summary>
-    /// Longitude.
-    /// </summary>
-    public class Longitude : Angle.Model
-    {
-        /// <summary>
-        /// Initializes a new instance of the Longitude class.
-        /// </summary>
-        public Longitude() : base(new Angle.BoundaryOptions(180, true, Angle.RectifyModes.Cycle))
-        {
-        }
-
-        /// <summary>
-        /// Gets or sets the longitude zone.
-        /// </summary>
-        public Longitudes Zone
-        {
-            get
+            /// <summary>
+            /// Indicates whether the current object is equal to another object of the same type.
+            /// </summary>
+            /// <returns>
+            /// true if the current object is equal to the <paramref name="other"/> parameter; otherwise, false.
+            /// </returns>
+            /// <param name="other">An object to compare with this object.</param>
+            public override bool Equals(object other)
             {
-                var degrees = Degrees;
-                if (degrees == 0) return Longitudes.PrimeMeridian;
-                if (degrees == 180 || degrees == -180) return Longitudes.CalendarLine;
-                return degrees > 0 ? Longitudes.East : Longitudes.West;
+                if (other is null) return false;
+                if (other is IAngle a) return Degrees.Equals(a.Degrees);
+                if (other is Latitude l) return Degrees.Equals(l.Value.Degrees);
+                if (other is double d) return Degrees.Equals(d);
+                return Degrees.Equals(other);
             }
 
-            set
+            /// <summary>
+            /// Returns the hash code for this instance.
+            /// </summary>
+            /// <returns>A 32-bit signed integer that is the hash code for this instance.</returns>
+            public override int GetHashCode()
             {
-                switch (value)
-                {
-                    case Longitudes.PrimeMeridian:
-                        Degrees = 0;
-                        break;
-                    case Longitudes.CalendarLine:
-                        Degrees = 180;
-                        break;
-                    case Longitudes.East:
-                        if (IsNegative) Degree = -Degree;
-                        break;
-                    case Longitudes.West:
-                        if (Positive) Degree = -Degree;
-                        break;
-                }
+                return base.GetHashCode();
+            }
+
+            /// <summary>
+            /// Returns the latitude string value of this instance.
+            /// </summary>
+            /// <returns>A System.String containing this latitude.</returns>
+            public override string ToString()
+            {
+                if (IsZero) return NumberSymbols.NumberZero + Angle.Symbols.DegreeUnit;
+                return this.ToAbsAngleString() + (Positive ? "N" : "S");
+            }
+
+            /// <summary>
+            /// Converts a latitude to its model.
+            /// </summary>
+            /// <param name="value">The instance.</param>
+            public static implicit operator Model(Latitude value)
+            {
+                return new Model { Degrees = value.Value.Degrees };
             }
         }
 
         /// <summary>
-        /// Returns the longitude string value of this instance.
+        /// Initializes a new instance of the Latitude struct.
         /// </summary>
-        /// <returns>A System.String containing this longitude.</returns>
-        public override string ToString()
-        {
-            var degrees = Degrees;
-            if (IsZero) return NumberSymbols.NumberZero + Angle.Symbols.DegreeUnit;
-            if (degrees == 180 || degrees == -180) return "180" + Angle.Symbols.DegreeUnit;
-            return this.ToAbsAngleString() + (Positive ? "E" : "W");
-        }
-    }
-
-    /// <summary>
-    /// Geolocation with latitude and longitude.
-    /// </summary>
-    public class PlaneGeolocation : IEquatable<PlaneGeolocation>
-    {
-        /// <summary>
-        /// Initializes a new instance of the PlaneGeolocation class.
-        /// </summary>
-        public PlaneGeolocation()
+        public Latitude(Latitudes type, int degree, int minute, float second) : this(GetDegrees(type, Angle.GetDegrees(degree, minute, second)))
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the PlaneGeolocation class.
+        /// Initializes a new instance of the Latitude struct.
         /// </summary>
-        /// <param name="latitude">The latitude.</param>
-        /// <param name="longitude">The longitude.</param>
-        public PlaneGeolocation(Latitude latitude, Longitude longitude)
+        public Latitude(int degree, int minute, float second) : this(Angle.GetDegrees(degree, minute, second))
         {
-            Latitude = latitude;
-            Longitude = longitude;
         }
 
         /// <summary>
-        /// Initializes a new instance of the PlaneGeolocation class.
+        /// Initializes a new instance of the Latitude struct.
         /// </summary>
-        /// <param name="latitude">The latitude.</param>
-        /// <param name="longitude">The longitude.</param>
-        /// <param name="radiusDeviation">The radius deviation in meters.</param>
-        public PlaneGeolocation(Latitude latitude, Longitude longitude, double radiusDeviation) : this(latitude, longitude)
+        public Latitude(double degrees)
         {
-            RadiusDeviation = radiusDeviation;
+            var i = (int)degrees / 180;
+            if (i != 0) degrees += i * 180;
+            if (degrees > 90) degrees = 180 - degrees;
+            else if (degrees < -90) degrees = -180 - degrees;
+            Value = new Angle(Math.Abs(degrees));
+            if (degrees > 0) Type = Latitudes.North;
+            else if (degrees < 0) Type = Latitudes.South;
+            else Type = Latitudes.Equator;
         }
 
         /// <summary>
-        /// Gets or sets the radius deviation in meters.
+        /// Initializes a new instance of the Latitude struct.
         /// </summary>
-        public double RadiusDeviation { get; set; }
+        public Latitude(Latitudes type, double degrees) : this(GetDegrees(type, degrees))
+        {
+        }
 
         /// <summary>
-        /// Gets or sets the latitude.
+        /// Gets the latitue zone.
         /// </summary>
-        public Latitude Latitude { get; } = new Latitude();
+        public Latitudes Type { get; }
 
         /// <summary>
-        /// Gets or sets the longitude.
+        /// The absolute angle value in the latitude type.
         /// </summary>
-        public Longitude Longitude { get; } = new Longitude();
-
+        public Angle Value { get; }
+        
         /// <summary>
         /// Returns the hash code for this instance.
         /// </summary>
         /// <returns>A 32-bit signed integer that is the hash code for this instance.</returns>
         public override int GetHashCode()
         {
-            return string.Format("{0}; {1}. (r {2})", Latitude, Longitude, RadiusDeviation).GetHashCode();
-        }
-
-        /// <summary>
-        /// Indicates whether the current object is equal to another object of the same type.
-        /// </summary>
-        /// <returns>
-        /// true if the current object is equal to the <paramref name="other"/> parameter; otherwise, false.
-        /// </returns>
-        /// <param name="other">An object to compare with this object.</param>
-        public virtual bool Equals(PlaneGeolocation other)
-        {
-            if (other is null) return false;
-            return Latitude == other.Latitude && Longitude == other.Longitude && RadiusDeviation == other.RadiusDeviation;
+            return Value.Degrees.GetHashCode();
         }
 
         /// <summary>
@@ -243,90 +208,344 @@ namespace Trivial.Geography
         public override bool Equals(object other)
         {
             if (other is null) return false;
-            if (other is PlaneGeolocation l) return Latitude == l.Latitude && Longitude == l.Longitude && RadiusDeviation == l.RadiusDeviation;
-            return false;
+            if (other is Latitude l) return Value.Degrees.Equals(l.Value.Degrees);
+            if (other is Model m) return Value.Degrees.Equals(m.Degrees);
+            return Value.Equals(other);
         }
 
         /// <summary>
-        /// Compares two locations to indicate if they are same.
+        /// Indicates whether the current object is equal to another object of the same type.
+        /// </summary>
+        /// <returns>
+        /// true if the current object is equal to the <paramref name="other"/> parameter; otherwise, false.
+        /// </returns>
+        /// <param name="other">An object to compare with this object.</param>
+        public bool Equals(Latitude other)
+        {
+            return Value == other.Value;
+        }
+
+        /// <summary>
+        /// Returns the latitude string value of this instance.
+        /// </summary>
+        /// <returns>A System.String containing this latitude.</returns>
+        public override string ToString()
+        {
+            if (Value.IsZero) return NumberSymbols.NumberZero + Angle.Symbols.DegreeUnit;
+            return Value.ToAbsAngleString() + (Value.Positive ? "N" : "S");
+        }
+
+        /// <summary>
+        /// Compares two latitudes to indicate if they are same.
         /// leftValue == rightValue
         /// </summary>
         /// <param name="leftValue">The left value to compare.</param>
         /// <param name="rightValue">The right value to compare.</param>
         /// <returns>A result after subtration.</returns>
-        public static bool operator ==(PlaneGeolocation leftValue, PlaneGeolocation rightValue)
+        public static bool operator ==(Latitude leftValue, Latitude rightValue)
         {
             if (ReferenceEquals(leftValue, rightValue)) return true;
-            if (leftValue is null || rightValue is null) return true;
-            return leftValue.Equals(rightValue);
+            return leftValue.Value == rightValue.Value;
         }
 
         /// <summary>
-        /// Compares two locations to indicate if they are different.
+        /// Compares two latitudes to indicate if they are different.
         /// leftValue != rightValue
         /// </summary>
         /// <param name="leftValue">The left value to compare.</param>
         /// <param name="rightValue">The right value to compare.</param>
         /// <returns>A result after subtration.</returns>
-        public static bool operator !=(PlaneGeolocation leftValue, PlaneGeolocation rightValue)
+        public static bool operator !=(Latitude leftValue, Latitude rightValue)
         {
             if (ReferenceEquals(leftValue, rightValue)) return false;
-            if (leftValue is null || rightValue is null) return true;
-            return !leftValue.Equals(rightValue);
+            return leftValue.Value != rightValue.Value;
         }
 
         /// <summary>
-        /// Returns the geolocation string value of this instance.
+        /// Converts a number to latitude.
         /// </summary>
-        /// <returns>A System.String containing this geolocation instance.</returns>
-        public override string ToString()
+        /// <param name="value">The instance.</param>
+        public static implicit operator Latitude(Model value)
         {
-            return string.Format("Latitude = {0}; Longtitude = {1}", Latitude, Longitude);
+            if (value == null) return new Latitude();
+            return new Latitude(value.Degrees);
+        }
+
+        private static double GetDegrees(Latitudes type, double degrees)
+        {
+            switch (type)
+            {
+                case Latitudes.North:
+                    return degrees;
+                case Latitudes.South:
+                    return -degrees;
+                default:
+                    return 0;
+            }
         }
     }
 
     /// <summary>
-    /// Geolocation with latitude, longitude and altitude.
+    /// Longitude.
     /// </summary>
-    public class Geolocation : PlaneGeolocation, IEquatable<Geolocation>
+    public struct Longitude : IEquatable<Longitude>
+    {
+        /// <summary>
+        /// Longitude model.
+        /// </summary>
+        public class Model : Angle.Model
+        {
+            /// <summary>
+            /// Initializes a new instance of the Longitude.Model class.
+            /// </summary>
+            public Model() : base(new Angle.BoundaryOptions(180, true, Angle.RectifyModes.Cycle))
+            {
+            }
+
+            /// <summary>
+            /// Gets or sets the longitude zone.
+            /// </summary>
+            public Longitudes Type
+            {
+                get
+                {
+                    var degrees = Degrees;
+                    if (degrees == 0) return Longitudes.PrimeMeridian;
+                    if (degrees == 180 || degrees == -180) return Longitudes.CalendarLine;
+                    return degrees > 0 ? Longitudes.East : Longitudes.West;
+                }
+
+                set
+                {
+                    switch (value)
+                    {
+                        case Longitudes.PrimeMeridian:
+                            Degrees = 0;
+                            break;
+                        case Longitudes.CalendarLine:
+                            Degrees = 180;
+                            break;
+                        case Longitudes.East:
+                            if (IsNegative) Degree = -Degree;
+                            break;
+                        case Longitudes.West:
+                            if (Positive) Degree = -Degree;
+                            break;
+                    }
+                }
+            }
+
+            /// <summary>
+            /// Indicates whether the current object is equal to another object of the same type.
+            /// </summary>
+            /// <returns>
+            /// true if the current object is equal to the <paramref name="other"/> parameter; otherwise, false.
+            /// </returns>
+            /// <param name="other">An object to compare with this object.</param>
+            public override bool Equals(object other)
+            {
+                if (other is null) return false;
+                if (other is IAngle a) return Degrees.Equals(a.Degrees);
+                if (other is Longitude l) return Degrees.Equals(l.Value.Degrees);
+                if (other is double d) return Degrees.Equals(d);
+                return Degrees.Equals(other);
+            }
+
+            /// <summary>
+            /// Returns the hash code for this instance.
+            /// </summary>
+            /// <returns>A 32-bit signed integer that is the hash code for this instance.</returns>
+            public override int GetHashCode()
+            {
+                return base.GetHashCode();
+            }
+
+            /// <summary>
+            /// Returns the longitude string value of this instance.
+            /// </summary>
+            /// <returns>A System.String containing this longitude.</returns>
+            public override string ToString()
+            {
+                var degrees = Degrees;
+                if (degrees == 0) return NumberSymbols.NumberZero + Angle.Symbols.DegreeUnit;
+                if (degrees == 180 || degrees == -180) return "180" + Angle.Symbols.DegreeUnit;
+                return this.ToAbsAngleString() + (Positive ? "E" : "W");
+            }
+
+            /// <summary>
+            /// Converts a longitude to its model.
+            /// </summary>
+            /// <param name="value">The instance.</param>
+            public static implicit operator Model(Longitude value)
+            {
+                return new Model { Degrees = value.Value.Degrees };
+            }
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the Longitude struct.
+        /// </summary>
+        public Longitude(Longitudes type, int degree, int minute, float second) : this(GetDegrees(type, Angle.GetDegrees(degree, minute, second)))
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the Longitude struct.
+        /// </summary>
+        public Longitude(int degree, int minute, float second) : this(Angle.GetDegrees(degree, minute, second))
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the Longitude struct.
+        /// </summary>
+        public Longitude(double degrees)
+        {
+            var i = (int)(degrees + 180) / 360 - 180;
+            degrees = degrees - (int)degrees + degrees;
+            Value = new Angle(Math.Abs(degrees));
+            if (degrees == 180 || degrees == -180) Type = Longitudes.CalendarLine;
+            else if (degrees > 0) Type = Longitudes.East;
+            else if (degrees < 0) Type = Longitudes.West;
+            else Type = Longitudes.PrimeMeridian;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the Longitude struct.
+        /// </summary>
+        public Longitude(Longitudes type, double degrees) : this(GetDegrees(type, degrees))
+        {
+        }
+
+        /// <summary>
+        /// Gets the longitude zone.
+        /// </summary>
+        public Longitudes Type { get; }
+
+        /// <summary>
+        /// The absolute angle value in the latitude type.
+        /// </summary>
+        public Angle Value { get; }
+
+        /// <summary>
+        /// Returns the hash code for this instance.
+        /// </summary>
+        /// <returns>A 32-bit signed integer that is the hash code for this instance.</returns>
+        public override int GetHashCode()
+        {
+            return Value.Degrees.GetHashCode();
+        }
+
+        /// <summary>
+        /// Indicates whether the current object is equal to another object of the same type.
+        /// </summary>
+        /// <returns>
+        /// true if the current object is equal to the <paramref name="other"/> parameter; otherwise, false.
+        /// </returns>
+        /// <param name="other">An object to compare with this object.</param>
+        public override bool Equals(object other)
+        {
+            if (other is null) return false;
+            if (other is Longitude l) return Value.Degrees.Equals(l.Value.Degrees);
+            if (other is Model m) return Value.Degrees.Equals(m.Degrees);
+            return Value.Equals(other);
+        }
+
+        /// <summary>
+        /// Indicates whether the current object is equal to another object of the same type.
+        /// </summary>
+        /// <returns>
+        /// true if the current object is equal to the <paramref name="other"/> parameter; otherwise, false.
+        /// </returns>
+        /// <param name="other">An object to compare with this object.</param>
+        public bool Equals(Longitude other)
+        {
+            return Value == other.Value;
+        }
+
+        /// <summary>
+        /// Returns the latitude string value of this instance.
+        /// </summary>
+        /// <returns>A System.String containing this latitude.</returns>
+        public override string ToString()
+        {
+            var degrees = Value.Degrees;
+            if (degrees == 0) return NumberSymbols.NumberZero + Angle.Symbols.DegreeUnit;
+            if (degrees == 180 || degrees == -180) return "180" + Angle.Symbols.DegreeUnit;
+            return Value.ToAbsAngleString() + (Value.Positive ? "E" : "W");
+        }
+
+        /// <summary>
+        /// Compares two longitudes to indicate if they are same.
+        /// leftValue == rightValue
+        /// </summary>
+        /// <param name="leftValue">The left value to compare.</param>
+        /// <param name="rightValue">The right value to compare.</param>
+        /// <returns>A result after subtration.</returns>
+        public static bool operator ==(Longitude leftValue, Longitude rightValue)
+        {
+            if (ReferenceEquals(leftValue, rightValue)) return true;
+            return leftValue.Value == rightValue.Value;
+        }
+
+        /// <summary>
+        /// Compares two longitudes to indicate if they are different.
+        /// leftValue != rightValue
+        /// </summary>
+        /// <param name="leftValue">The left value to compare.</param>
+        /// <param name="rightValue">The right value to compare.</param>
+        /// <returns>A result after subtration.</returns>
+        public static bool operator !=(Longitude leftValue, Longitude rightValue)
+        {
+            if (ReferenceEquals(leftValue, rightValue)) return false;
+            return leftValue.Value != rightValue.Value;
+        }
+
+        /// <summary>
+        /// Converts a number to longitude.
+        /// </summary>
+        /// <param name="value">The instance.</param>
+        public static implicit operator Longitude(Model value)
+        {
+            if (value == null) return new Longitude();
+            return new Longitude(value.Degrees);
+        }
+
+        private static double GetDegrees(Longitudes type, double degrees)
+        {
+            switch (type)
+            {
+                case Longitudes.East:
+                    return degrees;
+                case Longitudes.West:
+                    return -degrees;
+                case Longitudes.CalendarLine:
+                    return 180;
+                default:
+                    return 0;
+            }
+        }
+    }
+
+    /// <summary>
+    /// Geolocation with latitude, longitude and optional altitude.
+    /// </summary>
+    public struct Geolocation : IEquatable<Geolocation>
     {
         /// <summary>
         /// Initializes a new instance of the Geolocation class.
         /// </summary>
-        public Geolocation()
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the Geolocation class.
-        /// </summary>
         /// <param name="latitude">The latitude.</param>
         /// <param name="longitude">The longitude.</param>
-        public Geolocation(Latitude latitude, Longitude longitude) : base(latitude, longitude)
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the Geolocation class.
-        /// </summary>
-        /// <param name="latitude">The latitude.</param>
-        /// <param name="longitude">The longitude.</param>
-        /// <param name="altitude">The altitude.</param>
-        public Geolocation(Latitude latitude, Longitude longitude, double altitude) : base(latitude, longitude)
-        {
-            Altitude = altitude;
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the Geolocation class.
-        /// </summary>
-        /// <param name="latitude">The latitude.</param>
-        /// <param name="longitude">The longitude.</param>
-        /// <param name="altitude">The altitude.</param>
         /// <param name="desc">The place description.</param>
-        public Geolocation(Latitude latitude, Longitude longitude, double altitude, string desc) : base(latitude, longitude)
+        /// <param name="radiusDeviation">The radius deviation in meters.</param>
+        public Geolocation(Latitude latitude, Longitude longitude, string desc = null, double? radiusDeviation = null)
         {
-            Altitude = altitude;
+            Latitude = latitude;
+            Longitude = longitude;
+            Altitude = null;
+            RadiusDeviation = radiusDeviation;
+            AltitudeDeviation = null;
             Description = desc;
         }
 
@@ -338,10 +557,8 @@ namespace Trivial.Geography
         /// <param name="altitude">The altitude.</param>
         /// <param name="radiusDeviation">The radius deviation in meters.</param>
         /// <param name="altitudeDeviation">The altitude deviation in meters.</param>
-        public Geolocation(Latitude latitude, Longitude longitude, double altitude, double radiusDeviation, double altitudeDeviation) : base(latitude, longitude, radiusDeviation)
+        public Geolocation(Latitude latitude, Longitude longitude, double altitude, double radiusDeviation, double? altitudeDeviation = null) : this(latitude, longitude, altitude, null, altitudeDeviation, radiusDeviation)
         {
-            Altitude = altitude;
-            AltitudeDeviation = altitudeDeviation;
         }
 
         /// <summary>
@@ -353,27 +570,45 @@ namespace Trivial.Geography
         /// <param name="desc">The place description.</param>
         /// <param name="radiusDeviation">The radius deviation in meters.</param>
         /// <param name="altitudeDeviation">The altitude deviation in meters.</param>
-        public Geolocation(Latitude latitude, Longitude longitude, double altitude, string desc, double radiusDeviation, double altitudeDeviation) : base(latitude, longitude, radiusDeviation)
+        public Geolocation(Latitude latitude, Longitude longitude, double altitude, string desc = null, double? radiusDeviation = null, double? altitudeDeviation = null)
         {
+            Latitude = latitude;
+            Longitude = longitude;
             Altitude = altitude;
+            RadiusDeviation = radiusDeviation;
             AltitudeDeviation = altitudeDeviation;
             Description = desc;
         }
 
         /// <summary>
-        /// Gets or sets the place description.
+        /// Gets the place description.
         /// </summary>
-        public string Description { get; set; }
+        public string Description { get; }
 
         /// <summary>
-        /// Gets or sets the altitude.
+        /// Gets the radius deviation in meters.
         /// </summary>
-        public double Altitude { get; set; }
+        public double? RadiusDeviation { get; }
 
         /// <summary>
-        /// Gets or sets the altitude deviation in meters.
+        /// Gets the latitude.
         /// </summary>
-        public double AltitudeDeviation { get; set; }
+        public Latitude Latitude { get; }
+
+        /// <summary>
+        /// Gets the longitude.
+        /// </summary>
+        public Longitude Longitude { get; }
+
+        /// <summary>
+        /// Gets the altitude.
+        /// </summary>
+        public double? Altitude { get; }
+
+        /// <summary>
+        /// Gets the altitude deviation in meters.
+        /// </summary>
+        public double? AltitudeDeviation { get; }
 
         /// <summary>
         /// Tests if the given altitude is in the deviation of this instance.
@@ -382,8 +617,10 @@ namespace Trivial.Geography
         /// <returns>true if they are in the same altitude; otherwise, false.</returns>
         public bool IsAltitude(double value)
         {
-            var min = Altitude - AltitudeDeviation;
-            var max = Altitude + AltitudeDeviation;
+            if (!Altitude.HasValue) return true;
+            if (!AltitudeDeviation.HasValue || AltitudeDeviation == 0) return Altitude == value;
+            var min = Altitude.Value - AltitudeDeviation.Value;
+            var max = Altitude.Value + AltitudeDeviation.Value;
             return Math.Min(min, max) <= value && value <= Math.Max(min, max);
         }
 
@@ -403,23 +640,9 @@ namespace Trivial.Geography
         /// true if the current object is equal to the <paramref name="other"/> parameter; otherwise, false.
         /// </returns>
         /// <param name="other">An object to compare with this object.</param>
-        public virtual bool Equals(Geolocation other)
+        public bool Equals(Geolocation other)
         {
-            if (other is null) return false;
             return Latitude == other.Latitude && Longitude == other.Longitude && Altitude == other.Altitude && RadiusDeviation == other.RadiusDeviation && AltitudeDeviation == other.AltitudeDeviation;
-        }
-
-        /// <summary>
-        /// Indicates whether the current object is equal to another object of the same type.
-        /// </summary>
-        /// <returns>
-        /// true if the current object is equal to the <paramref name="other"/> parameter; otherwise, false.
-        /// </returns>
-        /// <param name="other">An object to compare with this object.</param>
-        public override bool Equals(PlaneGeolocation other)
-        {
-            if (other is null || !IsAltitude(0)) return false;
-            return Latitude == other.Latitude && Longitude == other.Longitude && RadiusDeviation == other.RadiusDeviation;
         }
 
         /// <summary>
@@ -433,7 +656,6 @@ namespace Trivial.Geography
         {
             if (other == null) return false;
             if (other is Geolocation l) return Latitude == l.Latitude && Longitude == l.Longitude && Altitude == l.Altitude && RadiusDeviation == l.RadiusDeviation && AltitudeDeviation == l.AltitudeDeviation;
-            if (other is PlaneGeolocation p) return IsAltitude(0) && Latitude == p.Latitude && Longitude == p.Longitude && RadiusDeviation == p.RadiusDeviation;
             return false;
         }
 
@@ -443,7 +665,8 @@ namespace Trivial.Geography
         /// <returns>A System.String containing this geolocation instance.</returns>
         public override string ToString()
         {
-            return string.Format("Latitude = {0}; Longtitude = {1}; Altitude = {2}m", Latitude, Longitude, Altitude);
+            if (!Altitude.HasValue) return string.Format("Latitude = {0}; Longtitude = {1}", Latitude, Longitude);
+            return string.Format("Latitude = {0}; Longtitude = {1}; Altitude = {2}m", Latitude, Longitude, Altitude.Value);
         }
     }
 }

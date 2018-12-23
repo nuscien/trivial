@@ -23,7 +23,7 @@ namespace Trivial.Maths
         private const string ErrStr = "{0} should be less than 60, and greater than or equals 0.";
 
         /// <summary>
-        /// Initializes a new instance of the Angle class.
+        /// Initializes a new instance of the Angle struct.
         /// </summary>
         public Angle(double degrees)
         {
@@ -33,25 +33,16 @@ namespace Trivial.Maths
             IsNegative = Degrees < 0;
             Degree = (int)Degrees;
             AbsDegree = Math.Abs(Degree);
-            var restValue = (float)Math.Abs(AbsDegrees - AbsDegree) * 60;
+            var restValue = Math.Abs(AbsDegrees - AbsDegree) * 60;
             Arcminute = (int)restValue;
-            Arcsecond = (restValue - Arcminute) * 60;
+            Arcsecond = (float)(restValue - Arcminute) * 60;
         }
 
         /// <summary>
-        /// Initializes a new instance of the Angle class.
+        /// Initializes a new instance of the Angle struct.
         /// </summary>
-        public Angle(int degree, int minute, float second)
+        public Angle(int degree, int minute, float second) : this(GetDegrees(degree, minute, second))
         {
-            Degrees = (degree > 0 ? 1 : -1) * (Math.Abs(degree) + minute / 60.0 + second / 3600.0);
-            AbsDegrees = Math.Abs(Degrees);
-            Positive = Degrees > 0;
-            IsNegative = Degrees < 0;
-            Degree = (int)Degrees;
-            AbsDegree = Math.Abs(Degree);
-            var restValue = (float)Math.Abs(AbsDegrees - AbsDegree) * 60;
-            Arcminute = (int)restValue;
-            Arcsecond = (restValue - Arcminute) * 60;
         }
 
         /// <summary>
@@ -124,7 +115,7 @@ namespace Trivial.Maths
         public bool IsNegative { get; }
 
         /// <summary>
-        /// Converts a number to latitude.
+        /// Converts a number to angle.
         /// </summary>
         /// <param name="value">The raw value.</param>
         public static implicit operator Angle(double value)
@@ -133,7 +124,7 @@ namespace Trivial.Maths
         }
 
         /// <summary>
-        /// Converts a number to latitude.
+        /// Converts a number to angle.
         /// </summary>
         /// <param name="value">The raw value.</param>
         public static implicit operator Angle(int value)
@@ -142,7 +133,7 @@ namespace Trivial.Maths
         }
 
         /// <summary>
-        /// Converts a number to latitude.
+        /// Converts an angel model to angle.
         /// </summary>
         /// <param name="value">The raw value.</param>
         public static implicit operator Angle(Model value)
@@ -276,6 +267,15 @@ namespace Trivial.Maths
         }
 
         /// <summary>
+        /// Computes the total degrees.
+        /// </summary>
+        /// <param name="degree">The degree part.</param>
+        /// <param name="minute">The arcminute part.</param>
+        /// <param name="second">The arcsecond part.</param>
+        /// <returns>The total degrees of the angle.</returns>
+        public static double GetDegrees(int degree, int minute, float second) => (degree > 0 ? 1 : -1) * (Math.Abs(degree) + minute / 60.0 + second / 3600.0);
+
+        /// <summary>
         /// Converts the string representation of a angle in a specified style and culture-specific format to its angle equivalent.
         /// </summary>
         /// <param name="s">A string containing a angle to convert.</param>
@@ -407,7 +407,8 @@ namespace Trivial.Maths
         public override bool Equals(object other)
         {
             if (other is null) return false;
-            if (other is Angle) return Degrees.Equals((Angle) other);
+            if (other is IAngle a) return Degrees.Equals(a.Degrees);
+            if (other is double d) return Degrees.Equals(d);
             return Degrees.Equals(other);
         }
 

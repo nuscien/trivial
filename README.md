@@ -12,6 +12,7 @@ Trivial libraries contain a lot of utilities, models and components, which are t
 - [Secure](https://github.com/nuscien/trivial/wiki/secure)
 - [File and stream](https://github.com/nuscien/trivial/wiki/io)
 - [Collection](https://github.com/nuscien/trivial/wiki/collection)
+- [Geography](https://github.com/nuscien/trivial/wiki/geo)
 
 ## [Trivial.Console](https://github.com/nuscien/trivial/wiki/console)
 

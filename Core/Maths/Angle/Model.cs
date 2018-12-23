@@ -110,7 +110,7 @@ namespace Trivial.Maths
                                         }
                                         else if (value < -Boundary.MaxDegree)
                                         {
-                                            value = Boundary.MaxDegree * 2 + value;
+                                            value = -Boundary.MaxDegree * 2 - value;
                                         }
                                         else if (value == -Boundary.MaxDegree && _arcmin > 0 && _arcsec > 0)
                                         {
@@ -209,15 +209,15 @@ namespace Trivial.Maths
             {
                 get
                 {
-                    return _degree + Arcminute / 60.0 + Arcsecond / 3600.0;
+                    return _degree + _arcmin / 60.0 + _arcsec / 3600.0;
                 }
 
                 set
                 {
                     var degree = Math.Abs((int)value);
                     var restValue = (float)Math.Abs(Math.Abs(value) - degree) * 60;
-                    Arcminute = (int)restValue;
-                    Arcsecond = (restValue - Arcminute) * 60;
+                    _arcmin = (int)restValue;
+                    _arcsec = (restValue - _arcmin) * 60;
                     Degree = degree * (value >= 0 ? 1 : -1);
                 }
             }
@@ -273,7 +273,7 @@ namespace Trivial.Maths
             public bool IsNegative => _degree < 0;
 
             /// <summary>
-            /// Converts a number to latitude.
+            /// Converts a number to angle model.
             /// </summary>
             /// <param name="value">The raw value.</param>
             public static implicit operator Model(double value)
@@ -282,7 +282,7 @@ namespace Trivial.Maths
             }
 
             /// <summary>
-            /// Converts a number to latitude.
+            /// Converts a number to angle model.
             /// </summary>
             /// <param name="value">The raw value.</param>
             public static implicit operator Model(int value)
@@ -291,7 +291,7 @@ namespace Trivial.Maths
             }
 
             /// <summary>
-            /// Converts a number to latitude.
+            /// Converts an angle to angle model.
             /// </summary>
             /// <param name="value">The raw value.</param>
             public static implicit operator Model(Angle value)
@@ -545,8 +545,6 @@ namespace Trivial.Maths
                 if (other is null) return false;
                 if (other is IAngle a) return Equals(a);
                 if (other is double d) return Degrees.Equals(d);
-                if (other is int i) return Degrees.Equals(i);
-                if (other is long l) return Degrees.Equals(l);
                 return Degrees.Equals(other);
             }
 
