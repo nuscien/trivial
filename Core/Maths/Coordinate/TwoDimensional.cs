@@ -64,7 +64,7 @@ namespace Trivial.Maths
     }
 
     /// <summary>
-    /// The generic 2D (plane) coordinate point.
+    /// The generic 2D (flat) coordinate point.
     /// </summary>
     /// <typeparam name="TUnit">The type of unit.</typeparam>
     public class TwoDimensionalPoint<TUnit> : TwoElements<TUnit>, IEquatable<TwoElements<TUnit>> where TUnit : struct, IComparable<TUnit>, IEquatable<TUnit>
@@ -161,7 +161,7 @@ namespace Trivial.Maths
     }
 
     /// <summary>
-    /// The point of 2D (plane) mathematics coordinate.
+    /// The point of 2D (flat) mathematics coordinate.
     /// </summary>
     public class DoubleTwoDimensionalPoint : TwoDimensionalPoint<double>, IAdditionCapable<DoubleTwoDimensionalPoint>, ISubtractionCapable<DoubleTwoDimensionalPoint>, INegationCapable<DoubleTwoDimensionalPoint>
     {
@@ -328,7 +328,7 @@ namespace Trivial.Maths
     }
 
     /// <summary>
-    /// The point of 2D (plane) integer coordinate.
+    /// The point of 2D (flat) integer coordinate.
     /// </summary>
     public class Int32TwoDimensionalPoint : TwoDimensionalPoint<int>, IAdditionCapable<Int32TwoDimensionalPoint>, ISubtractionCapable<Int32TwoDimensionalPoint>, INegationCapable<Int32TwoDimensionalPoint>
     {
