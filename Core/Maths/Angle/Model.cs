@@ -18,7 +18,7 @@ namespace Trivial.Maths
     public partial struct Angle
     {
         /// <summary>
-        /// The angle.
+        /// The angle model.
         /// </summary>
         public class Model : IAngle, IComparable, IComparable<IAngle>, IEquatable<IAngle>, IComparable<double>, IEquatable<double>, IComparable<int>, IEquatable<int>, IAdvancedAdditionCapable<Model>
         {
@@ -36,11 +36,6 @@ namespace Trivial.Maths
             /// The arcsecond value.
             /// </summary>
             private float _arcsec;
-
-            /// <summary>
-            /// A value indicating whether it is negative.
-            /// </summary>
-            private bool _negative;
 
             /// <summary>
             /// Initializes a new instance of the Angle.Model class.
@@ -68,21 +63,14 @@ namespace Trivial.Maths
             /// </summary>
             public bool Positive
             {
-                get
-                {
-                    return !_negative;
-                }
-
-                set
-                {
-                    _negative = !value;
-                }
+                get => _degree > 0;
+                set => _degree *= (value ? 1 : -1);
             }
 
             /// <summary>
             /// Gets or sets the absolute degree of the angle.
             /// </summary>
-            public int AbsDegree => _degree;
+            public int AbsDegree => Math.Abs(Degree);
 
             /// <summary>
             /// Gets or sets the degree of the angle.
@@ -91,7 +79,7 @@ namespace Trivial.Maths
             {
                 get
                 {
-                    return _degree * (Positive ? 1 : -1);
+                    return _degree;
                 }
 
                 set
@@ -161,8 +149,7 @@ namespace Trivial.Maths
                         }
                     }
 
-                    _degree = Math.Abs(value);
-                    Positive = value >= 0;
+                    _degree = value;
                 }
             }
 
@@ -188,6 +175,7 @@ namespace Trivial.Maths
 
                     _arcmin = remainder;
                     if (d != 0) Degree += d;
+                    else if (remainder > 0 && Boundary != null && (_degree == Boundary.MaxDegree || _degree == -Boundary.MaxDegree)) Degree = _degree;
                 }
             }
 
@@ -205,13 +193,14 @@ namespace Trivial.Maths
                 {
                     if (value >= 60 || value < 0) throw new ArgumentOutOfRangeException("value", string.Format(ErrStr, "value"));
                     _arcsec = value;
+                    if (value > 0 && Boundary != null && (_degree == Boundary.MaxDegree || _degree == -Boundary.MaxDegree)) Degree = _degree;
                 }
             }
 
             /// <summary>
             /// Gets the absolute total degrees with float format.
             /// </summary>
-            public double AbsDegrees => _degree + Arcminute / 60.0 + Arcsecond / 3600.0;
+            public double AbsDegrees => Math.Abs(Degrees);
 
             /// <summary>
             /// Gets or sets the total degrees.
@@ -220,7 +209,7 @@ namespace Trivial.Maths
             {
                 get
                 {
-                    return (_degree + Arcminute / 60.0 + Arcsecond / 3600.0) * (Positive ? 1 : -1);
+                    return _degree + Arcminute / 60.0 + Arcsecond / 3600.0;
                 }
 
                 set
@@ -276,12 +265,12 @@ namespace Trivial.Maths
             /// <summary>
             /// Gets a value indicating whether the angle is a zero degree angle.
             /// </summary>
-            public bool IsZero => Arcsecond.Equals(0) && Arcminute == 0 && Degree == 0;
+            public bool IsZero => Degree == 0 && Arcminute == 0 && Arcsecond.Equals(0);
 
             /// <summary>
             /// Gets a value indicating whether the angle is a negative angle.
             /// </summary>
-            public bool IsNegative => _negative;
+            public bool IsNegative => _degree < 0;
 
             /// <summary>
             /// Converts a number to latitude.
@@ -299,6 +288,15 @@ namespace Trivial.Maths
             public static implicit operator Model(int value)
             {
                 return new Model { Degree = value };
+            }
+
+            /// <summary>
+            /// Converts a number to latitude.
+            /// </summary>
+            /// <param name="value">The raw value.</param>
+            public static implicit operator Model(Angle value)
+            {
+                return new Model { Degrees = value.Degrees };
             }
 
             /// <summary>
@@ -353,8 +351,8 @@ namespace Trivial.Maths
             /// <returns>A result after subtration.</returns>
             public static bool operator ==(Model leftValue, IAngle rightValue)
             {
-                if (leftValue == null && rightValue == null) return true;
-                if (leftValue == null || rightValue == null) return false;
+                if (ReferenceEquals(leftValue, rightValue)) return true;
+                if (leftValue is null || rightValue is null) return false;
                 return leftValue.Degrees == rightValue.Degrees;
             }
 
@@ -367,8 +365,8 @@ namespace Trivial.Maths
             /// <returns>A result after subtration.</returns>
             public static bool operator !=(Model leftValue, IAngle rightValue)
             {
-                if (leftValue == null && rightValue == null) return false;
-                if (leftValue == null || rightValue == null) return true;
+                if (ReferenceEquals(leftValue, rightValue)) return false;
+                if (leftValue is null || rightValue is null) return true;
                 return leftValue.Degrees != rightValue.Degrees;
             }
 
@@ -380,9 +378,9 @@ namespace Trivial.Maths
             /// <returns>A result after subtration.</returns>
             public static bool operator <(Model leftValue, IAngle rightValue)
             {
-                if (leftValue == null && rightValue == null) return false;
-                if (leftValue == null) return false;
-                if (rightValue == null) return true;
+                if (ReferenceEquals(leftValue, rightValue)) return false;
+                if (leftValue is null) return false;
+                if (rightValue is null) return true;
                 return leftValue.Degrees < rightValue.Degrees;
             }
 
@@ -394,9 +392,9 @@ namespace Trivial.Maths
             /// <returns>A result after subtration.</returns>
             public static bool operator >(Model leftValue, IAngle rightValue)
             {
-                if (leftValue == null && rightValue == null) return false;
-                if (leftValue == null) return true;
-                if (rightValue == null) return false;
+                if (ReferenceEquals(leftValue, rightValue)) return false;
+                if (leftValue is null) return true;
+                if (rightValue is null) return false;
                 return leftValue.Degrees < rightValue.Degrees;
             }
 
@@ -408,9 +406,9 @@ namespace Trivial.Maths
             /// <returns>A result after subtration.</returns>
             public static bool operator <=(Model leftValue, IAngle rightValue)
             {
-                if (leftValue == null && rightValue == null) return true;
-                if (leftValue == null) return false;
-                if (rightValue == null) return true;
+                if (ReferenceEquals(leftValue, rightValue)) return true;
+                if (leftValue is null) return false;
+                if (rightValue is null) return true;
                 return leftValue.Degrees <= rightValue.Degrees;
             }
 
@@ -422,9 +420,9 @@ namespace Trivial.Maths
             /// <returns>A result after subtration.</returns>
             public static bool operator >=(Model leftValue, IAngle rightValue)
             {
-                if (leftValue == null && rightValue == null) return true;
-                if (leftValue == null) return true;
-                if (rightValue == null) return false;
+                if (ReferenceEquals(leftValue, rightValue)) return true;
+                if (leftValue is null) return true;
+                if (rightValue is null) return false;
                 return leftValue.Degrees <= rightValue.Degrees;
             }
 
@@ -498,7 +496,7 @@ namespace Trivial.Maths
             /// <param name="other">An object to compare with this object.</param>
             public int CompareTo(IAngle other)
             {
-                if (other == null) return Degrees.CompareTo(null);
+                if (other is null) return Degrees.CompareTo(null);
                 return Degrees.CompareTo(other.Degrees);
             }
 
@@ -544,7 +542,7 @@ namespace Trivial.Maths
             /// <param name="other">An object to compare with this object.</param>
             public override bool Equals(object other)
             {
-                if (other == null) return false;
+                if (other is null) return false;
                 if (other is IAngle a) return Equals(a);
                 if (other is double d) return Degrees.Equals(d);
                 if (other is int i) return Degrees.Equals(i);

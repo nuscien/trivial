@@ -229,7 +229,7 @@ namespace Trivial.Geography
         /// <param name="other">An object to compare with this object.</param>
         public virtual bool Equals(PlaneGeolocation other)
         {
-            if (other == null) return false;
+            if (other is null) return false;
             return Latitude == other.Latitude && Longitude == other.Longitude && RadiusDeviation == other.RadiusDeviation;
         }
 
@@ -242,7 +242,7 @@ namespace Trivial.Geography
         /// <param name="other">An object to compare with this object.</param>
         public override bool Equals(object other)
         {
-            if (other == null) return false;
+            if (other is null) return false;
             if (other is PlaneGeolocation l) return Latitude == l.Latitude && Longitude == l.Longitude && RadiusDeviation == l.RadiusDeviation;
             return false;
         }
@@ -256,8 +256,8 @@ namespace Trivial.Geography
         /// <returns>A result after subtration.</returns>
         public static bool operator ==(PlaneGeolocation leftValue, PlaneGeolocation rightValue)
         {
-            if (leftValue == null && rightValue == null) return true;
-            if (leftValue == null) return false;
+            if (ReferenceEquals(leftValue, rightValue)) return true;
+            if (leftValue is null || rightValue is null) return true;
             return leftValue.Equals(rightValue);
         }
 
@@ -270,8 +270,8 @@ namespace Trivial.Geography
         /// <returns>A result after subtration.</returns>
         public static bool operator !=(PlaneGeolocation leftValue, PlaneGeolocation rightValue)
         {
-            if (leftValue == null && rightValue == null) return false;
-            if (leftValue == null) return true;
+            if (ReferenceEquals(leftValue, rightValue)) return false;
+            if (leftValue is null || rightValue is null) return true;
             return !leftValue.Equals(rightValue);
         }
 
@@ -405,7 +405,7 @@ namespace Trivial.Geography
         /// <param name="other">An object to compare with this object.</param>
         public virtual bool Equals(Geolocation other)
         {
-            if (other == null) return false;
+            if (other is null) return false;
             return Latitude == other.Latitude && Longitude == other.Longitude && Altitude == other.Altitude && RadiusDeviation == other.RadiusDeviation && AltitudeDeviation == other.AltitudeDeviation;
         }
 
@@ -418,7 +418,7 @@ namespace Trivial.Geography
         /// <param name="other">An object to compare with this object.</param>
         public override bool Equals(PlaneGeolocation other)
         {
-            if (other == null || !IsAltitude(0)) return false;
+            if (other is null || !IsAltitude(0)) return false;
             return Latitude == other.Latitude && Longitude == other.Longitude && RadiusDeviation == other.RadiusDeviation;
         }
 

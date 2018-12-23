@@ -129,8 +129,8 @@ namespace Trivial.Maths
         /// <returns>A result after subtration.</returns>
         public static bool operator ==(PolarPoint leftValue, PolarPoint rightValue)
         {
-            if (leftValue == null && rightValue == null) return true;
-            if (leftValue == null || rightValue == null) return false;
+            if (ReferenceEquals(leftValue, rightValue)) return true;
+            if (leftValue is null || rightValue is null) return false;
             return leftValue.Theta == rightValue.Theta && leftValue.Radius == rightValue.Radius;
         }
 
@@ -143,8 +143,8 @@ namespace Trivial.Maths
         /// <returns>A result after subtration.</returns>
         public static bool operator !=(PolarPoint leftValue, PolarPoint rightValue)
         {
-            if (leftValue == null && rightValue == null) return false;
-            if (leftValue == null || rightValue == null) return true;
+            if (ReferenceEquals(leftValue, rightValue)) return false;
+            if (leftValue is null || rightValue is null) return true;
             return leftValue.Theta != rightValue.Theta || leftValue.Radius != rightValue.Radius;
         }
 

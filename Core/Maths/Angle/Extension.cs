@@ -15,7 +15,7 @@ namespace Trivial.Maths
     /// <summary>
     /// The struct of degree (angle).
     /// </summary>
-    public static class Utilities
+    public static class AngleExtension
     {
         /// <summary>
         /// Gets a value indicating whether the angle is an acute angle.

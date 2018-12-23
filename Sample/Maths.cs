@@ -143,18 +143,24 @@ namespace Trivial.Sample
             ConsoleLine.End(true);
 
             // Location
-            var a = new Geography.Geolocation
-            {
-                Altitude = 10
-            };
-            a.Latitude.Degree = 148;
-            a.Latitude.Arcminute = 100;
-            a.Latitude.Arcsecond = 17;
-            a.Longitude.Degree = 120;
-            ConsoleLine.Write("{0} {1}", a.Latitude.Zone, a.Longitude.Zone);
+            var location = new Geography.Geolocation(
+                new Geography.Latitude
+                {
+                    Degree = 148,
+                    Arcminute = 100,
+                    Arcsecond = 17
+                },
+                new Geography.Longitude
+                {
+                    Degrees = 120.5
+                },
+                10
+            );
+            ConsoleLine.Write("{0} {1} {2}", location.Latitude.Zone, location.Longitude.Zone, location.Latitude.Degrees);
             ConsoleLine.End();
-            ConsoleLine.Write(a.ToString());
+            ConsoleLine.Write(location.ToString());
             ConsoleLine.End();
+            var angle = (Maths.Angle)location.Latitude;
         }
 
         private async Task WriteIsPrimeAsync(int value)

@@ -52,7 +52,7 @@ namespace Trivial.Maths
         /// <returns>true if the specified object is equal to the current object; otherwise, false.</returns>
         public bool Equals(BaseMultipleElements<T> other)
         {
-            if (other == null) return false;
+            if (other is null) return false;
             var a = ToList();
             var b = other.ToList();
             if (a.Count != b.Count) return false;
@@ -94,8 +94,8 @@ namespace Trivial.Maths
         /// <returns>A result after subtration.</returns>
         public static bool operator ==(BaseMultipleElements<T> leftValue, BaseMultipleElements<T> rightValue)
         {
-            if (leftValue == null && rightValue == null) return true;
-            if (leftValue == null || rightValue == null) return false;
+            if (ReferenceEquals(leftValue, rightValue)) return true;
+            if (leftValue is null || rightValue is null) return false;
             return leftValue.Equals(rightValue);
         }
 
@@ -108,8 +108,8 @@ namespace Trivial.Maths
         /// <returns>A result after subtration.</returns>
         public static bool operator !=(BaseMultipleElements<T> leftValue, BaseMultipleElements<T> rightValue)
         {
-            if (leftValue == null && rightValue == null) return false;
-            if (leftValue == null || rightValue == null) return true;
+            if (ReferenceEquals(leftValue, rightValue)) return false;
+            if (leftValue is null || rightValue is null) return true;
             return !leftValue.Equals(rightValue);
         }
 

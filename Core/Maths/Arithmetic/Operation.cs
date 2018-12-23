@@ -98,8 +98,8 @@ namespace Trivial.Maths
         /// <returns>A result after leftValue minus rightValue.</returns>
         public static T Minus<T>(IAdditionCapable<T> leftValue, INegationCapable<T> rightValue)
         {
-            if (leftValue == null) throw new ArgumentNullException(nameof(leftValue));
-            if (rightValue == null) throw new ArgumentNullException(nameof(rightValue));
+            if (leftValue is null) throw new ArgumentNullException(nameof(leftValue));
+            if (rightValue is null) throw new ArgumentNullException(nameof(rightValue));
             return leftValue.Plus(rightValue.Negate());
         }
 
@@ -113,7 +113,7 @@ namespace Trivial.Maths
         /// <returns>A result after leftValue minus rightValue.</returns>
         public static T Minus<T>(ISubtractionCapable<T> leftValue, T rightValue)
         {
-            if (leftValue == null) throw new ArgumentNullException(nameof(leftValue));
+            if (leftValue is null) throw new ArgumentNullException(nameof(leftValue));
             if (rightValue == null) throw new ArgumentNullException(nameof(rightValue));
             return leftValue.Minus(rightValue);
         }
@@ -128,7 +128,7 @@ namespace Trivial.Maths
         /// <returns>A result after leftValue plus rightValue.</returns>
         public static T Plus<T>(IAdditionCapable<T> leftValue, T rightValue)
         {
-            if (leftValue == null) throw new ArgumentNullException(nameof(leftValue));
+            if (leftValue is null) throw new ArgumentNullException(nameof(leftValue));
             if (rightValue == null) throw new ArgumentNullException(nameof(rightValue));
             return leftValue.Plus(rightValue);
         }

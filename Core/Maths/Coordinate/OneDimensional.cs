@@ -238,7 +238,7 @@ namespace Trivial.Maths
         /// <param name="other">An object to compare with this object.</param>
         public int CompareTo(OneDimensionalPoint<double> other)
         {
-            if (other == null) return X.CompareTo(null);
+            if (other is null) return X.CompareTo(null);
             return X.CompareTo(other.X);
         }
 
@@ -254,7 +254,7 @@ namespace Trivial.Maths
         /// <param name="other">An object to compare with this object.</param>
         public int CompareTo(OneDimensionalPoint<int> other)
         {
-            if (other == null) return X.CompareTo(null);
+            if (other is null) return X.CompareTo(null);
             return X.CompareTo(other.X);
         }
 
@@ -470,7 +470,7 @@ namespace Trivial.Maths
         /// <param name="other">An object to compare with this object.</param>
         public int CompareTo(OneDimensionalPoint<double> other)
         {
-            if (other == null) return X.CompareTo(null);
+            if (other is null) return X.CompareTo(null);
             return X.CompareTo(other.X);
         }
 
@@ -486,7 +486,7 @@ namespace Trivial.Maths
         /// <param name="other">An object to compare with this object.</param>
         public int CompareTo(OneDimensionalPoint<int> other)
         {
-            if (other == null) return X.CompareTo(null);
+            if (other is null) return X.CompareTo(null);
             return X.CompareTo(other.X);
         }
 

@@ -93,5 +93,30 @@ namespace Trivial.Maths
             /// </summary>
             public const string RightAngledTriangleSign = "⊿";
         }
+
+        /// <summary>
+        /// Gets an angle with 0 degree.
+        /// </summary>
+        public static Angle ZeroDegree { get { return new Angle(0); } }
+
+        /// <summary>
+        /// Gets an angle with 1 degree.
+        /// </summary>
+        public static Angle OneDegree { get { return new Angle(1); } }
+
+        /// <summary>
+        /// Gets the right angle.
+        /// </summary>
+        public static Angle Right { get { return new Angle(90); } }
+
+        /// <summary>
+        /// Gets the straight angle.
+        /// </summary>
+        public static Angle Straight { get { return new Angle(180); } }
+
+        /// <summary>
+        /// Gets the full angle.
+        /// </summary>
+        public static Angle Full { get { return new Angle(360); } }
     }
 }
