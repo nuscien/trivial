@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Text;
 
+using Trivial.Maths;
+
 namespace Trivial.Geography
 {
     /// <summary>
@@ -54,12 +56,12 @@ namespace Trivial.Geography
     /// <summary>
     /// Latitude.
     /// </summary>
-    public class Latitude : Maths.Angle
+    public class Latitude : Angle.Model
     {
         /// <summary>
         /// Initializes a new instance of the Latitude class.
         /// </summary>
-        public Latitude() : base(new BoundaryOptions(90, true, RectifyModes.Bounce))
+        public Latitude() : base(new Angle.BoundaryOptions(90, true, Angle.RectifyModes.Bounce))
         {
         }
 
@@ -97,20 +99,20 @@ namespace Trivial.Geography
         /// <returns>A System.String containing this latitude.</returns>
         public override string ToString()
         {
-            if (IsZero) return Maths.NumberSymbols.NumberZero + Symbols.DegreeUnit;
-            return ToAbsAngleString() + (Positive ? "N" : "S");
+            if (IsZero) return NumberSymbols.NumberZero + Angle.Symbols.DegreeUnit;
+            return this.ToAbsAngleString() + (Positive ? "N" : "S");
         }
     }
 
     /// <summary>
     /// Longitude.
     /// </summary>
-    public class Longitude : Maths.Angle
+    public class Longitude : Angle.Model
     {
         /// <summary>
         /// Initializes a new instance of the Longitude class.
         /// </summary>
-        public Longitude() : base(new BoundaryOptions(180, true, RectifyModes.Cycle))
+        public Longitude() : base(new Angle.BoundaryOptions(180, true, Angle.RectifyModes.Cycle))
         {
         }
 
@@ -154,9 +156,9 @@ namespace Trivial.Geography
         public override string ToString()
         {
             var degrees = Degrees;
-            if (IsZero) return Maths.NumberSymbols.NumberZero + Symbols.DegreeUnit;
-            if (degrees == 180 || degrees == -180) return "180" + Symbols.DegreeUnit;
-            return ToAbsAngleString() + (Positive ? "E" : "W");
+            if (IsZero) return NumberSymbols.NumberZero + Angle.Symbols.DegreeUnit;
+            if (degrees == 180 || degrees == -180) return "180" + Angle.Symbols.DegreeUnit;
+            return this.ToAbsAngleString() + (Positive ? "E" : "W");
         }
     }
 
