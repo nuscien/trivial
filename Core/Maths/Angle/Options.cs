@@ -23,7 +23,7 @@ namespace Trivial.Maths
         public enum RectifyModes
         {
             /// <summary>
-            /// Nothing to do.
+            /// Forbidden for out of range.
             /// </summary>
             None = 0,
 
@@ -33,7 +33,7 @@ namespace Trivial.Maths
             Cycle = 1,
 
             /// <summary>
-            /// Bounce.
+            /// The value will turn back when touch the boundary.
             /// </summary>
             Bounce = 2
         }

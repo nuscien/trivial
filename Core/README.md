@@ -147,7 +147,7 @@ using Trivial.Security;
 
 ## [IO](https://github.com/nuscien/trivial/wiki/io)
 
-Contains the helper functions and extension functions for file and stream.
+Contains the helper functions and extension functions for `FileInfo` and `Stream`.
 
 ```csharp
 using Trivial.IO;

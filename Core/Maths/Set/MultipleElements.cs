@@ -86,12 +86,25 @@ namespace Trivial.Maths
         }
 
         /// <summary>
+        /// Determines whether the specified object is equal to the current object.
+        /// </summary>
+        /// <param name="other">The object to compare with the current object.</param>
+        /// <returns>true if the specified object is equal to the current object; otherwise, false.</returns>
+        public override bool Equals(object other)
+        {
+            if (other is null) return false;
+            if (other is BaseMultipleElements<T> b) return Equals(b);
+            if (other is IEnumerable<T> l) return Equals(l);
+            return false;
+        }
+
+        /// <summary>
         /// Compares two multiple elements to indicate if they are same.
         /// leftValue == rightValue
         /// </summary>
         /// <param name="leftValue">The left value to compare.</param>
         /// <param name="rightValue">The right value to compare.</param>
-        /// <returns>A result after subtration.</returns>
+        /// <returns>true if they are same; otherwise, false.</returns>
         public static bool operator ==(BaseMultipleElements<T> leftValue, BaseMultipleElements<T> rightValue)
         {
             if (ReferenceEquals(leftValue, rightValue)) return true;
@@ -105,7 +118,7 @@ namespace Trivial.Maths
         /// </summary>
         /// <param name="leftValue">The left value to compare.</param>
         /// <param name="rightValue">The right value to compare.</param>
-        /// <returns>A result after subtration.</returns>
+        /// <returns>true if they are different; otherwise, false.</returns>
         public static bool operator !=(BaseMultipleElements<T> leftValue, BaseMultipleElements<T> rightValue)
         {
             if (ReferenceEquals(leftValue, rightValue)) return false;

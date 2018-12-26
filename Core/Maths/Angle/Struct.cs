@@ -25,9 +25,9 @@ namespace Trivial.Maths
         /// <summary>
         /// Initializes a new instance of the Angle struct.
         /// </summary>
-        public Angle(double degrees)
+        public Angle(double degrees, BoundaryOptions boundary = null)
         {
-            Degrees = degrees;
+            Degrees = AdaptValue(boundary, degrees);
             AbsDegrees = Math.Abs(Degrees);
             Positive = Degrees > 0;
             IsNegative = Degrees < 0;
@@ -35,13 +35,13 @@ namespace Trivial.Maths
             AbsDegree = Math.Abs(Degree);
             var restValue = Math.Abs(AbsDegrees - AbsDegree) * 60;
             Arcminute = (int)restValue;
-            Arcsecond = (float)(restValue - Arcminute) * 60;
+            Arcsecond = (float)((restValue - Arcminute) * 60);
         }
 
         /// <summary>
         /// Initializes a new instance of the Angle struct.
         /// </summary>
-        public Angle(int degree, int minute, float second) : this(GetDegrees(degree, minute, second))
+        public Angle(int degree, int minute, float second, BoundaryOptions boundary = null) : this(GetDegrees(degree, minute, second), boundary)
         {
         }
 
@@ -182,7 +182,7 @@ namespace Trivial.Maths
         /// </summary>
         /// <param name="leftValue">The left value to compare.</param>
         /// <param name="rightValue">The right value to compare.</param>
-        /// <returns>A result after subtration.</returns>
+        /// <returns>true if they are same; otherwise, false.</returns>
         public static bool operator ==(Angle leftValue, IAngle rightValue)
         {
             if (ReferenceEquals(leftValue, rightValue)) return true;
@@ -196,7 +196,7 @@ namespace Trivial.Maths
         /// </summary>
         /// <param name="leftValue">The left value to compare.</param>
         /// <param name="rightValue">The right value to compare.</param>
-        /// <returns>A result after subtration.</returns>
+        /// <returns>true if they are different; otherwise, false.</returns>
         public static bool operator !=(Angle leftValue, IAngle rightValue)
         {
             if (ReferenceEquals(leftValue, rightValue)) return false;
@@ -209,7 +209,7 @@ namespace Trivial.Maths
         /// </summary>
         /// <param name="leftValue">The left value to compare.</param>
         /// <param name="rightValue">The right value to compare.</param>
-        /// <returns>A result after subtration.</returns>
+        /// <returns>true if the left one is smaller than the right one; otherwise, false.</returns>
         public static bool operator <(Angle leftValue, IAngle rightValue)
         {
             if (ReferenceEquals(leftValue, rightValue)) return false;
@@ -222,7 +222,7 @@ namespace Trivial.Maths
         /// </summary>
         /// <param name="leftValue">The left value to compare.</param>
         /// <param name="rightValue">The right value to compare.</param>
-        /// <returns>A result after subtration.</returns>
+        /// <returns>true if the left one is greater than the right one; otherwise, false.</returns>
         public static bool operator >(Angle leftValue, IAngle rightValue)
         {
             if (ReferenceEquals(leftValue, rightValue)) return false;
@@ -235,7 +235,7 @@ namespace Trivial.Maths
         /// </summary>
         /// <param name="leftValue">The left value to compare.</param>
         /// <param name="rightValue">The right value to compare.</param>
-        /// <returns>A result after subtration.</returns>
+        /// <returns>true if the left one is smaller than or equals to the right one; otherwise, false.</returns>
         public static bool operator <=(Angle leftValue, IAngle rightValue)
         {
             if (ReferenceEquals(leftValue, rightValue)) return true;
@@ -248,7 +248,7 @@ namespace Trivial.Maths
         /// </summary>
         /// <param name="leftValue">The left value to compare.</param>
         /// <param name="rightValue">The right value to compare.</param>
-        /// <returns>A result after subtration.</returns>
+        /// <returns>true if the left one is greater than or equals to the right one; otherwise, false.</returns>
         public static bool operator >=(Angle leftValue, IAngle rightValue)
         {
             if (ReferenceEquals(leftValue, rightValue)) return true;
@@ -507,6 +507,50 @@ namespace Trivial.Maths
         public override string ToString()
         {
             return (Positive ? string.Empty : "-") + this.ToAbsAngleString();
+        }
+
+        internal static double AdaptValue(BoundaryOptions boundary, double value)
+        {
+            if (boundary == null || boundary.MaxDegree <= 0) return value;
+            switch (boundary.RectifyMode)
+            {
+                case RectifyModes.Bounce:
+                    {
+                        if (!boundary.Negative)
+                        {
+                            var integer = (int)value % (boundary.MaxDegree * 2);
+                            value = value - (int)value + integer;
+                            if (value > boundary.MaxDegree) value = boundary.MaxDegree * 2 - value;
+                            return value;
+                        }
+
+                        value = (value + boundary.MaxDegree) % (boundary.MaxDegree * 4) - boundary.MaxDegree;
+                        if (value > boundary.MaxDegree) return boundary.MaxDegree * 2 - value;
+                        if (value < -boundary.MaxDegree) return -boundary.MaxDegree * 2 - value;
+                        return value;
+                    }
+                case RectifyModes.Cycle:
+                    {
+                        if (!boundary.Negative)
+                        {
+                            value = value % boundary.MaxDegree;
+                            if (value < 0) value += boundary.MaxDegree;
+                            return value;
+                        }
+
+                        return (value + boundary.MaxDegree) % (boundary.MaxDegree * 2) - boundary.MaxDegree;
+                    }
+                default:
+                    {
+                        if (value > boundary.MaxDegree)
+                            throw new ArgumentOutOfRangeException(nameof(Degree), string.Format("Cannot be greater than {0} degrees.", boundary.MaxDegree));
+                        if (boundary.Negative && value < -boundary.MaxDegree)
+                            throw new ArgumentOutOfRangeException(nameof(Degree), string.Format("Cannot be less than -{0} degrees.", boundary.MaxDegree));
+                        if (!boundary.Negative && value < 0)
+                            throw new ArgumentOutOfRangeException(nameof(Degree), "Cannot be less than 0 degree.");
+                        return value;
+                    }
+            }
         }
     }
 }

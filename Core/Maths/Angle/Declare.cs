@@ -97,26 +97,50 @@ namespace Trivial.Maths
         /// <summary>
         /// Gets an angle with 0 degree.
         /// </summary>
-        public static Angle ZeroDegree { get { return new Angle(0); } }
+        public static Angle ZeroDegree { get; } = new Angle(0);
 
         /// <summary>
         /// Gets an angle with 1 degree.
         /// </summary>
-        public static Angle OneDegree { get { return new Angle(1); } }
+        public static Angle OneDegree { get; } = new Angle(1);
 
         /// <summary>
         /// Gets the right angle.
         /// </summary>
-        public static Angle Right { get { return new Angle(90); } }
+        public static Angle Right { get; } = new Angle(90);
 
         /// <summary>
         /// Gets the straight angle.
         /// </summary>
-        public static Angle Straight { get { return new Angle(180); } }
+        public static Angle Straight { get; } = new Angle(180);
 
         /// <summary>
         /// Gets the full angle.
         /// </summary>
-        public static Angle Full { get { return new Angle(360); } }
+        public static Angle Full { get; } = new Angle(360);
+        /// <summary>
+        /// Gets an angle with 0 degree.
+        /// </summary>
+        public static Model ZeroDegreeModel { get { return new Model { Degree = 0 }; } }
+
+        /// <summary>
+        /// Gets an angle with 1 degree.
+        /// </summary>
+        public static Model OneDegreeModel { get { return new Model { Degree = 1 }; } }
+
+        /// <summary>
+        /// Gets the right angle.
+        /// </summary>
+        public static Model RightModel { get { return new Model { Degree = 90 }; } }
+
+        /// <summary>
+        /// Gets the straight angle.
+        /// </summary>
+        public static Model StraightModel { get { return new Model { Degree = 180 }; } }
+
+        /// <summary>
+        /// Gets the full angle.
+        /// </summary>
+        public static Model FullModel { get { return new Model { Degree = 360 }; } }
     }
 }

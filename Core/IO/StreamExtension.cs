@@ -61,5 +61,34 @@ namespace Trivial.IO
                 progress?.Report(totalBytesRead);
             }
         }
+
+        /// <summary>
+        /// Separates a stream to several parts.
+        /// </summary>
+        /// <param name="source">The source stream.</param>
+        /// <param name="size">The size for each part.</param>
+        /// <returns>All parts of the stream separated.</returns>
+        public static IEnumerable<MemoryStream> Separate(this Stream source, int size)
+        {
+            if (source == null) throw new ArgumentNullException(nameof(source));
+            if (!source.CanRead) throw new ArgumentException("The source stream should be readable.", nameof(source));
+            var destination = new MemoryStream();
+            var bufferSize = DefaultBufferSize;
+            var buffer = new byte[bufferSize];
+            long totalBytesRead = 0;
+            int bytesRead;
+            while ((bytesRead = source.Read(buffer, 0, buffer.Length)) != 0)
+            {
+                destination.Write(buffer, 0, bytesRead);
+                totalBytesRead += bytesRead;
+                if (totalBytesRead < size) continue;
+                destination = new MemoryStream();
+                totalBytesRead = 0;
+                yield return destination;
+            }
+
+            if (destination.Length > 0) yield return destination;
+            else yield break;
+        }
     }
 }

@@ -23,19 +23,9 @@ namespace Trivial.Maths
         public class Model : IAngle, IComparable, IComparable<IAngle>, IEquatable<IAngle>, IComparable<double>, IEquatable<double>, IComparable<int>, IEquatable<int>, IAdvancedAdditionCapable<Model>
         {
             /// <summary>
-            /// The degree value.
+            /// The total degrees value.
             /// </summary>
-            private int _degree;
-
-            /// <summary>
-            /// The arcminute value.
-            /// </summary>
-            private int _arcmin;
-
-            /// <summary>
-            /// The arcsecond value.
-            /// </summary>
-            private float _arcsec;
+            private double raw;
 
             /// <summary>
             /// Initializes a new instance of the Angle.Model class.
@@ -48,109 +38,67 @@ namespace Trivial.Maths
             /// Initializes a new instance of the Angle.Model class.
             /// </summary>
             /// <param name="boundary">The boundary options.</param>
-            public Model(BoundaryOptions boundary)
+            public Model(BoundaryOptions boundary) : this(0, boundary)
             {
+            }
+
+            /// <summary>
+            /// Initializes a new instance of the Angle.Model class.
+            /// </summary>
+            /// <param name="degrees">The total degrees.</param>
+            /// <param name="boundary">The boundary options.</param>
+            public Model(double degrees, BoundaryOptions boundary = null)
+            {
+                raw = degrees;
                 Boundary = boundary;
+            }
+
+            /// <summary>
+            /// Initializes a new instance of the Angle.Model class.
+            /// </summary>
+            /// <param name="degree">The degree part.</param>
+            /// <param name="minute">The minute part.</param>
+            /// <param name="second">The second part.</param>
+            /// <param name="boundary">The boundary options.</param>
+            public Model(int degree, int minute, float second, BoundaryOptions boundary = null) : this(GetDegrees(degree, minute, second), boundary)
+            {
             }
 
             /// <summary>
             /// Gets the boundary options.
             /// </summary>
-            public virtual BoundaryOptions Boundary { get; }
+            public BoundaryOptions Boundary { get; protected set; }
 
             /// <summary>
             /// Gets or sets a value indicating whether it is positive.
             /// </summary>
             public bool Positive
             {
-                get => _degree > 0;
-                set => _degree *= (value ? 1 : -1);
+                get
+                {
+                    return raw > 0;
+                }
+
+                set
+                {
+                    if (raw > 0 && value) return;
+                    if (raw < 0 && !value) return;
+                    raw *= -1;
+                }
             }
 
             /// <summary>
             /// Gets or sets the absolute degree of the angle.
             /// </summary>
-            public int AbsDegree => Math.Abs(Degree);
+            public int AbsDegree => Math.Abs((int)raw);
 
             /// <summary>
             /// Gets or sets the degree of the angle.
             /// </summary>
             public int Degree
             {
-                get
-                {
-                    return _degree;
-                }
-
-                set
-                {
-                    if (Boundary != null && Boundary.MaxDegree > 0)
-                    {
-                        switch (Boundary.RectifyMode)
-                        {
-                            case RectifyModes.Bounce:
-                                {
-                                    if (!Boundary.Negative)
-                                    {
-                                        value = value % (Boundary.MaxDegree * 2);
-                                        value = -value;
-                                    }
-                                    else
-                                    {
-                                        value = (value + Boundary.MaxDegree) % (Boundary.MaxDegree * 4) - Boundary.MaxDegree;
-                                        if (value > Boundary.MaxDegree)
-                                        {
-                                            value = Boundary.MaxDegree * 2 - value;
-                                        }
-                                        else if (value == Boundary.MaxDegree && _arcmin > 0 && _arcsec > 0)
-                                        {
-                                            value = Boundary.MaxDegree - 1;
-                                            _arcmin = 60 - _arcmin - (_arcsec > 0 ? 1 : 0);
-                                            _arcsec = 60 - _arcsec;
-                                        }
-                                        else if (value < -Boundary.MaxDegree)
-                                        {
-                                            value = -Boundary.MaxDegree * 2 - value;
-                                        }
-                                        else if (value == -Boundary.MaxDegree && _arcmin > 0 && _arcsec > 0)
-                                        {
-                                            value = Boundary.MaxDegree + 1;
-                                            _arcmin = 60 - _arcmin - (_arcsec > 0 ? 1 : 0);
-                                            _arcsec = 60 - _arcsec;
-                                        }
-                                    }
-
-                                    break;
-                                }
-                            case RectifyModes.Cycle:
-                                {
-                                    if (!Boundary.Negative)
-                                    {
-                                        value = value % Boundary.MaxDegree;
-                                        if (value < 0) value += Boundary.MaxDegree;
-                                    }
-                                    else
-                                    {
-                                        value = (value + Boundary.MaxDegree) % (Boundary.MaxDegree * 2) - Boundary.MaxDegree;
-                                    }
-
-                                    break;
-                                }
-                            case RectifyModes.None:
-                                {
-                                    if (value > Boundary.MaxDegree)
-                                        throw new ArgumentOutOfRangeException(nameof(Degree), string.Format("Cannot be greater than {0} degrees.", Boundary.MaxDegree));
-                                    if (Boundary.Negative && value < -Boundary.MaxDegree)
-                                        throw new ArgumentOutOfRangeException(nameof(Degree), string.Format("Cannot be less than -{0} degrees.", Boundary.MaxDegree));
-                                    if (!Boundary.Negative && value < 0)
-                                        throw new ArgumentOutOfRangeException(nameof(Degree), "Cannot be less than 0 degree.");
-                                    break;
-                                }
-                        }
-                    }
-
-                    _degree = value;
-                }
+                get => (int)raw;
+                set => Degrees = raw - (int)raw + value;
             }
 
             /// <summary>
@@ -160,22 +108,13 @@ namespace Trivial.Maths
             {
                 get
                 {
-                    return _arcmin;
+                    return (int)((raw - (int)raw) * 60);
                 }
 
                 set
                 {
-                    var remainder = value % 60;
-                    var d = (value - remainder) / 60;
-                    if (remainder < 0)
-                    {
-                        d--;
-                        remainder += 60;
-                    }
-
-                    _arcmin = remainder;
-                    if (d != 0) Degree += d;
-                    else if (remainder > 0 && Boundary != null && (_degree == Boundary.MaxDegree || _degree == -Boundary.MaxDegree)) Degree = _degree;
+                    var min = (int)((raw - (int)raw) * 60);
+                    Degrees = raw - min / 60.0 + value;
                 }
             }
 
@@ -186,14 +125,15 @@ namespace Trivial.Maths
             {
                 get
                 {
-                    return _arcsec;
+                    var min = (raw - (int)raw) * 60;
+                    return (float)((min - (int)min) * 60);
                 }
 
                 set
                 {
-                    if (value >= 60 || value < 0) throw new ArgumentOutOfRangeException("value", string.Format(ErrStr, "value"));
-                    _arcsec = value;
-                    if (value > 0 && Boundary != null && (_degree == Boundary.MaxDegree || _degree == -Boundary.MaxDegree)) Degree = _degree;
+                    var min = (raw - (int)raw) * 60;
+                    var sec = (float)((min - (int)min) * 60);
+                    Degrees = raw - sec / 3600.0 + value;
                 }
             }
 
@@ -209,16 +149,12 @@ namespace Trivial.Maths
             {
                 get
                 {
-                    return _degree + _arcmin / 60.0 + _arcsec / 3600.0;
+                    return raw;
                 }
 
                 set
                 {
-                    var degree = Math.Abs((int)value);
-                    var restValue = (float)Math.Abs(Math.Abs(value) - degree) * 60;
-                    _arcmin = (int)restValue;
-                    _arcsec = (restValue - _arcmin) * 60;
-                    Degree = degree * (value >= 0 ? 1 : -1);
+                    raw = AdaptValue(Boundary, value);
                 }
             }
 
@@ -265,12 +201,12 @@ namespace Trivial.Maths
             /// <summary>
             /// Gets a value indicating whether the angle is a zero degree angle.
             /// </summary>
-            public bool IsZero => Degree == 0 && Arcminute == 0 && Arcsecond.Equals(0);
+            public bool IsZero => raw == 0;
 
             /// <summary>
             /// Gets a value indicating whether the angle is a negative angle.
             /// </summary>
-            public bool IsNegative => _degree < 0;
+            public bool IsNegative => raw < 0;
 
             /// <summary>
             /// Converts a number to angle model.
@@ -278,7 +214,7 @@ namespace Trivial.Maths
             /// <param name="value">The raw value.</param>
             public static implicit operator Model(double value)
             {
-                return new Model { Degrees = value };
+                return new Model(value);
             }
 
             /// <summary>
@@ -287,7 +223,7 @@ namespace Trivial.Maths
             /// <param name="value">The raw value.</param>
             public static implicit operator Model(int value)
             {
-                return new Model { Degree = value };
+                return new Model(value);
             }
 
             /// <summary>
@@ -296,7 +232,7 @@ namespace Trivial.Maths
             /// <param name="value">The raw value.</param>
             public static implicit operator Model(Angle value)
             {
-                return new Model { Degrees = value.Degrees };
+                return new Model(value.Degrees);
             }
 
             /// <summary>
@@ -306,10 +242,8 @@ namespace Trivial.Maths
             /// <returns>A result mirrored with the specific angle.</returns>
             public static Model operator -(Model value)
             {
-                return new Model
-                {
-                    Degrees = -value.Degrees
-                };
+                if (value is null) return null;
+                return new Model(-value.Degrees);
             }
 
             /// <summary>
@@ -321,10 +255,9 @@ namespace Trivial.Maths
             /// <returns>A result after addition.</returns>
             public static Model operator +(Model leftValue, IAngle rightValue)
             {
-                return new Model
-                {
-                    Degrees = leftValue.Degrees + rightValue.Degrees
-                };
+                if (leftValue is null) leftValue = new Model();
+                if (rightValue is null) rightValue = new Model();
+                return new Model(leftValue.Degrees + rightValue.Degrees);
             }
 
             /// <summary>
@@ -336,10 +269,9 @@ namespace Trivial.Maths
             /// <returns>A result after subtration.</returns>
             public static Model operator -(Model leftValue, IAngle rightValue)
             {
-                return new Model
-                {
-                    Degrees = leftValue.Degrees - rightValue.Degrees
-                };
+                if (leftValue is null) leftValue = new Model();
+                if (rightValue is null) rightValue = new Model();
+                return new Model(leftValue.Degrees - rightValue.Degrees);
             }
 
             /// <summary>
@@ -433,7 +365,7 @@ namespace Trivial.Maths
             /// <returns>A new Angle object with the same value as this instance.</returns>
             public static Model Copy(Model obj)
             {
-                return new Model { Degree = obj.Degree, Arcminute = obj.Arcminute, Arcsecond = obj.Arcsecond };
+                return new Model(obj.Degrees);
             }
 
             /// <summary>
@@ -457,7 +389,7 @@ namespace Trivial.Maths
                 if (split.Length < 2)
                 {
                     var degrees = float.Parse(s.Replace(";", string.Empty).Replace(",", string.Empty).Replace(Symbols.DegreeUnit, string.Empty).Replace(Symbols.ArcminuteUnit, string.Empty).Replace(Symbols.ArcsecondUnit, string.Empty));
-                    return new Model { Degrees = degrees };
+                    return new Model(degrees);
                 }
 
                 var positive = true;
@@ -467,9 +399,7 @@ namespace Trivial.Maths
                     split[0] = split[0].Replace("-", string.Empty);
                 }
 
-                var resultObj = new Model { Degree = int.Parse(split[0]), Arcminute = int.Parse(split[1]), Positive = positive };
-                if (split.Length > 2) resultObj.Arcsecond = float.Parse(split[2]);
-                return resultObj;
+                return new Model((positive ? 1 : -1) * int.Parse(split[0]), int.Parse(split[1]), split.Length > 2 ? float.Parse(split[2]) : 0);
             }
 
             /// <summary>
@@ -557,7 +487,7 @@ namespace Trivial.Maths
             /// <param name="other">An object to compare with this object.</param>
             public virtual bool Equals(IAngle other)
             {
-                return (Degree == other.Degree) && (Arcminute == other.Arcminute) && Arcsecond.Equals(other.Arcsecond);
+                return Degrees == other.Degrees;
             }
 
             /// <summary>
@@ -592,10 +522,7 @@ namespace Trivial.Maths
             /// <returns>A result after addition.</returns>
             public Model Plus(Model value)
             {
-                return new Model
-                {
-                    Degrees = Degrees + value.Degrees,
-                };
+                return new Model(Degrees + value.Degrees);
             }
 
             /// <summary>
@@ -606,10 +533,7 @@ namespace Trivial.Maths
             /// <returns>A result after subtraction.</returns>
             public Model Minus(Model value)
             {
-                return new Model
-                {
-                    Degrees = Degrees - value.Degrees,
-                };
+                return new Model(Degrees - value.Degrees);
             }
 
             /// <summary>
@@ -619,10 +543,7 @@ namespace Trivial.Maths
             /// <returns>A result after negation.</returns>
             public Model Negate()
             {
-                return new Model
-                {
-                    Degrees = -Degrees
-                };
+                return new Model(-Degrees);
             }
 
             /// <summary>
@@ -632,10 +553,7 @@ namespace Trivial.Maths
             /// <returns>A absolute result.</returns>
             public Model Abs()
             {
-                return new Model
-                {
-                    Degrees = Math.Abs(Degrees)
-                };
+                return new Model(Math.Abs(Degrees));
             }
 
             /// <summary>

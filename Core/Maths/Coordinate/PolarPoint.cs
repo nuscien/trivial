@@ -9,6 +9,7 @@
 // --------------------------------------------------------------------------------------------------------------------
 
 using System;
+using System.Globalization;
 
 namespace Trivial.Maths
 {
@@ -90,6 +91,15 @@ namespace Trivial.Maths
         }
 
         /// <summary>
+        /// Serves as the default hash function.
+        /// </summary>
+        /// <returns>A hash code for the current object.</returns>
+        public override int GetHashCode()
+        {
+            return string.Format(CultureInfo.InvariantCulture, "{0} {1}", Theta.Degrees, Radius).GetHashCode();
+        }
+
+        /// <summary>
         /// Returns the point string value of this instance.
         /// </summary>
         /// <returns>A System.String containing this point.</returns>
@@ -117,7 +127,20 @@ namespace Trivial.Maths
         /// <returns> true if the current object is equal to the other parameter; otherwise, false.</returns>
         public bool Equals(PolarPoint other)
         {
-            return other != null && Radius == other.Radius && Theta == other.Theta;
+            if (other is null) return false;
+            return Radius == other.Radius && Theta == other.Theta;
+        }
+
+        /// <summary>
+        /// Indicates whether the current object is equal to another object of the same type.
+        /// </summary>
+        /// <param name="other">An object to compare with this object.</param>
+        /// <returns> true if the current object is equal to the other parameter; otherwise, false.</returns>
+        public override bool Equals(object other)
+        {
+            if (other is null) return false;
+            if (other is PolarPoint p) return Equals(p);
+            return false;
         }
 
         /// <summary>
@@ -126,7 +149,7 @@ namespace Trivial.Maths
         /// </summary>
         /// <param name="leftValue">The left value to compare.</param>
         /// <param name="rightValue">The right value to compare.</param>
-        /// <returns>A result after subtration.</returns>
+        /// <returns>true if they are same; otherwise, false.</returns>
         public static bool operator ==(PolarPoint leftValue, PolarPoint rightValue)
         {
             if (ReferenceEquals(leftValue, rightValue)) return true;
@@ -140,7 +163,7 @@ namespace Trivial.Maths
         /// </summary>
         /// <param name="leftValue">The left value to compare.</param>
         /// <param name="rightValue">The right value to compare.</param>
-        /// <returns>A result after subtration.</returns>
+        /// <returns>true if they are different; otherwise, false.</returns>
         public static bool operator !=(PolarPoint leftValue, PolarPoint rightValue)
         {
             if (ReferenceEquals(leftValue, rightValue)) return false;
