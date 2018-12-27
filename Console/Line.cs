@@ -222,6 +222,42 @@ namespace Trivial.Console
         }
 
         /// <summary>
+        /// Writes the specified string value, followed by the current line terminator, to the standard output stream.
+        /// </summary>
+        /// <param name="value">The value to write.</param>
+        /// <param name="arg">An array of objects to write using format.</param>
+        public void WriteLine(string value, params object[] arg)
+        {
+            Write(value, arg);
+            End();
+        }
+
+        /// <summary>
+        /// Writes the specified string value, followed by the current line terminator, to the standard output stream.
+        /// </summary>
+        /// <param name="foregroundColor">The foreground color of the console.</param>
+        /// <param name="value">The value to write.</param>
+        /// <param name="arg">An array of objects to write using format.</param>
+        public void WriteLine(ConsoleColor foregroundColor, string value, params object[] arg)
+        {
+            Write(foregroundColor, value, arg);
+            End();
+        }
+
+        /// <summary>
+        /// Writes the specified string value, followed by the current line terminator, to the standard output stream.
+        /// </summary>
+        /// <param name="foregroundColor">The foreground color of the console.</param>
+        /// <param name="backgroundColor">The background color of the console.</param>
+        /// <param name="value">The value to write.</param>
+        /// <param name="arg">An array of objects to write using format.</param>
+        public void WriteLine(ConsoleColor? foregroundColor, ConsoleColor? backgroundColor, string value, params object[] arg)
+        {
+            Write(foregroundColor, backgroundColor, value, arg);
+            End();
+        }
+
+        /// <summary>
         /// Reads the next line of characters from the standard input stream.
         /// </summary>
         /// <param name="question">The optional question message to output.</param>
@@ -567,6 +603,7 @@ namespace Trivial.Console
             if (foregroundColor.HasValue) System.Console.ForegroundColor = fore;
             if (backgroundColor.HasValue) System.Console.BackgroundColor = back;
         }
+
         /// <summary>
         /// Writes the specified string value, followed by the current line terminator, to the standard output stream.
         /// </summary>

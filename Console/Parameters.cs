@@ -356,7 +356,6 @@ namespace Trivial.Console
                 return item != null;
             }).ToList() : new List<Parameter>()).AsReadOnly();
             ItemCount = Items.Count;
-            if (ItemCount > 0) FirstItem = Items[0];
             AdditionalKeys = (additionalKeys != null ? additionalKeys.ToList() : new List<string>()).AsReadOnly();
             var keys = new List<string>
             {
@@ -364,18 +363,24 @@ namespace Trivial.Console
             };
             keys.AddRange(AdditionalKeys);
             AllKeys = keys.AsReadOnly();
-            IsEmpty = Items.Count == 0;
+            IsEmpty = ItemCount == 0;
             if (IsEmpty)
             {
-                FirstValues = (new List<string>()).AsReadOnly();
+                FirstValues = new List<string>().AsReadOnly();
                 FirstValue = string.Empty;
-                MergedValues = (new List<string>()).AsReadOnly();
+                LastValues = new List<string>().AsReadOnly();
+                LastValue = string.Empty;
+                MergedValues = new List<string>().AsReadOnly();
                 MergedValue = string.Empty;
                 return;
             }
 
-            FirstValues = Items[0].Values;
-            FirstValue = Items[0].Value;
+            FirstItem = Items[0];
+            FirstValues = FirstItem.Values;
+            FirstValue = FirstItem.Value;
+            LastItem = Items[ItemCount - 1];
+            LastValues = LastItem.Values;
+            LastValue = LastItem.Value;
             var mergedList = new List<string>();
             var mergedStr = new StringBuilder();
             foreach (var item in Items)
@@ -420,6 +425,11 @@ namespace Trivial.Console
         public Parameter FirstItem { get; }
 
         /// <summary>
+        /// Gets the first parameter matched the key.
+        /// </summary>
+        public Parameter LastItem { get; }
+
+        /// <summary>
         /// Gets the count of the parameter matched the key.
         /// </summary>
         public int ItemCount { get; }
@@ -433,6 +443,16 @@ namespace Trivial.Console
         /// Gets the words of the value of the first parameter matched the key.
         /// </summary>
         public IReadOnlyList<string> FirstValues { get; }
+
+        /// <summary>
+        /// Gets the string value of the last parameter matched the key.
+        /// </summary>
+        public string LastValue { get; }
+
+        /// <summary>
+        /// Gets the words of the value of the last parameter matched the key.
+        /// </summary>
+        public IReadOnlyList<string> LastValues { get; }
 
         /// <summary>
         /// Gets the string value merged by all the parameter matched the key.
@@ -456,8 +476,7 @@ namespace Trivial.Console
                 case ParameterModes.All:
                     return MergedValue;
                 case ParameterModes.Last:
-                    if (ItemCount == 0) return string.Empty;
-                    return Items[ItemCount - 1].Value;
+                    return LastValue;
                 default:
                     return FirstValue;
             }
@@ -485,8 +504,7 @@ namespace Trivial.Console
                 case ParameterModes.All:
                     return MergedValues;
                 case ParameterModes.Last:
-                    if (ItemCount == 0) return FirstValues;
-                    return Items[ItemCount - 1].Values;
+                    return LastValues;
                 default:
                     return FirstValues;
             }
