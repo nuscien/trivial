@@ -55,6 +55,18 @@ namespace Trivial.Maths
         }
 
         /// <summary>
+        /// Initializes a new instance of the PolarPoint class.
+        /// </summary>
+        /// <param name="r">The length between center point and the specific point.</param>
+        /// <param name="degrees">The total degrees of angel.</param>
+        /// <remarks>You can use this to initialize an instance for the class.</remarks>
+        public PolarPoint(double r, double degrees)
+        {
+            Radius = r;
+            Theta = new Angle(degrees);
+        }
+
+        /// <summary>
         /// Gets or sets the length between center point and the specific point (r).
         /// </summary>
         public double Radius

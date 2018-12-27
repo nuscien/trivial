@@ -209,6 +209,15 @@ namespace Trivial.Maths
         }
 
         /// <summary>
+        /// Returns a tuple that represents the values of current multiple elements object.
+        /// </summary>
+        /// <returns>The tuple representation of this multiple elements object.</returns>
+        public ValueTuple<T> ToValueTuple()
+        {
+            return new ValueTuple<T>(ItemA);
+        }
+
+        /// <summary>
         /// Returns a list that represents the values of current multiple elements object.
         /// </summary>
         /// <returns>The list representation of this multiple elements object.</returns>
@@ -278,6 +287,15 @@ namespace Trivial.Maths
         public new Tuple<T, T> ToTuple()
         {
             return new Tuple<T, T>(ItemA, ItemB);
+        }
+
+        /// <summary>
+        /// Returns a tuple that represents the values of current multiple elements object.
+        /// </summary>
+        /// <returns>The tuple representation of this multiple elements object.</returns>
+        public new ValueTuple<T, T> ToValueTuple()
+        {
+            return new ValueTuple<T, T>(ItemA, ItemB);
         }
 
         /// <summary>
@@ -355,6 +373,15 @@ namespace Trivial.Maths
         }
 
         /// <summary>
+        /// Returns a tuple that represents the values of current multiple elements object.
+        /// </summary>
+        /// <returns>The tuple representation of this multiple elements object.</returns>
+        public new ValueTuple<T, T, T> ToValueTuple()
+        {
+            return new ValueTuple<T, T, T>(ItemA, ItemB, ItemC);
+        }
+
+        /// <summary>
         /// Returns a list that represents the values of current multiple elements object.
         /// </summary>
         /// <returns>The list representation of this multiple elements object.</returns>
@@ -428,6 +455,15 @@ namespace Trivial.Maths
         public new Tuple<T, T, T, T> ToTuple()
         {
             return new Tuple<T, T, T, T>(ItemA, ItemB, ItemC, ItemD);
+        }
+
+        /// <summary>
+        /// Returns a tuple that represents the values of current multiple elements object.
+        /// </summary>
+        /// <returns>The tuple representation of this multiple elements object.</returns>
+        public new ValueTuple<T, T, T, T> ToValueTuple()
+        {
+            return new ValueTuple<T, T, T, T>(ItemA, ItemB, ItemC, ItemD);
         }
 
         /// <summary>
@@ -510,6 +546,15 @@ namespace Trivial.Maths
         }
 
         /// <summary>
+        /// Returns a tuple that represents the values of current multiple elements object.
+        /// </summary>
+        /// <returns>The tuple representation of this multiple elements object.</returns>
+        public new ValueTuple<T, T, T, T, T> ToValueTuple()
+        {
+            return new ValueTuple<T, T, T, T, T>(ItemA, ItemB, ItemC, ItemD, ItemE);
+        }
+
+        /// <summary>
         /// Returns a list that represents the values of current multiple elements object.
         /// </summary>
         /// <returns>The list representation of this multiple elements object.</returns>
@@ -587,6 +632,15 @@ namespace Trivial.Maths
         public new Tuple<T, T, T, T, T, T> ToTuple()
         {
             return new Tuple<T, T, T, T, T, T>(ItemA, ItemB, ItemC, ItemD, ItemE, ItemF);
+        }
+
+        /// <summary>
+        /// Returns a tuple that represents the values of current multiple elements object.
+        /// </summary>
+        /// <returns>The tuple representation of this multiple elements object.</returns>
+        public new ValueTuple<T, T, T, T, T, T> ToValueTuple()
+        {
+            return new ValueTuple<T, T, T, T, T, T>(ItemA, ItemB, ItemC, ItemD, ItemE, ItemF);
         }
 
         /// <summary>
@@ -672,6 +726,15 @@ namespace Trivial.Maths
         }
 
         /// <summary>
+        /// Returns a tuple that represents the values of current multiple elements object.
+        /// </summary>
+        /// <returns>The tuple representation of this multiple elements object.</returns>
+        public new ValueTuple<T, T, T, T, T, T, T> ToValueTuple()
+        {
+            return new ValueTuple<T, T, T, T, T, T, T>(ItemA, ItemB, ItemC, ItemD, ItemE, ItemF, ItemG);
+        }
+
+        /// <summary>
         /// Returns a list that represents the values of current multiple elements object.
         /// </summary>
         /// <returns>The list representation of this multiple elements object.</returns>
@@ -753,6 +816,15 @@ namespace Trivial.Maths
         public new Tuple<T, T, T, T, T, T, T, T> ToTuple()
         {
             return new Tuple<T, T, T, T, T, T, T, T>(ItemA, ItemB, ItemC, ItemD, ItemE, ItemF, ItemG, ItemH);
+        }
+
+        /// <summary>
+        /// Returns a tuple that represents the values of current multiple elements object.
+        /// </summary>
+        /// <returns>The tuple representation of this multiple elements object.</returns>
+        public new ValueTuple<T, T, T, T, T, T, T, ValueTuple<T>> ToValueTuple()
+        {
+            return new ValueTuple<T, T, T, T, T, T, T, ValueTuple<T>>(ItemA, ItemB, ItemC, ItemD, ItemE, ItemF, ItemG, new ValueTuple<T>(ItemH));
         }
 
         /// <summary>
@@ -842,6 +914,15 @@ namespace Trivial.Maths
         }
 
         /// <summary>
+        /// Returns a tuple that represents the values of current multiple elements object.
+        /// </summary>
+        /// <returns>The tuple representation of this multiple elements object.</returns>
+        public new ValueTuple<T, T, T, T, T, T, T, ValueTuple<T, T>> ToValueTuple()
+        {
+            return new ValueTuple<T, T, T, T, T, T, T, ValueTuple<T, T>>(ItemA, ItemB, ItemC, ItemD, ItemE, ItemF, ItemG, new ValueTuple<T, T>(ItemH, ItemI));
+        }
+
+        /// <summary>
         /// Returns a list that represents the values of current multiple elements object.
         /// </summary>
         /// <returns>The list representation of this multiple elements object.</returns>
@@ -927,6 +1008,15 @@ namespace Trivial.Maths
         public new Tuple<T, T, T, T, T, T, T, Tuple<T, T, T>> ToTuple()
         {
             return new Tuple<T, T, T, T, T, T, T, Tuple<T, T, T>>(ItemA, ItemB, ItemC, ItemD, ItemE, ItemF, ItemG, new Tuple<T, T, T>(ItemH, ItemI, ItemJ));
+        }
+
+        /// <summary>
+        /// Returns a tuple that represents the values of current multiple elements object.
+        /// </summary>
+        /// <returns>The tuple representation of this multiple elements object.</returns>
+        public new ValueTuple<T, T, T, T, T, T, T, ValueTuple<T, T, T>> ToValueTuple()
+        {
+            return new ValueTuple<T, T, T, T, T, T, T, ValueTuple<T, T, T>>(ItemA, ItemB, ItemC, ItemD, ItemE, ItemF, ItemG, new ValueTuple<T, T, T>(ItemH, ItemI, ItemJ));
         }
 
         /// <summary>
@@ -1020,6 +1110,15 @@ namespace Trivial.Maths
         }
 
         /// <summary>
+        /// Returns a tuple that represents the values of current multiple elements object.
+        /// </summary>
+        /// <returns>The tuple representation of this multiple elements object.</returns>
+        public new ValueTuple<T, T, T, T, T, T, T, ValueTuple<T, T, T, T>> ToValueTuple()
+        {
+            return new ValueTuple<T, T, T, T, T, T, T, ValueTuple<T, T, T, T>>(ItemA, ItemB, ItemC, ItemD, ItemE, ItemF, ItemG, new ValueTuple<T, T, T, T>(ItemH, ItemI, ItemJ, ItemK));
+        }
+
+        /// <summary>
         /// Returns a list that represents the values of current multiple elements object.
         /// </summary>
         /// <returns>The list representation of this multiple elements object.</returns>
@@ -1109,6 +1208,15 @@ namespace Trivial.Maths
         public new Tuple<T, T, T, T, T, T, T, Tuple<T, T, T, T, T>> ToTuple()
         {
             return new Tuple<T, T, T, T, T, T, T, Tuple<T, T, T, T, T>>(ItemA, ItemB, ItemC, ItemD, ItemE, ItemF, ItemG, new Tuple<T, T, T, T, T>(ItemH, ItemI, ItemJ, ItemK, ItemL));
+        }
+
+        /// <summary>
+        /// Returns a tuple that represents the values of current multiple elements object.
+        /// </summary>
+        /// <returns>The tuple representation of this multiple elements object.</returns>
+        public new ValueTuple<T, T, T, T, T, T, T, ValueTuple<T, T, T, T, T>> ToValueTuple()
+        {
+            return new ValueTuple<T, T, T, T, T, T, T, ValueTuple<T, T, T, T, T>>(ItemA, ItemB, ItemC, ItemD, ItemE, ItemF, ItemG, new ValueTuple<T, T, T, T, T>(ItemH, ItemI, ItemJ, ItemK, ItemL));
         }
 
         /// <summary>

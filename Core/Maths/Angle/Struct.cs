@@ -511,7 +511,8 @@ namespace Trivial.Maths
 
         internal static double AdaptValue(BoundaryOptions boundary, double value)
         {
-            if (boundary == null || boundary.MaxDegree <= 0) return value;
+            if (boundary == null) return value;
+            if (boundary.MaxDegree <= 0) throw new ArgumentOutOfRangeException(nameof(boundary), "MaxDegree should be greater than 0.");
             switch (boundary.RectifyMode)
             {
                 case RectifyModes.Bounce:

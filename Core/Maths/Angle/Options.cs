@@ -23,17 +23,20 @@ namespace Trivial.Maths
         public enum RectifyModes
         {
             /// <summary>
-            /// Forbidden for out of range.
+            /// Forbidden.
+            /// It will throw an ArgumentOutOfRangeException if the value is out of range.
             /// </summary>
             None = 0,
 
             /// <summary>
-            /// Cycle.
+            /// Circulation.
+            /// It will turn to the other side of the range for the value out of range.
             /// </summary>
             Cycle = 1,
 
             /// <summary>
-            /// The value will turn back when touch the boundary.
+            /// Turn back like a pendulum.
+            /// It will retrace when touch the boundary.
             /// </summary>
             Bounce = 2
         }
@@ -57,7 +60,7 @@ namespace Trivial.Maths
             }
 
             /// <summary>
-            /// The maximum degree supported.
+            /// The maximum degree supported. Should be greater than 0.
             /// </summary>
             public int MaxDegree { get; }
 

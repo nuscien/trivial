@@ -162,6 +162,7 @@ namespace Trivial.Console
         {
             Dispose(true);
         }
+
         #endregion
     }
 
