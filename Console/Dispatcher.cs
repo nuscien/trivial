@@ -368,7 +368,7 @@ namespace Trivial.Console
             if (verbFactory == null) return null;
             var v = verbFactory();
             if (v == null) return null;
-            v.Arguments = args ?? throw new ArgumentNullException("args");
+            v.Arguments = args ?? throw new ArgumentNullException(nameof(args));
             args.Deserialize(v);
             if (!v.IsValid()) return null;
             return v;

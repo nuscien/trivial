@@ -452,6 +452,15 @@ namespace Trivial.Maths
         }
 
         /// <summary>
+        /// Converts the interval to a tuple, which includes MinValue and MaxValue.
+        /// </summary>
+        /// <returns>A tuple including MinValue and MaxValue.</returns>
+        public ValueTuple<T, T> ToValueTuple()
+        {
+            return new ValueTuple<T, T>(MinValue, MaxValue);
+        }
+
+        /// <summary>
         /// Converts the interval to a two elements object, which includes MinValue and MaxValue.
         /// </summary>
         /// <returns>A multiple elements object including MinValue and MaxValue.</returns>
@@ -496,7 +505,6 @@ namespace Trivial.Maths
     /// </summary>
     public class RefValueSimpleInterval<T> : SimpleInterval<T> where T : class, IComparable<T>
     {
-
         /// <summary>
         /// Initializes a new instance of the RefValueSimpleInterval class.
         /// </summary>
