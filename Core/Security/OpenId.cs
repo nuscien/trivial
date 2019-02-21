@@ -3,60 +3,16 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
 using System.Security;
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Web;
+using Trivial.Net;
 
 namespace Trivial.Security
 {
-    /// <summary>
-    /// The open id token response.
-    /// </summary>
-    public class OpenIdTokenResponse
-    {
-        /// <summary>
-        /// Gets or sets the access token.
-        /// </summary>
-        public SecureString AccessToken { get; set; }
-
-        /// <summary>
-        /// Gets or sets the refresh token.
-        /// </summary>
-        public SecureString RefreshToken { get; set; }
-
-        /// <summary>
-        /// Gets or sets the resource identifier.
-        /// </summary>
-        public string OpenId { get; set; }
-
-        /// <summary>
-        /// Gets or sets the time span of expiration.
-        /// </summary>
-        public TimeSpan ExpiresIn { get; set; }
-
-        /// <summary>
-        /// Gets the permission scope.
-        /// </summary>
-        public IList<string> Scope { get; } = new List<string>();
-
-        /// <summary>
-        /// Tests if the access token is set.
-        /// </summary>
-        /// <returns>true if it is null or empty; otherwise, false.</returns>
-        public bool IsEmpty()
-        {
-            try
-            {
-                return AccessToken == null || AccessToken.Length == 0;
-            }
-            catch (ObjectDisposedException)
-            {
-            }
-
-            return true;
-        }
-    }
-
     /// <summary>
     /// Gets the app secret key for accessing api.
     /// </summary>
@@ -94,9 +50,94 @@ namespace Trivial.Security
     /// <summary>
     /// The open id token client.
     /// </summary>
+    public abstract class TokenResolver
+    {
+        private AppAccessingKey appInfo;
+
+        /// <summary>
+        /// Gets the JSON HTTP web client for resolving access token information instance.
+        /// </summary>
+        private JsonHttpClient<TokenInfo> webClient;
+
+        /// <summary>
+        /// Initializes a new instance of the OpenIdTokenClient class.
+        /// </summary>
+        /// <param name="appKey">The app accessing key.</param>
+        public TokenResolver(AppAccessingKey appKey)
+        {
+            appInfo = appKey;
+        }
+
+        /// <summary>
+        /// Gets the app id.
+        /// </summary>
+        public string AppId => AppAccessingKey.IsNullOrEmpty(appInfo) ? appInfo.Id : null;
+
+        /// <summary>
+        /// Gets the open id info cached.
+        /// </summary>
+        public TokenInfo Token { get; protected set; }
+
+        /// <summary>
+        /// Gets a value indicating whether there is a token cached.
+        /// </summary>
+        public bool HasCache => !string.IsNullOrWhiteSpace(Token?.AccessToken);
+
+        /// <summary>
+        /// Gets authorization value.
+        /// </summary>
+        public string Authorization => Token?.ToString();
+
+        /// <summary>
+        /// Gets the latest resolved date.
+        /// </summary>
+        public DateTime LatestResolveDate { get; private set; }
+
+        /// <summary>
+        /// Gets a value indicating whether need dispose request content after receiving response.
+        /// </summary>
+        protected virtual bool NeedDisposeRequestContent => true;
+
+        /// <summary>
+        /// Updates the access token.
+        /// </summary>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>The access token information instance updated.</returns>
+        public async Task<TokenInfo> Update(CancellationToken cancellationToken = default)
+        {
+            if (AppAccessingKey.IsNullOrEmpty(appInfo)) return null;
+            if (webClient == null) webClient = new JsonHttpClient<TokenInfo>();
+            PrepareWebClient(webClient, appInfo);
+            Token = await webClient.Process(cancellationToken);
+            LatestResolveDate = DateTime.Now;
+            if (NeedDisposeRequestContent && webClient.RequestContent != null)
+            {
+                webClient.RequestContent.Dispose();
+                webClient.RequestContent = null;
+            }
+
+            return Token;
+        }
+
+        /// <summary>
+        /// Prepared web client.
+        /// </summary>
+        /// <param name="webClient">The JSON HTTP client instance.</param>
+        /// <param name="appInfo">The app id and key.</param>
+        protected abstract void PrepareWebClient(JsonHttpClient<TokenInfo> webClient, AppAccessingKey appInfo);
+    }
+
+    /// <summary>
+    /// The open id token client.
+    /// </summary>
     public abstract class OpenIdTokenClient
     {
         private AppAccessingKey appInfo;
+
+        /// <summary>
+        /// Gets the JSON HTTP web client for resolving access token information instance.
+        /// </summary>
+        private readonly JsonHttpClient<TokenInfo> webClient = new JsonHttpClient<TokenInfo>();
 
         /// <summary>
         /// Initializes a new instance of the OpenIdTokenClient class.
@@ -115,12 +156,64 @@ namespace Trivial.Security
         /// <summary>
         /// Gets the open id info.
         /// </summary>
-        public OpenIdTokenResponse Token { get; protected set; }
+        public TokenInfo Token { get; protected set; }
 
         /// <summary>
         /// Gets the latest visited date.
         /// </summary>
         public DateTime LatestVisitDate { get; private set; }
+
+        /// <summary>
+        /// Gets a value indicating whether need dispose request content after receiving response.
+        /// </summary>
+        protected virtual bool NeedDisposeRequestContent => true;
+
+        /// <summary>
+        /// Validates the code.
+        /// </summary>
+        /// <param name="code">The code to validate.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>A new open id; or null, if failed.</returns>
+        public async Task<TokenInfo> ValidateCode(string code, CancellationToken cancellationToken = default)
+        {
+            if (!AppAccessingKey.IsNullOrEmpty(appInfo) || !string.IsNullOrWhiteSpace(code)) return null;
+            var url = GetValidationUri(appInfo.Key, code);
+            if (url == null) return null;
+            PrepareWebClient(webClient, appInfo);
+            webClient.Uri = url;
+            Token = await webClient.Process(cancellationToken);
+            LatestVisitDate = DateTime.Now;
+            if (NeedDisposeRequestContent && webClient.RequestContent != null)
+            {
+                webClient.RequestContent.Dispose();
+                webClient.RequestContent = null;
+            }
+
+            return Token;
+        }
+
+        /// <summary>
+        /// Refreshes the token.
+        /// </summary>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>A new open id; or null, if failed.</returns>
+        public async Task<TokenInfo> Refresh(CancellationToken cancellationToken = default)
+        {
+            if (!AppAccessingKey.IsNullOrEmpty(appInfo)) return null;
+            var url = GetRefreshingUri();
+            if (url == null) return null;
+            PrepareWebClient(webClient, appInfo);
+            webClient.Uri = url;
+            Token = await webClient.Process(cancellationToken);
+            LatestVisitDate = DateTime.Now;
+            if (NeedDisposeRequestContent && webClient.RequestContent != null)
+            {
+                webClient.RequestContent.Dispose();
+                webClient.RequestContent = null;
+            }
+
+            return Token;
+        }
 
         /// <summary>
         /// Gets the login URI.
@@ -130,55 +223,6 @@ namespace Trivial.Security
         /// <param name="state">A state code.</param>
         /// <returns>A URI for login.</returns>
         public abstract Uri GetLoginUri(Uri redirectUri, string scope, string state);
-
-        /// <summary>
-        /// Validates the code.
-        /// </summary>
-        /// <param name="code">The code to validate.</param>
-        /// <returns>A new open id; or null, if failed.</returns>
-        public OpenIdTokenResponse ValidateCode(string code)
-        {
-            if (!AppAccessingKey.IsNullOrEmpty(appInfo) || !string.IsNullOrWhiteSpace(code)) return null;
-            var url = GetValidationUri(appInfo.Key, code);
-            if (url == null) return null;
-            var webClient = CreateWebClient();
-            var now = DateTime.UtcNow;
-            var token = webClient.DownloadString(url);
-            var response = Deserialize(token);
-            Token = response;
-            LatestVisitDate = now;
-            return response;
-        }
-
-        /// <summary>
-        /// Refreshes the token.
-        /// </summary>
-        /// <returns>A new open id; or null, if failed.</returns>
-        public OpenIdTokenResponse Refresh()
-        {
-            if (!AppAccessingKey.IsNullOrEmpty(this.appInfo)) return null;
-            var url = GetRefreshingUri();
-            if (url == null) return null;
-            var webClient = CreateWebClient();
-            var now = DateTime.UtcNow;
-            var token = webClient.DownloadString(url);
-            var response = Deserialize(token);
-            Token = response;
-            LatestVisitDate = now;
-            return response;
-        }
-
-        /// <summary>
-        /// Creates a web client.
-        /// </summary>
-        /// <returns>A web client to use access network resource.</returns>
-        protected virtual WebClient CreateWebClient()
-        {
-            return new WebClient
-            {
-                UseDefaultCredentials = true
-            };
-        }
 
         /// <summary>
         /// Gets the validation URI.
@@ -195,10 +239,12 @@ namespace Trivial.Security
         protected abstract Uri GetRefreshingUri();
 
         /// <summary>
-        /// Deserializes the text to the open id response instance.
+        /// Prepared web client.
         /// </summary>
-        /// <param name="response">The response string to deserialize.</param>
-        /// <returns>The open id response instance.</returns>
-        protected abstract OpenIdTokenResponse Deserialize(string response);
+        /// <param name="webClient">The JSON HTTP client instance.</param>
+        /// <param name="appInfo">The app id and key.</param>
+        protected virtual void PrepareWebClient(JsonHttpClient<TokenInfo> webClient, AppAccessingKey appInfo)
+        {
+        }
     }
 }

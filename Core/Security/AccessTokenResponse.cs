@@ -17,7 +17,8 @@ namespace Trivial.Security
     /// <summary>
     /// The access token response information.
     /// </summary>
-    public class AccessTokenResponse
+    [DataContract]
+    public class TokenInfo
     {
         /// <summary>
         /// The user identifier property.
@@ -70,9 +71,9 @@ namespace Trivial.Security
         public const string BearerTokenType = "Bearer";
 
         /// <summary>
-        /// Initializes a new instance of the AccessTokenResponse class.
+        /// Initializes a new instance of the TokenInfo class.
         /// </summary>
-        public AccessTokenResponse()
+        public TokenInfo()
         {
             AdditionalData = new Dictionary<string, string>();
         }
@@ -90,10 +91,29 @@ namespace Trivial.Security
         public string TokenType { get; set; }
 
         /// <summary>
-        /// Gets or sets the expiration date and time.
+        /// Gets or sets the expiration seconds.
         /// </summary>
         [DataMember(Name = ExpiresInProperty)]
-        public DateTime? ExpiredTime { get; set; }
+        public int? ExpiredSecond {
+            get
+            {
+                var expiredAfter = ExpiredAfter;
+                if (!expiredAfter.HasValue) return null;
+                return (int)(expiredAfter.Value.TotalSeconds);
+            }
+
+            set
+            {
+                if (value.HasValue) ExpiredAfter = new TimeSpan(0, 0, value.Value);
+                else ExpiredAfter = null;
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the expiration seconds.
+        /// </summary>
+        [DataMember(Name = ExpiresInProperty)]
+        public TimeSpan? ExpiredAfter { get; set; }
 
         /// <summary>
         /// Gets or sets the refresh token.
@@ -114,9 +134,20 @@ namespace Trivial.Security
         public virtual string UserId { get; set; }
 
         /// <summary>
+        /// Gets the permission scope.
+        /// </summary>
+        public IList<string> Scope { get; } = new List<string>();
+
+        /// <summary>
         /// Gets the additional data.
         /// </summary>
         public Dictionary<string, string> AdditionalData { get; private set; }
+
+        /// <summary>
+        /// Tests if the access token is set.
+        /// </summary>
+        /// <returns>true if it is null or empty; otherwise, false.</returns>
+        public bool IsEmpty => string.IsNullOrWhiteSpace(AccessToken);
 
         /// <summary>
         /// Tries to get string value of additional data.
@@ -134,7 +165,7 @@ namespace Trivial.Security
         /// <returns>A System.String that represents the current RequestIdentifier.</returns>
         public override string ToString()
         {
-            return string.Format("{0}\\{1}", TokenType, AccessToken);
+            return string.Format("{0} {1}", TokenType, AccessToken);
         }
     }
 }

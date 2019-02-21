@@ -465,6 +465,11 @@ namespace Trivial.Net
         }
 
         /// <summary>
+        /// Gets additional string bag.
+        /// </summary>
+        public IDictionary<string, string> Bag { get; } = new Dictionary<string, string>();
+
+        /// <summary>
         /// Sends request.
         /// </summary>
         /// <param name="cancellationToken">The optional cancellation token.</param>
