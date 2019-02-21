@@ -29,6 +29,11 @@ namespace Trivial.Security
         public SecureString Key { get; set; }
 
         /// <summary>
+        /// Gets additional string bag.
+        /// </summary>
+        public IDictionary<string, string> Bag { get; } = new Dictionary<string, string>();
+
+        /// <summary>
         /// Tests if the app accessing key is null or empty.
         /// </summary>
         /// <param name="appKey">The app accessing key instance.</param>
@@ -48,7 +53,7 @@ namespace Trivial.Security
     }
 
     /// <summary>
-    /// The open id token client.
+    /// The token resolver.
     /// </summary>
     public abstract class TokenResolver
     {
@@ -60,7 +65,7 @@ namespace Trivial.Security
         private JsonHttpClient<TokenInfo> webClient;
 
         /// <summary>
-        /// Initializes a new instance of the OpenIdTokenClient class.
+        /// Initializes a new instance of the TokenResolver class.
         /// </summary>
         /// <param name="appKey">The app accessing key.</param>
         public TokenResolver(AppAccessingKey appKey)
@@ -103,7 +108,7 @@ namespace Trivial.Security
         /// </summary>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>The access token information instance updated.</returns>
-        public async Task<TokenInfo> Update(CancellationToken cancellationToken = default)
+        public async Task<TokenInfo> UpdateAsync(CancellationToken cancellationToken = default)
         {
             if (AppAccessingKey.IsNullOrEmpty(appInfo)) return null;
             if (webClient == null) webClient = new JsonHttpClient<TokenInfo>();
@@ -117,6 +122,16 @@ namespace Trivial.Security
             }
 
             return Token;
+        }
+
+        /// <summary>
+        /// Gets the access token.
+        /// </summary>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>The access token information instance.</returns>
+        public Task<TokenInfo> GetAsync(CancellationToken cancellationToken = default)
+        {
+            return HasCache ? Task.Run(() => Token) : UpdateAsync(cancellationToken);
         }
 
         /// <summary>
@@ -174,7 +189,7 @@ namespace Trivial.Security
         /// <param name="code">The code to validate.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>A new open id; or null, if failed.</returns>
-        public async Task<TokenInfo> ValidateCode(string code, CancellationToken cancellationToken = default)
+        public async Task<TokenInfo> ValidateCodeAsync(string code, CancellationToken cancellationToken = default)
         {
             if (!AppAccessingKey.IsNullOrEmpty(appInfo) || !string.IsNullOrWhiteSpace(code)) return null;
             var url = GetValidationUri(appInfo.Key, code);
@@ -197,7 +212,7 @@ namespace Trivial.Security
         /// </summary>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>A new open id; or null, if failed.</returns>
-        public async Task<TokenInfo> Refresh(CancellationToken cancellationToken = default)
+        public async Task<TokenInfo> RefreshAsync(CancellationToken cancellationToken = default)
         {
             if (!AppAccessingKey.IsNullOrEmpty(appInfo)) return null;
             var url = GetRefreshingUri();

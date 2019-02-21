@@ -404,7 +404,7 @@ namespace Trivial.Net
     /// JSON format serialization HTTP client.
     /// </summary>
     /// <typeparam name="T">The type of the result.</typeparam>
-    public abstract class BaseJsonHttpClient<T>
+    public class JsonHttpClient<T>
     {
         private readonly HttpRequestMessage request = new HttpRequestMessage();
 
@@ -465,6 +465,11 @@ namespace Trivial.Net
         }
 
         /// <summary>
+        /// Gets or sets the handler to catch the exception and indicate whether need retry.
+        /// </summary>
+        public Func<Exception, bool> NeedRetryHandler { get; set; }
+
+        /// <summary>
         /// Gets additional string bag.
         /// </summary>
         public IDictionary<string, string> Bag { get; } = new Dictionary<string, string>();
@@ -484,7 +489,7 @@ namespace Trivial.Net
                     ? await HttpClientExtension.SerializeAsync(resp.Content, Serializer)
                     : await HttpClientExtension.SerializeJsonAsync<T>(resp.Content);
                 return obj;
-            }, NeedRetry, cancellationToken);
+            }, NeedRetryInternal, cancellationToken);
             return result.Result;
         }
 
@@ -493,28 +498,19 @@ namespace Trivial.Net
         /// </summary>
         /// <param name="exception">The exception thrown to test.</param>
         /// <returns>true if need retry; otherwise, false.</returns>
-        protected abstract bool NeedRetry(Exception exception);
-    }
-
-    /// <summary>
-    /// JSON format serialization HTTP client.
-    /// </summary>
-    /// <typeparam name="T">The type of the result.</typeparam>
-    public class JsonHttpClient<T> : BaseJsonHttpClient<T>
-    {
-        /// <summary>
-        /// Gets or sets the handler to catch the exception and indicate whether need retry.
-        /// </summary>
-        public Func<Exception, bool> NeedRetryHandler { get; set; }
+        protected virtual bool NeedRetry(Exception exception)
+        {
+            return false;
+        }
 
         /// <summary>
         /// Tests if need retry for the exception catched.
         /// </summary>
         /// <param name="exception">The exception thrown to test.</param>
         /// <returns>true if need retry; otherwise, false.</returns>
-        protected override bool NeedRetry(Exception exception)
+        private bool NeedRetryInternal(Exception exception)
         {
-            return NeedRetryHandler != null ? NeedRetry(exception) : false;
+            return NeedRetryHandler != null ? NeedRetry(exception) : NeedRetry(exception);
         }
     }
 }
