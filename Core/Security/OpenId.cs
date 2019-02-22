@@ -189,22 +189,11 @@ namespace Trivial.Security
         /// <param name="code">The code to validate.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>A new open id; or null, if failed.</returns>
-        public async Task<TokenInfo> ValidateCodeAsync(string code, CancellationToken cancellationToken = default)
+        public Task<TokenInfo> ValidateCodeAsync(string code, CancellationToken cancellationToken = default)
         {
             if (!AppAccessingKey.IsNullOrEmpty(appInfo) || !string.IsNullOrWhiteSpace(code)) return null;
-            var url = GetValidationUri(appInfo.Key, code);
-            if (url == null) return null;
-            PrepareWebClient(webClient, appInfo);
-            webClient.Uri = url;
-            Token = await webClient.Process(cancellationToken);
-            LatestVisitDate = DateTime.Now;
-            if (NeedDisposeRequestContent && webClient.RequestContent != null)
-            {
-                webClient.RequestContent.Dispose();
-                webClient.RequestContent = null;
-            }
-
-            return Token;
+            var uri = GetValidationUri(appInfo.Key, code);
+            return ProcessAsync(uri, cancellationToken);
         }
 
         /// <summary>
@@ -212,22 +201,11 @@ namespace Trivial.Security
         /// </summary>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>A new open id; or null, if failed.</returns>
-        public async Task<TokenInfo> RefreshAsync(CancellationToken cancellationToken = default)
+        public Task<TokenInfo> RefreshAsync(CancellationToken cancellationToken = default)
         {
             if (!AppAccessingKey.IsNullOrEmpty(appInfo)) return null;
-            var url = GetRefreshingUri();
-            if (url == null) return null;
-            PrepareWebClient(webClient, appInfo);
-            webClient.Uri = url;
-            Token = await webClient.Process(cancellationToken);
-            LatestVisitDate = DateTime.Now;
-            if (NeedDisposeRequestContent && webClient.RequestContent != null)
-            {
-                webClient.RequestContent.Dispose();
-                webClient.RequestContent = null;
-            }
-
-            return Token;
+            var uri = GetRefreshingUri();
+            return ProcessAsync(uri, cancellationToken);
         }
 
         /// <summary>
@@ -260,6 +238,23 @@ namespace Trivial.Security
         /// <param name="appInfo">The app id and key.</param>
         protected virtual void PrepareWebClient(JsonHttpClient<TokenInfo> webClient, AppAccessingKey appInfo)
         {
+        }
+
+        private async Task<TokenInfo> ProcessAsync(Uri uri, CancellationToken cancellationToken)
+        {
+            if (!AppAccessingKey.IsNullOrEmpty(appInfo)) return null;
+            if (uri == null) return null;
+            PrepareWebClient(webClient, appInfo);
+            webClient.Uri = uri;
+            Token = await webClient.Process(cancellationToken);
+            LatestVisitDate = DateTime.Now;
+            if (NeedDisposeRequestContent && webClient.RequestContent != null)
+            {
+                webClient.RequestContent.Dispose();
+                webClient.RequestContent = null;
+            }
+
+            return Token;
         }
     }
 }

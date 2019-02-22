@@ -165,7 +165,7 @@ namespace Trivial.Security
         /// <returns>A System.String that represents the current RequestIdentifier.</returns>
         public override string ToString()
         {
-            return string.Format("{0} {1}", TokenType, AccessToken);
+            return string.Format("{0} {1}", TokenType, AccessToken).Trim();
         }
     }
 }
