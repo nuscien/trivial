@@ -11,7 +11,7 @@ namespace Trivial.IO
     /// <summary>
     /// File extension.
     /// </summary>
-    public static class FileExtension
+    public static class FileUtility
     {
         /// <summary>
         /// Copies the directory.

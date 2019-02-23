@@ -10,7 +10,7 @@ namespace Trivial.IO
     /// <summary>
     /// Stream extension.
     /// </summary>
-    public static class StreamExtension
+    public static class StreamUtility
     {
         /// <summary>
         /// The default buffer size.

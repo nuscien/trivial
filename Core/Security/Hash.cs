@@ -17,7 +17,7 @@ namespace Trivial.Security
     /// <summary>
     /// The helper of hash functions.
     /// </summary>
-    public static class HashExtension
+    public static class HashUtility
     {
         /// <summary>
         /// Computes a hash string value of a specific string instance.

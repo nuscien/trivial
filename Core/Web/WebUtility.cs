@@ -7,7 +7,7 @@ namespace Trivial.Web
     /// <summary>
     /// Web utilities.
     /// </summary>
-    public static class WebExtension
+    public static class WebUtility
     {
         /// <summary>
         /// Parses JavaScript date tick to date and time.

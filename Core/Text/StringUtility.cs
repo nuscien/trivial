@@ -34,7 +34,7 @@ namespace Trivial.Text
     /// <summary>
     /// The string extension and helper.
     /// </summary>
-    public static class StringExtension
+    public static class StringUtility
     {
         /// <summary>
         /// Returns a copy of this string converted to specific case, using the casing rules of the specified culture.

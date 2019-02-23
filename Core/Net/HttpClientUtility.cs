@@ -14,9 +14,9 @@ using System.Threading.Tasks;
 namespace Trivial.Net
 {
     /// <summary>
-    /// HTTP web client extension.
+    /// HTTP web client extension and helper.
     /// </summary>
-    public static class HttpClientExtension
+    public static class HttpClientUtility
     {
         /// <summary>
         /// Default block size.
@@ -34,7 +34,7 @@ namespace Trivial.Net
         /// <exception cref="ArgumentNullException">The argument is null.</exception>
         public static Task CopyToAsync(this HttpContent httpContent, Stream destination, IProgress<long> progress, CancellationToken cancellationToken = default)
         {
-            return CopyToAsync(httpContent, destination, IO.StreamExtension.DefaultBufferSize, progress, cancellationToken);
+            return CopyToAsync(httpContent, destination, IO.StreamUtility.DefaultBufferSize, progress, cancellationToken);
         }
 
         /// <summary>
@@ -53,7 +53,7 @@ namespace Trivial.Net
             if (destination == null) throw new ArgumentNullException(nameof(destination));
             using (var downloadingStream = await httpContent.ReadAsStreamAsync())
             {
-                await IO.StreamExtension.CopyToAsync(downloadingStream, destination, bufferSize, progress, cancellationToken);
+                await IO.StreamUtility.CopyToAsync(downloadingStream, destination, bufferSize, progress, cancellationToken);
             }
         }
 
@@ -73,7 +73,7 @@ namespace Trivial.Net
         /// <exception cref="NotSupportedException">The path of the file refers to a non-file device, such as "con:", "com1:", "lpt1:".</exception>
         public static Task WriteFileAsync(this HttpContent httpContent, string fileName, IProgress<double> progress, CancellationToken cancellationToken = default)
         {
-            return WriteFileAsync(httpContent, fileName, IO.StreamExtension.DefaultBufferSize, progress, cancellationToken);
+            return WriteFileAsync(httpContent, fileName, IO.StreamUtility.DefaultBufferSize, progress, cancellationToken);
         }
 
         /// <summary>
@@ -344,7 +344,7 @@ namespace Trivial.Net
         public static void Add(this MultipartFormDataContent content, string name, DateTime value, Encoding encoding = null)
         {
             if (content == null) return;
-            content.Add(new StringContent(Web.WebExtension.ParseDate(value).ToString(), encoding ?? Encoding.UTF8), name);
+            content.Add(new StringContent(Web.WebUtility.ParseDate(value).ToString(), encoding ?? Encoding.UTF8), name);
         }
 
         /// <summary>
@@ -486,8 +486,8 @@ namespace Trivial.Net
             {
                 var resp = await client.SendAsync(request, cancellationToken);
                 var obj = Serializer != null
-                    ? await HttpClientExtension.SerializeAsync(resp.Content, Serializer)
-                    : await HttpClientExtension.SerializeJsonAsync<T>(resp.Content);
+                    ? await HttpClientUtility.SerializeAsync(resp.Content, Serializer)
+                    : await HttpClientUtility.SerializeJsonAsync<T>(resp.Content);
                 return obj;
             }, NeedRetryInternal, cancellationToken);
             return result.Result;

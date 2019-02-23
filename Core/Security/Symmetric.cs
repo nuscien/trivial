@@ -19,7 +19,7 @@ namespace Trivial.Security
     /// <summary>
     /// The helper of symmetric functions.
     /// </summary>
-    public static class SymmetricExtension
+    public static class SymmetricUtility
     {
         /// <summary>
         /// Gets a encrypted string value of a specific string instance by symmetric algorithm.
