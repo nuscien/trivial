@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 
 namespace Trivial.Reflection
@@ -11,6 +10,14 @@ namespace Trivial.Reflection
     public class ExceptionHandler
     {
         /// <summary>
+        /// The item handler.
+        /// </summary>
+        /// <param name="ex">The exception to test.</param>
+        /// <param name="handled">true if handled; otherwise, false.</param>
+        /// <returns>The exception need throw; or null, if ignore.</returns>
+        public delegate Exception ItemHandler(Exception ex, out bool handled);
+
+        /// <summary>
         /// The item of exception handlers registered.
         /// </summary>
         public class Item
@@ -20,7 +27,7 @@ namespace Trivial.Reflection
             /// </summary>
             /// <param name="type">The exception type.</param>
             /// <param name="handler">The catch handler.</param>
-            public Item(Type type, Func<Exception, Exception> handler)
+            public Item(Type type, ItemHandler handler)
             {
                 Type = type;
                 Handler = handler;
@@ -34,13 +41,73 @@ namespace Trivial.Reflection
             /// <summary>
             /// Gets the catch handler.
             /// </summary>
-            public Func<Exception, Exception> Handler { get; private set; }
+            public ItemHandler Handler { get; private set; }
+        }
+
+        /// <summary>
+        /// The item of exception handlers registered.
+        /// </summary>
+        public class Item<T> : Item, IEquatable<Item>, IEquatable<Item<T>> where T : Exception
+        {
+            /// <summary>
+            /// Initializes a new instance of the ExceptionHandler.Item class.
+            /// </summary>
+            /// <param name="handler">The catch handler.</param>
+            public Item(Func<T, Exception> handler) : base(typeof(T), (Exception ex, out bool handled) =>
+            {
+                if (ex is T exConverted)
+                {
+                    handled = true;
+                    return handler(exConverted);
+                }
+
+                handled = false;
+                return ex;
+            })
+            {
+                Handler = handler;
+            }
+
+            /// <summary>
+            /// Gets the catch handler.
+            /// </summary>
+            public new Func<T, Exception> Handler { get; private set; }
+
+            /// <summary>
+            /// Tests if the given item equals the current one.
+            /// </summary>
+            /// <param name="other">The given item.</param>
+            /// <returns>true if the given item equals the current one; otherwise, false.</returns>
+            public bool Equals(Item<T> other)
+            {
+                return other.Handler == Handler;
+            }
+
+            /// <summary>
+            /// Tests if the given item equals the current one.
+            /// </summary>
+            /// <param name="other">The given item.</param>
+            /// <returns>true if the given item equals the current one; otherwise, false.</returns>
+            public bool Equals(Item other)
+            {
+                return other is Item<T> item && item.Handler == Handler;
+            }
         }
 
         /// <summary>
         /// The catch handler list.
         /// </summary>
         private IList<Item> list = new List<Item>();
+
+        /// <summary>
+        /// Gets a value indicating whether need test all catch handler rather than try-catch logic.
+        /// </summary>
+        public bool TestAll { get; set; }
+
+        /// <summary>
+        /// Gets the count of the catch handler.
+        /// </summary>
+        public int Count => list.Count;
 
         /// <summary>
         /// Tests if need throw an exception.
@@ -51,8 +118,8 @@ namespace Trivial.Reflection
         {
             foreach (var item in list)
             {
-                var result = item.Handler(ex);
-                if (result != null) return result;
+                var result = item.Handler(ex, out bool handled);
+                if (handled && (!TestAll || result != null)) return result;
             }
 
             return ex;
@@ -68,13 +135,10 @@ namespace Trivial.Reflection
             var type = typeof(T);
             foreach (var item in list)
             {
-                if (item.Type == type && item.Handler == catchHandler) return;
+                if (item is Item<T> itemConverted && itemConverted.Handler == catchHandler) return;
             }
 
-            list.Add(new Item(type, ex =>
-            {
-                return ex is T exConverted ? catchHandler(exConverted) : ex;
-            }));
+            list.Add(new Item<T>(catchHandler));
         }
 
         /// <summary>
@@ -88,7 +152,29 @@ namespace Trivial.Reflection
             var removing = new List<Item>();
             foreach (var item in list)
             {
-                if (item.Type == type && item.Handler == catchHandler) removing.Add(item);
+                if (item is Item<T> itemConverted && itemConverted.Handler == catchHandler) removing.Add(item);
+            }
+
+            var count = removing.Count;
+            foreach (var item in removing)
+            {
+                list.Remove(item);
+            }
+
+            return count > 0;
+        }
+
+        /// <summary>
+        /// Removes a catch handler.
+        /// </summary>
+        /// <typeparam name="T">The type of exception to try to catch.</typeparam>
+        public bool Remove<T>() where T : Exception
+        {
+            var type = typeof(T);
+            var removing = new List<Item>();
+            foreach (var item in list)
+            {
+                if (item is Item<T> itemConverted) removing.Add(item);
             }
 
             var count = removing.Count;
