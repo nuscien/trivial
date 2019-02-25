@@ -368,17 +368,17 @@ namespace Trivial.Net
         /// <param name="httpClient">The HTTP client.</param>
         /// <param name="request">The HTTP request message to send.</param>
         /// <param name="retryPolicy">The retry policy.</param>
-        /// <param name="needRetry">A function to check whether the exception thrown should raise retry logic.</param>
+        /// <param name="needThrow">A handler to check if need throw the exception without retry.</param>
         /// <param name="completionOption">When the operation should complete.</param>
         /// <param name="cancellationToken">The optional cancellation token to cancel operation.</param>
         /// <returns>The retry result.</returns>
-        public static async Task<Tasks.RetryResult<HttpResponseMessage>> SendAsync(this HttpClient httpClient, HttpRequestMessage request, Tasks.IRetryPolicy retryPolicy, Func<Exception, bool> needRetry, HttpCompletionOption completionOption, CancellationToken cancellationToken = default)
+        public static async Task<Tasks.RetryResult<HttpResponseMessage>> SendAsync(this HttpClient httpClient, HttpRequestMessage request, Tasks.IRetryPolicy retryPolicy, Func<Exception, Exception> needThrow, HttpCompletionOption completionOption, CancellationToken cancellationToken = default)
         {
             if (httpClient == null) throw new ArgumentNullException(nameof(httpClient));
             return await Tasks.RetryExtension.ProcessAsync(retryPolicy, async (CancellationToken cancellation) =>
             {
                 return await httpClient.SendAsync(request, completionOption, cancellation);
-            }, needRetry, cancellationToken);
+            }, needThrow, cancellationToken);
         }
 
         /// <summary>
@@ -387,16 +387,16 @@ namespace Trivial.Net
         /// <param name="httpClient">The HTTP client.</param>
         /// <param name="request">The HTTP request message to send.</param>
         /// <param name="retryPolicy">The retry policy.</param>
-        /// <param name="needRetry">A function to check whether the exception thrown should raise retry logic.</param>
+        /// <param name="needThrow">A handler to check if need throw the exception without retry.</param>
         /// <param name="cancellationToken">The optional cancellation token to cancel operation.</param>
         /// <returns>The retry result.</returns>
-        public static async Task<Tasks.RetryResult<HttpResponseMessage>> SendAsync(this HttpClient httpClient, HttpRequestMessage request, Tasks.IRetryPolicy retryPolicy, Func<Exception, bool> needRetry, CancellationToken cancellationToken = default)
+        public static async Task<Tasks.RetryResult<HttpResponseMessage>> SendAsync(this HttpClient httpClient, HttpRequestMessage request, Tasks.IRetryPolicy retryPolicy, Func<Exception, Exception> needThrow, CancellationToken cancellationToken = default)
         {
             if (httpClient == null) throw new ArgumentNullException(nameof(httpClient));
             return await Tasks.RetryExtension.ProcessAsync(retryPolicy, async (CancellationToken cancellation) =>
             {
                 return await httpClient.SendAsync(request, cancellation);
-            }, needRetry, cancellationToken);
+            }, needThrow, cancellationToken);
         }
     }
 
@@ -465,9 +465,9 @@ namespace Trivial.Net
         }
 
         /// <summary>
-        /// Gets or sets the handler to catch the exception and indicate whether need retry.
+        /// Gets or sets a handler to catch the exception and return if need throw.
         /// </summary>
-        public Func<Exception, bool> NeedRetryHandler { get; set; }
+        public Func<Exception, Exception> GetExceptionHandler { get; set; }
 
         /// <summary>
         /// Gets additional string bag.
@@ -489,18 +489,18 @@ namespace Trivial.Net
                     ? await HttpClientUtility.SerializeAsync(resp.Content, Serializer)
                     : await HttpClientUtility.SerializeJsonAsync<T>(resp.Content);
                 return obj;
-            }, NeedRetryInternal, cancellationToken);
+            }, GetExceptionInternal, cancellationToken);
             return result.Result;
         }
 
         /// <summary>
-        /// Tests if need retry for the exception catched.
+        /// Gets the exception need throw.
         /// </summary>
         /// <param name="exception">The exception thrown to test.</param>
         /// <returns>true if need retry; otherwise, false.</returns>
-        protected virtual bool NeedRetry(Exception exception)
+        protected virtual Exception GetException(Exception exception)
         {
-            return false;
+            return exception;
         }
 
         /// <summary>
@@ -508,9 +508,9 @@ namespace Trivial.Net
         /// </summary>
         /// <param name="exception">The exception thrown to test.</param>
         /// <returns>true if need retry; otherwise, false.</returns>
-        private bool NeedRetryInternal(Exception exception)
+        private Exception GetExceptionInternal(Exception exception)
         {
-            return NeedRetryHandler != null ? NeedRetry(exception) : NeedRetry(exception);
+            return GetExceptionHandler?.Invoke(exception) ?? GetException(exception);
         }
     }
 }

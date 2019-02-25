@@ -71,7 +71,7 @@ namespace Trivial.Data
         /// <param name="oldValue">The old value.</param>
         /// <param name="newValue">The new value.</param>
         /// <param name="key">The property key of the value changed.</param>
-        /// <param name="autoMethod">true if set method automatically by value arguments; otherwise, false.</param>
+        /// <param name="autoMethod">true if set method automatically by value parameters; otherwise, false.</param>
         public ChangeEventArgs(T oldValue, T newValue, string key = null, bool autoMethod = false)
         {
             OldValue = oldValue;
