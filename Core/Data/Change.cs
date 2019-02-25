@@ -71,11 +71,26 @@ namespace Trivial.Data
         /// <param name="oldValue">The old value.</param>
         /// <param name="newValue">The new value.</param>
         /// <param name="key">The property key of the value changed.</param>
-        public ChangeEventArgs(T oldValue, T newValue, string key = null)
+        /// <param name="autoMethod">true if set method automatically by value arguments; otherwise, false.</param>
+        public ChangeEventArgs(T oldValue, T newValue, string key = null, bool autoMethod = false)
         {
             OldValue = oldValue;
             NewValue = newValue;
             Key = key;
+            if (!autoMethod) return;
+            try
+            {
+                if (oldValue == null && newValue == null) Method = ChangeMethods.Same;
+                else if (oldValue == null) Method = ChangeMethods.Remove;
+                else if (newValue == null) Method = ChangeMethods.Add;
+                else if (oldValue.Equals(newValue)) Method = ChangeMethods.Same;
+            }
+            catch (InvalidCastException)
+            {
+            }
+            catch (InvalidOperationException)
+            {
+            }
         }
 
         /// <summary>

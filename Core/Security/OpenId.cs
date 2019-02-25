@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
+using Trivial.Data;
 using Trivial.Net;
 
 namespace Trivial.Security
@@ -18,6 +19,35 @@ namespace Trivial.Security
     /// </summary>
     public class AppAccessingKey
     {
+        /// <summary>
+        /// Initializes a new instance of the AppAccessingKey class.
+        /// </summary>
+        public AppAccessingKey()
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the AppAccessingKey class.
+        /// </summary>
+        /// <param name="id">The app id.</param>
+        /// <param name="key">The secret key.</param>
+        public AppAccessingKey(string id, string key = null)
+        {
+            Id = id;
+            if (key != null) Key = key.ToSecure();
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the AppAccessingKey class.
+        /// </summary>
+        /// <param name="id">The app id.</param>
+        /// <param name="key">The secret key.</param>
+        public AppAccessingKey(string id, SecureString key)
+        {
+            Id = id;
+            Key = key;
+        }
+
         /// <summary>
         /// The app id.
         /// </summary>
@@ -68,9 +98,32 @@ namespace Trivial.Security
         /// Initializes a new instance of the TokenResolver class.
         /// </summary>
         /// <param name="appKey">The app accessing key.</param>
-        public TokenResolver(AppAccessingKey appKey)
+        /// <param name="tokenCached">The token information instance cached.</param>
+        public TokenResolver(AppAccessingKey appKey, TokenInfo tokenCached = null)
         {
             appInfo = appKey;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the TokenResolver class.
+        /// </summary>
+        /// <param name="appId">The app id.</param>
+        /// <param name="secretKey">The secret key.</param>
+        /// <param name="tokenCached">The token information instance cached.</param>
+        public TokenResolver(string appId, string secretKey, TokenInfo tokenCached = null)
+        {
+            appInfo = new AppAccessingKey(appId, secretKey);
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the TokenResolver class.
+        /// </summary>
+        /// <param name="appId">The app id.</param>
+        /// <param name="secretKey">The secret key.</param>
+        /// <param name="tokenCached">The token information instance cached.</param>
+        public TokenResolver(string appId, SecureString secretKey, TokenInfo tokenCached = null)
+        {
+            appInfo = new AppAccessingKey(appId, secretKey);
         }
 
         /// <summary>
@@ -99,6 +152,11 @@ namespace Trivial.Security
         public DateTime LatestResolveDate { get; private set; }
 
         /// <summary>
+        /// Adds or removes the event raised after token changed.
+        /// </summary>
+        public event ChangeEventHandler<TokenInfo> TokenChanged;
+
+        /// <summary>
         /// Gets a value indicating whether need dispose request content after receiving response.
         /// </summary>
         protected virtual bool NeedDisposeRequestContent => true;
@@ -113,6 +171,7 @@ namespace Trivial.Security
             if (AppAccessingKey.IsNullOrEmpty(appInfo)) return null;
             if (webClient == null) webClient = new JsonHttpClient<TokenInfo>();
             PrepareWebClient(webClient, appInfo);
+            var oldToken = Token;
             Token = await webClient.Process(cancellationToken);
             LatestResolveDate = DateTime.Now;
             if (NeedDisposeRequestContent && webClient.RequestContent != null)
@@ -121,6 +180,7 @@ namespace Trivial.Security
                 webClient.RequestContent = null;
             }
 
+            TokenChanged?.Invoke(this, new ChangeEventArgs<TokenInfo>(oldToken, Token, nameof(Token), true));
             return Token;
         }
 
@@ -135,7 +195,7 @@ namespace Trivial.Security
         }
 
         /// <summary>
-        /// Prepared web client.
+        /// Prepares web client.
         /// </summary>
         /// <param name="webClient">The JSON HTTP client instance.</param>
         /// <param name="appInfo">The app id and key.</param>
@@ -158,9 +218,31 @@ namespace Trivial.Security
         /// Initializes a new instance of the OpenIdTokenClient class.
         /// </summary>
         /// <param name="appKey">The app accessing key.</param>
-        public OpenIdTokenClient(AppAccessingKey appKey)
+        /// <param name="tokenCached">The token information instance cached.</param>
+        public OpenIdTokenClient(AppAccessingKey appKey, TokenInfo tokenCached = null)
         {
             appInfo = appKey;
+        }
+        /// <summary>
+        /// Initializes a new instance of the OpenIdTokenClient class.
+        /// </summary>
+        /// <param name="appId">The app id.</param>
+        /// <param name="secretKey">The secret key.</param>
+        /// <param name="tokenCached">The token information instance cached.</param>
+        public OpenIdTokenClient(string appId, string secretKey, TokenInfo tokenCached = null)
+        {
+            appInfo = new AppAccessingKey(appId, secretKey);
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the OpenIdTokenClient class.
+        /// </summary>
+        /// <param name="appId">The app id.</param>
+        /// <param name="secretKey">The secret key.</param>
+        /// <param name="tokenCached">The token information instance cached.</param>
+        public OpenIdTokenClient(string appId, SecureString secretKey, TokenInfo tokenCached = null)
+        {
+            appInfo = new AppAccessingKey(appId, secretKey);
         }
 
         /// <summary>
@@ -177,6 +259,11 @@ namespace Trivial.Security
         /// Gets the latest visited date.
         /// </summary>
         public DateTime LatestVisitDate { get; private set; }
+
+        /// <summary>
+        /// Adds or removes the event raised after token changed.
+        /// </summary>
+        public event ChangeEventHandler<TokenInfo> TokenChanged;
 
         /// <summary>
         /// Gets a value indicating whether need dispose request content after receiving response.
@@ -232,7 +319,7 @@ namespace Trivial.Security
         protected abstract Uri GetRefreshingUri();
 
         /// <summary>
-        /// Prepared web client.
+        /// Prepares web client.
         /// </summary>
         /// <param name="webClient">The JSON HTTP client instance.</param>
         /// <param name="appInfo">The app id and key.</param>
@@ -246,6 +333,7 @@ namespace Trivial.Security
             if (uri == null) return null;
             PrepareWebClient(webClient, appInfo);
             webClient.Uri = uri;
+            var oldToken = Token;
             Token = await webClient.Process(cancellationToken);
             LatestVisitDate = DateTime.Now;
             if (NeedDisposeRequestContent && webClient.RequestContent != null)
@@ -254,6 +342,7 @@ namespace Trivial.Security
                 webClient.RequestContent = null;
             }
 
+            TokenChanged?.Invoke(this, new ChangeEventArgs<TokenInfo>(oldToken, Token, nameof(Token), true));
             return Token;
         }
     }
