@@ -9,7 +9,7 @@ Trivial libraries contain a lot of utilities, models and components, which are t
 - [Task and retry policy](https://github.com/nuscien/trivial/wiki/tasks)
 - [Maths and numbers](https://github.com/nuscien/trivial/wiki/maths)
 - [Network](https://github.com/nuscien/trivial/wiki/net)
-- [Secure](https://github.com/nuscien/trivial/wiki/secure)
+- [Security](https://github.com/nuscien/trivial/wiki/security)
 - [File and stream](https://github.com/nuscien/trivial/wiki/io)
 - [Collection](https://github.com/nuscien/trivial/wiki/collection)
 - [Geography](https://github.com/nuscien/trivial/wiki/geo)
