@@ -18,6 +18,7 @@ namespace Trivial.Sample
             var url = "http://www.kingcean.net:8080/test/path?a=123&b=hello#nothing/all";
             var uri = HttpUri.Parse(url);
             ConsoleLine.WriteLine(((Uri)uri).ToString());
+            //"{ \"access_token\": \"abc\", \"token_type\": \"Bearer\" }"
         }
     }
 }

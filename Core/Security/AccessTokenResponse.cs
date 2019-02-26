@@ -94,12 +94,12 @@ namespace Trivial.Security
         /// Gets or sets the expiration seconds.
         /// </summary>
         [DataMember(Name = ExpiresInProperty)]
-        public int? ExpiredSecond {
+        public int? ExpiredInSecond {
             get
             {
                 var expiredAfter = ExpiredAfter;
                 if (!expiredAfter.HasValue) return null;
-                return (int)(expiredAfter.Value.TotalSeconds);
+                return (int)expiredAfter.Value.TotalSeconds;
             }
 
             set
@@ -112,7 +112,6 @@ namespace Trivial.Security
         /// <summary>
         /// Gets or sets the expiration seconds.
         /// </summary>
-        [DataMember(Name = ExpiresInProperty)]
         public TimeSpan? ExpiredAfter { get; set; }
 
         /// <summary>
