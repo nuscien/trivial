@@ -222,6 +222,14 @@ namespace Trivial.Console
         }
 
         /// <summary>
+        /// Writes the current line terminator, to the standard output stream.
+        /// </summary>
+        public void WriteLine()
+        {
+            LineUtilities.WriteLine();
+        }
+
+        /// <summary>
         /// Writes the specified string value, followed by the current line terminator, to the standard output stream.
         /// </summary>
         /// <param name="value">The value to write.</param>
@@ -602,6 +610,14 @@ namespace Trivial.Console
             System.Console.Write(value, arg);
             if (foregroundColor.HasValue) System.Console.ForegroundColor = fore;
             if (backgroundColor.HasValue) System.Console.BackgroundColor = back;
+        }
+
+        /// <summary>
+        /// Writes the current line terminator, to the standard output stream.
+        /// </summary>
+        public static void WriteLine()
+        {
+            System.Console.WriteLine();
         }
 
         /// <summary>

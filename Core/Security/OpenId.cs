@@ -30,22 +30,22 @@ namespace Trivial.Security
         /// Initializes a new instance of the AppAccessingKey class.
         /// </summary>
         /// <param name="id">The app id.</param>
-        /// <param name="key">The secret key.</param>
-        public AppAccessingKey(string id, string key = null)
+        /// <param name="secret">The secret key.</param>
+        public AppAccessingKey(string id, string secret = null)
         {
             Id = id;
-            if (key != null) Key = key.ToSecure();
+            if (secret != null) Secret = secret.ToSecure();
         }
 
         /// <summary>
         /// Initializes a new instance of the AppAccessingKey class.
         /// </summary>
         /// <param name="id">The app id.</param>
-        /// <param name="key">The secret key.</param>
-        public AppAccessingKey(string id, SecureString key)
+        /// <param name="secret">The secret key.</param>
+        public AppAccessingKey(string id, SecureString secret)
         {
             Id = id;
-            Key = key;
+            Secret = secret;
         }
 
         /// <summary>
@@ -56,7 +56,7 @@ namespace Trivial.Security
         /// <summary>
         /// The secret key.
         /// </summary>
-        public SecureString Key { get; set; }
+        public SecureString Secret { get; set; }
 
         /// <summary>
         /// Gets additional string bag.
@@ -72,7 +72,7 @@ namespace Trivial.Security
         {
             try
             {
-                return appKey == null || string.IsNullOrWhiteSpace(appKey.Id) || appKey.Key == null || appKey.Key.Length == 0;
+                return appKey == null || string.IsNullOrWhiteSpace(appKey.Id) || appKey.Secret == null || appKey.Secret.Length == 0;
             }
             catch (ObjectDisposedException)
             {
@@ -88,9 +88,10 @@ namespace Trivial.Security
     public abstract class TokenResolver
     {
         private AppAccessingKey appInfo;
+        private Task<TokenInfo> task;
 
         /// <summary>
-        /// Gets the JSON HTTP web client for resolving access token information instance.
+        /// The JSON HTTP web client for resolving access token information instance.
         /// </summary>
         private JsonHttpClient<TokenInfo> webClient;
 
@@ -168,20 +169,35 @@ namespace Trivial.Security
         /// <returns>The access token information instance updated.</returns>
         public async Task<TokenInfo> UpdateAsync(CancellationToken cancellationToken = default)
         {
-            if (AppAccessingKey.IsNullOrEmpty(appInfo)) return null;
-            if (webClient == null) webClient = new JsonHttpClient<TokenInfo>();
-            PrepareWebClient(webClient, appInfo);
-            var oldToken = Token;
-            Token = await webClient.Process(cancellationToken);
-            LatestResolveDate = DateTime.Now;
-            if (NeedDisposeRequestContent && webClient.RequestContent != null)
+            var t = task;
+            if (t != null && t.Status == TaskStatus.Running)
             {
-                webClient.RequestContent.Dispose();
-                webClient.RequestContent = null;
+                try
+                {
+                    return await Task.Run(async () =>
+                    {
+                        return await t;
+                    }, cancellationToken);
+                }
+                catch (TaskCanceledException)
+                {
+                    if (cancellationToken.IsCancellationRequested) throw;
+                }
+                catch (ObjectDisposedException)
+                {
+                }
+                catch (ArgumentException)
+                {
+                }
+                catch (InvalidOperationException)
+                {
+                }
             }
 
-            TokenChanged?.Invoke(this, new ChangeEventArgs<TokenInfo>(oldToken, Token, nameof(Token), true));
-            return Token;
+            task = t = UpdateUnlockedAsync(cancellationToken);
+            var result = await t;
+            task = null;
+            return result;
         }
 
         /// <summary>
@@ -195,11 +211,44 @@ namespace Trivial.Security
         }
 
         /// <summary>
-        /// Prepares web client.
+        /// Gets the token resolve URI.
         /// </summary>
-        /// <param name="webClient">The JSON HTTP client instance.</param>
-        /// <param name="appInfo">The app id and key.</param>
-        protected abstract void PrepareWebClient(JsonHttpClient<TokenInfo> webClient, AppAccessingKey appInfo);
+        /// <param name="appSecretKey">The app secret string.</param>
+        /// <returns>A URI for login.</returns>
+        protected abstract Uri GetResolveUri(SecureString appSecretKey);
+
+        /// <summary>
+        /// Creates a web client.
+        /// </summary>
+        /// <param name="appSecretKey">The app secret key.</param>
+        protected virtual JsonHttpClient<TokenInfo> CreateWebClient(SecureString appSecretKey)
+        {
+            if (webClient == null) webClient = new JsonHttpClient<TokenInfo>();
+            return webClient;
+        }
+
+        /// <summary>
+        /// Updates the access token.
+        /// </summary>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>The access token information instance updated.</returns>
+        private async Task<TokenInfo> UpdateUnlockedAsync(CancellationToken cancellationToken = default)
+        {
+            if (AppAccessingKey.IsNullOrEmpty(appInfo)) return null;
+            var wc = CreateWebClient(appInfo.Secret);
+            wc.Uri = GetResolveUri(appInfo.Secret);
+            var oldToken = Token;
+            Token = await wc.Process(cancellationToken);
+            LatestResolveDate = DateTime.Now;
+            if (NeedDisposeRequestContent && wc.RequestContent != null)
+            {
+                wc.RequestContent.Dispose();
+                wc.RequestContent = null;
+            }
+
+            TokenChanged?.Invoke(this, new ChangeEventArgs<TokenInfo>(oldToken, Token, nameof(Token), true));
+            return Token;
+        }
     }
 
     /// <summary>
@@ -207,12 +256,13 @@ namespace Trivial.Security
     /// </summary>
     public abstract class OpenIdTokenClient
     {
-        private AppAccessingKey appInfo;
+        private readonly AppAccessingKey appInfo;
+        private Task<TokenInfo> task;
 
         /// <summary>
-        /// Gets the JSON HTTP web client for resolving access token information instance.
+        /// The JSON HTTP web client for resolving access token information instance.
         /// </summary>
-        private readonly JsonHttpClient<TokenInfo> webClient = new JsonHttpClient<TokenInfo>();
+        private JsonHttpClient<TokenInfo> webClient;
 
         /// <summary>
         /// Initializes a new instance of the OpenIdTokenClient class.
@@ -223,6 +273,7 @@ namespace Trivial.Security
         {
             appInfo = appKey;
         }
+
         /// <summary>
         /// Initializes a new instance of the OpenIdTokenClient class.
         /// </summary>
@@ -276,11 +327,10 @@ namespace Trivial.Security
         /// <param name="code">The code to validate.</param>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>A new open id; or null, if failed.</returns>
-        public Task<TokenInfo> ValidateCodeAsync(string code, CancellationToken cancellationToken = default)
+        public async Task<TokenInfo> ValidateCodeAsync(string code, CancellationToken cancellationToken = default)
         {
-            if (!AppAccessingKey.IsNullOrEmpty(appInfo) || !string.IsNullOrWhiteSpace(code)) return null;
-            var uri = GetValidationUri(appInfo.Key, code);
-            return ProcessAsync(uri, cancellationToken);
+            if (!string.IsNullOrWhiteSpace(code)) return null;
+            return await ProcessAsync(GetValidationUri(appInfo.Secret, code), cancellationToken);
         }
 
         /// <summary>
@@ -288,11 +338,37 @@ namespace Trivial.Security
         /// </summary>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>A new open id; or null, if failed.</returns>
-        public Task<TokenInfo> RefreshAsync(CancellationToken cancellationToken = default)
+        public async Task<TokenInfo> RefreshAsync(CancellationToken cancellationToken = default)
         {
-            if (!AppAccessingKey.IsNullOrEmpty(appInfo)) return null;
-            var uri = GetRefreshingUri();
-            return ProcessAsync(uri, cancellationToken);
+            var t = task;
+            if (t != null && t.Status == TaskStatus.Running)
+            {
+                try
+                {
+                    return await Task.Run(async () =>
+                    {
+                        return await t;
+                    }, cancellationToken);
+                }
+                catch (TaskCanceledException)
+                {
+                    if (cancellationToken.IsCancellationRequested) throw;
+                }
+                catch (ObjectDisposedException)
+                {
+                }
+                catch (ArgumentException)
+                {
+                }
+                catch (InvalidOperationException)
+                {
+                }
+            }
+
+            task = t = ProcessAsync(GetRefreshingUri(appInfo.Secret), cancellationToken);
+            var result = await t;
+            task = null;
+            return result;
         }
 
         /// <summary>
@@ -307,39 +383,40 @@ namespace Trivial.Security
         /// <summary>
         /// Gets the validation URI.
         /// </summary>
-        /// <param name="appKey">The app secret string.</param>
+        /// <param name="appSecretKey">The app secret string.</param>
         /// <param name="code">The code to validate.</param>
         /// <returns>A URI for login.</returns>
-        protected abstract Uri GetValidationUri(SecureString appKey, string code);
+        protected abstract Uri GetValidationUri(SecureString appSecretKey, string code);
 
         /// <summary>
         /// Gets the token refresh URI.
         /// </summary>
+        /// <param name="appSecretKey">The app secret string.</param>
         /// <returns>A URI for login.</returns>
-        protected abstract Uri GetRefreshingUri();
+        protected abstract Uri GetRefreshingUri(SecureString appSecretKey);
 
         /// <summary>
-        /// Prepares web client.
+        /// Creates a web client.
         /// </summary>
-        /// <param name="webClient">The JSON HTTP client instance.</param>
-        /// <param name="appInfo">The app id and key.</param>
-        protected virtual void PrepareWebClient(JsonHttpClient<TokenInfo> webClient, AppAccessingKey appInfo)
+        /// <param name="appSecretKey">The app secret key.</param>
+        protected virtual JsonHttpClient<TokenInfo> CreateWebClient(SecureString appSecretKey)
         {
+            if (webClient == null) webClient = new JsonHttpClient<TokenInfo>();
+            return webClient;
         }
 
         private async Task<TokenInfo> ProcessAsync(Uri uri, CancellationToken cancellationToken)
         {
-            if (!AppAccessingKey.IsNullOrEmpty(appInfo)) return null;
-            if (uri == null) return null;
-            PrepareWebClient(webClient, appInfo);
-            webClient.Uri = uri;
+            if (!AppAccessingKey.IsNullOrEmpty(appInfo) || uri == null) return null;
+            var wc = CreateWebClient(appInfo.Secret);
+            wc.Uri = uri;
             var oldToken = Token;
-            Token = await webClient.Process(cancellationToken);
+            Token = await wc.Process(cancellationToken);
             LatestVisitDate = DateTime.Now;
-            if (NeedDisposeRequestContent && webClient.RequestContent != null)
+            if (NeedDisposeRequestContent && wc.RequestContent != null)
             {
-                webClient.RequestContent.Dispose();
-                webClient.RequestContent = null;
+                wc.RequestContent.Dispose();
+                wc.RequestContent = null;
             }
 
             TokenChanged?.Invoke(this, new ChangeEventArgs<TokenInfo>(oldToken, Token, nameof(Token), true));

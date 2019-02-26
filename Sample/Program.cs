@@ -12,6 +12,7 @@ namespace Trivial.Sample
             dispatcher.Register<HitTasksVerb>("hittask");
             dispatcher.Register<MathsVerb>("maths");
             dispatcher.Register<HttpClientVerb>("http");
+            dispatcher.Register<RetryVerb>("retry");
             dispatcher.RegisterHelp();
             dispatcher.RegisterExit();
             if (args.Length > 0)

@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using Trivial.Reflection;
+using Trivial.Tasks;
 using Trivial.Net;
 
 namespace Trivial.Sample
@@ -15,8 +17,7 @@ namespace Trivial.Sample
             await Task.Delay(0);
             var url = "http://www.kingcean.net:8080/test/path?a=123&b=hello#nothing/all";
             var uri = HttpUri.Parse(url);
-            ConsoleLine.Write(((Uri)uri).ToString());
-            ConsoleLine.End();
+            ConsoleLine.WriteLine(((Uri)uri).ToString());
         }
     }
 }

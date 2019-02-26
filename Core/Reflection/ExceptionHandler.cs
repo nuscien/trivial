@@ -58,7 +58,7 @@ namespace Trivial.Reflection
                 if (ex is T exConverted)
                 {
                     handled = true;
-                    return handler(exConverted);
+                    return handler?.Invoke(exConverted);
                 }
 
                 handled = false;
@@ -130,7 +130,7 @@ namespace Trivial.Reflection
         /// </summary>
         /// <typeparam name="T">The type of exception to try to catch.</typeparam>
         /// <param name="catchHandler">The handler to return if need throw an exception.</param>
-        public void Add<T>(Func<T, Exception> catchHandler) where T : Exception
+        public void Add<T>(Func<T, Exception> catchHandler = null) where T : Exception
         {
             var type = typeof(T);
             foreach (var item in list)
