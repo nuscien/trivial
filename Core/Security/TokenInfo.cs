@@ -83,9 +83,9 @@ namespace Trivial.Security
         }
 
         /// <summary>
-        /// Returns a System.String that represents the current RequestIdentifier.
+        /// Returns a System.String that represents the current AppAccessingKey.
         /// </summary>
-        /// <returns>A System.String that represents the current RequestIdentifier.</returns>
+        /// <returns>A System.String that represents the current AppAccessingKey.</returns>
         public override string ToString()
         {
             return Id ?? string.Empty;
