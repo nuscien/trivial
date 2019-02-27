@@ -406,8 +406,6 @@ namespace Trivial.Net
     /// <typeparam name="T">The type of the result.</typeparam>
     public class JsonHttpClient<T>
     {
-        private readonly HttpRequestMessage request = new HttpRequestMessage();
-
         /// <summary>
         /// Gets or sets the retry policy.
         /// </summary>
@@ -424,45 +422,9 @@ namespace Trivial.Net
         public HttpClient Client { get; set; }
 
         /// <summary>
-        /// Gets or sets the HTTP method.
+        /// Gets or sets a value inidcating whether need create new HTTP client instance per request by default.
         /// </summary>
-        public HttpMethod Method
-        {
-            get => request.Method;
-            set => request.Method = value;
-        }
-
-        /// <summary>
-        /// Gets the HTTP request headers.
-        /// </summary>
-        public HttpRequestHeaders Headers => request.Headers;
-
-        /// <summary>
-        /// Gets or sets the request URI.
-        /// </summary>
-        public Uri Uri
-        {
-            get => request.RequestUri;
-            set => request.RequestUri = value;
-        }
-
-        /// <summary>
-        /// Gets or sets the HTTP version.
-        /// </summary>
-        public Version Version
-        {
-            get => request.Version;
-            set => request.Version = value;
-        }
-
-        /// <summary>
-        /// Gets or sets the request content.
-        /// </summary>
-        public HttpContent RequestContent
-        {
-            get => request.Content;
-            set => request.Content = value;
-        }
+        public bool IsNewHttpClientByDefault { get; set; }
 
         /// <summary>
         /// Gets or sets a handler to catch the exception and return if need throw.
@@ -475,12 +437,15 @@ namespace Trivial.Net
         public IDictionary<string, string> Bag { get; } = new Dictionary<string, string>();
 
         /// <summary>
-        /// Sends request.
+        /// Sends an HTTP request and gets the result serialized by JSON.
         /// </summary>
+        /// <param name="request">The HTTP request message.</param>
         /// <param name="cancellationToken">The optional cancellation token.</param>
         /// <returns>A result serialized.</returns>
-        public async Task<T> Process(CancellationToken cancellationToken = default)
+        public async Task<T> ProcessAsync(HttpRequestMessage request, CancellationToken cancellationToken = default)
         {
+            if (request == null) throw new ArgumentNullException(nameof(request));
+            if (Client == null && !IsNewHttpClientByDefault) Client = new HttpClient();
             var client = Client ?? new HttpClient();
             var result = await Tasks.RetryExtension.ProcessAsync(RetryPolicy, async (CancellationToken cancellation) =>
             {
