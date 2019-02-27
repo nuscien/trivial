@@ -227,7 +227,7 @@ namespace Trivial.Security
         /// <summary>
         /// Gets the app id.
         /// </summary>
-        public string AppId => AppAccessingKey.IsNullOrEmpty(appInfo) ? appInfo.Id : null;
+        public string AppId => !AppAccessingKey.IsNullOrEmpty(appInfo) ? appInfo.Id : null;
 
         /// <summary>
         /// Gets the open id info.
@@ -335,7 +335,7 @@ namespace Trivial.Security
 
         private async Task<TokenInfo> ProcessAsync(Uri uri, CancellationToken cancellationToken)
         {
-            if (!AppAccessingKey.IsNullOrEmpty(appInfo) || uri == null) return null;
+            if (AppAccessingKey.IsNullOrEmpty(appInfo) || uri == null) return null;
             var wc = CreateWebClient(appInfo.Secret);
             wc.Uri = uri;
             var oldToken = Token;
