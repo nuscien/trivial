@@ -154,6 +154,21 @@ namespace Trivial.Reflection
         }
 
         /// <summary>
+        /// Inserts a catch handler at the specified index.
+        /// </summary>
+        /// <typeparam name="T">The type of exception to try to catch.</typeparam>
+        /// <param name="index">The zero-based index at which item should be inserted.</param>
+        /// <param name="catchHandler">The handler to return if need throw an exception.</param>
+        /// <exception cref="ArgumentOutOfRangeException">index is not a valid index in the list of catch handler registered.</exception>
+        public void Insert<T>(int index, Func<T, Exception> catchHandler = null) where T : Exception
+        {
+            if (index < 0) throw new ArgumentOutOfRangeException(nameof(index), $"{nameof(index)} should be a natural number.");
+            if (index >= list.Count) throw new ArgumentOutOfRangeException(nameof(index), $"{nameof(index)} should be less than {list.Count}.");
+            Remove(catchHandler);
+            list.Insert(index, new Item<T>(catchHandler));
+        }
+
+        /// <summary>
         /// Adds a catch handler.
         /// </summary>
         /// <typeparam name="T">The type of exception to try to catch.</typeparam>
@@ -185,6 +200,16 @@ namespace Trivial.Reflection
             }
 
             return count > 0;
+        }
+
+        /// <summary>
+        /// Removes the catch handler at the specified index.
+        /// </summary>
+        /// <param name="index">The zero-based index of the item to remove.</param>
+        /// <exception cref="ArgumentOutOfRangeException">index is not a valid index in the list of catch handler registered.</exception>
+        public void RemoveAt(int index)
+        {
+            list.RemoveAt(index);
         }
 
         /// <summary>

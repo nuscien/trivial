@@ -81,6 +81,15 @@ namespace Trivial.Security
 
             return true;
         }
+
+        /// <summary>
+        /// Returns a System.String that represents the current RequestIdentifier.
+        /// </summary>
+        /// <returns>A System.String that represents the current RequestIdentifier.</returns>
+        public override string ToString()
+        {
+            return Id ?? string.Empty;
+        }
     }
 
     /// <summary>
