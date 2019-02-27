@@ -10,10 +10,79 @@
 
 using System;
 using System.Collections.Generic;
+using System.Security;
 using System.Runtime.Serialization;
 
 namespace Trivial.Security
 {
+    /// <summary>
+    /// Gets the app secret key for accessing api.
+    /// </summary>
+    public class AppAccessingKey
+    {
+        /// <summary>
+        /// Initializes a new instance of the AppAccessingKey class.
+        /// </summary>
+        public AppAccessingKey()
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the AppAccessingKey class.
+        /// </summary>
+        /// <param name="id">The app id.</param>
+        /// <param name="secret">The secret key.</param>
+        public AppAccessingKey(string id, string secret = null)
+        {
+            Id = id;
+            if (secret != null) Secret = secret.ToSecure();
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the AppAccessingKey class.
+        /// </summary>
+        /// <param name="id">The app id.</param>
+        /// <param name="secret">The secret key.</param>
+        public AppAccessingKey(string id, SecureString secret)
+        {
+            Id = id;
+            Secret = secret;
+        }
+
+        /// <summary>
+        /// The app id.
+        /// </summary>
+        public string Id { get; set; }
+
+        /// <summary>
+        /// The secret key.
+        /// </summary>
+        public SecureString Secret { get; set; }
+
+        /// <summary>
+        /// Gets additional string bag.
+        /// </summary>
+        public IDictionary<string, string> Bag { get; } = new Dictionary<string, string>();
+
+        /// <summary>
+        /// Tests if the app accessing key is null or empty.
+        /// </summary>
+        /// <param name="appKey">The app accessing key instance.</param>
+        /// <returns>true if it is null or empty; otherwise, false.</returns>
+        public static bool IsNullOrEmpty(AppAccessingKey appKey)
+        {
+            try
+            {
+                return appKey == null || string.IsNullOrWhiteSpace(appKey.Id) || appKey.Secret == null || appKey.Secret.Length == 0;
+            }
+            catch (ObjectDisposedException)
+            {
+            }
+
+            return true;
+        }
+    }
+
     /// <summary>
     /// The access token response information.
     /// </summary>

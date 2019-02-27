@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using System.Security;
 using System.Text;
 
@@ -102,6 +103,26 @@ namespace Trivial.Security
             value.Clear();
             AppendString(value, newValue);
             return true;
+        }
+
+        /// <summary>
+        /// Converts a secure string to unsecure string.
+        /// </summary>
+        /// <param name="value">The secure string to convert.</param>
+        /// <returns>The unsecure string.</returns>
+        public static string ToUnsecureString(this SecureString value)
+        {
+            if (value == null) return null;
+            IntPtr unmanagedString = IntPtr.Zero;
+            try
+            {
+                unmanagedString = Marshal.SecureStringToGlobalAllocUnicode(value);
+                return Marshal.PtrToStringUni(unmanagedString);
+            }
+            finally
+            {
+                Marshal.ZeroFreeGlobalAllocUnicode(unmanagedString);
+            }
         }
     }
 }
