@@ -145,6 +145,28 @@ Just add following namespace to your code file to use.
 using Trivial.Security;
 ```
 
+### Symmetric and hash
+
+You can encrypt and decrypt a string by symmetric algorithm.
+
+```csharp
+// AES sample.
+var original = "Original secret string";
+var cipher = SymmetricUtilities.Encrypt(Aes.Create, original, key, iv);
+var back = SymmetricUtilities.Decrypt(Aes.Create, cipher, key, iv); // back == original
+```
+
+And also for hash, by `HashUtilities.ComputeHashString` function to get hash and `HashUtilities.Verify` to verify.
+
+### Access token
+
+We also provide a set of tools for OAuth including following models.
+
+- `TokenInfo` The access token and other properties.
+- `AppAccessingKey` The app identifier and secret key.
+
+And you can implement the `OpenIdTokenClient` abstract class or `TokenResolver` abstract class to get and maintain the access token.
+
 ## [IO](https://github.com/nuscien/trivial/wiki/io)
 
 Contains the helper functions and extension functions for `FileInfo` and `Stream`.

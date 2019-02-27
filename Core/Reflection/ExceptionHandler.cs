@@ -126,18 +126,41 @@ namespace Trivial.Reflection
         }
 
         /// <summary>
+        /// Tests if need throw an exception.
+        /// </summary>
+        /// <param name="ex">The exception catched.</param>
+        /// <returns>The exception needed to throw.</returns>
+        public void ThrowIfUnhandled(Exception ex)
+        {
+            ex = GetException(ex);
+            if (ex != null) throw ex;
+        }
+
+        /// <summary>
+        /// Checks whether has a given catch handler.
+        /// </summary>
+        /// <typeparam name="T">The type of exception to try to catch.</typeparam>
+        /// <param name="catchHandler">The handler to return if need throw an exception.</param>
+        /// <returns>true if contains; otherwise, false.</returns>
+        public bool Contains<T>(Func<T, Exception> catchHandler = null) where T : Exception
+        {
+            var type = typeof(T);
+            foreach (var item in list)
+            {
+                if (item is Item<T> itemConverted && itemConverted.Handler == catchHandler) return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>
         /// Adds a catch handler.
         /// </summary>
         /// <typeparam name="T">The type of exception to try to catch.</typeparam>
         /// <param name="catchHandler">The handler to return if need throw an exception.</param>
         public void Add<T>(Func<T, Exception> catchHandler = null) where T : Exception
         {
-            var type = typeof(T);
-            foreach (var item in list)
-            {
-                if (item is Item<T> itemConverted && itemConverted.Handler == catchHandler) return;
-            }
-
+            if (Contains(catchHandler)) return;
             list.Add(new Item<T>(catchHandler));
         }
 

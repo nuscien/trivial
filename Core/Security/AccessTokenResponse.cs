@@ -104,7 +104,7 @@ namespace Trivial.Security
 
             set
             {
-                if (value.HasValue) ExpiredAfter = new TimeSpan(0, 0, value.Value);
+                if (value.HasValue) ExpiredAfter = TimeSpan.FromSeconds(value.Value);
                 else ExpiredAfter = null;
             }
         }
