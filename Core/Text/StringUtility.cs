@@ -28,7 +28,12 @@ namespace Trivial.Text
         /// <summary>
         /// First letter uppercase and rest keeping original.
         /// </summary>
-        FirstLetterUpper = 3
+        FirstLetterUpper = 3,
+
+        /// <summary>
+        /// First letter lowercase and rest keeping original.
+        /// </summary>
+        FirstLetterLower = 4
     }
 
     /// <summary>
@@ -57,6 +62,8 @@ namespace Trivial.Text
                     return source.ToLower(culture);
                 case Cases.FirstLetterUpper:
                     return $"{source.Substring(0, 1).ToUpper(culture)}{source.Substring(1)}";
+                case Cases.FirstLetterLower:
+                    return $"{source.Substring(0, 1).ToLower(culture)}{source.Substring(1)}";
                 default:
                     return source;
             }
@@ -81,6 +88,8 @@ namespace Trivial.Text
                     return source.ToLower();
                 case Cases.FirstLetterUpper:
                     return $"{source.Substring(0, 1).ToUpper()}{source.Substring(1)}";
+                case Cases.FirstLetterLower:
+                    return $"{source.Substring(0, 1).ToLower()}{source.Substring(1)}";
                 default:
                     return source;
             }
