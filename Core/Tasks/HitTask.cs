@@ -180,6 +180,8 @@ namespace Trivial.Tasks
         /// <summary>
         /// Sends request to process.
         /// </summary>
+        /// <param name="arg">The optional argument.</param>
+        /// <returns>true if process succeeded; otherwise, false.</returns>
         public bool Process(T arg = default)
         {
             var task = ProcessAsync(arg);
@@ -190,7 +192,8 @@ namespace Trivial.Tasks
         /// <summary>
         /// Sends request to process.
         /// </summary>
-        /// <returns>The processing task instance.</returns>
+        /// <param name="arg">The optional argument.</param>
+        /// <returns>true if process succeeded; otherwise, false.</returns>
         public async Task<bool> ProcessAsync(T arg = default)
         {
             if (IsIgnoring) return false;
@@ -255,6 +258,33 @@ namespace Trivial.Tasks
             TotalCount++;
             Processed?.Invoke(this, args);
             return true;
+        }
+
+        /// <summary>
+        /// Creates an event handler to register.
+        /// </summary>
+        /// <param name="arg">The optional argument used on this task is processing.</param>
+        /// <returns>An event handler.</returns>
+        public EventHandler CreateEventHandler(T arg = default)
+        {
+            return (object sender, EventArgs ev) =>
+            {
+                var task = ProcessAsync(arg);
+            };
+        }
+
+        /// <summary>
+        /// Creates an event handler to register.
+        /// </summary>
+        /// <typeparam name="TEventArgs">The type of the event argument.</typeparam>
+        /// <param name="arg">The optional argument used on this task is processing.</param>
+        /// <returns>An event handler.</returns>
+        public EventHandler<TEventArgs> CreateEventHandler<TEventArgs>(T arg = default) where TEventArgs : EventArgs
+        {
+            return (object sender, TEventArgs ev) =>
+            {
+                var task = ProcessAsync(arg);
+            };
         }
     }
 

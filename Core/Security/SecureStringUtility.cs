@@ -96,7 +96,7 @@ namespace Trivial.Security
             if (value.IsReadOnly()) return false;
             if (old != null)
             {
-                if (value.ToString() != old) return false;
+                if (ToUnsecureString(value) != old) return false;
                 if (newValue == old) return true;
             }
 
