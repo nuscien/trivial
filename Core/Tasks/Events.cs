@@ -66,7 +66,7 @@ namespace Trivial.Tasks
     /// The event arguments with result.
     /// </summary>
     /// <typeparam name="T">The type of the result.</typeparam>
-    public class ResultEventArgs<T> : StateEventArgs<TaskState>
+    public class ResultEventArgs<T> : StateEventArgs<TaskStates>
     {
         /// <summary>
         /// Initializes a new instance of the ResultEventArgs class.
@@ -74,7 +74,7 @@ namespace Trivial.Tasks
         /// <param name="result">The result.</param>
         /// <param name="state">The state.</param>
         /// <param name="exception">The exception.</param>
-        public ResultEventArgs(T result, TaskState state = TaskState.Done, Exception exception = null) : base(state)
+        public ResultEventArgs(T result, TaskStates state = TaskStates.Done, Exception exception = null) : base(state)
         {
             Result = result;
             Exception = exception;
@@ -85,7 +85,7 @@ namespace Trivial.Tasks
         /// </summary>
         /// <param name="exception">The exception.</param>
         /// <param name="state">The state.</param>
-        public ResultEventArgs(Exception exception, TaskState state = TaskState.Faulted) : base(state) => Exception = exception;
+        public ResultEventArgs(Exception exception, TaskStates state = TaskStates.Faulted) : base(state) => Exception = exception;
 
         /// <summary>
         /// Gets the result.

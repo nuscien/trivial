@@ -205,6 +205,11 @@ namespace Trivial.Tasks
         public Reflection.ExceptionHandler ExceptionHandler { get; }
 
         /// <summary>
+        /// Gets the task state.
+        /// </summary>
+        public TaskStates State { get; private set; } = TaskStates.Pending;
+
+        /// <summary>
         /// Adds or removes an event handler on processing.
         /// </summary>
         public event EventHandler<RetryEventArgs> Processing;
@@ -216,32 +221,65 @@ namespace Trivial.Tasks
         /// <returns>The processing retry result.</returns>
         public async Task<RetryResult> Process(CancellationToken cancellationToken = default)
         {
+            State = TaskStates.Initializing;
             var result = new RetryResult();
             var retry = RetryPolicy?.CreateInstance() ?? new InternalRetryInstance();
+            State = TaskStates.Working;
             while (true)
             {
-                cancellationToken.ThrowIfCancellationRequested();
+                try
+                {
+                    cancellationToken.ThrowIfCancellationRequested();
+                }
+                catch (OperationCanceledException)
+                {
+                    State = TaskStates.Canceled;
+                    throw;
+                }
+                catch (ObjectDisposedException)
+                {
+                    State = TaskStates.Canceled;
+                    throw;
+                }
+
                 try
                 {
                     Processing?.Invoke(this, new RetryEventArgs(retry.Status));
+                    State = TaskStates.Done;
                     result.Success();
                     return result;
                 }
                 catch (Exception ex)
                 {
+                    State = TaskStates.WaitingToRetry;
                     result.Fail(ex);
-                    ex = ExceptionHandler.GetException(ex);
-                    if (ex != null) throw ex;
+                    try
+                    {
+                        ex = ExceptionHandler.GetException(ex);
+                    }
+                    catch (Exception)
+                    {
+                        State = TaskStates.Faulted;
+                        throw;
+                    }
+
+                    if (ex != null)
+                    {
+                        State = TaskStates.Faulted;
+                        throw ex;
+                    }
                 }
 
                 var span = retry.Next();
                 if (!span.HasValue)
                 {
+                    State = TaskStates.Faulted;
                     result.End();
                     return result;
                 }
 
                 await Task.Delay(span.Value);
+                State = TaskStates.Retrying;
             }
         }
     }

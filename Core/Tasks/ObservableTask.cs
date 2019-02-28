@@ -8,7 +8,7 @@ namespace Trivial.Tasks
     /// <summary>
     /// The task states.
     /// </summary>
-    public enum TaskState
+    public enum TaskStates
     {
         /// <summary>
         /// Ready for processing.
@@ -26,29 +26,94 @@ namespace Trivial.Tasks
         Working = 2,
 
         /// <summary>
+        /// Waiting to retry.
+        /// </summary>
+        WaitingToRetry = 3,
+
+        /// <summary>
         /// Retrying.
         /// </summary>
-        Retrying = 3,
+        Retrying = 4,
 
         /// <summary>
         /// Cancelling.
         /// </summary>
-        Cancelling = 4,
+        Cancelling = 5,
 
         /// <summary>
         /// Cancelled.
         /// </summary>
-        Canceled = 5,
+        Canceled = 6,
+
+        /// <summary>
+        /// Rolled back.
+        /// </summary>
+        RolledBack = 7,
 
         /// <summary>
         /// Process succeeded.
         /// </summary>
-        Done = 6,
+        Done = 8,
 
         /// <summary>
         /// Failed to process.
         /// </summary>
-        Faulted = 7
+        Faulted = 9
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    public static class TaskStatesChecker
+    {
+        /// <summary>
+        /// Gets a value indicating whether the task is pending to process.
+        /// </summary>
+        /// <param name="state">The task state.</param>
+        /// <returns>true if the task is pending to process; otherwise, false.</returns>
+        public static bool IsPending(TaskStates state) => state == TaskStates.Pending;
+
+        /// <summary>
+        /// Gets a value indicating whether the task is processing.
+        /// </summary>
+        /// <param name="state">The task state.</param>
+        /// <returns>true if the task is processing; otherwise, false.</returns>
+        public static bool IsWorking(TaskStates state) => state == TaskStates.Working || state == TaskStates.WaitingToRetry || state == TaskStates.Retrying;
+
+        /// <summary>
+        /// Gets a value indicating whether the task is not finished.
+        /// </summary>
+        /// <param name="state">The task state.</param>
+        /// <returns>true if the task is not finished; otherwise, false.</returns>
+        public static bool IsPendingOrWorking(TaskStates state) => state == TaskStates.Pending || state == TaskStates.Working || state == TaskStates.WaitingToRetry || state == TaskStates.Retrying || state == TaskStates.Initializing || state == TaskStates.Cancelling;
+
+        /// <summary>
+        /// Gets a value indicating whether the task is cancelled.
+        /// </summary>
+        /// <param name="state">The task state.</param>
+        /// <returns>true if the task is cancelled; otherwise, false.</returns>
+        public static bool IsCanceled(TaskStates state) => state == TaskStates.Canceled;
+
+        /// <summary>
+        /// Gets a value indicating whether the task is done.
+        /// </summary>
+        /// <param name="state">The task state.</param>
+        /// <returns>true if the task is done; otherwise, false.</returns>
+        public static bool IsDone(TaskStates state) => state == TaskStates.Done;
+
+        /// <summary>
+        /// Gets a value indicating whether the task is failed.
+        /// </summary>
+        /// <param name="state">The task state.</param>
+        /// <returns>true if the task is failed; otherwise, false.</returns>
+        public static bool IsFailed(TaskStates state) => state == TaskStates.Faulted;
+
+        /// <summary>
+        /// Gets a value indicating whether the task is end.
+        /// </summary>
+        /// <param name="state">The task state.</param>
+        /// <returns>true if the task is end; otherwise, false.</returns>
+        public static bool IsEnd(TaskStates state) => state == TaskStates.Done || state == TaskStates.Canceled || state == TaskStates.RolledBack || state == TaskStates.Faulted;
     }
 
     /// <summary>
@@ -94,37 +159,7 @@ namespace Trivial.Tasks
         /// <summary>
         /// Gets the task state.
         /// </summary>
-        public TaskState State { get; private set; } = TaskState.Pending;
-
-        /// <summary>
-        /// Gets a value indicating whether the task is pending to process.
-        /// </summary>
-        public bool IsPending => State == TaskState.Pending;
-
-        /// <summary>
-        /// Gets a value indicating whether the task is processing.
-        /// </summary>
-        public bool IsWorking => State == TaskState.Working || State == TaskState.Retrying;
-
-        /// <summary>
-        /// Gets a value indicating whether the task is not finished.
-        /// </summary>
-        public bool IsPendingOrWorking => State == TaskState.Pending || State == TaskState.Working || State == TaskState.Retrying || State == TaskState.Initializing || State == TaskState.Cancelling;
-
-        /// <summary>
-        /// Gets a value indicating whether the task is cancelled.
-        /// </summary>
-        public bool IsCanceled => State == TaskState.Canceled;
-
-        /// <summary>
-        /// Gets a value indicating whether the task is done.
-        /// </summary>
-        public bool IsDone => State == TaskState.Done;
-
-        /// <summary>
-        /// Gets a value indicating whether the task is failed.
-        /// </summary>
-        public bool IsFailed => State == TaskState.Faulted;
+        public TaskStates State { get; private set; } = TaskStates.Pending;
 
         /// <summary>
         /// Gets the progress from 0 to 1.
@@ -134,7 +169,7 @@ namespace Trivial.Tasks
         /// <summary>
         /// Gets whether cancellation has been requested for this System.Threading.CancellationTokenSource.
         /// </summary>
-        public bool IsCancellationRequested => State == TaskState.Cancelling || State == TaskState.Canceled;
+        public bool IsCancellationRequested => State == TaskStates.Cancelling || State == TaskStates.Canceled;
 
         /// <summary>
         /// Gets the result.
@@ -143,8 +178,8 @@ namespace Trivial.Tasks
         {
             get
             {
-                if (IsPendingOrWorking) throw new InvalidOperationException();
-                else if (State == TaskState.Faulted) throw exception;
+                if (TaskStatesChecker.IsPendingOrWorking(State)) throw new InvalidOperationException();
+                else if (State == TaskStates.Faulted) throw exception;
                 ThrowIfCancellationRequested();
                 return result;
             }
@@ -173,8 +208,8 @@ namespace Trivial.Tasks
         {
             lock (locker)
             {
-                if (State != TaskState.Pending && State != TaskState.Canceled) throw new InvalidOperationException();
-                State = TaskState.Initializing;
+                if (State != TaskStates.Pending && State != TaskStates.Canceled) throw new InvalidOperationException();
+                State = TaskStates.Initializing;
             }
 
             task = ProcessImplAsync();
@@ -200,8 +235,8 @@ namespace Trivial.Tasks
             var canWork = false;
             lock (locker)
             {
-                canWork = State != TaskState.Pending && State != TaskState.Canceled;
-                if (canWork) State = TaskState.Initializing;
+                canWork = State != TaskStates.Pending && State != TaskStates.Canceled;
+                if (canWork) State = TaskStates.Initializing;
             }
 
             if (canWork) task = ProcessImplAsync();
@@ -216,8 +251,8 @@ namespace Trivial.Tasks
         {
             lock (locker)
             {
-                if (IsCancellationRequested || !IsPendingOrWorking) return;
-                State = TaskState.Cancelling;
+                if (IsCancellationRequested || !TaskStatesChecker.IsPendingOrWorking(State)) return;
+                State = TaskStates.Cancelling;
             }
 
             try
@@ -236,7 +271,7 @@ namespace Trivial.Tasks
         /// </summary>
         protected void ThrowIfCancellationRequested()
         {
-            if (State != TaskState.Canceled) return;
+            if (State != TaskStates.Canceled) return;
             if (exception != null && exception is OperationCanceledException) throw exception;
             throw new OperationCanceledException();
         }
@@ -299,18 +334,18 @@ namespace Trivial.Tasks
             }
             catch (OperationCanceledException ex)
             {
-                ErrorHandle(TaskState.Canceled, ex);
+                ErrorHandle(TaskStates.Canceled, ex);
                 throw;
             }
             catch (Exception ex)
             {
-                ErrorHandle(TaskState.Faulted, ex);
+                ErrorHandle(TaskStates.Faulted, ex);
                 throw;
             }
 
             var retry = RetryPolicy?.CreateInstance();
             ThrowIfCancellationRequested();
-            State = TaskState.Working;
+            State = TaskStates.Working;
             while (true)
             {
                 try
@@ -320,7 +355,7 @@ namespace Trivial.Tasks
                 }
                 catch (OperationCanceledException ex)
                 {
-                    ErrorHandle(TaskState.Canceled, ex);
+                    ErrorHandle(TaskStates.Canceled, ex);
                     throw;
                 }
                 catch (Exception ex)
@@ -337,22 +372,22 @@ namespace Trivial.Tasks
                         }
 
                         retryTimes.Add(DateTime.Now);
-                        ErrorHandle(TaskState.Retrying, ex);
+                        ErrorHandle(TaskStates.Retrying, ex);
                         continue;
                     }
 
-                    ErrorHandle(TaskState.Faulted, ex);
+                    ErrorHandle(TaskStates.Faulted, ex);
                     throw;
                 }
             }
 
-            State = TaskState.Done;
+            State = TaskStates.Done;
             ReportProgress(1);
             Finished?.Invoke(this, new ResultEventArgs<T>(result));
             return result;
         }
 
-        private void ErrorHandle(TaskState state, Exception ex)
+        private void ErrorHandle(TaskStates state, Exception ex)
         {
             State = state;
             exception = ex;

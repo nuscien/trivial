@@ -103,8 +103,7 @@ namespace Trivial.Reflection
             public override bool Equals(object other)
             {
                 if (other is null) return false;
-                if (other is Item<T> item) return Equals(item);
-                if (other is Item item2) return Equals(item2);
+                if (other is Item item) return Equals(item);
                 return false;
             }
 
