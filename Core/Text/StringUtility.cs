@@ -61,9 +61,15 @@ namespace Trivial.Text
                 case Cases.Lower:
                     return source.ToLower(culture);
                 case Cases.FirstLetterUpper:
-                    return $"{source.Substring(0, 1).ToUpper(culture)}{source.Substring(1)}";
+                    {
+                        var s = source.TrimStart();
+                        return $"{source.Substring(0, source.Length - s.Length)}{s.Substring(0, 1).ToUpper(culture)}{s.Substring(1)}";
+                    }
                 case Cases.FirstLetterLower:
-                    return $"{source.Substring(0, 1).ToLower(culture)}{source.Substring(1)}";
+                    {
+                        var s = source.TrimStart();
+                        return $"{source.Substring(0, source.Length - s.Length)}{s.Substring(0, 1).ToLower(culture)}{s.Substring(1)}";
+                    }
                 default:
                     return source;
             }
@@ -87,9 +93,15 @@ namespace Trivial.Text
                 case Cases.Lower:
                     return source.ToLower();
                 case Cases.FirstLetterUpper:
-                    return $"{source.Substring(0, 1).ToUpper()}{source.Substring(1)}";
+                    {
+                        var s = source.TrimStart();
+                        return $"{source.Substring(0, source.Length - s.Length)}{s.Substring(0, 1).ToUpper()}{s.Substring(1)}";
+                    }
                 case Cases.FirstLetterLower:
-                    return $"{source.Substring(0, 1).ToLower()}{source.Substring(1)}";
+                    {
+                        var s = source.TrimStart();
+                        return $"{source.Substring(0, source.Length - s.Length)}{s.Substring(0, 1).ToLower()}{s.Substring(1)}";
+                    }
                 default:
                     return source;
             }
