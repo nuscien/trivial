@@ -10,6 +10,8 @@
 
 using System;
 using System.Collections.Generic;
+using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Security;
 using System.Runtime.Serialization;
 
@@ -237,12 +239,21 @@ namespace Trivial.Security
         }
 
         /// <summary>
-        /// Returns a System.String that represents the current RequestIdentifier.
+        /// Returns a System.String that represents the current TokenInfo.
         /// </summary>
-        /// <returns>A System.String that represents the current RequestIdentifier.</returns>
+        /// <returns>A System.String that represents the current TokenInfo.</returns>
         public override string ToString()
         {
             return string.Format("{0} {1}", TokenType, AccessToken).Trim();
+        }
+
+        /// <summary>
+        /// Returns a System.Net.Http.Headers.AuthenticationHeaderValue that represents the current TokenInfo.
+        /// </summary>
+        /// <returns>A System.Net.Http.Headers.AuthenticationHeaderValue that represents the current TokenInfo.</returns>
+        public AuthenticationHeaderValue ToAuthenticationHeaderValue()
+        {
+            return new AuthenticationHeaderValue(TokenType, AccessToken);
         }
     }
 }

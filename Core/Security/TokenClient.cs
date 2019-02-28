@@ -16,15 +16,24 @@ namespace Trivial.Security
     /// </summary>
     public abstract class TokenResolver
     {
-        private AppAccessingKey appInfo;
+        private readonly AppAccessingKey appInfo;
         private Task<TokenInfo> task;
+
+        /// <summary>
+        /// Initializes a new instance of the TokenResolver class.
+        /// </summary>
+        /// <param name="tokenCached">The token information instance cached.</param>
+        public TokenResolver(TokenInfo tokenCached)
+        {
+            Token = tokenCached;
+        }
 
         /// <summary>
         /// Initializes a new instance of the TokenResolver class.
         /// </summary>
         /// <param name="appKey">The app accessing key.</param>
         /// <param name="tokenCached">The token information instance cached.</param>
-        public TokenResolver(AppAccessingKey appKey, TokenInfo tokenCached = null)
+        public TokenResolver(AppAccessingKey appKey, TokenInfo tokenCached = null) : this(tokenCached)
         {
             appInfo = appKey;
         }
@@ -35,9 +44,8 @@ namespace Trivial.Security
         /// <param name="appId">The app id.</param>
         /// <param name="secretKey">The secret key.</param>
         /// <param name="tokenCached">The token information instance cached.</param>
-        public TokenResolver(string appId, string secretKey, TokenInfo tokenCached = null)
+        public TokenResolver(string appId, string secretKey, TokenInfo tokenCached = null) : this(new AppAccessingKey(appId, secretKey), tokenCached)
         {
-            appInfo = new AppAccessingKey(appId, secretKey);
         }
 
         /// <summary>
@@ -46,9 +54,8 @@ namespace Trivial.Security
         /// <param name="appId">The app id.</param>
         /// <param name="secretKey">The secret key.</param>
         /// <param name="tokenCached">The token information instance cached.</param>
-        public TokenResolver(string appId, SecureString secretKey, TokenInfo tokenCached = null)
+        public TokenResolver(string appId, SecureString secretKey, TokenInfo tokenCached = null) : this(new AppAccessingKey(appId, secretKey), tokenCached)
         {
-            appInfo = new AppAccessingKey(appId, secretKey);
         }
 
         /// <summary>
@@ -173,6 +180,15 @@ namespace Trivial.Security
         /// <summary>
         /// Initializes a new instance of the OpenIdTokenClient class.
         /// </summary>
+        /// <param name="tokenCached">The token information instance cached.</param>
+        public OpenIdTokenClient(TokenInfo tokenCached)
+        {
+            Token = tokenCached;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the OpenIdTokenClient class.
+        /// </summary>
         /// <param name="appKey">The app accessing key.</param>
         /// <param name="tokenCached">The token information instance cached.</param>
         public OpenIdTokenClient(AppAccessingKey appKey, TokenInfo tokenCached = null)
@@ -186,9 +202,8 @@ namespace Trivial.Security
         /// <param name="appId">The app id.</param>
         /// <param name="secretKey">The secret key.</param>
         /// <param name="tokenCached">The token information instance cached.</param>
-        public OpenIdTokenClient(string appId, string secretKey, TokenInfo tokenCached = null)
+        public OpenIdTokenClient(string appId, string secretKey, TokenInfo tokenCached = null) : this(new AppAccessingKey(appId, secretKey), tokenCached)
         {
-            appInfo = new AppAccessingKey(appId, secretKey);
         }
 
         /// <summary>
@@ -197,9 +212,8 @@ namespace Trivial.Security
         /// <param name="appId">The app id.</param>
         /// <param name="secretKey">The secret key.</param>
         /// <param name="tokenCached">The token information instance cached.</param>
-        public OpenIdTokenClient(string appId, SecureString secretKey, TokenInfo tokenCached = null)
+        public OpenIdTokenClient(string appId, SecureString secretKey, TokenInfo tokenCached = null) : this(new AppAccessingKey(appId, secretKey), tokenCached)
         {
-            appInfo = new AppAccessingKey(appId, secretKey);
         }
 
         /// <summary>

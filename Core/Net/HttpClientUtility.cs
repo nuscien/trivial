@@ -401,81 +401,21 @@ namespace Trivial.Net
     }
 
     /// <summary>
-    /// JSON format serialization HTTP client.
+    /// The web exception for unexpected HTTP status.
     /// </summary>
-    /// <typeparam name="T">The type of the result.</typeparam>
-    public class JsonHttpClient<T>
+    public class FailedHttpException : Exception
     {
         /// <summary>
-        /// Gets or sets the retry policy.
+        /// Initializes a new instance of the FailedHttpException class.
         /// </summary>
-        public Tasks.IRetryPolicy RetryPolicy { get; set; }
+        /// <param name="response">The HTTP web response.</param>
+        /// <param name="message">The error message that explains the reason for the exception.</param>
+        /// <param name="innerException">The exception that is the cause of the current exception, or a null reference if no inner exception is specified.</param>
+        public FailedHttpException(HttpResponseMessage response, string message = null, Exception innerException = null) : base(message, innerException) => Response = response;
 
         /// <summary>
-        /// Gets or sets the JSON serializer.
+        /// Gets the HTTP response message.
         /// </summary>
-        public Func<string, T> Serializer { get; set; }
-
-        /// <summary>
-        /// Gets or sets the HTTP client.
-        /// </summary>
-        public HttpClient Client { get; set; }
-
-        /// <summary>
-        /// Gets or sets a value inidcating whether need create new HTTP client instance per request by default.
-        /// </summary>
-        public bool IsNewHttpClientByDefault { get; set; }
-
-        /// <summary>
-        /// Gets or sets a handler to catch the exception and return if need throw.
-        /// </summary>
-        public Func<Exception, Exception> GetExceptionHandler { get; set; }
-
-        /// <summary>
-        /// Gets additional string bag.
-        /// </summary>
-        public IDictionary<string, string> Bag { get; } = new Dictionary<string, string>();
-
-        /// <summary>
-        /// Sends an HTTP request and gets the result serialized by JSON.
-        /// </summary>
-        /// <param name="request">The HTTP request message.</param>
-        /// <param name="cancellationToken">The optional cancellation token.</param>
-        /// <returns>A result serialized.</returns>
-        public async Task<T> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken = default)
-        {
-            if (request == null) throw new ArgumentNullException(nameof(request));
-            if (Client == null && !IsNewHttpClientByDefault) Client = new HttpClient();
-            var client = Client ?? new HttpClient();
-            var result = await Tasks.RetryExtension.ProcessAsync(RetryPolicy, async (CancellationToken cancellation) =>
-            {
-                var resp = await client.SendAsync(request, cancellationToken);
-                var obj = Serializer != null
-                    ? await HttpClientUtility.SerializeAsync(resp.Content, Serializer)
-                    : await HttpClientUtility.SerializeJsonAsync<T>(resp.Content);
-                return obj;
-            }, GetExceptionInternal, cancellationToken);
-            return result.Result;
-        }
-
-        /// <summary>
-        /// Gets the exception need throw.
-        /// </summary>
-        /// <param name="exception">The exception thrown to test.</param>
-        /// <returns>true if need retry; otherwise, false.</returns>
-        protected virtual Exception GetException(Exception exception)
-        {
-            return exception;
-        }
-
-        /// <summary>
-        /// Tests if need retry for the exception catched.
-        /// </summary>
-        /// <param name="exception">The exception thrown to test.</param>
-        /// <returns>true if need retry; otherwise, false.</returns>
-        private Exception GetExceptionInternal(Exception exception)
-        {
-            return GetExceptionHandler?.Invoke(exception) ?? GetException(exception);
-        }
+        public HttpResponseMessage Response { get; }
     }
 }
