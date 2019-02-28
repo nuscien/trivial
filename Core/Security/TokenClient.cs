@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Security;
 using System.Threading;
 using System.Threading.Tasks;
@@ -142,6 +143,24 @@ namespace Trivial.Security
         }
 
         /// <summary>
+        /// Returns a System.String that represents the current TokenResolver.
+        /// </summary>
+        /// <returns>A System.String that represents the current TokenResolver.</returns>
+        public override string ToString()
+        {
+            return Token?.ToString() ?? string.Empty;
+        }
+
+        /// <summary>
+        /// Returns a System.Net.Http.Headers.AuthenticationHeaderValue that represents the current TokenResolver.
+        /// </summary>
+        /// <returns>A System.Net.Http.Headers.AuthenticationHeaderValue that represents the current TokenResolver.</returns>
+        public AuthenticationHeaderValue ToAuthenticationHeaderValue()
+        {
+            return Token?.ToAuthenticationHeaderValue();
+        }
+
+        /// <summary>
         /// Gets the token resolve request message.
         /// </summary>
         /// <param name="appSecretKey">The app secret string.</param>
@@ -232,6 +251,11 @@ namespace Trivial.Security
         public DateTime LatestVisitDate { get; private set; }
 
         /// <summary>
+        /// Gets the latest refreshed date.
+        /// </summary>
+        public DateTime LatestRefreshDate { get; private set; }
+
+        /// <summary>
         /// Gets the JSON HTTP web client for resolving access token information instance.
         /// </summary>
         protected virtual JsonHttpClient<TokenInfo> WebClient { get; } = new JsonHttpClient<TokenInfo>();
@@ -292,9 +316,28 @@ namespace Trivial.Security
             {
                 task = t = ProcessAsync(request, cancellationToken);
                 var result = await t;
+                LatestRefreshDate = DateTime.Now;
                 task = null;
                 return result;
             }
+        }
+
+        /// <summary>
+        /// Returns a System.String that represents the current OpenIdTokenClient.
+        /// </summary>
+        /// <returns>A System.String that represents the current OpenIdTokenClient.</returns>
+        public override string ToString()
+        {
+            return Token?.ToString() ?? string.Empty;
+        }
+
+        /// <summary>
+        /// Returns a System.Net.Http.Headers.AuthenticationHeaderValue that represents the current OpenIdTokenClient.
+        /// </summary>
+        /// <returns>A System.Net.Http.Headers.AuthenticationHeaderValue that represents the current OpenIdTokenClient.</returns>
+        public AuthenticationHeaderValue ToAuthenticationHeaderValue()
+        {
+            return Token?.ToAuthenticationHeaderValue();
         }
 
         /// <summary>

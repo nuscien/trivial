@@ -47,7 +47,7 @@ namespace Trivial.Reflection
         /// <summary>
         /// The item of exception handlers registered.
         /// </summary>
-        public class Item<T> : Item, IEquatable<Item>, IEquatable<Item<T>> where T : Exception
+        public class Item<T> : Item, IEquatable<object>, IEquatable<Item>, IEquatable<Item<T>> where T : Exception
         {
             /// <summary>
             /// Initializes a new instance of the ExceptionHandler.Item class.
@@ -80,7 +80,7 @@ namespace Trivial.Reflection
             /// <returns>true if the given item equals the current one; otherwise, false.</returns>
             public bool Equals(Item<T> other)
             {
-                return other.Handler == Handler;
+                return !(other is null) && other.Handler == Handler;
             }
 
             /// <summary>
@@ -90,7 +90,31 @@ namespace Trivial.Reflection
             /// <returns>true if the given item equals the current one; otherwise, false.</returns>
             public bool Equals(Item other)
             {
-                return other is Item<T> item && item.Handler == Handler;
+                if (other is null) return false;
+                if (other is Item<T> item) return item.Handler == Handler;
+                return other.Handler == base.Handler && other.Type == Type;
+            }
+
+            /// <summary>
+            /// Tests if the given item equals the current one.
+            /// </summary>
+            /// <param name="other">The given item.</param>
+            /// <returns>true if the given item equals the current one; otherwise, false.</returns>
+            public override bool Equals(object other)
+            {
+                if (other is null) return false;
+                if (other is Item<T> item) return Equals(item);
+                if (other is Item item2) return Equals(item2);
+                return false;
+            }
+
+            /// <summary>
+            /// Returns the hash code for this instance.
+            /// </summary>
+            /// <returns>A 32-bit signed integer hash code.</returns>
+            public override int GetHashCode()
+            {
+                return Handler != null ? Handler.GetHashCode() : 0.GetHashCode();
             }
         }
 

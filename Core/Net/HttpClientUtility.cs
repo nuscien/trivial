@@ -108,14 +108,15 @@ namespace Trivial.Net
         /// </summary>
         /// <typeparam name="T">The type of the result expected.</typeparam>
         /// <param name="httpContent">The http response content.</param>
+        /// <param name="settings">The options for serialization.</param>
         /// <returns>The result serialized.</returns>
         /// <exception cref="ArgumentNullException">The argument is null.</exception>
-        public static async Task<T> SerializeJsonAsync<T>(this HttpContent httpContent)
+        public static async Task<T> SerializeJsonAsync<T>(this HttpContent httpContent, DataContractJsonSerializerSettings settings = null)
         {
             if (httpContent == null) throw new ArgumentNullException(nameof(httpContent));
             using (var stream = await httpContent.ReadAsStreamAsync())
             {
-                var serializer = new DataContractJsonSerializer(typeof(T));
+                var serializer = settings != null ? new DataContractJsonSerializer(typeof(T), settings) : new DataContractJsonSerializer(typeof(T));
                 return (T)serializer.ReadObject(stream);
             }
         }
@@ -125,14 +126,15 @@ namespace Trivial.Net
         /// </summary>
         /// <typeparam name="T">The type of the result expected.</typeparam>
         /// <param name="httpContent">The http response content.</param>
+        /// <param name="settings">The options for serialization.</param>
         /// <returns>The result serialized.</returns>
         /// <exception cref="ArgumentNullException">The argument is null.</exception>
-        public static async Task<T> SerializeXmlAsync<T>(this HttpContent httpContent)
+        public static async Task<T> SerializeXmlAsync<T>(this HttpContent httpContent, DataContractSerializerSettings settings = null)
         {
             if (httpContent == null) throw new ArgumentNullException(nameof(httpContent));
             using (var stream = await httpContent.ReadAsStreamAsync())
             {
-                var serializer = new DataContractSerializer(typeof(T)); 
+                var serializer = settings != null ? new DataContractSerializer(typeof(T), settings) : new DataContractSerializer(typeof(T)); 
                 return (T)serializer.ReadObject(stream);
             }
         }
@@ -174,14 +176,15 @@ namespace Trivial.Net
         /// </summary>
         /// <typeparam name="T">The type of the result expected.</typeparam>
         /// <param name="webResponse">The web response.</param>
+        /// <param name="settings">The options for serialization.</param>
         /// <returns>The result serialized.</returns>
         /// <exception cref="ArgumentNullException">The argument is null.</exception>
-        public static T SerializeJson<T>(this WebResponse webResponse)
+        public static T SerializeJson<T>(this WebResponse webResponse, DataContractJsonSerializerSettings settings = null)
         {
             if (webResponse == null) throw new ArgumentNullException(nameof(webResponse));
             using (var stream = webResponse.GetResponseStream())
             {
-                var serializer = new DataContractJsonSerializer(typeof(T));
+                var serializer = settings != null ? new DataContractJsonSerializer(typeof(T), settings) : new DataContractJsonSerializer(typeof(T));
                 return (T)serializer.ReadObject(stream);
             }
         }
@@ -191,14 +194,15 @@ namespace Trivial.Net
         /// </summary>
         /// <typeparam name="T">The type of the result expected.</typeparam>
         /// <param name="webResponse">The web response.</param>
+        /// <param name="settings">The options for serialization.</param>
         /// <returns>The result serialized.</returns>
         /// <exception cref="ArgumentNullException">The argument is null.</exception>
-        public static T SerializeXml<T>(this WebResponse webResponse)
+        public static T SerializeXml<T>(this WebResponse webResponse, DataContractSerializerSettings settings = null)
         {
             if (webResponse == null) throw new ArgumentNullException(nameof(webResponse));
             using (var stream = webResponse.GetResponseStream())
             {
-                var serializer = new DataContractSerializer(typeof(T));
+                var serializer = settings != null ? new DataContractSerializer(typeof(T), settings) : new DataContractSerializer(typeof(T));
                 return (T)serializer.ReadObject(stream);
             }
         }
@@ -398,24 +402,5 @@ namespace Trivial.Net
                 return await httpClient.SendAsync(request, cancellation);
             }, needThrow, cancellationToken);
         }
-    }
-
-    /// <summary>
-    /// The web exception for unexpected HTTP status.
-    /// </summary>
-    public class FailedHttpException : Exception
-    {
-        /// <summary>
-        /// Initializes a new instance of the FailedHttpException class.
-        /// </summary>
-        /// <param name="response">The HTTP web response.</param>
-        /// <param name="message">The error message that explains the reason for the exception.</param>
-        /// <param name="innerException">The exception that is the cause of the current exception, or a null reference if no inner exception is specified.</param>
-        public FailedHttpException(HttpResponseMessage response, string message = null, Exception innerException = null) : base(message, innerException) => Response = response;
-
-        /// <summary>
-        /// Gets the HTTP response message.
-        /// </summary>
-        public HttpResponseMessage Response { get; }
     }
 }

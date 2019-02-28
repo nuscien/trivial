@@ -39,11 +39,10 @@ namespace Trivial.Net
         /// </summary>
         public bool IsNewHttpClientByDefault { get; set; }
 
-
         /// <summary>
         /// Gets or sets a value indicating whether still need serialize the result even if it fails to send request.
         /// </summary>
-        public bool SerializeEvenFailed { get; set; }
+        public bool SerializeEvenIfFailed { get; set; }
 
         /// <summary>
         /// Gets or sets a handler to catch the exception and return if need throw.
@@ -69,7 +68,7 @@ namespace Trivial.Net
             var result = await Tasks.RetryExtension.ProcessAsync(RetryPolicy, async (CancellationToken cancellation) =>
             {
                 var resp = await client.SendAsync(request, cancellationToken);
-                if (!SerializeEvenFailed && !resp.IsSuccessStatusCode) throw new FailedHttpException(resp);
+                if (!SerializeEvenIfFailed && !resp.IsSuccessStatusCode) throw new FailedHttpException(resp);
                 var obj = Serializer != null
                     ? await HttpClientUtility.SerializeAsync(resp.Content, Serializer)
                     : await HttpClientUtility.SerializeJsonAsync<T>(resp.Content);

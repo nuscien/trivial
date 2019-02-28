@@ -138,7 +138,8 @@ namespace Trivial.Maths
         /// <returns>A hash code for the current object.</returns>
         public override int GetHashCode()
         {
-            return ToList().GetHashCode();
+            var list = ToList();
+            return list != null ? list.GetHashCode() : 0.GetHashCode();
         }
 
         /// <summary>
@@ -147,7 +148,7 @@ namespace Trivial.Maths
         /// <returns>An enumerator that can be used to iterate through the collection.</returns>
         public IEnumerator<T> GetEnumerator()
         {
-            return ToList().GetEnumerator();
+            return (ToList() ?? new List<T>()).GetEnumerator();
         }
 
         /// <summary>
@@ -156,7 +157,7 @@ namespace Trivial.Maths
         /// <returns>An enumerator that can be used to iterate through the collection.</returns>
         IEnumerator IEnumerable.GetEnumerator()
         {
-            return (ToList() as IEnumerable).GetEnumerator();
+            return ((ToList() ?? new List<T>()) as IEnumerable).GetEnumerator();
         }
     }
 
