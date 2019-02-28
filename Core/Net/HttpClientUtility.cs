@@ -442,7 +442,7 @@ namespace Trivial.Net
         /// <param name="request">The HTTP request message.</param>
         /// <param name="cancellationToken">The optional cancellation token.</param>
         /// <returns>A result serialized.</returns>
-        public async Task<T> ProcessAsync(HttpRequestMessage request, CancellationToken cancellationToken = default)
+        public async Task<T> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken = default)
         {
             if (request == null) throw new ArgumentNullException(nameof(request));
             if (Client == null && !IsNewHttpClientByDefault) Client = new HttpClient();

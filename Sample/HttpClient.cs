@@ -35,9 +35,9 @@ namespace Trivial.Sample
             //"{ \"access_token\": \"abc\", \"token_type\": \"Bearer\" }"
             url = "https://github.com/compositejs/datasense/raw/master/package.json";
             var webClient = new JsonHttpClient<NameAndDescription>();
-            var resp = await webClient.ProcessAsync(new HttpRequestMessage(HttpMethod.Get, url));
+            var resp = await webClient.SendAsync(new HttpRequestMessage(HttpMethod.Get, url));
             ConsoleLine.WriteLine(resp.Name);
-            resp = await webClient.ProcessAsync(new HttpRequestMessage(HttpMethod.Get, url));
+            resp = await webClient.SendAsync(new HttpRequestMessage(HttpMethod.Get, url));
             ConsoleLine.WriteLine(resp.Name);
         }
     }

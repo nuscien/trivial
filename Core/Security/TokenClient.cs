@@ -153,7 +153,7 @@ namespace Trivial.Security
             var oldToken = Token;
             using (var request = CreateResolveMessage(appInfo.Secret))
             {
-                Token = await wc.ProcessAsync(request, cancellationToken);
+                Token = await wc.SendAsync(request, cancellationToken);
                 LatestResolveDate = DateTime.Now;
             }
 
@@ -312,7 +312,7 @@ namespace Trivial.Security
             if (AppAccessingKey.IsNullOrEmpty(appInfo) || request == null) return null;
             var wc = WebClient;
             var oldToken = Token;
-            Token = await wc.ProcessAsync(request, cancellationToken);
+            Token = await wc.SendAsync(request, cancellationToken);
             LatestVisitDate = DateTime.Now;
             TokenChanged?.Invoke(this, new ChangeEventArgs<TokenInfo>(oldToken, Token, nameof(Token), true));
             return Token;
