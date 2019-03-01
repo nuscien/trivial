@@ -9,6 +9,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Trivial.Data;
 using Trivial.Net;
+using Trivial.Text;
 
 namespace Trivial.Security
 {
@@ -154,10 +155,23 @@ namespace Trivial.Security
         /// <summary>
         /// Returns a System.Net.Http.Headers.AuthenticationHeaderValue that represents the current TokenResolver.
         /// </summary>
+        /// <param name="schemeCase">The scheme case.</param>
+        /// <param name="parameterCase">The parameter case.</param>
         /// <returns>A System.Net.Http.Headers.AuthenticationHeaderValue that represents the current TokenResolver.</returns>
-        public AuthenticationHeaderValue ToAuthenticationHeaderValue()
+        public AuthenticationHeaderValue ToAuthenticationHeaderValue(Cases schemeCase = Cases.Original, Cases parameterCase = Cases.Original)
         {
-            return Token?.ToAuthenticationHeaderValue();
+            return Token?.ToAuthenticationHeaderValue(schemeCase, parameterCase);
+        }
+
+        /// <summary>
+        /// Returns a System.Net.Http.Headers.AuthenticationHeaderValue that represents the current TokenResolver.
+        /// </summary>
+        /// <param name="scheme">The scheme to use for authorization.</param>
+        /// <param name="parameterCase">The parameter case.</param>
+        /// <returns>A System.Net.Http.Headers.AuthenticationHeaderValue that represents the current TokenResolver.</returns>
+        public AuthenticationHeaderValue ToAuthenticationHeaderValue(string scheme, Cases parameterCase = Cases.Original)
+        {
+            return Token?.ToAuthenticationHeaderValue(scheme, parameterCase);
         }
 
         /// <summary>
@@ -334,10 +348,23 @@ namespace Trivial.Security
         /// <summary>
         /// Returns a System.Net.Http.Headers.AuthenticationHeaderValue that represents the current OpenIdTokenClient.
         /// </summary>
+        /// <param name="schemeCase">The scheme case.</param>
+        /// <param name="parameterCase">The parameter case.</param>
         /// <returns>A System.Net.Http.Headers.AuthenticationHeaderValue that represents the current OpenIdTokenClient.</returns>
-        public AuthenticationHeaderValue ToAuthenticationHeaderValue()
+        public AuthenticationHeaderValue ToAuthenticationHeaderValue(Cases schemeCase = Cases.Original, Cases parameterCase = Cases.Original)
         {
-            return Token?.ToAuthenticationHeaderValue();
+            return Token?.ToAuthenticationHeaderValue(schemeCase, parameterCase);
+        }
+
+        /// <summary>
+        /// Returns a System.Net.Http.Headers.AuthenticationHeaderValue that represents the current OpenIdTokenClient.
+        /// </summary>
+        /// <param name="scheme">The scheme to use for authorization.</param>
+        /// <param name="parameterCase">The parameter case.</param>
+        /// <returns>A System.Net.Http.Headers.AuthenticationHeaderValue that represents the current OpenIdTokenClient.</returns>
+        public AuthenticationHeaderValue ToAuthenticationHeaderValue(string scheme, Cases parameterCase = Cases.Original)
+        {
+            return Token?.ToAuthenticationHeaderValue(scheme, parameterCase);
         }
 
         /// <summary>

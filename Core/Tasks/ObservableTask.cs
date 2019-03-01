@@ -46,19 +46,34 @@ namespace Trivial.Tasks
         Canceled = 6,
 
         /// <summary>
+        /// Pausing.
+        /// </summary>
+        Pausing = 7,
+
+        /// <summary>
+        /// Paused.
+        /// </summary>
+        Paused = 8,
+
+        /// <summary>
+        /// Resuming.
+        /// </summary>
+        Resuming = 9,
+
+        /// <summary>
         /// Rolled back.
         /// </summary>
-        RolledBack = 7,
+        RolledBack = 10,
 
         /// <summary>
         /// Process succeeded.
         /// </summary>
-        Done = 8,
+        Done = 11,
 
         /// <summary>
         /// Failed to process.
         /// </summary>
-        Faulted = 9
+        Faulted = 12
     }
 
     /// <summary>
@@ -85,7 +100,14 @@ namespace Trivial.Tasks
         /// </summary>
         /// <param name="state">The task state.</param>
         /// <returns>true if the task is not finished; otherwise, false.</returns>
-        public static bool IsPendingOrWorking(TaskStates state) => state == TaskStates.Pending || state == TaskStates.Working || state == TaskStates.WaitingToRetry || state == TaskStates.Retrying || state == TaskStates.Initializing || state == TaskStates.Cancelling;
+        public static bool IsPendingOrWorking(TaskStates state) => !IsEnd(state);
+
+        /// <summary>
+        /// Gets a value indicating whether the task is pending to process.
+        /// </summary>
+        /// <param name="state">The task state.</param>
+        /// <returns>true if the task is pending to process; otherwise, false.</returns>
+        public static bool IsWaiting(TaskStates state) => state == TaskStates.Pending || state == TaskStates.Initializing || state == TaskStates.WaitingToRetry || state == TaskStates.Pausing || state == TaskStates.Paused || state == TaskStates.Resuming;
 
         /// <summary>
         /// Gets a value indicating whether the task is cancelled.

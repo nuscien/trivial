@@ -62,6 +62,11 @@ var task = HitTask.Times(() => {
 task.ProcessAsync();
 ```
 
+### Retry
+
+You can create a linear retry policy or even a customized to process an action with the specific retry policy.
+And you use `ObservableTask` to observe the state of an action processing.
+
 ## [Mathematics](https://github.com/nuscien/trivial/wiki/maths)
 
 Just add following namespace to your code file to use.
@@ -131,11 +136,14 @@ ChineseNumber.SimplifiedUppercase.ToString(12345);
 
 ## [Network](https://github.com/nuscien/trivial/wiki/net)
 
-Contains the helper functions and extension functions for network, such as HTTP client.
+Contains the helper functions and extension functions for network, such as HTTP web client and its content.
 
 ```csharp
 using Trivial.Net;
 ```
+
+And you can also use `JsonHttpClient` to serialize the JSON format response with retry policy supports.
+And `HttpUri` for HTTP URI fields accessing.
 
 ## [Security](https://github.com/nuscien/trivial/wiki/security)
 

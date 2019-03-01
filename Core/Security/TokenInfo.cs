@@ -14,6 +14,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Security;
 using System.Runtime.Serialization;
+using Trivial.Text;
 
 namespace Trivial.Security
 {
@@ -250,10 +251,32 @@ namespace Trivial.Security
         /// <summary>
         /// Returns a System.Net.Http.Headers.AuthenticationHeaderValue that represents the current TokenInfo.
         /// </summary>
+        /// <param name="schemeCase">The scheme case.</param>
+        /// <param name="parameterCase">The parameter case.</param>
         /// <returns>A System.Net.Http.Headers.AuthenticationHeaderValue that represents the current TokenInfo.</returns>
-        public AuthenticationHeaderValue ToAuthenticationHeaderValue()
+        public AuthenticationHeaderValue ToAuthenticationHeaderValue(Cases schemeCase = Cases.Original, Cases parameterCase = Cases.Original)
         {
-            return new AuthenticationHeaderValue(TokenType, AccessToken);
+            return AccessToken != null
+                ? new AuthenticationHeaderValue(
+                    StringUtility.ToSpecificCaseInvariant(TokenType, schemeCase),
+                    StringUtility.ToSpecificCaseInvariant(AccessToken, parameterCase))
+                : new AuthenticationHeaderValue(
+                    StringUtility.ToSpecificCaseInvariant(TokenType, schemeCase));
+        }
+
+        /// <summary>
+        /// Returns a System.Net.Http.Headers.AuthenticationHeaderValue that represents the current TokenInfo.
+        /// </summary>
+        /// <param name="scheme">The scheme to use for authorization.</param>
+        /// <param name="parameterCase">The parameter case.</param>
+        /// <returns>A System.Net.Http.Headers.AuthenticationHeaderValue that represents the current TokenInfo.</returns>
+        public AuthenticationHeaderValue ToAuthenticationHeaderValue(string scheme, Cases parameterCase = Cases.Original)
+        {
+            return AccessToken != null
+                ? new AuthenticationHeaderValue(
+                    scheme ?? TokenType,
+                    StringUtility.ToSpecificCaseInvariant(AccessToken, parameterCase))
+                : new AuthenticationHeaderValue(scheme ?? TokenType);
         }
     }
 }

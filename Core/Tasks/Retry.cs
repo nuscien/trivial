@@ -219,7 +219,7 @@ namespace Trivial.Tasks
         /// </summary>
         /// <param name="cancellationToken">The optional cancellation token.</param>
         /// <returns>The processing retry result.</returns>
-        public async Task<RetryResult> Process(CancellationToken cancellationToken = default)
+        public async Task<RetryResult> ProcessAsync(CancellationToken cancellationToken = default)
         {
             State = TaskStates.Initializing;
             var result = new RetryResult();
@@ -244,6 +244,7 @@ namespace Trivial.Tasks
 
                 try
                 {
+                    await OnProcessAsync(cancellationToken);
                     Processing?.Invoke(this, new RetryEventArgs(retry.Status));
                     State = TaskStates.Done;
                     result.Success();
@@ -281,6 +282,16 @@ namespace Trivial.Tasks
                 await Task.Delay(span.Value);
                 State = TaskStates.Retrying;
             }
+        }
+
+        /// <summary>
+        /// Raises on processing.
+        /// </summary>
+        /// <param name="cancellationToken">The optional cancellation token.</param>
+        /// <returns>An asynchronous operation instance.</returns>
+        protected virtual Task OnProcessAsync(CancellationToken cancellationToken)
+        {
+            return Task.Run(() => { });
         }
     }
 

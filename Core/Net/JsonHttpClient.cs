@@ -20,6 +20,11 @@ namespace Trivial.Net
     public class JsonHttpClient<T>
     {
         /// <summary>
+        /// Gets the MIME value.
+        /// </summary>
+        public const string MIME = "application/json";
+
+        /// <summary>
         /// Gets or sets the retry policy.
         /// </summary>
         public Tasks.IRetryPolicy RetryPolicy { get; set; }
@@ -131,6 +136,116 @@ namespace Trivial.Net
             {
                 Content = content
             }, cancellationToken);
+        }
+
+        /// <summary>
+        /// Sends an HTTP request and gets the result serialized by JSON.
+        /// </summary>
+        /// <typeparam name="TRequestBody">The type of request body to serialize and send.</typeparam>
+        /// <param name="method">The HTTP method.</param>
+        /// <param name="requestUri">The Uri the request is sent to.</param>
+        /// <param name="content">The HTTP request content sent to the server.</param>
+        /// <param name="settings">The options for serialization.</param>
+        /// <param name="cancellationToken">The optional cancellation token.</param>
+        /// <returns>A result serialized.</returns>
+        public async Task<T> SendAsync<TRequestBody>(HttpMethod method, string requestUri, TRequestBody content, DataContractJsonSerializerSettings settings, CancellationToken cancellationToken = default)
+        {
+            using (var stream = new MemoryStream())
+            {
+                var serializer = settings != null ? new DataContractJsonSerializer(typeof(TRequestBody), settings) : new DataContractJsonSerializer(typeof(TRequestBody));
+                serializer.WriteObject(stream, content);
+                return await SendAsync(new HttpRequestMessage(method, requestUri)
+                {
+                    Content = new StreamContent(stream)
+                }, cancellationToken);
+            }
+        }
+
+        /// <summary>
+        /// Sends an HTTP request and gets the result serialized by JSON.
+        /// </summary>
+        /// <typeparam name="TRequestBody">The type of request body to serialize and send.</typeparam>
+        /// <param name="method">The HTTP method.</param>
+        /// <param name="requestUri">The Uri the request is sent to.</param>
+        /// <param name="content">The HTTP request content sent to the server.</param>
+        /// <param name="settings">The options for serialization.</param>
+        /// <param name="cancellationToken">The optional cancellation token.</param>
+        /// <returns>A result serialized.</returns>
+        public async Task<T> SendAsync<TRequestBody>(HttpMethod method, Uri requestUri, TRequestBody content, DataContractJsonSerializerSettings settings, CancellationToken cancellationToken = default)
+        {
+            using (var stream = new MemoryStream())
+            {
+                var serializer = settings != null ? new DataContractJsonSerializer(typeof(TRequestBody), settings) : new DataContractJsonSerializer(typeof(TRequestBody));
+                serializer.WriteObject(stream, content);
+                return await SendAsync(new HttpRequestMessage(method, requestUri)
+                {
+                    Content = new StreamContent(stream)
+                }, cancellationToken);
+            }
+        }
+
+        /// <summary>
+        /// Sends an HTTP request and gets the result serialized by JSON.
+        /// </summary>
+        /// <typeparam name="TRequestBody">The type of request body to serialize and send.</typeparam>
+        /// <param name="method">The HTTP method.</param>
+        /// <param name="requestUri">The Uri the request is sent to.</param>
+        /// <param name="content">The HTTP request content sent to the server.</param>
+        /// <param name="cancellationToken">The optional cancellation token.</param>
+        /// <returns>A result serialized.</returns>
+        public Task<T> SendJsonAsync<TRequestBody>(HttpMethod method, string requestUri, TRequestBody content, CancellationToken cancellationToken = default)
+        {
+            return SendAsync(method, requestUri, content, null, cancellationToken);
+        }
+
+        /// <summary>
+        /// Sends an HTTP request and gets the result serialized by JSON.
+        /// </summary>
+        /// <typeparam name="TRequestBody">The type of request body to serialize and send.</typeparam>
+        /// <param name="method">The HTTP method.</param>
+        /// <param name="requestUri">The Uri the request is sent to.</param>
+        /// <param name="content">The HTTP request content sent to the server.</param>
+        /// <param name="cancellationToken">The optional cancellation token.</param>
+        /// <returns>A result serialized.</returns>
+        public Task<T> SendJsonAsync<TRequestBody>(HttpMethod method, Uri requestUri, TRequestBody content, CancellationToken cancellationToken = default)
+        {
+            return SendAsync(method, requestUri, content, null, cancellationToken);
+        }
+
+        /// <summary>
+        /// Sends an HTTP request and gets the result serialized by JSON.
+        /// </summary>
+        /// <typeparam name="TRequestBody">The type of request body to serialize and send.</typeparam>
+        /// <param name="method">The HTTP method.</param>
+        /// <param name="requestUri">The Uri the request is sent to.</param>
+        /// <param name="content">The HTTP request content sent to the server.</param>
+        /// <param name="deserializer">The JSON deserializer.</param>
+        /// <param name="cancellationToken">The optional cancellation token.</param>
+        /// <returns>A result serialized.</returns>
+        public Task<T> SendJsonAsync<TRequestBody>(HttpMethod method, string requestUri, TRequestBody content, Func<TRequestBody, string> deserializer, CancellationToken cancellationToken = default)
+        {
+            return deserializer != null ? SendAsync(new HttpRequestMessage(method, requestUri)
+            {
+                Content = new StringContent(deserializer(content), Encoding.UTF8, MIME)
+            }, cancellationToken) : SendJsonAsync(method, requestUri, content, cancellationToken);
+        }
+
+        /// <summary>
+        /// Sends an HTTP request and gets the result serialized by JSON.
+        /// </summary>
+        /// <typeparam name="TRequestBody">The type of request body to serialize and send.</typeparam>
+        /// <param name="method">The HTTP method.</param>
+        /// <param name="requestUri">The Uri the request is sent to.</param>
+        /// <param name="content">The HTTP request content sent to the server.</param>
+        /// <param name="deserializer">The JSON deserializer.</param>
+        /// <param name="cancellationToken">The optional cancellation token.</param>
+        /// <returns>A result serialized.</returns>
+        public Task<T> SendJsonAsync<TRequestBody>(HttpMethod method, Uri requestUri, TRequestBody content, Func<TRequestBody, string> deserializer, CancellationToken cancellationToken = default)
+        {
+            return deserializer != null ? SendAsync(new HttpRequestMessage(method, requestUri)
+            {
+                Content = new StringContent(deserializer(content), Encoding.UTF8, MIME)
+            }, cancellationToken) : SendJsonAsync(method, requestUri, content, cancellationToken);
         }
 
         /// <summary>

@@ -159,8 +159,9 @@ namespace Trivial.Net
         /// <summary>
         /// Serialize the HTTP content into an object by the specific serializer.
         /// </summary>
+        /// <typeparam name="T">The type of the result expected.</typeparam>
         /// <param name="httpContent">The http response content.</param>
-        /// <param name="serializer">The serializer to read the object from the stream downloaded.</param>
+        /// <param name="serializer">The JSON serializer.</param>
         /// <returns>The result serialized.</returns>
         /// <exception cref="ArgumentNullException">The argument is null.</exception>
         public static async Task<T> SerializeAsync<T>(this HttpContent httpContent, Func<string, T> serializer)
@@ -227,8 +228,9 @@ namespace Trivial.Net
         /// <summary>
         /// Serialize the HTTP content into an object by the specific serializer.
         /// </summary>
+        /// <typeparam name="T">The type of the result expected.</typeparam>
         /// <param name="webResponse">The web response.</param>
-        /// <param name="serializer">The serializer to read the object from the stream downloaded.</param>
+        /// <param name="serializer">The JSON serializer.</param>
         /// <param name="encoding">The character encoding to use.</param>
         /// <returns>The result serialized.</returns>
         /// <exception cref="ArgumentNullException">The argument is null.</exception>

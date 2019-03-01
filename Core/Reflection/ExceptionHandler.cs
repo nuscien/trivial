@@ -139,6 +139,7 @@ namespace Trivial.Reflection
         /// <returns>The exception needed to throw.</returns>
         public Exception GetException(Exception ex)
         {
+            if (ex == null) return null;
             foreach (var item in list)
             {
                 var result = item.Handler(ex, out bool handled);
