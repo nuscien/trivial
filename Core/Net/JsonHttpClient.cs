@@ -301,6 +301,36 @@ namespace Trivial.Net
         }
 
         /// <summary>
+        /// Sends a PUT request and gets the result serialized by JSON.
+        /// </summary>
+        /// <param name="requestUri">The Uri the request is sent to.</param>
+        /// <param name="content">The HTTP request content sent to the server.</param>
+        /// <param name="cancellationToken">The optional cancellation token.</param>
+        /// <returns>A result serialized.</returns>
+        public Task<T> PutAsync(string requestUri, HttpContent content, CancellationToken cancellationToken = default)
+        {
+            return SendAsync(new HttpRequestMessage(HttpMethod.Put, requestUri)
+            {
+                Content = content
+            }, cancellationToken);
+        }
+
+        /// <summary>
+        /// Sends a PUT request and gets the result serialized by JSON.
+        /// </summary>
+        /// <param name="requestUri">The Uri the request is sent to.</param>
+        /// <param name="content">The HTTP request content sent to the server.</param>
+        /// <param name="cancellationToken">The optional cancellation token.</param>
+        /// <returns>A result serialized.</returns>
+        public Task<T> PutAsync(Uri requestUri, HttpContent content, CancellationToken cancellationToken = default)
+        {
+            return SendAsync(new HttpRequestMessage(HttpMethod.Put, requestUri)
+            {
+                Content = content
+            }, cancellationToken);
+        }
+
+        /// <summary>
         /// Gets the exception need throw.
         /// </summary>
         /// <param name="exception">The exception thrown to test.</param>
