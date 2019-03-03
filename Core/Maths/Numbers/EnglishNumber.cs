@@ -481,6 +481,8 @@ namespace Trivial.Maths
                     if (number == 1 / 3) return "a third";
                     if (number == 0.25) return "a quarter";
                     if (number == 0.2) return "a fifth";
+                    if (number == 0.1) return "ten percents";
+                    if (number == 0.01) return "a percent";
                 }
 
                 if (number <= ulong.MaxValue)
@@ -488,6 +490,8 @@ namespace Trivial.Maths
                     var numInt = (ulong)number;
                     if (numInt == number) return ToString(numInt);
                     if (number == 1.5) return "a half and one";
+                    if (number == 1.25) return "a half and a quarter";
+                    if (number == 1.21) return "a half and a fifth";
                 }
             }
             else if (number > long.MinValue)
