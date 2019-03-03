@@ -512,12 +512,28 @@ namespace Trivial.Maths
 
             if (exponentialPart > 0)
             {
-                str.Append(" times ten");
-                if (exponentialPart > 1)
+                switch (exponentialPart)
                 {
-                    str.Append(" of ");
-                    str.Append(ToString(exponentialPart));
-                    str.Append(" power");
+                    case 1:
+                        str.Append(" times ten");
+                        break;
+                    case 2:
+                        str.Append(" hundred");
+                        break;
+                    case 3:
+                        str.Append(" thousand");
+                        break;
+                    case 6:
+                        str.Append(" million");
+                        break;
+                    case 9:
+                        str.Append(" trillion");
+                        break;
+                    default:
+                        str.Append(" times ten of ");
+                        str.Append(ToString(exponentialPart));
+                        str.Append(" power");
+                        break;
                 }
             }
 

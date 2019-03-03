@@ -447,7 +447,7 @@ namespace Trivial.Maths
 
             if (exponentialPart > 0)
             {
-                if (exponentialPart % 4 == 0)
+                if (exponentialPart % 4 == 0 && exponentialPart < 41)
                 {
                     if (exponentialPart % 8 == 4)
                     {
