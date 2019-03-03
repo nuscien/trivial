@@ -634,7 +634,15 @@ namespace Trivial.Maths
             const string zero = "0";
             var numStr = value.ToString(CultureInfo.InvariantCulture);
             var dotPos = numStr.IndexOf(".");
-            if (dotPos < 0) return ((long)value, string.Empty, 0);
+            if (dotPos < 0)
+            {
+                dotPos = numStr.IndexOf("E");
+                if (dotPos < 0) return ((long)value, string.Empty, 0);
+                var integerPart2 = numStr.Substring(0, dotPos);
+                var exponentialPart2 = numStr.Substring(dotPos + 1);
+                return (long.Parse(integerPart2, CultureInfo.InvariantCulture), string.Empty, int.Parse(exponentialPart2, CultureInfo.InvariantCulture));
+            }
+
             var integerPart = numStr.Substring(0, dotPos);
             if (integerPart.Length == 0) integerPart = zero;
             var integerPartNum = long.Parse(integerPart, CultureInfo.InvariantCulture);

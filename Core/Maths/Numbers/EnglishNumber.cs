@@ -248,6 +248,60 @@ namespace Trivial.Maths
         public string TrillionClass => "trillion";
 
         /// <summary>
+        /// Converts a number to the string of approximation.
+        /// </summary>
+        /// <param name="number">The number to convert.</param>
+        /// <param name="accuracy">A nature number for accuracy of the number.</param>
+        /// <returns>A string format number.</returns>
+        /// <exception cref="ArgumentOutOfRangeException">accuracy is less than 0 or is greater than 32.</exception>
+        public string ToApproximationString(long number, int accuracy = 1)
+        {
+            var str = ToApproximationString((ulong)Math.Abs(number), accuracy);
+            if (number < 0) return NegativeSign + str;
+            return str;
+        }
+
+        /// <summary>
+        /// Converts a number to the string of approximation.
+        /// </summary>
+        /// <param name="number">The number to convert.</param>
+        /// <param name="accuracy">A nature number for accuracy of the number.</param>
+        /// <returns>A string format number.</returns>
+        /// <exception cref="ArgumentOutOfRangeException">accuracy is less than 0 or is greater than 32.</exception>
+        public string ToApproximationString(ulong number, int accuracy = 1)
+        {
+            if (accuracy < 0 || accuracy > 32) throw new ArgumentOutOfRangeException(nameof(accuracy));
+            var prefix = number < 0 ? NegativeSign : string.Empty;
+            var levels = Math.Abs(number.ToString(CultureInfo.InvariantCulture).Length) / GroupLength;
+            if (levels < 1) return number.ToString();
+            var len = levels * GroupLength;
+            var format = new StringBuilder("0.");
+            format.Append('0', Math.Min(accuracy, len));
+            var num = (number * 1.0 / Math.Pow(10, len)).ToString(format.ToString(), CultureInfo.InvariantCulture);
+            switch (levels)
+            {
+                case 1:
+                    return num + "K";
+                case 2:
+                    return num + "M";
+                case 3:
+                    return num + "G";
+                case 4:
+                    return num + "T";
+                case 5:
+                    return num + "P";
+                case 6:
+                    return num + "E";
+                case 7:
+                    return num + "Z";
+                case 8:
+                    return num + "Y";
+                default:
+                    return string.Format("{0}×10^{1}", num, levels * GroupLength);
+            }
+        }
+
+        /// <summary>
         /// Gets the main number digits.
         /// </summary>
         /// <returns>A string with main numbers.</returns>

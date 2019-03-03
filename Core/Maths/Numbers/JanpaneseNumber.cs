@@ -6,25 +6,23 @@ using System.Text;
 namespace Trivial.Maths
 {
     /// <summary>
-    /// The Chinese number digits.
+    /// The Japanese number digits.
     /// </summary>
-    public class ChineseNumber : IIntegerSample, INumberLocalization
+    public class JapaneseNumber : IIntegerSample, INumberLocalization
     {
-        private static readonly string digits1 = "零壹贰叄肆伍陆柒捌玖拾佰仟万亿";
-        private static readonly string digits2 = "零一二三四五六七八九十百千万亿";
-        private static readonly string digits3 = "零壹贰叄肆伍陆柒捌玖拾佰仟萬億";
-        private static readonly string digits4 = "零一二三四五六七八九十百千萬億";
+        private static readonly string digits= "零一二三四五六七八九十百千万億兆京垓秭穰沟涧正载";
 
         /// <summary>
-        /// Initializes a new instance of the ChineseNumber class.
+        /// Initializes a new instance of the JapaneseNumber class.
         /// </summary>
-        /// <param name="isTraditional">true if it set as Traditional Chinese; otherwise, false.</param>
-        /// <param name="upperCase">true if use upper case; otherwise, false.</param>
-        protected internal ChineseNumber(bool isTraditional = false, bool upperCase = false)
+        protected internal JapaneseNumber()
         {
-            IsUpperCase = upperCase;
-            IsTraditional = isTraditional;
         }
+
+        /// <summary>
+        /// Gets a value inidcatint whether it is hiragana.
+        /// </summary>
+        public bool IsHiragana { get; }
 
         /// <summary>
         /// Gets a value indicating whether it supports number 0.
@@ -47,74 +45,54 @@ namespace Trivial.Maths
         public int GroupLength => 4;
 
         /// <summary>
-        /// Gets a value indicating whether it is in lower case.
-        /// </summary>
-        public bool IsUpperCase { get; }
-
-        /// <summary>
-        /// Gets a value indicating whether it is Tranditional Chinese.
-        /// </summary>
-        public bool IsTraditional { get; }
-
-        /// <summary>
-        /// Gets a value indicating whether it is Simplified Chinese.
-        /// </summary>
-        public bool IsSimplified => !IsTraditional;
-
-        /// <summary>
         /// Number 0.
         /// </summary>
-        public string Zero => "零";
+        public string Zero => IsHiragana ? "れい" : "零";
 
         /// <summary>
         /// Number 1.
         /// </summary>
-        public string One => IsUpperCase ? "壹" : "一";
+        public string One => IsHiragana ? "いち" : "一";
 
         /// <summary>
         /// Number 2.
         /// </summary>
-        public string Two => IsUpperCase ? "贰" : "二";
-
-        /// <summary>
-        /// Number 2.
-        /// </summary>
-        private string Two2 => IsTraditional ? "兩" : "两";
+        public string Two => IsHiragana ? "に" : "二";
 
         /// <summary>
         /// Number 3.
         /// </summary>
-        public string Three => IsUpperCase ? "叄" : "三";
+        public string Three => IsHiragana ? "さん" : "三";
 
         /// <summary>
         /// Number 4.
         /// </summary>
-        public string Four => IsUpperCase ? "肆" : "四";
+        public string Four => IsHiragana ? "し" : "四";
 
         /// <summary>
         /// Number 5.
         /// </summary>
-        public string Five => IsUpperCase ? "伍" : "五";
+        public string Five => IsHiragana ? "ご" : "五";
 
         /// <summary>
         /// Number 6.
         /// </summary>
-        public string Six => IsUpperCase ? "陆" : "六";
+        public string Six => IsHiragana ? "ろく" : "六";
 
         /// <summary>
         /// Number 7.
         /// </summary>
-        public string Seven => IsUpperCase ? "柒" : "七";
+        public string Seven => IsHiragana ? "しち" : "七";
 
         /// <summary>
         /// Number 8.
         /// </summary>
-        public string Eight => IsUpperCase ? "捌" : "八";
+        public string Eight => IsHiragana ? "はち" : "八";
 
         /// <summary>
         /// Number 9.
         /// </summary>
-        public string Nine => IsUpperCase ? "玖" : "九";
+        public string Nine => IsHiragana ? "きゅう" : "九";
 
         /// <summary>
         /// Number 10.
@@ -124,47 +102,47 @@ namespace Trivial.Maths
         /// <summary>
         /// Number 11.
         /// </summary>
-        public string Eleven => IsUpperCase ? "拾壹" : "十一";
+        public string Eleven => IsHiragana ? "じゅういち" : "十一";
 
         /// <summary>
         /// Number 12.
         /// </summary>
-        public string Twelve => IsUpperCase ? "拾贰" : "十二";
+        public string Twelve => IsHiragana ? "じゅうに" : "十二";
 
         /// <summary>
         /// Number 13.
         /// </summary>
-        public string Thirteen => IsUpperCase ? "拾叄" : "十三";
+        public string Thirteen => IsHiragana ? "じゅうさん" : "十三";
 
         /// <summary>
         /// Number 14.
         /// </summary>
-        public string Fourteen => IsUpperCase ? "拾肆" : "十四";
+        public string Fourteen => IsHiragana ? "じゅうし" : "十四";
 
         /// <summary>
         /// Number 15.
         /// </summary>
-        public string Fifteen => IsUpperCase ? "拾伍" : "十五";
+        public string Fifteen => IsHiragana ? "じゅうご" : "十五";
 
         /// <summary>
         /// Number 16.
         /// </summary>
-        public string Sixteen => IsUpperCase ? "拾陆" : "十六";
+        public string Sixteen => IsHiragana ? "じゅうろく" : "十六";
 
         /// <summary>
         /// Number 17.
         /// </summary>
-        public string Seventeen => IsUpperCase ? "拾柒" : "十七";
+        public string Seventeen => IsHiragana ? "じゅうしち" : "十七";
 
         /// <summary>
         /// Number 18.
         /// </summary>
-        public string Eighteen => IsUpperCase ? "拾捌" : "十八";
+        public string Eighteen => IsHiragana ? "じゅうはち" : "十八";
 
         /// <summary>
         /// Number 19.
         /// </summary>
-        public string Nineteen => IsUpperCase ? "拾玖" : "十九";
+        public string Nineteen => IsHiragana ? "じゅうきゅう" : "十九";
 
         /// <summary>
         /// Number 20.
@@ -214,7 +192,7 @@ namespace Trivial.Maths
         /// <summary>
         /// Number 200.
         /// </summary>
-        public string TwoHundred => (IsUpperCase ? Two : Two2) + HundredClass;
+        public string TwoHundred => Two + HundredClass;
 
         /// <summary>
         /// Number 500.
@@ -229,7 +207,7 @@ namespace Trivial.Maths
         /// <summary>
         /// Number 2,000.
         /// </summary>
-        public string TwoThousand => (IsUpperCase ? Two : Two2) + ThousandClass;
+        public string TwoThousand => Two + ThousandClass;
 
         /// <summary>
         /// Number 5,000.
@@ -254,27 +232,32 @@ namespace Trivial.Maths
         /// <summary>
         /// The order of magnitude 10e1.
         /// </summary>
-        public string TenClass => IsUpperCase ? "拾" : "十";
+        public string TenClass => IsHiragana ? "じゅう" : "十";
 
         /// <summary>
         /// The order of magnitude 10e2.
         /// </summary>
-        public string HundredClass => IsUpperCase ? "佰" : "百";
+        public string HundredClass => IsHiragana ? "ひゃく" : "百";
 
         /// <summary>
         /// The order of magnitude 10e3.
         /// </summary>
-        public string ThousandClass => IsUpperCase ? "仟" : "千";
+        public string ThousandClass => IsHiragana ? "せん" : "千";
 
         /// <summary>
         /// The order of magnitude 10e4.
         /// </summary>
-        public string TenThousandClass => IsTraditional ? "萬" : "万";
-        
+        public string TenThousandClass => IsHiragana ? "おく" : "万";
+
         /// <summary>
         /// The order of magnitude 10e8.
         /// </summary>
-        public string HundredMillionClass => IsTraditional ? "億" : "亿";
+        public string HundredMillionClass => IsHiragana ? "おく" : "億";
+
+        /// <summary>
+        /// The order of magnitude 10e12.
+        /// </summary>
+        public string TrillionClass => IsHiragana ? "ちょう" : "兆";
 
         /// <summary>
         /// Converts a number to the string of approximation.
@@ -306,9 +289,17 @@ namespace Trivial.Maths
             var format = new StringBuilder("0.");
             format.Append('0', Math.Min(accuracy, len));
             var num = new StringBuilder((number * 1.0 / Math.Pow(10, len)).ToString(format.ToString(), CultureInfo.InvariantCulture));
+            if ((number / Math.Pow(10, len)).ToString(CultureInfo.InvariantCulture).Length == 4) num.Insert(1, ',');
             var digits = ToString();
-            if (levels % 2 == 1) num.Append(digits[13]);
-            num.Append(digits[14], levels / 2);
+            if (levels > 11)
+            {
+                num.AppendFormat("×10^{0}", levels);
+            }
+            else
+            {
+                num.Append(digits[12 + levels]);
+            }
+
             return num.ToString();
         }
 
@@ -318,7 +309,7 @@ namespace Trivial.Maths
         /// <returns>A string with main numbers.</returns>
         public override string ToString()
         {
-            return IsTraditional ? (IsUpperCase ? digits3 : digits4) : (IsUpperCase ? digits1 : digits2);
+            return digits;
         }
 
         /// <summary>
@@ -364,23 +355,12 @@ namespace Trivial.Maths
             }
 
             var classPos = num.Length / 4;
-            var isZero = false;
             for (var i = 0; i < num.Length; i++)
             {
                 var c = num[i].ToString();
                 if (c == " ") continue;
-                if (c == "0")
+                if (c != "0")
                 {
-                    isZero = true;
-                }
-                else
-                {
-                    if (isZero)
-                    {
-                        str.Append(digits[0]);
-                        isZero = false;
-                    }
-
                     str.Append(digits[int.Parse(c)]);
                     var j = 3 - i % 4;
                     if (j > 0) str.Append(digits[9 + j]);
@@ -388,26 +368,11 @@ namespace Trivial.Maths
 
                 if (i % 4 != 3 || i == num.Length - 1) continue;
                 classPos--;
-                isZero = false;
-                var lastChar = str[str.Length - 1];
-                if (lastChar == digits[13] || lastChar == digits[14]) continue;
-                if (classPos % 2 == 1)
-                {
-                    str.Append(digits[13]);
-                }
-                else
-                {
-                    str.Append(digits[14], classPos / 2);
-                }
+                if (classPos == 0) continue;
+                str.Append(digits[12 + classPos]);
             }
 
-            if (IsUpperCase) return str.ToString();
-            str = str
-                .Replace(Two + HundredClass, TwoHundred)
-                .Replace(Two + ThousandClass, TwoThousand)
-                .Replace(Zero + Two + TenThousandClass, Zero + Two2 + TenThousandClass);
-            var result = str.ToString();
-            return result.IndexOf(One + TenClass) == 0 ? result.Substring(1) : result;
+            return str.ToString().Replace("一十", "十");
         }
 
         /// <summary>
@@ -438,7 +403,7 @@ namespace Trivial.Maths
             var digits = ToString();
             if (fractionalPart.Length > 0)
             {
-                str.Append(IsTraditional ? "點" : "点");
+                str.Append("点");
                 foreach (var item in fractionalPart)
                 {
                     str.Append(digits[int.Parse(item.ToString())]);
@@ -447,26 +412,19 @@ namespace Trivial.Maths
 
             if (exponentialPart > 0)
             {
-                if (exponentialPart % 4 == 0)
+                if (exponentialPart % 4 == 0 && exponentialPart < 45)
                 {
-                    if (exponentialPart % 8 == 4)
-                    {
-                        str.Append(digits[13]);
-                    }
-                    else
-                    {
-                        str.Append(digits[14], exponentialPart / 8);
-                    }
+                    str.Append(digits[12 + exponentialPart / 4]);
                 }
                 else
                 {
-                    str.Append("乘以");
+                    str.Append("かける");
                     str.Append(TenClass);
                     if (exponentialPart > 1)
                     {
-                        str.Append("的");
+                        str.Append("の");
                         str.Append(ToString(exponentialPart));
-                        str.Append("次方");
+                        str.Append("乗");
                     }
                 }
             }
@@ -477,21 +435,6 @@ namespace Trivial.Maths
         /// <summary>
         /// Simplified Chinese number.
         /// </summary>
-        public static readonly ChineseNumber Simplified = new ChineseNumber();
-
-        /// <summary>
-        /// Simplified Chinese number.
-        /// </summary>
-        public static readonly ChineseNumber SimplifiedUppercase = new ChineseNumber(false, true);
-
-        /// <summary>
-        /// Traditional Chinese uppercase number.
-        /// </summary>
-        public static readonly ChineseNumber Traditional = new ChineseNumber(true);
-
-        /// <summary>
-        /// Traditional Chinese uppercase number.
-        /// </summary>
-        public static readonly ChineseNumber TraditionalUppercase = new ChineseNumber(true, true);
+        public static readonly JapaneseNumber Default = new JapaneseNumber();
     }
 }

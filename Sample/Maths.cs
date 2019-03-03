@@ -52,6 +52,7 @@ namespace Trivial.Sample
             // English numbers.
             ConsoleLine.Write(ConsoleColor.Magenta, "English numbers");
             ConsoleLine.End();
+            ConsoleLine.WriteLine(Maths.EnglishNumber.Default.ToApproximationString(9876543210));
             WriteNumber(9876543210, Maths.EnglishNumber.Default);
             WriteNumber(2305843009213693951, Maths.EnglishNumber.Default);
             WriteNumber(1000000001, Maths.EnglishNumber.Default);
@@ -76,9 +77,10 @@ namespace Trivial.Sample
             WriteNumber(-6.7800e90, Maths.EnglishNumber.Default);
             ConsoleLine.End(true);
 
-            // Chinese numbers.
+            // Simplified Chinese numbers.
             ConsoleLine.Write(ConsoleColor.Magenta, "Simplified Chinese number");
             ConsoleLine.End();
+            ConsoleLine.WriteLine(Maths.ChineseNumber.Simplified.ToApproximationString(9876543210));
             WriteNumber(9876543210, Maths.ChineseNumber.Simplified);
             WriteNumber(2305843009213693951, Maths.ChineseNumber.Simplified);
             WriteNumber(1000000001, Maths.ChineseNumber.Simplified);
@@ -98,6 +100,7 @@ namespace Trivial.Sample
             WriteNumber(0, Maths.ChineseNumber.Simplified);
             WriteNumber(-12345, Maths.ChineseNumber.Simplified);
             WriteNumber(3.14159265, Maths.ChineseNumber.Simplified);
+            WriteNumber(4e24, Maths.ChineseNumber.Simplified);
             WriteNumber(1.23e45, Maths.ChineseNumber.Simplified);
             WriteNumber(-10001.4567, Maths.ChineseNumber.Simplified);
             WriteNumber(-6.7800e90, Maths.ChineseNumber.Simplified);
@@ -142,6 +145,35 @@ namespace Trivial.Sample
             WriteNumber(-6.7800e90, Maths.ChineseNumber.TraditionalUppercase);
             ConsoleLine.End(true);
 
+            // Japanese numbers.
+            ConsoleLine.Write(ConsoleColor.Magenta, "Japanese number");
+            ConsoleLine.End();
+            ConsoleLine.WriteLine(Maths.JapaneseNumber.Default.ToApproximationString(9876543210));
+            WriteNumber(9876543210, Maths.JapaneseNumber.Default);
+            WriteNumber(2305843009213693951, Maths.JapaneseNumber.Default);
+            WriteNumber(1000000001, Maths.JapaneseNumber.Default);
+            WriteNumber(10086, Maths.JapaneseNumber.Default);
+            WriteNumber(9000, Maths.JapaneseNumber.Default);
+            WriteNumber(2018, Maths.JapaneseNumber.Default);
+            WriteNumber(2004, Maths.JapaneseNumber.Default);
+            WriteNumber(1999, Maths.JapaneseNumber.Default);
+            WriteNumber(1024, Maths.JapaneseNumber.Default);
+            WriteNumber(1000, Maths.JapaneseNumber.Default);
+            WriteNumber(240, Maths.JapaneseNumber.Default);
+            WriteNumber(101, Maths.JapaneseNumber.Default);
+            WriteNumber(100, Maths.JapaneseNumber.Default);
+            WriteNumber(17, Maths.JapaneseNumber.Default);
+            WriteNumber(10, Maths.JapaneseNumber.Default);
+            WriteNumber(7, Maths.JapaneseNumber.Default);
+            WriteNumber(0, Maths.JapaneseNumber.Default);
+            WriteNumber(-12345, Maths.JapaneseNumber.Default);
+            WriteNumber(3.14159265, Maths.JapaneseNumber.Default);
+            WriteNumber(4e24, Maths.JapaneseNumber.Default);
+            WriteNumber(1.23e45, Maths.JapaneseNumber.Default);
+            WriteNumber(-10001.4567, Maths.JapaneseNumber.Default);
+            WriteNumber(-6.7800e90, Maths.JapaneseNumber.Default);
+            ConsoleLine.End(true);
+
             // Location
             var location = new Geography.Geolocation(new Geography.Latitude(148, 100, 17), new Geography.Longitude(120.5), 10);
             ConsoleLine.Write("{0} {1} {2}", location.Latitude.Type, location.Longitude.Type, location.Latitude.Value);
@@ -170,7 +202,7 @@ namespace Trivial.Sample
 
         private void WriteNumber(long value, Maths.INumberLocalization localInt)
         {
-            ConsoleLine.Write("{0}: {1}; {2}.", value, localInt.ToString(value), localInt.ToString(value, true));
+            ConsoleLine.Write("{0}: {1}; {2}.", value, localInt.ToString(value, false), localInt.ToString(value, true));
             ConsoleLine.End();
         }
 
