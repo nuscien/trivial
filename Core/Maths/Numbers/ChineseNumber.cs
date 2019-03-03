@@ -286,7 +286,7 @@ namespace Trivial.Maths
         public string ToApproximationString(long number, int accuracy = 1)
         {
             var str = ToApproximationString((ulong)Math.Abs(number), accuracy);
-            if (number < 0) return NegativeSign + str;
+            if (number < 0) return NumberSymbols.NegativeSign + str;
             return str;
         }
 

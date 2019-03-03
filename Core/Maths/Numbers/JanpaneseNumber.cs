@@ -10,19 +10,21 @@ namespace Trivial.Maths
     /// </summary>
     public class JapaneseNumber : IIntegerSample, INumberLocalization
     {
-        private static readonly string digits= "零一二三四五六七八九十百千万億兆京垓秭穰沟涧正载";
+        private static readonly string digits = "零一二三四五六七八九十百千万億兆京垓秭穣溝澗正載極";
 
         /// <summary>
         /// Initializes a new instance of the JapaneseNumber class.
         /// </summary>
-        protected internal JapaneseNumber()
+        /// <param name="kana">true if use Kana; otherwise, false.</param>
+        protected internal JapaneseNumber(bool kana = false)
         {
+            IsKana = kana;
         }
 
         /// <summary>
-        /// Gets a value inidcatint whether it is hiragana.
+        /// Gets a value inidcatint whether it is based on Kana or Chinese.
         /// </summary>
-        public bool IsHiragana { get; }
+        public bool IsKana { get; }
 
         /// <summary>
         /// Gets a value indicating whether it supports number 0.
@@ -37,7 +39,7 @@ namespace Trivial.Maths
         /// <summary>
         /// Gets the sign of negative.
         /// </summary>
-        public string NegativeSign => "负";
+        public string NegativeSign => "負";
 
         /// <summary>
         /// Gets the length of digit group.
@@ -47,52 +49,52 @@ namespace Trivial.Maths
         /// <summary>
         /// Number 0.
         /// </summary>
-        public string Zero => IsHiragana ? "れい" : "零";
+        public string Zero => IsKana ? "れい" : "零";
 
         /// <summary>
         /// Number 1.
         /// </summary>
-        public string One => IsHiragana ? "いち" : "一";
+        public string One => IsKana ? "いち" : "一";
 
         /// <summary>
         /// Number 2.
         /// </summary>
-        public string Two => IsHiragana ? "に" : "二";
+        public string Two => IsKana ? "に" : "二";
 
         /// <summary>
         /// Number 3.
         /// </summary>
-        public string Three => IsHiragana ? "さん" : "三";
+        public string Three => IsKana ? "さん" : "三";
 
         /// <summary>
         /// Number 4.
         /// </summary>
-        public string Four => IsHiragana ? "し" : "四";
+        public string Four => IsKana ? "し" : "四";
 
         /// <summary>
         /// Number 5.
         /// </summary>
-        public string Five => IsHiragana ? "ご" : "五";
+        public string Five => IsKana ? "ご" : "五";
 
         /// <summary>
         /// Number 6.
         /// </summary>
-        public string Six => IsHiragana ? "ろく" : "六";
+        public string Six => IsKana ? "ろく" : "六";
 
         /// <summary>
         /// Number 7.
         /// </summary>
-        public string Seven => IsHiragana ? "しち" : "七";
+        public string Seven => IsKana ? "しち" : "七";
 
         /// <summary>
         /// Number 8.
         /// </summary>
-        public string Eight => IsHiragana ? "はち" : "八";
+        public string Eight => IsKana ? "はち" : "八";
 
         /// <summary>
         /// Number 9.
         /// </summary>
-        public string Nine => IsHiragana ? "きゅう" : "九";
+        public string Nine => IsKana ? "きゅう" : "九";
 
         /// <summary>
         /// Number 10.
@@ -102,47 +104,47 @@ namespace Trivial.Maths
         /// <summary>
         /// Number 11.
         /// </summary>
-        public string Eleven => IsHiragana ? "じゅういち" : "十一";
+        public string Eleven => IsKana ? "じゅういち" : "十一";
 
         /// <summary>
         /// Number 12.
         /// </summary>
-        public string Twelve => IsHiragana ? "じゅうに" : "十二";
+        public string Twelve => IsKana ? "じゅうに" : "十二";
 
         /// <summary>
         /// Number 13.
         /// </summary>
-        public string Thirteen => IsHiragana ? "じゅうさん" : "十三";
+        public string Thirteen => IsKana ? "じゅうさん" : "十三";
 
         /// <summary>
         /// Number 14.
         /// </summary>
-        public string Fourteen => IsHiragana ? "じゅうし" : "十四";
+        public string Fourteen => IsKana ? "じゅうし" : "十四";
 
         /// <summary>
         /// Number 15.
         /// </summary>
-        public string Fifteen => IsHiragana ? "じゅうご" : "十五";
+        public string Fifteen => IsKana ? "じゅうご" : "十五";
 
         /// <summary>
         /// Number 16.
         /// </summary>
-        public string Sixteen => IsHiragana ? "じゅうろく" : "十六";
+        public string Sixteen => IsKana ? "じゅうろく" : "十六";
 
         /// <summary>
         /// Number 17.
         /// </summary>
-        public string Seventeen => IsHiragana ? "じゅうしち" : "十七";
+        public string Seventeen => IsKana ? "じゅうしち" : "十七";
 
         /// <summary>
         /// Number 18.
         /// </summary>
-        public string Eighteen => IsHiragana ? "じゅうはち" : "十八";
+        public string Eighteen => IsKana ? "じゅうはち" : "十八";
 
         /// <summary>
         /// Number 19.
         /// </summary>
-        public string Nineteen => IsHiragana ? "じゅうきゅう" : "十九";
+        public string Nineteen => IsKana ? "じゅうきゅう" : "十九";
 
         /// <summary>
         /// Number 20.
@@ -232,32 +234,32 @@ namespace Trivial.Maths
         /// <summary>
         /// The order of magnitude 10e1.
         /// </summary>
-        public string TenClass => IsHiragana ? "じゅう" : "十";
+        public string TenClass => IsKana ? "じゅう" : "十";
 
         /// <summary>
         /// The order of magnitude 10e2.
         /// </summary>
-        public string HundredClass => IsHiragana ? "ひゃく" : "百";
+        public string HundredClass => IsKana ? "ひゃく" : "百";
 
         /// <summary>
         /// The order of magnitude 10e3.
         /// </summary>
-        public string ThousandClass => IsHiragana ? "せん" : "千";
+        public string ThousandClass => IsKana ? "せん" : "千";
 
         /// <summary>
         /// The order of magnitude 10e4.
         /// </summary>
-        public string TenThousandClass => IsHiragana ? "おく" : "万";
+        public string TenThousandClass => IsKana ? "まん" : "万";
 
         /// <summary>
         /// The order of magnitude 10e8.
         /// </summary>
-        public string HundredMillionClass => IsHiragana ? "おく" : "億";
+        public string HundredMillionClass => IsKana ? "おく" : "億";
 
         /// <summary>
         /// The order of magnitude 10e12.
         /// </summary>
-        public string TrillionClass => IsHiragana ? "ちょう" : "兆";
+        public string TrillionClass => IsKana ? "ちょう" : "兆";
 
         /// <summary>
         /// Converts a number to the string of approximation.
@@ -269,7 +271,7 @@ namespace Trivial.Maths
         public string ToApproximationString(long number, int accuracy = 1)
         {
             var str = ToApproximationString((ulong)Math.Abs(number), accuracy);
-            if (number < 0) return NegativeSign + str;
+            if (number < 0) return NumberSymbols.NegativeSign + str;
             return str;
         }
 
@@ -284,14 +286,14 @@ namespace Trivial.Maths
         {
             if (accuracy < 0 || accuracy > 32) throw new ArgumentOutOfRangeException(nameof(accuracy));
             var levels = number.ToString(CultureInfo.InvariantCulture).Length / GroupLength;
-            if (levels < 1) return number.ToString();
+            if (levels < 1) return ConvertString(number.ToString());
             var len = levels * GroupLength;
             var format = new StringBuilder("0.");
             format.Append('0', Math.Min(accuracy, len));
             var num = new StringBuilder((number * 1.0 / Math.Pow(10, len)).ToString(format.ToString(), CultureInfo.InvariantCulture));
             if ((number / Math.Pow(10, len)).ToString(CultureInfo.InvariantCulture).Length == 4) num.Insert(1, ',');
             var digits = ToString();
-            if (levels > 11)
+            if (levels > 12)
             {
                 num.AppendFormat("×10^{0}", levels);
             }
@@ -300,7 +302,7 @@ namespace Trivial.Maths
                 num.Append(digits[12 + levels]);
             }
 
-            return num.ToString();
+            return ConvertString(num);
         }
 
         /// <summary>
@@ -342,11 +344,11 @@ namespace Trivial.Maths
                     str.Append(digits[int.Parse(item.ToString())]);
                 }
 
-                return str.ToString();
+                return ConvertString(str);
             }
 
-            if (number <= 10) return digits[(int)number].ToString();
-            if (number < 20) return TenClass + digits[(int)number - 10].ToString();
+            if (number <= 10) return ConvertString(digits[(int)number].ToString());
+            if (number < 20) return ConvertString(TenClass + digits[(int)number - 10].ToString());
             var append = 4 - num.Length % 4;
             if (append == 4) append = 0;
             for (var i = 0; i < append; i++)
@@ -372,7 +374,7 @@ namespace Trivial.Maths
                 str.Append(digits[12 + classPos]);
             }
 
-            return str.ToString().Replace("一十", "十");
+            return ConvertString(str.ToString().Replace("一十", "十"));
         }
 
         /// <summary>
@@ -406,7 +408,8 @@ namespace Trivial.Maths
                 str.Append("点");
                 foreach (var item in fractionalPart)
                 {
-                    str.Append(digits[int.Parse(item.ToString())]);
+                    if (IsKana) str.Append(ConvertString(digits[int.Parse(item.ToString())].ToString()));
+                    else str.Append(digits[int.Parse(item.ToString())]);
                 }
             }
 
@@ -414,7 +417,8 @@ namespace Trivial.Maths
             {
                 if (exponentialPart % 4 == 0 && exponentialPart < 45)
                 {
-                    str.Append(digits[12 + exponentialPart / 4]);
+                    if (IsKana) str.Append(ConvertString(digits[12 + exponentialPart / 4].ToString()));
+                    else str.Append(digits[12 + exponentialPart / 4]);
                 }
                 else
                 {
@@ -432,9 +436,50 @@ namespace Trivial.Maths
             return str.ToString();
         }
 
+        private string ConvertString(StringBuilder value)
+        {
+            return ConvertString(value.ToString());
+        }
+
+        private string ConvertString(string value)
+        {
+            if (!IsKana) return value;
+            return value
+                .Replace("零", "れい")
+                .Replace("一", "いち")
+                .Replace("二", "に")
+                .Replace("三", "さん")
+                .Replace("四", "し")
+                .Replace("五", "ご")
+                .Replace("六", "ろく")
+                .Replace("七", "しち")
+                .Replace("八", "はち")
+                .Replace("九", "きゅう")
+                .Replace("十", "じゅう")
+                .Replace("百", "ひゃく")
+                .Replace("千", "せん")
+                .Replace("万", "まん")
+                .Replace("億", "おく")
+                .Replace("兆", "ちょう")
+                .Replace("京", "けい")
+                .Replace("垓", "がい")
+                .Replace("秭", "し")
+                .Replace("穣", "じょう")
+                .Replace("溝", "こう")
+                .Replace("澗", "かん")
+                .Replace("正", "せい")
+                .Replace("載", "さい")
+                .Replace("極", "ごく");
+        }
+
         /// <summary>
-        /// Simplified Chinese number.
+        /// Japanese number.
         /// </summary>
         public static readonly JapaneseNumber Default = new JapaneseNumber();
+
+        /// <summary>
+        /// Japanese Kana number.
+        /// </summary>
+        public static readonly JapaneseNumber Kana = new JapaneseNumber(true);
     }
 }

@@ -174,6 +174,35 @@ namespace Trivial.Sample
             WriteNumber(-6.7800e90, Maths.JapaneseNumber.Default);
             ConsoleLine.End(true);
 
+            // Japanese Kana numbers.
+            ConsoleLine.Write(ConsoleColor.Magenta, "Japanese Kana number");
+            ConsoleLine.End();
+            ConsoleLine.WriteLine(Maths.JapaneseNumber.Kana.ToApproximationString(9876543210));
+            WriteNumber(9876543210, Maths.JapaneseNumber.Kana);
+            WriteNumber(2305843009213693951, Maths.JapaneseNumber.Kana);
+            WriteNumber(1000000001, Maths.JapaneseNumber.Kana);
+            WriteNumber(10086, Maths.JapaneseNumber.Kana);
+            WriteNumber(9000, Maths.JapaneseNumber.Kana);
+            WriteNumber(2018, Maths.JapaneseNumber.Kana);
+            WriteNumber(2004, Maths.JapaneseNumber.Kana);
+            WriteNumber(1999, Maths.JapaneseNumber.Kana);
+            WriteNumber(1024, Maths.JapaneseNumber.Kana);
+            WriteNumber(1000, Maths.JapaneseNumber.Kana);
+            WriteNumber(240, Maths.JapaneseNumber.Kana);
+            WriteNumber(101, Maths.JapaneseNumber.Kana);
+            WriteNumber(100, Maths.JapaneseNumber.Kana);
+            WriteNumber(17, Maths.JapaneseNumber.Kana);
+            WriteNumber(10, Maths.JapaneseNumber.Kana);
+            WriteNumber(7, Maths.JapaneseNumber.Kana);
+            WriteNumber(0, Maths.JapaneseNumber.Kana);
+            WriteNumber(-12345, Maths.JapaneseNumber.Kana);
+            WriteNumber(3.14159265, Maths.JapaneseNumber.Kana);
+            WriteNumber(4e24, Maths.JapaneseNumber.Kana);
+            WriteNumber(1.23e45, Maths.JapaneseNumber.Kana);
+            WriteNumber(-10001.4567, Maths.JapaneseNumber.Kana);
+            WriteNumber(-6.7800e90, Maths.JapaneseNumber.Kana);
+            ConsoleLine.End(true);
+
             // Location
             var location = new Geography.Geolocation(new Geography.Latitude(148, 100, 17), new Geography.Longitude(120.5), 10);
             ConsoleLine.Write("{0} {1} {2}", location.Latitude.Type, location.Longitude.Type, location.Latitude.Value);
