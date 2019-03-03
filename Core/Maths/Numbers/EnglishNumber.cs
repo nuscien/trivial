@@ -527,6 +527,9 @@ namespace Trivial.Maths
                         str.Append(" million");
                         break;
                     case 9:
+                        str.Append(" billion");
+                        break;
+                    case 12:
                         str.Append(" trillion");
                         break;
                     default:
