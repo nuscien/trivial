@@ -14,7 +14,7 @@ namespace Trivial.Collection
     public class KeyValuePairs<TKey, TValue> : List<KeyValuePair<TKey, TValue>> where TKey : IComparable<TKey>
     {
         /// <summary>
-        /// Adds an object to the end of the key value pairs.
+        /// Adds a key and a value to the end of the key value pairs.
         /// </summary>
         /// <param name="key">The key.</param>
         /// <param name="value">The value.</param>
@@ -76,6 +76,18 @@ namespace Trivial.Collection
         }
 
         /// <summary>
+        /// Gets the query value by a specific key.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <param name="index">The index of the value for multiple values.</param>
+        /// <returns>The query value. The first one for multiple values.</returns>
+        /// <exception cref="IndexOutOfRangeException">index is less than 0, or is equals to or greater than the length of the values of the specific key.</exception>
+        public TValue GetValue(TKey key, int index)
+        {
+            return Values(key).ToList()[index];
+        }
+
+        /// <summary>
         /// Determines whether the instance contains the specified
         /// </summary>
         /// <param name="key">The key to locate in the instance.</param>
@@ -117,6 +129,53 @@ namespace Trivial.Collection
         }
 
         /// <summary>
+        /// Searches for the specified key and returns the zero-based index of the first occurrence within the entire key value pairs.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        public int IndexOf(TKey key)
+        {
+            var i = -1;
+            if (key == null)
+            {
+                foreach (var item in this)
+                {
+                    i++;
+                    if (item.Key == null) return i;
+                }
+            }
+            else
+            {
+                foreach (var item in this)
+                {
+                    i++;
+                    if (key.Equals(item.Key)) return i;
+                }
+            }
+
+            return i;
+        }
+
+        /// <summary>
+        /// Sets a key value.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <param name="value">The value.</param>
+        /// <param name="insertAtLast">true if insert at last; otherwise, false.</param>
+        public void SetValue(TKey key, TValue value, bool insertAtLast = false)
+        {
+            var i = insertAtLast ? -1 : IndexOf(key);
+            if (i >= 0)
+            {
+                Remove(key);
+                Insert(i, key, value);
+            }
+            else
+            {
+                Add(key, value, true);
+            }
+        }
+
+        /// <summary>
         /// Groups the key value pairs.
         /// </summary>
         /// <returns>The groups.</returns>
@@ -146,9 +205,100 @@ namespace Trivial.Collection
         public virtual string EqualSign => "=";
 
         /// <summary>
-        /// Gets the separator.
+        /// Gets the separator which is used between each key values.
         /// </summary>
         public virtual string Separator => "&";
+
+        /// <summary>
+        /// Gets the separator which is used between each values for a key if has more than one.
+        /// </summary>
+        public virtual string ValueSeparator => ",";
+
+        /// <summary>
+        /// Gets or sets the value of the specific key.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <returns>A value of the specific key.</returns>
+        public string this[string key]
+        {
+            get
+            {
+                return GetValue(key);
+            }
+
+            set
+            {
+                SetValue(key, value);
+            }
+        }
+
+        /// <summary>
+        /// Gets the query value by a specific key.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <param name="separator">The optional string to use as a separator is included in the returned string only if it has more than one value.</param>
+        /// <returns>The query value.</returns>
+        public string GetValue(string key, string separator = null)
+        {
+            return string.Join(separator ?? ValueSeparator ?? string.Empty, Values(key));
+        }
+
+        /// <summary>
+        /// Gets the query value by a specific key.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <param name="ignoreEmpty">true if ignore empty; otherwise, false.</param>
+        /// <returns>The query value.</returns>
+        public string GetFirstValue(string key, bool ignoreEmpty = false)
+        {
+            return Values(key).Where(item => !string.IsNullOrWhiteSpace(item)).FirstOrDefault();
+        }
+
+        /// <summary>
+        /// Gets the query value by a specific key.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <param name="ignoreEmpty">true if ignore empty; otherwise, false.</param>
+        /// <returns>The query value. The last one for multiple values..</returns>
+        public string GetLastValue(string key, bool ignoreEmpty = false)
+        {
+            return Values(key).Where(item => !string.IsNullOrWhiteSpace(item)).LastOrDefault();
+        }
+
+        /// <summary>
+        /// Gets the query value as an interger by a specific key.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <returns>The query value as Int32.</returns>
+        public int? TryGetInt32Value(string key)
+        {
+            var v = GetFirstValue(key, true);
+            if (v != null && int.TryParse(v, out int result)) return result;
+            return null;
+        }
+
+        /// <summary>
+        /// Gets the query value as an enumeration by a specific key.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <param name="ignoreCase">true to ignore case; false to regard case; null to use default settings.</param>
+        /// <returns>The query value as Enum.</returns>
+        /// <exception cref="ArgumentException">TEnum is not an enumeration type.</exception>
+        public TEnum? TryGetEnumValue<TEnum>(string key, bool? ignoreCase = null) where TEnum : struct
+        {
+            var v = GetFirstValue(key, true);
+            if (v == null) return null;
+            if (ignoreCase.HasValue)
+            {
+                if (Enum.TryParse(v, ignoreCase.Value, out TEnum result)) return result;
+            }
+            else
+            {
+                if (Enum.TryParse(v, out TEnum result)) return result;
+            }
+
+            return null;
+        }
 
         /// <summary>
         /// Encodes the key.
