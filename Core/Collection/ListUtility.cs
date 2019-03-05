@@ -217,7 +217,7 @@ namespace Trivial.Collection
         /// </summary>
         /// <param name="list">The key value pairs.</param>
         /// <param name="key">The key to test.</param>
-        public static IEnumerable<int> IndexOfAll<TKey, TValue>(this List<KeyValuePair<TKey, TValue>> list, TKey key)
+        public static IEnumerable<int> IndexOfAll<TKey, TValue>(this IEnumerable<KeyValuePair<TKey, TValue>> list, TKey key)
         {
             var i = -1;
             if (key == null)
@@ -246,7 +246,7 @@ namespace Trivial.Collection
         /// <param name="value">The value to test.</param>
         /// <param name="index">The zero-based starting index of the search. 0 (zero) is valid in an empty list.</param>
         /// <param name="count">The number of elements in the section to search.</param>
-        public static IEnumerable<int> IndexOfAll<TKey, TValue>(this List<KeyValuePair<TKey, TValue>> list, TKey key, TValue value, int index = 0, int? count = null)
+        public static IEnumerable<int> IndexOfAll<TKey, TValue>(this IEnumerable<KeyValuePair<TKey, TValue>> list, TKey key, TValue value, int index = 0, int? count = null)
         {
             Func<KeyValuePair<TKey, TValue>, bool> test;
             if (key == null && value == null) test = item => item.Key == null && item.Value == null;
