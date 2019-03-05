@@ -5,6 +5,7 @@ using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Web;
+using Trivial.Collection;
 
 namespace Trivial.Net
 {
@@ -282,8 +283,8 @@ namespace Trivial.Net
             foreach (var item in arr)
             {
                 pos = item.IndexOf("=");
-                if (pos < 0) Add(HttpUtility.UrlDecode(item, encoding), string.Empty);
-                else Add(HttpUtility.UrlDecode(item.Substring(0, pos), encoding), HttpUtility.UrlDecode(item.Substring(pos + 1), encoding));
+                if (pos < 0) ListUtility.Add(this, HttpUtility.UrlDecode(item, encoding), string.Empty);
+                else ListUtility.Add(this, HttpUtility.UrlDecode(item.Substring(0, pos), encoding), HttpUtility.UrlDecode(item.Substring(pos + 1), encoding));
             }
 
             return arr.Length;
