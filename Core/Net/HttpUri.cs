@@ -324,7 +324,19 @@ namespace Trivial.Net
         /// <returns>A query string.</returns>
         public string ToString(string url, Encoding encoding = null)
         {
-            return url + (url.IndexOf("?") >= 0 ? "&" : "?") + ToString(encoding);
+            var qIndex = url.IndexOf("?");
+            var str = new StringBuilder(url);
+            if (qIndex >= 0)
+            {
+                if (qIndex < url.Length - 1) str.Append("&");
+            }
+            else
+            {
+                str.Append("?");
+            }
+
+            str.Append(ToString(encoding));
+            return str.ToString();
         }
 
         /// <summary>

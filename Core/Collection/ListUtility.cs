@@ -20,6 +20,7 @@ namespace Trivial.Collection
         /// <param name="clearOthers">true if clear the others of the property before adding; otherwise, false.</param>
         public static void Add<TKey, TValue>(this List<KeyValuePair<TKey, TValue>> list, TKey key, TValue value, bool clearOthers = false)
         {
+            if (list == null) throw new ArgumentNullException(nameof(list), "list should not be null.");
             if (clearOthers) list.Remove(key);
             list.Add(new KeyValuePair<TKey, TValue>(key, value));
         }
@@ -33,6 +34,7 @@ namespace Trivial.Collection
         /// <param name="value">The value.</param>
         public static void Insert<TKey, TValue>(this IList<KeyValuePair<TKey, TValue>> list, int index, TKey key, TValue value)
         {
+            if (list == null) throw new ArgumentNullException(nameof(list), "list should not be null.");
             list.Insert(index, new KeyValuePair<TKey, TValue>(key, value));
         }
 
@@ -43,6 +45,7 @@ namespace Trivial.Collection
         /// <returns>The keys.</returns>
         public static IEnumerable<TKey> Keys<TKey, TValue>(this IEnumerable<KeyValuePair<TKey, TValue>> list)
         {
+            if (list == null) throw new ArgumentNullException(nameof(list), "list should not be null.");
             return list.Select(item => item.Key).Distinct();
         }
 
@@ -54,6 +57,7 @@ namespace Trivial.Collection
         /// <returns>The values.</returns>
         public static IEnumerable<TValue> Values<TKey, TValue>(this IEnumerable<KeyValuePair<TKey, TValue>> list, TKey key)
         {
+            if (list == null) throw new ArgumentNullException(nameof(list), "list should not be null.");
             return key != null ? list.Where(item => key.Equals(item.Key)).Select(item => item.Value) : list.Where(item => item.Key == null).Select(item => item.Value);
         }
 
@@ -67,6 +71,7 @@ namespace Trivial.Collection
         /// <returns>true if has; otherwise, false.</returns>
         public static bool TryGetValue<TKey, TValue>(this IList<KeyValuePair<TKey, TValue>> list, TKey key, int index, out TValue value)
         {
+            if (list == null) throw new ArgumentNullException(nameof(list), "list should not be null.");
             var col = list.Values(key).ToList();
             if (list.Count <= index)
             {
@@ -79,16 +84,30 @@ namespace Trivial.Collection
         }
 
         /// <summary>
-        /// Gets the query value by a specific key.
+        /// Gets the value by a specific key.
         /// </summary>
         /// <param name="list">The key value pairs.</param>
         /// <param name="key">The key.</param>
         /// <param name="index">The index of the value for multiple values.</param>
-        /// <returns>The query value. The first one for multiple values.</returns>
+        /// <returns>The value. The first one for multiple values.</returns>
         /// <exception cref="IndexOutOfRangeException">index is less than 0, or is equals to or greater than the length of the values of the specific key.</exception>
         public static TValue GetValue<TKey, TValue>(this IEnumerable<KeyValuePair<TKey, TValue>> list, TKey key, int index)
         {
             return Values(list, key).ToList()[index];
+        }
+
+        /// <summary>
+        /// Gets the value by a specific key.
+        /// </summary>
+        /// <param name="list">The key value pairs.</param>
+        /// <param name="key">The key.</param>
+        /// <returns>The value. The first one for multiple values.</returns>
+        /// <exception cref="IndexOutOfRangeException">index is less than 0, or is equals to or greater than the length of the values of the specific key.</exception>
+        public static IGrouping<TKey, TValue> Get<TKey, TValue>(this IEnumerable<KeyValuePair<TKey, TValue>> list, TKey key)
+        {
+            if (list == null) throw new ArgumentNullException(nameof(list), "list should not be null.");
+            list = key == null ? list.Where(item => item.Key == null) : list.Where(item => key.Equals(item.Key));
+            return list.GroupBy(item => item.Key, item => item.Value).SingleOrDefault();
         }
 
         /// <summary>
@@ -99,6 +118,7 @@ namespace Trivial.Collection
         /// <returns>true if the instance contains an element with the specified key; otherwise, false.</returns>
         public static bool ContainsKey<TKey, TValue>(this IEnumerable<KeyValuePair<TKey, TValue>> list, TKey key)
         {
+            if (list == null) throw new ArgumentNullException(nameof(list), "list should not be null.");
             if (key == null)
             {
                 foreach (var item in list)
@@ -125,6 +145,7 @@ namespace Trivial.Collection
         /// <returns>The number of elements removed from the key value pairs.</returns>
         public static int Remove<TKey, TValue>(this List<KeyValuePair<TKey, TValue>> list, params TKey[] keys)
         {
+            if (list == null) throw new ArgumentNullException(nameof(list), "list should not be null.");
             var count = 0;
             foreach (var key in keys)
             {
@@ -135,12 +156,24 @@ namespace Trivial.Collection
         }
 
         /// <summary>
+        /// Searches for the specified key and returns the zero-based index of the last occurrence within the entire key value pairs.
+        /// </summary>
+        /// <param name="list">The key value pairs.</param>
+        /// <param name="key">The key.</param>
+        public static int LastIndexOf<TKey, TValue>(this IEnumerable<KeyValuePair<TKey, TValue>> list, TKey key)
+        {
+            if (list == null) throw new ArgumentNullException(nameof(list), "list should not be null.");
+            return IndexOf(list.Reverse(), key);
+        }
+
+        /// <summary>
         /// Searches for the specified key and returns the zero-based index of the first occurrence within the entire key value pairs.
         /// </summary>
         /// <param name="list">The key value pairs.</param>
         /// <param name="key">The key.</param>
         public static int IndexOf<TKey, TValue>(this IEnumerable<KeyValuePair<TKey, TValue>> list, TKey key)
         {
+            if (list == null) throw new ArgumentNullException(nameof(list), "list should not be null.");
             var i = -1;
             if (key == null)
             {
@@ -169,8 +202,9 @@ namespace Trivial.Collection
         /// <param name="test">The object to test.</param>
         /// <param name="index">The zero-based starting index of the search. 0 (zero) is valid in an empty list.</param>
         /// <param name="count">The number of elements in the section to search.</param>
-        public static IEnumerable<int> IndexOfAll<T>(this IEnumerable<T> list, T test, int index = 0, int? count = null)
+        public static IEnumerable<int> IndexesOf<T>(this IEnumerable<T> list, T test, int index = 0, int? count = null)
         {
+            if (list == null) throw new ArgumentNullException(nameof(list), "list should not be null.");
             if (index > 0) list = list.Skip(index);
             if (count.HasValue) list = list.Take(count.Value);
             var i = -1;
@@ -199,9 +233,10 @@ namespace Trivial.Collection
         /// <param name="test">The function to test.</param>
         /// <param name="index">The zero-based starting index of the search. 0 (zero) is valid in an empty list.</param>
         /// <param name="count">The number of elements in the section to search.</param>
-        public static IEnumerable<int> IndexOfAll<T>(this IEnumerable<T> list, Func<T, bool> test, int index = 0, int? count = null)
+        public static IEnumerable<int> IndexesOf<T>(this IEnumerable<T> list, Func<T, bool> test, int index = 0, int? count = null)
         {
-            if (test == null) throw new ArgumentNullException(nameof(test));
+            if (list == null) throw new ArgumentNullException(nameof(list), "list should not be null.");
+            if (test == null) throw new ArgumentNullException(nameof(test), "test should be a function to test.");
             if (index > 0) list = list.Skip(index);
             if (count.HasValue) list = list.Take(count.Value);
             var i = -1;
@@ -217,8 +252,9 @@ namespace Trivial.Collection
         /// </summary>
         /// <param name="list">The key value pairs.</param>
         /// <param name="key">The key to test.</param>
-        public static IEnumerable<int> IndexOfAll<TKey, TValue>(this IEnumerable<KeyValuePair<TKey, TValue>> list, TKey key)
+        public static IEnumerable<int> IndexesOf<TKey, TValue>(this IEnumerable<KeyValuePair<TKey, TValue>> list, TKey key)
         {
+            if (list == null) throw new ArgumentNullException(nameof(list), "list should not be null.");
             var i = -1;
             if (key == null)
             {
@@ -246,14 +282,14 @@ namespace Trivial.Collection
         /// <param name="value">The value to test.</param>
         /// <param name="index">The zero-based starting index of the search. 0 (zero) is valid in an empty list.</param>
         /// <param name="count">The number of elements in the section to search.</param>
-        public static IEnumerable<int> IndexOfAll<TKey, TValue>(this IEnumerable<KeyValuePair<TKey, TValue>> list, TKey key, TValue value, int index = 0, int? count = null)
+        public static IEnumerable<int> IndexesOf<TKey, TValue>(this IEnumerable<KeyValuePair<TKey, TValue>> list, TKey key, TValue value, int index = 0, int? count = null)
         {
             Func<KeyValuePair<TKey, TValue>, bool> test;
             if (key == null && value == null) test = item => item.Key == null && item.Value == null;
             else if (key != null && value == null) test = item => key.Equals(item.Key) && item.Value == null;
             else if (key == null && value != null) test = item => item.Key == null && value.Equals(item.Value);
             else test = item => key.Equals(item.Key) && value.Equals(item.Value);
-            return IndexOfAll(list, test, index, count);
+            return IndexesOf(list, test, index, count);
         }
 
         /// <summary>
@@ -263,8 +299,9 @@ namespace Trivial.Collection
         /// <param name="key">The key.</param>
         /// <param name="value">The value.</param>
         /// <param name="insertAtLast">true if insert at last; otherwise, false.</param>
-        public static void SetValue<TKey, TValue>(this List<KeyValuePair<TKey, TValue>> list, TKey key, TValue value, bool insertAtLast = false)
+        public static void Set<TKey, TValue>(this List<KeyValuePair<TKey, TValue>> list, TKey key, TValue value, bool insertAtLast = false)
         {
+            if (list == null) throw new ArgumentNullException(nameof(list), "list should not be null.");
             var i = insertAtLast ? -1 : list.IndexOf(key);
             if (i >= 0)
             {
@@ -284,6 +321,7 @@ namespace Trivial.Collection
         /// <returns>The groups.</returns>
         public static IEnumerable<IGrouping<TKey, TValue>> ToGroups<TKey, TValue>(this IEnumerable<KeyValuePair<TKey, TValue>> list)
         {
+            if (list == null) throw new ArgumentNullException(nameof(list), "list should not be null.");
             return list.GroupBy(item => item.Key, item => item.Value);
         }
 

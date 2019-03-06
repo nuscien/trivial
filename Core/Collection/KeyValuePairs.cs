@@ -40,7 +40,7 @@ namespace Trivial.Collection
 
             set
             {
-                ListUtility.SetValue(this, key, value);
+                ListUtility.Set(this, key, value);
             }
         }
 
