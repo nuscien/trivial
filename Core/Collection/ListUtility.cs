@@ -55,10 +55,22 @@ namespace Trivial.Collection
         /// <param name="list">The key value pairs.</param>
         /// <param name="key">The key.</param>
         /// <returns>The values.</returns>
-        public static IEnumerable<TValue> Values<TKey, TValue>(this IEnumerable<KeyValuePair<TKey, TValue>> list, TKey key)
+        public static IEnumerable<TValue> GetValues<TKey, TValue>(this IEnumerable<KeyValuePair<TKey, TValue>> list, TKey key)
         {
             if (list == null) throw new ArgumentNullException(nameof(list), "list should not be null.");
             return key != null ? list.Where(item => key.Equals(item.Key)).Select(item => item.Value) : list.Where(item => item.Key == null).Select(item => item.Value);
+        }
+
+        /// <summary>
+        /// Gets the value items by a specific key.
+        /// </summary>
+        /// <param name="list">The key value items pairs.</param>
+        /// <param name="key">The key.</param>
+        /// <returns>The value items.</returns>
+        public static IEnumerable<TValue> GetValueItems<TKey, TValue, TList>(this IEnumerable<KeyValuePair<TKey, TList>> list, TKey key) where TList : IEnumerable<TValue>
+        {
+            if (list == null) throw new ArgumentNullException(nameof(list), "list should not be null.");
+            return key != null ? list.Where(item => key.Equals(item.Key)).SelectMany(item => item.Value) : list.Where(item => item.Key == null).SelectMany(item => item.Value);
         }
 
         /// <summary>
@@ -72,7 +84,7 @@ namespace Trivial.Collection
         public static bool TryGetValue<TKey, TValue>(this IList<KeyValuePair<TKey, TValue>> list, TKey key, int index, out TValue value)
         {
             if (list == null) throw new ArgumentNullException(nameof(list), "list should not be null.");
-            var col = list.Values(key).ToList();
+            var col = list.GetValues(key).ToList();
             if (list.Count <= index)
             {
                 value = default;
@@ -93,7 +105,7 @@ namespace Trivial.Collection
         /// <exception cref="IndexOutOfRangeException">index is less than 0, or is equals to or greater than the length of the values of the specific key.</exception>
         public static TValue GetValue<TKey, TValue>(this IEnumerable<KeyValuePair<TKey, TValue>> list, TKey key, int index)
         {
-            return Values(list, key).ToList()[index];
+            return GetValues(list, key).ToList()[index];
         }
 
         /// <summary>

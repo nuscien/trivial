@@ -52,7 +52,7 @@ namespace Trivial.Collection
         /// <returns>The query value.</returns>
         public string GetValue(string key, string separator = null)
         {
-            return string.Join(separator ?? ValueSeparator ?? string.Empty, ListUtility.Values(this, key));
+            return string.Join(separator ?? ValueSeparator ?? string.Empty, ListUtility.GetValues(this, key));
         }
 
         /// <summary>
@@ -63,7 +63,7 @@ namespace Trivial.Collection
         /// <returns>The query value.</returns>
         public string GetFirstValue(string key, bool ignoreEmpty = false)
         {
-            return ListUtility.Values(this, key).Where(item => !string.IsNullOrWhiteSpace(item)).FirstOrDefault();
+            return ListUtility.GetValues(this, key).Where(item => !string.IsNullOrWhiteSpace(item)).FirstOrDefault();
         }
 
         /// <summary>
@@ -74,7 +74,7 @@ namespace Trivial.Collection
         /// <returns>The query value. The last one for multiple values..</returns>
         public string GetLastValue(string key, bool ignoreEmpty = false)
         {
-            return ListUtility.Values(this, key).Where(item => !string.IsNullOrWhiteSpace(item)).LastOrDefault();
+            return ListUtility.GetValues(this, key).Where(item => !string.IsNullOrWhiteSpace(item)).LastOrDefault();
         }
 
         /// <summary>

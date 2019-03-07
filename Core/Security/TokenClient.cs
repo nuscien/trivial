@@ -5,6 +5,8 @@ using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Security;
+using System.Security.Cryptography;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Trivial.Data;
@@ -400,6 +402,141 @@ namespace Trivial.Security
             LatestVisitDate = DateTime.Now;
             TokenChanged?.Invoke(this, new ChangeEventArgs<TokenInfo>(oldToken, Token, nameof(Token), true));
             return Token;
+        }
+    }
+
+    /// <summary>
+    /// The token exchange based on RSA.
+    /// </summary>
+    public class RsaTokenExchange
+    {
+        /// <summary>
+        /// The RSA crypto service provider.
+        /// </summary>
+        private RSACryptoServiceProvider crypto;
+
+        /// <summary>
+        /// Gets or sets the entity identifier.
+        /// </summary>
+        public string EntityId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the access token.
+        /// </summary>
+        public SecureString AccessToken { get; set; }
+
+        /// <summary>
+        /// Gets or sets the encryption key for token.
+        /// </summary>
+        public string EncryptKey { get; set; }
+
+        /// <summary>
+        /// Gets the public key.
+        /// </summary>
+        public string PublicKey { get; private set; }
+
+        /// <summary>
+        /// Gets a value indicating whether there is an RSA crypto service provider.
+        /// </summary>
+        public bool IsSecure => crypto != null;
+
+        /// <summary>
+        /// Gets a value indicating whether there is an access token.
+        /// </summary>
+        public bool HasToken => AccessToken != null && AccessToken.Length > 0;
+
+        /// <summary>
+        /// Sets a specific crypto service provider.
+        /// </summary>
+        /// <param name="rsa">The new crypto service provider.</param>
+        /// <param name="syncEncryptKey">true if set the token encryption key from the crypto service provider; otherwise, false.</param>
+        public void SetCrypto(RSACryptoServiceProvider rsa, bool syncEncryptKey = false)
+        {
+            crypto = rsa;
+            if (rsa == null)
+            {
+                PublicKey = null;
+                if (syncEncryptKey) EncryptKey = null;
+                return;
+            }
+
+            PublicKey = rsa.ToXmlString(false);
+            if (syncEncryptKey) EncryptKey = PublicKey;
+        }
+
+        /// <summary>
+        /// Creates a new crypto service provider.
+        /// </summary>
+        /// <param name="syncEncryptKey">true if set the token encryption key from the crypto service provider; otherwise, false.</param>
+        public void CreateCrypto(bool syncEncryptKey = false)
+        {
+            SetCrypto(new RSACryptoServiceProvider(), syncEncryptKey);
+        }
+
+        /// <summary>
+        /// Decrypts the token and fills into this token exchange instance.
+        /// </summary>
+        /// <param name="tokenEncrypted">The new token encrypted.</param>
+        /// <param name="supportNoCrypto">true if the token is not encrypted if there is no crypto service provider; otherwise, false.</param>
+        public void DecryptToken(string tokenEncrypted, bool supportNoCrypto = false)
+        {
+            if (string.IsNullOrWhiteSpace(tokenEncrypted))
+            {
+                AccessToken = null;
+                return;
+            }
+
+            var rsa = crypto;
+            if (rsa == null && supportNoCrypto)
+            {
+                AccessToken = tokenEncrypted.ToSecure();
+                return;
+            }
+
+            var plain = rsa.Decrypt(Convert.FromBase64String(tokenEncrypted), false);
+            AccessToken = Encoding.UTF8.GetString(plain).ToSecure();
+        }
+
+        /// <summary>
+        /// Sets a new token.
+        /// </summary>
+        /// <param name="token">The new token.</param>
+        public void SetToken(string token)
+        {
+            AccessToken = token?.ToSecure();
+        }
+
+        /// <summary>
+        /// Sets a new token.
+        /// </summary>
+        /// <param name="token">The new token.</param>
+        public void SetToken(TokenInfo token)
+        {
+            AccessToken = token?.AccessToken?.ToSecure();
+        }
+
+        /// <summary>
+        /// Decrypts the token and fills into this token exchange instance.
+        /// </summary>
+        /// <param name="key">The optional token encryption key to use to override the original one set.</param>
+        public string EncryptToken(string key = null)
+        {
+            if (key == null) key = EncryptKey;
+            if (key == null) return AccessToken.ToUnsecureString();
+            var rsa = new RSACryptoServiceProvider();
+            rsa.FromXmlString(key);
+            var cypher = rsa.Encrypt(Encoding.UTF8.GetBytes(AccessToken.ToUnsecureString()), false);
+            return Convert.ToBase64String(cypher);
+        }
+
+        /// <summary>
+        /// Tests if the given key is as same as the public key of this instance.
+        /// </summary>
+        /// <param name="key">The key to test.</param>
+        /// <returns>true if they are same; otherwise, false.</returns>
+        public bool IsPublicKey(string key)
+        {
+            return key == PublicKey || (string.IsNullOrWhiteSpace(key) && string.IsNullOrWhiteSpace(PublicKey));
         }
     }
 }

@@ -20,9 +20,39 @@ namespace Trivial.Net
     public class JsonHttpClient<T>
     {
         /// <summary>
+        /// The event arguments on sending.
+        /// </summary>
+        public class SendingEventArgs : EventArgs
+        {
+            /// <summary>
+            /// Initializes a new instance of the SendingEventArgs class.
+            /// </summary>
+            /// <param name="requestMessage">The HTTP request message.</param>
+            public SendingEventArgs(HttpRequestMessage requestMessage)
+            {
+                RequestMessage = requestMessage;
+            }
+
+            /// <summary>
+            /// Gets the HTTP request message.
+            /// </summary>
+            public HttpRequestMessage RequestMessage { get; }
+        }
+
+        /// <summary>
         /// Gets the MIME value.
         /// </summary>
         public const string MIME = "application/json";
+
+        /// <summary>
+        /// Adds or removes a handler raised on sending.
+        /// </summary>
+        public event EventHandler<SendingEventArgs> Sending;
+
+        /// <summary>
+        /// Gets the type of response expected.
+        /// </summary>
+        public Type ResponseType => typeof(T);
 
         /// <summary>
         /// Gets or sets the retry policy.
@@ -70,6 +100,9 @@ namespace Trivial.Net
             if (request == null) throw new ArgumentNullException(nameof(request));
             if (Client == null && !IsNewHttpClientByDefault) Client = new HttpClient();
             var client = Client ?? new HttpClient();
+            Sending?.Invoke(this, new SendingEventArgs(request));
+            cancellationToken.ThrowIfCancellationRequested();
+            OnSending(request);
             var result = await Tasks.RetryExtension.ProcessAsync(RetryPolicy, async (CancellationToken cancellation) =>
             {
                 var resp = await client.SendAsync(request, cancellationToken);
@@ -338,6 +371,14 @@ namespace Trivial.Net
         protected virtual Exception GetException(Exception exception)
         {
             return exception;
+        }
+
+        /// <summary>
+        /// Processes before sending the request message.
+        /// </summary>
+        /// <param name="requestMessage">The HTTP request message pending to send.</param>
+        protected virtual void OnSending(HttpRequestMessage requestMessage)
+        {
         }
 
         /// <summary>
