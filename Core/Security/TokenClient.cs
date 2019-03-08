@@ -456,12 +456,12 @@ namespace Trivial.Security
         public bool HasToken => AccessToken != null && AccessToken.Length > 0;
 
         /// <summary>
-        /// Gets or sets the handler to set the token. For SetToken and DecryptToken methods.
+        /// Gets or sets the optional handler of the access token setter for SetToken and DecryptToken methods.
         /// </summary>
         public Func<string, bool, string> TokenSet { get; set; }
 
         /// <summary>
-        /// Gets or sets the handler to get the token. For EncryptToken method.
+        /// Gets or sets the optional handler of the access token getter for EncryptToken method.
         /// </summary>
         public Func<string, bool, string> TokenGet { get; set; }
 
@@ -588,7 +588,7 @@ namespace Trivial.Security
             var rsa = RSA.Create();
             rsa.ImportParameters(key.Value);
             var cypher = rsa.Encrypt(
-                Encoding.UTF8.GetBytes(TokenGet != null ? TokenGet(AccessToken.ToUnsecureString(), false) : AccessToken.ToUnsecureString()),
+                Encoding.UTF8.GetBytes(TokenGet != null ? TokenGet(AccessToken.ToUnsecureString(), true) : AccessToken.ToUnsecureString()),
                 padding ?? RSAEncryptionPadding.Pkcs1);
             return Convert.ToBase64String(cypher);
         }

@@ -2,10 +2,11 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Security;
 using System.Security.Cryptography;
 using System.Text;
-using System.Text.RegularExpressions;
 using System.Xml.Linq;
+
 using Trivial.Collection;
 using Trivial.Text;
 
@@ -16,8 +17,14 @@ namespace Trivial.Security
     /// </summary>
     public static class RSAUtility
     {
-        private static readonly Regex codePEM = new Regex(@"--+.+?--+|\s+");
+        /// <summary>
+        /// Encoded OID sequence for PKCS #1 rsaEncryption szOID_RSA_RSA = "1.2.840.113549.1.1.1".
+        /// </summary>
         private static readonly byte[] seqOID = new byte[] { 0x30, 0x0D, 0x06, 0x09, 0x2A, 0x86, 0x48, 0x86, 0xF7, 0x0D, 0x01, 0x01, 0x01, 0x05, 0x00 };
+
+        /// <summary>
+        /// PEM versions.
+        /// </summary>
         private static readonly byte[] verPem = new byte[] { 0x02, 0x01, 0x00 };
 
         /// <summary>
@@ -93,16 +100,14 @@ namespace Trivial.Security
                 var privateKeyBits = Convert.FromBase64String(key);
                 using (var reader = new BinaryReader(new MemoryStream(privateKeyBits)))
                 {
-                    byte bt = 0;
-                    ushort twobytes = 0;
-                    twobytes = reader.ReadUInt16();
-                    if (twobytes == 0x8130) reader.ReadByte();
-                    else if (twobytes == 0x8230) reader.ReadInt16();
+                    var twoBytes = reader.ReadUInt16();
+                    if (twoBytes == 0x8130) reader.ReadByte();
+                    else if (twoBytes == 0x8230) reader.ReadInt16();
                     else return null;
-                    twobytes = reader.ReadUInt16();
-                    if (twobytes != 0x0102) return null;
-                    bt = reader.ReadByte();
-                    if (bt != 0x00) return null;
+                    twoBytes = reader.ReadUInt16();
+                    if (twoBytes != 0x0102) return null;
+                    var testByte = reader.ReadByte();
+                    if (testByte != 0x00) return null;
                     return new RSAParameters
                     {
                         Modulus = reader.ReadBytes(GetIntegerSize(reader)),
@@ -118,76 +123,68 @@ namespace Trivial.Security
             }
             else
             {
-                // Encoded OID sequence for  PKCS #1 rsaEncryption szOID_RSA_RSA = "1.2.840.113549.1.1.1".
-                byte[] SeqOID = { 0x30, 0x0D, 0x06, 0x09, 0x2A, 0x86, 0x48, 0x86, 0xF7, 0x0D, 0x01, 0x01, 0x01, 0x05, 0x00 };
-                byte[] x509key;
-                byte[] seq = new byte[15];
-                int x509size;
-
-                x509key = Convert.FromBase64String(key);
-                x509size = x509key.Length;
+                var x509key = Convert.FromBase64String(key);
+                var x509size = x509key.Length;
 
                 // Set up stream to read the asn.1 encoded SubjectPublicKeyInfo blob.
                 using (var stream = new MemoryStream(x509key))
                 {
                     using (var reader = new BinaryReader(stream))  // Wrap in-memory stream with BinaryReader for easy reading.
                     {
-                        byte bt = 0;
-                        ushort twobytes = 0;
-                        twobytes = reader.ReadUInt16();
-                        if (twobytes == 0x8130) // Data read as little endian order (actual data order for Sequence is 30 81).
+                        var twoBytes = reader.ReadUInt16();
+                        if (twoBytes == 0x8130) // Data read as little endian order (actual data order for Sequence is 30 81).
                             reader.ReadByte();  // Advance 1 byte.
-                        else if (twobytes == 0x8230)
+                        else if (twoBytes == 0x8230)
                             reader.ReadInt16(); // Advance 2 bytes.
                         else
                             return null;
 
-                        seq = reader.ReadBytes(15); // Read the Sequence OID.
-                        if (!ListUtility.Equals(seq, SeqOID))   // Make sure Sequence for OID is correct.
+                        var seq = reader.ReadBytes(15); // Read the Sequence OID.
+                        if (!ListUtility.Equals(seq, seqOID))   // Make sure Sequence for OID is correct.
                             return null;
 
-                        twobytes = reader.ReadUInt16();
-                        if (twobytes == 0x8103) // Data read as little endian order (actual data order for Bit String is 03 81).
+                        twoBytes = reader.ReadUInt16();
+                        if (twoBytes == 0x8103) // Data read as little endian order (actual data order for Bit String is 03 81).
                             reader.ReadByte();  // Advance 1 byte.
-                        else if (twobytes == 0x8203)
+                        else if (twoBytes == 0x8203)
                             reader.ReadInt16(); // Advance 2 bytes.
                         else
                             return null;
 
-                        bt = reader.ReadByte();
-                        if (bt != 0x00) // Expect null byte next.
+                        var testByte = reader.ReadByte();
+                        if (testByte != 0x00) // Expect null byte next.
                             return null;
 
-                        twobytes = reader.ReadUInt16();
-                        if (twobytes == 0x8130) // Data read as little endian order (actual data order for Sequence is 30 81).
+                        twoBytes = reader.ReadUInt16();
+                        if (twoBytes == 0x8130) // Data read as little endian order (actual data order for Sequence is 30 81).
                             reader.ReadByte();  // Advance 1 byte.
-                        else if (twobytes == 0x8230)
+                        else if (twoBytes == 0x8230)
                             reader.ReadInt16(); // Advance 2 bytes.
                         else
                             return null;
 
-                        twobytes = reader.ReadUInt16();
-                        byte lowbyte = 0x00;
-                        byte highbyte = 0x00;
+                        twoBytes = reader.ReadUInt16();
+                        byte lowByte = 0x00;
+                        byte highByte = 0x00;
 
-                        if (twobytes == 0x8102) // Data read as little endian order (actual data order for Integer is 02 81).
+                        if (twoBytes == 0x8102) // Data read as little endian order (actual data order for Integer is 02 81).
                         {
-                            lowbyte = reader.ReadByte();    // Read next bytes which is bytes in modulus.
+                            lowByte = reader.ReadByte();    // Read next bytes which is bytes in modulus.
                         }
-                        else if (twobytes == 0x8202)
+                        else if (twoBytes == 0x8202)
                         {
-                            highbyte = reader.ReadByte();   // Advance 2 bytes.
-                            lowbyte = reader.ReadByte();
+                            highByte = reader.ReadByte();   // Advance 2 bytes.
+                            lowByte = reader.ReadByte();
                         }
                         else
                         {
                             return null;
                         }
 
-                        byte[] modint = { lowbyte, highbyte, 0x00, 0x00 };   // Reverse byte order since asn.1 key uses big endian order.
-                        var modsize = BitConverter.ToInt32(modint, 0);
-                        var firstbyte = reader.PeekChar();
-                        if (firstbyte == 0x00)
+                        byte[] modInt = { lowByte, highByte, 0x00, 0x00 };   // Reverse byte order since asn.1 key uses big endian order.
+                        var modsize = BitConverter.ToInt32(modInt, 0);
+                        var firstByte = reader.PeekChar();
+                        if (firstByte == 0x00)
                         {   // Don't include it if the first byte (highest order) of modulus is zero.
                             reader.ReadByte();  // Skip this null byte.
                             modsize -= 1;   // Reduce modulus buffer size by 1.
@@ -196,8 +193,8 @@ namespace Trivial.Security
                         var modulus = reader.ReadBytes(modsize);    // Read the modulus bytes.
                         if (reader.ReadByte() != 0x02)  // Expect an Integer for the exponent data.
                             return null;
-                        var expbytes = (int)reader.ReadByte();  // Should only need one byte for actual exponent data (for all useful values).
-                        var exponent = reader.ReadBytes(expbytes);
+                        var expBytes = (int)reader.ReadByte();  // Should only need one byte for actual exponent data (for all useful values).
+                        var exponent = reader.ReadBytes(expBytes);
 
                         // Create RSACryptoServiceProvider instance and initialize with public key.
                         return new RSAParameters
@@ -221,14 +218,14 @@ namespace Trivial.Security
             var xml = new XElement("RSAKeyValue",
                 new XElement("Modulus") { Value = Convert.ToBase64String(parameters.Modulus) },
                 new XElement("Exponent") { Value = Convert.ToBase64String(parameters.Exponent) });
-            if (!includePrivateKey) return xml;
-            xml.Add(new XElement("P") { Value = Convert.ToBase64String(parameters.P) });
-            xml.Add(new XElement("Q") { Value = Convert.ToBase64String(parameters.Q) });
-            xml.Add(new XElement("DP") { Value = Convert.ToBase64String(parameters.DP) });
-            xml.Add(new XElement("DQ") { Value = Convert.ToBase64String(parameters.DQ) });
-            xml.Add(new XElement("P") { Value = Convert.ToBase64String(parameters.P) });
-            xml.Add(new XElement("InverseQ") { Value = Convert.ToBase64String(parameters.InverseQ) });
-            xml.Add(new XElement("D") { Value = Convert.ToBase64String(parameters.D) });
+            if (includePrivateKey) xml.Add(
+                new XElement("P") { Value = Convert.ToBase64String(parameters.P) },
+                new XElement("Q") { Value = Convert.ToBase64String(parameters.Q) },
+                new XElement("DP") { Value = Convert.ToBase64String(parameters.DP) },
+                new XElement("DQ") { Value = Convert.ToBase64String(parameters.DQ) },
+                new XElement("P") { Value = Convert.ToBase64String(parameters.P) },
+                new XElement("InverseQ") { Value = Convert.ToBase64String(parameters.InverseQ) },
+                new XElement("D") { Value = Convert.ToBase64String(parameters.D) });
             return xml;
         }
 
@@ -270,23 +267,20 @@ namespace Trivial.Security
                 WriteBlock(stream, parameters.InverseQ);
 
                 // Calculate blanks.
-                var byts = stream.ToArray();
+                var bytes = stream.ToArray();
                 if (index2 != -1)
                 {
-                    byts = WriteLen(stream, index3, byts);
-                    byts = WriteLen(stream, index2, byts);
+                    bytes = WriteLen(stream, index3, bytes);
+                    bytes = WriteLen(stream, index2, bytes);
                 }
 
                 // Flag.
-                byts = WriteLen(stream, index1, byts);
+                bytes = WriteLen(stream, index1, bytes);
                 var flag = " PRIVATE KEY";
-                if (!usePKCS8)
-                {
-                    flag = " RSA" + flag;
-                }
+                if (!usePKCS8) flag = " RSA" + flag;
 
                 // Return Pem.
-                return "-----BEGIN" + flag + "-----\n" + StringUtility.BreakLines(Convert.ToBase64String(byts), 64) + "\n-----END" + flag + "-----";
+                return "-----BEGIN" + flag + "-----\n" + StringUtility.BreakLines(Convert.ToBase64String(bytes), 64) + "\n-----END" + flag + "-----";
             }
         }
 
@@ -301,8 +295,6 @@ namespace Trivial.Security
             {
                 stream.WriteByte(0x30);
                 var index1 = (int)stream.Length;
-
-                // Encoded OID sequence for PKCS #1 rsaEncryption szOID_RSA_RSA = "1.2.840.113549.1.1.1".
                 stream.Write(seqOID, 0, seqOID.Length);
 
                 // Read length after 0x00.
@@ -317,48 +309,92 @@ namespace Trivial.Security
                 var index3 = (int)stream.Length;
                 WriteBlock(stream, parameters.Modulus);
                 WriteBlock(stream, parameters.Exponent);
-                var byts = stream.ToArray();
-                byts = WriteLen(stream, index3, byts);
-                byts = WriteLen(stream, index2, byts);
-                byts = WriteLen(stream, index1, byts);
+                var bytes = stream.ToArray();
+                bytes = WriteLen(stream, index3, bytes);
+                bytes = WriteLen(stream, index2, bytes);
+                bytes = WriteLen(stream, index1, bytes);
 
                 // Return PEM.
-                return "-----BEGIN PUBLIC KEY-----\n" + StringUtility.BreakLines(Convert.ToBase64String(byts), 64) + "\n-----END PUBLIC KEY-----";
+                return "-----BEGIN PUBLIC KEY-----\n" + StringUtility.BreakLines(Convert.ToBase64String(bytes), 64) + "\n-----END PUBLIC KEY-----";
             }
         }
 
-        private static int GetIntegerSize(BinaryReader binr)
+        /// <summary>
+        /// Encrypts the input string using the specified encoding and padding mode.
+        /// </summary>
+        /// <param name="rsa">The RSA algorithm instance.</param>
+        /// <param name="data">The string data to encrypt.</param>
+        /// <param name="encoding">The encoding.</param>
+        /// <param name="padding">The padding mode.</param>
+        /// <returns></returns>
+        public static byte[] Encrypt(this RSA rsa, string data, Encoding encoding, RSAEncryptionPadding padding)
         {
-            byte bt = 0;
-            byte lowbyte = 0x00;
-            byte highbyte = 0x00;
-            int count = 0;
-            bt = binr.ReadByte();
-            if (bt != 0x02)
-                return 0;
-            bt = binr.ReadByte();
+            if (data == null) return null;
+            if (rsa == null) throw new ArgumentNullException(nameof(rsa), "rsa should not be null.");
+            if (encoding == null) throw new ArgumentNullException(nameof(encoding), "encoding should not be null.");
+            return rsa.Encrypt(encoding.GetBytes(data), padding);
+        }
 
-            if (bt == 0x81)
-                count = binr.ReadByte();
-            else
-                if (bt == 0x82)
+        /// <summary>
+        /// Encrypts the input string using the specified encoding and padding mode.
+        /// </summary>
+        /// <param name="rsa">The RSA algorithm instance.</param>
+        /// <param name="data">The string data to encrypt.</param>
+        /// <param name="encoding">The encoding.</param>
+        /// <param name="padding">The padding mode.</param>
+        /// <returns></returns>
+        public static byte[] Encrypt(this RSA rsa, SecureString data, Encoding encoding, RSAEncryptionPadding padding)
+        {
+            if (data == null || data.Length == 0) return null;
+            if (rsa == null) throw new ArgumentNullException(nameof(rsa), "rsa should not be null.");
+            if (encoding == null) throw new ArgumentNullException(nameof(encoding), "encoding should not be null.");
+            return rsa.Encrypt(encoding.GetBytes(SecureStringUtility.ToUnsecureString(data)), padding);
+        }
+
+        /// <summary>
+        /// Decrypts the input string using the specified encoding and padding mode.
+        /// </summary>
+        /// <param name="rsa">The RSA algorithm instance.</param>
+        /// <param name="data">The data to decrypt.</param>
+        /// <param name="encoding">The encoding.</param>
+        /// <param name="padding">The padding mode.</param>
+        /// <returns></returns>
+        public static string Decrypt(this RSA rsa, byte[] data, Encoding encoding, RSAEncryptionPadding padding)
+        {
+            if (data == null) return null;
+            if (rsa == null) throw new ArgumentNullException(nameof(rsa), "rsa should not be null.");
+            if (encoding == null) throw new ArgumentNullException(nameof(encoding), "encoding should not be null.");
+            return encoding.GetString(rsa.Decrypt(data, padding));
+        }
+
+        private static int GetIntegerSize(BinaryReader reader)
+        {
+            var count = 0;
+            var testByte = reader.ReadByte();
+            if (testByte != 0x02) return 0;
+            testByte = reader.ReadByte();
+            if (testByte == 0x81)
             {
-                highbyte = binr.ReadByte();
-                lowbyte = binr.ReadByte();
-                byte[] modint = { lowbyte, highbyte, 0x00, 0x00 };
-                count = BitConverter.ToInt32(modint, 0);
+                count = reader.ReadByte();
+            }
+            else if (testByte == 0x82)
+            {
+                var highByte = reader.ReadByte();
+                var lowByte = reader.ReadByte();
+                byte[] modInt = { lowByte, highByte, 0x00, 0x00 };
+                count = BitConverter.ToInt32(modInt, 0);
             }
             else
             {
-                count = bt;
+                count = testByte;
             }
 
-            while (binr.ReadByte() == 0x00)
+            while (reader.ReadByte() == 0x00)
             {
                 count -= 1;
             }
 
-            binr.BaseStream.Seek(-1, SeekOrigin.Current);
+            reader.BaseStream.Seek(-1, SeekOrigin.Current);
             return count;
         }
 
@@ -393,7 +429,6 @@ namespace Trivial.Security
             }
 
             stream.Write(bytes, 0, bytes.Length);
-
         }
 
         private static byte[] WriteLen(MemoryStream stream, int index, byte[] bytes) {

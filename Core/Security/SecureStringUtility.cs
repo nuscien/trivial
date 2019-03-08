@@ -77,13 +77,14 @@ namespace Trivial.Security
         /// <returns>The secure string instance.</returns>
         public static SecureString ToSecure(this StringBuilder value)
         {
+            if (value == null) return null;
             var obj = new SecureString();
             AppendString(obj, value.ToString());
             return obj;
         }
 
         /// <summary>
-        /// Sets the new value.
+        /// Sets the new value into the secure string instance.
         /// </summary>
         /// <param name="value">The secure string instance.</param>
         /// <param name="newValue">The new string to set.</param>
@@ -92,6 +93,7 @@ namespace Trivial.Security
         /// <returns>true if set succeeded; otherwise, false.</returns>
         public static bool Set(this SecureString value, string newValue, string old = null, string confirm = null)
         {
+            if (value == null) return false;
             if (confirm != null && newValue != confirm) return false;
             if (value.IsReadOnly()) return false;
             if (old != null)
