@@ -27,7 +27,7 @@ namespace Trivial.Security
         }
 
         /// <summary>
-        /// Appends a string into a secure string instance.
+        /// Appends a string builder content into a secure string instance.
         /// </summary>
         /// <param name="obj">The secure string instance.</param>
         /// <param name="value">The string to append.</param>
@@ -38,6 +38,22 @@ namespace Trivial.Security
             for (var i = 0; i < value.Length; i++)
             {
                 obj.AppendChar(value[i]);
+            }
+        }
+
+        /// <summary>
+        /// Appends a string by a byte array with character encoding into a secure string instance.
+        /// </summary>
+        /// <param name="obj">The secure string instance.</param>
+        /// <param name="value">The byte array to append.</param>
+        /// <param name="encoding">The text encoding.</param>
+        public static void AppendString(this SecureString obj, byte[] value, Encoding encoding = null)
+        {
+            if (obj == null) throw new ArgumentNullException(nameof(obj));
+            if (value == null) return;
+            foreach (var c in (encoding ?? Encoding.UTF8).GetChars(value))
+            {
+                obj.AppendChar(c);
             }
         }
 
@@ -93,12 +109,7 @@ namespace Trivial.Security
         {
             if (value == null) return null;
             var obj = new SecureString();
-            if (encoding == null) encoding = Encoding.UTF8;
-            foreach (var c in encoding.GetChars(value))
-            {
-                obj.AppendChar(c);
-            }
-
+            AppendString(obj, value, encoding);
             return obj;
         }
 
