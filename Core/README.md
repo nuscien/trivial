@@ -102,20 +102,22 @@ EnglishNumber.Default.ToString(12345.67);
 
 EnglishNumber.Default.ToString(12345, true);
 // one two three four five
+
+EnglishNumber.Default.ToApproximationString(1234567);
+// 1.2M
 ```
 
-And also for Chinese.
+And also for Chinese and Japanese.
 
 ```csharp
 ChineseNumber.Simplified.ToString(12345.67);
 // 一万两千三百四十五点六七
 
-ChineseNumber.Simplified.ToString(12345, true);
-// 一二三四五
+ChineseNumber.SimplifiedUppercase.ToString(12345, true);
+// 壹贰叄肆伍
 
-ChineseNumber.SimplifiedUppercase.ToString(12345);
-// 壹萬贰仟叄佰肆拾伍
-
+JapaneseNumber.Default.ToApproximationString(1234567);
+// 123.5万
 ```
 
 ### Angle and polar point
@@ -152,6 +154,16 @@ Just add following namespace to your code file to use.
 ```csharp
 using Trivial.Security;
 ```
+### RSA
+
+You can convert a PEM (OpenSSL RSA key) or an XML string to the `RSAParameters` class.
+
+```csharp
+var parameters = RSAUtility.Parse(pem);
+```
+
+And you can convert back by using the extension function `ToPrivatePEM` or `ToPublicPEM`.
+And also you can use the extension function `ToXElement` to export the XML.
 
 ### Symmetric and hash
 

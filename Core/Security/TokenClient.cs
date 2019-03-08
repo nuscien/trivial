@@ -441,6 +441,11 @@ namespace Trivial.Security
         public RSAParameters? EncryptKey { get; set; }
 
         /// <summary>
+        /// Gets or sets the additional identifier of the encryption key for token.
+        /// </summary>
+        public string EncryptKeyId { get; set; }
+
+        /// <summary>
         /// Gets a value indicating whether there is an RSA crypto service provider.
         /// </summary>
         public bool IsSecure => crypto != null;
@@ -449,6 +454,16 @@ namespace Trivial.Security
         /// Gets a value indicating whether there is an access token.
         /// </summary>
         public bool HasToken => AccessToken != null && AccessToken.Length > 0;
+
+        /// <summary>
+        /// Gets or sets the handler to set the token. For SetToken and DecryptToken methods.
+        /// </summary>
+        public Func<string, bool, string> TokenSet { get; set; }
+
+        /// <summary>
+        /// Gets or sets the handler to get the token. For EncryptToken method.
+        /// </summary>
+        public Func<string, bool, string> TokenGet { get; set; }
 
         /// <summary>
         /// Sets a specific crypto service provider.
@@ -461,12 +476,16 @@ namespace Trivial.Security
             if (rsa == null)
             {
                 PublicKey = null;
-                if (syncEncryptKey) EncryptKey = null;
+                if (!syncEncryptKey) return;
+                EncryptKey = null;
+                EncryptKeyId = Id;
                 return;
             }
             
             PublicKey = rsa.ExportParameters(false);
-            if (syncEncryptKey) EncryptKey = PublicKey;
+            if (!syncEncryptKey) return;
+            EncryptKey = PublicKey;
+            EncryptKeyId = Id;
         }
 
         /// <summary>
@@ -480,7 +499,9 @@ namespace Trivial.Security
             if (!key.HasValue)
             {
                 PublicKey = null;
-                if (syncEncryptKey) EncryptKey = null;
+                if (!syncEncryptKey) return;
+                EncryptKey = null;
+                EncryptKeyId = Id;
                 return;
             }
 
@@ -516,12 +537,13 @@ namespace Trivial.Security
             var rsa = crypto;
             if (rsa == null && supportNoCrypto)
             {
+                if (TokenSet != null) tokenEncrypted = TokenSet(tokenEncrypted, false);
                 AccessToken = tokenEncrypted.ToSecure();
                 return;
             }
 
             var plain = rsa.Decrypt(Convert.FromBase64String(tokenEncrypted), padding ?? RSAEncryptionPadding.Pkcs1);
-            AccessToken = Encoding.UTF8.GetString(plain).ToSecure();
+            AccessToken = TokenSet != null ? TokenSet(Encoding.UTF8.GetString(plain), true).ToSecure() : Encoding.UTF8.GetString(plain).ToSecure();
         }
 
         /// <summary>
@@ -540,7 +562,9 @@ namespace Trivial.Security
         /// <param name="token">The new token.</param>
         public void SetToken(string token)
         {
-            AccessToken = token?.ToSecure();
+            if (string.IsNullOrWhiteSpace(token)) return;
+            if (TokenSet != null) token = TokenSet(token, false);
+            AccessToken = token.ToSecure();
         }
 
         /// <summary>
@@ -549,7 +573,7 @@ namespace Trivial.Security
         /// <param name="token">The new token.</param>
         public void SetToken(TokenInfo token)
         {
-            AccessToken = token?.AccessToken?.ToSecure();
+            SetToken(token?.AccessToken);
         }
 
         /// <summary>
@@ -560,10 +584,12 @@ namespace Trivial.Security
         public string EncryptToken(RSAParameters? key = null, RSAEncryptionPadding padding = null)
         {
             if (!key.HasValue) key = EncryptKey;
-            if (!key.HasValue) return AccessToken.ToUnsecureString();
+            if (!key.HasValue) return TokenGet != null ? TokenGet(AccessToken.ToUnsecureString(), false) : AccessToken.ToUnsecureString();
             var rsa = RSA.Create();
             rsa.ImportParameters(key.Value);
-            var cypher = rsa.Encrypt(Encoding.UTF8.GetBytes(AccessToken.ToUnsecureString()), padding ?? RSAEncryptionPadding.Pkcs1);
+            var cypher = rsa.Encrypt(
+                Encoding.UTF8.GetBytes(TokenGet != null ? TokenGet(AccessToken.ToUnsecureString(), false) : AccessToken.ToUnsecureString()),
+                padding ?? RSAEncryptionPadding.Pkcs1);
             return Convert.ToBase64String(cypher);
         }
 

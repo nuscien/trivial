@@ -14,6 +14,7 @@ namespace Trivial.Maths
         private static readonly string digits2 = "零一二三四五六七八九十百千万亿";
         private static readonly string digits3 = "零壹贰叄肆伍陆柒捌玖拾佰仟萬億";
         private static readonly string digits4 = "零一二三四五六七八九十百千萬億";
+        private readonly string digits;
 
         /// <summary>
         /// Initializes a new instance of the ChineseNumber class.
@@ -24,6 +25,7 @@ namespace Trivial.Maths
         {
             IsUpperCase = upperCase;
             IsTraditional = isTraditional;
+            digits = IsTraditional ? (IsUpperCase ? digits3 : digits4) : (IsUpperCase ? digits1 : digits2);
         }
 
         /// <summary>
@@ -306,7 +308,6 @@ namespace Trivial.Maths
             var format = new StringBuilder("0.");
             format.Append('0', Math.Min(accuracy, len));
             var num = new StringBuilder((number * 1.0 / Math.Pow(10, len)).ToString(format.ToString(), CultureInfo.InvariantCulture));
-            var digits = ToString();
             if (levels % 2 == 1) num.Append(digits[13]);
             num.Append(digits[14], levels / 2);
             return num.ToString();
@@ -318,7 +319,7 @@ namespace Trivial.Maths
         /// <returns>A string with main numbers.</returns>
         public override string ToString()
         {
-            return IsTraditional ? (IsUpperCase ? digits3 : digits4) : (IsUpperCase ? digits1 : digits2);
+            return (IsTraditional ? "中文數位 " : "中文数字 ") + digits;
         }
 
         /// <summary>
@@ -342,7 +343,6 @@ namespace Trivial.Maths
         public string ToString(ulong number, bool digitOnly = false)
         {
             var num = number.ToString(CultureInfo.InvariantCulture);
-            var digits = ToString();
             var str = new StringBuilder();
             if (digitOnly)
             {
@@ -435,7 +435,6 @@ namespace Trivial.Maths
             var str = new StringBuilder();
             var (integerPart, fractionalPart, exponentialPart) = NumberSymbols.SplitNumber(number);
             str.Append(ToString(integerPart, false));
-            var digits = ToString();
             if (fractionalPart.Length > 0)
             {
                 str.Append(IsTraditional ? "點" : "点");
@@ -480,12 +479,12 @@ namespace Trivial.Maths
         public static readonly ChineseNumber Simplified = new ChineseNumber();
 
         /// <summary>
-        /// Simplified Chinese number.
+        /// Simplified Chinese uppercase number.
         /// </summary>
         public static readonly ChineseNumber SimplifiedUppercase = new ChineseNumber(false, true);
 
         /// <summary>
-        /// Traditional Chinese uppercase number.
+        /// Traditional Chinese number.
         /// </summary>
         public static readonly ChineseNumber Traditional = new ChineseNumber(true);
 

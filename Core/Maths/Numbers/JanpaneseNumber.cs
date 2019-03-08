@@ -292,7 +292,6 @@ namespace Trivial.Maths
             format.Append('0', Math.Min(accuracy, len));
             var num = new StringBuilder((number * 1.0 / Math.Pow(10, len)).ToString(format.ToString(), CultureInfo.InvariantCulture));
             if ((number / Math.Pow(10, len)).ToString(CultureInfo.InvariantCulture).Length == 4) num.Insert(1, ',');
-            var digits = ToString();
             if (levels > 12)
             {
                 num.AppendFormat("×10^{0}", levels);
@@ -311,7 +310,7 @@ namespace Trivial.Maths
         /// <returns>A string with main numbers.</returns>
         public override string ToString()
         {
-            return digits;
+            return "日本の数字 " + digits;
         }
 
         /// <summary>
@@ -335,7 +334,6 @@ namespace Trivial.Maths
         public string ToString(ulong number, bool digitOnly = false)
         {
             var num = number.ToString(CultureInfo.InvariantCulture);
-            var digits = ToString();
             var str = new StringBuilder();
             if (digitOnly)
             {
@@ -402,7 +400,6 @@ namespace Trivial.Maths
             var str = new StringBuilder();
             var (integerPart, fractionalPart, exponentialPart) = NumberSymbols.SplitNumber(number);
             str.Append(ToString(integerPart, false));
-            var digits = ToString();
             if (fractionalPart.Length > 0)
             {
                 str.Append("点");
