@@ -162,10 +162,10 @@ You can convert a PEM (OpenSSL RSA key) or an XML string to the `RSAParameters` 
 var parameters = RSAUtility.Parse(pem);
 ```
 
-And you can convert back by using the extension function `ToPrivatePEM` or `ToPublicPEM`.
-And also you can use the extension function `ToXElement` to export the XML.
+And you can convert back by using the extension method `ToPrivatePEMString` or `ToPublicPEMString`.
+And also you can use the extension method `ToXElement` to export the XML.
 
-### Symmetric and hash
+### Symmetric
 
 You can encrypt and decrypt a string by symmetric algorithm.
 
@@ -176,7 +176,9 @@ var cipher = SymmetricUtilities.Encrypt(Aes.Create, original, key, iv);
 var back = SymmetricUtilities.Decrypt(Aes.Create, cipher, key, iv); // back == original
 ```
 
-And also for hash, by `HashUtilities.ComputeHashString` function to get hash and `HashUtilities.Verify` to verify.
+### Hash
+
+For hash, you can call `HashUtilities.ComputeHashString` function to get hash and `HashUtilities.Verify` to verify.
 
 ### Access token
 
@@ -187,9 +189,13 @@ We also provide a set of tools for OAuth including following models.
 
 And you can implement the `OpenIdTokenClient` abstract class or `TokenResolver` abstract class to get and maintain the access token.
 
+### Secure string utiltiy
+
+You can use the extension methods `SecureStringUtiltiy` to convert between `SecureString` and `String`/`StringBuilder`/`Byte[]`.
+
 ## [IO](https://github.com/nuscien/trivial/wiki/io)
 
-Contains the helper functions and extension functions for `FileInfo` and `Stream`.
+Contains the helper functions and extension methods for `FileInfo` and `Stream`.
 
 ```csharp
 using Trivial.IO;

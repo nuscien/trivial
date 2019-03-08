@@ -59,7 +59,7 @@ namespace Trivial.Security
         }
 
         /// <summary>
-        /// Converts a secure string instance to a string.
+        /// Converts a string to a secure string instance.
         /// </summary>
         /// <param name="value">The string to convert.</param>
         /// <returns>The secure string instance.</returns>
@@ -71,7 +71,7 @@ namespace Trivial.Security
         }
 
         /// <summary>
-        /// Converts a secure string instance to a string.
+        /// Converts a string builder instance to a secure string instance.
         /// </summary>
         /// <param name="value">The string to convert.</param>
         /// <returns>The secure string instance.</returns>
@@ -80,6 +80,25 @@ namespace Trivial.Security
             if (value == null) return null;
             var obj = new SecureString();
             AppendString(obj, value.ToString());
+            return obj;
+        }
+
+        /// <summary>
+        /// Converts a byte array instance to a secure string instance.
+        /// </summary>
+        /// <param name="value">The string to convert.</param>
+        /// <param name="encoding">The text encoding.</param>
+        /// <returns>The secure string instance.</returns>
+        public static SecureString ToSecure(this byte[] value, Encoding encoding = null)
+        {
+            if (value == null) return null;
+            var obj = new SecureString();
+            if (encoding == null) encoding = Encoding.UTF8;
+            foreach (var c in encoding.GetChars(value))
+            {
+                obj.AppendChar(c);
+            }
+
             return obj;
         }
 

@@ -230,12 +230,12 @@ namespace Trivial.Security
         }
 
         /// <summary>
-        /// Converts the RSA parameter to OpenSSL RSA private key format (PEM Base64).
+        /// Converts the RSA parameter to OpenSSL RSA private key format string (PEM Base64).
         /// </summary>
         /// <param name="parameters">The RSA parameters.</param>
         /// <param name="usePKCS8">true if use PKCS8; otherwise, false.</param>
-        /// <returns>The PEM.</returns>
-        public static string ToPrivatePEM(this RSAParameters parameters, bool usePKCS8)
+        /// <returns>The PEM string of private key.</returns>
+        public static string ToPrivatePEMString(this RSAParameters parameters, bool usePKCS8)
         {
             using (var stream = new MemoryStream())
             {
@@ -285,11 +285,11 @@ namespace Trivial.Security
         }
 
         /// <summary>
-        /// Converts the RSA parameter to OpenSSL RSA public key format (PEM Base64).
+        /// Converts the RSA parameter to OpenSSL RSA public key format string (PEM Base64).
         /// </summary>
         /// <param name="parameters">The RSA parameters.</param>
-        /// <returns>The PEM.</returns>
-        public static string ToPublicPEM(this RSAParameters parameters)
+        /// <returns>The PEM string of public key.</returns>
+        public static string ToPublicPEMString(this RSAParameters parameters)
         {
             using (var stream = new MemoryStream())
             {
@@ -327,12 +327,11 @@ namespace Trivial.Security
         /// <param name="encoding">The encoding.</param>
         /// <param name="padding">The padding mode.</param>
         /// <returns></returns>
-        public static byte[] Encrypt(this RSA rsa, string data, Encoding encoding, RSAEncryptionPadding padding)
+        public static byte[] Encrypt(this RSA rsa, string data, RSAEncryptionPadding padding, Encoding encoding = null)
         {
             if (data == null) return null;
             if (rsa == null) throw new ArgumentNullException(nameof(rsa), "rsa should not be null.");
-            if (encoding == null) throw new ArgumentNullException(nameof(encoding), "encoding should not be null.");
-            return rsa.Encrypt(encoding.GetBytes(data), padding);
+            return rsa.Encrypt((encoding ?? Encoding.UTF8).GetBytes(data), padding);
         }
 
         /// <summary>
@@ -343,12 +342,11 @@ namespace Trivial.Security
         /// <param name="encoding">The encoding.</param>
         /// <param name="padding">The padding mode.</param>
         /// <returns></returns>
-        public static byte[] Encrypt(this RSA rsa, SecureString data, Encoding encoding, RSAEncryptionPadding padding)
+        public static byte[] Encrypt(this RSA rsa, SecureString data, RSAEncryptionPadding padding, Encoding encoding = null)
         {
             if (data == null || data.Length == 0) return null;
             if (rsa == null) throw new ArgumentNullException(nameof(rsa), "rsa should not be null.");
-            if (encoding == null) throw new ArgumentNullException(nameof(encoding), "encoding should not be null.");
-            return rsa.Encrypt(encoding.GetBytes(SecureStringUtility.ToUnsecureString(data)), padding);
+            return rsa.Encrypt((encoding ?? Encoding.UTF8).GetBytes(SecureStringUtility.ToUnsecureString(data)), padding);
         }
 
         /// <summary>
@@ -359,12 +357,12 @@ namespace Trivial.Security
         /// <param name="encoding">The encoding.</param>
         /// <param name="padding">The padding mode.</param>
         /// <returns></returns>
-        public static string Decrypt(this RSA rsa, byte[] data, Encoding encoding, RSAEncryptionPadding padding)
+        public static string Decrypt(this RSA rsa, byte[] data, RSAEncryptionPadding padding, Encoding encoding = null)
         {
             if (data == null) return null;
             if (rsa == null) throw new ArgumentNullException(nameof(rsa), "rsa should not be null.");
             if (encoding == null) throw new ArgumentNullException(nameof(encoding), "encoding should not be null.");
-            return encoding.GetString(rsa.Decrypt(data, padding));
+            return (encoding ?? Encoding.UTF8).GetString(rsa.Decrypt(data, padding));
         }
 
         private static int GetIntegerSize(BinaryReader reader)
