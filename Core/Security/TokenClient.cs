@@ -413,7 +413,7 @@ namespace Trivial.Security
         /// <summary>
         /// The RSA crypto service provider.
         /// </summary>
-        private RSACryptoServiceProvider crypto;
+        private RSA crypto;
 
         /// <summary>
         /// Gets or sets the identifier for the token exchange.
@@ -431,14 +431,14 @@ namespace Trivial.Security
         public SecureString AccessToken { get; set; }
 
         /// <summary>
-        /// Gets or sets the encryption key for token.
+        /// Gets the public key for token.
         /// </summary>
-        public string EncryptKey { get; set; }
+        public RSAParameters? PublicKey { get; private set; }
 
         /// <summary>
-        /// Gets the public key.
+        /// Gets or sets the encryption key for token.
         /// </summary>
-        public string PublicKey { get; private set; }
+        public RSAParameters? EncryptKey { get; set; }
 
         /// <summary>
         /// Gets a value indicating whether there is an RSA crypto service provider.
@@ -455,7 +455,7 @@ namespace Trivial.Security
         /// </summary>
         /// <param name="rsa">The new crypto service provider.</param>
         /// <param name="syncEncryptKey">true if set the token encryption key from the crypto service provider; otherwise, false.</param>
-        public void SetCrypto(RSACryptoServiceProvider rsa, bool syncEncryptKey = false)
+        public void SetCrypto(RSA rsa, bool syncEncryptKey = false)
         {
             crypto = rsa;
             if (rsa == null)
@@ -465,7 +465,7 @@ namespace Trivial.Security
                 return;
             }
 
-            PublicKey = rsa.ToXmlString(false);
+            PublicKey = rsa.ExportParameters(false);
             if (syncEncryptKey) EncryptKey = PublicKey;
         }
 
@@ -475,7 +475,7 @@ namespace Trivial.Security
         /// <param name="syncEncryptKey">true if set the token encryption key from the crypto service provider; otherwise, false.</param>
         public void CreateCrypto(bool syncEncryptKey = false)
         {
-            SetCrypto(new RSACryptoServiceProvider(), syncEncryptKey);
+            SetCrypto(RSA.Create(), syncEncryptKey);
         }
 
         /// <summary>
@@ -483,7 +483,8 @@ namespace Trivial.Security
         /// </summary>
         /// <param name="tokenEncrypted">The new token encrypted.</param>
         /// <param name="supportNoCrypto">true if the token is not encrypted if there is no crypto service provider; otherwise, false.</param>
-        public void DecryptToken(string tokenEncrypted, bool supportNoCrypto = false)
+        /// <param name="padding">The optional padding mode for decryption.</param>
+        public void DecryptToken(string tokenEncrypted, bool supportNoCrypto = false, RSAEncryptionPadding padding = null)
         {
             if (string.IsNullOrWhiteSpace(tokenEncrypted))
             {
@@ -498,8 +499,18 @@ namespace Trivial.Security
                 return;
             }
 
-            var plain = rsa.Decrypt(Convert.FromBase64String(tokenEncrypted), false);
+            var plain = rsa.Decrypt(Convert.FromBase64String(tokenEncrypted), padding ?? RSAEncryptionPadding.Pkcs1);
             AccessToken = Encoding.UTF8.GetString(plain).ToSecure();
+        }
+
+        /// <summary>
+        /// Decrypts the token and fills into this token exchange instance.
+        /// </summary>
+        /// <param name="tokenEncrypted">The new token encrypted.</param>
+        /// <param name="padding">The padding mode for decryption.</param>
+        public void DecryptToken(string tokenEncrypted, RSAEncryptionPadding padding)
+        {
+            DecryptToken(tokenEncrypted, false, padding);
         }
 
         /// <summary>
@@ -524,24 +535,24 @@ namespace Trivial.Security
         /// Decrypts the token and fills into this token exchange instance.
         /// </summary>
         /// <param name="key">The optional token encryption key to use to override the original one set.</param>
-        public string EncryptToken(string key = null)
+        /// <param name="padding">The optional padding mode for decryption.</param>
+        public string EncryptToken(RSAParameters? key = null, RSAEncryptionPadding padding = null)
         {
-            if (key == null) key = EncryptKey;
-            if (key == null) return AccessToken.ToUnsecureString();
-            var rsa = new RSACryptoServiceProvider();
-            rsa.FromXmlString(key);
-            var cypher = rsa.Encrypt(Encoding.UTF8.GetBytes(AccessToken.ToUnsecureString()), false);
+            if (!key.HasValue) key = EncryptKey;
+            if (!key.HasValue) return AccessToken.ToUnsecureString();
+            var rsa = RSA.Create();
+            rsa.ImportParameters(key.Value);
+            var cypher = rsa.Encrypt(Encoding.UTF8.GetBytes(AccessToken.ToUnsecureString()), padding ?? RSAEncryptionPadding.Pkcs1);
             return Convert.ToBase64String(cypher);
         }
 
         /// <summary>
-        /// Tests if the given key is as same as the public key of this instance.
+        /// Decrypts the token and fills into this token exchange instance.
         /// </summary>
-        /// <param name="key">The key to test.</param>
-        /// <returns>true if they are same; otherwise, false.</returns>
-        public bool IsSamePublicKey(string key)
+        /// <param name="padding">The padding mode for decryption.</param>
+        public string EncryptToken(RSAEncryptionPadding padding)
         {
-            return key == PublicKey || (string.IsNullOrWhiteSpace(key) && string.IsNullOrWhiteSpace(PublicKey));
+            return EncryptToken(null, padding);
         }
 
         /// <summary>
