@@ -416,7 +416,12 @@ namespace Trivial.Security
         private RSACryptoServiceProvider crypto;
 
         /// <summary>
-        /// Gets or sets the entity identifier.
+        /// Gets or sets the identifier for the token exchange.
+        /// </summary>
+        public string Id { get; set; }
+
+        /// <summary>
+        /// Gets or sets the related entity identifier.
         /// </summary>
         public string EntityId { get; set; }
 
@@ -534,9 +539,29 @@ namespace Trivial.Security
         /// </summary>
         /// <param name="key">The key to test.</param>
         /// <returns>true if they are same; otherwise, false.</returns>
-        public bool IsPublicKey(string key)
+        public bool IsSamePublicKey(string key)
         {
             return key == PublicKey || (string.IsNullOrWhiteSpace(key) && string.IsNullOrWhiteSpace(PublicKey));
+        }
+
+        /// <summary>
+        /// Tests if the given identifier is as same as the identifier of this instance.
+        /// </summary>
+        /// <param name="id">The identifier to test.</param>
+        /// <returns>true if they are same; otherwise, false.</returns>
+        public bool IsSameId(string id)
+        {
+            return id == Id || (string.IsNullOrWhiteSpace(id) && string.IsNullOrWhiteSpace(Id));
+        }
+
+        /// <summary>
+        /// Tests if the given identifier is as same as the related entity identifier of this instance.
+        /// </summary>
+        /// <param name="entity">The entity identifier to test.</param>
+        /// <returns>true if they are same; otherwise, false.</returns>
+        public bool IsSameEntityId(string entity)
+        {
+            return entity == EntityId || (string.IsNullOrWhiteSpace(entity) && string.IsNullOrWhiteSpace(EntityId));
         }
     }
 }

@@ -14,31 +14,73 @@ using System.Threading.Tasks;
 namespace Trivial.Net
 {
     /// <summary>
+    /// The event arguments on sending.
+    /// </summary>
+    public class SendingEventArgs : EventArgs
+    {
+        /// <summary>
+        /// Initializes a new instance of the SendingEventArgs class.
+        /// </summary>
+        /// <param name="requestMessage">The HTTP request message.</param>
+        public SendingEventArgs(HttpRequestMessage requestMessage)
+        {
+            RequestMessage = requestMessage;
+        }
+
+        /// <summary>
+        /// Gets the HTTP request message.
+        /// </summary>
+        public HttpRequestMessage RequestMessage { get; }
+    }
+
+    /// <summary>
+    /// The event arguments on received.
+    /// </summary>
+    public class ReceivedEventArgs : EventArgs
+    {
+        /// <summary>
+        /// Initializes a new instance of the ReceivedEventArgs class.
+        /// </summary>
+        /// <param name="responseMessage">The HTTP response message.</param>
+        public ReceivedEventArgs(HttpResponseMessage responseMessage)
+        {
+            ResponseMessage = responseMessage;
+        }
+
+        /// <summary>
+        /// Gets the HTTP response message.
+        /// </summary>
+        public HttpResponseMessage ResponseMessage { get; }
+    }
+
+    /// <summary>
+    /// The event arguments on received.
+    /// </summary>
+    /// <typeparam name="T">The type of the result.</typeparam>
+    public class ReceivedEventArgs<T> : ReceivedEventArgs
+    {
+        /// <summary>
+        /// Initializes a new instance of the ReceivedEventArgs class.
+        /// </summary>
+        /// <param name="result">The result.</param>
+        /// <param name="responseMessage">The HTTP response message.</param>
+        public ReceivedEventArgs(T result, HttpResponseMessage responseMessage) : base(responseMessage)
+        {
+            Result = result;
+        }
+
+        /// <summary>
+        /// Gets the result.
+        /// </summary>
+        public T Result { get; }
+    }
+
+    /// <summary>
     /// JSON format serialization HTTP client.
     /// </summary>
     /// <typeparam name="T">The type of the result.</typeparam>
     public class JsonHttpClient<T>
     {
-        /// <summary>
-        /// The event arguments on sending.
-        /// </summary>
-        public class SendingEventArgs : EventArgs
-        {
-            /// <summary>
-            /// Initializes a new instance of the SendingEventArgs class.
-            /// </summary>
-            /// <param name="requestMessage">The HTTP request message.</param>
-            public SendingEventArgs(HttpRequestMessage requestMessage)
-            {
-                RequestMessage = requestMessage;
-            }
-
-            /// <summary>
-            /// Gets the HTTP request message.
-            /// </summary>
-            public HttpRequestMessage RequestMessage { get; }
-        }
-
         /// <summary>
         /// Gets the MIME value.
         /// </summary>
@@ -48,6 +90,11 @@ namespace Trivial.Net
         /// Adds or removes a handler raised on sending.
         /// </summary>
         public event EventHandler<SendingEventArgs> Sending;
+
+        /// <summary>
+        /// Adds or removes a handler raised on received.
+        /// </summary>
+        public event EventHandler<ReceivedEventArgs<T>> Received;
 
         /// <summary>
         /// Gets the type of response expected.
@@ -102,16 +149,20 @@ namespace Trivial.Net
             var client = Client ?? new HttpClient();
             Sending?.Invoke(this, new SendingEventArgs(request));
             cancellationToken.ThrowIfCancellationRequested();
-            OnSending(request);
+            OnSend(request);
+            HttpResponseMessage resp = null;
             var result = await Tasks.RetryExtension.ProcessAsync(RetryPolicy, async (CancellationToken cancellation) =>
             {
-                var resp = await client.SendAsync(request, cancellationToken);
-                if (!SerializeEvenIfFailed && !resp.IsSuccessStatusCode) throw new FailedHttpException(resp);
+                resp = await client.SendAsync(request, cancellationToken);
+                if (!SerializeEvenIfFailed && !resp.IsSuccessStatusCode)
+                    throw new FailedHttpException(resp);
                 var obj = Serializer != null
                     ? await HttpClientUtility.SerializeAsync(resp.Content, Serializer)
                     : await HttpClientUtility.SerializeJsonAsync<T>(resp.Content);
                 return obj;
             }, GetExceptionInternal, cancellationToken);
+            OnReceive(result.Result, resp);
+            Received?.Invoke(this, new ReceivedEventArgs<T>(result.Result, resp));
             return result.Result;
         }
 
@@ -377,7 +428,16 @@ namespace Trivial.Net
         /// Processes before sending the request message.
         /// </summary>
         /// <param name="requestMessage">The HTTP request message pending to send.</param>
-        protected virtual void OnSending(HttpRequestMessage requestMessage)
+        protected virtual void OnSend(HttpRequestMessage requestMessage)
+        {
+        }
+
+        /// <summary>
+        /// Processes before sending the request message.
+        /// </summary>
+        /// <param name="result">The result.</param>
+        /// <param name="responseMessage">The HTTP response message pending to send.</param>
+        protected virtual void OnReceive(T result, HttpResponseMessage responseMessage)
         {
         }
 
