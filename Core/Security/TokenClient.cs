@@ -470,6 +470,27 @@ namespace Trivial.Security
         }
 
         /// <summary>
+        /// Sets a specific crypto service provider.
+        /// </summary>
+        /// <param name="privateKey">The RSA private key.</param>
+        /// <param name="syncEncryptKey">true if set the token encryption key from the crypto service provider; otherwise, false.</param>
+        public void SetCrypto(string privateKey, bool syncEncryptKey = false)
+        {
+            var key = RSAUtility.ParseParameters(privateKey);
+            if (!key.HasValue)
+            {
+                PublicKey = null;
+                if (syncEncryptKey) EncryptKey = null;
+                return;
+            }
+
+            if (key.Value.D == null || key.Value.D.Length == 0) throw new ArgumentException("privateKey should be an OpenSSL RSA private key.");
+            var rsa = RSA.Create();
+            rsa.ImportParameters(key.Value);
+            SetCrypto(rsa, syncEncryptKey);
+        }
+
+        /// <summary>
         /// Creates a new crypto service provider.
         /// </summary>
         /// <param name="syncEncryptKey">true if set the token encryption key from the crypto service provider; otherwise, false.</param>
@@ -549,10 +570,20 @@ namespace Trivial.Security
         /// <summary>
         /// Decrypts the token and fills into this token exchange instance.
         /// </summary>
+        /// <param name="key">The token encryption key to use to override the original one set.</param>
+        /// <param name="padding">The optional padding mode for decryption.</param>
+        public string EncryptToken(string key, RSAEncryptionPadding padding = null)
+        {
+            return EncryptToken(RSAUtility.ParseParameters(key), padding);
+        }
+
+        /// <summary>
+        /// Decrypts the token and fills into this token exchange instance.
+        /// </summary>
         /// <param name="padding">The padding mode for decryption.</param>
         public string EncryptToken(RSAEncryptionPadding padding)
         {
-            return EncryptToken(null, padding);
+            return EncryptToken(null as string, padding);
         }
 
         /// <summary>

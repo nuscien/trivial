@@ -86,6 +86,39 @@ namespace Trivial.Text
             return ToSpecificCase(source, options, CultureInfo.InvariantCulture);
         }
 
+        /// <summary>
+        /// Breaks lines.
+        /// </summary>
+        /// <param name="text">The original string.</param>
+        /// <param name="length">The count of a line.</param>
+        /// <returns>A new text with line break.</returns>
+        public static string BreakLines(string text, int length)
+        {
+            var idx = 0;
+            var len = text.Length;
+            var str = new StringBuilder();
+            while (idx < len)
+            {
+                if (idx > 0)
+                {
+                    str.Append('\n');
+                }
+
+                if (idx + length >= len)
+                {
+                    str.Append(text.Substring(idx));
+                }
+                else
+                {
+                    str.Append(text.Substring(idx, length));
+                }
+
+                idx += length;
+            }
+
+            return str.ToString();
+        }
+
         private static string ToUpper(string source, CultureInfo culture)
         {
             return culture == null ? source.ToUpper() : source.ToUpper(culture);
