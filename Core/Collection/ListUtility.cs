@@ -345,5 +345,22 @@ namespace Trivial.Collection
         {
             return ToGroups(list).ToDictionary(item => item.Key, item => item as IEnumerable<TValue>);
         }
+
+        /// <summary>
+        /// Tests if they are same.
+        /// </summary>
+        /// <param name="a">Collection a.</param>
+        /// <param name="b">Collection b.</param>
+        /// <returns>true if they are same; otherwise, false.</returns>
+        public static bool Equals<T>(T[] a, T[] b)
+        {
+            if (a.Length != b.Length) return false;
+            for (var i = 0; i < a.Length; i++)
+            {
+                if ((a[i] == null && b[i] != null) || !a[i].Equals(b[i])) return false;
+            }
+
+            return true;
+        }
     }
 }

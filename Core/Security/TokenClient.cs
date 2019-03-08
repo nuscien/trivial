@@ -464,7 +464,7 @@ namespace Trivial.Security
                 if (syncEncryptKey) EncryptKey = null;
                 return;
             }
-
+            
             PublicKey = rsa.ExportParameters(false);
             if (syncEncryptKey) EncryptKey = PublicKey;
         }
