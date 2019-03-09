@@ -91,8 +91,9 @@ namespace Trivial.Text
         /// </summary>
         /// <param name="text">The original string.</param>
         /// <param name="length">The count of a line.</param>
+        /// <param name="newLine">The newline string.</param>
         /// <returns>A new text with line break.</returns>
-        public static string BreakLines(string text, int length)
+        public static string BreakLines(string text, int length, string newLine = null)
         {
             var idx = 0;
             var len = text.Length;
@@ -101,7 +102,40 @@ namespace Trivial.Text
             {
                 if (idx > 0)
                 {
-                    str.Append('\n');
+                    str.Append(newLine ?? Environment.NewLine);
+                }
+
+                if (idx + length >= len)
+                {
+                    str.Append(text.Substring(idx));
+                }
+                else
+                {
+                    str.Append(text.Substring(idx, length));
+                }
+
+                idx += length;
+            }
+
+            return str.ToString();
+        }
+        /// <summary>
+        /// Breaks lines.
+        /// </summary>
+        /// <param name="text">The original string.</param>
+        /// <param name="length">The count of a line.</param>
+        /// <param name="newLine">The newline string.</param>
+        /// <returns>A new text with line break.</returns>
+        public static string BreakLines(string text, int length, char newLine)
+        {
+            var idx = 0;
+            var len = text.Length;
+            var str = new StringBuilder();
+            while (idx < len)
+            {
+                if (idx > 0)
+                {
+                    str.Append(newLine);
                 }
 
                 if (idx + length >= len)

@@ -280,7 +280,7 @@ namespace Trivial.Security
                 if (!usePKCS8) flag = " RSA" + flag;
 
                 // Return Pem.
-                return "-----BEGIN" + flag + "-----\n" + StringUtility.BreakLines(Convert.ToBase64String(bytes), 64) + "\n-----END" + flag + "-----";
+                return "-----BEGIN" + flag + "-----\n" + StringUtility.BreakLines(Convert.ToBase64String(bytes), 64, '\n') + "\n-----END" + flag + "-----";
             }
         }
 
@@ -315,7 +315,7 @@ namespace Trivial.Security
                 bytes = WriteLen(stream, index1, bytes);
 
                 // Return PEM.
-                return "-----BEGIN PUBLIC KEY-----\n" + StringUtility.BreakLines(Convert.ToBase64String(bytes), 64) + "\n-----END PUBLIC KEY-----";
+                return "-----BEGIN PUBLIC KEY-----\n" + StringUtility.BreakLines(Convert.ToBase64String(bytes), 64, '\n') + "\n-----END PUBLIC KEY-----";
             }
         }
 
