@@ -16,9 +16,72 @@ using Trivial.Text;
 namespace Trivial.Security
 {
     /// <summary>
+    /// The token container.
+    /// </summary>
+    public class TokenContainer
+    {
+        /// <summary>
+        /// Initializes a new instance of the TokenContainer class.
+        /// </summary>
+        public TokenContainer()
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the TokenContainer class.
+        /// </summary>
+        /// <param name="token">The token information instance.</param>
+        public TokenContainer(TokenInfo token)
+        {
+            Token = token;
+        }
+
+        /// <summary>
+        /// Gets the token information instance saved in this container.
+        /// </summary>
+        public TokenInfo Token { get; protected set; }
+
+        /// <summary>
+        /// Gets the access token saved in this container.
+        /// </summary>
+        public string AccessToken => Token?.AccessToken;
+
+        /// <summary>
+        /// Returns a System.String that represents the current token container instance.
+        /// </summary>
+        /// <returns>A System.String that represents the current token container instance.</returns>
+        public override string ToString()
+        {
+            return Token?.ToString() ?? string.Empty;
+        }
+
+        /// <summary>
+        /// Returns a System.Net.Http.Headers.AuthenticationHeaderValue that represents the current token container instance.
+        /// </summary>
+        /// <param name="schemeCase">The scheme case.</param>
+        /// <param name="parameterCase">The parameter case.</param>
+        /// <returns>A System.Net.Http.Headers.AuthenticationHeaderValue that represents the current token container instance.</returns>
+        public virtual AuthenticationHeaderValue ToAuthenticationHeaderValue(Cases schemeCase = Cases.Original, Cases parameterCase = Cases.Original)
+        {
+            return Token?.ToAuthenticationHeaderValue(schemeCase, parameterCase);
+        }
+
+        /// <summary>
+        /// Returns a System.Net.Http.Headers.AuthenticationHeaderValue that represents the current token container instance.
+        /// </summary>
+        /// <param name="scheme">The scheme to use for authorization.</param>
+        /// <param name="parameterCase">The parameter case.</param>
+        /// <returns>A System.Net.Http.Headers.AuthenticationHeaderValue that represents the current token container instance.</returns>
+        public virtual AuthenticationHeaderValue ToAuthenticationHeaderValue(string scheme, Cases parameterCase = Cases.Original)
+        {
+            return Token?.ToAuthenticationHeaderValue(scheme, parameterCase);
+        }
+    }
+
+    /// <summary>
     /// The token resolver.
     /// </summary>
-    public abstract class TokenResolver
+    public abstract class TokenResolver : TokenContainer
     {
         private readonly AppAccessingKey appInfo;
         private Task<TokenInfo> task;
@@ -27,9 +90,8 @@ namespace Trivial.Security
         /// Initializes a new instance of the TokenResolver class.
         /// </summary>
         /// <param name="tokenCached">The token information instance cached.</param>
-        public TokenResolver(TokenInfo tokenCached)
+        public TokenResolver(TokenInfo tokenCached) : base(tokenCached)
         {
-            Token = tokenCached;
         }
 
         /// <summary>
@@ -66,11 +128,6 @@ namespace Trivial.Security
         /// Gets the app id.
         /// </summary>
         public string AppId => !AppAccessingKey.IsNullOrEmpty(appInfo) ? appInfo.Id : null;
-
-        /// <summary>
-        /// Gets the open id info cached.
-        /// </summary>
-        public TokenInfo Token { get; protected set; }
 
         /// <summary>
         /// Gets a value indicating whether there is a token cached.
@@ -146,37 +203,6 @@ namespace Trivial.Security
         }
 
         /// <summary>
-        /// Returns a System.String that represents the current TokenResolver.
-        /// </summary>
-        /// <returns>A System.String that represents the current TokenResolver.</returns>
-        public override string ToString()
-        {
-            return Token?.ToString() ?? string.Empty;
-        }
-
-        /// <summary>
-        /// Returns a System.Net.Http.Headers.AuthenticationHeaderValue that represents the current TokenResolver.
-        /// </summary>
-        /// <param name="schemeCase">The scheme case.</param>
-        /// <param name="parameterCase">The parameter case.</param>
-        /// <returns>A System.Net.Http.Headers.AuthenticationHeaderValue that represents the current TokenResolver.</returns>
-        public AuthenticationHeaderValue ToAuthenticationHeaderValue(Cases schemeCase = Cases.Original, Cases parameterCase = Cases.Original)
-        {
-            return Token?.ToAuthenticationHeaderValue(schemeCase, parameterCase);
-        }
-
-        /// <summary>
-        /// Returns a System.Net.Http.Headers.AuthenticationHeaderValue that represents the current TokenResolver.
-        /// </summary>
-        /// <param name="scheme">The scheme to use for authorization.</param>
-        /// <param name="parameterCase">The parameter case.</param>
-        /// <returns>A System.Net.Http.Headers.AuthenticationHeaderValue that represents the current TokenResolver.</returns>
-        public AuthenticationHeaderValue ToAuthenticationHeaderValue(string scheme, Cases parameterCase = Cases.Original)
-        {
-            return Token?.ToAuthenticationHeaderValue(scheme, parameterCase);
-        }
-
-        /// <summary>
         /// Gets the token resolve request message.
         /// </summary>
         /// <param name="appSecretKey">The app secret string.</param>
@@ -207,7 +233,7 @@ namespace Trivial.Security
     /// <summary>
     /// The open id token client.
     /// </summary>
-    public abstract class OpenIdTokenClient
+    public abstract class OpenIdTokenClient : TokenContainer
     {
         private readonly AppAccessingKey appInfo;
         private Task<TokenInfo> task;
@@ -216,9 +242,8 @@ namespace Trivial.Security
         /// Initializes a new instance of the OpenIdTokenClient class.
         /// </summary>
         /// <param name="tokenCached">The token information instance cached.</param>
-        public OpenIdTokenClient(TokenInfo tokenCached)
+        public OpenIdTokenClient(TokenInfo tokenCached) : base(tokenCached)
         {
-            Token = tokenCached;
         }
 
         /// <summary>
@@ -226,7 +251,7 @@ namespace Trivial.Security
         /// </summary>
         /// <param name="appKey">The app accessing key.</param>
         /// <param name="tokenCached">The token information instance cached.</param>
-        public OpenIdTokenClient(AppAccessingKey appKey, TokenInfo tokenCached = null)
+        public OpenIdTokenClient(AppAccessingKey appKey, TokenInfo tokenCached = null) : this(tokenCached)
         {
             appInfo = appKey;
         }
@@ -255,11 +280,6 @@ namespace Trivial.Security
         /// Gets the app id.
         /// </summary>
         public string AppId => !AppAccessingKey.IsNullOrEmpty(appInfo) ? appInfo.Id : null;
-
-        /// <summary>
-        /// Gets the open id info.
-        /// </summary>
-        public TokenInfo Token { get; protected set; }
 
         /// <summary>
         /// Gets the latest visited date.
@@ -336,37 +356,6 @@ namespace Trivial.Security
                 task = null;
                 return result;
             }
-        }
-
-        /// <summary>
-        /// Returns a System.String that represents the current OpenIdTokenClient.
-        /// </summary>
-        /// <returns>A System.String that represents the current OpenIdTokenClient.</returns>
-        public override string ToString()
-        {
-            return Token?.ToString() ?? string.Empty;
-        }
-
-        /// <summary>
-        /// Returns a System.Net.Http.Headers.AuthenticationHeaderValue that represents the current OpenIdTokenClient.
-        /// </summary>
-        /// <param name="schemeCase">The scheme case.</param>
-        /// <param name="parameterCase">The parameter case.</param>
-        /// <returns>A System.Net.Http.Headers.AuthenticationHeaderValue that represents the current OpenIdTokenClient.</returns>
-        public AuthenticationHeaderValue ToAuthenticationHeaderValue(Cases schemeCase = Cases.Original, Cases parameterCase = Cases.Original)
-        {
-            return Token?.ToAuthenticationHeaderValue(schemeCase, parameterCase);
-        }
-
-        /// <summary>
-        /// Returns a System.Net.Http.Headers.AuthenticationHeaderValue that represents the current OpenIdTokenClient.
-        /// </summary>
-        /// <param name="scheme">The scheme to use for authorization.</param>
-        /// <param name="parameterCase">The parameter case.</param>
-        /// <returns>A System.Net.Http.Headers.AuthenticationHeaderValue that represents the current OpenIdTokenClient.</returns>
-        public AuthenticationHeaderValue ToAuthenticationHeaderValue(string scheme, Cases parameterCase = Cases.Original)
-        {
-            return Token?.ToAuthenticationHeaderValue(scheme, parameterCase);
         }
 
         /// <summary>
@@ -456,14 +445,14 @@ namespace Trivial.Security
         public bool HasToken => AccessToken != null && AccessToken.Length > 0;
 
         /// <summary>
-        /// Gets or sets the optional handler of the access token setter for SetToken and DecryptToken methods.
+        /// Gets or sets the optional handler of the access token setter for DecryptToken methods.
         /// </summary>
-        public Func<string, bool, string> TokenSet { get; set; }
+        public Func<string, bool, string> TokenFormatBeforeDecrypt { get; set; }
 
         /// <summary>
         /// Gets or sets the optional handler of the access token getter for EncryptToken method.
         /// </summary>
-        public Func<string, bool, string> TokenGet { get; set; }
+        public Func<string, bool, string> TokenFormatBeforeEncrypt { get; set; }
 
         /// <summary>
         /// Sets a specific crypto service provider.
@@ -537,13 +526,13 @@ namespace Trivial.Security
             var rsa = crypto;
             if (rsa == null && supportNoCrypto)
             {
-                if (TokenSet != null) tokenEncrypted = TokenSet(tokenEncrypted, false);
+                if (TokenFormatBeforeDecrypt != null) tokenEncrypted = TokenFormatBeforeDecrypt(tokenEncrypted, false);
                 AccessToken = tokenEncrypted.ToSecure();
                 return;
             }
 
             var plain = rsa.Decrypt(Convert.FromBase64String(tokenEncrypted), padding ?? RSAEncryptionPadding.Pkcs1);
-            AccessToken = TokenSet != null ? TokenSet(Encoding.UTF8.GetString(plain), true).ToSecure() : Encoding.UTF8.GetString(plain).ToSecure();
+            AccessToken = TokenFormatBeforeDecrypt != null ? TokenFormatBeforeDecrypt(Encoding.UTF8.GetString(plain), true).ToSecure() : Encoding.UTF8.GetString(plain).ToSecure();
         }
 
         /// <summary>
@@ -557,13 +546,25 @@ namespace Trivial.Security
         }
 
         /// <summary>
+        /// Clears the token.
+        /// </summary>
+        public void ClearToken()
+        {
+            AccessToken = null;
+        }
+
+        /// <summary>
         /// Sets a new token.
         /// </summary>
         /// <param name="token">The new token.</param>
         public void SetToken(string token)
         {
-            if (string.IsNullOrWhiteSpace(token)) return;
-            if (TokenSet != null) token = TokenSet(token, false);
+            if (string.IsNullOrWhiteSpace(token))
+            {
+                AccessToken = null;
+                return;
+            }
+
             AccessToken = token.ToSecure();
         }
 
@@ -577,6 +578,15 @@ namespace Trivial.Security
         }
 
         /// <summary>
+        /// Sets a new token.
+        /// </summary>
+        /// <param name="token">The new token.</param>
+        public void SetToken(TokenContainer token)
+        {
+            SetToken(token?.AccessToken);
+        }
+
+        /// <summary>
         /// Decrypts the token and fills into this token exchange instance.
         /// </summary>
         /// <param name="key">The optional token encryption key to use to override the original one set.</param>
@@ -584,11 +594,11 @@ namespace Trivial.Security
         public string EncryptToken(RSAParameters? key = null, RSAEncryptionPadding padding = null)
         {
             if (!key.HasValue) key = EncryptKey;
-            if (!key.HasValue) return TokenGet != null ? TokenGet(AccessToken.ToUnsecureString(), false) : AccessToken.ToUnsecureString();
+            if (!key.HasValue) return TokenFormatBeforeEncrypt != null ? TokenFormatBeforeEncrypt(AccessToken.ToUnsecureString(), false) : AccessToken.ToUnsecureString();
             var rsa = RSA.Create();
             rsa.ImportParameters(key.Value);
             var cypher = rsa.Encrypt(
-                Encoding.UTF8.GetBytes(TokenGet != null ? TokenGet(AccessToken.ToUnsecureString(), true) : AccessToken.ToUnsecureString()),
+                Encoding.UTF8.GetBytes(TokenFormatBeforeEncrypt != null ? TokenFormatBeforeEncrypt(AccessToken.ToUnsecureString(), true) : AccessToken.ToUnsecureString()),
                 padding ?? RSAEncryptionPadding.Pkcs1);
             return Convert.ToBase64String(cypher);
         }

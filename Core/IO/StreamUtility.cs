@@ -88,7 +88,6 @@ namespace Trivial.IO
             }
 
             if (destination.Length > 0) yield return destination;
-            else yield break;
         }
     }
 }

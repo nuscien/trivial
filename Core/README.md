@@ -65,7 +65,7 @@ task.ProcessAsync();
 ### Retry
 
 You can create a linear retry policy or even a customized to process an action with the specific retry policy.
-And you use `ObservableTask` to observe the state of an action processing.
+And you can use `ObservableTask` to observe the state of an action processing.
 
 ## [Mathematics](https://github.com/nuscien/trivial/wiki/maths)
 

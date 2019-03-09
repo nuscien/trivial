@@ -91,7 +91,7 @@ namespace Trivial.Text
         /// </summary>
         /// <param name="text">The original string.</param>
         /// <param name="length">The count of a line.</param>
-        /// <param name="newLine">The newline string.</param>
+        /// <param name="newLine">The optional newline string.</param>
         /// <returns>A new text with line break.</returns>
         public static string BreakLines(string text, int length, string newLine = null)
         {
@@ -124,7 +124,7 @@ namespace Trivial.Text
         /// </summary>
         /// <param name="text">The original string.</param>
         /// <param name="length">The count of a line.</param>
-        /// <param name="newLine">The newline string.</param>
+        /// <param name="newLine">The newline character.</param>
         /// <returns>A new text with line break.</returns>
         public static string BreakLines(string text, int length, char newLine)
         {

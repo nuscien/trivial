@@ -39,10 +39,11 @@ namespace Trivial.Security
             if (key.IndexOf("<") == 0 && key.LastIndexOf(">") == key.Length - 1)
             {
                 var xml = XElement.Parse(key);
-                if (xml?.Name?.LocalName != "RSAKeyValue") return null;
+                if (xml == null) return null;
                 var p = new RSAParameters();
                 foreach (var ele in xml.Elements())
                 {
+                    if (string.IsNullOrWhiteSpace(ele?.Value)) continue;
                     var chars = Convert.FromBase64String(ele.Value);
                     switch (ele.Name?.LocalName)
                     {
@@ -233,10 +234,11 @@ namespace Trivial.Security
         /// Converts the RSA parameter to OpenSSL RSA private key format string (PEM Base64).
         /// </summary>
         /// <param name="parameters">The RSA parameters.</param>
-        /// <param name="usePKCS8">true if use PKCS8; otherwise, false.</param>
+        /// <param name="usePKCS8">true if use Private-Key Information Syntax Standard #8; otherwise, false.</param>
         /// <returns>The PEM string of private key.</returns>
         public static string ToPrivatePEMString(this RSAParameters parameters, bool usePKCS8)
         {
+            if (parameters.D == null || parameters.D.Length == 0) return ToPublicPEMString(parameters);
             using (var stream = new MemoryStream())
             {
                 // Wrtie total length and version.

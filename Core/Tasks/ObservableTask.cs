@@ -77,7 +77,7 @@ namespace Trivial.Tasks
     }
 
     /// <summary>
-    /// 
+    /// The task states checker.
     /// </summary>
     public static class TaskStatesChecker
     {
