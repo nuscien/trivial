@@ -166,7 +166,7 @@ namespace Trivial.IO
         }
 
         /// <summary>
-        /// Gets the string of the file size.
+        /// Gets the approximation string of the file size.
         /// </summary>
         /// <param name="size">The file size.</param>
         /// <param name="unit">The unit.</param>
@@ -180,29 +180,29 @@ namespace Trivial.IO
                 size = -size;
             }
 
-            if (size > 1000000000000000000) return prefix + (size / 1152921504606846976.0).ToString("F1") + "E" + unit;
-            if (size > 1000000000000000) return prefix + (size / 1125899906842624.0).ToString("F1") + "P" + unit;
-            if (size > 1000000000000) return prefix + (size / 1099511627776.0).ToString("F1") + "T" + unit;
-            if (size > 1000000000) return prefix + (size / 1073741824.0).ToString("F1") + "G" + unit;
-            if (size > 1000000) return prefix + (size / 1048576.0).ToString("F1") + "M" + unit;
-            if (size > 990) return prefix + (size / 1024.0).ToString("F1") + "K" + unit;
+            if (size > 1125336956000000000) return prefix + (size / 1152921504606846976.0).ToString("F1") + "E" + unit;
+            if (size > 1098961000000000) return prefix + (size / 1125899906842624.0).ToString("F1") + "P" + unit;
+            if (size > 1073204000000) return prefix + (size / 1099511627776.0).ToString("F1") + "T" + unit;
+            if (size > 1048000000) return prefix + (size / 1073741824.0).ToString("F1") + "G" + unit;
+            if (size > 1023400) return prefix + (size / 1048576.0).ToString("F1") + "M" + unit;
+            if (size > 999) return prefix + (size / 1024.0).ToString("F1") + "K" + unit;
             return prefix + size.ToString() + unit;
         }
 
         /// <summary>
-        /// Gets the string of the file size.
+        /// Gets the approximation string of the file size.
         /// </summary>
         /// <param name="size">The file size.</param>
         /// <param name="unit">The unit.</param>
         /// <returns>A string.</returns>
         public static string FileSize(ulong size, string unit = "B")
         {
-            if (size > 1000000000000000000) return (size / 1152921504606846976.0).ToString("F1") + "E" + unit;
-            if (size > 1000000000000000) return (size / 1125899906842624.0).ToString("F1") + "P" + unit;
-            if (size > 1000000000000) return (size / 1099511627776.0).ToString("F1") + "T" + unit;
-            if (size > 1000000000) return (size / 1073741824.0).ToString("F1") + "G" + unit;
-            if (size > 1000000) return (size / 1048576.0).ToString("F1") + "M" + unit;
-            if (size > 990) return (size / 1024.0).ToString("F1") + "K" + unit;
+            if (size > 1125336956000000000) return (size / 1152921504606846976.0).ToString("F1") + "E" + unit;
+            if (size > 1098961000000000) return (size / 1125899906842624.0).ToString("F1") + "P" + unit;
+            if (size > 1073204000000) return (size / 1099511627776.0).ToString("F1") + "T" + unit;
+            if (size > 1048000000) return (size / 1073741824.0).ToString("F1") + "G" + unit;
+            if (size > 1023400) return (size / 1048576.0).ToString("F1") + "M" + unit;
+            if (size > 999) return (size / 1024.0).ToString("F1") + "K" + unit;
             return size.ToString() + unit;
         }
 
