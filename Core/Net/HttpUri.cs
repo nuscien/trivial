@@ -254,9 +254,9 @@ namespace Trivial.Net
     }
 
     /// <summary>
-    /// The query data in URI.
+    /// The query data in URI after question mark.
     /// </summary>
-    public class QueryData : Collection.StringKeyValuePairs
+    public class QueryData : StringKeyValuePairs
     {
         /// <summary>
         /// Gets or sets the default encoding.
@@ -269,7 +269,7 @@ namespace Trivial.Net
         /// <param name="query">The query string.</param>
         /// <param name="append">true if append instead of override; otherwise, false.</param>
         /// <param name="encoding">The optional encoding.</param>
-        /// <returns>A query data instance.</returns>
+        /// <returns>The count of query item added.</returns>
         public int ParseSet(string query, bool append = false, Encoding encoding = null)
         {
             if (!append) Clear();
@@ -337,6 +337,17 @@ namespace Trivial.Net
 
             str.Append(ToString(encoding));
             return str.ToString();
+        }
+
+        /// <summary>
+        /// Returns a string HTTP request content.
+        /// </summary>
+        /// <param name="encoding">The optional encoding to use for the content. Or null for default.</param>
+        /// <param name="mediaType">The optional media type to use for the content. Or null for default.</param>
+        /// <returns>A string HTTP request content.</returns>
+        public StringContent ToStringContent(Encoding encoding = null, string mediaType = null)
+        {
+            return new StringContent(ToString(), encoding ?? DefaultEncoding ?? Encoding.UTF8, mediaType ?? "application/x-www-form-urlencoded");
         }
 
         /// <summary>

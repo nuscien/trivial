@@ -140,28 +140,41 @@ namespace Trivial.Net
         /// <param name="request">The HTTP request message.</param>
         /// <param name="cancellationToken">The optional cancellation token.</param>
         /// <returns>A result serialized.</returns>
+        /// <exception cref="ArgumentNullException">The request was null.</exception>
+        /// <exception cref="FailedHttpException">HTTP response contains failure status code.</exception>
+        /// <exception cref="HttpRequestException">The request failed due to an underlying issue such as network connectivity, DNS failure, server certificate validation or timeout.</exception>
+        /// <exception cref="InvalidOperationException">The task is cancelled.</exception>
         public async Task<T> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken = default)
         {
-            if (request == null) throw new ArgumentNullException(nameof(request));
+            if (request == null) throw new ArgumentNullException(nameof(request), "request should not be null.");
             if (Client == null && !IsNewHttpClientByDefault) Client = new HttpClient();
             var client = Client ?? new HttpClient();
             Sending?.Invoke(this, new SendingEventArgs(request));
             cancellationToken.ThrowIfCancellationRequested();
             OnSend(request);
             HttpResponseMessage resp = null;
-            var result = await Tasks.RetryExtension.ProcessAsync(RetryPolicy, async (CancellationToken cancellation) =>
+            try
             {
-                resp = await client.SendAsync(request, cancellationToken);
-                if (!SerializeEvenIfFailed && !resp.IsSuccessStatusCode)
-                    throw new FailedHttpException(resp);
-                var obj = Serializer != null
-                    ? await HttpClientUtility.SerializeAsync(resp.Content, Serializer)
-                    : await HttpClientUtility.SerializeJsonAsync<T>(resp.Content);
-                return obj;
-            }, GetExceptionInternal, cancellationToken);
-            OnReceive(result.Result, resp);
-            Received?.Invoke(this, new ReceivedEventArgs<T>(result.Result, resp));
-            return result.Result;
+                var result = await Tasks.RetryExtension.ProcessAsync(RetryPolicy, async (CancellationToken cancellation) =>
+                {
+                    resp = await client.SendAsync(request, cancellationToken);
+                    if (!SerializeEvenIfFailed && !resp.IsSuccessStatusCode)
+                        throw new FailedHttpException(resp);
+                    var obj = Serializer != null
+                        ? await HttpClientUtility.SerializeAsync(resp.Content, Serializer)
+                        : await HttpClientUtility.SerializeJsonAsync<T>(resp.Content);
+                    return obj;
+                }, GetExceptionInternal, cancellationToken);
+                OnReceive(result.Result, resp);
+                Received?.Invoke(this, new ReceivedEventArgs<T>(result.Result, resp));
+                return result.Result;
+            }
+            catch (FailedHttpException)
+            {
+                OnReceive(default, resp);
+                Received?.Invoke(this, new ReceivedEventArgs<T>(default, resp));
+                throw;
+            }
         }
 
         /// <summary>
@@ -171,6 +184,9 @@ namespace Trivial.Net
         /// <param name="requestUri">The Uri the request is sent to.</param>
         /// <param name="cancellationToken">The optional cancellation token.</param>
         /// <returns>A result serialized.</returns>
+        /// <exception cref="FailedHttpException">HTTP response contains failure status code.</exception>
+        /// <exception cref="HttpRequestException">The request failed due to an underlying issue such as network connectivity, DNS failure, server certificate validation or timeout.</exception>
+        /// <exception cref="InvalidOperationException">The task is cancelled.</exception>
         public Task<T> SendAsync(HttpMethod method, string requestUri, CancellationToken cancellationToken = default)
         {
             return SendAsync(new HttpRequestMessage(method, requestUri), cancellationToken);
@@ -183,6 +199,9 @@ namespace Trivial.Net
         /// <param name="requestUri">The Uri the request is sent to.</param>
         /// <param name="cancellationToken">The optional cancellation token.</param>
         /// <returns>A result serialized.</returns>
+        /// <exception cref="FailedHttpException">HTTP response contains failure status code.</exception>
+        /// <exception cref="HttpRequestException">The request failed due to an underlying issue such as network connectivity, DNS failure, server certificate validation or timeout.</exception>
+        /// <exception cref="InvalidOperationException">The task is cancelled.</exception>
         public Task<T> SendAsync(HttpMethod method, Uri requestUri, CancellationToken cancellationToken = default)
         {
             return SendAsync(new HttpRequestMessage(method, requestUri), cancellationToken);
@@ -196,6 +215,9 @@ namespace Trivial.Net
         /// <param name="content">The HTTP request content sent to the server.</param>
         /// <param name="cancellationToken">The optional cancellation token.</param>
         /// <returns>A result serialized.</returns>
+        /// <exception cref="FailedHttpException">HTTP response contains failure status code.</exception>
+        /// <exception cref="HttpRequestException">The request failed due to an underlying issue such as network connectivity, DNS failure, server certificate validation or timeout.</exception>
+        /// <exception cref="InvalidOperationException">The task is cancelled.</exception>
         public Task<T> SendAsync(HttpMethod method, string requestUri, HttpContent content, CancellationToken cancellationToken = default)
         {
             return SendAsync(new HttpRequestMessage(method, requestUri)
@@ -212,6 +234,9 @@ namespace Trivial.Net
         /// <param name="content">The HTTP request content sent to the server.</param>
         /// <param name="cancellationToken">The optional cancellation token.</param>
         /// <returns>A result serialized.</returns>
+        /// <exception cref="FailedHttpException">HTTP response contains failure status code.</exception>
+        /// <exception cref="HttpRequestException">The request failed due to an underlying issue such as network connectivity, DNS failure, server certificate validation or timeout.</exception>
+        /// <exception cref="InvalidOperationException">The task is cancelled.</exception>
         public Task<T> SendAsync(HttpMethod method, Uri requestUri, HttpContent content, CancellationToken cancellationToken = default)
         {
             return SendAsync(new HttpRequestMessage(method, requestUri)
@@ -230,6 +255,9 @@ namespace Trivial.Net
         /// <param name="settings">The options for serialization.</param>
         /// <param name="cancellationToken">The optional cancellation token.</param>
         /// <returns>A result serialized.</returns>
+        /// <exception cref="FailedHttpException">HTTP response contains failure status code.</exception>
+        /// <exception cref="HttpRequestException">The request failed due to an underlying issue such as network connectivity, DNS failure, server certificate validation or timeout.</exception>
+        /// <exception cref="InvalidOperationException">The task is cancelled.</exception>
         public async Task<T> SendAsync<TRequestBody>(HttpMethod method, string requestUri, TRequestBody content, DataContractJsonSerializerSettings settings, CancellationToken cancellationToken = default)
         {
             using (var stream = new MemoryStream())
@@ -253,6 +281,9 @@ namespace Trivial.Net
         /// <param name="settings">The options for serialization.</param>
         /// <param name="cancellationToken">The optional cancellation token.</param>
         /// <returns>A result serialized.</returns>
+        /// <exception cref="FailedHttpException">HTTP response contains failure status code.</exception>
+        /// <exception cref="HttpRequestException">The request failed due to an underlying issue such as network connectivity, DNS failure, server certificate validation or timeout.</exception>
+        /// <exception cref="InvalidOperationException">The task is cancelled.</exception>
         public async Task<T> SendAsync<TRequestBody>(HttpMethod method, Uri requestUri, TRequestBody content, DataContractJsonSerializerSettings settings, CancellationToken cancellationToken = default)
         {
             using (var stream = new MemoryStream())
@@ -275,6 +306,9 @@ namespace Trivial.Net
         /// <param name="content">The HTTP request content sent to the server.</param>
         /// <param name="cancellationToken">The optional cancellation token.</param>
         /// <returns>A result serialized.</returns>
+        /// <exception cref="FailedHttpException">HTTP response contains failure status code.</exception>
+        /// <exception cref="HttpRequestException">The request failed due to an underlying issue such as network connectivity, DNS failure, server certificate validation or timeout.</exception>
+        /// <exception cref="InvalidOperationException">The task is cancelled.</exception>
         public Task<T> SendJsonAsync<TRequestBody>(HttpMethod method, string requestUri, TRequestBody content, CancellationToken cancellationToken = default)
         {
             return SendAsync(method, requestUri, content, null, cancellationToken);
@@ -289,6 +323,9 @@ namespace Trivial.Net
         /// <param name="content">The HTTP request content sent to the server.</param>
         /// <param name="cancellationToken">The optional cancellation token.</param>
         /// <returns>A result serialized.</returns>
+        /// <exception cref="FailedHttpException">HTTP response contains failure status code.</exception>
+        /// <exception cref="HttpRequestException">The request failed due to an underlying issue such as network connectivity, DNS failure, server certificate validation or timeout.</exception>
+        /// <exception cref="InvalidOperationException">The task is cancelled.</exception>
         public Task<T> SendJsonAsync<TRequestBody>(HttpMethod method, Uri requestUri, TRequestBody content, CancellationToken cancellationToken = default)
         {
             return SendAsync(method, requestUri, content, null, cancellationToken);
@@ -304,6 +341,9 @@ namespace Trivial.Net
         /// <param name="deserializer">The JSON deserializer.</param>
         /// <param name="cancellationToken">The optional cancellation token.</param>
         /// <returns>A result serialized.</returns>
+        /// <exception cref="FailedHttpException">HTTP response contains failure status code.</exception>
+        /// <exception cref="HttpRequestException">The request failed due to an underlying issue such as network connectivity, DNS failure, server certificate validation or timeout.</exception>
+        /// <exception cref="InvalidOperationException">The task is cancelled.</exception>
         public Task<T> SendJsonAsync<TRequestBody>(HttpMethod method, string requestUri, TRequestBody content, Func<TRequestBody, string> deserializer, CancellationToken cancellationToken = default)
         {
             return deserializer != null ? SendAsync(new HttpRequestMessage(method, requestUri)
@@ -322,6 +362,9 @@ namespace Trivial.Net
         /// <param name="deserializer">The JSON deserializer.</param>
         /// <param name="cancellationToken">The optional cancellation token.</param>
         /// <returns>A result serialized.</returns>
+        /// <exception cref="FailedHttpException">HTTP response contains failure status code.</exception>
+        /// <exception cref="HttpRequestException">The request failed due to an underlying issue such as network connectivity, DNS failure, server certificate validation or timeout.</exception>
+        /// <exception cref="InvalidOperationException">The task is cancelled.</exception>
         public Task<T> SendJsonAsync<TRequestBody>(HttpMethod method, Uri requestUri, TRequestBody content, Func<TRequestBody, string> deserializer, CancellationToken cancellationToken = default)
         {
             return deserializer != null ? SendAsync(new HttpRequestMessage(method, requestUri)
@@ -336,6 +379,9 @@ namespace Trivial.Net
         /// <param name="requestUri">The Uri the request is sent to.</param>
         /// <param name="cancellationToken">The optional cancellation token.</param>
         /// <returns>A result serialized.</returns>
+        /// <exception cref="FailedHttpException">HTTP response contains failure status code.</exception>
+        /// <exception cref="HttpRequestException">The request failed due to an underlying issue such as network connectivity, DNS failure, server certificate validation or timeout.</exception>
+        /// <exception cref="InvalidOperationException">The task is cancelled.</exception>
         public Task<T> GetAsync(string requestUri, CancellationToken cancellationToken = default)
         {
             return SendAsync(new HttpRequestMessage(HttpMethod.Get, requestUri), cancellationToken);
@@ -347,6 +393,9 @@ namespace Trivial.Net
         /// <param name="requestUri">The Uri the request is sent to.</param>
         /// <param name="cancellationToken">The optional cancellation token.</param>
         /// <returns>A result serialized.</returns>
+        /// <exception cref="FailedHttpException">HTTP response contains failure status code.</exception>
+        /// <exception cref="HttpRequestException">The request failed due to an underlying issue such as network connectivity, DNS failure, server certificate validation or timeout.</exception>
+        /// <exception cref="InvalidOperationException">The task is cancelled.</exception>
         public Task<T> GetAsync(Uri requestUri, CancellationToken cancellationToken = default)
         {
             return SendAsync(new HttpRequestMessage(HttpMethod.Get, requestUri), cancellationToken);
@@ -374,6 +423,9 @@ namespace Trivial.Net
         /// <param name="content">The HTTP request content sent to the server.</param>
         /// <param name="cancellationToken">The optional cancellation token.</param>
         /// <returns>A result serialized.</returns>
+        /// <exception cref="FailedHttpException">HTTP response contains failure status code.</exception>
+        /// <exception cref="HttpRequestException">The request failed due to an underlying issue such as network connectivity, DNS failure, server certificate validation or timeout.</exception>
+        /// <exception cref="InvalidOperationException">The task is cancelled.</exception>
         public Task<T> PostAsync(Uri requestUri, HttpContent content, CancellationToken cancellationToken = default)
         {
             return SendAsync(new HttpRequestMessage(HttpMethod.Post, requestUri)
@@ -389,6 +441,9 @@ namespace Trivial.Net
         /// <param name="content">The HTTP request content sent to the server.</param>
         /// <param name="cancellationToken">The optional cancellation token.</param>
         /// <returns>A result serialized.</returns>
+        /// <exception cref="FailedHttpException">HTTP response contains failure status code.</exception>
+        /// <exception cref="HttpRequestException">The request failed due to an underlying issue such as network connectivity, DNS failure, server certificate validation or timeout.</exception>
+        /// <exception cref="InvalidOperationException">The task is cancelled.</exception>
         public Task<T> PutAsync(string requestUri, HttpContent content, CancellationToken cancellationToken = default)
         {
             return SendAsync(new HttpRequestMessage(HttpMethod.Put, requestUri)
@@ -404,6 +459,9 @@ namespace Trivial.Net
         /// <param name="content">The HTTP request content sent to the server.</param>
         /// <param name="cancellationToken">The optional cancellation token.</param>
         /// <returns>A result serialized.</returns>
+        /// <exception cref="FailedHttpException">HTTP response contains failure status code.</exception>
+        /// <exception cref="HttpRequestException">The request failed due to an underlying issue such as network connectivity, DNS failure, server certificate validation or timeout.</exception>
+        /// <exception cref="InvalidOperationException">The task is cancelled.</exception>
         public Task<T> PutAsync(Uri requestUri, HttpContent content, CancellationToken cancellationToken = default)
         {
             return SendAsync(new HttpRequestMessage(HttpMethod.Put, requestUri)

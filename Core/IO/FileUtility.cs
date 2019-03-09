@@ -180,13 +180,7 @@ namespace Trivial.IO
                 size = -size;
             }
 
-            if (size > 1125336956000000000) return prefix + (size / 1152921504606846976.0).ToString("F1") + "E" + unit;
-            if (size > 1098961000000000) return prefix + (size / 1125899906842624.0).ToString("F1") + "P" + unit;
-            if (size > 1073204000000) return prefix + (size / 1099511627776.0).ToString("F1") + "T" + unit;
-            if (size > 1048000000) return prefix + (size / 1073741824.0).ToString("F1") + "G" + unit;
-            if (size > 1023400) return prefix + (size / 1048576.0).ToString("F1") + "M" + unit;
-            if (size > 999) return prefix + (size / 1024.0).ToString("F1") + "K" + unit;
-            return prefix + size.ToString() + unit;
+            return prefix + FileSize((ulong)size, unit);
         }
 
         /// <summary>

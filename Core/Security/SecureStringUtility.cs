@@ -16,9 +16,10 @@ namespace Trivial.Security
         /// </summary>
         /// <param name="obj">The secure string instance.</param>
         /// <param name="value">The string to append.</param>
+        /// <exception cref="ArgumentNullException">the secure string instance was null.</exception>
         public static void AppendString(this SecureString obj, string value)
         {
-            if (obj == null) throw new ArgumentNullException(nameof(obj));
+            if (obj == null) throw new ArgumentNullException(nameof(obj), "obj should not be null.");
             if (string.IsNullOrEmpty(value)) return;
             foreach (var c in value)
             {
@@ -31,9 +32,10 @@ namespace Trivial.Security
         /// </summary>
         /// <param name="obj">The secure string instance.</param>
         /// <param name="value">The string to append.</param>
+        /// <exception cref="ArgumentNullException">the secure string instance was null.</exception>
         public static void AppendString(this SecureString obj, StringBuilder value)
         {
-            if (obj == null) throw new ArgumentNullException(nameof(obj));
+            if (obj == null) throw new ArgumentNullException(nameof(obj), "obj should not be null.");
             if (value == null) return;
             for (var i = 0; i < value.Length; i++)
             {
@@ -47,9 +49,10 @@ namespace Trivial.Security
         /// <param name="obj">The secure string instance.</param>
         /// <param name="value">The byte array to append.</param>
         /// <param name="encoding">The text encoding.</param>
+        /// <exception cref="ArgumentNullException">the secure string instance was null.</exception>
         public static void AppendString(this SecureString obj, byte[] value, Encoding encoding = null)
         {
-            if (obj == null) throw new ArgumentNullException(nameof(obj));
+            if (obj == null) throw new ArgumentNullException(nameof(obj), "obj should not be null.");
             if (value == null) return;
             foreach (var c in (encoding ?? Encoding.UTF8).GetChars(value))
             {
@@ -63,9 +66,10 @@ namespace Trivial.Security
         /// <param name="obj">The secure string instance.</param>
         /// <param name="value">The string to append.</param>
         /// <param name="args">An object array that contains zero or more objects to format.</param>
+        /// <exception cref="ArgumentNullException">the secure string instance was null.</exception>
         public static void AppendFormat(this SecureString obj, string value, params object[] args)
         {
-            if (obj == null) throw new ArgumentNullException(nameof(obj));
+            if (obj == null) throw new ArgumentNullException(nameof(obj), "obj should not be null.");
             if (string.IsNullOrEmpty(value)) return;
             value = string.Format(value, args);
             foreach (var c in value)
