@@ -5,6 +5,7 @@ using System.Linq;
 using System.Security;
 using System.Security.Cryptography;
 using System.Text;
+using System.Xml;
 using System.Xml.Linq;
 
 using Trivial.Collection;
@@ -224,10 +225,33 @@ namespace Trivial.Security
                 new XElement("Q") { Value = Convert.ToBase64String(parameters.Q) },
                 new XElement("DP") { Value = Convert.ToBase64String(parameters.DP) },
                 new XElement("DQ") { Value = Convert.ToBase64String(parameters.DQ) },
-                new XElement("P") { Value = Convert.ToBase64String(parameters.P) },
                 new XElement("InverseQ") { Value = Convert.ToBase64String(parameters.InverseQ) },
                 new XElement("D") { Value = Convert.ToBase64String(parameters.D) });
             return xml;
+        }
+
+        /// <summary>
+        /// Converts the RSA parameters to an XmlDocument object.
+        /// </summary>
+        /// <param name="parameters">The RSA parameters.</param>
+        /// <param name="includePrivateKey">true if includes the private key; otherwise, false.</param>
+        /// <returns>An XmlDocument object.</returns>
+        public static XmlDocument XmlDocument(this RSAParameters parameters, bool includePrivateKey)
+        {
+            var doc = new XmlDocument();
+            doc.LoadXml("<RSAKeyValue></RSAKeyValue>");
+            AppendChildWithBase64(doc, "Modulus", parameters.Modulus);
+            AppendChildWithBase64(doc, "Exponent", parameters.Exponent);
+            if (includePrivateKey) {
+                AppendChildWithBase64(doc, "P", parameters.P);
+                AppendChildWithBase64(doc, "Q", parameters.Q);
+                AppendChildWithBase64(doc, "DP", parameters.DP);
+                AppendChildWithBase64(doc, "DQ", parameters.DQ);
+                AppendChildWithBase64(doc, "InverseQ", parameters.InverseQ);
+                AppendChildWithBase64(doc, "D", parameters.D);
+            }
+
+            return doc;
         }
 
         /// <summary>
@@ -438,6 +462,19 @@ namespace Trivial.Security
             WriteLenByte(stream, len);
             stream.Write(bytes, index, len);
             return stream.ToArray();
+        }
+
+        private static XmlElement AppendChildWithText(XmlDocument doc, string name, string value)
+        {
+            var ele = doc.CreateElement(name);
+            doc.AppendChild(ele);
+            if (!string.IsNullOrEmpty(value)) ele.AppendChild(doc.CreateTextNode(value));
+            return ele;
+        }
+
+        private static XmlElement AppendChildWithBase64(XmlDocument doc, string name, byte[] value)
+        {
+            return AppendChildWithText(doc, name, value != null ? Convert.ToBase64String(value) : null);
         }
     }
 }

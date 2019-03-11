@@ -47,6 +47,11 @@ namespace Trivial.Security
         public string AccessToken => Token?.AccessToken;
 
         /// <summary>
+        /// Gets a value indicating whether the access token is null, empty or consists only of white-space characters.
+        /// </summary>
+        public bool IsTokenNullOrEmpty => Token?.IsEmpty ?? false;
+
+        /// <summary>
         /// Returns a System.String that represents the current token container instance.
         /// </summary>
         /// <returns>A System.String that represents the current token container instance.</returns>

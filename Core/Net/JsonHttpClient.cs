@@ -80,11 +80,6 @@ namespace Trivial.Net
     public class JsonHttpClient<T>
     {
         /// <summary>
-        /// Gets the MIME value.
-        /// </summary>
-        public const string MIME = "application/json";
-
-        /// <summary>
         /// Adds or removes a handler raised on sending.
         /// </summary>
         public event EventHandler<SendingEventArgs> Sending;
@@ -348,7 +343,7 @@ namespace Trivial.Net
         {
             return deserializer != null ? SendAsync(new HttpRequestMessage(method, requestUri)
             {
-                Content = new StringContent(deserializer(content), Encoding.UTF8, MIME)
+                Content = new StringContent(deserializer(content), Encoding.UTF8, Trivial.Web.WebUtility.JsonMIME)
             }, cancellationToken) : SendJsonAsync(method, requestUri, content, cancellationToken);
         }
 
@@ -369,7 +364,7 @@ namespace Trivial.Net
         {
             return deserializer != null ? SendAsync(new HttpRequestMessage(method, requestUri)
             {
-                Content = new StringContent(deserializer(content), Encoding.UTF8, MIME)
+                Content = new StringContent(deserializer(content), Encoding.UTF8, Trivial.Web.WebUtility.JsonMIME)
             }, cancellationToken) : SendJsonAsync(method, requestUri, content, cancellationToken);
         }
 

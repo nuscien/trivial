@@ -362,5 +362,22 @@ namespace Trivial.Collection
 
             return true;
         }
+
+        /// <summary>
+        /// Tests if they are same.
+        /// </summary>
+        /// <param name="a">Collection a.</param>
+        /// <param name="b">Collection b.</param>
+        /// <returns>true if they are same; otherwise, false.</returns>
+        public static bool Equals<T>(IList<T> a, IList<T> b)
+        {
+            if (a.Count != b.Count) return false;
+            for (var i = 0; i < a.Count; i++)
+            {
+                if ((a[i] == null && b[i] != null) || !a[i].Equals(b[i])) return false;
+            }
+
+            return true;
+        }
     }
 }

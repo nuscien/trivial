@@ -10,6 +10,21 @@ namespace Trivial.Web
     public static class WebUtility
     {
         /// <summary>
+        /// Gets the MIME value of JSON format text.
+        /// </summary>
+        public const string JsonMIME = "application/json";
+
+        /// <summary>
+        /// Gets the MIME value of JavaScript format text.
+        /// </summary>
+        public const string JavaScriptMIME = "text/javascript";
+
+        /// <summary>
+        /// Gets the MIME value of CSS format text.
+        /// </summary>
+        public const string CssMIME = "text/css";
+
+        /// <summary>
         /// Parses JavaScript date tick to date and time.
         /// </summary>
         /// <param name="tick">The JavaScript date tick.</param>

@@ -224,9 +224,8 @@ namespace Trivial.Security
         public Dictionary<string, string> AdditionalData { get; private set; }
 
         /// <summary>
-        /// Tests if the access token is set.
+        /// Gets a value indicating whether the access token is null, empty or consists only of white-space characters.
         /// </summary>
-        /// <returns>true if it is null or empty; otherwise, false.</returns>
         public bool IsEmpty => string.IsNullOrWhiteSpace(AccessToken);
 
         /// <summary>
