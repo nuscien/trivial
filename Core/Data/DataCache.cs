@@ -117,7 +117,7 @@ namespace Trivial.Data
         /// <summary>
         /// Gets a value indicating whether the collection is readonly.
         /// </summary>
-        public bool IsReadOnly => ((IList<ItemInfo>)items).IsReadOnly;
+        public bool IsReadOnly => false;
 
         /// <summary>
         /// Gets the element at the specified index.
@@ -203,6 +203,34 @@ namespace Trivial.Data
         }
 
         /// <summary>
+        /// Searches for the specified object and returns the zero-based index of the first occurrence within the entire collection.
+        /// </summary>
+        /// <param name="id">The identifier.</param>
+        /// <returns>The zero-based index of the first occurrence of item within the entire collection, if found; otherwise, –1.</returns>
+        public int IndexOf(string id)
+        {
+            return IndexOf(null, id);
+        }
+
+        /// <summary>
+        /// Searches for the specified object and returns the zero-based index of the first occurrence within the entire collection.
+        /// </summary>
+        /// <param name="prefix">The prefix of the identifier for resource group.</param>
+        /// <param name="id">The identifier in the resource group.</param>
+        /// <returns>The zero-based index of the first occurrence of item within the entire collection, if found; otherwise, –1.</returns>
+        public int IndexOf(string prefix, string id)
+        {
+            var i = -1;
+            foreach (var ele in items)
+            {
+                i++;
+                if (ele.Prefix == prefix && ele.Id == id && !ele.IsExpired(Expiration)) return i;
+            }
+
+            return i;
+        }
+
+        /// <summary>
         /// Gets the cache item info.
         /// </summary>
         /// <param name="id">The identifier.</param>
@@ -221,7 +249,7 @@ namespace Trivial.Data
         public ItemInfo GetInfo(string prefix, string id)
         {
             if (string.IsNullOrWhiteSpace(id)) return null;
-            var info = items.LastOrDefault(ele => ele.Prefix == null && ele.Id == id);
+            var info = items.LastOrDefault(ele => ele.Prefix == prefix && ele.Id == id);
             if (info == null) return null;
             if (info.Value == null || info.IsExpired(Expiration))
             {
@@ -458,6 +486,16 @@ namespace Trivial.Data
         public void RemoveExpired()
         {
             items.RemoveAll(ele => ele.IsExpired(Expiration));
+            if (!MaxCount.HasValue) return;
+            var maxCount = MaxCount.Value;
+            if (maxCount < 1)
+            {
+                items.Clear();
+            }
+            else
+            {
+                while (items.Count > maxCount) items.RemoveAt(0);
+            }
         }
 
         /// <summary>
