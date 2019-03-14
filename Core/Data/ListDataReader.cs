@@ -661,6 +661,16 @@ namespace Trivial.Data
         }
 
         /// <summary>
+        /// Gets the value of the specified column as a string.
+        /// </summary>
+        /// <param name="ordinal">The zero-based column ordinal.</param>
+        /// <returns>The value of the specified column.</returns>
+        public override string GetString(int ordinal)
+        {
+            return CurrentRecord[ordinal];
+        }
+
+        /// <summary>
         /// Processes on reading record.
         /// </summary>
         /// <param name="record">The record to read.</param>
