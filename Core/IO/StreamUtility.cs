@@ -89,5 +89,79 @@ namespace Trivial.IO
 
             if (destination.Length > 0) yield return destination;
         }
+
+        /// <summary>
+        /// Reads lines from a specific stream reader.
+        /// </summary>
+        /// <param name="reader">The stream reader.</param>
+        /// <param name="removeEmptyLine">true if need remove the empty line; otherwise, false.</param>
+        /// <returns>Lines from the specific stream reader.</returns>
+        public static IEnumerable<string> ReadLines(this StreamReader reader, bool removeEmptyLine = false)
+        {
+            if (removeEmptyLine)
+            {
+                while (true)
+                {
+                    var line = reader.ReadLine();
+                    if (line == null) break;
+                    if (string.IsNullOrEmpty(line)) continue;
+                    yield return line;
+                }
+            }
+            else
+            {
+                while (true)
+                {
+                    var line = reader.ReadLine();
+                    if (line == null) break;
+                    yield return line;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Reads lines from a specific stream.
+        /// </summary>
+        /// <param name="stream">The stream to read.</param>
+        /// <param name="encoding">The character encoding to use.</param>
+        /// <param name="removeEmptyLine">true if need remove the empty line; otherwise, false.</param>
+        /// <returns>Lines from the specific stream reader.</returns>
+        public static IEnumerable<string> ReadLines(Stream stream, Encoding encoding, bool removeEmptyLine = false)
+        {
+            using (var reader = new StreamReader(stream, encoding))
+            {
+                return ReadLines(reader);
+            }
+        }
+
+        /// <summary>
+        /// Reads lines from a specific stream.
+        /// </summary>
+        /// <param name="file">The file to read.</param>
+        /// <param name="encoding">The character encoding to use.</param>
+        /// <param name="removeEmptyLine">true if need remove the empty line; otherwise, false.</param>
+        /// <returns>Lines from the specific stream reader.</returns>
+        public static IEnumerable<string> ReadLines(FileInfo file, Encoding encoding, bool removeEmptyLine = false)
+        {
+            using (var reader = new StreamReader(file.FullName, encoding))
+            {
+                return ReadLines(reader);
+            }
+        }
+
+        /// <summary>
+        /// Reads lines from a specific stream.
+        /// </summary>
+        /// <param name="file">The file to read.</param>
+        /// <param name="detectEncodingFromByteOrderMarks">true if look for byte order marks at the beginning of the file; otherwise, false.</param>
+        /// <param name="removeEmptyLine">true if need remove the empty line; otherwise, false.</param>
+        /// <returns>Lines from the specific stream reader.</returns>
+        public static IEnumerable<string> ReadLines(FileInfo file, bool detectEncodingFromByteOrderMarks, bool removeEmptyLine = false)
+        {
+            using (var reader = new StreamReader(file.FullName, detectEncodingFromByteOrderMarks))
+            {
+                return ReadLines(reader);
+            }
+        }
     }
 }

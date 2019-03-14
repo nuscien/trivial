@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using System.Text;
 
 namespace Trivial.Text
@@ -151,6 +152,202 @@ namespace Trivial.Text
             }
 
             return str.ToString();
+        }
+
+        /// <summary>
+        /// Splits a string into a number of substrings based on the string in an enumerable strings.
+        /// </summary>
+        /// <param name="source">The source string to split.</param>
+        /// <param name="seperator">A string that delimits the substrings in the source string, an empty array that contains no delimiters, or null.</param>
+        /// <param name="options">System.StringSplitOptions.RemoveEmptyEntries to omit empty array elements from the array returned; or System.StringSplitOptions.None to include empty array elements in the array returned.</param>
+        /// <returns>A string enumerable instance whose elements contain the substrings in the source string that are delimited by one or more characters in separator.</returns>
+        public static IEnumerable<string> YieldSplit(this string source, string seperator, StringSplitOptions options = StringSplitOptions.None)
+        {
+            if (options == StringSplitOptions.None && string.IsNullOrEmpty(source)) yield break;
+            if (options == StringSplitOptions.RemoveEmptyEntries && string.IsNullOrWhiteSpace(source)) yield break;
+            if (string.IsNullOrEmpty(seperator))
+            {
+                yield return source;
+                yield break;
+            }
+
+            var index = 0;
+            if (options == StringSplitOptions.None)
+            {
+                while (true)
+                {
+                    var i = source.IndexOf(seperator, index);
+                    if (i < 0) break;
+                    yield return source.Substring(index, i - index);
+                    index = i + seperator.Length;
+                    if (index >= source.Length) break;
+                }
+            }
+            else
+            {
+                while (true)
+                {
+                    var i = source.IndexOf(seperator, index);
+                    if (i < 0) break;
+                    if (i <= index) continue;
+                    yield return source.Substring(index, i - index);
+                    index = i + seperator.Length;
+                    if (index >= source.Length) break;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Splits a string into a number of substrings based on the character in an enumerable strings.
+        /// </summary>
+        /// <param name="source">The source string to split.</param>
+        /// <param name="seperator">A character that delimits the substrings in the source string, an empty array that contains no delimiters, or null.</param>
+        /// <param name="options">System.StringSplitOptions.RemoveEmptyEntries to omit empty array elements from the array returned; or System.StringSplitOptions.None to include empty array elements in the array returned.</param>
+        /// <returns>A string enumerable instance whose elements contain the substrings in the source string that are delimited by one or more characters in separator.</returns>
+        public static IEnumerable<string> YieldSplit(this string source, char seperator, StringSplitOptions options = StringSplitOptions.None)
+        {
+            return YieldSplit(source, new[] { seperator }, options);
+        }
+
+        /// <summary>
+        /// Splits a string into a number of substrings based on the characters in an enumerable strings.
+        /// </summary>
+        /// <param name="source">The source string to split.</param>
+        /// <param name="seperatorA">A character that delimits the substrings in the source string, an empty array that contains no delimiters, or null.</param>
+        /// <param name="seperatorB">Another character that delimits the substrings in the source string, an empty array that contains no delimiters, or null.</param>
+        /// <param name="options">System.StringSplitOptions.RemoveEmptyEntries to omit empty array elements from the array returned; or System.StringSplitOptions.None to include empty array elements in the array returned.</param>
+        /// <returns>A string enumerable instance whose elements contain the substrings in the source string that are delimited by one or more characters in separator.</returns>
+        public static IEnumerable<string> YieldSplit(this string source, char seperatorA, char seperatorB, StringSplitOptions options = StringSplitOptions.None)
+        {
+            return YieldSplit(source, new[] { seperatorA, seperatorB }, options);
+        }
+
+        /// <summary>
+        /// Splits a string into a number of substrings based on the characters in an enumerable strings.
+        /// </summary>
+        /// <param name="source">The source string to split.</param>
+        /// <param name="seperatorA">The character A that delimits the substrings in the source string, an empty array that contains no delimiters, or null.</param>
+        /// <param name="seperatorB">The character B that delimits the substrings in the source string, an empty array that contains no delimiters, or null.</param>
+        /// <param name="seperatorC">The character C that delimits the substrings in the source string, an empty array that contains no delimiters, or null.</param>
+        /// <param name="options">System.StringSplitOptions.RemoveEmptyEntries to omit empty array elements from the array returned; or System.StringSplitOptions.None to include empty array elements in the array returned.</param>
+        /// <returns>A string enumerable instance whose elements contain the substrings in the source string that are delimited by one or more characters in separator.</returns>
+        public static IEnumerable<string> YieldSplit(this string source, char seperatorA, char seperatorB, char seperatorC, StringSplitOptions options = StringSplitOptions.None)
+        {
+            return YieldSplit(source, new[] { seperatorA, seperatorB, seperatorC }, options);
+        }
+
+        /// <summary>
+        /// Splits a string into a number of substrings based on the characters in an enumerable strings.
+        /// </summary>
+        /// <param name="source">The source string to split.</param>
+        /// <param name="seperatorA">The character A that delimits the substrings in the source string, an empty array that contains no delimiters, or null.</param>
+        /// <param name="seperatorB">The character B that delimits the substrings in the source string, an empty array that contains no delimiters, or null.</param>
+        /// <param name="seperatorC">The character C that delimits the substrings in the source string, an empty array that contains no delimiters, or null.</param>
+        /// <param name="seperatorD">The character D that delimits the substrings in the source string, an empty array that contains no delimiters, or null.</param>
+        /// <param name="options">System.StringSplitOptions.RemoveEmptyEntries to omit empty array elements from the array returned; or System.StringSplitOptions.None to include empty array elements in the array returned.</param>
+        /// <returns>A string enumerable instance whose elements contain the substrings in the source string that are delimited by one or more characters in separator.</returns>
+        public static IEnumerable<string> YieldSplit(this string source, char seperatorA, char seperatorB, char seperatorC, char seperatorD, StringSplitOptions options = StringSplitOptions.None)
+        {
+            return YieldSplit(source, new[] { seperatorA, seperatorB, seperatorC, seperatorD }, options);
+        }
+
+        /// <summary>
+        /// Splits a string into a number of substrings based on the characters in an enumerable strings.
+        /// </summary>
+        /// <param name="source">The source string to split.</param>
+        /// <param name="seperators">A character array that delimits the substrings in the source string, an empty array that contains no delimiters, or null.</param>
+        /// <param name="options">System.StringSplitOptions.RemoveEmptyEntries to omit empty array elements from the array returned; or System.StringSplitOptions.None to include empty array elements in the array returned.</param>
+        /// <returns>A string enumerable instance whose elements contain the substrings in the source string that are delimited by one or more characters in separator.</returns>
+        public static IEnumerable<string> YieldSplit(this string source, char[] seperators, StringSplitOptions options = StringSplitOptions.None)
+        {
+            if (options == StringSplitOptions.None && string.IsNullOrEmpty(source)) yield break;
+            if (options == StringSplitOptions.RemoveEmptyEntries && string.IsNullOrWhiteSpace(source)) yield break;
+            if (seperators == null || seperators.Length == 0)
+            {
+                yield return source;
+                yield break;
+            }
+
+            var index = 0;
+            if (options == StringSplitOptions.None)
+            {
+                while (true)
+                {
+                    var i = source.IndexOfAny(seperators, index);
+                    if (i < 0) break;
+                    yield return source.Substring(index, i - index);
+                    index = i + 1;
+                    if (index >= source.Length) break;
+                }
+            }
+            else
+            {
+                while (true)
+                {
+                    var i = source.IndexOfAny(seperators, index);
+                    if (i < 0) break;
+                    if (i <= index) continue;
+                    yield return source.Substring(index, i - index);
+                    index = i + 1;
+                    if (index >= source.Length) break;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Splits a string into a number of substrings based on the strings in an enumerable strings.
+        /// </summary>
+        /// <param name="source">The source string to split.</param>
+        /// <param name="seperators">A string array that delimits the substrings in the source string, an empty array that contains no delimiters, or null.</param>
+        /// <param name="options">System.StringSplitOptions.RemoveEmptyEntries to omit empty array elements from the array returned; or System.StringSplitOptions.None to include empty array elements in the array returned.</param>
+        /// <returns>A string enumerable instance whose elements contain the substrings in the source string that are delimited by one or more characters in separator.</returns>
+        public static IEnumerable<string> YieldSplit(this string source, IEnumerable<string> seperators, StringSplitOptions options = StringSplitOptions.None)
+        {
+            if (options == StringSplitOptions.None && string.IsNullOrEmpty(source)) yield break;
+            if (options == StringSplitOptions.RemoveEmptyEntries && string.IsNullOrWhiteSpace(source)) yield break;
+            if (seperators == null)
+            {
+                yield return source;
+                yield break;
+            }
+
+            var index = 0;
+            if (options == StringSplitOptions.None)
+            {
+                while (true)
+                {
+                    var indexes = seperators.Select(ele => (Index: source.IndexOf(ele, index), ele.Length)).Where(ele => ele.Index >= 0).ToList();
+                    if (indexes.Count == 0) break;
+                    var i = indexes.Min(ele => ele.Index);
+                    var len = indexes.Where(ele => ele.Index == i).Max(ele => ele.Length);
+                    yield return source.Substring(index, i - index);
+                    index = i + len;
+                }
+            }
+            else
+            {
+                while (true)
+                {
+                    var indexes = seperators.Select(ele => (Index: source.IndexOf(ele, index), ele.Length)).Where(ele => ele.Index >= 0).ToList();
+                    if (indexes.Count == 0) break;
+                    var i = indexes.Min(ele => ele.Index);
+                    if (i <= index) continue;
+                    var len = indexes.Where(ele => ele.Index == i).Max(ele => ele.Length);
+                    yield return source.Substring(index, i - index);
+                    index = i + len;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Reads lines from a specific stream reader.
+        /// </summary>
+        /// <param name="source">The source string to split.</param>
+        /// <param name="removeEmptyLine">true if need remove the empty line; otherwise, false.</param>
+        /// <returns>Lines from the specific string.</returns>
+        public static IEnumerable<string> ReadLines(string source, bool removeEmptyLine = false)
+        {
+            return YieldSplit(source, new[] { "\r\n", "\n", "\r" }, removeEmptyLine ? StringSplitOptions.RemoveEmptyEntries : StringSplitOptions.None);
         }
 
         private static string ToUpper(string source, CultureInfo culture)

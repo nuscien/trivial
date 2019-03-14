@@ -10,7 +10,7 @@ namespace Trivial.Data
     /// The collection for data cache.
     /// </summary>
     /// <typeparam name="T">The type of data model.</typeparam>
-    public class DataCacheCollection<T> : ICollection<DataCacheCollection<T>.ItemInfo>
+    public class DataCacheCollection<T> : ICollection<DataCacheCollection<T>.ItemInfo>, IReadOnlyList<DataCacheCollection<T>.ItemInfo>
     {
         /// <summary>
         /// The cache item info.

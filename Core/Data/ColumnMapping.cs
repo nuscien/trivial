@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Text;
 
+using Trivial.Text;
+
 namespace Trivial.Data
 {
     /// <summary>
@@ -16,7 +18,29 @@ namespace Trivial.Data
         /// <param name="propertyName">The property name.</param>
         public void Add(string columnName, string propertyName)
         {
+            if (string.IsNullOrWhiteSpace(columnName)) return;
+            if (string.IsNullOrWhiteSpace(propertyName)) propertyName = columnName;
             Add(new ColumnMappingItem(columnName, propertyName));
+        }
+
+        /// <summary>
+        /// Adds a column-property-mapping item.
+        /// </summary>
+        /// <param name="columnName">The column name.</param>
+        /// <param name="propertyNameCase">The case for column name convert to property name.</param>
+        public void AddColumn(string columnName, Cases propertyNameCase = Cases.Original)
+        {
+            Add(columnName, StringUtility.ToSpecificCaseInvariant(columnName, propertyNameCase));
+        }
+
+        /// <summary>
+        /// Adds a column-property-mapping item.
+        /// </summary>
+        /// <param name="propertyName">The property name.</param>
+        /// <param name="columnNameCase">The case for property name convert to column name.</param>
+        public void AddProperty(string propertyName, Cases columnNameCase = Cases.Original)
+        {
+            Add(StringUtility.ToSpecificCaseInvariant(propertyName, columnNameCase), propertyName);
         }
 
         /// <summary>
@@ -35,10 +59,9 @@ namespace Trivial.Data
 
             foreach (var prop in type.GetProperties())
             {
-                foreach (var attr in prop.GetCustomAttributes(typeof(ColumnAttribute), true))
+                foreach (var attr in prop.GetCustomAttributes(typeof(ColumnMappingAttribute), true))
                 {
-                    var info = attr as ColumnAttribute;
-                    if (info == null) continue;
+                    if (!(attr is ColumnMappingAttribute info)) continue;
                     mapping.Add(info.Name, prop.Name);
                 }
             }
@@ -74,13 +97,16 @@ namespace Trivial.Data
         public string PropertyName { get; set; }
     }
 
-    public class ColumnAttribute : Attribute
+    /// <summary>
+    /// The column mapping attribute.
+    /// </summary>
+    public class ColumnMappingAttribute : Attribute
     {
         /// <summary>
-        /// Initializes a new instance of the ColumnAttribute class.
+        /// Initializes a new instance of the ColumnMappingAttribute class.
         /// </summary>
         /// <param name="name">The column name.</param>
-        public ColumnAttribute(string name)
+        public ColumnMappingAttribute(string name)
         {
             Name = name;
         }

@@ -226,6 +226,7 @@ namespace Trivial.Security
             var oldToken = Token;
             using (var request = CreateResolveMessage(appInfo.Secret))
             {
+                if (request == null) return null;
                 Token = await wc.SendAsync(request, cancellationToken);
                 LatestResolveDate = DateTime.Now;
             }
@@ -317,6 +318,7 @@ namespace Trivial.Security
             if (!string.IsNullOrWhiteSpace(code)) return null;
             using (var request = CreateValidationMessage(appInfo.Secret, code))
             {
+                if (request == null) return null;
                 return await ProcessAsync(request, cancellationToken);
             }
         }
@@ -355,6 +357,7 @@ namespace Trivial.Security
 
             using (var request = CreateRefreshingMessage(appInfo.Secret))
             {
+                if (request == null) return null;
                 task = t = ProcessAsync(request, cancellationToken);
                 var result = await t;
                 LatestRefreshDate = DateTime.Now;
