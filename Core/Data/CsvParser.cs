@@ -10,92 +10,50 @@ using Trivial.IO;
 namespace Trivial.Data
 {
     /// <summary>
-    /// CSV data reader.
+    /// CSV parser.
     /// </summary>
-    public class CsvDataReader : ReadOnlyStringTableDataReader
+    public class CsvParser : LinesStringTableParser
     {
         /// <summary>
-        /// Initializes a new instance of the CsvDataReader class.
+        /// Initializes a new instance of the CsvParser class.
         /// </summary>
         /// <param name="reader">The stream reader.</param>
-        /// <param name="hasHeader">true if the first is the table header, and the column names will be replaced by the header; otherwise, false.</param>
-        public CsvDataReader(StreamReader reader, bool hasHeader = false) : base(Parse(reader), null, null, hasHeader)
+        public CsvParser(StreamReader reader) : base(reader)
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the CsvDataReader class.
+        /// Initializes a new instance of the CsvParser class.
         /// </summary>
-        /// <param name="reader">The stream reader.</param>
-        /// <param name="columns">The columns information</param>
-        public CsvDataReader(StreamReader reader, IReadOnlyList<DbColumnInfo> columns) : base(Parse(reader), columns)
+        /// <param name="lines">The lines.</param>
+        public CsvParser(string lines) : base(lines)
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the CsvDataReader class.
+        /// Initializes a new instance of the CsvParser class.
         /// </summary>
-        /// <param name="reader">The stream reader.</param>
-        /// <param name="columnNames">The names of column.</param>
-        /// <param name="columnTypeName">The type name of each column.</param>
-        public CsvDataReader(StreamReader reader, IReadOnlyList<string> columnNames, string columnTypeName = null) : base(Parse(reader), columnNames, columnTypeName)
+        /// <param name="lines">The lines.</param>
+        public CsvParser(IEnumerable<string> lines) : base(lines)
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the CsvDataReader class.
+        /// Initializes a new instance of the CsvParser class.
         /// </summary>
-        /// <param name="lines">Lines to read.</param>
-        /// <param name="hasHeader">true if the first is the table header, and the column names will be replaced by the header; otherwise, false.</param>
-        public CsvDataReader(IEnumerable<string> lines, bool hasHeader = false) : base(Parse(lines), null, null, hasHeader)
+        /// <param name="lines">The lines.</param>
+        public CsvParser(IEnumerable<IReadOnlyList<string>> lines) : base(lines)
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the CsvDataReader class.
+        /// Parses a line in CSV file.
         /// </summary>
-        /// <param name="lines">Lines to read.</param>
-        /// <param name="columns">The columns information</param>
-        public CsvDataReader(IEnumerable<string> lines, IReadOnlyList<DbColumnInfo> columns) : base(Parse(lines), columns)
+        /// <param name="line">A line in CSV file.</param>
+        /// <returns>Values in this line.</returns>
+        protected override List<string> ParseLine(string line)
         {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the CsvDataReader class.
-        /// </summary>
-        /// <param name="lines">Lines to read.</param>
-        /// <param name="columnNames">The names of column.</param>
-        /// <param name="columnTypeName">The type name of each column.</param>
-        public CsvDataReader(IEnumerable<string> lines, IReadOnlyList<string> columnNames, string columnTypeName = null) : base(Parse(lines), columnNames, columnTypeName)
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the CsvDataReader class.
-        /// </summary>
-        /// <param name="text">A CSV format string.</param>
-        /// <param name="hasHeader">true if the first is the table header, and the column names will be replaced by the header; otherwise, false.</param>
-        public CsvDataReader(string text, bool hasHeader = false) : base(Parse(text), null, null, hasHeader)
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the CsvDataReader class.
-        /// </summary>
-        /// <param name="text">A CSV format string.</param>
-        /// <param name="columns">The columns information</param>
-        public CsvDataReader(string text, IReadOnlyList<DbColumnInfo> columns) : base(Parse(text), columns)
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the CsvDataReader class.
-        /// </summary>
-        /// <param name="text">A CSV format string.</param>
-        /// <param name="columnNames">The names of column.</param>
-        /// <param name="columnTypeName">The type name of each column.</param>
-        public CsvDataReader(string text, IReadOnlyList<string> columnNames, string columnTypeName = null) : base(Parse(text), columnNames, columnTypeName)
-        {
+            return ParseLineStatic(line);
         }
 
         /// <summary>
@@ -107,7 +65,7 @@ namespace Trivial.Data
         {
             foreach (var line in csv)
             {
-                var item = ParseLine(line);
+                var item = ParseLineStatic(line);
                 if (item == null) continue;
                 yield return item.AsReadOnly();
             }
@@ -176,7 +134,7 @@ namespace Trivial.Data
             {
                 var line = csv.ReadLine();
                 if (line == null) break;
-                var item = ParseLine(line);
+                var item = ParseLineStatic(line);
                 if (item == null) continue;
                 yield return item.AsReadOnly();
             }
@@ -187,7 +145,7 @@ namespace Trivial.Data
         /// </summary>
         /// <param name="line">A line in CSV file.</param>
         /// <returns>Values in this line.</returns>
-        private static List<string> ParseLine(string line)
+        private static List<string> ParseLineStatic(string line)
         {
             if (string.IsNullOrEmpty(line)) return null;
             var arr = line.Split(',');

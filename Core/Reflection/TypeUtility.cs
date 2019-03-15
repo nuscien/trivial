@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Text;
 
@@ -246,6 +247,71 @@ namespace Trivial.Reflection
 
             output = null;
             return false;
+        }
+
+        /// <summary>
+        /// Returns the typed instance.
+        /// </summary>
+        /// <typeparam name="T">The type of each instance in the collection.</typeparam>
+        /// <param name="fields">The field values.</param>
+        /// <param name="creator">The instance factory.</param>
+        /// <param name="propertyNames">The optional property names to map.</param>
+        /// <returns>A typed instance based on the fields.</returns>
+        public static T ConvertTo<T>(IReadOnlyList<string> fields, Func<IReadOnlyList<string>, T> creator, IEnumerable<string> propertyNames = null)
+        {
+            var type = typeof(T);
+            var props = propertyNames?.Select(ele =>
+            {
+                try
+                {
+                    if (!string.IsNullOrWhiteSpace(ele)) return type.GetProperty(ele);
+                }
+                catch (AmbiguousMatchException)
+                {
+                }
+
+                return null;
+            })?.ToList();
+            if (props != null && props.Count == 0) props = null;
+            return ConvertTo(fields, creator, props);
+        }
+
+        /// <summary>
+        /// Returns the typed instance.
+        /// </summary>
+        /// <typeparam name="T">The type of each instance in the collection.</typeparam>
+        /// <param name="fields">The field values.</param>
+        /// <param name="propertyNames">The optional property names to map.</param>
+        /// <returns>A typed instance based on the fields.</returns>
+        public static T ConvertTo<T>(IReadOnlyList<string> fields, IEnumerable<string> propertyNames)
+        {
+            return ConvertTo<T>(fields, propertyNames);
+        }
+
+        /// <summary>
+        /// Returns the typed instance.
+        /// </summary>
+        /// <typeparam name="T">The type of each instance in the collection.</typeparam>
+        /// <param name="fields">The field values.</param>
+        /// <param name="creator">The instance factory.</param>
+        /// <param name="properties">The optional properties to map.</param>
+        /// <returns>A typed instance based on the fields.</returns>
+        public static T ConvertTo<T>(IReadOnlyList<string> fields, Func<IReadOnlyList<string>, T> creator, IReadOnlyList<PropertyInfo> properties)
+        {
+            var instance = creator != null ? creator(fields) : Activator.CreateInstance<T>();
+            if (instance == null) return default;
+            if (properties != null)
+            {
+                for (var i = 0; i < Math.Min(properties.Count, fields.Count); i++)
+                {
+                    var prop = properties[i];
+                    if (prop == null || !prop.CanWrite) continue;
+                    var propV = ConvertTo(prop.PropertyType, fields[i]);
+                    prop.SetValue(instance, propV);
+                }
+            }
+
+            return instance;
         }
 
         private static bool IsNullableValueType(Type type)
