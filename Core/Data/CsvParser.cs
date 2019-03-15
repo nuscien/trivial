@@ -5,7 +5,6 @@ using System.Linq;
 using System.Text;
 
 using Trivial.Text;
-using Trivial.IO;
 
 namespace Trivial.Data
 {
@@ -47,6 +46,44 @@ namespace Trivial.Data
         }
 
         /// <summary>
+        /// Initializes a new instance of the CsvParser class.
+        /// </summary>
+        /// <param name="stream">The stream to read.</param>
+        /// <param name="detectEncodingFromByteOrderMarks">true if look for byte order marks at the beginning of the file; otherwise, false.</param>
+        /// <param name="encoding">The optional character encoding to use.</param>
+        public CsvParser(Stream stream, bool detectEncodingFromByteOrderMarks, Encoding encoding = null) : base(stream, detectEncodingFromByteOrderMarks, encoding)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the CsvParser class.
+        /// </summary>
+        /// <param name="stream">The stream to read.</param>
+        /// <param name="encoding">The optional character encoding to use.</param>
+        public CsvParser(Stream stream, Encoding encoding = null) : base(stream, encoding)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the CsvParser class.
+        /// </summary>
+        /// <param name="file">The file to read.</param>
+        /// <param name="detectEncodingFromByteOrderMarks">true if look for byte order marks at the beginning of the file; otherwise, false.</param>
+        /// <param name="encoding">The optional character encoding to use.</param>
+        public CsvParser(FileInfo file, bool detectEncodingFromByteOrderMarks, Encoding encoding = null) : base(file, detectEncodingFromByteOrderMarks, encoding)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the CsvParser class.
+        /// </summary>
+        /// <param name="file">The file to read.</param>
+        /// <param name="encoding">The optional character encoding to use.</param>
+        public CsvParser(FileInfo file, Encoding encoding = null) : base(file, encoding)
+        {
+        }
+
+        /// <summary>
         /// Parses a line in CSV file.
         /// </summary>
         /// <param name="line">A line in CSV file.</param>
@@ -54,6 +91,36 @@ namespace Trivial.Data
         protected override List<string> ParseLine(string line)
         {
             return ParseLineStatic(line);
+        }
+
+        /// <summary>
+        /// Converts a line information to a string.
+        /// </summary>
+        /// <param name="line">The fields.</param>
+        /// <returns>A line string.</returns>
+        protected override string ToLineString(IReadOnlyList<string> line)
+        {
+            if (line == null || line.Count == 0) return null;
+            var str = new StringBuilder();
+            foreach (var field in line)
+            {
+                if (field.IndexOfAny(new[] { ',', '\"' }) >= 0)
+                {
+                    str.Append('\"');
+                    str.Append(field.Replace("\"", "\\\""));
+                    str.Append('\"');
+                }
+                else
+                {
+                    str.Append(field);
+                }
+
+                str.Append(',');
+            }
+
+            if (str.Length == 0) return null;
+            str.Remove(str.Length - 1, 1);
+            return str.ToString();
         }
 
         /// <summary>
