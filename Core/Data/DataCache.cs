@@ -280,11 +280,52 @@ namespace Trivial.Data
         /// <returns>true if has the info and it is not expired; otherwise, false.</returns>
         public bool TryGetInfo(string prefix, string id, out ItemInfo result)
         {
-            result = default;
-            if (string.IsNullOrWhiteSpace(id)) return false;
-            var info = items.LastOrDefault(ele => ele.Prefix == null && ele.Id == id);
+            if (string.IsNullOrWhiteSpace(id))
+            {
+                result = default;
+                return false;
+            }
+
+            var info = items.LastOrDefault(ele => ele.Prefix == prefix && ele.Id == id);
             result = info;
             return info != null && info.Value != null && !info.IsExpired(Expiration);
+        }
+
+        /// <summary>
+        /// Tries to get the cache item data.
+        /// </summary>
+        /// <param name="id">The identifier in the resource group.</param>
+        /// <param name="data">The output data.</param>
+        /// <returns>true if has the info and it is not expired; otherwise, false.</returns>
+        public bool TryGet(string id, out T data)
+        {
+            return TryGet(null, id, out data);
+        }
+
+        /// <summary>
+        /// Tries to get the cache item data.
+        /// </summary>
+        /// <param name="prefix">The prefix of the identifier for resource group.</param>
+        /// <param name="id">The identifier in the resource group.</param>
+        /// <param name="data">The output data.</param>
+        /// <returns>true if has the info and it is not expired; otherwise, false.</returns>
+        public bool TryGet(string prefix, string id, out T data)
+        {
+            if (string.IsNullOrWhiteSpace(id))
+            {
+                data = default;
+                return false;
+            }
+
+            var info = items.LastOrDefault(ele => ele.Prefix == prefix && ele.Id == id);
+            if (info == null || info.Value == null)
+            {
+                data = default;
+                return false;
+            }
+
+            data = info.Value;
+            return !info.IsExpired(Expiration);
         }
 
         /// <summary>

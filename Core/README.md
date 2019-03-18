@@ -201,6 +201,70 @@ Contains the helper functions and extension methods for `FileInfo` and `Stream`.
 using Trivial.IO;
 ```
 
+## [Data](https://github.com/nuscien/trivial/wiki/data)
+
+Contains lots of data readers, parsers and utilities.
+
+```csharp
+using Trivial.Data;
+```
+
+### CSV
+
+You can parse a CSV text by following way.
+
+```csharp
+var csv = new CsvParser("ab,cd,efg\nhijk,l,mn");
+foreach (var item in csv)
+{
+    Console.WriteLine("{0},{1],{2}", item[0], item[1], item[2]);
+}
+```
+
+If you have a model like following.
+
+```csharp
+class Model
+{
+    public string FieldA { get; set; }
+    public string FieldB { get; set; }
+    public string FieldC { get; set; }
+}
+```
+
+Now you can map to the CSV file.
+
+```csharp
+var csv = new CsvParser("ab,cd,efg\nhijk,l,mn");
+foreach (var model in csv.ConvertTo<Model>(new[] { "FieldA", "FieldB", "FieldC" }))
+{
+    Console.WriteLine("{0},{1],{2}", model.FieldA, model.FieldB, model.FieldC);
+}
+```
+
+And you can also send this instance into `StringTableDataReader` construct with field names to load it as a `DbDataReader` object.
+
+### Data cache collection
+
+You can create a collection to cache data with expiration and count limitation by following way.
+
+```csharp
+var cache = new DataCacheCollection<Model>
+{
+    MaxCount = 1000,
+    Expiration = TimeSpan.FromSeconds(100)
+};
+```
+
+So that you can get the data from the cache if has and or add new one if necessary.
+
+```csharp
+if (!cache.TryGet("abcd", out item))
+{
+    item = new Model();
+}
+```
+
 ## [Geography](https://github.com/nuscien/trivial/wiki/geo)
 
 Contains the models of geography.
