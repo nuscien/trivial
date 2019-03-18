@@ -660,7 +660,7 @@ namespace Trivial.Data
         /// <param name="hasHeader">true if the first is the table header, and the column names will be replaced by the header; otherwise, false.</param>
         public StringTableDataReader(IEnumerable<IReadOnlyList<string>> lines, IEnumerable<string> columnNames, bool hasHeader = false) : this(lines, columnNames, null, hasHeader)
         {
-            if (columnsInfo == null) return;
+            if (columnNames == null) return;
             columnsInfo = columnNames.Select(ele => new DbColumnInfo(ele, typeof(string))).ToList().AsReadOnly();
         }
 
@@ -674,7 +674,7 @@ namespace Trivial.Data
         public StringTableDataReader(IEnumerable<IReadOnlyList<string>> lines, IEnumerable<string> columnNames, string columnTypeName, bool hasHeader = false) : base(lines, hasHeader ? 1 : 0)
         {
             defaultColumnTypeName = columnTypeName;
-            if (columnsInfo == null) return;
+            if (columnNames == null) return;
             columnsInfo = columnNames.Select(ele => new DbColumnInfo(ele, columnTypeName)).ToList().AsReadOnly();
         }
 
@@ -689,7 +689,7 @@ namespace Trivial.Data
         {
             columnResolver = columnInfoResolver;
             defaultColumnTypeName = columnTypeName;
-            if (columnsInfo == null) return;
+            if (columnNames == null) return;
             columnsInfo = columnNames.Select(ele => new DbColumnInfo(ele, typeof(string))).ToList().AsReadOnly();
         }
 
@@ -701,7 +701,7 @@ namespace Trivial.Data
         /// <param name="hasHeader">true if the first is the table header, and the column names will be replaced by the header; otherwise, false.</param>
         public StringTableDataReader(IEnumerable<IReadOnlyList<string>> lines, IEnumerable<DbColumnInfo> columns, bool hasHeader = false) : base(lines, hasHeader ? 1 : 0)
         {
-            if (columnsInfo == null) return;
+            if (columns == null) return;
             columnsInfo = columns.ToList().AsReadOnly();
         }
 
@@ -716,7 +716,7 @@ namespace Trivial.Data
         {
             columnResolver = columnInfoResolver;
             defaultColumnTypeName = columnTypeName;
-            if (columnsInfo == null) return;
+            if (columns == null) return;
             columnsInfo = columns.ToList().AsReadOnly();
         }
 

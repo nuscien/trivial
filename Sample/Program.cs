@@ -13,6 +13,7 @@ namespace Trivial.Sample
             dispatcher.Register<MathsVerb>("maths");
             dispatcher.Register<HttpClientVerb>("http");
             dispatcher.Register<RetryVerb>("retry");
+            dispatcher.Register<CsvVerb>("csv");
             dispatcher.RegisterHelp();
             dispatcher.RegisterExit();
             if (args.Length > 0)

@@ -177,7 +177,12 @@ namespace Trivial.Text
                 while (true)
                 {
                     var i = source.IndexOf(seperator, index);
-                    if (i < 0) break;
+                    if (i < 0)
+                    {
+                        yield return source.Substring(index);
+                        break;
+                    }
+
                     yield return source.Substring(index, i - index);
                     index = i + seperator.Length;
                     if (index >= source.Length) break;
@@ -188,7 +193,12 @@ namespace Trivial.Text
                 while (true)
                 {
                     var i = source.IndexOf(seperator, index);
-                    if (i < 0) break;
+                    if (i < 0)
+                    {
+                        yield return source.Substring(index);
+                        break;
+                    }
+
                     if (i <= index) continue;
                     yield return source.Substring(index, i - index);
                     index = i + seperator.Length;
@@ -274,7 +284,12 @@ namespace Trivial.Text
                 while (true)
                 {
                     var i = source.IndexOfAny(seperators, index);
-                    if (i < 0) break;
+                    if (i < 0)
+                    {
+                        yield return source.Substring(index);
+                        break;
+                    }
+
                     yield return source.Substring(index, i - index);
                     index = i + 1;
                     if (index >= source.Length) break;
@@ -285,7 +300,12 @@ namespace Trivial.Text
                 while (true)
                 {
                     var i = source.IndexOfAny(seperators, index);
-                    if (i < 0) break;
+                    if (i < 0)
+                    {
+                        yield return source.Substring(index);
+                        break;
+                    }
+
                     if (i <= index) continue;
                     yield return source.Substring(index, i - index);
                     index = i + 1;
@@ -317,11 +337,17 @@ namespace Trivial.Text
                 while (true)
                 {
                     var indexes = seperators.Select(ele => (Index: source.IndexOf(ele, index), ele.Length)).Where(ele => ele.Index >= 0).ToList();
-                    if (indexes.Count == 0) break;
+                    if (indexes.Count == 0)
+                    {
+                        yield return source.Substring(index);
+                        break;
+                    }
+
                     var i = indexes.Min(ele => ele.Index);
                     var len = indexes.Where(ele => ele.Index == i).Max(ele => ele.Length);
                     yield return source.Substring(index, i - index);
                     index = i + len;
+                    if (index >= source.Length) break;
                 }
             }
             else
@@ -329,12 +355,18 @@ namespace Trivial.Text
                 while (true)
                 {
                     var indexes = seperators.Select(ele => (Index: source.IndexOf(ele, index), ele.Length)).Where(ele => ele.Index >= 0).ToList();
-                    if (indexes.Count == 0) break;
+                    if (indexes.Count == 0)
+                    {
+                        yield return source.Substring(index);
+                        break;
+                    }
+
                     var i = indexes.Min(ele => ele.Index);
                     if (i <= index) continue;
                     var len = indexes.Where(ele => ele.Index == i).Max(ele => ele.Length);
                     yield return source.Substring(index, i - index);
                     index = i + len;
+                    if (index >= source.Length) break;
                 }
             }
         }
