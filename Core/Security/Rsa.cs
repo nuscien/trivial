@@ -82,18 +82,28 @@ namespace Trivial.Security
             var lines = key.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
             if (lines.Length == 0) return null;
             var isPrivate = true;
+            var firstLine = lines[0].Trim();
             if (lines.Length == 1)
             {
-                key = lines[0];
+                key = firstLine;
+            }
+            else if (firstLine.IndexOf("ssh-rsa ") == 0)
+            {
+                isPrivate = false;
+                key = string.Join(string.Empty, lines).Trim();
+                if (key.Length < 16) return null;
+                key = key.Substring(8);
+                var blankPos = key.IndexOf(' ');
+                if (blankPos > 0) key = key.Substring(0, blankPos);
             }
             else if (lines.Length == 2)
             {
-                isPrivate = lines[0].IndexOf("PRIVATE KEY") > 0;
+                isPrivate = firstLine.IndexOf("PRIVATE KEY") >= 0;
                 key = lines[1];
             }
             else
             {
-                isPrivate = lines[0].IndexOf(" PRIVATE KEY-") > 0;
+                isPrivate = firstLine.IndexOf(" PRIVATE KEY") > 0 || firstLine.IndexOf("PRIVATE KEY") == 0;
                 key = string.Join(string.Empty, lines.Skip(1).Take(lines.Length - 2));
             }
 

@@ -217,7 +217,7 @@ You can parse a CSV text by following way.
 var csv = new CsvParser("ab,cd,efg\nhijk,l,mn");
 foreach (var item in csv)
 {
-    Console.WriteLine("{0},{1],{2}", item[0], item[1], item[2]);
+    Console.WriteLine("{0},{1},{2}", item[0], item[1], item[2]);
 }
 ```
 
@@ -238,7 +238,7 @@ Now you can map to the CSV file.
 var csv = new CsvParser("ab,cd,efg\nhijk,l,mn");
 foreach (var model in csv.ConvertTo<Model>(new[] { "FieldA", "FieldB", "FieldC" }))
 {
-    Console.WriteLine("{0},{1],{2}", model.FieldA, model.FieldB, model.FieldC);
+    Console.WriteLine("{0},{1},{2}", model.FieldA, model.FieldB, model.FieldC);
 }
 ```
 
