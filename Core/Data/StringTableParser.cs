@@ -49,8 +49,8 @@ namespace Trivial.Data
         /// <summary>
         /// Initializes a new instance of the StringTableParser class.
         /// </summary>
-        /// <param name="reader">The stream reader.</param>
-        public StringTableParser(StreamReader reader)
+        /// <param name="reader">The text reader.</param>
+        public StringTableParser(TextReader reader)
         {
             if (reader == null) return;
             text = Parse(reader);
@@ -187,11 +187,11 @@ namespace Trivial.Data
         }
 
         /// <summary>
-        /// Reads lines from a given stream reader.
+        /// Reads lines from a given text reader.
         /// </summary>
-        /// <param name="reader">A stream reader.</param>
+        /// <param name="reader">A text reader.</param>
         /// <returns>Lines.</returns>
-        protected virtual IEnumerable<string> ReadLines(StreamReader reader)
+        protected virtual IEnumerable<string> ReadLines(TextReader reader)
         {
             if (reader == null) throw new ArgumentNullException(nameof(reader), "reader could not be null.");
             while (true)
@@ -232,12 +232,12 @@ namespace Trivial.Data
         }
 
         /// <summary>
-        /// Parses from a stream reader.
+        /// Parses from a text reader.
         /// </summary>
-        /// <param name="reader">The stream reader.</param>
+        /// <param name="reader">The text reader.</param>
         /// <returns>Content with table.</returns>
         /// <exception cref="ArgumentNullException">reader was null.</exception>
-        private IEnumerable<IReadOnlyList<string>> Parse(StreamReader reader)
+        private IEnumerable<IReadOnlyList<string>> Parse(TextReader reader)
         {
             if (reader == null) throw new ArgumentNullException(nameof(reader), "reader could not be null.");
             return Parse(ReadLines(reader));
@@ -352,8 +352,8 @@ namespace Trivial.Data
         /// <summary>
         /// Initializes a new instance of the LinesStringTableParser class.
         /// </summary>
-        /// <param name="reader">The stream reader.</param>
-        public LinesStringTableParser(StreamReader reader) : base(reader)
+        /// <param name="reader">The text reader.</param>
+        public LinesStringTableParser(TextReader reader) : base(reader)
         {
         }
 
@@ -524,8 +524,8 @@ namespace Trivial.Data
         /// Initializes a new instance of the FixedStringTableParser class.
         /// </summary>
         /// <param name="fieldLength">The collection of each field length.</param>
-        /// <param name="reader">The stream reader.</param>
-        public FixedStringTableParser(IEnumerable<int> fieldLength, StreamReader reader) : base(reader)
+        /// <param name="reader">The text reader.</param>
+        public FixedStringTableParser(IEnumerable<int> fieldLength, TextReader reader) : base(reader)
         {
             FieldLength = fieldLength?.ToList()?.AsReadOnly();
         }

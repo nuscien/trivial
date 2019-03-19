@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Security;
@@ -135,6 +136,11 @@ namespace Trivial.Security
         public string AppId => !AppAccessingKey.IsNullOrEmpty(appInfo) ? appInfo.Id : null;
 
         /// <summary>
+        /// Gets or sets a value indicating whether it requires an app identifier.
+        /// </summary>
+        public bool IsAppIdRequired { get; set; }
+
+        /// <summary>
         /// Gets a value indicating whether there is a token cached.
         /// </summary>
         public bool HasCache => !string.IsNullOrWhiteSpace(Token?.AccessToken);
@@ -221,10 +227,10 @@ namespace Trivial.Security
         /// <returns>The access token information instance updated.</returns>
         private async Task<TokenInfo> UpdateUnlockedAsync(CancellationToken cancellationToken = default)
         {
-            if (AppAccessingKey.IsNullOrEmpty(appInfo)) return null;
+            if (IsAppIdRequired && AppAccessingKey.IsNullOrEmpty(appInfo)) return null;
             var wc = WebClient;
             var oldToken = Token;
-            using (var request = CreateResolveMessage(appInfo.Secret))
+            using (var request = CreateResolveMessage(appInfo?.Secret))
             {
                 if (request == null) return null;
                 Token = await wc.SendAsync(request, cancellationToken);
@@ -288,6 +294,11 @@ namespace Trivial.Security
         public string AppId => !AppAccessingKey.IsNullOrEmpty(appInfo) ? appInfo.Id : null;
 
         /// <summary>
+        /// Gets or sets a value indicating whether it requires an app identifier.
+        /// </summary>
+        public bool IsAppIdRequired { get; set; }
+
+        /// <summary>
         /// Gets the latest visited date.
         /// </summary>
         public DateTime LatestVisitDate { get; private set; }
@@ -296,6 +307,11 @@ namespace Trivial.Security
         /// Gets the latest refreshed date.
         /// </summary>
         public DateTime LatestRefreshDate { get; private set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether need refresh token before valdate the code when expired.
+        /// </summary>
+        public bool IsAutoRefresh { get; set; }
 
         /// <summary>
         /// Gets the JSON HTTP web client for resolving access token information instance.
@@ -316,10 +332,25 @@ namespace Trivial.Security
         public async Task<TokenInfo> ValidateCodeAsync(string code, CancellationToken cancellationToken = default)
         {
             if (!string.IsNullOrWhiteSpace(code)) return null;
-            using (var request = CreateValidationMessage(appInfo.Secret, code))
+            if (IsAppIdRequired && AppAccessingKey.IsNullOrEmpty(appInfo)) return null;
+            using (var request = CreateValidationMessage(appInfo?.Secret, code))
             {
                 if (request == null) return null;
-                return await ProcessAsync(request, cancellationToken);
+                try
+                {
+                    return await ProcessAsync(request, cancellationToken);
+                }
+                catch (FailedHttpException ex)
+                {
+                    if (!IsAutoRefresh || ex.Response == null || ex.Response.StatusCode != HttpStatusCode.Unauthorized) throw;
+                    var token = await RefreshAsync(cancellationToken);
+                    if (token == null || token.IsEmpty) throw;
+                    using (var request2 = CreateValidationMessage(appInfo?.Secret, code))
+                    {
+                        if (request2 == null) return null;
+                        return await ProcessAsync(request2, cancellationToken);
+                    }
+                }
             }
         }
 
@@ -355,7 +386,8 @@ namespace Trivial.Security
                 }
             }
 
-            using (var request = CreateRefreshingMessage(appInfo.Secret))
+            if (IsAppIdRequired && AppAccessingKey.IsNullOrEmpty(appInfo)) return null;
+            using (var request = CreateRefreshingMessage(appInfo?.Secret))
             {
                 if (request == null) return null;
                 task = t = ProcessAsync(request, cancellationToken);
@@ -392,7 +424,8 @@ namespace Trivial.Security
 
         private async Task<TokenInfo> ProcessAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
-            if (AppAccessingKey.IsNullOrEmpty(appInfo) || request == null) return null;
+            if (request == null) return null;
+            if (IsAppIdRequired && AppAccessingKey.IsNullOrEmpty(appInfo)) return null;
             var wc = WebClient;
             var oldToken = Token;
             Token = await wc.SendAsync(request, cancellationToken);

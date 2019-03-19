@@ -16,8 +16,8 @@ namespace Trivial.Data
         /// <summary>
         /// Initializes a new instance of the CsvParser class.
         /// </summary>
-        /// <param name="reader">The stream reader.</param>
-        public CsvParser(StreamReader reader) : base(reader)
+        /// <param name="reader">The text reader.</param>
+        public CsvParser(TextReader reader) : base(reader)
         {
         }
 
@@ -193,9 +193,9 @@ namespace Trivial.Data
         /// <summary>
         /// Parses CSV.
         /// </summary>
-        /// <param name="csv">The CSV stream reader.</param>
+        /// <param name="csv">The CSV text reader.</param>
         /// <returns>Content of CSV.</returns>
-        public static IEnumerable<IReadOnlyList<string>> Parse(StreamReader csv)
+        public static IEnumerable<IReadOnlyList<string>> Parse(TextReader csv)
         {
             while (true)
             {
