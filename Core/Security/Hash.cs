@@ -9,6 +9,7 @@
 // --------------------------------------------------------------------------------------------------------------------
 
 using System;
+using System.Security;
 using System.Security.Cryptography;
 using System.Text;
 
@@ -53,6 +54,18 @@ namespace Trivial.Security
         /// <summary>
         /// Computes a hash string value of a specific string instance.
         /// </summary>
+        /// <param name="alg">The hash algorithm instance.</param>
+        /// <param name="secureString">The original input value to get hash.</param>
+        /// <param name="encoding">The text encoding.</param>
+        /// <returns>A hash string value of the given string; or null, if h or input is null.</returns>
+        public static string ToHashString<T>(this T alg, SecureString secureString, Encoding encoding = null) where T : HashAlgorithm
+        {
+            return ToHashString(alg, secureString.ToUnsecureString(), encoding);
+        }
+
+        /// <summary>
+        /// Computes a hash string value of a specific string instance.
+        /// </summary>
         /// <param name="h">The hash algorithm object maker.</param>
         /// <param name="plainText">The original input value to get hash.</param>
         /// <param name="encoding">The text encoding.</param>
@@ -69,12 +82,24 @@ namespace Trivial.Security
         /// <summary>
         /// Computes a hash string value of a specific string instance.
         /// </summary>
+        /// <param name="h">The hash algorithm object maker.</param>
+        /// <param name="secureString">The original input value to get hash.</param>
+        /// <param name="encoding">The text encoding.</param>
+        /// <returns>A hash string value of the given string; or null, if h or input is null.</returns>
+        public static string ToHashString<T>(Func<T> h, SecureString secureString, Encoding encoding = null) where T : HashAlgorithm
+        {
+            return ToHashString(h, secureString.ToUnsecureString(), encoding);
+        }
+
+        /// <summary>
+        /// Computes a hash string value of a specific string instance.
+        /// </summary>
         /// <param name="h">The hash algorithm name.</param>
         /// <param name="plainText">The original input value to get hash.</param>
         /// <param name="encoding">The text encoding.</param>
         /// <returns>A hash string value of the given string; or null, if h or input is null.</returns>
         /// <exception cref="NotSupportedException">The hash algorithm name is not supported.</exception>
-        public static string ToHashString<T>(HashAlgorithmName h, string plainText, Encoding encoding = null) where T : HashAlgorithm
+        public static string ToHashString(HashAlgorithmName h, string plainText, Encoding encoding = null)
         {
             if (h == null) return null;
             if (h == HashAlgorithmName.SHA512) return ToHashString(SHA512.Create, plainText, encoding);
@@ -82,27 +107,29 @@ namespace Trivial.Security
             if (h == HashAlgorithmName.SHA256) return ToHashString(SHA256.Create, plainText, encoding);
             if (h == HashAlgorithmName.SHA1) return ToHashString(SHA1.Create, plainText, encoding);
             if (h == HashAlgorithmName.SHA384) return ToHashString(SHA384.Create, plainText, encoding);
-            throw new NotSupportedException("The hash algorithm name is not supported.");
+            throw new NotSupportedException("The hash algorithm name is not supported. Please use the factory or instance of its hash algorithm as the first parameter to call.");
         }
 
         /// <summary>
-        /// Computes a MD5 hash string value of a specific string instance.
+        /// Computes a hash string value of a specific string instance.
         /// </summary>
-        /// <param name="plainText">The original input value to get hash.</param>
+        /// <param name="h">The hash algorithm name.</param>
+        /// <param name="secureString">The original input value to get hash.</param>
         /// <param name="encoding">The text encoding.</param>
-        /// <returns>A hash string value of the given string.</returns>
-        public static string ToMD5String(string plainText, Encoding encoding = null)
+        /// <returns>A hash string value of the given string; or null, if h or input is null.</returns>
+        /// <exception cref="NotSupportedException">The hash algorithm name is not supported.</exception>
+        public static string ToHashString<T>(HashAlgorithmName h, SecureString secureString, Encoding encoding = null)
         {
-            // Create a new instance of the MD5CryptoServiceProvider object.
-            return ToHashString(MD5.Create, plainText, encoding);
+            return ToHashString(h, secureString.ToUnsecureString(), encoding);
         }
 
         /// <summary>
-        /// Computes a SHA1 hash string value of a specific string instance.
+        /// Computes a SHA-1 hash string value of a specific string instance.
         /// </summary>
         /// <param name="plainText">The original input value to get hash.</param>
         /// <param name="encoding">The text encoding.</param>
         /// <returns>A hash string value of the given string.</returns>
+        [Obsolete("SHA-1 is no longer considered secure. Please use SHA-512 or other better one instead.")]
         public static string ToSHA1String(string plainText, Encoding encoding = null)
         {
             // Create a new instance of the SHA512CryptoServiceProvider object.
@@ -110,7 +137,7 @@ namespace Trivial.Security
         }
 
         /// <summary>
-        /// Computes a SHA512 hash string value of a specific string instance.
+        /// Computes a SHA-512 hash string value of a specific string instance.
         /// </summary>
         /// <param name="plainText">The original input value to get hash.</param>
         /// <param name="encoding">The text encoding.</param>
@@ -153,25 +180,13 @@ namespace Trivial.Security
         }
 
         /// <summary>
-        /// Verifies a MD5 hash against a string.
+        /// Verifies a SHA-1 hash against a string.
         /// </summary>
         /// <param name="plainText">The original input value to test.</param>
         /// <param name="hash">A hash string for comparing.</param>
         /// <param name="encoding">The text encoding.</param>
         /// <returns>true if hash is a hash value of input; otherwise, false.</returns>
-        public static bool VerifyMD5(string plainText, string hash, Encoding encoding = null)
-        {
-            // Return the result after StringComparer comparing.
-            return 0 == StringComparer.OrdinalIgnoreCase.Compare(ToMD5String(plainText, encoding), hash);
-        }
-
-        /// <summary>
-        /// Verifies a SHA1 hash against a string.
-        /// </summary>
-        /// <param name="plainText">The original input value to test.</param>
-        /// <param name="hash">A hash string for comparing.</param>
-        /// <param name="encoding">The text encoding.</param>
-        /// <returns>true if hash is a hash value of input; otherwise, false.</returns>
+        [Obsolete("SHA-1 is no longer considered secure.")]
         public static bool VerifySHA1(string plainText, string hash, Encoding encoding = null)
         {
             // Return the result after StringComparer comparing.
@@ -179,7 +194,7 @@ namespace Trivial.Security
         }
 
         /// <summary>
-        /// Verifies a SHA512 hash against a string.
+        /// Verifies a SHA-512 hash against a string.
         /// </summary>
         /// <param name="plainText">The original input value to test.</param>
         /// <param name="hash">A hash string for comparing.</param>

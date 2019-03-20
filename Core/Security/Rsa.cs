@@ -246,7 +246,7 @@ namespace Trivial.Security
         /// <param name="parameters">The RSA parameters.</param>
         /// <param name="includePrivateKey">true if includes the private key; otherwise, false.</param>
         /// <returns>An XmlDocument object.</returns>
-        public static XmlDocument XmlDocument(this RSAParameters parameters, bool includePrivateKey)
+        public static XmlDocument ToXmlDocument(this RSAParameters parameters, bool includePrivateKey)
         {
             var doc = new XmlDocument();
             doc.LoadXml("<RSAKeyValue></RSAKeyValue>");
@@ -269,8 +269,9 @@ namespace Trivial.Security
         /// </summary>
         /// <param name="parameters">The RSA parameters.</param>
         /// <param name="usePKCS8">true if use Private-Key Information Syntax Standard #8; otherwise, false.</param>
+        /// <param name="onlyBase64Value">true if only contains the Base64 value but without the first and last type description lines; otherwise, false.</param>
         /// <returns>The PEM string of private key.</returns>
-        public static string ToPrivatePEMString(this RSAParameters parameters, bool usePKCS8)
+        public static string ToPrivatePEMString(this RSAParameters parameters, bool usePKCS8, bool onlyBase64Value = false)
         {
             if (parameters.D == null || parameters.D.Length == 0) return ToPublicPEMString(parameters);
             using (var stream = new MemoryStream())
@@ -312,11 +313,13 @@ namespace Trivial.Security
 
                 // Flag.
                 bytes = WriteLen(stream, index1, bytes);
-                var flag = " PRIVATE KEY";
-                if (!usePKCS8) flag = " RSA" + flag;
+                var flag = "PRIVATE KEY";
+                if (!usePKCS8) flag = "RSA " + flag;
 
                 // Return Pem.
-                return "-----BEGIN" + flag + "-----\n" + StringUtility.BreakLines(Convert.ToBase64String(bytes), 64, '\n') + "\n-----END" + flag + "-----";
+                var result = Convert.ToBase64String(bytes);
+                if (onlyBase64Value) return result;
+                return $"-----BEGIN {flag}-----\n{StringUtility.BreakLines(result, 64, '\n')}\n-----END {flag}-----";
             }
         }
 
@@ -324,8 +327,9 @@ namespace Trivial.Security
         /// Converts the RSA parameter to OpenSSL RSA public key format string (PEM Base64).
         /// </summary>
         /// <param name="parameters">The RSA parameters.</param>
+        /// <param name="onlyBase64Value">true if only contains the Base64 value but without the first and last type description lines; otherwise, false.</param>
         /// <returns>The PEM string of public key.</returns>
-        public static string ToPublicPEMString(this RSAParameters parameters)
+        public static string ToPublicPEMString(this RSAParameters parameters, bool onlyBase64Value = false)
         {
             using (var stream = new MemoryStream())
             {
@@ -351,7 +355,9 @@ namespace Trivial.Security
                 bytes = WriteLen(stream, index1, bytes);
 
                 // Return PEM.
-                return "-----BEGIN PUBLIC KEY-----\n" + StringUtility.BreakLines(Convert.ToBase64String(bytes), 64, '\n') + "\n-----END PUBLIC KEY-----";
+                var result = Convert.ToBase64String(bytes);
+                if (onlyBase64Value) return result;
+                return $"-----BEGIN PUBLIC KEY-----\n{StringUtility.BreakLines(result, 64, '\n')}\n-----END PUBLIC KEY-----";
             }
         }
 

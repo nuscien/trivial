@@ -438,7 +438,7 @@ namespace Trivial.Security
     /// <summary>
     /// The token exchange based on RSA.
     /// </summary>
-    public class RsaTokenExchange
+    public class RsaTokenExchange : ICloneable
     {
         /// <summary>
         /// The RSA crypto service provider.
@@ -496,7 +496,15 @@ namespace Trivial.Security
         public Func<string, bool, string> TokenFormatBeforeEncrypt { get; set; }
 
         /// <summary>
-        /// Sets a specific crypto service provider.
+        /// Creates a random new identifier.
+        /// </summary>
+        public void RenewId()
+        {
+            Id = Guid.NewGuid().ToString("n");
+        }
+
+        /// <summary>
+        /// Sets a specific crypto service provider instance.
         /// </summary>
         /// <param name="rsa">The new crypto service provider.</param>
         /// <param name="syncEncryptKey">true if set the token encryption key from the crypto service provider; otherwise, false.</param>
@@ -505,10 +513,7 @@ namespace Trivial.Security
             crypto = rsa;
             if (rsa == null)
             {
-                PublicKey = null;
-                if (!syncEncryptKey) return;
-                EncryptKey = null;
-                EncryptKeyId = Id;
+                ClearCrypto(syncEncryptKey);
                 return;
             }
             
@@ -519,7 +524,7 @@ namespace Trivial.Security
         }
 
         /// <summary>
-        /// Sets a specific crypto service provider.
+        /// Sets a specific crypto service provider instance.
         /// </summary>
         /// <param name="privateKey">The RSA private key.</param>
         /// <param name="syncEncryptKey">true if set the token encryption key from the crypto service provider; otherwise, false.</param>
@@ -528,17 +533,37 @@ namespace Trivial.Security
             var key = RSAUtility.ParseParameters(privateKey);
             if (!key.HasValue)
             {
-                PublicKey = null;
-                if (!syncEncryptKey) return;
-                EncryptKey = null;
-                EncryptKeyId = Id;
+                ClearCrypto(syncEncryptKey);
                 return;
             }
 
-            if (key.Value.D == null || key.Value.D.Length == 0) throw new ArgumentException("privateKey should be an OpenSSL RSA private key.");
+            SetCrypto(key.Value, syncEncryptKey);
+        }
+
+        /// <summary>
+        /// Sets a specific crypto service provider instance.
+        /// </summary>
+        /// <param name="privateKey">The RSA private key.</param>
+        /// <param name="syncEncryptKey">true if set the token encryption key from the crypto service provider; otherwise, false.</param>
+        public void SetCrypto(RSAParameters privateKey, bool syncEncryptKey = false)
+        {
+            if (privateKey.D == null || privateKey.D.Length == 0) throw new ArgumentException("privateKey should be an RSA private key.");
             var rsa = RSA.Create();
-            rsa.ImportParameters(key.Value);
+            rsa.ImportParameters(privateKey);
             SetCrypto(rsa, syncEncryptKey);
+        }
+
+        /// <summary>
+        /// Clears the crypto service provider instance.
+        /// </summary>
+        /// <param name="syncEncryptKey"></param>
+        public void ClearCrypto(bool syncEncryptKey = false)
+        {
+            PublicKey = null;
+            if (!syncEncryptKey) return;
+            EncryptKey = null;
+            EncryptKeyId = Id;
+            return;
         }
 
         /// <summary>
@@ -554,9 +579,9 @@ namespace Trivial.Security
         /// Decrypts the token and fills into this token exchange instance.
         /// </summary>
         /// <param name="tokenEncrypted">The new token encrypted.</param>
-        /// <param name="supportNoCrypto">true if the token is not encrypted if there is no crypto service provider; otherwise, false.</param>
+        /// <param name="ignoreFormatIfNoCrypto">true if ignore format when no crypto set; otherwise, false.</param>
         /// <param name="padding">The optional padding mode for decryption.</param>
-        public void DecryptToken(string tokenEncrypted, bool supportNoCrypto = false, RSAEncryptionPadding padding = null)
+        public void DecryptToken(string tokenEncrypted, bool ignoreFormatIfNoCrypto, RSAEncryptionPadding padding = null)
         {
             if (string.IsNullOrWhiteSpace(tokenEncrypted))
             {
@@ -565,9 +590,9 @@ namespace Trivial.Security
             }
 
             var rsa = crypto;
-            if (rsa == null && supportNoCrypto)
+            if (rsa == null)
             {
-                if (TokenFormatBeforeDecrypt != null) tokenEncrypted = TokenFormatBeforeDecrypt(tokenEncrypted, false);
+                if (!ignoreFormatIfNoCrypto && TokenFormatBeforeDecrypt != null) tokenEncrypted = TokenFormatBeforeDecrypt(tokenEncrypted, false);
                 AccessToken = tokenEncrypted.ToSecure();
                 return;
             }
@@ -681,6 +706,35 @@ namespace Trivial.Security
         public bool IsSameEntityId(string entity)
         {
             return entity == EntityId || (string.IsNullOrWhiteSpace(entity) && string.IsNullOrWhiteSpace(EntityId));
+        }
+
+        /// <summary>
+        /// Creates a new object that is a copy of the current instance.
+        /// </summary>
+        /// <returns>A new object that is a copy of this instance.</returns>
+        public RsaTokenExchange Clone()
+        {
+            return new RsaTokenExchange
+            {
+                Id = Id,
+                EntityId = EntityId,
+                EncryptKey = EncryptKey,
+                EncryptKeyId = EncryptKeyId,
+                AccessToken = AccessToken,
+                TokenFormatBeforeDecrypt = TokenFormatBeforeDecrypt,
+                TokenFormatBeforeEncrypt = TokenFormatBeforeEncrypt,
+                PublicKey = PublicKey,
+                crypto = crypto
+            };
+        }
+
+        /// <summary>
+        /// Creates a new object that is a copy of the current instance.
+        /// </summary>
+        /// <returns>A new object that is a copy of this instance.</returns>
+        object ICloneable.Clone()
+        {
+            return Clone();
         }
     }
 }
