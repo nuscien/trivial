@@ -178,7 +178,7 @@ var back = SymmetricUtilities.Decrypt(Aes.Create, cipher, key, iv); // back == o
 
 ### Hash
 
-For hash, you can call `HashUtilities.ComputeHashString` function to get hash and `HashUtilities.Verify` to verify.
+For hash algorithm (e.g. SHA-2, SHA-3), you can call `HashUtilities.ToHashString` function to get hash from a plain string and call `HashUtilities.Verify` to verify.
 
 ### Access token
 
