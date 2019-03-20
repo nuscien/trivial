@@ -1,6 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Runtime.Serialization;
+using System.Runtime.Serialization.Json;
+using System.Security;
+using System.Security.Cryptography;
 using System.Text;
+using Trivial.Security;
 
 namespace Trivial.Web
 {
@@ -65,6 +71,94 @@ namespace Trivial.Web
         {
             if (!date.HasValue) return null;
             return ParseDate(date.Value);
+        }
+
+        /// <summary>
+        /// Encodes a specific byte array into Base64Url format.
+        /// </summary>
+        /// <param name="bytes">The value to encode.</param>
+        /// <returns>A Base64Url string.</returns>
+        public static string Base64UrlEncode(byte[] bytes)
+        {
+            if (bytes == null) return null;
+            return Convert.ToBase64String(bytes).Replace("+", "-").Replace("/", "_").Replace("=", string.Empty);
+        }
+
+        /// <summary>
+        /// Encodes a specific string into Base64Url format.
+        /// </summary>
+        /// <param name="value">The value to encode.</param>
+        /// <param name="encoding">Optional text encoding.</param>
+        /// <returns>A Base64Url string.</returns>
+        public static string Base64UrlEncode(string value, Encoding encoding = null)
+        {
+            if (string.IsNullOrEmpty(value)) return value;
+            var bytes = (encoding ?? Encoding.UTF8).GetBytes(value);
+            return Convert.ToBase64String(bytes).Replace("+", "-").Replace("/", "_").Replace("=", string.Empty);
+        }
+
+        /// <summary>
+        /// Encodes a specific object into JSON Base64Url format.
+        /// </summary>
+        /// <typeparam name="T">The type of the object to deserialize.</typeparam>
+        /// <param name="obj">The object.</param>
+        /// <returns>A Base64Url string.</returns>
+        public static string Base64UrlEncode<T>(T obj)
+        {
+            var serializer = new DataContractJsonSerializer(typeof(T));
+            using (var stream = new MemoryStream())
+            {
+                serializer.WriteObject(stream, obj);
+                stream.Position = 0;
+                var bytes = new byte[stream.Length];
+                stream.Read(bytes, 0, (int)stream.Length);
+                return Base64UrlEncode(bytes);
+            }
+        }
+
+        /// <summary>
+        /// Decodes the string from a Base64Url format.
+        /// </summary>
+        /// <param name="base64UrlStringEncoded">A Base64Url encoded string.</param>
+        /// <returns>A plain text.</returns>
+        public static byte[] Base64UrlDecode(string base64UrlStringEncoded)
+        {
+            if (base64UrlStringEncoded == null) return null;
+            if (base64UrlStringEncoded == string.Empty) return new byte[0];
+            base64UrlStringEncoded = base64UrlStringEncoded.Replace("-", "+").Replace("_", "/");
+            base64UrlStringEncoded = base64UrlStringEncoded.PadRight(4 - base64UrlStringEncoded.Length % 4, '=');
+            var bytes = Convert.FromBase64String(base64UrlStringEncoded);
+            return bytes;
+        }
+
+        /// <summary>
+        /// Decodes the string from a Base64Url format.
+        /// </summary>
+        /// <param name="base64UrlStringEncoded">A Base64Url encoded string.</param>
+        /// <param name="encoding">Optional text encoding.</param>
+        /// <returns>A plain text.</returns>
+        public static string Base64UrlDecodeAsString(string base64UrlStringEncoded, Encoding encoding = null)
+        {
+            if (string.IsNullOrEmpty(base64UrlStringEncoded)) return base64UrlStringEncoded;
+            var bytes = Base64UrlDecode(base64UrlStringEncoded);
+            return (encoding ?? Encoding.ASCII).GetString(bytes);
+        }
+
+        /// <summary>
+        /// Decodes and deserializes the object from a JSON Base64Url format.
+        /// </summary>
+        /// <typeparam name="T">The type of the object to deserialize.</typeparam>
+        /// <param name="base64UrlStringEncoded">A Base64Url encoded string.</param>
+        /// <returns>The object typed.</returns>
+        public static T Base64UrlDecodeAs<T>(string base64UrlStringEncoded)
+        {
+            if (string.IsNullOrEmpty(base64UrlStringEncoded)) return default;
+            var bytes = Base64UrlDecode(base64UrlStringEncoded);
+            var serializer = new DataContractJsonSerializer(typeof(T));
+            using (var stream = new MemoryStream(bytes))
+            {
+                return (T)serializer.ReadObject(stream);
+            }
         }
     }
 }
