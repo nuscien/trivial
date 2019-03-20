@@ -53,6 +53,18 @@ namespace Trivial.Security
         }
 
         /// <summary>
+        /// Parses a JSON web token with HMAC SHA-512 hash algorithm.
+        /// </summary>
+        /// <param name="jwt">The string encoded.</param>
+        /// <param name="secret">The secret.</param>
+        /// <param name="verify">true if verify the signature; otherwise, false.</param>
+        /// <returns>A JSON web token object.</returns>
+        public static JsonWebToken<T> CreateHS512(string jwt, string secret, bool verify = true)
+        {
+            return Parse(jwt, new HMACSHA512(Encoding.ASCII.GetBytes(secret ?? string.Empty)), verify);
+        }
+
+        /// <summary>
         /// Creates a JSON web token with HMAC SHA-384 hash algorithm.
         /// </summary>
         /// <param name="payload">The payload.</param>
@@ -64,6 +76,18 @@ namespace Trivial.Security
         }
 
         /// <summary>
+        /// Parses a JSON web token with HMAC SHA-384 hash algorithm.
+        /// </summary>
+        /// <param name="jwt">The string encoded.</param>
+        /// <param name="secret">The secret.</param>
+        /// <param name="verify">true if verify the signature; otherwise, false.</param>
+        /// <returns>A JSON web token object.</returns>
+        public static JsonWebToken<T> CreateHS384(string jwt, string secret, bool verify = true)
+        {
+            return Parse(jwt, new HMACSHA384(Encoding.ASCII.GetBytes(secret ?? string.Empty)), verify);
+        }
+
+        /// <summary>
         /// Creates a JSON web token with HMAC SHA-256 hash algorithm.
         /// </summary>
         /// <param name="payload">The payload.</param>
@@ -72,6 +96,85 @@ namespace Trivial.Security
         public static JsonWebToken<T> CreateHS256(T payload, string secret)
         {
             return new JsonWebToken<T>(payload, new HMACSHA256(Encoding.ASCII.GetBytes(secret ?? string.Empty)), "HS256");
+        }
+
+        /// <summary>
+        /// Parses a JSON web token with HMAC SHA-256 hash algorithm.
+        /// </summary>
+        /// <param name="jwt">The string encoded.</param>
+        /// <param name="secret">The secret.</param>
+        /// <param name="verify">true if verify the signature; otherwise, false.</param>
+        /// <returns>A JSON web token object.</returns>
+        public static JsonWebToken<T> CreateHS256(string jwt, string secret, bool verify = true)
+        {
+            return Parse(jwt, new HMACSHA256(Encoding.ASCII.GetBytes(secret ?? string.Empty)), verify);
+        }
+
+        /// <summary>
+        /// Parses a JWT string encoded.
+        /// </summary>
+        /// <param name="jwt">The string encoded.</param>
+        /// <param name="algorithm">The signature algorithm.</param>
+        /// <param name="secret">The secret.</param>
+        /// <param name="verify">true if verify the signature; otherwise, false.</param>
+        /// <returns>A JSON web token object.</returns>
+        /// <exception cref="ArgumentNullException">jwt was null or empty.</exception>
+        /// <exception cref="ArgumentException">jwt did not contain any information.</exception>
+        /// <exception cref="FormatException">jwt was in incorrect format.</exception>
+        /// <exception cref="InvalidOperationException">Verify failure.</exception>
+        public static JsonWebToken<T> Parse(string jwt, SignatureAlgorithm algorithm, string secret, bool verify = true)
+        {
+            var (payload, algorithmName, sign) = ParseInternal(jwt);
+            var obj = new JsonWebToken<T>(payload, algorithm, algorithmName, secret);
+            if (verify && obj.ToSigntureBase64Url() != sign) throw new InvalidOperationException("jwt signature is incorrect.");
+            return obj;
+        }
+
+        /// <summary>
+        /// Parses a JWT string encoded.
+        /// </summary>
+        /// <param name="jwt">The string encoded.</param>
+        /// <param name="algorithm">The signature algorithm.</param>
+        /// <param name="verify">true if verify the signature; otherwise, false.</param>
+        /// <returns>A JSON web token object.</returns>
+        /// <exception cref="ArgumentNullException">jwt was null or empty.</exception>
+        /// <exception cref="ArgumentException">jwt did not contain any information.</exception>
+        /// <exception cref="FormatException">jwt was in incorrect format.</exception>
+        /// <exception cref="InvalidOperationException">Verify failure.</exception>
+        public static JsonWebToken<T> Parse(string jwt, KeyedHashAlgorithm algorithm, bool verify = true)
+        {
+            var (payload, algorithmName, sign) = ParseInternal(jwt);
+            var obj = new JsonWebToken<T>(payload, algorithm, algorithmName);
+            if (verify && obj.ToSigntureBase64Url() != sign) throw new InvalidOperationException("jwt signature is incorrect.");
+            return obj;
+        }
+
+        /// <summary>
+        /// Parses a JWT string encoded.
+        /// </summary>
+        /// <param name="jwt">The string encoded.</param>
+        /// <returns>A JSON web token tuple.</returns>
+        /// <exception cref="ArgumentNullException">jwt was null or empty.</exception>
+        /// <exception cref="ArgumentException">jwt did not contain any information.</exception>
+        /// <exception cref="FormatException">jwt was in incorrect format.</exception>
+        /// <exception cref="InvalidOperationException">Verify failure.</exception>
+        private static (T, string, string) ParseInternal(string jwt)
+        {
+            if (string.IsNullOrWhiteSpace(jwt)) throw new ArgumentNullException(nameof(jwt), "jwt should not be null or empty.");
+            var prefix = $"{TokenInfo.BearerTokenType} ";
+            if (jwt.IndexOf(prefix) == 0)
+            {
+                if (jwt.Length == prefix.Length) throw new ArgumentException(nameof(jwt), "jwt should not contain a scheme only.");
+                jwt = jwt.Substring(prefix.Length);
+            }
+
+            var arr = jwt.Split('.');
+            if (arr.Length < 3) throw new FormatException("jwt is not in the correct format.");
+            var header = WebUtility.Base64UrlDecodeTo<HeaderModel>(arr[0]);
+            var payload = WebUtility.Base64UrlDecodeTo<T>(arr[1]);
+            if (header == null) throw new ArgumentException(nameof(jwt), "jwt should contain header in Base64Url.");
+            if (payload == null) throw new ArgumentException(nameof(jwt), "jwt should contain payload in Base64Url.");
+            return (payload, header.AlgorithmName, arr[2]);
         }
 
         /// <summary>
@@ -191,6 +294,15 @@ namespace Trivial.Security
         public string ToEncodedString()
         {
             return $"{ToHeaderBase64Url()}.{ToPayloadBase64Url()}.{ToSigntureBase64Url()}";
+        }
+
+        /// <summary>
+        /// Returns a System.Net.Http.Headers.AuthenticationHeaderValue that represents the current TokenInfo.
+        /// </summary>
+        /// <returns>A System.Net.Http.Headers.AuthenticationHeaderValue that represents the current TokenInfo.</returns>
+        public string ToAuthenticationHeaderValue()
+        {
+            return $"{TokenInfo.BearerTokenType} {ToEncodedString()}";
         }
 
         /// <summary>

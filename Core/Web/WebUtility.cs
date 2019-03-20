@@ -119,28 +119,29 @@ namespace Trivial.Web
         /// <summary>
         /// Decodes the string from a Base64Url format.
         /// </summary>
-        /// <param name="base64UrlStringEncoded">A Base64Url encoded string.</param>
+        /// <param name="s">A Base64Url encoded string.</param>
         /// <returns>A plain text.</returns>
-        public static byte[] Base64UrlDecode(string base64UrlStringEncoded)
+        public static byte[] Base64UrlDecode(string s)
         {
-            if (base64UrlStringEncoded == null) return null;
-            if (base64UrlStringEncoded == string.Empty) return new byte[0];
-            base64UrlStringEncoded = base64UrlStringEncoded.Replace("-", "+").Replace("_", "/");
-            base64UrlStringEncoded = base64UrlStringEncoded.PadRight(4 - base64UrlStringEncoded.Length % 4, '=');
-            var bytes = Convert.FromBase64String(base64UrlStringEncoded);
+            if (s == null) return null;
+            if (s == string.Empty) return new byte[0];
+            s = s.Replace("-", "+").Replace("_", "/");
+            var len = 4 - s.Length % 4;
+            if (len < 4) s = s.PadRight(len + s.Length, '=');
+            var bytes = Convert.FromBase64String(s);
             return bytes;
         }
 
         /// <summary>
         /// Decodes the string from a Base64Url format.
         /// </summary>
-        /// <param name="base64UrlStringEncoded">A Base64Url encoded string.</param>
+        /// <param name="s">A Base64Url encoded string.</param>
         /// <param name="encoding">Optional text encoding.</param>
         /// <returns>A plain text.</returns>
-        public static string Base64UrlDecodeAsString(string base64UrlStringEncoded, Encoding encoding = null)
+        public static string Base64UrlDecodeToString(string s, Encoding encoding = null)
         {
-            if (string.IsNullOrEmpty(base64UrlStringEncoded)) return base64UrlStringEncoded;
-            var bytes = Base64UrlDecode(base64UrlStringEncoded);
+            if (string.IsNullOrEmpty(s)) return s;
+            var bytes = Base64UrlDecode(s);
             return (encoding ?? Encoding.ASCII).GetString(bytes);
         }
 
@@ -148,12 +149,12 @@ namespace Trivial.Web
         /// Decodes and deserializes the object from a JSON Base64Url format.
         /// </summary>
         /// <typeparam name="T">The type of the object to deserialize.</typeparam>
-        /// <param name="base64UrlStringEncoded">A Base64Url encoded string.</param>
+        /// <param name="s">A Base64Url encoded string.</param>
         /// <returns>The object typed.</returns>
-        public static T Base64UrlDecodeAs<T>(string base64UrlStringEncoded)
+        public static T Base64UrlDecodeTo<T>(string s)
         {
-            if (string.IsNullOrEmpty(base64UrlStringEncoded)) return default;
-            var bytes = Base64UrlDecode(base64UrlStringEncoded);
+            if (string.IsNullOrEmpty(s)) return default;
+            var bytes = Base64UrlDecode(s);
             var serializer = new DataContractJsonSerializer(typeof(T));
             using (var stream = new MemoryStream(bytes))
             {

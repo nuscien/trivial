@@ -206,6 +206,19 @@ And you can implement the `OpenIdTokenClient` abstract class or `TokenResolver` 
 
 You can use the extension methods `SecureStringUtiltiy` to convert between `SecureString` and `String`/`StringBuilder`/`Byte[]`.
 
+### JWT
+
+You can create a JSON web token to get the string encoded by initializing a new instance of the `JsonWebToken` class.
+
+```csharp
+var secret = "a secret string";
+var jwt = JsonWebToken<Model>.CreateHS512(new Model(), secret);
+var jwtStr = jwt.ToEncodedString();
+
+// Parse.
+var jwtSame = JsonWebToken<Model>.CreateHS512(jwtStr, secret); // jwtSame.ToEncodedString() == jwtStr
+```
+
 ## [IO](https://github.com/nuscien/trivial/wiki/io)
 
 Contains the helper functions and extension methods for `FileInfo` and `Stream`.
