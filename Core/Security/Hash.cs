@@ -27,7 +27,7 @@ namespace Trivial.Security
         /// <param name="plainText">The original input value to get hash.</param>
         /// <param name="encoding">The text encoding.</param>
         /// <returns>A hash string value of the given string; or null, if h or input is null.</returns>
-        public static string ToHashString<T>(this T alg, string plainText, Encoding encoding = null) where T : HashAlgorithm
+        public static string ToHashString(this HashAlgorithm alg, string plainText, Encoding encoding = null)
         {
             // Check if the arguments is not null.
             if (alg == null || plainText == null) return null;
@@ -58,7 +58,7 @@ namespace Trivial.Security
         /// <param name="secureString">The original input value to get hash.</param>
         /// <param name="encoding">The text encoding.</param>
         /// <returns>A hash string value of the given string; or null, if h or input is null.</returns>
-        public static string ToHashString<T>(this T alg, SecureString secureString, Encoding encoding = null) where T : HashAlgorithm
+        public static string ToHashString(this HashAlgorithm alg, SecureString secureString, Encoding encoding = null)
         {
             return ToHashString(alg, secureString.ToUnsecureString(), encoding);
         }
@@ -94,20 +94,38 @@ namespace Trivial.Security
         /// <summary>
         /// Computes a hash string value of a specific string instance.
         /// </summary>
-        /// <param name="h">The hash algorithm name.</param>
+        /// <param name="name">The hash algorithm name.</param>
         /// <param name="plainText">The original input value to get hash.</param>
         /// <param name="encoding">The text encoding.</param>
         /// <returns>A hash string value of the given string; or null, if h or input is null.</returns>
         /// <exception cref="NotSupportedException">The hash algorithm name is not supported.</exception>
-        public static string ToHashString(HashAlgorithmName h, string plainText, Encoding encoding = null)
+        public static string ToHashString(HashAlgorithmName name, string plainText, Encoding encoding = null)
         {
+            Func<HashAlgorithm> h = null;
+            try
+            {
+                h = GetHashAlgorithmFactory(name);
+            }
+            catch (NotSupportedException)
+            {
+                throw new NotSupportedException("The hash algorithm name is not supported. Please use the factory or instance of its hash algorithm as the first parameter to call.");
+            }
+
             if (h == null) return null;
-            if (h == HashAlgorithmName.SHA512) return ToHashString(SHA512.Create, plainText, encoding);
-            if (h == HashAlgorithmName.MD5) return ToHashString(MD5.Create, plainText, encoding);
-            if (h == HashAlgorithmName.SHA256) return ToHashString(SHA256.Create, plainText, encoding);
-            if (h == HashAlgorithmName.SHA1) return ToHashString(SHA1.Create, plainText, encoding);
-            if (h == HashAlgorithmName.SHA384) return ToHashString(SHA384.Create, plainText, encoding);
-            throw new NotSupportedException("The hash algorithm name is not supported. Please use the factory or instance of its hash algorithm as the first parameter to call.");
+            return ToHashString(h, plainText, encoding);
+        }
+
+        /// <summary>
+        /// Creates a hash algorithm instance.
+        /// </summary>
+        /// <param name="name">The hash algorithm name,</param>
+        /// <returns>A hash algorithm instance.</returns>
+        public static HashAlgorithm Create(HashAlgorithmName name)
+        {
+            if (name == null) throw new ArgumentNullException(nameof(name), "name should not be null.");
+            var h = GetHashAlgorithmFactory(name);
+            if (h == null) throw new ArgumentException(nameof(name), "name.Name should not be null or empty.");
+            return h();
         }
 
         /// <summary>
@@ -137,15 +155,27 @@ namespace Trivial.Security
         }
 
         /// <summary>
-        /// Computes a SHA-512 hash string value of a specific string instance.
+        /// Computes a SHA-512 (of SHA-2 family) hash string value of a specific string instance.
         /// </summary>
         /// <param name="plainText">The original input value to get hash.</param>
         /// <param name="encoding">The text encoding.</param>
         /// <returns>A hash string value of the given string.</returns>
         public static string ToSHA512String(string plainText, Encoding encoding = null)
         {
-            // Create a new instance of the SHA512CryptoServiceProvider object.
+            // Create a new instance of the SHA-512 crypto service provider object.
             return ToHashString(SHA512.Create, plainText, encoding);
+        }
+
+        /// <summary>
+        /// Computes a SHA-3-512 hash string value of a specific string instance.
+        /// </summary>
+        /// <param name="plainText">The original input value to get hash.</param>
+        /// <param name="encoding">The text encoding.</param>
+        /// <returns>A hash string value of the given string.</returns>
+        public static string ToSHA3512String(string plainText, Encoding encoding = null)
+        {
+            // Create a new instance of the SHA512CryptoServiceProvider object.
+            return ToHashString(SHA3ManagedImpl.Create512, plainText, encoding);
         }
 
         /// <summary>
@@ -194,7 +224,7 @@ namespace Trivial.Security
         }
 
         /// <summary>
-        /// Verifies a SHA-512 hash against a string.
+        /// Verifies a SHA-512 (of SHA-2 family) hash against a string.
         /// </summary>
         /// <param name="plainText">The original input value to test.</param>
         /// <param name="hash">A hash string for comparing.</param>
@@ -204,6 +234,53 @@ namespace Trivial.Security
         {
             // Return the result after StringComparer comparing.
             return 0 == StringComparer.OrdinalIgnoreCase.Compare(ToSHA512String(plainText, encoding), hash);
+        }
+
+        /// <summary>
+        /// Verifies a SHA-3-512 hash against a string.
+        /// </summary>
+        /// <param name="plainText">The original input value to test.</param>
+        /// <param name="hash">A hash string for comparing.</param>
+        /// <param name="encoding">The text encoding.</param>
+        /// <returns>true if hash is a hash value of input; otherwise, false.</returns>
+        public static bool VerifySHA3512(string plainText, string hash, Encoding encoding = null)
+        {
+            // Return the result after StringComparer comparing.
+            return 0 == StringComparer.OrdinalIgnoreCase.Compare(ToSHA3512String(plainText, encoding), hash);
+        }
+
+        private static Func<HashAlgorithm> GetHashAlgorithmFactory(HashAlgorithmName h)
+        {
+            if (h == null) return null;
+            if (h == HashAlgorithmName.SHA512) return SHA512.Create;
+            if (h == HashAlgorithmName.MD5) return MD5.Create;
+            if (h == HashAlgorithmName.SHA256) return SHA256.Create;
+            if (h == HashAlgorithmName.SHA1) return SHA1.Create;
+            if (h == HashAlgorithmName.SHA384) return SHA384.Create;
+            if (string.IsNullOrWhiteSpace(h.Name)) return null;
+            switch (h.Name.ToUpper().Replace("-", string.Empty))
+            {
+                case "SHA3512":
+                    return SHA3ManagedImpl.Create512;
+                case "SHA3384":
+                    return SHA3ManagedImpl.Create384;
+                case "SHA3256":
+                    return SHA3ManagedImpl.Create256;
+                case "SHA3224":
+                    return SHA3ManagedImpl.Create224;
+                case "SHA2":
+                    return SHA512.Create;
+                case "SHA256":
+                    return SHA256.Create;
+                case "SHA384":
+                    return SHA384.Create;
+                case "SHA512":
+                    return SHA512.Create;
+                case "MD5":
+                    return MD5.Create;
+            }
+
+            throw new NotSupportedException("The hash algorithm name is not supported.");
         }
     }
 }
