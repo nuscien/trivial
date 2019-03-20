@@ -13,6 +13,13 @@ namespace Trivial.IO
     public static class StreamUtility
     {
         /// <summary>
+        /// Gets a stream in given page.
+        /// </summary>
+        /// <param name="pageNo">The page number to turn to.</param>
+        /// <returns>The stream in given page; or null, if no stream in the page.</returns>
+        public delegate Stream StreamPagingResolver(int pageNo);
+
+        /// <summary>
         /// The default buffer size.
         /// </summary>
         public const int DefaultBufferSize = 81920; // 80K
@@ -161,6 +168,61 @@ namespace Trivial.IO
             using (var reader = new StreamReader(file.FullName, detectEncodingFromByteOrderMarks))
             {
                 return ReadLines(reader);
+            }
+        }
+
+        /// <summary>
+        /// Reads bytes from the stream and advances the position within the stream to the end.
+        /// </summary>
+        /// <param name="stream">The stream to read.</param>
+        /// <returns>Bytes from the stream.</returns>
+        public static IEnumerable<byte> ReadBytes(Stream stream)
+        {
+            if (stream == null) yield break;
+            while (true)
+            {
+                var b = stream.ReadByte();
+                if (b < 0) break;
+                yield return (byte)b;
+            }
+        }
+
+        /// <summary>
+        /// Reads bytes from the streams and advances the position within each stream to the end.
+        /// </summary>
+        /// <param name="streams">The stream collection to read.</param>
+        /// <returns>Bytes from the stream collection.</returns>
+        public static IEnumerable<byte> ReadBytes(IEnumerable<Stream> streams)
+        {
+            foreach (var stream in streams)
+            {
+                while (true)
+                {
+                    var b = stream.ReadByte();
+                    if (b < 0) break;
+                    yield return (byte)b;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Reads bytes from the streams and advances the position within each stream to the end.
+        /// </summary>
+        /// <param name="streams">The stream collection to read.</param>
+        /// <returns>Bytes from the stream collection.</returns>
+        public static IEnumerable<byte> ReadBytes(StreamPagingResolver streams)
+        {
+            return ReadBytes(ToStreamCollection(streams));
+        }
+
+        private static IEnumerable<Stream> ToStreamCollection(StreamPagingResolver streams)
+        {
+            if (streams == null) yield break;
+            for (var i = 0; ; i++)
+            {
+                var stream = streams(i);
+                if (stream == null) break;
+                yield return stream;
             }
         }
     }

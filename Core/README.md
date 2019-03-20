@@ -178,7 +178,20 @@ var back = SymmetricUtilities.Decrypt(Aes.Create, cipher, key, iv); // back == o
 
 ### Hash
 
-For hash algorithm (e.g. SHA-2, SHA-3), you can call `HashUtilities.ToHashString` function to get hash from a plain string and call `HashUtilities.Verify` to verify.
+For hash algorithm, you can call `HashUtilities.ToHashString` function to get hash from a plain string and call `HashUtilities.Verify` to verify.
+
+```csharp
+var original = "The string to hash";
+
+// SHA-512 (of SHA-2 family)
+var sha512Hash = HashUtilities.ToHashString(SHA512.Create, original);
+var isVerified = HashUtilities.Verify(SHA512.Create, original, sha512Hash); // --> true
+
+// SHA-3-512
+var sha3512Name = new HashAlgorithmName("SHA3512");
+var sha3512Hash = HashUtilities.ToHashString(sha3512Name, original);
+var isVerified3512 = HashUtilities.Verify(sha3512Name, original, sha3512Hash); // --> true
+```
 
 ### Access token
 

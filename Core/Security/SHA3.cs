@@ -47,28 +47,10 @@ namespace Trivial.Security
         protected int buffLength;
         protected int keccakR;
 
-        public int KeccakR
-        {
-            get
-            {
-                return keccakR;
-            }
-            protected set
-            {
-                keccakR = value;
-            }
-        }
-
-        public int SizeInBytes => KeccakR / 8;
-
-        public int HashByteLength => HashSizeValue / 8;
-
-        public override bool CanReuseTransform => true;
-
         private SHA3ManagedImpl(int hashBitLength)
         {
             if (hashBitLength != 224 && hashBitLength != 256 && hashBitLength != 384 && hashBitLength != 512)
-                throw new ArgumentException("hashBitLength must be 224, 256, 384, or 512", "hashBitLength");
+                throw new ArgumentException("hashBitLength must be 224, 256, 384, or 512", nameof(hashBitLength));
             Initialize();
             HashSizeValue = hashBitLength;
             switch (hashBitLength)
@@ -114,6 +96,25 @@ namespace Trivial.Security
                 0x8000000080008008UL
             };
         }
+
+        public int KeccakR
+        {
+            get
+            {
+                return keccakR;
+            }
+
+            protected set
+            {
+                keccakR = value;
+            }
+        }
+
+        public int SizeInBytes => KeccakR / 8;
+
+        public int HashByteLength => HashSizeValue / 8;
+
+        public override bool CanReuseTransform => true;
 
         protected ulong ROL(ulong a, int offset)
         {
@@ -183,8 +184,8 @@ namespace Trivial.Security
             else Array.Clear(buffer, buffLength, sizeInBytes - buffLength);
             buffer[buffLength++] = 1;
             buffer[sizeInBytes - 1] |= 0x80;
-            int stride = sizeInBytes >> 3;
-            ulong[] utemps = new ulong[stride];
+            var stride = sizeInBytes >> 3;
+            var utemps = new ulong[stride];
             Buffer.BlockCopy(buffer, 0, utemps, 0, sizeInBytes);
             KeccakF(utemps, stride);
             Buffer.BlockCopy(state, 0, outb, 0, HashByteLength);
@@ -194,8 +195,6 @@ namespace Trivial.Security
         private void KeccakF(ulong[] inb, int laneCount)
         {
             while (--laneCount >= 0) state[laneCount] ^= inb[laneCount];
-            var round = laneCount;
-
             var Aba = state[0];
             var Abe = state[1];
             var Abi = state[2];
@@ -222,7 +221,7 @@ namespace Trivial.Security
             var Aso = state[23];
             var Asu = state[24];
 
-            for (round = 0; round < KeccakNumberOfRounds; round += 2)
+            for (var round = 0; round < KeccakNumberOfRounds; round += 2)
             {
                 var BCa = Aba ^ Aga ^ Aka ^ Ama ^ Asa;
                 var BCe = Abe ^ Age ^ Ake ^ Ame ^ Ase;

@@ -258,7 +258,7 @@ namespace Trivial.Security
             if (h == HashAlgorithmName.SHA1) return SHA1.Create;
             if (h == HashAlgorithmName.SHA384) return SHA384.Create;
             if (string.IsNullOrWhiteSpace(h.Name)) return null;
-            switch (h.Name.ToUpper().Replace("-", string.Empty))
+            switch (h.Name.ToUpperInvariant().Replace("-", string.Empty))
             {
                 case "SHA3512":
                     return SHA3ManagedImpl.Create512;
