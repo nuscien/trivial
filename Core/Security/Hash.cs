@@ -261,6 +261,18 @@ namespace Trivial.Security
             return 0 == StringComparer.OrdinalIgnoreCase.Compare(ToSHA3512String(plainText, encoding), hash);
         }
 
+        /// <summary>
+        /// Computes the signature for the specified hash value.
+        /// </summary>
+        /// <param name="sign">The signature provider.</param>
+        /// <param name="value">The value to sign.</param>
+        /// <param name="encoding">The text encoding.</param>
+        /// <returns>The signature for the specified hash value.</returns>
+        public static byte[] Sign(this ISignatureProvider sign, string value, Encoding encoding = null)
+        {
+            return sign.Sign((encoding ?? Encoding.UTF8).GetBytes(value));
+        }
+
         private static Func<HashAlgorithm> GetHashAlgorithmFactory(HashAlgorithmName h)
         {
             if (h == null) return null;

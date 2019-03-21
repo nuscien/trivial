@@ -9,14 +9,6 @@ using Trivial.Web;
 namespace Trivial.Security
 {
     /// <summary>
-    /// Signature algorithm for JWT.
-    /// </summary>
-    /// <param name="payload">The payload string.</param>
-    /// <param name="secret">The secret.</param>
-    /// <returns>The signature.</returns>
-    public delegate byte[] JsonWebTokenSignature(string payload, string secret);
-
-    /// <summary>
     /// Json web token header model.
     /// </summary>
     [DataContract]
@@ -42,95 +34,6 @@ namespace Trivial.Security
     public class JsonWebToken<T>
     {
         /// <summary>
-        /// Creates a JSON web token with HMAC SHA-512 hash algorithm.
-        /// </summary>
-        /// <param name="payload">The payload.</param>
-        /// <param name="secret">The secret.</param>
-        /// <returns>A JSON web token object.</returns>
-        public static JsonWebToken<T> CreateHS512(T payload, string secret)
-        {
-            return new JsonWebToken<T>(payload, new HMACSHA512(Encoding.ASCII.GetBytes(secret ?? string.Empty)), "HS512");
-        }
-
-        /// <summary>
-        /// Parses a JSON web token with HMAC SHA-512 hash algorithm.
-        /// </summary>
-        /// <param name="jwt">The string encoded.</param>
-        /// <param name="secret">The secret.</param>
-        /// <param name="verify">true if verify the signature; otherwise, false.</param>
-        /// <returns>A JSON web token object.</returns>
-        public static JsonWebToken<T> CreateHS512(string jwt, string secret, bool verify = true)
-        {
-            return Parse(jwt, new HMACSHA512(Encoding.ASCII.GetBytes(secret ?? string.Empty)), verify);
-        }
-
-        /// <summary>
-        /// Creates a JSON web token with HMAC SHA-384 hash algorithm.
-        /// </summary>
-        /// <param name="payload">The payload.</param>
-        /// <param name="secret">The secret.</param>
-        /// <returns>A JSON web token object.</returns>
-        public static JsonWebToken<T> CreateHS384(T payload, string secret)
-        {
-            return new JsonWebToken<T>(payload, new HMACSHA384(Encoding.ASCII.GetBytes(secret ?? string.Empty)), "HS384");
-        }
-
-        /// <summary>
-        /// Parses a JSON web token with HMAC SHA-384 hash algorithm.
-        /// </summary>
-        /// <param name="jwt">The string encoded.</param>
-        /// <param name="secret">The secret.</param>
-        /// <param name="verify">true if verify the signature; otherwise, false.</param>
-        /// <returns>A JSON web token object.</returns>
-        public static JsonWebToken<T> CreateHS384(string jwt, string secret, bool verify = true)
-        {
-            return Parse(jwt, new HMACSHA384(Encoding.ASCII.GetBytes(secret ?? string.Empty)), verify);
-        }
-
-        /// <summary>
-        /// Creates a JSON web token with HMAC SHA-256 hash algorithm.
-        /// </summary>
-        /// <param name="payload">The payload.</param>
-        /// <param name="secret">The secret.</param>
-        /// <returns>A JSON web token object.</returns>
-        public static JsonWebToken<T> CreateHS256(T payload, string secret)
-        {
-            return new JsonWebToken<T>(payload, new HMACSHA256(Encoding.ASCII.GetBytes(secret ?? string.Empty)), "HS256");
-        }
-
-        /// <summary>
-        /// Parses a JSON web token with HMAC SHA-256 hash algorithm.
-        /// </summary>
-        /// <param name="jwt">The string encoded.</param>
-        /// <param name="secret">The secret.</param>
-        /// <param name="verify">true if verify the signature; otherwise, false.</param>
-        /// <returns>A JSON web token object.</returns>
-        public static JsonWebToken<T> CreateHS256(string jwt, string secret, bool verify = true)
-        {
-            return Parse(jwt, new HMACSHA256(Encoding.ASCII.GetBytes(secret ?? string.Empty)), verify);
-        }
-
-        /// <summary>
-        /// Parses a JWT string encoded.
-        /// </summary>
-        /// <param name="jwt">The string encoded.</param>
-        /// <param name="algorithm">The signature algorithm.</param>
-        /// <param name="secret">The secret.</param>
-        /// <param name="verify">true if verify the signature; otherwise, false.</param>
-        /// <returns>A JSON web token object.</returns>
-        /// <exception cref="ArgumentNullException">jwt was null or empty.</exception>
-        /// <exception cref="ArgumentException">jwt did not contain any information.</exception>
-        /// <exception cref="FormatException">jwt was in incorrect format.</exception>
-        /// <exception cref="InvalidOperationException">Verify failure.</exception>
-        public static JsonWebToken<T> Parse(string jwt, JsonWebTokenSignature algorithm, string secret, bool verify = true)
-        {
-            var (payload, algorithmName, sign) = ParseInternal(jwt);
-            var obj = new JsonWebToken<T>(payload, algorithm, algorithmName, secret);
-            if (verify && obj.ToSigntureBase64Url() != sign) throw new InvalidOperationException("jwt signature is incorrect.");
-            return obj;
-        }
-
-        /// <summary>
         /// Parses a JWT string encoded.
         /// </summary>
         /// <param name="jwt">The string encoded.</param>
@@ -141,24 +44,7 @@ namespace Trivial.Security
         /// <exception cref="ArgumentException">jwt did not contain any information.</exception>
         /// <exception cref="FormatException">jwt was in incorrect format.</exception>
         /// <exception cref="InvalidOperationException">Verify failure.</exception>
-        public static JsonWebToken<T> Parse(string jwt, KeyedHashAlgorithm algorithm, bool verify = true)
-        {
-            var (payload, algorithmName, sign) = ParseInternal(jwt);
-            var obj = new JsonWebToken<T>(payload, algorithm, algorithmName);
-            if (verify && obj.ToSigntureBase64Url() != sign) throw new InvalidOperationException("jwt signature is incorrect.");
-            return obj;
-        }
-
-        /// <summary>
-        /// Parses a JWT string encoded.
-        /// </summary>
-        /// <param name="jwt">The string encoded.</param>
-        /// <returns>A JSON web token tuple.</returns>
-        /// <exception cref="ArgumentNullException">jwt was null or empty.</exception>
-        /// <exception cref="ArgumentException">jwt did not contain any information.</exception>
-        /// <exception cref="FormatException">jwt was in incorrect format.</exception>
-        /// <exception cref="InvalidOperationException">Verify failure.</exception>
-        private static (T, string, string) ParseInternal(string jwt)
+        public static JsonWebToken<T> Parse(string jwt, ISignatureProvider algorithm, bool verify = true)
         {
             if (string.IsNullOrWhiteSpace(jwt)) throw new ArgumentNullException(nameof(jwt), "jwt should not be null or empty.");
             var prefix = $"{TokenInfo.BearerTokenType} ";
@@ -174,13 +60,18 @@ namespace Trivial.Security
             var payload = WebUtility.Base64UrlDecodeTo<T>(arr[1]);
             if (header == null) throw new ArgumentException(nameof(jwt), "jwt should contain header in Base64Url.");
             if (payload == null) throw new ArgumentException(nameof(jwt), "jwt should contain payload in Base64Url.");
-            return (payload, header.AlgorithmName, arr[2]);
+            var obj = new JsonWebToken<T>(payload, algorithm)
+            {
+                signatureCache = arr[2]
+            };
+            if (verify && obj.ToSigntureBase64Url() != arr[2]) throw new InvalidOperationException("jwt signature is incorrect.");
+            return obj;
         }
 
         /// <summary>
         /// The signature algorithm function.
         /// </summary>
-        private readonly Func<string, byte[]> signature;
+        private readonly ISignatureProvider signature;
 
         /// <summary>
         /// The Jwt header model.
@@ -193,57 +84,22 @@ namespace Trivial.Security
         private string headerBase64Url;
 
         /// <summary>
-        /// Initializes a new instance of the JwtModel class.
+        /// The signature cache.
         /// </summary>
-        /// <param name="payload">The payload.</param>
-        /// <param name="algorithm">The signature algorithm instance.</param>
-        /// <param name="algorithmName">The signature algorithm name.</param>
-        public JsonWebToken(T payload, KeyedHashAlgorithm algorithm, string algorithmName)
-        {
-            Payload = payload;
-            if (algorithm == null)
-            {
-                if (algorithmName != null)
-                {
-                    switch (algorithmName.ToUpperInvariant())
-                    {
-                        case "HS256":
-                            algorithm = new HMACSHA256(new byte[0]);
-                            break;
-                        case "HS384":
-                            algorithm = new HMACSHA384(new byte[0]);
-                            break;
-                        case "HS512":
-                            algorithm = new HMACSHA512(new byte[0]);
-                            break;
-                    }
-                }
-
-                if (algorithm == null) algorithm = new HMACSHA512(new byte[0]);
-                if (string.IsNullOrWhiteSpace(algorithmName)) algorithmName = "HS512";
-            }
-
-            signature = value => algorithm.ComputeHash(Encoding.ASCII.GetBytes(value));
-            header = new JsonWebTokenHeader
-            {
-                AlgorithmName = algorithmName
-            };
-        }
+        private string signatureCache;
 
         /// <summary>
         /// Initializes a new instance of the JwtModel class.
         /// </summary>
         /// <param name="payload">The payload.</param>
-        /// <param name="algorithm">The signature algorithm instance.</param>
-        /// <param name="algorithmName">The signature algorithm name.</param>
-        /// <param name="secret">The secret.</param>
-        public JsonWebToken(T payload, JsonWebTokenSignature algorithm, string algorithmName, string secret)
+        /// <param name="sign">The signature provider.</param>
+        public JsonWebToken(T payload, ISignatureProvider sign)
         {
             Payload = payload;
-            signature = value => algorithm(value, secret);
+            signature = sign;
             header = new JsonWebTokenHeader
             {
-                AlgorithmName = algorithmName
+                AlgorithmName = sign.Name
             };
         }
 
@@ -282,8 +138,8 @@ namespace Trivial.Security
         /// <returns>A string encoded of signature.</returns>
         public string ToSigntureBase64Url()
         {
-            if (signature == null) return string.Empty;
-            var bytes = signature($"{ToHeaderBase64Url()}.{ToPayloadBase64Url()}");
+            if (signature == null) return signatureCache ?? string.Empty;
+            var bytes = signature.Sign($"{ToHeaderBase64Url()}.{ToPayloadBase64Url()}");
             return WebUtility.Base64UrlEncode(bytes);
         }
 
@@ -320,7 +176,7 @@ namespace Trivial.Security
     /// The base JWT payload model.
     /// </summary>
     [DataContract]
-    public class JsonWebTokenPayload : ICloneable
+    public class JsonWebTokenPayload
     {
         /// <summary>
         /// Gets or sets the optional JWT ID.
