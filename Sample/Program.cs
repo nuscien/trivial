@@ -11,6 +11,7 @@ namespace Trivial.Sample
             dispatcher.Register<SelectionVerb>("selection");
             dispatcher.Register<HitTasksVerb>("hittask");
             dispatcher.Register<MathsVerb>("maths");
+            dispatcher.Register<TokenClientVerb>("token");
             dispatcher.Register<HttpClientVerb>("http");
             dispatcher.Register<RetryVerb>("retry");
             dispatcher.Register<CsvVerb>("csv");

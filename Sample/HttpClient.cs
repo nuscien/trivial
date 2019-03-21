@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using System.Runtime.Serialization;
+
+using Trivial.Net;
 using Trivial.Reflection;
 using Trivial.Tasks;
-using Trivial.Net;
-using System.Runtime.Serialization;
-using System.Net.Http;
 
 namespace Trivial.Sample
 {

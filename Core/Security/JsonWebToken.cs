@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Net.Http.Headers;
 using System.Runtime.Serialization;
 using System.Security.Cryptography;
 using System.Text;
@@ -68,7 +69,7 @@ namespace Trivial.Security
             if (verify)
             {
                 var bytes = Encoding.ASCII.GetBytes($"{obj.ToHeaderBase64Url()}.{obj.ToPayloadBase64Url()}");
-                var sign = Encoding.ASCII.GetBytes(arr[2]);
+                var sign = WebUtility.Base64UrlDecode(arr[2]);
                 if (!algorithm.Verify(bytes, sign)) throw new InvalidOperationException("jwt signature is incorrect.");
             }
 
@@ -163,9 +164,9 @@ namespace Trivial.Security
         /// Returns a System.Net.Http.Headers.AuthenticationHeaderValue that represents the current TokenInfo.
         /// </summary>
         /// <returns>A System.Net.Http.Headers.AuthenticationHeaderValue that represents the current TokenInfo.</returns>
-        public string ToAuthenticationHeaderValue()
+        public AuthenticationHeaderValue ToAuthenticationHeaderValue()
         {
-            return $"{TokenInfo.BearerTokenType} {ToEncodedString()}";
+            return new AuthenticationHeaderValue(TokenInfo.BearerTokenType, ToEncodedString());
         }
 
         /// <summary>

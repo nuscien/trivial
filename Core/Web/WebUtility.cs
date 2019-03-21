@@ -126,8 +126,8 @@ namespace Trivial.Web
             if (s == null) return null;
             if (s == string.Empty) return new byte[0];
             s = s.Replace("-", "+").Replace("_", "/");
-            var len = 4 - s.Length % 4;
-            if (len < 4) s = s.PadRight(len + s.Length, '=');
+            var rest = s.Length % 4;
+            if (rest > 0) s = s.PadRight(4 - rest + s.Length, '=');
             var bytes = Convert.FromBase64String(s);
             return bytes;
         }

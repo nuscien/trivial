@@ -239,6 +239,16 @@ namespace Trivial.Security
         }
 
         /// <summary>
+        /// Creates an RSA hash signature provider using SHA-512 hash algorithm of SHA-2 family.
+        /// </summary>
+        /// <param name="rsaInstance">The RSA instance with private key.</param>
+        /// <returns>An RSA hash signature provider instance.</returns>
+        public static RSASignatureProvider CreateRS512(RSA rsaInstance)
+        {
+            return new RSASignatureProvider(rsaInstance, HashAlgorithmName.SHA512, "RS512");
+        }
+
+        /// <summary>
         /// Creates an RSA hash signature provider using SHA-384 hash algorithm of SHA-2 family.
         /// </summary>
         /// <param name="secret">The RSA private key.</param>
@@ -258,6 +268,16 @@ namespace Trivial.Security
             var r = RSA.Create();
             r.ImportParameters(secret);
             return new RSASignatureProvider(r, HashAlgorithmName.SHA384, "RS384");
+        }
+
+        /// <summary>
+        /// Creates an RSA hash signature provider using SHA-384 hash algorithm of SHA-2 family.
+        /// </summary>
+        /// <param name="rsaInstance">The RSA instance with private key.</param>
+        /// <returns>An RSA hash signature provider instance.</returns>
+        public static RSASignatureProvider CreateRS384(RSA rsaInstance)
+        {
+            return new RSASignatureProvider(rsaInstance, HashAlgorithmName.SHA384, "RS384");
         }
 
         /// <summary>
@@ -282,6 +302,16 @@ namespace Trivial.Security
             return new RSASignatureProvider(r, HashAlgorithmName.SHA256, "RS256");
         }
 
+
+        /// <summary>
+        /// Creates an RSA hash signature provider using SHA-256 hash algorithm of SHA-2 family.
+        /// </summary>
+        /// <param name="rsaInstance">The RSA instance with private key.</param>
+        /// <returns>An RSA hash signature provider instance.</returns>
+        public static RSASignatureProvider CreateRS256(RSA rsaInstance)
+        {
+            return new RSASignatureProvider(rsaInstance, HashAlgorithmName.SHA256, "RS256");
+        }
 
         /// <summary>
         /// Creates an RSA hash signature provider.
@@ -310,7 +340,7 @@ namespace Trivial.Security
         /// <param name="signAlgorithmName">The signature algorithm name.</param>
         public RSASignatureProvider(RSA rsaInstance, HashAlgorithmName hashAlgorithmName, string signAlgorithmName)
         {
-            signAlgorithmName = Name;
+            Name = signAlgorithmName;
             rsa = rsaInstance;
             hashName = hashAlgorithmName;
         }
