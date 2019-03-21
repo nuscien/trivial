@@ -9,38 +9,38 @@ using Trivial.Web;
 namespace Trivial.Security
 {
     /// <summary>
+    /// Signature algorithm for JWT.
+    /// </summary>
+    /// <param name="payload">The payload string.</param>
+    /// <param name="secret">The secret.</param>
+    /// <returns>The signature.</returns>
+    public delegate byte[] JsonWebTokenSignature(string payload, string secret);
+
+    /// <summary>
+    /// Json web token header model.
+    /// </summary>
+    [DataContract]
+    internal class JsonWebTokenHeader
+    {
+        /// <summary>
+        /// Gets or sets the name of signature algorithm.
+        /// </summary>
+        [DataMember(Name = "alg")]
+        public string AlgorithmName { get; set; }
+
+        /// <summary>
+        /// Gets the type.
+        /// </summary>
+        [DataMember(Name = "typ")]
+        public string Type { get; set; } = "JWT";
+    }
+
+    /// <summary>
     /// Json web token model.
     /// </summary>
     /// <typeparam name="T">The type of payload.</typeparam>
     public class JsonWebToken<T>
     {
-        /// <summary>
-        /// Json web token header model.
-        /// </summary>
-        [DataContract]
-        private class HeaderModel
-        {
-            /// <summary>
-            /// Gets or sets the name of signature algorithm.
-            /// </summary>
-            [DataMember(Name = "alg")]
-            public string AlgorithmName { get; set; }
-
-            /// <summary>
-            /// Gets the type.
-            /// </summary>
-            [DataMember(Name = "typ")]
-            public string Type { get; set; } = "JWT";
-        }
-
-        /// <summary>
-        /// Signature algorithm.
-        /// </summary>
-        /// <param name="payload">The payload string.</param>
-        /// <param name="secret">The secret.</param>
-        /// <returns>The signature.</returns>
-        public delegate byte[] SignatureAlgorithm(string payload, string secret);
-
         /// <summary>
         /// Creates a JSON web token with HMAC SHA-512 hash algorithm.
         /// </summary>
@@ -122,7 +122,7 @@ namespace Trivial.Security
         /// <exception cref="ArgumentException">jwt did not contain any information.</exception>
         /// <exception cref="FormatException">jwt was in incorrect format.</exception>
         /// <exception cref="InvalidOperationException">Verify failure.</exception>
-        public static JsonWebToken<T> Parse(string jwt, SignatureAlgorithm algorithm, string secret, bool verify = true)
+        public static JsonWebToken<T> Parse(string jwt, JsonWebTokenSignature algorithm, string secret, bool verify = true)
         {
             var (payload, algorithmName, sign) = ParseInternal(jwt);
             var obj = new JsonWebToken<T>(payload, algorithm, algorithmName, secret);
@@ -170,7 +170,7 @@ namespace Trivial.Security
 
             var arr = jwt.Split('.');
             if (arr.Length < 3) throw new FormatException("jwt is not in the correct format.");
-            var header = WebUtility.Base64UrlDecodeTo<HeaderModel>(arr[0]);
+            var header = WebUtility.Base64UrlDecodeTo<JsonWebTokenHeader>(arr[0]);
             var payload = WebUtility.Base64UrlDecodeTo<T>(arr[1]);
             if (header == null) throw new ArgumentException(nameof(jwt), "jwt should contain header in Base64Url.");
             if (payload == null) throw new ArgumentException(nameof(jwt), "jwt should contain payload in Base64Url.");
@@ -185,7 +185,7 @@ namespace Trivial.Security
         /// <summary>
         /// The Jwt header model.
         /// </summary>
-        private readonly HeaderModel header;
+        private readonly JsonWebTokenHeader header;
 
         /// <summary>
         /// The header Base64Url encoded string.
@@ -224,7 +224,7 @@ namespace Trivial.Security
             }
 
             signature = value => algorithm.ComputeHash(Encoding.ASCII.GetBytes(value));
-            header = new HeaderModel
+            header = new JsonWebTokenHeader
             {
                 AlgorithmName = algorithmName
             };
@@ -237,11 +237,11 @@ namespace Trivial.Security
         /// <param name="algorithm">The signature algorithm instance.</param>
         /// <param name="algorithmName">The signature algorithm name.</param>
         /// <param name="secret">The secret.</param>
-        public JsonWebToken(T payload, SignatureAlgorithm algorithm, string algorithmName, string secret)
+        public JsonWebToken(T payload, JsonWebTokenSignature algorithm, string algorithmName, string secret)
         {
             Payload = payload;
             signature = value => algorithm(value, secret);
-            header = new HeaderModel
+            header = new JsonWebTokenHeader
             {
                 AlgorithmName = algorithmName
             };
@@ -314,5 +314,147 @@ namespace Trivial.Security
             if (Payload == null) return string.Empty;
             return Payload.ToString();
         }
+    }
+
+    /// <summary>
+    /// The base JWT payload model.
+    /// </summary>
+    [DataContract]
+    public class JsonWebTokenPayload : ICloneable
+    {
+        /// <summary>
+        /// Gets or sets the optional JWT ID.
+        /// This claim provides a unique identifier for the JWT.
+        /// The identifier value MUST be assigned in a manner that ensures that
+        /// there is a negligible probability that the same value will be
+        /// accidentally assigned to a different data object; if the application
+        /// uses multiple issuers, collisions MUST be prevented among values
+        /// produced by different issuers as well.
+        /// This claim can be used to prevent the JWT from being replayed.
+        /// Its value is a case-sensitive string.
+        /// </summary>
+        [DataMember(Name = "jti")]
+        public string Id { get; set; }
+
+        /// <summary>
+        /// Gets or sets the optional issuer identifier.
+        /// This claim identifies the principal that issued the
+        /// JWT.The processing of this claim is generally application specific.
+        /// Its value is a case-sensitive string containing a string or a URI.
+        /// </summary>
+        [DataMember(Name = "iss")]
+        public string Issuer { get; set; }
+
+        /// <summary>
+        /// Gets or sets the optional subject.
+        /// This claim identifies the principal that is the
+        /// subject of the JWT.The claims in a JWT are normally statements
+        /// about the subject.  The subject value MUST either be scoped to be
+        /// locally unique in the context of the issuer or be globally unique.
+        /// The processing of this claim is generally application specific.The
+        /// Its value is a case-sensitive string containing a string or a URI.
+        /// </summary>
+        [DataMember(Name = "sub")]
+        public string Subject { get; set; }
+
+        /// <summary>
+        /// Gets or sets the optional audience identifier.
+        /// This claim identifies the recipients that the JWT is
+        /// intended for.  Each principal intended to process the JWT MUST
+        /// identify itself with a value in the audience claim.If the principal
+        /// processing the claim does not identify itself with a value in the
+        /// this claim when this claim is present, then the JWT MUST be
+        /// rejected.
+        /// In the general case, its value is an array of case-sensitive strings,
+        /// each containing a string or a URI.
+        /// In the special case when the JWT has one audience, its value MAY be a
+        /// single case-sensitive string containing a string or a URI.The
+        /// interpretation of audience values is generally application specific
+        /// </summary>
+        [DataMember(Name = "aud")]
+        public string Audience { get; set; }
+
+        /// <summary>
+        /// Gets or sets an optional expiration date time tick in JSON format.
+        /// The original property is Expiration.
+        /// </summary>
+        [DataMember(Name = "exp")]
+        public long? ExpirationTick
+        {
+            get
+            {
+                return WebUtility.ParseDate(Expiration);
+            }
+
+            set
+            {
+                Expiration = WebUtility.ParseDate(value);
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets an optional expiration date time.
+        /// This claim identifies the expiration time on or after
+        /// which the JWT MUST NOT be accepted for processing.
+        /// The processing of this claim requires that the current date time
+        /// MUST be before the expiration date time listed in this claim.
+        /// Implementers MAY provide for some small leeway,
+        /// usually no more than a few minutes, to account for clock skew.
+        /// </summary>
+        public DateTime? Expiration { get; set; }
+
+        /// <summary>
+        /// Gets or sets an optional available start date time tick in JSON format.
+        /// The original property is NotBefore.
+        /// </summary>
+        [DataMember(Name = "nbf")]
+        public long? NotBeforeTick
+        {
+            get
+            {
+                return WebUtility.ParseDate(NotBefore);
+            }
+
+            set
+            {
+                NotBefore = WebUtility.ParseDate(value);
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets an optional available start date time.
+        /// This claim identifies the time before which the JWT
+        /// MUST NOT be accepted for processing.
+        /// The processing of this claim requires that the current date time
+        /// MUST be after or equal to the not-before date time listed in this claim.
+        /// Implementers MAY provide for some small leeway,
+        /// usually no more than a few minutes, to account for clock skew.
+        /// </summary>
+        public DateTime? NotBefore { get; set; }
+
+        /// <summary>
+        /// Gets or sets an optional issue creation date time tick in JSON format.
+        /// The original property is IssuedAt.
+        /// </summary>
+        [DataMember(Name = "iat")]
+        public long? IssuedAtTick
+        {
+            get
+            {
+                return WebUtility.ParseDate(IssuedAt);
+            }
+
+            set
+            {
+                IssuedAt = WebUtility.ParseDate(value);
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets an optional issue creation date time.
+        /// This claim identifies the time at which the JWT was issued.
+        /// This claim can be used to determine the age of the JWT.
+        /// </summary>
+        public DateTime? IssuedAt { get; set; }
     }
 }
