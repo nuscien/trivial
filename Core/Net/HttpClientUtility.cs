@@ -249,12 +249,12 @@ namespace Trivial.Net
         /// <summary>
         /// Creates a stream content from a JSON of the specific object.
         /// </summary>
-        /// <typeparam name="T">The type of the graph.</typeparam>
         /// <param name="value">The graph.</param>
         /// <returns>The HTTP content based on a stream from a JSON of the specific object.</returns>
-        public static StreamContent CreateJsonStreamContent<T>(T value)
+        public static StreamContent CreateJsonStreamContent(object value)
         {
-            var serializer = new DataContractJsonSerializer(typeof(T));
+            if (value == null) return null;
+            var serializer = new DataContractJsonSerializer(value.GetType());
             var stream = new MemoryStream();
             serializer.WriteObject(stream, value);
             var content = new StreamContent(stream);

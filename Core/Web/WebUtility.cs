@@ -103,9 +103,9 @@ namespace Trivial.Web
         /// <typeparam name="T">The type of the object to deserialize.</typeparam>
         /// <param name="obj">The object.</param>
         /// <returns>A Base64Url string.</returns>
-        public static string Base64UrlEncode<T>(T obj)
+        public static string Base64UrlEncode(object obj)
         {
-            var serializer = new DataContractJsonSerializer(typeof(T));
+            var serializer = new DataContractJsonSerializer(obj.GetType());
             using (var stream = new MemoryStream())
             {
                 serializer.WriteObject(stream, obj);

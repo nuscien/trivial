@@ -21,13 +21,12 @@ namespace Trivial.Security
         /// <param name="jwt">The string encoded.</param>
         /// <param name="algorithm">The signature algorithm.</param>
         /// <param name="verify">true if verify the signature; otherwise, false.</param>
-        /// <param name="containHashAlgorithm">true if the algorithm contains compute hash algorithm.</param>
         /// <returns>A JSON web token object.</returns>
         /// <exception cref="ArgumentNullException">jwt was null or empty.</exception>
         /// <exception cref="ArgumentException">jwt did not contain any information.</exception>
         /// <exception cref="FormatException">jwt was in incorrect format.</exception>
         /// <exception cref="InvalidOperationException">Verify failure.</exception>
-        public static JsonWebToken<T> Parse(string jwt, ISignatureProvider algorithm, bool verify = true, bool containHashAlgorithm = true)
+        public static JsonWebToken<T> Parse(string jwt, ISignatureProvider algorithm, bool verify = true)
         {
             if (string.IsNullOrWhiteSpace(jwt)) throw new ArgumentNullException(nameof(jwt), "jwt should not be null or empty.");
             var prefix = $"{TokenInfo.BearerTokenType} ";
@@ -39,29 +38,25 @@ namespace Trivial.Security
 
             var arr = jwt.Split('.');
             if (arr.Length < 3) throw new FormatException("jwt is not in the correct format.");
-            var header = WebUtility.Base64UrlDecodeTo<JsonWebTokenHeader>(arr[0]);
-            var payload = WebUtility.Base64UrlDecodeTo<T>(arr[1]);
-            if (header == null) throw new ArgumentException(nameof(jwt), "jwt should contain header in Base64Url.");
-            if (payload == null) throw new ArgumentException(nameof(jwt), "jwt should contain payload in Base64Url.");
-            var obj = new JsonWebToken<T>(payload, containHashAlgorithm ? algorithm : null)
-            {
-                headerBase64Url = arr[0],
-                signatureCache = arr[2]
-            };
-            if (obj.signature == null)
-            {
-                obj.header.Type = header.Type;
-                obj.header.AlgorithmName = header.AlgorithmName;
-                obj.header.ContentType = header.ContentType;
-            }
-
             if (verify)
             {
-                var bytes = Encoding.ASCII.GetBytes($"{obj.ToHeaderBase64Url()}.{obj.ToPayloadBase64Url()}");
+                var bytes = Encoding.ASCII.GetBytes($"{arr[0]}.{arr[1]}");
                 var sign = WebUtility.Base64UrlDecode(arr[2]);
                 if (!algorithm.Verify(bytes, sign)) throw new InvalidOperationException("jwt signature is incorrect.");
             }
 
+            var header = WebUtility.Base64UrlDecodeTo<JsonWebTokenHeader>(arr[0]);
+            var payload = WebUtility.Base64UrlDecodeTo<T>(arr[1]);
+            if (header == null) throw new ArgumentException(nameof(jwt), "jwt should contain header in Base64Url.");
+            if (payload == null) throw new ArgumentException(nameof(jwt), "jwt should contain payload in Base64Url.");
+            var obj = new JsonWebToken<T>(payload, algorithm)
+            {
+                headerBase64Url = arr[0],
+                signatureCache = arr[2]
+            };
+            obj.header.Type = header.Type;
+            obj.header.AlgorithmName = header.AlgorithmName;
+            obj.header.ContentType = header.ContentType;
             return obj;
         }
 
@@ -135,7 +130,7 @@ namespace Trivial.Security
         /// <returns>A string encoded of signature.</returns>
         public string ToSigntureBase64Url()
         {
-            if (signature == null) return signatureCache ?? string.Empty;
+            if (signature == null || !signature.CanSign) return signatureCache ?? string.Empty;
             var bytes = signature.Sign($"{ToHeaderBase64Url()}.{ToPayloadBase64Url()}");
             return WebUtility.Base64UrlEncode(bytes);
         }
@@ -335,5 +330,16 @@ namespace Trivial.Security
         /// This claim can be used to determine the age of the JWT.
         /// </summary>
         public DateTime? IssuedAt { get; set; }
+
+        /// <summary>
+        /// Returns a System.Net.Http.Headers.AuthenticationHeaderValue that represents the current token.
+        /// </summary>
+        /// <param name="sign">The signature provider.</param>
+        /// <returns>A System.Net.Http.Headers.AuthenticationHeaderValue that represents the current token.</returns>
+        public AuthenticationHeaderValue ToAuthenticationHeaderValue(ISignatureProvider sign)
+        {
+            var jwt = new JsonWebToken<JsonWebTokenPayload>(this, sign);
+            return jwt.ToAuthenticationHeaderValue();
+        }
     }
 }

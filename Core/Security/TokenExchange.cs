@@ -21,7 +21,7 @@ namespace Trivial.Security
     /// <summary>
     /// The token exchange based on RSA.
     /// </summary>
-    public class RsaTokenExchange : ICloneable
+    public class RSATokenExchange : ICloneable
     {
         /// <summary>
         /// The RSA exchange JWT payload model.
@@ -58,7 +58,7 @@ namespace Trivial.Security
             /// </summary>
             /// <param name="rsa">The RSA token exchange instance from the other side.</param>
             /// <returns>true if read succeeded; otherwise, false.</returns>
-            public bool Read(RsaTokenExchange rsa)
+            public bool Read(RSATokenExchange rsa)
             {
                 if (string.IsNullOrWhiteSpace(CurrentEncryptId))
                 {
@@ -73,7 +73,6 @@ namespace Trivial.Security
                 if (!string.IsNullOrWhiteSpace(UserId)) rsa.EntityId = UserId;
                 return true;
             }
-
         }
 
         /// <summary>
@@ -351,7 +350,7 @@ namespace Trivial.Security
         /// true if get the JSON web token payload without encryption for this side usage;
         /// otherwise, false, as default value, for the other side to send.
         /// </param>
-        /// <returns>A JSON web token.</returns>
+        /// <returns>A JSON web token payload.</returns>
         public JsonWebTokenPayload ToJsonWebTokenPayload(bool thisSide = false)
         {
             if (thisSide)
@@ -386,12 +385,45 @@ namespace Trivial.Security
         }
 
         /// <summary>
+        /// Returns a System.Net.Http.Headers.AuthenticationHeaderValue that represents the current RSA token exchange in JSON web token format.
+        /// </summary>
+        /// <param name="sign">The signature provider.</param>
+        /// <param name="thisSide">
+        /// true if get the JSON web token payload without encryption for this side usage;
+        /// otherwise, false, as default value, for the other side to send.
+        /// </param>
+        /// <returns>A System.Net.Http.Headers.AuthenticationHeaderValue that represents the current RSA token exchange in JSON web token format.</returns>
+        public AuthenticationHeaderValue ToJsonWebTokenAuthenticationHeaderValue(ISignatureProvider sign, bool thisSide = false)
+        {
+            var m = ToJsonWebTokenPayload(thisSide);
+            return m.ToAuthenticationHeaderValue(sign);
+        }
+
+        /// <summary>
+        /// Returns a System.Net.Http.Headers.AuthenticationHeaderValue that represents the current RSA token exchange in JSON web token format.
+        /// </summary>
+        /// <param name="sign">The signature provider.</param>
+        /// <param name="converter">A converter for payload.</param>
+        /// <param name="thisSide">
+        /// true if get the JSON web token payload without encryption for this side usage;
+        /// otherwise, false, as default value, for the other side to send.
+        /// </param>
+        /// <returns>A System.Net.Http.Headers.AuthenticationHeaderValue that represents the current RSA token exchange in JSON web token format.</returns>
+        public AuthenticationHeaderValue ToJsonWebTokenAuthenticationHeaderValue(ISignatureProvider sign, Func<JsonWebTokenPayload, object> converter, bool thisSide = false)
+        {
+            var m = ToJsonWebTokenPayload(thisSide);
+            var obj = converter != null ? converter(m) : m;
+            var jwt = new JsonWebToken<object>(obj, sign);
+            return jwt.ToAuthenticationHeaderValue();
+        }
+
+        /// <summary>
         /// Creates a new object that is a copy of the current instance.
         /// </summary>
         /// <returns>A new object that is a copy of this instance.</returns>
-        public RsaTokenExchange Clone()
+        public RSATokenExchange Clone()
         {
-            return new RsaTokenExchange
+            return new RSATokenExchange
             {
                 Id = Id,
                 EntityId = EntityId,

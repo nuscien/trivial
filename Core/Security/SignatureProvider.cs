@@ -17,6 +17,11 @@ namespace Trivial.Security
         string Name { get; }
 
         /// <summary>
+        /// Gets a value indicating whether it can sign a specific data.
+        /// </summary>
+        bool CanSign { get; }
+
+        /// <summary>
         /// Computes the signature for the specified hash value.
         /// </summary>
         /// <param name="data">The data to sign.</param>
@@ -186,6 +191,11 @@ namespace Trivial.Security
         public string Name { get; }
 
         /// <summary>
+        /// Gets a value indicating whether it can sign a specific data.
+        /// </summary>
+        public bool CanSign => true;
+
+        /// <summary>
         /// Computes the signature for the specified hash value.
         /// </summary>
         /// <param name="data">The data to sign.</param>
@@ -219,7 +229,7 @@ namespace Trivial.Security
         /// <summary>
         /// Creates an RSA hash signature provider using SHA-512 hash algorithm of SHA-2 family.
         /// </summary>
-        /// <param name="secret">The RSA private key.</param>
+        /// <param name="secret">The RSA key.</param>
         /// <returns>An RSA hash signature provider instance.</returns>
         public static RSASignatureProvider CreateRS512(string secret)
         {
@@ -229,19 +239,17 @@ namespace Trivial.Security
         /// <summary>
         /// Creates an RSA hash signature provider using SHA-512 hash algorithm of SHA-2 family.
         /// </summary>
-        /// <param name="secret">The RSA private key.</param>
+        /// <param name="secret">The RSA parameters.</param>
         /// <returns>An RSA hash signature provider instance.</returns>
         public static RSASignatureProvider CreateRS512(RSAParameters secret)
         {
-            var r = RSA.Create();
-            r.ImportParameters(secret);
-            return new RSASignatureProvider(r, HashAlgorithmName.SHA512, "RS512");
+            return new RSASignatureProvider(secret, HashAlgorithmName.SHA512, "RS512");
         }
 
         /// <summary>
         /// Creates an RSA hash signature provider using SHA-512 hash algorithm of SHA-2 family.
         /// </summary>
-        /// <param name="rsaInstance">The RSA instance with private key.</param>
+        /// <param name="rsaInstance">The RSA instance.</param>
         /// <returns>An RSA hash signature provider instance.</returns>
         public static RSASignatureProvider CreateRS512(RSA rsaInstance)
         {
@@ -251,7 +259,7 @@ namespace Trivial.Security
         /// <summary>
         /// Creates an RSA hash signature provider using SHA-384 hash algorithm of SHA-2 family.
         /// </summary>
-        /// <param name="secret">The RSA private key.</param>
+        /// <param name="secret">The RSA key.</param>
         /// <returns>An RSA hash signature provider instance.</returns>
         public static RSASignatureProvider CreateRS384(string secret)
         {
@@ -261,19 +269,17 @@ namespace Trivial.Security
         /// <summary>
         /// Creates an RSA hash signature provider using SHA-384 hash algorithm of SHA-2 family.
         /// </summary>
-        /// <param name="secret">The RSA private key.</param>
+        /// <param name="secret">The RSA parameters.</param>
         /// <returns>An RSA hash signature provider instance.</returns>
         public static RSASignatureProvider CreateRS384(RSAParameters secret)
         {
-            var r = RSA.Create();
-            r.ImportParameters(secret);
-            return new RSASignatureProvider(r, HashAlgorithmName.SHA384, "RS384");
+            return new RSASignatureProvider(secret, HashAlgorithmName.SHA384, "RS384");
         }
 
         /// <summary>
         /// Creates an RSA hash signature provider using SHA-384 hash algorithm of SHA-2 family.
         /// </summary>
-        /// <param name="rsaInstance">The RSA instance with private key.</param>
+        /// <param name="rsaInstance">The RSA instance.</param>
         /// <returns>An RSA hash signature provider instance.</returns>
         public static RSASignatureProvider CreateRS384(RSA rsaInstance)
         {
@@ -283,7 +289,7 @@ namespace Trivial.Security
         /// <summary>
         /// Creates an RSA hash signature provider using SHA-256 hash algorithm of SHA-2 family.
         /// </summary>
-        /// <param name="secret">The RSA private key.</param>
+        /// <param name="secret">The RSA key.</param>
         /// <returns>An RSA hash signature provider instance.</returns>
         public static RSASignatureProvider CreateRS256(string secret)
         {
@@ -293,20 +299,18 @@ namespace Trivial.Security
         /// <summary>
         /// Creates an RSA hash signature provider using SHA-256 hash algorithm of SHA-2 family.
         /// </summary>
-        /// <param name="secret">The RSA private key.</param>
+        /// <param name="secret">The RSA parameters.</param>
         /// <returns>An RSA hash signature provider instance.</returns>
         public static RSASignatureProvider CreateRS256(RSAParameters secret)
         {
-            var r = RSA.Create();
-            r.ImportParameters(secret);
-            return new RSASignatureProvider(r, HashAlgorithmName.SHA256, "RS256");
+            return new RSASignatureProvider(secret, HashAlgorithmName.SHA256, "RS256");
         }
 
 
         /// <summary>
         /// Creates an RSA hash signature provider using SHA-256 hash algorithm of SHA-2 family.
         /// </summary>
-        /// <param name="rsaInstance">The RSA instance with private key.</param>
+        /// <param name="rsaInstance">The RSA instance.</param>
         /// <returns>An RSA hash signature provider instance.</returns>
         public static RSASignatureProvider CreateRS256(RSA rsaInstance)
         {
@@ -316,7 +320,7 @@ namespace Trivial.Security
         /// <summary>
         /// Creates an RSA hash signature provider.
         /// </summary>
-        /// <param name="secret">The RSA private key.</param>
+        /// <param name="secret">The RSA key.</param>
         /// <param name="hashAlgorithmName">The hash algorithm name.</param>
         /// <param name="signAlgorithmName">The signature algorithm name.</param>
         /// <returns>An RSA hash signature provider instance.</returns>
@@ -324,12 +328,25 @@ namespace Trivial.Security
         {
             if (string.IsNullOrWhiteSpace(secret))
                 throw new ArgumentNullException(nameof(secret), "secret should not be null, empty or consists only of white-space characters.");
-            var r = RSA.Create();
             var p = RSAUtility.ParseParameters(secret);
             if (p == null)
                 throw new FormatException("secret is not a valid RSA key. A PEM string or XML string expected.");
-            r.ImportParameters(p.Value);
-            return new RSASignatureProvider(r, hashAlgorithmName, signAlgorithmName);
+            return new RSASignatureProvider(p.Value, hashAlgorithmName, signAlgorithmName);
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the RSASignatureProvider class.
+        /// </summary>
+        /// <param name="rsaParams">The RSA parameters.</param>
+        /// <param name="hashAlgorithmName">The hash algorithm name.</param>
+        /// <param name="signAlgorithmName">The signature algorithm name.</param>
+        public RSASignatureProvider(RSAParameters rsaParams, HashAlgorithmName hashAlgorithmName, string signAlgorithmName)
+        {
+            Name = signAlgorithmName;
+            rsa = RSA.Create();
+            CanSign = rsaParams.D!= null && rsaParams.D.Length > 0;
+            rsa.ImportParameters(rsaParams);
+            hashName = hashAlgorithmName;
         }
 
         /// <summary>
@@ -343,12 +360,29 @@ namespace Trivial.Security
             Name = signAlgorithmName;
             rsa = rsaInstance;
             hashName = hashAlgorithmName;
+            if (rsa == null) return;
+            try
+            {
+                var p = rsa.ExportParameters(true);
+                CanSign = p.D != null && p.D.Length > 0;
+            }
+            catch (SystemException)
+            {
+            }
+            catch (ApplicationException)
+            {
+            }
         }
 
         /// <summary>
         /// Gets the signature name.
         /// </summary>
         public string Name { get; }
+
+        /// <summary>
+        /// Gets a value indicating whether it can sign a specific data.
+        /// </summary>
+        public bool CanSign { get; private set; }
 
         /// <summary>
         /// Computes the signature for the specified hash value.
@@ -410,6 +444,7 @@ namespace Trivial.Security
             secretBytes = secret;
             Name = name;
             sign = signHandler;
+            CanSign = true;
         }
 
         /// <summary>
@@ -423,6 +458,35 @@ namespace Trivial.Security
             secretBytes = Encoding.ASCII.GetBytes(secret);
             Name = name;
             sign = signHandler;
+            CanSign = true;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the KeyedSignatureProvider class.
+        /// </summary>
+        /// <param name="verifyHandler">The verify handler.</param>
+        /// <param name="secret">The secret.</param>
+        /// <param name="name">The signature algorithm name.</param>
+        public KeyedSignatureProvider(VerifyHandler verifyHandler, byte[] secret, string name)
+        {
+            secretBytes = secret;
+            Name = name;
+            verify = verifyHandler;
+            CanSign = true;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the KeyedSignatureProvider class.
+        /// </summary>
+        /// <param name="verifyHandler">The verify handler.</param>
+        /// <param name="secret">The secret.</param>
+        /// <param name="name">The signature algorithm name.</param>
+        public KeyedSignatureProvider(VerifyHandler verifyHandler, string secret, string name)
+        {
+            secretBytes = Encoding.ASCII.GetBytes(secret);
+            Name = name;
+            verify = verifyHandler;
+            CanSign = true;
         }
 
         /// <summary>
@@ -453,6 +517,11 @@ namespace Trivial.Security
         /// Gets the signature name.
         /// </summary>
         public string Name { get; }
+
+        /// <summary>
+        /// Gets a value indicating whether it can sign a specific data.
+        /// </summary>
+        public bool CanSign { get; }
 
         /// <summary>
         /// Computes the signature for the specified hash value.

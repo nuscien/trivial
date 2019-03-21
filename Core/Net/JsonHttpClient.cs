@@ -243,7 +243,6 @@ namespace Trivial.Net
         /// <summary>
         /// Sends an HTTP request and gets the result serialized by JSON.
         /// </summary>
-        /// <typeparam name="TRequestBody">The type of request body to serialize and send.</typeparam>
         /// <param name="method">The HTTP method.</param>
         /// <param name="requestUri">The Uri the request is sent to.</param>
         /// <param name="content">The HTTP request content sent to the server.</param>
@@ -253,11 +252,11 @@ namespace Trivial.Net
         /// <exception cref="FailedHttpException">HTTP response contains failure status code.</exception>
         /// <exception cref="HttpRequestException">The request failed due to an underlying issue such as network connectivity, DNS failure, server certificate validation or timeout.</exception>
         /// <exception cref="InvalidOperationException">The task is cancelled.</exception>
-        public async Task<T> SendAsync<TRequestBody>(HttpMethod method, string requestUri, TRequestBody content, DataContractJsonSerializerSettings settings, CancellationToken cancellationToken = default)
+        public async Task<T> SendJsonAsync(HttpMethod method, string requestUri, object content, DataContractJsonSerializerSettings settings, CancellationToken cancellationToken = default)
         {
             using (var stream = new MemoryStream())
             {
-                var serializer = settings != null ? new DataContractJsonSerializer(typeof(TRequestBody), settings) : new DataContractJsonSerializer(typeof(TRequestBody));
+                var serializer = settings != null ? new DataContractJsonSerializer(content.GetType(), settings) : new DataContractJsonSerializer(content.GetType());
                 serializer.WriteObject(stream, content);
                 return await SendAsync(new HttpRequestMessage(method, requestUri)
                 {
@@ -269,7 +268,6 @@ namespace Trivial.Net
         /// <summary>
         /// Sends an HTTP request and gets the result serialized by JSON.
         /// </summary>
-        /// <typeparam name="TRequestBody">The type of request body to serialize and send.</typeparam>
         /// <param name="method">The HTTP method.</param>
         /// <param name="requestUri">The Uri the request is sent to.</param>
         /// <param name="content">The HTTP request content sent to the server.</param>
@@ -279,11 +277,11 @@ namespace Trivial.Net
         /// <exception cref="FailedHttpException">HTTP response contains failure status code.</exception>
         /// <exception cref="HttpRequestException">The request failed due to an underlying issue such as network connectivity, DNS failure, server certificate validation or timeout.</exception>
         /// <exception cref="InvalidOperationException">The task is cancelled.</exception>
-        public async Task<T> SendAsync<TRequestBody>(HttpMethod method, Uri requestUri, TRequestBody content, DataContractJsonSerializerSettings settings, CancellationToken cancellationToken = default)
+        public async Task<T> SendJsonAsync(HttpMethod method, Uri requestUri, object content, DataContractJsonSerializerSettings settings, CancellationToken cancellationToken = default)
         {
             using (var stream = new MemoryStream())
             {
-                var serializer = settings != null ? new DataContractJsonSerializer(typeof(TRequestBody), settings) : new DataContractJsonSerializer(typeof(TRequestBody));
+                var serializer = settings != null ? new DataContractJsonSerializer(content.GetType(), settings) : new DataContractJsonSerializer(content.GetType());
                 serializer.WriteObject(stream, content);
                 return await SendAsync(new HttpRequestMessage(method, requestUri)
                 {
@@ -295,7 +293,6 @@ namespace Trivial.Net
         /// <summary>
         /// Sends an HTTP request and gets the result serialized by JSON.
         /// </summary>
-        /// <typeparam name="TRequestBody">The type of request body to serialize and send.</typeparam>
         /// <param name="method">The HTTP method.</param>
         /// <param name="requestUri">The Uri the request is sent to.</param>
         /// <param name="content">The HTTP request content sent to the server.</param>
@@ -304,15 +301,14 @@ namespace Trivial.Net
         /// <exception cref="FailedHttpException">HTTP response contains failure status code.</exception>
         /// <exception cref="HttpRequestException">The request failed due to an underlying issue such as network connectivity, DNS failure, server certificate validation or timeout.</exception>
         /// <exception cref="InvalidOperationException">The task is cancelled.</exception>
-        public Task<T> SendJsonAsync<TRequestBody>(HttpMethod method, string requestUri, TRequestBody content, CancellationToken cancellationToken = default)
+        public Task<T> SendJsonAsync(HttpMethod method, string requestUri, object content, CancellationToken cancellationToken = default)
         {
-            return SendAsync(method, requestUri, content, null, cancellationToken);
+            return SendJsonAsync(method, requestUri, content, null as DataContractJsonSerializerSettings, cancellationToken);
         }
 
         /// <summary>
         /// Sends an HTTP request and gets the result serialized by JSON.
         /// </summary>
-        /// <typeparam name="TRequestBody">The type of request body to serialize and send.</typeparam>
         /// <param name="method">The HTTP method.</param>
         /// <param name="requestUri">The Uri the request is sent to.</param>
         /// <param name="content">The HTTP request content sent to the server.</param>
@@ -321,9 +317,9 @@ namespace Trivial.Net
         /// <exception cref="FailedHttpException">HTTP response contains failure status code.</exception>
         /// <exception cref="HttpRequestException">The request failed due to an underlying issue such as network connectivity, DNS failure, server certificate validation or timeout.</exception>
         /// <exception cref="InvalidOperationException">The task is cancelled.</exception>
-        public Task<T> SendJsonAsync<TRequestBody>(HttpMethod method, Uri requestUri, TRequestBody content, CancellationToken cancellationToken = default)
+        public Task<T> SendJsonAsync(HttpMethod method, Uri requestUri, object content, CancellationToken cancellationToken = default)
         {
-            return SendAsync(method, requestUri, content, null, cancellationToken);
+            return SendJsonAsync(method, requestUri, content, null as DataContractJsonSerializerSettings, cancellationToken);
         }
 
         /// <summary>
