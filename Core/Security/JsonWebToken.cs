@@ -45,8 +45,16 @@ namespace Trivial.Security
             if (payload == null) throw new ArgumentException(nameof(jwt), "jwt should contain payload in Base64Url.");
             var obj = new JsonWebToken<T>(payload, containHashAlgorithm ? algorithm : null)
             {
+                headerBase64Url = arr[0],
                 signatureCache = arr[2]
             };
+            if (obj.signature == null)
+            {
+                obj.header.Type = header.Type;
+                obj.header.AlgorithmName = header.AlgorithmName;
+                obj.header.ContentType = header.ContentType;
+            }
+
             if (verify)
             {
                 var bytes = Encoding.ASCII.GetBytes($"{obj.ToHeaderBase64Url()}.{obj.ToPayloadBase64Url()}");
