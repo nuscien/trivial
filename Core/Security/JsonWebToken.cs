@@ -39,12 +39,13 @@ namespace Trivial.Security
         /// <param name="jwt">The string encoded.</param>
         /// <param name="algorithm">The signature algorithm.</param>
         /// <param name="verify">true if verify the signature; otherwise, false.</param>
+        /// <param name="containHashAlgorithm">true if the algorithm contains compute hash algorithm.</param>
         /// <returns>A JSON web token object.</returns>
         /// <exception cref="ArgumentNullException">jwt was null or empty.</exception>
         /// <exception cref="ArgumentException">jwt did not contain any information.</exception>
         /// <exception cref="FormatException">jwt was in incorrect format.</exception>
         /// <exception cref="InvalidOperationException">Verify failure.</exception>
-        public static JsonWebToken<T> Parse(string jwt, ISignatureProvider algorithm, bool verify = true)
+        public static JsonWebToken<T> Parse(string jwt, ISignatureProvider algorithm, bool verify = true, bool containHashAlgorithm = true)
         {
             if (string.IsNullOrWhiteSpace(jwt)) throw new ArgumentNullException(nameof(jwt), "jwt should not be null or empty.");
             var prefix = $"{TokenInfo.BearerTokenType} ";
@@ -60,11 +61,17 @@ namespace Trivial.Security
             var payload = WebUtility.Base64UrlDecodeTo<T>(arr[1]);
             if (header == null) throw new ArgumentException(nameof(jwt), "jwt should contain header in Base64Url.");
             if (payload == null) throw new ArgumentException(nameof(jwt), "jwt should contain payload in Base64Url.");
-            var obj = new JsonWebToken<T>(payload, algorithm)
+            var obj = new JsonWebToken<T>(payload, containHashAlgorithm ? algorithm : null)
             {
                 signatureCache = arr[2]
             };
-            if (verify && obj.ToSigntureBase64Url() != arr[2]) throw new InvalidOperationException("jwt signature is incorrect.");
+            if (verify)
+            {
+                var bytes = Encoding.ASCII.GetBytes($"{obj.ToHeaderBase64Url()}.{obj.ToPayloadBase64Url()}");
+                var sign = Encoding.ASCII.GetBytes(arr[2]);
+                if (!algorithm.Verify(bytes, sign)) throw new InvalidOperationException("jwt signature is incorrect.");
+            }
+
             return obj;
         }
 

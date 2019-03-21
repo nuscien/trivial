@@ -211,12 +211,12 @@ You can use the extension methods `SecureStringUtiltiy` to convert between `Secu
 You can create a JSON web token to get the string encoded by initializing a new instance of the `JsonWebToken` class.
 
 ```csharp
-var secret = "a secret string";
-var jwt = JsonWebToken<Model>.CreateHS512(new Model(), secret);
+var secret = HashSignatureProvider.CreateHS512("a secret string");
+var jwt = new JsonWebToken(new Model(), secret);
 var jwtStr = jwt.ToEncodedString();
 
 // Parse.
-var jwtSame = JsonWebToken<Model>.CreateHS512(jwtStr, secret); // jwtSame.ToEncodedString() == jwtStr
+var jwtSame = JsonWebToken<Model>.Parse(jwtStr, secret); // jwtSame.ToEncodedString() == jwtStr
 ```
 
 ## [IO](https://github.com/nuscien/trivial/wiki/io)
