@@ -10,25 +10,6 @@ using Trivial.Web;
 namespace Trivial.Security
 {
     /// <summary>
-    /// Json web token header model.
-    /// </summary>
-    [DataContract]
-    internal class JsonWebTokenHeader
-    {
-        /// <summary>
-        /// Gets or sets the name of signature algorithm.
-        /// </summary>
-        [DataMember(Name = "alg")]
-        public string AlgorithmName { get; set; }
-
-        /// <summary>
-        /// Gets the type.
-        /// </summary>
-        [DataMember(Name = "typ")]
-        public string Type { get; set; } = "JWT";
-    }
-
-    /// <summary>
     /// Json web token model.
     /// </summary>
     /// <typeparam name="T">The type of payload.</typeparam>
@@ -107,7 +88,7 @@ namespace Trivial.Security
             signature = sign;
             header = new JsonWebTokenHeader
             {
-                AlgorithmName = sign.Name
+                AlgorithmName = sign != null ? sign.Name : "none"
             };
         }
 
@@ -181,6 +162,31 @@ namespace Trivial.Security
     }
 
     /// <summary>
+    /// Json web token header model.
+    /// </summary>
+    [DataContract]
+    public class JsonWebTokenHeader
+    {
+        /// <summary>
+        /// Gets or sets the name of signature algorithm.
+        /// </summary>
+        [DataMember(Name = "alg")]
+        public string AlgorithmName { get; set; }
+
+        /// <summary>
+        /// Gets the type.
+        /// </summary>
+        [DataMember(Name = "typ")]
+        public string Type { get; set; } = "JWT";
+
+        /// <summary>
+        /// Gets or sets the content type.
+        /// </summary>
+        [DataMember(Name = "ctp")]
+        public string ContentType { get; set; }
+    }
+
+    /// <summary>
     /// The base JWT payload model.
     /// </summary>
     [DataContract]
@@ -213,9 +219,10 @@ namespace Trivial.Security
         /// Gets or sets the optional subject.
         /// This claim identifies the principal that is the
         /// subject of the JWT.The claims in a JWT are normally statements
-        /// about the subject.  The subject value MUST either be scoped to be
-        /// locally unique in the context of the issuer or be globally unique.
-        /// The processing of this claim is generally application specific.The
+        /// about the subject.
+        /// The subject value MUST either be scoped to be locally unique
+        /// in the context of the issuer or be globally unique.
+        /// The processing of this claim is generally application specific.
         /// Its value is a case-sensitive string containing a string or a URI.
         /// </summary>
         [DataMember(Name = "sub")]
@@ -232,11 +239,11 @@ namespace Trivial.Security
         /// In the general case, its value is an array of case-sensitive strings,
         /// each containing a string or a URI.
         /// In the special case when the JWT has one audience, its value MAY be a
-        /// single case-sensitive string containing a string or a URI.The
+        /// single case-sensitive string containing a string or a URI. The
         /// interpretation of audience values is generally application specific
         /// </summary>
         [DataMember(Name = "aud")]
-        public string Audience { get; set; }
+        public IEnumerable<string> Audience { get; set; }
 
         /// <summary>
         /// Gets or sets an optional expiration date time tick in JSON format.
