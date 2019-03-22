@@ -42,6 +42,12 @@ namespace Trivial.Security
             public string Value { get; set; }
 
             /// <summary>
+            /// Gets or sets a value indicating whether the value is encrypted.
+            /// </summary>
+            [DataMember(Name = "ien")]
+            public bool IsEncrypted { get; set; }
+
+            /// <summary>
             /// Gets or sets the optional current encrypt key identifier if has.
             /// </summary>
             [DataMember(Name = "cei")]
@@ -63,16 +69,36 @@ namespace Trivial.Security
             /// Reads an RSA token exchange instance from the other side.
             /// </summary>
             /// <param name="rsa">The RSA token exchange instance from the other side.</param>
+            /// <param name="encryptKeyResolver">A handler to resolve encrypt key.</param>
             /// <returns>true if read succeeded; otherwise, false.</returns>
-            public bool Read(RSATokenExchange rsa)
+            public bool Read(RSATokenExchange rsa, Func<string, RSAParameters?> encryptKeyResolver = null)
             {
-                if (string.IsNullOrWhiteSpace(CurrentEncryptId))
+                if (!IsEncrypted || string.IsNullOrWhiteSpace(CurrentEncryptId))
                 {
-                    if (!rsa.IsSameId(CurrentEncryptId)) return false;
+                    rsa.SetToken(Value);
                 }
                 else
                 {
-                    rsa.SetToken(Value);
+                    if (!rsa.IsSameId(CurrentEncryptId)) return false;
+                }
+
+                if (string.IsNullOrWhiteSpace(ExpectFutureEncryptId) || (!IsEncrypted && ExpectFutureEncryptId == rsa.Id))
+                {
+                    rsa.EncryptKeyId = null;
+                    rsa.EncryptKey = null;
+                }
+                else if (ExpectFutureEncryptId != rsa.EncryptKeyId)
+                {
+                    if (encryptKeyResolver != null)
+                    {
+                        rsa.EncryptKey = encryptKeyResolver(ExpectFutureEncryptId);
+                        rsa.EncryptKeyId = rsa.EncryptKey != null ? ExpectFutureEncryptId : null;
+                    }
+                    else
+                    {
+                        rsa.EncryptKey = null;
+                        rsa.EncryptKeyId = null;
+                    }
                 }
 
                 rsa.DecryptToken(Value, true);
@@ -214,6 +240,17 @@ namespace Trivial.Security
         public void CreateCrypto(bool syncEncryptKey = false)
         {
             SetCrypto(RSA.Create(), syncEncryptKey);
+        }
+
+        /// <summary>
+        /// Exports the System.Security.Cryptography.RSAParameters.
+        /// </summary>
+        /// <param name="includePrivateParameters">true to include private parameters; otherwise, false.</param>
+        /// <returns>The parameters for System.Security.Cryptography.RSA.</returns>
+        public RSAParameters ExportParameters(bool includePrivateParameters)
+        {
+            if (crypto == null) throw new InvalidOperationException("No RSA crypto service provider.");
+            return crypto.ExportParameters(includePrivateParameters);
         }
 
         /// <summary>
@@ -385,6 +422,7 @@ namespace Trivial.Security
                 CurrentEncryptId = EncryptKeyId,
                 UserId = EntityId,
                 Value = EncryptToken(),
+                IsEncrypted = IsSecure,
                 ExpectFutureEncryptId = Id,
                 IssuedAt = DateTime.Now
             };

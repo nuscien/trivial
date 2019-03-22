@@ -55,7 +55,6 @@ namespace Trivial.Security
             };
             obj.header.Type = header.Type;
             obj.header.AlgorithmName = header.AlgorithmName;
-            obj.header.ContentType = header.ContentType;
             return obj;
         }
 
@@ -180,12 +179,6 @@ namespace Trivial.Security
         /// </summary>
         [DataMember(Name = "typ")]
         public string Type { get; set; } = "JWT";
-
-        /// <summary>
-        /// Gets or sets the content type.
-        /// </summary>
-        [DataMember(Name = "ctp")]
-        public string ContentType { get; set; }
     }
 
     /// <summary>
