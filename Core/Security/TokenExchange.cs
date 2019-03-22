@@ -30,7 +30,7 @@ namespace Trivial.Security
         public class JsonWebTokenPayload : Security.JsonWebTokenPayload
         {
             /// <summary>
-            /// Gets or sets the user identifer.
+            /// Gets or sets the optional user identifer.
             /// </summary>
             [DataMember(Name = "uid")]
             public string UserId { get; set; }
@@ -42,16 +42,22 @@ namespace Trivial.Security
             public string Value { get; set; }
 
             /// <summary>
-            /// Gets or sets the current encrypt key identifier if has.
+            /// Gets or sets the optional current encrypt key identifier if has.
             /// </summary>
             [DataMember(Name = "cei")]
             public string CurrentEncryptId { get; set; }
 
             /// <summary>
-            /// Gets or sets the encrypt key identifier expected for next operation back.
+            /// Gets or sets the optional encrypt key identifier expected for next operation back.
             /// </summary>
             [DataMember(Name = "eei")]
             public string ExpectFutureEncryptId { get; set; }
+
+            /// <summary>
+            /// Gets or sets the optional creation identifier.
+            /// </summary>
+            [DataMember(Name = "jci")]
+            public string CreationId { get; set; } = Guid.NewGuid().ToString("n");
 
             /// <summary>
             /// Reads an RSA token exchange instance from the other side.
@@ -295,11 +301,11 @@ namespace Trivial.Security
         public string EncryptToken(RSAParameters? key = null, RSAEncryptionPadding padding = null)
         {
             if (!key.HasValue) key = EncryptKey;
-            if (!key.HasValue) return TokenFormatBeforeEncrypt != null ? TokenFormatBeforeEncrypt(AccessToken.ToUnsecureString(), false) : AccessToken.ToUnsecureString();
+            if (!key.HasValue) return TokenFormatBeforeEncrypt != null ? TokenFormatBeforeEncrypt(AccessToken?.ToUnsecureString(), false) : AccessToken?.ToUnsecureString();
             var rsa = RSA.Create();
             rsa.ImportParameters(key.Value);
             var cypher = rsa.Encrypt(
-                Encoding.UTF8.GetBytes(TokenFormatBeforeEncrypt != null ? TokenFormatBeforeEncrypt(AccessToken.ToUnsecureString(), true) : AccessToken.ToUnsecureString()),
+                Encoding.UTF8.GetBytes(TokenFormatBeforeEncrypt != null ? TokenFormatBeforeEncrypt(AccessToken?.ToUnsecureString(), true) : AccessToken?.ToUnsecureString()),
                 padding ?? RSAEncryptionPadding.Pkcs1);
             return Convert.ToBase64String(cypher);
         }
@@ -358,7 +364,7 @@ namespace Trivial.Security
                 return new JsonWebTokenPayload
                 {
                     UserId = EntityId,
-                    Value = AccessToken.ToUnsecureString(),
+                    Value = AccessToken?.ToUnsecureString(),
                     ExpectFutureEncryptId = EncryptKeyId
                 };
             }
@@ -368,7 +374,7 @@ namespace Trivial.Security
                 return new JsonWebTokenPayload
                 {
                     UserId = EntityId,
-                    Value = AccessToken.ToUnsecureString(),
+                    Value = AccessToken?.ToUnsecureString(),
                     ExpectFutureEncryptId = Id,
                     IssuedAt = DateTime.Now
                 };

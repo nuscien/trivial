@@ -120,6 +120,7 @@ namespace Trivial.Text
 
             return str.ToString();
         }
+
         /// <summary>
         /// Breaks lines.
         /// </summary>

@@ -113,7 +113,7 @@ namespace Trivial.Net
         /// <exception cref="ArgumentNullException">The argument is null.</exception>
         public static async Task<T> SerializeJsonAsync<T>(this HttpContent httpContent, DataContractJsonSerializerSettings settings = null)
         {
-            if (httpContent == null) throw new ArgumentNullException(nameof(httpContent));
+            if (httpContent == null) throw new ArgumentNullException(nameof(httpContent), "httpContent should not be null.");
             using (var stream = await httpContent.ReadAsStreamAsync())
             {
                 var serializer = settings != null ? new DataContractJsonSerializer(typeof(T), settings) : new DataContractJsonSerializer(typeof(T));
@@ -131,7 +131,7 @@ namespace Trivial.Net
         /// <exception cref="ArgumentNullException">The argument is null.</exception>
         public static async Task<T> SerializeXmlAsync<T>(this HttpContent httpContent, DataContractSerializerSettings settings = null)
         {
-            if (httpContent == null) throw new ArgumentNullException(nameof(httpContent));
+            if (httpContent == null) throw new ArgumentNullException(nameof(httpContent), "httpContent should not be null.");
             using (var stream = await httpContent.ReadAsStreamAsync())
             {
                 var serializer = settings != null ? new DataContractSerializer(typeof(T), settings) : new DataContractSerializer(typeof(T)); 
@@ -148,8 +148,8 @@ namespace Trivial.Net
         /// <exception cref="ArgumentNullException">The argument is null.</exception>
         public static async Task<object> SerializeAsync(this HttpContent httpContent, XmlObjectSerializer serializer)
         {
-            if (httpContent == null) throw new ArgumentNullException(nameof(httpContent));
-            if (serializer == null) throw new ArgumentNullException(nameof(serializer));
+            if (httpContent == null) throw new ArgumentNullException(nameof(httpContent), "httpContent should not be null.");
+            if (serializer == null) throw new ArgumentNullException(nameof(serializer), "serializer should not be null.");
             using (var stream = await httpContent.ReadAsStreamAsync())
             {
                 return serializer.ReadObject(stream);
@@ -166,8 +166,8 @@ namespace Trivial.Net
         /// <exception cref="ArgumentNullException">The argument is null.</exception>
         public static async Task<T> SerializeAsync<T>(this HttpContent httpContent, Func<string, T> serializer)
         {
-            if (httpContent == null) throw new ArgumentNullException(nameof(httpContent));
-            if (serializer == null) throw new ArgumentNullException(nameof(serializer));
+            if (httpContent == null) throw new ArgumentNullException(nameof(httpContent), "httpContent should not be null.");
+            if (serializer == null) throw new ArgumentNullException(nameof(serializer), "serializer should not be null.");
             var str = await httpContent.ReadAsStringAsync();
             return serializer(str);
         }
@@ -182,7 +182,7 @@ namespace Trivial.Net
         /// <exception cref="ArgumentNullException">The argument is null.</exception>
         public static T SerializeJson<T>(this WebResponse webResponse, DataContractJsonSerializerSettings settings = null)
         {
-            if (webResponse == null) throw new ArgumentNullException(nameof(webResponse));
+            if (webResponse == null) throw new ArgumentNullException(nameof(webResponse), "webResponse should not be null.");
             using (var stream = webResponse.GetResponseStream())
             {
                 var serializer = settings != null ? new DataContractJsonSerializer(typeof(T), settings) : new DataContractJsonSerializer(typeof(T));

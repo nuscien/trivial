@@ -355,12 +355,23 @@ namespace Trivial.Security
         /// <param name="rsaInstance">The RSA instance.</param>
         /// <param name="hashAlgorithmName">The hash algorithm name.</param>
         /// <param name="signAlgorithmName">The signature algorithm name.</param>
-        public RSASignatureProvider(RSA rsaInstance, HashAlgorithmName hashAlgorithmName, string signAlgorithmName)
+        public RSASignatureProvider(RSA rsaInstance, HashAlgorithmName hashAlgorithmName, string signAlgorithmName) : this(rsaInstance, true, hashAlgorithmName, signAlgorithmName)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the RSASignatureProvider class.
+        /// </summary>
+        /// <param name="rsaInstance">The RSA instance.</param>
+        /// <param name="hasPrivateKey">true if has the private key; otherwise, false.</param>
+        /// <param name="hashAlgorithmName">The hash algorithm name.</param>
+        /// <param name="signAlgorithmName">The signature algorithm name.</param>
+        public RSASignatureProvider(RSA rsaInstance, bool hasPrivateKey, HashAlgorithmName hashAlgorithmName, string signAlgorithmName)
         {
             Name = signAlgorithmName;
             rsa = rsaInstance;
             hashName = hashAlgorithmName;
-            if (rsa == null) return;
+            if (rsa == null || !hasPrivateKey) return;
             try
             {
                 var p = rsa.ExportParameters(true);
