@@ -147,6 +147,11 @@ namespace Trivial.Security
         public const string ExpiresInProperty = "expires_in";
 
         /// <summary>
+        /// The error message in property.
+        /// </summary>
+        public const string ErrorMessageProperty = "error";
+
+        /// <summary>
         /// The token type.
         /// </summary>
         public const string BearerTokenType = "Bearer";
@@ -200,6 +205,12 @@ namespace Trivial.Security
         /// </summary>
         [DataMember(Name = RefreshTokenProperty)]
         public string RefreshToken { get; set; }
+
+        /// <summary>
+        /// Gets or sets the error message.
+        /// </summary>
+        [DataMember(Name = ErrorMessageProperty)]
+        public string ErrorMessage { get; set; }
 
         /// <summary>
         /// Gets or sets the resource identifier.

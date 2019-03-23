@@ -245,9 +245,9 @@ namespace Trivial.Security
     }
 
     /// <summary>
-    /// The open id token client.
+    /// The token client.
     /// </summary>
-    public abstract class OpenIdTokenClient : TokenContainer
+    public abstract class TokenClient : TokenContainer
     {
         private readonly AppAccessingKey appInfo;
         private Task<TokenInfo> task;
@@ -256,7 +256,7 @@ namespace Trivial.Security
         /// Initializes a new instance of the OpenIdTokenClient class.
         /// </summary>
         /// <param name="tokenCached">The token information instance cached.</param>
-        public OpenIdTokenClient(TokenInfo tokenCached) : base(tokenCached)
+        public TokenClient(TokenInfo tokenCached) : base(tokenCached)
         {
         }
 
@@ -265,7 +265,7 @@ namespace Trivial.Security
         /// </summary>
         /// <param name="appKey">The app accessing key.</param>
         /// <param name="tokenCached">The token information instance cached.</param>
-        public OpenIdTokenClient(AppAccessingKey appKey, TokenInfo tokenCached = null) : this(tokenCached)
+        public TokenClient(AppAccessingKey appKey, TokenInfo tokenCached = null) : this(tokenCached)
         {
             appInfo = appKey;
         }
@@ -276,7 +276,7 @@ namespace Trivial.Security
         /// <param name="appId">The app id.</param>
         /// <param name="secretKey">The secret key.</param>
         /// <param name="tokenCached">The token information instance cached.</param>
-        public OpenIdTokenClient(string appId, string secretKey, TokenInfo tokenCached = null) : this(new AppAccessingKey(appId, secretKey), tokenCached)
+        public TokenClient(string appId, string secretKey, TokenInfo tokenCached = null) : this(new AppAccessingKey(appId, secretKey), tokenCached)
         {
         }
 
@@ -286,7 +286,200 @@ namespace Trivial.Security
         /// <param name="appId">The app id.</param>
         /// <param name="secretKey">The secret key.</param>
         /// <param name="tokenCached">The token information instance cached.</param>
-        public OpenIdTokenClient(string appId, SecureString secretKey, TokenInfo tokenCached = null) : this(new AppAccessingKey(appId, secretKey), tokenCached)
+        public TokenClient(string appId, SecureString secretKey, TokenInfo tokenCached = null) : this(new AppAccessingKey(appId, secretKey), tokenCached)
+        {
+        }
+
+        /// <summary>
+        /// Gets the app id.
+        /// </summary>
+        public string AppId => !AppAccessingKey.IsNullOrEmpty(appInfo) ? appInfo.Id : null;
+
+        /// <summary>
+        /// Gets or sets a value indicating whether it requires an app identifier.
+        /// </summary>
+        public bool IsAppIdRequired { get; set; }
+
+        /// <summary>
+        /// Gets the latest visited date.
+        /// </summary>
+        public DateTime LatestVisitDate { get; private set; }
+
+        /// <summary>
+        /// Gets the latest refreshed date.
+        /// </summary>
+        public DateTime LatestRefreshDate { get; private set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether need refresh token before valdate the code when expired.
+        /// </summary>
+        public bool IsAutoRefresh { get; set; }
+
+        /// <summary>
+        /// Gets the JSON HTTP web client for resolving access token information instance.
+        /// </summary>
+        protected virtual JsonHttpClient<TokenInfo> WebClient { get; } = new JsonHttpClient<TokenInfo>();
+
+        /// <summary>
+        /// Adds or removes the event raised after token changed.
+        /// </summary>
+        public event ChangeEventHandler<TokenInfo> TokenChanged;
+
+        /// <summary>
+        /// Validates the code.
+        /// </summary>
+        /// <param name="code">The code to validate.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>A new open id; or null, if failed.</returns>
+        public async Task<TokenInfo> ValidateCodeAsync(string code, CancellationToken cancellationToken = default)
+        {
+            if (!string.IsNullOrWhiteSpace(code)) return null;
+            if (IsAppIdRequired && AppAccessingKey.IsNullOrEmpty(appInfo)) return null;
+            using (var request = CreateValidationMessage(appInfo?.Secret, code))
+            {
+                if (request == null) return null;
+                try
+                {
+                    return await ProcessAsync(request, cancellationToken);
+                }
+                catch (FailedHttpException ex)
+                {
+                    if (!IsAutoRefresh || ex.Response == null || ex.Response.StatusCode != HttpStatusCode.Unauthorized) throw;
+                    var token = await RefreshAsync(cancellationToken);
+                    if (token == null || token.IsEmpty) throw;
+                    using (var request2 = CreateValidationMessage(appInfo?.Secret, code))
+                    {
+                        if (request2 == null) return null;
+                        return await ProcessAsync(request2, cancellationToken);
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Refreshes the token.
+        /// </summary>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>A new open id; or null, if failed.</returns>
+        public async Task<TokenInfo> RefreshAsync(CancellationToken cancellationToken = default)
+        {
+            var t = task;
+            if (t != null && t.Status == TaskStatus.Running)
+            {
+                try
+                {
+                    return await Task.Run(async () =>
+                    {
+                        return await t;
+                    }, cancellationToken);
+                }
+                catch (TaskCanceledException)
+                {
+                    if (cancellationToken.IsCancellationRequested) throw;
+                }
+                catch (ObjectDisposedException)
+                {
+                }
+                catch (ArgumentException)
+                {
+                }
+                catch (InvalidOperationException)
+                {
+                }
+            }
+
+            if (IsAppIdRequired && AppAccessingKey.IsNullOrEmpty(appInfo)) return null;
+            using (var request = CreateRefreshingMessage(appInfo?.Secret))
+            {
+                if (request == null) return null;
+                task = t = ProcessAsync(request, cancellationToken);
+                var result = await t;
+                LatestRefreshDate = DateTime.Now;
+                task = null;
+                return result;
+            }
+        }
+
+        /// <summary>
+        /// Gets the login URI.
+        /// </summary>
+        /// <param name="redirectUri">The redirect URI.</param>
+        /// <param name="scope">The permission scope to request.</param>
+        /// <param name="state">A state code.</param>
+        /// <returns>A URI for login.</returns>
+        public abstract Uri GetLoginUri(Uri redirectUri, string scope, string state);
+
+        /// <summary>
+        /// Creates the validation request message.
+        /// </summary>
+        /// <param name="appSecretKey">The app secret string.</param>
+        /// <param name="code">The code to validate.</param>
+        /// <returns>A URI for login.</returns>
+        protected abstract HttpRequestMessage CreateValidationMessage(SecureString appSecretKey, string code);
+
+        /// <summary>
+        /// Creates the token refresh request message.
+        /// </summary>
+        /// <param name="appSecretKey">The app secret string.</param>
+        /// <returns>A URI for login.</returns>
+        protected abstract HttpRequestMessage CreateRefreshingMessage(SecureString appSecretKey);
+
+        private async Task<TokenInfo> ProcessAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+        {
+            if (request == null) return null;
+            if (IsAppIdRequired && AppAccessingKey.IsNullOrEmpty(appInfo)) return null;
+            var wc = WebClient;
+            var oldToken = Token;
+            Token = await wc.SendAsync(request, cancellationToken);
+            LatestVisitDate = DateTime.Now;
+            TokenChanged?.Invoke(this, new ChangeEventArgs<TokenInfo>(oldToken, Token, nameof(Token), true));
+            return Token;
+        }
+    }
+
+    /// <summary>
+    /// The OAuth client.
+    /// </summary>
+    public abstract class OAuthClient : TokenContainer
+    {
+        private readonly AppAccessingKey appInfo;
+        private Task<TokenInfo> task;
+
+        /// <summary>
+        /// Initializes a new instance of the OAuthClient class.
+        /// </summary>
+        /// <param name="tokenCached">The token information instance cached.</param>
+        public OAuthClient(TokenInfo tokenCached) : base(tokenCached)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the OAuthClient class.
+        /// </summary>
+        /// <param name="appKey">The app accessing key.</param>
+        /// <param name="tokenCached">The token information instance cached.</param>
+        public OAuthClient(AppAccessingKey appKey, TokenInfo tokenCached = null) : this(tokenCached)
+        {
+            appInfo = appKey;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the OAuthClient class.
+        /// </summary>
+        /// <param name="appId">The app id.</param>
+        /// <param name="secretKey">The secret key.</param>
+        /// <param name="tokenCached">The token information instance cached.</param>
+        public OAuthClient(string appId, string secretKey, TokenInfo tokenCached = null) : this(new AppAccessingKey(appId, secretKey), tokenCached)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the OAuthClient class.
+        /// </summary>
+        /// <param name="appId">The app id.</param>
+        /// <param name="secretKey">The secret key.</param>
+        /// <param name="tokenCached">The token information instance cached.</param>
+        public OAuthClient(string appId, SecureString secretKey, TokenInfo tokenCached = null) : this(new AppAccessingKey(appId, secretKey), tokenCached)
         {
         }
 
