@@ -26,6 +26,11 @@ namespace Trivial.Web
         public const string JavaScriptMIME = "text/javascript";
 
         /// <summary>
+        /// Gets the MIME value of the URL encoded.
+        /// </summary>
+        public const string FormUrlMIME = "application/x-www-form-urlencoded";
+
+        /// <summary>
         /// Gets the MIME value of CSS format text.
         /// </summary>
         public const string CssMIME = "text/css";
@@ -67,7 +72,28 @@ namespace Trivial.Web
         /// </summary>
         /// <param name="date">A date and time.</param>
         /// <returns>The JavaScript date tick.</returns>
+        public static long ParseDate(DateTimeOffset date)
+        {
+            return (date.ToUniversalTime().Ticks - 621355968000000000) / 10000;
+        }
+
+        /// <summary>
+        /// Parses JavaScript date tick to date and time back.
+        /// </summary>
+        /// <param name="date">A date and time.</param>
+        /// <returns>The JavaScript date tick.</returns>
         public static long? ParseDate(DateTime? date)
+        {
+            if (!date.HasValue) return null;
+            return ParseDate(date.Value);
+        }
+
+        /// <summary>
+        /// Parses JavaScript date tick to date and time back.
+        /// </summary>
+        /// <param name="date">A date and time.</param>
+        /// <returns>The JavaScript date tick.</returns>
+        public static long? ParseDate(DateTimeOffset? date)
         {
             if (!date.HasValue) return null;
             return ParseDate(date.Value);

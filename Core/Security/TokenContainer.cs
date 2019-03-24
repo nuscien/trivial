@@ -23,6 +23,8 @@ namespace Trivial.Security
     /// </summary>
     public class TokenContainer
     {
+        private TokenInfo token;
+
         /// <summary>
         /// Initializes a new instance of the TokenContainer class.
         /// </summary>
@@ -42,7 +44,20 @@ namespace Trivial.Security
         /// <summary>
         /// Gets the token information instance saved in this container.
         /// </summary>
-        public TokenInfo Token { get; protected set; }
+        public TokenInfo Token
+        {
+            get
+            {
+                return token;
+            }
+
+            protected set
+            {
+                var oldValue = token;
+                token = value;
+                TokenChanged?.Invoke(this, new ChangeEventArgs<TokenInfo>(oldValue, value, nameof(Token), true));
+            }
+        }
 
         /// <summary>
         /// Gets the access token saved in this container.
@@ -53,6 +68,11 @@ namespace Trivial.Security
         /// Gets a value indicating whether the access token is null, empty or consists only of white-space characters.
         /// </summary>
         public bool IsTokenNullOrEmpty => Token?.IsEmpty ?? false;
+
+        /// <summary>
+        /// Adds or removes the event raised after token changed.
+        /// </summary>
+        public event ChangeEventHandler<TokenInfo> TokenChanged;
 
         /// <summary>
         /// Returns a System.String that represents the current token container instance.
@@ -87,48 +107,48 @@ namespace Trivial.Security
     }
 
     /// <summary>
-    /// The token resolver.
+    /// The client credentials token container.
     /// </summary>
-    public abstract class TokenResolver : TokenContainer
+    public abstract class ClientCredentialsTokenContainer : TokenContainer
     {
         private readonly AppAccessingKey appInfo;
         private Task<TokenInfo> task;
 
         /// <summary>
-        /// Initializes a new instance of the TokenResolver class.
+        /// Initializes a new instance of the ClientTokenContainer class.
         /// </summary>
         /// <param name="tokenCached">The token information instance cached.</param>
-        public TokenResolver(TokenInfo tokenCached) : base(tokenCached)
+        public ClientCredentialsTokenContainer(TokenInfo tokenCached) : base(tokenCached)
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the TokenResolver class.
+        /// Initializes a new instance of the ClientTokenContainer class.
         /// </summary>
         /// <param name="appKey">The app accessing key.</param>
         /// <param name="tokenCached">The token information instance cached.</param>
-        public TokenResolver(AppAccessingKey appKey, TokenInfo tokenCached = null) : this(tokenCached)
+        public ClientCredentialsTokenContainer(AppAccessingKey appKey, TokenInfo tokenCached = null) : this(tokenCached)
         {
             appInfo = appKey;
         }
 
         /// <summary>
-        /// Initializes a new instance of the TokenResolver class.
+        /// Initializes a new instance of the ClientTokenContainer class.
         /// </summary>
         /// <param name="appId">The app id.</param>
         /// <param name="secretKey">The secret key.</param>
         /// <param name="tokenCached">The token information instance cached.</param>
-        public TokenResolver(string appId, string secretKey, TokenInfo tokenCached = null) : this(new AppAccessingKey(appId, secretKey), tokenCached)
+        public ClientCredentialsTokenContainer(string appId, string secretKey, TokenInfo tokenCached = null) : this(new AppAccessingKey(appId, secretKey), tokenCached)
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the TokenResolver class.
+        /// Initializes a new instance of the ClientTokenContainer class.
         /// </summary>
         /// <param name="appId">The app id.</param>
         /// <param name="secretKey">The secret key.</param>
         /// <param name="tokenCached">The token information instance cached.</param>
-        public TokenResolver(string appId, SecureString secretKey, TokenInfo tokenCached = null) : this(new AppAccessingKey(appId, secretKey), tokenCached)
+        public ClientCredentialsTokenContainer(string appId, SecureString secretKey, TokenInfo tokenCached = null) : this(new AppAccessingKey(appId, secretKey), tokenCached)
         {
         }
 
@@ -231,7 +251,6 @@ namespace Trivial.Security
         {
             if (IsAppIdRequired && AppAccessingKey.IsNullOrEmpty(appInfo)) return null;
             var wc = WebClient;
-            var oldToken = Token;
             using (var request = CreateResolveMessage(appInfo?.Secret))
             {
                 if (request == null) return null;
@@ -239,54 +258,53 @@ namespace Trivial.Security
                 LatestResolveDate = DateTime.Now;
             }
 
-            TokenChanged?.Invoke(this, new ChangeEventArgs<TokenInfo>(oldToken, Token, nameof(Token), true));
             return Token;
         }
     }
 
     /// <summary>
-    /// The token client.
+    /// The code token container.
     /// </summary>
-    public abstract class TokenClient : TokenContainer
+    public abstract class AuthorizationCodeTokenContainer : TokenContainer
     {
         private readonly AppAccessingKey appInfo;
         private Task<TokenInfo> task;
 
         /// <summary>
-        /// Initializes a new instance of the OpenIdTokenClient class.
+        /// Initializes a new instance of the AuthorizationCodeTokenContainer class.
         /// </summary>
         /// <param name="tokenCached">The token information instance cached.</param>
-        public TokenClient(TokenInfo tokenCached) : base(tokenCached)
+        public AuthorizationCodeTokenContainer(TokenInfo tokenCached) : base(tokenCached)
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the OpenIdTokenClient class.
+        /// Initializes a new instance of the AuthorizationCodeTokenContainer class.
         /// </summary>
         /// <param name="appKey">The app accessing key.</param>
         /// <param name="tokenCached">The token information instance cached.</param>
-        public TokenClient(AppAccessingKey appKey, TokenInfo tokenCached = null) : this(tokenCached)
+        public AuthorizationCodeTokenContainer(AppAccessingKey appKey, TokenInfo tokenCached = null) : this(tokenCached)
         {
             appInfo = appKey;
         }
 
         /// <summary>
-        /// Initializes a new instance of the OpenIdTokenClient class.
+        /// Initializes a new instance of the AuthorizationCodeTokenContainer class.
         /// </summary>
         /// <param name="appId">The app id.</param>
         /// <param name="secretKey">The secret key.</param>
         /// <param name="tokenCached">The token information instance cached.</param>
-        public TokenClient(string appId, string secretKey, TokenInfo tokenCached = null) : this(new AppAccessingKey(appId, secretKey), tokenCached)
+        public AuthorizationCodeTokenContainer(string appId, string secretKey, TokenInfo tokenCached = null) : this(new AppAccessingKey(appId, secretKey), tokenCached)
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the OpenIdTokenClient class.
+        /// Initializes a new instance of the AuthorizationCodeTokenContainer class.
         /// </summary>
         /// <param name="appId">The app id.</param>
         /// <param name="secretKey">The secret key.</param>
         /// <param name="tokenCached">The token information instance cached.</param>
-        public TokenClient(string appId, SecureString secretKey, TokenInfo tokenCached = null) : this(new AppAccessingKey(appId, secretKey), tokenCached)
+        public AuthorizationCodeTokenContainer(string appId, SecureString secretKey, TokenInfo tokenCached = null) : this(new AppAccessingKey(appId, secretKey), tokenCached)
         {
         }
 
@@ -319,11 +337,6 @@ namespace Trivial.Security
         /// Gets the JSON HTTP web client for resolving access token information instance.
         /// </summary>
         protected virtual JsonHttpClient<TokenInfo> WebClient { get; } = new JsonHttpClient<TokenInfo>();
-
-        /// <summary>
-        /// Adds or removes the event raised after token changed.
-        /// </summary>
-        public event ChangeEventHandler<TokenInfo> TokenChanged;
 
         /// <summary>
         /// Validates the code.
@@ -429,10 +442,8 @@ namespace Trivial.Security
             if (request == null) return null;
             if (IsAppIdRequired && AppAccessingKey.IsNullOrEmpty(appInfo)) return null;
             var wc = WebClient;
-            var oldToken = Token;
             Token = await wc.SendAsync(request, cancellationToken);
             LatestVisitDate = DateTime.Now;
-            TokenChanged?.Invoke(this, new ChangeEventArgs<TokenInfo>(oldToken, Token, nameof(Token), true));
             return Token;
         }
     }
@@ -440,11 +451,8 @@ namespace Trivial.Security
     /// <summary>
     /// The OAuth client.
     /// </summary>
-    public abstract class OAuthClient : TokenContainer
+    public class OAuthClient : TokenContainer
     {
-        private readonly AppAccessingKey appInfo;
-        private Task<TokenInfo> task;
-
         /// <summary>
         /// Initializes a new instance of the OAuthClient class.
         /// </summary>
@@ -454,179 +462,90 @@ namespace Trivial.Security
         }
 
         /// <summary>
-        /// Initializes a new instance of the OAuthClient class.
+        /// Gets or sets the JSON serializer.
         /// </summary>
-        /// <param name="appKey">The app accessing key.</param>
-        /// <param name="tokenCached">The token information instance cached.</param>
-        public OAuthClient(AppAccessingKey appKey, TokenInfo tokenCached = null) : this(tokenCached)
+        public Func<string, Type, object> Serializer { get; set; }
+
+        /// <summary>
+        /// Gets or sets the case of authenticiation scheme.
+        /// </summary>
+        public Cases AuthenticationSchemeCase { get; set; } = Cases.Original;
+
+        /// <summary>
+        /// Adds or removes a handler raised on sending.
+        /// </summary>
+        public event EventHandler<SendingEventArgs> Sending;
+
+        /// <summary>
+        /// Adds or removes a handler raised on token is resolving.
+        /// </summary>
+        public event EventHandler<SendingEventArgs> TokenResolving;
+
+        /// <summary>
+        /// Adds or removes a handler raised on token has resolved.
+        /// </summary>
+        public event EventHandler<ReceivedEventArgs<TokenInfo>> TokenResolved;
+
+        /// <summary>
+        /// Creates a JSON HTTP client.
+        /// </summary>
+        /// <typeparam name="T">The type of response.</typeparam>
+        /// <returns>A new JSON HTTP client.</returns>
+        public JsonHttpClient<T> Create<T>(Action<ReceivedEventArgs<T>> callback = null)
         {
-            appInfo = appKey;
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the OAuthClient class.
-        /// </summary>
-        /// <param name="appId">The app id.</param>
-        /// <param name="secretKey">The secret key.</param>
-        /// <param name="tokenCached">The token information instance cached.</param>
-        public OAuthClient(string appId, string secretKey, TokenInfo tokenCached = null) : this(new AppAccessingKey(appId, secretKey), tokenCached)
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the OAuthClient class.
-        /// </summary>
-        /// <param name="appId">The app id.</param>
-        /// <param name="secretKey">The secret key.</param>
-        /// <param name="tokenCached">The token information instance cached.</param>
-        public OAuthClient(string appId, SecureString secretKey, TokenInfo tokenCached = null) : this(new AppAccessingKey(appId, secretKey), tokenCached)
-        {
-        }
-
-        /// <summary>
-        /// Gets the app id.
-        /// </summary>
-        public string AppId => !AppAccessingKey.IsNullOrEmpty(appInfo) ? appInfo.Id : null;
-
-        /// <summary>
-        /// Gets or sets a value indicating whether it requires an app identifier.
-        /// </summary>
-        public bool IsAppIdRequired { get; set; }
-
-        /// <summary>
-        /// Gets the latest visited date.
-        /// </summary>
-        public DateTime LatestVisitDate { get; private set; }
-
-        /// <summary>
-        /// Gets the latest refreshed date.
-        /// </summary>
-        public DateTime LatestRefreshDate { get; private set; }
-
-        /// <summary>
-        /// Gets or sets a value indicating whether need refresh token before valdate the code when expired.
-        /// </summary>
-        public bool IsAutoRefresh { get; set; }
-
-        /// <summary>
-        /// Gets the JSON HTTP web client for resolving access token information instance.
-        /// </summary>
-        protected virtual JsonHttpClient<TokenInfo> WebClient { get; } = new JsonHttpClient<TokenInfo>();
-
-        /// <summary>
-        /// Adds or removes the event raised after token changed.
-        /// </summary>
-        public event ChangeEventHandler<TokenInfo> TokenChanged;
-
-        /// <summary>
-        /// Validates the code.
-        /// </summary>
-        /// <param name="code">The code to validate.</param>
-        /// <param name="cancellationToken">The cancellation token.</param>
-        /// <returns>A new open id; or null, if failed.</returns>
-        public async Task<TokenInfo> ValidateCodeAsync(string code, CancellationToken cancellationToken = default)
-        {
-            if (!string.IsNullOrWhiteSpace(code)) return null;
-            if (IsAppIdRequired && AppAccessingKey.IsNullOrEmpty(appInfo)) return null;
-            using (var request = CreateValidationMessage(appInfo?.Secret, code))
+            var httpClient = new JsonHttpClient<T>();
+            httpClient.Sending += (sender, ev) =>
             {
-                if (request == null) return null;
-                try
+                if (Token == null || ev.RequestMessage.Headers.Authorization != null)
                 {
-                    return await ProcessAsync(request, cancellationToken);
+                    Sending?.Invoke(sender, ev);
+                    return;
                 }
-                catch (FailedHttpException ex)
-                {
-                    if (!IsAutoRefresh || ex.Response == null || ex.Response.StatusCode != HttpStatusCode.Unauthorized) throw;
-                    var token = await RefreshAsync(cancellationToken);
-                    if (token == null || token.IsEmpty) throw;
-                    using (var request2 = CreateValidationMessage(appInfo?.Secret, code))
-                    {
-                        if (request2 == null) return null;
-                        return await ProcessAsync(request2, cancellationToken);
-                    }
-                }
-            }
+
+                ev.RequestMessage.Headers.Authorization = Token.ToAuthenticationHeaderValue(AuthenticationSchemeCase);
+                Sending?.Invoke(sender, ev);
+            };
+            if (Serializer != null) httpClient.Serializer = json => (T)Serializer(json, typeof(T));
+            if (callback != null) httpClient.Received += (sender, ev) =>
+            {
+                callback(ev);
+            };
+            return httpClient;
         }
 
         /// <summary>
-        /// Refreshes the token.
+        /// Sends a POST request and gets the result serialized by JSON.
         /// </summary>
-        /// <param name="cancellationToken">The cancellation token.</param>
-        /// <returns>A new open id; or null, if failed.</returns>
-        public async Task<TokenInfo> RefreshAsync(CancellationToken cancellationToken = default)
+        /// <param name="requestUri">The Uri the request is sent to.</param>
+        /// <param name="content">The HTTP request content sent to the server.</param>
+        /// <param name="cancellationToken">The optional cancellation token.</param>
+        /// <returns>A result serialized.</returns>
+        /// <exception cref="FailedHttpException">HTTP response contains failure status code.</exception>
+        /// <exception cref="HttpRequestException">The request failed due to an underlying issue such as network connectivity, DNS failure, server certificate validation or timeout.</exception>
+        /// <exception cref="InvalidOperationException">The task is cancelled.</exception>
+        public Task ResolveTokenAsync(Uri requestUri, AccessTokenRequest content, CancellationToken cancellationToken = default)
         {
-            var t = task;
-            if (t != null && t.Status == TaskStatus.Running)
+            var httpClient = new JsonHttpClient<TokenInfo>
             {
-                try
-                {
-                    return await Task.Run(async () =>
-                    {
-                        return await t;
-                    }, cancellationToken);
-                }
-                catch (TaskCanceledException)
-                {
-                    if (cancellationToken.IsCancellationRequested) throw;
-                }
-                catch (ObjectDisposedException)
-                {
-                }
-                catch (ArgumentException)
-                {
-                }
-                catch (InvalidOperationException)
-                {
-                }
-            }
-
-            if (IsAppIdRequired && AppAccessingKey.IsNullOrEmpty(appInfo)) return null;
-            using (var request = CreateRefreshingMessage(appInfo?.Secret))
+                SerializeEvenIfFailed = true
+            };
+            if (Serializer != null) httpClient.Serializer = json => (TokenInfo)Serializer(json, typeof(TokenInfo));
+            httpClient.Sending += (sender, ev) =>
             {
-                if (request == null) return null;
-                task = t = ProcessAsync(request, cancellationToken);
-                var result = await t;
-                LatestRefreshDate = DateTime.Now;
-                task = null;
-                return result;
-            }
-        }
+                TokenResolving?.Invoke(sender, ev);
+            };
+            httpClient.Received += (sender, ev) =>
+            {
+                if (!ev.IsSuccessStatusCode)
+                {
+                    TokenResolved?.Invoke(sender, ev);
+                    return;
+                }
 
-        /// <summary>
-        /// Gets the login URI.
-        /// </summary>
-        /// <param name="redirectUri">The redirect URI.</param>
-        /// <param name="scope">The permission scope to request.</param>
-        /// <param name="state">A state code.</param>
-        /// <returns>A URI for login.</returns>
-        public abstract Uri GetLoginUri(Uri redirectUri, string scope, string state);
-
-        /// <summary>
-        /// Creates the validation request message.
-        /// </summary>
-        /// <param name="appSecretKey">The app secret string.</param>
-        /// <param name="code">The code to validate.</param>
-        /// <returns>A URI for login.</returns>
-        protected abstract HttpRequestMessage CreateValidationMessage(SecureString appSecretKey, string code);
-
-        /// <summary>
-        /// Creates the token refresh request message.
-        /// </summary>
-        /// <param name="appSecretKey">The app secret string.</param>
-        /// <returns>A URI for login.</returns>
-        protected abstract HttpRequestMessage CreateRefreshingMessage(SecureString appSecretKey);
-
-        private async Task<TokenInfo> ProcessAsync(HttpRequestMessage request, CancellationToken cancellationToken)
-        {
-            if (request == null) return null;
-            if (IsAppIdRequired && AppAccessingKey.IsNullOrEmpty(appInfo)) return null;
-            var wc = WebClient;
-            var oldToken = Token;
-            Token = await wc.SendAsync(request, cancellationToken);
-            LatestVisitDate = DateTime.Now;
-            TokenChanged?.Invoke(this, new ChangeEventArgs<TokenInfo>(oldToken, Token, nameof(Token), true));
-            return Token;
+                Token = ev.Result;
+                TokenResolved?.Invoke(sender, ev);
+            };
+            return httpClient.SendAsync(HttpMethod.Post, requestUri, content.ToQueryData(), cancellationToken);
         }
     }
 }
