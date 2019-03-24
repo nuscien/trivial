@@ -350,6 +350,7 @@ namespace Trivial.Net
             {
                 var serializer = settings != null ? new DataContractJsonSerializer(content.GetType(), settings) : new DataContractJsonSerializer(content.GetType());
                 serializer.WriteObject(stream, content);
+                stream.Position = 0;
                 return await SendAsync(new HttpRequestMessage(method, requestUri)
                 {
                     Content = new StreamContent(stream)
@@ -375,6 +376,7 @@ namespace Trivial.Net
             {
                 var serializer = settings != null ? new DataContractJsonSerializer(content.GetType(), settings) : new DataContractJsonSerializer(content.GetType());
                 serializer.WriteObject(stream, content);
+                stream.Position = 0;
                 return await SendAsync(new HttpRequestMessage(method, requestUri)
                 {
                     Content = new StreamContent(stream)

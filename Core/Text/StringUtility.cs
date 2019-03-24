@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Linq;
+using System.Runtime.Serialization.Json;
+using System.Security;
 using System.Text;
 
 namespace Trivial.Text
@@ -381,6 +384,29 @@ namespace Trivial.Text
         public static IEnumerable<string> ReadLines(string source, bool removeEmptyLine = false)
         {
             return YieldSplit(source, new[] { "\r\n", "\n", "\r" }, removeEmptyLine ? StringSplitOptions.RemoveEmptyEntries : StringSplitOptions.None);
+        }
+
+        internal static T FromJson<T>(string s)
+        {
+            var bytes = Encoding.UTF8.GetBytes(s);
+            using (var stream = new MemoryStream(bytes))
+            {
+                var serializer = new DataContractJsonSerializer(typeof(T));
+                return (T)serializer.ReadObject(stream);
+            }
+        }
+
+        internal static string ToJson<T>(T obj)
+        {
+            var serializer = new DataContractJsonSerializer(typeof(T));
+            using (var stream = new MemoryStream())
+            {
+                serializer.WriteObject(stream, obj);
+                stream.Position = 0;
+                var bytes = new byte[stream.Length];
+                stream.Read(bytes, 0, (int)stream.Length);
+                return Encoding.UTF8.GetString(bytes);
+            }
         }
 
         private static string ToUpper(string source, CultureInfo culture)

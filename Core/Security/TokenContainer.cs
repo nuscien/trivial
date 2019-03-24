@@ -11,7 +11,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-
+using System.Web;
 using Trivial.Data;
 using Trivial.Net;
 using Trivial.Text;
@@ -109,7 +109,7 @@ namespace Trivial.Security
     /// <summary>
     /// The client credentials token container.
     /// </summary>
-    public abstract class ClientCredentialsTokenContainer : TokenContainer
+    public class ClientTokenContainer : TokenContainer
     {
         private readonly AppAccessingKey appInfo;
         private Task<TokenInfo> task;
@@ -118,7 +118,7 @@ namespace Trivial.Security
         /// Initializes a new instance of the ClientTokenContainer class.
         /// </summary>
         /// <param name="tokenCached">The token information instance cached.</param>
-        public ClientCredentialsTokenContainer(TokenInfo tokenCached) : base(tokenCached)
+        public ClientTokenContainer(TokenInfo tokenCached) : base(tokenCached)
         {
         }
 
@@ -127,7 +127,7 @@ namespace Trivial.Security
         /// </summary>
         /// <param name="appKey">The app accessing key.</param>
         /// <param name="tokenCached">The token information instance cached.</param>
-        public ClientCredentialsTokenContainer(AppAccessingKey appKey, TokenInfo tokenCached = null) : this(tokenCached)
+        public ClientTokenContainer(AppAccessingKey appKey, TokenInfo tokenCached = null) : this(tokenCached)
         {
             appInfo = appKey;
         }
@@ -138,7 +138,7 @@ namespace Trivial.Security
         /// <param name="appId">The app id.</param>
         /// <param name="secretKey">The secret key.</param>
         /// <param name="tokenCached">The token information instance cached.</param>
-        public ClientCredentialsTokenContainer(string appId, string secretKey, TokenInfo tokenCached = null) : this(new AppAccessingKey(appId, secretKey), tokenCached)
+        public ClientTokenContainer(string appId, string secretKey, TokenInfo tokenCached = null) : this(new AppAccessingKey(appId, secretKey), tokenCached)
         {
         }
 
@@ -148,7 +148,7 @@ namespace Trivial.Security
         /// <param name="appId">The app id.</param>
         /// <param name="secretKey">The secret key.</param>
         /// <param name="tokenCached">The token information instance cached.</param>
-        public ClientCredentialsTokenContainer(string appId, SecureString secretKey, TokenInfo tokenCached = null) : this(new AppAccessingKey(appId, secretKey), tokenCached)
+        public ClientTokenContainer(string appId, SecureString secretKey, TokenInfo tokenCached = null) : this(new AppAccessingKey(appId, secretKey), tokenCached)
         {
         }
 
@@ -178,14 +178,19 @@ namespace Trivial.Security
         public DateTime LatestResolveDate { get; private set; }
 
         /// <summary>
+        /// Gets or sets the token resolve URL.
+        /// </summary>
+        public Uri TokenResolveUri { get; set; }
+
+        /// <summary>
+        /// Gets the scope.
+        /// </summary>
+        public IList<string> Scope { get; } = new List<string>();
+
+        /// <summary>
         /// Gets the JSON HTTP web client for resolving access token information instance.
         /// </summary>
         protected virtual JsonHttpClient<TokenInfo> WebClient { get; } = new JsonHttpClient<TokenInfo>();
-
-        /// <summary>
-        /// Adds or removes the event raised after token changed.
-        /// </summary>
-        public event ChangeEventHandler<TokenInfo> TokenChanged;
 
         /// <summary>
         /// Updates the access token.
@@ -236,11 +241,36 @@ namespace Trivial.Security
         }
 
         /// <summary>
+        /// Gets the client token request.
+        /// </summary>
+        /// <returns>The client token request instance.</returns>
+        public virtual ClientTokenRequest ToClientTokenRequest()
+        {
+            var req = new ClientTokenRequest(appInfo);
+            if (Scope.Count > 0)
+            {
+                foreach (var item in Scope)
+                {
+                    req.Scope.Add(item);
+                }
+            }
+
+            return req;
+        }
+
+        /// <summary>
         /// Gets the token resolve request message.
         /// </summary>
         /// <param name="appSecretKey">The app secret string.</param>
         /// <returns>A URI for login.</returns>
-        protected abstract HttpRequestMessage CreateResolveMessage(SecureString appSecretKey);
+        protected virtual HttpRequestMessage CreateResolveMessage(SecureString appSecretKey)
+        {
+            var p = ToClientTokenRequest().ToQueryData().ToString();
+            return new HttpRequestMessage(HttpMethod.Post, TokenResolveUri)
+            {
+                Content = new StringContent(p, Encoding.UTF8, Web.WebUtility.FormUrlMIME)
+            };
+        }
 
         /// <summary>
         /// Updates the access token.
@@ -265,7 +295,7 @@ namespace Trivial.Security
     /// <summary>
     /// The code token container.
     /// </summary>
-    public abstract class AuthorizationCodeTokenContainer : TokenContainer
+    public class CodeTokenContainer : TokenContainer
     {
         private readonly AppAccessingKey appInfo;
         private Task<TokenInfo> task;
@@ -274,7 +304,7 @@ namespace Trivial.Security
         /// Initializes a new instance of the AuthorizationCodeTokenContainer class.
         /// </summary>
         /// <param name="tokenCached">The token information instance cached.</param>
-        public AuthorizationCodeTokenContainer(TokenInfo tokenCached) : base(tokenCached)
+        public CodeTokenContainer(TokenInfo tokenCached) : base(tokenCached)
         {
         }
 
@@ -283,7 +313,7 @@ namespace Trivial.Security
         /// </summary>
         /// <param name="appKey">The app accessing key.</param>
         /// <param name="tokenCached">The token information instance cached.</param>
-        public AuthorizationCodeTokenContainer(AppAccessingKey appKey, TokenInfo tokenCached = null) : this(tokenCached)
+        public CodeTokenContainer(AppAccessingKey appKey, TokenInfo tokenCached = null) : this(tokenCached)
         {
             appInfo = appKey;
         }
@@ -294,7 +324,7 @@ namespace Trivial.Security
         /// <param name="appId">The app id.</param>
         /// <param name="secretKey">The secret key.</param>
         /// <param name="tokenCached">The token information instance cached.</param>
-        public AuthorizationCodeTokenContainer(string appId, string secretKey, TokenInfo tokenCached = null) : this(new AppAccessingKey(appId, secretKey), tokenCached)
+        public CodeTokenContainer(string appId, string secretKey, TokenInfo tokenCached = null) : this(new AppAccessingKey(appId, secretKey), tokenCached)
         {
         }
 
@@ -304,7 +334,7 @@ namespace Trivial.Security
         /// <param name="appId">The app id.</param>
         /// <param name="secretKey">The secret key.</param>
         /// <param name="tokenCached">The token information instance cached.</param>
-        public AuthorizationCodeTokenContainer(string appId, SecureString secretKey, TokenInfo tokenCached = null) : this(new AppAccessingKey(appId, secretKey), tokenCached)
+        public CodeTokenContainer(string appId, SecureString secretKey, TokenInfo tokenCached = null) : this(new AppAccessingKey(appId, secretKey), tokenCached)
         {
         }
 
@@ -332,6 +362,26 @@ namespace Trivial.Security
         /// Gets or sets a value indicating whether need refresh token before valdate the code when expired.
         /// </summary>
         public bool IsAutoRefresh { get; set; }
+
+        /// <summary>
+        /// Gets or sets the token resolve URL.
+        /// </summary>
+        public Uri TokenResolveUri { get; set; }
+
+        /// <summary>
+        /// Gets or sets the login base URI.
+        /// </summary>
+        public Uri LoginBaseUri { get; set; }
+
+        /// <summary>
+        /// Gets or sets the redirect URI.
+        /// </summary>
+        public Uri RedirectUri { get; set; }
+
+        /// <summary>
+        /// Gets the scope.
+        /// </summary>
+        public IList<string> Scope { get; } = new List<string>();
 
         /// <summary>
         /// Gets the JSON HTTP web client for resolving access token information instance.
@@ -414,13 +464,60 @@ namespace Trivial.Security
         }
 
         /// <summary>
+        /// Gets the code token request.
+        /// </summary>
+        /// <param name="code">The authorization code.</param>
+        /// <returns>The code token request instance.</returns>
+        public virtual CodeTokenRequest ToCodeTokenRequest(string code)
+        {
+            var req = new CodeTokenRequest(appInfo)
+            {
+                Code = code,
+                RedirectUri = RedirectUri
+            };
+            if (Scope.Count > 0)
+            {
+                foreach (var item in Scope)
+                {
+                    req.Scope.Add(item);
+                }
+            }
+
+            return req;
+        }
+
+        /// <summary>
+        /// Gets the refresh token request.
+        /// </summary>
+        /// <returns>The refresh token request instance.</returns>
+        public virtual RefreshTokenRequest ToRefreshTokenRequest()
+        {
+            if (Token == null || string.IsNullOrWhiteSpace(Token.RefreshToken)) return null;
+            var req = new RefreshTokenRequest(appInfo)
+            {
+                RefreshToken = Token.RefreshToken
+            };
+            if (Scope.Count > 0)
+            {
+                foreach (var item in Scope)
+                {
+                    req.Scope.Add(item);
+                }
+            }
+
+            return req;
+        }
+
+        /// <summary>
         /// Gets the login URI.
         /// </summary>
-        /// <param name="redirectUri">The redirect URI.</param>
-        /// <param name="scope">The permission scope to request.</param>
         /// <param name="state">A state code.</param>
+        /// <param name="responseType">The response type.</param>
         /// <returns>A URI for login.</returns>
-        public abstract Uri GetLoginUri(Uri redirectUri, string scope, string state);
+        public virtual Uri GetLoginUri(string state, string responseType = null)
+        {
+            return ToCodeTokenRequest(null).GetLoginUri(LoginBaseUri, responseType ?? "code", state);
+        }
 
         /// <summary>
         /// Creates the validation request message.
@@ -428,14 +525,30 @@ namespace Trivial.Security
         /// <param name="appSecretKey">The app secret string.</param>
         /// <param name="code">The code to validate.</param>
         /// <returns>A URI for login.</returns>
-        protected abstract HttpRequestMessage CreateValidationMessage(SecureString appSecretKey, string code);
+        protected virtual HttpRequestMessage CreateValidationMessage(SecureString appSecretKey, string code)
+        {
+            var p = ToCodeTokenRequest(code).ToQueryData().ToString();
+            return new HttpRequestMessage(HttpMethod.Post, TokenResolveUri)
+            {
+                Content = new StringContent(p, Encoding.UTF8, Web.WebUtility.FormUrlMIME)
+            };
+        }
+
 
         /// <summary>
         /// Creates the token refresh request message.
         /// </summary>
         /// <param name="appSecretKey">The app secret string.</param>
         /// <returns>A URI for login.</returns>
-        protected abstract HttpRequestMessage CreateRefreshingMessage(SecureString appSecretKey);
+        protected virtual HttpRequestMessage CreateRefreshingMessage(SecureString appSecretKey)
+        {
+            var p = ToRefreshTokenRequest()?.ToQueryData()?.ToString();
+            if (string.IsNullOrWhiteSpace(p)) return null;
+            return new HttpRequestMessage(HttpMethod.Post, TokenResolveUri)
+            {
+                Content = new StringContent(p, Encoding.UTF8, Web.WebUtility.FormUrlMIME)
+            };
+        }
 
         private async Task<TokenInfo> ProcessAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
@@ -523,7 +636,7 @@ namespace Trivial.Security
         /// <exception cref="FailedHttpException">HTTP response contains failure status code.</exception>
         /// <exception cref="HttpRequestException">The request failed due to an underlying issue such as network connectivity, DNS failure, server certificate validation or timeout.</exception>
         /// <exception cref="InvalidOperationException">The task is cancelled.</exception>
-        public Task ResolveTokenAsync(Uri requestUri, AccessTokenRequest content, CancellationToken cancellationToken = default)
+        public Task<TokenInfo> ResolveTokenAsync(Uri requestUri, TokenRequest content, CancellationToken cancellationToken = default)
         {
             var httpClient = new JsonHttpClient<TokenInfo>
             {
