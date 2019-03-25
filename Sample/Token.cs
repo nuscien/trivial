@@ -19,9 +19,11 @@ namespace Trivial.Sample
 
         public override async Task ProcessAsync()
         {
-            var codeTokenReq = new CodeTokenRequest("abcd", "efg")
+            var codeTokenReq = new CodeTokenRequest(new CodeTokenRequestBody
             {
-                Code = "hijklmn",
+                Code = "hijklmn"
+            }, "abcd", "efg")
+            {
                 ScopeString = "test plain"
             };
             var tokenUrl = codeTokenReq.ToJson();

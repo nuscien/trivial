@@ -244,18 +244,9 @@ namespace Trivial.Security
         /// Gets the client token request.
         /// </summary>
         /// <returns>The client token request instance.</returns>
-        public virtual ClientTokenRequest ToClientTokenRequest()
+        public virtual TokenRequest<ClientTokenRequestBody> ToClientTokenRequest()
         {
-            var req = new ClientTokenRequest(appInfo);
-            if (Scope.Count > 0)
-            {
-                foreach (var item in Scope)
-                {
-                    req.Scope.Add(item);
-                }
-            }
-
-            return req;
+            return new TokenRequest<ClientTokenRequestBody>(new ClientTokenRequestBody(), appInfo, Scope);
         }
 
         /// <summary>
@@ -470,42 +461,24 @@ namespace Trivial.Security
         /// <returns>The code token request instance.</returns>
         public virtual CodeTokenRequest ToCodeTokenRequest(string code)
         {
-            var req = new CodeTokenRequest(appInfo)
+            return new CodeTokenRequest(new CodeTokenRequestBody
             {
                 Code = code,
                 RedirectUri = RedirectUri
-            };
-            if (Scope.Count > 0)
-            {
-                foreach (var item in Scope)
-                {
-                    req.Scope.Add(item);
-                }
-            }
-
-            return req;
+            }, appInfo, Scope);
         }
 
         /// <summary>
         /// Gets the refresh token request.
         /// </summary>
         /// <returns>The refresh token request instance.</returns>
-        public virtual RefreshTokenRequest ToRefreshTokenRequest()
+        public virtual TokenRequest<RefreshTokenRequestBody> ToRefreshTokenRequest()
         {
             if (Token == null || string.IsNullOrWhiteSpace(Token.RefreshToken)) return null;
-            var req = new RefreshTokenRequest(appInfo)
+            return new TokenRequest<RefreshTokenRequestBody>(new RefreshTokenRequestBody
             {
                 RefreshToken = Token.RefreshToken
-            };
-            if (Scope.Count > 0)
-            {
-                foreach (var item in Scope)
-                {
-                    req.Scope.Add(item);
-                }
-            }
-
-            return req;
+            }, appInfo, Scope);
         }
 
         /// <summary>
@@ -635,7 +608,7 @@ namespace Trivial.Security
         /// <exception cref="FailedHttpException">HTTP response contains failure status code.</exception>
         /// <exception cref="HttpRequestException">The request failed due to an underlying issue such as network connectivity, DNS failure, server certificate validation or timeout.</exception>
         /// <exception cref="InvalidOperationException">The task is cancelled.</exception>
-        public Task<TokenInfo> ResolveTokenAsync(Uri requestUri, TokenRequest content, CancellationToken cancellationToken = default)
+        public Task<TokenInfo> ResolveTokenAsync<T>(Uri requestUri, TokenRequest<T> content, CancellationToken cancellationToken = default) where T : TokenRequestBody
         {
             var httpClient = new JsonHttpClient<TokenInfo>
             {

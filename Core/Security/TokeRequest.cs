@@ -17,61 +17,40 @@ namespace Trivial.Security
     /// The access token resolver request.
     /// </summary>
     [DataContract]
-    public abstract class TokenRequest
+    public class TokenRequest<T> where T : TokenRequestBody
     {
         /// <summary>
-        /// The  property name.
-        /// </summary>
-        public const string GrantTypeProperty = "grant_type";
-
-        /// <summary>
-        /// The  property name.
-        /// </summary>
-        public const string ClientIdProperty = "client_id";
-
-        /// <summary>
-        /// The  property name.
-        /// </summary>
-        public const string ClientSecretProperty = "client_secret";
-
-        /// <summary>
-        /// The  property name.
-        /// </summary>
-        public const string ScopeProperty = "scope";
-
-        /// <summary>
-        /// The  property name.
-        /// </summary>
-        public const string StateProperty = "state";
-
-        /// <summary>
         /// Initializes a new instance of the TokenRequest class.
         /// </summary>
-        /// <param name="grantType">The grant type.</param>
+        /// <param name="body">The request body.</param>
         /// <param name="appId">The client id and secret key.</param>
-        protected TokenRequest(string grantType, AppAccessingKey appId)
+        /// <param name="scope">The scope.</param>
+        public TokenRequest(T body, AppAccessingKey appId, IEnumerable<string> scope = null)
         {
-            GrantType = grantType;
+            Body = body;
             ClientCredentials = appId;
+            if (scope != null) Scope = scope.ToList();
         }
 
         /// <summary>
         /// Initializes a new instance of the TokenRequest class.
         /// </summary>
-        /// <param name="grantType">The grant type.</param>
+        /// <param name="body">The request body.</param>
         /// <param name="id">The client id.</param>
         /// <param name="secret">The client secret key.</param>
-        protected TokenRequest(string grantType, string id, string secret = null) : this(grantType, new AppAccessingKey(id, secret))
+        /// <param name="scope">The scope.</param>
+        public TokenRequest(T body, string id, string secret = null, IEnumerable<string> scope = null) : this(body, new AppAccessingKey(id, secret), scope)
         {
         }
 
         /// <summary>
         /// Initializes a new instance of the TokenRequest class.
         /// </summary>
-        /// <param name="grantType">The grant type.</param>
+        /// <param name="body">The request body.</param>
         /// <param name="id">The client id.</param>
         /// <param name="secret">The client secret key.</param>
-        protected TokenRequest(string grantType, string id, SecureString secret) : this(grantType, new AppAccessingKey(id, secret))
+        /// <param name="scope">The scope.</param>
+        public TokenRequest(T body, string id, SecureString secret, IEnumerable<string> scope = null) : this(body, new AppAccessingKey(id, secret), scope)
         {
         }
 
@@ -81,15 +60,20 @@ namespace Trivial.Security
         public AppAccessingKey ClientCredentials { get; private set; }
 
         /// <summary>
+        /// Gets the body.
+        /// </summary>
+        public T Body { get; }
+
+        /// <summary>
         /// Gets the grant type.
         /// </summary>
-        [DataMember(Name = GrantTypeProperty)]
-        public string GrantType { get; }
+        [DataMember(Name = TokenRequestBody.GrantTypeProperty)]
+        public string GrantType => Body?.GrantType;
 
         /// <summary>
         /// Gets the client identifier.
         /// </summary>
-        [DataMember(Name = ClientIdProperty)]
+        [DataMember(Name = TokenRequestBody.ClientIdProperty)]
         public string ClientId
         {
             get
@@ -119,7 +103,7 @@ namespace Trivial.Security
         /// <summary>
         /// Gets the scope string.
         /// </summary>
-        [DataMember(Name = ScopeProperty)]
+        [DataMember(Name = TokenRequestBody.ScopeProperty)]
         public string ScopeString
         {
             get
@@ -145,6 +129,74 @@ namespace Trivial.Security
         /// <returns>A query data.</returns>
         public virtual QueryData ToQueryData()
         {
+            var data = Body?.ToQueryData() ?? new QueryData();
+            data.Add(TokenRequestBody.ClientIdProperty, ClientId);
+            if (ClientCredentials != null && ClientCredentials.Secret != null && ClientCredentials.Secret.Length > 0) data.Add(TokenRequestBody.ClientSecretProperty, ClientCredentials.Secret.ToUnsecureString());
+            if (!string.IsNullOrWhiteSpace(ScopeString)) data.Add(TokenRequestBody.ScopeProperty, ScopeString);
+            return data;
+        }
+
+        /// <summary>
+        /// Gets the JSON format string.
+        /// </summary>
+        /// <returns>A string in JSON format.</returns>
+        public virtual string ToJson()
+        {
+            var data = Body?.ToJsonProperites() ?? new List<string>();
+            if (!string.IsNullOrWhiteSpace(ClientId)) data.Add($"\"{TokenRequestBody.ClientIdProperty}\": \"{ClientId}\"");
+            if (ClientCredentials != null && ClientCredentials.Secret != null && ClientCredentials.Secret.Length > 0) data.Add($"\"{TokenRequestBody.ClientSecretProperty}\": \"{ClientCredentials.Secret.ToUnsecureString()}\"");
+            if (!string.IsNullOrWhiteSpace(ScopeString)) data.Add($"\"{TokenRequestBody.ScopeProperty}\": \"{ScopeString}\"");
+            return "{ " + string.Join(", ", data) + " }";
+        }
+    }
+
+    /// <summary>
+    /// The access token resolver request.
+    /// </summary>
+    [DataContract]
+    public abstract class TokenRequestBody
+    {
+        /// <summary>
+        /// The grant type property name.
+        /// </summary>
+        public const string GrantTypeProperty = "grant_type";
+
+        /// <summary>
+        /// The client identifier property name.
+        /// </summary>
+        public const string ClientIdProperty = "client_id";
+
+        /// <summary>
+        /// The client secret property name.
+        /// </summary>
+        public const string ClientSecretProperty = "client_secret";
+
+        /// <summary>
+        /// The scope property name.
+        /// </summary>
+        public const string ScopeProperty = "scope";
+
+        /// <summary>
+        /// Initializes a new instance of the TokenRequestBody class.
+        /// </summary>
+        /// <param name="grantType">The grant type.</param>
+        protected TokenRequestBody(string grantType)
+        {
+            GrantType = grantType;
+        }
+
+        /// <summary>
+        /// Gets the grant type.
+        /// </summary>
+        [DataMember(Name = GrantTypeProperty)]
+        public string GrantType { get; }
+
+        /// <summary>
+        /// Gets the query data.
+        /// </summary>
+        /// <returns>A query data.</returns>
+        public virtual QueryData ToQueryData()
+        {
             var data = new QueryData();
             var props = GetType().GetProperties();
             foreach (var item in props)
@@ -160,11 +212,9 @@ namespace Trivial.Security
                 else if (propType == typeof(DateTime)) data.Add(attr.Name, WebUtility.ParseDate((DateTime)propValue).ToString());
                 else if (propType == typeof(DateTimeOffset)) data.Add(attr.Name, WebUtility.ParseDate((DateTimeOffset)propValue).ToString());
                 else if (propType == typeof(SecureString)) data.Add(attr.Name, ((SecureString)propValue).ToUnsecureString());
-                else data.Add(attr.Name, propValue.ToString());
+                else if (!string.IsNullOrWhiteSpace(propValue.ToString())) data.Add(attr.Name, propValue.ToString());
             }
 
-            var secret = ClientCredentials?.Secret;
-            if (secret != null && secret.Length > 0) data.Add(ClientSecretProperty, secret.ToUnsecureString());
             return data;
         }
 
@@ -172,7 +222,7 @@ namespace Trivial.Security
         /// Gets the JSON format string.
         /// </summary>
         /// <returns>A string in JSON format.</returns>
-        public virtual string ToJson()
+        internal protected virtual IList<string> ToJsonProperites()
         {
             var data = new List<string>();
             var props = GetType().GetProperties();
@@ -190,12 +240,10 @@ namespace Trivial.Security
                 else if (propType == typeof(DateTimeOffset)) data.Add($"\"{attr.Name}\": {WebUtility.ParseDate((DateTimeOffset)propValue).ToString()}");
                 else if (propType == typeof(int) || propType == typeof(long) || propType == typeof(uint) || propType == typeof(ulong) || propType == typeof(float) || propType == typeof(double) || propType == typeof(short) || propType == typeof(bool)) data.Add($"\"{attr.Name}\": {propValue.ToString()}");
                 else if (propType == typeof(SecureString)) data.Add($"\"{attr.Name}\": \"{((SecureString)propValue).ToUnsecureString()}\"");
-                else data.Add($"\"{attr.Name}\": \"{propValue.ToString()}\"");
+                else if (!string.IsNullOrWhiteSpace(propValue.ToString())) data.Add($"\"{attr.Name}\": \"{propValue.ToString()}\"");
             }
 
-            var secret = ClientCredentials?.Secret;
-            if (secret != null && secret.Length > 0) data.Add($"\"{ClientSecretProperty}\": \"{secret.ToUnsecureString()}\"");
-            return "{ " + string.Join(", ", data) + " }";
+            return data;
         }
     }
 
@@ -203,7 +251,7 @@ namespace Trivial.Security
     /// The access token resolver request with client credentials grant type.
     /// </summary>
     [DataContract]
-    public class ClientTokenRequest : TokenRequest
+    public class ClientTokenRequestBody : TokenRequestBody
     {
         /// <summary>
         /// The grant type value of client credentials.
@@ -213,26 +261,7 @@ namespace Trivial.Security
         /// <summary>
         /// Initializes a new instance of the ClientCredentialsTokenRequest class.
         /// </summary>
-        /// <param name="appId">The client id and secret key.</param>
-        public ClientTokenRequest(AppAccessingKey appId) : base(ClientCredentialsGrantType, appId)
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the ClientCredentialsTokenRequest class.
-        /// </summary>
-        /// <param name="id">The client id.</param>
-        /// <param name="secret">The client secret key.</param>
-        public ClientTokenRequest(string id, string secret = null) : base(ClientCredentialsGrantType, id, secret)
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the ClientCredentialsTokenRequest class.
-        /// </summary>
-        /// <param name="id">The client id.</param>
-        /// <param name="secret">The client secret key.</param>
-        public ClientTokenRequest(string id, SecureString secret) : base(ClientCredentialsGrantType, id, secret)
+        public ClientTokenRequestBody() : base(ClientCredentialsGrantType)
         {
         }
 
@@ -245,14 +274,14 @@ namespace Trivial.Security
         /// <exception cref="ArgumentException">s was not in correct format to parse.</exception>
         /// <exception cref="NotSupportedException">s was not in correct format to parse.</exception>
         /// <exception cref="InvalidOperationException">The grant type was not the expected one.</exception>
-        public static ClientTokenRequest Parse(string s)
+        public static TokenRequest<ClientTokenRequestBody> Parse(string s)
         {
             if (string.IsNullOrWhiteSpace(s)) throw new ArgumentNullException(nameof(s), "s should not be null, empty or consists only of white-space characters.");
             var m = TokenRequestModel.Parse(s);
             if (m == null) throw new NotSupportedException("s cannot be parsed.");
             var grantTypeExpect = ClientCredentialsGrantType;
             if (m.GrantType != grantTypeExpect) throw new InvalidOperationException($"The grant type is not the expected one. Current is {m.GrantType}; but the expect is {grantTypeExpect}.");
-            return new ClientTokenRequest(new AppAccessingKey(m.ClientId, m.ClientSecret))
+            return new TokenRequest<ClientTokenRequestBody>(new ClientTokenRequestBody(), new AppAccessingKey(m.ClientId, m.ClientSecret))
             {
                 ScopeString = m.Scope
             };
@@ -263,7 +292,7 @@ namespace Trivial.Security
     /// The access token request with authorization code grant type.
     /// </summary>
     [DataContract]
-    public class CodeTokenRequest : TokenRequest
+    public class CodeTokenRequestBody : TokenRequestBody
     {
         /// <summary>
         /// The grant type value of authorization code.
@@ -286,28 +315,14 @@ namespace Trivial.Security
         public const string CodeVerifierProperty = "code_verifier";
 
         /// <summary>
-        /// Initializes a new instance of the CodeTokenRequest class.
+        /// The state property name.
         /// </summary>
-        /// <param name="appId">The client id and secret key.</param>
-        public CodeTokenRequest(AppAccessingKey appId) : base(AuthorizationCodeGrantType, appId)
-        {
-        }
+        public const string StateProperty = "state";
 
         /// <summary>
         /// Initializes a new instance of the CodeTokenRequest class.
         /// </summary>
-        /// <param name="id">The client id.</param>
-        /// <param name="secret">The client secret key.</param>
-        public CodeTokenRequest(string id, string secret = null) : base(AuthorizationCodeGrantType, id, secret)
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the CodeTokenRequest class.
-        /// </summary>
-        /// <param name="id">The client id.</param>
-        /// <param name="secret">The client secret key.</param>
-        public CodeTokenRequest(string id, SecureString secret) : base(AuthorizationCodeGrantType, id, secret)
+        public CodeTokenRequestBody() : base(AuthorizationCodeGrantType)
         {
         }
 
@@ -330,6 +345,72 @@ namespace Trivial.Security
         public string CodeVerifier { get; set; }
 
         /// <summary>
+        /// Parses a string to code access token request.
+        /// </summary>
+        /// <param name="s">The string to parse.</param>
+        /// <returns>The object parsed returned.</returns>
+        /// <exception cref="ArgumentNullException">s was null, empty or consists only of white-space characters.</exception>
+        /// <exception cref="ArgumentException">s was not in correct format to parse.</exception>
+        /// <exception cref="NotSupportedException">s was not in correct format to parse.</exception>
+        /// <exception cref="InvalidOperationException">The grant type was not the expected one.</exception>
+        public static CodeTokenRequest Parse(string s)
+        {
+            if (string.IsNullOrWhiteSpace(s)) throw new ArgumentNullException(nameof(s), "s should not be null, empty or consists only of white-space characters.");
+            var m = TokenRequestModel.Parse(s);
+            if (m == null) throw new NotSupportedException("s cannot be parsed.");
+            var grantTypeExpect = AuthorizationCodeGrantType;
+            if (m.GrantType != grantTypeExpect) throw new InvalidOperationException($"The grant type is not the expected one. Current is {m.GrantType}; but the expect is {grantTypeExpect}.");
+            return new CodeTokenRequest(new CodeTokenRequestBody
+            {
+                Code = m.Code,
+                CodeVerifier = m.CodeVerifier,
+                RedirectUri = !string.IsNullOrWhiteSpace(m.RedirectUri) ? new Uri(m.RedirectUri) : null
+            }, new AppAccessingKey(m.ClientId, m.ClientSecret))
+            {
+                ScopeString = m.Scope
+            };
+        }
+    }
+
+    /// <summary>
+    /// The access token resolver request.
+    /// </summary>
+    [DataContract]
+    public class CodeTokenRequest : TokenRequest<CodeTokenRequestBody>
+    {
+        /// <summary>
+        /// Initializes a new instance of the CodeTokenRequest class.
+        /// </summary>
+        /// <param name="body">The request body.</param>
+        /// <param name="appId">The client id and secret key.</param>
+        /// <param name="scope">The scope.</param>
+        public CodeTokenRequest(CodeTokenRequestBody body, AppAccessingKey appId, IEnumerable<string> scope = null) : base(body, appId, scope)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the CodeTokenRequest class.
+        /// </summary>
+        /// <param name="body">The request body.</param>
+        /// <param name="id">The client id.</param>
+        /// <param name="secret">The client secret key.</param>
+        /// <param name="scope">The scope.</param>
+        public CodeTokenRequest(CodeTokenRequestBody body, string id, string secret = null, IEnumerable<string> scope = null) : base(body, id, secret, scope)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the CodeTokenRequest class.
+        /// </summary>
+        /// <param name="body">The request body.</param>
+        /// <param name="id">The client id.</param>
+        /// <param name="secret">The client secret key.</param>
+        /// <param name="scope">The scope.</param>
+        public CodeTokenRequest(CodeTokenRequestBody body, string id, SecureString secret, IEnumerable<string> scope = null) : base(body, id, secret, scope)
+        {
+        }
+
+        /// <summary>
         /// Gets the login URI.
         /// </summary>
         /// <param name="uri">The base URI.</param>
@@ -342,7 +423,7 @@ namespace Trivial.Security
             {
                 { "response_type", responseType },
                 { "client_id", ClientId },
-                { "redirect_uri", RedirectUri.OriginalString },
+                { "redirect_uri", Body?.RedirectUri?.OriginalString },
                 { "scope", ScopeString },
                 { "state", state }
             };
@@ -360,18 +441,7 @@ namespace Trivial.Security
         /// <exception cref="InvalidOperationException">The grant type was not the expected one.</exception>
         public static CodeTokenRequest Parse(string s)
         {
-            if (string.IsNullOrWhiteSpace(s)) throw new ArgumentNullException(nameof(s), "s should not be null, empty or consists only of white-space characters.");
-            var m = TokenRequestModel.Parse(s);
-            if (m == null) throw new NotSupportedException("s cannot be parsed.");
-            var grantTypeExpect = AuthorizationCodeGrantType;
-            if (m.GrantType != grantTypeExpect) throw new InvalidOperationException($"The grant type is not the expected one. Current is {m.GrantType}; but the expect is {grantTypeExpect}.");
-            return new CodeTokenRequest(new AppAccessingKey(m.ClientId, m.ClientSecret))
-            {
-                ScopeString = m.Scope,
-                Code = m.Code,
-                CodeVerifier = m.CodeVerifier,
-                RedirectUri = !string.IsNullOrWhiteSpace(m.RedirectUri) ? new Uri(m.RedirectUri) : null
-            };
+            return CodeTokenRequestBody.Parse(s);
         }
     }
 
@@ -379,7 +449,7 @@ namespace Trivial.Security
     /// The access token request with refresh token grant type.
     /// </summary>
     [DataContract]
-    public class RefreshTokenRequest : TokenRequest
+    public class RefreshTokenRequestBody : TokenRequestBody
     {
         /// <summary>
         /// The grant type value of refresh token.
@@ -394,26 +464,7 @@ namespace Trivial.Security
         /// <summary>
         /// Initializes a new instance of the TokenRequest class.
         /// </summary>
-        /// <param name="appId">The client id and secret key.</param>
-        public RefreshTokenRequest(AppAccessingKey appId) : base(RefreshTokenGrantType, appId)
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the TokenRequest class.
-        /// </summary>
-        /// <param name="id">The client id.</param>
-        /// <param name="secret">The client secret key.</param>
-        public RefreshTokenRequest(string id, string secret = null) : base(RefreshTokenGrantType, id, secret)
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the TokenRequest class.
-        /// </summary>
-        /// <param name="id">The client id.</param>
-        /// <param name="secret">The client secret key.</param>
-        public RefreshTokenRequest(string id, SecureString secret) : base(RefreshTokenGrantType, id, secret)
+        public RefreshTokenRequestBody() : base(RefreshTokenGrantType)
         {
         }
 
@@ -432,17 +483,19 @@ namespace Trivial.Security
         /// <exception cref="ArgumentException">s was not in correct format to parse.</exception>
         /// <exception cref="NotSupportedException">s was not in correct format to parse.</exception>
         /// <exception cref="InvalidOperationException">The grant type was not the expected one.</exception>
-        public static RefreshTokenRequest Parse(string s)
+        public static TokenRequest<RefreshTokenRequestBody> Parse(string s)
         {
             if (string.IsNullOrWhiteSpace(s)) throw new ArgumentNullException(nameof(s), "s should not be null, empty or consists only of white-space characters.");
             var m = TokenRequestModel.Parse(s);
             if (m == null) throw new NotSupportedException("s cannot be parsed.");
             var grantTypeExpect = RefreshTokenGrantType;
             if (m.GrantType != grantTypeExpect) throw new InvalidOperationException($"The grant type is not the expected one. Current is {m.GrantType}; but the expect is {grantTypeExpect}.");
-            return new RefreshTokenRequest(new AppAccessingKey(m.ClientId, m.ClientSecret))
+            return new TokenRequest<RefreshTokenRequestBody>(new RefreshTokenRequestBody
             {
-                ScopeString = m.Scope,
                 RefreshToken = m.RefreshToken
+            }, new AppAccessingKey(m.ClientId, m.ClientSecret))
+            {
+                ScopeString = m.Scope
             };
         }
     }
@@ -451,7 +504,7 @@ namespace Trivial.Security
     /// The access token request with password grant type.
     /// </summary>
     [DataContract]
-    public class PasswordTokenRequest : TokenRequest
+    public class PasswordTokenRequestBody : TokenRequestBody
     {
         /// <summary>
         /// The grant type value of password.
@@ -471,26 +524,7 @@ namespace Trivial.Security
         /// <summary>
         /// Initializes a new instance of the TokenRequest class.
         /// </summary>
-        /// <param name="appId">The client id and secret key.</param>
-        public PasswordTokenRequest(AppAccessingKey appId) : base(PasswordGrantType, appId)
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the TokenRequest class.
-        /// </summary>
-        /// <param name="id">The client id.</param>
-        /// <param name="secret">The client secret key.</param>
-        public PasswordTokenRequest(string id, string secret = null) : base(PasswordGrantType, id, secret)
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the TokenRequest class.
-        /// </summary>
-        /// <param name="id">The client id.</param>
-        /// <param name="secret">The client secret key.</param>
-        public PasswordTokenRequest(string id, SecureString secret) : base(PasswordGrantType, id, secret)
+        public PasswordTokenRequestBody() : base(PasswordGrantType)
         {
         }
 
@@ -515,18 +549,20 @@ namespace Trivial.Security
         /// <exception cref="ArgumentException">s was not in correct format to parse.</exception>
         /// <exception cref="NotSupportedException">s was not in correct format to parse.</exception>
         /// <exception cref="InvalidOperationException">The grant type was not the expected one.</exception>
-        public static PasswordTokenRequest Parse(string s)
+        public static TokenRequest<PasswordTokenRequestBody> Parse(string s)
         {
             if (string.IsNullOrWhiteSpace(s)) throw new ArgumentNullException(nameof(s), "s should not be null, empty or consists only of white-space characters.");
             var m = TokenRequestModel.Parse(s);
             if (m == null) throw new NotSupportedException("s cannot be parsed.");
             var grantTypeExpect = PasswordGrantType;
             if (m.GrantType != grantTypeExpect) throw new InvalidOperationException($"The grant type is not the expected one. Current is {m.GrantType}; but the expect is {grantTypeExpect}.");
-            return new PasswordTokenRequest(new AppAccessingKey(m.ClientId, m.ClientSecret))
+            return new TokenRequest<PasswordTokenRequestBody>(new PasswordTokenRequestBody
             {
-                ScopeString = m.Scope,
                 UserName = m.UserName,
                 Password = !string.IsNullOrEmpty(m.Password) ? m.Password.ToSecure() : null
+            }, new AppAccessingKey(m.ClientId, m.ClientSecret))
+            {
+                ScopeString = m.Scope
             };
         }
     }
@@ -534,34 +570,34 @@ namespace Trivial.Security
     [DataContract]
     internal class TokenRequestModel
     {
-        [DataMember(Name = TokenRequest.GrantTypeProperty)]
+        [DataMember(Name = TokenRequestBody.GrantTypeProperty)]
         public string GrantType { get; set; }
 
-        [DataMember(Name = TokenRequest.ClientIdProperty)]
+        [DataMember(Name = TokenRequestBody.ClientIdProperty)]
         public string ClientId { get; set; }
 
-        [DataMember(Name = TokenRequest.ClientSecretProperty)]
+        [DataMember(Name = TokenRequestBody.ClientSecretProperty)]
         public string ClientSecret { get; set; }
 
-        [DataMember(Name = TokenRequest.ScopeProperty)]
+        [DataMember(Name = TokenRequestBody.ScopeProperty)]
         public string Scope { get; set; }
 
-        [DataMember(Name = CodeTokenRequest.RedirectUriProperty)]
+        [DataMember(Name = CodeTokenRequestBody.RedirectUriProperty)]
         public string RedirectUri { get; set; }
 
-        [DataMember(Name = CodeTokenRequest.CodeProperty)]
+        [DataMember(Name = CodeTokenRequestBody.CodeProperty)]
         public string Code { get; set; }
 
-        [DataMember(Name = CodeTokenRequest.CodeVerifierProperty)]
+        [DataMember(Name = CodeTokenRequestBody.CodeVerifierProperty)]
         public string CodeVerifier { get; set; }
 
-        [DataMember(Name = RefreshTokenRequest.RefreshTokenProperty)]
+        [DataMember(Name = RefreshTokenRequestBody.RefreshTokenProperty)]
         public string RefreshToken { get; set; }
 
-        [DataMember(Name = PasswordTokenRequest.UserNameProperty)]
+        [DataMember(Name = PasswordTokenRequestBody.UserNameProperty)]
         public string UserName { get; set; }
 
-        [DataMember(Name = PasswordTokenRequest.PasswordProperty)]
+        [DataMember(Name = PasswordTokenRequestBody.PasswordProperty)]
         public string Password { get; set; }
 
         public static TokenRequestModel Parse(string s)
@@ -572,16 +608,16 @@ namespace Trivial.Security
             var q = QueryData.Parse(s);
             return new TokenRequestModel
             {
-                GrantType = q[TokenRequest.GrantTypeProperty],
-                ClientId = q[TokenRequest.ClientIdProperty],
-                ClientSecret = q[TokenRequest.ClientSecretProperty],
-                Scope = q[TokenRequest.ScopeProperty],
-                Code = q[CodeTokenRequest.CodeProperty],
-                CodeVerifier = q[CodeTokenRequest.CodeVerifierProperty],
-                RedirectUri = q[CodeTokenRequest.RedirectUriProperty],
-                RefreshToken = q[RefreshTokenRequest.RefreshTokenProperty],
-                UserName = q[PasswordTokenRequest.UserNameProperty],
-                Password = q[PasswordTokenRequest.PasswordProperty]
+                GrantType = q[TokenRequestBody.GrantTypeProperty],
+                ClientId = q[TokenRequestBody.ClientIdProperty],
+                ClientSecret = q[TokenRequestBody.ClientSecretProperty],
+                Scope = q[TokenRequestBody.ScopeProperty],
+                Code = q[CodeTokenRequestBody.CodeProperty],
+                CodeVerifier = q[CodeTokenRequestBody.CodeVerifierProperty],
+                RedirectUri = q[CodeTokenRequestBody.RedirectUriProperty],
+                RefreshToken = q[RefreshTokenRequestBody.RefreshTokenProperty],
+                UserName = q[PasswordTokenRequestBody.UserNameProperty],
+                Password = q[PasswordTokenRequestBody.PasswordProperty]
             };
         }
     }
