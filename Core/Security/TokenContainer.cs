@@ -534,7 +534,6 @@ namespace Trivial.Security
             };
         }
 
-
         /// <summary>
         /// Creates the token refresh request message.
         /// </summary>

@@ -19,6 +19,18 @@ namespace Trivial.Sample
 
         public override async Task ProcessAsync()
         {
+            var codeTokenReq = new CodeTokenRequest("abcd", "efg")
+            {
+                Code = "hijklmn",
+                ScopeString = "test plain"
+            };
+            var tokenUrl = codeTokenReq.ToJson();
+            codeTokenReq = CodeTokenRequest.Parse(tokenUrl);
+            tokenUrl = codeTokenReq.ToQueryData().ToString();
+            codeTokenReq = CodeTokenRequest.Parse(tokenUrl);
+            ConsoleLine.WriteLine(codeTokenReq.ToQueryData().ToString());
+            ConsoleLine.WriteLine();
+
             // JWT HS512
             var hs = HashSignatureProvider.CreateHS512("a secret string");
             var jwt = new JsonWebToken<HttpClientVerb.NameAndDescription>(new HttpClientVerb.NameAndDescription
@@ -30,6 +42,7 @@ namespace Trivial.Sample
             jwt = JsonWebToken<HttpClientVerb.NameAndDescription>.Parse(header.ToString(), hs);
             var jwtStr = jwt.ToEncodedString();
             ConsoleLine.WriteLine(jwtStr != header.Parameter ? "Failed JWT HS512 testing." : jwtStr);
+            ConsoleLine.WriteLine();
 
             // JWT RS512
             var rsa = RSA.Create();
@@ -41,6 +54,7 @@ namespace Trivial.Sample
             jwt = JsonWebToken<HttpClientVerb.NameAndDescription>.Parse(header.ToString(), rs);
             jwtStr = jwt.ToEncodedString();
             ConsoleLine.WriteLine(jwtStr != header.Parameter ? "Failed JWT RS512 testing." : header.Parameter);
+            ConsoleLine.WriteLine();
         }
     }
 }

@@ -45,7 +45,7 @@ namespace Trivial.Security
         public const string StateProperty = "state";
 
         /// <summary>
-        /// Initializes a new instance of the AccessTokenRequest class.
+        /// Initializes a new instance of the TokenRequest class.
         /// </summary>
         /// <param name="grantType">The grant type.</param>
         /// <param name="appId">The client id and secret key.</param>
@@ -56,7 +56,7 @@ namespace Trivial.Security
         }
 
         /// <summary>
-        /// Initializes a new instance of the AccessTokenRequest class.
+        /// Initializes a new instance of the TokenRequest class.
         /// </summary>
         /// <param name="grantType">The grant type.</param>
         /// <param name="id">The client id.</param>
@@ -66,7 +66,7 @@ namespace Trivial.Security
         }
 
         /// <summary>
-        /// Initializes a new instance of the AccessTokenRequest class.
+        /// Initializes a new instance of the TokenRequest class.
         /// </summary>
         /// <param name="grantType">The grant type.</param>
         /// <param name="id">The client id.</param>
@@ -211,7 +211,7 @@ namespace Trivial.Security
         public const string ClientCredentialsGrantType = "client_credentials";
 
         /// <summary>
-        /// Initializes a new instance of the ClientCredentialsAccessTokenRequest class.
+        /// Initializes a new instance of the ClientCredentialsTokenRequest class.
         /// </summary>
         /// <param name="appId">The client id and secret key.</param>
         public ClientTokenRequest(AppAccessingKey appId) : base(ClientCredentialsGrantType, appId)
@@ -219,7 +219,7 @@ namespace Trivial.Security
         }
 
         /// <summary>
-        /// Initializes a new instance of the ClientCredentialsAccessTokenRequest class.
+        /// Initializes a new instance of the ClientCredentialsTokenRequest class.
         /// </summary>
         /// <param name="id">The client id.</param>
         /// <param name="secret">The client secret key.</param>
@@ -228,7 +228,7 @@ namespace Trivial.Security
         }
 
         /// <summary>
-        /// Initializes a new instance of the ClientCredentialsAccessTokenRequest class.
+        /// Initializes a new instance of the ClientCredentialsTokenRequest class.
         /// </summary>
         /// <param name="id">The client id.</param>
         /// <param name="secret">The client secret key.</param>
@@ -286,7 +286,7 @@ namespace Trivial.Security
         public const string CodeVerifierProperty = "code_verifier";
 
         /// <summary>
-        /// Initializes a new instance of the CodeAccessTokenRequest class.
+        /// Initializes a new instance of the CodeTokenRequest class.
         /// </summary>
         /// <param name="appId">The client id and secret key.</param>
         public CodeTokenRequest(AppAccessingKey appId) : base(AuthorizationCodeGrantType, appId)
@@ -294,7 +294,7 @@ namespace Trivial.Security
         }
 
         /// <summary>
-        /// Initializes a new instance of the CodeAccessTokenRequest class.
+        /// Initializes a new instance of the CodeTokenRequest class.
         /// </summary>
         /// <param name="id">The client id.</param>
         /// <param name="secret">The client secret key.</param>
@@ -303,7 +303,7 @@ namespace Trivial.Security
         }
 
         /// <summary>
-        /// Initializes a new instance of the CodeAccessTokenRequest class.
+        /// Initializes a new instance of the CodeTokenRequest class.
         /// </summary>
         /// <param name="id">The client id.</param>
         /// <param name="secret">The client secret key.</param>
@@ -392,7 +392,7 @@ namespace Trivial.Security
         public const string RefreshTokenProperty = "refresh_token";
 
         /// <summary>
-        /// Initializes a new instance of the AccessTokenRequest class.
+        /// Initializes a new instance of the TokenRequest class.
         /// </summary>
         /// <param name="appId">The client id and secret key.</param>
         public RefreshTokenRequest(AppAccessingKey appId) : base(RefreshTokenGrantType, appId)
@@ -400,7 +400,7 @@ namespace Trivial.Security
         }
 
         /// <summary>
-        /// Initializes a new instance of the AccessTokenRequest class.
+        /// Initializes a new instance of the TokenRequest class.
         /// </summary>
         /// <param name="id">The client id.</param>
         /// <param name="secret">The client secret key.</param>
@@ -409,7 +409,7 @@ namespace Trivial.Security
         }
 
         /// <summary>
-        /// Initializes a new instance of the AccessTokenRequest class.
+        /// Initializes a new instance of the TokenRequest class.
         /// </summary>
         /// <param name="id">The client id.</param>
         /// <param name="secret">The client secret key.</param>
@@ -469,7 +469,7 @@ namespace Trivial.Security
         public const string PasswordProperty = "password";
 
         /// <summary>
-        /// Initializes a new instance of the AccessTokenRequest class.
+        /// Initializes a new instance of the TokenRequest class.
         /// </summary>
         /// <param name="appId">The client id and secret key.</param>
         public PasswordTokenRequest(AppAccessingKey appId) : base(PasswordGrantType, appId)
@@ -477,7 +477,7 @@ namespace Trivial.Security
         }
 
         /// <summary>
-        /// Initializes a new instance of the AccessTokenRequest class.
+        /// Initializes a new instance of the TokenRequest class.
         /// </summary>
         /// <param name="id">The client id.</param>
         /// <param name="secret">The client secret key.</param>
@@ -486,7 +486,7 @@ namespace Trivial.Security
         }
 
         /// <summary>
-        /// Initializes a new instance of the AccessTokenRequest class.
+        /// Initializes a new instance of the TokenRequest class.
         /// </summary>
         /// <param name="id">The client id.</param>
         /// <param name="secret">The client secret key.</param>
