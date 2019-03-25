@@ -203,6 +203,7 @@ namespace Trivial.Net
             cancellationToken.ThrowIfCancellationRequested();
             OnSend(request);
             HttpResponseMessage resp = null;
+            T valueResult;
             try
             {
                 var result = await Tasks.RetryExtension.ProcessAsync(RetryPolicy, async (CancellationToken cancellation) =>
@@ -215,9 +216,7 @@ namespace Trivial.Net
                         : await HttpClientUtility.SerializeJsonAsync<T>(resp.Content);
                     return obj;
                 }, GetExceptionInternal, cancellationToken);
-                OnReceive(result.Result, resp);
-                Received?.Invoke(this, new ReceivedEventArgs<T>(result.Result, resp));
-                return result.Result;
+                valueResult = result.Result;
             }
             catch (FailedHttpException)
             {
@@ -225,6 +224,34 @@ namespace Trivial.Net
                 Received?.Invoke(this, new ReceivedEventArgs<T>(default, resp));
                 throw;
             }
+            catch (ArgumentException)
+            {
+                OnReceive(default, resp);
+                Received?.Invoke(this, new ReceivedEventArgs<T>(default, resp));
+                throw;
+            }
+            catch (InvalidOperationException)
+            {
+                OnReceive(default, resp);
+                Received?.Invoke(this, new ReceivedEventArgs<T>(default, resp));
+                throw;
+            }
+            catch (UnauthorizedAccessException)
+            {
+                OnReceive(default, resp);
+                Received?.Invoke(this, new ReceivedEventArgs<T>(default, resp));
+                throw;
+            }
+            catch (NullReferenceException)
+            {
+                OnReceive(default, resp);
+                Received?.Invoke(this, new ReceivedEventArgs<T>(default, resp));
+                throw;
+            }
+
+            OnReceive(valueResult, resp);
+            Received?.Invoke(this, new ReceivedEventArgs<T>(valueResult, resp));
+            return valueResult;
         }
 
         /// <summary>

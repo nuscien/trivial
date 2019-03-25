@@ -151,7 +151,7 @@ namespace Trivial.Security
     }
 
     /// <summary>
-    /// The access token resolver request.
+    /// The access token resolver request body.
     /// </summary>
     [DataContract]
     public abstract class TokenRequestBody
@@ -320,10 +320,28 @@ namespace Trivial.Security
         public const string StateProperty = "state";
 
         /// <summary>
+        /// The response type property name.
+        /// </summary>
+        public const string ResponseType = "response_type";
+
+        /// <summary>
         /// Initializes a new instance of the CodeTokenRequest class.
         /// </summary>
         public CodeTokenRequestBody() : base(AuthorizationCodeGrantType)
         {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the CodeTokenRequest class.
+        /// </summary>
+        /// <param name="code">The authorization code.</param>
+        /// <param name="redirectUri">The redirect URI.</param>
+        /// <param name="codeVerifier">The code verifier.</param>
+        public CodeTokenRequestBody(string code, Uri redirectUri = null, string codeVerifier = null) : this()
+        {
+            Code = code;
+            RedirectUri = redirectUri;
+            CodeVerifier = codeVerifier;
         }
 
         /// <summary>
@@ -411,6 +429,38 @@ namespace Trivial.Security
         }
 
         /// <summary>
+        /// Initializes a new instance of the CodeTokenRequest class.
+        /// </summary>
+        /// <param name="code">The authorization code.</param>
+        /// <param name="redirectUri">The redirect URI.</param>
+        /// <param name="id">The client id.</param>
+        /// <param name="secret">The client secret key.</param>
+        /// <param name="scope">The scope.</param>
+        public CodeTokenRequest(string code, Uri redirectUri, string id, string secret = null, IEnumerable<string> scope = null) : base(new CodeTokenRequestBody
+        {
+            Code = code,
+            RedirectUri = redirectUri
+        }, id, secret, scope)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the CodeTokenRequest class.
+        /// </summary>
+        /// <param name="code">The authorization code.</param>
+        /// <param name="redirectUri">The redirect URI.</param>
+        /// <param name="id">The client id.</param>
+        /// <param name="secret">The client secret key.</param>
+        /// <param name="scope">The scope.</param>
+        public CodeTokenRequest(string code, Uri redirectUri, string id, SecureString secret, IEnumerable<string> scope = null) : base(new CodeTokenRequestBody
+        {
+            Code = code,
+            RedirectUri = redirectUri
+        }, id, secret, scope)
+        {
+        }
+
+        /// <summary>
         /// Gets the login URI.
         /// </summary>
         /// <param name="uri">The base URI.</param>
@@ -421,11 +471,11 @@ namespace Trivial.Security
         {
             var data = new QueryData
             {
-                { "response_type", responseType },
-                { "client_id", ClientId },
-                { "redirect_uri", Body?.RedirectUri?.OriginalString },
-                { "scope", ScopeString },
-                { "state", state }
+                { CodeTokenRequestBody.ResponseType, responseType },
+                { TokenRequestBody.ClientIdProperty, ClientId },
+                { CodeTokenRequestBody.RedirectUriProperty, Body?.RedirectUri?.OriginalString },
+                { TokenRequestBody.ScopeProperty, ScopeString },
+                { CodeTokenRequestBody.StateProperty, state }
             };
             return new Uri(data.ToString(uri.OriginalString));
         }
@@ -466,6 +516,15 @@ namespace Trivial.Security
         /// </summary>
         public RefreshTokenRequestBody() : base(RefreshTokenGrantType)
         {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the TokenRequest class.
+        /// </summary>
+        /// <param name="refreshToken">The refresh token.</param>
+        public RefreshTokenRequestBody(string refreshToken) : this()
+        {
+            RefreshToken = refreshToken;
         }
 
         /// <summary>
@@ -526,6 +585,28 @@ namespace Trivial.Security
         /// </summary>
         public PasswordTokenRequestBody() : base(PasswordGrantType)
         {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the TokenRequest class.
+        /// </summary>
+        /// <param name="userName">The user name.</param>
+        /// <param name="password">The password.</param>
+        public PasswordTokenRequestBody(string userName, string password) : this()
+        {
+            UserName = userName;
+            Password = password.ToSecure();
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the TokenRequest class.
+        /// </summary>
+        /// <param name="userName">The user name.</param>
+        /// <param name="password">The password.</param>
+        public PasswordTokenRequestBody(string userName, SecureString password) : this()
+        {
+            UserName = userName;
+            Password = password;
         }
 
         /// <summary>
