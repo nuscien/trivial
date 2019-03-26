@@ -5,6 +5,7 @@ using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Web;
+
 using Trivial.Collection;
 
 namespace Trivial.Net
@@ -274,6 +275,122 @@ namespace Trivial.Net
         {
             if (!append) Clear();
             if (string.IsNullOrWhiteSpace(query)) return 0;
+            var queryTrim = query.TrimStart();
+            if (queryTrim.IndexOf('{') == 0)
+            {
+                queryTrim = queryTrim.Substring(1).Trim();
+                var lastPos = queryTrim.LastIndexOf('}');
+                if (lastPos >= 0) queryTrim = queryTrim.Substring(0, lastPos);
+                var count = 0;
+
+                string name = null;
+                StringBuilder sb = null;
+                var level = new List<char>();
+                StringBuilder backSlash = null;
+                foreach (var c in queryTrim)
+                {
+                    if (c == '\\')
+                    {
+                        backSlash = new StringBuilder();
+                        continue;
+                    }
+
+                    if (backSlash != null)
+                    {
+                        if (backSlash.Length == 0)
+                        {
+                            if (c != 'x' && c != 'u')
+                            {
+                                sb.Append(c);
+                                backSlash = null;
+                            }
+
+                            backSlash.Append(c);
+                            continue;
+                        }
+
+                        var len = 0;
+                        if (backSlash[0] == 'x')
+                        {
+                            len = 3;
+                        }
+                        else if (backSlash[0] == 'u')
+                        {
+                            len = 5;
+                        }
+                        else
+                        {
+                            backSlash = null;
+                            continue;
+                        }
+
+                        if (backSlash.Length < len)
+                        {
+                            backSlash.Append(c);
+                            continue;
+                        }
+
+                        try
+                        {
+                            var num = Convert.ToInt32(backSlash.ToString().Substring(1), 16);
+                            sb.Append(char.ConvertFromUtf32(num));
+                        }
+                        catch (FormatException)
+                        {
+                            sb.Append(backSlash.ToString());
+                        }
+                        catch (ArgumentException)
+                        {
+                            sb.Append(backSlash.ToString());
+                        }
+
+                        backSlash = null;
+                        continue;
+                    }
+
+                    if (c == '"' && level.Count == 0)
+                    {
+                        if (sb == null)
+                        {
+                            sb = new StringBuilder();
+                            if (name != null) level.Add('"');
+                            continue;
+                        }
+
+                        if (name == null)
+                        {
+                            name = sb.ToString();
+                            sb = null;
+                            continue;
+                        }
+
+                        level.Clear();
+                        if (string.IsNullOrWhiteSpace(name)) continue;
+                        ListUtility.Add(this, name, sb.ToString());
+                        count++;
+                        continue;
+                    }
+
+                    if (level.Count > 0 && c == level[level.Count - 1])
+                    {
+                        level.RemoveAt(level.Count - 1);
+                        if (sb != null) sb.Append(c);
+                        continue;
+                    }
+
+                    if (name != null && sb == null)
+                    {
+                        if (c != '{' && c != '[') continue;
+                        level.Add(c);
+                    }
+
+                    if (sb == null) sb = new StringBuilder();
+                    sb.Append(c);
+                }
+
+                return 0; // count;
+            }
+
             if (encoding == null) encoding = DefaultEncoding ?? Encoding.UTF8;
             var pos = query.IndexOf("?");
             if (pos >= 0) query = query.Substring(pos + 1);
