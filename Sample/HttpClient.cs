@@ -32,6 +32,11 @@ namespace Trivial.Sample
             ConsoleLine.WriteLine(((Uri)uri).ToString());
             ConsoleLine.WriteLine();
 
+            // Query.
+            var query = "{ str: \"abcdefg\", \"name\": \"hijklmn\", \"value\": \"012345\", \"num\": 67, \"props\": { \"x\": \"opq\", \"y\": [ 8, 9, { \"z\": \"rst\" } ] }, null: undefined }";
+            var q = QueryData.Parse(query);
+
+            // JSON HTTP web client.
             //"{ \"access_token\": \"abc\", \"token_type\": \"Bearer\" }"
             url = "https://github.com/compositejs/datasense/raw/master/package.json";
             var webClient = new JsonHttpClient<NameAndDescription>();
