@@ -130,7 +130,7 @@ namespace Trivial.Security
         public virtual QueryData ToQueryData()
         {
             var data = Body?.ToQueryData() ?? new QueryData();
-            data.Add(TokenRequestBody.ClientIdProperty, ClientId);
+            if (!string.IsNullOrWhiteSpace(ClientId)) data.Add(TokenRequestBody.ClientIdProperty, ClientId);
             if (ClientCredentials != null && ClientCredentials.Secret != null && ClientCredentials.Secret.Length > 0) data.Add(TokenRequestBody.ClientSecretProperty, ClientCredentials.Secret.ToUnsecureString());
             if (!string.IsNullOrWhiteSpace(ScopeString)) data.Add(TokenRequestBody.ScopeProperty, ScopeString);
             return data;
@@ -147,6 +147,83 @@ namespace Trivial.Security
             if (ClientCredentials != null && ClientCredentials.Secret != null && ClientCredentials.Secret.Length > 0) data.Add($"\"{TokenRequestBody.ClientSecretProperty}\": \"{ClientCredentials.Secret.ToUnsecureString()}\"");
             if (!string.IsNullOrWhiteSpace(ScopeString)) data.Add($"\"{TokenRequestBody.ScopeProperty}\": \"{ScopeString}\"");
             return "{ " + string.Join(", ", data) + " }";
+        }
+    }
+
+    /// <summary>
+    /// The app secret key for accessing api.
+    /// </summary>
+    public class AppAccessingKey
+    {
+        /// <summary>
+        /// Initializes a new instance of the AppAccessingKey class.
+        /// </summary>
+        public AppAccessingKey()
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the AppAccessingKey class.
+        /// </summary>
+        /// <param name="id">The app id.</param>
+        /// <param name="secret">The secret key.</param>
+        public AppAccessingKey(string id, string secret = null)
+        {
+            Id = id;
+            if (secret != null) Secret = secret.ToSecure();
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the AppAccessingKey class.
+        /// </summary>
+        /// <param name="id">The app id.</param>
+        /// <param name="secret">The secret key.</param>
+        public AppAccessingKey(string id, SecureString secret)
+        {
+            Id = id;
+            Secret = secret;
+        }
+
+        /// <summary>
+        /// The app id.
+        /// </summary>
+        public string Id { get; set; }
+
+        /// <summary>
+        /// The secret key.
+        /// </summary>
+        public SecureString Secret { get; set; }
+
+        /// <summary>
+        /// Gets additional string bag.
+        /// </summary>
+        public IDictionary<string, string> Bag { get; } = new Dictionary<string, string>();
+
+        /// <summary>
+        /// Tests if the app accessing key is null or empty.
+        /// </summary>
+        /// <param name="appKey">The app accessing key instance.</param>
+        /// <returns>true if it is null or empty; otherwise, false.</returns>
+        public static bool IsNullOrEmpty(AppAccessingKey appKey)
+        {
+            try
+            {
+                return appKey == null || string.IsNullOrWhiteSpace(appKey.Id) || appKey.Secret == null || appKey.Secret.Length == 0;
+            }
+            catch (ObjectDisposedException)
+            {
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// Returns a System.String that represents the current AppAccessingKey.
+        /// </summary>
+        /// <returns>A System.String that represents the current AppAccessingKey.</returns>
+        public override string ToString()
+        {
+            return Id ?? string.Empty;
         }
     }
 

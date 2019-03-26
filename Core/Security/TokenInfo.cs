@@ -15,86 +15,10 @@ using System.Net.Http.Headers;
 using System.Security;
 using System.Runtime.Serialization;
 using Trivial.Text;
+using Trivial.Data;
 
 namespace Trivial.Security
 {
-    /// <summary>
-    /// Gets the app secret key for accessing api.
-    /// </summary>
-    public class AppAccessingKey
-    {
-        /// <summary>
-        /// Initializes a new instance of the AppAccessingKey class.
-        /// </summary>
-        public AppAccessingKey()
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the AppAccessingKey class.
-        /// </summary>
-        /// <param name="id">The app id.</param>
-        /// <param name="secret">The secret key.</param>
-        public AppAccessingKey(string id, string secret = null)
-        {
-            Id = id;
-            if (secret != null) Secret = secret.ToSecure();
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the AppAccessingKey class.
-        /// </summary>
-        /// <param name="id">The app id.</param>
-        /// <param name="secret">The secret key.</param>
-        public AppAccessingKey(string id, SecureString secret)
-        {
-            Id = id;
-            Secret = secret;
-        }
-
-        /// <summary>
-        /// The app id.
-        /// </summary>
-        public string Id { get; set; }
-
-        /// <summary>
-        /// The secret key.
-        /// </summary>
-        public SecureString Secret { get; set; }
-
-        /// <summary>
-        /// Gets additional string bag.
-        /// </summary>
-        public IDictionary<string, string> Bag { get; } = new Dictionary<string, string>();
-
-        /// <summary>
-        /// Tests if the app accessing key is null or empty.
-        /// </summary>
-        /// <param name="appKey">The app accessing key instance.</param>
-        /// <returns>true if it is null or empty; otherwise, false.</returns>
-        public static bool IsNullOrEmpty(AppAccessingKey appKey)
-        {
-            try
-            {
-                return appKey == null || string.IsNullOrWhiteSpace(appKey.Id) || appKey.Secret == null || appKey.Secret.Length == 0;
-            }
-            catch (ObjectDisposedException)
-            {
-            }
-
-            return true;
-        }
-
-        /// <summary>
-        /// Returns a System.String that represents the current AppAccessingKey.
-        /// </summary>
-        /// <returns>A System.String that represents the current AppAccessingKey.</returns>
-        public override string ToString()
-        {
-            return Id ?? string.Empty;
-        }
-    }
-
     /// <summary>
     /// The access token response information.
     /// </summary>
@@ -287,6 +211,94 @@ namespace Trivial.Security
                     scheme ?? TokenType,
                     StringUtility.ToSpecificCaseInvariant(AccessToken, parameterCase))
                 : new AuthenticationHeaderValue(scheme ?? TokenType);
+        }
+    }
+
+    /// <summary>
+    /// The token container.
+    /// </summary>
+    public class TokenContainer
+    {
+        private TokenInfo token;
+
+        /// <summary>
+        /// Initializes a new instance of the TokenContainer class.
+        /// </summary>
+        public TokenContainer()
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the TokenContainer class.
+        /// </summary>
+        /// <param name="token">The token information instance.</param>
+        public TokenContainer(TokenInfo token)
+        {
+            Token = token;
+        }
+
+        /// <summary>
+        /// Gets the token information instance saved in this container.
+        /// </summary>
+        public TokenInfo Token
+        {
+            get
+            {
+                return token;
+            }
+
+            protected set
+            {
+                var oldValue = token;
+                token = value;
+                TokenChanged?.Invoke(this, new ChangeEventArgs<TokenInfo>(oldValue, value, nameof(Token), true));
+            }
+        }
+
+        /// <summary>
+        /// Gets the access token saved in this container.
+        /// </summary>
+        public string AccessToken => Token?.AccessToken;
+
+        /// <summary>
+        /// Gets a value indicating whether the access token is null, empty or consists only of white-space characters.
+        /// </summary>
+        public bool IsTokenNullOrEmpty => Token?.IsEmpty ?? false;
+
+        /// <summary>
+        /// Adds or removes the event raised after token changed.
+        /// </summary>
+        public event ChangeEventHandler<TokenInfo> TokenChanged;
+
+        /// <summary>
+        /// Returns a System.String that represents the current token container instance.
+        /// </summary>
+        /// <returns>A System.String that represents the current token container instance.</returns>
+        public override string ToString()
+        {
+            return Token?.ToString() ?? string.Empty;
+        }
+
+        /// <summary>
+        /// Returns a System.Net.Http.Headers.AuthenticationHeaderValue that represents the current token container instance.
+        /// </summary>
+        /// <param name="schemeCase">The scheme case.</param>
+        /// <param name="parameterCase">The parameter case.</param>
+        /// <returns>A System.Net.Http.Headers.AuthenticationHeaderValue that represents the current token container instance.</returns>
+        public virtual AuthenticationHeaderValue ToAuthenticationHeaderValue(Cases schemeCase = Cases.Original, Cases parameterCase = Cases.Original)
+        {
+            return Token?.ToAuthenticationHeaderValue(schemeCase, parameterCase);
+        }
+
+        /// <summary>
+        /// Returns a System.Net.Http.Headers.AuthenticationHeaderValue that represents the current token container instance.
+        /// </summary>
+        /// <param name="scheme">The scheme to use for authorization.</param>
+        /// <param name="parameterCase">The parameter case.</param>
+        /// <returns>A System.Net.Http.Headers.AuthenticationHeaderValue that represents the current token container instance.</returns>
+        public virtual AuthenticationHeaderValue ToAuthenticationHeaderValue(string scheme, Cases parameterCase = Cases.Original)
+        {
+            return Token?.ToAuthenticationHeaderValue(scheme, parameterCase);
         }
     }
 }

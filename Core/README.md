@@ -200,7 +200,7 @@ We also provide a set of tools for OAuth including following models.
 - `TokenInfo` The access token and other properties.
 - `AppAccessingKey` The app identifier and secret key.
 
-And you can implement the `OpenIdTokenClient` abstract class or `TokenResolver` abstract class to get and maintain the access token.
+And you can initializes a new instance of the `OAuthClient` class to resolve the access token and create the JSON HTTP web client to access the resources required authentication.
 
 ### Secure string utiltiy
 
