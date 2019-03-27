@@ -27,23 +27,25 @@ namespace Trivial.Sample
 
         public override async Task ProcessAsync()
         {
+            // HTTP URI.
             var url = "http://www.kingcean.net:8080/test/path?a=123&b=hello#nothing/all";
             var uri = HttpUri.Parse(url);
             ConsoleLine.WriteLine(((Uri)uri).ToString());
             ConsoleLine.WriteLine();
 
-            // Query.
-            var query = "{ str: \"abcdefg\", \"name\": \"hijklmn\", \"value\": \"012345\", \"num\": 67, \"props\": { \"x\": \"opq\", \"y\": [ 8, 9, { \"z\": \"rst\" } ] }, null: undefined }";
+            // Query data.
+            var query = "{ str: \"abcdefg\", b: true, \"name\": \"hijklmn\", // abcd: efg\n \"value\": \"012345\", \"num\": 67, null: undefined, \"props\": { \"x\": \"opq\", \"y\": [ 8, 9, { \"z\": \"rst\" } ] } }";
             var q = QueryData.Parse(query);
 
             // JSON HTTP web client.
-            //"{ \"access_token\": \"abc\", \"token_type\": \"Bearer\" }"
             url = "https://github.com/compositejs/datasense/raw/master/package.json";
             var webClient = new JsonHttpClient<NameAndDescription>();
             var resp = await webClient.SendAsync(new HttpRequestMessage(HttpMethod.Get, url));
             ConsoleLine.WriteLine(resp.Name);
             resp = await webClient.SendAsync(new HttpRequestMessage(HttpMethod.Get, url));
             ConsoleLine.WriteLine(resp.Name);
+
+            //"{ \"access_token\": \"abc\", \"token_type\": \"Bearer\" }"
         }
     }
 }

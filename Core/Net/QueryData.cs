@@ -7,6 +7,7 @@ using System.Text;
 using System.Web;
 
 using Trivial.Collection;
+using Trivial.Text;
 
 namespace Trivial.Net
 {
@@ -30,6 +31,7 @@ namespace Trivial.Net
         /// <param name="append">true if append instead of override; otherwise, false.</param>
         /// <param name="encoding">The optional encoding.</param>
         /// <returns>The count of query item added.</returns>
+        /// <exception cref="FormatException">The format is not correct.</exception>
         public int ParseSet(string query, bool append = false, Encoding encoding = null)
         {
             if (!append) Clear();
@@ -46,8 +48,22 @@ namespace Trivial.Net
                 StringBuilder sb = null;
                 var level = new List<char>();
                 StringBuilder backSlash = null;
+                bool ignoreRest = false;
                 foreach (var c in queryTrim)
                 {
+                    if (ignoreRest)
+                    {
+                        switch (c)
+                        {
+                            case '\r':
+                            case '\n':
+                                ignoreRest = false;
+                                break;
+                        }
+
+                        continue;
+                    }
+
                     if (c == '\\')
                     {
                         backSlash = new StringBuilder();
@@ -56,92 +72,18 @@ namespace Trivial.Net
 
                     if (backSlash != null)
                     {
-                        if (backSlash.Length == 0)
-                        {
-                            var ignoreBackSlash = false;
-                            switch (c)
-                            {
-                                case 'x':
-                                case 'X':
-                                case 'u':
-                                case 'U':
-                                    backSlash.Append(c);
-                                    ignoreBackSlash = true;
-                                    break;
-                                case 'R':
-                                case 'r':
-                                    sb.Append('\r');
-                                    break;
-                                case 'N':
-                                case 'n':
-                                    sb.Append('\n');
-                                    break;
-                                case 'A':
-                                case 'a':
-                                    sb.Append('\a');
-                                    break;
-                                case 'B':
-                                case 'b':
-                                    sb.Append('\b');
-                                    break;
-                                case 'T':
-                                case 't':
-                                    sb.Append('\t');
-                                    break;
-                                case '0':
-                                    sb.Append('\0');
-                                    break;
-                                default:
-                                    sb.Append(c);
-                                    break;
-                            }
-
-                            if (!ignoreBackSlash) backSlash = null;
-                            continue;
-                        }
-
-                        var len = 0;
-                        var firstBackSlash = backSlash[0];
-                        if (firstBackSlash == 'x' || firstBackSlash == 'X')
-                        {
-                            len = 3;
-                        }
-                        else if (firstBackSlash == 'u' || firstBackSlash == 'U')
-                        {
-                            len = 5;
-                        }
-                        else
-                        {
-                            backSlash = null;
-                            continue;
-                        }
-
-                        if (backSlash.Length < len)
-                        {
-                            backSlash.Append(c);
-                            continue;
-                        }
-
-                        try
-                        {
-                            var num = Convert.ToInt32(backSlash.ToString().Substring(1), 16);
-                            sb.Append(char.ConvertFromUtf32(num));
-                        }
-                        catch (FormatException)
-                        {
-                            sb.Append(backSlash.ToString());
-                        }
-                        catch (ArgumentException)
-                        {
-                            sb.Append(backSlash.ToString());
-                        }
-
-                        backSlash = null;
+                        if (StringUtility.ReplaceBackSlash(sb, backSlash, c)) backSlash = null;
                         continue;
                     }
 
                     if (sb == null)
                     {
+                        if (c == '/')
+                        {
+                            ignoreRest = true;
+                            continue;
+                        }
+
                         if (c == '"')
                         {
                             sb = new StringBuilder();
@@ -196,10 +138,10 @@ namespace Trivial.Net
                         }
                         else if (level.Count == 0)
                         {
-                            var sbStr = sb.ToString();
                             if (c == ',')
                             {
-                                sbStr = sbStr.Trim();
+                                var sbStr = sb.ToString().Trim();
+                                sb = new StringBuilder(sbStr);
                                 if (sbStr == "null" || sbStr == "undefined")
                                 {
                                     name = null;
@@ -215,13 +157,38 @@ namespace Trivial.Net
                                 sb.Append(c);
                             }
 
-                            ListUtility.Add(this, name, sbStr);
+                            ListUtility.Add(this, name, sb.ToString());
                             name = null;
                             sb = null;
                             continue;
                         }
                     }
-                    else if (c == '"') level.Add('"');
+                    else if (lastLevelChar == ':' && name == null)
+                    {
+                        if (c == '\r' || c == '\n' || c == '\t' || c == ' ' || c == ',' || c == '+')
+                        {
+                            sb = null;
+                        }
+                        else if (c == '/')
+                        {
+                            sb = null;
+                            ignoreRest = true;
+                        }
+                        else if (chars.IndexOf(c) < 0)
+                        {
+                            throw new FormatException("The format of query string is not correct.");
+                        }
+
+                        if (sb == null)
+                        {
+                            level.RemoveAt(level.Count - 1);
+                            continue;
+                        }
+                    }
+                    else if (c == '"')
+                    {
+                        level.Add('"');
+                    }
                     else if (lastLevelChar != '"')
                     {
                         if (c == '{')
@@ -328,6 +295,7 @@ namespace Trivial.Net
         /// </summary>
         /// <param name="query">The query string.</param>
         /// <returns>A query data instance.</returns>
+        /// <exception cref="FormatException">The format is not correct.</exception>
         public static QueryData Parse(string query)
         {
             var q = new QueryData();

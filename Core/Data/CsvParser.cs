@@ -227,17 +227,17 @@ namespace Trivial.Data
                     {
                         if (item.Length > 1 && item[item.Length - 1] == '"' && item[item.Length - 2] != '\\')
                         {
-                            list.Add(ReplaceBackslash(item.Substring(1, item.Length - 2)));
+                            list.Add(StringUtility.ReplaceBackSlash(item.Substring(1, item.Length - 2)));
                         }
                         else
                         {
-                            list.Add(ReplaceBackslash(item.Substring(1)));
+                            list.Add(StringUtility.ReplaceBackSlash(item.Substring(1)));
                             inScope = true;
                         }
                     }
                     else
                     {
-                        list.Add(ReplaceBackslash(item));
+                        list.Add(StringUtility.ReplaceBackSlash(item));
                     }
 
                     continue;
@@ -245,21 +245,16 @@ namespace Trivial.Data
 
                 if (item.Length > 0 && item[item.Length - 1] == '"' && (item.Length == 1 || item[item.Length - 2] != '\\'))
                 {
-                    list[list.Count - 1] += "," + ReplaceBackslash(item.Substring(0, item.Length - 1));
+                    list[list.Count - 1] += "," + StringUtility.ReplaceBackSlash(item.Substring(0, item.Length - 1));
                     inScope = false;
                 }
                 else
                 {
-                    list[list.Count - 1] += "," + ReplaceBackslash(item);
+                    list[list.Count - 1] += "," + StringUtility.ReplaceBackSlash(item);
                 }
             }
 
             return list;
-        }
-
-        private static string ReplaceBackslash(string str)
-        {
-            return str.Replace("\\\"", "\"").Replace("\\t", "\t").Replace("\\r", "\r").Replace("\\n", "\n").Replace("\\'", "\'").Replace("\\f", "\f").Replace("\\v", "\v").Replace("\\b", "\b").Replace("\\a", "\a").Replace("\\\\", "\\");
         }
     }
 }

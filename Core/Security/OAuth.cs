@@ -128,7 +128,7 @@ namespace Trivial.Security
         /// </summary>
         /// <typeparam name="T">The type of response.</typeparam>
         /// <returns>A new JSON HTTP client.</returns>
-        public JsonHttpClient<T> Create<T>(Action<ReceivedEventArgs<T>> callback = null)
+        public virtual JsonHttpClient<T> Create<T>(Action<ReceivedEventArgs<T>> callback = null)
         {
             var httpClient = new JsonHttpClient<T>();
             httpClient.Sending += (sender, ev) =>

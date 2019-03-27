@@ -13,11 +13,11 @@ using System.Security.Cryptography;
 
 namespace Trivial.Sample
 {
-    public class TokenClientVerb : Trivial.Console.AsyncVerb
+    public class TokenClientVerb : Trivial.Console.Verb
     {
         public override string Description => "HTTP client";
 
-        public override async Task ProcessAsync()
+        public override void Process()
         {
             var codeTokenReq = new CodeTokenRequest(new CodeTokenRequestBody
             {
@@ -26,9 +26,11 @@ namespace Trivial.Sample
             {
                 ScopeString = "test plain"
             };
-            var tokenUrl = codeTokenReq.ToJson();
+            var tokenUrl = codeTokenReq.ToJsonString();
             codeTokenReq = CodeTokenRequest.Parse(tokenUrl);
             tokenUrl = codeTokenReq.ToQueryData().ToString();
+            codeTokenReq = CodeTokenRequest.Parse(tokenUrl);
+            tokenUrl = codeTokenReq.ToJsonString();
             codeTokenReq = CodeTokenRequest.Parse(tokenUrl);
             ConsoleLine.WriteLine(codeTokenReq.ToQueryData().ToString());
             ConsoleLine.WriteLine();

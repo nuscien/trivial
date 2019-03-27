@@ -409,6 +409,119 @@ namespace Trivial.Text
             }
         }
 
+        internal static bool ReplaceBackSlash(StringBuilder sb, StringBuilder backSlash, char c)
+        {
+            if (backSlash.Length == 0)
+            {
+                switch (c)
+                {
+                    case 'x':
+                    case 'X':
+                    case 'u':
+                    case 'U':
+                        backSlash.Append(c);
+                        return false;
+                    case 'R':
+                    case 'r':
+                        sb.Append('\r');
+                        break;
+                    case 'N':
+                    case 'n':
+                        sb.Append('\n');
+                        break;
+                    case 'A':
+                    case 'a':
+                        sb.Append('\a');
+                        break;
+                    case 'B':
+                    case 'b':
+                        sb.Append('\b');
+                        break;
+                    case 'T':
+                    case 't':
+                        sb.Append('\t');
+                        break;
+                    case 'F':
+                    case 'f':
+                        sb.Append('\f');
+                        break;
+                    case 'V':
+                    case 'v':
+                        sb.Append('\v');
+                        break;
+                    case '0':
+                        sb.Append('\0');
+                        break;
+                    default:
+                        sb.Append(c);
+                        break;
+                }
+
+                return true;
+            }
+
+            var len = 0;
+            var firstBackSlash = backSlash[0];
+            if (firstBackSlash == 'x' || firstBackSlash == 'X')
+            {
+                len = 3;
+            }
+            else if (firstBackSlash == 'u' || firstBackSlash == 'U')
+            {
+                len = 5;
+            }
+            else
+            {
+                return true;
+            }
+
+            if (backSlash.Length < len)
+            {
+                backSlash.Append(c);
+                return false;
+            }
+
+            try
+            {
+                var num = Convert.ToInt32(backSlash.ToString().Substring(1), 16);
+                sb.Append(char.ConvertFromUtf32(num));
+            }
+            catch (FormatException)
+            {
+                sb.Append(backSlash.ToString());
+            }
+            catch (ArgumentException)
+            {
+                sb.Append(backSlash.ToString());
+            }
+
+            return true;
+        }
+
+        internal static string ReplaceBackSlash(IEnumerable<char> s)
+        {
+            var sb = new StringBuilder();
+            StringBuilder backSlash = null;
+            foreach (var c in s)
+            {
+                if (c == '\\')
+                {
+                    backSlash = new StringBuilder();
+                    continue;
+                }
+
+                if (backSlash != null)
+                {
+                    if (ReplaceBackSlash(sb, backSlash, c)) backSlash = null;
+                    continue;
+                }
+
+                sb.Append(c);
+            }
+
+            return sb.ToString();
+        }
+
         private static string ToUpper(string source, CultureInfo culture)
         {
             return culture == null ? source.ToUpper() : source.ToUpper(culture);
