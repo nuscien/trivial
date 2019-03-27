@@ -331,10 +331,11 @@ namespace Trivial.Security
         }
 
         /// <summary>
-        /// Decrypts the token and fills into this token exchange instance.
+        /// Gets the token encrypted.
         /// </summary>
         /// <param name="key">The optional token encryption key to use to override the original one set.</param>
         /// <param name="padding">The optional padding mode for decryption.</param>
+        /// <returns>The Base64 string with token encrypted.</returns>
         public string EncryptToken(RSAParameters? key = null, RSAEncryptionPadding padding = null)
         {
             if (!key.HasValue) key = EncryptKey;
@@ -348,19 +349,21 @@ namespace Trivial.Security
         }
 
         /// <summary>
-        /// Decrypts the token and fills into this token exchange instance.
+        /// Gets the token encrypted.
         /// </summary>
         /// <param name="key">The token encryption key to use to override the original one set.</param>
         /// <param name="padding">The optional padding mode for decryption.</param>
+        /// <returns>The Base64 string with token encrypted.</returns>
         public string EncryptToken(string key, RSAEncryptionPadding padding = null)
         {
             return EncryptToken(RSAUtility.ParseParameters(key), padding);
         }
 
         /// <summary>
-        /// Decrypts the token and fills into this token exchange instance.
+        /// Gets the token encrypted.
         /// </summary>
         /// <param name="padding">The padding mode for decryption.</param>
+        /// <returns>The Base64 string with token encrypted.</returns>
         public string EncryptToken(RSAEncryptionPadding padding)
         {
             return EncryptToken(null as string, padding);
