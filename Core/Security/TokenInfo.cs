@@ -247,8 +247,9 @@ namespace Trivial.Security
                 return token;
             }
 
-            protected set
+            internal protected set
             {
+                if (token == value) return;
                 var oldValue = token;
                 token = value;
                 TokenChanged?.Invoke(this, new ChangeEventArgs<TokenInfo>(oldValue, value, nameof(Token), true));

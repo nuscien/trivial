@@ -42,6 +42,22 @@ namespace Trivial.Net
         /// <summary>
         /// Initializes a new instance of the ReceivedEventArgs class.
         /// </summary>
+        /// <param name="ev">The event arguments.</param>
+        public ReceivedEventArgs(ReceivedEventArgs ev)
+        {
+            if (ev == null) return;
+            Header = ev.Header;
+            ReasonPhrase = ev.ReasonPhrase;
+            IsSuccessStatusCode = ev.IsSuccessStatusCode;
+            StatusCode = ev.StatusCode;
+            Content = ev.Content;
+            Version = ev.Version;
+            RequestMessage = ev.RequestMessage;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the ReceivedEventArgs class.
+        /// </summary>
         /// <param name="responseMessage">The HTTP response message.</param>
         public ReceivedEventArgs(HttpResponseMessage responseMessage)
         {
@@ -116,6 +132,23 @@ namespace Trivial.Net
         /// Initializes a new instance of the ReceivedEventArgs class.
         /// </summary>
         /// <param name="result">The result.</param>
+        /// <param name="ev">The event arguments.</param>
+        public ReceivedEventArgs(object result, ReceivedEventArgs ev) : base(ev)
+        {
+            if (result == null) return;
+            try
+            {
+                Result = (T)result;
+            }
+            catch (InvalidCastException)
+            {
+            }
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the ReceivedEventArgs class.
+        /// </summary>
+        /// <param name="result">The result.</param>
         /// <param name="responseMessage">The HTTP response message.</param>
         public ReceivedEventArgs(T result, HttpResponseMessage responseMessage) : base(responseMessage)
         {
@@ -126,6 +159,16 @@ namespace Trivial.Net
         /// Gets the result.
         /// </summary>
         public T Result { get; }
+
+        /// <summary>
+        /// Converts to a specific received event arguments.
+        /// </summary>
+        /// <typeparam name="U">The type of result.</typeparam>
+        /// <returns>A received data event arguments.</returns>
+        public ReceivedEventArgs<U> ConvertTo<U>()
+        {
+            return new ReceivedEventArgs<U>(Result, this);
+        }
     }
 
     /// <summary>
