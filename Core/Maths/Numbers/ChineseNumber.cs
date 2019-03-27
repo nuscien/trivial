@@ -17,6 +17,16 @@ namespace Trivial.Maths
         private readonly string digits;
 
         /// <summary>
+        /// The ten Heavenly Stems.
+        /// </summary>
+        public const string HeavenlyStems = "甲乙丙丁戊己庚辛壬癸";
+
+        /// <summary>
+        /// The twelve Earthly Branches.
+        /// </summary>
+        public const string EarthlyBranches = "子丑寅卯辰巳午未申酉戌亥";
+
+        /// <summary>
         /// Initializes a new instance of the ChineseNumber class.
         /// </summary>
         /// <param name="isTraditional">true if it set as Traditional Chinese; otherwise, false.</param>
@@ -26,6 +36,8 @@ namespace Trivial.Maths
             IsUpperCase = upperCase;
             IsTraditional = isTraditional;
             digits = IsTraditional ? (IsUpperCase ? digits3 : digits4) : (IsUpperCase ? digits1 : digits2);
+            PositiveSign = "正";
+            NegativeSign = IsTraditional ? "負" : "负";
         }
 
         /// <summary>
@@ -36,12 +48,12 @@ namespace Trivial.Maths
         /// <summary>
         /// Gets the sign of negative.
         /// </summary>
-        public string PositiveSign => "正";
+        public string PositiveSign { get; }
 
         /// <summary>
         /// Gets the sign of negative.
         /// </summary>
-        public string NegativeSign => "负";
+        public string NegativeSign { get; }
 
         /// <summary>
         /// Gets the length of digit group.
@@ -319,7 +331,8 @@ namespace Trivial.Maths
         /// <returns>A string with main numbers.</returns>
         public override string ToString()
         {
-            return (IsTraditional ? "中文數位 " : "中文数字 ") + digits;
+            if (IsUpperCase) return (IsTraditional ? "中文大寫數字 " : "汉字大写数字 ") + digits;
+            return (IsTraditional ? "中文數字 " : "汉字数字 ") + digits;
         }
 
         /// <summary>

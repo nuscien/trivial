@@ -19,6 +19,8 @@ namespace Trivial.Maths
         protected internal JapaneseNumber(bool kana = false)
         {
             IsKana = kana;
+            PositiveSign = "正";
+            NegativeSign = "負";
         }
 
         /// <summary>
@@ -34,12 +36,12 @@ namespace Trivial.Maths
         /// <summary>
         /// Gets the sign of negative.
         /// </summary>
-        public string PositiveSign => "正";
+        public string PositiveSign { get; }
 
         /// <summary>
         /// Gets the sign of negative.
         /// </summary>
-        public string NegativeSign => "負";
+        public string NegativeSign { get; }
 
         /// <summary>
         /// Gets the length of digit group.

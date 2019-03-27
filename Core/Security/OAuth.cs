@@ -53,7 +53,7 @@ namespace Trivial.Security
         /// <param name="appId">The app id.</param>
         /// <param name="secretKey">The secret key.</param>
         /// <param name="tokenCached">The token information instance cached.</param>
-        public OAuthClient(string appId, string secretKey, TokenInfo tokenCached = null) : this(new AppAccessingKey(appId, secretKey), tokenCached)
+        public OAuthClient(string appId, string secretKey = null, TokenInfo tokenCached = null) : this(new AppAccessingKey(appId, secretKey), tokenCached)
         {
         }
 
