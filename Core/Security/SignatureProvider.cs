@@ -39,7 +39,7 @@ namespace Trivial.Security
     }
 
     /// <summary>
-    /// The signature for string.
+    /// The hash signature for string.
     /// </summary>
     public class HashSignatureProvider : ISignatureProvider
     {
@@ -114,64 +114,71 @@ namespace Trivial.Security
         /// <summary>
         /// Creates a hash signature provider using SHA-512 hash algorithm of SHA-2 family.
         /// </summary>
+        /// <param name="shortName">true if use short name; otherwise, false.</param>
         /// <returns>A keyed hash signature provider.</returns>
-        public static HashSignatureProvider CreateSHA512()
+        public static HashSignatureProvider CreateSHA512(bool shortName = false)
         {
-            return new HashSignatureProvider(SHA512.Create(), "SHA512");
+            return new HashSignatureProvider(SHA512.Create(), shortName ? "S512" : "SHA512");
         }
 
         /// <summary>
         /// Creates a hash signature provider using SHA-384 hash algorithm of SHA-2 family.
         /// </summary>
+        /// <param name="shortName">true if use short name; otherwise, false.</param>
         /// <returns>A keyed hash signature provider.</returns>
-        public static HashSignatureProvider CreateSHA384()
+        public static HashSignatureProvider CreateSHA384(bool shortName = false)
         {
-            return new HashSignatureProvider(SHA384.Create(), "SHA384");
+            return new HashSignatureProvider(SHA384.Create(), shortName ? "S384" : "SHA384");
         }
 
         /// <summary>
         /// Creates a hash signature provider using SHA-256 hash algorithm of SHA-2 family.
         /// </summary>
+        /// <param name="shortName">true if use short name; otherwise, false.</param>
         /// <returns>A keyed hash signature provider.</returns>
-        public static HashSignatureProvider CreateSHA256()
+        public static HashSignatureProvider CreateSHA256(bool shortName = false)
         {
-            return new HashSignatureProvider(SHA256.Create(), "SHA256");
+            return new HashSignatureProvider(SHA256.Create(), shortName ? "S256" : "SHA256");
         }
 
         /// <summary>
         /// Creates a hash signature provider using SHA-3-512 hash algorithm.
         /// </summary>
+        /// <param name="shortName">true if use short name; otherwise, false.</param>
         /// <returns>A keyed hash signature provider.</returns>
-        public static HashSignatureProvider CreateSHA3512()
+        public static HashSignatureProvider CreateSHA3512(bool shortName = false)
         {
-            return new HashSignatureProvider(SHA3ManagedImpl.Create512(), "SHA3512");
+            return new HashSignatureProvider(SHA3ManagedImpl.Create512(), shortName ? "S3512" : "SHA3512");
         }
 
         /// <summary>
         /// Creates a hash signature provider using SHA-3-384 hash algorithm.
         /// </summary>
+        /// <param name="shortName">true if use short name; otherwise, false.</param>
         /// <returns>A keyed hash signature provider.</returns>
-        public static HashSignatureProvider CreateSHA3384()
+        public static HashSignatureProvider CreateSHA3384(bool shortName = false)
         {
-            return new HashSignatureProvider(SHA3ManagedImpl.Create384(), "SHA3384");
+            return new HashSignatureProvider(SHA3ManagedImpl.Create384(), shortName ? "S3384" : "SHA3384");
         }
 
         /// <summary>
         /// Creates a hash signature provider using SHA-3-256 hash algorithm.
         /// </summary>
+        /// <param name="shortName">true if use short name; otherwise, false.</param>
         /// <returns>A keyed hash signature provider.</returns>
-        public static HashSignatureProvider CreateSHA3256()
+        public static HashSignatureProvider CreateSHA3256(bool shortName = false)
         {
-            return new HashSignatureProvider(SHA3ManagedImpl.Create256(), "SHA3256");
+            return new HashSignatureProvider(SHA3ManagedImpl.Create256(), shortName ? "S3256" : "SHA3256");
         }
 
         /// <summary>
         /// Creates a hash signature provider using SHA-3-224 hash algorithm.
         /// </summary>
+        /// <param name="shortName">true if use short name; otherwise, false.</param>
         /// <returns>A keyed hash signature provider.</returns>
-        public static HashSignatureProvider CreateSHA3224()
+        public static HashSignatureProvider CreateSHA3224(bool shortName = false)
         {
-            return new HashSignatureProvider(SHA3ManagedImpl.Create224(), "SHA3224");
+            return new HashSignatureProvider(SHA3ManagedImpl.Create224(), shortName ? "S3224" : "SHA3224");
         }
 
         /// <summary>
@@ -219,8 +226,11 @@ namespace Trivial.Security
     }
 
     /// <summary>
-    /// The signature for string.
+    /// The RSA hash signature for string.
     /// </summary>
+    /// <remarks>
+    /// WARNING: Please do NOT use this provider since it tests failed.
+    /// </remarks>
     public class RSASignatureProvider : ISignatureProvider
     {
         private readonly RSA rsa;
@@ -419,7 +429,7 @@ namespace Trivial.Security
     }
 
     /// <summary>
-    /// The signature for string.
+    /// The customized keyed signature for string.
     /// </summary>
     public class KeyedSignatureProvider : ISignatureProvider
     {

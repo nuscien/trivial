@@ -253,13 +253,19 @@ namespace Trivial.Net
                 {
                     resp = await client.SendAsync(request, cancellationToken);
                     if (!SerializeEvenIfFailed && !resp.IsSuccessStatusCode)
-                        throw new FailedHttpException(resp);
+                        throw new FailedHttpException(resp, "Failed to send JSON HTTP web request because of unsuccess status code.", new HttpRequestException(resp.ReasonPhrase));
                     var obj = Serializer != null
                         ? await HttpClientUtility.SerializeAsync(resp.Content, Serializer)
                         : await HttpClientUtility.SerializeJsonAsync<T>(resp.Content);
                     return obj;
                 }, GetExceptionInternal, cancellationToken);
                 valueResult = result.Result;
+            }
+            catch (HttpRequestException)
+            {
+                OnReceive(default, resp);
+                Received?.Invoke(this, new ReceivedEventArgs<T>(default, resp));
+                throw;
             }
             catch (FailedHttpException)
             {
