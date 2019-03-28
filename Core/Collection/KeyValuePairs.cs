@@ -12,6 +12,21 @@ namespace Trivial.Collection
     public class StringKeyValuePairs : List<KeyValuePair<string, string>>
     {
         /// <summary>
+        /// Initializes a new instance of the StringKeyValuePairs class.
+        /// </summary>
+        public StringKeyValuePairs() : base()
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the StringKeyValuePairs class.
+        /// </summary>
+        /// <param name="collection">The collection whose elements are copied to the new list.</param>
+        public StringKeyValuePairs(IEnumerable<KeyValuePair<string, string>> collection) : base(collection)
+        {
+        }
+
+        /// <summary>
         /// Gets the equal sign for key and value.
         /// </summary>
         public virtual string EqualSign => "=";
@@ -145,6 +160,41 @@ namespace Trivial.Collection
             }
 
             return string.Join(Separator, arr);
+        }
+
+        /// <summary>
+        /// Adds 2 elements.
+        /// </summary>
+        /// <param name="a">Left element.</param>
+        /// <param name="b">Right element.</param>
+        /// <returns>The result.</returns>
+        public static StringKeyValuePairs operator +(StringKeyValuePairs a, IEnumerable<KeyValuePair<string, string>> b)
+        {
+            if (a == null && b == null) return null;
+            var col = new StringKeyValuePairs();
+            if (a != null) col.AddRange(a);
+            if (b != null) col.AddRange(b);
+            return col;
+        }
+
+        /// <summary>
+        /// Deletes.
+        /// </summary>
+        /// <param name="a">Left element.</param>
+        /// <param name="b">Right element.</param>
+        /// <returns>The result.</returns>
+        public static StringKeyValuePairs operator -(StringKeyValuePairs a, IEnumerable<KeyValuePair<string, string>> b)
+        {
+            if (a == null) return null;
+            var col = new StringKeyValuePairs();
+            col.AddRange(a);
+            if (b == null) return col;
+            foreach (var kvp in b)
+            {
+                a.Remove(kvp.Key, kvp.Value);
+            }
+
+            return col;
         }
     }
 }

@@ -1,9 +1,9 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="Arithmetic.cs" company="Nanchang Jinchen Software Co., Ltd.">
+// <copyright file="Arithmetic\Basic.cs" company="Nanchang Jinchen Software Co., Ltd.">
 //   Copyright (c) 2010 Nanchang Jinchen Software Co., Ltd. All rights reserved.
 // </copyright>
 // <summary>
-//   The arithmetic classes and interfaces.
+//   The basic arithmetic functions.
 // </summary>
 // <author>Kingcean Tuan</author>
 // --------------------------------------------------------------------------------------------------------------------

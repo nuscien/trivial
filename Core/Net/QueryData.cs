@@ -20,6 +20,21 @@ namespace Trivial.Net
         private static string chars = "_$-0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
         /// <summary>
+        /// Initializes a new instance of the QueryData class.
+        /// </summary>
+        public QueryData() : base()
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the QueryData class.
+        /// </summary>
+        /// <param name="collection">The collection whose elements are copied to the new list.</param>
+        public QueryData(IEnumerable<KeyValuePair<string, string>> collection) : base(collection)
+        {
+        }
+
+        /// <summary>
         /// Gets or sets the default encoding.
         /// </summary>
         public Encoding DefaultEncoding { get; set; } = Encoding.UTF8;

@@ -1,9 +1,9 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="Coordinate.cs" company="Nanchang Jinchen Software Co., Ltd.">
+// <copyright file="Coordinate\PolarPoint.cs" company="Nanchang Jinchen Software Co., Ltd.">
 //   Copyright (c) 2010 Nanchang Jinchen Software Co., Ltd. All rights reserved.
 // </copyright>
 // <summary>
-//   The classes of coordinates and points.
+//   The polar point.
 // </summary>
 // <author>Kingcean Tuan</author>
 // --------------------------------------------------------------------------------------------------------------------

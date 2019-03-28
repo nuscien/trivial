@@ -8,7 +8,9 @@ namespace Trivial.Security
     /// <summary>
     /// SHA-3 family hash algorithm.
     /// </summary>
-    /// <remarks>Will be replaced by the implementation in .Net when available.</remarks>
+    /// <remarks>
+    /// Note: Will be replaced by the implementation in .Net when available.
+    /// </remarks>
     internal class SHA3ManagedImpl : HashAlgorithm
     {
         public static new SHA3ManagedImpl Create()

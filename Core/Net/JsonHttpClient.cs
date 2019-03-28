@@ -253,7 +253,7 @@ namespace Trivial.Net
                 {
                     resp = await client.SendAsync(request, cancellationToken);
                     if (!SerializeEvenIfFailed && !resp.IsSuccessStatusCode)
-                        throw new FailedHttpException(resp, "Failed to send JSON HTTP web request because of unsuccess status code.", new HttpRequestException(resp.ReasonPhrase));
+                        throw FailedHttpException.Create(resp, "Failed to send JSON HTTP web request because of unsuccess status code.");
                     var obj = Serializer != null
                         ? await HttpClientUtility.SerializeAsync(resp.Content, Serializer)
                         : await HttpClientUtility.SerializeJsonAsync<T>(resp.Content);
@@ -370,6 +370,7 @@ namespace Trivial.Net
                 Content = content
             }, cancellationToken);
         }
+
         /// <summary>
         /// Sends an HTTP request and gets the result serialized by JSON.
         /// </summary>

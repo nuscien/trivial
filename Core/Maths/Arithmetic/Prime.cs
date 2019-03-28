@@ -1,9 +1,9 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="Arithmetic.cs" company="Nanchang Jinchen Software Co., Ltd.">
+// <copyright file="Arithmetic\Prime.cs" company="Nanchang Jinchen Software Co., Ltd.">
 //   Copyright (c) 2010 Nanchang Jinchen Software Co., Ltd. All rights reserved.
 // </copyright>
 // <summary>
-//   The arithmetic classes and interfaces.
+//   The prime related functions.
 // </summary>
 // <author>Kingcean Tuan</author>
 // --------------------------------------------------------------------------------------------------------------------

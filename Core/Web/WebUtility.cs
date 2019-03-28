@@ -21,7 +21,7 @@ namespace Trivial.Web
         public const string JsonMIME = "application/json";
 
         /// <summary>
-        /// Gets the MIME value of JavaScript format text.
+        /// Gets the MIME value of JavaScript (ECMAScript) format text.
         /// </summary>
         public const string JavaScriptMIME = "text/javascript";
 
@@ -34,6 +34,11 @@ namespace Trivial.Web
         /// Gets the MIME value of CSS format text.
         /// </summary>
         public const string CssMIME = "text/css";
+
+        /// <summary>
+        /// Gets the MIME value of HTML format text.
+        /// </summary>
+        public const string HtmlMIME = "text/html";
 
         /// <summary>
         /// Parses JavaScript date tick to date and time.

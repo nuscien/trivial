@@ -3,7 +3,7 @@
 //   Copyright (c) 2010 Nanchang Jinchen Software Co., Ltd. All rights reserved.
 // </copyright>
 // <summary>
-//   The arithmetic classes and interfaces.
+//   The arithmetic symbols.
 // </summary>
 // <author>Kingcean Tuan</author>
 // --------------------------------------------------------------------------------------------------------------------

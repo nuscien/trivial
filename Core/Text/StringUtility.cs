@@ -46,6 +46,11 @@ namespace Trivial.Text
     public static class StringUtility
     {
         /// <summary>
+        /// Gets the MIME value of plain text format text.
+        /// </summary>
+        public const string PlainTextMIME = "text/plain";
+
+        /// <summary>
         /// Returns a copy of this string converted to specific case, using the casing rules of the specified culture.
         /// </summary>
         /// <param name="source">The source string.</param>

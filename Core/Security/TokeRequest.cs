@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http.Headers;
 using System.Reflection;
 using System.Runtime.Serialization;
 using System.Security;
@@ -174,6 +175,17 @@ namespace Trivial.Security
             if (sb.Length > 3) sb.Remove(sb.Length - 2, 2);
             sb.Append(" }");
             return sb.ToString();
+        }
+
+        /// <summary>
+        /// Returns a string that represents the current object.
+        /// </summary>
+        /// <returns>A query string of the token request but without client secret.</returns>
+        public override string ToString()
+        {
+            var data = ToQueryData();
+            data.Remove(TokenRequestBody.ClientSecretProperty);
+            return data.ToString();
         }
     }
 
@@ -522,6 +534,14 @@ namespace Trivial.Security
         }
 
         /// <summary>
+        /// Initializes a new instance of the CodeTokenRequest class.
+        /// </summary>
+        /// <param name="tokenRequestBody">Another token request body to copy.</param>
+        public CodeTokenRequestBody(CodeTokenRequestBody tokenRequestBody) : this(tokenRequestBody.Code, tokenRequestBody.RedirectUri, tokenRequestBody.CodeVerifier)
+        {
+        }
+
+        /// <summary>
         /// Gets or sets the authorization code.
         /// </summary>
         [DataMember(Name = CodeProperty)]
@@ -738,6 +758,14 @@ namespace Trivial.Security
         }
 
         /// <summary>
+        /// Initializes a new instance of the RereshTokenRequest class.
+        /// </summary>
+        /// <param name="tokenRequestBody">Another token request body to copy.</param>
+        public RefreshTokenRequestBody(RefreshTokenRequestBody tokenRequestBody) : this(tokenRequestBody.RefreshToken)
+        {
+        }
+
+        /// <summary>
         /// Gets or sets the refresh token.
         /// </summary>
         [DataMember(Name = RefreshTokenProperty)]
@@ -851,6 +879,14 @@ namespace Trivial.Security
         }
 
         /// <summary>
+        /// Initializes a new instance of the PasswordTokenRequest class.
+        /// </summary>
+        /// <param name="tokenRequestBody">Another token request body to copy.</param>
+        public PasswordTokenRequestBody(PasswordTokenRequestBody tokenRequestBody) : this(tokenRequestBody.UserName, tokenRequestBody.Password)
+        {
+        }
+
+        /// <summary>
         /// Gets or sets the user name.
         /// </summary>
         [DataMember(Name = UserNameProperty)]
@@ -861,6 +897,33 @@ namespace Trivial.Security
         /// </summary>
         [DataMember(Name = PasswordProperty)]
         public SecureString Password { get; set; }
+
+        /// <summary>
+        /// Returns a System.Net.Http.Headers.AuthenticationHeaderValue that represents the current user name and password information.
+        /// </summary>
+        /// <param name="schemeCase">The scheme case.</param>
+        /// <returns>A System.Net.Http.Headers.AuthenticationHeaderValue that represents the current user name and password information.</returns>
+        public AuthenticationHeaderValue ToAuthenticationHeaderValue(Cases schemeCase = Cases.Original)
+        {
+            return ToAuthenticationHeaderValue(null, schemeCase);
+        }
+
+        /// <summary>
+        /// Returns a System.Net.Http.Headers.AuthenticationHeaderValue that represents the current TokenInfo.
+        /// </summary>
+        /// <param name="encoding">The text encoding.</param>
+        /// <param name="schemeCase">The scheme case.</param>
+        /// <returns>A System.Net.Http.Headers.AuthenticationHeaderValue that represents the current TokenInfo.</returns>
+        public AuthenticationHeaderValue ToAuthenticationHeaderValue(Encoding encoding, Cases schemeCase = Cases.Original)
+        {
+            var sb = new StringBuilder();
+            if (!string.IsNullOrEmpty(UserName)) sb.Append(UserName);
+            sb.Append(':');
+            if (Password != null && Password.Length > 0) sb.Append(Password.ToUnsecureString());
+            return new AuthenticationHeaderValue(
+                StringUtility.ToSpecificCaseInvariant("Basic", schemeCase),
+                Convert.ToBase64String((encoding ?? Encoding.UTF8).GetBytes(sb.ToString())));
+        }
 
         /// <summary>
         /// Fills the data into the current request body.

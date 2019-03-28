@@ -9,10 +9,15 @@ using Trivial.Text;
 namespace Trivial.Data
 {
     /// <summary>
-    /// CSV parser.
+    /// The text parser for comma-separated values (RFC-4180) file format.
     /// </summary>
     public class CsvParser : LinesStringTableParser
     {
+        /// <summary>
+        /// CSV MIME.
+        /// </summary>
+        public const string MIME = "text/csv";  // RFC 7111.
+
         /// <summary>
         /// Initializes a new instance of the CsvParser class.
         /// </summary>
