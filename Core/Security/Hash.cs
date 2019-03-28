@@ -187,7 +187,7 @@ namespace Trivial.Security
         public static string ToSHA3512String(string plainText, Encoding encoding = null)
         {
             // Create a new instance of the SHA512CryptoServiceProvider object.
-            return ToHashString(SHA3ManagedImpl.Create512, plainText, encoding);
+            return ToHashString(SHA3Managed.Create512, plainText, encoding);
         }
 
         /// <summary>
@@ -285,13 +285,13 @@ namespace Trivial.Security
             switch (h.Name.ToUpperInvariant().Replace("-", string.Empty))
             {
                 case "SHA3512":
-                    return SHA3ManagedImpl.Create512;
+                    return SHA3Managed.Create512;
                 case "SHA3384":
-                    return SHA3ManagedImpl.Create384;
+                    return SHA3Managed.Create384;
                 case "SHA3256":
-                    return SHA3ManagedImpl.Create256;
+                    return SHA3Managed.Create256;
                 case "SHA3224":
-                    return SHA3ManagedImpl.Create224;
+                    return SHA3Managed.Create224;
                 case "SHA2":
                     return SHA512.Create;
                 case "SHA256":

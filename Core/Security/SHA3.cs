@@ -11,31 +11,31 @@ namespace Trivial.Security
     /// <remarks>
     /// Note: Will be replaced by the implementation in .Net when available.
     /// </remarks>
-    internal class SHA3ManagedImpl : HashAlgorithm
+    internal class SHA3Managed : HashAlgorithm
     {
-        public static new SHA3ManagedImpl Create()
+        public static new SHA3Managed Create()
         {
-            return new SHA3ManagedImpl(512);
+            return new SHA3Managed(512);
         }
 
-        public static SHA3ManagedImpl Create224()
+        public static SHA3Managed Create224()
         {
-            return new SHA3ManagedImpl(224);
+            return new SHA3Managed(224);
         }
 
-        public static SHA3ManagedImpl Create256()
+        public static SHA3Managed Create256()
         {
-            return new SHA3ManagedImpl(256);
+            return new SHA3Managed(256);
         }
 
-        public static SHA3ManagedImpl Create384()
+        public static SHA3Managed Create384()
         {
-            return new SHA3ManagedImpl(384);
+            return new SHA3Managed(384);
         }
 
-        public static SHA3ManagedImpl Create512()
+        public static SHA3Managed Create512()
         {
-            return new SHA3ManagedImpl(512);
+            return new SHA3Managed(512);
         }
 
         public const int KeccakB = 1600;
@@ -49,7 +49,7 @@ namespace Trivial.Security
         protected int buffLength;
         protected int keccakR;
 
-        private SHA3ManagedImpl(int hashBitLength)
+        private SHA3Managed(int hashBitLength)
         {
             if (hashBitLength != 224 && hashBitLength != 256 && hashBitLength != 384 && hashBitLength != 512)
                 throw new ArgumentException("hashBitLength must be 224, 256, 384, or 512", nameof(hashBitLength));

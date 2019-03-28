@@ -148,7 +148,7 @@ namespace Trivial.Security
         /// <returns>A keyed hash signature provider.</returns>
         public static HashSignatureProvider CreateSHA3512(bool shortName = false)
         {
-            return new HashSignatureProvider(SHA3ManagedImpl.Create512(), shortName ? "S3512" : "SHA3512");
+            return new HashSignatureProvider(SHA3Managed.Create512(), shortName ? "S3512" : "SHA3512");
         }
 
         /// <summary>
@@ -158,7 +158,7 @@ namespace Trivial.Security
         /// <returns>A keyed hash signature provider.</returns>
         public static HashSignatureProvider CreateSHA3384(bool shortName = false)
         {
-            return new HashSignatureProvider(SHA3ManagedImpl.Create384(), shortName ? "S3384" : "SHA3384");
+            return new HashSignatureProvider(SHA3Managed.Create384(), shortName ? "S3384" : "SHA3384");
         }
 
         /// <summary>
@@ -168,7 +168,7 @@ namespace Trivial.Security
         /// <returns>A keyed hash signature provider.</returns>
         public static HashSignatureProvider CreateSHA3256(bool shortName = false)
         {
-            return new HashSignatureProvider(SHA3ManagedImpl.Create256(), shortName ? "S3256" : "SHA3256");
+            return new HashSignatureProvider(SHA3Managed.Create256(), shortName ? "S3256" : "SHA3256");
         }
 
         /// <summary>
@@ -178,7 +178,7 @@ namespace Trivial.Security
         /// <returns>A keyed hash signature provider.</returns>
         public static HashSignatureProvider CreateSHA3224(bool shortName = false)
         {
-            return new HashSignatureProvider(SHA3ManagedImpl.Create224(), shortName ? "S3224" : "SHA3224");
+            return new HashSignatureProvider(SHA3Managed.Create224(), shortName ? "S3224" : "SHA3224");
         }
 
         /// <summary>

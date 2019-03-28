@@ -14,7 +14,7 @@ namespace Trivial.IO
     public static class FileUtility
     {
         /// <summary>
-        /// Copies the directory.
+        /// Copies a directory.
         /// </summary>
         /// <param name="source">The source directory.</param>
         /// <param name="destPath">The destinate directory path.</param>
@@ -38,7 +38,7 @@ namespace Trivial.IO
         }
 
         /// <summary>
-        /// Copies the directory.
+        /// Copies a directory.
         /// </summary>
         /// <param name="source">The source directory.</param>
         /// <param name="destPath">The destinate directory path.</param>
@@ -55,7 +55,7 @@ namespace Trivial.IO
         }
 
         /// <summary>
-        /// Copies the directory.
+        /// Copies a directory.
         /// </summary>
         /// <param name="source">The source directory.</param>
         /// <param name="destPath">The destinate directory path.</param>
@@ -76,7 +76,7 @@ namespace Trivial.IO
         }
 
         /// <summary>
-        /// Copies the directory.
+        /// Copies a directory.
         /// </summary>
         /// <param name="source">The source directory.</param>
         /// <param name="destPath">The destinate directory path.</param>
@@ -129,7 +129,7 @@ namespace Trivial.IO
         }
 
         /// <summary>
-        /// Copies the directory.
+        /// Copies a directory.
         /// </summary>
         /// <param name="source">The source directory.</param>
         /// <param name="destPath">The destinate directory path.</param>
@@ -140,7 +140,7 @@ namespace Trivial.IO
         }
 
         /// <summary>
-        /// Copies the directory.
+        /// Copies a directory.
         /// </summary>
         /// <param name="source">The source directory.</param>
         /// <param name="destPath">The destinate directory path.</param>
@@ -201,40 +201,6 @@ namespace Trivial.IO
         }
 
         /// <summary>
-        /// Creates a file info instance.
-        /// </summary>
-        /// <param name="file">The file path.</param>
-        /// <returns>A file info instance; or null, if failed.</returns>
-        public static FileInfo TryCreateFileInfo(string file)
-        {
-            if (string.IsNullOrWhiteSpace(file)) return null;
-            try
-            {
-                return new FileInfo(file);
-            }
-            catch (UnauthorizedAccessException)
-            {
-            }
-            catch (IOException)
-            {
-            }
-            catch (ArgumentException)
-            {
-            }
-            catch (NotSupportedException)
-            {
-            }
-            catch (SecurityException)
-            {
-            }
-            catch (InvalidOperationException)
-            {
-            }
-
-            return null;
-        }
-
-        /// <summary>
         /// Gets the specific directory path.
         /// </summary>
         /// <param name="path">The path.</param>
@@ -281,24 +247,32 @@ namespace Trivial.IO
         }
 
         /// <summary>
-        /// Gets the log full file of web native.
+        /// Gets a directory information instance of the specific path.
         /// </summary>
-        /// <returns>The file information instance.</returns>
+        /// <param name="folder">The folder path.</param>
+        /// <param name="folderName">The sub-folder name.</param>
+        /// <param name="folderName2">The sub-sub-folder name.</param>
+        /// <param name="folderName3">The sub-sub-sub-folder name.</param>
+        /// <returns>The directory information instance.</returns>
         /// <exception cref="ArgumentNullException">The argument is null.</exception>
         /// <exception cref="ArgumentException">The argument is invalid.</exception>
         /// <exception cref="SecurityException">The caller does not have the required permission.</exception>
         /// <exception cref="NotSupportedException">The path of the file refers to a non-file device, such as "con:", "com1:", "lpt1:".</exception>
-        public static DirectoryInfo GetLocalDir(string folder, string folderName = null, string folderName2 = null, string folderName3 = null)
+        public static DirectoryInfo GetDirectoryInfo(string folder, string folderName = null, string folderName2 = null, string folderName3 = null)
         {
             var path = GetLocalPath(folder, folderName, folderName2, folderName3);
             return new DirectoryInfo(path);
         }
 
         /// <summary>
-        /// Gets the log full file of web native.
+        /// Gets a directory information instance of the specific path.
         /// </summary>
+        /// <param name="folder">The folder path.</param>
+        /// <param name="folderName">The sub-folder name.</param>
+        /// <param name="folderName2">The sub-sub-folder name.</param>
+        /// <param name="folderName3">The sub-sub-sub-folder name.</param>
         /// <returns>The file information instance; or null, if failed.</returns>
-        public static DirectoryInfo TryGetLocalDir(string folder, string folderName = null, string folderName2 = null, string folderName3 = null)
+        public static DirectoryInfo TryGetDirectoryInfo(string folder, string folderName = null, string folderName2 = null, string folderName3 = null)
         {
             var path = GetLocalPath(folder, folderName, folderName2, folderName3);
             if (string.IsNullOrWhiteSpace(path)) return null;
@@ -329,14 +303,15 @@ namespace Trivial.IO
         }
 
         /// <summary>
-        /// Gets the log full file of web native.
+        /// Gets a file information instance of the specific path.
         /// </summary>
+        /// <param name="fileName">The file name.</param>
         /// <returns>The file information instance.</returns>
         /// <exception cref="ArgumentNullException">The argument is null.</exception>
         /// <exception cref="ArgumentException">The argument is invalid.</exception>
         /// <exception cref="SecurityException">The caller does not have the required permission.</exception>
         /// <exception cref="NotSupportedException">The path of the file refers to a non-file device, such as "con:", "com1:", "lpt1:".</exception>
-        public static FileInfo GetLocalFile(string fileName)
+        public static FileInfo GetFileInfo(string fileName)
         {
             var path = GetLocalPath(fileName);
             if (string.IsNullOrWhiteSpace(path)) throw new ArgumentNullException(nameof(fileName));
@@ -345,14 +320,16 @@ namespace Trivial.IO
         }
 
         /// <summary>
-        /// Gets the log full file of web native.
+        /// Gets a file information instance of the specific path.
         /// </summary>
+        /// <param name="folder">The folder path.</param>
+        /// <param name="fileName">The file name.</param>
         /// <returns>The file information instance.</returns>
         /// <exception cref="ArgumentNullException">The argument is null.</exception>
         /// <exception cref="ArgumentException">The argument is invalid.</exception>
         /// <exception cref="SecurityException">The caller does not have the required permission.</exception>
         /// <exception cref="NotSupportedException">The path of the file refers to a non-file device, such as "con:", "com1:", "lpt1:".</exception>
-        public static FileInfo GetLocalFile(string folder, string fileName)
+        public static FileInfo GetFileInfo(string folder, string fileName)
         {
             var path = GetLocalPath(folder);
             if (string.IsNullOrWhiteSpace(path)) throw new ArgumentNullException(nameof(folder));
@@ -362,27 +339,52 @@ namespace Trivial.IO
         }
 
         /// <summary>
-        /// Gets the log full file of web native.
+        /// Tries to get a file information instance of the specific path.
         /// </summary>
-        /// <returns>The file information instance; or null, if failed.</returns>
-        public static FileInfo TryGetLocalFile(string fileName)
+        /// <param name="file">The file path.</param>
+        /// <returns>A file info instance; or null, if failed.</returns>
+        public static FileInfo TryGetFileInfo(string file)
         {
-            var path = GetLocalPath(fileName);
-            if (string.IsNullOrWhiteSpace(path)) return null;
-            path = Path.Combine(path, fileName);
-            return TryCreateFileInfo(path);
+            file = GetLocalPath(file);
+            if (string.IsNullOrWhiteSpace(file)) return null;
+            try
+            {
+                return new FileInfo(file);
+            }
+            catch (UnauthorizedAccessException)
+            {
+            }
+            catch (IOException)
+            {
+            }
+            catch (ArgumentException)
+            {
+            }
+            catch (NotSupportedException)
+            {
+            }
+            catch (SecurityException)
+            {
+            }
+            catch (InvalidOperationException)
+            {
+            }
+
+            return null;
         }
 
         /// <summary>
-        /// Gets the log full file of web native.
+        /// Tries to get a file information instance of the specific path.
         /// </summary>
+        /// <param name="folder">The folder path.</param>
+        /// <param name="fileName">The file name.</param>
         /// <returns>The file information instance; or null, if failed.</returns>
-        public static FileInfo TryGetLocalFile(string folder, string fileName)
+        public static FileInfo TryGetFileInfo(string folder, string fileName)
         {
             var path = GetLocalPath(folder);
             if (string.IsNullOrWhiteSpace(path) || string.IsNullOrWhiteSpace(fileName)) return null;
             path = Path.Combine(path, fileName);
-            return TryCreateFileInfo(path);
+            return TryGetFileInfo(path);
         }
     }
 }
