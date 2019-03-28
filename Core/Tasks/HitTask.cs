@@ -299,6 +299,12 @@ namespace Trivial.Tasks
         /// <param name="action">The action.</param>
         /// <param name="delay">Delay time span.</param>
         /// <returns>The hit task instance.</returns>
+        /// <remarks>
+        /// Maybe a handler will be asked to process several times in a short time
+        /// but you just want to process once at the last time
+        /// because the previous ones are obsolete.
+        /// A sample scenario is real-time search.
+        /// </remarks>
         public static HitTask Debounce(Action action, TimeSpan delay)
         {
             var task = new HitTask
@@ -319,6 +325,12 @@ namespace Trivial.Tasks
         /// <param name="action">The action.</param>
         /// <param name="delay">Delay time span.</param>
         /// <returns>The hit task instance.</returns>
+        /// <remarks>
+        /// Maybe a handler will be asked to process several times in a short time
+        /// but you just want to process once at the last time
+        /// because the previous ones are obsolete.
+        /// A sample scenario is real-time search.
+        /// </remarks>
         public static HitTask Debounce(HitEventHandler action, TimeSpan delay)
         {
             var task = new HitTask
@@ -340,6 +352,12 @@ namespace Trivial.Tasks
         /// <param name="action">The action.</param>
         /// <param name="delay">Delay time span.</param>
         /// <returns>The hit task instance.</returns>
+        /// <remarks>
+        /// Maybe a handler will be asked to process several times in a short time
+        /// but you just want to process once at the last time
+        /// because the previous ones are obsolete.
+        /// A sample scenario is real-time search.
+        /// </remarks>
         public static HitTask<T> Debounce<T>(Action<T> action, TimeSpan delay)
         {
             var task = new HitTask<T>
@@ -361,6 +379,12 @@ namespace Trivial.Tasks
         /// <param name="action">The action.</param>
         /// <param name="delay">Delay time span.</param>
         /// <returns>The hit task instance.</returns>
+        /// <remarks>
+        /// Maybe a handler will be asked to process several times in a short time
+        /// but you just want to process once at the last time
+        /// because the previous ones are obsolete.
+        /// A sample scenario is real-time search.
+        /// </remarks>
         public static HitTask<T> Debounce<T>(HitEventHandler<T> action, TimeSpan delay)
         {
             var task = new HitTask<T>
@@ -381,6 +405,9 @@ namespace Trivial.Tasks
         /// <param name="action">The action.</param>
         /// <param name="duration">The duration.</param>
         /// <returns>The hit task instance.</returns>
+        /// <remarks>
+        /// A handler to be frozen for a while after it has processed.
+        /// </remarks>
         public static HitTask Throttle(Action action, TimeSpan duration)
         {
             var task = new HitTask
@@ -403,6 +430,9 @@ namespace Trivial.Tasks
         /// <param name="action">The action.</param>
         /// <param name="duration">The duration.</param>
         /// <returns>The hit task instance.</returns>
+        /// <remarks>
+        /// A handler to be frozen for a while after it has processed.
+        /// </remarks>
         public static HitTask Throttle(HitEventHandler action, TimeSpan duration)
         {
             var task = new HitTask
@@ -426,6 +456,9 @@ namespace Trivial.Tasks
         /// <param name="action">The action.</param>
         /// <param name="duration">The duration.</param>
         /// <returns>The hit task instance.</returns>
+        /// <remarks>
+        /// A handler to be frozen for a while after it has processed.
+        /// </remarks>
         public static HitTask<T> Throttle<T>(Action<T> action, TimeSpan duration)
         {
             var task = new HitTask<T>
@@ -449,6 +482,9 @@ namespace Trivial.Tasks
         /// <param name="action">The action.</param>
         /// <param name="duration">The duration.</param>
         /// <returns>The hit task instance.</returns>
+        /// <remarks>
+        /// A handler to be frozen for a while after it has processed.
+        /// </remarks>
         public static HitTask<T> Throttle<T>(HitEventHandler<T> action, TimeSpan duration)
         {
             var task = new HitTask<T>
@@ -473,6 +509,9 @@ namespace Trivial.Tasks
         /// <param name="max">The maxmum hit count.</param>
         /// <param name="timeout">The time span between each hit.</param>
         /// <returns>The hit task instance.</returns>
+        /// <remark>
+        /// A handler to process for the specific times and it will be reset after a while.
+        /// </remark>
         public static HitTask Mutliple(Action action, int min, int? max, TimeSpan timeout)
         {
             var task = new HitTask
@@ -496,6 +535,9 @@ namespace Trivial.Tasks
         /// <param name="max">The maxmum hit count.</param>
         /// <param name="timeout">The time span between each hit.</param>
         /// <returns>The hit task instance.</returns>
+        /// <remark>
+        /// A handler to process for the specific times and it will be reset after a while.
+        /// </remark>
         public static HitTask Mutliple(HitEventHandler action, int min, int? max, TimeSpan timeout)
         {
             var task = new HitTask
@@ -520,6 +562,9 @@ namespace Trivial.Tasks
         /// <param name="max">The maxmum hit count.</param>
         /// <param name="timeout">The time span between each hit.</param>
         /// <returns>The hit task instance.</returns>
+        /// <remark>
+        /// A handler to process for the specific times and it will be reset after a while.
+        /// </remark>
         public static HitTask<T> Mutliple<T>(Action<T> action, int min, int? max, TimeSpan timeout)
         {
             var task = new HitTask<T>
@@ -544,6 +589,9 @@ namespace Trivial.Tasks
         /// <param name="max">The maxmum hit count.</param>
         /// <param name="timeout">The time span between each hit.</param>
         /// <returns>The hit task instance.</returns>
+        /// <remark>
+        /// A handler to process for the specific times and it will be reset after a while.
+        /// </remark>
         public static HitTask<T> Mutliple<T>(HitEventHandler<T> action, int min, int? max, TimeSpan timeout)
         {
             var task = new HitTask<T>
@@ -568,6 +616,10 @@ namespace Trivial.Tasks
         /// <param name="max">The maxmum hit count.</param>
         /// <param name="timeout">The time span between each hit.</param>
         /// <returns>The hit task instance.</returns>
+        /// <remarks>
+        /// A handler to process for the specific times only and it will be reset after a while.
+        /// A sample scenario is double click.
+        /// </remarks>
         public static HitTask Times(Action action, int min, int? max, TimeSpan timeout)
         {
             var task = new HitTask
@@ -593,6 +645,10 @@ namespace Trivial.Tasks
         /// <param name="max">The maxmum hit count.</param>
         /// <param name="timeout">The time span between each hit.</param>
         /// <returns>The hit task instance.</returns>
+        /// <remarks>
+        /// A handler to process for the specific times only and it will be reset after a while.
+        /// A sample scenario is double click.
+        /// </remarks>
         public static HitTask Times(HitEventHandler action, int min, int? max, TimeSpan timeout)
         {
             var task = new HitTask
@@ -619,6 +675,10 @@ namespace Trivial.Tasks
         /// <param name="max">The maxmum hit count.</param>
         /// <param name="timeout">The time span between each hit.</param>
         /// <returns>The hit task instance.</returns>
+        /// <remarks>
+        /// A handler to process for the specific times only and it will be reset after a while.
+        /// A sample scenario is double click.
+        /// </remarks>
         public static HitTask<T> Times<T>(Action<T> action, int min, int? max, TimeSpan timeout)
         {
             var task = new HitTask<T>
@@ -645,6 +705,10 @@ namespace Trivial.Tasks
         /// <param name="max">The maxmum hit count.</param>
         /// <param name="timeout">The time span between each hit.</param>
         /// <returns>The hit task instance.</returns>
+        /// <remarks>
+        /// A handler to process for the specific times only and it will be reset after a while.
+        /// A sample scenario is double click.
+        /// </remarks>
         public static HitTask<T> Times<T>(HitEventHandler<T> action, int min, int? max, TimeSpan timeout)
         {
             var task = new HitTask<T>

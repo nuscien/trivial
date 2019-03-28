@@ -47,6 +47,12 @@ namespace Trivial.Maths
         /// </summary>
         /// <param name="value">The value to test.</param>
         /// <returns>true if it is a prime number; otherwise, false.</returns>
+        /// <example>
+        /// <code>
+        /// var isPrime1 = Arithemtic.IsPrime(256); // => false
+        /// var isPrime2 = Arithemtic.IsPrime(257); // => true
+        /// </code>
+        /// </example>
         public static bool IsPrime(int value)
         {
             return IsPrime((uint)Math.Abs(value));
@@ -79,6 +85,11 @@ namespace Trivial.Maths
         /// <param name="value">The value to test.</param>
         /// <param name="cancellationToken">The additional cancellation token.</param>
         /// <returns>true if it is a prime number; otherwise, false.</returns>
+        /// <example>
+        /// <code>
+        /// var isPrimeLong = await Arithemtic.IsPrimeAsync(2305843009213693951); // => true
+        /// </code>
+        /// </example>
         public static async Task<bool> IsPrimeAsync(ulong value, CancellationToken cancellationToken = default)
         {
             if (value < 2 || value % 2 == 0 || value % 3 == 0 || value % 5 == 0 || value % 7 == 0 || value % 11 == 0 || value % 13 == 0 || value % 17 == 0 || value % 19 == 0) return false;
@@ -263,6 +274,11 @@ namespace Trivial.Maths
         /// <param name="a">Number 1.</param>
         /// <param name="b">Number 2.</param>
         /// <returns>The greatest common divisor.</returns>
+        /// <example>
+        /// <code>
+        /// var gcdNum = Arithmetic.Gcd(192, 128); // => 64
+        /// </code>
+        /// </example>
         public static int Gcd(int a, int b)
         {
             if (a == 0 || b == 0) return 1;
@@ -309,6 +325,11 @@ namespace Trivial.Maths
         /// <param name="a">Number 1.</param>
         /// <param name="b">Number 2.</param>
         /// <returns>The least common multiple.</returns>
+        /// <example>
+        /// <code>
+        /// var lcmNum = Arithmetic.Lcm(192, 128); // => 384
+        /// </code>
+        /// </example>
         public static int Lcm(int a, int b)
         {
             return a / Gcd(a, b) * b;

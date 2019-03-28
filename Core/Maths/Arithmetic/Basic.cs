@@ -24,6 +24,11 @@ namespace Trivial.Maths
         /// </summary>
         /// <param name="value">A number to calculate.</param>
         /// <returns>A number of result.</returns>
+        /// <example>
+        /// <code>
+        /// var factorialNum = Arithmetic.Factorial(20); // => 2432902008176640000
+        /// </code>
+        /// </example>
         public static long Factorial(uint value)
         {
             if (value < 2) return 1;
@@ -41,6 +46,11 @@ namespace Trivial.Maths
         /// </summary>
         /// <param name="value">A number to calculate.</param>
         /// <returns>A number of result.</returns>
+        /// <example>
+        /// <code>
+        /// var factorialNum = Arithmetic.FactorialApproximate(100); // 9.33262154439442e+157
+        /// </code>
+        /// </example>
         public static double FactorialApproximate(uint value)
         {
             if (value < 2) return 1;

@@ -179,6 +179,10 @@ namespace Trivial.Tasks
     /// The retry task.
     /// </summary>
     /// <typeparam name="T">The type of retry policy.</typeparam>
+    /// <remarks>
+    /// You can set up a task and a retry policy
+    /// so that the task will process and retry automatically expected when it fails.
+    /// </remarks>
     public class RetryTask<T> where T : IRetryPolicy
     {
         /// <summary>
@@ -727,6 +731,10 @@ namespace Trivial.Tasks
     /// <summary>
     /// The linear retry policy.
     /// </summary>
+    /// <remarks>
+    /// You can create this retry policy to process the specific handler within the specific times
+    /// with the specific time span between two processing.
+    /// </remarks>
     public class LinearRetryPolicy : IRetryPolicy
     {
         /// <summary>

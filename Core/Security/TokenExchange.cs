@@ -19,8 +19,114 @@ using Trivial.Text;
 namespace Trivial.Security
 {
     /// <summary>
-    /// The token exchange based on RSA.
+    ///   <para>
+    ///     The token exchange based on RSA.
+    ///   </para>
+    ///   <para>
+    ///     You can save the access tokenor other string in local and send it another side
+    ///     after encryption by the public key required by that side.
+    ///     And send a public key registered in current container to the other side
+    ///     so that it can use the same mechanism to transfer the token encrypted back
+    ///     and you can decrypt it by your private key.
+    ///   </para>
     /// </summary>
+    /// <remarks>
+    ///   <para>
+    ///     So you can use this in both 2 sides.
+    ///   </para>
+    ///   <para>
+    ///     Following is an example of flow, suppose one is server side and another is client side.
+    ///   </para>
+    ///   <list type="number">
+    ///     <item>
+    ///       Client side asks for a server encrypt key
+    ///       to encrypt the authorization form filled in client.
+    ///     </item>
+    ///     <item>
+    ///       Server side sends a server encrypt key and its identifier.
+    ///       This key is a public key (marked as S-Key-Public here) for encryption.
+    ///       Its private key (marked as S-Key-Private here) is used to decrypt.
+    ///       Both keys and its identifier (marked as S-Key-Id here) should cache in server.
+    ///     </item>
+    ///     <item>
+    ///       Client creates a pair of private key and public key.
+    ///       The private key (marked as C-Key-Private here) is used to decrypt data
+    ///       and the public key (marked as C-Key-Public here) is used to encrypt.
+    ///       The key pair should cache in client with an identifier (marked as C-Key-Id here).
+    ///     </item>
+    ///     <item>
+    ///       Client uses S-Key-Public to encrypt the form now
+    ///       and send it back to server with the S-Key-Id, C-Key-Public and C-Key-Id.
+    ///       Client also need cache S-Key-Id and S-Key-Public in local.
+    ///     </item>
+    ///     <item>
+    ///       Server uses S-Key-Id to find the S-Key-Private to decrypt the form.
+    ///       Then generates a token and encrypt it by C-Key-Public.
+    ///       Then send the token encrypted back to client with C-Key-Id.
+    ///       Server also need cache C-Key-Id and C-Key-Public with a mapping relationship with the token.
+    ///     </item>
+    ///     <item>
+    ///       Client uses C-Key-Id to find C-Key-Private to decrypt the token.At next time,
+    ///       client sends the data and the token encrypted by S-Key-Public with S-Key-Id.
+    ///     </item>
+    ///     <item>
+    ///       Server uses S-Key-Id to find the S-Key-Private to decrypt the token to authorize.
+    ///       Then process the business logic of request.
+    ///       Then return the result and the token encrypted by C-Key-Public with C-Key-Id.
+    ///     </item>
+    ///   </list>
+    ///   <para>
+    ///     Here, in server side.
+    ///   </para>
+    ///   <list type="bullet">
+    ///     <item>C-Key-Public is the <code>EncryptKey</code>.</item>
+    ///     <item>C-Key-Id is the <code>EncryptKeyId</code>.</item>
+    ///     <item>S-Key-Public is the <code>PublicKey</code>.</item>
+    ///     <item>S-Key-Id is the <code>Id</code>.</item>
+    ///   </list>
+    ///   <para>
+    ///     In client side.
+    ///   </para>
+    ///   <list type="bullet">
+    ///     <item>C-Key-Public is the <code>PublicKey</code>.</item>
+    ///     <item>C-Key-Id is the <code>Id</code>.</item>
+    ///     <item>S-Key-Public is the <code>EncryptKey</code>.</item>
+    ///     <item>S-Key-Id is the <code>EncryptKeyId</code>.</item>
+    ///   </list>
+    ///   <para>
+    ///     and in both, token is in `AccessToken`,
+    ///     the private key is not accessable directly.
+    ///   </para>
+    /// </remarks>
+    /// <example>
+    ///   <code>
+    ///     // Create a token exchange instance and create a pair of RSA key.
+    ///     var token = new RSATokenExchange();
+    ///     token.CreateCrypto();
+    ///     
+    ///     // Get the public key to send to the other side
+    ///     // so that they can use this to encrypt the access token
+    ///     // and send back to us.
+    ///     var publicKey = token.PublicKey.ToPublicPEMString();
+    ///     
+    ///     // Save the access token from the other side.
+    ///     // The access token is encrypted by the current public key
+    ///     // and we can decrypt by the private key stored in this instance to save.
+    ///     token.DecryptToken(tokenReceived);
+    ///     
+    ///     // Save the other side public key.
+    ///     var otherSidePublicKey = ...; // An RSA public key from the other side.
+    ///     token.EncryptKey = RSAUtility.Parse(otherSidePublicKey);
+    ///     
+    ///     // Get the Base64 of the token encrypted by the other side public key.
+    ///     var tokenToSend = token.EncryptToken();
+    ///
+    ///     // Get the authentication header value in JSON web token format
+    ///     // using HMAC SHA-512 keyed hash algorithm to signature for example.
+    ///     var sign = HashSignatureProvider.CreateHS512("a secret string");
+    ///     var jwt = token.ToJsonWebTokenAuthenticationHeaderValue(sign);
+    ///   </code>
+    /// </example>
     public class RSATokenExchange : ICloneable
     {
         /// <summary>
@@ -284,7 +390,7 @@ namespace Trivial.Security
         /// </summary>
         /// <param name="tokenEncrypted">The new token encrypted.</param>
         /// <param name="padding">The padding mode for decryption.</param>
-        public void DecryptToken(string tokenEncrypted, RSAEncryptionPadding padding)
+        public void DecryptToken(string tokenEncrypted, RSAEncryptionPadding padding = null)
         {
             DecryptToken(tokenEncrypted, false, padding);
         }

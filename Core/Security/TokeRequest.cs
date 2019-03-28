@@ -957,8 +957,6 @@ namespace Trivial.Security
         public static TokenRequestModel Parse(string s)
         {
             if (string.IsNullOrWhiteSpace(s)) return null;
-            s = s.Trim();
-            if (s.IndexOf("{") == 0) return StringUtility.FromJson<TokenRequestModel>(s);
             var q = QueryData.Parse(s);
             return new TokenRequestModel
             {

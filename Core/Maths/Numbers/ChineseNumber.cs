@@ -489,11 +489,33 @@ namespace Trivial.Maths
         /// <summary>
         /// Simplified Chinese number.
         /// </summary>
+        /// <example>
+        /// <code>
+        /// // Get the string for a specific number. It should be following.
+        /// // 一万两千三百四十五点六七
+        /// ChineseNumber.Simplified.ToString(12345.67);
+        /// 
+        /// // Get the string of the digit one by one by setting the 2nd arg as true. It should be following.
+        /// // 一二三四五
+        /// ChineseNumber.Simplified.ToString(12345, true);
+        /// 
+        /// // Get the string of an approximation for a specific number. It should be following.
+        /// // 123.5万
+        /// var num3 = ChineseNumber.Simplified.ToApproximationString(1234567);
+        /// </code>
+        /// </example>
         public static readonly ChineseNumber Simplified = new ChineseNumber();
 
         /// <summary>
         /// Simplified Chinese uppercase number.
         /// </summary>
+        /// <example>
+        /// <code>
+        /// // Get the uppercase number string. It should be following.
+        /// // 壹萬贰仟叄佰肆拾伍
+        /// ChineseNumber.SimplifiedUppercase.ToString(12345);
+        /// </code>
+        /// </example>
         public static readonly ChineseNumber SimplifiedUppercase = new ChineseNumber(false, true);
 
         /// <summary>

@@ -679,6 +679,21 @@ namespace Trivial.Maths
         /// <summary>
         /// English number.
         /// </summary>
+        /// <example>
+        /// <code>
+        /// // Get the string for a specific number. It should be following.
+        /// // twelve thousand three hundred and forty-five point six seven
+        /// var num1 = EnglishNumber.Default.ToString(12345.67);
+        /// 
+        /// // Get the string of the digit one by one by setting the 2nd arg as true. It should be following.
+        /// // one two three four five
+        /// var num2 = EnglishNumber.Default.ToString(12345, true);
+        /// 
+        /// // Get the string of an approximation for a specific number. It should be following.
+        /// // 1.2M
+        /// var num3 = EnglishNumber.Default.ToApproximationString(1234567);
+        /// </code>
+        /// </example>
         public static EnglishNumber Default = new EnglishNumber();
     }
 }

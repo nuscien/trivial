@@ -19,6 +19,18 @@ namespace Trivial.Security
     /// <summary>
     /// The helper of symmetric functions.
     /// </summary>
+    /// <example>
+    /// <code>
+    /// // Encryption Key and IV.
+    /// var key = ...;
+    /// var iv = ...;
+    /// 
+    /// // AES sample.
+    /// var original = "Original secret string";
+    /// var cipher = SymmetricUtilities.Encrypt(Aes.Create, original, key, iv);
+    /// var back = SymmetricUtilities.Decrypt(Aes.Create, cipher, key, iv); // back == original
+    /// </code>
+    /// </example>
     public static class SymmetricUtility
     {
         /// <summary>

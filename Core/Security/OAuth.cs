@@ -20,7 +20,8 @@ using Trivial.Text;
 namespace Trivial.Security
 {
     /// <summary>
-    /// The OAuth client.
+    /// <para>The OAuth client.</para>
+    /// <para>You can use this to login and then create the JSON HTTP web clients with the authentication information.</para>
     /// </summary>
     public class OAuthClient : TokenContainer
     {
