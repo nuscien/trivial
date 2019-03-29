@@ -16,8 +16,8 @@ namespace Trivial.Net
     /// </summary>
     public class QueryData : StringKeyValuePairs
     {
-        private static string numbool = "-0123456789.tfnuTFNU";
-        private static string chars = "_$-0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        private const string NumBoolChars = "-0123456789.tfnuTFNU";
+        private const string NameChars = "_$-0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
         /// <summary>
         /// Initializes a new instance of the QueryData class.
@@ -108,7 +108,7 @@ namespace Trivial.Net
 
                         if (name == null)
                         {
-                            if (chars.IndexOf(c) > -1)
+                            if (NameChars.IndexOf(c) > -1)
                             {
                                 sb = new StringBuilder();
                                 level.Add(':');
@@ -126,7 +126,7 @@ namespace Trivial.Net
                         {
                             level.Add(']');
                         }
-                        else if (numbool.IndexOf(c) > -1)
+                        else if (NumBoolChars.IndexOf(c) > -1)
                         {
                             level.Add(',');
                         }
@@ -189,7 +189,7 @@ namespace Trivial.Net
                             sb = null;
                             ignoreRest = true;
                         }
-                        else if (chars.IndexOf(c) < 0)
+                        else if (NameChars.IndexOf(c) < 0)
                         {
                             throw new FormatException("The format of query string is not correct.");
                         }

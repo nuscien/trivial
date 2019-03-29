@@ -178,6 +178,21 @@ namespace Trivial.Collection
         }
 
         /// <summary>
+        /// Adds 2 elements.
+        /// </summary>
+        /// <param name="a">Left element.</param>
+        /// <param name="b">Right element.</param>
+        /// <returns>The result.</returns>
+        public static StringKeyValuePairs operator +(StringKeyValuePairs a, KeyValuePair<string, string> b)
+        {
+            if (a == null) return null;
+            var col = new StringKeyValuePairs();
+            if (a != null) col.AddRange(a);
+            col.Add(b);
+            return col;
+        }
+
+        /// <summary>
         /// Deletes.
         /// </summary>
         /// <param name="a">Left element.</param>
@@ -194,6 +209,21 @@ namespace Trivial.Collection
                 a.Remove(kvp.Key, kvp.Value);
             }
 
+            return col;
+        }
+
+        /// <summary>
+        /// Deletes.
+        /// </summary>
+        /// <param name="a">Left element.</param>
+        /// <param name="b">Right element.</param>
+        /// <returns>The result.</returns>
+        public static StringKeyValuePairs operator -(StringKeyValuePairs a, KeyValuePair<string, string> b)
+        {
+            if (a == null) return null;
+            var col = new StringKeyValuePairs();
+            col.AddRange(a);
+            a.Remove(b.Key, b.Value);
             return col;
         }
     }
