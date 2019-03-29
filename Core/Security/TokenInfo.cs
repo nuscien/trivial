@@ -26,54 +26,143 @@ namespace Trivial.Security
     public class TokenInfo
     {
         /// <summary>
-        /// The user identifier property.
+        /// The error codes of token response.
+        /// </summary>
+        public static class ErrorCodeConstants
+        {
+            /// <summary>
+            /// The unknown error
+            /// </summary>
+            public const string Unknown = "unknown";
+
+            /// <summary>
+            /// The request is missing a required parameter,
+            /// includes an invalid parameter value,
+            /// includes a parameter more than once,
+            /// or is otherwise malformed.
+            /// </summary>
+            public const string InvalidRequest = "invalid_request";
+
+            /// <summary>
+            /// Client authentication failed.
+            /// </summary>
+            public const string InvalidClient = "invalid_client";
+
+            /// <summary>
+            /// The provided authorization grant or refresh token is
+            /// invalid, expired, revoked,
+            /// does not match the redirection URI used in the authorization request,
+            /// or was issued to another client.
+            /// </summary>
+            public const string InvalidGrant = "invalid_grant";
+
+            /// <summary>
+            /// The client is not authorized to request an access token using this method.
+            /// </summary>
+            public const string UnauthorizedClient = "UnauthorizedClient";
+
+            /// <summary>
+            /// The resource owner or authorization server denied the request.
+            /// </summary>
+            public const string AccessDenied = "access_denied";
+
+            /// <summary>
+            /// The authorization server does not support obtaining an access token using this method.
+            /// </summary>
+            public const string UnsupportedResponseType = "unsupported_response_type";
+
+            /// <summary>
+            /// The authorization grant type is not supported by the authorization server.
+            /// </summary>
+            public const string UnsupportedGrantType = "unsupported_grant_type";
+
+            /// <summary>
+            /// The requested scope is invalid, unknown, or malformed.
+            /// </summary>
+            public const string InvalidScope = "invalid_scope";
+
+            /// <summary>
+            /// The authorization server encountered an unexpected condition
+            /// that prevented it from fulfilling the request.
+            /// </summary>
+            public const string ServerError = "server_error";
+
+            /// <summary>
+            /// The authorization server is currently unable to handle the request
+            /// due to a temporary overloading or maintenance of the server.
+            /// </summary>
+            public const string TemporarilyUnavailable = "temporarily_unavailable";
+        }
+
+        /// <summary>
+        /// The user identifier property name.
         /// </summary>
         public const string TokenKey = "token";
 
         /// <summary>
-        /// The user identifier property.
+        /// The user identifier property name.
         /// </summary>
         public const string UserIdProperty = "user_id";
 
         /// <summary>
-        /// The resource identifier property.
+        /// The resource identifier property name.
         /// </summary>
         public const string ResourceIdProperty = "res_id";
 
         /// <summary>
-        /// The user name property.
+        /// The user name property name.
         /// </summary>
         public const string UserNameProperty = "username";
 
         /// <summary>
-        /// The token reference identifier property.
+        /// The token reference identifier property name.
         /// </summary>
         public const string TokenIdProperty = "token_id";
 
         /// <summary>
-        /// The access token property.
+        /// The access token property name.
         /// </summary>
         public const string AccessTokenProperty = "access_token";
 
         /// <summary>
-        /// The token type property.
+        /// The token type property name.
         /// </summary>
         public const string TokenTypeProperty = "token_type";
 
         /// <summary>
-        /// The refresh token property.
+        /// The refresh token property name.
         /// </summary>
         public const string RefreshTokenProperty = "refresh_token";
 
         /// <summary>
-        /// The expires in property.
+        /// The expires in property name.
         /// </summary>
         public const string ExpiresInProperty = "expires_in";
 
         /// <summary>
-        /// The error message in property.
+        /// The error code property name.
         /// </summary>
-        public const string ErrorMessageProperty = "error";
+        public const string ErrorCodeProperty = "error";
+
+        /// <summary>
+        /// The error description property name.
+        /// </summary>
+        public const string ErrorDescriptionProperty = "error_description";
+
+        /// <summary>
+        /// The error description property name.
+        /// </summary>
+        public const string ErrorUriProperty = "error_uri";
+
+        /// <summary>
+        /// The state property name.
+        /// </summary>
+        public const string StateProperty = "state";
+
+        /// <summary>
+        /// The scope property name.
+        /// </summary>
+        public const string ScopeProperty = "scope";
 
         /// <summary>
         /// The token type.
@@ -131,10 +220,77 @@ namespace Trivial.Security
         public string RefreshToken { get; set; }
 
         /// <summary>
-        /// Gets or sets the error message.
+        /// Gets or sets the error code.
         /// </summary>
-        [DataMember(Name = ErrorMessageProperty)]
-        public string ErrorMessage { get; set; }
+        [DataMember(Name = ErrorCodeProperty)]
+        public string ErrorCode { get; set; }
+
+        /// <summary>
+        /// Gets or sets the error description.
+        /// Human-readable text providing additional information,
+        /// used to assist the client developer in understanding the error that occurred.
+        /// </summary>
+        [DataMember(Name = ErrorDescriptionProperty)]
+        public string ErrorDescription { get; set; }
+
+        /// <summary>
+        /// Gets or sets the error URI in string.
+        /// A URI identifying a human-readable web page with information about the error,
+        /// used to provide the client developer with additional information about the error.
+        /// </summary>
+        [DataMember(Name = ErrorUriProperty)]
+        public string ErrorUrl
+        {
+            get
+            {
+                return ErrorUri.OriginalString;
+            }
+
+            set
+            {
+                try
+                {
+                    ErrorUri = !string.IsNullOrWhiteSpace(value) ? new Uri(value) : null;
+                }
+                catch (FormatException)
+                {
+                    ErrorUri = null;
+                }
+                catch (ArgumentException)
+                {
+                    ErrorUri = null;
+                }
+                catch (InvalidCastException)
+                {
+                    ErrorUri = null;
+                }
+                catch (InvalidDataContractException)
+                {
+                    ErrorUri = null;
+                }
+                catch (InvalidOperationException)
+                {
+                    ErrorUri = null;
+                }
+                catch (NullReferenceException)
+                {
+                    ErrorUri = null;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the error URI.
+        /// A URI identifying a human-readable web page with information about the error,
+        /// used to provide the client developer with additional information about the error.
+        /// </summary>
+        public Uri ErrorUri { get; set; }
+
+        /// <summary>
+        /// Gets or sets the state sent by client authorization request.
+        /// </summary>
+        [DataMember(Name = StateProperty)]
+        public virtual string State { get; set; }
 
         /// <summary>
         /// Gets or sets the resource identifier.
@@ -147,6 +303,32 @@ namespace Trivial.Security
         /// </summary>
         [DataMember(Name = UserIdProperty)]
         public virtual string UserId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the scope string.
+        /// </summary>
+        [DataMember(Name = ScopeProperty)]
+        public string ScopeString
+        {
+            get
+            {
+                return string.Join(" ", Scope);
+            }
+
+            set
+            {
+                if (string.IsNullOrWhiteSpace(value))
+                {
+                    Scope.Clear();
+                    return;
+                }
+
+                foreach (var ele in value.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries))
+                {
+                    Scope.Add(ele);
+                }
+            }
+        }
 
         /// <summary>
         /// Gets the permission scope.

@@ -213,6 +213,17 @@ namespace Trivial.Net
         public bool IsNewHttpClientByDefault { get; set; }
 
         /// <summary>
+        /// Gets or sets the timespan to wait before the request times out.
+        /// </summary>
+        public TimeSpan? Timeout { get; set; }
+
+        /// <summary>
+        /// Gets or sets The maximum number of bytes to buffer when reading the response content.
+        /// The default value for this property is 2 gigabytes.
+        /// </summary>
+        public long? MaxResponseContentBufferSize { get; set; }
+
+        /// <summary>
         /// Gets or sets a value indicating whether still need serialize the result even if it fails to send request.
         /// </summary>
         public bool SerializeEvenIfFailed { get; set; }
@@ -237,11 +248,36 @@ namespace Trivial.Net
         /// <exception cref="FailedHttpException">HTTP response contains failure status code.</exception>
         /// <exception cref="HttpRequestException">The request failed due to an underlying issue such as network connectivity, DNS failure, server certificate validation or timeout.</exception>
         /// <exception cref="InvalidOperationException">The task is cancelled.</exception>
+        /// <exception cref="ObjectDisposedException">The inner HTTP web client instance has been disposed.</exception>
         public async Task<T> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken = default)
         {
             if (request == null) throw new ArgumentNullException(nameof(request), "request should not be null.");
             if (Client == null && !IsNewHttpClientByDefault) Client = new HttpClient();
             var client = Client ?? new HttpClient();
+            var timeout = Timeout;
+            if (timeout.HasValue)
+            {
+                try
+                {
+                    client.Timeout = timeout.Value;
+                }
+                catch (ArgumentException)
+                {
+                }
+            }
+
+            var maxBufferSize = MaxResponseContentBufferSize;
+            if (maxBufferSize.HasValue)
+            {
+                try
+                {
+                    client.MaxResponseContentBufferSize = maxBufferSize.Value;
+                }
+                catch (ArgumentException)
+                {
+                }
+            }
+
             Sending?.Invoke(this, new SendingEventArgs(request));
             cancellationToken.ThrowIfCancellationRequested();
             OnSend(request);
@@ -313,6 +349,7 @@ namespace Trivial.Net
         /// <exception cref="FailedHttpException">HTTP response contains failure status code.</exception>
         /// <exception cref="HttpRequestException">The request failed due to an underlying issue such as network connectivity, DNS failure, server certificate validation or timeout.</exception>
         /// <exception cref="InvalidOperationException">The task is cancelled.</exception>
+        /// <exception cref="ObjectDisposedException">The inner HTTP web client instance has been disposed.</exception>
         public Task<T> SendAsync(HttpMethod method, string requestUri, CancellationToken cancellationToken = default)
         {
             return SendAsync(new HttpRequestMessage(method, requestUri), cancellationToken);
@@ -328,6 +365,7 @@ namespace Trivial.Net
         /// <exception cref="FailedHttpException">HTTP response contains failure status code.</exception>
         /// <exception cref="HttpRequestException">The request failed due to an underlying issue such as network connectivity, DNS failure, server certificate validation or timeout.</exception>
         /// <exception cref="InvalidOperationException">The task is cancelled.</exception>
+        /// <exception cref="ObjectDisposedException">The inner HTTP web client instance has been disposed.</exception>
         public Task<T> SendAsync(HttpMethod method, Uri requestUri, CancellationToken cancellationToken = default)
         {
             return SendAsync(new HttpRequestMessage(method, requestUri), cancellationToken);
@@ -344,6 +382,7 @@ namespace Trivial.Net
         /// <exception cref="FailedHttpException">HTTP response contains failure status code.</exception>
         /// <exception cref="HttpRequestException">The request failed due to an underlying issue such as network connectivity, DNS failure, server certificate validation or timeout.</exception>
         /// <exception cref="InvalidOperationException">The task is cancelled.</exception>
+        /// <exception cref="ObjectDisposedException">The inner HTTP web client instance has been disposed.</exception>
         public Task<T> SendAsync(HttpMethod method, string requestUri, HttpContent content, CancellationToken cancellationToken = default)
         {
             return SendAsync(new HttpRequestMessage(method, requestUri)
@@ -363,6 +402,7 @@ namespace Trivial.Net
         /// <exception cref="FailedHttpException">HTTP response contains failure status code.</exception>
         /// <exception cref="HttpRequestException">The request failed due to an underlying issue such as network connectivity, DNS failure, server certificate validation or timeout.</exception>
         /// <exception cref="InvalidOperationException">The task is cancelled.</exception>
+        /// <exception cref="ObjectDisposedException">The inner HTTP web client instance has been disposed.</exception>
         public Task<T> SendAsync(HttpMethod method, Uri requestUri, HttpContent content, CancellationToken cancellationToken = default)
         {
             return SendAsync(new HttpRequestMessage(method, requestUri)
@@ -382,6 +422,7 @@ namespace Trivial.Net
         /// <exception cref="FailedHttpException">HTTP response contains failure status code.</exception>
         /// <exception cref="HttpRequestException">The request failed due to an underlying issue such as network connectivity, DNS failure, server certificate validation or timeout.</exception>
         /// <exception cref="InvalidOperationException">The task is cancelled.</exception>
+        /// <exception cref="ObjectDisposedException">The inner HTTP web client instance has been disposed.</exception>
         public Task<T> SendAsync(HttpMethod method, string requestUri, QueryData content, CancellationToken cancellationToken = default)
         {
             return SendAsync(new HttpRequestMessage(method, requestUri)
@@ -401,6 +442,7 @@ namespace Trivial.Net
         /// <exception cref="FailedHttpException">HTTP response contains failure status code.</exception>
         /// <exception cref="HttpRequestException">The request failed due to an underlying issue such as network connectivity, DNS failure, server certificate validation or timeout.</exception>
         /// <exception cref="InvalidOperationException">The task is cancelled.</exception>
+        /// <exception cref="ObjectDisposedException">The inner HTTP web client instance has been disposed.</exception>
         public Task<T> SendAsync(HttpMethod method, Uri requestUri, QueryData content, CancellationToken cancellationToken = default)
         {
             return SendAsync(new HttpRequestMessage(method, requestUri)
@@ -421,6 +463,7 @@ namespace Trivial.Net
         /// <exception cref="FailedHttpException">HTTP response contains failure status code.</exception>
         /// <exception cref="HttpRequestException">The request failed due to an underlying issue such as network connectivity, DNS failure, server certificate validation or timeout.</exception>
         /// <exception cref="InvalidOperationException">The task is cancelled.</exception>
+        /// <exception cref="ObjectDisposedException">The inner HTTP web client instance has been disposed.</exception>
         public async Task<T> SendJsonAsync(HttpMethod method, string requestUri, object content, DataContractJsonSerializerSettings settings, CancellationToken cancellationToken = default)
         {
             using (var stream = new MemoryStream())
@@ -447,6 +490,7 @@ namespace Trivial.Net
         /// <exception cref="FailedHttpException">HTTP response contains failure status code.</exception>
         /// <exception cref="HttpRequestException">The request failed due to an underlying issue such as network connectivity, DNS failure, server certificate validation or timeout.</exception>
         /// <exception cref="InvalidOperationException">The task is cancelled.</exception>
+        /// <exception cref="ObjectDisposedException">The inner HTTP web client instance has been disposed.</exception>
         public async Task<T> SendJsonAsync(HttpMethod method, Uri requestUri, object content, DataContractJsonSerializerSettings settings, CancellationToken cancellationToken = default)
         {
             using (var stream = new MemoryStream())
@@ -472,6 +516,7 @@ namespace Trivial.Net
         /// <exception cref="FailedHttpException">HTTP response contains failure status code.</exception>
         /// <exception cref="HttpRequestException">The request failed due to an underlying issue such as network connectivity, DNS failure, server certificate validation or timeout.</exception>
         /// <exception cref="InvalidOperationException">The task is cancelled.</exception>
+        /// <exception cref="ObjectDisposedException">The inner HTTP web client instance has been disposed.</exception>
         public Task<T> SendJsonAsync(HttpMethod method, string requestUri, object content, CancellationToken cancellationToken = default)
         {
             return SendJsonAsync(method, requestUri, content, null as DataContractJsonSerializerSettings, cancellationToken);
@@ -488,6 +533,7 @@ namespace Trivial.Net
         /// <exception cref="FailedHttpException">HTTP response contains failure status code.</exception>
         /// <exception cref="HttpRequestException">The request failed due to an underlying issue such as network connectivity, DNS failure, server certificate validation or timeout.</exception>
         /// <exception cref="InvalidOperationException">The task is cancelled.</exception>
+        /// <exception cref="ObjectDisposedException">The inner HTTP web client instance has been disposed.</exception>
         public Task<T> SendJsonAsync(HttpMethod method, Uri requestUri, object content, CancellationToken cancellationToken = default)
         {
             return SendJsonAsync(method, requestUri, content, null as DataContractJsonSerializerSettings, cancellationToken);
@@ -506,6 +552,7 @@ namespace Trivial.Net
         /// <exception cref="FailedHttpException">HTTP response contains failure status code.</exception>
         /// <exception cref="HttpRequestException">The request failed due to an underlying issue such as network connectivity, DNS failure, server certificate validation or timeout.</exception>
         /// <exception cref="InvalidOperationException">The task is cancelled.</exception>
+        /// <exception cref="ObjectDisposedException">The inner HTTP web client instance has been disposed.</exception>
         public Task<T> SendJsonAsync<TRequestBody>(HttpMethod method, string requestUri, TRequestBody content, Func<TRequestBody, string> deserializer, CancellationToken cancellationToken = default)
         {
             return deserializer != null ? SendAsync(new HttpRequestMessage(method, requestUri)
@@ -527,6 +574,7 @@ namespace Trivial.Net
         /// <exception cref="FailedHttpException">HTTP response contains failure status code.</exception>
         /// <exception cref="HttpRequestException">The request failed due to an underlying issue such as network connectivity, DNS failure, server certificate validation or timeout.</exception>
         /// <exception cref="InvalidOperationException">The task is cancelled.</exception>
+        /// <exception cref="ObjectDisposedException">The inner HTTP web client instance has been disposed.</exception>
         public Task<T> SendJsonAsync<TRequestBody>(HttpMethod method, Uri requestUri, TRequestBody content, Func<TRequestBody, string> deserializer, CancellationToken cancellationToken = default)
         {
             return deserializer != null ? SendAsync(new HttpRequestMessage(method, requestUri)
@@ -544,6 +592,7 @@ namespace Trivial.Net
         /// <exception cref="FailedHttpException">HTTP response contains failure status code.</exception>
         /// <exception cref="HttpRequestException">The request failed due to an underlying issue such as network connectivity, DNS failure, server certificate validation or timeout.</exception>
         /// <exception cref="InvalidOperationException">The task is cancelled.</exception>
+        /// <exception cref="ObjectDisposedException">The inner HTTP web client instance has been disposed.</exception>
         public Task<T> GetAsync(string requestUri, CancellationToken cancellationToken = default)
         {
             return SendAsync(new HttpRequestMessage(HttpMethod.Get, requestUri), cancellationToken);
@@ -558,6 +607,7 @@ namespace Trivial.Net
         /// <exception cref="FailedHttpException">HTTP response contains failure status code.</exception>
         /// <exception cref="HttpRequestException">The request failed due to an underlying issue such as network connectivity, DNS failure, server certificate validation or timeout.</exception>
         /// <exception cref="InvalidOperationException">The task is cancelled.</exception>
+        /// <exception cref="ObjectDisposedException">The inner HTTP web client instance has been disposed.</exception>
         public Task<T> GetAsync(Uri requestUri, CancellationToken cancellationToken = default)
         {
             return SendAsync(new HttpRequestMessage(HttpMethod.Get, requestUri), cancellationToken);
@@ -570,6 +620,7 @@ namespace Trivial.Net
         /// <param name="content">The HTTP request content sent to the server.</param>
         /// <param name="cancellationToken">The optional cancellation token.</param>
         /// <returns>A result serialized.</returns>
+        /// <exception cref="ObjectDisposedException">The inner HTTP web client instance has been disposed.</exception>
         public Task<T> PostAsync(string requestUri, HttpContent content, CancellationToken cancellationToken = default)
         {
             return SendAsync(new HttpRequestMessage(HttpMethod.Post, requestUri)
@@ -588,6 +639,7 @@ namespace Trivial.Net
         /// <exception cref="FailedHttpException">HTTP response contains failure status code.</exception>
         /// <exception cref="HttpRequestException">The request failed due to an underlying issue such as network connectivity, DNS failure, server certificate validation or timeout.</exception>
         /// <exception cref="InvalidOperationException">The task is cancelled.</exception>
+        /// <exception cref="ObjectDisposedException">The inner HTTP web client instance has been disposed.</exception>
         public Task<T> PostAsync(Uri requestUri, HttpContent content, CancellationToken cancellationToken = default)
         {
             return SendAsync(new HttpRequestMessage(HttpMethod.Post, requestUri)
@@ -606,6 +658,7 @@ namespace Trivial.Net
         /// <exception cref="FailedHttpException">HTTP response contains failure status code.</exception>
         /// <exception cref="HttpRequestException">The request failed due to an underlying issue such as network connectivity, DNS failure, server certificate validation or timeout.</exception>
         /// <exception cref="InvalidOperationException">The task is cancelled.</exception>
+        /// <exception cref="ObjectDisposedException">The inner HTTP web client instance has been disposed.</exception>
         public Task<T> PutAsync(string requestUri, HttpContent content, CancellationToken cancellationToken = default)
         {
             return SendAsync(new HttpRequestMessage(HttpMethod.Put, requestUri)
@@ -624,6 +677,7 @@ namespace Trivial.Net
         /// <exception cref="FailedHttpException">HTTP response contains failure status code.</exception>
         /// <exception cref="HttpRequestException">The request failed due to an underlying issue such as network connectivity, DNS failure, server certificate validation or timeout.</exception>
         /// <exception cref="InvalidOperationException">The task is cancelled.</exception>
+        /// <exception cref="ObjectDisposedException">The inner HTTP web client instance has been disposed.</exception>
         public Task<T> PutAsync(Uri requestUri, HttpContent content, CancellationToken cancellationToken = default)
         {
             return SendAsync(new HttpRequestMessage(HttpMethod.Put, requestUri)

@@ -20,7 +20,7 @@ using Trivial.Text;
 namespace Trivial.Security
 {
     /// <summary>
-    /// <para>The OAuth client.</para>
+    /// <para>The OAuth HTTP web client (for RFC-6749).</para>
     /// <para>You can use this to login and then create the JSON HTTP web clients with the authentication information.</para>
     /// </summary>
     public class OAuthClient : TokenContainer
@@ -39,7 +39,7 @@ namespace Trivial.Security
         }
 
         /// <summary>
-        /// Initializes a new instance of the OAuthClient class.
+        /// Initializes a new instance of the OAuthHttpClient class.
         /// </summary>
         /// <param name="appKey">The app accessing key.</param>
         /// <param name="tokenCached">The token information instance cached.</param>
@@ -49,7 +49,7 @@ namespace Trivial.Security
         }
 
         /// <summary>
-        /// Initializes a new instance of the OAuthClient class.
+        /// Initializes a new instance of the OAuthHttpClient class.
         /// </summary>
         /// <param name="appId">The app id.</param>
         /// <param name="secretKey">The secret key.</param>
@@ -59,7 +59,7 @@ namespace Trivial.Security
         }
 
         /// <summary>
-        /// Initializes a new instance of the OAuthClient class.
+        /// Initializes a new instance of the OAuthHttpClient class.
         /// </summary>
         /// <param name="appId">The app id.</param>
         /// <param name="secretKey">The secret key.</param>
@@ -131,6 +131,23 @@ namespace Trivial.Security
         public Func<string, Type, object> Serializer { get; set; }
 
         /// <summary>
+        /// Gets or sets the HTTP web client handler for sending message.
+        /// But token resolving will not use this.
+        /// </summary>
+        public HttpClientHandler HttpClientHandler { get; set; }
+
+        /// <summary>
+        /// Gets or sets the timespan to wait before the request times out.
+        /// </summary>
+        public TimeSpan? Timeout { get; set; }
+
+        /// <summary>
+        /// Gets or sets The maximum number of bytes to buffer when reading the response content.
+        /// The default value for this property is 2 gigabytes.
+        /// </summary>
+        public long? MaxResponseContentBufferSize { get; set; }
+
+        /// <summary>
         /// Gets or sets the converter of authentication header value.
         /// </summary>
         public Func<TokenInfo, Cases, AuthenticationHeaderValue> ConvertToAuthenticationHeaderValue { get; set; }
@@ -143,12 +160,12 @@ namespace Trivial.Security
         public virtual JsonHttpClient<T> Create<T>(Action<ReceivedEventArgs<T>> callback = null)
         {
             var httpClient = new JsonHttpClient<T>();
+            if (HttpClientHandler != null) httpClient.Client = new HttpClient(HttpClientHandler, false);
+            httpClient.Timeout = Timeout;
+            httpClient.MaxResponseContentBufferSize = MaxResponseContentBufferSize;
             httpClient.Sending += (sender, ev) =>
             {
-                if (Token != null && ev.RequestMessage.Headers.Authorization == null)
-                    ev.RequestMessage.Headers.Authorization = ConvertToAuthenticationHeaderValue != null
-                        ? ConvertToAuthenticationHeaderValue(Token, AuthenticationSchemeCase)
-                        : Token.ToAuthenticationHeaderValue(AuthenticationSchemeCase);
+                WriteAuthenticationHeaderValue(ev.RequestMessage.Headers);
                 Sending?.Invoke(sender, ev);
             };
             if (Serializer != null) httpClient.Serializer = json => (T)Serializer(json, typeof(T));
@@ -157,6 +174,54 @@ namespace Trivial.Security
                 callback(ev);
             };
             return httpClient;
+        }
+
+        /// <summary>
+        /// Send an HTTP request as an asynchronous operation.
+        /// </summary>
+        /// <param name="request">The HTTP request message to send.</param>
+        /// <param name="cancellationToken">The cancellation token to cancel operation.</param>
+        /// <returns>The task object representing the asynchronous operation.</returns>
+        /// <exception cref="ArgumentNullException">The request was null.</exception>
+        /// <exception cref="HttpRequestException">The request failed due to an underlying issue such as network connectivity, DNS failure, server certificate validation or timeout.</exception>
+        public Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken = default)
+        {
+            if (request == null) throw new ArgumentNullException(nameof(request), "request should not be null");
+            var client = CreateHttpClient();
+            WriteAuthenticationHeaderValue(request.Headers);
+            return client.SendAsync(request, cancellationToken);
+        }
+
+        /// <summary>
+        /// Send an HTTP request as an asynchronous operation.
+        /// </summary>
+        /// <param name="request">The HTTP request message to send.</param>
+        /// <param name="completionOption">When the operation should complete (as soon as a response is available or after reading the whole response content).</param>
+        /// <param name="cancellationToken">The cancellation token to cancel operation.</param>
+        /// <returns>The task object representing the asynchronous operation.</returns>
+        /// <exception cref="ArgumentNullException">The request was null.</exception>
+        /// <exception cref="HttpRequestException">The request failed due to an underlying issue such as network connectivity, DNS failure, server certificate validation or timeout.</exception>
+        public Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, HttpCompletionOption completionOption, CancellationToken cancellationToken = default)
+        {
+            if (request == null) throw new ArgumentNullException(nameof(request), "request should not be null");
+            var client = CreateHttpClient();
+            WriteAuthenticationHeaderValue(request.Headers);
+            return client.SendAsync(request, completionOption, cancellationToken);
+        }
+
+        /// <summary>
+        /// Sets the headers with current authorization information.
+        /// </summary>
+        /// <param name="headers">The headers to fill.</param>
+        /// <param name="forceToSet">true if force to set even if it has one; otherwise, false.</param>
+        /// <returns>true if write succeeded; otherwise, false.</returns>
+        public bool WriteAuthenticationHeaderValue(HttpRequestHeaders headers, bool forceToSet = false)
+        {
+            if (headers == null || Token == null || headers.Authorization != null) return false;
+            headers.Authorization = ConvertToAuthenticationHeaderValue != null
+                ? ConvertToAuthenticationHeaderValue(Token, AuthenticationSchemeCase)
+                : Token.ToAuthenticationHeaderValue(AuthenticationSchemeCase);
+            return true;
         }
 
         /// <summary>
@@ -332,6 +397,40 @@ namespace Trivial.Security
                 TokenResolving?.Invoke(sender, ev);
             };
             return httpClient;
+        }
+
+        /// <summary>
+        /// Creats an HTTP web client.
+        /// </summary>
+        /// <returns>The HTTP web client.</returns>
+        private HttpClient CreateHttpClient()
+        {
+            var client = HttpClientHandler != null ? new HttpClient(HttpClientHandler, false) : new HttpClient();
+            var timeout = Timeout;
+            if (timeout.HasValue)
+            {
+                try
+                {
+                    client.Timeout = timeout.Value;
+                }
+                catch (ArgumentException)
+                {
+                }
+            }
+
+            var maxBufferSize = MaxResponseContentBufferSize;
+            if (maxBufferSize.HasValue)
+            {
+                try
+                {
+                    client.MaxResponseContentBufferSize = maxBufferSize.Value;
+                }
+                catch (ArgumentException)
+                {
+                }
+            }
+
+            return client;
         }
     }
 
@@ -515,6 +614,33 @@ namespace Trivial.Security
         public virtual JsonHttpClient<T> Create<T>(Action<ReceivedEventArgs<T>> callback = null)
         {
             return oauth.Create(callback);
+        }
+
+        /// <summary>
+        /// Send an HTTP request as an asynchronous operation.
+        /// </summary>
+        /// <param name="request">The HTTP request message to send.</param>
+        /// <param name="cancellationToken">The cancellation token to cancel operation.</param>
+        /// <returns>The task object representing the asynchronous operation.</returns>
+        /// <exception cref="ArgumentNullException">The request was null.</exception>
+        /// <exception cref="HttpRequestException">The request failed due to an underlying issue such as network connectivity, DNS failure, server certificate validation or timeout.</exception>
+        public Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken = default)
+        {
+            return oauth.SendAsync(request, cancellationToken);
+        }
+
+        /// <summary>
+        /// Send an HTTP request as an asynchronous operation.
+        /// </summary>
+        /// <param name="request">The HTTP request message to send.</param>
+        /// <param name="completionOption">When the operation should complete (as soon as a response is available or after reading the whole response content).</param>
+        /// <param name="cancellationToken">The cancellation token to cancel operation.</param>
+        /// <returns>The task object representing the asynchronous operation.</returns>
+        /// <exception cref="ArgumentNullException">The request was null.</exception>
+        /// <exception cref="HttpRequestException">The request failed due to an underlying issue such as network connectivity, DNS failure, server certificate validation or timeout.</exception>
+        public Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, HttpCompletionOption completionOption, CancellationToken cancellationToken = default)
+        {
+            return oauth.SendAsync(request, completionOption, cancellationToken);
         }
 
         /// <summary>

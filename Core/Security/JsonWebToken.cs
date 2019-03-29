@@ -31,7 +31,7 @@ namespace Trivial.Security
             var prefix = $"{TokenInfo.BearerTokenType} ";
             if (jwt.IndexOf(prefix) == 0)
             {
-                if (jwt.Length == prefix.Length) throw new ArgumentException(nameof(jwt), "jwt should not contain a scheme only.");
+                if (jwt.Length == prefix.Length) throw new ArgumentException("jwt should not contain a scheme only.", nameof(jwt));
                 jwt = jwt.Substring(prefix.Length);
             }
 
@@ -46,8 +46,8 @@ namespace Trivial.Security
 
             var header = WebUtility.Base64UrlDecodeTo<JsonWebTokenHeader>(arr[0]);
             var payload = WebUtility.Base64UrlDecodeTo<T>(arr[1]);
-            if (header == null) throw new ArgumentException(nameof(jwt), "jwt should contain header in Base64Url.");
-            if (payload == null) throw new ArgumentException(nameof(jwt), "jwt should contain payload in Base64Url.");
+            if (header == null) throw new ArgumentException("jwt should contain header in Base64Url.", nameof(jwt));
+            if (payload == null) throw new ArgumentException("jwt should contain payload in Base64Url.", nameof(jwt));
             var obj = new JsonWebToken<T>(payload, algorithm)
             {
                 headerBase64Url = arr[0],
@@ -56,6 +56,35 @@ namespace Trivial.Security
             obj.header.Type = header.Type;
             obj.header.AlgorithmName = header.AlgorithmName;
             return obj;
+        }
+
+        /// <summary>
+        /// Parses a JWT string encoded.
+        /// </summary>
+        /// <param name="token">The access token.</param>
+        /// <param name="algorithm">The signature algorithm.</param>
+        /// <param name="verify">true if verify the signature; otherwise, false.</param>
+        /// <returns>A JSON web token object.</returns>
+        /// <exception cref="ArgumentNullException">token was null.</exception>
+        /// <exception cref="ArgumentException">token is not a Bearer token, or its access token did not contain the required information.</exception>
+        /// <exception cref="FormatException">The access token was in incorrect format.</exception>
+        /// <exception cref="InvalidOperationException">Verify failure.</exception>
+        public static JsonWebToken<T> Parse(TokenInfo token, ISignatureProvider algorithm, bool verify = true)
+        {
+            if (token == null) throw new ArgumentNullException(nameof(token), "token should not be null.");
+            if (string.IsNullOrWhiteSpace(token.AccessToken)) throw new ArgumentException("The access token should not be null or empty.", nameof(token));
+            if (!string.IsNullOrEmpty(token.TokenType) && token.TokenType != TokenInfo.BearerTokenType) throw new ArgumentException("The token type should be Bearer.", nameof(token));
+            try
+            {
+                return Parse(token.AccessToken, algorithm, verify);
+            }
+            catch (ArgumentException ex)
+            {
+                var msg = string.IsNullOrWhiteSpace(ex.Message) || ex.Message.Length < 7 || ex.Message.IndexOf("jwt ") != 0
+                    ? "The access token is incorrect."
+                    : ("The access token" + ex.Message.Substring(3));
+                throw new ArgumentException(msg, nameof(token), ex);
+            }
         }
 
         /// <summary>

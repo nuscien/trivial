@@ -105,7 +105,7 @@ namespace Trivial.Security
         /// <summary>
         /// Gets the scope string.
         /// </summary>
-        [DataMember(Name = TokenRequestBody.ScopeProperty)]
+        [DataMember(Name = TokenInfo.ScopeProperty)]
         public string ScopeString
         {
             get
@@ -121,7 +121,10 @@ namespace Trivial.Security
                     return;
                 }
 
-                Scope = value.Split(' ');
+                foreach (var ele in value.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries))
+                {
+                    Scope.Add(ele);
+                }
             }
         }
 
@@ -134,7 +137,7 @@ namespace Trivial.Security
             var data = Body?.ToQueryData() ?? new QueryData();
             if (!string.IsNullOrWhiteSpace(ClientId)) data.Add(TokenRequestBody.ClientIdProperty, ClientId);
             if (ClientCredentials != null && ClientCredentials.Secret != null && ClientCredentials.Secret.Length > 0) data.Add(TokenRequestBody.ClientSecretProperty, ClientCredentials.Secret.ToUnsecureString());
-            if (!string.IsNullOrWhiteSpace(ScopeString)) data.Add(TokenRequestBody.ScopeProperty, ScopeString);
+            if (!string.IsNullOrWhiteSpace(ScopeString)) data.Add(TokenInfo.ScopeProperty, ScopeString);
             return data;
         }
 
@@ -150,7 +153,7 @@ namespace Trivial.Security
             if (ClientCredentials != null && ClientCredentials.Secret != null && ClientCredentials.Secret.Length > 0)
                 data.Add(TokenRequestBody.ClientSecretProperty, $"\"{ClientCredentials.Secret.ToUnsecureString()}\"");
             if (!string.IsNullOrWhiteSpace(ScopeString))
-                data.Add(TokenRequestBody.ScopeProperty, $"\"{ScopeString}\"");
+                data.Add(TokenInfo.ScopeProperty, $"\"{ScopeString}\"");
             return data;
         }
 
@@ -331,11 +334,6 @@ namespace Trivial.Security
         /// The client secret property name.
         /// </summary>
         public const string ClientSecretProperty = "client_secret";
-
-        /// <summary>
-        /// The scope property name.
-        /// </summary>
-        public const string ScopeProperty = "scope";
 
         /// <summary>
         /// Initializes a new instance of the TokenRequestBody class.
@@ -704,7 +702,7 @@ namespace Trivial.Security
                 { CodeTokenRequestBody.ResponseType, responseType },
                 { TokenRequestBody.ClientIdProperty, ClientId },
                 { CodeTokenRequestBody.RedirectUriProperty, Body?.RedirectUri?.OriginalString },
-                { TokenRequestBody.ScopeProperty, ScopeString },
+                { TokenInfo.ScopeProperty, ScopeString },
                 { CodeTokenRequestBody.StateProperty, state }
             };
             return new Uri(data.ToString(uri.OriginalString));
@@ -737,11 +735,6 @@ namespace Trivial.Security
         public const string RefreshTokenGrantType = "refresh_token";
 
         /// <summary>
-        /// The refresh token property name.
-        /// </summary>
-        public const string RefreshTokenProperty = "refresh_token";
-
-        /// <summary>
         /// Initializes a new instance of the TokenRequest class.
         /// </summary>
         public RefreshTokenRequestBody() : base(RefreshTokenGrantType)
@@ -768,7 +761,7 @@ namespace Trivial.Security
         /// <summary>
         /// Gets or sets the refresh token.
         /// </summary>
-        [DataMember(Name = RefreshTokenProperty)]
+        [DataMember(Name = TokenInfo.RefreshTokenProperty)]
         public string RefreshToken { get; set; }
 
         /// <summary>
@@ -850,6 +843,11 @@ namespace Trivial.Security
         public const string PasswordProperty = "password";
 
         /// <summary>
+        /// The token type.
+        /// </summary>
+        public const string BasicTokenType = "Basic";
+
+        /// <summary>
         /// Initializes a new instance of the TokenRequest class.
         /// </summary>
         public PasswordTokenRequestBody() : base(PasswordGrantType)
@@ -921,7 +919,7 @@ namespace Trivial.Security
             sb.Append(':');
             if (Password != null && Password.Length > 0) sb.Append(Password.ToUnsecureString());
             return new AuthenticationHeaderValue(
-                StringUtility.ToSpecificCaseInvariant("Basic", schemeCase),
+                StringUtility.ToSpecificCaseInvariant(BasicTokenType, schemeCase),
                 Convert.ToBase64String((encoding ?? Encoding.UTF8).GetBytes(sb.ToString())));
         }
 
@@ -996,7 +994,7 @@ namespace Trivial.Security
         [DataMember(Name = TokenRequestBody.ClientSecretProperty)]
         public string ClientSecret { get; set; }
 
-        [DataMember(Name = TokenRequestBody.ScopeProperty)]
+        [DataMember(Name = TokenInfo.ScopeProperty)]
         public string Scope { get; set; }
 
         [DataMember(Name = CodeTokenRequestBody.RedirectUriProperty)]
@@ -1008,7 +1006,7 @@ namespace Trivial.Security
         [DataMember(Name = CodeTokenRequestBody.CodeVerifierProperty)]
         public string CodeVerifier { get; set; }
 
-        [DataMember(Name = RefreshTokenRequestBody.RefreshTokenProperty)]
+        [DataMember(Name = TokenInfo.RefreshTokenProperty)]
         public string RefreshToken { get; set; }
 
         [DataMember(Name = PasswordTokenRequestBody.UserNameProperty)]
@@ -1026,11 +1024,11 @@ namespace Trivial.Security
                 GrantType = q[TokenRequestBody.GrantTypeProperty],
                 ClientId = q[TokenRequestBody.ClientIdProperty],
                 ClientSecret = q[TokenRequestBody.ClientSecretProperty],
-                Scope = q[TokenRequestBody.ScopeProperty],
+                Scope = q[TokenInfo.ScopeProperty],
                 Code = q[CodeTokenRequestBody.CodeProperty],
                 CodeVerifier = q[CodeTokenRequestBody.CodeVerifierProperty],
                 RedirectUri = q[CodeTokenRequestBody.RedirectUriProperty],
-                RefreshToken = q[RefreshTokenRequestBody.RefreshTokenProperty],
+                RefreshToken = q[TokenInfo.RefreshTokenProperty],
                 UserName = q[PasswordTokenRequestBody.UserNameProperty],
                 Password = q[PasswordTokenRequestBody.PasswordProperty]
             };

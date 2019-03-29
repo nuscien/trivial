@@ -136,7 +136,7 @@ namespace Trivial.Security
         {
             if (name == null) throw new ArgumentNullException(nameof(name), "name should not be null.");
             var h = GetHashAlgorithmFactory(name);
-            if (h == null) throw new ArgumentException(nameof(name), "name.Name should not be null or empty.");
+            if (h == null) throw new ArgumentException("name.Name should not be null or empty.", nameof(name));
             return h();
         }
 
