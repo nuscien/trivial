@@ -361,7 +361,7 @@ namespace Trivial.Security
         /// <returns>A System.String that represents the current TokenInfo.</returns>
         public override string ToString()
         {
-            return string.Format("{0} {1}", TokenType, AccessToken).Trim();
+            return $"{TokenType ?? string.Empty} {AccessToken ?? string.Empty}".Trim();
         }
 
         /// <summary>
@@ -439,6 +439,11 @@ namespace Trivial.Security
         }
 
         /// <summary>
+        /// Adds or removes the event raised after token changed.
+        /// </summary>
+        public event ChangeEventHandler<TokenInfo> TokenChanged;
+
+        /// <summary>
         /// Gets the access token saved in this container.
         /// </summary>
         public string AccessToken => Token?.AccessToken;
@@ -449,9 +454,14 @@ namespace Trivial.Security
         public bool IsTokenNullOrEmpty => Token?.IsEmpty ?? false;
 
         /// <summary>
-        /// Adds or removes the event raised after token changed.
+        /// Gets or sets the case of authenticiation scheme.
         /// </summary>
-        public event ChangeEventHandler<TokenInfo> TokenChanged;
+        public Cases AuthenticationSchemeCase { get; set; } = Cases.Original;
+
+        /// <summary>
+        /// Gets or sets the converter of authentication header value.
+        /// </summary>
+        public Func<TokenInfo, Cases, AuthenticationHeaderValue> ConvertToAuthenticationHeaderValue { get; set; }
 
         /// <summary>
         /// Returns a System.String that represents the current token container instance.
@@ -465,23 +475,25 @@ namespace Trivial.Security
         /// <summary>
         /// Returns a System.Net.Http.Headers.AuthenticationHeaderValue that represents the current token container instance.
         /// </summary>
-        /// <param name="schemeCase">The scheme case.</param>
-        /// <param name="parameterCase">The parameter case.</param>
         /// <returns>A System.Net.Http.Headers.AuthenticationHeaderValue that represents the current token container instance.</returns>
-        public virtual AuthenticationHeaderValue ToAuthenticationHeaderValue(Cases schemeCase = Cases.Original, Cases parameterCase = Cases.Original)
+        public virtual AuthenticationHeaderValue ToAuthenticationHeaderValue()
         {
-            return Token?.ToAuthenticationHeaderValue(schemeCase, parameterCase);
+            return Token?.ToAuthenticationHeaderValue(AuthenticationSchemeCase);
         }
 
         /// <summary>
-        /// Returns a System.Net.Http.Headers.AuthenticationHeaderValue that represents the current token container instance.
+        /// Sets the headers with current authorization information.
         /// </summary>
-        /// <param name="scheme">The scheme to use for authorization.</param>
-        /// <param name="parameterCase">The parameter case.</param>
-        /// <returns>A System.Net.Http.Headers.AuthenticationHeaderValue that represents the current token container instance.</returns>
-        public virtual AuthenticationHeaderValue ToAuthenticationHeaderValue(string scheme, Cases parameterCase = Cases.Original)
+        /// <param name="headers">The headers to fill.</param>
+        /// <param name="forceToSet">true if force to set even if it has one; otherwise, false.</param>
+        /// <returns>true if write succeeded; otherwise, false.</returns>
+        public bool WriteAuthenticationHeaderValue(HttpRequestHeaders headers, bool forceToSet = false)
         {
-            return Token?.ToAuthenticationHeaderValue(scheme, parameterCase);
+            if (headers == null || Token == null || headers.Authorization != null) return false;
+            headers.Authorization = ConvertToAuthenticationHeaderValue != null
+                ? ConvertToAuthenticationHeaderValue(Token, AuthenticationSchemeCase)
+                : Token.ToAuthenticationHeaderValue(AuthenticationSchemeCase);
+            return true;
         }
     }
 }

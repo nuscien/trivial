@@ -69,6 +69,59 @@ namespace Trivial.Security
         }
 
         /// <summary>
+        /// Initializes a new instance of the OAuthHttpClient class.
+        /// </summary>
+        /// <param name="appKey">The app accessing key.</param>
+        /// <param name="tokenResolveUri">The token resolve URI.</param>
+        /// <param name="scope">The scope.</param>
+        /// <param name="tokenCached">The token information instance cached.</param>
+        public OAuthClient(AppAccessingKey appKey, Uri tokenResolveUri, IEnumerable<string> scope, TokenInfo tokenCached = null) : this(appKey, tokenCached)
+        {
+            TokenResolverUri = tokenResolveUri;
+            if (scope == null) return;
+            foreach (var ele in scope)
+            {
+                Scope.Add(ele);
+            }
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the OAuthHttpClient class.
+        /// </summary>
+        /// <param name="appId">The app id.</param>
+        /// <param name="secretKey">The secret key.</param>
+        /// <param name="tokenResolveUri">The token resolve URI.</param>
+        /// <param name="scope">The scope.</param>
+        /// <param name="tokenCached">The token information instance cached.</param>
+        public OAuthClient(string appId, string secretKey, Uri tokenResolveUri, IEnumerable<string> scope, TokenInfo tokenCached = null) : this(appId, secretKey, tokenCached)
+        {
+            TokenResolverUri = tokenResolveUri;
+            if (scope == null) return;
+            foreach (var ele in scope)
+            {
+                Scope.Add(ele);
+            }
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the OAuthHttpClient class.
+        /// </summary>
+        /// <param name="appId">The app id.</param>
+        /// <param name="secretKey">The secret key.</param>
+        /// <param name="tokenResolveUri">The token resolve URI.</param>
+        /// <param name="scope">The scope.</param>
+        /// <param name="tokenCached">The token information instance cached.</param>
+        public OAuthClient(string appId, SecureString secretKey, Uri tokenResolveUri, IEnumerable<string> scope, TokenInfo tokenCached = null) : this(appId, secretKey, tokenCached)
+        {
+            TokenResolverUri = tokenResolveUri;
+            if (scope == null) return;
+            foreach (var ele in scope)
+            {
+                Scope.Add(ele);
+            }
+        }
+
+        /// <summary>
         /// Adds or removes a handler raised on sending.
         /// </summary>
         public event EventHandler<SendingEventArgs> Sending;
@@ -121,11 +174,6 @@ namespace Trivial.Security
         }
 
         /// <summary>
-        /// Gets or sets the case of authenticiation scheme.
-        /// </summary>
-        public Cases AuthenticationSchemeCase { get; set; } = Cases.Original;
-
-        /// <summary>
         /// Gets or sets the JSON serializer.
         /// </summary>
         public Func<string, Type, object> Serializer { get; set; }
@@ -142,15 +190,10 @@ namespace Trivial.Security
         public TimeSpan? Timeout { get; set; }
 
         /// <summary>
-        /// Gets or sets The maximum number of bytes to buffer when reading the response content.
+        /// Gets or sets the maximum number of bytes to buffer when reading the response content.
         /// The default value for this property is 2 gigabytes.
         /// </summary>
         public long? MaxResponseContentBufferSize { get; set; }
-
-        /// <summary>
-        /// Gets or sets the converter of authentication header value.
-        /// </summary>
-        public Func<TokenInfo, Cases, AuthenticationHeaderValue> ConvertToAuthenticationHeaderValue { get; set; }
 
         /// <summary>
         /// Creates a JSON HTTP client.
@@ -207,21 +250,6 @@ namespace Trivial.Security
             var client = CreateHttpClient();
             WriteAuthenticationHeaderValue(request.Headers);
             return client.SendAsync(request, completionOption, cancellationToken);
-        }
-
-        /// <summary>
-        /// Sets the headers with current authorization information.
-        /// </summary>
-        /// <param name="headers">The headers to fill.</param>
-        /// <param name="forceToSet">true if force to set even if it has one; otherwise, false.</param>
-        /// <returns>true if write succeeded; otherwise, false.</returns>
-        public bool WriteAuthenticationHeaderValue(HttpRequestHeaders headers, bool forceToSet = false)
-        {
-            if (headers == null || Token == null || headers.Authorization != null) return false;
-            headers.Authorization = ConvertToAuthenticationHeaderValue != null
-                ? ConvertToAuthenticationHeaderValue(Token, AuthenticationSchemeCase)
-                : Token.ToAuthenticationHeaderValue(AuthenticationSchemeCase);
-            return true;
         }
 
         /// <summary>
@@ -349,7 +377,9 @@ namespace Trivial.Security
         {
             var httpClient = new JsonHttpClient<TokenInfo>
             {
-                SerializeEvenIfFailed = true
+                SerializeEvenIfFailed = true,
+                Timeout = Timeout,
+                MaxResponseContentBufferSize = MaxResponseContentBufferSize
             };
             httpClient.Received += (sender, ev) =>
             {
@@ -378,7 +408,9 @@ namespace Trivial.Security
         {
             var httpClient = new JsonHttpClient<T>
             {
-                SerializeEvenIfFailed = true
+                SerializeEvenIfFailed = true,
+                Timeout = Timeout,
+                MaxResponseContentBufferSize = MaxResponseContentBufferSize
             };
             httpClient.Received += (sender, ev) =>
             {
@@ -549,6 +581,25 @@ namespace Trivial.Security
             {
                 oauth.TokenResolved -= value;
             }
+        }
+
+        /// <summary>
+        /// Gets or sets the timespan to wait before the request times out.
+        /// </summary>
+        public TimeSpan? Timeout
+        {
+            get => oauth.Timeout;
+            set => oauth.Timeout = value;
+        }
+
+        /// <summary>
+        /// Gets or sets the maximum number of bytes to buffer when reading the response content.
+        /// The default value for this property is 2 gigabytes.
+        /// </summary>
+        public long? MaxResponseContentBufferSize
+        {
+            get => oauth.MaxResponseContentBufferSize;
+            set => oauth.MaxResponseContentBufferSize = value;
         }
 
         /// <summary>
