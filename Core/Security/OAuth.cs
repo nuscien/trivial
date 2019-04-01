@@ -179,6 +179,11 @@ namespace Trivial.Security
         public Func<string, Type, object> Serializer { get; set; }
 
         /// <summary>
+        /// Gets or sets a handler to indicate whether the token request is valid and fill additional information if needed.
+        /// </summary>
+        public Func<QueryData, bool> TokenRequestInfoValidator { get; set; }
+
+        /// <summary>
         /// Gets or sets the HTTP web client handler for sending message.
         /// But token resolving will not use this.
         /// </summary>
@@ -262,6 +267,7 @@ namespace Trivial.Security
         /// <exception cref="InvalidOperationException">TokenResolverUri property was null.</exception>
         /// <exception cref="FailedHttpException">HTTP response contains failure status code.</exception>
         /// <exception cref="HttpRequestException">The request failed due to an underlying issue such as network connectivity, DNS failure, server certificate validation or timeout.</exception>
+        /// <exception cref="InvalidOperationException">Cannot pass the request by the TokenRequestInfoValidator because it is not valid.</exception>
         /// <exception cref="OperationCanceledException">The task is cancelled.</exception>
         public Task<TokenInfo> ResolveTokenAsync(TokenRequestBody content, CancellationToken cancellationToken = default)
         {
@@ -280,6 +286,7 @@ namespace Trivial.Security
         /// <exception cref="InvalidOperationException">TokenResolverUri property was null.</exception>
         /// <exception cref="FailedHttpException">HTTP response contains failure status code.</exception>
         /// <exception cref="HttpRequestException">The request failed due to an underlying issue such as network connectivity, DNS failure, server certificate validation or timeout.</exception>
+        /// <exception cref="InvalidOperationException">Cannot pass the request by the TokenRequestInfoValidator because it is not valid.</exception>
         /// <exception cref="OperationCanceledException">The task is cancelled.</exception>
         public Task<T> ResolveTokenAsync<T>(TokenRequestBody content, CancellationToken cancellationToken = default) where T : TokenInfo
         {
@@ -297,6 +304,7 @@ namespace Trivial.Security
         /// <exception cref="ArgumentNullException">requestUri or content was null.</exception>
         /// <exception cref="FailedHttpException">HTTP response contains failure status code.</exception>
         /// <exception cref="HttpRequestException">The request failed due to an underlying issue such as network connectivity, DNS failure, server certificate validation or timeout.</exception>
+        /// <exception cref="InvalidOperationException">Cannot pass the request by the TokenRequestInfoValidator because it is not valid.</exception>
         /// <exception cref="OperationCanceledException">The task is cancelled.</exception>
         public Task<TokenInfo> ResolveTokenAsync(Uri requestUri, TokenRequestBody content, CancellationToken cancellationToken = default)
         {
@@ -304,7 +312,9 @@ namespace Trivial.Security
             if (uri == null) throw new ArgumentNullException(nameof(uri), "requestUri should not be null.");
             if (content == null) throw new ArgumentNullException(nameof(content), "content should not be null.");
             var c = new TokenRequest<TokenRequestBody>(content, appInfo, Scope);
-            return CreateTokenResolveHttpClient().SendAsync(HttpMethod.Post, uri, c.ToQueryData(), cancellationToken);
+            var q = c.ToQueryData();
+            if (TokenRequestInfoValidator != null && !TokenRequestInfoValidator(q)) throw new InvalidOperationException("Cannot pass the request because it is not valid.");
+            return CreateTokenResolveHttpClient().SendAsync(HttpMethod.Post, uri, q, cancellationToken);
         }
 
         /// <summary>
@@ -317,6 +327,7 @@ namespace Trivial.Security
         /// <exception cref="ArgumentNullException">requestUri was null, empty, or consists only of white-space characters; or, content was null.</exception>
         /// <exception cref="FailedHttpException">HTTP response contains failure status code.</exception>
         /// <exception cref="HttpRequestException">The request failed due to an underlying issue such as network connectivity, DNS failure, server certificate validation or timeout.</exception>
+        /// <exception cref="InvalidOperationException">Cannot pass the request by the TokenRequestInfoValidator because it is not valid.</exception>
         /// <exception cref="OperationCanceledException">The task is cancelled.</exception>
         public Task<TokenInfo> ResolveTokenAsync(string requestUri, TokenRequestBody content, CancellationToken cancellationToken = default)
         {
@@ -324,7 +335,9 @@ namespace Trivial.Security
             if (string.IsNullOrWhiteSpace(uri)) throw new ArgumentNullException(nameof(uri), "requestUri should not be null.");
             if (content == null) throw new ArgumentNullException(nameof(content), "content should not be null.");
             var c = new TokenRequest<TokenRequestBody>(content, appInfo, Scope);
-            return CreateTokenResolveHttpClient().SendAsync(HttpMethod.Post, uri, c.ToQueryData(), cancellationToken);
+            var q = c.ToQueryData();
+            if (TokenRequestInfoValidator != null && !TokenRequestInfoValidator(q)) throw new InvalidOperationException("Cannot pass the request because it is not valid.");
+            return CreateTokenResolveHttpClient().SendAsync(HttpMethod.Post, uri, q, cancellationToken);
         }
 
         /// <summary>
@@ -338,6 +351,7 @@ namespace Trivial.Security
         /// <exception cref="ArgumentNullException">requestUri or content was null.</exception>
         /// <exception cref="FailedHttpException">HTTP response contains failure status code.</exception>
         /// <exception cref="HttpRequestException">The request failed due to an underlying issue such as network connectivity, DNS failure, server certificate validation or timeout.</exception>
+        /// <exception cref="InvalidOperationException">Cannot pass the request by the TokenRequestInfoValidator because it is not valid.</exception>
         /// <exception cref="OperationCanceledException">The task is cancelled.</exception>
         public Task<T> ResolveTokenAsync<T>(Uri requestUri, TokenRequestBody content, CancellationToken cancellationToken = default) where T : TokenInfo
         {
@@ -345,7 +359,9 @@ namespace Trivial.Security
             if (uri == null) throw new ArgumentNullException(nameof(uri), "requestUri should not be null.");
             if (content == null) throw new ArgumentNullException(nameof(content), "content should not be null.");
             var c = new TokenRequest<TokenRequestBody>(content, appInfo, Scope);
-            return CreateTokenResolveHttpClient<T>().SendAsync(HttpMethod.Post, uri, c.ToQueryData(), cancellationToken);
+            var q = c.ToQueryData();
+            if (TokenRequestInfoValidator != null && !TokenRequestInfoValidator(q)) throw new InvalidOperationException("Cannot pass the request because it is not valid.");
+            return CreateTokenResolveHttpClient<T>().SendAsync(HttpMethod.Post, uri, q, cancellationToken);
         }
 
         /// <summary>
@@ -359,6 +375,7 @@ namespace Trivial.Security
         /// <exception cref="ArgumentNullException">requestUri was null, empty, or consists only of white-space characters; or, content was null.</exception>
         /// <exception cref="FailedHttpException">HTTP response contains failure status code.</exception>
         /// <exception cref="HttpRequestException">The request failed due to an underlying issue such as network connectivity, DNS failure, server certificate validation or timeout.</exception>
+        /// <exception cref="InvalidOperationException">Cannot pass the request by the TokenRequestInfoValidator because it is not valid.</exception>
         /// <exception cref="OperationCanceledException">The task is cancelled.</exception>
         public Task<T> ResolveTokenAsync<T>(string requestUri, TokenRequestBody content, CancellationToken cancellationToken = default) where T : TokenInfo
         {
@@ -366,7 +383,9 @@ namespace Trivial.Security
             if (string.IsNullOrWhiteSpace(uri)) throw new ArgumentNullException(nameof(uri), "requestUri should not be null.");
             if (content == null) throw new ArgumentNullException(nameof(content), "content should not be null.");
             var c = new TokenRequest<TokenRequestBody>(content, appInfo, Scope);
-            return CreateTokenResolveHttpClient<T>().SendAsync(HttpMethod.Post, uri, c.ToQueryData(), cancellationToken);
+            var q = c.ToQueryData();
+            if (TokenRequestInfoValidator != null && !TokenRequestInfoValidator(q)) throw new InvalidOperationException("Cannot pass the request because it is not valid.");
+            return CreateTokenResolveHttpClient<T>().SendAsync(HttpMethod.Post, uri, q, cancellationToken);
         }
 
         /// <summary>
@@ -626,9 +645,18 @@ namespace Trivial.Security
         }
 
         /// <summary>
+        /// Gets or sets a handler to indicate whether the token request is valid and fill additional information if needed.
+        /// </summary>
+        public Func<QueryData, bool> TokenRequestInfoValidator
+        {
+            get => oauth.TokenRequestInfoValidator;
+            set => oauth.TokenRequestInfoValidator = value;
+        }
+
+        /// <summary>
         /// Gets or sets the case of authenticiation scheme.
         /// </summary>
-        protected Cases AuthenticationSchemeCase
+        public override Cases AuthenticationSchemeCase
         {
             get => oauth.AuthenticationSchemeCase;
             set => oauth.AuthenticationSchemeCase = value;
@@ -637,7 +665,7 @@ namespace Trivial.Security
         /// <summary>
         /// Gets or sets the converter of authentication header value.
         /// </summary>
-        protected Func<TokenInfo, Cases, AuthenticationHeaderValue> ConvertToAuthenticationHeaderValue
+        public override Func<TokenInfo, Cases, AuthenticationHeaderValue> ConvertToAuthenticationHeaderValue
         {
             get => oauth.ConvertToAuthenticationHeaderValue;
             set => oauth.ConvertToAuthenticationHeaderValue = value;

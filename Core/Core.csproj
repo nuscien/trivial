@@ -6,7 +6,7 @@
     <RootNamespace>Trivial</RootNamespace>
     <PackageId>Trivial</PackageId>
     <Company>Nanchang Jinchen Software Co., Ltd.</Company>
-    <Version>0.6.2</Version>
+    <Version>0.6.3</Version>
     <Authors>Kingcean Tuan</Authors>
     <Product>Trivial</Product>
     <Description>The core library of Trivial.</Description>

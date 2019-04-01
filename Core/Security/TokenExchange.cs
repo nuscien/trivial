@@ -396,6 +396,26 @@ namespace Trivial.Security
         }
 
         /// <summary>
+        /// Decrypts the token and fills into this token exchange instance.
+        /// </summary>
+        /// <param name="text">The string to decrypt.</param>
+        /// <param name="ignoreFormatIfNoCrypto">true if ignore format when no crypto set; otherwise, false.</param>
+        /// <param name="padding">The optional padding mode for decryption.</param>
+        public string Decrypt(string text, bool ignoreFormatIfNoCrypto, RSAEncryptionPadding padding = null)
+        {
+            if (string.IsNullOrWhiteSpace(text)) return null;
+            var rsa = crypto;
+            if (rsa == null)
+            {
+                if (!ignoreFormatIfNoCrypto && TokenFormatBeforeDecrypt != null) text = TokenFormatBeforeDecrypt(text, false);
+                return text;
+            }
+
+            var plain = rsa.Decrypt(Convert.FromBase64String(text), padding ?? RSAEncryptionPadding.Pkcs1);
+            return TokenFormatBeforeDecrypt != null ? TokenFormatBeforeDecrypt(Encoding.UTF8.GetString(plain), true) : Encoding.UTF8.GetString(plain);
+        }
+
+        /// <summary>
         /// Clears the token.
         /// </summary>
         public void ClearToken()
@@ -468,11 +488,28 @@ namespace Trivial.Security
         /// <summary>
         /// Gets the token encrypted.
         /// </summary>
-        /// <param name="padding">The padding mode for decryption.</param>
+        /// <param name="padding">The optional padding mode for decryption.</param>
         /// <returns>The Base64 string with token encrypted.</returns>
         public string EncryptToken(RSAEncryptionPadding padding)
         {
             return EncryptToken(null as string, padding);
+        }
+
+        /// <summary>
+        /// Gets the token encrypted.
+        /// </summary>
+        /// <param name="text">The string to encrypt.</param>
+        /// <param name="padding">The optional padding mode for decryption.</param>
+        /// <returns>The Base64 string with token encrypted.</returns>
+        public string Encrypt(string text, RSAEncryptionPadding padding = null)
+        {
+            if (EncryptKey == null) return TokenFormatBeforeEncrypt != null ? TokenFormatBeforeEncrypt(AccessToken?.ToUnsecureString(), false) : AccessToken?.ToUnsecureString();
+            var rsa = RSA.Create();
+            rsa.ImportParameters(EncryptKey.Value);
+            var cypher = rsa.Encrypt(
+                Encoding.UTF8.GetBytes(TokenFormatBeforeEncrypt != null ? TokenFormatBeforeEncrypt(AccessToken?.ToUnsecureString(), true) : AccessToken?.ToUnsecureString()),
+                padding ?? RSAEncryptionPadding.Pkcs1);
+            return Convert.ToBase64String(cypher);
         }
 
         /// <summary>

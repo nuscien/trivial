@@ -260,6 +260,10 @@ namespace Trivial.Security
                 {
                     ErrorUri = null;
                 }
+                catch (NotSupportedException)
+                {
+                    ErrorUri = null;
+                }
                 catch (InvalidCastException)
                 {
                     ErrorUri = null;
@@ -456,12 +460,12 @@ namespace Trivial.Security
         /// <summary>
         /// Gets or sets the case of authenticiation scheme.
         /// </summary>
-        public Cases AuthenticationSchemeCase { get; set; } = Cases.Original;
+        public virtual Cases AuthenticationSchemeCase { get; set; } = Cases.Original;
 
         /// <summary>
         /// Gets or sets the converter of authentication header value.
         /// </summary>
-        public Func<TokenInfo, Cases, AuthenticationHeaderValue> ConvertToAuthenticationHeaderValue { get; set; }
+        public virtual Func<TokenInfo, Cases, AuthenticationHeaderValue> ConvertToAuthenticationHeaderValue { get; set; }
 
         /// <summary>
         /// Returns a System.String that represents the current token container instance.
