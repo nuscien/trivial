@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security;
 using System.Text;
+using Trivial.Data;
 
 namespace Trivial.Security
 {
@@ -35,5 +36,14 @@ namespace Trivial.Security
         /// Gets or sets the owner identifier. Null for current user or default instance.
         /// </summary>
         public string Id { get; set; }
+
+        /// <summary>
+        /// Converts to the chagne event argument object.
+        /// </summary>
+        /// <returns>The chagne event argument object.</returns>
+        public ChangeEventArgs<SecureString> ToChangeEventArgs()
+        {
+            return new ChangeEventArgs<SecureString>(OldPassword, NewPassword, "password", true);
+        }
     }
 }

@@ -321,12 +321,8 @@ namespace Trivial.Security
 
             set
             {
-                if (string.IsNullOrWhiteSpace(value))
-                {
-                    Scope.Clear();
-                    return;
-                }
-
+                Scope.Clear();
+                if (string.IsNullOrWhiteSpace(value)) return;
                 foreach (var ele in value.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries))
                 {
                     Scope.Add(ele);

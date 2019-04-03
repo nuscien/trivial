@@ -56,6 +56,21 @@ namespace Trivial.Security
         }
 
         /// <summary>
+        /// Initializes a new instance of the TokenRequest class.
+        /// </summary>
+        /// <param name="body">The request body.</param>
+        /// <param name="q">The query data.</param>
+        public TokenRequest(TokenRequestBody body, QueryData q)
+        {
+            Body = body;
+            if (q == null) return;
+            var clientId = q[TokenRequestBody.ClientIdProperty];
+            var clientSecret = q[TokenRequestBody.ClientSecretProperty];
+            if (!string.IsNullOrEmpty(clientId) || !string.IsNullOrEmpty(clientSecret)) ClientCredentials = new AppAccessingKey(clientId, clientSecret);
+            ScopeString = q[TokenInfo.ScopeProperty];
+        }
+
+        /// <summary>
         /// Gets the client identifier and secret key.
         /// </summary>
         public AppAccessingKey ClientCredentials { get; private set; }
@@ -103,7 +118,7 @@ namespace Trivial.Security
         public IList<string> Scope { get; private set; } = new List<string>();
 
         /// <summary>
-        /// Gets the scope string.
+        /// Gets or sets the scope string.
         /// </summary>
         [DataMember(Name = TokenInfo.ScopeProperty)]
         public string ScopeString
@@ -115,12 +130,8 @@ namespace Trivial.Security
 
             set
             {
-                if (string.IsNullOrWhiteSpace(value))
-                {
-                    Scope.Clear();
-                    return;
-                }
-
+                Scope.Clear();
+                if (string.IsNullOrWhiteSpace(value)) return;
                 foreach (var ele in value.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries))
                 {
                     Scope.Add(ele);
@@ -228,6 +239,15 @@ namespace Trivial.Security
         /// <param name="secret">The client secret key.</param>
         /// <param name="scope">The scope.</param>
         public TokenRequest(T body, string id, SecureString secret, IEnumerable<string> scope = null) : base(body, id, secret, scope)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the TokenRequest class.
+        /// </summary>
+        /// <param name="body">The request body.</param>
+        /// <param name="q">The query data with client identifier and secret.</param>
+        public TokenRequest(T body, QueryData q) : base(body, q)
         {
         }
 
@@ -428,28 +448,27 @@ namespace Trivial.Security
         /// Fills the data into the current request body.
         /// </summary>
         /// <param name="s">A string to be parsed.</param>
-        /// <param name="clearOriginal">true if clear the properties in the current request body before filling; otherwise, false.</param>
         /// <exception cref="ArgumentNullException">s was null, empty or consists only of white-space characters.</exception>
         /// <exception cref="ArgumentException">s was not in correct format to parse.</exception>
         /// <exception cref="NotSupportedException">s was not in correct format to parse.</exception>
         /// <exception cref="InvalidOperationException">The grant type was not the expected one.</exception>
-        public virtual void Fill(string s, bool clearOriginal = true)
+        public virtual void Fill(string s)
         {
             if (string.IsNullOrWhiteSpace(s)) return;
-            var m = TokenRequestModel.Parse(s);
-            if (!Fill(m, clearOriginal)) throw new InvalidOperationException($"The grant type is not the expected one. Current is {m.GrantType}; but the expect is {GrantType}.");
+            var q = QueryData.Parse(s);
+            Fill(q);
         }
 
         /// <summary>
         /// Fills the data into the current request body.
         /// </summary>
-        /// <param name="m">The token request model.</param>
-        /// <param name="clearOriginal">true if clear the properties in the current request body before filling; otherwise, false.</param>
+        /// <param name="q">The query data.</param>
         /// <returns>true if fill succeeded; otherwise, false.</returns>
-        private bool Fill(TokenRequestModel m, bool clearOriginal)
+        private void Fill(QueryData q)
         {
-            if (m == null || m.GrantType != GrantType) return false;
-            return true;
+            if (q == null) return;
+            var grantType = q[GrantTypeProperty];
+            if (!string.IsNullOrEmpty(grantType) && grantType != GrantType) throw new InvalidOperationException($"The grant type is not the expected one. Current is {grantType}; but the expect is {GrantType}.");
         }
 
         /// <summary>
@@ -464,14 +483,10 @@ namespace Trivial.Security
         public static TokenRequest<ClientTokenRequestBody> Parse(string s)
         {
             if (string.IsNullOrWhiteSpace(s)) throw new ArgumentNullException(nameof(s), "s should not be null, empty or consists only of white-space characters.");
-            var m = TokenRequestModel.Parse(s);
-            if (m == null) throw new NotSupportedException("s cannot be parsed.");
+            var q = QueryData.Parse(s);
             var body = new ClientTokenRequestBody();
-            if (!body.Fill(m, false)) throw new InvalidOperationException($"The grant type is not the expected one. Current is {m.GrantType}; but the expect is {body.GrantType}.");
-            return new TokenRequest<ClientTokenRequestBody>(body, new AppAccessingKey(m.ClientId, m.ClientSecret))
-            {
-                ScopeString = m.Scope
-            };
+            body.Fill(q);
+            return new TokenRequest<ClientTokenRequestBody>(body, q);
         }
     }
 
@@ -560,39 +575,33 @@ namespace Trivial.Security
         /// <summary>
         /// Fills the data into the current request body.
         /// </summary>
-        /// <param name="s">A string to be parsed.</param>
-        /// <param name="clearOriginal">true if clear the properties in the current request body before filling; otherwise, false.</param>
+        /// <param name="s">A string to parse.</param>
         /// <exception cref="ArgumentNullException">s was null, empty or consists only of white-space characters.</exception>
         /// <exception cref="ArgumentException">s was not in correct format to parse.</exception>
         /// <exception cref="NotSupportedException">s was not in correct format to parse.</exception>
         /// <exception cref="InvalidOperationException">The grant type was not the expected one.</exception>
-        public virtual void Fill(string s, bool clearOriginal = true)
+        public virtual void Fill(string s)
         {
-            if (string.IsNullOrWhiteSpace(s)) return;
-            var m = TokenRequestModel.Parse(s);
-            if (!Fill(m, clearOriginal)) throw new InvalidOperationException($"The grant type is not the expected one. Current is {m.GrantType}; but the expect is {GrantType}.");
+            var q = QueryData.Parse(s);
+            Fill(q);
         }
 
         /// <summary>
         /// Fills the data into the current request body.
         /// </summary>
-        /// <param name="m">The token request model.</param>
-        /// <param name="clearOriginal">true if clear the properties in the current request body before filling; otherwise, false.</param>
+        /// <param name="q">The query data.</param>
         /// <returns>true if fill succeeded; otherwise, false.</returns>
-        private bool Fill(TokenRequestModel m, bool clearOriginal)
+        private void Fill(QueryData q)
         {
-            if (m == null || m.GrantType != GrantType) return false;
-            if (clearOriginal)
-            {
-                Code = null;
-                CodeVerifier = null;
-                RedirectUri = null;
-            }
-
-            if (!string.IsNullOrWhiteSpace(m.Code)) Code = m.Code;
-            if (!string.IsNullOrWhiteSpace(m.CodeVerifier)) CodeVerifier = m.CodeVerifier;
-            if (!string.IsNullOrWhiteSpace(m.RedirectUri)) RedirectUri = new Uri(m.RedirectUri);
-            return true;
+            if (q == null) return;
+            var grantType = q[GrantTypeProperty];
+            if (!string.IsNullOrEmpty(grantType) && grantType != GrantType) throw new InvalidOperationException($"The grant type is not the expected one. Current is {grantType}; but the expect is {GrantType}.");
+            var code = q[CodeProperty];
+            if (code != null) Code = q[CodeProperty];
+            var codeVerifier = q[CodeVerifierProperty];
+            if (codeVerifier != null) CodeVerifier = codeVerifier;
+            var redirectUri = q[RedirectUriProperty];
+            if (redirectUri != null) RedirectUri = redirectUri == string.Empty ? null : new Uri(redirectUri);
         }
 
         /// <summary>
@@ -607,14 +616,10 @@ namespace Trivial.Security
         public static CodeTokenRequest Parse(string s)
         {
             if (string.IsNullOrWhiteSpace(s)) throw new ArgumentNullException(nameof(s), "s should not be null, empty or consists only of white-space characters.");
-            var m = TokenRequestModel.Parse(s);
-            if (m == null) throw new NotSupportedException("s cannot be parsed.");
+            var q = QueryData.Parse(s);
             var body = new CodeTokenRequestBody();
-            if (!body.Fill(m, false)) throw new InvalidOperationException($"The grant type is not the expected one. Current is {m.GrantType}; but the expect is {body.GrantType}.");
-            return new CodeTokenRequest(body, new AppAccessingKey(m.ClientId, m.ClientSecret))
-            {
-                ScopeString = m.Scope
-            };
+            body.Fill(q);
+            return new CodeTokenRequest(body, q);
         }
     }
 
@@ -653,6 +658,15 @@ namespace Trivial.Security
         /// <param name="secret">The client secret key.</param>
         /// <param name="scope">The scope.</param>
         public CodeTokenRequest(CodeTokenRequestBody body, string id, SecureString secret, IEnumerable<string> scope = null) : base(body, id, secret, scope)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the CodeTokenRequest class.
+        /// </summary>
+        /// <param name="body">The request body.</param>
+        /// <param name="q">The query data with client identifier and secret.</param>
+        public CodeTokenRequest(CodeTokenRequestBody body, QueryData q) : base(body, q)
         {
         }
 
@@ -768,34 +782,29 @@ namespace Trivial.Security
         /// Fills the data into the current request body.
         /// </summary>
         /// <param name="s">A string to be parsed.</param>
-        /// <param name="clearOriginal">true if clear the properties in the current request body before filling; otherwise, false.</param>
         /// <exception cref="ArgumentNullException">s was null, empty or consists only of white-space characters.</exception>
         /// <exception cref="ArgumentException">s was not in correct format to parse.</exception>
         /// <exception cref="NotSupportedException">s was not in correct format to parse.</exception>
         /// <exception cref="InvalidOperationException">The grant type was not the expected one.</exception>
-        public virtual void Fill(string s, bool clearOriginal = true)
+        public virtual void Fill(string s)
         {
             if (string.IsNullOrWhiteSpace(s)) return;
-            var m = TokenRequestModel.Parse(s);
-            if (!Fill(m, clearOriginal)) throw new InvalidOperationException($"The grant type is not the expected one. Current is {m.GrantType}; but the expect is {GrantType}.");
+            var q = QueryData.Parse(s);
+            Fill(q);
         }
 
         /// <summary>
         /// Fills the data into the current request body.
         /// </summary>
-        /// <param name="m">The token request model.</param>
-        /// <param name="clearOriginal">true if clear the properties in the current request body before filling; otherwise, false.</param>
+        /// <param name="q">The query data.</param>
         /// <returns>true if fill succeeded; otherwise, false.</returns>
-        private bool Fill(TokenRequestModel m, bool clearOriginal)
+        private void Fill(QueryData q)
         {
-            if (m == null || m.GrantType != GrantType) return false;
-            if (clearOriginal)
-            {
-                RefreshToken = null;
-            }
-
-            if (!string.IsNullOrWhiteSpace(m.RefreshToken)) RefreshToken = m.RefreshToken;
-            return true;
+            if (q == null) return;
+            var grantType = q[GrantTypeProperty];
+            if (!string.IsNullOrEmpty(grantType) && grantType != GrantType) throw new InvalidOperationException($"The grant type is not the expected one. Current is {grantType}; but the expect is {GrantType}.");
+            var refreshToken = q[TokenInfo.RefreshTokenProperty];
+            if (refreshToken != null) RefreshToken = refreshToken;
         }
 
         /// <summary>
@@ -810,14 +819,10 @@ namespace Trivial.Security
         public static TokenRequest<RefreshTokenRequestBody> Parse(string s)
         {
             if (string.IsNullOrWhiteSpace(s)) throw new ArgumentNullException(nameof(s), "s should not be null, empty or consists only of white-space characters.");
-            var m = TokenRequestModel.Parse(s);
-            if (m == null) throw new NotSupportedException("s cannot be parsed.");
+            var q = QueryData.Parse(s);
             var body = new RefreshTokenRequestBody();
-            if (!body.Fill(m, false)) throw new InvalidOperationException($"The grant type is not the expected one. Current is {m.GrantType}; but the expect is {body.GrantType}.");
-            return new TokenRequest<RefreshTokenRequestBody>(body, new AppAccessingKey(m.ClientId, m.ClientSecret))
-            {
-                ScopeString = m.Scope
-            };
+            body.Fill(q);
+            return new TokenRequest<RefreshTokenRequestBody>(body, q);
         }
     }
 
@@ -927,36 +932,31 @@ namespace Trivial.Security
         /// Fills the data into the current request body.
         /// </summary>
         /// <param name="s">A string to be parsed.</param>
-        /// <param name="clearOriginal">true if clear the properties in the current request body before filling; otherwise, false.</param>
         /// <exception cref="ArgumentNullException">s was null, empty or consists only of white-space characters.</exception>
         /// <exception cref="ArgumentException">s was not in correct format to parse.</exception>
         /// <exception cref="NotSupportedException">s was not in correct format to parse.</exception>
         /// <exception cref="InvalidOperationException">The grant type was not the expected one.</exception>
-        public virtual void Fill(string s, bool clearOriginal = true)
+        public virtual void Fill(string s)
         {
             if (string.IsNullOrWhiteSpace(s)) return;
-            var m = TokenRequestModel.Parse(s);
-            if (!Fill(m, clearOriginal)) throw new InvalidOperationException($"The grant type is not the expected one. Current is {m.GrantType}; but the expect is {GrantType}.");
+            var q = QueryData.Parse(s);
+            Fill(q);
         }
 
         /// <summary>
         /// Fills the data into the current request body.
         /// </summary>
-        /// <param name="m">The token request model.</param>
-        /// <param name="clearOriginal">true if clear the properties in the current request body before filling; otherwise, false.</param>
+        /// <param name="q">The query data.</param>
         /// <returns>true if fill succeeded; otherwise, false.</returns>
-        private bool Fill(TokenRequestModel m, bool clearOriginal)
+        private void Fill(QueryData q)
         {
-            if (m == null || m.GrantType != GrantType) return false;
-            if (clearOriginal)
-            {
-                UserName = null;
-                Password = null;
-            }
-
-            if (!string.IsNullOrWhiteSpace(m.UserName)) UserName = m.UserName;
-            if (!string.IsNullOrWhiteSpace(m.Password)) Password = m.Password.ToSecure();
-            return true;
+            if (q == null) return;
+            var grantType = q[GrantTypeProperty];
+            if (!string.IsNullOrEmpty(grantType) && grantType != GrantType) throw new InvalidOperationException($"The grant type is not the expected one. Current is {grantType}; but the expect is {GrantType}.");
+            var userName = q[UserNameProperty];
+            if (userName != null) UserName = userName;
+            var password = q[PasswordProperty];
+            if (password != null) Password = password == string.Empty ? null : password.ToSecure();
         }
 
         /// <summary>
@@ -971,67 +971,10 @@ namespace Trivial.Security
         public static TokenRequest<PasswordTokenRequestBody> Parse(string s)
         {
             if (string.IsNullOrWhiteSpace(s)) throw new ArgumentNullException(nameof(s), "s should not be null, empty or consists only of white-space characters.");
-            var m = TokenRequestModel.Parse(s);
-            if (m == null) throw new NotSupportedException("s cannot be parsed.");
-            var body = new PasswordTokenRequestBody();
-            if (!body.Fill(m, false)) throw new InvalidOperationException($"The grant type is not the expected one. Current is {m.GrantType}; but the expect is {body.GrantType}.");
-            return new TokenRequest<PasswordTokenRequestBody>(body, new AppAccessingKey(m.ClientId, m.ClientSecret))
-            {
-                ScopeString = m.Scope
-            };
-        }
-    }
-
-    [DataContract]
-    internal class TokenRequestModel
-    {
-        [DataMember(Name = TokenRequestBody.GrantTypeProperty)]
-        public string GrantType { get; set; }
-
-        [DataMember(Name = TokenRequestBody.ClientIdProperty)]
-        public string ClientId { get; set; }
-
-        [DataMember(Name = TokenRequestBody.ClientSecretProperty)]
-        public string ClientSecret { get; set; }
-
-        [DataMember(Name = TokenInfo.ScopeProperty)]
-        public string Scope { get; set; }
-
-        [DataMember(Name = CodeTokenRequestBody.RedirectUriProperty)]
-        public string RedirectUri { get; set; }
-
-        [DataMember(Name = CodeTokenRequestBody.CodeProperty)]
-        public string Code { get; set; }
-
-        [DataMember(Name = CodeTokenRequestBody.CodeVerifierProperty)]
-        public string CodeVerifier { get; set; }
-
-        [DataMember(Name = TokenInfo.RefreshTokenProperty)]
-        public string RefreshToken { get; set; }
-
-        [DataMember(Name = PasswordTokenRequestBody.UserNameProperty)]
-        public string UserName { get; set; }
-
-        [DataMember(Name = PasswordTokenRequestBody.PasswordProperty)]
-        public string Password { get; set; }
-
-        public static TokenRequestModel Parse(string s)
-        {
-            if (string.IsNullOrWhiteSpace(s)) return null;
             var q = QueryData.Parse(s);
-            return new TokenRequestModel
-            {
-                GrantType = q[TokenRequestBody.GrantTypeProperty],
-                ClientId = q[TokenRequestBody.ClientIdProperty],
-                ClientSecret = q[TokenRequestBody.ClientSecretProperty],
-                Scope = q[TokenInfo.ScopeProperty],
-                Code = q[CodeTokenRequestBody.CodeProperty],
-                CodeVerifier = q[CodeTokenRequestBody.CodeVerifierProperty],
-                RedirectUri = q[CodeTokenRequestBody.RedirectUriProperty],
-                RefreshToken = q[TokenInfo.RefreshTokenProperty],
-                UserName = q[PasswordTokenRequestBody.UserNameProperty],
-                Password = q[PasswordTokenRequestBody.PasswordProperty]
-            };
+            var body = new PasswordTokenRequestBody();
+            body.Fill(q);
+            return new TokenRequest<PasswordTokenRequestBody>(body, q);
         }
     }
 }

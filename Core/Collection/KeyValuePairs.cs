@@ -67,7 +67,9 @@ namespace Trivial.Collection
         /// <returns>The query value.</returns>
         public string GetValue(string key, string separator = null)
         {
-            return string.Join(separator ?? ValueSeparator ?? string.Empty, ListUtility.GetValues(this, key));
+            var arr = ListUtility.GetValues(this, key).ToList();
+            if (arr.Count == 0) return null;
+            return string.Join(separator ?? ValueSeparator ?? string.Empty, arr);
         }
 
         /// <summary>

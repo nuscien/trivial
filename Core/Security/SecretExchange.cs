@@ -127,7 +127,7 @@ namespace Trivial.Security
     ///     var jwt = token.ToJsonWebTokenAuthenticationHeaderValue(sign);
     ///   </code>
     /// </example>
-    public class RSATokenExchange : ICloneable
+    public class RSASecretExchange : ICloneable
     {
         /// <summary>
         /// The RSA exchange JWT payload model.
@@ -177,11 +177,11 @@ namespace Trivial.Security
             /// <param name="rsa">The RSA token exchange instance from the other side.</param>
             /// <param name="encryptKeyResolver">A handler to resolve encrypt key.</param>
             /// <returns>true if read succeeded; otherwise, false.</returns>
-            public bool Read(RSATokenExchange rsa, Func<string, RSAParameters?> encryptKeyResolver = null)
+            public bool Read(RSASecretExchange rsa, Func<string, RSAParameters?> encryptKeyResolver = null)
             {
                 if (!IsEncrypted || string.IsNullOrWhiteSpace(CurrentEncryptId))
                 {
-                    rsa.SetToken(Value);
+                    rsa.SetSecret(Value);
                 }
                 else
                 {
@@ -207,7 +207,7 @@ namespace Trivial.Security
                     }
                 }
 
-                rsa.DecryptToken(Value, true);
+                rsa.DecryptSecret(Value, true);
                 if (!string.IsNullOrWhiteSpace(UserId)) rsa.EntityId = UserId;
                 return true;
             }
@@ -219,7 +219,7 @@ namespace Trivial.Security
         private RSA crypto;
 
         /// <summary>
-        /// Gets or sets the identifier for the token exchange.
+        /// Gets or sets the identifier for the secret exchange.
         /// </summary>
         public string Id { get; set; }
 
@@ -229,22 +229,22 @@ namespace Trivial.Security
         public string EntityId { get; set; }
 
         /// <summary>
-        /// Gets or sets the access token.
+        /// Gets or sets the secret.
         /// </summary>
-        public SecureString AccessToken { get; set; }
+        public SecureString Secret { get; set; }
 
         /// <summary>
-        /// Gets the public key for token.
+        /// Gets the public key for secret.
         /// </summary>
         public RSAParameters? PublicKey { get; private set; }
 
         /// <summary>
-        /// Gets or sets the encryption key for token.
+        /// Gets or sets the encryption key for secret.
         /// </summary>
         public RSAParameters? EncryptKey { get; set; }
 
         /// <summary>
-        /// Gets or sets the additional identifier of the encryption key for token.
+        /// Gets or sets the additional identifier of the encryption key for secret.
         /// </summary>
         public string EncryptKeyId { get; set; }
 
@@ -254,19 +254,19 @@ namespace Trivial.Security
         public bool IsSecure => crypto != null;
 
         /// <summary>
-        /// Gets a value indicating whether there is an access token.
+        /// Gets a value indicating whether there is a secret.
         /// </summary>
-        public bool HasToken => AccessToken != null && AccessToken.Length > 0;
+        public bool HasSecret => Secret != null && Secret.Length > 0;
 
         /// <summary>
-        /// Gets or sets the optional handler of the access token setter for DecryptToken methods.
+        /// Gets or sets the optional handler of the secret setter for DecryptSecret methods.
         /// </summary>
-        public Func<string, bool, string> TokenFormatBeforeDecrypt { get; set; }
+        public Func<string, bool, string> SecretFormatBeforeDecrypt { get; set; }
 
         /// <summary>
-        /// Gets or sets the optional handler of the access token getter for EncryptToken method.
+        /// Gets or sets the optional handler of the access secret getter for EncryptSecret method.
         /// </summary>
-        public Func<string, bool, string> TokenFormatBeforeEncrypt { get; set; }
+        public Func<string, bool, string> SecretFormatBeforeEncrypt { get; set; }
 
         /// <summary>
         /// Creates a random new identifier.
@@ -280,7 +280,7 @@ namespace Trivial.Security
         /// Sets a specific crypto service provider instance.
         /// </summary>
         /// <param name="rsa">The new crypto service provider.</param>
-        /// <param name="syncEncryptKey">true if set the token encryption key from the crypto service provider; otherwise, false.</param>
+        /// <param name="syncEncryptKey">true if set the secret encryption key from the crypto service provider; otherwise, false.</param>
         public void SetCrypto(RSA rsa, bool syncEncryptKey = false)
         {
             crypto = rsa;
@@ -300,7 +300,7 @@ namespace Trivial.Security
         /// Sets a specific crypto service provider instance.
         /// </summary>
         /// <param name="privateKey">The RSA private key.</param>
-        /// <param name="syncEncryptKey">true if set the token encryption key from the crypto service provider; otherwise, false.</param>
+        /// <param name="syncEncryptKey">true if set the secret encryption key from the crypto service provider; otherwise, false.</param>
         public void SetCrypto(string privateKey, bool syncEncryptKey = false)
         {
             var key = RSAUtility.ParseParameters(privateKey);
@@ -317,7 +317,7 @@ namespace Trivial.Security
         /// Sets a specific crypto service provider instance.
         /// </summary>
         /// <param name="privateKey">The RSA private key.</param>
-        /// <param name="syncEncryptKey">true if set the token encryption key from the crypto service provider; otherwise, false.</param>
+        /// <param name="syncEncryptKey">true if set the secret encryption key from the crypto service provider; otherwise, false.</param>
         public void SetCrypto(RSAParameters privateKey, bool syncEncryptKey = false)
         {
             if (privateKey.D == null || privateKey.D.Length == 0) throw new ArgumentException("privateKey should be an RSA private key.");
@@ -342,7 +342,7 @@ namespace Trivial.Security
         /// <summary>
         /// Creates a new crypto service provider.
         /// </summary>
-        /// <param name="syncEncryptKey">true if set the token encryption key from the crypto service provider; otherwise, false.</param>
+        /// <param name="syncEncryptKey">true if set the secret encryption key from the crypto service provider; otherwise, false.</param>
         public void CreateCrypto(bool syncEncryptKey = false)
         {
             SetCrypto(RSA.Create(), syncEncryptKey);
@@ -360,156 +360,168 @@ namespace Trivial.Security
         }
 
         /// <summary>
-        /// Decrypts the token and fills into this token exchange instance.
+        /// Decrypts the secret and fills into this secret exchange instance.
         /// </summary>
-        /// <param name="tokenEncrypted">The new token encrypted.</param>
+        /// <param name="secretEncrypted">The new secret encrypted.</param>
         /// <param name="ignoreFormatIfNoCrypto">true if ignore format when no crypto set; otherwise, false.</param>
         /// <param name="padding">The optional padding mode for decryption.</param>
-        public void DecryptToken(string tokenEncrypted, bool ignoreFormatIfNoCrypto, RSAEncryptionPadding padding = null)
+        public void DecryptSecret(string secretEncrypted, bool ignoreFormatIfNoCrypto, RSAEncryptionPadding padding = null)
         {
-            if (string.IsNullOrWhiteSpace(tokenEncrypted))
+            if (string.IsNullOrWhiteSpace(secretEncrypted))
             {
-                AccessToken = null;
+                Secret = null;
                 return;
             }
 
             var rsa = crypto;
             if (rsa == null)
             {
-                if (!ignoreFormatIfNoCrypto && TokenFormatBeforeDecrypt != null) tokenEncrypted = TokenFormatBeforeDecrypt(tokenEncrypted, false);
-                AccessToken = tokenEncrypted.ToSecure();
+                if (!ignoreFormatIfNoCrypto && SecretFormatBeforeDecrypt != null) secretEncrypted = SecretFormatBeforeDecrypt(secretEncrypted, false);
+                Secret = secretEncrypted.ToSecure();
                 return;
             }
 
-            var plain = rsa.Decrypt(Convert.FromBase64String(tokenEncrypted), padding ?? RSAEncryptionPadding.Pkcs1);
-            AccessToken = TokenFormatBeforeDecrypt != null ? TokenFormatBeforeDecrypt(Encoding.UTF8.GetString(plain), true).ToSecure() : Encoding.UTF8.GetString(plain).ToSecure();
+            var plain = rsa.Decrypt(Convert.FromBase64String(secretEncrypted), padding ?? RSAEncryptionPadding.Pkcs1);
+            Secret = SecretFormatBeforeDecrypt != null ? SecretFormatBeforeDecrypt(Encoding.UTF8.GetString(plain), true).ToSecure() : Encoding.UTF8.GetString(plain).ToSecure();
         }
 
         /// <summary>
-        /// Decrypts the token and fills into this token exchange instance.
+        /// Decrypts the secret and fills into this secret exchange instance.
         /// </summary>
-        /// <param name="tokenEncrypted">The new token encrypted.</param>
+        /// <param name="secretEncrypted">The new secret encrypted.</param>
         /// <param name="padding">The padding mode for decryption.</param>
-        public void DecryptToken(string tokenEncrypted, RSAEncryptionPadding padding = null)
+        public void DecryptSecret(string secretEncrypted, RSAEncryptionPadding padding = null)
         {
-            DecryptToken(tokenEncrypted, false, padding);
+            DecryptSecret(secretEncrypted, false, padding);
         }
 
         /// <summary>
-        /// Decrypts the token and fills into this token exchange instance.
+        /// Decrypts the secret and fills into this secret exchange instance.
         /// </summary>
         /// <param name="text">The string to decrypt.</param>
         /// <param name="ignoreFormatIfNoCrypto">true if ignore format when no crypto set; otherwise, false.</param>
         /// <param name="padding">The optional padding mode for decryption.</param>
-        public string Decrypt(string text, bool ignoreFormatIfNoCrypto, RSAEncryptionPadding padding = null)
+        public string DecryptText(string text, bool ignoreFormatIfNoCrypto, RSAEncryptionPadding padding = null)
         {
             if (string.IsNullOrWhiteSpace(text)) return null;
             var rsa = crypto;
             if (rsa == null)
             {
-                if (!ignoreFormatIfNoCrypto && TokenFormatBeforeDecrypt != null) text = TokenFormatBeforeDecrypt(text, false);
+                if (!ignoreFormatIfNoCrypto && SecretFormatBeforeDecrypt != null) text = SecretFormatBeforeDecrypt(text, false);
                 return text;
             }
 
             var plain = rsa.Decrypt(Convert.FromBase64String(text), padding ?? RSAEncryptionPadding.Pkcs1);
-            return TokenFormatBeforeDecrypt != null ? TokenFormatBeforeDecrypt(Encoding.UTF8.GetString(plain), true) : Encoding.UTF8.GetString(plain);
+            return SecretFormatBeforeDecrypt != null ? SecretFormatBeforeDecrypt(Encoding.UTF8.GetString(plain), true) : Encoding.UTF8.GetString(plain);
         }
 
         /// <summary>
-        /// Clears the token.
+        /// Clears the secret.
         /// </summary>
-        public void ClearToken()
+        public void ClearSecret()
         {
-            AccessToken = null;
+            Secret = null;
         }
 
         /// <summary>
-        /// Sets a new token.
+        /// Sets a new secret.
         /// </summary>
-        /// <param name="token">The new token.</param>
-        public void SetToken(string token)
+        /// <param name="secret">The new secret to set.</param>
+        public void SetSecret(string secret)
         {
-            if (string.IsNullOrWhiteSpace(token))
+            if (string.IsNullOrWhiteSpace(secret))
             {
-                AccessToken = null;
+                Secret = null;
                 return;
             }
 
-            AccessToken = token.ToSecure();
+            Secret = secret.ToSecure();
         }
 
         /// <summary>
-        /// Sets a new token.
+        /// Sets a new secret from an access token.
         /// </summary>
         /// <param name="token">The new token.</param>
-        public void SetToken(TokenInfo token)
+        public void SetSecret(TokenInfo token)
         {
-            SetToken(token?.AccessToken);
+            SetSecret(token?.AccessToken);
         }
 
         /// <summary>
-        /// Sets a new token.
+        /// Sets a new token from an access token.
         /// </summary>
         /// <param name="token">The new token.</param>
-        public void SetToken(TokenContainer token)
+        public void SetSecret(TokenContainer token)
         {
-            SetToken(token?.AccessToken);
+            SetSecret(token?.AccessToken);
         }
 
         /// <summary>
-        /// Gets the token encrypted.
+        /// Gets the secret encrypted.
         /// </summary>
-        /// <param name="key">The optional token encryption key to use to override the original one set.</param>
+        /// <param name="key">The optional secret encryption key to use to override the original one set.</param>
         /// <param name="padding">The optional padding mode for decryption.</param>
-        /// <returns>The Base64 string with token encrypted.</returns>
-        public string EncryptToken(RSAParameters? key = null, RSAEncryptionPadding padding = null)
+        /// <returns>The Base64 string with secret encrypted.</returns>
+        public string EncryptSecret(RSAParameters? key = null, RSAEncryptionPadding padding = null)
         {
             if (!key.HasValue) key = EncryptKey;
-            if (!key.HasValue) return TokenFormatBeforeEncrypt != null ? TokenFormatBeforeEncrypt(AccessToken?.ToUnsecureString(), false) : AccessToken?.ToUnsecureString();
+            if (!key.HasValue) return SecretFormatBeforeEncrypt != null ? SecretFormatBeforeEncrypt(Secret?.ToUnsecureString(), false) : Secret?.ToUnsecureString();
             var rsa = RSA.Create();
             rsa.ImportParameters(key.Value);
             var cypher = rsa.Encrypt(
-                Encoding.UTF8.GetBytes(TokenFormatBeforeEncrypt != null ? TokenFormatBeforeEncrypt(AccessToken?.ToUnsecureString(), true) : AccessToken?.ToUnsecureString()),
+                Encoding.UTF8.GetBytes(SecretFormatBeforeEncrypt != null ? SecretFormatBeforeEncrypt(Secret?.ToUnsecureString(), true) : Secret?.ToUnsecureString()),
                 padding ?? RSAEncryptionPadding.Pkcs1);
             return Convert.ToBase64String(cypher);
         }
 
         /// <summary>
-        /// Gets the token encrypted.
+        /// Gets the secret encrypted.
         /// </summary>
-        /// <param name="key">The token encryption key to use to override the original one set.</param>
+        /// <param name="key">The secret encryption key to use to override the original one set.</param>
         /// <param name="padding">The optional padding mode for decryption.</param>
-        /// <returns>The Base64 string with token encrypted.</returns>
-        public string EncryptToken(string key, RSAEncryptionPadding padding = null)
+        /// <returns>The Base64 string with secret encrypted.</returns>
+        public string EncryptSecret(string key, RSAEncryptionPadding padding = null)
         {
-            return EncryptToken(RSAUtility.ParseParameters(key), padding);
+            return EncryptSecret(RSAUtility.ParseParameters(key), padding);
         }
 
         /// <summary>
-        /// Gets the token encrypted.
+        /// Gets the secret encrypted.
         /// </summary>
         /// <param name="padding">The optional padding mode for decryption.</param>
-        /// <returns>The Base64 string with token encrypted.</returns>
-        public string EncryptToken(RSAEncryptionPadding padding)
+        /// <returns>The Base64 string with secret encrypted.</returns>
+        public string EncryptSecret(RSAEncryptionPadding padding)
         {
-            return EncryptToken(null as string, padding);
+            return EncryptSecret(null as string, padding);
         }
 
         /// <summary>
-        /// Gets the token encrypted.
+        /// Gets the secret encrypted.
         /// </summary>
         /// <param name="text">The string to encrypt.</param>
         /// <param name="padding">The optional padding mode for decryption.</param>
-        /// <returns>The Base64 string with token encrypted.</returns>
-        public string Encrypt(string text, RSAEncryptionPadding padding = null)
+        /// <returns>The Base64 string with secret encrypted.</returns>
+        public string EncryptText(string text, RSAEncryptionPadding padding = null)
         {
-            if (EncryptKey == null) return TokenFormatBeforeEncrypt != null ? TokenFormatBeforeEncrypt(AccessToken?.ToUnsecureString(), false) : AccessToken?.ToUnsecureString();
+            if (text == null) return null;
+            if (EncryptKey == null) return SecretFormatBeforeEncrypt != null ? SecretFormatBeforeEncrypt(text, false) : text;
             var rsa = RSA.Create();
             rsa.ImportParameters(EncryptKey.Value);
             var cypher = rsa.Encrypt(
-                Encoding.UTF8.GetBytes(TokenFormatBeforeEncrypt != null ? TokenFormatBeforeEncrypt(AccessToken?.ToUnsecureString(), true) : AccessToken?.ToUnsecureString()),
+                Encoding.UTF8.GetBytes(SecretFormatBeforeEncrypt != null ? SecretFormatBeforeEncrypt(text, true) : text),
                 padding ?? RSAEncryptionPadding.Pkcs1);
             return Convert.ToBase64String(cypher);
+        }
+
+        /// <summary>
+        /// Gets the secret encrypted.
+        /// </summary>
+        /// <param name="text">The string to encrypt.</param>
+        /// <param name="padding">The optional padding mode for decryption.</param>
+        /// <returns>The Base64 string with secret encrypted.</returns>
+        public string EncryptText(SecureString text, RSAEncryptionPadding padding = null)
+        {
+            return EncryptText(SecureStringUtility.ToUnsecureString(text), padding);
         }
 
         /// <summary>
@@ -547,7 +559,7 @@ namespace Trivial.Security
                 return new JsonWebTokenPayload
                 {
                     UserId = EntityId,
-                    Value = AccessToken?.ToUnsecureString(),
+                    Value = Secret?.ToUnsecureString(),
                     ExpectFutureEncryptId = EncryptKeyId
                 };
             }
@@ -557,7 +569,7 @@ namespace Trivial.Security
                 return new JsonWebTokenPayload
                 {
                     UserId = EntityId,
-                    Value = AccessToken?.ToUnsecureString(),
+                    Value = Secret?.ToUnsecureString(),
                     ExpectFutureEncryptId = Id,
                     IssuedAt = DateTime.Now
                 };
@@ -567,7 +579,7 @@ namespace Trivial.Security
             {
                 CurrentEncryptId = EncryptKeyId,
                 UserId = EntityId,
-                Value = EncryptToken(),
+                Value = EncryptSecret(),
                 IsEncrypted = IsSecure,
                 ExpectFutureEncryptId = Id,
                 IssuedAt = DateTime.Now
@@ -611,17 +623,17 @@ namespace Trivial.Security
         /// Creates a new object that is a copy of the current instance.
         /// </summary>
         /// <returns>A new object that is a copy of this instance.</returns>
-        public RSATokenExchange Clone()
+        public RSASecretExchange Clone()
         {
-            return new RSATokenExchange
+            return new RSASecretExchange
             {
                 Id = Id,
                 EntityId = EntityId,
                 EncryptKey = EncryptKey,
                 EncryptKeyId = EncryptKeyId,
-                AccessToken = AccessToken,
-                TokenFormatBeforeDecrypt = TokenFormatBeforeDecrypt,
-                TokenFormatBeforeEncrypt = TokenFormatBeforeEncrypt,
+                Secret = Secret,
+                SecretFormatBeforeDecrypt = SecretFormatBeforeDecrypt,
+                SecretFormatBeforeEncrypt = SecretFormatBeforeEncrypt,
                 PublicKey = PublicKey,
                 crypto = crypto
             };
