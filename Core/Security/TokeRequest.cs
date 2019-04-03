@@ -137,7 +137,7 @@ namespace Trivial.Security
         {
             get
             {
-                return string.Join(" ", Scope);
+                return Scope.Count > 0 ? string.Join(" ", Scope) : null;
             }
 
             set

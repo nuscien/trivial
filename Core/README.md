@@ -190,12 +190,15 @@ We also provide a set of tools for OAuth including following models.
 
 - `TokenInfo` The access token and other properties.
 - `AppAccessingKey` The app identifier and secret key.
+- `OAuthClient` The token container with the ability to resolve the access token and create the JSON HTTP web client to access the resources required authentication.
 
-And you can initializes a new instance of the `OAuthClient` class to resolve the access token and create the JSON HTTP web client to access the resources required authentication.
+And you can also implement the `OAuthBasedClient` base class to create your own business HTTP web client factory with OAuth supports.
 
 ### Secure string utiltiy
 
-You can use the extension methods `SecureStringUtiltiy` to convert between `SecureString` and `String`/`StringBuilder`/`Byte[]`.
+You can use the extension methods in the `SecureStringUtiltiy` class to convert the secret between `SecureString` and `String`/`StringBuilder`/`Byte[]`.
+
+You can also use the class `RSASecretExchange` to transfer the secret with RSA encryption.
 
 ### JWT
 

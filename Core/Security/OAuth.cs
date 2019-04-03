@@ -442,7 +442,7 @@ namespace Trivial.Security
                 Token = ev.Result;
                 TokenResolved?.Invoke(sender, ev.ConvertTo<TokenInfo>());
             };
-            if (Serializer != null) httpClient.Serializer = json => (T)Serializer(json, typeof(TokenInfo));
+            if (Serializer != null) httpClient.Serializer = json => (T)Serializer(json, typeof(T));
             if (TokenResolving != null) httpClient.Sending += (sender, ev) =>
             {
                 TokenResolving?.Invoke(sender, ev);
