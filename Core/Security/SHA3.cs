@@ -49,7 +49,7 @@ namespace Trivial.Security
         protected int buffLength;
         protected int keccakR;
 
-        private SHA3Managed(int hashBitLength)
+        protected SHA3Managed(int hashBitLength)
         {
             if (hashBitLength != 224 && hashBitLength != 256 && hashBitLength != 384 && hashBitLength != 512)
                 throw new ArgumentException("hashBitLength must be 224, 256, 384, or 512", nameof(hashBitLength));
@@ -101,15 +101,8 @@ namespace Trivial.Security
 
         public int KeccakR
         {
-            get
-            {
-                return keccakR;
-            }
-
-            protected set
-            {
-                keccakR = value;
-            }
+            get => keccakR;
+            protected set => keccakR = value;
         }
 
         public int SizeInBytes => KeccakR / 8;
@@ -117,6 +110,10 @@ namespace Trivial.Security
         public int HashByteLength => HashSizeValue / 8;
 
         public override bool CanReuseTransform => true;
+
+        public override byte[] Hash => HashValue;
+
+        public override int HashSize => HashSizeValue;
 
         protected ulong ROL(ulong a, int offset)
         {
@@ -131,10 +128,6 @@ namespace Trivial.Security
             buffLength += amount;
             count -= amount;
         }
-
-        public override byte[] Hash => HashValue;
-
-        public override int HashSize => HashSizeValue;
 
         public override void Initialize()
         {

@@ -261,7 +261,7 @@ namespace Trivial.Data
 
             if (info.Value == null || info.IsExpired(Expiration))
             {
-                RemoveExpired();
+                Remove(prefix, id);
                 return Add(prefix, id, initialization, expiration);
             }
 
