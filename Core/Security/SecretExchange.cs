@@ -20,13 +20,13 @@ namespace Trivial.Security
 {
     /// <summary>
     ///   <para>
-    ///     The token exchange based on RSA.
+    ///     The secret exchange based on RSA.
     ///   </para>
     ///   <para>
-    ///     You can save the access tokenor other string in local and send it another side
+    ///     You can save the secret or other string in local and send it another side
     ///     after encryption by the public key required by that side.
     ///     And send a public key registered in current container to the other side
-    ///     so that it can use the same mechanism to transfer the token encrypted back
+    ///     so that it can use the same mechanism to transfer the secret encrypted back
     ///     and you can decrypt it by your private key.
     ///   </para>
     /// </summary>
@@ -61,18 +61,18 @@ namespace Trivial.Security
     ///     </item>
     ///     <item>
     ///       Server uses S-Key-Id to find the S-Key-Private to decrypt the form.
-    ///       Then generates a token and encrypt it by C-Key-Public.
-    ///       Then send the token encrypted back to client with C-Key-Id.
+    ///       Then generates a secret and encrypt it by C-Key-Public.
+    ///       Then send the secret encrypted back to client with C-Key-Id.
     ///       Server also need cache C-Key-Id and C-Key-Public with a mapping relationship with the token.
     ///     </item>
     ///     <item>
-    ///       Client uses C-Key-Id to find C-Key-Private to decrypt the token.At next time,
-    ///       client sends the data and the token encrypted by S-Key-Public with S-Key-Id.
+    ///       Client uses C-Key-Id to find C-Key-Private to decrypt the secret.At next time,
+    ///       client sends the data and the secret encrypted by S-Key-Public with S-Key-Id.
     ///     </item>
     ///     <item>
-    ///       Server uses S-Key-Id to find the S-Key-Private to decrypt the token to authorize.
+    ///       Server uses S-Key-Id to find the S-Key-Private to decrypt the secret to authorize.
     ///       Then process the business logic of request.
-    ///       Then return the result and the token encrypted by C-Key-Public with C-Key-Id.
+    ///       Then return the result and the secret encrypted by C-Key-Public with C-Key-Id.
     ///     </item>
     ///   </list>
     ///   <para>
@@ -94,37 +94,37 @@ namespace Trivial.Security
     ///     <item>S-Key-Id is the <code>EncryptKeyId</code>.</item>
     ///   </list>
     ///   <para>
-    ///     and in both, token is in `AccessToken`,
+    ///     and in both, secret is in `Secret` property,
     ///     the private key is not accessable directly.
     ///   </para>
     /// </remarks>
     /// <example>
     ///   <code>
-    ///     // Create a token exchange instance and create a pair of RSA key.
-    ///     var token = new RSATokenExchange();
-    ///     token.CreateCrypto();
+    ///     // Create a secret exchange instance and create a pair of RSA key.
+    ///     var exchange = new RSASecretExchange();
+    ///     exchange.CreateCrypto();
     ///     
     ///     // Get the public key to send to the other side
-    ///     // so that they can use this to encrypt the access token
+    ///     // so that they can use this to encrypt the secret
     ///     // and send back to us.
-    ///     var publicKey = token.PublicKey.ToPublicPEMString();
+    ///     var publicKey = exchange.PublicKey.ToPublicPEMString();
     ///     
-    ///     // Save the access token from the other side.
-    ///     // The access token is encrypted by the current public key
+    ///     // Save the secret from the other side.
+    ///     // The secret is encrypted by the current public key
     ///     // and we can decrypt by the private key stored in this instance to save.
-    ///     token.DecryptToken(tokenReceived);
+    ///     exchange.DecryptSecret(secretReceived);
     ///     
     ///     // Save the other side public key.
     ///     var otherSidePublicKey = ...; // An RSA public key from the other side.
-    ///     token.EncryptKey = RSAUtility.Parse(otherSidePublicKey);
+    ///     exchange.EncryptKey = RSAUtility.Parse(otherSidePublicKey);
     ///     
-    ///     // Get the Base64 of the token encrypted by the other side public key.
-    ///     var tokenToSend = token.EncryptToken();
+    ///     // Get the Base64 of the secret encrypted by the other side public key.
+    ///     var secretToSend = exchange.EncryptSecret();
     ///
-    ///     // Get the authentication header value in JSON web token format
+    ///     // Get the authentication header value in JSON web secret format
     ///     // using HMAC SHA-512 keyed hash algorithm to signature for example.
-    ///     var sign = HashSignatureProvider.CreateHS512("a secret string");
-    ///     var jwt = token.ToJsonWebTokenAuthenticationHeaderValue(sign);
+    ///     var sign = HashSignatureProvider.CreateHS512("a secret hash key");
+    ///     var jwt = exchange.ToJsonWebTokenAuthenticationHeaderValue(sign);
     ///   </code>
     /// </example>
     public class RSASecretExchange : ICloneable
@@ -188,6 +188,8 @@ namespace Trivial.Security
                     if (!rsa.IsSameId(CurrentEncryptId)) return false;
                 }
 
+                rsa.DecryptSecret(Value, true);
+                if (!string.IsNullOrWhiteSpace(UserId)) rsa.EntityId = UserId;
                 if (string.IsNullOrWhiteSpace(ExpectFutureEncryptId) || (!IsEncrypted && ExpectFutureEncryptId == rsa.Id))
                 {
                     rsa.EncryptKeyId = null;
@@ -207,8 +209,6 @@ namespace Trivial.Security
                     }
                 }
 
-                rsa.DecryptSecret(Value, true);
-                if (!string.IsNullOrWhiteSpace(UserId)) rsa.EntityId = UserId;
                 return true;
             }
         }
