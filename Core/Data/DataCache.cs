@@ -234,10 +234,12 @@ namespace Trivial.Data
         /// Gets the cache item info.
         /// </summary>
         /// <param name="id">The identifier.</param>
+        /// <param name="initialization">The value initialization. It will be called to generate a new value when no cache.</param>
+        /// <param name="expiration">The expiration for initialization.</param>
         /// <returns>The cache item info.</returns>
-        public ItemInfo GetInfo(string id)
+        public ItemInfo GetInfo(string id, Func<T> initialization = null, TimeSpan? expiration = null)
         {
-            return GetInfo(null, id);
+            return GetInfo(null, id, initialization, expiration);
         }
 
         /// <summary>
@@ -245,16 +247,22 @@ namespace Trivial.Data
         /// </summary>
         /// <param name="prefix">The prefix of the identifier for resource group.</param>
         /// <param name="id">The identifier in the resource group.</param>
+        /// <param name="initialization">The value initialization. It will be called to generate a new value when no cache.</param>
+        /// <param name="expiration">The expiration for initialization.</param>
         /// <returns>The cache item info.</returns>
-        public ItemInfo GetInfo(string prefix, string id)
+        public ItemInfo GetInfo(string prefix, string id, Func<T> initialization = null, TimeSpan? expiration = null)
         {
             if (string.IsNullOrWhiteSpace(id)) return null;
             var info = items.LastOrDefault(ele => ele.Prefix == prefix && ele.Id == id);
-            if (info == null) return null;
+            if (info == null)
+            {
+                return Add(prefix, id, initialization, expiration);
+            }
+
             if (info.Value == null || info.IsExpired(Expiration))
             {
                 RemoveExpired();
-                return null;
+                return Add(prefix, id, initialization, expiration);
             }
 
             return info;
@@ -565,6 +573,16 @@ namespace Trivial.Data
         IEnumerator IEnumerable.GetEnumerator()
         {
             return ((IList<ItemInfo>)items).GetEnumerator();
+        }
+
+        private ItemInfo Add(string prefix, string id, Func<T> initialization = null, TimeSpan? expiration = null)
+        {
+            if (initialization == null) return null;
+            var obj = initialization();
+            var info = new ItemInfo(prefix, id, obj, expiration);
+            if (info.IsExpired(Expiration)) return null;
+            Add(info);
+            return info;
         }
     }
 }

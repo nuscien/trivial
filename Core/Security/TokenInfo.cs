@@ -243,7 +243,14 @@ namespace Trivial.Security
         {
             get
             {
-                return ErrorUri.OriginalString;
+                try
+                {
+                    return ErrorUri?.OriginalString;
+                }
+                catch (InvalidCastException)
+                {
+                    return null;
+                }
             }
 
             set

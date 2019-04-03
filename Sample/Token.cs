@@ -48,7 +48,7 @@ namespace Trivial.Sample
             ConsoleLine.WriteLine(jwtStr != header.Parameter ? "Failed JWT HS512 testing." : jwtStr);
             ConsoleLine.WriteLine();
 
-            // JWT RS512
+            // JWT RS512 - Test failed currently now.
             var rsa = RSA.Create();
             ConsoleLine.WriteLine(rsa.ExportParameters(true).ToPrivatePEMString(true));
             ConsoleLine.WriteLine(rsa.ExportParameters(false).ToPublicPEMString());

@@ -23,6 +23,18 @@ namespace Trivial.Security
         /// <summary>
         /// Initializes a new instance of the TokenRequest class.
         /// </summary>
+        /// <param name="tokenRequest">The token request.</param>
+        public TokenRequest(TokenRequest tokenRequest)
+        {
+            if (tokenRequest == null) return;
+            Body = tokenRequest.Body;
+            ClientCredentials = tokenRequest.ClientCredentials;
+            ScopeString = tokenRequest.ScopeString;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the TokenRequest class.
+        /// </summary>
         /// <param name="body">The request body.</param>
         /// <param name="appId">The client id and secret key.</param>
         /// <param name="scope">The scope.</param>
@@ -59,15 +71,15 @@ namespace Trivial.Security
         /// Initializes a new instance of the TokenRequest class.
         /// </summary>
         /// <param name="body">The request body.</param>
-        /// <param name="q">The query data.</param>
-        public TokenRequest(TokenRequestBody body, QueryData q)
+        /// <param name="clientCredentials">The client credentials and scope query data.</param>
+        public TokenRequest(TokenRequestBody body, QueryData clientCredentials)
         {
             Body = body;
-            if (q == null) return;
-            var clientId = q[TokenRequestBody.ClientIdProperty];
-            var clientSecret = q[TokenRequestBody.ClientSecretProperty];
+            if (clientCredentials == null) return;
+            var clientId = clientCredentials[TokenRequestBody.ClientIdProperty];
+            var clientSecret = clientCredentials[TokenRequestBody.ClientSecretProperty];
             if (!string.IsNullOrEmpty(clientId) || !string.IsNullOrEmpty(clientSecret)) ClientCredentials = new AppAccessingKey(clientId, clientSecret);
-            ScopeString = q[TokenInfo.ScopeProperty];
+            ScopeString = clientCredentials[TokenInfo.ScopeProperty];
         }
 
         /// <summary>
@@ -175,19 +187,19 @@ namespace Trivial.Security
         public virtual string ToJsonString()
         {
             var data = ToJsonProperites();
-            var sb = new StringBuilder("{ ");
+            var sb = new StringBuilder("{");
             foreach (var kvp in data)
             {
                 if (string.IsNullOrWhiteSpace(kvp.Key) || string.IsNullOrWhiteSpace(kvp.Value)) continue;
                 sb.Append('"');
                 sb.Append(StringUtility.ReplaceBackSlash(kvp.Key));
-                sb.Append("\": ");
+                sb.Append("\":");
                 sb.Append(StringUtility.ReplaceBackSlash(kvp.Value));
-                sb.Append(", ");
+                sb.Append(",");
             }
 
             if (sb.Length > 3) sb.Remove(sb.Length - 2, 2);
-            sb.Append(" }");
+            sb.Append("}");
             return sb.ToString();
         }
 
@@ -209,6 +221,16 @@ namespace Trivial.Security
     [DataContract]
     public class TokenRequest<T> : TokenRequest where T : TokenRequestBody
     {
+        /// <summary>
+        /// Initializes a new instance of the TokenRequest class.
+        /// </summary>
+        /// <param name="tokenRequest">The token request.</param>
+        public TokenRequest(TokenRequest<T> tokenRequest) : base(tokenRequest)
+        {
+            if (tokenRequest == null) return;
+            Body = tokenRequest.Body;
+        }
+
         /// <summary>
         /// Initializes a new instance of the TokenRequest class.
         /// </summary>
@@ -246,8 +268,8 @@ namespace Trivial.Security
         /// Initializes a new instance of the TokenRequest class.
         /// </summary>
         /// <param name="body">The request body.</param>
-        /// <param name="q">The query data with client identifier and secret.</param>
-        public TokenRequest(T body, QueryData q) : base(body, q)
+        /// <param name="clientCredentials">The client credentials and scope query data.</param>
+        public TokenRequest(T body, QueryData clientCredentials) : base(body, clientCredentials)
         {
         }
 
@@ -632,6 +654,14 @@ namespace Trivial.Security
         /// <summary>
         /// Initializes a new instance of the CodeTokenRequest class.
         /// </summary>
+        /// <param name="tokenRequest">The token request.</param>
+        public CodeTokenRequest(TokenRequest<CodeTokenRequestBody> tokenRequest) : base(tokenRequest)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the CodeTokenRequest class.
+        /// </summary>
         /// <param name="body">The request body.</param>
         /// <param name="appId">The client id and secret key.</param>
         /// <param name="scope">The scope.</param>
@@ -665,8 +695,8 @@ namespace Trivial.Security
         /// Initializes a new instance of the CodeTokenRequest class.
         /// </summary>
         /// <param name="body">The request body.</param>
-        /// <param name="q">The query data with client identifier and secret.</param>
-        public CodeTokenRequest(CodeTokenRequestBody body, QueryData q) : base(body, q)
+        /// <param name="clientCredentials">The client credentials and scope query data.</param>
+        public CodeTokenRequest(CodeTokenRequestBody body, QueryData clientCredentials) : base(body, clientCredentials)
         {
         }
 

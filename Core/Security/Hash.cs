@@ -113,7 +113,7 @@ namespace Trivial.Security
         /// <exception cref="NotSupportedException">The hash algorithm name is not supported.</exception>
         public static string ToHashString(HashAlgorithmName name, string plainText, Encoding encoding = null)
         {
-            Func<HashAlgorithm> h = null;
+            Func<HashAlgorithm> h;
             try
             {
                 h = GetHashAlgorithmFactory(name);

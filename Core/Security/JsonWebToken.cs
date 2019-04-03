@@ -21,7 +21,7 @@ namespace Trivial.Security
         /// <param name="algorithm">The signature algorithm.</param>
         /// <param name="verify">true if verify the signature; otherwise, false.</param>
         /// <returns>A JSON web token object.</returns>
-        /// <exception cref="ArgumentNullException">jwt was null or empty.</exception>
+        /// <exception cref="ArgumentNullException">jwt was null or empty. -or- algorithm was null and verify is true.</exception>
         /// <exception cref="ArgumentException">jwt did not contain any information.</exception>
         /// <exception cref="FormatException">jwt was in incorrect format.</exception>
         /// <exception cref="InvalidOperationException">Verify failure.</exception>
@@ -41,7 +41,14 @@ namespace Trivial.Security
             {
                 var bytes = Encoding.ASCII.GetBytes($"{arr[0]}.{arr[1]}");
                 var sign = WebUtility.Base64UrlDecode(arr[2]);
-                if (!algorithm.Verify(bytes, sign)) throw new InvalidOperationException("jwt signature is incorrect.");
+                if (algorithm != null)
+                {
+                    if (!algorithm.Verify(bytes, sign)) throw new InvalidOperationException("jwt signature is incorrect.");
+                }
+                else
+                {
+                    if (sign.Length > 0) throw new ArgumentNullException(nameof(algorithm), "algorithm should not be null.");
+                }
             }
 
             var header = WebUtility.Base64UrlDecodeTo<JsonWebTokenHeader>(arr[0]);
@@ -65,7 +72,7 @@ namespace Trivial.Security
         /// <param name="algorithm">The signature algorithm.</param>
         /// <param name="verify">true if verify the signature; otherwise, false.</param>
         /// <returns>A JSON web token object.</returns>
-        /// <exception cref="ArgumentNullException">token was null.</exception>
+        /// <exception cref="ArgumentNullException">token was null. -or- algorithm was null and verify is true.</exception>
         /// <exception cref="ArgumentException">token is not a Bearer token, or its access token did not contain the required information.</exception>
         /// <exception cref="FormatException">The access token was in incorrect format.</exception>
         /// <exception cref="InvalidOperationException">Verify failure.</exception>

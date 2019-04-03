@@ -31,9 +31,6 @@ A handler to be frozen for a while after it has processed.
 var task = HitTask.Throttle(() => {
     // Do something...
 }, TimeSpan.FromMilliseconds(10000));
-
-// Somewhere to raise.
-task.ProcessAsync();
 ```
 
 ### Multiple
@@ -44,9 +41,6 @@ A handler to process for the specific times and it will be reset after a while.
 var task = HitTask.Multiple(() => {
     // Do something...
 }, 10, null, TimeSpan.FromMilliseconds(200));
-
-// Somewhere to raise.
-task.ProcessAsync();
 ```
 
 ### Times
@@ -57,9 +51,6 @@ A handler to process for the specific times only and it will be reset after a wh
 var task = HitTask.Times(() => {
     // Do something...
 }, 2, 2, TimeSpan.FromMilliseconds(200));
-
-// Somewhere to raise.
-task.ProcessAsync();
 ```
 
 ### Retry
@@ -288,10 +279,7 @@ var cache = new DataCacheCollection<Model>
 So that you can get the data from the cache if has and or add new one if necessary.
 
 ```csharp
-if (!cache.TryGet("abcd", out item))
-{
-    item = new Model();
-}
+if (!cache.TryGet("abcd", out Model item)) item = new Model();
 ```
 
 ## [Geography](https://github.com/nuscien/trivial/wiki/geo)
