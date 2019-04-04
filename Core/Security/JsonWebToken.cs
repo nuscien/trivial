@@ -554,17 +554,6 @@ namespace Trivial.Security
         public IEnumerable<string> Audience { get; set; }
 
         /// <summary>
-        /// Gets or sets an optional expiration date time tick in JSON format.
-        /// The original property is Expiration.
-        /// </summary>
-        [DataMember(Name = "exp")]
-        public long? ExpirationTick
-        {
-            get => WebUtility.ParseDate(Expiration);
-            set => Expiration = WebUtility.ParseDate(value);
-        }
-
-        /// <summary>
         /// Gets or sets an optional expiration date time.
         /// This claim identifies the expiration time on or after
         /// which the JWT MUST NOT be accepted for processing.
@@ -576,14 +565,14 @@ namespace Trivial.Security
         public DateTime? Expiration { get; set; }
 
         /// <summary>
-        /// Gets or sets an optional available start date time tick in JSON format.
-        /// The original property is NotBefore.
+        /// Gets or sets an optional expiration date time tick in JSON format.
+        /// The original property is Expiration.
         /// </summary>
-        [DataMember(Name = "nbf")]
-        public long? NotBeforeTick
+        [DataMember(Name = "exp")]
+        public long? ExpirationTick
         {
-            get => WebUtility.ParseDate(NotBefore);
-            set => NotBefore = WebUtility.ParseDate(value);
+            get => WebUtility.ParseDate(Expiration);
+            set => Expiration = WebUtility.ParseDate(value);
         }
 
         /// <summary>
@@ -598,6 +587,24 @@ namespace Trivial.Security
         public DateTime? NotBefore { get; set; }
 
         /// <summary>
+        /// Gets or sets an optional available start date time tick in JSON format.
+        /// The original property is NotBefore.
+        /// </summary>
+        [DataMember(Name = "nbf")]
+        public long? NotBeforeTick
+        {
+            get => WebUtility.ParseDate(NotBefore);
+            set => NotBefore = WebUtility.ParseDate(value);
+        }
+
+        /// <summary>
+        /// Gets or sets an optional issue creation date time.
+        /// This claim identifies the time at which the JWT was issued.
+        /// This claim can be used to determine the age of the JWT.
+        /// </summary>
+        public DateTime? IssuedAt { get; set; }
+
+        /// <summary>
         /// Gets or sets an optional issue creation date time tick in JSON format.
         /// The original property is IssuedAt.
         /// </summary>
@@ -607,13 +614,6 @@ namespace Trivial.Security
             get => WebUtility.ParseDate(IssuedAt);
             set => IssuedAt = WebUtility.ParseDate(value);
         }
-
-        /// <summary>
-        /// Gets or sets an optional issue creation date time.
-        /// This claim identifies the time at which the JWT was issued.
-        /// This claim can be used to determine the age of the JWT.
-        /// </summary>
-        public DateTime? IssuedAt { get; set; }
 
         /// <summary>
         /// Returns a System.Net.Http.Headers.AuthenticationHeaderValue that represents the current token.

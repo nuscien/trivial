@@ -198,9 +198,9 @@ namespace Trivial.Net
         public Tasks.IRetryPolicy RetryPolicy { get; set; }
 
         /// <summary>
-        /// Gets or sets the JSON serializer.
+        /// Gets or sets the JSON deserializer.
         /// </summary>
-        public Func<string, T> Serializer { get; set; }
+        public Func<string, T> Deserializer { get; set; }
 
         /// <summary>
         /// Gets or sets the HTTP client.
@@ -290,8 +290,8 @@ namespace Trivial.Net
                     resp = await client.SendAsync(request, cancellationToken);
                     if (!SerializeEvenIfFailed && !resp.IsSuccessStatusCode)
                         throw FailedHttpException.Create(resp, "Failed to send JSON HTTP web request because of unsuccess status code.");
-                    var obj = Serializer != null
-                        ? await HttpClientUtility.SerializeAsync(resp.Content, Serializer)
+                    var obj = Deserializer != null
+                        ? await HttpClientUtility.SerializeAsync(resp.Content, Deserializer)
                         : await HttpClientUtility.SerializeJsonAsync<T>(resp.Content);
                     return obj;
                 }, GetExceptionInternal, cancellationToken);

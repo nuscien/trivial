@@ -174,9 +174,9 @@ namespace Trivial.Security
         }
 
         /// <summary>
-        /// Gets or sets the JSON serializer.
+        /// Gets or sets the JSON deserializer.
         /// </summary>
-        public Func<string, Type, object> Serializer { get; set; }
+        public Func<string, Type, object> Deserializer { get; set; }
 
         /// <summary>
         /// Gets or sets a handler to indicate whether the token request is valid and fill additional information if needed.
@@ -216,7 +216,7 @@ namespace Trivial.Security
                 WriteAuthenticationHeaderValue(ev.RequestMessage.Headers);
                 Sending?.Invoke(sender, ev);
             };
-            if (Serializer != null) httpClient.Serializer = json => (T)Serializer(json, typeof(T));
+            if (Deserializer != null) httpClient.Deserializer = json => (T)Deserializer(json, typeof(T));
             if (callback != null) httpClient.Received += (sender, ev) =>
             {
                 callback(ev);
@@ -237,6 +237,7 @@ namespace Trivial.Security
             if (request == null) throw new ArgumentNullException(nameof(request), "request should not be null");
             var client = CreateHttpClient();
             WriteAuthenticationHeaderValue(request.Headers);
+            Sending?.Invoke(this, new SendingEventArgs(request));
             return client.SendAsync(request, cancellationToken);
         }
 
@@ -254,6 +255,7 @@ namespace Trivial.Security
             if (request == null) throw new ArgumentNullException(nameof(request), "request should not be null");
             var client = CreateHttpClient();
             WriteAuthenticationHeaderValue(request.Headers);
+            Sending?.Invoke(this, new SendingEventArgs(request));
             return client.SendAsync(request, completionOption, cancellationToken);
         }
 
@@ -358,7 +360,7 @@ namespace Trivial.Security
             var uri = requestUri ?? TokenResolverUri;
             if (uri == null) throw new ArgumentNullException(nameof(uri), "requestUri should not be null.");
             if (content == null) throw new ArgumentNullException(nameof(content), "content should not be null.");
-            var c = new TokenRequest<TokenRequestBody>(content, appInfo, Scope);
+            var c = new TokenRequest(content, appInfo, Scope);
             var q = c.ToQueryData();
             if (TokenRequestInfoValidator != null && !TokenRequestInfoValidator(q)) throw new InvalidOperationException("Cannot pass the request because it is not valid.");
             return CreateTokenResolveHttpClient<T>().SendAsync(HttpMethod.Post, uri, q, cancellationToken);
@@ -382,7 +384,7 @@ namespace Trivial.Security
             var uri = requestUri ?? TokenResolverUri?.OriginalString;
             if (string.IsNullOrWhiteSpace(uri)) throw new ArgumentNullException(nameof(uri), "requestUri should not be null.");
             if (content == null) throw new ArgumentNullException(nameof(content), "content should not be null.");
-            var c = new TokenRequest<TokenRequestBody>(content, appInfo, Scope);
+            var c = new TokenRequest(content, appInfo, Scope);
             var q = c.ToQueryData();
             if (TokenRequestInfoValidator != null && !TokenRequestInfoValidator(q)) throw new InvalidOperationException("Cannot pass the request because it is not valid.");
             return CreateTokenResolveHttpClient<T>().SendAsync(HttpMethod.Post, uri, q, cancellationToken);
@@ -411,7 +413,7 @@ namespace Trivial.Security
                 Token = ev.Result;
                 TokenResolved?.Invoke(sender, ev);
             };
-            if (Serializer != null) httpClient.Serializer = json => (TokenInfo)Serializer(json, typeof(TokenInfo));
+            if (Deserializer != null) httpClient.Deserializer = json => (TokenInfo)Deserializer(json, typeof(TokenInfo));
             if (TokenResolving != null) httpClient.Sending += (sender, ev) =>
             {
                 TokenResolving?.Invoke(sender, ev);
@@ -442,7 +444,7 @@ namespace Trivial.Security
                 Token = ev.Result;
                 TokenResolved?.Invoke(sender, ev.ConvertTo<TokenInfo>());
             };
-            if (Serializer != null) httpClient.Serializer = json => (T)Serializer(json, typeof(T));
+            if (Deserializer != null) httpClient.Deserializer = json => (T)Deserializer(json, typeof(T));
             if (TokenResolving != null) httpClient.Sending += (sender, ev) =>
             {
                 TokenResolving?.Invoke(sender, ev);
@@ -677,12 +679,12 @@ namespace Trivial.Security
         public string AppId => oauth.AppId;
 
         /// <summary>
-        /// Gets or sets the JSON serializer.
+        /// Gets or sets the JSON deserializer.
         /// </summary>
-        public Func<string, Type, object> Serializer
+        public Func<string, Type, object> Deserializer
         {
-            get => oauth.Serializer;
-            set => oauth.Serializer = value;
+            get => oauth.Deserializer;
+            set => oauth.Deserializer = value;
         }
 
         /// <summary>

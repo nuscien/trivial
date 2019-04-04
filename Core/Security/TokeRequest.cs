@@ -137,11 +137,12 @@ namespace Trivial.Security
         {
             get
             {
-                return Scope.Count > 0 ? string.Join(" ", Scope) : null;
+                return Scope != null && Scope.Count > 0 ? string.Join(" ", Scope) : null;
             }
 
             set
             {
+                if (Scope == null) Scope = new List<string>();
                 Scope.Clear();
                 if (string.IsNullOrWhiteSpace(value)) return;
                 foreach (var ele in value.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries))

@@ -171,14 +171,6 @@ namespace Trivial.Security
         public const string BearerTokenType = "Bearer";
 
         /// <summary>
-        /// Initializes a new instance of the TokenInfo class.
-        /// </summary>
-        public TokenInfo()
-        {
-            AdditionalData = new Dictionary<string, string>();
-        }
-
-        /// <summary>
         /// Gets or sets the access token.
         /// </summary>
         [DataMember(Name = AccessTokenProperty)]
@@ -317,6 +309,11 @@ namespace Trivial.Security
         public virtual string UserId { get; set; }
 
         /// <summary>
+        /// Gets the permission scope.
+        /// </summary>
+        public IList<string> Scope { get; private set; } = new List<string>();
+
+        /// <summary>
         /// Gets or sets the scope string.
         /// </summary>
         [DataMember(Name = ScopeProperty)]
@@ -324,12 +321,13 @@ namespace Trivial.Security
         {
             get
             {
-                return Scope.Count > 0 ? string.Join(" ", Scope) : null;
+                return Scope != null && Scope.Count > 0 ? string.Join(" ", Scope) : null;
             }
 
             set
             {
-                Scope.Clear();
+                if (Scope == null) Scope = new List<string>();
+                else Scope.Clear();
                 if (string.IsNullOrWhiteSpace(value)) return;
                 foreach (var ele in value.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries))
                 {
@@ -339,14 +337,9 @@ namespace Trivial.Security
         }
 
         /// <summary>
-        /// Gets the permission scope.
-        /// </summary>
-        public IList<string> Scope { get; } = new List<string>();
-
-        /// <summary>
         /// Gets the additional data.
         /// </summary>
-        public Dictionary<string, string> AdditionalData { get; private set; }
+        public Dictionary<string, string> AdditionalData { get; } = new Dictionary<string, string>();
 
         /// <summary>
         /// Gets a value indicating whether the access token is null, empty or consists only of white-space characters.
@@ -497,7 +490,7 @@ namespace Trivial.Security
         /// <returns>true if write succeeded; otherwise, false.</returns>
         public bool WriteAuthenticationHeaderValue(HttpRequestHeaders headers, bool forceToSet = false)
         {
-            if (headers == null || Token == null || headers.Authorization != null) return false;
+            if (headers == null || Token == null || (headers.Authorization != null && !forceToSet)) return false;
             headers.Authorization = ConvertToAuthenticationHeaderValue != null
                 ? ConvertToAuthenticationHeaderValue(Token, AuthenticationSchemeCase)
                 : Token.ToAuthenticationHeaderValue(AuthenticationSchemeCase);
