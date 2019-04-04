@@ -81,33 +81,33 @@ Arithmetic.Gcd(192, 128); // 64
 Arithmetic.Lcm(192, 128); // 384
 ```
 
-### Numbers
+### Numerals
 
 You can get the number symbols as you want.
 
 You can also get the number string in English words.
 
 ```csharp
-EnglishNumber.Default.ToString(12345.67);
+EnglishNumerals.Default.ToString(12345.67);
 // twelve thousand three hundred and forty-five point six seven
 
-EnglishNumber.Default.ToString(12345, true);
+EnglishNumerals.Default.ToString(12345, true);
 // one two three four five
 
-EnglishNumber.Default.ToApproximationString(1234567);
+EnglishNumerals.Default.ToApproximationString(1234567);
 // 1.2M
 ```
 
 And also for Chinese and Japanese.
 
 ```csharp
-ChineseNumber.Simplified.ToString(12345.67);
+ChineseNumerals.Simplified.ToString(12345.67);
 // 一万两千三百四十五点六七
 
-ChineseNumber.SimplifiedUppercase.ToString(12345, true);
+ChineseNumerals.SimplifiedUppercase.ToString(12345, true);
 // 壹贰叄肆伍
 
-JapaneseNumber.Default.ToApproximationString(1234567);
+JapaneseNumerals.Default.ToApproximationString(1234567);
 // 123.5万
 ```
 

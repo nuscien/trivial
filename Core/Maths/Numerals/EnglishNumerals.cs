@@ -6,14 +6,14 @@ using System.Text;
 namespace Trivial.Maths
 {
     /// <summary>
-    /// The English number digits.
+    /// The English numerals.
     /// </summary>
-    public class EnglishNumber : IIntegerSample, INumberLocalization
+    public class EnglishNumerals : IIntegerSample, INumberLocalization
     {
         /// <summary>
-        /// Initializes a new instance of the EnglishNumber class.
+        /// Initializes a new instance of the EnglishNumerals class.
         /// </summary>
-        protected internal EnglishNumber()
+        protected internal EnglishNumerals()
         {
         }
 
@@ -302,12 +302,12 @@ namespace Trivial.Maths
         }
 
         /// <summary>
-        /// Gets the main number digits.
+        /// Gets the a part of numbers.
         /// </summary>
-        /// <returns>A string with main numbers.</returns>
+        /// <returns>A string with key numbers.</returns>
         public override string ToString()
         {
-            return string.Format("English numbers {0} {1} {2} {3} {4} {5} {6} {7} {8} {9} {10}",
+            return string.Format("English numerals {0} {1} {2} {3} {4} {5} {6} {7} {8} {9} {10}",
                 Zero,
                 One,
                 Two,
@@ -694,6 +694,6 @@ namespace Trivial.Maths
         /// var num3 = EnglishNumber.Default.ToApproximationString(1234567);
         /// </code>
         /// </example>
-        public static EnglishNumber Default = new EnglishNumber();
+        public static EnglishNumerals Default = new EnglishNumerals();
     }
 }

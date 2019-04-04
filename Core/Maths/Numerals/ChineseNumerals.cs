@@ -6,27 +6,39 @@ using System.Text;
 namespace Trivial.Maths
 {
     /// <summary>
-    /// The Japanese number digits.
+    /// The Chinese numerals.
     /// </summary>
-    public class JapaneseNumber : IIntegerSample, INumberLocalization
+    public class ChineseNumerals : IIntegerSample, INumberLocalization
     {
-        private static readonly string digits = "零一二三四五六七八九十百千万億兆京垓秭穣溝澗正載極";
+        private static readonly string digits1 = "零壹贰叄肆伍陆柒捌玖拾佰仟万亿";
+        private static readonly string digits2 = "零一二三四五六七八九十百千万亿";
+        private static readonly string digits3 = "零壹贰叄肆伍陆柒捌玖拾佰仟萬億";
+        private static readonly string digits4 = "零一二三四五六七八九十百千萬億";
+        private readonly string digits;
 
         /// <summary>
-        /// Initializes a new instance of the JapaneseNumber class.
+        /// The ten Heavenly Stems.
         /// </summary>
-        /// <param name="kana">true if use Kana; otherwise, false.</param>
-        protected internal JapaneseNumber(bool kana = false)
+        public const string HeavenlyStems = "甲乙丙丁戊己庚辛壬癸";
+
+        /// <summary>
+        /// The twelve Earthly Branches.
+        /// </summary>
+        public const string EarthlyBranches = "子丑寅卯辰巳午未申酉戌亥";
+
+        /// <summary>
+        /// Initializes a new instance of the ChineseNumerals class.
+        /// </summary>
+        /// <param name="isTraditional">true if it set as Traditional Chinese; otherwise, false.</param>
+        /// <param name="upperCase">true if use upper case; otherwise, false.</param>
+        protected internal ChineseNumerals(bool isTraditional = false, bool upperCase = false)
         {
-            IsKana = kana;
+            IsUpperCase = upperCase;
+            IsTraditional = isTraditional;
+            digits = IsTraditional ? (IsUpperCase ? digits3 : digits4) : (IsUpperCase ? digits1 : digits2);
             PositiveSign = "正";
-            NegativeSign = "負";
+            NegativeSign = IsTraditional ? "負" : "负";
         }
-
-        /// <summary>
-        /// Gets a value inidcatint whether it is based on Kana or Chinese.
-        /// </summary>
-        public bool IsKana { get; }
 
         /// <summary>
         /// Gets a value indicating whether it supports number 0.
@@ -49,54 +61,74 @@ namespace Trivial.Maths
         public int GroupLength => 4;
 
         /// <summary>
+        /// Gets a value indicating whether it is in lower case.
+        /// </summary>
+        public bool IsUpperCase { get; }
+
+        /// <summary>
+        /// Gets a value indicating whether it is Tranditional Chinese.
+        /// </summary>
+        public bool IsTraditional { get; }
+
+        /// <summary>
+        /// Gets a value indicating whether it is Simplified Chinese.
+        /// </summary>
+        public bool IsSimplified => !IsTraditional;
+
+        /// <summary>
         /// Number 0.
         /// </summary>
-        public string Zero => IsKana ? "れい" : "零";
+        public string Zero => "零";
 
         /// <summary>
         /// Number 1.
         /// </summary>
-        public string One => IsKana ? "いち" : "一";
+        public string One => IsUpperCase ? "壹" : "一";
 
         /// <summary>
         /// Number 2.
         /// </summary>
-        public string Two => IsKana ? "に" : "二";
+        public string Two => IsUpperCase ? "贰" : "二";
+
+        /// <summary>
+        /// Number 2.
+        /// </summary>
+        private string Two2 => IsTraditional ? "兩" : "两";
 
         /// <summary>
         /// Number 3.
         /// </summary>
-        public string Three => IsKana ? "さん" : "三";
+        public string Three => IsUpperCase ? "叄" : "三";
 
         /// <summary>
         /// Number 4.
         /// </summary>
-        public string Four => IsKana ? "し" : "四";
+        public string Four => IsUpperCase ? "肆" : "四";
 
         /// <summary>
         /// Number 5.
         /// </summary>
-        public string Five => IsKana ? "ご" : "五";
+        public string Five => IsUpperCase ? "伍" : "五";
 
         /// <summary>
         /// Number 6.
         /// </summary>
-        public string Six => IsKana ? "ろく" : "六";
+        public string Six => IsUpperCase ? "陆" : "六";
 
         /// <summary>
         /// Number 7.
         /// </summary>
-        public string Seven => IsKana ? "しち" : "七";
+        public string Seven => IsUpperCase ? "柒" : "七";
 
         /// <summary>
         /// Number 8.
         /// </summary>
-        public string Eight => IsKana ? "はち" : "八";
+        public string Eight => IsUpperCase ? "捌" : "八";
 
         /// <summary>
         /// Number 9.
         /// </summary>
-        public string Nine => IsKana ? "きゅう" : "九";
+        public string Nine => IsUpperCase ? "玖" : "九";
 
         /// <summary>
         /// Number 10.
@@ -106,47 +138,47 @@ namespace Trivial.Maths
         /// <summary>
         /// Number 11.
         /// </summary>
-        public string Eleven => IsKana ? "じゅういち" : "十一";
+        public string Eleven => IsUpperCase ? "拾壹" : "十一";
 
         /// <summary>
         /// Number 12.
         /// </summary>
-        public string Twelve => IsKana ? "じゅうに" : "十二";
+        public string Twelve => IsUpperCase ? "拾贰" : "十二";
 
         /// <summary>
         /// Number 13.
         /// </summary>
-        public string Thirteen => IsKana ? "じゅうさん" : "十三";
+        public string Thirteen => IsUpperCase ? "拾叄" : "十三";
 
         /// <summary>
         /// Number 14.
         /// </summary>
-        public string Fourteen => IsKana ? "じゅうし" : "十四";
+        public string Fourteen => IsUpperCase ? "拾肆" : "十四";
 
         /// <summary>
         /// Number 15.
         /// </summary>
-        public string Fifteen => IsKana ? "じゅうご" : "十五";
+        public string Fifteen => IsUpperCase ? "拾伍" : "十五";
 
         /// <summary>
         /// Number 16.
         /// </summary>
-        public string Sixteen => IsKana ? "じゅうろく" : "十六";
+        public string Sixteen => IsUpperCase ? "拾陆" : "十六";
 
         /// <summary>
         /// Number 17.
         /// </summary>
-        public string Seventeen => IsKana ? "じゅうしち" : "十七";
+        public string Seventeen => IsUpperCase ? "拾柒" : "十七";
 
         /// <summary>
         /// Number 18.
         /// </summary>
-        public string Eighteen => IsKana ? "じゅうはち" : "十八";
+        public string Eighteen => IsUpperCase ? "拾捌" : "十八";
 
         /// <summary>
         /// Number 19.
         /// </summary>
-        public string Nineteen => IsKana ? "じゅうきゅう" : "十九";
+        public string Nineteen => IsUpperCase ? "拾玖" : "十九";
 
         /// <summary>
         /// Number 20.
@@ -196,7 +228,7 @@ namespace Trivial.Maths
         /// <summary>
         /// Number 200.
         /// </summary>
-        public string TwoHundred => Two + HundredClass;
+        public string TwoHundred => (IsUpperCase ? Two : Two2) + HundredClass;
 
         /// <summary>
         /// Number 500.
@@ -211,7 +243,7 @@ namespace Trivial.Maths
         /// <summary>
         /// Number 2,000.
         /// </summary>
-        public string TwoThousand => Two + ThousandClass;
+        public string TwoThousand => (IsUpperCase ? Two : Two2) + ThousandClass;
 
         /// <summary>
         /// Number 5,000.
@@ -236,32 +268,27 @@ namespace Trivial.Maths
         /// <summary>
         /// The order of magnitude 10e1.
         /// </summary>
-        public string TenClass => IsKana ? "じゅう" : "十";
+        public string TenClass => IsUpperCase ? "拾" : "十";
 
         /// <summary>
         /// The order of magnitude 10e2.
         /// </summary>
-        public string HundredClass => IsKana ? "ひゃく" : "百";
+        public string HundredClass => IsUpperCase ? "佰" : "百";
 
         /// <summary>
         /// The order of magnitude 10e3.
         /// </summary>
-        public string ThousandClass => IsKana ? "せん" : "千";
+        public string ThousandClass => IsUpperCase ? "仟" : "千";
 
         /// <summary>
         /// The order of magnitude 10e4.
         /// </summary>
-        public string TenThousandClass => IsKana ? "まん" : "万";
-
+        public string TenThousandClass => IsTraditional ? "萬" : "万";
+        
         /// <summary>
         /// The order of magnitude 10e8.
         /// </summary>
-        public string HundredMillionClass => IsKana ? "おく" : "億";
-
-        /// <summary>
-        /// The order of magnitude 10e12.
-        /// </summary>
-        public string TrillionClass => IsKana ? "ちょう" : "兆";
+        public string HundredMillionClass => IsTraditional ? "億" : "亿";
 
         /// <summary>
         /// Converts a number to the string of approximation.
@@ -288,22 +315,14 @@ namespace Trivial.Maths
         {
             if (accuracy < 0 || accuracy > 32) throw new ArgumentOutOfRangeException(nameof(accuracy));
             var levels = number.ToString(CultureInfo.InvariantCulture).Length / GroupLength;
-            if (levels < 1) return ConvertString(number.ToString());
+            if (levels < 1) return number.ToString();
             var len = levels * GroupLength;
             var format = new StringBuilder("0.");
             format.Append('0', Math.Min(accuracy, len));
             var num = new StringBuilder((number * 1.0 / Math.Pow(10, len)).ToString(format.ToString(), CultureInfo.InvariantCulture));
-            if ((number / Math.Pow(10, len)).ToString(CultureInfo.InvariantCulture).Length == 4) num.Insert(1, ',');
-            if (levels > 12)
-            {
-                num.AppendFormat("×10^{0}", levels);
-            }
-            else
-            {
-                num.Append(digits[12 + levels]);
-            }
-
-            return ConvertString(num);
+            if (levels % 2 == 1) num.Append(digits[13]);
+            num.Append(digits[14], levels / 2);
+            return num.ToString();
         }
 
         /// <summary>
@@ -312,7 +331,8 @@ namespace Trivial.Maths
         /// <returns>A string with main numbers.</returns>
         public override string ToString()
         {
-            return "日本の数字 " + digits;
+            if (IsUpperCase) return (IsTraditional ? "中文大寫數字 " : "汉字大写数字 ") + digits;
+            return (IsTraditional ? "中文數字 " : "汉字数字 ") + digits;
         }
 
         /// <summary>
@@ -344,11 +364,11 @@ namespace Trivial.Maths
                     str.Append(digits[int.Parse(item.ToString())]);
                 }
 
-                return ConvertString(str);
+                return str.ToString();
             }
 
-            if (number <= 10) return ConvertString(digits[(int)number].ToString());
-            if (number < 20) return ConvertString(TenClass + digits[(int)number - 10].ToString());
+            if (number <= 10) return digits[(int)number].ToString();
+            if (number < 20) return TenClass + digits[(int)number - 10].ToString();
             var append = 4 - num.Length % 4;
             if (append == 4) append = 0;
             for (var i = 0; i < append; i++)
@@ -357,12 +377,23 @@ namespace Trivial.Maths
             }
 
             var classPos = num.Length / 4;
+            var isZero = false;
             for (var i = 0; i < num.Length; i++)
             {
                 var c = num[i].ToString();
                 if (c == " ") continue;
-                if (c != "0")
+                if (c == "0")
                 {
+                    isZero = true;
+                }
+                else
+                {
+                    if (isZero)
+                    {
+                        str.Append(digits[0]);
+                        isZero = false;
+                    }
+
                     str.Append(digits[int.Parse(c)]);
                     var j = 3 - i % 4;
                     if (j > 0) str.Append(digits[9 + j]);
@@ -370,11 +401,26 @@ namespace Trivial.Maths
 
                 if (i % 4 != 3 || i == num.Length - 1) continue;
                 classPos--;
-                if (classPos == 0) continue;
-                str.Append(digits[12 + classPos]);
+                isZero = false;
+                var lastChar = str[str.Length - 1];
+                if (lastChar == digits[13] || lastChar == digits[14]) continue;
+                if (classPos % 2 == 1)
+                {
+                    str.Append(digits[13]);
+                }
+                else
+                {
+                    str.Append(digits[14], classPos / 2);
+                }
             }
 
-            return ConvertString(str.ToString().Replace("一十", "十"));
+            if (IsUpperCase) return str.ToString();
+            str = str
+                .Replace(Two + HundredClass, TwoHundred)
+                .Replace(Two + ThousandClass, TwoThousand)
+                .Replace(Zero + Two + TenThousandClass, Zero + Two2 + TenThousandClass);
+            var result = str.ToString();
+            return result.IndexOf(One + TenClass) == 0 ? result.Substring(1) : result;
         }
 
         /// <summary>
@@ -404,30 +450,35 @@ namespace Trivial.Maths
             str.Append(ToString(integerPart, false));
             if (fractionalPart.Length > 0)
             {
-                str.Append("点");
+                str.Append(IsTraditional ? "點" : "点");
                 foreach (var item in fractionalPart)
                 {
-                    if (IsKana) str.Append(ConvertString(digits[int.Parse(item.ToString())].ToString()));
-                    else str.Append(digits[int.Parse(item.ToString())]);
+                    str.Append(digits[int.Parse(item.ToString())]);
                 }
             }
 
             if (exponentialPart > 0)
             {
-                if (exponentialPart % 4 == 0 && exponentialPart < 45)
+                if (exponentialPart % 4 == 0 && exponentialPart < 41)
                 {
-                    if (IsKana) str.Append(ConvertString(digits[12 + exponentialPart / 4].ToString()));
-                    else str.Append(digits[12 + exponentialPart / 4]);
+                    if (exponentialPart % 8 == 4)
+                    {
+                        str.Append(digits[13]);
+                    }
+                    else
+                    {
+                        str.Append(digits[14], exponentialPart / 8);
+                    }
                 }
                 else
                 {
-                    str.Append("かける");
+                    str.Append("乘以");
                     str.Append(TenClass);
                     if (exponentialPart > 1)
                     {
-                        str.Append("の");
+                        str.Append("的");
                         str.Append(ToString(exponentialPart));
-                        str.Append("乗");
+                        str.Append("次方");
                     }
                 }
             }
@@ -435,50 +486,46 @@ namespace Trivial.Maths
             return str.ToString();
         }
 
-        private string ConvertString(StringBuilder value)
-        {
-            return ConvertString(value.ToString());
-        }
-
-        private string ConvertString(string value)
-        {
-            if (!IsKana) return value;
-            return value
-                .Replace("零", "れい")
-                .Replace("一", "いち")
-                .Replace("二", "に")
-                .Replace("三", "さん")
-                .Replace("四", "し")
-                .Replace("五", "ご")
-                .Replace("六", "ろく")
-                .Replace("七", "しち")
-                .Replace("八", "はち")
-                .Replace("九", "きゅう")
-                .Replace("十", "じゅう")
-                .Replace("百", "ひゃく")
-                .Replace("千", "せん")
-                .Replace("万", "まん")
-                .Replace("億", "おく")
-                .Replace("兆", "ちょう")
-                .Replace("京", "けい")
-                .Replace("垓", "がい")
-                .Replace("秭", "し")
-                .Replace("穣", "じょう")
-                .Replace("溝", "こう")
-                .Replace("澗", "かん")
-                .Replace("正", "せい")
-                .Replace("載", "さい")
-                .Replace("極", "ごく");
-        }
+        /// <summary>
+        /// Simplified Chinese number.
+        /// </summary>
+        /// <example>
+        /// <code>
+        /// // Get the string for a specific number. It should be following.
+        /// // 一万两千三百四十五点六七
+        /// ChineseNumber.Simplified.ToString(12345.67);
+        /// 
+        /// // Get the string of the digit one by one by setting the 2nd arg as true. It should be following.
+        /// // 一二三四五
+        /// ChineseNumber.Simplified.ToString(12345, true);
+        /// 
+        /// // Get the string of an approximation for a specific number. It should be following.
+        /// // 123.5万
+        /// var num3 = ChineseNumber.Simplified.ToApproximationString(1234567);
+        /// </code>
+        /// </example>
+        public static readonly ChineseNumerals Simplified = new ChineseNumerals();
 
         /// <summary>
-        /// Japanese number.
+        /// Simplified Chinese uppercase number.
         /// </summary>
-        public static readonly JapaneseNumber Default = new JapaneseNumber();
+        /// <example>
+        /// <code>
+        /// // Get the uppercase number string. It should be following.
+        /// // 壹萬贰仟叄佰肆拾伍
+        /// ChineseNumber.SimplifiedUppercase.ToString(12345);
+        /// </code>
+        /// </example>
+        public static readonly ChineseNumerals SimplifiedUppercase = new ChineseNumerals(false, true);
 
         /// <summary>
-        /// Japanese Kana number.
+        /// Traditional Chinese number.
         /// </summary>
-        public static readonly JapaneseNumber Kana = new JapaneseNumber(true);
+        public static readonly ChineseNumerals Traditional = new ChineseNumerals(true);
+
+        /// <summary>
+        /// Traditional Chinese uppercase number.
+        /// </summary>
+        public static readonly ChineseNumerals TraditionalUppercase = new ChineseNumerals(true, true);
     }
 }

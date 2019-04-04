@@ -5,9 +5,9 @@ using System.Text;
 namespace Trivial.Maths
 {
     /// <summary>
-    /// The Roman number.
+    /// The Roman numerals.
     /// </summary>
-    public class RomanNumber : IIntegerSample
+    public class RomanNumerals : IIntegerSample
     {
         /// <summary>
         /// Roman numbers.
@@ -59,7 +59,7 @@ namespace Trivial.Maths
         /// Initializes a new instance of the RomanNumber class.
         /// </summary>
         /// <param name="lowerCase">true if use lower case; otherwise, false.</param>
-        protected internal RomanNumber(bool lowerCase = false)
+        protected internal RomanNumerals(bool lowerCase = false)
         {
             IsLowerCase = lowerCase;
         }
@@ -227,11 +227,11 @@ namespace Trivial.Maths
         /// <summary>
         /// Roman number digits.
         /// </summary>
-        public static readonly RomanNumber Uppercase = new RomanNumber();
+        public static readonly RomanNumerals Uppercase = new RomanNumerals();
 
         /// <summary>
         /// Roman number digits.
         /// </summary>
-        public static readonly RomanNumber Lowercase = new RomanNumber(true);
+        public static readonly RomanNumerals Lowercase = new RomanNumerals(true);
     }
 }

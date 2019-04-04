@@ -219,7 +219,7 @@ namespace Trivial.Maths
     /// <summary>
     /// The base number digits.
     /// </summary>
-    public abstract class LocalNumber : IIntegerSample, IIntegerLocalization
+    public abstract class LocalNumerals : IIntegerSample, IIntegerLocalization
     {
         /// <summary>
         /// Gets a value indicating whether it supports number 0.

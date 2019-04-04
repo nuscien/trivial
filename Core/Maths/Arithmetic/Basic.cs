@@ -86,5 +86,91 @@ namespace Trivial.Maths
         {
             return value * (1024L ^ e);
         }
+
+        /// <summary>
+        /// Converts a number to a specific positional notation format string.
+        /// </summary>
+        /// <param name="value">The number to convert.</param>
+        /// <param name="type">The positional notation.</param>
+        /// <returns>A string of the number in the specific positional notation.</returns>
+        public static string ToPositionalNotationString(int value, int type)
+        {
+            return ToPositionalNotationString((double)value, type);
+        }
+
+        /// <summary>
+        /// Converts a number to a specific positional notation format string.
+        /// </summary>
+        /// <param name="value">The number to convert.</param>
+        /// <param name="type">The positional notation.</param>
+        /// <returns>A string of the number in the specific positional notation.</returns>
+        public static string ToPositionalNotationString(long value, int type)
+        {
+            if (type < 2 || type > 36) throw new ArgumentOutOfRangeException(nameof(type), "type should be in 2-36.");
+            var nums = "0123456789abcdefghijklmnopqrstuvwxyz";
+            var integerStr = string.Empty;
+            var integerPart = Math.Abs(value);
+            if (integerPart == 0) return "0";
+            while (integerPart != 0)
+            {
+                integerStr = nums[(int)integerPart % type] + integerStr;
+                integerPart /= type;
+            }
+
+            if (value < 0) return "-" + integerStr;
+            return integerStr;
+        }
+
+        /// <summary>
+        /// Converts a number to a specific positional notation format string.
+        /// </summary>
+        /// <param name="value">The number to convert.</param>
+        /// <param name="type">The positional notation.</param>
+        /// <returns>A string of the number in the specific positional notation.</returns>
+        /// <exception cref="ArgumentOutOfRangeException">type was less than 2 or greater than 36.</exception>
+        public static string ToPositionalNotationString(double value, int type)
+        {
+            if (type < 2 || type > 36) throw new ArgumentOutOfRangeException(nameof(type), "type should be in 2-36.");
+            var nums = "0123456789abcdefghijklmnopqrstuvwxyz";
+            var integerStr = string.Empty;
+            var fractionalStr = string.Empty;
+            var integerPart = Math.Abs((long)value);
+            var fractionalPart = Math.Abs(value) - integerPart;
+            if (integerPart == 0)
+            {
+                integerStr = "0";
+            }
+
+            while (integerPart != 0)
+            {
+                integerStr = nums[(int)integerPart % type] + integerStr;
+                integerPart /= type;
+            }
+
+            for (int i = 0; i < 7; i++)
+            {
+                if (fractionalPart == 0)
+                {
+                    break;
+                }
+
+                fractionalStr += nums[(int)(fractionalPart * type)];
+                fractionalPart = fractionalPart * type - (int)(fractionalPart * type);
+            }
+
+            while (fractionalStr.Length > 0 && fractionalStr.LastIndexOf('0') == (fractionalStr.Length - 1))
+                fractionalStr = fractionalStr.Remove(fractionalStr.Length - 1);
+
+            var str = new StringBuilder();
+            if (value < 0) str.Append('-');
+            str.Append(integerStr);
+            if (!string.IsNullOrEmpty(fractionalStr))
+            {
+                str.Append('.');
+                str.Append(fractionalStr);
+            }
+
+            return str.ToString();
+        }
     }
 }
