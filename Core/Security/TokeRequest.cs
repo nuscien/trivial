@@ -251,6 +251,7 @@ namespace Trivial.Security
         /// <param name="scope">The scope.</param>
         public TokenRequest(T body, string id, string secret = null, IEnumerable<string> scope = null) : base(body, id, secret, scope)
         {
+            Body = body;
         }
 
         /// <summary>
@@ -262,6 +263,7 @@ namespace Trivial.Security
         /// <param name="scope">The scope.</param>
         public TokenRequest(T body, string id, SecureString secret, IEnumerable<string> scope = null) : base(body, id, secret, scope)
         {
+            Body = body;
         }
 
         /// <summary>
@@ -271,6 +273,7 @@ namespace Trivial.Security
         /// <param name="clientCredentials">The client credentials and scope query data.</param>
         public TokenRequest(T body, QueryData clientCredentials) : base(body, clientCredentials)
         {
+            Body = body;
         }
 
         /// <summary>

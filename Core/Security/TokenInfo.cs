@@ -14,6 +14,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Security;
 using System.Runtime.Serialization;
+
 using Trivial.Text;
 using Trivial.Data;
 
@@ -368,7 +369,7 @@ namespace Trivial.Security
         /// <returns>A System.String that represents the current TokenInfo.</returns>
         public override string ToString()
         {
-            return $"{TokenType ?? string.Empty} {AccessToken ?? string.Empty}".Trim();
+            return $"{TokenType} {AccessToken}".Trim();
         }
 
         /// <summary>
