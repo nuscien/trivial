@@ -137,7 +137,7 @@ namespace Trivial.IO
         {
             using (var reader = new StreamReader(stream, encoding))
             {
-                return ReadLines(reader);
+                return ReadLines(reader, removeEmptyLine);
             }
         }
 
@@ -152,7 +152,7 @@ namespace Trivial.IO
         {
             using (var reader = new StreamReader(file.FullName, encoding))
             {
-                return ReadLines(reader);
+                return ReadLines(reader, removeEmptyLine);
             }
         }
 
@@ -167,7 +167,7 @@ namespace Trivial.IO
         {
             using (var reader = new StreamReader(file.FullName, detectEncodingFromByteOrderMarks))
             {
-                return ReadLines(reader);
+                return ReadLines(reader, removeEmptyLine);
             }
         }
 
@@ -213,6 +213,66 @@ namespace Trivial.IO
         public static IEnumerable<byte> ReadBytes(StreamPagingResolver streams)
         {
             return ReadBytes(ToStreamCollection(streams));
+        }
+
+        /// <summary>
+        /// Reads characters from the stream and advances the position within each stream to the end.
+        /// </summary>
+        /// <param name="stream">The stream to read.</param>
+        /// <param name="encoding">The encoding to read text.</param>
+        /// <returns>Bytes from the stream collection.</returns>
+        public static IEnumerable<char> ReadChars(Stream stream, Encoding encoding = null)
+        {
+            var decoder = (encoding ?? Encoding.Default).GetDecoder();
+            while (true)
+            {
+                var buffer = new byte[12];
+                if (stream.Read(buffer, 0, buffer.Length) < buffer.Length) break;
+                var len = decoder.GetCharCount(buffer, 0, buffer.Length);
+                var chars = new char[len];
+                decoder.GetChars(buffer, 0, buffer.Length, chars, 0);
+                foreach (var c in chars)
+                {
+                    yield return c;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Reads characters from the streams and advances the position within each stream to the end.
+        /// </summary>
+        /// <param name="streams">The stream collection to read.</param>
+        /// <param name="encoding">The encoding to read text.</param>
+        /// <returns>Bytes from the stream collection.</returns>
+        public static IEnumerable<char> ReadChars(IEnumerable<Stream> streams, Encoding encoding = null)
+        {
+            var decoder = (encoding ?? Encoding.Default).GetDecoder();
+            foreach (var stream in streams)
+            {
+                while (true)
+                {
+                    var buffer = new byte[12];
+                    if (stream.Read(buffer, 0, buffer.Length) < buffer.Length) break;
+                    var len = decoder.GetCharCount(buffer, 0, buffer.Length);
+                    var chars = new char[len];
+                    decoder.GetChars(buffer, 0, buffer.Length, chars, 0);
+                    foreach (var c in chars)
+                    {
+                        yield return c;
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Reads characters from the streams and advances the position within each stream to the end.
+        /// </summary>
+        /// <param name="streams">The stream collection to read.</param>
+        /// <param name="encoding">The encoding to read text.</param>
+        /// <returns>Bytes from the stream collection.</returns>
+        public static IEnumerable<char> ReadChars(StreamPagingResolver streams, Encoding encoding = null)
+        {
+            return ReadChars(ToStreamCollection(streams), encoding);
         }
 
         private static IEnumerable<Stream> ToStreamCollection(StreamPagingResolver streams)

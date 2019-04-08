@@ -95,6 +95,21 @@ namespace Trivial.Security
         /// Computes a hash string value of a specific string instance.
         /// </summary>
         /// <param name="h">The hash algorithm object maker.</param>
+        /// <param name="plainText">The original input value to get hash.</param>
+        /// <returns>A hash string value of the given string; or null, if h or input is null.</returns>
+        public static string ToHashString<T>(Func<T> h, byte[] plainText) where T : HashAlgorithm
+        {
+            // Check if the arguments is not null.
+            if (h == null || plainText == null) return null;
+
+            // Return the hash string computed.
+            return ToHashString(h(), plainText);
+        }
+
+        /// <summary>
+        /// Computes a hash string value of a specific string instance.
+        /// </summary>
+        /// <param name="h">The hash algorithm object maker.</param>
         /// <param name="secureString">The original input value to get hash.</param>
         /// <param name="encoding">The text encoding.</param>
         /// <returns>A hash string value of the given string; or null, if h or input is null.</returns>
@@ -170,12 +185,35 @@ namespace Trivial.Security
         /// Computes a SHA-512 (of SHA-2 family) hash string value of a specific string instance.
         /// </summary>
         /// <param name="plainText">The original input value to get hash.</param>
+        /// <returns>A hash string value of the given string.</returns>
+        public static string ToSHA512String(byte[] plainText)
+        {
+            // Create a new instance of the SHA-512 crypto service provider object.
+            return ToHashString(SHA512.Create, plainText);
+        }
+
+        /// <summary>
+        /// Computes a SHA-512 (of SHA-2 family) hash string value of a specific string instance.
+        /// </summary>
+        /// <param name="plainText">The original input value to get hash.</param>
         /// <param name="encoding">The text encoding.</param>
         /// <returns>A hash string value of the given string.</returns>
         public static string ToSHA512String(string plainText, Encoding encoding = null)
         {
             // Create a new instance of the SHA-512 crypto service provider object.
             return ToHashString(SHA512.Create, plainText, encoding);
+        }
+
+        /// <summary>
+        /// Computes a SHA-512 (of SHA-2 family) hash string value of a specific string instance.
+        /// </summary>
+        /// <param name="secureString">The original input value to get hash.</param>
+        /// <param name="encoding">The text encoding.</param>
+        /// <returns>A hash string value of the given string.</returns>
+        public static string ToSHA512String(SecureString secureString, Encoding encoding = null)
+        {
+            // Create a new instance of the SHA-512 crypto service provider object.
+            return ToHashString(SHA512.Create, secureString, encoding);
         }
 
         /// <summary>
@@ -186,8 +224,31 @@ namespace Trivial.Security
         /// <returns>A hash string value of the given string.</returns>
         public static string ToSHA3512String(string plainText, Encoding encoding = null)
         {
-            // Create a new instance of the SHA512CryptoServiceProvider object.
+            // Create a new instance of the SHA-3-512 crypto service provider object.
             return ToHashString(SHA3Managed.Create512, plainText, encoding);
+        }
+
+        /// <summary>
+        /// Computes a SHA-3-512 hash string value of a specific string instance.
+        /// </summary>
+        /// <param name="secureString">The original input value to get hash.</param>
+        /// <param name="encoding">The text encoding.</param>
+        /// <returns>A hash string value of the given string.</returns>
+        public static string ToSHA3512String(SecureString secureString, Encoding encoding = null)
+        {
+            // Create a new instance of the SHA-3-512 crypto service provider object.
+            return ToHashString(SHA3Managed.Create512, secureString, encoding);
+        }
+
+        /// <summary>
+        /// Computes a SHA-3-512 hash string value of a specific string instance.
+        /// </summary>
+        /// <param name="plainText">The original input value to get hash.</param>
+        /// <returns>A hash string value of the given string.</returns>
+        public static string ToSHA3512String(byte[] plainText)
+        {
+            // Create a new instance of the SHA-3-512 crypto service provider object.
+            return ToHashString(SHA3Managed.Create512, plainText);
         }
 
         /// <summary>
@@ -249,6 +310,31 @@ namespace Trivial.Security
         }
 
         /// <summary>
+        /// Verifies a SHA-512 (of SHA-2 family) hash against a string.
+        /// </summary>
+        /// <param name="secureString">The original input value to test.</param>
+        /// <param name="hash">A hash string for comparing.</param>
+        /// <param name="encoding">The text encoding.</param>
+        /// <returns>true if hash is a hash value of input; otherwise, false.</returns>
+        public static bool VerifySHA512(SecureString secureString, string hash, Encoding encoding = null)
+        {
+            // Return the result after StringComparer comparing.
+            return 0 == StringComparer.OrdinalIgnoreCase.Compare(ToSHA512String(secureString, encoding), hash);
+        }
+
+        /// <summary>
+        /// Verifies a SHA-512 (of SHA-2 family) hash against a string.
+        /// </summary>
+        /// <param name="plainText">The original input value to test.</param>
+        /// <param name="hash">A hash string for comparing.</param>
+        /// <returns>true if hash is a hash value of input; otherwise, false.</returns>
+        public static bool VerifySHA512(byte[] plainText, string hash)
+        {
+            // Return the result after StringComparer comparing.
+            return 0 == StringComparer.OrdinalIgnoreCase.Compare(ToSHA512String(plainText), hash);
+        }
+
+        /// <summary>
         /// Verifies a SHA-3-512 hash against a string.
         /// </summary>
         /// <param name="plainText">The original input value to test.</param>
@@ -259,6 +345,31 @@ namespace Trivial.Security
         {
             // Return the result after StringComparer comparing.
             return 0 == StringComparer.OrdinalIgnoreCase.Compare(ToSHA3512String(plainText, encoding), hash);
+        }
+
+        /// <summary>
+        /// Verifies a SHA-3-512 hash against a string.
+        /// </summary>
+        /// <param name="secureString">The original input value to test.</param>
+        /// <param name="hash">A hash string for comparing.</param>
+        /// <param name="encoding">The text encoding.</param>
+        /// <returns>true if hash is a hash value of input; otherwise, false.</returns>
+        public static bool VerifySHA3512(SecureString secureString, string hash, Encoding encoding = null)
+        {
+            // Return the result after StringComparer comparing.
+            return 0 == StringComparer.OrdinalIgnoreCase.Compare(ToSHA3512String(secureString, encoding), hash);
+        }
+
+        /// <summary>
+        /// Verifies a SHA-3-512 hash against a string.
+        /// </summary>
+        /// <param name="plainText">The original input value to test.</param>
+        /// <param name="hash">A hash string for comparing.</param>
+        /// <returns>true if hash is a hash value of input; otherwise, false.</returns>
+        public static bool VerifySHA3512(byte[] plainText, string hash)
+        {
+            // Return the result after StringComparer comparing.
+            return 0 == StringComparer.OrdinalIgnoreCase.Compare(ToSHA3512String(plainText), hash);
         }
 
         /// <summary>

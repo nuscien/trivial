@@ -125,6 +125,22 @@ namespace Trivial.Security
             }
 
             /// <summary>
+            /// Converts to JSON web token.
+            /// </summary>
+            /// <param name="verifyAlgorithm">The signature algorithm instance to verify.</param>
+            /// <param name="newSignatureAlgorithm">The new signature algorithm instance to use.</param>
+            /// <returns>A JSON web token instance.</returns>
+            public JsonWebToken<T> ToToken(ISignatureProvider verifyAlgorithm, ISignatureProvider newSignatureAlgorithm)
+            {
+                if (verifyAlgorithm != null && !Verify(verifyAlgorithm)) return null;
+                if (string.IsNullOrWhiteSpace(PayloadBase64Url)) return null;
+                return new JsonWebToken<T>(GetPayload(), newSignatureAlgorithm)
+                {
+                    headerBase64Url = headerStr
+                };
+            }
+
+            /// <summary>
             /// Returns a System.Net.Http.Headers.AuthenticationHeaderValue that represents the current TokenInfo.
             /// </summary>
             /// <returns>A System.Net.Http.Headers.AuthenticationHeaderValue that represents the current TokenInfo.</returns>
@@ -406,12 +422,17 @@ namespace Trivial.Security
         public T Payload { get; }
 
         /// <summary>
+        /// Gets or sets the Base64Url encode function.
+        /// </summary>
+        public Func<object, string> JsonToBase64Url { get; set; }
+
+        /// <summary>
         /// Gets the Base64Url of payload.
         /// </summary>
         /// <returns>A string encoded of payload.</returns>
         public string ToPayloadBase64Url()
         {
-            return WebUtility.Base64UrlEncode(Payload);
+            return GetBase64UrlEncode(Payload);
         }
 
         /// <summary>
@@ -420,17 +441,24 @@ namespace Trivial.Security
         /// <returns>A string encoded of header.</returns>
         public string ToHeaderBase64Url()
         {
-            if (headerBase64Url == null) headerBase64Url = WebUtility.Base64UrlEncode(header);
+            if (headerBase64Url == null) headerBase64Url = GetBase64UrlEncode(header);
             return headerBase64Url;
         }
 
         /// <summary>
         /// Gets the Base64Url of signature.
         /// </summary>
+        /// <param name="sign">An optional signature provider to use; or null, use the current one.</param>
         /// <returns>A string encoded of signature.</returns>
-        public string ToSigntureBase64Url()
+        public string ToSigntureBase64Url(ISignatureProvider sign = null)
         {
-            if (signature == null || !signature.CanSign) return signatureCache ?? string.Empty;
+            if (sign == null)
+            {
+                sign = signature;
+                if (sign == null || !sign.CanSign) return signatureCache ?? string.Empty;
+            }
+
+            if (!sign.CanSign) throw new InvalidOperationException("The signature provider can only verify.");
             var bytes = signature.Sign($"{ToHeaderBase64Url()}.{ToPayloadBase64Url()}");
             return WebUtility.Base64UrlEncode(bytes);
         }
@@ -438,19 +466,21 @@ namespace Trivial.Security
         /// <summary>
         /// Gets the encoded string.
         /// </summary>
+        /// <param name="sign">An optional signature provider to use; or null, use the current one.</param>
         /// <returns>A string encoded.</returns>
-        public string ToEncodedString()
+        public string ToEncodedString(ISignatureProvider sign = null)
         {
-            return $"{ToHeaderBase64Url()}.{ToPayloadBase64Url()}.{ToSigntureBase64Url()}";
+            return $"{ToHeaderBase64Url()}.{ToPayloadBase64Url()}.{ToSigntureBase64Url(sign)}";
         }
 
         /// <summary>
         /// Returns a System.Net.Http.Headers.AuthenticationHeaderValue that represents the current TokenInfo.
         /// </summary>
+        /// <param name="sign">An optional signature provider to use; or null, use the current one.</param>
         /// <returns>A System.Net.Http.Headers.AuthenticationHeaderValue that represents the current TokenInfo.</returns>
-        public AuthenticationHeaderValue ToAuthenticationHeaderValue()
+        public AuthenticationHeaderValue ToAuthenticationHeaderValue(ISignatureProvider sign = null)
         {
-            return new AuthenticationHeaderValue(TokenInfo.BearerTokenType, ToEncodedString());
+            return new AuthenticationHeaderValue(TokenInfo.BearerTokenType, ToEncodedString(sign));
         }
 
         /// <summary>
@@ -461,6 +491,12 @@ namespace Trivial.Security
         {
             if (Payload == null) return string.Empty;
             return Payload.ToString();
+        }
+
+        private string GetBase64UrlEncode(object bytes)
+        {
+            if (JsonToBase64Url != null) return JsonToBase64Url(bytes);
+            return WebUtility.Base64UrlEncode(bytes);
         }
     }
 
