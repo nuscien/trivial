@@ -452,7 +452,7 @@ namespace Trivial.Security
         /// <summary>
         /// Gets a value indicating whether the access token is null, empty or consists only of white-space characters.
         /// </summary>
-        public bool IsTokenNullOrEmpty => Token?.IsEmpty ?? false;
+        public bool IsTokenNullOrEmpty => Token?.IsEmpty ?? true;
 
         /// <summary>
         /// Gets or sets the case of authenticiation scheme.

@@ -10,14 +10,18 @@ Just add following namespace to your code file to use.
 using Trivial.Tasks;
 ```
 
-### Debounce
+### Debound
 
 Maybe a handler will be asked to process several times in a short time but you just want to process once at the last time because the previous ones are obsolete. A sample is real-time search. You can use following method to do so.
 
 ```csharp
-var task = HitTask.Debound(() => {
+// An action you need to process.
+Action action = () => {
     // Do something...
-}, TimeSpan.FromMilliseconds(200));
+};
+
+// Set up when the action can be processed.
+var task = HitTask.Debound(action, TimeSpan.FromMilliseconds(200));
 
 // Somewhere to raise.
 task.ProcessAsync();
@@ -28,9 +32,7 @@ task.ProcessAsync();
 A handler to be frozen for a while after it has processed.
 
 ```csharp
-var task = HitTask.Throttle(() => {
-    // Do something...
-}, TimeSpan.FromMilliseconds(10000));
+var task = HitTask.Throttle(action, TimeSpan.FromMilliseconds(10000));
 ```
 
 ### Multiple
@@ -38,9 +40,7 @@ var task = HitTask.Throttle(() => {
 A handler to process for the specific times and it will be reset after a while.
 
 ```csharp
-var task = HitTask.Multiple(() => {
-    // Do something...
-}, 10, null, TimeSpan.FromMilliseconds(200));
+var task = HitTask.Multiple(action, 10, null, TimeSpan.FromMilliseconds(200));
 ```
 
 ### Times
@@ -48,9 +48,7 @@ var task = HitTask.Multiple(() => {
 A handler to process for the specific times only and it will be reset after a while. A sample is double click.
 
 ```csharp
-var task = HitTask.Times(() => {
-    // Do something...
-}, 2, 2, TimeSpan.FromMilliseconds(200));
+var task = HitTask.Times(action, 2, 2, TimeSpan.FromMilliseconds(200));
 ```
 
 ### Retry
@@ -91,25 +89,11 @@ You can also get the number string in English words.
 EnglishNumerals.Default.ToString(12345.67);
 // twelve thousand three hundred and forty-five point six seven
 
-EnglishNumerals.Default.ToString(12345, true);
-// one two three four five
-
 EnglishNumerals.Default.ToApproximationString(1234567);
 // 1.2M
 ```
 
-And also for Chinese and Japanese.
-
-```csharp
-ChineseNumerals.Simplified.ToString(12345.67);
-// 一万两千三百四十五点六七
-
-ChineseNumerals.SimplifiedUppercase.ToString(12345, true);
-// 壹贰叄肆伍
-
-JapaneseNumerals.Default.ToApproximationString(1234567);
-// 123.5万
-```
+And `ChineseNumerals` for Chinese and `JapaneseNumerals` for Japanese.
 
 ### Angle and polar point
 
@@ -175,13 +159,12 @@ For hash algorithm, you can call `HashUtilities.ToHashString` function to get ha
 var original = "The string to hash";
 
 // SHA-512 (of SHA-2 family)
-var sha512Hash = HashUtilities.ToHashString(SHA512.Create, original);
-var isVerified = HashUtilities.Verify(SHA512.Create, original, sha512Hash); // --> true
+var sha512Str = HashUtilities.ToHashString(SHA512.Create, original);
+var isVerified = HashUtilities.Verify(SHA512.Create, original, sha512Str); // --> true
 
 // SHA-3-512
-var sha3512Name = new HashAlgorithmName("SHA3512");
-var sha3512Hash = HashUtilities.ToHashString(sha3512Name, original);
-var isVerified3512 = HashUtilities.Verify(sha3512Name, original, sha3512Hash); // --> true
+var sha3512Str = HashUtilities.ToHashString(new HashAlgorithmName("SHA3512"), original);
+var isVerified3512 = HashUtilities.Verify(sha3512Name, original, sha3512Str); // --> true
 ```
 
 ### Access token
@@ -249,9 +232,9 @@ If you have a model like following.
 ```csharp
 class Model
 {
-    public string FieldA { get; set; }
-    public string FieldB { get; set; }
-    public string FieldC { get; set; }
+    public string A { get; set; }
+    public string B { get; set; }
+    public string C { get; set; }
 }
 ```
 
@@ -259,9 +242,9 @@ Now you can map to the CSV file.
 
 ```csharp
 var csv = new CsvParser("ab,cd,efg\nhijk,l,mn");
-foreach (var model in csv.ConvertTo<Model>(new[] { "FieldA", "FieldB", "FieldC" }))
+foreach (var model in csv.ConvertTo<Model>(new[] { "A", "B", "C" }))
 {
-    Console.WriteLine("{0},{1},{2}", model.FieldA, model.FieldB, model.FieldC);
+    Console.WriteLine("{0},{1},{2}", model.A, model.B, model.C);
 }
 ```
 

@@ -204,6 +204,7 @@ namespace Trivial.Security
         /// Creates a JSON HTTP client.
         /// </summary>
         /// <typeparam name="T">The type of response.</typeparam>
+        /// <param name="callback">An optional callback raised on data received.</param>
         /// <returns>A new JSON HTTP client.</returns>
         public virtual JsonHttpClient<T> Create<T>(Action<ReceivedEventArgs<T>> callback = null)
         {
@@ -232,7 +233,7 @@ namespace Trivial.Security
         /// <returns>The task object representing the asynchronous operation.</returns>
         /// <exception cref="ArgumentNullException">The request was null.</exception>
         /// <exception cref="HttpRequestException">The request failed due to an underlying issue such as network connectivity, DNS failure, server certificate validation or timeout.</exception>
-        public Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken = default)
+        public virtual Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken = default)
         {
             if (request == null) throw new ArgumentNullException(nameof(request), "request should not be null");
             var client = CreateHttpClient();
@@ -250,13 +251,40 @@ namespace Trivial.Security
         /// <returns>The task object representing the asynchronous operation.</returns>
         /// <exception cref="ArgumentNullException">The request was null.</exception>
         /// <exception cref="HttpRequestException">The request failed due to an underlying issue such as network connectivity, DNS failure, server certificate validation or timeout.</exception>
-        public Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, HttpCompletionOption completionOption, CancellationToken cancellationToken = default)
+        public virtual Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, HttpCompletionOption completionOption, CancellationToken cancellationToken = default)
         {
             if (request == null) throw new ArgumentNullException(nameof(request), "request should not be null");
             var client = CreateHttpClient();
             WriteAuthenticationHeaderValue(request.Headers);
             Sending?.Invoke(this, new SendingEventArgs(request));
             return client.SendAsync(request, completionOption, cancellationToken);
+        }
+
+        /// <summary>
+        /// Send an HTTP request as an asynchronous operation.
+        /// </summary>
+        /// <param name="request">The HTTP request message to send.</param>
+        /// <param name="cancellationToken">The cancellation token to cancel operation.</param>
+        /// <returns>The task object representing the asynchronous operation.</returns>
+        /// <exception cref="ArgumentNullException">The request was null.</exception>
+        /// <exception cref="HttpRequestException">The request failed due to an underlying issue such as network connectivity, DNS failure, server certificate validation or timeout.</exception>
+        public Task<T> SendAsync<T>(HttpRequestMessage request, CancellationToken cancellationToken = default)
+        {
+            return Create<T>().SendAsync(request, cancellationToken);
+        }
+
+        /// <summary>
+        /// Send an HTTP request as an asynchronous operation.
+        /// </summary>
+        /// <param name="request">The HTTP request message to send.</param>
+        /// <param name="callback">An optional callback raised on data received.</param>
+        /// <param name="cancellationToken">The cancellation token to cancel operation.</param>
+        /// <returns>The task object representing the asynchronous operation.</returns>
+        /// <exception cref="ArgumentNullException">The request was null.</exception>
+        /// <exception cref="HttpRequestException">The request failed due to an underlying issue such as network connectivity, DNS failure, server certificate validation or timeout.</exception>
+        public Task<T> SendAsync<T>(HttpRequestMessage request, Action<ReceivedEventArgs<T>> callback, CancellationToken cancellationToken = default)
+        {
+            return Create<T>().SendAsync(request, callback, cancellationToken);
         }
 
         /// <summary>
@@ -705,7 +733,7 @@ namespace Trivial.Security
         /// <returns>The task object representing the asynchronous operation.</returns>
         /// <exception cref="ArgumentNullException">The request was null.</exception>
         /// <exception cref="HttpRequestException">The request failed due to an underlying issue such as network connectivity, DNS failure, server certificate validation or timeout.</exception>
-        public Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken = default)
+        public virtual Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken = default)
         {
             return oauth.SendAsync(request, cancellationToken);
         }
@@ -719,9 +747,36 @@ namespace Trivial.Security
         /// <returns>The task object representing the asynchronous operation.</returns>
         /// <exception cref="ArgumentNullException">The request was null.</exception>
         /// <exception cref="HttpRequestException">The request failed due to an underlying issue such as network connectivity, DNS failure, server certificate validation or timeout.</exception>
-        public Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, HttpCompletionOption completionOption, CancellationToken cancellationToken = default)
+        public virtual Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, HttpCompletionOption completionOption, CancellationToken cancellationToken = default)
         {
             return oauth.SendAsync(request, completionOption, cancellationToken);
+        }
+
+        /// <summary>
+        /// Send an HTTP request as an asynchronous operation.
+        /// </summary>
+        /// <param name="request">The HTTP request message to send.</param>
+        /// <param name="cancellationToken">The cancellation token to cancel operation.</param>
+        /// <returns>The task object representing the asynchronous operation.</returns>
+        /// <exception cref="ArgumentNullException">The request was null.</exception>
+        /// <exception cref="HttpRequestException">The request failed due to an underlying issue such as network connectivity, DNS failure, server certificate validation or timeout.</exception>
+        public Task<T> SendAsync<T>(HttpRequestMessage request, CancellationToken cancellationToken = default)
+        {
+            return Create<T>().SendAsync(request, cancellationToken);
+        }
+
+        /// <summary>
+        /// Send an HTTP request as an asynchronous operation.
+        /// </summary>
+        /// <param name="request">The HTTP request message to send.</param>
+        /// <param name="callback">An optional callback raised on data received.</param>
+        /// <param name="cancellationToken">The cancellation token to cancel operation.</param>
+        /// <returns>The task object representing the asynchronous operation.</returns>
+        /// <exception cref="ArgumentNullException">The request was null.</exception>
+        /// <exception cref="HttpRequestException">The request failed due to an underlying issue such as network connectivity, DNS failure, server certificate validation or timeout.</exception>
+        public Task<T> SendAsync<T>(HttpRequestMessage request, Action<ReceivedEventArgs<T>> callback, CancellationToken cancellationToken = default)
+        {
+            return Create<T>().SendAsync(request, callback, cancellationToken);
         }
 
         /// <summary>

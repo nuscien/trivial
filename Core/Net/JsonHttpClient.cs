@@ -242,6 +242,7 @@ namespace Trivial.Net
         /// Sends an HTTP request and gets the result serialized by JSON.
         /// </summary>
         /// <param name="request">The HTTP request message.</param>
+        /// <param name="callback">An optional callback raised on data received.</param>
         /// <param name="cancellationToken">The optional cancellation token.</param>
         /// <returns>A result serialized.</returns>
         /// <exception cref="ArgumentNullException">The request was null.</exception>
@@ -249,7 +250,7 @@ namespace Trivial.Net
         /// <exception cref="HttpRequestException">The request failed due to an underlying issue such as network connectivity, DNS failure, server certificate validation or timeout.</exception>
         /// <exception cref="InvalidOperationException">The task is cancelled.</exception>
         /// <exception cref="ObjectDisposedException">The inner HTTP web client instance has been disposed.</exception>
-        public async Task<T> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken = default)
+        public async Task<T> SendAsync(HttpRequestMessage request, Action<ReceivedEventArgs<T>> callback, CancellationToken cancellationToken = default)
         {
             if (request == null) throw new ArgumentNullException(nameof(request), "request should not be null.");
             if (Client == null && !IsNewHttpClientByDefault) Client = new HttpClient();
@@ -301,42 +302,65 @@ namespace Trivial.Net
             {
                 OnReceive(default, resp);
                 Received?.Invoke(this, new ReceivedEventArgs<T>(default, resp));
+                callback?.Invoke(new ReceivedEventArgs<T>(default, resp));
                 throw;
             }
             catch (FailedHttpException)
             {
                 OnReceive(default, resp);
                 Received?.Invoke(this, new ReceivedEventArgs<T>(default, resp));
+                callback?.Invoke(new ReceivedEventArgs<T>(default, resp));
                 throw;
             }
             catch (ArgumentException)
             {
                 OnReceive(default, resp);
                 Received?.Invoke(this, new ReceivedEventArgs<T>(default, resp));
+                callback?.Invoke(new ReceivedEventArgs<T>(default, resp));
                 throw;
             }
             catch (InvalidOperationException)
             {
                 OnReceive(default, resp);
                 Received?.Invoke(this, new ReceivedEventArgs<T>(default, resp));
+                callback?.Invoke(new ReceivedEventArgs<T>(default, resp));
                 throw;
             }
             catch (UnauthorizedAccessException)
             {
                 OnReceive(default, resp);
                 Received?.Invoke(this, new ReceivedEventArgs<T>(default, resp));
+                callback?.Invoke(new ReceivedEventArgs<T>(default, resp));
                 throw;
             }
             catch (NullReferenceException)
             {
                 OnReceive(default, resp);
                 Received?.Invoke(this, new ReceivedEventArgs<T>(default, resp));
+                callback?.Invoke(new ReceivedEventArgs<T>(default, resp));
                 throw;
             }
 
             OnReceive(valueResult, resp);
             Received?.Invoke(this, new ReceivedEventArgs<T>(valueResult, resp));
+            callback?.Invoke(new ReceivedEventArgs<T>(valueResult, resp));
             return valueResult;
+        }
+
+        /// <summary>
+        /// Sends an HTTP request and gets the result serialized by JSON.
+        /// </summary>
+        /// <param name="request">The HTTP request message.</param>
+        /// <param name="cancellationToken">The optional cancellation token.</param>
+        /// <returns>A result serialized.</returns>
+        /// <exception cref="ArgumentNullException">The request was null.</exception>
+        /// <exception cref="FailedHttpException">HTTP response contains failure status code.</exception>
+        /// <exception cref="HttpRequestException">The request failed due to an underlying issue such as network connectivity, DNS failure, server certificate validation or timeout.</exception>
+        /// <exception cref="InvalidOperationException">The task is cancelled.</exception>
+        /// <exception cref="ObjectDisposedException">The inner HTTP web client instance has been disposed.</exception>
+        public Task<T> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken = default)
+        {
+            return SendAsync(request, null, cancellationToken);
         }
 
         /// <summary>
