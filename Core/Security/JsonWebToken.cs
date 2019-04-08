@@ -90,9 +90,11 @@ namespace Trivial.Security
             /// Verifies the JSON web token.
             /// </summary>
             /// <param name="algorithm">The signature algorithm instance.</param>
+            /// <param name="checkName">true if check whether the algorithm name are same before verfiy; otherwise, false.</param>
             /// <returns>true if valid; otherwise, false.</returns>
-            public bool Verify(ISignatureProvider algorithm)
+            public bool Verify(ISignatureProvider algorithm, bool checkName = false)
             {
+                if (checkName && !IsSameSignatureAlgorithmName(algorithm)) return false;
                 if (algorithm == null) return string.IsNullOrEmpty(Signature);
                 var bytes = Encoding.ASCII.GetBytes($"{headerStr}.{PayloadBase64Url}");
                 var sign = WebUtility.Base64UrlDecode(Signature);
@@ -100,15 +102,29 @@ namespace Trivial.Security
             }
 
             /// <summary>
-            /// Converts to JSON web token.
+            /// Verifies the JSON web token.
             /// </summary>
             /// <param name="algorithm">The signature algorithm instance.</param>
+            /// <returns>true if valid; otherwise, false.</returns>
+            public bool IsSameSignatureAlgorithmName(ISignatureProvider algorithm)
+            {
+                var name = GetAlgorithmName();
+                if (string.IsNullOrWhiteSpace(name) || name == "none") return algorithm == null || string.IsNullOrWhiteSpace(algorithm.Name) || algorithm.Name == "none";
+                return name == algorithm.Name;
+            }
+
+            /// <summary>
+            /// Converts to JSON web token.
+            /// </summary>
+            /// <param name="algorithm">The verify signature algorithm instance.</param>
             /// <param name="verify">true if need verify before converting; otherwise, false.</param>
+            /// <param name="useVerifyAlgorithmName">true if use the verify algorithm name to create the instance instead of the original one; otherwise, false.</param>
             /// <returns>A JSON web token instance.</returns>
-            public JsonWebToken<T> ToToken(ISignatureProvider algorithm, bool verify = true)
+            public JsonWebToken<T> ToToken(ISignatureProvider algorithm, bool verify = true, bool useVerifyAlgorithmName = false)
             {
                 if (verify && !Verify(algorithm)) return null;
                 if (string.IsNullOrWhiteSpace(PayloadBase64Url)) return null;
+                if (useVerifyAlgorithmName) return new JsonWebToken<T>(GetPayload(), algorithm);
                 var result = new JsonWebToken<T>(GetPayload(), algorithm)
                 {
                     headerBase64Url = headerStr,
@@ -128,16 +144,14 @@ namespace Trivial.Security
             /// Converts to JSON web token.
             /// </summary>
             /// <param name="verifyAlgorithm">The signature algorithm instance to verify.</param>
+            /// <param name="verify">true if need verify before converting; otherwise, false.</param>
             /// <param name="newSignatureAlgorithm">The new signature algorithm instance to use.</param>
             /// <returns>A JSON web token instance.</returns>
-            public JsonWebToken<T> ToToken(ISignatureProvider verifyAlgorithm, ISignatureProvider newSignatureAlgorithm)
+            public JsonWebToken<T> ToToken(ISignatureProvider verifyAlgorithm, bool verify, ISignatureProvider newSignatureAlgorithm)
             {
-                if (verifyAlgorithm != null && !Verify(verifyAlgorithm)) return null;
+                if (verify && !Verify(verifyAlgorithm)) return null;
                 if (string.IsNullOrWhiteSpace(PayloadBase64Url)) return null;
-                return new JsonWebToken<T>(GetPayload(), newSignatureAlgorithm)
-                {
-                    headerBase64Url = headerStr
-                };
+                return new JsonWebToken<T>(GetPayload(), newSignatureAlgorithm);
             }
 
             /// <summary>
@@ -422,9 +436,9 @@ namespace Trivial.Security
         public T Payload { get; }
 
         /// <summary>
-        /// Gets or sets the Base64Url encode function.
+        /// Gets or sets the JSON serializer.
         /// </summary>
-        public Func<object, string> JsonToBase64Url { get; set; }
+        public Func<object, string> Serializer { get; set; }
 
         /// <summary>
         /// Gets the Base64Url of payload.
@@ -448,17 +462,10 @@ namespace Trivial.Security
         /// <summary>
         /// Gets the Base64Url of signature.
         /// </summary>
-        /// <param name="sign">An optional signature provider to use; or null, use the current one.</param>
         /// <returns>A string encoded of signature.</returns>
-        public string ToSigntureBase64Url(ISignatureProvider sign = null)
+        public string ToSigntureBase64Url()
         {
-            if (sign == null)
-            {
-                sign = signature;
-                if (sign == null || !sign.CanSign) return signatureCache ?? string.Empty;
-            }
-
-            if (!sign.CanSign) throw new InvalidOperationException("The signature provider can only verify.");
+            if (signature == null || !signature.CanSign) return signatureCache ?? string.Empty;
             var bytes = signature.Sign($"{ToHeaderBase64Url()}.{ToPayloadBase64Url()}");
             return WebUtility.Base64UrlEncode(bytes);
         }
@@ -466,21 +473,19 @@ namespace Trivial.Security
         /// <summary>
         /// Gets the encoded string.
         /// </summary>
-        /// <param name="sign">An optional signature provider to use; or null, use the current one.</param>
         /// <returns>A string encoded.</returns>
-        public string ToEncodedString(ISignatureProvider sign = null)
+        public string ToEncodedString()
         {
-            return $"{ToHeaderBase64Url()}.{ToPayloadBase64Url()}.{ToSigntureBase64Url(sign)}";
+            return $"{ToHeaderBase64Url()}.{ToPayloadBase64Url()}.{ToSigntureBase64Url()}";
         }
 
         /// <summary>
         /// Returns a System.Net.Http.Headers.AuthenticationHeaderValue that represents the current TokenInfo.
         /// </summary>
-        /// <param name="sign">An optional signature provider to use; or null, use the current one.</param>
         /// <returns>A System.Net.Http.Headers.AuthenticationHeaderValue that represents the current TokenInfo.</returns>
         public AuthenticationHeaderValue ToAuthenticationHeaderValue(ISignatureProvider sign = null)
         {
-            return new AuthenticationHeaderValue(TokenInfo.BearerTokenType, ToEncodedString(sign));
+            return new AuthenticationHeaderValue(TokenInfo.BearerTokenType, ToEncodedString());
         }
 
         /// <summary>
@@ -493,9 +498,22 @@ namespace Trivial.Security
             return Payload.ToString();
         }
 
+        /// <summary>
+        /// Creates a new JSON web token with new signature provider.
+        /// </summary>
+        /// <param name="sign">A signature provider to use; or null, use the current one.</param>
+        /// <returns>A new JSON web token instance.</returns>
+        public JsonWebToken<T> Create(ISignatureProvider sign)
+        {
+            return new JsonWebToken<T>(Payload, sign)
+            {
+                Serializer = Serializer
+            };
+        }
+
         private string GetBase64UrlEncode(object bytes)
         {
-            if (JsonToBase64Url != null) return JsonToBase64Url(bytes);
+            if (Serializer != null) return WebUtility.Base64UrlEncode(Serializer(bytes));
             return WebUtility.Base64UrlEncode(bytes);
         }
     }
