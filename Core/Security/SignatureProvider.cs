@@ -228,9 +228,6 @@ namespace Trivial.Security
     /// <summary>
     /// The RSA hash signature for string.
     /// </summary>
-    /// <remarks>
-    /// WARNING: Please do NOT use this provider since it tests failed.
-    /// </remarks>
     public class RSASignatureProvider : ISignatureProvider
     {
         private readonly RSA rsa;

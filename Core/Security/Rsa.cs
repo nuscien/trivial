@@ -5,6 +5,7 @@ using System.Linq;
 using System.Security;
 using System.Security.Cryptography;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Xml;
 using System.Xml.Linq;
 
@@ -107,41 +108,56 @@ namespace Trivial.Security
                 key = string.Join(string.Empty, lines.Skip(1).Take(lines.Length - 2));
             }
 
-            if (isPrivate)
+            using (var stream = new MemoryStream(Convert.FromBase64String(key)))
             {
-                var privateKeyBits = Convert.FromBase64String(key);
-                using (var reader = new BinaryReader(new MemoryStream(privateKeyBits)))
+                using (var reader = new BinaryReader(stream))
                 {
-                    var twoBytes = reader.ReadUInt16();
-                    if (twoBytes == 0x8130) reader.ReadByte();
-                    else if (twoBytes == 0x8230) reader.ReadInt16();
-                    else return null;
-                    twoBytes = reader.ReadUInt16();
-                    if (twoBytes != 0x0102) return null;
-                    var testByte = reader.ReadByte();
-                    if (testByte != 0x00) return null;
-                    return new RSAParameters
+                    if (isPrivate)
                     {
-                        Modulus = reader.ReadBytes(GetIntegerSize(reader)),
-                        Exponent = reader.ReadBytes(GetIntegerSize(reader)),
-                        D = reader.ReadBytes(GetIntegerSize(reader)),
-                        P = reader.ReadBytes(GetIntegerSize(reader)),
-                        Q = reader.ReadBytes(GetIntegerSize(reader)),
-                        DP = reader.ReadBytes(GetIntegerSize(reader)),
-                        DQ = reader.ReadBytes(GetIntegerSize(reader)),
-                        InverseQ = reader.ReadBytes(GetIntegerSize(reader))
-                    };
-                }
-            }
-            else
-            {
-                var x509key = Convert.FromBase64String(key);
-                var x509size = x509key.Length;
+                        var twoBytes = reader.ReadUInt16();
+                        if (twoBytes == 0x8130) reader.ReadByte();
+                        else if (twoBytes == 0x8230) reader.ReadInt16();
+                        else return null;
+                        if (!AreSame(reader, verPem)) return null;
 
-                // Set up stream to read the asn.1 encoded SubjectPublicKeyInfo blob.
-                using (var stream = new MemoryStream(x509key))
-                {
-                    using (var reader = new BinaryReader(stream))  // Wrap in-memory stream with BinaryReader for easy reading.
+                        // For PKCS8.
+                        if (reader.BaseStream.Position + seqOID.Length < reader.BaseStream.Length)
+                        {
+                            var isPkcs8 = true;
+                            var i = 0;
+                            for (; i < seqOID.Length; i++)
+                            {
+                                if (seqOID[i] == reader.ReadByte()) continue;
+                                isPkcs8 = false;
+                                break;
+                            }
+
+                            if (isPkcs8)
+                            {
+                                GetIntegerSize(reader, 0x04);
+                                GetIntegerSize(reader, 0x30);
+                                if (!AreSame(reader, verPem)) return null;
+                            }
+                            else
+                            {
+                                i++;
+                                reader.BaseStream.Seek(-i, SeekOrigin.Current);
+                            }
+                        }
+
+                        return new RSAParameters
+                        {
+                            Modulus = reader.ReadBytes(GetIntegerSize(reader)),
+                            Exponent = reader.ReadBytes(GetIntegerSize(reader)),
+                            D = reader.ReadBytes(GetIntegerSize(reader)),
+                            P = reader.ReadBytes(GetIntegerSize(reader)),
+                            Q = reader.ReadBytes(GetIntegerSize(reader)),
+                            DP = reader.ReadBytes(GetIntegerSize(reader)),
+                            DQ = reader.ReadBytes(GetIntegerSize(reader)),
+                            InverseQ = reader.ReadBytes(GetIntegerSize(reader))
+                        };
+                    }
+                    else
                     {
                         var twoBytes = reader.ReadUInt16();
                         if (twoBytes == 0x8130) // Data read as little endian order (actual data order for Sequence is 30 81).
@@ -331,6 +347,7 @@ namespace Trivial.Security
         /// <returns>The PEM string of public key.</returns>
         public static string ToPublicPEMString(this RSAParameters parameters, bool onlyBase64Value = false)
         {
+            if (parameters.Modulus == null || parameters.Modulus.Length < 1 || parameters.Exponent == null || parameters.Exponent.Length < 1) return null;
             using (var stream = new MemoryStream())
             {
                 stream.WriteByte(0x30);
@@ -407,11 +424,23 @@ namespace Trivial.Security
             return (encoding ?? Encoding.UTF8).GetString(rsa.Decrypt(data, padding));
         }
 
-        private static int GetIntegerSize(BinaryReader reader)
+        private static bool AreSame(BinaryReader reader, byte[] bytes)
         {
-            var count = 0;
+            if (bytes == null) return true;
+            if (reader == null) return false;
+            foreach (var b in bytes)
+            {
+                if (reader.Read() != b) return false;
+            }
+
+            return true;
+        }
+
+        private static int GetIntegerSize(BinaryReader reader, byte firstByte = 0x02)
+        {
+            int count;
             var testByte = reader.ReadByte();
-            if (testByte != 0x02) return 0;
+            if (testByte != firstByte) return 0;
             testByte = reader.ReadByte();
             if (testByte == 0x81)
             {

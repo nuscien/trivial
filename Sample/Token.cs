@@ -48,11 +48,21 @@ namespace Trivial.Sample
             ConsoleLine.WriteLine(jwtStr != header.Parameter ? "Failed JWT HS512 testing." : jwtStr);
             ConsoleLine.WriteLine();
 
-            // JWT RS512 - Test failed currently now.
+            // RSA.
             var rsa = RSA.Create();
-            ConsoleLine.WriteLine(rsa.ExportParameters(true).ToPrivatePEMString(true));
-            ConsoleLine.WriteLine(rsa.ExportParameters(false).ToPublicPEMString());
-            var rs = RSASignatureProvider.CreateRS512(RSA.Create());
+            var privateKey = rsa.ExportParameters(true).ToPrivatePEMString(true);
+            ConsoleLine.WriteLine(privateKey);
+            var publicKey = rsa.ExportParameters(false).ToPublicPEMString();
+            ConsoleLine.WriteLine(publicKey);
+            var privateKeyP = RSAUtility.ParseParameters(privateKey).Value;
+            var privateKeyS = privateKeyP.ToPrivatePEMString(true);
+            var publicKeyP = RSAUtility.ParseParameters(publicKey).Value;
+            var publicKeyS = publicKeyP.ToPublicPEMString();
+            ConsoleLine.WriteLine("They are {0}.", (privateKey == privateKeyS) && (publicKey == publicKeyS) ? "same" : "different");
+            ConsoleLine.WriteLine();
+
+            // JWT RS512
+            var rs = RSASignatureProvider.CreateRS512(rsa);
             jwt = new JsonWebToken<HttpClientVerb.NameAndDescription>(jwt.Payload, rs);
             header = jwt.ToAuthenticationHeaderValue();
             jwt = JsonWebToken<HttpClientVerb.NameAndDescription>.Parse(header.ToString(), rs);
