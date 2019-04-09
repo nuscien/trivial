@@ -140,7 +140,7 @@ namespace Trivial.IO
         /// <param name="stream">The stream to read.</param>
         /// <param name="encoding">The character encoding to use.</param>
         /// <param name="removeEmptyLine">true if need remove the empty line; otherwise, false.</param>
-        /// <returns>Lines from the specific stream reader.</returns>
+        /// <returns>Lines from the specific stream.</returns>
         public static IEnumerable<string> ReadLines(Stream stream, Encoding encoding, bool removeEmptyLine = false)
         {
             if (stream == null) throw new ArgumentNullException(nameof(stream), "stream should not be null.");
@@ -148,6 +148,30 @@ namespace Trivial.IO
             {
                 return ReadLines(reader, removeEmptyLine);
             }
+        }
+
+        /// <summary>
+        /// Reads lines from a specific stream collection.
+        /// </summary>
+        /// <param name="streams">The stream collection to read.</param>
+        /// <param name="encoding">The character encoding to use.</param>
+        /// <param name="removeEmptyLine">true if need remove the empty line; otherwise, false.</param>
+        /// <returns>Lines from the specific stream collection.</returns>
+        public static IEnumerable<string> ReadLines(IEnumerable<Stream> streams, Encoding encoding, bool removeEmptyLine = false)
+        {
+            return ReadLines(ReadChars(streams, encoding), removeEmptyLine);
+        }
+
+        /// <summary>
+        /// Reads lines from a specific stream collection.
+        /// </summary>
+        /// <param name="streams">The stream collection to read.</param>
+        /// <param name="encoding">The character encoding to use.</param>
+        /// <param name="removeEmptyLine">true if need remove the empty line; otherwise, false.</param>
+        /// <returns>Lines from the specific stream collection.</returns>
+        public static IEnumerable<string> ReadLines(StreamPagingResolver streams, Encoding encoding, bool removeEmptyLine = false)
+        {
+            return ReadLines(ReadChars(streams, encoding), removeEmptyLine);
         }
 
         /// <summary>
@@ -187,6 +211,38 @@ namespace Trivial.IO
             using (var reader = new StreamReader(file.FullName, detectEncodingFromByteOrderMarks))
             {
                 return ReadLines(reader, removeEmptyLine);
+            }
+        }
+
+        /// <summary>
+        /// Reads lines from a specific charactor collection.
+        /// </summary>
+        /// <param name="chars">The charactors to read.</param>
+        /// <param name="removeEmptyLine">true if need remove the empty line; otherwise, false.</param>
+        /// <returns>Lines from the specific charactor collection.</returns>
+        public static IEnumerable<string> ReadLines(IEnumerable<char> chars, bool removeEmptyLine = false)
+        {
+            if (chars == null) yield break;
+            var wasR = false;
+            var str = new StringBuilder();
+            foreach (var c in chars)
+            {
+                if (wasR)
+                {
+                    wasR = false;
+                    if (c == '\n') continue;
+                }
+
+                if (c == '\r') wasR = true;
+                if (!wasR && c != '\n')
+                {
+                    str.Append(c);
+                    continue;
+                }
+
+                if (removeEmptyLine && str.Length == 0) continue;
+                yield return str.ToString();
+                str.Clear();
             }
         }
 
@@ -243,7 +299,7 @@ namespace Trivial.IO
         /// </summary>
         /// <param name="stream">The stream to read.</param>
         /// <param name="encoding">The encoding to read text.</param>
-        /// <returns>Bytes from the stream collection.</returns>
+        /// <returns>Bytes from the stream.</returns>
         /// <exception cref="NotSupportedException">The stream does not support reading.</exception>
         public static IEnumerable<char> ReadChars(Stream stream, Encoding encoding = null)
         {
