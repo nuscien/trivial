@@ -20,7 +20,6 @@ namespace Trivial.Security
         /// </summary>
         public class Parser : IEquatable<Parser>, IEquatable<string>
         {
-            private readonly string headerStr;
             private T payloadCache;
             private JsonWebTokenHeader headerCache;
 
@@ -46,9 +45,9 @@ namespace Trivial.Security
                     return;
                 }
 
-                headerStr = arr[0];
+                HeaderBase64Url = arr[0];
                 PayloadBase64Url = arr[1];
-                if (arr.Length > 2) Signature = arr[2];
+                if (arr.Length > 2) SignatureBase64Url = arr[2];
             }
 
             /// <summary>
@@ -59,20 +58,25 @@ namespace Trivial.Security
             /// <param name="sign">The signature string.</param>
             public Parser(string header, string payload, string sign)
             {
-                headerStr = header;
+                HeaderBase64Url = header;
                 PayloadBase64Url = payload;
-                Signature = sign;
+                SignatureBase64Url = sign;
             }
 
             /// <summary>
-            /// Gets the payload string.
+            /// Gets the header string encoded.
+            /// </summary>
+            public string HeaderBase64Url { get; }
+
+            /// <summary>
+            /// Gets the payload string encoded.
             /// </summary>
             public string PayloadBase64Url { get; }
 
             /// <summary>
-            /// Gets the signature string.
+            /// Gets the signature string encoded.
             /// </summary>
-            public string Signature { get; }
+            public string SignatureBase64Url { get; }
 
             /// <summary>
             /// Gets payload instance.
@@ -95,6 +99,15 @@ namespace Trivial.Security
             }
 
             /// <summary>
+            /// Gets a copy of signature.
+            /// </summary>
+            /// <returns>A signature bytes.</returns>
+            public byte[] GetSignature()
+            {
+                return WebUtility.Base64UrlDecode(SignatureBase64Url);
+            }
+
+            /// <summary>
             /// Verifies the JSON web token.
             /// </summary>
             /// <param name="algorithm">The signature algorithm instance.</param>
@@ -103,9 +116,9 @@ namespace Trivial.Security
             public bool Verify(ISignatureProvider algorithm, bool checkName = false)
             {
                 if (checkName && !IsSameSignatureAlgorithmName(algorithm)) return false;
-                if (algorithm == null) return string.IsNullOrEmpty(Signature);
-                var bytes = Encoding.ASCII.GetBytes($"{headerStr}.{PayloadBase64Url}");
-                var sign = WebUtility.Base64UrlDecode(Signature);
+                if (algorithm == null) return string.IsNullOrEmpty(SignatureBase64Url);
+                var bytes = Encoding.ASCII.GetBytes($"{HeaderBase64Url}.{PayloadBase64Url}");
+                var sign = WebUtility.Base64UrlDecode(SignatureBase64Url);
                 return algorithm.Verify(bytes, sign);
             }
 
@@ -148,13 +161,13 @@ namespace Trivial.Security
                 {
                     return algorithm == null || algorithm.CanSign
                         ? new JsonWebToken<T>(GetPayload(), algorithm)
-                        : new JsonWebToken<T>(GetPayload(), algorithm) { signatureCache = Signature };
+                        : new JsonWebToken<T>(GetPayload(), algorithm) { signatureCache = SignatureBase64Url };
                 }
 
                 var result = new JsonWebToken<T>(GetPayload(), algorithm)
                 {
-                    headerBase64Url = headerStr,
-                    signatureCache = Signature
+                    headerBase64Url = HeaderBase64Url,
+                    signatureCache = SignatureBase64Url
                 };
                 var header = headerCache;
                 if (header != null)
@@ -195,7 +208,7 @@ namespace Trivial.Security
             /// <returns>A JWT string.</returns>
             public override string ToString()
             {
-                return $"{headerStr}.{PayloadBase64Url}.{Signature}";
+                return $"{HeaderBase64Url}.{PayloadBase64Url}.{SignatureBase64Url}";
             }
 
             /// <summary>
@@ -250,7 +263,7 @@ namespace Trivial.Security
             /// </summary>
             private void Refresh()
             {
-                headerCache = WebUtility.Base64UrlDecodeTo<JsonWebTokenHeader>(headerStr) ?? JsonWebTokenHeader.NoAlgorithm;
+                headerCache = WebUtility.Base64UrlDecodeTo<JsonWebTokenHeader>(HeaderBase64Url) ?? JsonWebTokenHeader.NoAlgorithm;
                 payloadCache = WebUtility.Base64UrlDecodeTo<T>(PayloadBase64Url);
             }
         }
@@ -509,7 +522,7 @@ namespace Trivial.Security
         public string ToSigntureBase64Url()
         {
             if (signature == null || !signature.CanSign) return signatureCache ?? string.Empty;
-            var bytes = signature.Sign($"{ToHeaderBase64Url()}.{ToPayloadBase64Url()}");
+            var bytes = signature.Sign($"{ToHeaderBase64Url()}.{ToPayloadBase64Url()}", Encoding.ASCII);
             return WebUtility.Base64UrlEncode(bytes);
         }
 
