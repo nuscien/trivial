@@ -8,17 +8,17 @@ using System.Threading.Tasks;
 namespace Trivial.IO
 {
     /// <summary>
+    /// Gets a stream in given page.
+    /// </summary>
+    /// <param name="pageNo">The page number to turn to.</param>
+    /// <returns>The stream in given page; or null, if no stream in the page.</returns>
+    public delegate Stream StreamPagingResolver(int pageNo);
+
+    /// <summary>
     /// Stream extension.
     /// </summary>
     public static class StreamUtility
     {
-        /// <summary>
-        /// Gets a stream in given page.
-        /// </summary>
-        /// <param name="pageNo">The page number to turn to.</param>
-        /// <returns>The stream in given page; or null, if no stream in the page.</returns>
-        public delegate Stream StreamPagingResolver(int pageNo);
-
         /// <summary>
         /// The default buffer size.
         /// </summary>
@@ -244,6 +244,9 @@ namespace Trivial.IO
                 yield return str.ToString();
                 str.Clear();
             }
+
+            if (removeEmptyLine && str.Length == 0) yield break;
+            yield return str.ToString();
         }
 
         /// <summary>
