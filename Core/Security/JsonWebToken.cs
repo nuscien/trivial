@@ -406,6 +406,11 @@ namespace Trivial.Security
         public T Payload { get; }
 
         /// <summary>
+        /// Gets a value indicating whether the signature provider can sign a specific data. null if no signature provider.
+        /// </summary>
+        public bool? CanSign => signature?.CanSign;
+
+        /// <summary>
         /// Gets the Base64Url of payload.
         /// </summary>
         /// <returns>A string encoded of payload.</returns>
