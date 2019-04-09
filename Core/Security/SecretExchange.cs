@@ -465,11 +465,12 @@ namespace Trivial.Security
         public string EncryptSecret(RSAParameters? key = null, RSAEncryptionPadding padding = null)
         {
             if (!key.HasValue) key = EncryptKey;
-            if (!key.HasValue) return SecretFormatBeforeEncrypt != null ? SecretFormatBeforeEncrypt(Secret?.ToUnsecureString(), false) : Secret?.ToUnsecureString();
+            if (Secret == null) return null;
+            if (!key.HasValue) return SecretFormatBeforeEncrypt != null ? SecretFormatBeforeEncrypt(Secret.ToUnsecureString(), false) : Secret.ToUnsecureString();
             var rsa = RSA.Create();
             rsa.ImportParameters(key.Value);
             var cypher = rsa.Encrypt(
-                Encoding.UTF8.GetBytes(SecretFormatBeforeEncrypt != null ? SecretFormatBeforeEncrypt(Secret?.ToUnsecureString(), true) : Secret?.ToUnsecureString()),
+                Encoding.UTF8.GetBytes(SecretFormatBeforeEncrypt != null ? SecretFormatBeforeEncrypt(Secret.ToUnsecureString(), true) : Secret.ToUnsecureString()),
                 padding ?? RSAEncryptionPadding.Pkcs1);
             return Convert.ToBase64String(cypher);
         }
