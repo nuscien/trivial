@@ -30,6 +30,8 @@ namespace Trivial.Security
             /// <param name="s">The JWT string.</param>
             public Parser(string s)
             {
+                if (s == null) return;
+                s = s.Trim();
                 var prefix = $"{TokenInfo.BearerTokenType} ";
                 if (s.IndexOf(prefix) == 0)
                 {
