@@ -105,12 +105,24 @@ namespace Trivial.Security
             /// Verifies the JSON web token.
             /// </summary>
             /// <param name="algorithm">The signature algorithm instance.</param>
+            /// <param name="caseSensitive">true if case senstive; otherwise, false.</param>
             /// <returns>true if valid; otherwise, false.</returns>
-            public bool IsSameSignatureAlgorithmName(ISignatureProvider algorithm)
+            public bool IsSameSignatureAlgorithmName(ISignatureProvider algorithm, bool caseSensitive = false)
+            {
+                return IsSameSignatureAlgorithmName(algorithm?.Name, caseSensitive);
+            }
+
+            /// <summary>
+            /// Verifies the JSON web token.
+            /// </summary>
+            /// <param name="algorithm">The signature algorithm name.</param>
+            /// <param name="caseSensitive">true if case senstive; otherwise, false.</param>
+            /// <returns>true if valid; otherwise, false.</returns>
+            public bool IsSameSignatureAlgorithmName(string algorithm, bool caseSensitive = false)
             {
                 var name = GetAlgorithmName();
-                if (string.IsNullOrWhiteSpace(name) || name == "none") return algorithm == null || string.IsNullOrWhiteSpace(algorithm.Name) || algorithm.Name == "none";
-                return name == algorithm.Name;
+                if (string.IsNullOrWhiteSpace(name) || name == "none") return algorithm == null || string.IsNullOrWhiteSpace(algorithm) || algorithm == "none";
+                return name.Equals(algorithm, caseSensitive ? StringComparison.InvariantCulture : StringComparison.InvariantCultureIgnoreCase);
             }
 
             /// <summary>
@@ -124,7 +136,13 @@ namespace Trivial.Security
             {
                 if (verify && !Verify(algorithm)) return null;
                 if (string.IsNullOrWhiteSpace(PayloadBase64Url)) return null;
-                if (useVerifyAlgorithmName) return new JsonWebToken<T>(GetPayload(), algorithm);
+                if (useVerifyAlgorithmName)
+                {
+                    return algorithm == null || algorithm.CanSign
+                        ? new JsonWebToken<T>(GetPayload(), algorithm)
+                        : new JsonWebToken<T>(GetPayload(), algorithm) { signatureCache = Signature };
+                }
+
                 var result = new JsonWebToken<T>(GetPayload(), algorithm)
                 {
                     headerBase64Url = headerStr,
