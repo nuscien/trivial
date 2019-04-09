@@ -19,8 +19,8 @@ namespace Trivial.Maths
         protected internal JapaneseNumerals(bool kana = false)
         {
             IsKana = kana;
-            PositiveSign = "正";
-            NegativeSign = "負";
+            PositiveSign = kana ? "せい" : "正";
+            NegativeSign = kana ? "ふ" : "負";
         }
 
         /// <summary>
@@ -121,7 +121,7 @@ namespace Trivial.Maths
         /// <summary>
         /// Number 14.
         /// </summary>
-        public string Fourteen => IsKana ? "じゅうし" : "十四";
+        public string Fourteen => IsKana ? "じゅうよん" : "十四";
 
         /// <summary>
         /// Number 15.
@@ -136,7 +136,7 @@ namespace Trivial.Maths
         /// <summary>
         /// Number 17.
         /// </summary>
-        public string Seventeen => IsKana ? "じゅうしち" : "十七";
+        public string Seventeen => IsKana ? "じゅうなな" : "十七";
 
         /// <summary>
         /// Number 18.
@@ -312,7 +312,7 @@ namespace Trivial.Maths
         /// <returns>A string with main numbers.</returns>
         public override string ToString()
         {
-            return "日本の数字 " + digits;
+            return (IsKana ? "かんすうじ " : "漢数字 ") + digits;
         }
 
         /// <summary>
@@ -404,7 +404,7 @@ namespace Trivial.Maths
             str.Append(ToString(integerPart, false));
             if (fractionalPart.Length > 0)
             {
-                str.Append("点");
+                str.Append(IsKana ? "てん" : "点");
                 foreach (var item in fractionalPart)
                 {
                     if (IsKana) str.Append(ConvertString(digits[int.Parse(item.ToString())].ToString()));
@@ -421,13 +421,13 @@ namespace Trivial.Maths
                 }
                 else
                 {
-                    str.Append("かける");
+                    str.Append(IsKana ? "かける" : "掛ける");
                     str.Append(TenClass);
                     if (exponentialPart > 1)
                     {
                         str.Append("の");
                         str.Append(ToString(exponentialPart));
-                        str.Append("乗");
+                        str.Append(IsKana ? "じょう" : "乗");
                     }
                 }
             }
@@ -448,10 +448,10 @@ namespace Trivial.Maths
                 .Replace("一", "いち")
                 .Replace("二", "に")
                 .Replace("三", "さん")
-                .Replace("四", "し")
+                .Replace("四", "よん")
                 .Replace("五", "ご")
                 .Replace("六", "ろく")
-                .Replace("七", "しち")
+                .Replace("七", "なな")
                 .Replace("八", "はち")
                 .Replace("九", "きゅう")
                 .Replace("十", "じゅう")
