@@ -171,6 +171,108 @@ namespace Trivial.Console
         }
 
         /// <summary>
+        /// Writes the specified character to the standard output stream.
+        /// </summary>
+        /// <param name="value">The value to write.</param>
+        /// <param name="repeatCount">The number of times to append value.</param>
+        public void Write(char value, int repeatCount = 1)
+        {
+            Write(null, null, value, repeatCount);
+        }
+
+        /// <summary>
+        /// Writes the specified character to the standard output stream.
+        /// </summary>
+        /// <param name="foregroundColor">The foreground color of the console.</param>
+        /// <param name="value">The value to write.</param>
+        /// <param name="repeatCount">The number of times to append value.</param>
+        public void Write(ConsoleColor? foregroundColor, char value, int repeatCount = 1)
+        {
+            Write(foregroundColor, null, value, repeatCount);
+        }
+
+        /// <summary>
+        /// Writes the specified character to the standard output stream.
+        /// </summary>
+        /// <param name="foregroundColor">The foreground color of the console.</param>
+        /// <param name="backgroundColor">The background color of the console.</param>
+        /// <param name="value">The value to write.</param>
+        /// <param name="repeatCount">The number of times to append value.</param>
+        public void Write(ConsoleColor? foregroundColor, ConsoleColor? backgroundColor, char value, int repeatCount = 1)
+        {
+            if (repeatCount < 1) return;
+            if (repeatCount == 1)
+            {
+                Write(foregroundColor, backgroundColor, value.ToString());
+                return;
+            }
+
+            var sb = new StringBuilder();
+            sb.Append(value, repeatCount);
+            Write(foregroundColor, backgroundColor, sb.ToString());
+        }
+
+        /// <summary>
+        /// Writes the specified character to the standard output stream.
+        /// </summary>
+        /// <param name="value">The value to write.</param>
+        public void Write(int value)
+        {
+            Write(null, null, value);
+        }
+
+        /// <summary>
+        /// Writes the specified character to the standard output stream.
+        /// </summary>
+        /// <param name="foregroundColor">The foreground color of the console.</param>
+        /// <param name="value">The value to write.</param>
+        public void Write(ConsoleColor? foregroundColor, int value)
+        {
+            Write(foregroundColor, null, value);
+        }
+
+        /// <summary>
+        /// Writes the specified character to the standard output stream.
+        /// </summary>
+        /// <param name="foregroundColor">The foreground color of the console.</param>
+        /// <param name="backgroundColor">The background color of the console.</param>
+        /// <param name="value">The value to write.</param>
+        public void Write(ConsoleColor? foregroundColor, ConsoleColor? backgroundColor, int value)
+        {
+            Write(foregroundColor, backgroundColor, value.ToString());
+        }
+
+        /// <summary>
+        /// Writes the specified character to the standard output stream.
+        /// </summary>
+        /// <param name="value">The value to write.</param>
+        public void Write(StringBuilder value)
+        {
+            Write(null, null, value);
+        }
+
+        /// <summary>
+        /// Writes the specified character to the standard output stream.
+        /// </summary>
+        /// <param name="foregroundColor">The foreground color of the console.</param>
+        /// <param name="value">The value to write.</param>
+        public void Write(ConsoleColor? foregroundColor, StringBuilder value)
+        {
+            Write(foregroundColor, null, value);
+        }
+
+        /// <summary>
+        /// Writes the specified character to the standard output stream.
+        /// </summary>
+        /// <param name="foregroundColor">The foreground color of the console.</param>
+        /// <param name="backgroundColor">The background color of the console.</param>
+        /// <param name="value">The value to write.</param>
+        public void Write(ConsoleColor? foregroundColor, ConsoleColor? backgroundColor, StringBuilder value)
+        {
+            Write(foregroundColor, backgroundColor, value.ToString());
+        }
+
+        /// <summary>
         /// Writes the specified string value to the standard output stream.
         /// </summary>
         /// <param name="foregroundColor">The foreground color of the console.</param>

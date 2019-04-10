@@ -9,7 +9,7 @@
     <Version>0.7.1</Version>
     <Authors>Kingcean Tuan</Authors>
     <Product>Trivial</Product>
-    <Description>The core library of Trivial.</Description>
+    <Description>A library providing lots of useful utilities, models and services, including hit task, retry policy, PEM, JWT, stream combination, JSON HTTP web client, CSV parser, numerals, coordinates, angle, arithmetic, sets, etc.</Description>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <Copyright>Copyright (c) 2018 Kingcean Tuan.</Copyright>
     <PackageProjectUrl>https://github.com/nuscien/trivial/wiki/core</PackageProjectUrl>
