@@ -75,7 +75,7 @@ namespace Trivial.Console
         /// <summary>
         /// The verb handlers match table.
         /// </summary>
-        private List<Item> items = new List<Item>();
+        private readonly List<Item> items = new List<Item>();
 
         /// <summary>
         /// A value inidcating whether the processing is cancelled.
@@ -108,9 +108,14 @@ namespace Trivial.Console
         public event EventHandler<ProcessEventArgs> Processing;
 
         /// <summary>
-        /// Adds or removes the event handler which will occur after processing.
+        /// Adds or removes the event handler which will occur after processing succeeded.
         /// </summary>
         public event EventHandler<ProcessEventArgs> Processed;
+
+        /// <summary>
+        /// Adds or removes the event handler which will occur after processing failure.
+        /// </summary>
+        public event EventHandler<ProcessEventArgs> ProcessFailed;
 
         /// <summary>
         /// Gets the verb handlers registered.
@@ -422,16 +427,19 @@ namespace Trivial.Console
                 if (!verb.IsCancelled && !isCanceled && !verb.HasDisposed) verb.Init(this);
                 if (!verb.IsCancelled && !isCanceled && !verb.HasDisposed) verb.Process();
                 else if (resetCancelState) isCanceled = false;
+                Processed?.Invoke(this, new ProcessEventArgs(args, verb));
             }
             catch (OperationCanceledException)
             {
+                ProcessFailed?.Invoke(this, new ProcessEventArgs(args, verb));
             }
-            catch (InvalidOperationException)
+            catch (Exception)
             {
+                ProcessFailed?.Invoke(this, new ProcessEventArgs(args, verb));
+                throw;
             }
             finally
             {
-                Processed?.Invoke(this, new ProcessEventArgs(args, verb));
                 verb.Dispose();
                 ProcessingVerb = null;
             }
