@@ -88,7 +88,10 @@ namespace Trivial.Security
             if (h == null || plainText == null) return null;
 
             // Return the hash string computed.
-            return ToHashString(h(), plainText, encoding);
+            using (var alg = h())
+            {
+                return ToHashString(alg, plainText, encoding);
+            }
         }
 
         /// <summary>
@@ -103,7 +106,10 @@ namespace Trivial.Security
             if (h == null || plainText == null) return null;
 
             // Return the hash string computed.
-            return ToHashString(h(), plainText);
+            using (var alg = h())
+            {
+                return ToHashString(h(), plainText);
+            }
         }
 
         /// <summary>

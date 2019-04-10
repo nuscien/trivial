@@ -41,8 +41,9 @@ namespace Trivial.Security
     /// <summary>
     /// The hash signature for string.
     /// </summary>
-    public class HashSignatureProvider : ISignatureProvider
+    public class HashSignatureProvider : ISignatureProvider, IDisposable
     {
+        private readonly bool needDispose;
         private readonly HashAlgorithm alg;
 
         /// <summary>
@@ -53,7 +54,7 @@ namespace Trivial.Security
         public static HashSignatureProvider CreateHS512(string secret)
         {
             var a = new HMACSHA512(Encoding.ASCII.GetBytes(secret ?? string.Empty));
-            return new HashSignatureProvider(a, "HS512");
+            return new HashSignatureProvider(a, "HS512", true);
         }
 
         /// <summary>
@@ -64,7 +65,7 @@ namespace Trivial.Security
         public static HashSignatureProvider CreateHS512(byte[] secret)
         {
             var a = new HMACSHA512(secret);
-            return new HashSignatureProvider(a, "HS512");
+            return new HashSignatureProvider(a, "HS512", true);
         }
 
         /// <summary>
@@ -75,7 +76,7 @@ namespace Trivial.Security
         public static HashSignatureProvider CreateHS384(string secret)
         {
             var a = new HMACSHA384(Encoding.ASCII.GetBytes(secret ?? string.Empty));
-            return new HashSignatureProvider(a, "HS384");
+            return new HashSignatureProvider(a, "HS384", true);
         }
 
         /// <summary>
@@ -86,7 +87,7 @@ namespace Trivial.Security
         public static HashSignatureProvider CreateHS384(byte[] secret)
         {
             var a = new HMACSHA384(secret);
-            return new HashSignatureProvider(a, "HS384");
+            return new HashSignatureProvider(a, "HS384", true);
         }
 
         /// <summary>
@@ -97,7 +98,7 @@ namespace Trivial.Security
         public static HashSignatureProvider CreateHS256(string secret)
         {
             var a = new HMACSHA256(Encoding.ASCII.GetBytes(secret ?? string.Empty));
-            return new HashSignatureProvider(a, "HS256");
+            return new HashSignatureProvider(a, "HS256", true);
         }
 
         /// <summary>
@@ -108,7 +109,7 @@ namespace Trivial.Security
         public static HashSignatureProvider CreateHS256(byte[] secret)
         {
             var a = new HMACSHA256(secret);
-            return new HashSignatureProvider(a, "HS256");
+            return new HashSignatureProvider(a, "HS256", true);
         }
 
         /// <summary>
@@ -118,7 +119,7 @@ namespace Trivial.Security
         /// <returns>A keyed hash signature provider.</returns>
         public static HashSignatureProvider CreateSHA512(bool shortName = false)
         {
-            return new HashSignatureProvider(SHA512.Create(), shortName ? "S512" : "SHA512");
+            return new HashSignatureProvider(SHA512.Create(), shortName ? "S512" : "SHA512", true);
         }
 
         /// <summary>
@@ -128,7 +129,7 @@ namespace Trivial.Security
         /// <returns>A keyed hash signature provider.</returns>
         public static HashSignatureProvider CreateSHA384(bool shortName = false)
         {
-            return new HashSignatureProvider(SHA384.Create(), shortName ? "S384" : "SHA384");
+            return new HashSignatureProvider(SHA384.Create(), shortName ? "S384" : "SHA384", true);
         }
 
         /// <summary>
@@ -138,7 +139,7 @@ namespace Trivial.Security
         /// <returns>A keyed hash signature provider.</returns>
         public static HashSignatureProvider CreateSHA256(bool shortName = false)
         {
-            return new HashSignatureProvider(SHA256.Create(), shortName ? "S256" : "SHA256");
+            return new HashSignatureProvider(SHA256.Create(), shortName ? "S256" : "SHA256", true);
         }
 
         /// <summary>
@@ -148,7 +149,7 @@ namespace Trivial.Security
         /// <returns>A keyed hash signature provider.</returns>
         public static HashSignatureProvider CreateSHA3512(bool shortName = false)
         {
-            return new HashSignatureProvider(SHA3Managed.Create512(), shortName ? "S3512" : "SHA3512");
+            return new HashSignatureProvider(SHA3Managed.Create512(), shortName ? "S3512" : "SHA3512", true);
         }
 
         /// <summary>
@@ -158,7 +159,7 @@ namespace Trivial.Security
         /// <returns>A keyed hash signature provider.</returns>
         public static HashSignatureProvider CreateSHA3384(bool shortName = false)
         {
-            return new HashSignatureProvider(SHA3Managed.Create384(), shortName ? "S3384" : "SHA3384");
+            return new HashSignatureProvider(SHA3Managed.Create384(), shortName ? "S3384" : "SHA3384", true);
         }
 
         /// <summary>
@@ -168,17 +169,7 @@ namespace Trivial.Security
         /// <returns>A keyed hash signature provider.</returns>
         public static HashSignatureProvider CreateSHA3256(bool shortName = false)
         {
-            return new HashSignatureProvider(SHA3Managed.Create256(), shortName ? "S3256" : "SHA3256");
-        }
-
-        /// <summary>
-        /// Creates a hash signature provider using SHA-3-224 hash algorithm.
-        /// </summary>
-        /// <param name="shortName">true if use short name; otherwise, false.</param>
-        /// <returns>A keyed hash signature provider.</returns>
-        public static HashSignatureProvider CreateSHA3224(bool shortName = false)
-        {
-            return new HashSignatureProvider(SHA3Managed.Create224(), shortName ? "S3224" : "SHA3224");
+            return new HashSignatureProvider(SHA3Managed.Create256(), shortName ? "S3256" : "SHA3256", true);
         }
 
         /// <summary>
@@ -186,10 +177,12 @@ namespace Trivial.Security
         /// </summary>
         /// <param name="algorithm">The hash algorithm</param>
         /// <param name="name">The signature algorithm name.</param>
-        public HashSignatureProvider(HashAlgorithm algorithm, string name)
+        /// <param name="needDisposeAlgorithmAutomatically">true if need dispose the given algorithm instance automatically when this object is disposed.</param>
+        public HashSignatureProvider(HashAlgorithm algorithm, string name, bool needDisposeAlgorithmAutomatically = false)
         {
             Name = name;
             alg = algorithm;
+            needDispose = needDisposeAlgorithmAutomatically;
         }
 
         /// <summary>
@@ -223,13 +216,22 @@ namespace Trivial.Security
         {
             return ListUtility.Equals(Sign(data), signature);
         }
+
+        /// <summary>
+        /// Releases all resources used by the current signature provider object.
+        /// </summary>
+        public void Dispose()
+        {
+            if (needDispose && alg != null) alg.Dispose();
+        }
     }
 
     /// <summary>
     /// The RSA hash signature for string.
     /// </summary>
-    public class RSASignatureProvider : ISignatureProvider
+    public class RSASignatureProvider : ISignatureProvider, IDisposable
     {
+        private readonly bool needDispose;
         private readonly RSA rsa;
         private readonly HashAlgorithmName hashName;
 
@@ -257,10 +259,12 @@ namespace Trivial.Security
         /// Creates an RSA hash signature provider using SHA-512 hash algorithm of SHA-2 family.
         /// </summary>
         /// <param name="rsaInstance">The RSA instance.</param>
+        /// <param name="hasPrivateKey">true if has the private key; otherwise, false.</param>
+        /// <param name="needDisposeAlgorithmAutomatically">true if need dispose the given algorithm instance automatically when this object is disposed.</param>
         /// <returns>An RSA hash signature provider instance.</returns>
-        public static RSASignatureProvider CreateRS512(RSA rsaInstance)
+        public static RSASignatureProvider CreateRS512(RSA rsaInstance, bool hasPrivateKey = true, bool needDisposeAlgorithmAutomatically = false)
         {
-            return new RSASignatureProvider(rsaInstance, HashAlgorithmName.SHA512, "RS512");
+            return new RSASignatureProvider(rsaInstance, hasPrivateKey, HashAlgorithmName.SHA512, "RS512", needDisposeAlgorithmAutomatically);
         }
 
         /// <summary>
@@ -287,10 +291,12 @@ namespace Trivial.Security
         /// Creates an RSA hash signature provider using SHA-384 hash algorithm of SHA-2 family.
         /// </summary>
         /// <param name="rsaInstance">The RSA instance.</param>
+        /// <param name="hasPrivateKey">true if has the private key; otherwise, false.</param>
+        /// <param name="needDisposeAlgorithmAutomatically">true if need dispose the given algorithm instance automatically when this object is disposed.</param>
         /// <returns>An RSA hash signature provider instance.</returns>
-        public static RSASignatureProvider CreateRS384(RSA rsaInstance)
+        public static RSASignatureProvider CreateRS384(RSA rsaInstance, bool hasPrivateKey = true, bool needDisposeAlgorithmAutomatically = false)
         {
-            return new RSASignatureProvider(rsaInstance, HashAlgorithmName.SHA384, "RS384");
+            return new RSASignatureProvider(rsaInstance, hasPrivateKey, HashAlgorithmName.SHA384, "RS384", needDisposeAlgorithmAutomatically);
         }
 
         /// <summary>
@@ -318,10 +324,12 @@ namespace Trivial.Security
         /// Creates an RSA hash signature provider using SHA-256 hash algorithm of SHA-2 family.
         /// </summary>
         /// <param name="rsaInstance">The RSA instance.</param>
+        /// <param name="hasPrivateKey">true if has the private key; otherwise, false.</param>
+        /// <param name="needDisposeAlgorithmAutomatically">true if need dispose the given algorithm instance automatically when this object is disposed.</param>
         /// <returns>An RSA hash signature provider instance.</returns>
-        public static RSASignatureProvider CreateRS256(RSA rsaInstance)
+        public static RSASignatureProvider CreateRS256(RSA rsaInstance, bool hasPrivateKey = true, bool needDisposeAlgorithmAutomatically = false)
         {
-            return new RSASignatureProvider(rsaInstance, HashAlgorithmName.SHA256, "RS256");
+            return new RSASignatureProvider(rsaInstance, hasPrivateKey, HashAlgorithmName.SHA256, "RS256", needDisposeAlgorithmAutomatically);
         }
 
         /// <summary>
@@ -351,6 +359,7 @@ namespace Trivial.Security
         {
             Name = signAlgorithmName;
             rsa = RSA.Create();
+            needDispose = true;
             CanSign = rsaParams.D!= null && rsaParams.D.Length > 0;
             rsa.ImportParameters(rsaParams);
             hashName = hashAlgorithmName;
@@ -362,7 +371,8 @@ namespace Trivial.Security
         /// <param name="rsaInstance">The RSA instance.</param>
         /// <param name="hashAlgorithmName">The hash algorithm name.</param>
         /// <param name="signAlgorithmName">The signature algorithm name.</param>
-        public RSASignatureProvider(RSA rsaInstance, HashAlgorithmName hashAlgorithmName, string signAlgorithmName) : this(rsaInstance, true, hashAlgorithmName, signAlgorithmName)
+        /// <param name="needDisposeAlgorithmAutomatically">true if need dispose the given algorithm instance automatically when this object is disposed.</param>
+        public RSASignatureProvider(RSA rsaInstance, HashAlgorithmName hashAlgorithmName, string signAlgorithmName, bool needDisposeAlgorithmAutomatically = false) : this(rsaInstance, true, hashAlgorithmName, signAlgorithmName, needDisposeAlgorithmAutomatically)
         {
         }
 
@@ -373,12 +383,14 @@ namespace Trivial.Security
         /// <param name="hasPrivateKey">true if has the private key; otherwise, false.</param>
         /// <param name="hashAlgorithmName">The hash algorithm name.</param>
         /// <param name="signAlgorithmName">The signature algorithm name.</param>
-        public RSASignatureProvider(RSA rsaInstance, bool hasPrivateKey, HashAlgorithmName hashAlgorithmName, string signAlgorithmName)
+        /// <param name="needDisposeAlgorithmAutomatically">true if need dispose the given algorithm instance automatically when this object is disposed.</param>
+        public RSASignatureProvider(RSA rsaInstance, bool hasPrivateKey, HashAlgorithmName hashAlgorithmName, string signAlgorithmName, bool needDisposeAlgorithmAutomatically = false)
         {
             Name = signAlgorithmName;
             rsa = rsaInstance;
             hashName = hashAlgorithmName;
             if (rsa == null || !hasPrivateKey) return;
+            needDispose = needDisposeAlgorithmAutomatically;
             try
             {
                 var p = rsa.ExportParameters(true);
@@ -422,6 +434,14 @@ namespace Trivial.Security
         public bool Verify(byte[] data, byte[] signature)
         {
             return rsa.VerifyData(data, signature, hashName, RSASignaturePadding.Pkcs1);
+        }
+
+        /// <summary>
+        /// Releases all resources used by the current signature provider object.
+        /// </summary>
+        public void Dispose()
+        {
+            if (needDispose && rsa != null) rsa.Dispose();
         }
     }
 

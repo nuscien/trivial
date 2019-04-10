@@ -23,8 +23,13 @@ namespace Trivial.Security
     /// <para>The OAuth HTTP web client (for RFC-6749).</para>
     /// <para>You can use this to login and then create the JSON HTTP web clients with the authentication information.</para>
     /// </summary>
-    public class OAuthClient : TokenContainer
+    public class OAuthClient : TokenContainer, IDisposable
     {
+        /// <summary>
+        /// A value indiciating whether need dispose the app accessing key automatically.
+        /// </summary>
+        private readonly bool needDisposeAppInfo;
+
         /// <summary>
         /// The app accessing key instance.
         /// </summary>
@@ -56,6 +61,7 @@ namespace Trivial.Security
         /// <param name="tokenCached">The token information instance cached.</param>
         public OAuthClient(string appId, string secretKey = null, TokenInfo tokenCached = null) : this(new AppAccessingKey(appId, secretKey), tokenCached)
         {
+            needDisposeAppInfo = true;
         }
 
         /// <summary>
@@ -66,6 +72,7 @@ namespace Trivial.Security
         /// <param name="tokenCached">The token information instance cached.</param>
         public OAuthClient(string appId, SecureString secretKey, TokenInfo tokenCached = null) : this(new AppAccessingKey(appId, secretKey), tokenCached)
         {
+            needDisposeAppInfo = true;
         }
 
         /// <summary>
@@ -513,12 +520,20 @@ namespace Trivial.Security
 
             return client;
         }
+
+        /// <summary>
+        /// Releases all resources used by the current OAuth client object.
+        /// </summary>
+        public void Dispose()
+        {
+            if (needDisposeAppInfo && appInfo != null) appInfo.Dispose();
+        }
     }
 
     /// <summary>
     /// The OAuth based JSON HTTP web client.
     /// </summary>
-    public abstract class OAuthBasedClient : TokenContainer
+    public abstract class OAuthBasedClient : TokenContainer, IDisposable
     {
         /// <summary>
         /// The OAuth client.
@@ -777,6 +792,14 @@ namespace Trivial.Security
         public Task<T> SendAsync<T>(HttpRequestMessage request, Action<ReceivedEventArgs<T>> callback, CancellationToken cancellationToken = default)
         {
             return Create<T>().SendAsync(request, callback, cancellationToken);
+        }
+
+        /// <summary>
+        /// Releases all resources used by the current OAuth client object.
+        /// </summary>
+        public void Dispose()
+        {
+            if (oauth != null) oauth.Dispose();
         }
 
         /// <summary>

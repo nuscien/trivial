@@ -127,7 +127,7 @@ namespace Trivial.Security
     ///     var jwt = exchange.ToJsonWebTokenAuthenticationHeaderValue(sign);
     ///   </code>
     /// </example>
-    public class RSASecretExchange : ICloneable
+    public class RSASecretExchange : ICloneable, IDisposable
     {
         /// <summary>
         /// The RSA exchange JWT payload model.
@@ -214,6 +214,11 @@ namespace Trivial.Security
         }
 
         /// <summary>
+        /// A value inidicating whether the RSA crypto service provider is from outside.
+        /// </summary>
+        private bool needDisposeCrypto;
+
+        /// <summary>
         /// The RSA crypto service provider.
         /// </summary>
         private RSA crypto;
@@ -283,17 +288,7 @@ namespace Trivial.Security
         /// <param name="syncEncryptKey">true if set the secret encryption key from the crypto service provider; otherwise, false.</param>
         public void SetCrypto(RSA rsa, bool syncEncryptKey = false)
         {
-            crypto = rsa;
-            if (rsa == null)
-            {
-                ClearCrypto(syncEncryptKey);
-                return;
-            }
-
-            PublicKey = rsa.ExportParameters(false);
-            if (!syncEncryptKey) return;
-            EncryptKey = PublicKey;
-            EncryptKeyId = Id;
+            SetCrypto(rsa, syncEncryptKey, true);
         }
 
         /// <summary>
@@ -323,7 +318,7 @@ namespace Trivial.Security
             if (privateKey.D == null || privateKey.D.Length == 0) throw new ArgumentException("privateKey should be an RSA private key.");
             var rsa = RSA.Create();
             rsa.ImportParameters(privateKey);
-            SetCrypto(rsa, syncEncryptKey);
+            SetCrypto(rsa, syncEncryptKey, false);
         }
 
         /// <summary>
@@ -332,6 +327,7 @@ namespace Trivial.Security
         /// <param name="syncEncryptKey"></param>
         public void ClearCrypto(bool syncEncryptKey = false)
         {
+            needDisposeCrypto = true;
             PublicKey = null;
             if (!syncEncryptKey) return;
             EncryptKey = null;
@@ -345,7 +341,7 @@ namespace Trivial.Security
         /// <param name="syncEncryptKey">true if set the secret encryption key from the crypto service provider; otherwise, false.</param>
         public void CreateCrypto(bool syncEncryptKey = false)
         {
-            SetCrypto(RSA.Create(), syncEncryptKey);
+            SetCrypto(RSA.Create(), syncEncryptKey, false);
         }
 
         /// <summary>
@@ -367,6 +363,7 @@ namespace Trivial.Security
         /// <param name="padding">The optional padding mode for decryption.</param>
         public void DecryptSecret(string secretEncrypted, bool ignoreFormatIfNoCrypto, RSAEncryptionPadding padding = null)
         {
+            if (Secret != null) Secret.Dispose();
             if (string.IsNullOrWhiteSpace(secretEncrypted))
             {
                 Secret = null;
@@ -420,6 +417,7 @@ namespace Trivial.Security
         /// </summary>
         public void ClearSecret()
         {
+            if (Secret != null) Secret.Dispose();
             Secret = null;
         }
 
@@ -429,6 +427,7 @@ namespace Trivial.Security
         /// <param name="secret">The new secret to set.</param>
         public void SetSecret(string secret)
         {
+            if (Secret != null) Secret.Dispose();
             if (string.IsNullOrWhiteSpace(secret))
             {
                 Secret = null;
@@ -436,6 +435,16 @@ namespace Trivial.Security
             }
 
             Secret = secret.ToSecure();
+        }
+
+        /// <summary>
+        /// Sets a new secret.
+        /// </summary>
+        /// <param name="secret">The new secret to set.</param>
+        public void SetSecret(SecureString secret)
+        {
+            if (Secret != null) Secret.Dispose();
+            Secret = secret?.Copy();
         }
 
         /// <summary>
@@ -467,12 +476,14 @@ namespace Trivial.Security
             if (!key.HasValue) key = EncryptKey;
             if (Secret == null) return null;
             if (!key.HasValue) return SecretFormatBeforeEncrypt != null ? SecretFormatBeforeEncrypt(Secret.ToUnsecureString(), false) : Secret.ToUnsecureString();
-            var rsa = RSA.Create();
-            rsa.ImportParameters(key.Value);
-            var cypher = rsa.Encrypt(
-                Encoding.UTF8.GetBytes(SecretFormatBeforeEncrypt != null ? SecretFormatBeforeEncrypt(Secret.ToUnsecureString(), true) : Secret.ToUnsecureString()),
-                padding ?? RSAEncryptionPadding.Pkcs1);
-            return Convert.ToBase64String(cypher);
+            using (var rsa = RSA.Create())
+            {
+                rsa.ImportParameters(key.Value);
+                var cypher = rsa.Encrypt(
+                    Encoding.UTF8.GetBytes(SecretFormatBeforeEncrypt != null ? SecretFormatBeforeEncrypt(Secret.ToUnsecureString(), true) : Secret.ToUnsecureString()),
+                    padding ?? RSAEncryptionPadding.Pkcs1);
+                return Convert.ToBase64String(cypher);
+            }
         }
 
         /// <summary>
@@ -506,12 +517,14 @@ namespace Trivial.Security
         {
             if (text == null) return null;
             if (EncryptKey == null) return SecretFormatBeforeEncrypt != null ? SecretFormatBeforeEncrypt(text, false) : text;
-            var rsa = RSA.Create();
-            rsa.ImportParameters(EncryptKey.Value);
-            var cypher = rsa.Encrypt(
-                Encoding.UTF8.GetBytes(SecretFormatBeforeEncrypt != null ? SecretFormatBeforeEncrypt(text, true) : text),
-                padding ?? RSAEncryptionPadding.Pkcs1);
-            return Convert.ToBase64String(cypher);
+            using (var rsa = RSA.Create())
+            {
+                rsa.ImportParameters(EncryptKey.Value);
+                var cypher = rsa.Encrypt(
+                    Encoding.UTF8.GetBytes(SecretFormatBeforeEncrypt != null ? SecretFormatBeforeEncrypt(text, true) : text),
+                    padding ?? RSAEncryptionPadding.Pkcs1);
+                return Convert.ToBase64String(cypher);
+            }
         }
 
         /// <summary>
@@ -621,18 +634,28 @@ namespace Trivial.Security
         }
 
         /// <summary>
+        /// Releases all resources used by the current secret exchange object.
+        /// </summary>
+        public void Dispose()
+        {
+            if (crypto != null && needDisposeCrypto) crypto.Dispose();
+            if (Secret != null) Secret.Dispose();
+        }
+
+        /// <summary>
         /// Creates a new object that is a copy of the current instance.
         /// </summary>
         /// <returns>A new object that is a copy of this instance.</returns>
         public RSASecretExchange Clone()
         {
+            needDisposeCrypto = false;
             return new RSASecretExchange
             {
                 Id = Id,
                 EntityId = EntityId,
                 EncryptKey = EncryptKey,
                 EncryptKeyId = EncryptKeyId,
-                Secret = Secret,
+                Secret = Secret.Copy(),
                 SecretFormatBeforeDecrypt = SecretFormatBeforeDecrypt,
                 SecretFormatBeforeEncrypt = SecretFormatBeforeEncrypt,
                 PublicKey = PublicKey,
@@ -647,6 +670,29 @@ namespace Trivial.Security
         object ICloneable.Clone()
         {
             return Clone();
+        }
+
+        /// <summary>
+        /// Sets a specific crypto service provider instance.
+        /// </summary>
+        /// <param name="rsa">The new crypto service provider.</param>
+        /// <param name="syncEncryptKey">true if set the secret encryption key from the crypto service provider; otherwise, false.</param>
+        /// <param name="isFromOutside">true if it is from outside; otherwise false.</param>
+        private void SetCrypto(RSA rsa, bool syncEncryptKey, bool isFromOutside)
+        {
+            if (crypto != null && !needDisposeCrypto) crypto.Dispose();
+            crypto = rsa;
+            if (rsa == null)
+            {
+                ClearCrypto(syncEncryptKey);
+                return;
+            }
+
+            needDisposeCrypto = !isFromOutside;
+            PublicKey = rsa.ExportParameters(false);
+            if (!syncEncryptKey) return;
+            EncryptKey = PublicKey;
+            EncryptKeyId = Id;
         }
     }
 }

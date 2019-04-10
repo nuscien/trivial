@@ -286,7 +286,7 @@ namespace Trivial.Security
     /// <summary>
     /// The app secret key for accessing api.
     /// </summary>
-    public class AppAccessingKey
+    public class AppAccessingKey : IDisposable
     {
         /// <summary>
         /// Initializes a new instance of the AppAccessingKey class.
@@ -314,7 +314,7 @@ namespace Trivial.Security
         public AppAccessingKey(string id, SecureString secret)
         {
             Id = id;
-            Secret = secret;
+            Secret = secret?.Copy();
         }
 
         /// <summary>
@@ -348,6 +348,14 @@ namespace Trivial.Security
             }
 
             return true;
+        }
+
+        /// <summary>
+        /// Releases all resources used by the current app accessing key object.
+        /// </summary>
+        public void Dispose()
+        {
+            if (Secret != null) Secret.Dispose();
         }
 
         /// <summary>
