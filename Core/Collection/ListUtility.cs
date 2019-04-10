@@ -214,7 +214,7 @@ namespace Trivial.Collection
         /// <param name="test">The object to test.</param>
         /// <param name="index">The zero-based starting index of the search. 0 (zero) is valid in an empty list.</param>
         /// <param name="count">The number of elements in the section to search.</param>
-        public static IEnumerable<int> IndexesOf<T>(this IEnumerable<T> list, T test, int index = 0, int? count = null)
+        public static IEnumerable<int> AllIndexesOf<T>(this IEnumerable<T> list, T test, int index = 0, int? count = null)
         {
             if (list == null) throw new ArgumentNullException(nameof(list), "list should not be null.");
             if (index > 0) list = list.Skip(index);
@@ -245,7 +245,7 @@ namespace Trivial.Collection
         /// <param name="test">The function to test.</param>
         /// <param name="index">The zero-based starting index of the search. 0 (zero) is valid in an empty list.</param>
         /// <param name="count">The number of elements in the section to search.</param>
-        public static IEnumerable<int> IndexesOf<T>(this IEnumerable<T> list, Func<T, bool> test, int index = 0, int? count = null)
+        public static IEnumerable<int> AllIndexesOf<T>(this IEnumerable<T> list, Func<T, bool> test, int index = 0, int? count = null)
         {
             if (list == null) throw new ArgumentNullException(nameof(list), "list should not be null.");
             if (test == null) throw new ArgumentNullException(nameof(test), "test should be a function to test.");
@@ -264,7 +264,7 @@ namespace Trivial.Collection
         /// </summary>
         /// <param name="list">The key value pairs.</param>
         /// <param name="key">The key to test.</param>
-        public static IEnumerable<int> IndexesOf<TKey, TValue>(this IEnumerable<KeyValuePair<TKey, TValue>> list, TKey key)
+        public static IEnumerable<int> AllIndexesOf<TKey, TValue>(this IEnumerable<KeyValuePair<TKey, TValue>> list, TKey key)
         {
             if (list == null) throw new ArgumentNullException(nameof(list), "list should not be null.");
             var i = -1;
@@ -294,14 +294,14 @@ namespace Trivial.Collection
         /// <param name="value">The value to test.</param>
         /// <param name="index">The zero-based starting index of the search. 0 (zero) is valid in an empty list.</param>
         /// <param name="count">The number of elements in the section to search.</param>
-        public static IEnumerable<int> IndexesOf<TKey, TValue>(this IEnumerable<KeyValuePair<TKey, TValue>> list, TKey key, TValue value, int index = 0, int? count = null)
+        public static IEnumerable<int> AllIndexesOf<TKey, TValue>(this IEnumerable<KeyValuePair<TKey, TValue>> list, TKey key, TValue value, int index = 0, int? count = null)
         {
             Func<KeyValuePair<TKey, TValue>, bool> test;
             if (key == null && value == null) test = item => item.Key == null && item.Value == null;
             else if (key != null && value == null) test = item => key.Equals(item.Key) && item.Value == null;
             else if (key == null && value != null) test = item => item.Key == null && value.Equals(item.Value);
             else test = item => key.Equals(item.Key) && value.Equals(item.Value);
-            return IndexesOf(list, test, index, count);
+            return AllIndexesOf(list, test, index, count);
         }
 
         /// <summary>
