@@ -221,6 +221,46 @@ namespace Trivial.Maths
         public string Ninety => Nine + TenClass;
 
         /// <summary>
+        /// Number 20.
+        /// </summary>
+        public string ShortTwenty => IsUpperCase ? Twenty : "廿";
+
+        /// <summary>
+        /// Number 30.
+        /// </summary>
+        public string ShortThirty => IsUpperCase ? Thirty : "卅";
+
+        /// <summary>
+        /// Number 40.
+        /// </summary>
+        public string ShortForty => IsUpperCase ? Forty : "卌";
+
+        /// <summary>
+        /// Number 50.
+        /// </summary>
+        public string ShortFifty => IsUpperCase ? Fifty : "圩";
+
+        /// <summary>
+        /// Number 60.
+        /// </summary>
+        public string ShortSixty => IsUpperCase ? Sixty : "圆";
+
+        /// <summary>
+        /// Number 70.
+        /// </summary>
+        public string ShortSeventy => IsUpperCase ? Seventy : "进";
+
+        /// <summary>
+        /// Number 80.
+        /// </summary>
+        public string ShortEighty => IsUpperCase ? Eighty : "枯";
+
+        /// <summary>
+        /// Number 90.
+        /// </summary>
+        public string ShortNinety => IsUpperCase ? Ninety : "枠";
+
+        /// <summary>
         /// Number 100.
         /// </summary>
         public string OneHundred => One + HundredClass;
@@ -229,6 +269,11 @@ namespace Trivial.Maths
         /// Number 200.
         /// </summary>
         public string TwoHundred => (IsUpperCase ? Two : Two2) + HundredClass;
+
+        /// <summary>
+        /// Number 200.
+        /// </summary>
+        public string ShortTwoHundred => IsUpperCase ? TwoHundred : "皕";
 
         /// <summary>
         /// Number 500.

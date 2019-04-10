@@ -312,7 +312,7 @@ namespace Trivial.Maths
         /// <returns>A string with main numbers.</returns>
         public override string ToString()
         {
-            return (IsKana ? "かんすうじ " : "漢数字 ") + digits;
+            return (IsKana ? "かんすうじ " : "漢数字 ") + ConvertString(digits);
         }
 
         /// <summary>
@@ -444,7 +444,7 @@ namespace Trivial.Maths
         {
             if (!IsKana) return value;
             return value
-                .Replace("零", "れい")
+                .Replace("零", "ゼロ")
                 .Replace("一", "いち")
                 .Replace("二", "に")
                 .Replace("三", "さん")
