@@ -286,9 +286,22 @@ namespace Trivial.Security
         /// </summary>
         /// <param name="rsa">The new crypto service provider.</param>
         /// <param name="syncEncryptKey">true if set the secret encryption key from the crypto service provider; otherwise, false.</param>
-        public void SetCrypto(RSA rsa, bool syncEncryptKey = false)
+        /// <param name="needDisposeAlgorithmAutomatically">true if need dispose the given algorithm instance automatically when this object is disposed.</param>
+        public void SetCrypto(RSA rsa, bool syncEncryptKey = false, bool needDisposeAlgorithmAutomatically = false)
         {
-            SetCrypto(rsa, syncEncryptKey, true);
+            if (crypto != null && !needDisposeCrypto) crypto.Dispose();
+            crypto = rsa;
+            if (rsa == null)
+            {
+                ClearCrypto(syncEncryptKey);
+                return;
+            }
+
+            needDisposeCrypto = needDisposeAlgorithmAutomatically;
+            PublicKey = rsa.ExportParameters(false);
+            if (!syncEncryptKey) return;
+            EncryptKey = PublicKey;
+            EncryptKeyId = Id;
         }
 
         /// <summary>
@@ -327,7 +340,7 @@ namespace Trivial.Security
         /// <param name="syncEncryptKey"></param>
         public void ClearCrypto(bool syncEncryptKey = false)
         {
-            needDisposeCrypto = true;
+            needDisposeCrypto = false;
             PublicKey = null;
             if (!syncEncryptKey) return;
             EncryptKey = null;
@@ -670,29 +683,6 @@ namespace Trivial.Security
         object ICloneable.Clone()
         {
             return Clone();
-        }
-
-        /// <summary>
-        /// Sets a specific crypto service provider instance.
-        /// </summary>
-        /// <param name="rsa">The new crypto service provider.</param>
-        /// <param name="syncEncryptKey">true if set the secret encryption key from the crypto service provider; otherwise, false.</param>
-        /// <param name="isFromOutside">true if it is from outside; otherwise false.</param>
-        private void SetCrypto(RSA rsa, bool syncEncryptKey, bool isFromOutside)
-        {
-            if (crypto != null && !needDisposeCrypto) crypto.Dispose();
-            crypto = rsa;
-            if (rsa == null)
-            {
-                ClearCrypto(syncEncryptKey);
-                return;
-            }
-
-            needDisposeCrypto = !isFromOutside;
-            PublicKey = rsa.ExportParameters(false);
-            if (!syncEncryptKey) return;
-            EncryptKey = PublicKey;
-            EncryptKeyId = Id;
         }
     }
 }
