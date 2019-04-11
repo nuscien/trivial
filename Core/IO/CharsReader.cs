@@ -25,12 +25,43 @@ namespace Trivial.IO
         }
 
         /// <summary>
+        /// Initializes a new instance of the CharsReader class.
+        /// </summary>
+        /// <param name="stream">The stream to read.</param>
+        /// <param name="encoding">The encoding to read text.</param>
+        public CharsReader(Stream stream, Encoding encoding = null)
+        {
+            enumerator = (StreamUtility.ReadChars(stream, encoding) ?? new List<char>()).GetEnumerator();
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the CharsReader class.
+        /// </summary>
+        /// <param name="streams">The stream collection to read.</param>
+        /// <param name="encoding">The encoding to read text.</param>
+        public CharsReader(IEnumerable<Stream> streams, Encoding encoding = null)
+        {
+            enumerator = (StreamUtility.ReadChars(streams, encoding) ?? new List<char>()).GetEnumerator();
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the CharsReader class.
+        /// </summary>
+        /// <param name="streams">The stream collection to read.</param>
+        /// <param name="encoding">The encoding to read text.</param>
+        public CharsReader(StreamPagingResolver streams, Encoding encoding = null)
+        {
+            enumerator = (StreamUtility.ReadChars(streams, encoding) ?? new List<char>()).GetEnumerator();
+        }
+
+        /// <summary>
         /// Returns the next available character but does not consume it.
         /// </summary>
         /// <returns>An integer representing the next character to be read, or -1 if no more characters are available or the stream does not support seeking.</returns>
         /// <exception cref="ObjectDisposedException">The current reader is closed.</exception>
         public override int Peek()
         {
+            if (hasRead) return enumerator.Current;
             if (!enumerator.MoveNext()) return -1;
             hasRead = true;
             return enumerator.Current;
@@ -221,7 +252,7 @@ namespace Trivial.IO
                 sb.Append(enumerator.Current);
             }
 
-            return sb.ToString();
+            return sb.Length > 0 ? sb.ToString() : null;
         }
 
         /// <summary>
