@@ -73,7 +73,7 @@ namespace Trivial.Console
         /// <summary>
         /// The value writen.
         /// </summary>
-        private StringBuilder line = new StringBuilder();
+        private readonly StringBuilder line = new StringBuilder();
 
         /// <summary>
         /// A value indicating whether write immediately.
@@ -210,6 +210,66 @@ namespace Trivial.Console
             var sb = new StringBuilder();
             sb.Append(value, repeatCount);
             Write(foregroundColor, backgroundColor, sb.ToString());
+        }
+
+        /// <summary>
+        /// Writes the specified characters to the standard output stream.
+        /// </summary>
+        /// <param name="value">The value to write.</param>
+        /// <param name="start">The starting position in value.</param>
+        /// <param name="count">The number of characters to write.</param>
+        public void Write(char[] value, int start = 0, int? count = null)
+        {
+            if (start == 0 && count == null)
+            {
+                Write(null, null, new string(value));
+            }
+
+            var list = value.Skip(start);
+            if (count.HasValue) list = list.Take(count.Value);
+            var str = new string(list.ToArray());
+            Write(null, null, str);
+        }
+
+        /// <summary>
+        /// Writes the specified characters to the standard output stream.
+        /// </summary>
+        /// <param name="foregroundColor">The foreground color of the console.</param>
+        /// <param name="value">The value to write.</param>
+        /// <param name="start">The starting position in value.</param>
+        /// <param name="count">The number of characters to write.</param>
+        public void Write(ConsoleColor? foregroundColor, char[] value, int start = 0, int? count = null)
+        {
+            if (start == 0 && count == null)
+            {
+                Write(foregroundColor, null, new string(value));
+            }
+
+            var list = value.Skip(start);
+            if (count.HasValue) list = list.Take(count.Value);
+            var str = new string(list.ToArray());
+            Write(foregroundColor, null, str);
+        }
+
+        /// <summary>
+        /// Writes the specified characters to the standard output stream.
+        /// </summary>
+        /// <param name="foregroundColor">The foreground color of the console.</param>
+        /// <param name="backgroundColor">The background color of the console.</param>
+        /// <param name="value">The value to write.</param>
+        /// <param name="start">The starting position in value.</param>
+        /// <param name="count">The number of characters to write.</param>
+        public void Write(ConsoleColor? foregroundColor, ConsoleColor? backgroundColor, char[] value, int start = 0, int? count = null)
+        {
+            if (start == 0 && count == null)
+            {
+                Write(foregroundColor, backgroundColor, new string(value));
+            }
+
+            var list = value.Skip(start);
+            if (count.HasValue) list = list.Take(count.Value);
+            var str = new string(list.ToArray());
+            Write(foregroundColor, backgroundColor, str);
         }
 
         /// <summary>
@@ -365,6 +425,66 @@ namespace Trivial.Console
         {
             Write(foregroundColor, backgroundColor, value, arg);
             End();
+        }
+
+        /// <summary>
+        /// Writes the specified characters, followed by the current line terminator, to the standard output stream.
+        /// </summary>
+        /// <param name="value">The value to write.</param>
+        /// <param name="start">The starting position in value.</param>
+        /// <param name="count">The number of characters to write.</param>
+        public void WriteLine(char[] value, int start = 0, int? count = null)
+        {
+            if (start == 0 && count == null)
+            {
+                WriteLine(null, null, new string(value));
+            }
+
+            var list = value.Skip(start);
+            if (count.HasValue) list = list.Take(count.Value);
+            var str = new string(list.ToArray());
+            WriteLine(null, null, str);
+        }
+
+        /// <summary>
+        /// Writes the specified characters, followed by the current line terminator, to the standard output stream.
+        /// </summary>
+        /// <param name="foregroundColor">The foreground color of the console.</param>
+        /// <param name="value">The value to write.</param>
+        /// <param name="start">The starting position in value.</param>
+        /// <param name="count">The number of characters to write.</param>
+        public void WriteLine(ConsoleColor? foregroundColor, char[] value, int start = 0, int? count = null)
+        {
+            if (start == 0 && count == null)
+            {
+                WriteLine(foregroundColor, null, new string(value));
+            }
+
+            var list = value.Skip(start);
+            if (count.HasValue) list = list.Take(count.Value);
+            var str = new string(list.ToArray());
+            WriteLine(foregroundColor, null, str);
+        }
+
+        /// <summary>
+        /// Writes the specified characters, followed by the current line terminator, to the standard output stream.
+        /// </summary>
+        /// <param name="foregroundColor">The foreground color of the console.</param>
+        /// <param name="backgroundColor">The background color of the console.</param>
+        /// <param name="value">The value to write.</param>
+        /// <param name="start">The starting position in value.</param>
+        /// <param name="count">The number of characters to write.</param>
+        public void WriteLine(ConsoleColor? foregroundColor, ConsoleColor? backgroundColor, char[] value, int start = 0, int? count = null)
+        {
+            if (start == 0 && count == null)
+            {
+                WriteLine(foregroundColor, backgroundColor, new string(value));
+            }
+
+            var list = value.Skip(start);
+            if (count.HasValue) list = list.Take(count.Value);
+            var str = new string(list.ToArray());
+            WriteLine(foregroundColor, backgroundColor, str);
         }
 
         /// <summary>

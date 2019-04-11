@@ -110,7 +110,7 @@ namespace Trivial.IO
         /// <returns>Lines from the specific stream reader.</returns>
         /// <exception cref="NotSupportedException">The stream does not support reading.</exception>
         /// <exception cref="IOException">An I/O error occurs.</exception>
-        public static IEnumerable<string> ReadLines(this StreamReader reader, bool removeEmptyLine = false)
+        public static IEnumerable<string> ReadLines(this TextReader reader, bool removeEmptyLine = false)
         {
             if (reader == null) yield break;
             if (removeEmptyLine)

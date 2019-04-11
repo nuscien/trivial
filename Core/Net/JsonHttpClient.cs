@@ -1,4 +1,14 @@
-﻿using System;
+﻿// --------------------------------------------------------------------------------------------------------------------
+// <copyright file="JsonHttpClient.cs" company="Nanchang Jinchen Software Co., Ltd.">
+//   Copyright (c) 2010 Nanchang Jinchen Software Co., Ltd. All rights reserved.
+// </copyright>
+// <summary>
+//   The JSON HTTP web client and its event arguments.
+// </summary>
+// <author>Kingcean Tuan</author>
+// --------------------------------------------------------------------------------------------------------------------
+
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;

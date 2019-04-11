@@ -465,8 +465,8 @@ namespace Trivial.Text
                 return true;
             }
 
-            var len = 0;
             var firstBackSlash = backSlash[0];
+            int len;
             if (firstBackSlash == 'x' || firstBackSlash == 'X')
             {
                 len = 3;

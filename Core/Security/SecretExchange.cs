@@ -624,8 +624,23 @@ namespace Trivial.Security
         /// <returns>A System.Net.Http.Headers.AuthenticationHeaderValue that represents the current RSA token exchange in JSON web token format.</returns>
         public AuthenticationHeaderValue ToJsonWebTokenAuthenticationHeaderValue(ISignatureProvider sign, bool thisSide = false)
         {
+            return ToJsonWebTokenAuthenticationHeaderValue(sign, null, thisSide);
+        }
+
+        /// <summary>
+        /// Returns a System.Net.Http.Headers.AuthenticationHeaderValue that represents the current RSA token exchange in JSON web token format.
+        /// </summary>
+        /// <param name="sign">The signature provider.</param>
+        /// <param name="serializer">An optional JSON serializer.</param>
+        /// <param name="thisSide">
+        /// true if get the JSON web token payload without encryption for this side usage;
+        /// otherwise, false, as default value, for the other side to send.
+        /// </param>
+        /// <returns>A System.Net.Http.Headers.AuthenticationHeaderValue that represents the current RSA token exchange in JSON web token format.</returns>
+        public AuthenticationHeaderValue ToJsonWebTokenAuthenticationHeaderValue(ISignatureProvider sign, Func<object, string> serializer, bool thisSide = false)
+        {
             var m = ToJsonWebTokenPayload(thisSide);
-            return m.ToAuthenticationHeaderValue(sign);
+            return m.ToAuthenticationHeaderValue(sign, serializer);
         }
 
         /// <summary>
@@ -640,9 +655,28 @@ namespace Trivial.Security
         /// <returns>A System.Net.Http.Headers.AuthenticationHeaderValue that represents the current RSA token exchange in JSON web token format.</returns>
         public AuthenticationHeaderValue ToJsonWebTokenAuthenticationHeaderValue(ISignatureProvider sign, Func<JsonWebTokenPayload, object> converter, bool thisSide = false)
         {
+            return ToJsonWebTokenAuthenticationHeaderValue(sign, converter, null, thisSide);
+        }
+
+        /// <summary>
+        /// Returns a System.Net.Http.Headers.AuthenticationHeaderValue that represents the current RSA token exchange in JSON web token format.
+        /// </summary>
+        /// <param name="sign">The signature provider.</param>
+        /// <param name="converter">A converter for payload.</param>
+        /// <param name="serializer">An optional JSON serializer.</param>
+        /// <param name="thisSide">
+        /// true if get the JSON web token payload without encryption for this side usage;
+        /// otherwise, false, as default value, for the other side to send.
+        /// </param>
+        /// <returns>A System.Net.Http.Headers.AuthenticationHeaderValue that represents the current RSA token exchange in JSON web token format.</returns>
+        public AuthenticationHeaderValue ToJsonWebTokenAuthenticationHeaderValue(ISignatureProvider sign, Func<JsonWebTokenPayload, object> converter, Func<object, string> serializer, bool thisSide = false)
+        {
             var m = ToJsonWebTokenPayload(thisSide);
             var obj = converter != null ? converter(m) : m;
-            var jwt = new JsonWebToken<object>(obj, sign);
+            var jwt = new JsonWebToken<object>(obj, sign)
+            {
+                Serializer = serializer
+            };
             return jwt.ToAuthenticationHeaderValue();
         }
 

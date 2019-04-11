@@ -41,12 +41,12 @@ namespace Trivial.Tasks
     public class RetryResult
     {
         /// <summary>
-        /// Gets if it has processed.
+        /// Gets a value indicating whether it has processed.
         /// </summary>
         public bool HasProcessed { get; private set; }
 
         /// <summary>
-        /// Gets if it processes succeeded.
+        /// Gets a value indicating whether it processes succeeded.
         /// </summary>
         public bool? IsSuccessful { get; private set; }
 

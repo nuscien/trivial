@@ -571,9 +571,29 @@ namespace Trivial.Data
         /// <summary>
         /// Removes the elements expired.
         /// </summary>
-        public void RemoveExpired()
+        /// <param name="expiration">An optional expiration time span.</param>
+        public void RemoveExpired(TimeSpan? expiration = null)
         {
-            items.RemoveAll(ele => ele.IsExpired(Expiration));
+            items.RemoveAll(ele => ele.IsExpired(expiration ?? Expiration));
+            if (!MaxCount.HasValue) return;
+            var maxCount = MaxCount.Value;
+            if (maxCount < 1)
+            {
+                items.Clear();
+            }
+            else
+            {
+                while (items.Count > maxCount) items.RemoveAt(0);
+            }
+        }
+
+        /// <summary>
+        /// Removes all the elements before the specific date time.
+        /// </summary>
+        /// <param name="date">The date time to compare with the update date of each item.</param>
+        public void RemoveBefore(DateTime date)
+        {
+            items.RemoveAll(ele => ele.UpdateDate < date || ele.IsExpired(Expiration));
             if (!MaxCount.HasValue) return;
             var maxCount = MaxCount.Value;
             if (maxCount < 1)
