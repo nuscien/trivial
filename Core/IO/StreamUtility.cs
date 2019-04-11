@@ -34,6 +34,7 @@ namespace Trivial.IO
         /// <returns>The task object representing the asynchronous operation.</returns>
         /// <exception cref="ArgumentNullException">The argument was null.</exception>
         /// <exception cref="NotSupportedException">The source stream was not readable; or the destination stream was not writable.</exception>
+        /// <exception cref="ObjectDisposedException">The stream has disposed.</exception>
         public static Task CopyToAsync(this Stream source, Stream destination, IProgress<long> progress, CancellationToken cancellationToken = default)
         {
             return CopyToAsync(source, destination, DefaultBufferSize, progress, cancellationToken);
@@ -51,6 +52,7 @@ namespace Trivial.IO
         /// <exception cref="ArgumentNullException">The argument was null.</exception>
         /// <exception cref="NotSupportedException">The source stream was not readable; or the destination stream was not writable.</exception>
         /// <exception cref="ArgumentOutOfRangeException">The buffer size was negative.</exception>
+        /// <exception cref="ObjectDisposedException">The stream has disposed.</exception>
         public static async Task CopyToAsync(this Stream source, Stream destination, int bufferSize, IProgress<long> progress, CancellationToken cancellationToken = default)
         {
             if (source == null) throw new ArgumentNullException(nameof(source), "source should not be null.");
@@ -77,10 +79,11 @@ namespace Trivial.IO
         /// <param name="size">The size for each part.</param>
         /// <returns>All parts of the stream separated.</returns>
         /// <exception cref="NotSupportedException">The stream does not support reading.</exception>
+        /// <exception cref="ObjectDisposedException">The stream has disposed.</exception>
         public static IEnumerable<MemoryStream> Separate(this Stream source, int size = DefaultBufferSize)
         {
-            if (source == null) throw new ArgumentNullException(nameof(source), "source should not be null.");
-            if (!source.CanRead) throw new ArgumentException("The source stream should be readable.", nameof(source));
+            if (source == null) yield break;
+            if (!source.CanRead) throw new NotSupportedException("The source stream should be readable.");
             if (size < 1) throw new ArgumentOutOfRangeException(nameof(size), "size should not be less than 1.");
             var destination = new MemoryStream();
             var buffer = new byte[size];
@@ -110,6 +113,7 @@ namespace Trivial.IO
         /// <returns>Lines from the specific stream reader.</returns>
         /// <exception cref="NotSupportedException">The stream does not support reading.</exception>
         /// <exception cref="IOException">An I/O error occurs.</exception>
+        /// <exception cref="ObjectDisposedException">The stream has disposed.</exception>
         public static IEnumerable<string> ReadLines(this TextReader reader, bool removeEmptyLine = false)
         {
             if (reader == null) yield break;
@@ -141,6 +145,7 @@ namespace Trivial.IO
         /// <param name="encoding">The character encoding to use.</param>
         /// <param name="removeEmptyLine">true if need remove the empty line; otherwise, false.</param>
         /// <returns>Lines from the specific stream.</returns>
+        /// <exception cref="ObjectDisposedException">The stream has disposed.</exception>
         public static IEnumerable<string> ReadLines(Stream stream, Encoding encoding, bool removeEmptyLine = false)
         {
             if (stream == null) throw new ArgumentNullException(nameof(stream), "stream should not be null.");
@@ -156,10 +161,12 @@ namespace Trivial.IO
         /// <param name="streams">The stream collection to read.</param>
         /// <param name="encoding">The character encoding to use.</param>
         /// <param name="removeEmptyLine">true if need remove the empty line; otherwise, false.</param>
+        /// <param name="closeStream">true if need close stream automatically after read; otherwise, false.</param>
         /// <returns>Lines from the specific stream collection.</returns>
-        public static IEnumerable<string> ReadLines(IEnumerable<Stream> streams, Encoding encoding, bool removeEmptyLine = false)
+        /// <exception cref="ObjectDisposedException">The stream has disposed.</exception>
+        public static IEnumerable<string> ReadLines(IEnumerable<Stream> streams, Encoding encoding, bool removeEmptyLine = false, bool closeStream = false)
         {
-            return ReadLines(ReadChars(streams, encoding), removeEmptyLine);
+            return ReadLines(ReadChars(streams, encoding, closeStream), removeEmptyLine);
         }
 
         /// <summary>
@@ -168,10 +175,12 @@ namespace Trivial.IO
         /// <param name="streams">The stream collection to read.</param>
         /// <param name="encoding">The character encoding to use.</param>
         /// <param name="removeEmptyLine">true if need remove the empty line; otherwise, false.</param>
+        /// <param name="closeStream">true if need close stream automatically after read; otherwise, false.</param>
         /// <returns>Lines from the specific stream collection.</returns>
-        public static IEnumerable<string> ReadLines(StreamPagingResolver streams, Encoding encoding, bool removeEmptyLine = false)
+        /// <exception cref="ObjectDisposedException">The stream has disposed.</exception>
+        public static IEnumerable<string> ReadLines(StreamPagingResolver streams, Encoding encoding, bool removeEmptyLine = false, bool closeStream = false)
         {
-            return ReadLines(ReadChars(streams, encoding), removeEmptyLine);
+            return ReadLines(ReadChars(streams, encoding, closeStream), removeEmptyLine);
         }
 
         /// <summary>
@@ -185,6 +194,7 @@ namespace Trivial.IO
         /// <exception cref="FileNotFoundException">file was not found.</exception>
         /// <exception cref="DirectoryNotFoundException">The directory of the file was not found.</exception>
         /// <exception cref="NotSupportedException">Cannot read the file.</exception>
+        /// <exception cref="IOException">An I/O error occurs.</exception>
         public static IEnumerable<string> ReadLines(FileInfo file, Encoding encoding, bool removeEmptyLine = false)
         {
             if (file == null) throw new ArgumentNullException(nameof(file), "file should not be null.");
@@ -255,6 +265,7 @@ namespace Trivial.IO
         /// <param name="stream">The stream to read.</param>
         /// <returns>Bytes from the stream.</returns>
         /// <exception cref="NotSupportedException">The stream does not support reading.</exception>
+        /// <exception cref="ObjectDisposedException">The stream has disposed.</exception>
         public static IEnumerable<byte> ReadBytes(Stream stream)
         {
             if (stream == null) yield break;
@@ -270,18 +281,27 @@ namespace Trivial.IO
         /// Reads bytes from the streams and advances the position within each stream to the end.
         /// </summary>
         /// <param name="streams">The stream collection to read.</param>
+        /// <param name="closeStream">true if need close stream automatically after read; otherwise, false.</param>
         /// <returns>Bytes from the stream collection.</returns>
         /// <exception cref="NotSupportedException">The stream does not support reading.</exception>
-        public static IEnumerable<byte> ReadBytes(IEnumerable<Stream> streams)
+        /// <exception cref="ObjectDisposedException">The stream has disposed.</exception>
+        public static IEnumerable<byte> ReadBytes(IEnumerable<Stream> streams, bool closeStream = false)
         {
             if (streams == null) yield break;
             foreach (var stream in streams)
             {
-                while (true)
+                try
                 {
-                    var b = stream.ReadByte();
-                    if (b < 0) break;
-                    yield return (byte)b;
+                    while (true)
+                    {
+                        var b = stream.ReadByte();
+                        if (b < 0) break;
+                        yield return (byte)b;
+                    }
+                }
+                finally
+                {
+                    if (closeStream) stream.Close();
                 }
             }
         }
@@ -290,11 +310,13 @@ namespace Trivial.IO
         /// Reads bytes from the streams and advances the position within each stream to the end.
         /// </summary>
         /// <param name="streams">The stream collection to read.</param>
+        /// <param name="closeStream">true if need close stream automatically after read; otherwise, false.</param>
         /// <returns>Bytes from the stream collection.</returns>
         /// <exception cref="NotSupportedException">The stream does not support reading.</exception>
-        public static IEnumerable<byte> ReadBytes(StreamPagingResolver streams)
+        /// <exception cref="ObjectDisposedException">The stream has disposed.</exception>
+        public static IEnumerable<byte> ReadBytes(StreamPagingResolver streams, bool closeStream = false)
         {
-            return ReadBytes(ToStreamCollection(streams));
+            return ReadBytes(ToStreamCollection(streams), closeStream);
         }
 
         /// <summary>
@@ -304,6 +326,7 @@ namespace Trivial.IO
         /// <param name="encoding">The encoding to read text.</param>
         /// <returns>Bytes from the stream.</returns>
         /// <exception cref="NotSupportedException">The stream does not support reading.</exception>
+        /// <exception cref="ObjectDisposedException">The stream has disposed.</exception>
         public static IEnumerable<char> ReadChars(Stream stream, Encoding encoding = null)
         {
             if (stream == null) yield break;
@@ -328,26 +351,35 @@ namespace Trivial.IO
         /// </summary>
         /// <param name="streams">The stream collection to read.</param>
         /// <param name="encoding">The encoding to read text.</param>
+        /// <param name="closeStream">true if need close stream automatically after read; otherwise, false.</param>
         /// <returns>Bytes from the stream collection.</returns>
         /// <exception cref="NotSupportedException">The stream does not support reading.</exception>
-        public static IEnumerable<char> ReadChars(IEnumerable<Stream> streams, Encoding encoding = null)
+        /// <exception cref="ObjectDisposedException">The stream has disposed.</exception>
+        public static IEnumerable<char> ReadChars(IEnumerable<Stream> streams, Encoding encoding = null, bool closeStream = false)
         {
             if (streams == null) yield break;
             var decoder = (encoding ?? Encoding.Default).GetDecoder();
             var buffer = new byte[12];
             foreach (var stream in streams)
             {
-                while (true)
+                try
                 {
-                    var count = stream.Read(buffer, 0, buffer.Length);
-                    if (count == 0) break;
-                    var len = decoder.GetCharCount(buffer, 0, count);
-                    var chars = new char[len];
-                    decoder.GetChars(buffer, 0, count, chars, 0);
-                    foreach (var c in chars)
+                    while (true)
                     {
-                        yield return c;
+                        var count = stream.Read(buffer, 0, buffer.Length);
+                        if (count == 0) break;
+                        var len = decoder.GetCharCount(buffer, 0, count);
+                        var chars = new char[len];
+                        decoder.GetChars(buffer, 0, count, chars, 0);
+                        foreach (var c in chars)
+                        {
+                            yield return c;
+                        }
                     }
+                }
+                finally
+                {
+                    if (closeStream) stream.Close();
                 }
             }
         }
@@ -357,11 +389,13 @@ namespace Trivial.IO
         /// </summary>
         /// <param name="streams">The stream collection to read.</param>
         /// <param name="encoding">The encoding to read text.</param>
+        /// <param name="closeStream">true if need close stream automatically after read; otherwise, false.</param>
         /// <returns>Bytes from the stream collection.</returns>
         /// <exception cref="NotSupportedException">The stream does not support reading.</exception>
-        public static IEnumerable<char> ReadChars(StreamPagingResolver streams, Encoding encoding = null)
+        /// <exception cref="ObjectDisposedException">The stream has disposed.</exception>
+        public static IEnumerable<char> ReadChars(StreamPagingResolver streams, Encoding encoding = null, bool closeStream = false)
         {
-            return ReadChars(ToStreamCollection(streams), encoding);
+            return ReadChars(ToStreamCollection(streams), encoding, closeStream);
         }
 
         private static IEnumerable<Stream> ToStreamCollection(StreamPagingResolver streams)

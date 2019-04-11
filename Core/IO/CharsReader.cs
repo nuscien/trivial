@@ -31,7 +31,7 @@ namespace Trivial.IO
         /// <param name="encoding">The encoding to read text.</param>
         public CharsReader(Stream stream, Encoding encoding = null)
         {
-            enumerator = (StreamUtility.ReadChars(stream, encoding) ?? new List<char>()).GetEnumerator();
+            enumerator = StreamUtility.ReadChars(stream, encoding).GetEnumerator();
         }
 
         /// <summary>
@@ -39,9 +39,10 @@ namespace Trivial.IO
         /// </summary>
         /// <param name="streams">The stream collection to read.</param>
         /// <param name="encoding">The encoding to read text.</param>
-        public CharsReader(IEnumerable<Stream> streams, Encoding encoding = null)
+        /// <param name="closeStream">true if need close stream automatically after read; otherwise, false.</param>
+        public CharsReader(IEnumerable<Stream> streams, Encoding encoding = null, bool closeStream = false)
         {
-            enumerator = (StreamUtility.ReadChars(streams, encoding) ?? new List<char>()).GetEnumerator();
+            enumerator = StreamUtility.ReadChars(streams, encoding, closeStream).GetEnumerator();
         }
 
         /// <summary>
@@ -49,9 +50,10 @@ namespace Trivial.IO
         /// </summary>
         /// <param name="streams">The stream collection to read.</param>
         /// <param name="encoding">The encoding to read text.</param>
-        public CharsReader(StreamPagingResolver streams, Encoding encoding = null)
+        /// <param name="closeStream">true if need close stream automatically after read; otherwise, false.</param>
+        public CharsReader(StreamPagingResolver streams, Encoding encoding = null, bool closeStream = false)
         {
-            enumerator = (StreamUtility.ReadChars(streams, encoding) ?? new List<char>()).GetEnumerator();
+            enumerator = StreamUtility.ReadChars(streams, encoding, closeStream).GetEnumerator();
         }
 
         /// <summary>
