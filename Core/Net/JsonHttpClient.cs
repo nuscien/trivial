@@ -208,7 +208,7 @@ namespace Trivial.Net
         public HttpClient Client { get; set; }
 
         /// <summary>
-        /// Gets or sets a value inidcating whether need create new HTTP client instance per request by default.
+        /// Gets or sets a value inidcating whether need create new HTTP client instance per request when the property Client is null.
         /// </summary>
         public bool IsNewHttpClientByDefault { get; set; }
 

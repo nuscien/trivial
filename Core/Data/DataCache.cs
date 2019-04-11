@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace Trivial.Data
 {
@@ -263,6 +264,44 @@ namespace Trivial.Data
             {
                 Remove(prefix, id);
                 return Add(prefix, id, initialization, expiration);
+            }
+
+            return info;
+        }
+
+        /// <summary>
+        /// Gets the cache item info.
+        /// </summary>
+        /// <param name="id">The identifier.</param>
+        /// <param name="initialization">The value initialization. It will be called to generate a new value when no cache.</param>
+        /// <param name="expiration">The expiration for initialization.</param>
+        /// <returns>The cache item info.</returns>
+        public Task<ItemInfo> GetInfoAsync(string id, Func<Task<T>> initialization = null, TimeSpan? expiration = null)
+        {
+            return GetInfoAsync(null, id, initialization, expiration);
+        }
+
+        /// <summary>
+        /// Gets the cache item info.
+        /// </summary>
+        /// <param name="prefix">The prefix of the identifier for resource group.</param>
+        /// <param name="id">The identifier in the resource group.</param>
+        /// <param name="initialization">The value initialization. It will be called to generate a new value when no cache.</param>
+        /// <param name="expiration">The expiration for initialization.</param>
+        /// <returns>The cache item info.</returns>
+        public async Task<ItemInfo> GetInfoAsync(string prefix, string id, Func<Task<T>> initialization = null, TimeSpan? expiration = null)
+        {
+            if (string.IsNullOrWhiteSpace(id)) return null;
+            var info = items.LastOrDefault(ele => ele.Prefix == prefix && ele.Id == id);
+            if (info == null)
+            {
+                return await AddAsync(prefix, id, initialization, expiration);
+            }
+
+            if (info.Value == null || info.IsExpired(Expiration))
+            {
+                Remove(prefix, id);
+                return await AddAsync(prefix, id, initialization, expiration);
             }
 
             return info;
@@ -579,6 +618,16 @@ namespace Trivial.Data
         {
             if (initialization == null) return null;
             var obj = initialization();
+            var info = new ItemInfo(prefix, id, obj, expiration);
+            if (info.IsExpired(Expiration)) return null;
+            Add(info);
+            return info;
+        }
+
+        private async Task<ItemInfo> AddAsync(string prefix, string id, Func<Task<T>> initialization = null, TimeSpan? expiration = null)
+        {
+            if (initialization == null) return null;
+            var obj = await initialization();
             var info = new ItemInfo(prefix, id, obj, expiration);
             if (info.IsExpired(Expiration)) return null;
             Add(info);
