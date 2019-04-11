@@ -15,7 +15,7 @@ namespace Trivial.IO
     public delegate Stream StreamPagingResolver(int pageNo);
 
     /// <summary>
-    /// Stream extension.
+    /// Stream utility.
     /// </summary>
     public static class StreamUtility
     {
@@ -195,7 +195,7 @@ namespace Trivial.IO
         /// <exception cref="DirectoryNotFoundException">The directory of the file was not found.</exception>
         /// <exception cref="NotSupportedException">Cannot read the file.</exception>
         /// <exception cref="IOException">An I/O error occurs.</exception>
-        public static IEnumerable<string> ReadLines(FileInfo file, Encoding encoding, bool removeEmptyLine = false)
+        public static IEnumerable<string> ReadLines(this FileInfo file, Encoding encoding, bool removeEmptyLine = false)
         {
             if (file == null) throw new ArgumentNullException(nameof(file), "file should not be null.");
             using (var reader = new StreamReader(file.FullName, encoding))
@@ -215,7 +215,7 @@ namespace Trivial.IO
         /// <exception cref="FileNotFoundException">file was not found.</exception>
         /// <exception cref="DirectoryNotFoundException">The directory of the file was not found.</exception>
         /// <exception cref="NotSupportedException">Cannot read the file.</exception>
-        public static IEnumerable<string> ReadLines(FileInfo file, bool detectEncodingFromByteOrderMarks, bool removeEmptyLine = false)
+        public static IEnumerable<string> ReadLines(this FileInfo file, bool detectEncodingFromByteOrderMarks, bool removeEmptyLine = false)
         {
             if (file == null) throw new ArgumentNullException(nameof(file), "file should not be null.");
             using (var reader = new StreamReader(file.FullName, detectEncodingFromByteOrderMarks))

@@ -17,10 +17,10 @@ namespace Trivial.Security
         /// <param name="obj">The secure string instance.</param>
         /// <param name="value">The string to append.</param>
         /// <exception cref="ArgumentNullException">the secure string instance was null.</exception>
-        public static void AppendString(this SecureString obj, string value)
+        public static void AppendString(this SecureString obj, IEnumerable<char> value)
         {
             if (obj == null) throw new ArgumentNullException(nameof(obj), "obj should not be null.");
-            if (string.IsNullOrEmpty(value)) return;
+            if (value == null) return;
             foreach (var c in value)
             {
                 obj.AppendChar(c);
@@ -40,6 +40,23 @@ namespace Trivial.Security
             for (var i = 0; i < value.Length; i++)
             {
                 obj.AppendChar(value[i]);
+            }
+        }
+
+        /// <summary>
+        /// Appends a string builder content into a secure string instance.
+        /// </summary>
+        /// <param name="obj">The secure string instance.</param>
+        /// <param name="value">The string to append.</param>
+        /// <exception cref="ArgumentNullException">the secure string instance was null.</exception>
+        public static void AppendString(this SecureString obj, SecureString value)
+        {
+            if (obj == null) throw new ArgumentNullException(nameof(obj), "obj should not be null.");
+            if (value == null) return;
+            var str = value.ToUnsecureString();
+            foreach (var c in str)
+            {
+                obj.AppendChar(c);
             }
         }
 

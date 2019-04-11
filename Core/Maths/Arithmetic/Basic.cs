@@ -70,9 +70,9 @@ namespace Trivial.Maths
         /// <param name="e">The exponential.</param>
         /// <returns>The result calculated.</returns>
         /// <remarks>You can use this to calculate such as 80K or 4M.</remarks>
-        public static int Times1024(int value, int e = 1)
+        public static long Times1024(int value, int e = 1)
         {
-            return value * (1024 ^ e);
+            return value * (long)Math.Pow(1024, e);
         }
 
         /// <summary>
@@ -82,9 +82,9 @@ namespace Trivial.Maths
         /// <param name="e">The exponential.</param>
         /// <returns>The result calculated.</returns>
         /// <remarks>You can use this to calculate such as 80K or 4M.</remarks>
-        public static long Times1024(long value, int e = 1)
+        public static double Times1024(long value, int e = 1)
         {
-            return value * (1024L ^ e);
+            return value * Math.Pow(1024, e);
         }
 
         /// <summary>

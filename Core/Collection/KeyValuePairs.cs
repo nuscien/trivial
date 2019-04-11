@@ -63,7 +63,7 @@ namespace Trivial.Collection
         /// Gets the query value by a specific key.
         /// </summary>
         /// <param name="key">The key.</param>
-        /// <param name="separator">The optional string to use as a separator is included in the returned string only if it has more than one value.</param>
+        /// <param name="separator">An optional string to use as a separator is included in the returned string only if it has more than one value.</param>
         /// <returns>The query value.</returns>
         public string GetValue(string key, string separator = null)
         {
@@ -80,7 +80,9 @@ namespace Trivial.Collection
         /// <returns>The query value.</returns>
         public string GetFirstValue(string key, bool ignoreEmpty = false)
         {
-            return ListUtility.GetValues(this, key).Where(item => !string.IsNullOrWhiteSpace(item)).FirstOrDefault();
+            var col = ListUtility.GetValues(this, key);
+            if (ignoreEmpty) col = col.Where(item => !string.IsNullOrWhiteSpace(item));
+            return col.FirstOrDefault();
         }
 
         /// <summary>
@@ -91,7 +93,9 @@ namespace Trivial.Collection
         /// <returns>The query value. The last one for multiple values..</returns>
         public string GetLastValue(string key, bool ignoreEmpty = false)
         {
-            return ListUtility.GetValues(this, key).Where(item => !string.IsNullOrWhiteSpace(item)).LastOrDefault();
+            var col = ListUtility.GetValues(this, key);
+            if (ignoreEmpty) col = col.Where(item => !string.IsNullOrWhiteSpace(item));
+            return col.LastOrDefault();
         }
 
         /// <summary>

@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace Trivial.IO
 {
     /// <summary>
-    /// File extension.
+    /// File utility.
     /// </summary>
     public static class FileUtility
     {
