@@ -275,6 +275,84 @@ namespace Trivial.Maths
             }
 
             /// <summary>
+            /// Multiplies.
+            /// leftValue * rightValue
+            /// </summary>
+            /// <param name="leftValue">The left value.</param>
+            /// <param name="rightValue">The right value.</param>
+            /// <returns>A result after addition.</returns>
+            public static Model operator *(Model leftValue, int rightValue)
+            {
+                if (leftValue is null) return null;
+                return new Model(leftValue.Degrees * rightValue);
+            }
+
+            /// <summary>
+            /// Multiplies.
+            /// leftValue * rightValue
+            /// </summary>
+            /// <param name="leftValue">The left value.</param>
+            /// <param name="rightValue">The right value.</param>
+            /// <returns>A result after addition.</returns>
+            public static Model operator *(Model leftValue, long rightValue)
+            {
+                if (leftValue is null) return null;
+                return new Model(leftValue.Degrees * rightValue);
+            }
+
+            /// <summary>
+            /// Multiplies.
+            /// leftValue * rightValue
+            /// </summary>
+            /// <param name="leftValue">The left value.</param>
+            /// <param name="rightValue">The right value.</param>
+            /// <returns>A result after addition.</returns>
+            public static Model operator *(Model leftValue, double rightValue)
+            {
+                if (leftValue is null) return null;
+                return new Model(leftValue.Degrees * rightValue);
+            }
+
+            /// <summary>
+            /// Divides.
+            /// leftValue / rightValue
+            /// </summary>
+            /// <param name="leftValue">The left value.</param>
+            /// <param name="rightValue">The right value.</param>
+            /// <returns>A result after addition.</returns>
+            public static Model operator /(Model leftValue, int rightValue)
+            {
+                if (leftValue is null) return null;
+                return new Model(leftValue.Degrees / rightValue);
+            }
+
+            /// <summary>
+            /// Divides.
+            /// leftValue / rightValue
+            /// </summary>
+            /// <param name="leftValue">The left value.</param>
+            /// <param name="rightValue">The right value.</param>
+            /// <returns>A result after addition.</returns>
+            public static Model operator /(Model leftValue, long rightValue)
+            {
+                if (leftValue is null) return null;
+                return new Model(leftValue.Degrees / rightValue);
+            }
+
+            /// <summary>
+            /// Divides.
+            /// leftValue / rightValue
+            /// </summary>
+            /// <param name="leftValue">The left value.</param>
+            /// <param name="rightValue">The right value.</param>
+            /// <returns>A result after addition.</returns>
+            public static Model operator /(Model leftValue, double rightValue)
+            {
+                if (leftValue is null) return null;
+                return new Model(leftValue.Degrees / rightValue);
+            }
+
+            /// <summary>
             /// Compares two angles to indicate if they are same.
             /// leftValue == rightValue
             /// </summary>

@@ -411,16 +411,11 @@ namespace Trivial.Security
         /// <param name="text">The string to decrypt.</param>
         /// <param name="ignoreFormatIfNoCrypto">true if ignore format when no crypto set; otherwise, false.</param>
         /// <param name="padding">The optional padding mode for decryption.</param>
-        public string DecryptText(string text, bool ignoreFormatIfNoCrypto, RSAEncryptionPadding padding = null)
+        public string DecryptText(string text, bool ignoreFormatIfNoCrypto = false, RSAEncryptionPadding padding = null)
         {
             if (string.IsNullOrWhiteSpace(text)) return null;
             var rsa = crypto;
-            if (rsa == null)
-            {
-                if (!ignoreFormatIfNoCrypto && SecretFormatBeforeDecrypt != null) text = SecretFormatBeforeDecrypt(text, false);
-                return text;
-            }
-
+            if (rsa == null) return (!ignoreFormatIfNoCrypto && SecretFormatBeforeDecrypt != null) ? SecretFormatBeforeDecrypt(text, false) : text;
             var plain = rsa.Decrypt(Convert.FromBase64String(text), padding ?? RSAEncryptionPadding.Pkcs1);
             return SecretFormatBeforeDecrypt != null ? SecretFormatBeforeDecrypt(Encoding.UTF8.GetString(plain), true) : Encoding.UTF8.GetString(plain);
         }
@@ -521,15 +516,16 @@ namespace Trivial.Security
         }
 
         /// <summary>
-        /// Gets the secret encrypted.
+        /// Gets the encrypted text by private key.
         /// </summary>
         /// <param name="text">The string to encrypt.</param>
+        /// <param name="ignoreFormatIfNoCrypto">true if ignore format when no crypto set; otherwise, false.</param>
         /// <param name="padding">The optional padding mode for decryption.</param>
         /// <returns>The Base64 string with secret encrypted.</returns>
-        public string EncryptText(string text, RSAEncryptionPadding padding = null)
+        public string EncryptText(string text, bool ignoreFormatIfNoCrypto = false, RSAEncryptionPadding padding = null)
         {
             if (text == null) return null;
-            if (EncryptKey == null) return SecretFormatBeforeEncrypt != null ? SecretFormatBeforeEncrypt(text, false) : text;
+            if (EncryptKey == null) return (!ignoreFormatIfNoCrypto && SecretFormatBeforeEncrypt != null) ? SecretFormatBeforeEncrypt(text, false) : text;
             using (var rsa = RSA.Create())
             {
                 rsa.ImportParameters(EncryptKey.Value);
@@ -541,14 +537,15 @@ namespace Trivial.Security
         }
 
         /// <summary>
-        /// Gets the secret encrypted.
+        /// Gets the encrypted text by private key.
         /// </summary>
         /// <param name="text">The string to encrypt.</param>
+        /// <param name="ignoreFormatIfNoCrypto">true if ignore format when no crypto set; otherwise, false.</param>
         /// <param name="padding">The optional padding mode for decryption.</param>
         /// <returns>The Base64 string with secret encrypted.</returns>
-        public string EncryptText(SecureString text, RSAEncryptionPadding padding = null)
+        public string EncryptText(SecureString text, bool ignoreFormatIfNoCrypto = false, RSAEncryptionPadding padding = null)
         {
-            return EncryptText(SecureStringUtility.ToUnsecureString(text), padding);
+            return EncryptText(SecureStringUtility.ToUnsecureString(text), ignoreFormatIfNoCrypto, padding);
         }
 
         /// <summary>

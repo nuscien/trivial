@@ -18,11 +18,6 @@ namespace Trivial.Maths
     public partial struct Angle : IAngle, IComparable, IComparable<IAngle>, IEquatable<IAngle>, IComparable<double>, IEquatable<double>, IComparable<int>, IEquatable<int>, IAdvancedAdditionCapable<Angle>
     {
         /// <summary>
-        /// The error string during value is out of argument.
-        /// </summary>
-        private const string ErrStr = "{0} should be less than 60, and greater than or equals 0.";
-
-        /// <summary>
         /// Initializes a new instance of the Angle struct.
         /// </summary>
         public Angle(double degrees, BoundaryOptions boundary = null)
@@ -153,7 +148,7 @@ namespace Trivial.Maths
         }
 
         /// <summary>
-        /// Pluses two angles.
+        /// Pluses angle.
         /// leftValue + rightValue
         /// </summary>
         /// <param name="leftValue">The left value for addition operator.</param>
@@ -165,7 +160,7 @@ namespace Trivial.Maths
         }
 
         /// <summary>
-        /// Minuses two angles.
+        /// Minuses angle.
         /// leftValue - rightValue
         /// </summary>
         /// <param name="leftValue">The left value for subtration operator.</param>
@@ -174,6 +169,78 @@ namespace Trivial.Maths
         public static Angle operator -(Angle leftValue, IAngle rightValue)
         {
             return new Angle(leftValue.Degrees - rightValue.Degrees);
+        }
+
+        /// <summary>
+        /// Multiplies.
+        /// leftValue * rightValue
+        /// </summary>
+        /// <param name="leftValue">The left value.</param>
+        /// <param name="rightValue">The right value.</param>
+        /// <returns>A result after addition.</returns>
+        public static Angle operator *(Angle leftValue, int rightValue)
+        {
+            return new Angle(leftValue.Degrees * rightValue);
+        }
+
+        /// <summary>
+        /// Multiplies.
+        /// leftValue * rightValue
+        /// </summary>
+        /// <param name="leftValue">The left value.</param>
+        /// <param name="rightValue">The right value.</param>
+        /// <returns>A result after addition.</returns>
+        public static Angle operator *(Angle leftValue, long rightValue)
+        {
+            return new Angle(leftValue.Degrees * rightValue);
+        }
+
+        /// <summary>
+        /// Multiplies.
+        /// leftValue * rightValue
+        /// </summary>
+        /// <param name="leftValue">The left value.</param>
+        /// <param name="rightValue">The right value.</param>
+        /// <returns>A result after addition.</returns>
+        public static Angle operator *(Angle leftValue, double rightValue)
+        {
+            return new Angle(leftValue.Degrees * rightValue);
+        }
+
+        /// <summary>
+        /// Divides.
+        /// leftValue / rightValue
+        /// </summary>
+        /// <param name="leftValue">The left value.</param>
+        /// <param name="rightValue">The right value.</param>
+        /// <returns>A result after addition.</returns>
+        public static Angle operator /(Angle leftValue, int rightValue)
+        {
+            return new Angle(leftValue.Degrees / rightValue);
+        }
+
+        /// <summary>
+        /// Divides.
+        /// leftValue / rightValue
+        /// </summary>
+        /// <param name="leftValue">The left value.</param>
+        /// <param name="rightValue">The right value.</param>
+        /// <returns>A result after addition.</returns>
+        public static Angle operator /(Angle leftValue, long rightValue)
+        {
+            return new Angle(leftValue.Degrees / rightValue);
+        }
+
+        /// <summary>
+        /// Divides.
+        /// leftValue / rightValue
+        /// </summary>
+        /// <param name="leftValue">The left value.</param>
+        /// <param name="rightValue">The right value.</param>
+        /// <returns>A result after addition.</returns>
+        public static Angle operator /(Angle leftValue, double rightValue)
+        {
+            return new Angle(leftValue.Degrees / rightValue);
         }
 
         /// <summary>
@@ -534,7 +601,7 @@ namespace Trivial.Maths
                     {
                         if (!boundary.Negative)
                         {
-                            value = value % boundary.MaxDegree;
+                            value %= boundary.MaxDegree;
                             if (value < 0) value += boundary.MaxDegree;
                             return value;
                         }
