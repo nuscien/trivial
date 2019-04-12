@@ -355,6 +355,17 @@ namespace Trivial.Security
         /// </summary>
         public void Dispose()
         {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        /// <summary>
+        /// Releases the unmanaged resources used by this instance and optionally releases the managed resources.
+        /// </summary>
+        /// <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
+        protected void Dispose(bool disposing)
+        {
+            if (!disposing) return;
             if (Secret != null) Secret.Dispose();
         }
 
