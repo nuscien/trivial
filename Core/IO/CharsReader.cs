@@ -171,14 +171,12 @@ namespace Trivial.IO
         /// </summary>
         /// <param name="buffer">
         /// When this method returns, contains the specified character array with the values
-        /// between index and (index + count - 1) replaced by the characters read from the
-        /// current source.
+        /// between index and (index + count - 1) replaced by the characters read from the current source.
         /// </param>
         /// <param name="index">The position in buffer at which to begin writing.</param>
         /// <param name="count">
         /// The maximum number of characters to read. If the end of the string is reached
-        /// before the specified number of characters is written into the buffer, the method
-        /// returns.
+        /// before the specified number of characters is written into the buffer, the method returns.
         /// </param>
         /// <returns>
         /// The number of characters that have been read.
@@ -196,21 +194,19 @@ namespace Trivial.IO
         /// </summary>
         /// <param name="buffer">
         /// When this method returns, contains the specified character array with the values
-        /// between index and (index + count - 1) replaced by the characters read from the
-        /// current source.
+        /// between index and (index + count - 1) replaced by the characters read from the current source.
         /// </param>
         /// <param name="index">The position in buffer at which to begin writing.</param>
         /// <param name="count">
         /// The maximum number of characters to read. If the end of the string is reached
-        /// before the specified number of characters is written into the buffer, the method
-        /// returns.
+        /// before the specified number of characters is written into the buffer, the method returns.
         /// </param>
         /// <returns>
-        /// A task that represents the asynchronous read operation. The value of the TResult
-        /// parameter contains the total number of bytes read into the buffer. The result
-        /// value can be less than the number of bytes requested if the number of bytes currently
-        /// available is less than the requested number, or it can be 0 (zero) if the end
-        /// of the string has been reached.
+        /// A task that represents the asynchronous read operation.
+        /// The value of the TResult parameter contains the total number of bytes read into the buffer.
+        /// The result value can be less than the number of bytes requested
+        /// if the number of bytes currently available is less than the requested number,
+        /// or it can be 0 (zero) if the end of the string has been reached.
         /// </returns>
         /// <exception cref="ArgumentNullException">buffer was null.</exception>
         /// <exception cref="ArgumentException">The buffer length minus index was less than count.</exception>

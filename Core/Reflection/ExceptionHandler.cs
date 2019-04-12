@@ -210,7 +210,6 @@ namespace Trivial.Reflection
         /// <param name="catchHandler">The handler to return if need throw an exception.</param>
         public bool Remove<T>(Func<T, Exception> catchHandler) where T : Exception
         {
-            var type = typeof(T);
             var removing = new List<Item>();
             foreach (var item in list)
             {
@@ -242,7 +241,6 @@ namespace Trivial.Reflection
         /// <typeparam name="T">The type of exception to try to catch.</typeparam>
         public bool Remove<T>() where T : Exception
         {
-            var type = typeof(T);
             var removing = new List<Item>();
             foreach (var item in list)
             {
