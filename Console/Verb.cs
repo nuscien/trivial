@@ -16,7 +16,7 @@ namespace Trivial.Console
         /// <summary>
         /// The cancllation token source.
         /// </summary>
-        private CancellationTokenSource cancel = new CancellationTokenSource();
+        private readonly CancellationTokenSource cancel = new CancellationTokenSource();
 
         /// <summary>
         /// Gets the descripiton of the verb handler.
@@ -144,14 +144,11 @@ namespace Trivial.Console
         /// <param name="disposing">true if also dispose the managed resources; otherwise, false.</param>
         protected virtual void Dispose(bool disposing)
         {
+            if (!disposing) return;
             if (HasDisposed) return;
-            if (disposing)
-            {
-                ConsoleLine.End();
-                Arguments = null;
-                cancel.Dispose();
-            }
-
+            ConsoleLine.End();
+            Arguments = null;
+            cancel.Dispose();
             HasDisposed = true;
         }
 

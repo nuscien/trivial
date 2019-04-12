@@ -120,7 +120,7 @@ namespace Trivial.Reflection
         /// <summary>
         /// The catch handler list.
         /// </summary>
-        private IList<Item> list = new List<Item>();
+        private readonly IList<Item> list = new List<Item>();
 
         /// <summary>
         /// Gets a value indicating whether need test all catch handler rather than try-catch logic.

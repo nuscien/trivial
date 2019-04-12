@@ -145,6 +145,8 @@ namespace Trivial.IO
         /// <param name="encoding">The character encoding to use.</param>
         /// <param name="removeEmptyLine">true if need remove the empty line; otherwise, false.</param>
         /// <returns>Lines from the specific stream.</returns>
+        /// <exception cref="ArgumentNullException">stream was null.</exception>
+        /// <exception cref="NotSupportedException">The stream does not support reading.</exception>
         /// <exception cref="ObjectDisposedException">The stream has disposed.</exception>
         public static IEnumerable<string> ReadLines(Stream stream, Encoding encoding, bool removeEmptyLine = false)
         {
@@ -163,6 +165,7 @@ namespace Trivial.IO
         /// <param name="removeEmptyLine">true if need remove the empty line; otherwise, false.</param>
         /// <param name="closeStream">true if need close stream automatically after read; otherwise, false.</param>
         /// <returns>Lines from the specific stream collection.</returns>
+        /// <exception cref="NotSupportedException">The stream does not support reading.</exception>
         /// <exception cref="ObjectDisposedException">The stream has disposed.</exception>
         public static IEnumerable<string> ReadLines(IEnumerable<Stream> streams, Encoding encoding, bool removeEmptyLine = false, bool closeStream = false)
         {
@@ -177,6 +180,7 @@ namespace Trivial.IO
         /// <param name="removeEmptyLine">true if need remove the empty line; otherwise, false.</param>
         /// <param name="closeStream">true if need close stream automatically after read; otherwise, false.</param>
         /// <returns>Lines from the specific stream collection.</returns>
+        /// <exception cref="NotSupportedException">The stream does not support reading.</exception>
         /// <exception cref="ObjectDisposedException">The stream has disposed.</exception>
         public static IEnumerable<string> ReadLines(StreamPagingResolver streams, Encoding encoding, bool removeEmptyLine = false, bool closeStream = false)
         {
