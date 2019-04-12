@@ -290,6 +290,7 @@ namespace Trivial.IO
             if (streams == null) yield break;
             foreach (var stream in streams)
             {
+                if (stream == null) continue;
                 try
                 {
                     while (true)
@@ -362,6 +363,7 @@ namespace Trivial.IO
             var buffer = new byte[12];
             foreach (var stream in streams)
             {
+                if (stream == null) continue;
                 try
                 {
                     while (true)
@@ -403,8 +405,17 @@ namespace Trivial.IO
             if (streams == null) yield break;
             for (var i = 0; ; i++)
             {
-                var stream = streams(i);
-                if (stream == null) break;
+                Stream stream;
+                try
+                {
+                    stream = streams(i);
+                    if (stream == null) break;
+                }
+                catch (ArgumentException)
+                {
+                    break;
+                }
+                
                 yield return stream;
             }
         }
