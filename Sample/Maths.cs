@@ -12,6 +12,44 @@ namespace Trivial.Sample
 
         public override async Task ProcessAsync()
         {
+            if (VerbParameter.Count >= 2)
+            {
+                switch (VerbParameter.Values[0].ToLower())
+                {
+                    case "en":
+                    case "english":
+                        WriteNumber(VerbParameter.Values[1], Maths.EnglishNumerals.Default);
+                        break;
+                    case "zh-hans":
+                    case "simplified":
+                    case "chinese":
+                    case "putonghua":
+                        WriteNumber(VerbParameter.Values[1], Maths.ChineseNumerals.Simplified);
+                        break;
+                    case "daxie":
+                        WriteNumber(VerbParameter.Values[1], Maths.ChineseNumerals.SimplifiedUppercase);
+                        break;
+                    case "zh-hant":
+                    case "traditional":
+                        WriteNumber(VerbParameter.Values[1], Maths.ChineseNumerals.Traditional);
+                        break;
+                    case "ja":
+                    case "japanese":
+                        WriteNumber(VerbParameter.Values[1], Maths.JapaneseNumerals.Default);
+                        break;
+                    case "kana":
+                        WriteNumber(VerbParameter.Values[1], Maths.JapaneseNumerals.Kana);
+                        break;
+                }
+
+                return;
+            }
+
+            await Test();
+        }
+
+        private async Task Test()
+        {
             // Prime.
             ConsoleLine.Write(ConsoleColor.Magenta, "Arithmetic");
             ConsoleLine.End();
@@ -238,6 +276,18 @@ namespace Trivial.Sample
         private void WriteNumber(double value, Maths.INumberLocalization localInt)
         {
             ConsoleLine.Write("{0}: {1}.", value, localInt.ToString(value));
+            ConsoleLine.End();
+        }
+
+        private void WriteNumber(string str, Maths.INumberLocalization localInt)
+        {
+            if (!long.TryParse(str, out long value))
+            {
+                ConsoleLine.Write("Expect a number.");
+                ConsoleLine.End();
+            }
+
+            ConsoleLine.Write("{0}: {1}; {2}.", value, localInt.ToString(value, false), localInt.ToString(value, true));
             ConsoleLine.End();
         }
     }
