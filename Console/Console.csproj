@@ -18,6 +18,7 @@
     <RepositoryUrl>https://github.com/nuscien/trivial</RepositoryUrl>
     <RepositoryType></RepositoryType>
     <LangVersion>7.2</LangVersion>
+    <PackageIconUrl>https://github.com/nuscien/trivial/blob/master/Materials/logo.jpg</PackageIconUrl>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

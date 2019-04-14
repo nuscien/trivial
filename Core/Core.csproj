@@ -20,6 +20,7 @@
     <RepositoryType></RepositoryType>
     <LangVersion>7.2</LangVersion>
     <PackageTags>tasks numerals utilities oauth2-client jwt-token csv-parser stream pem coordinates</PackageTags>
+    <PackageIconUrl>https://github.com/nuscien/trivial/blob/master/Materials/logo.jpg</PackageIconUrl>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
