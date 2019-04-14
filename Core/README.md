@@ -207,6 +207,10 @@ Contains the helper functions and extension methods for `FileInfo` and `Stream`.
 using Trivial.IO;
 ```
 
+### Characters reader
+
+You can read text from a character collection or a number of stream by `CharsReader` class.
+
 ## [Data](https://github.com/nuscien/trivial/wiki/data)
 
 Contains lots of data readers, parsers and utilities.
