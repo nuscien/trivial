@@ -16,7 +16,7 @@ namespace Trivial.Sample
 {
     public class TokenClientVerb : Trivial.Console.Verb
     {
-        public override string Description => "HTTP client";
+        public override string Description => "Access token";
 
         public override void Process()
         {

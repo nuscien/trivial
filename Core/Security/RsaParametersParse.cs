@@ -403,7 +403,7 @@ namespace Trivial.Security
         /// <returns></returns>
         public static byte[] Encrypt(this RSA rsa, SecureString data, RSAEncryptionPadding padding, Encoding encoding = null)
         {
-            if (data == null || data.Length == 0) return null;
+            if (data == null) return null;
             if (rsa == null) throw new ArgumentNullException(nameof(rsa), "rsa should not be null.");
             return rsa.Encrypt((encoding ?? Encoding.UTF8).GetBytes(SecureStringExtension.ToUnsecureString(data)), padding);
         }
@@ -413,15 +413,29 @@ namespace Trivial.Security
         /// </summary>
         /// <param name="rsa">The RSA algorithm instance.</param>
         /// <param name="data">The data to decrypt.</param>
-        /// <param name="encoding">The encoding.</param>
         /// <param name="padding">The padding mode.</param>
+        /// <param name="encoding">The encoding.</param>
         /// <returns></returns>
-        public static string Decrypt(this RSA rsa, byte[] data, RSAEncryptionPadding padding, Encoding encoding = null)
+        public static string DecryptText(this RSA rsa, byte[] data, RSAEncryptionPadding padding, Encoding encoding = null)
         {
             if (data == null) return null;
             if (rsa == null) throw new ArgumentNullException(nameof(rsa), "rsa should not be null.");
-            if (encoding == null) throw new ArgumentNullException(nameof(encoding), "encoding should not be null.");
             return (encoding ?? Encoding.UTF8).GetString(rsa.Decrypt(data, padding));
+        }
+
+        /// <summary>
+        /// Decrypts the input string using the specified encoding and padding mode.
+        /// </summary>
+        /// <param name="rsa">The RSA algorithm instance.</param>
+        /// <param name="base64">The Base64 string of the value encrypted.</param>
+        /// <param name="padding">The padding mode.</param>
+        /// <param name="encoding">The encoding.</param>
+        /// <returns></returns>
+        public static string DecryptText(this RSA rsa, string base64, RSAEncryptionPadding padding, Encoding encoding = null)
+        {
+            if (base64 == null) return null;
+            if (rsa == null) throw new ArgumentNullException(nameof(rsa), "rsa should not be null.");
+            return (encoding ?? Encoding.UTF8).GetString(rsa.Decrypt(Convert.FromBase64String(base64), padding));
         }
 
         private static bool AreSame(BinaryReader reader, byte[] bytes)
