@@ -9,9 +9,9 @@ using System.Threading.Tasks;
 namespace Trivial.IO
 {
     /// <summary>
-    /// File utility.
+    /// File system info utility.
     /// </summary>
-    public static class FileUtility
+    public static class FileSystemInfoUtility
     {
         /// <summary>
         /// Copies a directory.
@@ -155,14 +155,58 @@ namespace Trivial.IO
         }
 
         /// <summary>
+        /// Reads lines from a specific stream.
+        /// </summary>
+        /// <param name="file">The file to read.</param>
+        /// <param name="encoding">The character encoding to use.</param>
+        /// <param name="removeEmptyLine">true if need remove the empty line; otherwise, false.</param>
+        /// <returns>Lines from the specific stream reader.</returns>
+        /// <exception cref="ArgumentNullException">file was null.</exception>
+        /// <exception cref="FileNotFoundException">file was not found.</exception>
+        /// <exception cref="DirectoryNotFoundException">The directory of the file was not found.</exception>
+        /// <exception cref="NotSupportedException">Cannot read the file.</exception>
+        /// <exception cref="IOException">An I/O error occurs.</exception>
+        public static IEnumerable<string> ReadLines(this FileInfo file, Encoding encoding, bool removeEmptyLine = false)
+        {
+            return CharsReader.ReadLines(file, encoding, removeEmptyLine);
+        }
+
+        /// <summary>
+        /// Reads lines from a specific stream.
+        /// </summary>
+        /// <param name="file">The file to read.</param>
+        /// <param name="detectEncodingFromByteOrderMarks">true if look for byte order marks at the beginning of the file; otherwise, false.</param>
+        /// <param name="removeEmptyLine">true if need remove the empty line; otherwise, false.</param>
+        /// <returns>Lines from the specific stream reader.</returns>
+        /// <exception cref="ArgumentNullException">file was null.</exception>
+        /// <exception cref="FileNotFoundException">file was not found.</exception>
+        /// <exception cref="DirectoryNotFoundException">The directory of the file was not found.</exception>
+        /// <exception cref="NotSupportedException">Cannot read the file.</exception>
+        public static IEnumerable<string> ReadLines(this FileInfo file, bool detectEncodingFromByteOrderMarks, bool removeEmptyLine = false)
+        {
+            return CharsReader.ReadLines(file, detectEncodingFromByteOrderMarks, removeEmptyLine);
+        }
+
+        /// <summary>
+        /// Gets the string of the file size.
+        /// </summary>
+        /// <param name="file">The file.</param>
+        /// <param name="unit">The unit.</param>
+        /// <returns>A string.</returns>
+        public static string ToFileSizeString(this FileInfo file, string unit = "B")
+        {
+            return ToFileSizeString(file.Length, unit);
+        }
+
+        /// <summary>
         /// Gets the string of the file size.
         /// </summary>
         /// <param name="size">The file size.</param>
         /// <param name="unit">The unit.</param>
         /// <returns>A string.</returns>
-        public static string FileSize(int size, string unit = "B")
+        public static string ToFileSizeString(int size, string unit = "B")
         {
-            return FileSize((long)size, unit);
+            return ToFileSizeString((long)size, unit);
         }
 
         /// <summary>
@@ -171,7 +215,7 @@ namespace Trivial.IO
         /// <param name="size">The file size.</param>
         /// <param name="unit">The unit.</param>
         /// <returns>A string.</returns>
-        public static string FileSize(long size, string unit = "B")
+        public static string ToFileSizeString(long size, string unit = "B")
         {
             var prefix = string.Empty;
             if (size < 0)
@@ -180,7 +224,7 @@ namespace Trivial.IO
                 size = -size;
             }
 
-            return prefix + FileSize((ulong)size, unit);
+            return prefix + ToFileSizeString((ulong)size, unit);
         }
 
         /// <summary>
@@ -189,7 +233,7 @@ namespace Trivial.IO
         /// <param name="size">The file size.</param>
         /// <param name="unit">The unit.</param>
         /// <returns>A string.</returns>
-        public static string FileSize(ulong size, string unit = "B")
+        public static string ToFileSizeString(ulong size, string unit = "B")
         {
             if (size > 1125336956000000000) return (size / 1152921504606846976.0).ToString("F1") + "E" + unit;
             if (size > 1098961000000000) return (size / 1125899906842624.0).ToString("F1") + "P" + unit;

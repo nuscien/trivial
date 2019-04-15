@@ -16,7 +16,7 @@ namespace Trivial.Net
     /// <summary>
     /// HTTP web client extension and helper.
     /// </summary>
-    public static class HttpClientUtility
+    public static class HttpClientExtension
     {
         /// <summary>
         /// Default block size.
@@ -34,7 +34,7 @@ namespace Trivial.Net
         /// <exception cref="ArgumentNullException">The argument is null.</exception>
         public static Task CopyToAsync(this HttpContent httpContent, Stream destination, IProgress<long> progress, CancellationToken cancellationToken = default)
         {
-            return CopyToAsync(httpContent, destination, IO.StreamUtility.DefaultBufferSize, progress, cancellationToken);
+            return CopyToAsync(httpContent, destination, IO.StreamCopy.DefaultBufferSize, progress, cancellationToken);
         }
 
         /// <summary>
@@ -53,7 +53,7 @@ namespace Trivial.Net
             if (destination == null) throw new ArgumentNullException(nameof(destination));
             using (var downloadingStream = await httpContent.ReadAsStreamAsync())
             {
-                await IO.StreamUtility.CopyToAsync(downloadingStream, destination, bufferSize, progress, cancellationToken);
+                await IO.StreamCopy.CopyToAsync(downloadingStream, destination, bufferSize, progress, cancellationToken);
             }
         }
 
@@ -73,7 +73,7 @@ namespace Trivial.Net
         /// <exception cref="NotSupportedException">The path of the file refers to a non-file device, such as "con:", "com1:", "lpt1:".</exception>
         public static Task WriteFileAsync(this HttpContent httpContent, string fileName, IProgress<double> progress, CancellationToken cancellationToken = default)
         {
-            return WriteFileAsync(httpContent, fileName, IO.StreamUtility.DefaultBufferSize, progress, cancellationToken);
+            return WriteFileAsync(httpContent, fileName, IO.StreamCopy.DefaultBufferSize, progress, cancellationToken);
         }
 
         /// <summary>

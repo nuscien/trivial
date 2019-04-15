@@ -7,9 +7,9 @@ using System.Text;
 namespace Trivial.Security
 {
     /// <summary>
-    /// The helper of secure string.
+    /// The extension of secure string.
     /// </summary>
-    public static class SecureStringUtility
+    public static class SecureStringExtension
     {
         /// <summary>
         /// Appends a string into a secure string instance.

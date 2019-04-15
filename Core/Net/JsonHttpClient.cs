@@ -302,8 +302,8 @@ namespace Trivial.Net
                     if (!SerializeEvenIfFailed && !resp.IsSuccessStatusCode)
                         throw FailedHttpException.Create(resp, "Failed to send JSON HTTP web request because of unsuccess status code.");
                     var obj = Deserializer != null
-                        ? await HttpClientUtility.SerializeAsync(resp.Content, Deserializer)
-                        : await HttpClientUtility.SerializeJsonAsync<T>(resp.Content);
+                        ? await HttpClientExtension.SerializeAsync(resp.Content, Deserializer)
+                        : await HttpClientExtension.SerializeJsonAsync<T>(resp.Content);
                     return obj;
                 }, GetExceptionInternal, cancellationToken);
                 valueResult = result.Result;

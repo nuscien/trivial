@@ -30,7 +30,7 @@ namespace Trivial.Data
         /// <param name="propertyNameCase">The case for column name convert to property name.</param>
         public void AddColumn(string columnName, Cases propertyNameCase = Cases.Original)
         {
-            Add(columnName, StringUtility.ToSpecificCaseInvariant(columnName, propertyNameCase));
+            Add(columnName, StringExtension.ToSpecificCaseInvariant(columnName, propertyNameCase));
         }
 
         /// <summary>
@@ -40,7 +40,7 @@ namespace Trivial.Data
         /// <param name="columnNameCase">The case for property name convert to column name.</param>
         public void AddProperty(string propertyName, Cases columnNameCase = Cases.Original)
         {
-            Add(StringUtility.ToSpecificCaseInvariant(propertyName, columnNameCase), propertyName);
+            Add(StringExtension.ToSpecificCaseInvariant(propertyName, columnNameCase), propertyName);
         }
 
         /// <summary>

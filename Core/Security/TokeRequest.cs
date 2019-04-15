@@ -193,9 +193,9 @@ namespace Trivial.Security
             {
                 if (string.IsNullOrWhiteSpace(kvp.Key) || string.IsNullOrWhiteSpace(kvp.Value)) continue;
                 sb.Append('"');
-                sb.Append(StringUtility.ReplaceBackSlash(kvp.Key));
+                sb.Append(StringExtension.ReplaceBackSlash(kvp.Key));
                 sb.Append("\":");
-                sb.Append(StringUtility.ReplaceBackSlash(kvp.Value));
+                sb.Append(StringExtension.ReplaceBackSlash(kvp.Value));
                 sb.Append(",");
             }
 
@@ -977,7 +977,7 @@ namespace Trivial.Security
             sb.Append(':');
             if (Password != null && Password.Length > 0) sb.Append(Password.ToUnsecureString());
             return new AuthenticationHeaderValue(
-                StringUtility.ToSpecificCaseInvariant(BasicTokenType, schemeCase),
+                StringExtension.ToSpecificCaseInvariant(BasicTokenType, schemeCase),
                 Convert.ToBase64String((encoding ?? Encoding.UTF8).GetBytes(sb.ToString())));
         }
 

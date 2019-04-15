@@ -31,7 +31,7 @@ namespace Trivial.IO
         /// <param name="encoding">The encoding to read text.</param>
         public CharsReader(Stream stream, Encoding encoding = null)
         {
-            enumerator = StreamUtility.ReadChars(stream, encoding).GetEnumerator();
+            enumerator = ReadChars(stream, encoding).GetEnumerator();
         }
 
         /// <summary>
@@ -42,7 +42,7 @@ namespace Trivial.IO
         /// <param name="closeStream">true if need close stream automatically after read; otherwise, false.</param>
         public CharsReader(IEnumerable<Stream> streams, Encoding encoding = null, bool closeStream = false)
         {
-            enumerator = StreamUtility.ReadChars(streams, encoding, closeStream).GetEnumerator();
+            enumerator = ReadChars(streams, encoding, closeStream).GetEnumerator();
         }
 
         /// <summary>
@@ -53,7 +53,7 @@ namespace Trivial.IO
         /// <param name="closeStream">true if need close stream automatically after read; otherwise, false.</param>
         public CharsReader(StreamPagingResolver streams, Encoding encoding = null, bool closeStream = false)
         {
-            enumerator = StreamUtility.ReadChars(streams, encoding, closeStream).GetEnumerator();
+            enumerator = ReadChars(streams, encoding, closeStream).GetEnumerator();
         }
 
         /// <summary>
@@ -331,6 +331,244 @@ namespace Trivial.IO
             if (!disposing) return;
             hasRead = false;
             enumerator.Dispose();
+        }
+
+        /// <summary>
+        /// Reads lines from a specific stream reader.
+        /// </summary>
+        /// <param name="reader">The stream reader.</param>
+        /// <param name="removeEmptyLine">true if need remove the empty line; otherwise, false.</param>
+        /// <returns>Lines from the specific stream reader.</returns>
+        /// <exception cref="NotSupportedException">The stream does not support reading.</exception>
+        /// <exception cref="IOException">An I/O error occurs.</exception>
+        /// <exception cref="ObjectDisposedException">The stream has disposed.</exception>
+        public static IEnumerable<string> ReadLines(TextReader reader, bool removeEmptyLine = false)
+        {
+            if (reader == null) yield break;
+            if (removeEmptyLine)
+            {
+                while (true)
+                {
+                    var line = reader.ReadLine();
+                    if (line == null) break;
+                    if (string.IsNullOrEmpty(line)) continue;
+                    yield return line;
+                }
+            }
+            else
+            {
+                while (true)
+                {
+                    var line = reader.ReadLine();
+                    if (line == null) break;
+                    yield return line;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Reads lines from a specific stream.
+        /// </summary>
+        /// <param name="stream">The stream to read.</param>
+        /// <param name="encoding">The character encoding to use.</param>
+        /// <param name="removeEmptyLine">true if need remove the empty line; otherwise, false.</param>
+        /// <returns>Lines from the specific stream.</returns>
+        /// <exception cref="ArgumentNullException">stream was null.</exception>
+        /// <exception cref="NotSupportedException">The stream does not support reading.</exception>
+        /// <exception cref="ObjectDisposedException">The stream has disposed.</exception>
+        public static IEnumerable<string> ReadLines(Stream stream, Encoding encoding, bool removeEmptyLine = false)
+        {
+            if (stream == null) throw new ArgumentNullException(nameof(stream), "stream should not be null.");
+            using (var reader = new StreamReader(stream, encoding))
+            {
+                return ReadLines(reader, removeEmptyLine);
+            }
+        }
+
+        /// <summary>
+        /// Reads lines from a specific stream collection.
+        /// </summary>
+        /// <param name="streams">The stream collection to read.</param>
+        /// <param name="encoding">The character encoding to use.</param>
+        /// <param name="removeEmptyLine">true if need remove the empty line; otherwise, false.</param>
+        /// <param name="closeStream">true if need close stream automatically after read; otherwise, false.</param>
+        /// <returns>Lines from the specific stream collection.</returns>
+        /// <exception cref="NotSupportedException">The stream does not support reading.</exception>
+        /// <exception cref="ObjectDisposedException">The stream has disposed.</exception>
+        public static IEnumerable<string> ReadLines(IEnumerable<Stream> streams, Encoding encoding, bool removeEmptyLine = false, bool closeStream = false)
+        {
+            return ReadLines(ReadChars(streams, encoding, closeStream), removeEmptyLine);
+        }
+
+        /// <summary>
+        /// Reads lines from a specific stream collection.
+        /// </summary>
+        /// <param name="streams">The stream collection to read.</param>
+        /// <param name="encoding">The character encoding to use.</param>
+        /// <param name="removeEmptyLine">true if need remove the empty line; otherwise, false.</param>
+        /// <param name="closeStream">true if need close stream automatically after read; otherwise, false.</param>
+        /// <returns>Lines from the specific stream collection.</returns>
+        /// <exception cref="NotSupportedException">The stream does not support reading.</exception>
+        /// <exception cref="ObjectDisposedException">The stream has disposed.</exception>
+        public static IEnumerable<string> ReadLines(StreamPagingResolver streams, Encoding encoding, bool removeEmptyLine = false, bool closeStream = false)
+        {
+            return ReadLines(ReadChars(streams, encoding, closeStream), removeEmptyLine);
+        }
+
+        /// <summary>
+        /// Reads lines from a specific charactor collection.
+        /// </summary>
+        /// <param name="chars">The charactors to read.</param>
+        /// <param name="removeEmptyLine">true if need remove the empty line; otherwise, false.</param>
+        /// <returns>Lines from the specific charactor collection.</returns>
+        public static IEnumerable<string> ReadLines(IEnumerable<char> chars, bool removeEmptyLine = false)
+        {
+            if (chars == null) yield break;
+            var wasR = false;
+            var str = new StringBuilder();
+            foreach (var c in chars)
+            {
+                if (wasR)
+                {
+                    wasR = false;
+                    if (c == '\n') continue;
+                }
+
+                if (c == '\r') wasR = true;
+                if (!wasR && c != '\n')
+                {
+                    str.Append(c);
+                    continue;
+                }
+
+                if (removeEmptyLine && str.Length == 0) continue;
+                yield return str.ToString();
+                str.Clear();
+            }
+
+            if (removeEmptyLine && str.Length == 0) yield break;
+            yield return str.ToString();
+        }
+
+        /// <summary>
+        /// Reads lines from a specific stream.
+        /// </summary>
+        /// <param name="file">The file to read.</param>
+        /// <param name="encoding">The character encoding to use.</param>
+        /// <param name="removeEmptyLine">true if need remove the empty line; otherwise, false.</param>
+        /// <returns>Lines from the specific stream reader.</returns>
+        /// <exception cref="ArgumentNullException">file was null.</exception>
+        /// <exception cref="FileNotFoundException">file was not found.</exception>
+        /// <exception cref="DirectoryNotFoundException">The directory of the file was not found.</exception>
+        /// <exception cref="NotSupportedException">Cannot read the file.</exception>
+        /// <exception cref="IOException">An I/O error occurs.</exception>
+        public static IEnumerable<string> ReadLines(FileInfo file, Encoding encoding, bool removeEmptyLine = false)
+        {
+            if (file == null) throw new ArgumentNullException(nameof(file), "file should not be null.");
+            using (var reader = new StreamReader(file.FullName, encoding))
+            {
+                return CharsReader.ReadLines(reader, removeEmptyLine);
+            }
+        }
+
+        /// <summary>
+        /// Reads lines from a specific stream.
+        /// </summary>
+        /// <param name="file">The file to read.</param>
+        /// <param name="detectEncodingFromByteOrderMarks">true if look for byte order marks at the beginning of the file; otherwise, false.</param>
+        /// <param name="removeEmptyLine">true if need remove the empty line; otherwise, false.</param>
+        /// <returns>Lines from the specific stream reader.</returns>
+        /// <exception cref="ArgumentNullException">file was null.</exception>
+        /// <exception cref="FileNotFoundException">file was not found.</exception>
+        /// <exception cref="DirectoryNotFoundException">The directory of the file was not found.</exception>
+        /// <exception cref="NotSupportedException">Cannot read the file.</exception>
+        public static IEnumerable<string> ReadLines(FileInfo file, bool detectEncodingFromByteOrderMarks, bool removeEmptyLine = false)
+        {
+            if (file == null) throw new ArgumentNullException(nameof(file), "file should not be null.");
+            using (var reader = new StreamReader(file.FullName, detectEncodingFromByteOrderMarks))
+            {
+                return CharsReader.ReadLines(reader, removeEmptyLine);
+            }
+        }
+
+        /// <summary>
+        /// Reads characters from the stream and advances the position within each stream to the end.
+        /// </summary>
+        /// <param name="stream">The stream to read.</param>
+        /// <param name="encoding">The encoding to read text.</param>
+        /// <returns>Bytes from the stream.</returns>
+        /// <exception cref="NotSupportedException">The stream does not support reading.</exception>
+        /// <exception cref="ObjectDisposedException">The stream has disposed.</exception>
+        public static IEnumerable<char> ReadChars(Stream stream, Encoding encoding = null)
+        {
+            if (stream == null) yield break;
+            var decoder = (encoding ?? Encoding.Default).GetDecoder();
+            var buffer = new byte[12];
+            while (true)
+            {
+                var count = stream.Read(buffer, 0, buffer.Length);
+                if (count == 0) break;
+                var len = decoder.GetCharCount(buffer, 0, count);
+                var chars = new char[len];
+                decoder.GetChars(buffer, 0, count, chars, 0);
+                foreach (var c in chars)
+                {
+                    yield return c;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Reads characters from the streams and advances the position within each stream to the end.
+        /// </summary>
+        /// <param name="streams">The stream collection to read.</param>
+        /// <param name="encoding">The encoding to read text.</param>
+        /// <param name="closeStream">true if need close stream automatically after read; otherwise, false.</param>
+        /// <returns>Bytes from the stream collection.</returns>
+        /// <exception cref="NotSupportedException">The stream does not support reading.</exception>
+        /// <exception cref="ObjectDisposedException">The stream has disposed.</exception>
+        public static IEnumerable<char> ReadChars(IEnumerable<Stream> streams, Encoding encoding = null, bool closeStream = false)
+        {
+            if (streams == null) yield break;
+            var decoder = (encoding ?? Encoding.Default).GetDecoder();
+            var buffer = new byte[12];
+            foreach (var stream in streams)
+            {
+                if (stream == null) continue;
+                try
+                {
+                    while (true)
+                    {
+                        var count = stream.Read(buffer, 0, buffer.Length);
+                        if (count == 0) break;
+                        var len = decoder.GetCharCount(buffer, 0, count);
+                        var chars = new char[len];
+                        decoder.GetChars(buffer, 0, count, chars, 0);
+                        foreach (var c in chars)
+                        {
+                            yield return c;
+                        }
+                    }
+                }
+                finally
+                {
+                    if (closeStream) stream.Close();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Reads characters from the streams and advances the position within each stream to the end.
+        /// </summary>
+        /// <param name="streams">The stream collection to read.</param>
+        /// <param name="encoding">The encoding to read text.</param>
+        /// <param name="closeStream">true if need close stream automatically after read; otherwise, false.</param>
+        /// <returns>Bytes from the stream collection.</returns>
+        /// <exception cref="NotSupportedException">The stream does not support reading.</exception>
+        /// <exception cref="ObjectDisposedException">The stream has disposed.</exception>
+        public static IEnumerable<char> ReadChars(StreamPagingResolver streams, Encoding encoding = null, bool closeStream = false)
+        {
+            return ReadChars(StreamCopy.ToStreamCollection(streams), encoding, closeStream);
         }
     }
 }

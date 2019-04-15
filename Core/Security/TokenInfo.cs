@@ -375,10 +375,10 @@ namespace Trivial.Security
         {
             return AccessToken != null
                 ? new AuthenticationHeaderValue(
-                    StringUtility.ToSpecificCaseInvariant(TokenType, schemeCase),
-                    StringUtility.ToSpecificCaseInvariant(AccessToken, parameterCase))
+                    StringExtension.ToSpecificCaseInvariant(TokenType, schemeCase),
+                    StringExtension.ToSpecificCaseInvariant(AccessToken, parameterCase))
                 : new AuthenticationHeaderValue(
-                    StringUtility.ToSpecificCaseInvariant(TokenType, schemeCase));
+                    StringExtension.ToSpecificCaseInvariant(TokenType, schemeCase));
         }
 
         /// <summary>
@@ -392,7 +392,7 @@ namespace Trivial.Security
             return AccessToken != null
                 ? new AuthenticationHeaderValue(
                     scheme ?? TokenType,
-                    StringUtility.ToSpecificCaseInvariant(AccessToken, parameterCase))
+                    StringExtension.ToSpecificCaseInvariant(AccessToken, parameterCase))
                 : new AuthenticationHeaderValue(scheme ?? TokenType);
         }
     }

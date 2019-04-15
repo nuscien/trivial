@@ -311,7 +311,7 @@ namespace Trivial.Security
         /// <param name="syncEncryptKey">true if set the secret encryption key from the crypto service provider; otherwise, false.</param>
         public void SetCrypto(string privateKey, bool syncEncryptKey = false)
         {
-            var key = RSAUtility.ParseParameters(privateKey);
+            var key = RSAParametersParse.Invoke(privateKey);
             if (!key.HasValue)
             {
                 ClearCrypto(syncEncryptKey);
@@ -502,7 +502,7 @@ namespace Trivial.Security
         /// <returns>The Base64 string with secret encrypted.</returns>
         public string EncryptSecret(string key, RSAEncryptionPadding padding = null)
         {
-            return EncryptSecret(RSAUtility.ParseParameters(key), padding);
+            return EncryptSecret(RSAParametersParse.Invoke(key), padding);
         }
 
         /// <summary>
@@ -545,7 +545,7 @@ namespace Trivial.Security
         /// <returns>The Base64 string with secret encrypted.</returns>
         public string EncryptText(SecureString text, bool ignoreFormatIfNoCrypto = false, RSAEncryptionPadding padding = null)
         {
-            return EncryptText(SecureStringUtility.ToUnsecureString(text), ignoreFormatIfNoCrypto, padding);
+            return EncryptText(SecureStringExtension.ToUnsecureString(text), ignoreFormatIfNoCrypto, padding);
         }
 
         /// <summary>

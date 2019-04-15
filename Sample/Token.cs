@@ -55,9 +55,9 @@ namespace Trivial.Sample
             ConsoleLine.WriteLine(privateKey);
             var publicKey = rsa.ExportParameters(false).ToPublicPEMString();
             ConsoleLine.WriteLine(publicKey);
-            var privateKeyP = RSAUtility.ParseParameters(privateKey).Value;
+            var privateKeyP = RSAParametersParse.Invoke(privateKey).Value;
             var privateKeyS = privateKeyP.ToPrivatePEMString(true);
-            var publicKeyP = RSAUtility.ParseParameters(publicKey).Value;
+            var publicKeyP = RSAParametersParse.Invoke(publicKey).Value;
             var publicKeyS = publicKeyP.ToPublicPEMString();
             ConsoleLine.WriteLine("They are {0}.", (privateKey == privateKeyS) && (publicKey == publicKeyS) ? "same" : "different");
             ConsoleLine.WriteLine();

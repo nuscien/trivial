@@ -214,7 +214,7 @@ namespace Trivial.Security
         /// <returns>true if the signature is valid; otherwise, false.</returns>
         public bool Verify(byte[] data, byte[] signature)
         {
-            return ListUtility.Equals(Sign(data), signature);
+            return ListExtension.Equals(Sign(data), signature);
         }
 
         /// <summary>
@@ -354,7 +354,7 @@ namespace Trivial.Security
         {
             if (string.IsNullOrWhiteSpace(secret))
                 throw new ArgumentNullException(nameof(secret), "secret should not be null, empty or consists only of white-space characters.");
-            var p = RSAUtility.ParseParameters(secret);
+            var p = RSAParametersParse.Invoke(secret);
             if (p == null)
                 throw new FormatException("secret is not a valid RSA key. A PEM string or XML string expected.");
             return new RSASignatureProvider(p.Value, hashAlgorithmName, signAlgorithmName);
@@ -604,7 +604,7 @@ namespace Trivial.Security
         {
             return verify != null
                 ? verify(data, signature, secretBytes)
-                : ListUtility.Equals(sign(data, secretBytes), signature);
+                : ListExtension.Equals(sign(data, secretBytes), signature);
         }
     }
 }

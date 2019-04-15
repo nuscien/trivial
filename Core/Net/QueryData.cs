@@ -87,7 +87,7 @@ namespace Trivial.Net
 
                     if (backSlash != null)
                     {
-                        if (StringUtility.ReplaceBackSlash(sb, backSlash, c)) backSlash = null;
+                        if (StringExtension.ReplaceBackSlash(sb, backSlash, c)) backSlash = null;
                         continue;
                     }
 
@@ -172,7 +172,7 @@ namespace Trivial.Net
                                 sb.Append(c);
                             }
 
-                            ListUtility.Add(this, name, sb.ToString());
+                            ListExtension.Add(this, name, sb.ToString());
                             name = null;
                             sb = null;
                             continue;
@@ -223,7 +223,7 @@ namespace Trivial.Net
                 if (!string.IsNullOrWhiteSpace(name) && sb != null)
                 {
                     var sbStr = sb.ToString().Trim();
-                    if (sbStr != "null" && sbStr != "undefined") ListUtility.Add(this, name, sbStr);
+                    if (sbStr != "null" && sbStr != "undefined") ListExtension.Add(this, name, sbStr);
                 }
 
                 return count;
@@ -238,8 +238,8 @@ namespace Trivial.Net
             foreach (var item in arr)
             {
                 pos = item.IndexOf("=");
-                if (pos < 0) ListUtility.Add(this, HttpUtility.UrlDecode(item, encoding), string.Empty);
-                else ListUtility.Add(this, HttpUtility.UrlDecode(item.Substring(0, pos), encoding), HttpUtility.UrlDecode(item.Substring(pos + 1), encoding));
+                if (pos < 0) ListExtension.Add(this, HttpUtility.UrlDecode(item, encoding), string.Empty);
+                else ListExtension.Add(this, HttpUtility.UrlDecode(item.Substring(0, pos), encoding), HttpUtility.UrlDecode(item.Substring(pos + 1), encoding));
             }
 
             return arr.Length;

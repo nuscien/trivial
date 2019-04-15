@@ -17,7 +17,7 @@ namespace Trivial.Security
     /// <summary>
     /// RSA utility.
     /// </summary>
-    public static class RSAUtility
+    public static class RSAParametersParse
     {
         /// <summary>
         /// Encoded OID sequence for PKCS #1 rsaEncryption szOID_RSA_RSA = "1.2.840.113549.1.1.1".
@@ -34,7 +34,7 @@ namespace Trivial.Security
         /// </summary>
         /// <param name="key">The OpenSSL RSA key string (PEM Base64) or the RSA parameters XML string.</param>
         /// <returns>The RSA parameters; or null, if parse failed.</returns>
-        public static RSAParameters? ParseParameters(string key)
+        public static RSAParameters? Invoke(string key)
         {
             if (string.IsNullOrWhiteSpace(key)) return null;
             key = key.Trim();
@@ -168,7 +168,7 @@ namespace Trivial.Security
                             return null;
 
                         var seq = reader.ReadBytes(15); // Read the Sequence OID.
-                        if (!ListUtility.Equals(seq, seqOID))   // Make sure Sequence for OID is correct.
+                        if (!ListExtension.Equals(seq, seqOID))   // Make sure Sequence for OID is correct.
                             return null;
 
                         twoBytes = reader.ReadUInt16();
@@ -335,7 +335,7 @@ namespace Trivial.Security
                 // Return Pem.
                 var result = Convert.ToBase64String(bytes);
                 if (onlyBase64Value) return result;
-                return $"-----BEGIN {flag}-----\n{StringUtility.BreakLines(result, 64, '\n')}\n-----END {flag}-----";
+                return $"-----BEGIN {flag}-----\n{StringExtension.BreakLines(result, 64, '\n')}\n-----END {flag}-----";
             }
         }
 
@@ -374,7 +374,7 @@ namespace Trivial.Security
                 // Return PEM.
                 var result = Convert.ToBase64String(bytes);
                 if (onlyBase64Value) return result;
-                return $"-----BEGIN PUBLIC KEY-----\n{StringUtility.BreakLines(result, 64, '\n')}\n-----END PUBLIC KEY-----";
+                return $"-----BEGIN PUBLIC KEY-----\n{StringExtension.BreakLines(result, 64, '\n')}\n-----END PUBLIC KEY-----";
             }
         }
 
@@ -405,7 +405,7 @@ namespace Trivial.Security
         {
             if (data == null || data.Length == 0) return null;
             if (rsa == null) throw new ArgumentNullException(nameof(rsa), "rsa should not be null.");
-            return rsa.Encrypt((encoding ?? Encoding.UTF8).GetBytes(SecureStringUtility.ToUnsecureString(data)), padding);
+            return rsa.Encrypt((encoding ?? Encoding.UTF8).GetBytes(SecureStringExtension.ToUnsecureString(data)), padding);
         }
 
         /// <summary>
