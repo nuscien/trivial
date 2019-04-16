@@ -354,7 +354,7 @@ namespace Trivial.Security
         {
             if (string.IsNullOrWhiteSpace(secret))
                 throw new ArgumentNullException(nameof(secret), "secret should not be null, empty or consists only of white-space characters.");
-            var p = RSAParametersParse.Invoke(secret);
+            var p = RSAParametersConvert.Parse(secret);
             if (p == null)
                 throw new FormatException("secret is not a valid RSA key. A PEM string or XML string expected.");
             return new RSASignatureProvider(p.Value, hashAlgorithmName, signAlgorithmName);

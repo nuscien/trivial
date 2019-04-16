@@ -15,9 +15,9 @@ using Trivial.Text;
 namespace Trivial.Security
 {
     /// <summary>
-    /// RSA utility.
+    /// RSA parameters convert.
     /// </summary>
-    public static class RSAParametersParse
+    public static class RSAParametersConvert
     {
         /// <summary>
         /// Encoded OID sequence for PKCS #1 rsaEncryption szOID_RSA_RSA = "1.2.840.113549.1.1.1".
@@ -34,7 +34,7 @@ namespace Trivial.Security
         /// </summary>
         /// <param name="key">The OpenSSL RSA key string (PEM Base64) or the RSA parameters XML string.</param>
         /// <returns>The RSA parameters; or null, if parse failed.</returns>
-        public static RSAParameters? Invoke(string key)
+        public static RSAParameters? Parse(string key)
         {
             if (string.IsNullOrWhiteSpace(key)) return null;
             key = key.Trim();

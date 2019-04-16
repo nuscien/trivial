@@ -138,13 +138,13 @@ namespace Trivial.Security
             /// <summary>
             /// Gets or sets the optional user identifer.
             /// </summary>
-            [DataMember(Name = "uid")]
+            [DataMember(Name = "uid", EmitDefaultValue = false)]
             public string UserId { get; set; }
 
             /// <summary>
             /// Gets or sets the token or the token encrypted if supports.
             /// </summary>
-            [DataMember(Name = "val")]
+            [DataMember(Name = "val", EmitDefaultValue = false)]
             public string Value { get; set; }
 
             /// <summary>
@@ -156,19 +156,19 @@ namespace Trivial.Security
             /// <summary>
             /// Gets or sets the optional current encrypt key identifier if has.
             /// </summary>
-            [DataMember(Name = "cei")]
+            [DataMember(Name = "cei", EmitDefaultValue = false)]
             public string CurrentEncryptId { get; set; }
 
             /// <summary>
             /// Gets or sets the optional encrypt key identifier expected for next operation back.
             /// </summary>
-            [DataMember(Name = "eei")]
+            [DataMember(Name = "eei", EmitDefaultValue = false)]
             public string ExpectFutureEncryptId { get; set; }
 
             /// <summary>
             /// Gets or sets the optional creation identifier.
             /// </summary>
-            [DataMember(Name = "jci")]
+            [DataMember(Name = "jci", EmitDefaultValue = false)]
             public string CreationId { get; set; } = Guid.NewGuid().ToString("n");
 
             /// <summary>
@@ -311,7 +311,7 @@ namespace Trivial.Security
         /// <param name="syncEncryptKey">true if set the secret encryption key from the crypto service provider; otherwise, false.</param>
         public void SetCrypto(string privateKey, bool syncEncryptKey = false)
         {
-            var key = RSAParametersParse.Invoke(privateKey);
+            var key = RSAParametersConvert.Parse(privateKey);
             if (!key.HasValue)
             {
                 ClearCrypto(syncEncryptKey);
@@ -502,7 +502,7 @@ namespace Trivial.Security
         /// <returns>The Base64 string with secret encrypted.</returns>
         public string EncryptSecret(string key, RSAEncryptionPadding padding = null)
         {
-            return EncryptSecret(RSAParametersParse.Invoke(key), padding);
+            return EncryptSecret(RSAParametersConvert.Parse(key), padding);
         }
 
         /// <summary>

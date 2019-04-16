@@ -633,7 +633,7 @@ namespace Trivial.Security
         /// This claim can be used to prevent the JWT from being replayed.
         /// Its value is a case-sensitive string.
         /// </summary>
-        [DataMember(Name = "jti")]
+        [DataMember(Name = "jti", EmitDefaultValue = false)]
         public string Id { get; set; }
 
         /// <summary>
@@ -642,7 +642,7 @@ namespace Trivial.Security
         /// JWT.The processing of this claim is generally application specific.
         /// Its value is a case-sensitive string containing a string or a URI.
         /// </summary>
-        [DataMember(Name = "iss")]
+        [DataMember(Name = "iss", EmitDefaultValue = false)]
         public string Issuer { get; set; }
 
         /// <summary>
@@ -655,7 +655,7 @@ namespace Trivial.Security
         /// The processing of this claim is generally application specific.
         /// Its value is a case-sensitive string containing a string or a URI.
         /// </summary>
-        [DataMember(Name = "sub")]
+        [DataMember(Name = "sub", EmitDefaultValue = false)]
         public string Subject { get; set; }
 
         /// <summary>
@@ -672,7 +672,7 @@ namespace Trivial.Security
         /// single case-sensitive string containing a string or a URI. The
         /// interpretation of audience values is generally application specific
         /// </summary>
-        [DataMember(Name = "aud")]
+        [DataMember(Name = "aud", EmitDefaultValue = false)]
         public IEnumerable<string> Audience { get; set; }
 
         /// <summary>
@@ -690,7 +690,7 @@ namespace Trivial.Security
         /// Gets or sets an optional expiration date time tick in JSON format.
         /// The original property is Expiration.
         /// </summary>
-        [DataMember(Name = "exp")]
+        [DataMember(Name = "exp", EmitDefaultValue = false)]
         public long? ExpirationTick
         {
             get => WebUtility.ParseDate(Expiration);
@@ -712,7 +712,7 @@ namespace Trivial.Security
         /// Gets or sets an optional available start date time tick in JSON format.
         /// The original property is NotBefore.
         /// </summary>
-        [DataMember(Name = "nbf")]
+        [DataMember(Name = "nbf", EmitDefaultValue = false)]
         public long? NotBeforeTick
         {
             get => WebUtility.ParseDate(NotBefore);
@@ -730,7 +730,7 @@ namespace Trivial.Security
         /// Gets or sets an optional issue creation date time tick in JSON format.
         /// The original property is IssuedAt.
         /// </summary>
-        [DataMember(Name = "iat")]
+        [DataMember(Name = "iat", EmitDefaultValue = false)]
         public long? IssuedAtTick
         {
             get => WebUtility.ParseDate(IssuedAt);
