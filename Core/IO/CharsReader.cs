@@ -37,6 +37,16 @@ namespace Trivial.IO
         /// <summary>
         /// Initializes a new instance of the CharsReader class.
         /// </summary>
+        /// <param name="bytes">The byte collection to read.</param>
+        /// <param name="encoding">The encoding to read text.</param>
+        public CharsReader(byte[] bytes, Encoding encoding = null)
+        {
+            enumerator = ReadChars(bytes, encoding).GetEnumerator();
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the CharsReader class.
+        /// </summary>
         /// <param name="streams">The stream collection to read.</param>
         /// <param name="encoding">The encoding to read text.</param>
         /// <param name="closeStream">true if need close stream automatically after read; otherwise, false.</param>
@@ -386,6 +396,21 @@ namespace Trivial.IO
         }
 
         /// <summary>
+        /// Reads lines from a specific byte collection.
+        /// </summary>
+        /// <param name="bytes">The byte collection to read.</param>
+        /// <param name="encoding">The character encoding to use.</param>
+        /// <param name="removeEmptyLine">true if need remove the empty line; otherwise, false.</param>
+        /// <returns>Lines from the specific stream.</returns>
+        /// <exception cref="ArgumentNullException">stream was null.</exception>
+        /// <exception cref="NotSupportedException">The stream does not support reading.</exception>
+        /// <exception cref="ObjectDisposedException">The stream has disposed.</exception>
+        public static IEnumerable<string> ReadLines(byte[] bytes, Encoding encoding, bool removeEmptyLine = false)
+        {
+            return ReadLines(ReadChars(bytes, encoding), removeEmptyLine);
+        }
+
+        /// <summary>
         /// Reads lines from a specific stream collection.
         /// </summary>
         /// <param name="streams">The stream collection to read.</param>
@@ -508,6 +533,47 @@ namespace Trivial.IO
             {
                 var count = stream.Read(buffer, 0, buffer.Length);
                 if (count == 0) break;
+                var len = decoder.GetCharCount(buffer, 0, count);
+                var chars = new char[len];
+                decoder.GetChars(buffer, 0, count, chars, 0);
+                foreach (var c in chars)
+                {
+                    yield return c;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Reads characters from the bytes and advances the position within each stream to the end.
+        /// </summary>
+        /// <param name="bytes">The byte collection to read.</param>
+        /// <param name="encoding">The encoding to read text.</param>
+        /// <returns>Bytes from the stream.</returns>
+        public static IEnumerable<char> ReadChars(IEnumerable<byte> bytes, Encoding encoding = null)
+        {
+            if (bytes == null) yield break;
+            var decoder = (encoding ?? Encoding.Default).GetDecoder();
+            var pos = -1;
+            var count = 12;
+            var buffer = new byte[count];
+            foreach (var b in bytes)
+            {
+                pos++;
+                buffer[pos] = b;
+                if (pos < 11) continue;
+                var len = decoder.GetCharCount(buffer, 0, count);
+                var chars = new char[len];
+                decoder.GetChars(buffer, 0, count, chars, 0);
+                pos = -1;
+                foreach (var c in chars)
+                {
+                    yield return c;
+                }
+            }
+
+            if (pos > -1)
+            {
+                count = pos + 1;
                 var len = decoder.GetCharCount(buffer, 0, count);
                 var chars = new char[len];
                 decoder.GetChars(buffer, 0, count, chars, 0);
