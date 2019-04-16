@@ -301,7 +301,7 @@ namespace Trivial.Data
         /// <returns>The value of the specified column.</returns>
         public override TValue GetFieldValue<TValue>(int ordinal)
         {
-            return TypeUtility.ConvertTo<TValue>(this[ordinal]);
+            return ObjectConvert.Invoke<TValue>(this[ordinal]);
         }
 
         /// <summary>

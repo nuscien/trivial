@@ -159,7 +159,7 @@ namespace Trivial.Data
             if (creator == null && props == null) yield break;
             foreach (var item in this)
             {
-                var instance = TypeUtility.ConvertTo(item, creator, props);
+                var instance = ObjectConvert.Invoke(item, creator, props);
                 if (instance == null) continue;
                 yield return instance;
             }
@@ -757,7 +757,7 @@ namespace Trivial.Data
         /// <returns>A typed collection based on the data parsed.</returns>
         public T ConvertTo<T>(Func<IReadOnlyList<string>, T> creator, IEnumerable<string> propertyNames)
         {
-            return TypeUtility.ConvertTo<T>(CurrentRecord, creator, propertyNames);
+            return ObjectConvert.Invoke<T>(CurrentRecord, creator, propertyNames);
         }
 
         /// <summary>

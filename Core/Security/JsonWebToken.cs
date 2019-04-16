@@ -743,7 +743,7 @@ namespace Trivial.Security
         /// <param name="sign">The signature provider.</param>
         /// <param name="serializer">An optional JSON serializer.</param>
         /// <returns>A System.Net.Http.Headers.AuthenticationHeaderValue that represents the current token.</returns>
-        public AuthenticationHeaderValue ToAuthenticationHeaderValue(ISignatureProvider sign, Func<object, string> serializer = null)
+        public virtual AuthenticationHeaderValue ToAuthenticationHeaderValue(ISignatureProvider sign, Func<object, string> serializer = null)
         {
             var jwt = new JsonWebToken<JsonWebTokenPayload>(this, sign)
             {

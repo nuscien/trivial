@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Web;
 
+using Trivial.Data;
+
 namespace Trivial.Collection
 {
     /// <summary>
@@ -378,6 +380,42 @@ namespace Trivial.Collection
             }
 
             return true;
+        }
+
+        /// <summary>
+        /// Filters a sequence of values based on a condition.
+        /// </summary>
+        /// <param name="source">A string collection to filter.</param>
+        /// <param name="condition">The condition.</param>
+        /// <returns>A string collection that contains elements from the input sequence that satisfy the condition.</returns>
+        public static IEnumerable<string> Where(this IEnumerable<string> source, StringCondition condition)
+        {
+            if (condition == null) return source;
+            return source.Where(ele => condition.IsMatched(ele));
+        }
+
+        /// <summary>
+        /// Filters a sequence of values based on a condition.
+        /// </summary>
+        /// <param name="source">A number collection to filter.</param>
+        /// <param name="condition">The condition.</param>
+        /// <returns>A number collection that contains elements from the input sequence that satisfy the condition.</returns>
+        public static IEnumerable<int> Where(this IEnumerable<int> source, Int32Condition condition)
+        {
+            if (condition == null) return source;
+            return source.Where(ele => condition.IsMatched(ele));
+        }
+
+        /// <summary>
+        /// Filters a sequence of values based on a condition.
+        /// </summary>
+        /// <param name="source">A number collection to filter.</param>
+        /// <param name="condition">The condition.</param>
+        /// <returns>A number collection that contains elements from the input sequence that satisfy the condition.</returns>
+        public static IEnumerable<long> Where(this IEnumerable<long> source, Int64Condition condition)
+        {
+            if (condition == null) return source;
+            return source.Where(ele => condition.IsMatched(ele));
         }
     }
 }

@@ -10,7 +10,7 @@ namespace Trivial.Reflection
     /// <summary>
     /// The type utility.
     /// </summary>
-    public static class TypeUtility
+    public static class ObjectConvert
     {
         /// <summary>
         /// Converts the given object to a specific strtypeuct.
@@ -23,7 +23,7 @@ namespace Trivial.Reflection
         /// <exception cref="ArgumentNullException">type or value was null.</exception>
         /// <exception cref="ArgumentException">value was not the one in the type or content format supported.</exception>
         /// <exception cref="OverflowException">value was outside the range of the underlying type of the specific type to convert.</exception>
-        public static object ConvertTo(Type type, object value)
+        public static object Invoke(Type type, object value)
         {
             if (type == null) throw new ArgumentNullException(nameof(type), "type should not be null.");
             if (type == typeof(string))
@@ -111,9 +111,9 @@ namespace Trivial.Reflection
         /// <exception cref="ArgumentNullException">value is null.</exception>
         /// <exception cref="ArgumentException">value is not the one in the type or content format supported.</exception>
         /// <exception cref="OverflowException">value is outside the range of the underlying type of the specific type to convert.</exception>
-        public static T ConvertTo<T>(object value)
+        public static T Invoke<T>(object value)
         {
-            return (T)ConvertTo(typeof(T), value);
+            return (T)Invoke(typeof(T), value);
         }
 
         /// <summary>
@@ -122,12 +122,12 @@ namespace Trivial.Reflection
         /// <typeparam name="T">The type of the value type instance to return.</typeparam>
         /// <param name="value">The value to convert.</param>
         /// <returns>An struct converted.</returns>
-        public static T? TryConvertStructTo<T>(object value) where T : struct
+        public static T? TryInvokeForStruct<T>(object value) where T : struct
         {
             if (value == null) return null;
             try
             {
-                return ConvertTo<T>(value);
+                return Invoke<T>(value);
             }
             catch (InvalidCastException)
             {
@@ -157,12 +157,12 @@ namespace Trivial.Reflection
         /// <typeparam name="T">The type of reference type instance to return.</typeparam>
         /// <param name="value">The value to convert.</param>
         /// <returns>An struct converted.</returns>
-        public static T TryConvertClassTo<T>(object value) where T : class
+        public static T TryInvokeForClass<T>(object value) where T : class
         {
             if (value == null) return null;
             try
             {
-                return ConvertTo<T>(value);
+                return Invoke<T>(value);
             }
             catch (InvalidCastException)
             {
@@ -193,7 +193,7 @@ namespace Trivial.Reflection
         /// <param name="value">The value to convert.</param>
         /// <param name="output">The result output.</param>
         /// <returns>true if convert succeeded; otherwise, false.</returns>
-        public static bool TryConvertStructTo<T>(object value, out T output) where T : struct
+        public static bool TryInvokeForStruct<T>(object value, out T output) where T : struct
         {
             if (value == null && IsNullableValueType(typeof(T)))
             {
@@ -201,7 +201,7 @@ namespace Trivial.Reflection
                 return true;
             }
 
-            var result = TryConvertStructTo<T>(value);
+            var result = TryInvokeForStruct<T>(value);
             if (!result.HasValue)
             {
                 output = default;
@@ -219,11 +219,11 @@ namespace Trivial.Reflection
         /// <param name="value">The value to convert.</param>
         /// <param name="output">The result output.</param>
         /// <returns>true if convert succeeded; otherwise, false.</returns>
-        public static bool TryConvertClassTo<T>(object value, out T output) where T : class
+        public static bool TryInvokeForClass<T>(object value, out T output) where T : class
         {
             try
             {
-                output = ConvertTo<T>(value);
+                output = Invoke<T>(value);
                 return true;
             }
             catch (InvalidCastException)
@@ -257,7 +257,7 @@ namespace Trivial.Reflection
         /// <param name="creator">The instance factory.</param>
         /// <param name="propertyNames">The optional property names to map.</param>
         /// <returns>A typed instance based on the fields.</returns>
-        public static T ConvertTo<T>(IReadOnlyList<string> fields, Func<IReadOnlyList<string>, T> creator, IEnumerable<string> propertyNames = null)
+        public static T Invoke<T>(IReadOnlyList<string> fields, Func<IReadOnlyList<string>, T> creator, IEnumerable<string> propertyNames = null)
         {
             var type = typeof(T);
             var props = propertyNames?.Select(ele =>
@@ -273,7 +273,7 @@ namespace Trivial.Reflection
                 return null;
             })?.ToList();
             if (props != null && props.Count == 0) props = null;
-            return ConvertTo(fields, creator, props);
+            return Invoke(fields, creator, props);
         }
 
         /// <summary>
@@ -283,9 +283,9 @@ namespace Trivial.Reflection
         /// <param name="fields">The field values.</param>
         /// <param name="propertyNames">The optional property names to map.</param>
         /// <returns>A typed instance based on the fields.</returns>
-        public static T ConvertTo<T>(IReadOnlyList<string> fields, IEnumerable<string> propertyNames)
+        public static T Invoke<T>(IReadOnlyList<string> fields, IEnumerable<string> propertyNames)
         {
-            return ConvertTo<T>(fields, propertyNames);
+            return Invoke<T>(fields, null, propertyNames);
         }
 
         /// <summary>
@@ -296,7 +296,7 @@ namespace Trivial.Reflection
         /// <param name="creator">The instance factory.</param>
         /// <param name="properties">The optional properties to map.</param>
         /// <returns>A typed instance based on the fields.</returns>
-        public static T ConvertTo<T>(IReadOnlyList<string> fields, Func<IReadOnlyList<string>, T> creator, IReadOnlyList<PropertyInfo> properties)
+        public static T Invoke<T>(IReadOnlyList<string> fields, Func<IReadOnlyList<string>, T> creator, IReadOnlyList<PropertyInfo> properties)
         {
             var instance = creator != null ? creator(fields) : Activator.CreateInstance<T>();
             if (instance == null) return default;
@@ -306,7 +306,7 @@ namespace Trivial.Reflection
                 {
                     var prop = properties[i];
                     if (prop == null || !prop.CanWrite) continue;
-                    var propV = ConvertTo(prop.PropertyType, fields[i]);
+                    var propV = Invoke(prop.PropertyType, fields[i]);
                     prop.SetValue(instance, propV);
                 }
             }

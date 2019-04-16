@@ -39,7 +39,7 @@ namespace Trivial.IO
         /// </summary>
         /// <param name="bytes">The byte collection to read.</param>
         /// <param name="encoding">The encoding to read text.</param>
-        public CharsReader(byte[] bytes, Encoding encoding = null)
+        public CharsReader(IEnumerable<byte> bytes, Encoding encoding = null)
         {
             enumerator = ReadChars(bytes, encoding).GetEnumerator();
         }
@@ -405,7 +405,7 @@ namespace Trivial.IO
         /// <exception cref="ArgumentNullException">stream was null.</exception>
         /// <exception cref="NotSupportedException">The stream does not support reading.</exception>
         /// <exception cref="ObjectDisposedException">The stream has disposed.</exception>
-        public static IEnumerable<string> ReadLines(byte[] bytes, Encoding encoding, bool removeEmptyLine = false)
+        public static IEnumerable<string> ReadLines(IEnumerable<byte> bytes, Encoding encoding, bool removeEmptyLine = false)
         {
             return ReadLines(ReadChars(bytes, encoding), removeEmptyLine);
         }

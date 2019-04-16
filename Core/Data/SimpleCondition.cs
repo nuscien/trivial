@@ -496,10 +496,40 @@ namespace Trivial.Data
         {
             get { return DbValueType.LiteralString; }
         }
+
+        /// <summary>
+        /// Tests if the given string is macthed.
+        /// </summary>
+        /// <param name="source">The source to test the condition.</param>
+        /// <returns>true if it is matched; otherwise, false.</returns>
+        public bool IsMatched(string source)
+        {
+            switch (Operator)
+            {
+                case DbCompareOperator.Contains:
+                    if (string.IsNullOrEmpty(Value)) return true;
+                    if (string.IsNullOrEmpty(source)) return false;
+                    return source.IndexOf(Value) >= 0;
+                case DbCompareOperator.StartsWith:
+                    if (string.IsNullOrEmpty(Value)) return true;
+                    if (string.IsNullOrEmpty(source)) return false;
+                    return source.IndexOf(Value) == 0;
+                case DbCompareOperator.EndsWith:
+                    if (string.IsNullOrEmpty(Value)) return true;
+                    if (string.IsNullOrEmpty(source)) return false;
+                    return source.LastIndexOf(Value) == source.Length - Value.Length;
+                case DbCompareOperator.Equal:
+                    return source == Value;
+                case DbCompareOperator.NotEqual:
+                    return source != Value;
+            }
+
+            return false;
+        }
     }
 
     /// <summary>
-    /// The simple condition class for integer.
+    /// The simple condition class for Int32.
     /// </summary>
     public class Int32Condition : StructSimpleCondition<int>
     {
@@ -598,7 +628,163 @@ namespace Trivial.Data
         /// </summary>
         public override DbValueType ValueType
         {
-            get { return DbValueType.Integer; }
+            get { return DbValueType.Int32; }
+        }
+
+        /// <summary>
+        /// Tests if the given number is macthed.
+        /// </summary>
+        /// <param name="source">The source to test the condition.</param>
+        /// <returns>true if it is matched; otherwise, false.</returns>
+        public bool IsMatched(int source)
+        {
+            switch (Operator)
+            {
+                case DbCompareOperator.Equal:
+                    return source == Value;
+                case DbCompareOperator.NotEqual:
+                    return source != Value;
+                case DbCompareOperator.Greater:
+                    return source > Value;
+                case DbCompareOperator.GreaterOrEqual:
+                    return source >= Value;
+                case DbCompareOperator.Less:
+                    return source < Value;
+                case DbCompareOperator.LessOrEqual:
+                    return source <= Value;
+            }
+
+            return false;
+        }
+    }
+
+    /// <summary>
+    /// The simple condition class for Int64.
+    /// </summary>
+    public class Int64Condition : StructSimpleCondition<long>
+    {
+        /// <summary>
+        /// Initializes a new instance of the Int64Condition class.
+        /// </summary>
+        /// <remarks>You can use this to initialize an instance for the class.</remarks>
+        public Int64Condition()
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the Int64Condition class.
+        /// </summary>
+        /// <param name="copier">An instance to copy.</param>
+        /// <remarks>You can use this to initialize an instance for the class.</remarks>
+        public Int64Condition(IStructSimpleCondition<long> copier)
+            : base(copier)
+        {
+        }
+
+        /// <summary>
+        /// Get a condition from the given struct value simple interval left bound.
+        /// </summary>
+        /// <param name="value">A simple interval.</param>
+        /// <returns>A condition from left bound of a specific simple interval.</returns>
+        public static Int64Condition CreateFromLeft(StructValueSimpleInterval<long> value)
+        {
+            if (value == null) throw new ArgumentNullException("value");
+            return new Int64Condition
+            {
+                Value = value.MinValue,
+                Operator = SimpleCondition.GetLeftOperator(value)
+            };
+        }
+
+        /// <summary>
+        /// Get a condition from the given struct value simple interval left bound.
+        /// </summary>
+        /// <param name="value">A simple interval.</param>
+        /// <returns>A condition from right bound of a specific simple interval.</returns>
+        public static Int64Condition CreateFromRight(StructValueSimpleInterval<long> value)
+        {
+            if (value == null) throw new ArgumentNullException("value");
+            return new Int64Condition
+            {
+                Value = value.MaxValue,
+                Operator = SimpleCondition.GetRightOperator(value)
+            };
+        }
+
+        /// <summary>
+        /// Get a condition from the given nullable value simple interval left bound.
+        /// </summary>
+        /// <param name="value">A simple interval.</param>
+        /// <returns>A condition from left bound of a specific simple interval.</returns>
+        public static Int64Condition CreateFromLeft(NullableValueSimpleInterval<long> value)
+        {
+            if (value == null) throw new ArgumentNullException("value");
+            if (!value.LeftBounded) return null;
+            return new Int64Condition
+            {
+                Value = value.MinValue,
+                Operator = SimpleCondition.GetLeftOperator(value)
+            };
+        }
+
+        /// <summary>
+        /// Get a condition from the given nullable value simple interval left bound.
+        /// </summary>
+        /// <param name="value">A simple interval.</param>
+        /// <returns>A condition from right bound of a specific simple interval.</returns>
+        public static Int64Condition CreateFromRight(NullableValueSimpleInterval<long> value)
+        {
+            if (value == null) throw new ArgumentNullException("value");
+            if (!value.RightBounded) return null;
+            return new Int64Condition
+            {
+                Value = value.MaxValue,
+                Operator = SimpleCondition.GetRightOperator(value)
+            };
+        }
+
+        /// <summary>
+        /// Checks if a integer condition is valid.
+        /// </summary>
+        /// <param name="value">The condition object.</param>
+        /// <returns>true if it is valid; otherwise, false.</returns>
+        public static bool IsValid(Int64Condition value)
+        {
+            return IsValid(value, SimpleCondition.GetComparableValidOperators().Contains);
+        }
+
+        /// <summary>
+        /// Gets the type of the value.
+        /// </summary>
+        public override DbValueType ValueType
+        {
+            get { return DbValueType.Int64; }
+        }
+
+        /// <summary>
+        /// Tests if the given number is macthed.
+        /// </summary>
+        /// <param name="source">The source to test the condition.</param>
+        /// <returns>true if it is matched; otherwise, false.</returns>
+        public bool IsMatched(long source)
+        {
+            switch (Operator)
+            {
+                case DbCompareOperator.Equal:
+                    return source == Value;
+                case DbCompareOperator.NotEqual:
+                    return source != Value;
+                case DbCompareOperator.Greater:
+                    return source > Value;
+                case DbCompareOperator.GreaterOrEqual:
+                    return source >= Value;
+                case DbCompareOperator.Less:
+                    return source < Value;
+                case DbCompareOperator.LessOrEqual:
+                    return source <= Value;
+            }
+
+            return false;
         }
     }
 
@@ -704,6 +890,162 @@ namespace Trivial.Data
         {
             get { return DbValueType.SingleDecimal; }
         }
+
+        /// <summary>
+        /// Tests if the given number is macthed.
+        /// </summary>
+        /// <param name="source">The source to test the condition.</param>
+        /// <returns>true if it is matched; otherwise, false.</returns>
+        public bool IsMatched(float source)
+        {
+            switch (Operator)
+            {
+                case DbCompareOperator.Equal:
+                    return source == Value;
+                case DbCompareOperator.NotEqual:
+                    return source != Value;
+                case DbCompareOperator.Greater:
+                    return source > Value;
+                case DbCompareOperator.GreaterOrEqual:
+                    return source >= Value;
+                case DbCompareOperator.Less:
+                    return source < Value;
+                case DbCompareOperator.LessOrEqual:
+                    return source <= Value;
+            }
+
+            return false;
+        }
+    }
+
+    /// <summary>
+    /// The simple condition class for double float.
+    /// </summary>
+    public class DoubleCondition : StructSimpleCondition<double>
+    {
+        /// <summary>
+        /// Initializes a new instance of the DoubleCondition class.
+        /// </summary>
+        /// <remarks>You can use this to initialize an instance for the class.</remarks>
+        public DoubleCondition()
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the DoubleCondition class.
+        /// </summary>
+        /// <param name="copier">An instance to copy.</param>
+        /// <remarks>You can use this to initialize an instance for the class.</remarks>
+        public DoubleCondition(IStructSimpleCondition<double> copier)
+            : base(copier)
+        {
+        }
+
+        /// <summary>
+        /// Get a condition from the given struct value simple interval left bound.
+        /// </summary>
+        /// <param name="value">A simple interval.</param>
+        /// <returns>A condition from left bound of a specific simple interval.</returns>
+        public static DoubleCondition CreateFromLeft(StructValueSimpleInterval<double> value)
+        {
+            if (value == null) throw new ArgumentNullException("value");
+            return new DoubleCondition
+            {
+                Value = value.MinValue,
+                Operator = SimpleCondition.GetLeftOperator(value)
+            };
+        }
+
+        /// <summary>
+        /// Get a condition from the given struct value simple interval left bound.
+        /// </summary>
+        /// <param name="value">A simple interval.</param>
+        /// <returns>A condition from right bound of a specific simple interval.</returns>
+        public static DoubleCondition CreateFromRight(StructValueSimpleInterval<double> value)
+        {
+            if (value == null) throw new ArgumentNullException("value");
+            return new DoubleCondition
+            {
+                Value = value.MaxValue,
+                Operator = SimpleCondition.GetRightOperator(value)
+            };
+        }
+
+        /// <summary>
+        /// Get a condition from the given nullable value simple interval left bound.
+        /// </summary>
+        /// <param name="value">A simple interval.</param>
+        /// <returns>A condition from left bound of a specific simple interval.</returns>
+        public static DoubleCondition CreateFromLeft(NullableValueSimpleInterval<double> value)
+        {
+            if (value == null) throw new ArgumentNullException("value");
+            if (!value.LeftBounded) return null;
+            return new DoubleCondition
+            {
+                Value = value.MinValue,
+                Operator = SimpleCondition.GetLeftOperator(value)
+            };
+        }
+
+        /// <summary>
+        /// Get a condition from the given nullable value simple interval left bound.
+        /// </summary>
+        /// <param name="value">A simple interval.</param>
+        /// <returns>A condition from right bound of a specific simple interval.</returns>
+        public static DoubleCondition CreateFromRight(NullableValueSimpleInterval<double> value)
+        {
+            if (value == null) throw new ArgumentNullException("value");
+            if (!value.RightBounded) return null;
+            return new DoubleCondition
+            {
+                Value = value.MaxValue,
+                Operator = SimpleCondition.GetRightOperator(value)
+            };
+        }
+
+        /// <summary>
+        /// Checks if a double float value condition is valid.
+        /// </summary>
+        /// <param name="value">The condition object.</param>
+        /// <returns>true if it is valid; otherwise, false.</returns>
+        public static bool IsValid(DoubleCondition value)
+        {
+            return IsValid(value, SimpleCondition.GetComparableValidOperators().Contains);
+        }
+
+        /// <summary>
+        /// Gets the type of the value.
+        /// </summary>
+        public override DbValueType ValueType
+        {
+            get { return DbValueType.DoubleDecimal; }
+        }
+
+        /// <summary>
+        /// Tests if the given number is macthed.
+        /// </summary>
+        /// <param name="source">The source to test the condition.</param>
+        /// <returns>true if it is matched; otherwise, false.</returns>
+        public bool IsMatched(double source)
+        {
+            switch (Operator)
+            {
+                case DbCompareOperator.Equal:
+                    return source == Value;
+                case DbCompareOperator.NotEqual:
+                    return source != Value;
+                case DbCompareOperator.Greater:
+                    return source > Value;
+                case DbCompareOperator.GreaterOrEqual:
+                    return source >= Value;
+                case DbCompareOperator.Less:
+                    return source < Value;
+                case DbCompareOperator.LessOrEqual:
+                    return source <= Value;
+            }
+
+            return false;
+        }
     }
 
     /// <summary>
@@ -808,6 +1150,32 @@ namespace Trivial.Data
         {
             get { return DbValueType.DateTimeGmt; }
         }
+
+        /// <summary>
+        /// Tests if the given date time is macthed.
+        /// </summary>
+        /// <param name="source">The source to test the condition.</param>
+        /// <returns>true if it is matched; otherwise, false.</returns>
+        public bool IsMatched(DateTime source)
+        {
+            switch (Operator)
+            {
+                case DbCompareOperator.Equal:
+                    return source == Value;
+                case DbCompareOperator.NotEqual:
+                    return source != Value;
+                case DbCompareOperator.Greater:
+                    return source > Value;
+                case DbCompareOperator.GreaterOrEqual:
+                    return source >= Value;
+                case DbCompareOperator.Less:
+                    return source < Value;
+                case DbCompareOperator.LessOrEqual:
+                    return source <= Value;
+            }
+
+            return false;
+        }
     }
 
     /// <summary>
@@ -849,6 +1217,24 @@ namespace Trivial.Data
         public override DbValueType ValueType
         {
             get { return DbValueType.Boolean; }
+        }
+
+        /// <summary>
+        /// Tests if the given boolean is macthed.
+        /// </summary>
+        /// <param name="source">The source to test the condition.</param>
+        /// <returns>true if it is matched; otherwise, false.</returns>
+        public bool IsMatched(bool source)
+        {
+            switch (Operator)
+            {
+                case DbCompareOperator.Equal:
+                    return source == Value;
+                case DbCompareOperator.NotEqual:
+                    return source != Value;
+            }
+
+            return false;
         }
     }
 }

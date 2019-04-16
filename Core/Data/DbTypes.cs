@@ -22,7 +22,7 @@ namespace Trivial.Data
         /// <summary>
         /// Int32 format.
         /// </summary>
-        Integer = 1,
+        Int32 = 1,
 
         /// <summary>
         /// Single format.
@@ -42,7 +42,12 @@ namespace Trivial.Data
         /// <summary>
         /// Int64 format.
         /// </summary>
-        BigInteger = 5,
+        Int64 = 5,
+
+        /// <summary>
+        /// Single format.
+        /// </summary>
+        DoubleDecimal = 6
     }
 
     /// <summary>
