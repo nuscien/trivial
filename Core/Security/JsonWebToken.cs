@@ -244,7 +244,7 @@ namespace Trivial.Security
                 if (other is null) return false;
                 if (other is Parser p) return Equals(p);
                 if (other is string s) return Equals(s);
-                if (other is SecureString ss) return Equals(SecureStringExtension.ToUnsecureString(ss));
+                if (other is SecureString ss) return Equals(SecureStringExtensions.ToUnsecureString(ss));
                 if (other is StringBuilder sb) return Equals(sb.ToString());
                 return false;
             }

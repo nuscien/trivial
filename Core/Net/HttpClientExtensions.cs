@@ -16,7 +16,7 @@ namespace Trivial.Net
     /// <summary>
     /// HTTP web client extension and helper.
     /// </summary>
-    public static class HttpClientExtension
+    public static class HttpClientExtensions
     {
         /// <summary>
         /// Default block size.
@@ -381,7 +381,7 @@ namespace Trivial.Net
         public static async Task<Tasks.RetryResult<HttpResponseMessage>> SendAsync(this HttpClient httpClient, HttpRequestMessage request, Tasks.IRetryPolicy retryPolicy, Func<Exception, Exception> needThrow, HttpCompletionOption completionOption, CancellationToken cancellationToken = default)
         {
             if (httpClient == null) throw new ArgumentNullException(nameof(httpClient));
-            return await Tasks.RetryExtension.ProcessAsync(retryPolicy, async (CancellationToken cancellation) =>
+            return await Tasks.RetryExtensions.ProcessAsync(retryPolicy, async (CancellationToken cancellation) =>
             {
                 return await httpClient.SendAsync(request, completionOption, cancellation);
             }, needThrow, cancellationToken);
@@ -399,7 +399,7 @@ namespace Trivial.Net
         public static async Task<Tasks.RetryResult<HttpResponseMessage>> SendAsync(this HttpClient httpClient, HttpRequestMessage request, Tasks.IRetryPolicy retryPolicy, Func<Exception, Exception> needThrow, CancellationToken cancellationToken = default)
         {
             if (httpClient == null) throw new ArgumentNullException(nameof(httpClient));
-            return await Tasks.RetryExtension.ProcessAsync(retryPolicy, async (CancellationToken cancellation) =>
+            return await Tasks.RetryExtensions.ProcessAsync(retryPolicy, async (CancellationToken cancellation) =>
             {
                 return await httpClient.SendAsync(request, cancellation);
             }, needThrow, cancellationToken);

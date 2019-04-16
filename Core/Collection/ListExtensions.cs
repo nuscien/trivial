@@ -9,7 +9,7 @@ namespace Trivial.Collection
     /// <summary>
     /// The list utility.
     /// </summary>
-    public static class ListExtension
+    public static class ListExtensions
     {
         /// <summary>
         /// Adds a key and a value to the end of the key value pairs.

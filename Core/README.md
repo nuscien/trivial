@@ -180,7 +180,7 @@ And you can also implement the `OAuthBasedClient` base class to create your own 
 
 ### Secure string utiltiy
 
-You can use the extension methods in the `SecureStringExtension` class to convert the secret between `SecureString` and `String`/`StringBuilder`/`Byte[]`.
+You can use the extension methods in the `SecureStringExtensions` class to convert the secret between `SecureString` and `String`/`StringBuilder`/`Byte[]`.
 
 You can also use the class `RSASecretExchange` to transfer the secret with RSA encryption.
 

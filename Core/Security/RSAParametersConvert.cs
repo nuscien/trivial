@@ -168,7 +168,7 @@ namespace Trivial.Security
                             return null;
 
                         var seq = reader.ReadBytes(15); // Read the Sequence OID.
-                        if (!ListExtension.Equals(seq, seqOID))   // Make sure Sequence for OID is correct.
+                        if (!ListExtensions.Equals(seq, seqOID))   // Make sure Sequence for OID is correct.
                             return null;
 
                         twoBytes = reader.ReadUInt16();
@@ -335,7 +335,7 @@ namespace Trivial.Security
                 // Return Pem.
                 var result = Convert.ToBase64String(bytes);
                 if (onlyBase64Value) return result;
-                return $"-----BEGIN {flag}-----\n{StringExtension.BreakLines(result, 64, '\n')}\n-----END {flag}-----";
+                return $"-----BEGIN {flag}-----\n{StringExtensions.BreakLines(result, 64, '\n')}\n-----END {flag}-----";
             }
         }
 
@@ -374,7 +374,7 @@ namespace Trivial.Security
                 // Return PEM.
                 var result = Convert.ToBase64String(bytes);
                 if (onlyBase64Value) return result;
-                return $"-----BEGIN PUBLIC KEY-----\n{StringExtension.BreakLines(result, 64, '\n')}\n-----END PUBLIC KEY-----";
+                return $"-----BEGIN PUBLIC KEY-----\n{StringExtensions.BreakLines(result, 64, '\n')}\n-----END PUBLIC KEY-----";
             }
         }
 
@@ -405,7 +405,7 @@ namespace Trivial.Security
         {
             if (data == null) return null;
             if (rsa == null) throw new ArgumentNullException(nameof(rsa), "rsa should not be null.");
-            return rsa.Encrypt((encoding ?? Encoding.UTF8).GetBytes(SecureStringExtension.ToUnsecureString(data)), padding);
+            return rsa.Encrypt((encoding ?? Encoding.UTF8).GetBytes(SecureStringExtensions.ToUnsecureString(data)), padding);
         }
 
         /// <summary>

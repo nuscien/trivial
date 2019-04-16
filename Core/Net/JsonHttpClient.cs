@@ -296,14 +296,14 @@ namespace Trivial.Net
             T valueResult;
             try
             {
-                var result = await Tasks.RetryExtension.ProcessAsync(RetryPolicy, async (CancellationToken cancellation) =>
+                var result = await Tasks.RetryExtensions.ProcessAsync(RetryPolicy, async (CancellationToken cancellation) =>
                 {
                     resp = await client.SendAsync(request, cancellationToken);
                     if (!SerializeEvenIfFailed && !resp.IsSuccessStatusCode)
                         throw FailedHttpException.Create(resp, "Failed to send JSON HTTP web request because of unsuccess status code.");
                     var obj = Deserializer != null
-                        ? await HttpClientExtension.SerializeAsync(resp.Content, Deserializer)
-                        : await HttpClientExtension.SerializeJsonAsync<T>(resp.Content);
+                        ? await HttpClientExtensions.SerializeAsync(resp.Content, Deserializer)
+                        : await HttpClientExtensions.SerializeJsonAsync<T>(resp.Content);
                     return obj;
                 }, GetExceptionInternal, cancellationToken);
                 valueResult = result.Result;

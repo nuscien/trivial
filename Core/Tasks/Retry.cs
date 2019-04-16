@@ -300,9 +300,9 @@ namespace Trivial.Tasks
     }
 
     /// <summary>
-    /// The instance for action retry.
+    /// The extensions for action retry.
     /// </summary>
-    public static class RetryExtension
+    public static class RetryExtensions
     {
         /// <summary>
         /// Processes an action with this retry policy.

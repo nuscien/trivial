@@ -9,7 +9,7 @@ namespace Trivial.Security
     /// <summary>
     /// The extension of secure string.
     /// </summary>
-    public static class SecureStringExtension
+    public static class SecureStringExtensions
     {
         /// <summary>
         /// Appends a string into a secure string instance.

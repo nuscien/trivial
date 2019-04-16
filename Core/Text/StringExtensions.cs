@@ -43,7 +43,7 @@ namespace Trivial.Text
     /// <summary>
     /// The string extension and helper.
     /// </summary>
-    public static class StringExtension
+    public static class StringExtensions
     {
         /// <summary>
         /// Gets the MIME value of plain text format text.

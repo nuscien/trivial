@@ -150,7 +150,7 @@ namespace Trivial.Data
         /// <returns>Content of CSV.</returns>
         public static IEnumerable<IReadOnlyList<string>> Parse(string csv)
         {
-            return Parse(StringExtension.YieldSplit(csv, '\r', '\n', StringSplitOptions.RemoveEmptyEntries));
+            return Parse(StringExtensions.YieldSplit(csv, '\r', '\n', StringSplitOptions.RemoveEmptyEntries));
         }
 
         /// <summary>
@@ -232,17 +232,17 @@ namespace Trivial.Data
                     {
                         if (item.Length > 1 && item[item.Length - 1] == '"' && item[item.Length - 2] != '\\')
                         {
-                            list.Add(StringExtension.ReplaceBackSlash(item.Substring(1, item.Length - 2)));
+                            list.Add(StringExtensions.ReplaceBackSlash(item.Substring(1, item.Length - 2)));
                         }
                         else
                         {
-                            list.Add(StringExtension.ReplaceBackSlash(item.Substring(1)));
+                            list.Add(StringExtensions.ReplaceBackSlash(item.Substring(1)));
                             inScope = true;
                         }
                     }
                     else
                     {
-                        list.Add(StringExtension.ReplaceBackSlash(item));
+                        list.Add(StringExtensions.ReplaceBackSlash(item));
                     }
 
                     continue;
@@ -250,12 +250,12 @@ namespace Trivial.Data
 
                 if (item.Length > 0 && item[item.Length - 1] == '"' && (item.Length == 1 || item[item.Length - 2] != '\\'))
                 {
-                    list[list.Count - 1] += "," + StringExtension.ReplaceBackSlash(item.Substring(0, item.Length - 1));
+                    list[list.Count - 1] += "," + StringExtensions.ReplaceBackSlash(item.Substring(0, item.Length - 1));
                     inScope = false;
                 }
                 else
                 {
-                    list[list.Count - 1] += "," + StringExtension.ReplaceBackSlash(item);
+                    list[list.Count - 1] += "," + StringExtensions.ReplaceBackSlash(item);
                 }
             }
 

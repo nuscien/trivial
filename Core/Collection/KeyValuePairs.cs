@@ -55,7 +55,7 @@ namespace Trivial.Collection
 
             set
             {
-                ListExtension.Set(this, key, value);
+                ListExtensions.Set(this, key, value);
             }
         }
 
@@ -67,7 +67,7 @@ namespace Trivial.Collection
         /// <returns>The query value.</returns>
         public string GetValue(string key, string separator = null)
         {
-            var arr = ListExtension.GetValues(this, key).ToList();
+            var arr = ListExtensions.GetValues(this, key).ToList();
             if (arr.Count == 0) return null;
             return string.Join(separator ?? ValueSeparator ?? string.Empty, arr);
         }
@@ -80,7 +80,7 @@ namespace Trivial.Collection
         /// <returns>The query value.</returns>
         public string GetFirstValue(string key, bool ignoreEmpty = false)
         {
-            var col = ListExtension.GetValues(this, key);
+            var col = ListExtensions.GetValues(this, key);
             if (ignoreEmpty) col = col.Where(item => !string.IsNullOrWhiteSpace(item));
             return col.FirstOrDefault();
         }
@@ -93,7 +93,7 @@ namespace Trivial.Collection
         /// <returns>The query value. The last one for multiple values..</returns>
         public string GetLastValue(string key, bool ignoreEmpty = false)
         {
-            var col = ListExtension.GetValues(this, key);
+            var col = ListExtensions.GetValues(this, key);
             if (ignoreEmpty) col = col.Where(item => !string.IsNullOrWhiteSpace(item));
             return col.LastOrDefault();
         }

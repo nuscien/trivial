@@ -1,5 +1,5 @@
 ﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="Angle\Extension.cs" company="Nanchang Jinchen Software Co., Ltd.">
+// <copyright file="Angle\Extensions.cs" company="Nanchang Jinchen Software Co., Ltd.">
 //   Copyright (c) 2010 Nanchang Jinchen Software Co., Ltd. All rights reserved.
 // </copyright>
 // <summary>
@@ -15,7 +15,7 @@ namespace Trivial.Maths
     /// <summary>
     /// The struct of degree (angle).
     /// </summary>
-    public static class AngleExtension
+    public static class AngleExtensions
     {
         /// <summary>
         /// Gets a value indicating whether the angle is an acute angle.

@@ -545,7 +545,7 @@ namespace Trivial.Security
         /// <returns>The Base64 string with secret encrypted.</returns>
         public string EncryptText(SecureString text, bool ignoreFormatIfNoCrypto = false, RSAEncryptionPadding padding = null)
         {
-            return EncryptText(SecureStringExtension.ToUnsecureString(text), ignoreFormatIfNoCrypto, padding);
+            return EncryptText(SecureStringExtensions.ToUnsecureString(text), ignoreFormatIfNoCrypto, padding);
         }
 
         /// <summary>

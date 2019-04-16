@@ -214,7 +214,7 @@ namespace Trivial.Security
         /// <returns>true if the signature is valid; otherwise, false.</returns>
         public bool Verify(byte[] data, byte[] signature)
         {
-            return ListExtension.Equals(Sign(data), signature);
+            return ListExtensions.Equals(Sign(data), signature);
         }
 
         /// <summary>
@@ -604,7 +604,7 @@ namespace Trivial.Security
         {
             return verify != null
                 ? verify(data, signature, secretBytes)
-                : ListExtension.Equals(sign(data, secretBytes), signature);
+                : ListExtensions.Equals(sign(data, secretBytes), signature);
         }
     }
 }

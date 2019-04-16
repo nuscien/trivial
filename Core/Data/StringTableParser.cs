@@ -183,7 +183,7 @@ namespace Trivial.Data
         /// <returns>Lines.</returns>
         protected virtual IEnumerable<string> ReadLines(string text)
         {
-            return StringExtension.YieldSplit(text, '\r', '\n', StringSplitOptions.RemoveEmptyEntries);
+            return StringExtensions.YieldSplit(text, '\r', '\n', StringSplitOptions.RemoveEmptyEntries);
         }
 
         /// <summary>

@@ -275,7 +275,7 @@ namespace Trivial.Console
     /// <summary>
     /// The utilities.
     /// </summary>
-    public static class VerbExtension
+    public static class VerbExtensions
     {
         /// <summary>
         /// Registers a help verb.
