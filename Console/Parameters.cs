@@ -92,7 +92,7 @@ namespace Trivial.Console
         /// </summary>
         /// <param name="result">The result value converted when this method returns.</param>
         /// <returns>true if the value was converted successfully; otherwise, false.</returns>
-        public bool TryToParse(out bool result)
+        public bool TryParse(out bool result)
         {
             if (!string.IsNullOrWhiteSpace(Value)) return bool.TryParse(Value, out result);
             result = true;
@@ -104,7 +104,7 @@ namespace Trivial.Console
         /// </summary>
         /// <param name="result">The result value converted when this method returns.</param>
         /// <returns>true if the value was converted successfully; otherwise, false.</returns>
-        public bool TryToParse(out int result)
+        public bool TryParse(out int result)
         {
             return int.TryParse(Value, out result);
         }
@@ -114,7 +114,7 @@ namespace Trivial.Console
         /// </summary>
         /// <param name="result">The result value converted when this method returns.</param>
         /// <returns>true if the value was converted successfully; otherwise, false.</returns>
-        public bool TryToParse(out long result)
+        public bool TryParse(out long result)
         {
             return long.TryParse(Value, out result);
         }
@@ -124,7 +124,7 @@ namespace Trivial.Console
         /// </summary>
         /// <param name="result">The result value converted when this method returns.</param>
         /// <returns>true if the value was converted successfully; otherwise, false.</returns>
-        public bool TryToParse(out float result)
+        public bool TryParse(out float result)
         {
             return float.TryParse(Value, out result);
         }
@@ -134,7 +134,7 @@ namespace Trivial.Console
         /// </summary>
         /// <param name="result">The result value converted when this method returns.</param>
         /// <returns>true if the value was converted successfully; otherwise, false.</returns>
-        public bool TryToParse(out double result)
+        public bool TryParse(out double result)
         {
             return double.TryParse(Value, out result);
         }
@@ -144,7 +144,7 @@ namespace Trivial.Console
         /// </summary>
         /// <param name="result">The result value converted when this method returns.</param>
         /// <returns>true if the value was converted successfully; otherwise, false.</returns>
-        public bool TryToParse(out Guid result)
+        public bool TryParse(out Guid result)
         {
             return Guid.TryParse(Value, out result);
         }
@@ -154,7 +154,7 @@ namespace Trivial.Console
         /// </summary>
         /// <param name="result">The result value converted when this method returns.</param>
         /// <returns>true if the value was converted successfully; otherwise, false.</returns>
-        public bool TryToParse(out DateTime result)
+        public bool TryParse(out DateTime result)
         {
             return DateTime.TryParse(Value, out result);
         }
@@ -164,7 +164,7 @@ namespace Trivial.Console
         /// </summary>
         /// <param name="result">The result value converted when this method returns.</param>
         /// <returns>true if the value was converted successfully; otherwise, false.</returns>
-        public bool TryToParse(out DateTimeOffset result)
+        public bool TryParse(out DateTimeOffset result)
         {
             return DateTimeOffset.TryParse(Value, out result);
         }
@@ -296,6 +296,20 @@ namespace Trivial.Console
         public bool Equals(string other)
         {
             return ToString() == other;
+        }
+
+        /// <summary>
+        /// Determines whether the value of this instance and the specified one have the same value.
+        /// </summary>
+        /// <param name="other">The object to compare.</param>
+        /// <returns>true if this instance is the value of the same as the specific one; otherwise, false.</returns>
+        public override bool Equals(object other)
+        {
+            if (other is null) return false;
+            if (other is Parameters parameters) return Equals(parameters);
+            if (other is Parameter parameter) return Equals(parameter);
+            if (other is string str) return Equals(str);
+            return false;
         }
 
         /// <summary>
@@ -748,6 +762,20 @@ namespace Trivial.Console
         public bool Equals(string other)
         {
             return ToString() == other;
+        }
+
+        /// <summary>
+        /// Determines whether the value of this instance and the specified one have the same value.
+        /// </summary>
+        /// <param name="other">The object to compare.</param>
+        /// <returns>true if this instance is the value of the same as the specific one; otherwise, false.</returns>
+        public override bool Equals(object other)
+        {
+            if (other is null) return false;
+            if (other is Parameters parameters) return Equals(parameters);
+            if (other is Parameter parameter) return Equals(parameter);
+            if (other is string str) return Equals(str);
+            return false;
         }
 
         /// <summary>

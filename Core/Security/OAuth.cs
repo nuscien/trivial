@@ -555,7 +555,7 @@ namespace Trivial.Security
         /// Initializes a new instance of the OAuthBasedClient class.
         /// </summary>
         /// <param name="tokenCached">The token information instance cached.</param>
-        public OAuthBasedClient(TokenInfo tokenCached) : base(tokenCached)
+        protected OAuthBasedClient(TokenInfo tokenCached) : base(tokenCached)
         {
             oauth = new OAuthClient(tokenCached);
             oauth.TokenChanged += (sender, ev) =>
@@ -575,7 +575,7 @@ namespace Trivial.Security
         /// </summary>
         /// <param name="appKey">The app accessing key.</param>
         /// <param name="tokenCached">The token information instance cached.</param>
-        public OAuthBasedClient(AppAccessingKey appKey, TokenInfo tokenCached = null) : base(tokenCached)
+        protected OAuthBasedClient(AppAccessingKey appKey, TokenInfo tokenCached = null) : base(tokenCached)
         {
             oauth = new OAuthClient(appKey, tokenCached);
             oauth.TokenChanged += (sender, ev) =>
@@ -596,7 +596,7 @@ namespace Trivial.Security
         /// <param name="appId">The app id.</param>
         /// <param name="secretKey">The secret key.</param>
         /// <param name="tokenCached">The token information instance cached.</param>
-        public OAuthBasedClient(string appId, string secretKey, TokenInfo tokenCached = null) : this(new AppAccessingKey(appId, secretKey), tokenCached)
+        protected OAuthBasedClient(string appId, string secretKey, TokenInfo tokenCached = null) : this(new AppAccessingKey(appId, secretKey), tokenCached)
         {
         }
 
@@ -606,7 +606,7 @@ namespace Trivial.Security
         /// <param name="appId">The app id.</param>
         /// <param name="secretKey">The secret key.</param>
         /// <param name="tokenCached">The token information instance cached.</param>
-        public OAuthBasedClient(string appId, SecureString secretKey, TokenInfo tokenCached = null) : this(new AppAccessingKey(appId, secretKey), tokenCached)
+        protected OAuthBasedClient(string appId, SecureString secretKey, TokenInfo tokenCached = null) : this(new AppAccessingKey(appId, secretKey), tokenCached)
         {
         }
 
@@ -884,7 +884,7 @@ namespace Trivial.Security
         /// Initializes a new instance of the OAuthBasedClient class.
         /// </summary>
         /// <param name="tokenCached">The token information instance cached.</param>
-        public OAuthBasedClient(T tokenCached) : base(tokenCached)
+        protected OAuthBasedClient(T tokenCached) : base(tokenCached)
         {
             oauth.TokenResolved += (sender, ev) =>
             {
@@ -897,7 +897,7 @@ namespace Trivial.Security
         /// </summary>
         /// <param name="appKey">The app accessing key.</param>
         /// <param name="tokenCached">The token information instance cached.</param>
-        public OAuthBasedClient(AppAccessingKey appKey, T tokenCached = null) : base(appKey, tokenCached)
+        protected OAuthBasedClient(AppAccessingKey appKey, T tokenCached = null) : base(appKey, tokenCached)
         {
             oauth.TokenResolved += (sender, ev) =>
             {
@@ -911,7 +911,7 @@ namespace Trivial.Security
         /// <param name="appId">The app id.</param>
         /// <param name="secretKey">The secret key.</param>
         /// <param name="tokenCached">The token information instance cached.</param>
-        public OAuthBasedClient(string appId, string secretKey, T tokenCached = null) : this(new AppAccessingKey(appId, secretKey), tokenCached)
+        protected OAuthBasedClient(string appId, string secretKey, T tokenCached = null) : this(new AppAccessingKey(appId, secretKey), tokenCached)
         {
         }
 
@@ -921,7 +921,7 @@ namespace Trivial.Security
         /// <param name="appId">The app id.</param>
         /// <param name="secretKey">The secret key.</param>
         /// <param name="tokenCached">The token information instance cached.</param>
-        public OAuthBasedClient(string appId, SecureString secretKey, T tokenCached = null) : this(new AppAccessingKey(appId, secretKey), tokenCached)
+        protected OAuthBasedClient(string appId, SecureString secretKey, T tokenCached = null) : this(new AppAccessingKey(appId, secretKey), tokenCached)
         {
         }
 
