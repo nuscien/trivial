@@ -687,14 +687,14 @@ namespace Trivial.Security
         public DateTime? Expiration { get; set; }
 
         /// <summary>
-        /// Gets or sets an optional expiration date time tick in JSON format.
+        /// Gets or sets an optional expiration Unix timestamp.
         /// The original property is Expiration.
         /// </summary>
         [DataMember(Name = "exp", EmitDefaultValue = false)]
         public long? ExpirationTick
         {
-            get => WebUtility.ParseDate(Expiration);
-            set => Expiration = WebUtility.ParseDate(value);
+            get => ParseDate(Expiration);
+            set => Expiration = ParseDate(value);
         }
 
         /// <summary>
@@ -709,14 +709,14 @@ namespace Trivial.Security
         public DateTime? NotBefore { get; set; }
 
         /// <summary>
-        /// Gets or sets an optional available start date time tick in JSON format.
+        /// Gets or sets an optional available start Unix timestamp.
         /// The original property is NotBefore.
         /// </summary>
         [DataMember(Name = "nbf", EmitDefaultValue = false)]
         public long? NotBeforeTick
         {
-            get => WebUtility.ParseDate(NotBefore);
-            set => NotBefore = WebUtility.ParseDate(value);
+            get => NotBefore.HasValue ? ParseDate(NotBefore) / 1000 : null;
+            set => NotBefore = ParseDate(value);
         }
 
         /// <summary>
@@ -727,14 +727,14 @@ namespace Trivial.Security
         public DateTime? IssuedAt { get; set; }
 
         /// <summary>
-        /// Gets or sets an optional issue creation date time tick in JSON format.
+        /// Gets or sets an optional issue creation Unix timestamp.
         /// The original property is IssuedAt.
         /// </summary>
         [DataMember(Name = "iat", EmitDefaultValue = false)]
         public long? IssuedAtTick
         {
-            get => WebUtility.ParseDate(IssuedAt);
-            set => IssuedAt = WebUtility.ParseDate(value);
+            get => ParseDate(IssuedAt);
+            set => IssuedAt = ParseDate(value);
         }
 
         /// <summary>
@@ -750,6 +750,28 @@ namespace Trivial.Security
                 Serializer = serializer
             };
             return jwt.ToAuthenticationHeaderValue();
+        }
+
+        /// <summary>
+        /// Parses Unix timestamp to date and time back.
+        /// </summary>
+        /// <param name="date">A date and time.</param>
+        /// <returns>The JavaScript date tick.</returns>
+        private static long? ParseDate(DateTime? date)
+        {
+            if (!date.HasValue) return null;
+            return WebUtility.ParseDate(date.Value) / 1000;
+        }
+
+        /// <summary>
+        /// Parses Unix timestamp tick to date and time.
+        /// </summary>
+        /// <param name="tick">The JavaScript date tick.</param>
+        /// <returns>A date and time.</returns>
+        public static DateTime? ParseDate(long? tick)
+        {
+            if (!tick.HasValue) return null;
+            return WebUtility.ParseDate(tick.Value * 1000);
         }
     }
 }
