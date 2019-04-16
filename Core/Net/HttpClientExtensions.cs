@@ -350,7 +350,7 @@ namespace Trivial.Net
         public static void Add(this MultipartFormDataContent content, string name, DateTime value, Encoding encoding = null)
         {
             if (content == null) return;
-            content.Add(new StringContent(Web.WebUtility.ParseDate(value).ToString(), encoding ?? Encoding.UTF8), name);
+            content.Add(new StringContent(Web.WebFormat.ParseDate(value).ToString(), encoding ?? Encoding.UTF8), name);
         }
 
         /// <summary>

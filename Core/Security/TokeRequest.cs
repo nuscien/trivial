@@ -433,8 +433,8 @@ namespace Trivial.Security
                 if (propValue == null) continue;
                 var propType = propValue.GetType();
                 if (propType == typeof(Uri)) data.Add(attr.Name, ((Uri)propValue).OriginalString);
-                else if (propType == typeof(DateTime)) data.Add(attr.Name, WebUtility.ParseDate((DateTime)propValue).ToString());
-                else if (propType == typeof(DateTimeOffset)) data.Add(attr.Name, WebUtility.ParseDate((DateTimeOffset)propValue).ToString());
+                else if (propType == typeof(DateTime)) data.Add(attr.Name, WebFormat.ParseDate((DateTime)propValue).ToString());
+                else if (propType == typeof(DateTimeOffset)) data.Add(attr.Name, WebFormat.ParseDate((DateTimeOffset)propValue).ToString());
                 else if (propType == typeof(SecureString)) data.Add(attr.Name, ((SecureString)propValue).ToUnsecureString());
                 else if (!string.IsNullOrWhiteSpace(propValue.ToString())) data.Add(attr.Name, propValue.ToString());
             }
@@ -460,8 +460,8 @@ namespace Trivial.Security
                 if (propValue == null) continue;
                 var propType = propValue.GetType();
                 if (propType == typeof(Uri)) data.Add(attr.Name, $"\"{((Uri)propValue).OriginalString}\"");
-                else if (propType == typeof(DateTime)) data.Add(attr.Name, $"{WebUtility.ParseDate((DateTime)propValue).ToString()}");
-                else if (propType == typeof(DateTimeOffset)) data.Add(attr.Name, $"{WebUtility.ParseDate((DateTimeOffset)propValue).ToString()}");
+                else if (propType == typeof(DateTime)) data.Add(attr.Name, $"{WebFormat.ParseDate((DateTime)propValue).ToString()}");
+                else if (propType == typeof(DateTimeOffset)) data.Add(attr.Name, $"{WebFormat.ParseDate((DateTimeOffset)propValue).ToString()}");
                 else if (propType == typeof(int) || propType == typeof(long) || propType == typeof(uint) || propType == typeof(ulong) || propType == typeof(float) || propType == typeof(double) || propType == typeof(short) || propType == typeof(bool)) data.Add(attr.Name, $"{propValue.ToString()}");
                 else if (propType == typeof(SecureString)) data.Add(attr.Name, $"\"{((SecureString)propValue).ToUnsecureString()}\"");
                 else if (!string.IsNullOrWhiteSpace(propValue.ToString())) data.Add(attr.Name, $"\"{propValue.ToString()}\"");

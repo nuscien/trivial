@@ -461,7 +461,7 @@ namespace Trivial.Net
         {
             return SendAsync(new HttpRequestMessage(method, requestUri)
             {
-                Content = new StringContent(content.ToString(), Encoding.UTF8, Web.WebUtility.FormUrlMIME)
+                Content = new StringContent(content.ToString(), Encoding.UTF8, Web.WebFormat.FormUrlMIME)
             }, cancellationToken);
         }
 
@@ -481,7 +481,7 @@ namespace Trivial.Net
         {
             return SendAsync(new HttpRequestMessage(method, requestUri)
             {
-                Content = new StringContent(content.ToString(), Encoding.UTF8, Web.WebUtility.FormUrlMIME)
+                Content = new StringContent(content.ToString(), Encoding.UTF8, Web.WebFormat.FormUrlMIME)
             }, cancellationToken);
         }
 
@@ -591,7 +591,7 @@ namespace Trivial.Net
         {
             return deserializer != null ? SendAsync(new HttpRequestMessage(method, requestUri)
             {
-                Content = new StringContent(deserializer(content), Encoding.UTF8, Trivial.Web.WebUtility.JsonMIME)
+                Content = new StringContent(deserializer(content), Encoding.UTF8, Trivial.Web.WebFormat.JsonMIME)
             }, cancellationToken) : SendJsonAsync(method, requestUri, content, cancellationToken);
         }
 
@@ -613,7 +613,7 @@ namespace Trivial.Net
         {
             return deserializer != null ? SendAsync(new HttpRequestMessage(method, requestUri)
             {
-                Content = new StringContent(deserializer(content), Encoding.UTF8, Trivial.Web.WebUtility.JsonMIME)
+                Content = new StringContent(deserializer(content), Encoding.UTF8, Trivial.Web.WebFormat.JsonMIME)
             }, cancellationToken) : SendJsonAsync(method, requestUri, content, cancellationToken);
         }
 

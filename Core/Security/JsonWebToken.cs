@@ -104,7 +104,7 @@ namespace Trivial.Security
             /// <returns>A signature bytes.</returns>
             public byte[] GetSignature()
             {
-                return WebUtility.Base64UrlDecode(SignatureBase64Url);
+                return WebFormat.Base64UrlDecode(SignatureBase64Url);
             }
 
             /// <summary>
@@ -118,7 +118,7 @@ namespace Trivial.Security
                 if (checkName && !IsSameSignatureAlgorithmName(algorithm)) return false;
                 if (algorithm == null) return string.IsNullOrEmpty(SignatureBase64Url);
                 var bytes = Encoding.ASCII.GetBytes($"{HeaderBase64Url}.{PayloadBase64Url}");
-                var sign = WebUtility.Base64UrlDecode(SignatureBase64Url);
+                var sign = WebFormat.Base64UrlDecode(SignatureBase64Url);
                 return algorithm.Verify(bytes, sign);
             }
 
@@ -263,8 +263,8 @@ namespace Trivial.Security
             /// </summary>
             private void Refresh()
             {
-                headerCache = WebUtility.Base64UrlDecodeTo<JsonWebTokenHeader>(HeaderBase64Url) ?? JsonWebTokenHeader.NoAlgorithm;
-                payloadCache = WebUtility.Base64UrlDecodeTo<T>(PayloadBase64Url);
+                headerCache = WebFormat.Base64UrlDecodeTo<JsonWebTokenHeader>(HeaderBase64Url) ?? JsonWebTokenHeader.NoAlgorithm;
+                payloadCache = WebFormat.Base64UrlDecodeTo<T>(PayloadBase64Url);
             }
         }
 
@@ -291,15 +291,15 @@ namespace Trivial.Security
 
             var arr = jwt.Split('.');
             if (arr.Length < 3) throw new FormatException("jwt is not in the correct format.");
-            var header = WebUtility.Base64UrlDecodeTo<JsonWebTokenHeader>(arr[0]);
+            var header = WebFormat.Base64UrlDecodeTo<JsonWebTokenHeader>(arr[0]);
             if (header == null) throw new ArgumentException("jwt should contain header in Base64Url.", nameof(jwt));
-            var payload = WebUtility.Base64UrlDecodeTo<T>(arr[1]);
+            var payload = WebFormat.Base64UrlDecodeTo<T>(arr[1]);
             if (payload == null) throw new ArgumentException("jwt should contain payload in Base64Url.", nameof(jwt));
             var algorithm = algorithmFactory != null ? algorithmFactory(payload, header.AlgorithmName) : null;
             if (verify)
             {
                 var bytes = Encoding.ASCII.GetBytes($"{arr[0]}.{arr[1]}");
-                var sign = WebUtility.Base64UrlDecode(arr[2]);
+                var sign = WebFormat.Base64UrlDecode(arr[2]);
                 if (algorithm != null)
                 {
                     if (!algorithm.Verify(bytes, sign)) throw new InvalidOperationException("jwt signature is incorrect.");
@@ -346,7 +346,7 @@ namespace Trivial.Security
             if (verify)
             {
                 var bytes = Encoding.ASCII.GetBytes($"{arr[0]}.{arr[1]}");
-                var sign = WebUtility.Base64UrlDecode(arr[2]);
+                var sign = WebFormat.Base64UrlDecode(arr[2]);
                 if (algorithm != null)
                 {
                     if (!algorithm.Verify(bytes, sign)) throw new InvalidOperationException("jwt signature is incorrect.");
@@ -357,9 +357,9 @@ namespace Trivial.Security
                 }
             }
 
-            var header = WebUtility.Base64UrlDecodeTo<JsonWebTokenHeader>(arr[0]);
+            var header = WebFormat.Base64UrlDecodeTo<JsonWebTokenHeader>(arr[0]);
             if (header == null) throw new ArgumentException("jwt should contain header in Base64Url.", nameof(jwt));
-            var payload = WebUtility.Base64UrlDecodeTo<T>(arr[1]);
+            var payload = WebFormat.Base64UrlDecodeTo<T>(arr[1]);
             if (payload == null) throw new ArgumentException("jwt should contain payload in Base64Url.", nameof(jwt));
             var obj = new JsonWebToken<T>(payload, algorithm)
             {
@@ -523,7 +523,7 @@ namespace Trivial.Security
         {
             if (signature == null || !signature.CanSign) return signatureCache ?? string.Empty;
             var bytes = signature.Sign($"{ToHeaderBase64Url()}.{ToPayloadBase64Url()}", Encoding.ASCII);
-            return WebUtility.Base64UrlEncode(bytes);
+            return WebFormat.Base64UrlEncode(bytes);
         }
 
         /// <summary>
@@ -581,8 +581,8 @@ namespace Trivial.Security
 
         private string GetBase64UrlEncode(object bytes)
         {
-            if (Serializer != null) return WebUtility.Base64UrlEncode(Serializer(bytes));
-            return WebUtility.Base64UrlEncode(bytes);
+            if (Serializer != null) return WebFormat.Base64UrlEncode(Serializer(bytes));
+            return WebFormat.Base64UrlEncode(bytes);
         }
     }
 
@@ -760,7 +760,7 @@ namespace Trivial.Security
         private static long? ParseDate(DateTime? date)
         {
             if (!date.HasValue) return null;
-            return WebUtility.ParseDate(date.Value) / 1000;
+            return WebFormat.ParseDate(date.Value) / 1000;
         }
 
         /// <summary>
@@ -771,7 +771,7 @@ namespace Trivial.Security
         public static DateTime? ParseDate(long? tick)
         {
             if (!tick.HasValue) return null;
-            return WebUtility.ParseDate(tick.Value * 1000);
+            return WebFormat.ParseDate(tick.Value * 1000);
         }
     }
 }

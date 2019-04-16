@@ -11,9 +11,9 @@ using Trivial.Security;
 namespace Trivial.Web
 {
     /// <summary>
-    /// Web utilities.
+    /// Web format utility.
     /// </summary>
-    public static class WebUtility
+    public static class WebFormat
     {
         /// <summary>
         /// Gets the MIME value of JSON format text.
