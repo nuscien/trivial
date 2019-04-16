@@ -6,7 +6,7 @@
     <RootNamespace>Trivial</RootNamespace>
     <PackageId>Trivial</PackageId>
     <Company>Nanchang Jinchen Software Co., Ltd.</Company>
-    <Version>0.7.2</Version>
+    <Version>0.8.1</Version>
     <Authors>Kingcean Tuan</Authors>
     <Product>Trivial</Product>
     <Description>A library providing lots of useful utilities, models and services, including hit task, retry policy, PEM, JWT, stream combination, JSON HTTP web client, CSV parser, numerals, coordinates, angle, arithmetic, sets, etc.</Description>
@@ -14,8 +14,8 @@
     <Copyright>Copyright (c) 2018 Kingcean Tuan.</Copyright>
     <PackageProjectUrl>https://github.com/nuscien/trivial/wiki/core</PackageProjectUrl>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <AssemblyVersion>0.7.2.415</AssemblyVersion>
-    <FileVersion>0.7.2.415</FileVersion>
+    <AssemblyVersion>0.8.1.420</AssemblyVersion>
+    <FileVersion>0.8.1.420</FileVersion>
     <RepositoryUrl>https://github.com/nuscien/trivial</RepositoryUrl>
     <RepositoryType></RepositoryType>
     <LangVersion>7.2</LangVersion>

@@ -129,12 +129,13 @@ Just add following namespace to your code file to use.
 ```csharp
 using Trivial.Security;
 ```
+
 ### RSA
 
-You can convert a PEM (OpenSSL RSA key) or an XML string to the `RSAParameters` class.
+You can convert a PEM (OpenSSL RSA key) or an XML string to the `RSAParametersConvert` class.
 
 ```csharp
-var parameters = RSAUtility.Parse(pem);
+var parameters = RSAParametersConvert.Parse(pem);
 ```
 
 And you can convert back by using the extension method `ToPrivatePEMString` or `ToPublicPEMString`.
@@ -148,7 +149,7 @@ You can encrypt and decrypt a string by symmetric algorithm.
 // AES sample.
 var original = "Original secret string";
 var cipher = SymmetricUtilities.Encrypt(Aes.Create, original, key, iv);
-var back = SymmetricUtilities.Decrypt(Aes.Create, cipher, key, iv); // back == original
+var back = SymmetricUtilities.DecryptText(Aes.Create, cipher, key, iv); // back == original
 ```
 
 ### Hash
@@ -179,13 +180,13 @@ And you can also implement the `OAuthBasedClient` base class to create your own 
 
 ### Secure string utiltiy
 
-You can use the extension methods in the `SecureStringUtiltiy` class to convert the secret between `SecureString` and `String`/`StringBuilder`/`Byte[]`.
+You can use the extension methods in the `SecureStringExtension` class to convert the secret between `SecureString` and `String`/`StringBuilder`/`Byte[]`.
 
 You can also use the class `RSASecretExchange` to transfer the secret with RSA encryption.
 
 ### JWT
 
-You can create a JSON web token to get the string encoded by initializing a new instance of the `JsonWebToken` class.
+You can create a JSON web token to get the string encoded by initializing a new instance of the `JsonWebToken` class or the `JsonWebTokenParser` class.
 
 ```csharp
 var sign = HashSignatureProvider.CreateHS512("a secret string");
@@ -224,10 +225,10 @@ using Trivial.Data;
 You can parse a CSV text by following way.
 
 ```csharp
-var csv = new CsvParser("ab,cd,efg\nhijk,l,mn");
+var csv = new CsvParser("abcd,efg\nhijk,lmn");
 foreach (var item in csv)
 {
-    Console.WriteLine("{0},{1},{2}", item[0], item[1], item[2]);
+    Console.WriteLine("{0},{1}", item[0], item[1]);
 }
 ```
 
@@ -238,21 +239,17 @@ class Model
 {
     public string A { get; set; }
     public string B { get; set; }
-    public string C { get; set; }
 }
 ```
 
 Now you can map to the CSV file.
 
 ```csharp
-var csv = new CsvParser("ab,cd,efg\nhijk,l,mn");
-foreach (var model in csv.ConvertTo<Model>(new[] { "A", "B", "C" }))
+foreach (var model in csv.ConvertTo<Model>(new[] { "A", "B" }))
 {
     Console.WriteLine("{0},{1},{2}", model.A, model.B, model.C);
 }
 ```
-
-And you can also send this instance into `StringTableDataReader` construct with field names to load it as a `DbDataReader` object.
 
 ### Data cache collection
 

@@ -10,6 +10,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace Trivial.Maths
@@ -19,6 +20,8 @@ namespace Trivial.Maths
     /// </summary>
     public static partial class Arithmetic
     {
+        private const string num36 = "0123456789abcdefghijklmnopqrstuvwxyz";
+
         /// <summary>
         /// Gets a result of factorial for a specific number.
         /// </summary>
@@ -107,13 +110,12 @@ namespace Trivial.Maths
         public static string ToPositionalNotationString(long value, int type)
         {
             if (type < 2 || type > 36) throw new ArgumentOutOfRangeException(nameof(type), "type should be in 2-36.");
-            var nums = "0123456789abcdefghijklmnopqrstuvwxyz";
             var integerStr = string.Empty;
             var integerPart = Math.Abs(value);
             if (integerPart == 0) return "0";
             while (integerPart != 0)
             {
-                integerStr = nums[(int)integerPart % type] + integerStr;
+                integerStr = num36[(int)integerPart % type] + integerStr;
                 integerPart /= type;
             }
 
@@ -131,7 +133,6 @@ namespace Trivial.Maths
         public static string ToPositionalNotationString(double value, int type)
         {
             if (type < 2 || type > 36) throw new ArgumentOutOfRangeException(nameof(type), "type should be in 2-36.");
-            var nums = "0123456789abcdefghijklmnopqrstuvwxyz";
             var integerStr = string.Empty;
             var fractionalStr = string.Empty;
             var integerPart = Math.Abs((long)value);
@@ -143,7 +144,7 @@ namespace Trivial.Maths
 
             while (integerPart != 0)
             {
-                integerStr = nums[(int)integerPart % type] + integerStr;
+                integerStr = num36[(int)integerPart % type] + integerStr;
                 integerPart /= type;
             }
 
@@ -154,7 +155,7 @@ namespace Trivial.Maths
                     break;
                 }
 
-                fractionalStr += nums[(int)(fractionalPart * type)];
+                fractionalStr += num36[(int)(fractionalPart * type)];
                 fractionalPart = fractionalPart * type - (int)(fractionalPart * type);
             }
 
