@@ -402,20 +402,24 @@ namespace Trivial.Security
             switch (h.Name.ToUpperInvariant().Replace("-", string.Empty))
             {
                 case "SHA3512":
+                case "KECCAK512":
+                case "SHA3":
                     return SHA3Managed.Create512;
                 case "SHA3384":
+                case "KECCAK384":
                     return SHA3Managed.Create384;
                 case "SHA3256":
+                case "KECCAK256":
                     return SHA3Managed.Create256;
                 case "SHA3224":
+                case "KECCAK224":
                     return SHA3Managed.Create224;
-                case "SHA2":
-                    return SHA512.Create;
                 case "SHA256":
                     return SHA256.Create;
                 case "SHA384":
                     return SHA384.Create;
                 case "SHA512":
+                case "SHA2":
                     return SHA512.Create;
                 case "MD5":
                     return MD5.Create;
