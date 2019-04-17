@@ -32,23 +32,23 @@ namespace Trivial.Security
             // Check if the parameter is not null.
             if (alg == null || plainText == null) return null;
 
-            // Convert the input string to a byte array and compute the hash.
-            var data = alg.ComputeHash((encoding ?? Encoding.UTF8).GetBytes(plainText));
-
             // Return the hexadecimal string.
-            return ToHashString(alg, data);
+            return ToHashString(alg, (encoding ?? Encoding.UTF8).GetBytes(plainText));
         }
 
         /// <summary>
         /// Computes a hash string value of a specific string instance.
         /// </summary>
         /// <param name="alg">The hash algorithm instance.</param>
-        /// <param name="data">The original input value to get hash.</param>
+        /// <param name="input">The original input value to get hash.</param>
         /// <returns>A hash string value of the given string; or null, if h or input is null.</returns>
-        public static string ToHashString(this HashAlgorithm alg, byte[] data)
+        public static string ToHashString(this HashAlgorithm alg, byte[] input)
         {
             // Check if the arguments is not null.
-            if (alg == null || data == null) return null;
+            if (alg == null || input == null) return null;
+
+            // Convert the input string to a byte array and compute the hash.
+            var data = alg.ComputeHash(input);
 
             // Create a new Stringbuilder to collect the bytes and create a string.
             var str = new StringBuilder();
@@ -60,7 +60,7 @@ namespace Trivial.Security
             }
 
             // Return the hexadecimal string.
-            return str.ToString().ToUpper();
+            return str.ToString();
         }
 
         /// <summary>
@@ -421,7 +421,7 @@ namespace Trivial.Security
                     return MD5.Create;
             }
 
-            throw new NotSupportedException("The hash algorithm name is not supported.");
+            return () => HashAlgorithm.Create(h.Name);
         }
     }
 }

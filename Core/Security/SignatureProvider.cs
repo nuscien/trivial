@@ -468,6 +468,187 @@ namespace Trivial.Security
     }
 
     /// <summary>
+    /// The ECDSA hash signature for string.
+    /// </summary>
+    public class ECDsaSignatureProvider : ISignatureProvider, IDisposable
+    {
+        private readonly bool needDispose;
+        private readonly ECDsa ecdsa;
+        private readonly HashAlgorithmName hashName;
+
+        /// <summary>
+        /// Creates an ECDSA hash signature provider using SHA-512 hash algorithm of SHA-2 family.
+        /// </summary>
+        /// <param name="secret">The ECDSA parameters.</param>
+        /// <returns>An ECDSA hash signature provider instance.</returns>
+        public static ECDsaSignatureProvider CreateES512(ECParameters secret)
+        {
+            return new ECDsaSignatureProvider(secret, HashAlgorithmName.SHA512, "ES512");
+        }
+
+        /// <summary>
+        /// Creates an ECDSA hash signature provider using SHA-512 hash algorithm of SHA-2 family.
+        /// </summary>
+        /// <param name="ecdsaInstance">The ECDSA instance.</param>
+        /// <param name="hasPrivateKey">true if has the private key; otherwise, false.</param>
+        /// <param name="needDisposeAlgorithmAutomatically">true if need dispose the given algorithm instance automatically when this object is disposed.</param>
+        /// <returns>An ECDSA hash signature provider instance.</returns>
+        public static ECDsaSignatureProvider CreateES512(ECDsa ecdsaInstance, bool hasPrivateKey = true, bool needDisposeAlgorithmAutomatically = false)
+        {
+            return new ECDsaSignatureProvider(ecdsaInstance, hasPrivateKey, HashAlgorithmName.SHA512, "ES512", needDisposeAlgorithmAutomatically);
+        }
+
+        /// <summary>
+        /// Creates an ECDSA hash signature provider using SHA-384 hash algorithm of SHA-2 family.
+        /// </summary>
+        /// <param name="secret">The ECDSA parameters.</param>
+        /// <returns>An ECDSA hash signature provider instance.</returns>
+        public static ECDsaSignatureProvider CreateES384(ECParameters secret)
+        {
+            return new ECDsaSignatureProvider(secret, HashAlgorithmName.SHA384, "ES384");
+        }
+
+        /// <summary>
+        /// Creates an ECDSA hash signature provider using SHA-384 hash algorithm of SHA-2 family.
+        /// </summary>
+        /// <param name="ecdsaInstance">The ECDSA instance.</param>
+        /// <param name="hasPrivateKey">true if has the private key; otherwise, false.</param>
+        /// <param name="needDisposeAlgorithmAutomatically">true if need dispose the given algorithm instance automatically when this object is disposed.</param>
+        /// <returns>An ECDSA hash signature provider instance.</returns>
+        public static ECDsaSignatureProvider CreateES384(ECDsa ecdsaInstance, bool hasPrivateKey = true, bool needDisposeAlgorithmAutomatically = false)
+        {
+            return new ECDsaSignatureProvider(ecdsaInstance, hasPrivateKey, HashAlgorithmName.SHA384, "ES384", needDisposeAlgorithmAutomatically);
+        }
+
+        /// <summary>
+        /// Creates an ECDSA hash signature provider using SHA-256 hash algorithm of SHA-2 family.
+        /// </summary>
+        /// <param name="secret">The ECDSA parameters.</param>
+        /// <returns>An ECDSA hash signature provider instance.</returns>
+        public static ECDsaSignatureProvider CreateES256(ECParameters secret)
+        {
+            return new ECDsaSignatureProvider(secret, HashAlgorithmName.SHA256, "ES256");
+        }
+
+        /// <summary>
+        /// Creates an ECDSA hash signature provider using SHA-256 hash algorithm of SHA-2 family.
+        /// </summary>
+        /// <param name="ecdsaInstance">The ECDSA instance.</param>
+        /// <param name="hasPrivateKey">true if has the private key; otherwise, false.</param>
+        /// <param name="needDisposeAlgorithmAutomatically">true if need dispose the given algorithm instance automatically when this object is disposed.</param>
+        /// <returns>An ECDSA hash signature provider instance.</returns>
+        public static ECDsaSignatureProvider CreateES256(ECDsa ecdsaInstance, bool hasPrivateKey = true, bool needDisposeAlgorithmAutomatically = false)
+        {
+            return new ECDsaSignatureProvider(ecdsaInstance, hasPrivateKey, HashAlgorithmName.SHA256, "ES256", needDisposeAlgorithmAutomatically);
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the ECDsaSignatureProvider class.
+        /// </summary>
+        /// <param name="ecdsaParams">The ECDSA parameters.</param>
+        /// <param name="hashAlgorithmName">The hash algorithm name.</param>
+        /// <param name="signAlgorithmName">The signature algorithm name.</param>
+        public ECDsaSignatureProvider(ECParameters ecdsaParams, HashAlgorithmName hashAlgorithmName, string signAlgorithmName)
+        {
+            Name = signAlgorithmName;
+            ecdsa = ECDsa.Create(ecdsaParams);
+            needDispose = true;
+            CanSign = ecdsaParams.D != null && ecdsaParams.D.Length > 0;
+            hashName = hashAlgorithmName;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the ECDsaSignatureProvider class.
+        /// </summary>
+        /// <param name="ecdsaInstance">The ECDSA instance.</param>
+        /// <param name="hashAlgorithmName">The hash algorithm name.</param>
+        /// <param name="signAlgorithmName">The signature algorithm name.</param>
+        /// <param name="needDisposeAlgorithmAutomatically">true if need dispose the given algorithm instance automatically when this object is disposed.</param>
+        public ECDsaSignatureProvider(ECDsa ecdsaInstance, HashAlgorithmName hashAlgorithmName, string signAlgorithmName, bool needDisposeAlgorithmAutomatically = false) : this(ecdsaInstance, true, hashAlgorithmName, signAlgorithmName, needDisposeAlgorithmAutomatically)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the ECDsaSignatureProvider class.
+        /// </summary>
+        /// <param name="ecdsaInstance">The ECDSA instance.</param>
+        /// <param name="hasPrivateKey">true if has the private key; otherwise, false.</param>
+        /// <param name="hashAlgorithmName">The hash algorithm name.</param>
+        /// <param name="signAlgorithmName">The signature algorithm name.</param>
+        /// <param name="needDisposeAlgorithmAutomatically">true if need dispose the given algorithm instance automatically when this object is disposed.</param>
+        public ECDsaSignatureProvider(ECDsa ecdsaInstance, bool hasPrivateKey, HashAlgorithmName hashAlgorithmName, string signAlgorithmName, bool needDisposeAlgorithmAutomatically = false)
+        {
+            Name = signAlgorithmName;
+            ecdsa = ecdsaInstance;
+            hashName = hashAlgorithmName;
+            if (ecdsa == null || !hasPrivateKey) return;
+            needDispose = needDisposeAlgorithmAutomatically;
+            try
+            {
+                var p = ecdsa.ExportParameters(true);
+                CanSign = p.D != null && p.D.Length > 0;
+            }
+            catch (SystemException)
+            {
+            }
+            catch (ApplicationException)
+            {
+            }
+        }
+
+        /// <summary>
+        /// Gets the signature name.
+        /// </summary>
+        public string Name { get; }
+
+        /// <summary>
+        /// Gets a value indicating whether it can sign a specific data.
+        /// </summary>
+        public bool CanSign { get; private set; }
+
+        /// <summary>
+        /// Computes the signature for the specified hash value.
+        /// </summary>
+        /// <param name="data">The data to sign.</param>
+        /// <returns>The signature for the specified hash value.</returns>
+        public byte[] Sign(byte[] data)
+        {
+            return ecdsa.SignData(data, hashName);
+        }
+
+        /// <summary>
+        /// Verifies that a digital signature is valid by calculating the hash value of the specified data
+        /// using the specified hash algorithm and padding, and comparing it to the provided signature.
+        /// </summary>
+        /// <param name="data">The data to sign.</param>
+        /// <param name="signature">The signature data to be verified.</param>
+        /// <returns>true if the signature is valid; otherwise, false.</returns>
+        public bool Verify(byte[] data, byte[] signature)
+        {
+            return ecdsa.VerifyData(data, signature, hashName);
+        }
+
+        /// <summary>
+        /// Releases all resources used by the current signature provider object.
+        /// </summary>
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        /// <summary>
+        /// Releases the unmanaged resources used by this instance and optionally releases the managed resources.
+        /// </summary>
+        /// <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposing) return;
+            if (needDispose && ecdsa != null) ecdsa.Dispose();
+        }
+    }
+
+    /// <summary>
     /// The customized keyed signature for string.
     /// </summary>
     public class KeyedSignatureProvider : ISignatureProvider
