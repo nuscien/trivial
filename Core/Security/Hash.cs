@@ -131,20 +131,27 @@ namespace Trivial.Security
         /// <param name="plainText">The original input value to get hash.</param>
         /// <param name="encoding">The text encoding.</param>
         /// <returns>A hash string value of the given string; or null, if h or input is null.</returns>
+        /// <exception cref="ArgumentNullException">name was null.</exception>
+        /// <exception cref="ArgumentException">name.Name was null or empty.</exception>
         /// <exception cref="NotSupportedException">The hash algorithm name is not supported.</exception>
         public static string ToHashString(HashAlgorithmName name, string plainText, Encoding encoding = null)
         {
+            if (name == null) return ToHashString(null, plainText, encoding);
             Func<HashAlgorithm> h;
             try
             {
                 h = GetHashAlgorithmFactory(name);
             }
-            catch (NotSupportedException)
+            catch (NotSupportedException ex)
             {
-                throw new NotSupportedException("The hash algorithm name is not supported. Please use the factory or instance of its hash algorithm as the first parameter to call.");
+                throw new NotSupportedException("The hash algorithm name is not supported. Please use the factory or instance of its hash algorithm as the first parameter to call.", ex);
+            }
+            catch (ArgumentException ex)
+            {
+                throw new NotSupportedException("The hash algorithm name is not supported. Please use the factory or instance of its hash algorithm as the first parameter to call.", ex);
             }
 
-            if (h == null) return null;
+            if (h == null) throw new ArgumentException("name.Name should not be null or empty.", nameof(name));
             return ToHashString(h, plainText, encoding);
         }
 
@@ -153,10 +160,26 @@ namespace Trivial.Security
         /// </summary>
         /// <param name="name">The hash algorithm name,</param>
         /// <returns>A hash algorithm instance.</returns>
+        /// <exception cref="ArgumentNullException">name was null.</exception>
+        /// <exception cref="ArgumentException">name.Name was null or empty.</exception>
+        /// <exception cref="NotSupportedException">The hash algorithm name is not supported.</exception>
         public static HashAlgorithm Create(HashAlgorithmName name)
         {
             if (name == null) throw new ArgumentNullException(nameof(name), "name should not be null.");
-            var h = GetHashAlgorithmFactory(name);
+            Func<HashAlgorithm> h;
+            try
+            {
+                h = GetHashAlgorithmFactory(name);
+            }
+            catch (NotSupportedException ex)
+            {
+                throw new NotSupportedException("The hash algorithm name is not supported. Please use the factory or instance of its hash algorithm as the first parameter to call.", ex);
+            }
+            catch (ArgumentException ex)
+            {
+                throw new NotSupportedException("The hash algorithm name is not supported. Please use the factory or instance of its hash algorithm as the first parameter to call.", ex);
+            }
+
             if (h == null) throw new ArgumentException("name.Name should not be null or empty.", nameof(name));
             return h();
         }
