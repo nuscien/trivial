@@ -417,5 +417,41 @@ namespace Trivial.Collection
             if (condition == null) return source;
             return source.Where(ele => condition.IsMatched(ele));
         }
+
+        /// <summary>
+        /// Filters a sequence of values based on a condition.
+        /// </summary>
+        /// <param name="source">A number collection to filter.</param>
+        /// <param name="condition">The condition.</param>
+        /// <returns>A number collection that contains elements from the input sequence that satisfy the condition.</returns>
+        public static IEnumerable<float> Where(this IEnumerable<float> source, SingleCondition condition)
+        {
+            if (condition == null) return source;
+            return source.Where(ele => condition.IsMatched(ele));
+        }
+
+        /// <summary>
+        /// Filters a sequence of values based on a condition.
+        /// </summary>
+        /// <param name="source">A number collection to filter.</param>
+        /// <param name="condition">The condition.</param>
+        /// <returns>A number collection that contains elements from the input sequence that satisfy the condition.</returns>
+        public static IEnumerable<double> Where(this IEnumerable<double> source, DoubleCondition condition)
+        {
+            if (condition == null) return source;
+            return source.Where(ele => condition.IsMatched(ele));
+        }
+
+        /// <summary>
+        /// Filters a sequence of values based on a condition.
+        /// </summary>
+        /// <param name="source">A date time collection to filter.</param>
+        /// <param name="condition">The condition.</param>
+        /// <returns>A date time collection that contains elements from the input sequence that satisfy the condition.</returns>
+        public static IEnumerable<DateTime> Where(this IEnumerable<DateTime> source, DateTimeCondition condition)
+        {
+            if (condition == null) return source;
+            return source.Where(ele => condition.IsMatched(ele));
+        }
     }
 }

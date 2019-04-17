@@ -715,7 +715,7 @@ namespace Trivial.Security
         [DataMember(Name = "nbf", EmitDefaultValue = false)]
         public long? NotBeforeTick
         {
-            get => NotBefore.HasValue ? ParseDate(NotBefore) / 1000 : null;
+            get => ParseDate(NotBefore);
             set => NotBefore = ParseDate(value);
         }
 
