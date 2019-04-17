@@ -21,6 +21,35 @@ namespace Trivial.Security
     public static class HashUtility
     {
         /// <summary>
+        /// Computes a hash bytes of a specific string instance.
+        /// </summary>
+        /// <param name="alg">The hash algorithm instance.</param>
+        /// <param name="plainText">The original input value to get hash.</param>
+        /// <param name="encoding">The text encoding.</param>
+        /// <returns>A hash string value of the given string; or null, if h or input is null.</returns>
+        public static byte[] ComputeHash(this HashAlgorithm alg, string plainText, Encoding encoding = null)
+        {
+            // Check if the parameter is not null.
+            if (alg == null || plainText == null) return null;
+
+            // Return the hash bytes.
+            return alg.ComputeHash((encoding ?? Encoding.UTF8).GetBytes(plainText));
+        }
+
+        /// <summary>
+        /// Computes a hash bytes of a specific string instance.
+        /// </summary>
+        /// <param name="alg">The hash algorithm instance.</param>
+        /// <param name="secureString">The original input value to get hash.</param>
+        /// <param name="encoding">The text encoding.</param>
+        /// <returns>A hash string value of the given string; or null, if h or input is null.</returns>
+        public static byte[] ComputeHash(this HashAlgorithm alg, SecureString secureString, Encoding encoding = null)
+        {
+            // Return the hash bytes.
+            return ComputeHash(alg, secureString, encoding);
+        }
+
+        /// <summary>
         /// Computes a hash string value of a specific string instance.
         /// </summary>
         /// <param name="alg">The hash algorithm instance.</param>
@@ -290,17 +319,106 @@ namespace Trivial.Security
         /// <summary>
         /// Verifies a hash against a string.
         /// </summary>
+        /// <param name="alg">The hash algorithm instance.</param>
+        /// <param name="plainText">The original input value to test.</param>
+        /// <param name="hash">A hash string for comparing.</param>
+        /// <param name="encoding">The text encoding.</param>
+        /// <returns>true if hash is a hash value of input; otherwise, false.</returns>
+        public static bool Verify(this HashAlgorithm alg, string plainText, string hash, Encoding encoding = null)
+        {
+            // Return the result after StringComparer comparing.
+            return alg != null ?
+                StringComparer.OrdinalIgnoreCase.Equals(ComputeHashString(alg, plainText, encoding), hash) :
+                (string.IsNullOrEmpty(hash) || StringComparer.OrdinalIgnoreCase.Equals(plainText, hash));
+        }
+
+        /// <summary>
+        /// Verifies a hash against a string.
+        /// </summary>
+        /// <param name="alg">The hash algorithm instance.</param>
+        /// <param name="secureString">The original input value to test.</param>
+        /// <param name="hash">A hash string for comparing.</param>
+        /// <param name="encoding">The text encoding.</param>
+        /// <returns>true if hash is a hash value of input; otherwise, false.</returns>
+        public static bool Verify(this HashAlgorithm alg, SecureString secureString, string hash, Encoding encoding = null)
+        {
+            return Verify(alg, secureString.ToUnsecureString(), hash, encoding);
+        }
+
+        /// <summary>
+        /// Verifies a hash against a byte array.
+        /// </summary>
+        /// <param name="alg">The hash algorithm instance.</param>
+        /// <param name="plainText">The original input value to test.</param>
+        /// <param name="hash">A hash byte array for comparing.</param>
+        /// <param name="encoding">The text encoding.</param>
+        /// <returns>true if hash is a hash value of input; otherwise, false.</returns>
+        public static bool Verify(this HashAlgorithm alg, string plainText, byte[] hash, Encoding encoding = null)
+        {
+            // Return the result after StringComparer comparing.
+            return alg != null ?
+                StringComparer.OrdinalIgnoreCase.Equals(ComputeHash(alg, plainText, encoding), hash) :
+                (hash == null || hash.Length == 0);
+        }
+
+        /// <summary>
+        /// Verifies a hash against a byte array.
+        /// </summary>
+        /// <param name="alg">The hash algorithm instance.</param>
+        /// <param name="secureString">The original input value to test.</param>
+        /// <param name="hash">A hash byte array for comparing.</param>
+        /// <param name="encoding">The text encoding.</param>
+        /// <returns>true if hash is a hash value of input; otherwise, false.</returns>
+        public static bool Verify(this HashAlgorithm alg, SecureString secureString, byte[] hash, Encoding encoding = null)
+        {
+            return Verify(alg, secureString.ToUnsecureString(), hash, encoding);
+        }
+
+
+        /// <summary>
+        /// Verifies a hash against a bytes.
+        /// </summary>
+        /// <param name="alg">The hash algorithm instance.</param>
+        /// <param name="input">The original input value to test.</param>
+        /// <param name="hash">A hash string for comparing.</param>
+        /// <returns>true if hash is a hash value of input; otherwise, false.</returns>
+        public static bool Verify(this HashAlgorithm alg, byte[] input, string hash)
+        {
+            // Return the result after StringComparer comparing.
+            return alg != null ?
+                StringComparer.OrdinalIgnoreCase.Equals(ComputeHashString(alg, input), hash) :
+                string.IsNullOrEmpty(hash);
+        }
+
+        /// <summary>
+        /// Verifies a hash against a bytes.
+        /// </summary>
+        /// <param name="alg">The hash algorithm instance.</param>
+        /// <param name="input">The original input value to test.</param>
+        /// <param name="hash">A hash bytes for comparing.</param>
+        /// <returns>true if hash is a hash value of input; otherwise, false.</returns>
+        public static bool Verify(this HashAlgorithm alg, byte[] input, byte[] hash)
+        {
+            // Return the result after StringComparer comparing.
+            return alg != null ?
+                Collection.ListExtensions.Equals(alg.ComputeHash(input), hash) :
+                (hash == null || hash.Length == 0);
+        }
+
+        /// <summary>
+        /// Verifies a hash against a string.
+        /// </summary>
         /// <param name="h">The hash algorithm object maker.</param>
         /// <param name="plainText">The original input value to test.</param>
         /// <param name="hash">A hash string for comparing.</param>
         /// <param name="encoding">The text encoding.</param>
         /// <returns>true if hash is a hash value of input; otherwise, false.</returns>
-        public static bool Verify<T>(this Func<T> h, string plainText, string hash, Encoding encoding = null) where T : HashAlgorithm
+        public static bool Verify<T>(Func<T> h, string plainText, string hash, Encoding encoding = null) where T : HashAlgorithm
         {
             // Return the result after StringComparer comparing.
             return h != null ?
                 StringComparer.OrdinalIgnoreCase.Equals(ComputeHashString(h, plainText, encoding), hash) :
-                StringComparer.OrdinalIgnoreCase.Equals(plainText, hash);
+                (string.IsNullOrEmpty(hash) || StringComparer.OrdinalIgnoreCase.Equals(plainText, hash));
         }
 
         /// <summary>
@@ -315,7 +433,36 @@ namespace Trivial.Security
             // Return the result after StringComparer comparing.
             return alg != null ?
                 StringComparer.OrdinalIgnoreCase.Equals(alg(plainText), hash) :
-                StringComparer.OrdinalIgnoreCase.Equals(plainText, hash);
+                (string.IsNullOrEmpty(hash) || StringComparer.OrdinalIgnoreCase.Equals(plainText, hash));
+        }
+
+        /// <summary>
+        /// Verifies a hash against a string.
+        /// </summary>
+        /// <param name="name">The hash algorithm name.</param>
+        /// <param name="plainText">The original input value to test.</param>
+        /// <param name="hash">A hash string for comparing.</param>
+        /// <param name="encoding">The text encoding.</param>
+        /// <returns>true if hash is a hash value of input; otherwise, false.</returns>
+        public static bool Verify(HashAlgorithmName name, string plainText, string hash, Encoding encoding = null)
+        {
+            // Return the result after StringComparer comparing.
+            return name != null ?
+                StringComparer.OrdinalIgnoreCase.Equals(ComputeHashString(name, plainText, encoding), hash) :
+                (string.IsNullOrEmpty(hash) || StringComparer.OrdinalIgnoreCase.Equals(plainText, hash));
+        }
+
+        /// <summary>
+        /// Verifies a hash against a string.
+        /// </summary>
+        /// <param name="name">The hash algorithm name.</param>
+        /// <param name="secureString">The original input value to test.</param>
+        /// <param name="hash">A hash string for comparing.</param>
+        /// <param name="encoding">The text encoding.</param>
+        /// <returns>true if hash is a hash value of input; otherwise, false.</returns>
+        public static bool Verify(HashAlgorithmName name, SecureString secureString, string hash, Encoding encoding = null)
+        {
+            return Verify(name, secureString.ToUnsecureString(), hash, encoding);
         }
 
         /// <summary>
@@ -329,7 +476,7 @@ namespace Trivial.Security
         public static bool VerifySHA1(string plainText, string hash, Encoding encoding = null)
         {
             // Return the result after StringComparer comparing.
-            return 0 == StringComparer.OrdinalIgnoreCase.Compare(ComputeSHA1String(plainText, encoding), hash);
+            return StringComparer.OrdinalIgnoreCase.Equals(ComputeSHA1String(plainText, encoding), hash);
         }
 
         /// <summary>
@@ -342,7 +489,7 @@ namespace Trivial.Security
         public static bool VerifySHA512(string plainText, string hash, Encoding encoding = null)
         {
             // Return the result after StringComparer comparing.
-            return 0 == StringComparer.OrdinalIgnoreCase.Compare(ComputeSHA512String(plainText, encoding), hash);
+            return StringComparer.OrdinalIgnoreCase.Equals(ComputeSHA512String(plainText, encoding), hash);
         }
 
         /// <summary>
@@ -355,7 +502,7 @@ namespace Trivial.Security
         public static bool VerifySHA512(SecureString secureString, string hash, Encoding encoding = null)
         {
             // Return the result after StringComparer comparing.
-            return 0 == StringComparer.OrdinalIgnoreCase.Compare(ComputeSHA512String(secureString, encoding), hash);
+            return StringComparer.OrdinalIgnoreCase.Equals(ComputeSHA512String(secureString, encoding), hash);
         }
 
         /// <summary>
@@ -367,7 +514,7 @@ namespace Trivial.Security
         public static bool VerifySHA512(byte[] plainText, string hash)
         {
             // Return the result after StringComparer comparing.
-            return 0 == StringComparer.OrdinalIgnoreCase.Compare(ComputeSHA512String(plainText), hash);
+            return StringComparer.OrdinalIgnoreCase.Equals(ComputeSHA512String(plainText), hash);
         }
 
         /// <summary>
@@ -380,7 +527,7 @@ namespace Trivial.Security
         public static bool VerifySHA3512(string plainText, string hash, Encoding encoding = null)
         {
             // Return the result after StringComparer comparing.
-            return 0 == StringComparer.OrdinalIgnoreCase.Compare(ComputeSHA3512String(plainText, encoding), hash);
+            return StringComparer.OrdinalIgnoreCase.Equals(ComputeSHA3512String(plainText, encoding), hash);
         }
 
         /// <summary>
@@ -393,7 +540,7 @@ namespace Trivial.Security
         public static bool VerifySHA3512(SecureString secureString, string hash, Encoding encoding = null)
         {
             // Return the result after StringComparer comparing.
-            return 0 == StringComparer.OrdinalIgnoreCase.Compare(ComputeSHA3512String(secureString, encoding), hash);
+            return StringComparer.OrdinalIgnoreCase.Equals(ComputeSHA3512String(secureString, encoding), hash);
         }
 
         /// <summary>
@@ -405,7 +552,7 @@ namespace Trivial.Security
         public static bool VerifySHA3512(byte[] plainText, string hash)
         {
             // Return the result after StringComparer comparing.
-            return 0 == StringComparer.OrdinalIgnoreCase.Compare(ComputeSHA3512String(plainText), hash);
+            return StringComparer.OrdinalIgnoreCase.Equals(ComputeSHA3512String(plainText), hash);
         }
 
         /// <summary>
