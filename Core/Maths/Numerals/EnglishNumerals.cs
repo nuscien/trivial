@@ -271,7 +271,6 @@ namespace Trivial.Maths
         public string ToApproximationString(ulong number, int accuracy = 1)
         {
             if (accuracy < 0 || accuracy > 32) throw new ArgumentOutOfRangeException(nameof(accuracy));
-            var prefix = number < 0 ? NegativeSign : string.Empty;
             var levels = Math.Abs(number.ToString(CultureInfo.InvariantCulture).Length) / GroupLength;
             if (levels < 1) return number.ToString();
             var len = levels * GroupLength;
@@ -297,7 +296,7 @@ namespace Trivial.Maths
                 case 8:
                     return num + "Y";
                 default:
-                    return string.Format("{0}×10^{1}", num, levels * GroupLength);
+                    return string.Format("{0}×10{1}", num, NumberSymbols.ToExponentString(levels * GroupLength));
             }
         }
 

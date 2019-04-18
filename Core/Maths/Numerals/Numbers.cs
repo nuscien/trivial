@@ -629,6 +629,27 @@ namespace Trivial.Maths
             return numbers.ToString((ulong)number, digitOnly);
         }
 
+        /// <summary>
+        /// Gets the exponent string.
+        /// </summary>
+        /// <param name="value">The exponent number.</param>
+        /// <returns>A string about the exponent.</returns>
+        internal static string ToExponentString(int value)
+        {
+            return value
+                .ToString(CultureInfo.InvariantCulture)
+                .Replace("1", "¹")
+                .Replace("2", "²")
+                .Replace("3", "³")
+                .Replace("4", "⁴")
+                .Replace("5", "⁵")
+                .Replace("6", "⁶")
+                .Replace("7", "⁷")
+                .Replace("8", "⁸")
+                .Replace("9", "⁹")
+                .Replace("0", "⁰");
+        }
+
         internal static (long, string, int) SplitNumber(double value)
         {
             const string zero = "0";

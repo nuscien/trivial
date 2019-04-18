@@ -296,7 +296,7 @@ namespace Trivial.Maths
             if ((number / Math.Pow(10, len)).ToString(CultureInfo.InvariantCulture).Length == 4) num.Insert(1, ',');
             if (levels > 12)
             {
-                num.AppendFormat("×10^{0}", levels);
+                num.AppendFormat("×10{0}", NumberSymbols.ToExponentString(levels * GroupLength));
             }
             else
             {
