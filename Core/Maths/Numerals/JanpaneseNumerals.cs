@@ -384,6 +384,7 @@ namespace Trivial.Maths
         /// <returns>A string for the number.</returns>
         public string ToString(double number)
         {
+            if (double.IsNaN(number)) return "NaN";
             if (number > 0)
             {
                 if (number <= ulong.MaxValue)
@@ -391,12 +392,20 @@ namespace Trivial.Maths
                     var numInt = (ulong)number;
                     if (numInt == number) return ToString(numInt);
                 }
+                else if (double.IsPositiveInfinity(number))
+                {
+                    return IsKana ? "せいのむげんだい" : "正の無限大";
+                }
             }
             else if (number > long.MinValue)
             {
                 var numAbs = Math.Abs(number);
                 var numInt = (ulong)numAbs;
                 if (numInt == numAbs) return NegativeSign + ToString(numInt);
+            }
+            else if (double.IsNegativeInfinity(number))
+            {
+                return IsKana ? "ふのむげんだい" : "負の無限大";
             }
 
             var str = new StringBuilder();

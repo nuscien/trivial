@@ -473,6 +473,7 @@ namespace Trivial.Maths
         /// <returns>A string for the number.</returns>
         public string ToString(double number)
         {
+            if (double.IsNaN(number)) return "not a number";
             if (number > 0)
             {
                 if (number < 1)
@@ -491,7 +492,11 @@ namespace Trivial.Maths
                     if (numInt == number) return ToString(numInt);
                     if (number == 1.5) return "a half and one";
                     if (number == 1.25) return "a half and a quarter";
-                    if (number == 1.21) return "a half and a fifth";
+                    if (number == 1.2) return "a half and a fifth";
+                }
+                else if (double.IsPositiveInfinity(number))
+                {
+                    return "positive infinity";
                 }
             }
             else if (number > long.MinValue)
@@ -499,6 +504,10 @@ namespace Trivial.Maths
                 var numAbs = Math.Abs(number);
                 var numInt = (ulong)numAbs;
                 if (numInt == numAbs) return NegativeSign + ToString(numInt);
+            }
+            else if (double.IsNegativeInfinity(number))
+            {
+                return "negative infinity";
             }
 
             var str = new StringBuilder();

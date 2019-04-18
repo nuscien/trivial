@@ -475,6 +475,7 @@ namespace Trivial.Maths
         /// <returns>A string for the number.</returns>
         public string ToString(double number)
         {
+            if (double.IsNaN(number)) return IsTraditional ? "不是數字" : "不是数字";
             if (number > 0)
             {
                 if (number <= ulong.MaxValue)
@@ -482,12 +483,20 @@ namespace Trivial.Maths
                     var numInt = (ulong)number;
                     if (numInt == number) return ToString(numInt);
                 }
+                else if (double.IsPositiveInfinity(number))
+                {
+                    return IsTraditional ? "正無窮" : "正无穷";
+                }
             }
             else if (number > long.MinValue)
             {
                 var numAbs = Math.Abs(number);
                 var numInt = (ulong)numAbs;
                 if (numInt == numAbs) return NegativeSign + ToString(numInt);
+            }
+            else if (double.IsNegativeInfinity(number))
+            {
+                return IsTraditional ? "負無窮" : "负无穷";
             }
 
             var str = new StringBuilder();
