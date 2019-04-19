@@ -357,12 +357,14 @@ namespace Trivial.Maths
             }
 
             var classPos = num.Length / 4;
+            var isZero = false;
             for (var i = 0; i < num.Length; i++)
             {
                 var c = num[i].ToString();
                 if (c == " ") continue;
                 if (c != "0")
                 {
+                    isZero = false;
                     str.Append(digits[int.Parse(c)]);
                     var j = 3 - i % 4;
                     if (j > 0) str.Append(digits[9 + j]);
@@ -370,8 +372,9 @@ namespace Trivial.Maths
 
                 if (i % 4 != 3 || i == num.Length - 1) continue;
                 classPos--;
-                if (classPos == 0) continue;
+                if (classPos == 0 || isZero) continue;
                 str.Append(digits[12 + classPos]);
+                isZero = true;
             }
 
             return ConvertString(str.ToString().Replace("一十", "十"));

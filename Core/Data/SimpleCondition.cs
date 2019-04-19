@@ -263,6 +263,18 @@ namespace Trivial.Data
         }
 
         /// <summary>
+        /// Initializes a new instance of the ClassSimpleCondition class.
+        /// </summary>
+        /// <param name="op">The operator in the condition.</param>
+        /// <param name="value">The value for comparing in the condition.</param>
+        /// <remarks>You can use this to initialize an instance for the class.</remarks>
+        protected ClassSimpleCondition(DbCompareOperator op, T value)
+        {
+            Value = value;
+            Operator = op;
+        }
+
+        /// <summary>
         /// Gets or sets the value for the comparing in the condition object.
         /// </summary>
         object ISimpleCondition.Value
@@ -342,6 +354,18 @@ namespace Trivial.Data
         }
 
         /// <summary>
+        /// Initializes a new instance of the StructSimpleCondition class.
+        /// </summary>
+        /// <param name="op">The operator in the condition.</param>
+        /// <param name="value">The value for comparing in the condition.</param>
+        /// <remarks>You can use this to initialize an instance for the class.</remarks>
+        protected StructSimpleCondition(DbCompareOperator op, T value)
+        {
+            Value = value;
+            Operator = op;
+        }
+
+        /// <summary>
         /// Gets or sets the value for the comparing in the condition object.
         /// </summary>
         object ISimpleCondition.Value
@@ -412,8 +436,7 @@ namespace Trivial.Data
         /// </summary>
         /// <param name="copier">An instance to copy.</param>
         /// <remarks>You can use this to initialize an instance for the class.</remarks>
-        public StringCondition(IClassSimpleCondition<string> copier)
-            : base(copier)
+        public StringCondition(IClassSimpleCondition<string> copier) : base(copier)
         {
         }
 
@@ -423,10 +446,8 @@ namespace Trivial.Data
         /// <param name="op">The operator in the condition.</param>
         /// <param name="value">The value for comparing in the condition.</param>
         /// <remarks>You can use this to initialize an instance for the class.</remarks>
-        public StringCondition(DbCompareOperator op, string value)
+        public StringCondition(DbCompareOperator op, string value) : base(op, value)
         {
-            Value = value;
-            Operator = op;
         }
 
         /// <summary>
@@ -548,6 +569,16 @@ namespace Trivial.Data
         /// <remarks>You can use this to initialize an instance for the class.</remarks>
         public Int32Condition(IStructSimpleCondition<int> copier)
             : base(copier)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the Int32Condition class.
+        /// </summary>
+        /// <param name="op">The operator in the condition.</param>
+        /// <param name="value">The value for comparing in the condition.</param>
+        /// <remarks>You can use this to initialize an instance for the class.</remarks>
+        public Int32Condition(DbCompareOperator op, int value) : base(op, value)
         {
         }
 
@@ -682,6 +713,16 @@ namespace Trivial.Data
         }
 
         /// <summary>
+        /// Initializes a new instance of the Int64Condition class.
+        /// </summary>
+        /// <param name="op">The operator in the condition.</param>
+        /// <param name="value">The value for comparing in the condition.</param>
+        /// <remarks>You can use this to initialize an instance for the class.</remarks>
+        public Int64Condition(DbCompareOperator op, long value) : base(op, value)
+        {
+        }
+
+        /// <summary>
         /// Get a condition from the given struct value simple interval left bound.
         /// </summary>
         /// <param name="value">A simple interval.</param>
@@ -812,6 +853,16 @@ namespace Trivial.Data
         }
 
         /// <summary>
+        /// Initializes a new instance of the SingleCondition class.
+        /// </summary>
+        /// <param name="op">The operator in the condition.</param>
+        /// <param name="value">The value for comparing in the condition.</param>
+        /// <remarks>You can use this to initialize an instance for the class.</remarks>
+        public SingleCondition(DbCompareOperator op, float value) : base(op, value)
+        {
+        }
+
+        /// <summary>
         /// Get a condition from the given struct value simple interval left bound.
         /// </summary>
         /// <param name="value">A simple interval.</param>
@@ -938,6 +989,16 @@ namespace Trivial.Data
         /// <remarks>You can use this to initialize an instance for the class.</remarks>
         public DoubleCondition(IStructSimpleCondition<double> copier)
             : base(copier)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the DoubleCondition class.
+        /// </summary>
+        /// <param name="op">The operator in the condition.</param>
+        /// <param name="value">The value for comparing in the condition.</param>
+        /// <remarks>You can use this to initialize an instance for the class.</remarks>
+        public DoubleCondition(DbCompareOperator op, double value) : base(op, value)
         {
         }
 

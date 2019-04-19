@@ -283,8 +283,16 @@ namespace Trivial.Sample
         {
             if (!long.TryParse(str, out long value))
             {
-                ConsoleLine.Write("Expect a number.");
+                if (!double.TryParse(str, out double dV))
+                {
+                    ConsoleLine.Write("Expect a number.");
+                    ConsoleLine.End();
+                    return;
+                }
+
+                ConsoleLine.Write("{0}: {1}.", dV, localInt.ToString(dV));
                 ConsoleLine.End();
+                return;
             }
 
             ConsoleLine.Write("{0}: {1}; {2}.", value, localInt.ToString(value, false), localInt.ToString(value, true));
