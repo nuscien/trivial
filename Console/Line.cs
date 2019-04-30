@@ -384,6 +384,18 @@ namespace Trivial.Console
         }
 
         /// <summary>
+        /// Writes the current line terminator in given count, to the standard output stream.
+        /// </summary>
+        /// <param name="count">The line count.</param>
+        public void WriteEmptyLines(int count)
+        {
+            for (var i = 0; i < count; i++)
+            {
+                LineUtilities.WriteLine();
+            }
+        }
+
+        /// <summary>
         /// Writes the current line terminator, to the standard output stream.
         /// </summary>
         public void WriteLine()
