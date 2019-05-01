@@ -6,6 +6,14 @@
     <AssemblyName>Trivial.Sample</AssemblyName>
     <RootNamespace>Trivial.Sample</RootNamespace>
     <StartupObject>Trivial.Sample.Program</StartupObject>
+    <Authors>Kingcean Tuan</Authors>
+    <Company>Nanchang Jinchen Software Co., Ltd.</Company>
+    <Product>Trivial</Product>
+    <Description>The sample of Trivial libraries.</Description>
+    <Copyright>Copyright (c) 2018 Kingcean Tuan.</Copyright>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageIconUrl>https://github.com/nuscien/trivial/raw/master/Materials/logo.jpg</PackageIconUrl>
+    <RepositoryUrl>https://github.com/nuscien/trivial</RepositoryUrl>
   </PropertyGroup>
 
   <ItemGroup>

@@ -181,17 +181,18 @@ namespace Trivial.Reflection
                 }
             }
 
+            var cache = Cache;
             lock (locker)
             {
                 if (!forceUpdate && HasCache) return Cache;
-                var cache = Cache;
                 var renewTask = ResolveFromSourceAsync();
                 renewTask.Wait();
                 Cache = renewTask.Result;
                 HasCache = true;
-                Renewed?.Invoke(this, new ChangeEventArgs<T>(cache, Cache, nameof(Cache), true));
-                return Cache;
             }
+
+            Renewed?.Invoke(this, new ChangeEventArgs<T>(cache, Cache, nameof(Cache), true));
+            return Cache;
         }
     }
 }

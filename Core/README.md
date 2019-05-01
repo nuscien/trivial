@@ -247,7 +247,7 @@ Now you can map to the CSV file.
 ```csharp
 foreach (var model in csv.ConvertTo<Model>(new[] { "A", "B" }))
 {
-    Console.WriteLine("{0},{1},{2}", model.A, model.B, model.C);
+    Console.WriteLine("{0},{1}", model.A, model.B);
 }
 ```
 

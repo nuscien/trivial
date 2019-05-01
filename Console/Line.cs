@@ -795,7 +795,7 @@ namespace Trivial.Console
         {
             try
             {
-                System.Console.SetCursorPosition(System.Console.BufferWidth - 1, row.HasValue ? row.Value : System.Console.CursorTop);
+                System.Console.SetCursorPosition(System.Console.BufferWidth - 1, row ?? System.Console.CursorTop);
                 Backspace(System.Console.CursorLeft);
             }
             catch (SecurityException)
