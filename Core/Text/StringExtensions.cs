@@ -401,9 +401,9 @@ namespace Trivial.Text
             }
         }
 
-        internal static string ToJson<T>(T obj)
+        internal static string ToJson<T>(T obj, DataContractJsonSerializerSettings settings = null)
         {
-            var serializer = new DataContractJsonSerializer(typeof(T));
+            var serializer = settings != null ? new DataContractJsonSerializer(typeof(T), settings) : new DataContractJsonSerializer(typeof(T));
             using (var stream = new MemoryStream())
             {
                 serializer.WriteObject(stream, obj);
@@ -525,6 +525,23 @@ namespace Trivial.Text
             }
 
             return sb.ToString();
+        }
+
+        internal static string ToStringJsonToken(string s, bool removeQuotes = false)
+        {
+            s = s
+                .Replace("\\", "\\\\")
+                .Replace("\r", "\\r")
+                .Replace("\n", "\\n")
+                .Replace("\t", "\\t")
+                .Replace("\a", "\\n")
+                .Replace("\b", "\\t")
+                .Replace("\f", "\\f")
+                .Replace("\v", "\\v")
+                .Replace("\0", "\\0")
+                .Replace("\"", "\\\"");
+            if (!removeQuotes) s = string.Format("\"{0}\"", s);
+            return s;
         }
 
         private static string ToUpper(string source, CultureInfo culture)

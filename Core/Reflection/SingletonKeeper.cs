@@ -15,7 +15,7 @@ namespace Trivial.Reflection
     /// <typeparam name="T">The type of value.</typeparam>
     public class SingletonKeeper<T>
     {
-        private readonly object locker = new object();
+        private readonly SemaphoreSlim semaphoreSlim = new SemaphoreSlim(1, 1);
         private readonly Func<Task<T>> renew;
 
         /// <summary>
@@ -38,10 +38,12 @@ namespace Trivial.Reflection
         /// Initializes a new instance of the SingletonKeeper class.
         /// </summary>
         /// <param name="cache">The cache.</param>
-        public SingletonKeeper(T cache)
+        /// <param name="refreshDate">The latest refresh succeeded date time of cache.</param>
+        public SingletonKeeper(T cache, DateTime? refreshDate = null)
         {
             HasCache = true;
             Cache = cache;
+            RefreshDate = refreshDate;
         }
 
         /// <summary>
@@ -49,7 +51,8 @@ namespace Trivial.Reflection
         /// </summary>
         /// <param name="resolveHandler">The resovle handler.</param>
         /// <param name="cache">The cache.</param>
-        public SingletonKeeper(Func<Task<T>> resolveHandler, T cache) : this(cache)
+        /// <param name="refreshDate">The latest refresh succeeded date time of cache.</param>
+        public SingletonKeeper(Func<Task<T>> resolveHandler, T cache, DateTime? refreshDate = null) : this(cache, refreshDate)
         {
             renew = resolveHandler;
         }
@@ -70,13 +73,9 @@ namespace Trivial.Reflection
         public bool HasCache { get; private set; }
 
         /// <summary>
-        /// Gets the instance.
+        /// Gets the latest refresh completed date.
         /// </summary>
-        /// <returns>The instance.</returns>
-        public T Get()
-        {
-            return Get(false);
-        }
+        public DateTime? RefreshDate { get; private set; }
 
         /// <summary>
         /// Gets the instance.
@@ -84,10 +83,7 @@ namespace Trivial.Reflection
         /// <returns>The instance.</returns>
         public Task<T> GetAsync()
         {
-            return Task.Run(() =>
-            {
-                return Get(false);
-            });
+            return GetAsync(false);
         }
 
         /// <summary>
@@ -96,10 +92,7 @@ namespace Trivial.Reflection
         /// <returns>The instance.</returns>
         public Task<T> RenewAsync()
         {
-            return Task.Run(() =>
-            {
-                return Get(true);
-            });
+            return GetAsync(true);
         }
 
         /// <summary>
@@ -150,7 +143,7 @@ namespace Trivial.Reflection
             return Task.Run(() => !HasCache);
         }
 
-        private T Get(bool forceUpdate)
+        private async Task<T> GetAsync(bool forceUpdate)
         {
             if (!forceUpdate && HasCache)
             {
@@ -182,17 +175,109 @@ namespace Trivial.Reflection
             }
 
             var cache = Cache;
-            lock (locker)
+            await semaphoreSlim.WaitAsync();
+            try
             {
                 if (!forceUpdate && HasCache) return Cache;
                 var renewTask = ResolveFromSourceAsync();
                 renewTask.Wait();
                 Cache = renewTask.Result;
+                RefreshDate = DateTime.Now;
                 HasCache = true;
+            }
+            finally
+            {
+                semaphoreSlim.Release();
             }
 
             Renewed?.Invoke(this, new ChangeEventArgs<T>(cache, Cache, nameof(Cache), true));
             return Cache;
         }
+    }
+
+    /// <summary>
+    /// Thread-safe singleton refresh scheduler.
+    /// </summary>
+    /// <typeparam name="T">The type of singleton</typeparam>
+    public class SingletonRefreshScheduler<T>
+    {
+        private readonly Lazy<Timer> timer;
+
+        /// <summary>
+        /// Initializes a new instance of the SingletonRefreshScheduler class.
+        /// </summary>
+        /// <param name="keeper">The singleton keeper instance to maintain.</param>
+        /// <param name="timerFactory">The timer factory.</param>
+        public SingletonRefreshScheduler(SingletonKeeper<T> keeper, Func<Timer> timerFactory)
+        {
+            Keeper = keeper;
+            timer = new Lazy<Timer>(timerFactory, true);
+        }
+
+        /// <summary>
+        /// Gets the singleton keeper source instance.
+        /// </summary>
+        public SingletonKeeper<T> Keeper { get; }
+
+        /// <summary>
+        /// Gets the refresh timer instance.
+        /// </summary>
+        public Timer Timer => timer.Value;
+
+        /// <summary>
+        /// Gets the latest refresh completed date.
+        /// </summary>
+        public DateTime? RefreshDate => Keeper?.RefreshDate;
+
+        /// <summary>
+        /// Gets the instance.
+        /// </summary>
+        /// <returns>The instance.</returns>
+        public Task<T> GetAsync()
+        {
+            InitTimer();
+            return Keeper != null ? Keeper.GetAsync() : Task.Run(() => default(T));
+        }
+
+        /// <summary>
+        /// Refreshes and gets the instance.
+        /// </summary>
+        /// <returns>The instance.</returns>
+        public Task<T> RenewAsync()
+        {
+            InitTimer();
+            return Keeper != null ? Keeper.RenewAsync() : Task.Run(() => default(T));
+        }
+
+        private void InitTimer()
+        {
+#pragma warning disable IDE0059
+            var t = Timer;
+#pragma warning restore IDE0059
+        }
+    }
+
+    /// <summary>
+    /// Thread-safe singleton refresh scheduler.
+    /// </summary>
+    /// <typeparam name="TKeeper">The type of keeper</typeparam>
+    /// <typeparam name="TModel">The type of singleton</typeparam>
+    public class SingletonRefreshScheduler<TKeeper, TModel> : SingletonRefreshScheduler<TModel>
+        where TKeeper : SingletonKeeper<TModel>
+    {
+        /// <summary>
+        /// Initializes a new instance of the SingletonRefreshScheduler class.
+        /// </summary>
+        /// <param name="keeper">The singleton keeper instance to maintain.</param>
+        /// <param name="timerFactory">The timer factory.</param>
+        public SingletonRefreshScheduler(TKeeper keeper, Func<Timer> timerFactory) : base(keeper, timerFactory)
+        {
+            Keeper = keeper;
+        }
+
+        /// <summary>
+        /// Gets the singleton keeper source instance.
+        /// </summary>
+        public new TKeeper Keeper { get; }
     }
 }

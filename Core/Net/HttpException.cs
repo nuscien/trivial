@@ -36,8 +36,9 @@ namespace Trivial.Net
         /// <param name="context">The System.Runtime.Serialization.StreamingContext that contains contextual information about the source or destination.</param>
         protected FailedHttpException(SerializationInfo info, StreamingContext context) : base(info, context)
         {
-            ReasonPhrase = info.GetString("ReasonPhrase");
-            var statusCode = info.GetInt32("StatusCode");
+            if (info == null) return;
+            ReasonPhrase = info.GetString(nameof(ReasonPhrase));
+            var statusCode = info.GetInt32(nameof(StatusCode));
             if (statusCode < 0) return;
             StatusCode = (HttpStatusCode)statusCode;
         }
@@ -85,10 +86,10 @@ namespace Trivial.Net
         public override void GetObjectData(SerializationInfo info, StreamingContext context)
         {
             base.GetObjectData(info, context);
-            info.AddValue("ReasonPhrase", ReasonPhrase, typeof(string));
+            info.AddValue(nameof(ReasonPhrase), ReasonPhrase, typeof(string));
             var statusCode = -1;
             if (StatusCode.HasValue) statusCode = (int)StatusCode.Value;
-            info.AddValue("HttpStatusCode", statusCode, typeof(int));
+            info.AddValue(nameof(StatusCode), statusCode, typeof(int));
         }
 
         internal static FailedHttpException Create(HttpResponseMessage response, string message)

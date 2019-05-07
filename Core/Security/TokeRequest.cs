@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Net.Http.Headers;
 using System.Reflection;
@@ -173,11 +174,11 @@ namespace Trivial.Security
         {
             var data = Body?.ToJsonProperites() ?? new Dictionary<string, string>();
             if (!string.IsNullOrWhiteSpace(ClientId))
-                data.Add(TokenRequestBody.ClientIdProperty, $"\"{ClientId}\"");
+                data.Add(TokenRequestBody.ClientIdProperty, $"{StringExtensions.ToStringJsonToken(ClientId)}");
             if (ClientCredentials != null && ClientCredentials.Secret != null && ClientCredentials.Secret.Length > 0)
-                data.Add(TokenRequestBody.ClientSecretProperty, $"\"{ClientCredentials.Secret.ToUnsecureString()}\"");
+                data.Add(TokenRequestBody.ClientSecretProperty, $"{StringExtensions.ToStringJsonToken(ClientCredentials.Secret.ToUnsecureString())}");
             if (!string.IsNullOrWhiteSpace(ScopeString))
-                data.Add(TokenInfo.ScopeProperty, $"\"{ScopeString}\"");
+                data.Add(TokenInfo.ScopeProperty, $"{StringExtensions.ToStringJsonToken(ScopeString)}");
             return data;
         }
 
@@ -192,14 +193,10 @@ namespace Trivial.Security
             foreach (var kvp in data)
             {
                 if (string.IsNullOrWhiteSpace(kvp.Key) || string.IsNullOrWhiteSpace(kvp.Value)) continue;
-                sb.Append('"');
-                sb.Append(StringExtensions.ReplaceBackSlash(kvp.Key));
-                sb.Append("\":");
-                sb.Append(StringExtensions.ReplaceBackSlash(kvp.Value));
-                sb.Append(",");
+                sb.AppendFormat("{0}:{1},", StringExtensions.ToStringJsonToken(kvp.Key), kvp.Value);
             }
 
-            if (sb.Length > 3) sb.Remove(sb.Length - 2, 2);
+            if (sb.Length > 3) sb.Remove(sb.Length - 2, 1);
             sb.Append("}");
             return sb.ToString();
         }
@@ -459,12 +456,12 @@ namespace Trivial.Security
                 var propValue = item.GetValue(this);
                 if (propValue == null) continue;
                 var propType = propValue.GetType();
-                if (propType == typeof(Uri)) data.Add(attr.Name, $"\"{((Uri)propValue).OriginalString}\"");
-                else if (propType == typeof(DateTime)) data.Add(attr.Name, $"{WebFormat.ParseDate((DateTime)propValue).ToString()}");
-                else if (propType == typeof(DateTimeOffset)) data.Add(attr.Name, $"{WebFormat.ParseDate((DateTimeOffset)propValue).ToString()}");
+                if (propType == typeof(Uri)) data.Add(attr.Name, $"{StringExtensions.ToStringJsonToken(((Uri)propValue).OriginalString)}");
+                else if (propType == typeof(DateTime)) data.Add(attr.Name, $"{WebFormat.ParseDate((DateTime)propValue).ToString(CultureInfo.InvariantCulture)}");
+                else if (propType == typeof(DateTimeOffset)) data.Add(attr.Name, $"{WebFormat.ParseDate((DateTimeOffset)propValue).ToString(CultureInfo.InvariantCulture)}");
                 else if (propType == typeof(int) || propType == typeof(long) || propType == typeof(uint) || propType == typeof(ulong) || propType == typeof(float) || propType == typeof(double) || propType == typeof(short) || propType == typeof(bool)) data.Add(attr.Name, $"{propValue.ToString()}");
-                else if (propType == typeof(SecureString)) data.Add(attr.Name, $"\"{((SecureString)propValue).ToUnsecureString()}\"");
-                else if (!string.IsNullOrWhiteSpace(propValue.ToString())) data.Add(attr.Name, $"\"{propValue.ToString()}\"");
+                else if (propType == typeof(SecureString)) data.Add(attr.Name, $"{StringExtensions.ToStringJsonToken(((SecureString)propValue).ToUnsecureString())}");
+                else if (!string.IsNullOrWhiteSpace(propValue.ToString())) data.Add(attr.Name, $"{StringExtensions.ToStringJsonToken(propValue.ToString())}");
             }
 
             return data;

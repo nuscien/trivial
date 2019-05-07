@@ -47,30 +47,30 @@ namespace Trivial.Security
                 {
                     if (string.IsNullOrWhiteSpace(ele?.Value)) continue;
                     var chars = Convert.FromBase64String(ele.Value);
-                    switch (ele.Name?.LocalName)
+                    switch (ele.Name?.LocalName?.ToLowerInvariant())
                     {
-                        case "Modulus":
+                        case "modulus":
                             p.Modulus = chars;
                             break;
-                        case "Exponent":
+                        case "exponent":
                             p.Exponent = chars;
                             break;
-                        case "P":
+                        case "p":
                             p.P = chars;
                             break;
-                        case "Q":
+                        case "q":
                             p.Q = chars;
                             break;
-                        case "DP":
+                        case "dp":
                             p.DP = chars;
                             break;
-                        case "DQ":
+                        case "dq":
                             p.DQ = chars;
                             break;
-                        case "InverseQ":
+                        case "inverseq":
                             p.InverseQ = chars;
                             break;
-                        case "D":
+                        case "d":
                             p.D = chars;
                             break;
                     }
