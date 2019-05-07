@@ -392,7 +392,7 @@ namespace Trivial.Tasks
         /// <param name="description">The description.</param>
         public EquipartitionTask(string id, string jobId, IEnumerable<Fragment> children, DateTime? creation = null, string description = null)
         {
-            Id = id;
+            Id = id ?? Guid.NewGuid().ToString("n");
             JobId = jobId;
             desc = description;
             if (creation.HasValue) Creation = creation.Value;
