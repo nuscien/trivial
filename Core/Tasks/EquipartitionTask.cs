@@ -10,6 +10,7 @@ using System.Text;
 using System.Xml.Linq;
 
 using Trivial.Data;
+using Trivial.Net;
 using Trivial.Text;
 using Trivial.Web;
 
@@ -53,9 +54,17 @@ namespace Trivial.Tasks
             /// <summary>
             /// Fatal.
             /// </summary>
-            Fatal = 5
+            Fatal = 5,
+
+            /// <summary>
+            /// Canceled or aborted.
+            /// </summary>
+            Ignored = 6
         }
 
+        /// <summary>
+        /// Task fragment model for serialization only.
+        /// </summary>
         [DataContract]
         internal class FragmentModel
         {
@@ -211,9 +220,9 @@ namespace Trivial.Tasks
             public bool IsProcessing => State == FragmentStates.Working || State == FragmentStates.Retrying;
 
             /// <summary>
-            /// Gets a value indicating whether this task fragment is done （even if it is either success or fatal）.
+            /// Gets a value indicating whether this task fragment is done (even if it is any of success, fatal or ignored).
             /// </summary>
-            public bool IsDone => State == FragmentStates.Success || State == FragmentStates.Fatal;
+            public bool IsDone => State == FragmentStates.Success || State == FragmentStates.Fatal || State == FragmentStates.Ignored;
 
             /// <summary>
             /// Gets a value indicating whether this task fragment is pending or failure.
@@ -221,9 +230,14 @@ namespace Trivial.Tasks
             public bool IsWaiting => State == FragmentStates.Pending || State == FragmentStates.Failure;
 
             /// <summary>
-            /// Gets a value indicating whether this task fragment is fatal or failure（even if it is either waiting or done）.
+            /// Gets a value indicating whether this task fragment is fatal or failure (even if it is either waiting or done).
             /// </summary>
             public bool IsError => State == FragmentStates.Failure || State == FragmentStates.Fatal;
+
+            /// <summary>
+            /// Gets a value indicating whether this task fragment is done but not successful (even if it is either waiting or done).
+            /// </summary>
+            public bool IsErrorOrIgnored => State == FragmentStates.Failure || State == FragmentStates.Fatal || State == FragmentStates.Ignored;
 
             /// <summary>
             /// Gets the tag.
@@ -263,6 +277,24 @@ namespace Trivial.Tasks
             public virtual string ToJsonString()
             {
                 return ToJsonString(null);
+            }
+
+            /// <summary>
+            /// Converts to query data.
+            /// </summary>
+            /// <returns>A query data instance.</returns>
+            public virtual QueryData ToQueryData()
+            {
+                var q = new QueryData
+                {
+                    [nameof(Id)] = Id,
+                    [nameof(Index)] = Index.ToString(CultureInfo.InvariantCulture),
+                    [nameof(State)] = State.ToString().ToLowerInvariant()
+                };
+                if (Tag != null) q[nameof(Tag)] = Tag;
+                q[nameof(Creation)] = WebFormat.ParseDate(Creation).ToString(CultureInfo.InvariantCulture);
+                q[nameof(Modification)] = WebFormat.ParseDate(Modification).ToString(CultureInfo.InvariantCulture);
+                return q;
             }
 
             /// <summary>
@@ -456,7 +488,7 @@ namespace Trivial.Tasks
             {
                 return fragments.FirstOrDefault(ele =>
                 {
-                    return ele.State != FragmentStates.Success && ele.State != FragmentStates.Fatal;
+                    return !ele.IsDone;
                 }) == null;
             }
         }
@@ -531,7 +563,12 @@ namespace Trivial.Tasks
         public IEnumerable<Fragment> GetProcessingFragments() => fragments.Where(ele => ele.IsProcessing);
 
         /// <summary>
-        /// Gets the collection of the task fragment which is done (even if it is either success or fatal).
+        /// Gets the collection of the task fragment which is not done yet.
+        /// </summary>
+        public IEnumerable<Fragment> GetWaitingOrProcessingFragments() => fragments.Where(ele => !ele.IsDone);
+
+        /// <summary>
+        /// Gets the collection of the task fragment which is done (even if it is any of success, fatal or ignored).
         /// </summary>
         public IEnumerable<Fragment> GetDoneFragments() => fragments.Where(ele => ele.IsDone);
 
@@ -544,6 +581,11 @@ namespace Trivial.Tasks
         /// Gets the collection of the task fragment which is fatal or failure (even if it is either waiting or done).
         /// </summary>
         public IEnumerable<Fragment> GetErrorFragments() => fragments.Where(ele => ele.IsError);
+
+        /// <summary>
+        /// Gets the collection of the task fragment which is done but not successful (even if it is either waiting or done).
+        /// </summary>
+        public IEnumerable<Fragment> GetErrorOrIngoredFragments() => fragments.Where(ele => ele.IsErrorOrIgnored);
 
         /// <summary>
         /// Filters a sequence of values based on a predicate.
@@ -619,6 +661,31 @@ namespace Trivial.Tasks
         /// <param name="state">The new state; or null if no change.</param>
         /// <returns>true if update succeeded; otherwise, false.</returns>
         public bool UpdateFragment(string id, FragmentStates state) => UpdateFragment(id, state, null as Action<Fragment>);
+
+        /// <summary>
+        /// Cancels.
+        /// </summary>
+        public void Cancel()
+        {
+            List<(Fragment, FragmentStates)> col;
+            lock (locker)
+            {
+                col = GetWaitingOrProcessingFragments().Select(ele => (ele, ele.State)).ToList();
+                if (col.Count == 0) return;
+                foreach (var fragment in col)
+                {
+                    fragment.Item1.State = FragmentStates.Ignored;
+                    fragment.Item1.Modification = DateTime.Now;
+                }
+            }
+
+            foreach (var fragment in col)
+            {
+                FragmentStateChanged?.Invoke(this, new FragmentStateEventArgs(fragment.Item1, fragment.Item2));
+            }
+
+            HasBeenDone?.Invoke(this, new EventArgs());
+        }
 
         /// <summary>
         /// Gets the JSON format string.
@@ -809,6 +876,11 @@ namespace Trivial.Tasks
         private readonly Dictionary<string, List<EquipartitionTask>> cache = new Dictionary<string, List<EquipartitionTask>>();
 
         /// <summary>
+        /// Adds or removes an event handler when create a new task.
+        /// </summary>
+        public event ChangeEventHandler<EquipartitionTask> Created;
+
+        /// <summary>
         /// Gets all the equipartition tasks available.
         /// </summary>
         /// <param name="service">The service identifier.</param>
@@ -900,6 +972,7 @@ namespace Trivial.Tasks
                 list.Remove(task);
             };
             list.Add(task);
+            Created?.Invoke(this, new ChangeEventArgs<EquipartitionTask>(null, task, ChangeMethods.Add, service));
             return task;
         }
     }
