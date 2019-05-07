@@ -10,7 +10,7 @@ using Trivial.Data;
 namespace Trivial.Reflection
 {
     /// <summary>
-    /// Singleton keeper.
+    /// Singleton keeper with optional renew ability in thread-safe mode.
     /// </summary>
     /// <typeparam name="T">The type of value.</typeparam>
     public class SingletonKeeper<T>
@@ -79,6 +79,7 @@ namespace Trivial.Reflection
 
         /// <summary>
         /// Gets the instance.
+        /// It will load from cache if it does not expired; otherwise, renew one, and then return.
         /// </summary>
         /// <returns>The instance.</returns>
         public Task<T> GetAsync()
@@ -87,7 +88,7 @@ namespace Trivial.Reflection
         }
 
         /// <summary>
-        /// Gets the instance.
+        /// Renews and gets the instance.
         /// </summary>
         /// <returns>The instance.</returns>
         public Task<T> RenewAsync()
@@ -96,7 +97,7 @@ namespace Trivial.Reflection
         }
 
         /// <summary>
-        /// Clears the cache.
+        /// Sets the cache flag as false.
         /// </summary>
         public void ClearCache()
         {
@@ -135,7 +136,7 @@ namespace Trivial.Reflection
         }
 
         /// <summary>
-        /// Validates if the cache is valid.
+        /// Tests if the cache is valid.
         /// </summary>
         /// <returns>true if valid; otherwise, false.</returns>
         protected virtual Task<bool> NeedRenewAsync()

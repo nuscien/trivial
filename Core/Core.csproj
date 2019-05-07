@@ -14,8 +14,8 @@
     <Copyright>Copyright (c) 2018 Kingcean Tuan.</Copyright>
     <PackageProjectUrl>https://github.com/nuscien/trivial/wiki/core</PackageProjectUrl>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <AssemblyVersion>1.1.0.507</AssemblyVersion>
-    <FileVersion>1.1.0.507</FileVersion>
+    <AssemblyVersion>1.1.0.508</AssemblyVersion>
+    <FileVersion>1.1.0.508</FileVersion>
     <RepositoryUrl>https://github.com/nuscien/trivial</RepositoryUrl>
     <RepositoryType></RepositoryType>
     <LangVersion>7.2</LangVersion>

@@ -317,6 +317,15 @@ namespace Trivial.Tasks
             }
 
             /// <summary>
+            /// Returns a string that represents the current object.
+            /// </summary>
+            /// <returns>A string that represents the current object.</returns>
+            public override string ToString()
+            {
+                return string.Format("#{0} [{1}] {2}", Index.ToString(), State.ToString(), Id);
+            }
+
+            /// <summary>
             /// Parses from a JSON string.
             /// </summary>
             /// <param name="s">The string to parse.</param>
@@ -688,7 +697,7 @@ namespace Trivial.Tasks
         }
 
         /// <summary>
-        /// Gets the JSON format string.
+        /// Gets the JSON format string serialized of this object.
         /// </summary>
         /// <returns>A JSON format string.</returns>
         public string ToJsonString() => ToJsonString(true);
@@ -728,6 +737,15 @@ namespace Trivial.Tasks
 
             sb.Append("}");
             return sb.ToString();
+        }
+
+        /// <summary>
+        /// Returns a string that represents the current object.
+        /// </summary>
+        /// <returns>A string that represents the current object.</returns>
+        public override string ToString()
+        {
+            return string.Format("Task ID: {0}. Job ID: {1}. Fragment count: {2}.", Id, JobId, Count);
         }
 
         /// <summary>
@@ -879,6 +897,19 @@ namespace Trivial.Tasks
         /// Adds or removes an event handler when create a new task.
         /// </summary>
         public event ChangeEventHandler<EquipartitionTask> Created;
+
+        /// <summary>
+        /// Gets the equipartition task list.
+        /// </summary>
+        /// <param name="service">The service identifier.</param>
+        /// <returns>A list of the equipartition task.</returns>
+        public IReadOnlyList<EquipartitionTask> this[string service]
+        {
+            get
+            {
+                return (cache.TryGetValue(service, out var list) ? list : new List<EquipartitionTask>()).AsReadOnly();
+            }
+        }
 
         /// <summary>
         /// Gets all the equipartition tasks available.
