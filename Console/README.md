@@ -200,13 +200,13 @@ var Main(string[] args)
 
     // Press ESC can cancel this selection.
     // But you can enable the manual way by set a manual question
-	// so that user can type the words directly.
+    // so that user can type the words directly.
     col.ManualQuestion = "Type: ";
 
     // Write it to the standard output stream and wait for user selection.
     var result = LineUtilities.Select(col);
 
-	// You can get the result.
+    // You can get the result.
     Console.WriteLine("The result is {0}.", result.Value);
 }
 ```
