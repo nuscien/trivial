@@ -10,6 +10,7 @@ namespace Trivial.Sample
             var dispatcher = new Dispatcher();
             dispatcher.Register<SelectionVerb>("selection");
             dispatcher.Register<HitTasksVerb>("hittask");
+            dispatcher.Register<SingletonKeeperVerb>("singleton");
             dispatcher.Register<MathsVerb>("maths");
             dispatcher.Register<TokenClientVerb>("token");
             dispatcher.Register<HttpClientVerb>("http");

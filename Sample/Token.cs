@@ -22,7 +22,7 @@ namespace Trivial.Sample
         {
             var codeTokenReq = new CodeTokenRequest(new CodeTokenRequestBody
             {
-                Code = "hijklmn"
+                Code = "hijklmn\r\nopq\trst"
             }, "abcd", "efg")
             {
                 ScopeString = "test plain"

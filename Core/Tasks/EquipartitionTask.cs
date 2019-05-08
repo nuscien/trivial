@@ -167,7 +167,7 @@ namespace Trivial.Tasks
                 try
                 {
                     var stateStr = info.GetString(nameof(State));
-                    if (!string.IsNullOrWhiteSpace(stateStr) && Enum.TryParse(stateStr, out FragmentStates state)) State = state;
+                    if (!string.IsNullOrWhiteSpace(stateStr) && Enum.TryParse(stateStr, true, out FragmentStates state)) State = state;
                 }
                 catch (SerializationException)
                 {
@@ -362,18 +362,39 @@ namespace Trivial.Tasks
                             case "creation":
                                 if (long.TryParse(ele.Value, out var creationV)) creation = creationV;
                                 break;
+                            case "update":
                             case "modification":
                                 if (long.TryParse(ele.Value, out var modificationV)) modification = modificationV;
                                 break;
                         }
                     }
 
-                    if (string.IsNullOrWhiteSpace(stateStr) || !Enum.TryParse(stateStr, out FragmentStates state2)) state2 = FragmentStates.Pending;
+                    if (string.IsNullOrWhiteSpace(stateStr) || !Enum.TryParse(stateStr, true, out FragmentStates state2)) state2 = FragmentStates.Pending;
                     return new Fragment(id, index, state2, WebFormat.ParseDate(creation), WebFormat.ParseDate(modification), tag);
                 }
 
+                if (s.IndexOfAny(new[] { '\"', '{' }) < 0)
+                {
+                    var q = QueryData.Parse(s);
+                    var stateStr = q["State"] ?? q["state"];
+                    if (!int.TryParse(q["Index"] ?? q["index"], out var index)) index = 0;
+                    if (string.IsNullOrWhiteSpace(stateStr) || !Enum.TryParse(stateStr, true, out FragmentStates state2)) state2 = FragmentStates.Pending;
+                    long? creation = null;
+                    long? modification = null;
+                    if (long.TryParse(q["Creation"] ?? q["creation"], out var creationV)) creation = creationV;
+                    if (long.TryParse(q["Modification"] ?? q["modification"] ?? q["Update"] ?? q["update"], out var modificationV)) modification = modificationV;
+                    return new Fragment(
+                        q["Id"] ?? q["ID"] ?? q["id"],
+                        index,
+                        state2,
+                        WebFormat.ParseDate(creation),
+                        WebFormat.ParseDate(modification),
+                        q["Tag"] ?? q["tag"]
+                    );
+                }
+
                 var m = StringExtensions.FromJson<FragmentModel>(s);
-                if (string.IsNullOrWhiteSpace(m.State) || !Enum.TryParse(m.State, out FragmentStates state)) state = FragmentStates.Pending;
+                if (string.IsNullOrWhiteSpace(m.State) || !Enum.TryParse(m.State, true, out FragmentStates state)) state = FragmentStates.Pending;
                 return new Fragment(m.Id, m.Index ?? 0, state, WebFormat.ParseDate(m.Creation), WebFormat.ParseDate(m.Modification), m.Tag);
             }
         }
@@ -433,11 +454,11 @@ namespace Trivial.Tasks
         /// <param name="description">The description.</param>
         public EquipartitionTask(string id, string jobId, IEnumerable<Fragment> children, DateTime? creation = null, string description = null)
         {
-            Id = id ?? Guid.NewGuid().ToString("n");
+            if (!string.IsNullOrWhiteSpace(id)) Id = id;
             JobId = jobId;
             desc = description;
             if (creation.HasValue) Creation = creation.Value;
-            if (children != null) fragments.AddRange(children.Where(ele => ele != null));
+            if (children != null) fragments.AddRange(children.Where(ele => ele != null && !string.IsNullOrWhiteSpace(ele.Id)));
         }
 
         /// <summary>
@@ -597,8 +618,7 @@ namespace Trivial.Tasks
         public IEnumerable<Fragment> GetErrorOrIngoredFragments() => fragments.Where(ele => ele.IsErrorOrIgnored);
 
         /// <summary>
-        /// Filters a sequence of values based on a predicate.
-        /// Each element's index is used in the logic of the predicate function.
+        /// Filters a sequence of values with specific state.
         /// </summary>
         /// <param name="state">Specific state.</param>
         /// <param name="states">Additional state grouped by OR boolean operation.</param>
@@ -672,6 +692,23 @@ namespace Trivial.Tasks
         public bool UpdateFragment(string id, FragmentStates state) => UpdateFragment(id, state, null as Action<Fragment>);
 
         /// <summary>
+        /// Updates the task fragment.
+        /// </summary>
+        /// <param name="fragment">The task fragment instance.</param>
+        /// <param name="state">The new state; or null if no change.</param>
+        /// <param name="tag">The new tag.</param>
+        /// <returns>true if update succeeded; otherwise, false.</returns>
+        public bool UpdateFragment(Fragment fragment, FragmentStates? state, string tag) => UpdateFragment(fragment?.Id, state, tag);
+
+        /// <summary>
+        /// Updates the task fragment.
+        /// </summary>
+        /// <param name="fragment">The task fragment instance.</param>
+        /// <param name="state">The new state; or null if no change.</param>
+        /// <returns>true if update succeeded; otherwise, false.</returns>
+        public bool UpdateFragment(Fragment fragment, FragmentStates state) => UpdateFragment(fragment?.Id, state);
+
+        /// <summary>
         /// Cancels.
         /// </summary>
         public void Cancel()
@@ -706,10 +743,10 @@ namespace Trivial.Tasks
         /// Gets the JSON format string.
         /// </summary>
         /// <param name="containFragments">true if output all the fragments; otherwise, false.</param>
-        /// <param name="serviceId">The service identifier.</param>
         /// <param name="additionalFragment">The additional fragment to output.</param>
+        /// <param name="additionalProperties">The additional JSON string properties to output.</param>
         /// <returns>A JSON format string.</returns>
-        public string ToJsonString(bool containFragments, string serviceId = null, Fragment additionalFragment = null)
+        public string ToJsonString(bool containFragments, Fragment additionalFragment = null, IDictionary<string, string> additionalProperties = null)
         {
             var sb = new StringBuilder();
             sb.Append("{");
@@ -722,7 +759,6 @@ namespace Trivial.Tasks
                 WebFormat.ParseDate(Modification),
                 IsDone);
             if (desc != null) sb.Append($",\"desc\":{StringExtensions.ToStringJsonToken(desc)}");
-            if (serviceId != null) sb.Append($",\"service\":{StringExtensions.ToStringJsonToken(serviceId)}");
             if (additionalFragment != null) sb.Append($",\"fragment\":{additionalFragment.ToJsonString()}");
             if (containFragments)
             {
@@ -733,6 +769,14 @@ namespace Trivial.Tasks
                 }
 
                 sb.AppendFormat(",\"fragments\":[{0}]", string.Join(",", jArr));
+            }
+
+            if (additionalProperties != null)
+            {
+                foreach (var kvp in additionalProperties)
+                {
+                    sb.AppendFormat(",{0}:{1}", StringExtensions.ToStringJsonToken(kvp.Key), StringExtensions.ToStringJsonToken(kvp.Value));
+                }
             }
 
             sb.Append("}");
@@ -811,7 +855,8 @@ namespace Trivial.Tasks
         /// <returns>true if update succeeded; otherwise, false.</returns>
         private bool UpdateFragment(string id, FragmentStates? state, Action<Fragment> callback)
         {
-            var fragment = this[id];
+            if (string.IsNullOrWhiteSpace(id)) return false;
+            var fragment = TryGetByFragmentId(id);
             if (fragment == null) return false;
             var oldState = fragment.State;
             if (!state.HasValue)
@@ -901,25 +946,25 @@ namespace Trivial.Tasks
         /// <summary>
         /// Gets the equipartition task list.
         /// </summary>
-        /// <param name="service">The service identifier.</param>
+        /// <param name="group">The group identifier.</param>
         /// <returns>A list of the equipartition task.</returns>
-        public IReadOnlyList<EquipartitionTask> this[string service]
+        public IReadOnlyList<EquipartitionTask> this[string group]
         {
             get
             {
-                return (cache.TryGetValue(service, out var list) ? list : new List<EquipartitionTask>()).AsReadOnly();
+                return (cache.TryGetValue(group, out var list) ? list : new List<EquipartitionTask>()).AsReadOnly();
             }
         }
 
         /// <summary>
         /// Gets all the equipartition tasks available.
         /// </summary>
-        /// <param name="service">The service identifier.</param>
+        /// <param name="group">The group identifier.</param>
         /// <param name="count">The count to take.</param>
         /// <returns>A collection of equipartition task.</returns>
-        public IEnumerable<EquipartitionTask> List(string service, int? count = null)
+        public IEnumerable<EquipartitionTask> List(string group, int? count = null)
         {
-            var col = cache.TryGetValue(service, out var list) ? list.Where(ele =>
+            var col = cache.TryGetValue(group, out var list) ? list.Where(ele =>
             {
                 return !ele.IsDone;
             }) : new List<EquipartitionTask>().AsReadOnly();
@@ -929,11 +974,11 @@ namespace Trivial.Tasks
         /// <summary>
         /// Gets the first equipartition tasks available.
         /// </summary>
-        /// <param name="service">The service identifier.</param>
+        /// <param name="group">The group identifier.</param>
         /// <returns>An equipartition task; or null, if no one available.</returns>
-        public EquipartitionTask FirstOrNull(string service)
+        public EquipartitionTask FirstOrNull(string group)
         {
-            if (!cache.TryGetValue(service, out var list)) return null;
+            if (!cache.TryGetValue(group, out var list)) return null;
             return list.FirstOrDefault(ele =>
             {
                 return !ele.IsDone;
@@ -943,12 +988,12 @@ namespace Trivial.Tasks
         /// <summary>
         /// Picks one and start.
         /// </summary>
-        /// <param name="service">The service identifier.</param>
+        /// <param name="group">The group identifier.</param>
         /// <param name="pick">A handler to pick.</param>
         /// <returns>A task and fragment.</returns>
-        public (EquipartitionTask, EquipartitionTask.Fragment) Pick(string service, Func<EquipartitionTask, EquipartitionTask.Fragment> pick = null)
+        public (EquipartitionTask, EquipartitionTask.Fragment) Pick(string group, Func<EquipartitionTask, EquipartitionTask.Fragment> pick = null)
         {
-            var col = List(service);
+            var col = List(group);
             if (pick == null) pick = task => task.Pick();
             EquipartitionTask t = null;
             EquipartitionTask.Fragment f = null;
@@ -965,45 +1010,62 @@ namespace Trivial.Tasks
         /// <summary>
         /// Picks one and start.
         /// </summary>
-        /// <param name="service">The service identifier.</param>
+        /// <param name="group">The group identifier.</param>
         /// <param name="tag">The tag.</param>
         /// <param name="except">The fragment identifier except.</param>
         /// <param name="onlyPending">true if get only pending one; otherwise, false.</param>
         /// <returns>A task and fragment.</returns>
-        public (EquipartitionTask, EquipartitionTask.Fragment) Pick(string service, string tag, IEnumerable<string> except = null, bool onlyPending = false)
+        public (EquipartitionTask, EquipartitionTask.Fragment) Pick(string group, string tag, IEnumerable<string> except = null, bool onlyPending = false)
         {
-            return Pick(service, task => task.Pick(tag, except, onlyPending));
+            return Pick(group, task => task.Pick(tag, except, onlyPending));
         }
 
         /// <summary>
         /// Creates a new equipartition tasks.
         /// </summary>
-        /// <param name="service">The service identifier.</param>
+        /// <param name="group">The group identifier.</param>
         /// <param name="jobId">The job identifier.</param>
         /// <param name="count">The task fragment count.</param>
         /// <param name="autoRemove">true if remove the item all done automatically; otherwise, false.</param>
         /// <returns>A new equipartition tasks created.</returns>
-        public virtual EquipartitionTask Create(string service, string jobId, int count, bool autoRemove = true)
+        public EquipartitionTask Create(string group, string jobId, int count, bool autoRemove = true)
         {
-            if (!cache.ContainsKey(service))
+            return Create(group, jobId, count, null, autoRemove);
+        }
+
+        /// <summary>
+        /// Creates a new equipartition tasks.
+        /// </summary>
+        /// <param name="group">The group identifier.</param>
+        /// <param name="jobId">The job identifier.</param>
+        /// <param name="count">The task fragment count.</param>
+        /// <param name="description">The description.</param>
+        /// <param name="autoRemove">true if remove the item all done automatically; otherwise, false.</param>
+        /// <returns>A new equipartition tasks created.</returns>
+        public virtual EquipartitionTask Create(string group, string jobId, int count, string description, bool autoRemove = true)
+        {
+            if (!cache.ContainsKey(group))
             {
                 lock (locker)
                 {
-                    if (!cache.ContainsKey(service))
+                    if (!cache.ContainsKey(group))
                     {
-                        cache[service] = new List<EquipartitionTask>();
+                        cache[group] = new List<EquipartitionTask>();
                     }
                 }
             }
 
-            var list = cache[service];
-            var task = new EquipartitionTask(jobId, count);
+            var list = cache[group];
+            var task = new EquipartitionTask(jobId, count)
+            {
+                Description = description
+            };
             if (autoRemove) task.HasBeenDone += (object sender, EventArgs eventArgs) =>
             {
                 list.Remove(task);
             };
             list.Add(task);
-            Created?.Invoke(this, new ChangeEventArgs<EquipartitionTask>(null, task, ChangeMethods.Add, service));
+            Created?.Invoke(this, new ChangeEventArgs<EquipartitionTask>(null, task, ChangeMethods.Add, group));
             return task;
         }
     }

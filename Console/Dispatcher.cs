@@ -73,6 +73,28 @@ namespace Trivial.Console
         }
 
         /// <summary>
+        /// The unhandled error processing event arguments of verb dispatcher.
+        /// </summary>
+        public class FailedProcessEventArgs : ProcessEventArgs
+        {
+            /// <summary>
+            /// Initializes a new instance of the Dispatcher.FailedProcessEventArgs class.
+            /// </summary>
+            /// <param name="args">The arguments.</param>
+            /// <param name="verb">The verb handler.</param>
+            /// <param name="ex">The unhandled exception.</param>
+            public FailedProcessEventArgs(Arguments args, Verb verb, Exception ex) : base(args, verb)
+            {
+                Exception = ex;
+            }
+
+            /// <summary>
+            /// Gets the exception unhandled.
+            /// </summary>
+            public Exception Exception { get; }
+        }
+
+        /// <summary>
         /// The verb handlers match table.
         /// </summary>
         private readonly List<Item> items = new List<Item>();
@@ -115,7 +137,12 @@ namespace Trivial.Console
         /// <summary>
         /// Adds or removes the event handler which will occur after processing failure.
         /// </summary>
-        public event EventHandler<ProcessEventArgs> ProcessFailed;
+        public event EventHandler<FailedProcessEventArgs> ProcessFailed;
+
+        /// <summary>
+        /// Adds or removes the event handler which will occur after processing is canceled.
+        /// </summary>
+        public event EventHandler<FailedProcessEventArgs> ProcessCanceled;
 
         /// <summary>
         /// Gets the verb handlers registered.
@@ -429,14 +456,14 @@ namespace Trivial.Console
                 else if (resetCancelState) isCanceled = false;
                 Processed?.Invoke(this, new ProcessEventArgs(args, verb));
             }
-            catch (OperationCanceledException)
+            catch (OperationCanceledException ex)
             {
-                ProcessFailed?.Invoke(this, new ProcessEventArgs(args, verb));
+                ProcessCanceled?.Invoke(this, new FailedProcessEventArgs(args, verb, ex));
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                ProcessFailed?.Invoke(this, new ProcessEventArgs(args, verb));
-                throw;
+                ProcessFailed?.Invoke(this, new FailedProcessEventArgs(args, verb, ex));
+                throw ex;
             }
             finally
             {

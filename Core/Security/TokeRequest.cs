@@ -196,7 +196,7 @@ namespace Trivial.Security
                 sb.AppendFormat("{0}:{1},", StringExtensions.ToStringJsonToken(kvp.Key), kvp.Value);
             }
 
-            if (sb.Length > 3) sb.Remove(sb.Length - 2, 1);
+            if (sb.Length > 3) sb.Remove(sb.Length - 1, 1);
             sb.Append("}");
             return sb.ToString();
         }
@@ -750,6 +750,24 @@ namespace Trivial.Security
             RedirectUri = redirectUri
         }, id, secret, scope)
         {
+        }
+
+        /// <summary>
+        /// Gets the authorization code.
+        /// </summary>
+        public string Code
+        {
+            get => Body?.Code;
+            set => Body.Code = value;
+        }
+
+        /// <summary>
+        /// Gets the redirect URI.
+        /// </summary>
+        public Uri RedirectUri
+        {
+            get => Body?.RedirectUri;
+            set => Body.RedirectUri = value;
         }
 
         /// <summary>

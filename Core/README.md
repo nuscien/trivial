@@ -70,7 +70,6 @@ There a lot of arithmetic functions.
 
 ```csharp
 Arithmetic.IsPrime(2147483647); // True
-Arithmetic.IsPrime(21474836479); // False
 await Arithmetic.IsPrimeAsync(2305843009213693951); // False
 
 Arithmetic.Factorial(10); // 3628800

@@ -116,12 +116,14 @@ namespace Trivial.Reflection
         /// The time interval between invocations of the methods referenced by callback.
         /// Specify negative one (-1) milliseconds to disable periodic signaling.
         /// </param>
+        /// <param name="isPaused">A handler to let the timer know if the renew action is paused.</param>
         /// <returns>The timer.</returns>
-        public Timer CreateRenewTimer(TimeSpan dueTime, TimeSpan period)
+        public Timer CreateRenewTimer(TimeSpan dueTime, TimeSpan period, Func<bool> isPaused = null)
         {
+            if (isPaused == null) isPaused = () => false;
             return new Timer(state =>
             {
-                RenewAsync();
+                if (!isPaused()) RenewAsync();
             }, null, dueTime, period);
         }
 
@@ -141,18 +143,17 @@ namespace Trivial.Reflection
         /// <returns>true if valid; otherwise, false.</returns>
         protected virtual Task<bool> NeedRenewAsync()
         {
-            return Task.Run(() => !HasCache);
+            return Task.FromResult(!HasCache);
         }
 
         private async Task<T> GetAsync(bool forceUpdate)
         {
-            if (!forceUpdate && HasCache)
+            var hasThread = semaphoreSlim.CurrentCount == 0;
+            if (!hasThread && !forceUpdate && HasCache)
             {
                 try
                 {
-                    var needTask = NeedRenewAsync();
-                    needTask.Wait();
-                    HasCache = needTask.IsCompleted && needTask.Result == false;
+                    HasCache = !await NeedRenewAsync();
                     if (HasCache) return Cache;
                 }
                 catch (AggregateException)
@@ -173,16 +174,16 @@ namespace Trivial.Reflection
                 catch (UnauthorizedAccessException)
                 {
                 }
+
+                hasThread = semaphoreSlim.CurrentCount == 0;
             }
 
             var cache = Cache;
             await semaphoreSlim.WaitAsync();
             try
             {
-                if (!forceUpdate && HasCache) return Cache;
-                var renewTask = ResolveFromSourceAsync();
-                renewTask.Wait();
-                Cache = renewTask.Result;
+                if ((!forceUpdate || hasThread) && HasCache) return Cache;
+                Cache = await ResolveFromSourceAsync();
                 RefreshDate = DateTime.Now;
                 HasCache = true;
             }
@@ -197,23 +198,81 @@ namespace Trivial.Reflection
     }
 
     /// <summary>
-    /// Thread-safe singleton refresh scheduler.
+    /// Thread-safe singleton renew scheduler.
     /// </summary>
     /// <typeparam name="T">The type of singleton</typeparam>
-    public class SingletonRefreshScheduler<T>
+    public class SingletonRenewScheduler<T> : IDisposable
     {
-        private readonly Lazy<Timer> timer;
-
         /// <summary>
-        /// Initializes a new instance of the SingletonRefreshScheduler class.
+        /// Initializes a new instance of the SingletonRenewScheduler class.
         /// </summary>
         /// <param name="keeper">The singleton keeper instance to maintain.</param>
-        /// <param name="timerFactory">The timer factory.</param>
-        public SingletonRefreshScheduler(SingletonKeeper<T> keeper, Func<Timer> timerFactory)
+        /// <param name="dueTime">
+        /// The amount of time to delay before the callback parameter invokes its methods.
+        /// Specify negative one (-1) milliseconds to prevent the timer from starting.
+        /// Specify zero (0) to start the timer immediately.
+        /// </param>
+        /// <param name="period">
+        /// The time interval between invocations of the methods referenced by callback.
+        /// Specify negative one (-1) milliseconds to disable periodic signaling.
+        /// </param>
+        public SingletonRenewScheduler(SingletonKeeper<T> keeper, TimeSpan dueTime, TimeSpan period)
         {
-            Keeper = keeper;
-            timer = new Lazy<Timer>(timerFactory, true);
+            Keeper = keeper ?? new SingletonKeeper<T>(default(T));
+            Timer = Keeper.CreateRenewTimer(dueTime, period, () => IsPaused);
         }
+
+        /// <summary>
+        /// Initializes a new instance of the SingletonRenewScheduler class.
+        /// </summary>
+        /// <param name="resolveHandler">The resovle handler.</param>
+        /// <param name="dueTime">
+        /// The amount of time to delay before the callback parameter invokes its methods.
+        /// Specify negative one (-1) milliseconds to prevent the timer from starting.
+        /// Specify zero (0) to start the timer immediately.
+        /// </param>
+        /// <param name="period">
+        /// The time interval between invocations of the methods referenced by callback.
+        /// Specify negative one (-1) milliseconds to disable periodic signaling.
+        /// </param>
+        public SingletonRenewScheduler(Func<Task<T>> resolveHandler, TimeSpan dueTime, TimeSpan period)
+            : this(new SingletonKeeper<T>(resolveHandler), dueTime, period)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the SingletonRenewScheduler class.
+        /// </summary>
+        /// <param name="resolveHandler">The resovle handler.</param>
+        /// <param name="dueTime">
+        /// The amount of time to delay before the callback parameter invokes its methods.
+        /// Specify negative one (-1) milliseconds to prevent the timer from starting.
+        /// Specify zero (0) to start the timer immediately.
+        /// </param>
+        /// <param name="period">
+        /// The time interval between invocations of the methods referenced by callback.
+        /// Specify negative one (-1) milliseconds to disable periodic signaling.
+        /// </param>
+        /// <param name="cache">The cache.</param>
+        /// <param name="refreshDate">The latest refresh succeeded date time of cache.</param>
+        public SingletonRenewScheduler(Func<Task<T>> resolveHandler, TimeSpan dueTime, TimeSpan period, T cache, DateTime? refreshDate = null)
+            : this(new SingletonKeeper<T>(resolveHandler, cache, refreshDate), dueTime, period)
+        {
+        }
+
+        /// <summary>
+        /// Adds or removes after the cache is updated.
+        /// </summary>
+        public event ChangeEventHandler<T> Renewed
+        {
+            add => Keeper.Renewed += value;
+            remove => Keeper.Renewed -= value;
+        }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether the timer should pause to renew.
+        /// </summary>
+        public bool IsPaused { get; set; }
 
         /// <summary>
         /// Gets the singleton keeper source instance.
@@ -221,57 +280,84 @@ namespace Trivial.Reflection
         public SingletonKeeper<T> Keeper { get; }
 
         /// <summary>
-        /// Gets the refresh timer instance.
+        /// Gets the cache.
         /// </summary>
-        public Timer Timer => timer.Value;
+        public T Cache => Keeper.Cache;
+
+        /// <summary>
+        /// Gets a value indicating whether has cache.
+        /// </summary>
+        public bool HasCache => Keeper.HasCache;
 
         /// <summary>
         /// Gets the latest refresh completed date.
         /// </summary>
-        public DateTime? RefreshDate => Keeper?.RefreshDate;
+        public DateTime? RefreshDate => Keeper.RefreshDate;
+
+        /// <summary>
+        /// Gets the refresh timer instance.
+        /// </summary>
+        public Timer Timer { get; }
 
         /// <summary>
         /// Gets the instance.
         /// </summary>
         /// <returns>The instance.</returns>
-        public Task<T> GetAsync()
-        {
-            InitTimer();
-            return Keeper != null ? Keeper.GetAsync() : Task.Run(() => default(T));
-        }
+        public Task<T> GetAsync() => Keeper.GetAsync();
 
         /// <summary>
         /// Refreshes and gets the instance.
         /// </summary>
         /// <returns>The instance.</returns>
-        public Task<T> RenewAsync()
+        public Task<T> RenewAsync() => Keeper.RenewAsync();
+
+        /// <summary>
+        /// Sets the cache flag as false.
+        /// </summary>
+        public void ClearCache() => Keeper.ClearCache();
+
+        /// <summary>
+        /// Releases all resources used by the current secret exchange object.
+        /// </summary>
+        public void Dispose()
         {
-            InitTimer();
-            return Keeper != null ? Keeper.RenewAsync() : Task.Run(() => default(T));
+            Dispose(true);
+            GC.SuppressFinalize(this);
         }
 
-        private void InitTimer()
+        /// <summary>
+        /// Releases the unmanaged resources used by this instance and optionally releases the managed resources.
+        /// </summary>
+        /// <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
+        protected virtual void Dispose(bool disposing)
         {
-#pragma warning disable IDE0059
-            var t = Timer;
-#pragma warning restore IDE0059
+            if (!disposing) return;
+            Timer.Dispose();
         }
     }
 
     /// <summary>
-    /// Thread-safe singleton refresh scheduler.
+    /// Thread-safe singleton renew scheduler.
     /// </summary>
     /// <typeparam name="TKeeper">The type of keeper</typeparam>
     /// <typeparam name="TModel">The type of singleton</typeparam>
-    public class SingletonRefreshScheduler<TKeeper, TModel> : SingletonRefreshScheduler<TModel>
+    public class SingletonRenewScheduler<TKeeper, TModel> : SingletonRenewScheduler<TModel>
         where TKeeper : SingletonKeeper<TModel>
     {
         /// <summary>
-        /// Initializes a new instance of the SingletonRefreshScheduler class.
+        /// Initializes a new instance of the SingletonRenewScheduler class.
         /// </summary>
         /// <param name="keeper">The singleton keeper instance to maintain.</param>
-        /// <param name="timerFactory">The timer factory.</param>
-        public SingletonRefreshScheduler(TKeeper keeper, Func<Timer> timerFactory) : base(keeper, timerFactory)
+        /// <param name="dueTime">
+        /// The amount of time to delay before the callback parameter invokes its methods.
+        /// Specify negative one (-1) milliseconds to prevent the timer from starting.
+        /// Specify zero (0) to start the timer immediately.
+        /// </param>
+        /// <param name="period">
+        /// The time interval between invocations of the methods referenced by callback.
+        /// Specify negative one (-1) milliseconds to disable periodic signaling.
+        /// </param>
+        public SingletonRenewScheduler(TKeeper keeper, TimeSpan dueTime, TimeSpan period) : base(keeper, dueTime, period)
         {
             Keeper = keeper;
         }

@@ -34,8 +34,10 @@ namespace Trivial.Sample
             ConsoleLine.WriteLine();
 
             // Query data.
-            var query = "{ str: \"abcdefg\", b: true, \"name\": \"hijklmn\", // abcd: efg\n \"value\": \"012345\", \"num\": 67, null: undefined, \"props\": { \"x\": \"opq\", \"y\": [ 8, 9, { \"z\": \"rst\" } ] } }";
+            var query = "{ str: \"abcdefg\", b: true, \"name\": \"hijklmn\", // abcd: efg\n \"value\": \"012345\", \"num\": 67, null: undefined, \"props\": { \"x\": \"o\\tp\\tq\", \"y\": [ 8, 9, { \"z\": \"rst\" } ] } }";
             var q = QueryData.Parse(query);
+            ConsoleLine.WriteLine(q.ToString());
+            ConsoleLine.WriteLine();
 
             // JSON HTTP web client.
             url = "https://github.com/compositejs/datasense/raw/master/package.json";
