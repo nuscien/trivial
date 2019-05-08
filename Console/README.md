@@ -86,13 +86,13 @@ class SecondVerb: AsyncVerb
 Then you can use dispatcher to dispatch the correct verb handler to process.
 
 ```csharp
-void Main(string[] args)
+static async Task Main(string[] args)
 {
     var dispatcher = new Dispatcher();
     dispatcher.Register<FirstVerb>("one");
     dispatcher.Register<SecondVerb>("two");
 
-    dispatcher.Process(args);
+    await dispatcher.ProcessAsync(args);
 
     // a.exe one --name Test
     // Console -> This is the verb handler 1.
