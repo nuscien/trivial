@@ -140,7 +140,7 @@ namespace Trivial.Console
         public int Length => line.Length + PendingLength;
 
         /// <summary>
-        /// Moves to the latest cursor position.
+        /// Moves cursor to its latest position.
         /// </summary>
         public void MoveToLatestCursorPosition()
         {
@@ -155,6 +155,7 @@ namespace Trivial.Console
         /// <param name="arg">An array of objects to write using format.</param>
         public void Write(string value, params object[] arg)
         {
+            if (value == null) return;
             var str = string.Format(value, arg);
             if (AutoFlush)
             {
@@ -389,9 +390,10 @@ namespace Trivial.Console
         /// <param name="count">The line count.</param>
         public void WriteEmptyLines(int count)
         {
+            ClearPending();
             for (var i = 0; i < count; i++)
             {
-                LineUtilities.WriteLine();
+                End(true);
             }
         }
 
@@ -400,7 +402,8 @@ namespace Trivial.Console
         /// </summary>
         public void WriteLine()
         {
-            LineUtilities.WriteLine();
+            ClearPending();
+            End(true);
         }
 
         /// <summary>
@@ -506,7 +509,7 @@ namespace Trivial.Console
         /// <returns>The next line of characters from the input stream, or null if no more lines are available.</returns>
         public string ReadLine(string question = null)
         {
-            if (question != null) Write(question);
+            Write(question);
             Flush();
             LineIndex++;
             initLeft = -1;
@@ -779,18 +782,24 @@ namespace Trivial.Console
         /// Enters a backspace to console to remove the last charactor.
         /// </summary>
         /// <param name="count">The count of the charactor to remove from end.</param>
-        public static void Backspace(int count = 1)
+        /// <param name="doNotRemoveOutput">true if just only move cursor back and keep output; otherwise, false.</param>
+        public static void Backspace(int count = 1, bool doNotRemoveOutput = false)
         {
             var str = new StringBuilder();
             str.Append('\b', count);
-            str.Append('\0', count);
-            str.Append('\b', count);
+            if (!doNotRemoveOutput)
+            {
+                str.Append('\0', count);
+                str.Append('\b', count);
+            }
+
             System.Console.Write(str.ToString());
         }
 
         /// <summary>
         /// Clear current line.
         /// </summary>
+        /// <param name="row">The additional row index to clear; or null, if clear the line where the cursor is.</param>
         public static void ClearLine(int? row = null)
         {
             try
