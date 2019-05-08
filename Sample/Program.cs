@@ -1,11 +1,13 @@
 ﻿using System;
+using System.Threading.Tasks;
+
 using Trivial.Console;
 
 namespace Trivial.Sample
 {
     class Program
     {
-        static void Main(string[] args)
+        static async Task Main(string[] args)
         {
             var dispatcher = new Dispatcher();
             dispatcher.Register<SelectionVerb>("selection");
@@ -25,7 +27,7 @@ namespace Trivial.Sample
             else
             {
                 System.Console.WriteLine("Type 'help' to get help.");
-                dispatcher.Process(true);
+                await dispatcher.ProcessAsync(true);
                 System.Console.WriteLine("Bye!");
             }
         }

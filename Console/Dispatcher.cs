@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 
 namespace Trivial.Console
 {
@@ -171,10 +172,30 @@ namespace Trivial.Console
         /// Processes.
         /// </summary>
         /// <param name="args">The arguments.</param>
+        public Task ProcessAsync(string args)
+        {
+            var arguments = new Arguments(args);
+            return ProcessAsync(arguments);
+        }
+
+        /// <summary>
+        /// Processes.
+        /// </summary>
+        /// <param name="args">The arguments.</param>
         public void Process(string args)
         {
             var arguments = new Arguments(args);
             Process(arguments);
+        }
+
+        /// <summary>
+        /// Processes.
+        /// </summary>
+        /// <param name="args">The arguments.</param>
+        public Task ProcessAsync(IEnumerable<string> args)
+        {
+            var arguments = new Arguments(args);
+            return ProcessAsync(arguments);
         }
 
         /// <summary>
@@ -191,9 +212,37 @@ namespace Trivial.Console
         /// Processes.
         /// </summary>
         /// <param name="args">The arguments.</param>
+        public Task ProcessAsync(Arguments args)
+        {
+            return ProcessAsync(args, true);
+        }
+
+        /// <summary>
+        /// Processes.
+        /// </summary>
+        /// <param name="args">The arguments.</param>
         public void Process(Arguments args)
         {
-            Process(args, true);
+            ProcessAsync(args, true).Wait();
+        }
+
+        /// <summary>
+        /// Processes.
+        /// </summary>
+        /// <param name="loop">true if process again after done; otherwise, false.</param>
+        public async Task ProcessAsync(bool loop = false)
+        {
+            while (true)
+            {
+                System.Console.Write(PositionString);
+                var str = System.Console.ReadLine();
+                if (isCanceled) break;
+                var args = new Arguments(str);
+                var verb = await ProcessAsync(args, false);
+                if (isCanceled || !loop || verb is ExitVerb) break;
+            }
+
+            isCanceled = false;
         }
 
         /// <summary>
@@ -202,17 +251,7 @@ namespace Trivial.Console
         /// <param name="loop">true if process again after done; otherwise, false.</param>
         public void Process(bool loop = false)
         {
-            while (true)
-            {
-                System.Console.Write(PositionString);
-                var str = System.Console.ReadLine();
-                if (isCanceled) break;
-                var args = new Arguments(str);
-                var verb = Process(args, false);
-                if (isCanceled || !loop || verb is ExitVerb) break;
-            }
-
-            isCanceled = false;
+            ProcessAsync(loop).Wait();
         }
 
         /// <summary>
@@ -412,7 +451,7 @@ namespace Trivial.Console
         /// <param name="args">The arguments.</param>
         /// <param name="resetCancelState">true if need to reset the cancel state; otherwise, false.</param>
         /// <returns>The verb handler.</returns>
-        private Verb Process(Arguments args, bool resetCancelState)
+        private async Task<Verb> ProcessAsync(Arguments args, bool resetCancelState)
         {
             if (isCanceled)
             {
@@ -452,7 +491,12 @@ namespace Trivial.Console
             try
             {
                 if (!verb.IsCancelled && !isCanceled && !verb.HasDisposed) verb.Init(this);
-                if (!verb.IsCancelled && !isCanceled && !verb.HasDisposed) verb.Process();
+                if (!verb.IsCancelled && !isCanceled && !verb.HasDisposed)
+                {
+                    if (verb is AsyncVerb asyncVerb) await asyncVerb.ProcessAsync();
+                    else verb.Process();
+                }
+
                 else if (resetCancelState) isCanceled = false;
                 Processed?.Invoke(this, new ProcessEventArgs(args, verb));
             }
