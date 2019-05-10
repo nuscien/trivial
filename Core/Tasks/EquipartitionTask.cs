@@ -1088,17 +1088,15 @@ namespace Trivial.Tasks
         /// </summary>
         /// <param name="group">The group identifier.</param>
         /// <param name="fragmentId">The task fragment identifier.</param>
-        /// <param name="state">The new state; or null if no change.</param>
-        /// <param name="tag">The new tag.</param>
         /// <returns>true if update succeeded; otherwise, false.</returns>
-        public SelectionRelationship<EquipartitionTask, EquipartitionTask.Fragment> UpdateFragment(string group, string fragmentId, EquipartitionTask.FragmentStates? state, string tag)
+        public SelectionRelationship<EquipartitionTask, EquipartitionTask.Fragment> GetFragment(string group, string fragmentId)
         {
             if (!cache.TryGetValue(group, out var list)) return new SelectionRelationship<EquipartitionTask, EquipartitionTask.Fragment>();
             foreach (var task in list)
             {
                 var fragment = task.TryGetByFragmentId(fragmentId);
                 if (fragment == null) continue;
-                if (task.UpdateFragment(fragment.Id, state, tag)) return new SelectionRelationship<EquipartitionTask, EquipartitionTask.Fragment>(task, fragment);
+                return new SelectionRelationship<EquipartitionTask, EquipartitionTask.Fragment>(task, fragment);
             }
 
             return new SelectionRelationship<EquipartitionTask, EquipartitionTask.Fragment>();
@@ -1110,18 +1108,27 @@ namespace Trivial.Tasks
         /// <param name="group">The group identifier.</param>
         /// <param name="fragmentId">The task fragment identifier.</param>
         /// <param name="state">The new state; or null if no change.</param>
+        /// <param name="tag">The new tag.</param>
+        /// <returns>true if update succeeded; otherwise, false.</returns>
+        public SelectionRelationship<EquipartitionTask, EquipartitionTask.Fragment> UpdateFragment(string group, string fragmentId, EquipartitionTask.FragmentStates? state, string tag)
+        {
+            var info = GetFragment(group, fragmentId);
+            if (info.IsSelected) info.Parent.UpdateFragment(info.ItemSelected, state, tag);
+            return info;
+        }
+
+        /// <summary>
+        /// Updates the task fragment.
+        /// </summary>
+        /// <param name="group">The group identifier.</param>
+        /// <param name="fragmentId">The task fragment identifier.</param>
+        /// <param name="state">The new state; or null if no change.</param>
         /// <returns>true if update succeeded; otherwise, false.</returns>
         public SelectionRelationship<EquipartitionTask, EquipartitionTask.Fragment> UpdateFragment(string group, string fragmentId, EquipartitionTask.FragmentStates state)
         {
-            if (!cache.TryGetValue(group, out var list)) return new SelectionRelationship<EquipartitionTask, EquipartitionTask.Fragment>();
-            foreach (var task in list)
-            {
-                var fragment = task.TryGetByFragmentId(fragmentId);
-                if (fragment == null) continue;
-                if (task.UpdateFragment(fragment.Id, state)) return new SelectionRelationship<EquipartitionTask, EquipartitionTask.Fragment>(task, fragment);
-            }
-
-            return new SelectionRelationship<EquipartitionTask, EquipartitionTask.Fragment>();
+            var info = GetFragment(group, fragmentId);
+            if (info.IsSelected) info.Parent.UpdateFragment(info.ItemSelected, state);
+            return info;
         }
     }
 }

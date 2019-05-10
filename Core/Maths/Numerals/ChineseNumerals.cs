@@ -22,9 +22,19 @@ namespace Trivial.Maths
         public const string HeavenlyStems = "甲乙丙丁戊己庚辛壬癸";
 
         /// <summary>
+        /// The ten Heavenly Stems.
+        /// </summary>
+        public const string HeavenlyStemsName = "天干";
+
+        /// <summary>
         /// The twelve Earthly Branches.
         /// </summary>
         public const string EarthlyBranches = "子丑寅卯辰巳午未申酉戌亥";
+
+        /// <summary>
+        /// The twelve Earthly Branches.
+        /// </summary>
+        public const string EarthlyBranchesName = "地支";
 
         /// <summary>
         /// Initializes a new instance of the ChineseNumerals class.
@@ -538,6 +548,18 @@ namespace Trivial.Maths
             }
 
             return str.ToString();
+        }
+
+        /// <summary>
+        /// Gets the Heavenly Stems, Earthly Branches and round.
+        /// </summary>
+        /// <param name="value">The input number.</param>
+        /// <param name="start">The start number.</param>
+        /// <returns>The Heavenly Stems, Earthly Branches and round.</returns>
+        public static (char, char, int) ToHeavenlyStemsEarthlyBranchesAndRound(int value, int start = 0)
+        {
+            value -= start;
+            return (HeavenlyStems[(value % 10 + 10) % 10], EarthlyBranches[(value % 12 + 12) % 12], value % 60);
         }
 
         /// <summary>

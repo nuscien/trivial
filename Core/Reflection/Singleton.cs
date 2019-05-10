@@ -49,11 +49,6 @@ namespace Trivial.Reflection
     public abstract class BaseSingletonResolver : ISingletonResolver
     {
         /// <summary>
-        /// Cache.
-        /// </summary>
-        private readonly Dictionary<Type, Dictionary<string, object>> cache = new Dictionary<Type, Dictionary<string, object>>();
-
-        /// <summary>
         /// Resolves a singleton instance.
         /// </summary>
         /// <typeparam name="T">The type of instance.</typeparam>
@@ -196,7 +191,7 @@ namespace Trivial.Reflection
         /// <summary>
         /// Cache.
         /// </summary>
-        private readonly Dictionary<Type, Dictionary<string, object>> cache = new Dictionary<Type, Dictionary<string, object>>();
+        private readonly Dictionary<Type, Dictionary<string, IObjectRef>> cache = new Dictionary<Type, Dictionary<string, IObjectRef>>();
 
         /// <summary>
         /// Registers an instance.
@@ -206,19 +201,29 @@ namespace Trivial.Reflection
         /// <param name="obj">The instance.</param>
         public void Register<T>(string key, T obj)
         {
-            if (!cache.ContainsKey(typeof(T)))
-            {
-                lock (locker)
-                {
-                    if (!cache.ContainsKey(typeof(T)))
-                    {
-                        cache[typeof(T)] = new Dictionary<string, object>();
-                    }
-                }
-            }
+            GetInstances(typeof(T))[key ?? string.Empty] = new ObjectRef(obj);
+        }
 
-            var set = cache[typeof(T)];
-            set[key ?? string.Empty] = obj;
+        /// <summary>
+        /// Registers an instance.
+        /// </summary>
+        /// <typeparam name="T">The type of the instance to register.</typeparam>
+        /// <param name="key">The key.</param>
+        /// <param name="factory">The instance factory.</param>
+        public void Register<T>(string key, Func<T> factory)
+        {
+            GetInstances(typeof(T))[key ?? string.Empty] = new FactoryObjectRef<T>(factory);
+        }
+
+        /// <summary>
+        /// Registers an instance.
+        /// </summary>
+        /// <typeparam name="T">The type of the instance to register.</typeparam>
+        /// <param name="key">The key.</param>
+        /// <param name="lazy">The lazy instance.</param>
+        public void Register<T>(string key, Lazy<T> lazy)
+        {
+            GetInstances(typeof(T))[key ?? string.Empty] = new LazyObjectRef<T>(lazy);
         }
 
         /// <summary>
@@ -260,7 +265,7 @@ namespace Trivial.Reflection
 
                 try
                 {
-                    result = (T)value;
+                    result = (T)value.Value;
                     return true;
                 }
                 catch (InvalidCastException)
@@ -269,6 +274,22 @@ namespace Trivial.Reflection
                     return false;
                 }
             };
+        }
+
+        private Dictionary<string, IObjectRef> GetInstances(Type type)
+        {
+            if (!cache.ContainsKey(type))
+            {
+                lock (locker)
+                {
+                    if (!cache.ContainsKey(type))
+                    {
+                        cache[type] = new Dictionary<string, IObjectRef>();
+                    }
+                }
+            }
+
+            return cache[type];
         }
     }
 
