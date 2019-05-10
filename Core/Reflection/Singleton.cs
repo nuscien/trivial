@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -183,6 +184,11 @@ namespace Trivial.Reflection
     /// </summary>
     public class SingletonResolver : BaseSingletonResolver
     {
+        internal class KeyedCollection
+        {
+
+        }
+
         /// <summary>
         /// The locker.
         /// </summary>
@@ -191,17 +197,17 @@ namespace Trivial.Reflection
         /// <summary>
         /// Cache.
         /// </summary>
-        private readonly Dictionary<Type, Dictionary<string, IObjectRef>> cache = new Dictionary<Type, Dictionary<string, IObjectRef>>();
+        private readonly Dictionary<Type, ConcurrentDictionary<string, IObjectRef>> cache = new Dictionary<Type, ConcurrentDictionary<string, IObjectRef>>();
 
         /// <summary>
         /// Registers an instance.
         /// </summary>
         /// <typeparam name="T">The type of the instance to register.</typeparam>
         /// <param name="key">The key.</param>
-        /// <param name="obj">The instance.</param>
-        public void Register<T>(string key, T obj)
+        /// <param name="reference">The object reference.</param>
+        public void Register<T>(string key, IObjectRef<T> reference)
         {
-            GetInstances(typeof(T))[key ?? string.Empty] = new ObjectRef(obj);
+            if (reference != null) GetInstances(typeof(T))[key ?? string.Empty] = reference;
         }
 
         /// <summary>
@@ -212,7 +218,7 @@ namespace Trivial.Reflection
         /// <param name="factory">The instance factory.</param>
         public void Register<T>(string key, Func<T> factory)
         {
-            GetInstances(typeof(T))[key ?? string.Empty] = new FactoryObjectRef<T>(factory);
+            Register(key, new FactoryObjectRef<T>(factory));
         }
 
         /// <summary>
@@ -223,7 +229,48 @@ namespace Trivial.Reflection
         /// <param name="lazy">The lazy instance.</param>
         public void Register<T>(string key, Lazy<T> lazy)
         {
-            GetInstances(typeof(T))[key ?? string.Empty] = new LazyObjectRef<T>(lazy);
+            Register(key, new LazyObjectRef<T>(lazy));
+        }
+
+        /// <summary>
+        /// Registers an instance.
+        /// </summary>
+        /// <typeparam name="T">The type of the instance to register.</typeparam>
+        /// <param name="key">The key.</param>
+        /// <param name="obj">The instance.</param>
+        public void Register<T>(string key, T obj)
+        {
+            Register(key, new InstanceObjectRef<T>(obj));
+        }
+
+        /// <summary>
+        /// Registers an instance.
+        /// </summary>
+        /// <typeparam name="T">The type of the instance to register.</typeparam>
+        /// <param name="reference">The object reference.</param>
+        public void Register<T>(IObjectRef<T> reference)
+        {
+            Register(null, reference);
+        }
+
+        /// <summary>
+        /// Registers an instance.
+        /// </summary>
+        /// <typeparam name="T">The type of the instance to register.</typeparam>
+        /// <param name="factory">The instance factory.</param>
+        public void Register<T>(Func<T> factory)
+        {
+            Register(null, factory);
+        }
+
+        /// <summary>
+        /// Registers an instance.
+        /// </summary>
+        /// <typeparam name="T">The type of the instance to register.</typeparam>
+        /// <param name="lazy">The lazy instance.</param>
+        public void Register<T>(Lazy<T> lazy)
+        {
+            Register(lazy);
         }
 
         /// <summary>
@@ -243,7 +290,192 @@ namespace Trivial.Reflection
         /// <param name="key">The key.</param>
         public void Register<T>(string key = null)
         {
-            Register(key, Activator.CreateInstance<T>());
+            Register(key, Activator.CreateInstance<T>);
+        }
+
+        /// <summary>
+        /// Resolves a singleton instance. Register one if non-exist.
+        /// </summary>
+        /// <typeparam name="T">The type of the instance to register.</typeparam>
+        /// <param name="key">The key.</param>
+        /// <param name="reference">The object reference.</param>
+        /// <returns>An instance resolved.</returns>
+        public T EnsureResolve<T>(string key, IObjectRef<T> reference)
+        {
+            if (reference == null) return default;
+            var set = GetInstances(typeof(T));
+            if (key == null) key = string.Empty;
+            if (!set.ContainsKey(key)) set.TryAdd(key, reference);
+            return (T)set[key].Value;
+        }
+
+        /// <summary>
+        /// Resolves a singleton instance. Register one if non-exist.
+        /// </summary>
+        /// <typeparam name="T">The type of the instance to register.</typeparam>
+        /// <param name="key">The key.</param>
+        /// <param name="factory">The instance factory.</param>
+        /// <returns>An instance resolved.</returns>
+        public T EnsureResolve<T>(string key, Func<T> factory)
+        {
+            return EnsureResolve(key, new FactoryObjectRef<T>(factory));
+        }
+
+        /// <summary>
+        /// Resolves a singleton instance. Register one if non-exist.
+        /// </summary>
+        /// <typeparam name="T">The type of the instance to register.</typeparam>
+        /// <param name="key">The key.</param>
+        /// <param name="lazy">The lazy instance.</param>
+        /// <returns>An instance resolved.</returns>
+        public T EnsureResolve<T>(string key, Lazy<T> lazy)
+        {
+            return EnsureResolve(key, new LazyObjectRef<T>(lazy));
+        }
+
+        /// <summary>
+        /// Resolves a singleton instance. Register one if non-exist.
+        /// </summary>
+        /// <typeparam name="T">The type of the instance to register.</typeparam>
+        /// <param name="reference">The object reference.</param>
+        /// <returns>An instance resolved.</returns>
+        public T EnsureResolve<T>(IObjectRef<T> reference)
+        {
+            return EnsureResolve(null, reference);
+        }
+
+        /// <summary>
+        /// Resolves a singleton instance. Register one if non-exist.
+        /// </summary>
+        /// <typeparam name="T">The type of the instance to register.</typeparam>
+        /// <param name="factory">The instance factory.</param>
+        /// <returns>An instance resolved.</returns>
+        public T EnsureResolve<T>(Func<T> factory)
+        {
+            return EnsureResolve(null, factory);
+        }
+
+        /// <summary>
+        /// Resolves a singleton instance. Register one if non-exist.
+        /// </summary>
+        /// <typeparam name="T">The type of the instance to register.</typeparam>
+        /// <param name="lazy">The lazy instance.</param>
+        /// <returns>An instance resolved.</returns>
+        public T EnsureResolve<T>(Lazy<T> lazy)
+        {
+            return EnsureResolve(null, lazy);
+        }
+
+        /// <summary>
+        /// Resolves a singleton instance. Register one if non-exist.
+        /// </summary>
+        /// <typeparam name="T">The type of the instance to register.</typeparam>
+        /// <param name="key">The key.</param>
+        /// <returns>An instance resolved.</returns>
+        public T EnsureResolve<T>(string key = null)
+        {
+            return EnsureResolve(key, Activator.CreateInstance<T>);
+        }
+
+        /// <summary>
+        /// Gets all keys of a specific type.
+        /// </summary>
+        /// <typeparam name="T">The type of the instance.</typeparam>
+        /// <returns>A key list of a specific type.</returns>
+        public IEnumerable<string> GetKeys<T>()
+        {
+            return GetKeys(typeof(T));
+        }
+
+        /// <summary>
+        /// Gets all keys of a specific type.
+        /// </summary>
+        /// <param name="type">The type of the instance.</param>
+        /// <returns>A key list of a specific type.</returns>
+        public IEnumerable<string> GetKeys(Type type)
+        {
+            return new List<string>(GetInstances(type).Keys);
+        }
+
+        /// <summary>
+        /// Gets a value indicating whether the type is registered.
+        /// </summary>
+        /// <typeparam name="T">The type of the instance.</typeparam>
+        /// <returns>true if found; otherwise, false.</returns>
+        public bool Contains<T>() => cache.ContainsKey(typeof(T));
+
+        /// <summary>
+        /// Gets a value indicating whether the type is registered.
+        /// </summary>
+        /// <param name="type">The type of the instance.</param>
+        /// <returns>true if found; otherwise, false.</returns>
+        public bool Contains(Type type) => cache.ContainsKey(type);
+
+        /// <summary>
+        /// Removes an instance registered.
+        /// </summary>
+        /// <typeparam name="T">The type of the instance.</typeparam>
+        /// <param name="key">The key.</param>
+        /// <returns>true if the instance is successfully found and removed; otherwise, false.</returns>
+        public bool Remove<T>(string key = null)
+        {
+            return Remove(typeof(T), key);
+        }
+
+        /// <summary>
+        /// Removes an instance registered.
+        /// </summary>
+        /// <param name="type">The type of the instance.</param>
+        /// <param name="key">The key.</param>
+        /// <returns>true if the instance is successfully found and removed; otherwise, false.</returns>
+        public bool Remove(Type type, string key = null)
+        {
+            var set = GetInstances(type);
+            return set.TryRemove(key ?? string.Empty, out var _);
+        }
+
+        /// <summary>
+        /// Removes all instance registered of a specific type.
+        /// </summary>
+        /// <param name="type">The type of the instance to remove.</param>
+        /// <returns>true if the instance is successfully found and removed; otherwise, false.</returns>
+        public bool RemoveAll(Type type)
+        {
+            lock (locker)
+            {
+                return cache.Remove(type);
+            }
+        }
+
+        /// <summary>
+        /// Removes all instance registered of a specific type.
+        /// </summary>
+        /// <param name="types">The types of the instance to remove.</param>
+        /// <returns>true if the instance is successfully found and removed; otherwise, false.</returns>
+        public int RemoveAll(IEnumerable<Type> types)
+        {
+            var i = 0;
+            lock (locker)
+            {
+                foreach (var type in types)
+                {
+                    if (cache.Remove(type)) i++;
+                }
+            }
+
+            return i;
+        }
+
+        /// <summary>
+        /// Removes all instance registered.
+        /// </summary>
+        /// <returns>true if the instance is successfully found and removed; otherwise, false.</returns>
+        public void Clear()
+        {
+            lock (locker)
+            {
+                cache.Clear();
+            }
         }
 
         /// <summary>
@@ -276,7 +508,7 @@ namespace Trivial.Reflection
             };
         }
 
-        private Dictionary<string, IObjectRef> GetInstances(Type type)
+        private ConcurrentDictionary<string, IObjectRef> GetInstances(Type type)
         {
             if (!cache.ContainsKey(type))
             {
@@ -284,7 +516,7 @@ namespace Trivial.Reflection
                 {
                     if (!cache.ContainsKey(type))
                     {
-                        cache[type] = new Dictionary<string, IObjectRef>();
+                        cache[type] = new ConcurrentDictionary<string, IObjectRef>();
                     }
                 }
             }

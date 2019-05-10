@@ -268,6 +268,22 @@ So that you can get the data from the cache if has and or add new one if necessa
 if (!cache.TryGet("abcd", out Model item)) item = new Model();
 ```
 
+## [Reflection](https://github.com/nuscien/trivial/wiki/reflection)
+
+Contains the singleton and error handling.
+
+```csharp
+using Trivial.Reflection;
+```
+
+### Singleton
+
+You can create following class as singleton for different scenarios.
+
+- `SingletonResolver` for instances management.
+- `SingletonKeeper` for async instances management.
+- `SingletonRenewScheduler` contains a timer to renew the instance as needed.
+
 ## [Geography](https://github.com/nuscien/trivial/wiki/geo)
 
 Contains the models of geography.
