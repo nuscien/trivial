@@ -10,6 +10,269 @@ using Trivial.Data;
 namespace Trivial.Reflection
 {
     /// <summary>
+    /// Resolves an instance by key.
+    /// </summary>
+    /// <typeparam name="T">The type of the instance.</typeparam>
+    /// <param name="key">The key.</param>
+    /// <param name="value">The value output.</param>
+    /// <returns>true if resolve succeeded; otherwise, false.</returns>
+    public delegate bool KeyedInstanceResolver<T>(string key, out T value);
+
+    /// <summary>
+    /// Singleton resolver interface.
+    /// </summary>
+    public interface ISingletonResolver
+    {
+        /// <summary>
+        /// Tries to resolves a singleton instance.
+        /// </summary>
+        /// <typeparam name="T">The type of instance.</typeparam>
+        /// <param name="key">The key.</param>
+        /// <returns>An instance resolved.</returns>
+        /// <exception cref="NotSupportedException">The type of instance was not support to resolve.</exception>
+        /// <exception cref="KeyNotFoundException">The key was not supported for this type.</exception>
+        T Resolve<T>(string key);
+
+        /// <summary>
+        /// Tries to resolves a singleton instance.
+        /// </summary>
+        /// <typeparam name="T">The type of instance.</typeparam>
+        /// <param name="key">The key.</param>
+        /// <param name="result">An instance resolved.</param>
+        /// <returns>true if resolve succeeded; otherwise, false.</returns>
+        bool TryResolve<T>(string key, out T result);
+    }
+
+    /// <summary>
+    /// The base singleton resolver.
+    /// </summary>
+    public abstract class BaseSingletonResolver : ISingletonResolver
+    {
+        /// <summary>
+        /// Cache.
+        /// </summary>
+        private readonly Dictionary<Type, Dictionary<string, object>> cache = new Dictionary<Type, Dictionary<string, object>>();
+
+        /// <summary>
+        /// Resolves a singleton instance.
+        /// </summary>
+        /// <typeparam name="T">The type of instance.</typeparam>
+        /// <param name="key">The key.</param>
+        /// <returns>An instance resolved.</returns>
+        /// <exception cref="NotSupportedException">The type of instance was not support to resolve.</exception>
+        /// <exception cref="KeyNotFoundException">The key was not supported for this type.</exception>
+        public T Resolve<T>(string key)
+        {
+            if (key == null) key = string.Empty;
+            KeyedInstanceResolver<T> resolver = null;
+            Exception exception = null;
+            try
+            {
+                resolver = GetResolver<T>();
+            }
+            catch (ArgumentException ex)
+            {
+                exception = ex;
+            }
+            catch (NullReferenceException ex)
+            {
+                exception = ex;
+            }
+            catch (KeyNotFoundException ex)
+            {
+                exception = ex;
+            }
+            catch (InvalidCastException ex)
+            {
+                exception = ex;
+            }
+            catch (NotSupportedException ex)
+            {
+                exception = ex;
+            }
+            catch (InvalidOperationException ex)
+            {
+                exception = ex;
+            }
+
+            if (exception != null) throw new NotSupportedException("The type of the instance has not been registered yet.", exception);
+            if (resolver == null) throw new NotSupportedException("The type of the instance has not been registered yet.");
+
+            try
+            {
+                if (resolver(key, out T result)) return result;
+                if (string.IsNullOrEmpty(key)) throw new NotSupportedException("There is no default instance of the type registered.");
+                throw new KeyNotFoundException("The key is not supported in the given type registered.");
+            }
+            catch (ArgumentException ex)
+            {
+                exception = ex;
+            }
+            catch (NullReferenceException ex)
+            {
+                exception = ex;
+            }
+            catch (KeyNotFoundException ex)
+            {
+                exception = ex;
+            }
+            catch (InvalidCastException ex)
+            {
+                exception = ex;
+            }
+            catch (NotSupportedException ex)
+            {
+                exception = ex;
+            }
+            catch (InvalidOperationException ex)
+            {
+                exception = ex;
+            }
+
+            if (string.IsNullOrEmpty(key)) throw new NotSupportedException("There is no default instance of the type registered.", exception);
+            throw new KeyNotFoundException("The key is not supported in the given type registered.", exception);
+        }
+
+        /// <summary>
+        /// Resolves a singleton instance.
+        /// </summary>
+        /// <typeparam name="T">The type of instance.</typeparam>
+        /// <param name="key">The key.</param>
+        /// <param name="result">An instance resolved.</param>
+        /// <returns>true if resolve succeeded; otherwise, false.</returns>
+        /// <exception cref="NotSupportedException">The type of instance was not support to resolve.</exception>
+        /// <exception cref="KeyNotFoundException">The key was not supported for this type.</exception>
+        public bool TryResolve<T>(string key, out T result)
+        {
+            if (key == null) key = string.Empty;
+            try
+            {
+                var resolver = GetResolver<T>();
+                if (resolver != null) return resolver(key, out result);
+                result = default;
+                return false;
+            }
+            catch (ArgumentException)
+            {
+            }
+            catch (NullReferenceException)
+            {
+            }
+            catch (KeyNotFoundException)
+            {
+            }
+            catch (InvalidCastException)
+            {
+            }
+            catch (NotSupportedException)
+            {
+            }
+            catch (InvalidOperationException)
+            {
+            }
+
+            result = default;
+            return false;
+        }
+
+        /// <summary>
+        /// Gets the keyed instance resolver of the specific type.
+        /// </summary>
+        /// <typeparam name="T">The type of the instance.</typeparam>
+        /// <returns>The resolver; or null, if so such type supported.</returns>
+        protected abstract KeyedInstanceResolver<T> GetResolver<T>();
+    }
+
+    /// <summary>
+    /// In-memory singleton resolver.
+    /// </summary>
+    public class SingletonResolver : BaseSingletonResolver
+    {
+        /// <summary>
+        /// The locker.
+        /// </summary>
+        private readonly object locker = new object();
+
+        /// <summary>
+        /// Cache.
+        /// </summary>
+        private readonly Dictionary<Type, Dictionary<string, object>> cache = new Dictionary<Type, Dictionary<string, object>>();
+
+        /// <summary>
+        /// Registers an instance.
+        /// </summary>
+        /// <typeparam name="T">The type of the instance to register.</typeparam>
+        /// <param name="key">The key.</param>
+        /// <param name="obj">The instance.</param>
+        public void Register<T>(string key, T obj)
+        {
+            if (!cache.ContainsKey(typeof(T)))
+            {
+                lock (locker)
+                {
+                    if (!cache.ContainsKey(typeof(T)))
+                    {
+                        cache[typeof(T)] = new Dictionary<string, object>();
+                    }
+                }
+            }
+
+            var set = cache[typeof(T)];
+            set[key ?? string.Empty] = obj;
+        }
+
+        /// <summary>
+        /// Registers an instance.
+        /// </summary>
+        /// <typeparam name="T">The type of the instance to register.</typeparam>
+        /// <param name="obj">The instance.</param>
+        public void Register<T>(T obj)
+        {
+            Register(null, obj);
+        }
+
+        /// <summary>
+        /// Registers an instance.
+        /// </summary>
+        /// <typeparam name="T">The type of the instance to register.</typeparam>
+        /// <param name="key">The key.</param>
+        public void Register<T>(string key = null)
+        {
+            Register(key, Activator.CreateInstance<T>());
+        }
+
+        /// <summary>
+        /// Gets the keyed instance resolver of the specific type.
+        /// </summary>
+        /// <typeparam name="T">The type of the instance.</typeparam>
+        /// <returns>The resolver; or null, if so such type supported.</returns>
+        protected override KeyedInstanceResolver<T> GetResolver<T>()
+        {
+            if (!cache.TryGetValue(typeof(T), out var set)) return null;
+            return (string key, out T result) =>
+            {
+                if (key == null) key = string.Empty;
+                if (!set.TryGetValue(key, out var value))
+                {
+                    result = default;
+                    return false;
+                }
+
+                try
+                {
+                    result = (T)value;
+                    return true;
+                }
+                catch (InvalidCastException)
+                {
+                    result = default;
+                    return false;
+                }
+            };
+        }
+    }
+
+    /// <summary>
     /// Singleton keeper with optional renew ability in thread-safe mode.
     /// </summary>
     /// <typeparam name="T">The type of value.</typeparam>

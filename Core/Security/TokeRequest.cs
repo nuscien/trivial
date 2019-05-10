@@ -7,9 +7,12 @@ using System.Reflection;
 using System.Runtime.Serialization;
 using System.Security;
 using System.Text;
+using System.Threading.Tasks;
 
 using Trivial.Collection;
+using Trivial.Data;
 using Trivial.Net;
+using Trivial.Reflection;
 using Trivial.Text;
 using Trivial.Web;
 
@@ -75,12 +78,20 @@ namespace Trivial.Security
         /// <param name="clientCredentials">The client credentials and scope query data.</param>
         public TokenRequest(TokenRequestBody body, QueryData clientCredentials)
         {
-            Body = body;
+            Body = body ?? new QueryDataTokenRequestBody(clientCredentials);
             if (clientCredentials == null) return;
             var clientId = clientCredentials[TokenRequestBody.ClientIdProperty];
             var clientSecret = clientCredentials[TokenRequestBody.ClientSecretProperty];
             if (!string.IsNullOrEmpty(clientId) || !string.IsNullOrEmpty(clientSecret)) ClientCredentials = new AppAccessingKey(clientId, clientSecret);
             ScopeString = clientCredentials[TokenInfo.ScopeProperty];
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the TokenRequest class.
+        /// </summary>
+        /// <param name="q">The query data.</param>
+        public TokenRequest(QueryData q) : this(null, q)
+        {
         }
 
         /// <summary>
@@ -154,6 +165,29 @@ namespace Trivial.Security
         }
 
         /// <summary>
+        /// Gets the property.
+        /// </summary>
+        /// <param name="name">The property name.</param>
+        /// <returns>The value of the specific property.</returns>
+        public string Property(string name)
+        {
+            if (string.IsNullOrWhiteSpace(name)) return null;
+            switch (name)
+            {
+                case TokenRequestBody.GrantTypeProperty:
+                    return GrantType;
+                case TokenRequestBody.ClientIdProperty:
+                    return ClientId;
+                case TokenRequestBody.ClientSecretProperty:
+                    return ClientCredentials.Secret.ToUnsecureString();
+                case TokenInfo.ScopeProperty:
+                    return ScopeString;
+                default:
+                    return Body?.Property(name);
+            }
+        }
+
+        /// <summary>
         /// Gets the query data.
         /// </summary>
         /// <returns>A query data.</returns>
@@ -174,11 +208,11 @@ namespace Trivial.Security
         {
             var data = Body?.ToJsonProperites() ?? new Dictionary<string, string>();
             if (!string.IsNullOrWhiteSpace(ClientId))
-                data.Add(TokenRequestBody.ClientIdProperty, $"{StringExtensions.ToStringJsonToken(ClientId)}");
+                data.Add(TokenRequestBody.ClientIdProperty, StringExtensions.ToStringJsonToken(ClientId));
             if (ClientCredentials != null && ClientCredentials.Secret != null && ClientCredentials.Secret.Length > 0)
-                data.Add(TokenRequestBody.ClientSecretProperty, $"{StringExtensions.ToStringJsonToken(ClientCredentials.Secret.ToUnsecureString())}");
+                data.Add(TokenRequestBody.ClientSecretProperty, StringExtensions.ToStringJsonToken(ClientCredentials.Secret.ToUnsecureString()));
             if (!string.IsNullOrWhiteSpace(ScopeString))
-                data.Add(TokenInfo.ScopeProperty, $"{StringExtensions.ToStringJsonToken(ScopeString)}");
+                data.Add(TokenInfo.ScopeProperty, StringExtensions.ToStringJsonToken(ScopeString));
             return data;
         }
 
@@ -413,6 +447,16 @@ namespace Trivial.Security
         public string GrantType { get; }
 
         /// <summary>
+        /// Gets the property.
+        /// </summary>
+        /// <param name="name">The property name.</param>
+        /// <returns>The value of the specific property.</returns>
+        public virtual string Property(string name)
+        {
+            return ToQueryData()?[name];
+        }
+
+        /// <summary>
         /// Gets the query data.
         /// </summary>
         /// <returns>A query data.</returns>
@@ -456,12 +500,54 @@ namespace Trivial.Security
                 var propValue = item.GetValue(this);
                 if (propValue == null) continue;
                 var propType = propValue.GetType();
-                if (propType == typeof(Uri)) data.Add(attr.Name, $"{StringExtensions.ToStringJsonToken(((Uri)propValue).OriginalString)}");
-                else if (propType == typeof(DateTime)) data.Add(attr.Name, $"{WebFormat.ParseDate((DateTime)propValue).ToString(CultureInfo.InvariantCulture)}");
-                else if (propType == typeof(DateTimeOffset)) data.Add(attr.Name, $"{WebFormat.ParseDate((DateTimeOffset)propValue).ToString(CultureInfo.InvariantCulture)}");
-                else if (propType == typeof(int) || propType == typeof(long) || propType == typeof(uint) || propType == typeof(ulong) || propType == typeof(float) || propType == typeof(double) || propType == typeof(short) || propType == typeof(bool)) data.Add(attr.Name, $"{propValue.ToString()}");
-                else if (propType == typeof(SecureString)) data.Add(attr.Name, $"{StringExtensions.ToStringJsonToken(((SecureString)propValue).ToUnsecureString())}");
-                else if (!string.IsNullOrWhiteSpace(propValue.ToString())) data.Add(attr.Name, $"{StringExtensions.ToStringJsonToken(propValue.ToString())}");
+                if (propType == typeof(Uri)) data.Add(attr.Name, StringExtensions.ToStringJsonToken(((Uri)propValue).OriginalString));
+                else if (propType == typeof(DateTime)) data.Add(attr.Name, WebFormat.ParseDate((DateTime)propValue).ToString(CultureInfo.InvariantCulture));
+                else if (propType == typeof(DateTimeOffset)) data.Add(attr.Name, WebFormat.ParseDate((DateTimeOffset)propValue).ToString(CultureInfo.InvariantCulture));
+                else if (propType == typeof(int) || propType == typeof(long) || propType == typeof(uint) || propType == typeof(ulong) || propType == typeof(float) || propType == typeof(double) || propType == typeof(short) || propType == typeof(bool)) data.Add(attr.Name, propValue.ToString());
+                else if (propType == typeof(SecureString)) data.Add(attr.Name, StringExtensions.ToStringJsonToken(((SecureString)propValue).ToUnsecureString()));
+                else if (!string.IsNullOrWhiteSpace(propValue.ToString())) data.Add(attr.Name, StringExtensions.ToStringJsonToken(propValue.ToString()));
+            }
+
+            return data;
+        }
+    }
+
+    /// <summary>
+    /// The access token resolver request body.
+    /// </summary>
+    internal sealed class QueryDataTokenRequestBody : TokenRequestBody
+    {
+        private readonly QueryData query;
+
+        /// <summary>
+        /// Initializes a new instance of the QueryDataTokenRequestBody class.
+        /// </summary>
+        /// <param name="q">The query data.</param>
+        public QueryDataTokenRequestBody(QueryData q) : base(q[GrantTypeProperty])
+        {
+            query = q ?? new QueryData();
+        }
+
+
+        /// <summary>
+        /// Gets the query data.
+        /// </summary>
+        /// <returns>A query data.</returns>
+        public override QueryData ToQueryData()
+        {
+            return query;
+        }
+
+        /// <summary>
+        /// Gets the JSON format string.
+        /// </summary>
+        /// <returns>A string in JSON format.</returns>
+        internal protected override IDictionary<string, string> ToJsonProperites()
+        {
+            var data = new Dictionary<string, string>();
+            foreach (var prop in query)
+            {
+                data.Add(prop.Key, StringExtensions.ToStringJsonToken(prop.Value));
             }
 
             return data;
@@ -916,6 +1002,11 @@ namespace Trivial.Security
         public const string PasswordProperty = "password";
 
         /// <summary>
+        /// The LDAP property name.
+        /// </summary>
+        public const string LdapProperty = "ldap";
+
+        /// <summary>
         /// The token type.
         /// </summary>
         public const string BasicTokenType = "Basic";
@@ -968,6 +1059,12 @@ namespace Trivial.Security
         /// </summary>
         [DataMember(Name = PasswordProperty)]
         public SecureString Password { get; set; }
+
+        /// <summary>
+        /// Gets or sets the LDAP.
+        /// </summary>
+        [DataMember(Name = LdapProperty)]
+        public string Ldap { get; set; }
 
         /// <summary>
         /// Returns a System.Net.Http.Headers.AuthenticationHeaderValue that represents the current user name and password information.
@@ -1025,6 +1122,8 @@ namespace Trivial.Security
             if (userName != null) UserName = userName;
             var password = q[PasswordProperty];
             if (password != null) Password = password == string.Empty ? null : password.ToSecure();
+            var ldap = q[LdapProperty];
+            if (ldap != null) Ldap = ldap;
         }
 
         /// <summary>
@@ -1043,6 +1142,102 @@ namespace Trivial.Security
             var body = new PasswordTokenRequestBody();
             body.Fill(q);
             return new TokenRequest<PasswordTokenRequestBody>(body, q);
+        }
+    }
+
+    /// <summary>
+    /// The server route of token request handler.
+    /// </summary>
+    /// <typeparam name="T">The type of account information.</typeparam>
+    public class TokenRequestRoute<T>
+    {
+        /// <summary>
+        /// The handlers.
+        /// </summary>
+        private readonly Dictionary<string, Func<QueryData, Task<(T, TokenInfo)>>> handlers = new Dictionary<string, Func<QueryData, Task<(T, TokenInfo)>>>();
+
+        /// <summary>
+        /// Adds or removes the event handler after signing in.
+        /// </summary>
+        public event DataEventHandler<SelectionRelationship<T, TokenInfo>> SignedIn;
+
+        /// <summary>
+        /// Registers a handler.
+        /// </summary>
+        /// <param name="grantType">The grant type.</param>
+        /// <param name="h">The handler.</param>
+        public void Register(string grantType, Func<QueryData, Task<(T, TokenInfo)>> h)
+        {
+            handlers[grantType] = h;
+        }
+
+        /// <summary>
+        /// Registers a handler.
+        /// </summary>
+        /// <param name="grantType">The grant type.</param>
+        /// <param name="h">The handler.</param>
+        public void Register(string grantType, Func<TokenRequest, Task<(T, TokenInfo)>> h)
+        {
+            handlers[grantType] = q =>
+            {
+                var info = new TokenRequest(q);
+                return h(info);
+            };
+        }
+
+        /// <summary>
+        /// Registers a handler.
+        /// </summary>
+        /// <param name="grantType">The grant type.</param>
+        /// <param name="tokenRequestFactory">The token request factory.</param>
+        /// <param name="h">The handler.</param>
+        public void Register<TTokenRequest>(string grantType, Func<QueryData, TTokenRequest> tokenRequestFactory, Func<TTokenRequest, Task<(T, TokenInfo)>> h) where TTokenRequest : TokenRequest
+        {
+            handlers[grantType] = q =>
+            {
+                var info = tokenRequestFactory(q);
+                if (info == null) return Task.FromResult<(T, TokenInfo)>((default, null));
+                return h(info);
+            };
+        }
+
+        /// <summary>
+        /// Signs in.
+        /// </summary>
+        /// <param name="tokenRequest">The token request information.</param>
+        /// <returns>A token information.</returns>
+        public Task<SelectionRelationship<T, TokenInfo>> SignInAsync(TokenRequest tokenRequest)
+        {
+            var q = tokenRequest?.ToQueryData();
+            return SignInAsync(q);
+        }
+
+        /// <summary>
+        /// Signs in.
+        /// </summary>
+        /// <param name="s">The token request information.</param>
+        /// <returns>A token information.</returns>
+        public Task<SelectionRelationship<T, TokenInfo>> SignInAsync(string s)
+        {
+            var q = QueryData.Parse(s);
+            return SignInAsync(q);
+        }
+
+        /// <summary>
+        /// Signs in.
+        /// </summary>
+        /// <param name="q">The token request information.</param>
+        /// <returns>A token information.</returns>
+        public async Task<SelectionRelationship<T, TokenInfo>> SignInAsync(QueryData q)
+        {
+            if (q == null) return null;
+            var grantType = TokenRequestBody.GrantTypeProperty;
+            if (string.IsNullOrWhiteSpace(grantType)) return null;
+            if (!handlers.TryGetValue(grantType, out var h)) return null;
+            var token = await h(q);
+            var info = new SelectionRelationship<T, TokenInfo>(token);
+            SignedIn?.Invoke(this, new DataEventArgs<SelectionRelationship<T, TokenInfo>>(info));
+            return info;
         }
     }
 }

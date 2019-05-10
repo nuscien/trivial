@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -314,9 +315,113 @@ namespace Trivial.Reflection
             return instance;
         }
 
+        /// <summary>
+        /// Resolves a singleton instance.
+        /// </summary>
+        /// <typeparam name="T">The type of instance.</typeparam>
+        /// <param name="resolver">The singleton resolver.</param>
+        /// <returns>An instance resolved.</returns>
+        /// <exception cref="NotSupportedException">The type of instance was not support to resolve.</exception>
+        public static T Resolve<T>(this ISingletonResolver resolver)
+        {
+            if (resolver == null) throw new ArgumentNullException(nameof(resolver), "resolver should not be null.");
+            return resolver.Resolve<T>(null);
+        }
+
+        /// <summary>
+        /// Resolves a singleton instance.
+        /// </summary>
+        /// <param name="resolver">The singleton resolver.</param>
+        /// <param name="type">The type of instance.</param>
+        /// <param name="key">The key.</param>
+        /// <returns>An instance resolved.</returns>
+        /// <exception cref="NotSupportedException">The type of instance was not support to resolve.</exception>
+        public static object Resolve(this ISingletonResolver resolver, Type type, string key = null)
+        {
+            if (resolver == null) throw new ArgumentNullException(nameof(resolver), "resolver should not be null.");
+            var resolverType = typeof(ISingletonResolver);
+            var method = resolverType.GetMethod("Resolve", new[] { typeof(string) });
+            var genericMethod = method.MakeGenericMethod(new [] { type });
+            return genericMethod.Invoke(resolver, new object[] { key });
+        }
+
+        /// <summary>
+        /// Resolves a singleton instance.
+        /// </summary>
+        /// <typeparam name="T">The type of instance.</typeparam>
+        /// <param name="resolver">The singleton resolver.</param>
+        /// <param name="result">An instance resolved.</param>
+        /// <returns>true if resolve succeeded; otherwise, false.</returns>
+        public static bool TryResolve<T>(this ISingletonResolver resolver, out T result)
+        {
+            if (resolver != null) return resolver.TryResolve(null, out result);
+            result = default;
+            return false;
+        }
+
         private static bool IsNullableValueType(Type type)
         {
             return type.IsValueType && type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>);
         }
+    }
+
+    /// <summary>
+    /// A model with the relationship between the item selected and its parent.
+    /// </summary>
+    public class SelectionRelationship<TParent, TItem>
+    {
+        /// <summary>
+        /// Initializes a new instance of the SelectionRelationship class.
+        /// </summary>
+        public SelectionRelationship()
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the SelectionRelationship class.
+        /// </summary>
+        /// <param name="tuple">The parent and item selected.</param>
+        public SelectionRelationship((TParent, TItem) tuple)
+        {
+            IsSelected = true;
+            Parent = tuple.Item1;
+            ItemSelected = tuple.Item2;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the SelectionRelationship class.
+        /// </summary>
+        /// <param name="parent">The parent.</param>
+        public SelectionRelationship(TParent parent)
+        {
+            Parent = parent;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the SelectionRelationship class.
+        /// </summary>
+        /// <param name="parent">The parent.</param>
+        /// <param name="itemSelected">The item selected.</param>
+        public SelectionRelationship(TParent parent, TItem itemSelected)
+        {
+            IsSelected = true;
+            Parent = parent;
+            ItemSelected = itemSelected;
+        }
+
+        /// <summary>
+        /// Gets a value indicating whether there is an item selected.
+        /// </summary>
+        public bool IsSelected { get; }
+
+        /// <summary>
+        /// Gets the parent which contains the item.
+        /// </summary>
+        public TParent Parent { get; }
+
+        /// <summary>
+        /// Gets the item selected.
+        /// </summary>
+        public TItem ItemSelected { get; }
     }
 }

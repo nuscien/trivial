@@ -11,6 +11,7 @@ using System.Xml.Linq;
 
 using Trivial.Data;
 using Trivial.Net;
+using Trivial.Reflection;
 using Trivial.Text;
 using Trivial.Web;
 
@@ -675,13 +676,10 @@ namespace Trivial.Tasks
         /// <param name="state">The new state; or null if no change.</param>
         /// <param name="tag">The new tag.</param>
         /// <returns>true if update succeeded; otherwise, false.</returns>
-        public bool UpdateFragment(string id, FragmentStates? state, string tag)
+        public bool UpdateFragment(string id, FragmentStates? state, string tag) => UpdateFragment(id, state, f =>
         {
-            return UpdateFragment(id, state, ele =>
-            {
-                ele.Tag = tag;
-            });
-        }
+            f.Tag = tag;
+        });
 
         /// <summary>
         /// Updates the task fragment.
@@ -698,7 +696,14 @@ namespace Trivial.Tasks
         /// <param name="state">The new state; or null if no change.</param>
         /// <param name="tag">The new tag.</param>
         /// <returns>true if update succeeded; otherwise, false.</returns>
-        public bool UpdateFragment(Fragment fragment, FragmentStates? state, string tag) => UpdateFragment(fragment?.Id, state, tag);
+        public bool UpdateFragment(Fragment fragment, FragmentStates? state, string tag) => UpdateFragment(fragment?.Id, state, f =>
+        {
+            f.Tag = tag;
+            if (fragment == f) return;
+            fragment.Modification = f.Modification;
+            fragment.State = f.State;
+            fragment.Tag = f.Tag;
+        });
 
         /// <summary>
         /// Updates the task fragment.
@@ -706,7 +711,13 @@ namespace Trivial.Tasks
         /// <param name="fragment">The task fragment instance.</param>
         /// <param name="state">The new state; or null if no change.</param>
         /// <returns>true if update succeeded; otherwise, false.</returns>
-        public bool UpdateFragment(Fragment fragment, FragmentStates state) => UpdateFragment(fragment?.Id, state);
+        public bool UpdateFragment(Fragment fragment, FragmentStates state) => UpdateFragment(fragment?.Id, state, f =>
+        {
+            if (fragment == f) return;
+            fragment.Modification = f.Modification;
+            fragment.State = f.State;
+            fragment.Tag = f.Tag;
+        });
 
         /// <summary>
         /// Cancels.
@@ -838,7 +849,6 @@ namespace Trivial.Tasks
                 {
                     fragment.Modification = DateTime.Now;
                     callback(fragment);
-                    fragment.Modification = DateTime.Now;
                 }
             }
 
@@ -865,7 +875,6 @@ namespace Trivial.Tasks
                 {
                     fragment.Modification = DateTime.Now;
                     callback(fragment);
-                    fragment.Modification = DateTime.Now;
                     FragmentStateChanged?.Invoke(this, new FragmentStateEventArgs(fragment, oldState));
                 }
 
@@ -896,7 +905,6 @@ namespace Trivial.Tasks
                 {
                     fragment.Modification = DateTime.Now;
                     callback(fragment);
-                    fragment.Modification = DateTime.Now;
                 }
             }
 
@@ -957,6 +965,11 @@ namespace Trivial.Tasks
         }
 
         /// <summary>
+        /// Gets the group identifier list in cache.
+        /// </summary>
+        public IReadOnlyCollection<string> GroupIds => cache.Keys;
+
+        /// <summary>
         /// Gets all the equipartition tasks available.
         /// </summary>
         /// <param name="group">The group identifier.</param>
@@ -991,7 +1004,7 @@ namespace Trivial.Tasks
         /// <param name="group">The group identifier.</param>
         /// <param name="pick">A handler to pick.</param>
         /// <returns>A task and fragment.</returns>
-        public (EquipartitionTask, EquipartitionTask.Fragment) Pick(string group, Func<EquipartitionTask, EquipartitionTask.Fragment> pick = null)
+        public SelectionRelationship<EquipartitionTask, EquipartitionTask.Fragment> Pick(string group, Func<EquipartitionTask, EquipartitionTask.Fragment> pick = null)
         {
             var col = List(group);
             if (pick == null) pick = task => task.Pick();
@@ -1003,8 +1016,9 @@ namespace Trivial.Tasks
                 if (f == null) continue;
             }
 
-            if (f == null) t = null;
-            return (t, f);
+            return f != null
+                ? new SelectionRelationship<EquipartitionTask, EquipartitionTask.Fragment>(t, f)
+                : new SelectionRelationship<EquipartitionTask, EquipartitionTask.Fragment>(t);
         }
 
         /// <summary>
@@ -1015,7 +1029,7 @@ namespace Trivial.Tasks
         /// <param name="except">The fragment identifier except.</param>
         /// <param name="onlyPending">true if get only pending one; otherwise, false.</param>
         /// <returns>A task and fragment.</returns>
-        public (EquipartitionTask, EquipartitionTask.Fragment) Pick(string group, string tag, IEnumerable<string> except = null, bool onlyPending = false)
+        public SelectionRelationship<EquipartitionTask, EquipartitionTask.Fragment> Pick(string group, string tag, IEnumerable<string> except = null, bool onlyPending = false)
         {
             return Pick(group, task => task.Pick(tag, except, onlyPending));
         }
@@ -1067,6 +1081,47 @@ namespace Trivial.Tasks
             list.Add(task);
             Created?.Invoke(this, new ChangeEventArgs<EquipartitionTask>(null, task, ChangeMethods.Add, group));
             return task;
+        }
+
+        /// <summary>
+        /// Updates the task fragment.
+        /// </summary>
+        /// <param name="group">The group identifier.</param>
+        /// <param name="fragmentId">The task fragment identifier.</param>
+        /// <param name="state">The new state; or null if no change.</param>
+        /// <param name="tag">The new tag.</param>
+        /// <returns>true if update succeeded; otherwise, false.</returns>
+        public SelectionRelationship<EquipartitionTask, EquipartitionTask.Fragment> UpdateFragment(string group, string fragmentId, EquipartitionTask.FragmentStates? state, string tag)
+        {
+            if (!cache.TryGetValue(group, out var list)) return new SelectionRelationship<EquipartitionTask, EquipartitionTask.Fragment>();
+            foreach (var task in list)
+            {
+                var fragment = task.TryGetByFragmentId(fragmentId);
+                if (fragment == null) continue;
+                if (task.UpdateFragment(fragment.Id, state, tag)) return new SelectionRelationship<EquipartitionTask, EquipartitionTask.Fragment>(task, fragment);
+            }
+
+            return new SelectionRelationship<EquipartitionTask, EquipartitionTask.Fragment>();
+        }
+
+        /// <summary>
+        /// Updates the task fragment.
+        /// </summary>
+        /// <param name="group">The group identifier.</param>
+        /// <param name="fragmentId">The task fragment identifier.</param>
+        /// <param name="state">The new state; or null if no change.</param>
+        /// <returns>true if update succeeded; otherwise, false.</returns>
+        public SelectionRelationship<EquipartitionTask, EquipartitionTask.Fragment> UpdateFragment(string group, string fragmentId, EquipartitionTask.FragmentStates state)
+        {
+            if (!cache.TryGetValue(group, out var list)) return new SelectionRelationship<EquipartitionTask, EquipartitionTask.Fragment>();
+            foreach (var task in list)
+            {
+                var fragment = task.TryGetByFragmentId(fragmentId);
+                if (fragment == null) continue;
+                if (task.UpdateFragment(fragment.Id, state)) return new SelectionRelationship<EquipartitionTask, EquipartitionTask.Fragment>(task, fragment);
+            }
+
+            return new SelectionRelationship<EquipartitionTask, EquipartitionTask.Fragment>();
         }
     }
 }

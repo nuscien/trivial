@@ -8,10 +8,18 @@ namespace Trivial.Data
     /// <summary>
     /// The change event handler.
     /// </summary>
-    /// <typeparam name="T">The type of the state.</typeparam>
+    /// <typeparam name="T">The type of the value.</typeparam>
     /// <param name="sender">The sender.</param>
     /// <param name="e">The event arguments.</param>
     public delegate void ChangeEventHandler<T>(object sender, ChangeEventArgs<T> e);
+
+    /// <summary>
+    /// The data event handler.
+    /// </summary>
+    /// <typeparam name="T">The type of the data.</typeparam>
+    /// <param name="sender">The sender.</param>
+    /// <param name="e">The event arguments.</param>
+    public delegate void DataEventHandler<T>(object sender, DataEventArgs<T> e);
 
     /// <summary>
     /// The method to change.
@@ -60,7 +68,7 @@ namespace Trivial.Data
     }
 
     /// <summary>
-    /// The event arguments with state.
+    /// The event arguments about changing.
     /// </summary>
     /// <typeparam name="T">The type of the state.</typeparam>
     public class ChangeEventArgs<T> : EventArgs
@@ -145,5 +153,26 @@ namespace Trivial.Data
         /// Gets the type identifier of the trigger.
         /// </summary>
         public Guid TriggerType { get; }
+    }
+
+    /// <summary>
+    /// The event arguments with data.
+    /// </summary>
+    /// <typeparam name="T">The type of the state.</typeparam>
+    public class DataEventArgs<T> : EventArgs
+    {
+        /// <summary>
+        /// Initializes a new instance of the DataEventArgs class.
+        /// </summary>
+        /// <param name="data">The data.</param>
+        public DataEventArgs(T data)
+        {
+            Data = data;
+        }
+
+        /// <summary>
+        /// Gets the data.
+        /// </summary>
+        public T Data { get; }
     }
 }
