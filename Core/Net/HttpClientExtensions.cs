@@ -11,6 +11,9 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
+using Trivial.Text;
+using Trivial.Web;
+
 namespace Trivial.Net
 {
     /// <summary>
@@ -247,18 +250,17 @@ namespace Trivial.Net
         }
 
         /// <summary>
-        /// Creates a stream content from a JSON of the specific object.
+        /// Creates an HTTP content from a JSON of the specific object.
         /// </summary>
-        /// <param name="value">The graph.</param>
-        /// <returns>The HTTP content based on a stream from a JSON of the specific object.</returns>
-        public static StreamContent CreateJsonStreamContent(object value)
+        /// <param name="value">The object.</param>
+        /// <param name="settings">An optional serialization settings.</param>
+        /// <returns>The HTTP content a JSON of the specific object.</returns>
+        public static StringContent CreateJsonStreamContent(object value, DataContractJsonSerializerSettings settings = null)
         {
             if (value == null) return null;
-            var serializer = new DataContractJsonSerializer(value.GetType());
-            var stream = new MemoryStream();
-            serializer.WriteObject(stream, value);
-            var content = new StreamContent(stream);
-            return content;
+            var json = StringExtensions.ToJson(value, settings);
+            if (json == null) return null;
+            return new StringContent(json, Encoding.UTF8, WebFormat.JsonMIME);
         }
 
         /// <summary>
