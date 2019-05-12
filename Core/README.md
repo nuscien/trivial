@@ -39,7 +39,7 @@ var task = HitTask.Throttle(action, TimeSpan.FromMilliseconds(10000));
 
 ### Times
 
-You can define an action can be only proccessed only when request to call in the specific times range and others will be ignored.
+You can define an action can be only processed only when request to call in the specific times range and others will be ignored.
 A sample is double click.
 
 ```csharp

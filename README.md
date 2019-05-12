@@ -15,6 +15,7 @@ A library providing lots of useful utilities, models and services, including hit
 - [Security](https://github.com/nuscien/trivial/wiki/security)
 - [File and stream](https://github.com/nuscien/trivial/wiki/io)
 - [Collection](https://github.com/nuscien/trivial/wiki/collection)
+- [Reflection](https://github.com/nuscien/trivial/wiki/reflection)
 - [Geography](https://github.com/nuscien/trivial/wiki/geo)
 
 ## [Trivial.Console](https://github.com/nuscien/trivial/wiki/console)
