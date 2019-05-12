@@ -472,12 +472,8 @@ namespace Trivial.Security
                 if (attr == null) continue;
                 var propValue = item.GetValue(this);
                 if (propValue == null) continue;
-                var propType = propValue.GetType();
-                if (propType == typeof(Uri)) data.Add(attr.Name, ((Uri)propValue).OriginalString);
-                else if (propType == typeof(DateTime)) data.Add(attr.Name, WebFormat.ParseDate((DateTime)propValue).ToString());
-                else if (propType == typeof(DateTimeOffset)) data.Add(attr.Name, WebFormat.ParseDate((DateTimeOffset)propValue).ToString());
-                else if (propType == typeof(SecureString)) data.Add(attr.Name, ((SecureString)propValue).ToUnsecureString());
-                else if (!string.IsNullOrWhiteSpace(propValue.ToString())) data.Add(attr.Name, propValue.ToString());
+                (var propStr, _) = GetNumberValueString(propValue, propValue.GetType());
+                if (propStr != null) data.Add(attr.Name, propStr);
             }
 
             return data;
@@ -499,16 +495,32 @@ namespace Trivial.Security
                 if (attr == null) continue;
                 var propValue = item.GetValue(this);
                 if (propValue == null) continue;
-                var propType = propValue.GetType();
-                if (propType == typeof(Uri)) data.Add(attr.Name, StringExtensions.ToStringJsonToken(((Uri)propValue).OriginalString));
-                else if (propType == typeof(DateTime)) data.Add(attr.Name, WebFormat.ParseDate((DateTime)propValue).ToString(CultureInfo.InvariantCulture));
-                else if (propType == typeof(DateTimeOffset)) data.Add(attr.Name, WebFormat.ParseDate((DateTimeOffset)propValue).ToString(CultureInfo.InvariantCulture));
-                else if (propType == typeof(int) || propType == typeof(long) || propType == typeof(uint) || propType == typeof(ulong) || propType == typeof(float) || propType == typeof(double) || propType == typeof(short) || propType == typeof(bool)) data.Add(attr.Name, propValue.ToString());
-                else if (propType == typeof(SecureString)) data.Add(attr.Name, StringExtensions.ToStringJsonToken(((SecureString)propValue).ToUnsecureString()));
-                else if (!string.IsNullOrWhiteSpace(propValue.ToString())) data.Add(attr.Name, StringExtensions.ToStringJsonToken(propValue.ToString()));
+                (var propStr, var isPropStr) = GetNumberValueString(propValue, propValue.GetType());
+                if (propStr != null) data.Add(attr.Name, isPropStr ? StringExtensions.ToStringJsonToken(propStr) : propStr);
             }
 
             return data;
+        }
+
+        private (string, bool) GetNumberValueString(object obj, Type type)
+        {
+            if (obj == null) return (null, false);
+            if (type == typeof(string) || type == typeof(StringBuilder)) return (obj.ToString(), true);
+            if (type == typeof(Uri)) return (((Uri)obj).OriginalString, true);
+            if (type == typeof(DateTime)) return (WebFormat.ParseDate((DateTime)obj).ToString(CultureInfo.InvariantCulture), false);
+            if (type == typeof(DateTimeOffset)) return (WebFormat.ParseDate((DateTimeOffset)obj).ToString(CultureInfo.InvariantCulture), false);
+            if (type == typeof(int)) return (((int)obj).ToString(CultureInfo.InvariantCulture), false);
+            if (type == typeof(long)) return (((long)obj).ToString(CultureInfo.InvariantCulture), false);
+            if (type == typeof(uint)) return (((uint)obj).ToString(CultureInfo.InvariantCulture), false);
+            if (type == typeof(ulong)) return (((ulong)obj).ToString(CultureInfo.InvariantCulture), false);
+            if (type == typeof(float)) return (((float)obj).ToString(CultureInfo.InvariantCulture), false);
+            if (type == typeof(double)) return (((double)obj).ToString(CultureInfo.InvariantCulture), false);
+            if (type == typeof(short)) return (((short)obj).ToString(CultureInfo.InvariantCulture), false);
+            if (type == typeof(bool)) return (((bool)obj).ToString(CultureInfo.InvariantCulture), false);
+            if (type == typeof(SecureString)) return (((SecureString)obj).ToUnsecureString(), true);
+            var str = obj.ToString();
+            if (!string.IsNullOrWhiteSpace(str)) return (obj.ToString(), true);
+            return (null, false);
         }
     }
 
