@@ -12,7 +12,8 @@ using Trivial.Tasks;
 
 ### Debound
 
-Maybe a handler will be asked to process several times in a short time but you just want to process once at the last time because the previous ones are obsolete. A sample is real-time search. You can use following method to do so.
+You may request to call a specific action several times in a short time but only the last one should be processed and previous ones should be ignored.
+A sample is real-time search suggestion.
 
 ```csharp
 // An action you need to process.
@@ -29,26 +30,28 @@ task.ProcessAsync();
 
 ### Throttle
 
-A handler to be frozen for a while after it has processed.
+You may want to request to call an action only once in a short time even if you request to call several times. The rest will be ignored.
+A sample is the submit button in a form.
 
 ```csharp
 var task = HitTask.Throttle(action, TimeSpan.FromMilliseconds(10000));
 ```
 
-### Multiple
-
-A handler to process for the specific times and it will be reset after a while.
-
-```csharp
-var task = HitTask.Multiple(action, 10, null, TimeSpan.FromMilliseconds(200));
-```
-
 ### Times
 
-A handler to process for the specific times only and it will be reset after a while. A sample is double click.
+You can define an action can be only proccessed only when request to call in the specific times range and others will be ignored.
+A sample is double click.
 
 ```csharp
 var task = HitTask.Times(action, 2, 2, TimeSpan.FromMilliseconds(200));
+```
+
+### Multiple
+
+A handler to process for the specific times and the state will be reset after a while.
+
+```csharp
+var task = HitTask.Multiple(action, 10, null, TimeSpan.FromMilliseconds(200));
 ```
 
 ### Retry

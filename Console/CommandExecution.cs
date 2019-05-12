@@ -31,6 +31,9 @@ namespace Trivial.Console
     /// <summary>
     /// The command execution instance.
     /// </summary>
+    /// <remarks>
+    /// Only for Windows operation system.
+    /// </remarks>
     public class CommandExecution
     {
         /// <summary>
