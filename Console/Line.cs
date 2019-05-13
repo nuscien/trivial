@@ -402,7 +402,6 @@ namespace Trivial.Console
         /// </summary>
         public void WriteLine()
         {
-            ClearPending();
             End(true);
         }
 
@@ -500,6 +499,25 @@ namespace Trivial.Console
             if (count.HasValue) list = list.Take(count.Value);
             var str = new string(list.ToArray());
             WriteLine(foregroundColor, backgroundColor, str);
+        }
+
+        /// <summary>
+        /// Writes the current line terminator for each item, to the standard output stream.
+        /// </summary>
+        /// <param name="col">The string collection to write. Each one in a line.</param>
+        public void WriteLines(IEnumerable<string> col)
+        {
+            if (col == null)
+            {
+                End();
+                return;
+            }
+
+            foreach (var item in col)
+            {
+                Write(item);
+                End(true);
+            }
         }
 
         /// <summary>
@@ -898,6 +916,19 @@ namespace Trivial.Console
             if (string.IsNullOrEmpty(value)) return;
             System.Console.WriteLine(value, arg);
             System.Console.WriteLine();
+        }
+
+        /// <summary>
+        /// Writes the current line terminator for each item, to the standard output stream.
+        /// </summary>
+        /// <param name="col">The string collection to write. Each one in a line.</param>
+        public static void WriteLines(IEnumerable<string> col)
+        {
+            if (col == null) return;
+            foreach (var item in col)
+            {
+                System.Console.WriteLine(item);
+            }
         }
 
         /// <summary>
