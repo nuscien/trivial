@@ -736,8 +736,7 @@ namespace Trivial.Reflection
         /// <returns>The end date time to disable.</returns>
         public DateTime FreezeRenew(TimeSpan until)
         {
-            var d = DateTime.Now + until;
-            return FreezeRenew(d);
+            return FreezeRenew(DateTime.Now + until);
         }
 
         /// <summary>
@@ -804,7 +803,6 @@ namespace Trivial.Reflection
             {
                 var rDate = RefreshDate;
                 if (rDate.HasValue && rDate + LockRenewSpan > DateTime.Now && HasCache) return Cache;
-                if (!CanRenew) return ThrowIfCannotRenew(forceUpdate == 2);
             }
 
             var hasThread = semaphoreSlim.CurrentCount == 0;
@@ -837,7 +835,7 @@ namespace Trivial.Reflection
                 hasThread = semaphoreSlim.CurrentCount == 0;
             }
 
-            if (forceUpdate < 3 && !CanRenew) ThrowIfCannotRenew(forceUpdate == 2);
+            if (forceUpdate < 3 && !CanRenew) return ThrowIfCannotRenew(forceUpdate == 2);
             await semaphoreSlim.WaitAsync();
             var cache = Cache;
             try
@@ -849,7 +847,7 @@ namespace Trivial.Reflection
                     if (forceUpdate < 3 && rDate.HasValue && rDate + LockRenewSpan > DateTime.Now) return Cache;
                 }
 
-                if (forceUpdate < 3 && !CanRenew) ThrowIfCannotRenew(forceUpdate == 2);
+                if (forceUpdate < 3 && !CanRenew) return ThrowIfCannotRenew(forceUpdate == 2);
                 Cache = await ResolveFromSourceAsync();
                 RefreshDate = DateTime.Now;
                 HasCache = true;
