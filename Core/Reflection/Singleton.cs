@@ -602,9 +602,11 @@ namespace Trivial.Reflection
                 if (key == null) key = string.Empty;
                 if (!set.TryGetValue(key, out var value))
                 {
-                    if (backup != null)
+                    var b = backup;
+                    if (b != null && b.TryResolve(key, out T bResult))
                     {
-                        return backup.TryResolve(key, out result);
+                        result = bResult;
+                        return set.TryAdd(key, new InstanceObjectRef(bResult));
                     }
 
                     result = default;
