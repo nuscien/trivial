@@ -144,7 +144,7 @@ namespace Trivial.Security
         /// <summary>
         /// Gets or sets the scope string.
         /// </summary>
-        [DataMember(Name = TokenInfo.ScopeProperty)]
+        [DataMember(Name = TokenInfo.ScopeProperty, EmitDefaultValue = false)]
         public string ScopeString
         {
             get
@@ -657,6 +657,11 @@ namespace Trivial.Security
         public const string CodeVerifierProperty = "code_verifier";
 
         /// <summary>
+        /// The service provider property name.
+        /// </summary>
+        public const string ServiceProviderProperty = "provider";
+
+        /// <summary>
         /// The state property name.
         /// </summary>
         public const string StateProperty = "state";
@@ -703,14 +708,20 @@ namespace Trivial.Security
         /// <summary>
         /// Gets or sets the redirect URI.
         /// </summary>
-        [DataMember(Name = RedirectUriProperty)]
+        [DataMember(Name = RedirectUriProperty, EmitDefaultValue = false)]
         public Uri RedirectUri { get; set; }
 
         /// <summary>
         /// Gets or sets the code verifier.
         /// </summary>
-        [DataMember(Name = CodeVerifierProperty)]
+        [DataMember(Name = CodeVerifierProperty, EmitDefaultValue = false)]
         public string CodeVerifier { get; set; }
+
+        /// <summary>
+        /// Gets or sets the service provider.
+        /// </summary>
+        [DataMember(Name = ServiceProviderProperty, EmitDefaultValue = false)]
+        public string ServiceProvider { get; set; }
 
         /// <summary>
         /// Fills the data into the current request body.
@@ -742,6 +753,8 @@ namespace Trivial.Security
             if (codeVerifier != null) CodeVerifier = codeVerifier;
             var redirectUri = q[RedirectUriProperty];
             if (redirectUri != null) RedirectUri = redirectUri == string.Empty ? null : new Uri(redirectUri);
+            var provider = q[ServiceProviderProperty];
+            if (provider != null) ServiceProvider = q[ServiceProviderProperty];
         }
 
         /// <summary>
@@ -866,6 +879,15 @@ namespace Trivial.Security
         {
             get => Body?.RedirectUri;
             set => Body.RedirectUri = value;
+        }
+
+        /// <summary>
+        /// Gets the service provider.
+        /// </summary>
+        public string ServiceProvider
+        {
+            get => Body?.ServiceProvider;
+            set => Body.ServiceProvider = value;
         }
 
         /// <summary>
@@ -1035,10 +1057,12 @@ namespace Trivial.Security
         /// </summary>
         /// <param name="userName">The user name.</param>
         /// <param name="password">The password.</param>
-        public PasswordTokenRequestBody(string userName, string password) : this()
+        /// <param name="ldap">The optional LDAP.</param>
+        public PasswordTokenRequestBody(string userName, string password, string ldap = null) : this()
         {
             UserName = userName;
-            Password = password.ToSecure();
+            Password = password?.ToSecure();
+            Ldap = ldap;
         }
 
         /// <summary>
@@ -1046,17 +1070,19 @@ namespace Trivial.Security
         /// </summary>
         /// <param name="userName">The user name.</param>
         /// <param name="password">The password.</param>
-        public PasswordTokenRequestBody(string userName, SecureString password) : this()
+        /// <param name="ldap">The optional LDAP.</param>
+        public PasswordTokenRequestBody(string userName, SecureString password, string ldap = null) : this()
         {
             UserName = userName;
             Password = password;
+            Ldap = ldap;
         }
 
         /// <summary>
         /// Initializes a new instance of the PasswordTokenRequest class.
         /// </summary>
         /// <param name="tokenRequestBody">Another token request body to copy.</param>
-        public PasswordTokenRequestBody(PasswordTokenRequestBody tokenRequestBody) : this(tokenRequestBody.UserName, tokenRequestBody.Password)
+        public PasswordTokenRequestBody(PasswordTokenRequestBody tokenRequestBody) : this(tokenRequestBody?.UserName, tokenRequestBody?.Password, tokenRequestBody?.Ldap)
         {
         }
 
@@ -1075,7 +1101,7 @@ namespace Trivial.Security
         /// <summary>
         /// Gets or sets the LDAP.
         /// </summary>
-        [DataMember(Name = LdapProperty)]
+        [DataMember(Name = LdapProperty, EmitDefaultValue = false)]
         public string Ldap { get; set; }
 
         /// <summary>
