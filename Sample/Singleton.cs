@@ -67,6 +67,24 @@ namespace Trivial.Sample
             ConsoleLine.WriteLine("Renew again.");
             await keeper.RenewAsync();
             ConsoleLine.WriteLine(count);
+            ConsoleLine.WriteLine("Disable renew by way 1.");
+            keeper.FreezeRenew(TimeSpan.FromMilliseconds(100));
+            await keeper.RenewIfCanAsync();
+            ConsoleLine.WriteLine(count);
+            await Task.Delay(200);
+            await keeper.RenewIfCanAsync();
+            ConsoleLine.WriteLine(count);
+            ConsoleLine.WriteLine("Disable renew by way 2.");
+            keeper.LockRenewSpan = TimeSpan.FromMilliseconds(100);
+            await keeper.RenewIfCanAsync();
+            ConsoleLine.WriteLine(count);
+            await Task.Delay(200);
+            await keeper.RenewIfCanAsync();
+            ConsoleLine.WriteLine(count);
+            ConsoleLine.WriteLine("Disable renew by way 3.");
+            keeper.IsRenewDisabled = true;
+            await keeper.RenewIfCanAsync();
+            ConsoleLine.WriteLine(count);
             ConsoleLine.WriteLine("Done!");
         }
     }

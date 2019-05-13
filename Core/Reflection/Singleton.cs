@@ -670,7 +670,7 @@ namespace Trivial.Reflection
         {
             get
             {
-                if (!IsRenewDisabled) return false;
+                if (IsRenewDisabled) return false;
                 var d = disabled;
                 if (d.HasValue)
                 {
@@ -704,7 +704,16 @@ namespace Trivial.Reflection
         /// <returns>The instance.</returns>
         public Task<T> RenewAsync(bool forceToRenew = false)
         {
-            return GetAsync(forceToRenew ? 2 : 1);
+            return GetAsync(forceToRenew ? 3 : 1);
+        }
+
+        /// <summary>
+        /// Renews if can and gets the instance.
+        /// </summary>
+        /// <returns>The instance.</returns>
+        public Task<T> RenewIfCanAsync()
+        {
+            return GetAsync(2);
         }
 
         /// <summary>
@@ -791,11 +800,11 @@ namespace Trivial.Reflection
 
         private async Task<T> GetAsync(int forceUpdate)
         {
-            if (forceUpdate < 2)
+            if (forceUpdate < 3)
             {
                 var rDate = RefreshDate;
                 if (rDate.HasValue && rDate + LockRenewSpan > DateTime.Now && HasCache) return Cache;
-                if (!CanRenew) throw new InvalidOperationException("Cannot renew now.");
+                if (!CanRenew) return ThrowIfCannotRenew(forceUpdate == 2);
             }
 
             var hasThread = semaphoreSlim.CurrentCount == 0;
@@ -828,7 +837,7 @@ namespace Trivial.Reflection
                 hasThread = semaphoreSlim.CurrentCount == 0;
             }
 
-            if (forceUpdate < 2 && !CanRenew) throw new InvalidOperationException("Cannot renew now.");
+            if (forceUpdate < 3 && !CanRenew) ThrowIfCannotRenew(forceUpdate == 2);
             await semaphoreSlim.WaitAsync();
             var cache = Cache;
             try
@@ -837,10 +846,10 @@ namespace Trivial.Reflection
                 if (HasCache)
                 {
                     if (forceUpdate == 0 || hasThread) return Cache;
-                    if (forceUpdate == 1 && rDate.HasValue && rDate + LockRenewSpan > DateTime.Now) return Cache;
+                    if (forceUpdate < 3 && rDate.HasValue && rDate + LockRenewSpan > DateTime.Now) return Cache;
                 }
 
-                if (forceUpdate < 2 && !CanRenew) throw new InvalidOperationException("Cannot renew now.");
+                if (forceUpdate < 3 && !CanRenew) ThrowIfCannotRenew(forceUpdate == 2);
                 Cache = await ResolveFromSourceAsync();
                 RefreshDate = DateTime.Now;
                 HasCache = true;
@@ -852,6 +861,12 @@ namespace Trivial.Reflection
 
             Renewed?.Invoke(this, new ChangeEventArgs<T>(cache, Cache, nameof(Cache), true));
             return Cache;
+        }
+
+        private T ThrowIfCannotRenew(bool returnCache)
+        {
+            if (returnCache) return Cache;
+            throw new InvalidOperationException("Cannot renew now.");
         }
     }
 
