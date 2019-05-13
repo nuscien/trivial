@@ -597,6 +597,7 @@ namespace Trivial.Reflection
     {
         private readonly SemaphoreSlim semaphoreSlim = new SemaphoreSlim(1, 1);
         private readonly Func<Task<T>> renew;
+        private DateTime? disabled;
 
         /// <summary>
         /// Initializes a new instance of the SingletonKeeper class.
@@ -658,22 +659,84 @@ namespace Trivial.Reflection
         public DateTime? RefreshDate { get; private set; }
 
         /// <summary>
+        /// Gets or sets a value indicating whether need disable renew.
+        /// </summary>
+        public bool IsRenewDisabled { get; set; }
+
+        /// <summary>
+        /// Gets a value indicating whether renew is available.
+        /// </summary>
+        public virtual bool CanRenew
+        {
+            get
+            {
+                if (!IsRenewDisabled) return false;
+                var d = disabled;
+                if (d.HasValue)
+                {
+                    if (DateTime.Now < d) return false;
+                    disabled = null;
+                }
+
+                return true;
+            }
+        }
+
+        /// <summary>
+        /// Gets the time span to lock renew.
+        /// </summary>
+        public TimeSpan LockRenewSpan { get; set; } = TimeSpan.Zero;
+
+        /// <summary>
         /// Gets the instance.
         /// It will load from cache if it does not expired; otherwise, renew one, and then return.
         /// </summary>
         /// <returns>The instance.</returns>
         public Task<T> GetAsync()
         {
-            return GetAsync(false);
+            return GetAsync(0);
         }
 
         /// <summary>
         /// Renews and gets the instance.
         /// </summary>
+        /// <param name="forceToRenew">true if force to renew without available checking; otherwise, false.</param>
         /// <returns>The instance.</returns>
-        public Task<T> RenewAsync()
+        public Task<T> RenewAsync(bool forceToRenew = false)
         {
-            return GetAsync(true);
+            return GetAsync(forceToRenew ? 2 : 1);
+        }
+
+        /// <summary>
+        /// Freezes renew for a while.
+        /// </summary>
+        /// <param name="until">The end date time to disable; then enable again.</param>
+        /// <returns>The end date time to disable.</returns>
+        public DateTime FreezeRenew(DateTime until)
+        {
+            var d = disabled;
+            if (d.HasValue && d > until) return d.Value;
+            disabled = until;
+            return until;
+        }
+
+        /// <summary>
+        /// Freezes renew for a while.
+        /// </summary>
+        /// <param name="until">The time span to disable; then enable again.</param>
+        /// <returns>The end date time to disable.</returns>
+        public DateTime FreezeRenew(TimeSpan until)
+        {
+            var d = DateTime.Now + until;
+            return FreezeRenew(d);
+        }
+
+        /// <summary>
+        /// Unfreezes renew now.
+        /// </summary>
+        public void UnfreezeRnew()
+        {
+            disabled = null;
         }
 
         /// <summary>
@@ -726,10 +789,10 @@ namespace Trivial.Reflection
             return Task.FromResult(!HasCache);
         }
 
-        private async Task<T> GetAsync(bool forceUpdate)
+        private async Task<T> GetAsync(int forceUpdate)
         {
             var hasThread = semaphoreSlim.CurrentCount == 0;
-            if (!hasThread && !forceUpdate && HasCache)
+            if (!hasThread && forceUpdate == 0 && HasCache)
             {
                 try
                 {
@@ -758,11 +821,18 @@ namespace Trivial.Reflection
                 hasThread = semaphoreSlim.CurrentCount == 0;
             }
 
+            if (forceUpdate < 2 && !CanRenew) throw new InvalidOperationException("Cannot renew now.");
             var cache = Cache;
             await semaphoreSlim.WaitAsync();
             try
             {
-                if ((!forceUpdate || hasThread) && HasCache) return Cache;
+                var rDate = RefreshDate;
+                if (HasCache)
+                {
+                    if (forceUpdate == 0 || hasThread) return Cache;
+                    if (forceUpdate == 1 && rDate.HasValue && rDate + LockRenewSpan > DateTime.Now) return Cache;
+                }
+
                 Cache = await ResolveFromSourceAsync();
                 RefreshDate = DateTime.Now;
                 HasCache = true;
