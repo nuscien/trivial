@@ -218,7 +218,7 @@ namespace Trivial.Reflection
         /// <param name="factory">The instance factory.</param>
         public void Register<T>(string key, Func<T> factory)
         {
-            Register(key, new FactoryObjectRef<T>(factory));
+            Register<T>(key, new FactoryObjectRef<T>(factory));
         }
 
         /// <summary>
@@ -229,7 +229,7 @@ namespace Trivial.Reflection
         /// <param name="lazy">The lazy instance.</param>
         public void Register<T>(string key, Lazy<T> lazy)
         {
-            Register(key, new LazyObjectRef<T>(lazy));
+            Register<T>(key, new LazyObjectRef<T>(lazy));
         }
 
         /// <summary>
@@ -240,7 +240,7 @@ namespace Trivial.Reflection
         /// <param name="obj">The instance.</param>
         public void Register<T>(string key, T obj)
         {
-            Register(key, new InstanceObjectRef<T>(obj));
+            Register<T>(key, new InstanceObjectRef<T>(obj));
         }
 
         /// <summary>

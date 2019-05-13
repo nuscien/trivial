@@ -274,7 +274,7 @@ namespace Trivial.Console
         }
 
         /// <summary>
-        /// Writes the specified character to the standard output stream.
+        /// Writes the specified number to the standard output stream.
         /// </summary>
         /// <param name="value">The value to write.</param>
         public void Write(int value)
@@ -283,7 +283,7 @@ namespace Trivial.Console
         }
 
         /// <summary>
-        /// Writes the specified character to the standard output stream.
+        /// Writes the specified number to the standard output stream.
         /// </summary>
         /// <param name="foregroundColor">The foreground color of the console.</param>
         /// <param name="value">The value to write.</param>
@@ -293,7 +293,7 @@ namespace Trivial.Console
         }
 
         /// <summary>
-        /// Writes the specified character to the standard output stream.
+        /// Writes the specified number to the standard output stream.
         /// </summary>
         /// <param name="foregroundColor">The foreground color of the console.</param>
         /// <param name="backgroundColor">The background color of the console.</param>
@@ -304,7 +304,67 @@ namespace Trivial.Console
         }
 
         /// <summary>
-        /// Writes the specified character to the standard output stream.
+        /// Writes the specified number to the standard output stream.
+        /// </summary>
+        /// <param name="value">The value to write.</param>
+        public void Write(long value)
+        {
+            Write(null, null, value);
+        }
+
+        /// <summary>
+        /// Writes the specified number to the standard output stream.
+        /// </summary>
+        /// <param name="foregroundColor">The foreground color of the console.</param>
+        /// <param name="value">The value to write.</param>
+        public void Write(ConsoleColor? foregroundColor, long value)
+        {
+            Write(foregroundColor, null, value);
+        }
+
+        /// <summary>
+        /// Writes the specified number to the standard output stream.
+        /// </summary>
+        /// <param name="foregroundColor">The foreground color of the console.</param>
+        /// <param name="backgroundColor">The background color of the console.</param>
+        /// <param name="value">The value to write.</param>
+        public void Write(ConsoleColor? foregroundColor, ConsoleColor? backgroundColor, long value)
+        {
+            Write(foregroundColor, backgroundColor, value.ToString());
+        }
+
+        /// <summary>
+        /// Writes the specified number to the standard output stream.
+        /// </summary>
+        /// <param name="value">The value to write.</param>
+        public void Write(double value)
+        {
+            Write(null, null, value);
+        }
+
+        /// <summary>
+        /// Writes the specified number to the standard output stream.
+        /// </summary>
+        /// <param name="foregroundColor">The foreground color of the console.</param>
+        /// <param name="value">The value to write.</param>
+        public void Write(ConsoleColor? foregroundColor, double value)
+        {
+            Write(foregroundColor, null, value);
+        }
+
+        /// <summary>
+        /// Writes the specified number to the standard output stream.
+        /// </summary>
+        /// <param name="foregroundColor">The foreground color of the console.</param>
+        /// <param name="backgroundColor">The background color of the console.</param>
+        /// <param name="value">The value to write.</param>
+        public void Write(ConsoleColor? foregroundColor, ConsoleColor? backgroundColor, double value)
+        {
+            Write(foregroundColor, backgroundColor, value.ToString());
+        }
+
+        /// <summary>
+        /// Writes the specified string to the standard output stream.
         /// </summary>
         /// <param name="value">The value to write.</param>
         public void Write(StringBuilder value)
@@ -313,7 +373,7 @@ namespace Trivial.Console
         }
 
         /// <summary>
-        /// Writes the specified character to the standard output stream.
+        /// Writes the specified string to the standard output stream.
         /// </summary>
         /// <param name="foregroundColor">The foreground color of the console.</param>
         /// <param name="value">The value to write.</param>
@@ -323,7 +383,7 @@ namespace Trivial.Console
         }
 
         /// <summary>
-        /// Writes the specified character to the standard output stream.
+        /// Writes the specified string to the standard output stream.
         /// </summary>
         /// <param name="foregroundColor">The foreground color of the console.</param>
         /// <param name="backgroundColor">The background color of the console.</param>
@@ -481,6 +541,47 @@ namespace Trivial.Console
         }
 
         /// <summary>
+        /// Writes the specified character, followed by the current line terminator, to the standard output stream.
+        /// </summary>
+        /// <param name="value">The value to write.</param>
+        /// <param name="repeatCount">The number of times to append value.</param>
+        public void WriteLine(char value, int repeatCount = 1)
+        {
+            Write(null, null, value, repeatCount);
+            End();
+        }
+
+        /// <summary>
+        /// Writes the specified number, followed by the current line terminator, to the standard output stream.
+        /// </summary>
+        /// <param name="value">The value to write.</param>
+        public void WriteLine(int value)
+        {
+            Write(value);
+            End();
+        }
+
+        /// <summary>
+        /// Writes the specified number, followed by the current line terminator, to the standard output stream.
+        /// </summary>
+        /// <param name="value">The value to write.</param>
+        public void WriteLine(long value)
+        {
+            Write(value);
+            End();
+        }
+
+        /// <summary>
+        /// Writes the specified number, followed by the current line terminator, to the standard output stream.
+        /// </summary>
+        /// <param name="value">The value to write.</param>
+        public void WriteLine(double value)
+        {
+            Write(value);
+            End();
+        }
+
+        /// <summary>
         /// Writes the specified characters, followed by the current line terminator, to the standard output stream.
         /// </summary>
         /// <param name="foregroundColor">The foreground color of the console.</param>
@@ -514,6 +615,27 @@ namespace Trivial.Console
             }
 
             foreach (var item in col)
+            {
+                Write(item);
+                End(true);
+            }
+        }
+
+        /// <summary>
+        /// Writes the current line terminator for each item, to the standard output stream.
+        /// </summary>
+        /// <param name="col">The string collection to write. Each one in a line.</param>
+        /// <param name="converter">A string converter.</param>
+        public void WriteLines<T>(IEnumerable<T> col, Func<T, string> converter)
+        {
+            if (col == null)
+            {
+                End();
+                return;
+            }
+
+            if (converter == null) converter = ele => ele?.ToString();
+            foreach (var item in col.Select(converter))
             {
                 Write(item);
                 End(true);
@@ -557,6 +679,74 @@ namespace Trivial.Console
             }
 
             return key;
+        }
+
+        /// <summary>
+        /// Obtains the password pressed by the user.
+        /// </summary>
+        /// <param name="intercept">Determines whether to display the pressed key in the console window. true to not display the pressed key; otherwise, false.</param>
+        /// <returns>
+        /// The password.
+        /// </returns>
+        public SecureString ReadPassword(bool intercept = false)
+        {
+            return ReadPassword(null, intercept);
+        }
+
+        /// <summary>
+        /// Obtains the password pressed by the user.
+        /// </summary>
+        /// <param name="intercept">Determines whether to display the pressed key in the console window. true to not display the pressed key; otherwise, false.</param>
+        /// <returns>
+        /// The password.
+        /// </returns>
+        public SecureString ReadPassword(char? replaceChar, bool intercept = false)
+        {
+            Flush();
+            var str = new SecureString();
+            while (true)
+            {
+                var key = System.Console.ReadKey(intercept);
+                var len = str.Length;
+                switch (key.Key)
+                {
+                    case ConsoleKey.Enter:
+                        LineIndex++;
+                        initLeft = -1;
+                        return str;
+                    case ConsoleKey.Escape:
+                        str.Dispose();
+                        LineIndex++;
+                        initLeft = -1;
+                        return null;
+                    case ConsoleKey.Backspace:
+                        if (key.Modifiers == ConsoleModifiers.Shift || key.Modifiers == ConsoleModifiers.Control)
+                        {
+                            str.Clear();
+                            if (replaceChar.HasValue) Backspace(len + 1);
+                            break;
+                        }
+
+                        SaveCursorPosition();
+                        Write('\0');
+                        if (str.Length == 0) break;
+                        str.RemoveAt(str.Length - 1);
+                        Backspace();
+                        break;
+                    case ConsoleKey.Delete:
+                        str.Clear();
+                        SaveCursorPosition();
+                        if (replaceChar.HasValue) Backspace(len + 1);
+                        break;
+                    default:
+                        var hasKey = key.KeyChar != '\0';
+                        if (hasKey) str.AppendChar(key.KeyChar);
+                        SaveCursorPosition();
+                        Backspace();
+                        if (hasKey && replaceChar.HasValue) Write(replaceChar.Value);
+                        break;
+                }
+            }
         }
 
         /// <summary>
