@@ -734,7 +734,7 @@ namespace Trivial.Reflection
         /// <summary>
         /// Unfreezes renew now.
         /// </summary>
-        public void UnfreezeRnew()
+        public void UnfreezeRenew()
         {
             disabled = null;
         }
@@ -791,6 +791,13 @@ namespace Trivial.Reflection
 
         private async Task<T> GetAsync(int forceUpdate)
         {
+            if (forceUpdate < 2)
+            {
+                var rDate = RefreshDate;
+                if (rDate.HasValue && rDate + LockRenewSpan > DateTime.Now && HasCache) return Cache;
+                if (!CanRenew) throw new InvalidOperationException("Cannot renew now.");
+            }
+
             var hasThread = semaphoreSlim.CurrentCount == 0;
             if (!hasThread && forceUpdate == 0 && HasCache)
             {
@@ -822,8 +829,8 @@ namespace Trivial.Reflection
             }
 
             if (forceUpdate < 2 && !CanRenew) throw new InvalidOperationException("Cannot renew now.");
-            var cache = Cache;
             await semaphoreSlim.WaitAsync();
+            var cache = Cache;
             try
             {
                 var rDate = RefreshDate;
@@ -833,6 +840,7 @@ namespace Trivial.Reflection
                     if (forceUpdate == 1 && rDate.HasValue && rDate + LockRenewSpan > DateTime.Now) return Cache;
                 }
 
+                if (forceUpdate < 2 && !CanRenew) throw new InvalidOperationException("Cannot renew now.");
                 Cache = await ResolveFromSourceAsync();
                 RefreshDate = DateTime.Now;
                 HasCache = true;
