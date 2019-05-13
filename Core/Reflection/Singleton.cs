@@ -297,11 +297,16 @@ namespace Trivial.Reflection
         /// <returns>An instance resolved.</returns>
         public T EnsureResolve<T>(string key, IObjectRef<T> reference)
         {
-            if (reference == null) return default;
-            var set = GetInstances(typeof(T));
             if (key == null) key = string.Empty;
-            if (!set.ContainsKey(key)) set.TryAdd(key, reference);
-            return (T)set[key].Value;
+            var set = GetInstances(typeof(T));
+            if (!set.TryGetValue(key, out var result))
+            {
+                if (reference == null) return default;
+                result = reference;
+                set.TryAdd(key, result);
+            }
+
+            return (T)result.Value;
         }
 
         /// <summary>
@@ -370,6 +375,70 @@ namespace Trivial.Reflection
         public T EnsureResolve<T>(string key = null)
         {
             return EnsureResolve(key, Activator.CreateInstance<T>);
+        }
+
+        /// <summary>
+        /// Resolves a singleton instance. Register one if non-exist.
+        /// </summary>
+        /// <typeparam name="T">The type of the instance to register.</typeparam>
+        /// <param name="key">The key.</param>
+        /// <param name="factory">The instance factory.</param>
+        /// <returns>An instance resolved.</returns>
+        public async Task<T> EnsureResolveAsync<T>(string key, Func<Task<T>> factory)
+        {
+            if (key == null) key = string.Empty;
+            var set = GetInstances(typeof(T));
+            if (!set.TryGetValue(key, out var result))
+            {
+                if (factory == null) return default;
+                result = new InstanceObjectRef<T>(await factory());
+                set.TryAdd(key, result);
+            }
+
+            return (T)result.Value;
+        }
+
+        /// <summary>
+        /// Resolves a singleton instance. Register one if non-exist.
+        /// </summary>
+        /// <typeparam name="T">The type of the instance to register.</typeparam>
+        /// <param name="key">The key.</param>
+        /// <param name="task">The task to get the instance.</param>
+        /// <returns>An instance resolved.</returns>
+        public async Task<T> EnsureResolveAsync<T>(string key, Task<T> task)
+        {
+            if (key == null) key = string.Empty;
+            var set = GetInstances(typeof(T));
+            if (!set.TryGetValue(key, out var result))
+            {
+                if (task == null) return default;
+                result = new InstanceObjectRef<T>(await task);
+                set.TryAdd(key, result);
+            }
+
+            return (T)result.Value;
+        }
+
+        /// <summary>
+        /// Resolves a singleton instance. Register one if non-exist.
+        /// </summary>
+        /// <typeparam name="T">The type of the instance to register.</typeparam>
+        /// <param name="factory">The instance factory.</param>
+        /// <returns>An instance resolved.</returns>
+        public Task<T> EnsureResolveAsync<T>(Func<Task<T>> factory)
+        {
+            return EnsureResolveAsync(null, factory);
+        }
+
+        /// <summary>
+        /// Resolves a singleton instance. Register one if non-exist.
+        /// </summary>
+        /// <typeparam name="T">The type of the instance to register.</typeparam>
+        /// <param name="task">The task to get the instance.</param>
+        /// <returns>An instance resolved.</returns>
+        public Task<T> EnsureResolveAsync<T>(Task<T> task)
+        {
+            return EnsureResolveAsync(null, task);
         }
 
         /// <summary>
