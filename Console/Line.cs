@@ -690,17 +690,32 @@ namespace Trivial.Console
         /// </returns>
         public SecureString ReadPassword(bool intercept = false)
         {
-            return ReadPassword(null, intercept);
+            return ReadPassword(null, null, intercept);
         }
 
         /// <summary>
         /// Obtains the password pressed by the user.
         /// </summary>
+        /// <param name="replaceChar">The optional charactor to output to replace the original one, such as *.</param>
         /// <param name="intercept">Determines whether to display the pressed key in the console window. true to not display the pressed key; otherwise, false.</param>
         /// <returns>
         /// The password.
         /// </returns>
         public SecureString ReadPassword(char? replaceChar, bool intercept = false)
+        {
+            return ReadPassword(replaceChar, null, intercept);
+        }
+
+        /// <summary>
+        /// Obtains the password pressed by the user.
+        /// </summary>
+        /// <param name="replaceChar">The optional charactor to output to replace the original one, such as *.</param>
+        /// <param name="foregroundColor">The replace charactor color.</param>
+        /// <param name="intercept">Determines whether to display the pressed key in the console window. true to not display the pressed key; otherwise, false.</param>
+        /// <returns>
+        /// The password.
+        /// </returns>
+        public SecureString ReadPassword(char? replaceChar, ConsoleColor? foregroundColor, bool intercept = false)
         {
             Flush();
             var str = new SecureString();
@@ -743,7 +758,7 @@ namespace Trivial.Console
                         if (hasKey) str.AppendChar(key.KeyChar);
                         SaveCursorPosition();
                         Backspace();
-                        if (hasKey && replaceChar.HasValue) Write(replaceChar.Value);
+                        if (hasKey && replaceChar.HasValue) Write(foregroundColor, replaceChar.Value);
                         break;
                 }
             }

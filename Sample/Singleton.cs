@@ -15,10 +15,6 @@ namespace Trivial.Sample
 
         public override async Task ProcessAsync()
         {
-            var password = ConsoleLine.ReadPassword('*');
-            ConsoleLine.WriteLine(password.ToUnsecureString());
-
-
             var singletonManager = new SingletonResolver();
             singletonManager.Register<HttpClientVerb.NameAndDescription>();
             var num = 12;
