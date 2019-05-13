@@ -185,6 +185,32 @@ namespace Trivial.Reflection
     public class SingletonResolver : BaseSingletonResolver
     {
         /// <summary>
+        /// The singleton instance of singleton resolver.
+        /// </summary>
+        private static readonly Lazy<SingletonResolver> instance = new Lazy<SingletonResolver>();
+
+        /// <summary>
+        /// Gets the singleton instance of singleton resolver.
+        /// </summary>
+        public static SingletonResolver Instance => instance.Value;
+
+        /// <summary>
+        /// Gets or sets the backup singleton instance of singleton resolver.
+        /// </summary>
+        public static ISingletonResolver BackupInstance
+        {
+            get
+            {
+                return Instance.backup;
+            }
+
+            set
+            {
+                if (value != Instance) Instance.backup = value;
+            }
+        }
+
+        /// <summary>
         /// The locker.
         /// </summary>
         private readonly object locker = new object();
@@ -193,6 +219,27 @@ namespace Trivial.Reflection
         /// Cache.
         /// </summary>
         private readonly Dictionary<Type, ConcurrentDictionary<string, IObjectRef>> cache = new Dictionary<Type, ConcurrentDictionary<string, IObjectRef>>();
+
+        /// <summary>
+        /// Backup resolver.
+        /// </summary>
+        private ISingletonResolver backup;
+
+        /// <summary>
+        /// Initializes a new instance of the SingletonResolver class.
+        /// </summary>
+        public SingletonResolver()
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the SingletonResolver class.
+        /// </summary>
+        /// <param name="backupResolver">Backup resolver.</param>
+        public SingletonResolver(ISingletonResolver backupResolver)
+        {
+            backup = backupResolver;
+        }
 
         /// <summary>
         /// Registers an instance.
@@ -555,6 +602,11 @@ namespace Trivial.Reflection
                 if (key == null) key = string.Empty;
                 if (!set.TryGetValue(key, out var value))
                 {
+                    if (backup != null)
+                    {
+                        return backup.TryResolve(key, out result);
+                    }
+
                     result = default;
                     return false;
                 }
