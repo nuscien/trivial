@@ -23,6 +23,8 @@ namespace Trivial.Sample
             if (!singletonManager.TryResolve<HttpClientVerb.NameAndDescription>(out _)) ConsoleLine.WriteLine("Failed to resolve.");
             if (singletonManager.TryResolve("one", out num)) ConsoleLine.WriteLine("Got! " + num);
             if (singletonManager.TryResolve(out num)) ConsoleLine.WriteLine("Got! " + num);
+            ConsoleLine.WriteLine("Got! " + singletonManager.Resolve(typeof(int), "one"));
+            ConsoleLine.WriteLine();
 
             var count = 0;
             var keeper = new SingletonKeeper<int>(async () =>

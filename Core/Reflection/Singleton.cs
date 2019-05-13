@@ -184,11 +184,6 @@ namespace Trivial.Reflection
     /// </summary>
     public class SingletonResolver : BaseSingletonResolver
     {
-        internal class KeyedCollection
-        {
-
-        }
-
         /// <summary>
         /// The locker.
         /// </summary>

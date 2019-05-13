@@ -38,7 +38,7 @@ namespace Trivial.Reflection
         /// Initializes a new instance of the ObjectRef class.
         /// </summary>
         /// <param name="value">The value.</param>
-        public ObjectRef(IObjectRef value) => reference = value != reference ? value : new InstanceObjectRef(null);
+        public ObjectRef(IObjectRef value) => reference = value;
 
         /// <summary>
         /// Initializes a new instance of the ObjectRef class.
@@ -81,7 +81,7 @@ namespace Trivial.Reflection
         /// Initializes a new instance of the ObjectRef class.
         /// </summary>
         /// <param name="value">The value.</param>
-        public ObjectRef(IObjectRef<T> value) => reference = value != reference ? value : new InstanceObjectRef<T>(default);
+        public ObjectRef(IObjectRef<T> value) => reference = value;
 
         /// <summary>
         /// Initializes a new instance of the ObjectRef class.
