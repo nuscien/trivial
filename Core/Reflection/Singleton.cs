@@ -1077,6 +1077,9 @@ namespace Trivial.Reflection
         /// <summary>
         /// Gets or sets a value indicating whether the timer should pause to renew.
         /// </summary>
+        /// <exception cref="ObjectDisposedException">The instance has already been disposed.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">The value, in milliseconds, is less than -1.</exception>
+        /// <exception cref="NotSupportedException">The value, in milliseconds, is greater than 4294967294.</exception>
         public TimeSpan Interval
         {
             get
@@ -1138,6 +1141,20 @@ namespace Trivial.Reflection
         /// Sets the cache flag as false.
         /// </summary>
         public void ClearCache() => Keeper.ClearCache();
+
+        /// <summary>
+        /// Changes the start time and the interval between method invocations for a timer.
+        /// </summary>
+        /// <param name="dueTime">The amount of time to delay before the callback parameter invokes its methods.</param>
+        /// <param name="period">The time interval between invocations of the methods referenced by callback.</param>
+        /// <returns>true if the timer was successfully updated; otherwise, false.</returns>
+        /// <exception cref="ObjectDisposedException">The instance has already been disposed.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">The dueTime or period parameter, in milliseconds, is less than -1.</exception>
+        /// <exception cref="NotSupportedException">The dueTime or period parameter, in milliseconds, is greater than 4294967294.</exception>
+        public bool ChangeInterval(TimeSpan dueTime, TimeSpan period)
+        {
+            return timer.Change(dueTime, period);
+        }
 
         /// <summary>
         /// Releases all resources used by the current secret exchange object.
