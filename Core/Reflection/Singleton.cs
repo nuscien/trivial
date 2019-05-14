@@ -6,6 +6,8 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
+using Timer = System.Timers.Timer;
+
 using Trivial.Data;
 
 namespace Trivial.Reflection
@@ -813,24 +815,18 @@ namespace Trivial.Reflection
         /// <summary>
         /// Creates a timer to renew the singleton.
         /// </summary>
-        /// <param name="dueTime">
-        /// The amount of time to delay before the callback parameter invokes its methods.
-        /// Specify negative one (-1) milliseconds to prevent the timer from starting.
-        /// Specify zero (0) to start the timer immediately.
-        /// </param>
-        /// <param name="period">
-        /// The time interval between invocations of the methods referenced by callback.
-        /// Specify negative one (-1) milliseconds to disable periodic signaling.
-        /// </param>
+        /// <param name="interval">The time interval between invocations of the methods referenced by callback.</param>
         /// <param name="isPaused">A handler to let the timer know if the renew action is paused.</param>
         /// <returns>The timer.</returns>
-        public Timer CreateRenewTimer(TimeSpan dueTime, TimeSpan period, Func<bool> isPaused = null)
+        public Timer CreateRenewTimer(TimeSpan interval, Func<bool> isPaused = null)
         {
             if (isPaused == null) isPaused = () => false;
-            return new Timer(state =>
+            var timer = new Timer(interval.TotalMilliseconds);
+            timer.Elapsed += (sender, ev) =>
             {
                 if (!isPaused()) RenewAsync();
-            }, null, dueTime, period);
+            };
+            return timer;
         }
 
         /// <summary>
@@ -930,39 +926,33 @@ namespace Trivial.Reflection
     public class SingletonRenewScheduler<T> : IDisposable
     {
         /// <summary>
+        /// The refresh timer instance.
+        /// </summary>
+        private readonly Timer timer;
+
+        /// <summary>
         /// Initializes a new instance of the SingletonRenewScheduler class.
         /// </summary>
         /// <param name="keeper">The singleton keeper instance to maintain.</param>
-        /// <param name="dueTime">
-        /// The amount of time to delay before the callback parameter invokes its methods.
-        /// Specify negative one (-1) milliseconds to prevent the timer from starting.
-        /// Specify zero (0) to start the timer immediately.
-        /// </param>
-        /// <param name="period">
-        /// The time interval between invocations of the methods referenced by callback.
-        /// Specify negative one (-1) milliseconds to disable periodic signaling.
-        /// </param>
-        public SingletonRenewScheduler(SingletonKeeper<T> keeper, TimeSpan dueTime, TimeSpan period)
+        /// <param name="interval">The time interval between invocations of the methods referenced by callback.</param>
+        /// <param name="pause">true if do not enable the timer; otherwise, false, by default.</param>
+        public SingletonRenewScheduler(SingletonKeeper<T> keeper, TimeSpan interval, bool pause = false)
         {
             Keeper = keeper ?? new SingletonKeeper<T>(default(T));
-            Timer = Keeper.CreateRenewTimer(dueTime, period, () => IsPaused);
+            timer = Keeper.CreateRenewTimer(interval);
+            if (pause) return;
+            timer.AutoReset = true;
+            timer.Enabled = true;
         }
 
         /// <summary>
         /// Initializes a new instance of the SingletonRenewScheduler class.
         /// </summary>
         /// <param name="resolveHandler">The resovle handler.</param>
-        /// <param name="dueTime">
-        /// The amount of time to delay before the callback parameter invokes its methods.
-        /// Specify negative one (-1) milliseconds to prevent the timer from starting.
-        /// Specify zero (0) to start the timer immediately.
-        /// </param>
-        /// <param name="period">
-        /// The time interval between invocations of the methods referenced by callback.
-        /// Specify negative one (-1) milliseconds to disable periodic signaling.
-        /// </param>
-        public SingletonRenewScheduler(Func<Task<T>> resolveHandler, TimeSpan dueTime, TimeSpan period)
-            : this(new SingletonKeeper<T>(resolveHandler), dueTime, period)
+        /// <param name="interval">The time interval between invocations of the methods referenced by callback.</param>
+        /// <param name="pause">true if do not enable the timer; otherwise, false, by default.</param>
+        public SingletonRenewScheduler(Func<Task<T>> resolveHandler, TimeSpan interval, bool pause = false)
+            : this(new SingletonKeeper<T>(resolveHandler), interval, pause)
         {
         }
 
@@ -970,19 +960,24 @@ namespace Trivial.Reflection
         /// Initializes a new instance of the SingletonRenewScheduler class.
         /// </summary>
         /// <param name="resolveHandler">The resovle handler.</param>
-        /// <param name="dueTime">
-        /// The amount of time to delay before the callback parameter invokes its methods.
-        /// Specify negative one (-1) milliseconds to prevent the timer from starting.
-        /// Specify zero (0) to start the timer immediately.
-        /// </param>
-        /// <param name="period">
-        /// The time interval between invocations of the methods referenced by callback.
-        /// Specify negative one (-1) milliseconds to disable periodic signaling.
-        /// </param>
+        /// <param name="interval">The time interval between invocations of the methods referenced by callback.</param>
         /// <param name="cache">The cache.</param>
         /// <param name="refreshDate">The latest refresh succeeded date time of cache.</param>
-        public SingletonRenewScheduler(Func<Task<T>> resolveHandler, TimeSpan dueTime, TimeSpan period, T cache, DateTime? refreshDate = null)
-            : this(new SingletonKeeper<T>(resolveHandler, cache, refreshDate), dueTime, period)
+        public SingletonRenewScheduler(Func<Task<T>> resolveHandler, TimeSpan interval, T cache, DateTime? refreshDate = null)
+            : this(new SingletonKeeper<T>(resolveHandler, cache, refreshDate), interval)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the SingletonRenewScheduler class.
+        /// </summary>
+        /// <param name="resolveHandler">The resovle handler.</param>
+        /// <param name="interval">The time interval between invocations of the methods referenced by callback.</param>
+        /// <param name="pause">true if do not enable the timer; otherwise, false, by default.</param>
+        /// <param name="cache">The cache.</param>
+        /// <param name="refreshDate">The latest refresh succeeded date time of cache.</param>
+        public SingletonRenewScheduler(Func<Task<T>> resolveHandler, TimeSpan interval, bool pause, T cache, DateTime? refreshDate = null)
+            : this(new SingletonKeeper<T>(resolveHandler, cache, refreshDate), interval, pause)
         {
         }
 
@@ -998,7 +993,20 @@ namespace Trivial.Reflection
         /// <summary>
         /// Gets or sets a value indicating whether the timer should pause to renew.
         /// </summary>
-        public bool IsPaused { get; set; }
+        public bool IsPaused
+        {
+            get => !timer.Enabled;
+            set => timer.Enabled = !value;
+        }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether the timer should pause to renew.
+        /// </summary>
+        public TimeSpan Interval
+        {
+            get => TimeSpan.FromMilliseconds(timer.Interval);
+            set => timer.Interval = value.TotalMilliseconds;
+        }
 
         /// <summary>
         /// Gets the singleton keeper source instance.
@@ -1019,11 +1027,6 @@ namespace Trivial.Reflection
         /// Gets the latest refresh completed date.
         /// </summary>
         public DateTime? RefreshDate => Keeper.RefreshDate;
-
-        /// <summary>
-        /// Gets the refresh timer instance.
-        /// </summary>
-        public Timer Timer { get; }
 
         /// <summary>
         /// Gets the instance.
@@ -1058,7 +1061,7 @@ namespace Trivial.Reflection
         protected virtual void Dispose(bool disposing)
         {
             if (!disposing) return;
-            Timer.Dispose();
+            timer.Dispose();
         }
     }
 
@@ -1074,16 +1077,9 @@ namespace Trivial.Reflection
         /// Initializes a new instance of the SingletonRenewScheduler class.
         /// </summary>
         /// <param name="keeper">The singleton keeper instance to maintain.</param>
-        /// <param name="dueTime">
-        /// The amount of time to delay before the callback parameter invokes its methods.
-        /// Specify negative one (-1) milliseconds to prevent the timer from starting.
-        /// Specify zero (0) to start the timer immediately.
-        /// </param>
-        /// <param name="period">
-        /// The time interval between invocations of the methods referenced by callback.
-        /// Specify negative one (-1) milliseconds to disable periodic signaling.
-        /// </param>
-        public SingletonRenewScheduler(TKeeper keeper, TimeSpan dueTime, TimeSpan period) : base(keeper, dueTime, period)
+        /// <param name="interval">The time interval between invocations of the methods referenced by callback.</param>
+        /// <param name="pause">true if do not enable the timer; otherwise, false, by default.</param>
+        public SingletonRenewScheduler(TKeeper keeper, TimeSpan interval, bool pause = false) : base(keeper, interval, pause)
         {
             Keeper = keeper;
         }
