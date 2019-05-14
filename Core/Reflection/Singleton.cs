@@ -977,7 +977,7 @@ namespace Trivial.Reflection
         private bool isPaused;
 
         /// <summary>
-        /// Initializes a new instance of the SingletonRenewScheduler class.
+        /// Initializes a new instance of the SingletonRenewTimer class.
         /// </summary>
         /// <param name="keeper">The singleton keeper instance to maintain.</param>
         /// <param name="dueTime">The amount of time to delay before the callback parameter invokes its methods.</param>
@@ -993,7 +993,7 @@ namespace Trivial.Reflection
         }
 
         /// <summary>
-        /// Initializes a new instance of the SingletonRenewScheduler class.
+        /// Initializes a new instance of the SingletonRenewTimer class.
         /// </summary>
         /// <param name="keeper">The singleton keeper instance to maintain.</param>
         public SingletonRenewTimer(SingletonKeeper<T> keeper) : this(keeper, TimeSpan.FromMilliseconds(Timeout.Infinite), TimeSpan.FromMilliseconds(Timeout.Infinite))
@@ -1001,7 +1001,7 @@ namespace Trivial.Reflection
         }
 
         /// <summary>
-        /// Initializes a new instance of the SingletonRenewScheduler class.
+        /// Initializes a new instance of the SingletonRenewTimer class.
         /// </summary>
         /// <param name="keeper">The singleton keeper instance to maintain.</param>
         /// <param name="interval">The time interval between invocations of the methods referenced by callback.</param>
@@ -1011,7 +1011,7 @@ namespace Trivial.Reflection
         }
 
         /// <summary>
-        /// Initializes a new instance of the SingletonRenewScheduler class.
+        /// Initializes a new instance of the SingletonRenewTimer class.
         /// </summary>
         /// <param name="resolveHandler">The resovle handler.</param>
         /// <param name="interval">The time interval between invocations of the methods referenced by callback.</param>
@@ -1022,7 +1022,7 @@ namespace Trivial.Reflection
         }
 
         /// <summary>
-        /// Initializes a new instance of the SingletonRenewScheduler class.
+        /// Initializes a new instance of the SingletonRenewTimer class.
         /// </summary>
         /// <param name="resolveHandler">The resovle handler.</param>
         /// <param name="interval">The time interval between invocations of the methods referenced by callback.</param>
@@ -1034,7 +1034,7 @@ namespace Trivial.Reflection
         }
 
         /// <summary>
-        /// Initializes a new instance of the SingletonRenewScheduler class.
+        /// Initializes a new instance of the SingletonRenewTimer class.
         /// </summary>
         /// <param name="resolveHandler">The resovle handler.</param>
         /// <param name="interval">The time interval between invocations of the methods referenced by callback.</param>
@@ -1090,10 +1090,10 @@ namespace Trivial.Reflection
                 var now = DateTime.Now;
                 try
                 {
-                    var dueSpan = now - (Keeper.RefreshDate ?? now);
-                    dueSpan = interval - dueSpan;
-                    if (dueSpan < TimeSpan.Zero) dueSpan = TimeSpan.Zero;
-                    timer.Change(dueSpan, interval);
+                    var dueTime = now - (Keeper.RefreshDate ?? now);
+                    dueTime = interval - dueTime;
+                    if (dueTime < TimeSpan.Zero) dueTime = TimeSpan.Zero;
+                    timer.Change(dueTime, interval);
                 }
                 catch (OverflowException)
                 {
@@ -1160,29 +1160,40 @@ namespace Trivial.Reflection
     }
 
     /// <summary>
-    /// Thread-safe singleton renew scheduler.
+    /// Thread-safe singleton renew timer.
     /// </summary>
     /// <typeparam name="TKeeper">The type of keeper</typeparam>
     /// <typeparam name="TModel">The type of singleton</typeparam>
-    public class SingletonRenewScheduler<TKeeper, TModel> : SingletonRenewTimer<TModel>
+    public class SingletonRenewTimer<TKeeper, TModel> : SingletonRenewTimer<TModel>
         where TKeeper : SingletonKeeper<TModel>
     {
         /// <summary>
-        /// Initializes a new instance of the SingletonRenewScheduler class.
+        /// Initializes a new instance of the SingletonRenewTimer class.
         /// </summary>
         /// <param name="keeper">The singleton keeper instance to maintain.</param>
-        public SingletonRenewScheduler(TKeeper keeper) : base(keeper)
+        public SingletonRenewTimer(TKeeper keeper) : base(keeper)
         {
             Keeper = keeper;
         }
 
         /// <summary>
-        /// Initializes a new instance of the SingletonRenewScheduler class.
+        /// Initializes a new instance of the SingletonRenewTimer class.
         /// </summary>
         /// <param name="keeper">The singleton keeper instance to maintain.</param>
         /// <param name="interval">The time interval between invocations of the methods referenced by callback.</param>
         /// <param name="immediately">true if renew immediately; otherwise, false, by default.</param>
-        public SingletonRenewScheduler(TKeeper keeper, TimeSpan interval, bool immediately = false) : base(keeper, interval, immediately)
+        public SingletonRenewTimer(TKeeper keeper, TimeSpan interval, bool immediately = false) : base(keeper, interval, immediately)
+        {
+            Keeper = keeper;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the SingletonRenewTimer class.
+        /// </summary>
+        /// <param name="keeper">The singleton keeper instance to maintain.</param>
+        /// <param name="dueTime">The amount of time to delay before the callback parameter invokes its methods.</param>
+        /// <param name="period">The time interval between invocations of the methods referenced by callback.</param>
+        public SingletonRenewTimer(TKeeper keeper, TimeSpan dueTime, TimeSpan period) : base(keeper, dueTime, period)
         {
             Keeper = keeper;
         }
