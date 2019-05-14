@@ -1055,6 +1055,8 @@ namespace Trivial.Tasks
             {
                 f = pick(item);
                 if (f == null) continue;
+                t = item;
+                break;
             }
 
             return f != null
