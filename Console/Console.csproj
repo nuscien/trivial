@@ -7,11 +7,11 @@
     <Authors>Kingcean Tuan</Authors>
     <Company>Nanchang Jinchen Software Co., Ltd</Company>
     <Copyright>Copyright (c) 2018 Kingcean Tuan.</Copyright>
-    <AssemblyVersion>1.1.0.0</AssemblyVersion>
-    <FileVersion>1.1.0.0</FileVersion>
+    <AssemblyVersion>1.2.0.0</AssemblyVersion>
+    <FileVersion>1.2.0.0</FileVersion>
     <Description>The useful utilities for console application including command dispatcher, arguments parser and some rich user interface console controls.</Description>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>1.1.0</Version>
+    <Version>1.2.0</Version>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/nuscien/trivial/wiki/console</PackageProjectUrl>
     <PackageTags>console utilities</PackageTags>
