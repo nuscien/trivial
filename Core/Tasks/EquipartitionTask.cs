@@ -147,7 +147,12 @@ namespace Trivial.Tasks
             /// <param name="context">The System.Runtime.Serialization.StreamingContext that contains contextual information about the source or destination.</param>
             protected Fragment(SerializationInfo info, StreamingContext context)
             {
-                if (info == null) return;
+                if (info == null)
+                {
+                    Id = Guid.NewGuid().ToString("n");
+                    return;
+                }
+
                 try
                 {
                     var id = info.GetString(nameof(Id));
@@ -197,7 +202,6 @@ namespace Trivial.Tasks
                 catch (SerializationException)
                 {
                 }
-
             }
 
             /// <summary>
@@ -940,7 +944,7 @@ namespace Trivial.Tasks
     }
 
     /// <summary>
-    /// Equipartition task thread-safe container.
+    /// Equipartition task thread-safe container with grouping.
     /// </summary>
     public class EquipartitionTaskContainer
     {
@@ -966,6 +970,20 @@ namespace Trivial.Tasks
         }
 
         /// <summary>
+        /// Gets the equipartition task list.
+        /// </summary>
+        /// <param name="group">The group identifier.</param>
+        /// <param name="taskId">The task identifier.</param>
+        /// <returns>A list of the equipartition task.</returns>
+        public EquipartitionTask this[string group, string taskId]
+        {
+            get
+            {
+                return this[group].First(t => t.Id == taskId);
+            }
+        }
+
+        /// <summary>
         /// Gets the group identifier list in cache.
         /// </summary>
         public IReadOnlyCollection<string> GroupIds => cache.Keys;
@@ -978,25 +996,47 @@ namespace Trivial.Tasks
         /// <returns>A collection of equipartition task.</returns>
         public IEnumerable<EquipartitionTask> List(string group, int? count = null)
         {
-            var col = cache.TryGetValue(group, out var list) ? list.Where(ele =>
+            return List(group, null, count);
+        }
+
+        /// <summary>
+        /// Gets all the equipartition tasks available.
+        /// </summary>
+        /// <param name="group">The group identifier.</param>
+        /// <param name="predicate">A function to test each element for a condition.</param>
+        /// <param name="count">The count to take.</param>
+        /// <returns>A collection of equipartition task.</returns>
+        public IEnumerable<EquipartitionTask> List(string group, Func<EquipartitionTask, bool> predicate, int? count = null)
+        {
+            if (!cache.TryGetValue(group, out var list)) return new List<EquipartitionTask>().AsReadOnly();
+            var col = list.Where(ele =>
             {
                 return !ele.IsDone;
-            }) : new List<EquipartitionTask>().AsReadOnly();
+            });
+            if (predicate != null) col = col.Where(predicate);
             return count.HasValue ? col.Take(count.Value) : col;
         }
 
         /// <summary>
-        /// Gets the first equipartition tasks available.
+        /// Gets the first equipartition tasks if available.
         /// </summary>
         /// <param name="group">The group identifier.</param>
+        /// <param name="predicate">A function to test each element for a condition.</param>
         /// <returns>An equipartition task; or null, if no one available.</returns>
-        public EquipartitionTask FirstOrNull(string group)
+        public EquipartitionTask TryGetFirst(string group, Func<EquipartitionTask, bool> predicate = null)
         {
-            if (!cache.TryGetValue(group, out var list)) return null;
-            return list.FirstOrDefault(ele =>
-            {
-                return !ele.IsDone;
-            });
+            return List(group, predicate).FirstOrDefault();
+        }
+
+        /// <summary>
+        /// Gets the last equipartition tasks if available.
+        /// </summary>
+        /// <param name="group">The group identifier.</param>
+        /// <param name="predicate">A function to test each element for a condition.</param>
+        /// <returns>An equipartition task; or null, if no one available.</returns>
+        public EquipartitionTask TryGetLast(string group, Func<EquipartitionTask, bool> predicate = null)
+        {
+            return List(group, predicate).LastOrDefault();
         }
 
         /// <summary>
