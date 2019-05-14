@@ -807,6 +807,7 @@ namespace Trivial.Reflection
         public void ClearCache()
         {
             HasCache = false;
+            disabled = null;
         }
 
         /// <summary>

@@ -886,10 +886,11 @@ namespace Trivial.Tasks
             {
                 if (state != oldState)
                 {
-                    if (oldState == FragmentStates.Success || oldState == FragmentStates.Fatal) return false;
+                    if (oldState == FragmentStates.Success || oldState == FragmentStates.Fatal || oldState == FragmentStates.Ignored) return false;
                     switch (state.Value)
                     {
                         case FragmentStates.Pending:
+                            if (oldState == FragmentStates.Working) break;
                             return false;
                         case FragmentStates.Working:
                         case FragmentStates.Retrying:
@@ -900,12 +901,12 @@ namespace Trivial.Tasks
                     fragment.State = state.Value;
                     fragment.Modification = DateTime.Now;
                 }
-
-                if (callback != null)
+                else
                 {
                     fragment.Modification = DateTime.Now;
-                    callback(fragment);
                 }
+
+                callback?.Invoke(fragment);
             }
 
             NotifyChange(fragment, oldState, wasDone);
