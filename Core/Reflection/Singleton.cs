@@ -722,6 +722,11 @@ namespace Trivial.Reflection
         public bool IsRenewDisabled { get; set; }
 
         /// <summary>
+        /// Gets a value indicating whether it is renewing.
+        /// </summary>
+        public bool IsRenewing => semaphoreSlim.CurrentCount == 0;
+
+        /// <summary>
         /// Gets a value indicating whether renew is available.
         /// </summary>
         public virtual bool CanRenew
@@ -839,7 +844,7 @@ namespace Trivial.Reflection
             var timer = new Timer(interval.TotalMilliseconds);
             timer.Elapsed += (sender, ev) =>
             {
-                if (!isPaused()) RenewAsync();
+                if (!isPaused() && !IsRenewing && CanRenew) RenewAsync();
             };
             return timer;
         }
