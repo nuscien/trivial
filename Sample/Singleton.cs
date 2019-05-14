@@ -32,11 +32,9 @@ namespace Trivial.Sample
                 await Task.Delay(50);
                 return count += 1;
             });
-            using (var refresher = new SingletonRenewScheduler<int>(keeper, TimeSpan.FromMilliseconds(200), TimeSpan.FromMilliseconds(100)))
+            using (var refresher = new SingletonRenewTimer<int>(keeper, TimeSpan.FromMilliseconds(100)))
             {
                 ConsoleLine.WriteLine("Started scheduler.");
-                ConsoleLine.WriteLine(count);
-                await Task.Delay(100);
                 ConsoleLine.WriteLine(count);
                 await Task.Delay(100);
                 ConsoleLine.WriteLine(count);

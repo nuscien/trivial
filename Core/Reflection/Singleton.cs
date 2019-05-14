@@ -653,6 +653,8 @@ namespace Trivial.Reflection
     {
         private readonly SemaphoreSlim semaphoreSlim = new SemaphoreSlim(1, 1);
         private readonly Func<Task<T>> renew;
+        private readonly List<Action<T>> callbacks = new List<Action<T>>();
+        private readonly object callbackLocker = new object();
         private DateTime? disabled;
 
         /// <summary>
@@ -813,6 +815,19 @@ namespace Trivial.Reflection
         }
 
         /// <summary>
+        /// Adds the callback for next renew.
+        /// It will be raised only once; and then removed.
+        /// </summary>
+        /// <param name="callback">The callback.</param>
+        public void AddCallbackForNextRenew(Action<T> callback)
+        {
+            lock (callbackLocker)
+            {
+                callbacks.Add(callback);
+            }
+        }
+
+        /// <summary>
         /// Creates a timer to renew the singleton.
         /// </summary>
         /// <param name="interval">The time interval between invocations of the methods referenced by callback.</param>
@@ -908,6 +923,24 @@ namespace Trivial.Reflection
                 semaphoreSlim.Release();
             }
 
+            if (callbacks.Count > 0)
+            {
+                List<Action<T>> callbackArr = null;
+                lock (callbackLocker)
+                {
+                    callbackArr = new List<Action<T>>(callbacks);
+                    callbacks.Clear();
+                }
+
+                if (callbackArr != null)
+                {
+                    foreach (var callback in callbackArr)
+                    {
+                        callback(Cache);
+                    }
+                }
+            }
+
             Renewed?.Invoke(this, new ChangeEventArgs<T>(cache, Cache, nameof(Cache), true));
             return Cache;
         }
@@ -920,10 +953,10 @@ namespace Trivial.Reflection
     }
 
     /// <summary>
-    /// Thread-safe singleton renew scheduler.
+    /// Thread-safe singleton renew timer.
     /// </summary>
     /// <typeparam name="T">The type of singleton</typeparam>
-    public class SingletonRenewScheduler<T> : IDisposable
+    public class SingletonRenewTimer<T> : IDisposable
     {
         /// <summary>
         /// The refresh timer instance.
@@ -936,13 +969,12 @@ namespace Trivial.Reflection
         /// <param name="keeper">The singleton keeper instance to maintain.</param>
         /// <param name="interval">The time interval between invocations of the methods referenced by callback.</param>
         /// <param name="pause">true if do not enable the timer; otherwise, false, by default.</param>
-        public SingletonRenewScheduler(SingletonKeeper<T> keeper, TimeSpan interval, bool pause = false)
+        public SingletonRenewTimer(SingletonKeeper<T> keeper, TimeSpan interval, bool pause = false)
         {
             Keeper = keeper ?? new SingletonKeeper<T>(default(T));
             timer = Keeper.CreateRenewTimer(interval);
-            if (pause) return;
             timer.AutoReset = true;
-            timer.Enabled = true;
+            if (!pause) timer.Enabled = true;
         }
 
         /// <summary>
@@ -951,7 +983,7 @@ namespace Trivial.Reflection
         /// <param name="resolveHandler">The resovle handler.</param>
         /// <param name="interval">The time interval between invocations of the methods referenced by callback.</param>
         /// <param name="pause">true if do not enable the timer; otherwise, false, by default.</param>
-        public SingletonRenewScheduler(Func<Task<T>> resolveHandler, TimeSpan interval, bool pause = false)
+        public SingletonRenewTimer(Func<Task<T>> resolveHandler, TimeSpan interval, bool pause = false)
             : this(new SingletonKeeper<T>(resolveHandler), interval, pause)
         {
         }
@@ -963,7 +995,7 @@ namespace Trivial.Reflection
         /// <param name="interval">The time interval between invocations of the methods referenced by callback.</param>
         /// <param name="cache">The cache.</param>
         /// <param name="refreshDate">The latest refresh succeeded date time of cache.</param>
-        public SingletonRenewScheduler(Func<Task<T>> resolveHandler, TimeSpan interval, T cache, DateTime? refreshDate = null)
+        public SingletonRenewTimer(Func<Task<T>> resolveHandler, TimeSpan interval, T cache, DateTime? refreshDate = null)
             : this(new SingletonKeeper<T>(resolveHandler, cache, refreshDate), interval)
         {
         }
@@ -976,7 +1008,7 @@ namespace Trivial.Reflection
         /// <param name="pause">true if do not enable the timer; otherwise, false, by default.</param>
         /// <param name="cache">The cache.</param>
         /// <param name="refreshDate">The latest refresh succeeded date time of cache.</param>
-        public SingletonRenewScheduler(Func<Task<T>> resolveHandler, TimeSpan interval, bool pause, T cache, DateTime? refreshDate = null)
+        public SingletonRenewTimer(Func<Task<T>> resolveHandler, TimeSpan interval, bool pause, T cache, DateTime? refreshDate = null)
             : this(new SingletonKeeper<T>(resolveHandler, cache, refreshDate), interval, pause)
         {
         }
@@ -1070,7 +1102,7 @@ namespace Trivial.Reflection
     /// </summary>
     /// <typeparam name="TKeeper">The type of keeper</typeparam>
     /// <typeparam name="TModel">The type of singleton</typeparam>
-    public class SingletonRenewScheduler<TKeeper, TModel> : SingletonRenewScheduler<TModel>
+    public class SingletonRenewScheduler<TKeeper, TModel> : SingletonRenewTimer<TModel>
         where TKeeper : SingletonKeeper<TModel>
     {
         /// <summary>

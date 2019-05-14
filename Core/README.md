@@ -285,7 +285,7 @@ You can create following class as singleton for different scenarios.
 
 - `SingletonResolver` for instances management.
 - `SingletonKeeper` for async instances management.
-- `SingletonRenewScheduler` contains a timer to renew the instance as needed.
+- `SingletonRenewTimer` contains a timer to renew the instance as needed.
 
 ## [Geography](https://github.com/nuscien/trivial/wiki/geo)
 
