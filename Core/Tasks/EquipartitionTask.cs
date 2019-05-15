@@ -1101,6 +1101,35 @@ namespace Trivial.Tasks
         /// <returns>A new equipartition tasks created.</returns>
         public virtual EquipartitionTask Create(string group, string jobId, int count, string description, bool autoRemove = true)
         {
+            var task = Create(group, new EquipartitionTask(jobId, count)
+            {
+                Description = description
+            }, autoRemove);
+            Created?.Invoke(this, new ChangeEventArgs<EquipartitionTask>(null, task, ChangeMethods.Add, group));
+            return task;
+        }
+
+        /// <summary>
+        /// Creates a new equipartition tasks.
+        /// </summary>
+        /// <param name="group">The group identifier.</param>
+        /// <param name="task">The task to create.</param>
+        /// <param name="autoRemove">true if remove the item all done automatically; otherwise, false.</param>
+        /// <returns>A new equipartition tasks created.</returns>
+        public EquipartitionTask Create(string group, EquipartitionTask task, bool autoRemove = true)
+        {
+            return Create(group, new[] { task }, autoRemove) > 0 ? task : null;
+        }
+
+        /// <summary>
+        /// Creates a new equipartition tasks.
+        /// </summary>
+        /// <param name="group">The group identifier.</param>
+        /// <param name="tasks">The tasks to create.</param>
+        /// <param name="autoRemove">true if remove the item all done automatically; otherwise, false.</param>
+        /// <returns>A new equipartition tasks created.</returns>
+        public virtual int Create(string group, IEnumerable<EquipartitionTask> tasks, bool autoRemove = true)
+        {
             if (!cache.ContainsKey(group))
             {
                 lock (locker)
@@ -1113,17 +1142,30 @@ namespace Trivial.Tasks
             }
 
             var list = cache[group];
-            var task = new EquipartitionTask(jobId, count)
+            var count = 0;
+            tasks = tasks.Where(task =>
             {
-                Description = description
-            };
-            if (autoRemove) task.HasBeenDone += (object sender, EventArgs eventArgs) =>
+                if (task == null) return false;
+                count++;
+                return true;
+            });
+            if (autoRemove)
             {
-                list.Remove(task);
-            };
-            list.Add(task);
-            Created?.Invoke(this, new ChangeEventArgs<EquipartitionTask>(null, task, ChangeMethods.Add, group));
-            return task;
+                foreach (var task in tasks)
+                {
+                    task.HasBeenDone += (object sender, EventArgs eventArgs) =>
+                    {
+                        list.Remove(task);
+                    };
+                    list.Add(task);
+                }
+            }
+            else
+            {
+                list.AddRange(tasks);
+            }
+
+            return count;
         }
 
         /// <summary>
