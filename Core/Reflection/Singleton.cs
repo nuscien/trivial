@@ -1134,8 +1134,15 @@ namespace Trivial.Reflection
         /// <summary>
         /// Refreshes and gets the instance.
         /// </summary>
+        /// <param name="forceToRenew">true if force to renew without available checking; otherwise, false.</param>
         /// <returns>The instance.</returns>
-        public Task<T> RenewAsync() => Keeper.RenewAsync();
+        public Task<T> RenewAsync(bool forceToRenew = false) => Keeper.RenewAsync(forceToRenew);
+
+        /// <summary>
+        /// Renews if can and gets the instance.
+        /// </summary>
+        /// <returns>The instance.</returns>
+        public Task<T> RenewIfCanAsync() => Keeper.RenewIfCanAsync();
 
         /// <summary>
         /// Sets the cache flag as false.
@@ -1153,7 +1160,9 @@ namespace Trivial.Reflection
         /// <exception cref="NotSupportedException">The dueTime or period parameter, in milliseconds, is greater than 4294967294.</exception>
         public bool ChangeInterval(TimeSpan dueTime, TimeSpan period)
         {
-            return timer.Change(dueTime, period);
+            var isSuc = timer.Change(dueTime, period);
+            if (isSuc) interval = period;
+            return isSuc;
         }
 
         /// <summary>
