@@ -961,13 +961,7 @@ namespace Trivial.Tasks
         /// </summary>
         /// <param name="group">The group identifier.</param>
         /// <returns>A list of the equipartition task.</returns>
-        public IReadOnlyList<EquipartitionTask> this[string group]
-        {
-            get
-            {
-                return (cache.TryGetValue(group, out var list) ? list : new List<EquipartitionTask>()).AsReadOnly();
-            }
-        }
+        public IReadOnlyList<EquipartitionTask> this[string group] => (cache.TryGetValue(group, out var list) ? list : new List<EquipartitionTask>()).AsReadOnly();
 
         /// <summary>
         /// Gets the equipartition task list.
@@ -975,13 +969,7 @@ namespace Trivial.Tasks
         /// <param name="group">The group identifier.</param>
         /// <param name="taskId">The task identifier.</param>
         /// <returns>A list of the equipartition task.</returns>
-        public EquipartitionTask this[string group, string taskId]
-        {
-            get
-            {
-                return this[group].First(t => t.Id == taskId);
-            }
-        }
+        public EquipartitionTask this[string group, string taskId] => this[group].First(t => t.Id == taskId);
 
         /// <summary>
         /// Gets the group identifier list in cache.
@@ -1047,21 +1035,7 @@ namespace Trivial.Tasks
         /// <returns>A task and fragment.</returns>
         public SelectionRelationship<EquipartitionTask, EquipartitionTask.Fragment> Pick(string group, Func<EquipartitionTask, EquipartitionTask.Fragment> pick = null)
         {
-            var col = List(group);
-            if (pick == null) pick = task => task.Pick();
-            EquipartitionTask t = null;
-            EquipartitionTask.Fragment f = null;
-            foreach (var item in col)
-            {
-                f = pick(item);
-                if (f == null) continue;
-                t = item;
-                break;
-            }
-
-            return f != null
-                ? new SelectionRelationship<EquipartitionTask, EquipartitionTask.Fragment>(t, f)
-                : new SelectionRelationship<EquipartitionTask, EquipartitionTask.Fragment>(t);
+            return Pick(group, null, pick);
         }
 
         /// <summary>
@@ -1074,7 +1048,42 @@ namespace Trivial.Tasks
         /// <returns>A task and fragment.</returns>
         public SelectionRelationship<EquipartitionTask, EquipartitionTask.Fragment> Pick(string group, string tag, IEnumerable<string> except = null, bool onlyPending = false)
         {
-            return Pick(group, task => task.Pick(tag, except, onlyPending));
+            return Pick(group, null, task => task.Pick(tag, except, onlyPending));
+        }
+
+        /// <summary>
+        /// Picks one and start.
+        /// </summary>
+        /// <param name="group">The group identifier.</param>
+        /// <param name="predicate">A function to test each element for a condition.</param>
+        /// <param name="pick">A handler to pick.</param>
+        /// <returns>A task and fragment.</returns>
+        public SelectionRelationship<EquipartitionTask, EquipartitionTask.Fragment> Pick(string group, Func<EquipartitionTask, bool> predicate, Func<EquipartitionTask, EquipartitionTask.Fragment> pick = null)
+        {
+            var col = List(group, predicate);
+            if (pick == null) pick = task => task.Pick();
+            foreach (var item in col)
+            {
+                var f = pick(item);
+                if (f == null) continue;
+                return new SelectionRelationship<EquipartitionTask, EquipartitionTask.Fragment>(item, f);
+            }
+
+            return new SelectionRelationship<EquipartitionTask, EquipartitionTask.Fragment>();
+        }
+
+        /// <summary>
+        /// Picks one and start.
+        /// </summary>
+        /// <param name="group">The group identifier.</param>
+        /// <param name="predicate">A function to test each element for a condition.</param>
+        /// <param name="tag">The tag.</param>
+        /// <param name="except">The fragment identifier except.</param>
+        /// <param name="onlyPending">true if get only pending one; otherwise, false.</param>
+        /// <returns>A task and fragment.</returns>
+        public SelectionRelationship<EquipartitionTask, EquipartitionTask.Fragment> Pick(string group, Func<EquipartitionTask, bool> predicate, string tag, IEnumerable<string> except = null, bool onlyPending = false)
+        {
+            return Pick(group, predicate, task => task.Pick(tag, except, onlyPending));
         }
 
         /// <summary>
@@ -1169,7 +1178,7 @@ namespace Trivial.Tasks
         }
 
         /// <summary>
-        /// Updates the task fragment.
+        /// Gets a task fragment.
         /// </summary>
         /// <param name="group">The group identifier.</param>
         /// <param name="fragmentId">The task fragment identifier.</param>
@@ -1188,7 +1197,7 @@ namespace Trivial.Tasks
         }
 
         /// <summary>
-        /// Updates the task fragment.
+        /// Updates a specific task fragment.
         /// </summary>
         /// <param name="group">The group identifier.</param>
         /// <param name="fragmentId">The task fragment identifier.</param>
@@ -1203,7 +1212,7 @@ namespace Trivial.Tasks
         }
 
         /// <summary>
-        /// Updates the task fragment.
+        /// Updates a specific task fragment.
         /// </summary>
         /// <param name="group">The group identifier.</param>
         /// <param name="fragmentId">The task fragment identifier.</param>

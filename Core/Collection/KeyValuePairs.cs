@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Linq;
 using System.Text;
 using System.Web;
@@ -231,6 +232,43 @@ namespace Trivial.Collection
             col.AddRange(a);
             a.Remove(b.Key, b.Value);
             return col;
+        }
+
+        /// <summary>
+        /// Converts to name value collection.
+        /// </summary>
+        /// <param name="value">The instance.</param>
+        /// <returns>The name value collection.</returns>
+        public static explicit operator NameValueCollection (StringKeyValuePairs value)
+        {
+            if (value == null) return null;
+            var obj = new NameValueCollection();
+            foreach (var prop in value)
+            {
+                obj.Add(prop.Key, prop.Value);
+            }
+
+            return obj;
+        }
+
+        /// <summary>
+        /// Converts from name value collection.
+        /// </summary>
+        /// <param name="value">The name value collection.</param>
+        /// <returns>The instance.</returns>
+        public static implicit operator StringKeyValuePairs(NameValueCollection value)
+        {
+            if (value == null) return null;
+            var obj = new StringKeyValuePairs();
+            foreach (var prop in value.AllKeys)
+            {
+                foreach (var v in value.GetValues(prop))
+                {
+                    obj.Add(prop, v);
+                }
+            }
+
+            return obj;
         }
     }
 }

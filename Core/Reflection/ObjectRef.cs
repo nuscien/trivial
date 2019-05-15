@@ -327,6 +327,7 @@ namespace Trivial.Reflection
         /// Converts to tuple.
         /// </summary>
         /// <param name="value">The value.</param>
+        /// <return>The tuple.</return>
         public static explicit operator (TParent, TItem, bool)(SelectionRelationship<TParent, TItem> value)
         {
             return value != null ? (value.Parent, value.ItemSelected, value.IsSelected) : (default(TParent), default(TItem), false);
