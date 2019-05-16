@@ -824,7 +824,7 @@ namespace Trivial.Tasks
                 IEnumerable<Fragment> list = fragments;
                 if (except != null) list = list.Where(ele =>
                 {
-                    return except.FirstOrDefault(exceptId => ele.Id != exceptId) == null;
+                    return !except.Contains(ele.Id);
                 });
                 fragment = state.HasValue ? list.FirstOrDefault(ele =>
                 {
