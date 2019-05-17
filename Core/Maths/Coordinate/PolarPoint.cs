@@ -190,7 +190,7 @@ namespace Trivial.Maths
         public static implicit operator PolarPoint(TwoDimensionalPoint<double> value)
         {
             if (value == null) return null;
-            return new PolarPoint(Math.Sqrt(value.X * value.X + value.Y * value.Y), new Angle(Math.Sin(value.X / value.Y)));
+            return new PolarPoint(Math.Sqrt(value.X * value.X + value.Y * value.Y), Math.Atan(value.Y / value.X));
         }
 
         /// <summary>
@@ -200,7 +200,7 @@ namespace Trivial.Maths
         public static implicit operator PolarPoint(TwoDimensionalPoint<long> value)
         {
             if (value == null) return null;
-            return new PolarPoint(Math.Sqrt(value.X * 1.0 * value.X + value.Y * 1.0 * value.Y), new Angle(Math.Sin(value.X * 1.0 / value.Y)));
+            return new PolarPoint(Math.Sqrt(value.X * 1.0 * value.X + value.Y * 1.0 * value.Y), Math.Atan(value.Y * 1.0 / value.X));
         }
 
         /// <summary>
@@ -210,7 +210,7 @@ namespace Trivial.Maths
         public static implicit operator PolarPoint(TwoDimensionalPoint<int> value)
         {
             if (value == null) return null;
-            return new PolarPoint(Math.Sqrt(value.X * 1.0 * value.X + value.Y * 1.0 * value.Y), new Angle(Math.Asin(value.X * 1.0 / value.Y)));
+            return new PolarPoint(Math.Sqrt(value.X * 1.0 * value.X + value.Y * 1.0 * value.Y), Math.Atan(value.Y * 1.0 / value.X));
         }
 
         /// <summary>
