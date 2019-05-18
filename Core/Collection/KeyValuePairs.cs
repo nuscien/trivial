@@ -59,6 +59,21 @@ namespace Trivial.Collection
                 ListExtensions.Set(this, key, value);
             }
         }
+        /// <summary>
+        /// Adds a key and a set of value to the end of the key value pairs.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <param name="value">The value.</param>
+        /// <param name="clearOthers">true if clear the others of the property before adding; otherwise, false.</param>
+        public void Add(string key, IEnumerable<string> value, bool clearOthers = false)
+        {
+            if (clearOthers) ListExtensions.Remove(this, key);
+            if (value == null) return;
+            foreach (var item in value)
+            {
+                Add(new KeyValuePair<string, string>(key, item));
+            }
+        }
 
         /// <summary>
         /// Gets the query value by a specific key.

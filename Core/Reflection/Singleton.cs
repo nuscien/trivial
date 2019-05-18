@@ -905,7 +905,17 @@ namespace Trivial.Reflection
             }
 
             if (forceUpdate < 3 && !CanRenew) return ThrowIfCannotRenew(forceUpdate == 2);
-            await semaphoreSlim.WaitAsync();
+            try
+            {
+                await semaphoreSlim.WaitAsync();
+            }
+            catch (ObjectDisposedException)
+            {
+            }
+            catch (NullReferenceException)
+            {
+            }
+
             var cache = Cache;
             try
             {
@@ -923,7 +933,16 @@ namespace Trivial.Reflection
             }
             finally
             {
-                semaphoreSlim.Release();
+                try
+                {
+                    semaphoreSlim.Release();
+                }
+                catch (ObjectDisposedException)
+                {
+                }
+                catch (NullReferenceException)
+                {
+                }
             }
 
             if (callbacks.Count > 0)

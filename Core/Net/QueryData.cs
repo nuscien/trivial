@@ -295,6 +295,28 @@ namespace Trivial.Net
         }
 
         /// <summary>
+        /// Returns a string that represents the current object.
+        /// </summary>
+        /// <param name="uri">The URI.</param>
+        /// <param name="encoding">The optional encoding.</param>
+        /// <returns>A query string.</returns>
+        public string ToString(Uri uri, Encoding encoding = null)
+        {
+            return ToString(uri?.OriginalString, encoding);
+        }
+
+        /// <summary>
+        /// Returns a string that represents the current object.
+        /// </summary>
+        /// <param name="url">The URL.</param>
+        /// <param name="encoding">The optional encoding.</param>
+        /// <returns>A query string.</returns>
+        public string ToString(StringBuilder url, Encoding encoding = null)
+        {
+            return ToString(url?.ToString(), encoding);
+        }
+
+        /// <summary>
         /// Returns a string HTTP request content.
         /// </summary>
         /// <param name="encoding">The optional encoding to use for the content. Or null for default.</param>
