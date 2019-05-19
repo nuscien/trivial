@@ -695,6 +695,12 @@ namespace Trivial.Reflection
         }
 
         /// <summary>
+        /// Gets a System.Threading.WaitHandle that can be used to wait on the semaphore.
+        /// </summary>
+        /// <exception cref="ObjectDisposedException">The System.Threading.SemaphoreSlim has been disposed.</exception>
+        protected WaitHandle SemaphoreSlimAvailableWaitHandle => semaphoreSlim.AvailableWaitHandle;
+
+        /// <summary>
         /// Adds or removes after the cache is updated.
         /// </summary>
         public event ChangeEventHandler<T> Renewed;
@@ -866,6 +872,14 @@ namespace Trivial.Reflection
             return Task.FromResult(!HasCache);
         }
 
+        /// <summary>
+        /// Disposes the semaphore slim.
+        /// </summary>
+        protected void DisposeSemaphoreSlim()
+        {
+            semaphoreSlim.Dispose();
+        }
+
         private async Task<T> GetAsync(int forceUpdate)
         {
             if (forceUpdate < 3)
@@ -874,7 +888,8 @@ namespace Trivial.Reflection
                 if (rDate.HasValue && rDate + LockRenewSpan > DateTime.Now && HasCache) return Cache;
             }
 
-            var hasThread = semaphoreSlim.CurrentCount == 0;
+            var slim = semaphoreSlim;
+            var hasThread = slim != null && slim.CurrentCount == 0;
             if (!hasThread && forceUpdate == 0 && HasCache)
             {
                 try
@@ -901,20 +916,12 @@ namespace Trivial.Reflection
                 {
                 }
 
-                hasThread = semaphoreSlim.CurrentCount == 0;
+                hasThread = slim.CurrentCount == 0;
             }
 
             if (forceUpdate < 3 && !CanRenew) return ThrowIfCannotRenew(forceUpdate == 2);
-            try
-            {
-                await semaphoreSlim.WaitAsync();
-            }
-            catch (ObjectDisposedException)
-            {
-            }
-            catch (NullReferenceException)
-            {
-            }
+            if (slim == null) return Cache;
+            await slim.WaitAsync();
 
             var cache = Cache;
             try
@@ -935,7 +942,7 @@ namespace Trivial.Reflection
             {
                 try
                 {
-                    semaphoreSlim.Release();
+                    slim.Release();
                 }
                 catch (ObjectDisposedException)
                 {

@@ -12,7 +12,7 @@ namespace Trivial.Reflection
     /// </summary>
     public class Initialization
     {
-        private readonly SemaphoreSlim semaphoreSlim = new SemaphoreSlim(1, 1);
+        private SemaphoreSlim semaphoreSlim = new SemaphoreSlim(1, 1);
         private readonly Func<Task> init;
 
         /// <summary>
@@ -21,6 +21,12 @@ namespace Trivial.Reflection
         protected Initialization()
         {
         }
+
+        /// <summary>
+        /// Gets a System.Threading.WaitHandle that can be used to wait on the semaphore.
+        /// </summary>
+        /// <exception cref="ObjectDisposedException">The System.Threading.SemaphoreSlim has been disposed.</exception>
+        protected WaitHandle SemaphoreSlimAvailableWaitHandle => semaphoreSlim.AvailableWaitHandle;
 
         /// <summary>
         /// Initializes a new instance of the Initialization class.
@@ -42,16 +48,18 @@ namespace Trivial.Reflection
         /// <returns>The async task returned.</returns>
         public async Task EnsureInitAsync()
         {
-            if (HasInit) return;
+            if (HasInit || semaphoreSlim == null) return;
             try
             {
                 await semaphoreSlim.WaitAsync();
             }
             catch (ObjectDisposedException)
             {
+                return;
             }
             catch (NullReferenceException)
             {
+                return;
             }
 
             try
@@ -73,6 +81,8 @@ namespace Trivial.Reflection
                 {
                 }
             }
+
+            AfterInit();
         }
 
         /// <summary>
@@ -82,6 +92,22 @@ namespace Trivial.Reflection
         protected virtual Task OnInitAsync()
         {
             return init != null ? init() : Task.Run(() => { });
+        }
+
+        /// <summary>
+        /// Processes on initialization has finished.
+        /// </summary>
+        protected virtual void AfterInit()
+        {
+        }
+
+        /// <summary>
+        /// Disposes the semaphore slim.
+        /// </summary>
+        protected void DisposeSemaphoreSlim()
+        {
+            semaphoreSlim.Dispose();
+            semaphoreSlim = null;
         }
     }
 }
