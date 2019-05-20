@@ -12,9 +12,9 @@ using Trivial.Tasks;
 
 ### Hit task
 
-You can create a task controller to manage when a handler shoud be raised.
+You can create a task controller to manage when a handler should be raised.
 
-- `HitTask.Debound`:
+- `HitTask.Debounce`:
   You may request to call a specific action several times in a short time but only the last one should be processed and previous ones should be ignored.
   A sample is real-time search suggestion.
 - `HitTask.Throttle`:
@@ -26,7 +26,7 @@ You can create a task controller to manage when a handler shoud be raised.
 - `HitTask.Multiple`:
   A handler to process for the specific times and the state will be reset after a while.
 
-Following is an example for debound.
+Following is an example for debounce.
 
 ```csharp
 // An action you need to process.
@@ -35,7 +35,7 @@ Action action = () => {
 };
 
 // Set up when the action can be processed.
-var task = HitTask.Debound(action, TimeSpan.FromMilliseconds(200));
+var task = HitTask.Debounce(action, TimeSpan.FromMilliseconds(200));
 
 // Somewhere to raise.
 task.ProcessAsync();
