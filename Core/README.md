@@ -10,10 +10,23 @@ Just add following namespace to your code file to use.
 using Trivial.Tasks;
 ```
 
-### Debound
+### Hit task
 
-You may request to call a specific action several times in a short time but only the last one should be processed and previous ones should be ignored.
-A sample is real-time search suggestion.
+You can create a task controller to manage when a handler shoud be raised.
+
+- `HitTask.Debound`:
+  You may request to call a specific action several times in a short time but only the last one should be processed and previous ones should be ignored.
+  A sample is real-time search suggestion.
+- `HitTask.Throttle`:
+  You may want to request to call an action only once in a short time even if you request to call several times.
+  A sample is the submit button in a form.
+- `HitTask.Times`:
+  You can define an action can be only processed only when request to call in the specific times range and others will be ignored.
+  A sample is double click.
+- `HitTask.Multiple`:
+  A handler to process for the specific times and the state will be reset after a while.
+
+Following is an example for debound.
 
 ```csharp
 // An action you need to process.
@@ -26,32 +39,6 @@ var task = HitTask.Debound(action, TimeSpan.FromMilliseconds(200));
 
 // Somewhere to raise.
 task.ProcessAsync();
-```
-
-### Throttle
-
-You may want to request to call an action only once in a short time even if you request to call several times. The rest will be ignored.
-A sample is the submit button in a form.
-
-```csharp
-var task = HitTask.Throttle(action, TimeSpan.FromMilliseconds(10000));
-```
-
-### Times
-
-You can define an action can be only processed only when request to call in the specific times range and others will be ignored.
-A sample is double click.
-
-```csharp
-var task = HitTask.Times(action, 2, 2, TimeSpan.FromMilliseconds(200));
-```
-
-### Multiple
-
-A handler to process for the specific times and the state will be reset after a while.
-
-```csharp
-var task = HitTask.Multiple(action, 10, null, TimeSpan.FromMilliseconds(200));
 ```
 
 ### Retry
@@ -101,6 +88,7 @@ And `ChineseNumerals` for Chinese and `JapaneseNumerals` for Japanese.
 
 - `Angle` Angle.
 - `PolarPoint` The point in polar coordinates.
+- `SphericalPoint` The point in spherical coordinates.
 
 ### Set
 
