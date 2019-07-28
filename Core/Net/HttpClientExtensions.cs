@@ -295,30 +295,6 @@ namespace Trivial.Net
         /// </summary>
         /// <param name="content">The HTTP content of multipart form data.</param>
         /// <param name="name">The name for the HTTP content to add.</param>
-        /// <param name="file">The file info instance.</param>
-        /// <param name="addMediaType">true if force to add a MIME into the header; otherwise, false, to keep empty.</param>
-        /// <param name="fileName">The file name for the HTTP content to add to the collection.</param>
-        /// <return>The HTTP content to add.</return>
-        public static StreamContent Add(this MultipartFormDataContent content, string name, FileInfo file, bool addMediaType, string fileName = null)
-        {
-            if (content == null || file == null) return null;
-            var c = new StreamContent(file.OpenRead());
-            if (addMediaType)
-            {
-                var mime = WebFormat.GetMime(file);
-                if (string.IsNullOrWhiteSpace(mime)) mime = "application/octet-stream";
-                c.Headers.ContentType = new MediaTypeHeaderValue(mime);
-            }
-
-            content.Add(c, name, fileName ?? file.Name);
-            return c;
-        }
-
-        /// <summary>
-        /// Adds a file to a collection of System.Net.Http.HttpContent objects that get serialized to multipart/form-data MIME type.
-        /// </summary>
-        /// <param name="content">The HTTP content of multipart form data.</param>
-        /// <param name="name">The name for the HTTP content to add.</param>
         /// <param name="stream">The stream.</param>
         /// <param name="fileName">The file name for the HTTP content to add to the collection.</param>
         /// <param name="mediaType">The MIME of the file.</param>
