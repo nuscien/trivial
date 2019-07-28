@@ -15,12 +15,9 @@ using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Runtime.Serialization.Json;
-using System.Security;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-
-using Trivial.Security;
 
 namespace Trivial.Net
 {
@@ -249,6 +246,52 @@ namespace Trivial.Net
         public IDictionary<string, string> Bag { get; } = new Dictionary<string, string>();
 
         /// <summary>
+        /// Initializes a new instance of the JsonHttpClient class.
+        /// </summary>
+        public JsonHttpClient()
+        {
+            var t = typeof(T);
+            if (t.Name == "System.Text.Json.JsonDocument")
+            {
+                foreach (var method in t.GetMethods())
+                {
+                    if (!method.IsStatic || method.Name != "Parse") continue;
+                    var parameters = method.GetParameters();
+                    if (parameters.Length != 2 && parameters[0].ParameterType != typeof(string) && !parameters[1].IsOptional) continue;
+                    Deserializer = str =>
+                    {
+                        return (T)method.Invoke(null, new object[] { str, null });
+                    };
+                    return;
+                }
+            }
+            else if (t.Name.StartsWith("Newtonsoft.Json.Linq.J", StringComparison.InvariantCulture))
+            {
+                try
+                {
+                    var parser = t.GetMethod("Parse", new[] { typeof(string) });
+                    if (parser != null && parser.IsStatic)
+                    {
+                        Deserializer = str =>
+                        {
+                            return (T)parser.Invoke(null, new object[] { str });
+                        };
+                    }
+                }
+                catch (System.Reflection.AmbiguousMatchException)
+                {
+                }
+                catch (ArgumentException)
+                {
+                }
+            }
+            else if (t.Name == "System.String")
+            {
+                Deserializer = str => (T)(object)str;
+            }
+        }
+
+        /// <summary>
         /// Sends an HTTP request and gets the result serialized by JSON.
         /// </summary>
         /// <param name="request">The HTTP request message.</param>
@@ -302,8 +345,8 @@ namespace Trivial.Net
                     if (!SerializeEvenIfFailed && !resp.IsSuccessStatusCode)
                         throw FailedHttpException.Create(resp, "Failed to send JSON HTTP web request because of unsuccess status code.");
                     var obj = Deserializer != null
-                        ? await HttpClientExtensions.SerializeAsync(resp.Content, Deserializer)
-                        : await HttpClientExtensions.SerializeJsonAsync<T>(resp.Content);
+                        ? await HttpClientExtensions.DeserializeAsync(resp.Content, Deserializer)
+                        : await HttpClientExtensions.DeserializeJsonAsync<T>(resp.Content);
                     return obj;
                 }, GetExceptionInternal, cancellationToken);
                 valueResult = result.Result;

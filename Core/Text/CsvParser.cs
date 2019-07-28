@@ -6,12 +6,12 @@ using System.Text;
 
 using Trivial.Text;
 
-namespace Trivial.Data
+namespace Trivial.Text
 {
     /// <summary>
     /// The text parser for comma-separated values (RFC-4180) file format.
     /// </summary>
-    public class CsvParser : LinesStringTableParser
+    public class CsvParser : BaseLinesStringTableParser
     {
         /// <summary>
         /// CSV MIME.

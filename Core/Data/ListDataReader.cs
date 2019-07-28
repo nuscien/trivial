@@ -52,7 +52,7 @@ namespace Trivial.Data
     /// <typeparam name="T">The type of list item.</typeparam>
     public abstract class BaseListDataReader<T> : DbDataReader
     {
-        private IEnumerator<T> enumerator;
+        private readonly IEnumerator<T> enumerator;
 
         /// <summary>
         /// Initializes a new instance of the BaseListDataReader class.
