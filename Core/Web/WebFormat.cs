@@ -6,40 +6,14 @@ using System.Runtime.Serialization.Json;
 using System.Security;
 using System.Security.Cryptography;
 using System.Text;
-using Trivial.Security;
 
 namespace Trivial.Web
 {
     /// <summary>
     /// Web format utility.
     /// </summary>
-    public static class WebFormat
+    public static partial class WebFormat
     {
-        /// <summary>
-        /// Gets the MIME value of JSON format text.
-        /// </summary>
-        public const string JsonMIME = "application/json";
-
-        /// <summary>
-        /// Gets the MIME value of JavaScript (ECMAScript) format text.
-        /// </summary>
-        public const string JavaScriptMIME = "text/javascript";
-
-        /// <summary>
-        /// Gets the MIME value of the URL encoded.
-        /// </summary>
-        public const string FormUrlMIME = "application/x-www-form-urlencoded";
-
-        /// <summary>
-        /// Gets the MIME value of CSS format text.
-        /// </summary>
-        public const string CssMIME = "text/css";
-
-        /// <summary>
-        /// Gets the MIME value of HTML format text.
-        /// </summary>
-        public const string HtmlMIME = "text/html";
-
         /// <summary>
         /// Parses JavaScript date tick to date and time.
         /// </summary>

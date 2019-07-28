@@ -276,7 +276,16 @@ namespace Trivial.Net
         {
             if (content == null || file == null) return null;
             var c = new StreamContent(file.OpenRead());
-            if (!string.IsNullOrWhiteSpace(mediaType)) c.Headers.ContentType = new MediaTypeHeaderValue(mediaType);
+            if (!string.IsNullOrWhiteSpace(mediaType))
+            {
+                c.Headers.ContentType = new MediaTypeHeaderValue(mediaType);
+            }
+            else if (mediaType == null)
+            {
+                var mime = WebFormat.GetMime(file);
+                if (!string.IsNullOrWhiteSpace(mime)) c.Headers.ContentType = new MediaTypeHeaderValue(mime);
+            }
+
             content.Add(c, name, fileName ?? file.Name);
             return c;
         }
