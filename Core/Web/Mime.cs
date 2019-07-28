@@ -73,7 +73,9 @@ namespace Trivial.Web
                     return "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
                 case "dotx":
                     return "application/vnd.openxmlformats-officedocument.wordprocessingml.template";
+                case "mda":
                 case "mdb":
+                case "mde":
                 case "accdb":
                     return "application/x-msaccess";
                 case "mpp":
@@ -307,6 +309,10 @@ namespace Trivial.Web
                     return "text/plain";
                 case "csv":
                     return "text/csv";
+                case "md":
+                    return "text/markdown";
+                case "mml":
+                    return "text/mathml";
                 case "rtx":
                     return "text/richtext";
                 case "sgml":
@@ -314,10 +320,18 @@ namespace Trivial.Web
                     return "text/sgml";
                 case "vcf":
                     return "text/x-vcard";
+                case "vtt":
+                    return "text/vtt";
 
                 // Web
+                case "ac":
+                    return "application/pkix-attr-cert";
+                case "cer":
+                    return "application/pkix-cert";
                 case "css":
                     return CssMIME;
+                case "crl":
+                    return "application/pkix-crl";
                 case "dtd":
                     return "application/xml-dtd";
                 case "ecma":
@@ -336,6 +350,14 @@ namespace Trivial.Web
                 case "json":
                 case "map":
                     return JsonMIME;
+                case "p8":
+                    return "application/pkcs8";
+                case "pem":
+                    return "application/x-x509-ca-cert";
+                case "pki":
+                    return "application/pkixcmp";
+                case "pkipath":
+                    return "application/pkix-pkipath";
                 case "uri":
                 case "uris":
                 case "urls":
@@ -399,6 +421,8 @@ namespace Trivial.Web
                     return "text/plain";
 
                 // Others
+                case "application":
+                    return "application/x-ms-application";
                 case "iso":
                     return "application/x-iso9660-image";
                 case "ics":
@@ -432,6 +456,7 @@ namespace Trivial.Web
                 case "deploy":
                 case "vso":
                 case "nupkg":
+                case "xsn":
                     return "application/octet-stream";
                 case "pdb":
                 case "pqa":
