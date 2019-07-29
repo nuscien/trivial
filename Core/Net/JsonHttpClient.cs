@@ -251,7 +251,7 @@ namespace Trivial.Net
         public JsonHttpClient()
         {
             var t = typeof(T);
-            if (t.Name == "System.Text.Json.JsonDocument")
+            if (t.FullName == "System.Text.Json.JsonDocument")
             {
                 foreach (var method in t.GetMethods())
                 {
@@ -265,7 +265,7 @@ namespace Trivial.Net
                     return;
                 }
             }
-            else if (t.Name.StartsWith("Newtonsoft.Json.Linq.J", StringComparison.InvariantCulture))
+            else if (t.FullName.StartsWith("Newtonsoft.Json.Linq.J", StringComparison.InvariantCulture))
             {
                 try
                 {
@@ -285,7 +285,7 @@ namespace Trivial.Net
                 {
                 }
             }
-            else if (t.Name == "System.String")
+            else if (t.FullName == "System.String")
             {
                 Deserializer = str => (T)(object)str;
             }

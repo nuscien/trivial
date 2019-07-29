@@ -6,10 +6,10 @@ using System.Text;
 namespace Trivial.Security
 {
     /// <summary>
-    /// SHA-3 family hash algorithm.
+    /// Managed SHA-3 family hash algorithm.
     /// </summary>
     /// <remarks>
-    /// Note: Will be replaced by the implementation in .Net when available.
+    /// Note: Will be replaced by the .NET built-in implementation when available.
     /// </remarks>
     internal class SHA3Managed : HashAlgorithm
     {

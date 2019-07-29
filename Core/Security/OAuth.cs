@@ -233,6 +233,19 @@ namespace Trivial.Security
         }
 
         /// <summary>
+        /// Creates a token request instance by a specific body.
+        /// The current app secret information will be filled into the instance.
+        /// </summary>
+        /// <typeparam name="T">The type of the body.</typeparam>
+        /// <param name="body">The token request body.</param>
+        /// <param name="scope">The additional scope.</param>
+        /// <returns>A token request instance with given body and the current app secret information.</returns>
+        public TokenRequest<T> CreateTokenRequest<T>(T body, IEnumerable<string> scope = null) where T : TokenRequestBody
+        {
+            return new TokenRequest<T>(body, appInfo, scope);
+        }
+
+        /// <summary>
         /// Send an HTTP request as an asynchronous operation.
         /// </summary>
         /// <param name="request">The HTTP request message to send.</param>
@@ -822,6 +835,19 @@ namespace Trivial.Security
         {
             if (!disposing) return;
             if (oauth != null) oauth.Dispose();
+        }
+
+        /// <summary>
+        /// Creates a token request instance by a specific body.
+        /// The current app secret information will be filled into the instance.
+        /// </summary>
+        /// <typeparam name="T">The type of the body.</typeparam>
+        /// <param name="body">The token request body.</param>
+        /// <param name="scope">The additional scope.</param>
+        /// <returns>A token request instance with given body and the current app secret information.</returns>
+        protected TokenRequest<T> CreateTokenRequest<T>(T body, IEnumerable<string> scope = null) where T : TokenRequestBody
+        {
+            return oauth?.CreateTokenRequest(body, scope) ?? new TokenRequest<T>(body, new AppAccessingKey(), scope);
         }
 
         /// <summary>

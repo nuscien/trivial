@@ -8,9 +8,9 @@ using System.Text;
 namespace Trivial.Reflection
 {
     /// <summary>
-    /// Base bindable model.
+    /// Base model with observable properties.
     /// </summary>
-    public abstract class BaseBindableModel : INotifyPropertyChanged
+    public abstract class BaseObservableProperties : INotifyPropertyChanged
     {
         /// <summary>
         /// Data cache.
@@ -118,13 +118,22 @@ namespace Trivial.Reflection
             if (result) PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(key));
             return result;
         }
+
+        /// <summary>
+        /// Forces rasing the property changed notification.
+        /// </summary>
+        /// <param name="key">The property key.</param>
+        protected void ForceNotify(string key)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(key));
+        }
     }
 
     /// <summary>
-    /// The bindable model with name and value.
+    /// The model with observable name and value.
     /// </summary>
     [DataContract]
-    public class NameValueBindableModel<T> : BaseBindableModel
+    public class NameValueObservableProperties<T> : BaseObservableProperties
     {
         /// <summary>
         /// Gets or sets the name.

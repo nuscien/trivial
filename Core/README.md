@@ -62,8 +62,6 @@ There a lot of arithmetic functions.
 Arithmetic.IsPrime(2147483647); // True
 await Arithmetic.IsPrimeAsync(2305843009213693951); // False
 
-Arithmetic.Factorial(10); // 3628800
-
 Arithmetic.Gcd(192, 128); // 64
 Arithmetic.Lcm(192, 128); // 384
 ```
@@ -168,12 +166,6 @@ We also provide a set of tools for OAuth including following models.
 
 And you can also implement the `OAuthBasedClient` base class to create your own business HTTP web client factory with OAuth supports.
 
-### Secure string utiltiy
-
-You can use the extension methods in the `SecureStringExtensions` class to convert the secret between `SecureString` and `String`/`StringBuilder`/`Byte[]`.
-
-You can also use the class `RSASecretExchange` to transfer the secret with RSA encryption.
-
 ### JWT
 
 You can create a JSON web token to get the string encoded by initializing a new instance of the `JsonWebToken` class or the `JsonWebTokenParser` class.
@@ -189,6 +181,12 @@ var header = jwt.ToAuthenticationHeaderValue();
 // Parse.
 var jwtSame = JsonWebToken<Model>.Parse(jwtStr, sign); // jwtSame.ToEncodedString() == jwtStr
 ```
+
+### Secure string utiltiy
+
+You can use the extension methods in the `SecureStringExtensions` class to convert the secret between `SecureString` and `String`/`StringBuilder`/`Byte[]`.
+
+You can also use the class `RSASecretExchange` to transfer the secret with RSA encryption.
 
 ## [IO](https://github.com/nuscien/trivial/wiki/io)
 
@@ -212,17 +210,7 @@ using Trivial.Data;
 
 ### CSV
 
-You can parse a CSV text by following way.
-
-```csharp
-var csv = new CsvParser("abcd,efg\nhijk,lmn");
-foreach (var item in csv)
-{
-    Console.WriteLine("{0},{1}", item[0], item[1]);
-}
-```
-
-If you have a model like following.
+You can read CSV file into a list of the specific models. For example, you have a model like following.
 
 ```csharp
 class Model
@@ -235,6 +223,7 @@ class Model
 Now you can map to the CSV file.
 
 ```csharp
+var csv = new CsvParser("abcd,efg\nhijk,lmn");
 foreach (var model in csv.ConvertTo<Model>(new[] { "A", "B" }))
 {
     Console.WriteLine("{0},{1}", model.A, model.B);
@@ -275,14 +264,7 @@ You can create following class as singleton for different scenarios.
 - `SingletonKeeper` for async instances management.
 - `SingletonRenewTimer` contains a timer to renew the instance as needed.
 
-## [Geography](https://github.com/nuscien/trivial/wiki/geo)
+## Further
 
-Contains the models of geography.
-
-```csharp
-using Trivial.Geography;
-```
-
-### Geolocation
-
-You can use `Geolocation`, `Latitude`, `Longitude` and other models for geolocation information.
+- [Geography](https://github.com/nuscien/trivial/wiki/geo)
+- [Text](https://github.com/nuscien/trivial/wiki/text)
