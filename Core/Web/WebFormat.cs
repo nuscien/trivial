@@ -159,11 +159,62 @@ namespace Trivial.Web
         {
             if (string.IsNullOrEmpty(s)) return default;
             var bytes = Base64UrlDecode(s);
+            var d = GetJsonDeserializer<T>();
+            if (d != null) return d(s);
             var serializer = new DataContractJsonSerializer(typeof(T));
             using (var stream = new MemoryStream(bytes))
             {
                 return (T)serializer.ReadObject(stream);
             }
+        }
+
+        /// <summary>
+        /// Gets the JSON deserializer.
+        /// </summary>
+        /// <typeparam name="T">The type of the instance.</typeparam>
+        /// <returns>A function for deserialization.</returns>
+        internal static Func<string, T> GetJsonDeserializer<T>()
+        {
+            var t = typeof(T);
+            if (t.FullName == "System.Text.Json.JsonDocument")
+            {
+                foreach (var method in t.GetMethods())
+                {
+                    if (!method.IsStatic || method.Name != "Parse") continue;
+                    var parameters = method.GetParameters();
+                    if (parameters.Length != 2 && parameters[0].ParameterType != typeof(string) && !parameters[1].IsOptional) continue;
+                    return str =>
+                    {
+                        return (T)method.Invoke(null, new object[] { str, null });
+                    };
+                }
+            }
+            else if (t.FullName.StartsWith("Newtonsoft.Json.Linq.J", StringComparison.InvariantCulture))
+            {
+                try
+                {
+                    var parser = t.GetMethod("Parse", new[] { typeof(string) });
+                    if (parser != null && parser.IsStatic)
+                    {
+                        return str =>
+                        {
+                            return (T)parser.Invoke(null, new object[] { str });
+                        };
+                    }
+                }
+                catch (System.Reflection.AmbiguousMatchException)
+                {
+                }
+                catch (ArgumentException)
+                {
+                }
+            }
+            else if (t.FullName == "System.String")
+            {
+                return str => (T)(object)str;
+            }
+
+            return null;
         }
     }
 }

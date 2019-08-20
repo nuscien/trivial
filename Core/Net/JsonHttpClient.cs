@@ -250,45 +250,8 @@ namespace Trivial.Net
         /// </summary>
         public JsonHttpClient()
         {
-            var t = typeof(T);
-            if (t.FullName == "System.Text.Json.JsonDocument")
-            {
-                foreach (var method in t.GetMethods())
-                {
-                    if (!method.IsStatic || method.Name != "Parse") continue;
-                    var parameters = method.GetParameters();
-                    if (parameters.Length != 2 && parameters[0].ParameterType != typeof(string) && !parameters[1].IsOptional) continue;
-                    Deserializer = str =>
-                    {
-                        return (T)method.Invoke(null, new object[] { str, null });
-                    };
-                    return;
-                }
-            }
-            else if (t.FullName.StartsWith("Newtonsoft.Json.Linq.J", StringComparison.InvariantCulture))
-            {
-                try
-                {
-                    var parser = t.GetMethod("Parse", new[] { typeof(string) });
-                    if (parser != null && parser.IsStatic)
-                    {
-                        Deserializer = str =>
-                        {
-                            return (T)parser.Invoke(null, new object[] { str });
-                        };
-                    }
-                }
-                catch (System.Reflection.AmbiguousMatchException)
-                {
-                }
-                catch (ArgumentException)
-                {
-                }
-            }
-            else if (t.FullName == "System.String")
-            {
-                Deserializer = str => (T)(object)str;
-            }
+            var d = Web.WebFormat.GetJsonDeserializer<T>();
+            if (d != null) Deserializer = d;
         }
 
         /// <summary>
