@@ -188,18 +188,6 @@ You can use the extension methods in the `SecureStringExtensions` class to conve
 
 You can also use the class `RSASecretExchange` to transfer the secret with RSA encryption.
 
-## [IO](https://github.com/nuscien/trivial/wiki/io)
-
-Contains the helper functions and extension methods for `FileInfo` and `Stream`.
-
-```csharp
-using Trivial.IO;
-```
-
-### Characters reader
-
-You can read text from a character collection or a number of stream by `CharsReader` class.
-
 ## [Data](https://github.com/nuscien/trivial/wiki/data)
 
 Contains lots of data readers, parsers and utilities.
@@ -207,6 +195,33 @@ Contains lots of data readers, parsers and utilities.
 ```csharp
 using Trivial.Data;
 ```
+
+### Data cache collection
+
+You can create a collection to cache data with expiration and count limitation by following way.
+
+```csharp
+var cache = new DataCacheCollection<Model>
+{
+    MaxCount = 1000,
+    Expiration = TimeSpan.FromSeconds(100)
+};
+```
+
+So that you can get the data from the cache if has and or add new one if necessary.
+
+```csharp
+if (!cache.TryGet("abcd", out Model item)) item = new Model();
+```
+
+## [Text](https://github.com/nuscien/trivial/wiki/text)
+
+Contains the text utilities.
+
+```csharp
+using Trivial.Text;
+```
+
 
 ### CSV
 
@@ -230,41 +245,9 @@ foreach (var model in csv.ConvertTo<Model>(new[] { "A", "B" }))
 }
 ```
 
-### Data cache collection
-
-You can create a collection to cache data with expiration and count limitation by following way.
-
-```csharp
-var cache = new DataCacheCollection<Model>
-{
-    MaxCount = 1000,
-    Expiration = TimeSpan.FromSeconds(100)
-};
-```
-
-So that you can get the data from the cache if has and or add new one if necessary.
-
-```csharp
-if (!cache.TryGet("abcd", out Model item)) item = new Model();
-```
-
-## [Reflection](https://github.com/nuscien/trivial/wiki/reflection)
-
-Contains the singleton and error handling.
-
-```csharp
-using Trivial.Reflection;
-```
-
-### Singleton
-
-You can create following class as singleton for different scenarios.
-
-- `SingletonResolver` for instances management.
-- `SingletonKeeper` for async instances management.
-- `SingletonRenewTimer` contains a timer to renew the instance as needed.
 
 ## Further
 
 - [Geography](https://github.com/nuscien/trivial/wiki/geo)
-- [Text](https://github.com/nuscien/trivial/wiki/text)
+- [Reflection](https://github.com/nuscien/trivial/wiki/reflection)
+- [IO](https://github.com/nuscien/trivial/wiki/io)
