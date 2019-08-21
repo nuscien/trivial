@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.Serialization.Json;
 using System.Security;
 using System.Text;
@@ -391,6 +392,11 @@ namespace Trivial.Text
             return YieldSplit(source, new[] { "\r\n", "\n", "\r" }, removeEmptyLine ? StringSplitOptions.RemoveEmptyEntries : StringSplitOptions.None);
         }
 
+        /// <summary>
+        /// Deserializes an object into JSON format.
+        /// </summary>
+        /// <param name="s">A JSON format string to deserialize.</param>
+        /// <returns>An object deserialized.</returns>
         internal static T FromJson<T>(string s)
         {
             var bytes = Encoding.UTF8.GetBytes(s);
@@ -401,8 +407,66 @@ namespace Trivial.Text
             }
         }
 
+        /// <summary>
+        /// Serializes an object into JSON format.
+        /// </summary>
+        /// <param name="obj">The object to serialize.</param>
+        /// <param name="settings">The optional serializer settings.</param>
+        /// <returns>A JSON string.</returns>
         internal static string ToJson<T>(T obj, DataContractJsonSerializerSettings settings = null)
         {
+            if (obj == null) return string.Empty;
+            var t = obj.GetType();
+            if (t.FullName.Equals("System.Text.Json.JsonDocument", StringComparison.InvariantCulture))
+            {
+                try
+                {
+                    var prop = t.GetProperty("RootElement");
+                    if (prop != null && prop.CanRead)
+                    {
+                        var ele = prop.GetValue(obj, null);
+                        if (ele is null) return string.Empty;
+                        return ele.ToString();
+                    }
+                }
+                catch (AmbiguousMatchException)
+                {
+                }
+                catch (ArgumentException)
+                {
+                }
+                catch (TargetException)
+                {
+                }
+                catch (TargetParameterCountException)
+                {
+                }
+                catch (TargetInvocationException)
+                {
+                }
+                catch (MemberAccessException)
+                {
+                }
+            }
+
+            if (t.FullName.StartsWith("Newtonsoft.Json.Linq.J", StringComparison.InvariantCulture))
+            {
+                if (t.FullName.Equals("Newtonsoft.Json.Linq.JObject", StringComparison.InvariantCulture)
+                    || t.FullName.Equals("Newtonsoft.Json.Linq.JArray", StringComparison.InvariantCulture))
+                    return obj.ToString();
+            }
+
+            if (t == typeof(string)) return ToStringJsonToken(obj.ToString());
+            if (t.IsValueType)
+            {
+                if (t == typeof(int)
+                    || t == typeof(long)
+                    || t == typeof(float)
+                    || t == typeof(double)
+                    || t == typeof(bool))
+                    return obj.ToString();
+            }
+
             var serializer = settings != null ? new DataContractJsonSerializer(typeof(T), settings) : new DataContractJsonSerializer(typeof(T));
             using (var stream = new MemoryStream())
             {

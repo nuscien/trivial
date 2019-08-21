@@ -539,7 +539,7 @@ namespace Trivial.Security
         /// Returns a System.Net.Http.Headers.AuthenticationHeaderValue that represents the current TokenInfo.
         /// </summary>
         /// <returns>A System.Net.Http.Headers.AuthenticationHeaderValue that represents the current TokenInfo.</returns>
-        public AuthenticationHeaderValue ToAuthenticationHeaderValue(ISignatureProvider sign = null)
+        public AuthenticationHeaderValue ToAuthenticationHeaderValue()
         {
             return new AuthenticationHeaderValue(TokenInfo.BearerTokenType, ToEncodedString());
         }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Reflection;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Json;
 using System.Security;
@@ -109,7 +110,49 @@ namespace Trivial.Web
         /// <returns>A Base64Url string.</returns>
         public static string Base64UrlEncode(object obj)
         {
-            var serializer = new DataContractJsonSerializer(obj.GetType());
+            var t = obj.GetType();
+            if (t.FullName.Equals("System.Text.Json.JsonDocument", StringComparison.InvariantCulture))
+            {
+                try
+                {
+                    var prop = t.GetProperty("RootElement");
+                    if (prop != null && prop.CanRead)
+                    {
+                        var ele = prop.GetValue(obj, null);
+                        if (ele is null) return string.Empty;
+                        return Base64UrlEncode(ele.ToString());
+                    }
+                }
+                catch (AmbiguousMatchException)
+                {
+                }
+                catch (ArgumentException)
+                {
+                }
+                catch (TargetException)
+                {
+                }
+                catch (TargetParameterCountException)
+                {
+                }
+                catch (TargetInvocationException)
+                {
+                }
+                catch (MemberAccessException)
+                {
+                }
+            }
+
+            if (t.FullName.StartsWith("Newtonsoft.Json.Linq.J", StringComparison.InvariantCulture))
+            {
+                if (t.FullName.Equals("Newtonsoft.Json.Linq.JObject", StringComparison.InvariantCulture)
+                    || t.FullName.Equals("Newtonsoft.Json.Linq.JArray", StringComparison.InvariantCulture))
+                    return Base64UrlEncode(obj.ToString());
+            }
+
+            if (t == typeof(string)) return Base64UrlEncode(obj.ToString());
+
+            var serializer = new DataContractJsonSerializer(t);
             using (var stream = new MemoryStream())
             {
                 serializer.WriteObject(stream, obj);
@@ -176,7 +219,7 @@ namespace Trivial.Web
         internal static Func<string, T> GetJsonDeserializer<T>()
         {
             var t = typeof(T);
-            if (t.FullName == "System.Text.Json.JsonDocument")
+            if (t.FullName.Equals("System.Text.Json.JsonDocument", StringComparison.InvariantCulture))
             {
                 foreach (var method in t.GetMethods())
                 {
@@ -202,14 +245,14 @@ namespace Trivial.Web
                         };
                     }
                 }
-                catch (System.Reflection.AmbiguousMatchException)
+                catch (AmbiguousMatchException)
                 {
                 }
                 catch (ArgumentException)
                 {
                 }
             }
-            else if (t.FullName == "System.String")
+            else if (t == typeof(string))
             {
                 return str => (T)(object)str;
             }

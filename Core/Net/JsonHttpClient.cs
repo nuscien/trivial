@@ -18,6 +18,7 @@ using System.Runtime.Serialization.Json;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Trivial.Web;
 
 namespace Trivial.Net
 {
@@ -506,14 +507,12 @@ namespace Trivial.Net
         /// <exception cref="ObjectDisposedException">The inner HTTP web client instance has been disposed.</exception>
         public async Task<T> SendJsonAsync(HttpMethod method, string requestUri, object content, DataContractJsonSerializerSettings settings, CancellationToken cancellationToken = default)
         {
-            using (var stream = new MemoryStream())
+            var json = Text.StringExtensions.ToJson(content, settings) ?? string.Empty;
+            using (var str = new StringContent(json, Encoding.UTF8, WebFormat.JsonMIME))
             {
-                var serializer = settings != null ? new DataContractJsonSerializer(content.GetType(), settings) : new DataContractJsonSerializer(content.GetType());
-                serializer.WriteObject(stream, content);
-                stream.Position = 0;
                 return await SendAsync(new HttpRequestMessage(method, requestUri)
                 {
-                    Content = new StreamContent(stream)
+                    Content = str
                 }, cancellationToken);
             }
         }
@@ -533,14 +532,12 @@ namespace Trivial.Net
         /// <exception cref="ObjectDisposedException">The inner HTTP web client instance has been disposed.</exception>
         public async Task<T> SendJsonAsync(HttpMethod method, Uri requestUri, object content, DataContractJsonSerializerSettings settings, CancellationToken cancellationToken = default)
         {
-            using (var stream = new MemoryStream())
+            var json = Text.StringExtensions.ToJson(content, settings) ?? string.Empty;
+            using (var str = new StringContent(json, Encoding.UTF8, WebFormat.JsonMIME))
             {
-                var serializer = settings != null ? new DataContractJsonSerializer(content.GetType(), settings) : new DataContractJsonSerializer(content.GetType());
-                serializer.WriteObject(stream, content);
-                stream.Position = 0;
                 return await SendAsync(new HttpRequestMessage(method, requestUri)
                 {
-                    Content = new StreamContent(stream)
+                    Content = str
                 }, cancellationToken);
             }
         }

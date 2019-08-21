@@ -255,7 +255,7 @@ namespace Trivial.Net
         /// <param name="value">The object.</param>
         /// <param name="settings">An optional serialization settings.</param>
         /// <returns>The HTTP content a JSON of the specific object.</returns>
-        public static StringContent CreateJsonStreamContent(object value, DataContractJsonSerializerSettings settings = null)
+        public static StringContent CreateJsonContent(object value, DataContractJsonSerializerSettings settings = null)
         {
             if (value == null) return null;
             var json = StringExtensions.ToJson(value, settings);
