@@ -60,7 +60,7 @@ namespace Trivial.Web
                 if (!string.IsNullOrWhiteSpace(result)) return result;
             }
 
-            switch (file.Extension.ToLowerInvariant().Remove(0))
+            switch (file.Extension.ToLowerInvariant().Remove(0, 1))
             {
                 // Office document
                 case "cat":
@@ -255,6 +255,8 @@ namespace Trivial.Web
                     return "video/h265";
                 case "h266":
                     return "video/h266";
+                case "h267":
+                    return "video/h267";
                 case "jpgv":
                     return "video/jpeg";
                 case "jpm":
