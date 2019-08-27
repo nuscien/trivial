@@ -222,7 +222,6 @@ Contains the text utilities.
 using Trivial.Text;
 ```
 
-
 ### CSV
 
 You can read CSV file into a list of the specific models. For example, you have a model like following.
@@ -244,7 +243,6 @@ foreach (var model in csv.ConvertTo<Model>(new[] { "A", "B" }))
     Console.WriteLine("{0},{1}", model.A, model.B);
 }
 ```
-
 
 ## Further
 
