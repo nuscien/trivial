@@ -5,7 +5,6 @@ using System.Reflection;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Json;
 using System.Security;
-using System.Security.Cryptography;
 using System.Text;
 
 namespace Trivial.Web
@@ -80,9 +79,9 @@ namespace Trivial.Web
         }
 
         /// <summary>
-        /// Parses JavaScript date tick to date and time.
+        /// Parses JavaScript date JSON string to date and time.
         /// </summary>
-        /// <param name="tick">The JavaScript date tick.</param>
+        /// <param name="tick">The JSON token value of JavaScript date.</param>
         /// <returns>A date and time.</returns>
         public static DateTime? ParseDate(string tick)
         {
@@ -90,31 +89,31 @@ namespace Trivial.Web
             tick = tick.Trim().ToUpperInvariant();
             if (tick.Length == 8)
             {
-                var y2 = GetInteger(tick, 0, 4);
+                var y2 = GetNaturalNumber(tick, 0, 4);
                 if (y2 < 0) return null;
-                var m2 = GetInteger(tick, 4, 2);
+                var m2 = GetNaturalNumber(tick, 4, 2);
                 if (m2 < 0) return null;
-                var d2 = GetInteger(tick, 6);
+                var d2 = GetNaturalNumber(tick, 6);
                 if (d2 < 0) return null;
                 return new DateTime(y2, m2, d2, 0, 0, 0, DateTimeKind.Utc);
             }
 
             if (tick.Length < 10 || tick[4] != '-') return null;
-            var y = GetInteger(tick, 0, 4);
+            var y = GetNaturalNumber(tick, 0, 4);
             if (y < 0) return null;
             var pos = tick[7] == '-' ? 8 : 7;
-            var m = GetInteger(tick, 5, 2);
+            var m = GetNaturalNumber(tick, 5, 2);
             if (m < 0)
             {
-                if (tick[6] == '-') m = GetInteger(tick, 5, 1);
+                if (tick[6] == '-') m = GetNaturalNumber(tick, 5, 1);
                 if (m < 0) return null;
             }
 
-            var d = GetInteger(tick, pos, 2);
+            var d = GetNaturalNumber(tick, pos, 2);
             if (d < 1)
             {
                 pos += 4;
-                d = GetInteger(tick, pos, 1);
+                d = GetNaturalNumber(tick, pos, 1);
                 if (d < 1) return null;
             }
             else
@@ -139,15 +138,15 @@ namespace Trivial.Web
 
             if (arr[2].Length < 5)
             {
-                var sf = GetInteger(arr[2], 0, 2);
+                var sf = GetNaturalNumber(arr[2], 0, 2);
                 return sf > 0 ? t.AddSeconds(sf) : t;
             }
 
-            var s = GetInteger(arr[2], 0, 2);
+            var s = GetNaturalNumber(arr[2], 0, 2);
             if (s < 0 || !int.TryParse(arr[3], out var rm)) return t;
             var neg = arr[2][2] == '-' ? 1 : -1;
             var hasSep = (neg == 1) || (arr[2][2] == '+');
-            var rh = GetInteger(arr[2], hasSep ? 3 : 2);
+            var rh = GetNaturalNumber(arr[2], hasSep ? 3 : 2);
             return t.AddSeconds(s).AddMinutes(neg * rm).AddHours(neg * rh);
         }
 
@@ -332,7 +331,14 @@ namespace Trivial.Web
             return null;
         }
 
-        private static int GetInteger(string s, int start, int? len = null)
+        /// <summary>
+        /// Tries to get the integer from a part of the specific string.
+        /// </summary>
+        /// <param name="s">A specific string.</param>
+        /// <param name="start">The start index of the string to get the integer.</param>
+        /// <param name="len">The length to get.</param>
+        /// <returns>A natural number; or -1, if failed.</returns>
+        private static int GetNaturalNumber(string s, int start, int? len = null)
         {
             const uint ZERO = '0';
             var end = len.HasValue ? Math.Min(start + len.Value, s.Length) : s.Length;
