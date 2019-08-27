@@ -80,6 +80,78 @@ namespace Trivial.Web
         }
 
         /// <summary>
+        /// Parses JavaScript date tick to date and time.
+        /// </summary>
+        /// <param name="tick">The JavaScript date tick.</param>
+        /// <returns>A date and time.</returns>
+        public static DateTime? ParseDate(string tick)
+        {
+            if (string.IsNullOrWhiteSpace(tick)) return null;
+            tick = tick.Trim().ToUpperInvariant();
+            if (tick.Length == 8)
+            {
+                var y2 = GetInteger(tick, 0, 4);
+                if (y2 < 0) return null;
+                var m2 = GetInteger(tick, 4, 2);
+                if (m2 < 0) return null;
+                var d2 = GetInteger(tick, 6);
+                if (d2 < 0) return null;
+                return new DateTime(y2, m2, d2, 0, 0, 0, DateTimeKind.Utc);
+            }
+
+            if (tick.Length < 10 || tick[4] != '-') return null;
+            var y = GetInteger(tick, 0, 4);
+            if (y < 0) return null;
+            var pos = tick[7] == '-' ? 8 : 7;
+            var m = GetInteger(tick, 5, 2);
+            if (m < 0)
+            {
+                if (tick[6] == '-') m = GetInteger(tick, 5, 1);
+                if (m < 0) return null;
+            }
+
+            var d = GetInteger(tick, pos, 2);
+            if (d < 1)
+            {
+                pos += 4;
+                d = GetInteger(tick, pos, 1);
+                if (d < 1) return null;
+            }
+            else
+            {
+                pos += 3;
+            }
+
+            var date = new DateTime(y, m, d, 0, 0, 0, DateTimeKind.Utc);
+            if (pos >= tick.Length) return date;
+            tick = tick.Substring(pos);
+            var arr = tick.Split(':');
+            if (arr.Length < 2) return date;
+            if (!int.TryParse(arr[0], out var h)) return date;
+            if (!int.TryParse(arr[1], out var mm)) return date;
+            var t = new DateTime(y, m, d, h, mm, 0, DateTimeKind.Utc).ToLocalTime();
+            if (arr.Length == 2) return t;
+            if (arr.Length == 3)
+            {
+                if (!double.TryParse(arr[2].Replace("Z", string.Empty), out var sf)) return t;
+                return t.AddSeconds(sf);
+            }
+
+            if (arr[2].Length < 5)
+            {
+                var sf = GetInteger(arr[2], 0, 2);
+                return sf > 0 ? t.AddSeconds(sf) : t;
+            }
+
+            var s = GetInteger(arr[2], 0, 2);
+            if (s < 0 || !int.TryParse(arr[3], out var rm)) return t;
+            var neg = arr[2][2] == '-' ? 1 : -1;
+            var hasSep = (neg == 1) || (arr[2][2] == '+');
+            var rh = GetInteger(arr[2], hasSep ? 3 : 2);
+            return t.AddSeconds(s).AddMinutes(neg * rm).AddHours(neg * rh);
+        }
+
+        /// <summary>
         /// Encodes a specific byte array into Base64Url format.
         /// </summary>
         /// <param name="bytes">The value to encode.</param>
@@ -258,6 +330,22 @@ namespace Trivial.Web
             }
 
             return null;
+        }
+
+        private static int GetInteger(string s, int start, int? len = null)
+        {
+            const uint ZERO = '0';
+            var end = len.HasValue ? Math.Min(start + len.Value, s.Length) : s.Length;
+            uint n = 0;
+            for (var i = start; i < end; i++)
+            {
+                var c = s[i];
+                var j = c - ZERO;
+                if (j > 9) return -1;
+                n = n * 10 + j;
+            }
+
+            return (int)n;
         }
     }
 }
