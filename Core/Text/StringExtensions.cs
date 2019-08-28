@@ -413,7 +413,7 @@ namespace Trivial.Text
         /// <param name="obj">The object to serialize.</param>
         /// <param name="settings">The optional serializer settings.</param>
         /// <returns>A JSON string.</returns>
-        internal static string ToJson<T>(T obj, DataContractJsonSerializerSettings settings = null)
+        internal static string ToJson(object obj, DataContractJsonSerializerSettings settings = null)
         {
             if (obj == null) return string.Empty;
             var t = obj.GetType();
@@ -463,11 +463,18 @@ namespace Trivial.Text
                     || t == typeof(long)
                     || t == typeof(float)
                     || t == typeof(double)
+                    || t == typeof(uint)
+                    || t == typeof(ulong)
                     || t == typeof(bool))
                     return obj.ToString();
             }
 
-            var serializer = settings != null ? new DataContractJsonSerializer(typeof(T), settings) : new DataContractJsonSerializer(typeof(T));
+            if (obj is Security.TokenRequest tokenReq)
+            {
+                return tokenReq.ToJsonString();
+            }
+
+            var serializer = settings != null ? new DataContractJsonSerializer(t, settings) : new DataContractJsonSerializer(t);
             using (var stream = new MemoryStream())
             {
                 serializer.WriteObject(stream, obj);
