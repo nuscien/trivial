@@ -502,9 +502,9 @@ namespace Trivial.Text
                 if (obj is uint i64u)
                     return i64u.ToString("G", CultureInfo.InvariantCulture);
                 if (obj is DateTime d)
-                    return d.ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ss.fffZ");
+                    return ToStringJsonToken(d.ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ss.fffZ"));
                 if (obj is DateTimeOffset dto)
-                    return dto.ToString("yyyy-MM-ddTHH:mm:ss.fffzzz");
+                    return ToStringJsonToken(dto.ToString("yyyy-MM-ddTHH:mm:ss.fffzzz"));
                 if (obj is double f2)
                 {
                     var str = f2.ToString("G", CultureInfo.InvariantCulture);
@@ -652,6 +652,7 @@ namespace Trivial.Text
 
         internal static string ToStringJsonToken(string s, bool removeQuotes = false)
         {
+            if (s == null) return removeQuotes ? null : "null";
             s = s
                 .Replace("\\", "\\\\")
                 .Replace("\r", "\\r")
