@@ -181,57 +181,10 @@ namespace Trivial.Web
         /// <returns>A Base64Url string.</returns>
         public static string Base64UrlEncode(object obj)
         {
+            if (obj == null) return string.Empty;
             var t = obj.GetType();
-            if (t.FullName.Equals("System.Text.Json.JsonDocument", StringComparison.InvariantCulture))
-            {
-                try
-                {
-                    var prop = t.GetProperty("RootElement");
-                    if (prop != null && prop.CanRead)
-                    {
-                        var ele = prop.GetValue(obj, null);
-                        if (ele is null) return string.Empty;
-                        return Base64UrlEncode(ele.ToString());
-                    }
-                }
-                catch (AmbiguousMatchException)
-                {
-                }
-                catch (ArgumentException)
-                {
-                }
-                catch (TargetException)
-                {
-                }
-                catch (TargetParameterCountException)
-                {
-                }
-                catch (TargetInvocationException)
-                {
-                }
-                catch (MemberAccessException)
-                {
-                }
-            }
-
-            if (t.FullName.StartsWith("Newtonsoft.Json.Linq.J", StringComparison.InvariantCulture))
-            {
-                if (t.FullName.Equals("Newtonsoft.Json.Linq.JObject", StringComparison.InvariantCulture)
-                    || t.FullName.Equals("Newtonsoft.Json.Linq.JArray", StringComparison.InvariantCulture))
-                    return Base64UrlEncode(obj.ToString());
-            }
-
             if (t == typeof(string)) return Base64UrlEncode(obj.ToString());
-
-            var serializer = new DataContractJsonSerializer(t);
-            using (var stream = new MemoryStream())
-            {
-                serializer.WriteObject(stream, obj);
-                stream.Position = 0;
-                var bytes = new byte[stream.Length];
-                stream.Read(bytes, 0, (int)stream.Length);
-                return Base64UrlEncode(bytes);
-            }
+            return Base64UrlEncode(Text.StringExtensions.ToJson(obj));
         }
 
         /// <summary>

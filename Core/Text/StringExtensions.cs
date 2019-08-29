@@ -415,37 +415,45 @@ namespace Trivial.Text
         /// <returns>A JSON string.</returns>
         internal static string ToJson(object obj, DataContractJsonSerializerSettings settings = null)
         {
-            if (obj == null) return string.Empty;
+            if (obj == null) return "null";
             var t = obj.GetType();
-            if (t.FullName.Equals("System.Text.Json.JsonDocument", StringComparison.InvariantCulture))
+            if (t.FullName.StartsWith("System.Text.Json.Json", StringComparison.InvariantCulture))
             {
-                try
+                if (t.FullName.Equals("System.Text.Json.JsonDocument", StringComparison.InvariantCulture))
                 {
-                    var prop = t.GetProperty("RootElement");
-                    if (prop != null && prop.CanRead)
+                    try
                     {
-                        var ele = prop.GetValue(obj, null);
-                        if (ele is null) return string.Empty;
-                        return ele.ToString();
+                        var prop = t.GetProperty("RootElement");
+                        if (prop != null && prop.CanRead)
+                        {
+                            var ele = prop.GetValue(obj, null);
+                            if (ele is null) return string.Empty;
+                            return ele.ToString();
+                        }
+                    }
+                    catch (AmbiguousMatchException)
+                    {
+                    }
+                    catch (ArgumentException)
+                    {
+                    }
+                    catch (TargetException)
+                    {
+                    }
+                    catch (TargetParameterCountException)
+                    {
+                    }
+                    catch (TargetInvocationException)
+                    {
+                    }
+                    catch (MemberAccessException)
+                    {
                     }
                 }
-                catch (AmbiguousMatchException)
+
+                if (t.FullName.Equals("System.Text.Json.JsonElement", StringComparison.InvariantCulture))
                 {
-                }
-                catch (ArgumentException)
-                {
-                }
-                catch (TargetException)
-                {
-                }
-                catch (TargetParameterCountException)
-                {
-                }
-                catch (TargetInvocationException)
-                {
-                }
-                catch (MemberAccessException)
-                {
+                    return obj.ToString();
                 }
             }
 
@@ -456,23 +464,67 @@ namespace Trivial.Text
                     return obj.ToString();
             }
 
-            if (t == typeof(string)) return ToStringJsonToken(obj.ToString());
-            if (t.IsValueType)
-            {
-                if (t == typeof(int)
-                    || t == typeof(long)
-                    || t == typeof(float)
-                    || t == typeof(double)
-                    || t == typeof(uint)
-                    || t == typeof(ulong)
-                    || t == typeof(bool))
-                    return obj.ToString();
-            }
-
             if (obj is Security.TokenRequest tokenReq)
             {
                 return tokenReq.ToJsonString();
             }
+
+            if (t == typeof(string)) return ToStringJsonToken(obj.ToString());
+            if (obj is Net.HttpUri uri2) return ToStringJsonToken(uri2.ToString());
+            if (obj is Uri uri)
+            {
+                try
+                {
+                    return ToStringJsonToken(uri.OriginalString);
+                }
+                catch (InvalidOperationException)
+                {
+                    return ToStringJsonToken(uri.ToString());
+                }
+            }
+
+            if (t.IsValueType)
+            {
+                if (t == typeof(short)
+                    || t == typeof(ushort)
+                    || t == typeof(byte))
+                    return obj.ToString();
+                if (obj is bool b)
+                    return b ? "true" : "false";
+                if (obj is int i32)
+                    return i32.ToString("G", CultureInfo.InvariantCulture);
+                if (obj is long i64)
+                    return i64.ToString("G", CultureInfo.InvariantCulture);
+                if (obj is float f1)
+                    return f1.ToString("G", CultureInfo.InvariantCulture);
+                if (obj is uint i32u)
+                    return i32u.ToString("G", CultureInfo.InvariantCulture);
+                if (obj is uint i64u)
+                    return i64u.ToString("G", CultureInfo.InvariantCulture);
+                if (obj is DateTime d)
+                    return d.ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ss.fffZ");
+                if (obj is DateTimeOffset dto)
+                    return dto.ToString("yyyy-MM-ddTHH:mm:ss.fffzzz");
+                if (obj is double f2)
+                {
+                    var str = f2.ToString("G", CultureInfo.InvariantCulture);
+                    if (str.IndexOf("E") < 0) return str;
+                    return f2.ToString("F", CultureInfo.InvariantCulture);
+                }
+
+                if (obj is TimeSpan ts)
+                {
+                    var str = ts.TotalSeconds.ToString("G", CultureInfo.InvariantCulture);
+                    if (str.IndexOf("E") < 0) return str;
+                    return ts.TotalSeconds.ToString("F", CultureInfo.InvariantCulture);
+                }
+
+                if (t == typeof(Guid)
+                    || t == typeof(Maths.Angle))
+                    return ToStringJsonToken(obj.ToString());
+            }
+
+            if (t == typeof(DBNull)) return "null";
 
             var serializer = settings != null ? new DataContractJsonSerializer(t, settings) : new DataContractJsonSerializer(t);
             using (var stream = new MemoryStream())

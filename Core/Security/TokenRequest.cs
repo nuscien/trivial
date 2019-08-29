@@ -506,18 +506,45 @@ namespace Trivial.Security
         {
             if (obj == null) return (null, false);
             if (type == typeof(string) || type == typeof(StringBuilder)) return (obj.ToString(), true);
-            if (type == typeof(Uri)) return (((Uri)obj).OriginalString, true);
             if (type == typeof(DateTime)) return (WebFormat.ParseDate((DateTime)obj).ToString(CultureInfo.InvariantCulture), false);
             if (type == typeof(DateTimeOffset)) return (WebFormat.ParseDate((DateTimeOffset)obj).ToString(CultureInfo.InvariantCulture), false);
-            if (type == typeof(int)) return (((int)obj).ToString(CultureInfo.InvariantCulture), false);
-            if (type == typeof(long)) return (((long)obj).ToString(CultureInfo.InvariantCulture), false);
-            if (type == typeof(uint)) return (((uint)obj).ToString(CultureInfo.InvariantCulture), false);
-            if (type == typeof(ulong)) return (((ulong)obj).ToString(CultureInfo.InvariantCulture), false);
-            if (type == typeof(float)) return (((float)obj).ToString(CultureInfo.InvariantCulture), false);
-            if (type == typeof(double)) return (((double)obj).ToString(CultureInfo.InvariantCulture), false);
-            if (type == typeof(short)) return (((short)obj).ToString(CultureInfo.InvariantCulture), false);
+            if (type == typeof(int)) return (((int)obj).ToString("G", CultureInfo.InvariantCulture), false);
+            if (type == typeof(long)) return (((long)obj).ToString("G", CultureInfo.InvariantCulture), false);
+            if (type == typeof(uint)) return (((uint)obj).ToString("G", CultureInfo.InvariantCulture), false);
+            if (type == typeof(ulong)) return (((ulong)obj).ToString("G", CultureInfo.InvariantCulture), false);
+            if (type == typeof(float)) return (((float)obj).ToString("G", CultureInfo.InvariantCulture), false);
+            if (type == typeof(short)) return (((short)obj).ToString("G", CultureInfo.InvariantCulture), false);
+            if (type == typeof(ushort)) return (((short)obj).ToString("G", CultureInfo.InvariantCulture), false);
             if (type == typeof(bool)) return (((bool)obj).ToString(CultureInfo.InvariantCulture), false);
             if (type == typeof(SecureString)) return (((SecureString)obj).ToUnsecureString(), true);
+            if (type == typeof(Uri))
+            {
+                try
+                {
+                    return (((Uri)obj).OriginalString, true);
+                }
+                catch (InvalidOperationException)
+                {
+                    return (((Uri)obj).ToString(), true);
+                }
+            }
+
+            if (type == typeof(double))
+            {
+                var num = (double)obj;
+                var nStr = num.ToString("G", CultureInfo.InvariantCulture);
+                if (nStr.IndexOf('E') < 0) return (nStr, false);
+                return (num.ToString("F", CultureInfo.InvariantCulture), false);
+            }
+
+            if (type == typeof(TimeSpan))
+            {
+                var num = ((TimeSpan)obj).TotalSeconds;
+                var nStr = num.ToString("G", CultureInfo.InvariantCulture);
+                if (nStr.IndexOf('E') < 0) return (nStr, false);
+                return (num.ToString("F", CultureInfo.InvariantCulture), false);
+            }
+
             var str = obj.ToString();
             if (!string.IsNullOrWhiteSpace(str)) return (obj.ToString(), true);
             return (null, false);
