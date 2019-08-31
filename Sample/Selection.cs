@@ -12,28 +12,23 @@ namespace Trivial.Sample
 
         public override void Process()
         {
-            for (var i = 0; i < 50; i++)
-            {
-                SysConsole.WriteLine(i);
-            }
-
-            var col = new TrivialConsole.Selection
-            {
-                Column = 5,
-                MaxRow = 10,
-                ManualQuestion = "Type: ",
-                TipsLine2 = "Hey..."
-            };
-            col.Add('a', "aaa", string.Empty);
+            var col = new TrivialConsole.SelectionData();
+            col.Add('a', "aaa", null, "first");
             col.Add('b', "bbb");
-            col.Add('?', "help", string.Empty);
+            col.Add('?', "help", null, string.Empty);
             for (var i = 0; i < 120; i++)
             {
                 col.Add(i.ToString());
             }
 
-            var result = TrivialConsole.LineUtilities.Select(col);
-            SysConsole.WriteLine("-> {0} | Press any key to exit...", result.Value);
+            var result = TrivialConsole.LineUtilities.Select(col, new TrivialConsole.SelectionOptions
+            {
+                Column = 5,
+                MaxRow = 10,
+                ManualQuestion = "Type: ",
+                TipsLine2 = "Hey..."
+            });
+            SysConsole.WriteLine("-> {0}", result.Value);
         }
     }
 }

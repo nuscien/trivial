@@ -27,47 +27,10 @@ namespace Trivial.Console
     }
 
     /// <summary>
-    /// The collection selection input information.
+    /// The selection options.
     /// </summary>
-    public class Selection : Selection<object>
+    public class SelectionOptions
     {
-        /// <summary>
-        /// Enumartes for each item in the list.
-        /// </summary>
-        /// <typeparam name="T">The type of list item.</typeparam>
-        /// <param name="col">The collection.</param>
-        /// <param name="callback">The for each callback.</param>
-        /// <param name="offset">The offset.</param>
-        /// <param name="count">The count.</param>
-        /// <returns>The index.</returns>
-        internal static int Some<T>(IList<T> col, Func<T, int, int, bool> callback, int offset = 0, int? count = null)
-        {
-            if (callback == null) return -1;
-            var len = col.Count;
-            if (count.HasValue) len = Math.Min(count.Value + offset, len);
-            var j = 0;
-            for (var i = Math.Max(offset, 0); i < len; i++)
-            {
-                var item = col[i];
-                if (callback(item, i, j)) return i;
-                j++;
-            }
-
-            return -1;
-        }
-    }
-
-    /// <summary>
-    /// The collection selection input information.
-    /// </summary>
-    /// <typeparam name="T">The type of data.</typeparam>
-    public class Selection<T>
-    {
-        /// <summary>
-        /// The list.
-        /// </summary>
-        private List<Tuple<string, T, string, char?>> list = new List<Tuple<string, T, string, char?>>();
-
         /// <summary>
         /// Gets or sets the minimum length for each item.
         /// </summary>
@@ -187,29 +150,120 @@ namespace Trivial.Console
         /// Gets or sets the prefix for the item selected.
         /// </summary>
         public string SelectedPrefix { get; set; }
+    }
 
+    /// <summary>
+    /// The model of the selection item.
+    /// </summary>
+    /// <typeparam name="T">The type of data.</typeparam>
+    public class SelectionItem<T>
+    {
         /// <summary>
         /// Adds an item.
         /// </summary>
         /// <param name="value">The value to output.</param>
         /// <param name="data">The optional data.</param>
         /// <param name="title">The description displayed in item.</param>
-        /// <param name="key">The hotkey mapped.</param>
-        public void Add(string value, T data = default(T), string title = null, char? key = null)
+        public SelectionItem(string value, T data = default, string title = null)
         {
-            list.Add(new Tuple<string, T, string, char?>(value, data, title, key));
+            Hotkey = null;
+            Value = value;
+            Data = data;
+            Title = title;
         }
 
         /// <summary>
         /// Adds an item.
         /// </summary>
+        /// <param name="key">The hotkey mapped.</param>
+        /// <param name="value">The value to output.</param>
+        /// <param name="title">The description displayed in item.</param>
+        /// <param name="data">The optional data.</param>
+        public SelectionItem(char key, string value, T data = default, string title = null)
+        {
+            Hotkey = key;
+            Value = value;
+            Data = data;
+            Title = title;
+        }
+
+        /// <summary>
+        /// Gets or sets the value output.
+        /// </summary>
+        public string Value { get; }
+
+        /// <summary>
+        /// Gets or sets the hotkey.
+        /// </summary>
+        public char? Hotkey { get; }
+
+        /// <summary>
+        /// Gets or sets the optional title to replace Value property to display.
+        /// </summary>
+        public string Title { get; }
+
+        /// <summary>
+        /// Gets or sets the data.
+        /// </summary>
+        public T Data { get; }
+
+        /// <summary>
+        /// Gets or sets the title displayed.
+        /// </summary>
+        public string DisplayName => Title ?? Value;
+    }
+
+    /// <summary>
+    /// The collection selection input information.
+    /// </summary>
+    public class SelectionData : SelectionData<object>
+    {
+        /// <summary>
+        /// Enumartes for each item in the list.
+        /// </summary>
+        /// <typeparam name="T">The type of list item.</typeparam>
+        /// <param name="col">The collection.</param>
+        /// <param name="callback">The for each callback.</param>
+        /// <param name="offset">The offset.</param>
+        /// <param name="count">The count.</param>
+        /// <returns>The index.</returns>
+        internal static int Some<T>(IList<T> col, Func<T, int, int, bool> callback, int offset = 0, int? count = null)
+        {
+            if (callback == null) return -1;
+            var len = col.Count;
+            if (count.HasValue) len = Math.Min(count.Value + offset, len);
+            var j = 0;
+            for (var i = Math.Max(offset, 0); i < len; i++)
+            {
+                var item = col[i];
+                if (callback(item, i, j)) return i;
+                j++;
+            }
+
+            return -1;
+        }
+    }
+
+    /// <summary>
+    /// The collection selection input information.
+    /// </summary>
+    /// <typeparam name="T">The type of data.</typeparam>
+    public class SelectionData<T>
+    {
+        /// <summary>
+        /// The list.
+        /// </summary>
+        private readonly List<SelectionItem<T>> list = new List<SelectionItem<T>>();
+
+        /// <summary>
+        /// Adds an item.
+        /// </summary>
         /// <param name="value">The value to output.</param>
         /// <param name="data">The optional data.</param>
-        /// <param name="key">The hotkey mapped.</param>
         /// <param name="title">The description displayed in item.</param>
-        public void Add(string value, T data, char key, string title = null)
+        public void Add(string value, T data = default, string title = null)
         {
-            list.Add(new Tuple<string, T, string, char?>(value, data, title, key));
+            list.Add(new SelectionItem<T>(value, data, title));
         }
 
         /// <summary>
@@ -217,11 +271,11 @@ namespace Trivial.Console
         /// </summary>
         /// <param name="key">The hotkey mapped.</param>
         /// <param name="value">The value to output.</param>
-        /// <param name="title">The description displayed in item.</param>
         /// <param name="data">The optional data.</param>
-        public void Add(char key, string value, string title = null, T data = default(T))
+        /// <param name="title">The description displayed in item.</param>
+        public void Add(char key, string value, T data = default, string title = null)
         {
-            list.Add(new Tuple<string, T, string, char?>(value, data, title, key));
+            list.Add(new SelectionItem<T>(key, value, data, title));
         }
 
         /// <summary>
@@ -230,16 +284,25 @@ namespace Trivial.Console
         /// <param name="values">The values to output.</param>
         public void AddRange(IEnumerable<string> values)
         {
-            list.AddRange(values.Select(item => new Tuple<string, T, string, char?>(item, default(T), null, null)));
+            if (values != null) list.AddRange(values.Select(item => new SelectionItem<T>(item, default, null)));
+        }
+
+        /// <summary>
+        /// Adds items to the end.
+        /// </summary>
+        /// <param name="values">The values to output.</param>
+        public void AddRange(IEnumerable<SelectionItem<T>> values)
+        {
+            if (values != null) list.AddRange(values);
         }
 
         /// <summary>
         /// Copies a list.
         /// </summary>
         /// <returns>A list copied.</returns>
-        internal List<Tuple<string, T, string, char?>> CopyList()
+        internal List<SelectionItem<T>> CopyList()
         {
-            return new List<Tuple<string, T, string, char?>>(list);
+            return new List<SelectionItem<T>>(list);
         }
     }
 
@@ -258,7 +321,7 @@ namespace Trivial.Console
         {
             Value = value;
             Index = -1;
-            Data = default(T);
+            Data = default;
             InputType = type;
         }
 

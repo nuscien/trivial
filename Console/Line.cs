@@ -1139,28 +1139,58 @@ namespace Trivial.Console
         /// <summary>
         /// Writes a collection of item for selecting.
         /// </summary>
-        /// <param name="collection">The collection and options.</param>
+        /// <param name="collection">The collection data.</param>
+        /// <param name="options">The selection display options.</param>
         /// <returns>The result of selection.</returns>
-        public static SelectionResult<object> Select(Selection collection)
+        public static SelectionResult<object> Select(SelectionData collection, SelectionOptions options = null)
         {
-            return Select<object>(collection);
+            return Select<object>(collection, options);
+        }
+
+        /// <summary>
+        /// Writes a collection of item for selecting.
+        /// </summary>
+        /// <param name="collection">The collection data.</param>
+        /// <param name="convert">The converter.</param>
+        /// <param name="options">The selection display options.</param>
+        /// <returns>The result of selection.</returns>
+        public static SelectionResult<T> Select<T>(IEnumerable<T> collection, Func<T, SelectionItem<T>> convert, SelectionOptions options = null)
+        {
+            var c = new SelectionData<T>();
+            c.AddRange(collection.Select(convert));
+            return Select(c, options);
+        }
+
+        /// <summary>
+        /// Writes a collection of item for selecting.
+        /// </summary>
+        /// <param name="collection">The collection data.</param>
+        /// <param name="options">The selection display options.</param>
+        /// <returns>The result of selection.</returns>
+        public static SelectionResult<T> Select<T>(IEnumerable<SelectionItem<T>> collection, SelectionOptions options = null)
+        {
+            var c = new SelectionData<T>();
+            c.AddRange(collection);
+            return Select(c, options);
         }
 
         /// <summary>
         /// Writes a collection of item for selecting.
         /// </summary>
         /// <typeparam name="T">The type of data.</typeparam>
-        /// <param name="collection">The collection and options.</param>
+        /// <param name="collection">The collection data.</param>
+        /// <param name="options">The selection display options.</param>
         /// <returns>The result of selection.</returns>
-        public static SelectionResult<T> Select<T>(Selection<T> collection)
+        public static SelectionResult<T> Select<T>(SelectionData<T> collection, SelectionOptions options = null)
         {
             if (collection == null) return null;
+            if (options == null) options = new SelectionOptions();
             var maxWidth = System.Console.BufferWidth;
-            var itemLen = collection.Column.HasValue ? (int)Math.Floor(maxWidth * 1.0 / collection.Column.Value) : maxWidth;
-            if (collection.MaxLength.HasValue) itemLen = Math.Min(collection.MaxLength.Value, itemLen);
-            if (collection.MinLength.HasValue) itemLen = Math.Max(collection.MinLength.Value, itemLen);
+            var itemLen = options.Column.HasValue ? (int)Math.Floor(maxWidth * 1.0 / options.Column.Value) : maxWidth;
+            if (options.MaxLength.HasValue) itemLen = Math.Min(options.MaxLength.Value, itemLen);
+            if (options.MinLength.HasValue) itemLen = Math.Max(options.MinLength.Value, itemLen);
             var columns = (int)Math.Floor(maxWidth * 1.0 / itemLen);
-            if (collection.Column.HasValue && columns > collection.Column.Value) columns = collection.Column.Value;
+            if (options.Column.HasValue && columns > options.Column.Value) columns = options.Column.Value;
             var itemLen2 = Math.Max(1, itemLen - 1);
             if (System.Console.CursorLeft > 0) System.Console.WriteLine();
             var top = System.Console.CursorTop;
@@ -1168,38 +1198,38 @@ namespace Trivial.Console
             var selected = 0;
             var oldSelected = -1;
             var list = collection.CopyList();
-            var keys = new Dictionary<char, Tuple<string, T, string, char?>>();
+            var keys = new Dictionary<char, SelectionItem<T>>();
             foreach (var item in list)
             {
-                if (!item.Item4.HasValue) continue;
-                keys[item.Item4.Value] = item;
+                if (!item.Hotkey.HasValue) continue;
+                keys[item.Hotkey.Value] = item;
             }
 
             list = list.Where(item =>
             {
-                return !string.IsNullOrEmpty(item.Item3 ?? item.Item1);
+                return !string.IsNullOrEmpty(item.Title ?? item.Value);
             }).ToList();
             if (list.Count == 0 || itemLen < 1) return new SelectionResult<T>(string.Empty, SelectionResultTypes.Canceled);
-            var pageSize = collection.MaxRow.HasValue ? collection.MaxRow.Value * columns : list.Count;
-            var prefix = collection.Prefix;
-            var selectedPrefix = collection.SelectedPrefix;
-            var tips = collection.Tips;
-            var tips2 = collection.TipsLine2;
-            var tipsP = collection.PagingTips;
-            var question = collection.Question;
-            var questionM = collection.ManualQuestion;
-            var fore = collection.ForegroundColor;
-            var back = collection.BackgroundColor;
-            var foreSel = collection.SelectedForegroundColor;
-            var backSel = collection.SelectedBackgroundColor;
-            var foreQ = collection.QuestionForegroundColor;
-            var backQ = collection.QuestionBackgroundColor;
-            var foreTip = collection.TipsForegroundColor;
-            var backTip = collection.TipsBackgroundColor;
-            var forePag = collection.PagingForegroundColor;
-            var backPag = collection.PagingBackgroundColor;
-            var foreDef = collection.DefaultValueForegroundColor;
-            var backDef = collection.DefaultValueBackgroundColor;
+            var pageSize = options.MaxRow.HasValue ? options.MaxRow.Value * columns : list.Count;
+            var prefix = options.Prefix;
+            var selectedPrefix = options.SelectedPrefix;
+            var tips = options.Tips;
+            var tips2 = options.TipsLine2;
+            var tipsP = options.PagingTips;
+            var question = options.Question;
+            var questionM = options.ManualQuestion;
+            var fore = options.ForegroundColor;
+            var back = options.BackgroundColor;
+            var foreSel = options.SelectedForegroundColor;
+            var backSel = options.SelectedBackgroundColor;
+            var foreQ = options.QuestionForegroundColor;
+            var backQ = options.QuestionBackgroundColor;
+            var foreTip = options.TipsForegroundColor;
+            var backTip = options.TipsBackgroundColor;
+            var forePag = options.PagingForegroundColor;
+            var backPag = options.PagingBackgroundColor;
+            var foreDef = options.DefaultValueForegroundColor;
+            var backDef = options.DefaultValueBackgroundColor;
             var inputTop = -1;
             var inputLeft = -1;
             if (!fore.HasValue && !back.HasValue && !foreSel.HasValue && !backSel.HasValue && prefix == null && selectedPrefix == null)
@@ -1216,7 +1246,7 @@ namespace Trivial.Console
                 var k = selIndex - offset;
                 var rowI = (int)Math.Floor(k * 1.0 / columns);
                 var curLeft = (k % columns) * itemLen;
-                var str = ((isSel ? selectedPrefix : prefix) ?? string.Empty) + (selItem.Item3 ?? selItem.Item1);
+                var str = ((isSel ? selectedPrefix : prefix) ?? string.Empty) + (selItem.Title ?? selItem.Value);
                 if (str.Length > itemLen2) str = str.Substring(0, itemLen2);
                 var curLeft2 = curLeft + itemLen2;
                 var curLeftDiff = itemLen2;
@@ -1272,7 +1302,7 @@ namespace Trivial.Console
 
                 System.Console.SetCursorPosition(inputLeft, inputTop);
                 var sel = list[selected];
-                if (question != null) Write(foreDef, backDef, sel.Item1);
+                if (question != null) Write(foreDef, backDef, sel.Value);
                 oldSelected = selected;
             }
 
@@ -1284,11 +1314,11 @@ namespace Trivial.Console
                 var k = 0;
                 System.Console.SetCursorPosition(0, top);
                 ClearLine();
-                Selection.Some(list, (item, i, j) =>
+                SelectionData.Some(list, (item, i, j) =>
                 {
                     if (j >= pageSize) return true;
                     k = j;
-                    var str = ((selected == i ? selectedPrefix : prefix) ?? string.Empty) + (item.Item3 ?? item.Item1);
+                    var str = ((selected == i ? selectedPrefix : prefix) ?? string.Empty) + (item.Title ?? item.Value);
                     var index = j % columns;
                     var row = (int)Math.Floor(j * 1.0 / columns);
                     if (str.Length > itemLen2) str = str.Substring(0, itemLen2);
@@ -1354,7 +1384,7 @@ namespace Trivial.Console
                 inputTop = System.Console.CursorTop;
                 inputLeft = System.Console.CursorLeft;
                 var sel = list[selected];
-                if (question != null) Write(foreDef, backDef, sel.Item1);
+                if (question != null) Write(foreDef, backDef, sel.Value);
                 oldSelected = selected;
             }
 
@@ -1416,8 +1446,8 @@ namespace Trivial.Console
                 if (key.Key == ConsoleKey.Enter || key.Key == ConsoleKey.Select)
                 {
                     var sel = list[selected];
-                    if (question != null) System.Console.WriteLine(sel.Item1);
-                    return new SelectionResult<T>(sel.Item1, selected, sel.Item2, sel.Item3);
+                    if (question != null) System.Console.WriteLine(sel.Value);
+                    return new SelectionResult<T>(sel.Value, selected, sel.Data, sel.Title);
                 }
                 else if (key.Key == ConsoleKey.Backspace || key.Key == ConsoleKey.Delete)
                 {
@@ -1446,8 +1476,8 @@ namespace Trivial.Console
                     {
                         change(-1);
                         var sel = keys['?'];
-                        if (question != null) System.Console.WriteLine(sel.Item1);
-                        return new SelectionResult<T>(sel.Item1, selected, sel.Item2, sel.Item3);
+                        if (question != null) System.Console.WriteLine(sel.Value);
+                        return new SelectionResult<T>(sel.Value, selected, sel.Data, sel.Title);
                     }
 
                     showTips();
@@ -1582,16 +1612,16 @@ namespace Trivial.Console
                     if (isUnselected)
                     {
                         change(-1);
-                        if (question != null) System.Console.WriteLine(sel.Item1);
+                        if (question != null) System.Console.WriteLine(sel.Value);
                     }
 
-                    return new SelectionResult<T>(sel.Item1, selected, sel.Item2, sel.Item3);
+                    return new SelectionResult<T>(sel.Value, selected, sel.Data, sel.Title);
                 }
                 else if (key.Key == ConsoleKey.Spacebar)
                 {
                     var sel = list[selected];
-                    if (question != null) System.Console.WriteLine(sel.Item1);
-                    return new SelectionResult<T>(sel.Item1, selected, sel.Item2, sel.Item3);
+                    if (question != null) System.Console.WriteLine(sel.Value);
+                    return new SelectionResult<T>(sel.Value, selected, sel.Data, sel.Title);
                 }
                 else
                 {

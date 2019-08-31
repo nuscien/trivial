@@ -157,54 +157,59 @@ You can have a way to list a lot of items so that user can select one of them ju
 var Main(string[] args)
 {
     // Create an instance for adding items and setting options.
-    var col = new Selection<string>();
+    var col = new SelectionData<string>();
 
     // Add some items. For each item, you can set a string value,
     // an additional data, an additional displayed title and an additional hot key.
-    col.Add("char a", "a", "char [a]", 'a');
-    col.Add("char b", "b", "char [b]", 'b');
+    col.Add('a', "char a", "a", "char [a]");
+    col.Add('b', "char b", "b", "char [b]");
     for (var i = 0; i < 120; i++)
     {
         col.Add("num " + i, i.ToString());
     }
 
-    // You can define a question string after the list.
-    col.Question = "Please select one: ";
 
-    // We can define the colors of the item selected.
-    col.SelectedForegroundColor = ConsoleColor.White;
-    col.SelectedBackgroundColor = ConsoleColor.Blue;
+    // Create an options for display.
+    var options = new SelectionOptions
+    {
+        // You can define a question string after the list.
+        Question = "Please select one: ",
 
-    // The selected item will also be displayed after the question string.
-    // So you can define its color.
-    col.DefaultValueForegroundColor = ConsoleColor.Cyan;
+        // We can define the colors of the item selected.
+        SelectedForegroundColor = ConsoleColor.White,
+        SelectedBackgroundColor = ConsoleColor.Blue,
 
-    // At the end of the list, the tips will be displayed before user press any key.
-    // There is a default value and you can customize it.
-    // And you can disable it by set it as null.
-    col.Tips = "Tips: You can use arrow key to select and press ENTER key to continue.";
+        // The selected item will also be displayed after the question string.
+        // So you can define its color.
+        DefaultValueForegroundColor = ConsoleColor.Cyan,
 
-    // Then you can define its color.
-    col.TipsForegroundColor = ConsoleColor.Yellow;
+        // At the end of the list, the tips will be displayed before user press any key.
+        // There is a default value and you can customize it.
+        // And you can disable it by set it as null.
+        Tips = "Tips: You can use arrow key to select and press ENTER key to continue.",
 
-    // You can define the prefix for the item and the one selected.
-    col.SelectedPrefix = "√ ";
-    col.Prefix = " ";
+        // Then you can define its color.
+        TipsForegroundColor = ConsoleColor.Yellow,
 
-    // You can define the column count for the list.
-    col.Column = 5;
+        // You can define the prefix for the item and the one selected.
+        SelectedPrefix = "√ ",
+        Prefix = " ",
 
-    // You can define the maximum rows to displayed.
-    // A paging will be displayed if the count of the list is greater than it.
-    col.MaxRow = 10;
+        // You can define the column count for the list.
+        Column = 5,
 
-    // Press ESC can cancel this selection.
-    // But you can enable the manual way by set a manual question
-    // so that user can type the words directly.
-    col.ManualQuestion = "Type: ";
+        // You can define the maximum rows to displayed.
+        // A paging will be displayed if the count of the list is greater than it.
+        MaxRow = 10,
+
+        // Press ESC can cancel this selection.
+        // But you can enable the manual way by set a manual question
+        // so that user can type the words directly.
+        ManualQuestion = "Type: "
+    };
 
     // Write it to the standard output stream and wait for user selection.
-    var result = LineUtilities.Select(col);
+    var result = LineUtilities.Select(col, options);
 
     // You can get the result.
     Console.WriteLine("The result is {0}.", result.Value);

@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
@@ -7,17 +7,17 @@
     <Authors>Kingcean Tuan</Authors>
     <Company>Nanchang Jinchen Software Co., Ltd</Company>
     <Copyright>Copyright (c) 2018 Kingcean Tuan.</Copyright>
-    <AssemblyVersion>1.2.0.0</AssemblyVersion>
-    <FileVersion>1.2.0.0</FileVersion>
+    <AssemblyVersion>2.0.0.0</AssemblyVersion>
+    <FileVersion>2.0.0.0</FileVersion>
     <Description>The useful utilities for console application including command dispatcher, arguments parser and some rich user interface console controls.</Description>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>1.2.0</Version>
+    <Version>2.0.0</Version>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/nuscien/trivial/wiki/console</PackageProjectUrl>
     <PackageTags>console utilities</PackageTags>
     <RepositoryUrl>https://github.com/nuscien/trivial</RepositoryUrl>
     <RepositoryType></RepositoryType>
-    <LangVersion>7.2</LangVersion>
+    <LangVersion>7.3</LangVersion>
     <PackageIconUrl>https://github.com/nuscien/trivial/raw/master/Materials/logo.jpg</PackageIconUrl>
   </PropertyGroup>
 
