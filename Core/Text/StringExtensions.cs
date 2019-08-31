@@ -488,31 +488,31 @@ namespace Trivial.Text
                 if (obj is bool b)
                     return b ? "true" : "false";
                 if (obj is int i32)
-                    return i32.ToString("G", CultureInfo.InvariantCulture);
+                    return i32.ToString("g", CultureInfo.InvariantCulture);
                 if (obj is long i64)
-                    return i64.ToString("G", CultureInfo.InvariantCulture);
+                    return i64.ToString("g", CultureInfo.InvariantCulture);
                 if (obj is float f1)
-                    return f1.ToString("G", CultureInfo.InvariantCulture);
+                    return f1.ToString("g", CultureInfo.InvariantCulture);
                 if (obj is uint i32u)
-                    return i32u.ToString("G", CultureInfo.InvariantCulture);
+                    return i32u.ToString("g", CultureInfo.InvariantCulture);
                 if (obj is uint i64u)
-                    return i64u.ToString("G", CultureInfo.InvariantCulture);
+                    return i64u.ToString("g", CultureInfo.InvariantCulture);
                 if (obj is DateTime d)
                     return ToStringJsonToken(d.ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ss.fffZ"));
                 if (obj is DateTimeOffset dto)
                     return ToStringJsonToken(dto.ToString("yyyy-MM-ddTHH:mm:ss.fffzzz"));
                 if (obj is double f2)
                 {
-                    var str = f2.ToString("G", CultureInfo.InvariantCulture);
-                    if (str.IndexOf("E") < 0) return str;
-                    return f2.ToString("F", CultureInfo.InvariantCulture);
+                    var str = f2.ToString("g", CultureInfo.InvariantCulture);
+                    if (str.IndexOf("e") < 0) return str;
+                    return ToStringJsonToken(str);
                 }
 
                 if (obj is TimeSpan ts)
                 {
-                    var str = ts.TotalSeconds.ToString("G", CultureInfo.InvariantCulture);
-                    if (str.IndexOf("E") < 0) return str;
-                    return ts.TotalSeconds.ToString("F", CultureInfo.InvariantCulture);
+                    var str = ts.TotalSeconds.ToString("g", CultureInfo.InvariantCulture);
+                    if (str.IndexOf("e") < 0) return str;
+                    return ToStringJsonToken(str);
                 }
 
                 if (t == typeof(Guid)
