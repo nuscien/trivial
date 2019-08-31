@@ -151,7 +151,7 @@ var Main(string[] args)
 
 ## Select
 
-You can have a way to list a lot of items so that user can select one of them just by arrow key.
+You can output a list to console and let user select one just by arrow in keyboard.
 
 ```csharp
 var Main(string[] args)
