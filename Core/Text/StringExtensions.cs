@@ -485,10 +485,6 @@ namespace Trivial.Text
 
             if (t.IsValueType)
             {
-                if (t == typeof(short)
-                    || t == typeof(ushort)
-                    || t == typeof(byte))
-                    return obj.ToString();
                 if (obj is bool b)
                     return b ? "true" : "false";
                 if (obj is int i32)
@@ -522,6 +518,10 @@ namespace Trivial.Text
                 if (t == typeof(Guid)
                     || t == typeof(Maths.Angle))
                     return ToStringJsonToken(obj.ToString());
+                if (t == typeof(byte)
+                    || t == typeof(short)
+                    || t == typeof(ushort))
+                    return obj.ToString();
             }
 
             if (t == typeof(DBNull)) return "null";
