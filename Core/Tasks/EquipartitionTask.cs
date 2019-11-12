@@ -7,6 +7,7 @@ using System.Linq;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Json;
 using System.Text;
+using System.Text.Json;
 using System.Xml.Linq;
 
 using Trivial.Data;
@@ -281,7 +282,7 @@ namespace Trivial.Tasks
             /// <returns>A JSON format string.</returns>
             public virtual string ToJsonString()
             {
-                return ToJsonString(null);
+                return ToJsonString(null as JsonSerializerOptions);
             }
 
             /// <summary>
@@ -305,9 +306,9 @@ namespace Trivial.Tasks
             /// <summary>
             /// Converts to JSON format string.
             /// </summary>
-            /// <param name="settings">The data contract serializer settings.</param>
+            /// <param name="options">The data contract serializer settings.</param>
             /// <returns>A JSON format string.</returns>
-            public virtual string ToJsonString(DataContractJsonSerializerSettings settings)
+            public virtual string ToJsonString(JsonSerializerOptions options)
             {
                 var m = new FragmentModel
                 {
@@ -318,7 +319,26 @@ namespace Trivial.Tasks
                     Creation = WebFormat.ParseDate(Creation),
                     Modification = WebFormat.ParseDate(Modification)
                 };
-                return StringExtensions.ToJson(m, settings);
+                return StringExtensions.ToJson(m, options);
+            }
+
+            /// <summary>
+            /// Converts to JSON format string.
+            /// </summary>
+            /// <param name="options">The data contract serializer settings.</param>
+            /// <returns>A JSON format string.</returns>
+            public virtual string ToJsonString(DataContractJsonSerializerSettings options)
+            {
+                var m = new FragmentModel
+                {
+                    Id = Id,
+                    Index = Index,
+                    State = State.ToString().ToLowerInvariant(),
+                    Tag = Tag,
+                    Creation = WebFormat.ParseDate(Creation),
+                    Modification = WebFormat.ParseDate(Modification)
+                };
+                return StringExtensions.ToJson(m, options);
             }
 
             /// <summary>

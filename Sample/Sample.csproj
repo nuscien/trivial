@@ -1,20 +1,20 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>netcoreapp2.2</TargetFramework>
+    <TargetFramework>netcoreapp3.0</TargetFramework>
     <AssemblyName>Trivial.Sample</AssemblyName>
     <RootNamespace>Trivial.Sample</RootNamespace>
-    <StartupObject>Trivial.Sample.Program</StartupObject>
+    <Product>Trivial</Product>
     <Authors>Kingcean Tuan</Authors>
     <Company>Nanchang Jinchen Software Co., Ltd.</Company>
-    <Product>Trivial</Product>
+    <Version>3.0.0</Version>
     <Description>The sample of Trivial libraries.</Description>
     <Copyright>Copyright (c) 2018 Kingcean Tuan.</Copyright>
+    <StartupObject>Trivial.Sample.Program</StartupObject>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageIconUrl>https://github.com/nuscien/trivial/raw/master/Materials/logo.jpg</PackageIconUrl>
     <RepositoryUrl>https://github.com/nuscien/trivial</RepositoryUrl>
-    <Version>1.1.0</Version>
   </PropertyGroup>
 
   <ItemGroup>

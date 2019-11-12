@@ -6,6 +6,7 @@ using System.Runtime.Serialization;
 using System.Runtime.Serialization.Json;
 using System.Security;
 using System.Text;
+using System.Text.Json;
 
 namespace Trivial.Web
 {
@@ -229,10 +230,8 @@ namespace Trivial.Web
             var d = GetJsonDeserializer<T>();
             if (d != null) return d(s);
             var serializer = new DataContractJsonSerializer(typeof(T));
-            using (var stream = new MemoryStream(bytes))
-            {
-                return (T)serializer.ReadObject(stream);
-            }
+            using var stream = new MemoryStream(bytes);
+            return (T)serializer.ReadObject(stream);
         }
 
         /// <summary>
@@ -243,18 +242,12 @@ namespace Trivial.Web
         internal static Func<string, T> GetJsonDeserializer<T>()
         {
             var t = typeof(T);
-            if (t.FullName.Equals("System.Text.Json.JsonDocument", StringComparison.InvariantCulture))
+            if (t == typeof(JsonDocument))
             {
-                foreach (var method in t.GetMethods())
+                return str =>
                 {
-                    if (!method.IsStatic || method.Name != "Parse") continue;
-                    var parameters = method.GetParameters();
-                    if (parameters.Length != 2 && parameters[0].ParameterType != typeof(string) && !parameters[1].IsOptional) continue;
-                    return str =>
-                    {
-                        return (T)method.Invoke(null, new object[] { str, null });
-                    };
-                }
+                    return (T)(object)JsonDocument.Parse(str);
+                };
             }
             else if (t.FullName.StartsWith("Newtonsoft.Json.Linq.J", StringComparison.InvariantCulture))
             {

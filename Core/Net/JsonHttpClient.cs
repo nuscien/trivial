@@ -16,6 +16,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Runtime.Serialization.Json;
 using System.Text;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Trivial.Web;
@@ -498,23 +499,20 @@ namespace Trivial.Net
         /// <param name="method">The HTTP method.</param>
         /// <param name="requestUri">The Uri the request is sent to.</param>
         /// <param name="content">The HTTP request content sent to the server.</param>
-        /// <param name="settings">The options for serialization.</param>
+        /// <param name="options">The options for serialization.</param>
         /// <param name="cancellationToken">The optional cancellation token.</param>
         /// <returns>A result serialized.</returns>
         /// <exception cref="FailedHttpException">HTTP response contains failure status code.</exception>
         /// <exception cref="HttpRequestException">The request failed due to an underlying issue such as network connectivity, DNS failure, server certificate validation or timeout.</exception>
         /// <exception cref="InvalidOperationException">The task is cancelled.</exception>
         /// <exception cref="ObjectDisposedException">The inner HTTP web client instance has been disposed.</exception>
-        public async Task<T> SendJsonAsync(HttpMethod method, string requestUri, object content, DataContractJsonSerializerSettings settings, CancellationToken cancellationToken = default)
+        public async Task<T> SendJsonAsync(HttpMethod method, string requestUri, object content, JsonSerializerOptions options, CancellationToken cancellationToken = default)
         {
-            var json = Text.StringExtensions.ToJson(content, settings) ?? string.Empty;
-            using (var str = new StringContent(json, Encoding.UTF8, WebFormat.JsonMIME))
+            using var body = HttpClientExtensions.CreateJsonContent(content, options);
+            return await SendAsync(new HttpRequestMessage(method, requestUri)
             {
-                return await SendAsync(new HttpRequestMessage(method, requestUri)
-                {
-                    Content = str
-                }, cancellationToken);
-            }
+                Content = body
+            }, cancellationToken);
         }
 
         /// <summary>
@@ -523,23 +521,66 @@ namespace Trivial.Net
         /// <param name="method">The HTTP method.</param>
         /// <param name="requestUri">The Uri the request is sent to.</param>
         /// <param name="content">The HTTP request content sent to the server.</param>
-        /// <param name="settings">The options for serialization.</param>
+        /// <param name="options">The options for serialization.</param>
         /// <param name="cancellationToken">The optional cancellation token.</param>
         /// <returns>A result serialized.</returns>
         /// <exception cref="FailedHttpException">HTTP response contains failure status code.</exception>
         /// <exception cref="HttpRequestException">The request failed due to an underlying issue such as network connectivity, DNS failure, server certificate validation or timeout.</exception>
         /// <exception cref="InvalidOperationException">The task is cancelled.</exception>
         /// <exception cref="ObjectDisposedException">The inner HTTP web client instance has been disposed.</exception>
-        public async Task<T> SendJsonAsync(HttpMethod method, Uri requestUri, object content, DataContractJsonSerializerSettings settings, CancellationToken cancellationToken = default)
+        public async Task<T> SendJsonAsync(HttpMethod method, Uri requestUri, object content, JsonSerializerOptions options, CancellationToken cancellationToken = default)
         {
-            var json = Text.StringExtensions.ToJson(content, settings) ?? string.Empty;
-            using (var str = new StringContent(json, Encoding.UTF8, WebFormat.JsonMIME))
+            using var body = HttpClientExtensions.CreateJsonContent(content, options);
+            return await SendAsync(new HttpRequestMessage(method, requestUri)
             {
-                return await SendAsync(new HttpRequestMessage(method, requestUri)
-                {
-                    Content = str
-                }, cancellationToken);
-            }
+                Content = body
+            }, cancellationToken);
+        }
+
+        /// <summary>
+        /// Sends an HTTP request and gets the result serialized by JSON.
+        /// </summary>
+        /// <param name="method">The HTTP method.</param>
+        /// <param name="requestUri">The Uri the request is sent to.</param>
+        /// <param name="content">The HTTP request content sent to the server.</param>
+        /// <param name="options">The options for serialization.</param>
+        /// <param name="cancellationToken">The optional cancellation token.</param>
+        /// <returns>A result serialized.</returns>
+        /// <exception cref="FailedHttpException">HTTP response contains failure status code.</exception>
+        /// <exception cref="HttpRequestException">The request failed due to an underlying issue such as network connectivity, DNS failure, server certificate validation or timeout.</exception>
+        /// <exception cref="InvalidOperationException">The task is cancelled.</exception>
+        /// <exception cref="ObjectDisposedException">The inner HTTP web client instance has been disposed.</exception>
+        public async Task<T> SendJsonAsync(HttpMethod method, string requestUri, object content, DataContractJsonSerializerSettings options, CancellationToken cancellationToken = default)
+        {
+            var json = Text.StringExtensions.ToJson(content, options) ?? string.Empty;
+            using var str = new StringContent(json, Encoding.UTF8, WebFormat.JsonMIME);
+            return await SendAsync(new HttpRequestMessage(method, requestUri)
+            {
+                Content = str
+            }, cancellationToken);
+        }
+
+        /// <summary>
+        /// Sends an HTTP request and gets the result serialized by JSON.
+        /// </summary>
+        /// <param name="method">The HTTP method.</param>
+        /// <param name="requestUri">The Uri the request is sent to.</param>
+        /// <param name="content">The HTTP request content sent to the server.</param>
+        /// <param name="options">The options for serialization.</param>
+        /// <param name="cancellationToken">The optional cancellation token.</param>
+        /// <returns>A result serialized.</returns>
+        /// <exception cref="FailedHttpException">HTTP response contains failure status code.</exception>
+        /// <exception cref="HttpRequestException">The request failed due to an underlying issue such as network connectivity, DNS failure, server certificate validation or timeout.</exception>
+        /// <exception cref="InvalidOperationException">The task is cancelled.</exception>
+        /// <exception cref="ObjectDisposedException">The inner HTTP web client instance has been disposed.</exception>
+        public async Task<T> SendJsonAsync(HttpMethod method, Uri requestUri, object content, DataContractJsonSerializerSettings options, CancellationToken cancellationToken = default)
+        {
+            var json = Text.StringExtensions.ToJson(content, options) ?? string.Empty;
+            using var str = new StringContent(json, Encoding.UTF8, WebFormat.JsonMIME);
+            return await SendAsync(new HttpRequestMessage(method, requestUri)
+            {
+                Content = str
+            }, cancellationToken);
         }
 
         /// <summary>
@@ -556,7 +597,7 @@ namespace Trivial.Net
         /// <exception cref="ObjectDisposedException">The inner HTTP web client instance has been disposed.</exception>
         public Task<T> SendJsonAsync(HttpMethod method, string requestUri, object content, CancellationToken cancellationToken = default)
         {
-            return SendJsonAsync(method, requestUri, content, null as DataContractJsonSerializerSettings, cancellationToken);
+            return SendJsonAsync(method, requestUri, content, null as JsonSerializerOptions, cancellationToken);
         }
 
         /// <summary>
@@ -573,7 +614,7 @@ namespace Trivial.Net
         /// <exception cref="ObjectDisposedException">The inner HTTP web client instance has been disposed.</exception>
         public Task<T> SendJsonAsync(HttpMethod method, Uri requestUri, object content, CancellationToken cancellationToken = default)
         {
-            return SendJsonAsync(method, requestUri, content, null as DataContractJsonSerializerSettings, cancellationToken);
+            return SendJsonAsync(method, requestUri, content, null as JsonSerializerOptions, cancellationToken);
         }
 
         /// <summary>

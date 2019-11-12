@@ -1,24 +1,23 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFramework>netcoreapp3.0</TargetFramework>
     <AssemblyName>Trivial</AssemblyName>
     <RootNamespace>Trivial</RootNamespace>
     <PackageId>Trivial</PackageId>
-    <Company>Nanchang Jinchen Software Co., Ltd.</Company>
-    <Version>2.0.2</Version>
-    <Authors>Kingcean Tuan</Authors>
     <Product>Trivial</Product>
+    <Authors>Kingcean Tuan</Authors>
+    <Company>Nanchang Jinchen Software Co., Ltd.</Company>
+    <Version>3.0.0-alpha</Version>
     <Description>A library providing lots of useful utilities, models and services, including hit task, retry policy, PEM, JWT, stream combination, JSON HTTP web client, CSV parser, numerals, coordinates, angle, arithmetic, sets, etc.</Description>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <Copyright>Copyright (c) 2018 Kingcean Tuan.</Copyright>
     <PackageProjectUrl>https://github.com/nuscien/trivial/wiki/core</PackageProjectUrl>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <AssemblyVersion>2.0.2.0</AssemblyVersion>
-    <FileVersion>2.0.2.0</FileVersion>
+    <AssemblyVersion>3.0.0.0</AssemblyVersion>
+    <FileVersion>3.0.0.0</FileVersion>
     <RepositoryUrl>https://github.com/nuscien/trivial</RepositoryUrl>
     <RepositoryType></RepositoryType>
-    <LangVersion>7.3</LangVersion>
     <PackageTags>tasks numerals utilities oauth2-client jwt-token csv-parser stream pem coordinates</PackageTags>
     <PackageIconUrl>https://github.com/nuscien/trivial/raw/master/Materials/logo.jpg</PackageIconUrl>
   </PropertyGroup>

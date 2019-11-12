@@ -7,6 +7,7 @@ using System.Reflection;
 using System.Runtime.Serialization.Json;
 using System.Security;
 using System.Text;
+using System.Text.Json;
 
 namespace Trivial.Text
 {
@@ -400,61 +401,63 @@ namespace Trivial.Text
         internal static T FromJson<T>(string s)
         {
             var bytes = Encoding.UTF8.GetBytes(s);
-            using (var stream = new MemoryStream(bytes))
-            {
-                var serializer = new DataContractJsonSerializer(typeof(T));
-                return (T)serializer.ReadObject(stream);
-            }
+            using var stream = new MemoryStream(bytes);
+            var serializer = new DataContractJsonSerializer(typeof(T));
+            return (T)serializer.ReadObject(stream);
         }
 
         /// <summary>
         /// Serializes an object into JSON format.
         /// </summary>
         /// <param name="obj">The object to serialize.</param>
-        /// <param name="settings">The optional serializer settings.</param>
+        /// <param name="options">The optional serializer settings.</param>
         /// <returns>A JSON string.</returns>
-        internal static string ToJson(object obj, DataContractJsonSerializerSettings settings = null)
+        internal static string ToJson(object obj, JsonSerializerOptions options = null)
+        {
+            return ToJson(obj, (o, t) =>
+            {
+                return JsonSerializer.Serialize(o, t, options);
+            });
+        }
+
+        /// <summary>
+        /// Serializes an object into JSON format.
+        /// </summary>
+        /// <param name="obj">The object to serialize.</param>
+        /// <param name="options">The optional serializer settings.</param>
+        /// <returns>A JSON string.</returns>
+        internal static string ToJson(object obj, DataContractJsonSerializerSettings options)
+        {
+            return ToJson(obj, (o, t) =>
+            {
+                var serializer = options != null ? new DataContractJsonSerializer(t, options) : new DataContractJsonSerializer(t);
+                using var stream = new MemoryStream();
+                serializer.WriteObject(stream, o);
+                stream.Position = 0;
+                var bytes = new byte[stream.Length];
+                stream.Read(bytes, 0, (int)stream.Length);
+                return Encoding.UTF8.GetString(bytes);
+            });
+        }
+
+        /// <summary>
+        /// Serializes an object into JSON format.
+        /// </summary>
+        /// <param name="obj">The object to serialize.</param>
+        /// <param name="converter">The fallback converter.</param>
+        /// <returns>A JSON string.</returns>
+        private static string ToJson(object obj, Func<object, Type, string> converter)
         {
             if (obj == null) return "null";
             var t = obj.GetType();
-            if (t.FullName.StartsWith("System.Text.Json.Json", StringComparison.InvariantCulture))
+            if (obj is JsonDocument jsonDoc)
             {
-                if (t.FullName.Equals("System.Text.Json.JsonDocument", StringComparison.InvariantCulture))
-                {
-                    try
-                    {
-                        var prop = t.GetProperty("RootElement");
-                        if (prop != null && prop.CanRead)
-                        {
-                            var ele = prop.GetValue(obj, null);
-                            if (ele is null) return string.Empty;
-                            return ele.ToString();
-                        }
-                    }
-                    catch (AmbiguousMatchException)
-                    {
-                    }
-                    catch (ArgumentException)
-                    {
-                    }
-                    catch (TargetException)
-                    {
-                    }
-                    catch (TargetParameterCountException)
-                    {
-                    }
-                    catch (TargetInvocationException)
-                    {
-                    }
-                    catch (MemberAccessException)
-                    {
-                    }
-                }
+                return jsonDoc.RootElement.ToString();
+            }
 
-                if (t.FullName.Equals("System.Text.Json.JsonElement", StringComparison.InvariantCulture))
-                {
-                    return obj.ToString();
-                }
+            if (obj is JsonElement jsonEle)
+            {
+                return jsonEle.ToString();
             }
 
             if (t.FullName.StartsWith("Newtonsoft.Json.Linq.J", StringComparison.InvariantCulture))
@@ -467,6 +470,19 @@ namespace Trivial.Text
             if (obj is Security.TokenRequest tokenReq)
             {
                 return tokenReq.ToJsonString();
+            }
+
+            if (obj is IEnumerable<KeyValuePair<string, string>> col)
+            {
+                var str = new StringBuilder("{");
+                foreach (var kvp in col)
+                {
+                    str.AppendFormat("\"{0}\":\"{1}\",", ToStringJsonToken(kvp.Key), ToStringJsonToken(kvp.Value));
+                }
+
+                str.Remove(str.Length - 1, 1);
+                str.Append("}");
+                return str.ToString();
             }
 
             if (t == typeof(string)) return ToStringJsonToken(obj.ToString());
@@ -525,16 +541,7 @@ namespace Trivial.Text
             }
 
             if (t == typeof(DBNull)) return "null";
-
-            var serializer = settings != null ? new DataContractJsonSerializer(t, settings) : new DataContractJsonSerializer(t);
-            using (var stream = new MemoryStream())
-            {
-                serializer.WriteObject(stream, obj);
-                stream.Position = 0;
-                var bytes = new byte[stream.Length];
-                stream.Read(bytes, 0, (int)stream.Length);
-                return Encoding.UTF8.GetString(bytes);
-            }
+            return converter(obj, t);
         }
 
         internal static bool ReplaceBackSlash(StringBuilder sb, StringBuilder backSlash, char c)

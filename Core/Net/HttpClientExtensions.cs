@@ -8,6 +8,7 @@ using System.Runtime.Serialization;
 using System.Runtime.Serialization.Json;
 using System.Security;
 using System.Text;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -54,10 +55,8 @@ namespace Trivial.Net
         {
             if (httpContent == null) throw new ArgumentNullException(nameof(httpContent));
             if (destination == null) throw new ArgumentNullException(nameof(destination));
-            using (var downloadingStream = await httpContent.ReadAsStreamAsync())
-            {
-                await IO.StreamCopy.CopyToAsync(downloadingStream, destination, bufferSize, progress, cancellationToken);
-            }
+            using var downloadingStream = await httpContent.ReadAsStreamAsync();
+            await IO.StreamCopy.CopyToAsync(downloadingStream, destination, bufferSize, progress, cancellationToken);
         }
 
         /// <summary>
@@ -111,17 +110,30 @@ namespace Trivial.Net
         /// </summary>
         /// <typeparam name="T">The type of the result expected.</typeparam>
         /// <param name="httpContent">The http response content.</param>
-        /// <param name="settings">The options for serialization.</param>
+        /// <param name="options">The options for serialization.</param>
         /// <returns>The result serialized.</returns>
         /// <exception cref="ArgumentNullException">The argument is null.</exception>
-        public static async Task<T> DeserializeJsonAsync<T>(this HttpContent httpContent, DataContractJsonSerializerSettings settings = null)
+        public static async Task<T> DeserializeJsonAsync<T>(this HttpContent httpContent, JsonSerializerOptions options = default)
         {
             if (httpContent == null) throw new ArgumentNullException(nameof(httpContent), "httpContent should not be null.");
-            using (var stream = await httpContent.ReadAsStreamAsync())
-            {
-                var serializer = settings != null ? new DataContractJsonSerializer(typeof(T), settings) : new DataContractJsonSerializer(typeof(T));
-                return (T)serializer.ReadObject(stream);
-            }
+            using var stream = await httpContent.ReadAsStreamAsync();
+            return await JsonSerializer.DeserializeAsync<T>(stream, options);
+        }
+
+        /// <summary>
+        /// Deserializes the HTTP JSON content into an object as the specific type.
+        /// </summary>
+        /// <typeparam name="T">The type of the result expected.</typeparam>
+        /// <param name="httpContent">The http response content.</param>
+        /// <param name="options">The options for serialization.</param>
+        /// <returns>The result serialized.</returns>
+        /// <exception cref="ArgumentNullException">The argument is null.</exception>
+        public static async Task<T> DeserializeJsonAsync<T>(this HttpContent httpContent, DataContractJsonSerializerSettings options)
+        {
+            if (httpContent == null) throw new ArgumentNullException(nameof(httpContent), "httpContent should not be null.");
+            using var stream = await httpContent.ReadAsStreamAsync();
+            var serializer = options != null ? new DataContractJsonSerializer(typeof(T), options) : new DataContractJsonSerializer(typeof(T));
+            return (T)serializer.ReadObject(stream);
         }
 
         /// <summary>
@@ -129,17 +141,15 @@ namespace Trivial.Net
         /// </summary>
         /// <typeparam name="T">The type of the result expected.</typeparam>
         /// <param name="httpContent">The http response content.</param>
-        /// <param name="settings">The options for serialization.</param>
+        /// <param name="options">The options for serialization.</param>
         /// <returns>The result serialized.</returns>
         /// <exception cref="ArgumentNullException">The argument is null.</exception>
-        public static async Task<T> DeserializeXmlAsync<T>(this HttpContent httpContent, DataContractSerializerSettings settings = null)
+        public static async Task<T> DeserializeXmlAsync<T>(this HttpContent httpContent, DataContractSerializerSettings options = null)
         {
             if (httpContent == null) throw new ArgumentNullException(nameof(httpContent), "httpContent should not be null.");
-            using (var stream = await httpContent.ReadAsStreamAsync())
-            {
-                var serializer = settings != null ? new DataContractSerializer(typeof(T), settings) : new DataContractSerializer(typeof(T)); 
-                return (T)serializer.ReadObject(stream);
-            }
+            using var stream = await httpContent.ReadAsStreamAsync();
+            var serializer = options != null ? new DataContractSerializer(typeof(T), options) : new DataContractSerializer(typeof(T));
+            return (T)serializer.ReadObject(stream);
         }
 
         /// <summary>
@@ -153,10 +163,8 @@ namespace Trivial.Net
         {
             if (httpContent == null) throw new ArgumentNullException(nameof(httpContent), "httpContent should not be null.");
             if (deserializer == null) throw new ArgumentNullException(nameof(deserializer), "serializer should not be null.");
-            using (var stream = await httpContent.ReadAsStreamAsync())
-            {
-                return deserializer.ReadObject(stream);
-            }
+            using var stream = await httpContent.ReadAsStreamAsync();
+            return deserializer.ReadObject(stream);
         }
 
         /// <summary>
@@ -180,17 +188,30 @@ namespace Trivial.Net
         /// </summary>
         /// <typeparam name="T">The type of the result expected.</typeparam>
         /// <param name="webResponse">The web response.</param>
-        /// <param name="settings">The options for serialization.</param>
+        /// <param name="options">The options for serialization.</param>
         /// <returns>The result serialized.</returns>
         /// <exception cref="ArgumentNullException">The argument is null.</exception>
-        public static T DeserializeJson<T>(this WebResponse webResponse, DataContractJsonSerializerSettings settings = null)
+        public static ValueTask<T> DeserializeJsonAsync<T>(this WebResponse webResponse, JsonSerializerOptions options = null)
         {
             if (webResponse == null) throw new ArgumentNullException(nameof(webResponse), "webResponse should not be null.");
-            using (var stream = webResponse.GetResponseStream())
-            {
-                var serializer = settings != null ? new DataContractJsonSerializer(typeof(T), settings) : new DataContractJsonSerializer(typeof(T));
-                return (T)serializer.ReadObject(stream);
-            }
+            using var stream = webResponse.GetResponseStream();
+            return JsonSerializer.DeserializeAsync<T>(stream, options);
+        }
+
+        /// <summary>
+        /// Deserializes the HTTP JSON content into an object as the specific type.
+        /// </summary>
+        /// <typeparam name="T">The type of the result expected.</typeparam>
+        /// <param name="webResponse">The web response.</param>
+        /// <param name="options">The options for serialization.</param>
+        /// <returns>The result serialized.</returns>
+        /// <exception cref="ArgumentNullException">The argument is null.</exception>
+        public static T DeserializeJson<T>(this WebResponse webResponse, DataContractJsonSerializerSettings options)
+        {
+            if (webResponse == null) throw new ArgumentNullException(nameof(webResponse), "webResponse should not be null.");
+            using var stream = webResponse.GetResponseStream();
+            var serializer = options != null ? new DataContractJsonSerializer(typeof(T), options) : new DataContractJsonSerializer(typeof(T));
+            return (T)serializer.ReadObject(stream);
         }
 
         /// <summary>
@@ -198,17 +219,15 @@ namespace Trivial.Net
         /// </summary>
         /// <typeparam name="T">The type of the result expected.</typeparam>
         /// <param name="webResponse">The web response.</param>
-        /// <param name="settings">The options for serialization.</param>
+        /// <param name="options">The options for serialization.</param>
         /// <returns>The result serialized.</returns>
         /// <exception cref="ArgumentNullException">The argument is null.</exception>
-        public static T DeserializeXml<T>(this WebResponse webResponse, DataContractSerializerSettings settings = null)
+        public static T DeserializeXml<T>(this WebResponse webResponse, DataContractSerializerSettings options = null)
         {
             if (webResponse == null) throw new ArgumentNullException(nameof(webResponse));
-            using (var stream = webResponse.GetResponseStream())
-            {
-                var serializer = settings != null ? new DataContractSerializer(typeof(T), settings) : new DataContractSerializer(typeof(T));
-                return (T)serializer.ReadObject(stream);
-            }
+            using var stream = webResponse.GetResponseStream();
+            var serializer = options != null ? new DataContractSerializer(typeof(T), options) : new DataContractSerializer(typeof(T));
+            return (T)serializer.ReadObject(stream);
         }
 
         /// <summary>
@@ -222,10 +241,8 @@ namespace Trivial.Net
         {
             if (webResponse == null) throw new ArgumentNullException(nameof(webResponse));
             if (serializer == null) throw new ArgumentNullException(nameof(serializer));
-            using (var stream = webResponse.GetResponseStream())
-            {
-                return serializer.ReadObject(stream);
-            }
+            using var stream = webResponse.GetResponseStream();
+            return serializer.ReadObject(stream);
         }
 
         /// <summary>
@@ -241,24 +258,36 @@ namespace Trivial.Net
         {
             if (webResponse == null) throw new ArgumentNullException(nameof(webResponse));
             if (deserializer == null) throw new ArgumentNullException(nameof(deserializer));
-            using (var stream = webResponse.GetResponseStream())
-            {
-                var reader = new StreamReader(stream, encoding ?? Encoding.UTF8);
-                var str = await reader.ReadToEndAsync();
-                return deserializer(str);
-            }
+            using var stream = webResponse.GetResponseStream();
+            var reader = new StreamReader(stream, encoding ?? Encoding.UTF8);
+            var str = await reader.ReadToEndAsync();
+            return deserializer(str);
         }
 
         /// <summary>
         /// Creates an HTTP content from a JSON of the specific object.
         /// </summary>
         /// <param name="value">The object.</param>
-        /// <param name="settings">An optional serialization settings.</param>
+        /// <param name="options">An optional serialization options.</param>
         /// <returns>The HTTP content a JSON of the specific object.</returns>
-        public static StringContent CreateJsonContent(object value, DataContractJsonSerializerSettings settings = null)
+        public static StringContent CreateJsonContent(object value, JsonSerializerOptions options = null)
         {
             if (value == null) return null;
-            var json = StringExtensions.ToJson(value, settings);
+            var json = StringExtensions.ToJson(value, options);
+            if (json == null) return null;
+            return new StringContent(json, Encoding.UTF8, WebFormat.JsonMIME);
+        }
+
+        /// <summary>
+        /// Creates an HTTP content from a JSON of the specific object.
+        /// </summary>
+        /// <param name="value">The object.</param>
+        /// <param name="options">An optional serialization options.</param>
+        /// <returns>The HTTP content a JSON of the specific object.</returns>
+        public static StringContent CreateJsonContent(object value, DataContractJsonSerializerSettings options)
+        {
+            if (value == null) return null;
+            var json = StringExtensions.ToJson(value, options);
             if (json == null) return null;
             return new StringContent(json, Encoding.UTF8, WebFormat.JsonMIME);
         }
