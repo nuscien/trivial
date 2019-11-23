@@ -232,7 +232,7 @@ namespace Trivial.Security
         /// <returns>A query string of the token request but without client secret.</returns>
         public override string ToString()
         {
-            var data = ToQueryData();
+            var data = ToQueryData() ?? new QueryData();
             data.Remove(TokenRequestBody.ClientSecretProperty);
             return data.ToString();
         }
