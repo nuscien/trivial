@@ -154,6 +154,48 @@ namespace Trivial.Web
         }
 
         /// <summary>
+        /// Parses Unix timestamp to date and time back.
+        /// </summary>
+        /// <param name="date">A date and time.</param>
+        /// <returns>The JavaScript date tick.</returns>
+        internal static long ParseUnixTimestamp(DateTime date)
+        {
+            return ParseDate(date) / 1000;
+        }
+
+        /// <summary>
+        /// Parses Unix timestamp to date and time back.
+        /// </summary>
+        /// <param name="date">A date and time.</param>
+        /// <returns>The JavaScript date tick.</returns>
+        internal static long? ParseUnixTimestamp(DateTime? date)
+        {
+            if (!date.HasValue) return null;
+            return ParseUnixTimestamp(date.Value);
+        }
+
+        /// <summary>
+        /// Parses Unix timestamp tick to date and time.
+        /// </summary>
+        /// <param name="tick">The JavaScript date tick.</param>
+        /// <returns>A date and time.</returns>
+        internal static DateTime ParseUnixTimestamp(long tick)
+        {
+            return ParseDate(tick * 1000);
+        }
+
+        /// <summary>
+        /// Parses Unix timestamp tick to date and time.
+        /// </summary>
+        /// <param name="tick">The JavaScript date tick.</param>
+        /// <returns>A date and time.</returns>
+        internal static DateTime? ParseUnixTimestamp(long? tick)
+        {
+            if (!tick.HasValue) return null;
+            return ParseUnixTimestamp(tick.Value);
+        }
+
+        /// <summary>
         /// Encodes a specific byte array into Base64Url format.
         /// </summary>
         /// <param name="bytes">The value to encode.</param>

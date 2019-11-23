@@ -117,11 +117,25 @@ namespace Trivial.Text
             if (data is null) return null;
             if (data is JsonStringValue str)
             {
-                return (string)str;
+                return str.Value;
             }
 
             if (convert) return data.ToString();
             throw new InvalidCastException($"The value type of property {key} is {data.ValueKind}.");
+        }
+
+        /// <summary>
+        /// Gets the value of the specific property.
+        /// </summary>
+        /// <param name="key">The property key.</param>
+        /// <returns>The value.</returns>
+        /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">The property does not exist.</exception>
+        /// <exception cref="FormatException">The value is not in a recognized format.</exception>
+        /// <exception cref="InvalidCastException">The value type is not the expected one.</exception>
+        public Guid GetGuidValue(string key)
+        {
+            return Guid.Parse(GetStringValue(key));
         }
 
         /// <summary>
@@ -167,7 +181,7 @@ namespace Trivial.Text
         public long GetInt64Value(string key)
         {
             AssertKey(key);
-            if (TryGetJsonValue<JsonIntegerValue>(key, out var v)) return (long)v;
+            if (TryGetJsonValue<JsonIntegerValue>(key, out var v)) return v.Value;
             var p = GetJsonValue<JsonFloatValue>(key);
             return (long)p;
         }
@@ -199,7 +213,7 @@ namespace Trivial.Text
         public double GetDoubleValue(string key)
         {
             AssertKey(key);
-            if (TryGetJsonValue<JsonFloatValue>(key, out var v)) return (double)v;
+            if (TryGetJsonValue<JsonFloatValue>(key, out var v)) return v.Value;
             var p = GetJsonValue<JsonIntegerValue>(key);
             return (double)p;
         }
@@ -216,7 +230,7 @@ namespace Trivial.Text
         {
             AssertKey(key);
             var p = GetJsonValue<JsonBooleanValue>(key);
-            return (bool)p;
+            return p.Value;
         }
 
         /// <summary>
@@ -251,6 +265,30 @@ namespace Trivial.Text
         /// Gets the value of the specific property.
         /// </summary>
         /// <param name="key">The property key.</param>
+        /// <param name="useUnixTimestampsFallback">true if use Unix timestamp to convert if the value is a number; otherwise, false, to use JavaScript date ticks fallback.</param>
+        /// <returns>The value.</returns>
+        /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">The property does not exist.</exception>
+        /// <exception cref="FormatException">The value is not in a recognized format.</exception>
+        /// <exception cref="InvalidCastException">The value type is not the expected one.</exception>
+        public DateTime GetDateTimeValue(string key, bool useUnixTimestampsFallback = false)
+        {
+            AssertKey(key);
+            if (TryGetJsonValue<JsonStringValue>(key, out var s))
+            {
+                var date = Web.WebFormat.ParseDate(s.Value);
+                if (date.HasValue) return date.Value;
+                throw new InvalidCastException("The value is not a date time.");
+            }
+
+            var num = GetJsonValue<JsonIntegerValue>(key);
+            return useUnixTimestampsFallback ? Web.WebFormat.ParseUnixTimestamp(num.Value) : Web.WebFormat.ParseDate(num.Value);
+        }
+
+        /// <summary>
+        /// Gets the value of the specific property.
+        /// </summary>
+        /// <param name="key">The property key.</param>
         /// <returns>The value.</returns>
         /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
         /// <exception cref="ArgumentOutOfRangeException">The property does not exist.</exception>
@@ -259,6 +297,37 @@ namespace Trivial.Text
         {
             AssertKey(key);
             return store[key] ?? JsonValueExtensions.Null;
+        }
+
+        /// <summary>
+        /// Gets the value of the specific property.
+        /// </summary>
+        /// <param name="key">The property key.</param>
+        /// <param name="convert">true if want to convert to string; otherwise, false.</param>
+        /// <returns>A string.</returns>
+        public string TryGetStringValue(string key, bool convert = false)
+        {
+            if (!store.TryGetValue(key, out var data))
+            {
+                return null;
+            }
+
+            if (data is null)
+            {
+                return null;
+            }
+
+            if (data is JsonStringValue str)
+            {
+                return str.Value;
+            }
+
+            if (convert)
+            {
+                return data.ToString();
+            }
+
+            return null;
         }
 
         /// <summary>
@@ -284,7 +353,7 @@ namespace Trivial.Text
 
             if (data is JsonStringValue str)
             {
-                result = (string)str;
+                result = str.Value;
                 return true;
             }
 
@@ -296,6 +365,38 @@ namespace Trivial.Text
 
             result = null;
             return false;
+        }
+
+        /// <summary>
+        /// Tries to gets the value of the specific property.
+        /// </summary>
+        /// <param name="key">The property key.</param>
+        /// <returns>The value; or null if fail to resolve.</returns>
+        public Guid? TryGetGuidValue(string key)
+        {
+            if (!TryGetStringValue(key, out var str) || string.IsNullOrWhiteSpace(str) || !Guid.TryParse(str, out var result))
+            {
+                return null;
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Tries to gets the value of the specific property.
+        /// </summary>
+        /// <param name="key">The property key.</param>
+        /// <param name="result">The result.</param>
+        /// <returns>true if has the property and the type is the one expected; otherwise, false.</returns>
+        public bool TryGetGuidValue(string key, out Guid result)
+        {
+            if (!TryGetStringValue(key, out var str) || string.IsNullOrWhiteSpace(str) || !Guid.TryParse(str, out result))
+            {
+                result = default;
+                return false;
+            }
+            
+            return true;
         }
 
         /// <summary>
@@ -355,7 +456,7 @@ namespace Trivial.Text
         /// <returns>The value; or null if fail to resolve.</returns>
         public long? TryGetInt64Value(string key)
         {
-            if (TryGetJsonValue<JsonIntegerValue>(key, out var p1)) return (long)p1;
+            if (TryGetJsonValue<JsonIntegerValue>(key, out var p1)) return p1.Value;
             if (TryGetJsonValue<JsonFloatValue>(key, out var p2)) return (long)p2;
             return null;
         }
@@ -405,7 +506,7 @@ namespace Trivial.Text
         /// <returns>The value; or null if fail to resolve.</returns>
         public double? TryGetDoubleValue(string key)
         {
-            if (TryGetJsonValue<JsonFloatValue>(key, out var p1)) return (double)p1;
+            if (TryGetJsonValue<JsonFloatValue>(key, out var p1)) return p1.Value;
             if (TryGetJsonValue<JsonIntegerValue>(key, out var p2)) return (double)p2;
             return null;
         }
@@ -430,7 +531,7 @@ namespace Trivial.Text
         /// <returns>The value; or null if fail to resolve.</returns>
         public bool? TryGetBooleanValue(string key)
         {
-            if (TryGetJsonValue<JsonBooleanValue>(key, out var p)) return (bool)p;
+            if (TryGetJsonValue<JsonBooleanValue>(key, out var p)) return p.Value;
             return null;
         }
 
@@ -499,6 +600,25 @@ namespace Trivial.Text
         /// Tries to gets the value of the specific property.
         /// </summary>
         /// <param name="key">The property key.</param>
+        /// <param name="useUnixTimestampsFallback">true if use Unix timestamp to convert if the value is a number; otherwise, false, to use JavaScript date ticks fallback.</param>
+        /// <returns>The value.</returns>
+        public DateTime? TryGetDateTimeValue(string key, bool useUnixTimestampsFallback = false)
+        {
+            AssertKey(key);
+            if (TryGetJsonValue<JsonStringValue>(key, out var s))
+            {
+                var date = Web.WebFormat.ParseDate(s.Value);
+                return date;
+            }
+
+            if (!TryGetJsonValue<JsonIntegerValue>(key, out var num)) return null;
+            return useUnixTimestampsFallback ? Web.WebFormat.ParseUnixTimestamp(num.Value) : Web.WebFormat.ParseDate(num.Value);
+        }
+
+        /// <summary>
+        /// Tries to gets the value of the specific property.
+        /// </summary>
+        /// <param name="key">The property key.</param>
         /// <returns>The value.</returns>
         public IJsonValue TryGetValue(string key)
         {
@@ -556,6 +676,18 @@ namespace Trivial.Text
         /// <param name="value">The value to set.</param>
         /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
         public void SetValue(string key, string value)
+        {
+            AssertKey(key);
+            store[key] = new JsonStringValue(value);
+        }
+
+        /// <summary>
+        /// Sets the value of the specific property.
+        /// </summary>
+        /// <param name="key">The property key.</param>
+        /// <param name="value">The value to set.</param>
+        /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+        public void SetValue(string key, Guid value)
         {
             AssertKey(key);
             store[key] = new JsonStringValue(value);
@@ -677,6 +809,42 @@ namespace Trivial.Text
         public void SetValue(JsonProperty property)
         {
             SetValue(property.Name, property.Value);
+        }
+
+        /// <summary>
+        /// Sets the value of the specific property.
+        /// </summary>
+        /// <param name="key">The property key.</param>
+        /// <param name="value">The value to set.</param>
+        /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+        public void SetDateTimeStringValue(string key, DateTime value)
+        {
+            AssertKey(key);
+            store[key] = new JsonStringValue(value);
+        }
+
+        /// <summary>
+        /// Sets the value of the specific property.
+        /// </summary>
+        /// <param name="key">The property key.</param>
+        /// <param name="value">The value to set.</param>
+        /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+        public void SetJavaScriptDateTicksValue(string key, DateTime value)
+        {
+            AssertKey(key);
+            store[key] = new JsonIntegerValue(Web.WebFormat.ParseDate(value));
+        }
+
+        /// <summary>
+        /// Sets the value of the specific property.
+        /// </summary>
+        /// <param name="key">The property key.</param>
+        /// <param name="value">The value to set.</param>
+        /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+        public void SetUnixTimestampValue(string key, DateTime value)
+        {
+            AssertKey(key);
+            store[key] = new JsonIntegerValue(Web.WebFormat.ParseUnixTimestamp(value));
         }
 
         /// <summary>

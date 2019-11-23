@@ -693,8 +693,8 @@ namespace Trivial.Security
         [DataMember(Name = "exp", EmitDefaultValue = false)]
         public long? ExpirationTick
         {
-            get => ParseDate(Expiration);
-            set => Expiration = ParseDate(value);
+            get => WebFormat.ParseUnixTimestamp(Expiration);
+            set => Expiration = WebFormat.ParseUnixTimestamp(value);
         }
 
         /// <summary>
@@ -715,8 +715,8 @@ namespace Trivial.Security
         [DataMember(Name = "nbf", EmitDefaultValue = false)]
         public long? NotBeforeTick
         {
-            get => ParseDate(NotBefore);
-            set => NotBefore = ParseDate(value);
+            get => WebFormat.ParseUnixTimestamp(NotBefore);
+            set => NotBefore = WebFormat.ParseUnixTimestamp(value);
         }
 
         /// <summary>
@@ -733,8 +733,8 @@ namespace Trivial.Security
         [DataMember(Name = "iat", EmitDefaultValue = false)]
         public long? IssuedAtTick
         {
-            get => ParseDate(IssuedAt);
-            set => IssuedAt = ParseDate(value);
+            get => WebFormat.ParseUnixTimestamp(IssuedAt);
+            set => IssuedAt = WebFormat.ParseUnixTimestamp(value);
         }
 
         /// <summary>
@@ -750,28 +750,6 @@ namespace Trivial.Security
                 Serializer = serializer
             };
             return jwt.ToAuthenticationHeaderValue();
-        }
-
-        /// <summary>
-        /// Parses Unix timestamp to date and time back.
-        /// </summary>
-        /// <param name="date">A date and time.</param>
-        /// <returns>The JavaScript date tick.</returns>
-        private static long? ParseDate(DateTime? date)
-        {
-            if (!date.HasValue) return null;
-            return WebFormat.ParseDate(date.Value) / 1000;
-        }
-
-        /// <summary>
-        /// Parses Unix timestamp tick to date and time.
-        /// </summary>
-        /// <param name="tick">The JavaScript date tick.</param>
-        /// <returns>A date and time.</returns>
-        public static DateTime? ParseDate(long? tick)
-        {
-            if (!tick.HasValue) return null;
-            return WebFormat.ParseDate(tick.Value * 1000);
         }
     }
 }
