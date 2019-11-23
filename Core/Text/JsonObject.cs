@@ -2,8 +2,11 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.IO;
 using System.Text;
 using System.Text.Json;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Trivial.Text
 {
@@ -317,7 +320,7 @@ namespace Trivial.Text
         public IJsonValue GetValue(string key)
         {
             AssertKey(key);
-            return store[key] ?? JsonValueExtensions.Null;
+            return store[key] ?? JsonValues.Null;
         }
 
         /// <summary>
@@ -429,7 +432,9 @@ namespace Trivial.Text
         {
             if (TryGetJsonValue<JsonIntegerValue>(key, out var p1)) return (uint)p1;
             if (TryGetJsonValue<JsonFloatValue>(key, out var p2)) return (uint)p2;
-            return null;
+            var str = TryGetStringValue(key);
+            if (string.IsNullOrWhiteSpace(str) || !uint.TryParse(str, out var p3)) return null;
+            return p3;
         }
 
         /// <summary>
@@ -454,7 +459,9 @@ namespace Trivial.Text
         {
             if (TryGetJsonValue<JsonIntegerValue>(key, out var p1)) return (int)p1;
             if (TryGetJsonValue<JsonFloatValue>(key, out var p2)) return (int)p2;
-            return null;
+            var str = TryGetStringValue(key);
+            if (string.IsNullOrWhiteSpace(str) || !int.TryParse(str, out var p3)) return null;
+            return p3;
         }
 
         /// <summary>
@@ -479,7 +486,9 @@ namespace Trivial.Text
         {
             if (TryGetJsonValue<JsonIntegerValue>(key, out var p1)) return p1.Value;
             if (TryGetJsonValue<JsonFloatValue>(key, out var p2)) return (long)p2;
-            return null;
+            var str = TryGetStringValue(key);
+            if (string.IsNullOrWhiteSpace(str) || !long.TryParse(str, out var p3)) return null;
+            return p3;
         }
 
         /// <summary>
@@ -504,7 +513,9 @@ namespace Trivial.Text
         {
             if (TryGetJsonValue<JsonFloatValue>(key, out var p1)) return (float)p1;
             if (TryGetJsonValue<JsonIntegerValue>(key, out var p2)) return (float)p2;
-            return null;
+            var str = TryGetStringValue(key);
+            if (string.IsNullOrWhiteSpace(str) || !float.TryParse(str, out var p3)) return null;
+            return p3;
         }
 
         /// <summary>
@@ -529,7 +540,9 @@ namespace Trivial.Text
         {
             if (TryGetJsonValue<JsonFloatValue>(key, out var p1)) return p1.Value;
             if (TryGetJsonValue<JsonIntegerValue>(key, out var p2)) return (double)p2;
-            return null;
+            var str = TryGetStringValue(key);
+            if (string.IsNullOrWhiteSpace(str) || !double.TryParse(str, out var p3)) return null;
+            return p3;
         }
 
         /// <summary>
@@ -553,7 +566,9 @@ namespace Trivial.Text
         public bool? TryGetBooleanValue(string key)
         {
             if (TryGetJsonValue<JsonBooleanValue>(key, out var p)) return p.Value;
-            return null;
+            var str = TryGetStringValue(key);
+            if (string.IsNullOrWhiteSpace(str) || !bool.TryParse(str, out var p3)) return null;
+            return p3;
         }
 
         /// <summary>
@@ -645,7 +660,7 @@ namespace Trivial.Text
         {
             try
             {
-                if (!string.IsNullOrWhiteSpace(key) && store.TryGetValue(key, out var value)) return value ?? JsonValueExtensions.Null;
+                if (!string.IsNullOrWhiteSpace(key) && store.TryGetValue(key, out var value)) return value ?? JsonValues.Null;
             }
             catch (ArgumentException)
             {
@@ -688,6 +703,26 @@ namespace Trivial.Text
         {
             AssertKey(key);
             store[key] = null;
+        }
+
+        /// <summary>
+        /// Sets properties.
+        /// </summary>
+        /// <param name="data">Key value pairs to set.</param>
+        /// <returns>The count to set.</returns>
+        /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+        public int SetRange(IEnumerable<KeyValuePair<string, string>> data)
+        {
+            var count = 0;
+            if (data == null) return count;
+            foreach (var props in data)
+            {
+                if (string.IsNullOrWhiteSpace(props.Key)) continue;
+                count++;
+                SetValue(props.Key, props.Value);
+            }
+
+            return count;
         }
 
         /// <summary>
@@ -819,7 +854,7 @@ namespace Trivial.Text
         public void SetValue(string key, JsonElement value)
         {
             AssertKey(key);
-            store[key] = JsonValueExtensions.ToJsonValue(value);
+            store[key] = JsonValues.ToJsonValue(value);
         }
 
         /// <summary>
@@ -866,6 +901,18 @@ namespace Trivial.Text
         {
             AssertKey(key);
             store[key] = new JsonIntegerValue(Web.WebFormat.ParseUnixTimestamp(value));
+        }
+
+        /// <summary>
+        /// Sets the value of the specific property.
+        /// </summary>
+        /// <param name="key">The property key.</param>
+        /// <param name="value">The value to set.</param>
+        /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+        public void SetWindowsFileTimeUtcValue(string key, DateTime value)
+        {
+            AssertKey(key);
+            store[key] = new JsonIntegerValue(value.ToFileTimeUtc());
         }
 
         /// <summary>
@@ -1095,14 +1142,55 @@ namespace Trivial.Text
         /// <summary>
         /// Parses JSON object.
         /// </summary>
-        /// <param name="json">A JSON array object.</param>
+        /// <param name="json">A JSON object.</param>
         /// <param name="options">Options to control the reader behavior during parsing.</param>
         /// <returns>A JSON object instance.</returns>
-        /// <exception cref="JsonException">json does not represent a valid single JSON array.</exception>
+        /// <exception cref="JsonException">json does not represent a valid single JSON object.</exception>
         /// <exception cref="ArgumentException">readerOptions contains unsupported options.</exception>
         public static JsonObject Parse(string json, JsonDocumentOptions options = default)
         {
             return JsonDocument.Parse(json, options);
+        }
+
+        /// <summary>
+        /// Parses a stream as UTF-8-encoded data representing a JSON object.
+        /// The stream is read to completio
+        /// </summary>
+        /// <param name="utf8Json">The JSON data to parse.</param>
+        /// <param name="options">Options to control the reader behavior during parsing.</param>
+        /// <returns>A JSON object instance.</returns>
+        /// <exception cref="JsonException">json does not represent a valid single JSON object.</exception>
+        /// <exception cref="ArgumentException">readerOptions contains unsupported options.</exception>
+        public static JsonObject Parse(Stream utf8Json, JsonDocumentOptions options = default)
+        {
+            return JsonDocument.Parse(utf8Json, options);
+        }
+
+        /// <summary>
+        /// Parses a stream as UTF-8-encoded data representing a JSON object.
+        /// The stream is read to completio
+        /// </summary>
+        /// <param name="utf8Json">The JSON data to parse.</param>
+        /// <param name="options">Options to control the reader behavior during parsing.</param>
+        /// <param name="cancellationToken">The token to monitor for cancellation requests.</param>
+        /// <returns>A JSON object instance.</returns>
+        /// <exception cref="JsonException">json does not represent a valid single JSON object.</exception>
+        /// <exception cref="ArgumentException">readerOptions contains unsupported options.</exception>
+        public static async Task<JsonObject> ParseAsync(Stream utf8Json, JsonDocumentOptions options = default, CancellationToken cancellationToken = default)
+        {
+            return await JsonDocument.ParseAsync(utf8Json, options, cancellationToken);
+        }
+
+        /// <summary>
+        /// Parses JSON object.
+        /// </summary>
+        /// <param name="reader">A JSON object.</param>
+        /// <returns>A JSON object instance.</returns>
+        /// <exception cref="JsonException">json does not represent a valid single JSON object.</exception>
+        /// <exception cref="ArgumentException">readerOptions contains unsupported options.</exception>
+        public static JsonObject ParseValue(ref Utf8JsonReader reader)
+        {
+            return JsonDocument.ParseValue(ref reader);
         }
     }
 }

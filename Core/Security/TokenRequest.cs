@@ -7,6 +7,7 @@ using System.Reflection;
 using System.Runtime.Serialization;
 using System.Security;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 using Trivial.Collection;
@@ -204,16 +205,16 @@ namespace Trivial.Security
         /// Gets the JSON format string.
         /// </summary>
         /// <returns>A string in JSON format.</returns>
-        protected virtual IDictionary<string, string> ToJsonProperites()
+        protected virtual JsonObject ToJsonObject()
         {
-            var data = Body?.ToJsonProperites() ?? new Dictionary<string, string>();
+            var json = Body?.ToJsonObject() ?? new JsonObject();
             if (!string.IsNullOrWhiteSpace(ClientId))
-                data.Add(TokenRequestBody.ClientIdProperty, JsonStringValue.ToJson(ClientId));
+                json.SetValue(TokenRequestBody.ClientIdProperty, ClientId);
             if (ClientCredentials != null && ClientCredentials.Secret != null && ClientCredentials.Secret.Length > 0)
-                data.Add(TokenRequestBody.ClientSecretProperty, JsonStringValue.ToJson(ClientCredentials.Secret.ToUnsecureString()));
+                json.SetValue(TokenRequestBody.ClientSecretProperty, ClientCredentials.Secret.ToUnsecureString());
             if (!string.IsNullOrWhiteSpace(ScopeString))
-                data.Add(TokenInfo.ScopeProperty, JsonStringValue.ToJson(ScopeString));
-            return data;
+                json.SetValue(TokenInfo.ScopeProperty, ScopeString);
+            return json;
         }
 
         /// <summary>
@@ -222,17 +223,7 @@ namespace Trivial.Security
         /// <returns>A string in JSON format.</returns>
         public virtual string ToJsonString()
         {
-            var data = ToJsonProperites();
-            var sb = new StringBuilder("{");
-            foreach (var kvp in data)
-            {
-                if (string.IsNullOrWhiteSpace(kvp.Key) || string.IsNullOrWhiteSpace(kvp.Value)) continue;
-                sb.AppendFormat("{0}:{1},", JsonStringValue.ToJson(kvp.Key), kvp.Value);
-            }
-
-            if (sb.Length > 3) sb.Remove(sb.Length - 1, 1);
-            sb.Append("}");
-            return sb.ToString();
+            return ToJsonObject()?.ToString() ?? "{}";
         }
 
         /// <summary>
@@ -480,26 +471,13 @@ namespace Trivial.Security
         }
 
         /// <summary>
-        /// Gets the JSON format string.
+        /// Gets the JSON object.
         /// </summary>
-        /// <returns>A string in JSON format.</returns>
-        internal protected virtual IDictionary<string, string> ToJsonProperites()
+        /// <returns>A JSON object instance.</returns>
+        internal protected virtual JsonObject ToJsonObject()
         {
-            var data = new Dictionary<string, string>();
-            var props = GetType().GetProperties();
-            foreach (var item in props)
-            {
-                var attributes = item.GetCustomAttributes<DataMemberAttribute>(true);
-                if (attributes == null) continue;
-                var attr = attributes.FirstOrDefault();
-                if (attr == null) continue;
-                var propValue = item.GetValue(this);
-                if (propValue == null) continue;
-                (var propStr, var isPropStr) = GetNumberValueString(propValue, propValue.GetType());
-                if (propStr != null) data.Add(attr.Name, isPropStr ? JsonStringValue.ToJson(propStr) : propStr);
-            }
-
-            return data;
+            var json = JsonSerializer.Serialize(this, GetType());
+            return JsonObject.Parse(json);
         }
 
         private (string, bool) GetNumberValueString(object obj, Type type)
@@ -567,7 +545,6 @@ namespace Trivial.Security
             query = q ?? new QueryData();
         }
 
-
         /// <summary>
         /// Gets the query data.
         /// </summary>
@@ -581,15 +558,11 @@ namespace Trivial.Security
         /// Gets the JSON format string.
         /// </summary>
         /// <returns>A string in JSON format.</returns>
-        internal protected override IDictionary<string, string> ToJsonProperites()
+        internal protected override JsonObject ToJsonObject()
         {
-            var data = new Dictionary<string, string>();
-            foreach (var prop in query)
-            {
-                data.Add(prop.Key, JsonStringValue.ToJson(prop.Value));
-            }
-
-            return data;
+            var json = new JsonObject();
+            json.SetRange(query);
+            return json;
         }
     }
 
@@ -1122,7 +1095,6 @@ namespace Trivial.Security
         /// <summary>
         /// Gets or sets the password.
         /// </summary>
-        [DataMember(Name = PasswordProperty)]
         public SecureString Password { get; set; }
 
         /// <summary>
@@ -1171,6 +1143,28 @@ namespace Trivial.Security
             if (string.IsNullOrWhiteSpace(s)) return;
             var q = QueryData.Parse(s);
             Fill(q);
+        }
+
+        /// <summary>
+        /// Gets the query data.
+        /// </summary>
+        /// <returns>A query data.</returns>
+        public override QueryData ToQueryData()
+        {
+            var query = base.ToQueryData() ?? new QueryData();
+            query[PasswordProperty] = Password.ToUnsecureString();
+            return query;
+        }
+
+        /// <summary>
+        /// Gets the JSON format string.
+        /// </summary>
+        /// <returns>A string in JSON format.</returns>
+        internal protected override JsonObject ToJsonObject()
+        {
+            var json = base.ToJsonObject() ?? new JsonObject();
+            json.SetValue(PasswordProperty, Password.ToUnsecureString());
+            return json;
         }
 
         /// <summary>

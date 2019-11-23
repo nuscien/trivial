@@ -408,7 +408,7 @@ namespace Trivial.Text
     /// <summary>
     /// The extensions for class IJsonValue, JsonDocument, JsonElement, etc.
     /// </summary>
-    public static class JsonValueExtensions
+    public static class JsonValues
     {
         /// <summary>
         /// JSON null.
@@ -449,6 +449,90 @@ namespace Trivial.Text
                 JsonValueKind.Object => (JsonObject)json,
                 _ => null
             };
+        }
+
+        /// <summary>
+        /// Attempts to represent the current JSON string or JavaScript date tidks number as a date time.
+        /// </summary>
+        /// <param name="json">The JSON element.</param>
+        /// <param name="value">When this method returns, contains the date and time value equivalent to the current JSON string.</param>
+        /// <returns>true if the string can be represented as a System.DateTime; otherwise, false.</returns>
+        /// <exception cref="InvalidOperationException">This value kind is not string or number.</exception>
+        /// <exception cref="ObjectDisposedException">The parent System.Text.Json.JsonDocument has been disposed.</exception>
+        public static bool TryGetJavaScriptDateTicks(this JsonElement json, out DateTime value)
+        {
+            switch (json.ValueKind)
+            {
+                case JsonValueKind.String:
+                    if (json.TryGetDateTime(out DateTime tmp)) break;
+                    value = tmp;
+                    return true;
+                case JsonValueKind.Number:
+                    if (!json.TryGetInt64(out long tick)) break;
+                    value = Web.WebFormat.ParseDate(tick);
+                    return true;
+                default:
+                    throw new InvalidOperationException("The value kind should be string or number.");
+            }
+
+            value = default;
+            return false;
+        }
+
+        /// <summary>
+        /// Attempts to represent the current JSON string or Unix timestamps number as a date time.
+        /// </summary>
+        /// <param name="json">The JSON element.</param>
+        /// <param name="value">When this method returns, contains the date and time value equivalent to the current JSON string.</param>
+        /// <returns>true if the string can be represented as a System.DateTime; otherwise, false.</returns>
+        /// <exception cref="InvalidOperationException">This value kind is not string or number.</exception>
+        /// <exception cref="ObjectDisposedException">The parent System.Text.Json.JsonDocument has been disposed.</exception>
+        public static bool TryGetUnixTimestamps(this JsonElement json, out DateTime value)
+        {
+            switch (json.ValueKind)
+            {
+                case JsonValueKind.String:
+                    if (json.TryGetDateTime(out DateTime tmp)) break;
+                    value = tmp;
+                    return true;
+                case JsonValueKind.Number:
+                    if (!json.TryGetInt64(out long tick)) break;
+                    value = Web.WebFormat.ParseUnixTimestamp(tick);
+                    return true;
+                default:
+                    throw new InvalidOperationException("The value kind should be string or number.");
+            }
+
+            value = default;
+            return false;
+        }
+
+        /// <summary>
+        /// Attempts to represent the current JSON string or Windows file time number as a date time.
+        /// </summary>
+        /// <param name="json">The JSON element.</param>
+        /// <param name="value">When this method returns, contains the date and time value equivalent to the current JSON string.</param>
+        /// <returns>true if the string can be represented as a System.DateTime; otherwise, false.</returns>
+        /// <exception cref="InvalidOperationException">This value kind is not string or number.</exception>
+        /// <exception cref="ObjectDisposedException">The parent System.Text.Json.JsonDocument has been disposed.</exception>
+        public static bool TryGetWindowsFileTimeUtc(this JsonElement json, out DateTime value)
+        {
+            switch (json.ValueKind)
+            {
+                case JsonValueKind.String:
+                    if (json.TryGetDateTime(out DateTime tmp)) break;
+                    value = tmp;
+                    return true;
+                case JsonValueKind.Number:
+                    if (!json.TryGetInt64(out long tick)) break;
+                    value = DateTime.FromFileTimeUtc(tick);
+                    return true;
+                default:
+                    throw new InvalidOperationException("The value kind should be string or number.");
+            }
+
+            value = default;
+            return false;
         }
     }
 }
