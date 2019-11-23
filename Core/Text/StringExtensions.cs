@@ -477,7 +477,7 @@ namespace Trivial.Text
                 var str = new StringBuilder("{");
                 foreach (var kvp in col)
                 {
-                    str.AppendFormat("\"{0}\":\"{1}\",", ToStringJsonToken(kvp.Key), ToStringJsonToken(kvp.Value));
+                    str.AppendFormat("\"{0}\":\"{1}\",", JsonStringValue.ToJson(kvp.Key), JsonStringValue.ToJson(kvp.Value));
                 }
 
                 str.Remove(str.Length - 1, 1);
@@ -485,18 +485,23 @@ namespace Trivial.Text
                 return str.ToString();
             }
 
-            if (t == typeof(string)) return ToStringJsonToken(obj.ToString());
-            if (obj is Net.HttpUri uri2) return ToStringJsonToken(uri2.ToString());
+            if (t == typeof(string)) return JsonStringValue.ToJson(obj.ToString());
+            if (obj is Net.HttpUri uri2) return JsonStringValue.ToJson(uri2.ToString());
             if (obj is Uri uri)
             {
                 try
                 {
-                    return ToStringJsonToken(uri.OriginalString);
+                    return JsonStringValue.ToJson(uri.OriginalString);
                 }
                 catch (InvalidOperationException)
                 {
-                    return ToStringJsonToken(uri.ToString());
+                    return JsonStringValue.ToJson(uri.ToString());
                 }
+            }
+
+            if (obj is IJsonValue)
+            {
+                return obj.ToString();
             }
 
             if (t.IsValueType)
@@ -514,26 +519,17 @@ namespace Trivial.Text
                 if (obj is uint i64u)
                     return i64u.ToString("g", CultureInfo.InvariantCulture);
                 if (obj is DateTime d)
-                    return ToStringJsonToken(d.ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ss.fffZ"));
+                    return JsonStringValue.ToJson(d.ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ss.fffZ"));
                 if (obj is DateTimeOffset dto)
-                    return ToStringJsonToken(dto.ToString("yyyy-MM-ddTHH:mm:ss.fffzzz"));
+                    return JsonStringValue.ToJson(dto.ToString("yyyy-MM-ddTHH:mm:ss.fffzzz"));
                 if (obj is double f2)
-                {
-                    var str = f2.ToString("g", CultureInfo.InvariantCulture);
-                    if (str.IndexOf("e") < 0) return str;
-                    return ToStringJsonToken(str);
-                }
-
+                    return f2.ToString("g", CultureInfo.InvariantCulture);
                 if (obj is TimeSpan ts)
-                {
-                    var str = ts.TotalSeconds.ToString("g", CultureInfo.InvariantCulture);
-                    if (str.IndexOf("e") < 0) return str;
-                    return ToStringJsonToken(str);
-                }
+                    return ts.TotalSeconds.ToString("g", CultureInfo.InvariantCulture);
 
                 if (t == typeof(Guid)
                     || t == typeof(Maths.Angle))
-                    return ToStringJsonToken(obj.ToString());
+                    return JsonStringValue.ToJson(obj.ToString());
                 if (t == typeof(byte)
                     || t == typeof(short)
                     || t == typeof(ushort))
@@ -655,24 +651,6 @@ namespace Trivial.Text
             }
 
             return sb.ToString();
-        }
-
-        internal static string ToStringJsonToken(string s, bool removeQuotes = false)
-        {
-            if (s == null) return removeQuotes ? null : "null";
-            s = s
-                .Replace("\\", "\\\\")
-                .Replace("\r", "\\r")
-                .Replace("\n", "\\n")
-                .Replace("\t", "\\t")
-                .Replace("\a", "\\n")
-                .Replace("\b", "\\t")
-                .Replace("\f", "\\f")
-                .Replace("\v", "\\v")
-                .Replace("\0", "\\0")
-                .Replace("\"", "\\\"");
-            if (!removeQuotes) s = string.Format("\"{0}\"", s);
-            return s;
         }
 
         private static string ToUpper(string source, CultureInfo culture)

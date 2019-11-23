@@ -8,6 +8,8 @@ using System.Security;
 using System.Text;
 using System.Text.Json;
 
+using Trivial.Text;
+
 namespace Trivial.Web
 {
     /// <summary>
@@ -248,6 +250,19 @@ namespace Trivial.Web
                 {
                     return (T)(object)JsonDocument.Parse(str);
                 };
+            }
+            else if (t == typeof(IJsonValue))
+            {
+                if (t == typeof (JsonObject))
+                    return str =>
+                    {
+                        return (T)(object)JsonObject.Parse(str);
+                    };
+                if (t == typeof(JsonArray))
+                    return str =>
+                    {
+                        return (T)(object)JsonArray.Parse(str);
+                    };
             }
             else if (t.FullName.StartsWith("Newtonsoft.Json.Linq.J", StringComparison.InvariantCulture))
             {

@@ -208,11 +208,11 @@ namespace Trivial.Security
         {
             var data = Body?.ToJsonProperites() ?? new Dictionary<string, string>();
             if (!string.IsNullOrWhiteSpace(ClientId))
-                data.Add(TokenRequestBody.ClientIdProperty, StringExtensions.ToStringJsonToken(ClientId));
+                data.Add(TokenRequestBody.ClientIdProperty, JsonStringValue.ToJson(ClientId));
             if (ClientCredentials != null && ClientCredentials.Secret != null && ClientCredentials.Secret.Length > 0)
-                data.Add(TokenRequestBody.ClientSecretProperty, StringExtensions.ToStringJsonToken(ClientCredentials.Secret.ToUnsecureString()));
+                data.Add(TokenRequestBody.ClientSecretProperty, JsonStringValue.ToJson(ClientCredentials.Secret.ToUnsecureString()));
             if (!string.IsNullOrWhiteSpace(ScopeString))
-                data.Add(TokenInfo.ScopeProperty, StringExtensions.ToStringJsonToken(ScopeString));
+                data.Add(TokenInfo.ScopeProperty, JsonStringValue.ToJson(ScopeString));
             return data;
         }
 
@@ -227,7 +227,7 @@ namespace Trivial.Security
             foreach (var kvp in data)
             {
                 if (string.IsNullOrWhiteSpace(kvp.Key) || string.IsNullOrWhiteSpace(kvp.Value)) continue;
-                sb.AppendFormat("{0}:{1},", StringExtensions.ToStringJsonToken(kvp.Key), kvp.Value);
+                sb.AppendFormat("{0}:{1},", JsonStringValue.ToJson(kvp.Key), kvp.Value);
             }
 
             if (sb.Length > 3) sb.Remove(sb.Length - 1, 1);
@@ -496,7 +496,7 @@ namespace Trivial.Security
                 var propValue = item.GetValue(this);
                 if (propValue == null) continue;
                 (var propStr, var isPropStr) = GetNumberValueString(propValue, propValue.GetType());
-                if (propStr != null) data.Add(attr.Name, isPropStr ? StringExtensions.ToStringJsonToken(propStr) : propStr);
+                if (propStr != null) data.Add(attr.Name, isPropStr ? JsonStringValue.ToJson(propStr) : propStr);
             }
 
             return data;
@@ -586,7 +586,7 @@ namespace Trivial.Security
             var data = new Dictionary<string, string>();
             foreach (var prop in query)
             {
-                data.Add(prop.Key, StringExtensions.ToStringJsonToken(prop.Value));
+                data.Add(prop.Key, JsonStringValue.ToJson(prop.Value));
             }
 
             return data;
