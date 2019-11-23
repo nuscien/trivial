@@ -102,6 +102,27 @@ namespace Trivial.Text
         }
 
         /// <summary>
+        /// Gets the value kind of the specific property.
+        /// </summary>
+        /// <param name="key">The property key.</param>
+        /// <param name="strictMode">true if enable strict mode; otherwise, false, to return undefined for non-existing.</param>
+        /// <returns>The value.</returns>
+        /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">The property does not exist.</exception>
+        public JsonValueKind GetValueKind(string key, bool strictMode = false)
+        {
+            if (strictMode) AssertKey(key);
+            if (string.IsNullOrWhiteSpace(key) || !store.TryGetValue(key, out var data))
+            {
+                if (strictMode) throw new ArgumentOutOfRangeException("key does not exist.");
+                return JsonValueKind.Undefined;
+            }
+
+            if (data is null) return JsonValueKind.Null;
+            return data.ValueKind;
+        }
+
+        /// <summary>
         /// Gets the value of the specific property.
         /// </summary>
         /// <param name="key">The property key.</param>
@@ -300,7 +321,7 @@ namespace Trivial.Text
         }
 
         /// <summary>
-        /// Gets the value of the specific property.
+        /// Tries to get the value of the specific property.
         /// </summary>
         /// <param name="key">The property key.</param>
         /// <param name="convert">true if want to convert to string; otherwise, false.</param>
@@ -331,7 +352,7 @@ namespace Trivial.Text
         }
 
         /// <summary>
-        /// Gets the value of the specific property.
+        /// Tries to get the value of the specific property.
         /// </summary>
         /// <param name="key">The property key.</param>
         /// <param name="result">The result.</param>
@@ -368,7 +389,7 @@ namespace Trivial.Text
         }
 
         /// <summary>
-        /// Tries to gets the value of the specific property.
+        /// Tries to get the value of the specific property.
         /// </summary>
         /// <param name="key">The property key.</param>
         /// <returns>The value; or null if fail to resolve.</returns>
@@ -383,7 +404,7 @@ namespace Trivial.Text
         }
 
         /// <summary>
-        /// Tries to gets the value of the specific property.
+        /// Tries to get the value of the specific property.
         /// </summary>
         /// <param name="key">The property key.</param>
         /// <param name="result">The result.</param>
@@ -400,7 +421,7 @@ namespace Trivial.Text
         }
 
         /// <summary>
-        /// Tries to gets the value of the specific property.
+        /// Tries to get the value of the specific property.
         /// </summary>
         /// <param name="key">The property key.</param>
         /// <returns>The value; or null if fail to resolve.</returns>
@@ -412,7 +433,7 @@ namespace Trivial.Text
         }
 
         /// <summary>
-        /// Tries to gets the value of the specific property.
+        /// Tries to get the value of the specific property.
         /// </summary>
         /// <param name="key">The property key.</param>
         /// <param name="result">The result.</param>
@@ -425,7 +446,7 @@ namespace Trivial.Text
         }
 
         /// <summary>
-        /// Tries to gets the value of the specific property.
+        /// Tries to get the value of the specific property.
         /// </summary>
         /// <param name="key">The property key.</param>
         /// <returns>The value; or null if fail to resolve.</returns>
@@ -437,7 +458,7 @@ namespace Trivial.Text
         }
 
         /// <summary>
-        /// Tries to gets the value of the specific property.
+        /// Tries to get the value of the specific property.
         /// </summary>
         /// <param name="key">The property key.</param>
         /// <param name="result">The result.</param>
@@ -450,7 +471,7 @@ namespace Trivial.Text
         }
 
         /// <summary>
-        /// Tries to gets the value of the specific property.
+        /// Tries to get the value of the specific property.
         /// </summary>
         /// <param name="key">The property key.</param>
         /// <returns>The value; or null if fail to resolve.</returns>
@@ -462,7 +483,7 @@ namespace Trivial.Text
         }
 
         /// <summary>
-        /// Tries to gets the value of the specific property.
+        /// Tries to get the value of the specific property.
         /// </summary>
         /// <param name="key">The property key.</param>
         /// <param name="result">The result.</param>
@@ -475,7 +496,7 @@ namespace Trivial.Text
         }
 
         /// <summary>
-        /// Tries to gets the value of the specific property.
+        /// Tries to get the value of the specific property.
         /// </summary>
         /// <param name="key">The property key.</param>
         /// <returns>The value; or null if fail to resolve.</returns>
@@ -487,7 +508,7 @@ namespace Trivial.Text
         }
 
         /// <summary>
-        /// Tries to gets the value of the specific property.
+        /// Tries to get the value of the specific property.
         /// </summary>
         /// <param name="key">The property key.</param>
         /// <param name="result">The result.</param>
@@ -500,7 +521,7 @@ namespace Trivial.Text
         }
 
         /// <summary>
-        /// Tries to gets the value of the specific property.
+        /// Tries to get the value of the specific property.
         /// </summary>
         /// <param name="key">The property key.</param>
         /// <returns>The value; or null if fail to resolve.</returns>
@@ -512,7 +533,7 @@ namespace Trivial.Text
         }
 
         /// <summary>
-        /// Tries to gets the value of the specific property.
+        /// Tries to get the value of the specific property.
         /// </summary>
         /// <param name="key">The property key.</param>
         /// <param name="result">The result.</param>
@@ -525,7 +546,7 @@ namespace Trivial.Text
         }
 
         /// <summary>
-        /// Tries to gets the value of the specific property.
+        /// Tries to get the value of the specific property.
         /// </summary>
         /// <param name="key">The property key.</param>
         /// <returns>The value; or null if fail to resolve.</returns>
@@ -536,7 +557,7 @@ namespace Trivial.Text
         }
 
         /// <summary>
-        /// Tries to gets the value of the specific property.
+        /// Tries to get the value of the specific property.
         /// </summary>
         /// <param name="key">The property key.</param>
         /// <param name="result">The result.</param>
@@ -549,7 +570,7 @@ namespace Trivial.Text
         }
 
         /// <summary>
-        /// Tries to gets the value of the specific property.
+        /// Tries to get the value of the specific property.
         /// </summary>
         /// <param name="key">The property key.</param>
         /// <returns>The value.</returns>
@@ -560,7 +581,7 @@ namespace Trivial.Text
         }
 
         /// <summary>
-        /// Tries to gets the value of the specific property.
+        /// Tries to get the value of the specific property.
         /// </summary>
         /// <param name="key">The property key.</param>
         /// <param name="result">The result.</param>
@@ -573,7 +594,7 @@ namespace Trivial.Text
         }
 
         /// <summary>
-        /// Tries to gets the value of the specific property.
+        /// Tries to get the value of the specific property.
         /// </summary>
         /// <param name="key">The property key.</param>
         /// <returns>The value.</returns>
@@ -584,7 +605,7 @@ namespace Trivial.Text
         }
 
         /// <summary>
-        /// Tries to gets the value of the specific property.
+        /// Tries to get the value of the specific property.
         /// </summary>
         /// <param name="key">The property key.</param>
         /// <param name="result">The result.</param>
@@ -597,7 +618,7 @@ namespace Trivial.Text
         }
 
         /// <summary>
-        /// Tries to gets the value of the specific property.
+        /// Tries to get the value of the specific property.
         /// </summary>
         /// <param name="key">The property key.</param>
         /// <param name="useUnixTimestampsFallback">true if use Unix timestamp to convert if the value is a number; otherwise, false, to use JavaScript date ticks fallback.</param>
@@ -616,7 +637,7 @@ namespace Trivial.Text
         }
 
         /// <summary>
-        /// Tries to gets the value of the specific property.
+        /// Tries to get the value of the specific property.
         /// </summary>
         /// <param name="key">The property key.</param>
         /// <returns>The value.</returns>
@@ -634,7 +655,7 @@ namespace Trivial.Text
         }
 
         /// <summary>
-        /// Tries to gets the value of the specific property.
+        /// Tries to get the value of the specific property.
         /// </summary>
         /// <param name="key">The property key.</param>
         /// <param name="result">The result.</param>
@@ -939,6 +960,17 @@ namespace Trivial.Text
             if (str.Length > 1) str.Remove(str.Length - 1, 1);
             str.Append('}');
             return str.ToString();
+        }
+
+        /// <summary>
+        /// Deserializes.
+        /// </summary>
+        /// <param name="options">Options to control the behavior during parsing.</param>
+        /// <returns>A JSON object instance.</returns>
+        /// <exception cref="ArgumentException">readerOptions contains unsupported options.</exception>
+        public T Deserialize<T>(JsonSerializerOptions options = default)
+        {
+            return JsonSerializer.Deserialize<T>(ToString(), options);
         }
 
         /// <summary>

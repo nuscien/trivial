@@ -65,7 +65,7 @@ namespace Trivial.Text
             try
             {
                 var value = store[index];
-                return value.ValueKind == JsonValueKind.Null || value.ValueKind == JsonValueKind.Undefined;
+                return value is null || value.ValueKind == JsonValueKind.Null || value.ValueKind == JsonValueKind.Undefined;
             }
             catch (ArgumentException)
             {
@@ -94,6 +94,37 @@ namespace Trivial.Text
             var data = store[index];
             if (data is null) return null;
             return data.ToString();
+        }
+
+        /// <summary>
+        /// Gets the value kind of the specific property.
+        /// </summary>
+        /// <param name="index">The zero-based index of the element to get.</param>
+        /// <param name="strictMode">true if enable strict mode; otherwise, false, to return undefined for non-existing.</param>
+        /// <returns>The value.</returns>
+        /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">The property does not exist.</exception>
+        public JsonValueKind GetValueKind(int index, bool strictMode = false)
+        {
+            if (strictMode)
+            {
+                var data = store[index];
+                if (data is null) return JsonValueKind.Null;
+                return data.ValueKind;
+            }
+
+            if (index < 0 || index >= store.Count) return JsonValueKind.Undefined;
+            try
+            {
+                var data = store[index];
+                if (data is null) return JsonValueKind.Null;
+                return data.ValueKind;
+            }
+            catch (ArgumentException)
+            {
+            }
+
+            return JsonValueKind.Undefined;
         }
 
         /// <summary>
@@ -353,7 +384,7 @@ namespace Trivial.Text
         }
 
         /// <summary>
-        /// Tries to gets the value of the specific property.
+        /// Tries to get the value of the specific property.
         /// </summary>
         /// <param name="index">The zero-based index of the element to get.</param>
         /// <returns>The value; or null if fail to resolve.</returns>
@@ -368,7 +399,7 @@ namespace Trivial.Text
         }
 
         /// <summary>
-        /// Tries to gets the value of the specific property.
+        /// Tries to get the value of the specific property.
         /// </summary>
         /// <param name="index">The zero-based index of the element to get.</param>
         /// <param name="result">The result.</param>
@@ -385,7 +416,7 @@ namespace Trivial.Text
         }
 
         /// <summary>
-        /// Tries to gets the value at the specific index.
+        /// Tries to get the value at the specific index.
         /// </summary>
         /// <param name="index">The zero-based index of the element to get.</param>
         /// <returns>The value; or null if fail to resolve.</returns>
@@ -397,7 +428,7 @@ namespace Trivial.Text
         }
 
         /// <summary>
-        /// Tries to gets the value at the specific index.
+        /// Tries to get the value at the specific index.
         /// </summary>
         /// <param name="index">The zero-based index of the element to get.</param>
         /// <param name="result">The result.</param>
@@ -410,7 +441,7 @@ namespace Trivial.Text
         }
 
         /// <summary>
-        /// Tries to gets the value at the specific index.
+        /// Tries to get the value at the specific index.
         /// </summary>
         /// <param name="index">The zero-based index of the element to get.</param>
         /// <returns>The value; or null if fail to resolve.</returns>
@@ -422,7 +453,7 @@ namespace Trivial.Text
         }
 
         /// <summary>
-        /// Tries to gets the value at the specific index.
+        /// Tries to get the value at the specific index.
         /// </summary>
         /// <param name="index">The zero-based index of the element to get.</param>
         /// <param name="result">The result.</param>
@@ -435,7 +466,7 @@ namespace Trivial.Text
         }
 
         /// <summary>
-        /// Tries to gets the value at the specific index.
+        /// Tries to get the value at the specific index.
         /// </summary>
         /// <param name="index">The zero-based index of the element to get.</param>
         /// <returns>The value; or null if fail to resolve.</returns>
@@ -447,7 +478,7 @@ namespace Trivial.Text
         }
 
         /// <summary>
-        /// Tries to gets the value at the specific index.
+        /// Tries to get the value at the specific index.
         /// </summary>
         /// <param name="index">The zero-based index of the element to get.</param>
         /// <param name="result">The result.</param>
@@ -460,7 +491,18 @@ namespace Trivial.Text
         }
 
         /// <summary>
-        /// Tries to gets the value at the specific index.
+        /// Deserializes.
+        /// </summary>
+        /// <param name="options">Options to control the behavior during parsing.</param>
+        /// <returns>A JSON object instance.</returns>
+        /// <exception cref="ArgumentException">readerOptions contains unsupported options.</exception>
+        public T Deserialize<T>(JsonSerializerOptions options = default)
+        {
+            return JsonSerializer.Deserialize<T>(ToString(), options);
+        }
+
+        /// <summary>
+        /// Tries to get the value at the specific index.
         /// </summary>
         /// <param name="index">The zero-based index of the element to get.</param>
         /// <returns>The value; or null if fail to resolve.</returns>
@@ -472,7 +514,7 @@ namespace Trivial.Text
         }
 
         /// <summary>
-        /// Tries to gets the value at the specific index.
+        /// Tries to get the value at the specific index.
         /// </summary>
         /// <param name="index">The zero-based index of the element to get.</param>
         /// <param name="result">The result.</param>
@@ -485,7 +527,7 @@ namespace Trivial.Text
         }
 
         /// <summary>
-        /// Tries to gets the value at the specific index.
+        /// Tries to get the value at the specific index.
         /// </summary>
         /// <param name="index">The zero-based index of the element to get.</param>
         /// <returns>The value; or null if fail to resolve.</returns>
@@ -497,7 +539,7 @@ namespace Trivial.Text
         }
 
         /// <summary>
-        /// Tries to gets the value at the specific index.
+        /// Tries to get the value at the specific index.
         /// </summary>
         /// <param name="index">The zero-based index of the element to get.</param>
         /// <param name="result">The result.</param>
@@ -510,7 +552,7 @@ namespace Trivial.Text
         }
 
         /// <summary>
-        /// Tries to gets the value at the specific index.
+        /// Tries to get the value at the specific index.
         /// </summary>
         /// <param name="index">The zero-based index of the element to get.</param>
         /// <returns>The value; or null if fail to resolve.</returns>
@@ -521,7 +563,7 @@ namespace Trivial.Text
         }
 
         /// <summary>
-        /// Tries to gets the value at the specific index.
+        /// Tries to get the value at the specific index.
         /// </summary>
         /// <param name="index">The zero-based index of the element to get.</param>
         /// <param name="result">The result.</param>
@@ -534,7 +576,7 @@ namespace Trivial.Text
         }
 
         /// <summary>
-        /// Tries to gets the value at the specific index.
+        /// Tries to get the value at the specific index.
         /// </summary>
         /// <param name="index">The zero-based index of the element to get.</param>
         /// <returns>The value.</returns>
@@ -545,7 +587,7 @@ namespace Trivial.Text
         }
 
         /// <summary>
-        /// Tries to gets the value at the specific index.
+        /// Tries to get the value at the specific index.
         /// </summary>
         /// <param name="index">The zero-based index of the element to get.</param>
         /// <param name="result">The result.</param>
@@ -558,7 +600,7 @@ namespace Trivial.Text
         }
 
         /// <summary>
-        /// Tries to gets the value at the specific index.
+        /// Tries to get the value at the specific index.
         /// </summary>
         /// <param name="index">The zero-based index of the element to get.</param>
         /// <returns>The value.</returns>
@@ -569,7 +611,7 @@ namespace Trivial.Text
         }
 
         /// <summary>
-        /// Tries to gets the value at the specific index.
+        /// Tries to get the value at the specific index.
         /// </summary>
         /// <param name="index">The zero-based index of the element to get.</param>
         /// <param name="result">The result.</param>
@@ -582,7 +624,7 @@ namespace Trivial.Text
         }
 
         /// <summary>
-        /// Tries to gets the value of the specific property.
+        /// Tries to get the value of the specific property.
         /// </summary>
         /// <param name="index">The zero-based index of the element to get.</param>
         /// <param name="useUnixTimestampsFallback">true if use Unix timestamp to convert if the value is a number; otherwise, false, to use JavaScript date ticks fallback.</param>
@@ -600,7 +642,7 @@ namespace Trivial.Text
         }
 
         /// <summary>
-        /// Tries to gets the value at the specific index.
+        /// Tries to get the value at the specific index.
         /// </summary>
         /// <param name="index">The zero-based index of the element to get.</param>
         /// <returns>The value.</returns>
@@ -623,7 +665,7 @@ namespace Trivial.Text
         }
 
         /// <summary>
-        /// Tries to gets the value at the specific index.
+        /// Tries to get the value at the specific index.
         /// </summary>
         /// <param name="index">The zero-based index of the element to get.</param>
         /// <param name="result">The result.</param>
