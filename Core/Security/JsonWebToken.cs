@@ -4,6 +4,7 @@ using System.Net.Http.Headers;
 using System.Runtime.Serialization;
 using System.Security;
 using System.Text;
+using System.Text.Json.Serialization;
 
 using Trivial.Web;
 
@@ -596,12 +597,14 @@ namespace Trivial.Security
         /// Gets or sets the name of signature algorithm.
         /// </summary>
         [DataMember(Name = "alg")]
+        [JsonPropertyName("alg")]
         public string AlgorithmName { get; set; }
 
         /// <summary>
         /// Gets the type.
         /// </summary>
         [DataMember(Name = "typ")]
+        [JsonPropertyName("typ")]
         public string Type { get; set; } = "JWT";
 
         /// <summary>
@@ -634,6 +637,7 @@ namespace Trivial.Security
         /// Its value is a case-sensitive string.
         /// </summary>
         [DataMember(Name = "jti", EmitDefaultValue = false)]
+        [JsonPropertyName("jti")]
         public string Id { get; set; }
 
         /// <summary>
@@ -643,6 +647,7 @@ namespace Trivial.Security
         /// Its value is a case-sensitive string containing a string or a URI.
         /// </summary>
         [DataMember(Name = "iss", EmitDefaultValue = false)]
+        [JsonPropertyName("iss")]
         public string Issuer { get; set; }
 
         /// <summary>
@@ -656,6 +661,7 @@ namespace Trivial.Security
         /// Its value is a case-sensitive string containing a string or a URI.
         /// </summary>
         [DataMember(Name = "sub", EmitDefaultValue = false)]
+        [JsonPropertyName("sub")]
         public string Subject { get; set; }
 
         /// <summary>
@@ -673,6 +679,7 @@ namespace Trivial.Security
         /// interpretation of audience values is generally application specific
         /// </summary>
         [DataMember(Name = "aud", EmitDefaultValue = false)]
+        [JsonPropertyName("aud")]
         public IEnumerable<string> Audience { get; set; }
 
         /// <summary>
@@ -684,6 +691,7 @@ namespace Trivial.Security
         /// Implementers MAY provide for some small leeway,
         /// usually no more than a few minutes, to account for clock skew.
         /// </summary>
+        [JsonIgnore]
         public DateTime? Expiration { get; set; }
 
         /// <summary>
@@ -691,6 +699,7 @@ namespace Trivial.Security
         /// The original property is Expiration.
         /// </summary>
         [DataMember(Name = "exp", EmitDefaultValue = false)]
+        [JsonPropertyName("exp")]
         public long? ExpirationTick
         {
             get => WebFormat.ParseUnixTimestamp(Expiration);
@@ -706,6 +715,7 @@ namespace Trivial.Security
         /// Implementers MAY provide for some small leeway,
         /// usually no more than a few minutes, to account for clock skew.
         /// </summary>
+        [JsonIgnore]
         public DateTime? NotBefore { get; set; }
 
         /// <summary>
@@ -713,6 +723,7 @@ namespace Trivial.Security
         /// The original property is NotBefore.
         /// </summary>
         [DataMember(Name = "nbf", EmitDefaultValue = false)]
+        [JsonPropertyName("nbf")]
         public long? NotBeforeTick
         {
             get => WebFormat.ParseUnixTimestamp(NotBefore);
@@ -724,6 +735,7 @@ namespace Trivial.Security
         /// This claim identifies the time at which the JWT was issued.
         /// This claim can be used to determine the age of the JWT.
         /// </summary>
+        [JsonIgnore]
         public DateTime? IssuedAt { get; set; }
 
         /// <summary>
@@ -731,6 +743,7 @@ namespace Trivial.Security
         /// The original property is IssuedAt.
         /// </summary>
         [DataMember(Name = "iat", EmitDefaultValue = false)]
+        [JsonPropertyName("iat")]
         public long? IssuedAtTick
         {
             get => WebFormat.ParseUnixTimestamp(IssuedAt);

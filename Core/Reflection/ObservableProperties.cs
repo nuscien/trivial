@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 using System.Text;
 
 namespace Trivial.Reflection
@@ -139,6 +140,7 @@ namespace Trivial.Reflection
         /// Gets or sets the name.
         /// </summary>
         [DataMember(Name = "name")]
+        [JsonPropertyName("name")]
         public string Name
         {
             get => GetCurrentProperty<string>();
@@ -149,6 +151,7 @@ namespace Trivial.Reflection
         /// Gets or sets the value.
         /// </summary>
         [DataMember(Name = "value")]
+        [JsonPropertyName("value")]
         public T Value
         {
             get => GetCurrentProperty<T>();

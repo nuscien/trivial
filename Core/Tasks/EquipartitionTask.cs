@@ -8,6 +8,7 @@ using System.Runtime.Serialization;
 using System.Runtime.Serialization.Json;
 using System.Text;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Xml.Linq;
 
 using Trivial.Data;
@@ -74,36 +75,42 @@ namespace Trivial.Tasks
             /// Gets or sets the task fragment identifier.
             /// </summary>
             [DataMember(Name = "id")]
+            [JsonPropertyName("id")]
             public string Id { get; set; }
 
             /// <summary>
             /// Gets or sets the fragment index in the task.
             /// </summary>
             [DataMember(Name = "index")]
+            [JsonPropertyName("index")]
             public int? Index { get; set; }
 
             /// <summary>
             /// Gets or sets the task fragment state.
             /// </summary>
             [DataMember(Name = "state")]
+            [JsonPropertyName("state")]
             public string State { get; set; }
 
             /// <summary>
             /// Gets or sets the tag.
             /// </summary>
             [DataMember(Name = "tag", EmitDefaultValue = false)]
+            [JsonPropertyName("tag")]
             public string Tag { get; set; }
 
             /// <summary>
             /// Gets or sets the creation date time tick.
             /// </summary>
             [DataMember(Name = "creation")]
+            [JsonPropertyName("creation")]
             public long? Creation { get; set; }
 
             /// <summary>
             /// Gets or sets the latest modification date time tick.
             /// </summary>
             [DataMember(Name = "update")]
+            [JsonPropertyName("update")]
             public long? Modification { get; set; }
         }
 

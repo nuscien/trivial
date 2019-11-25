@@ -9,6 +9,7 @@ using System.Runtime.Serialization;
 using System.Security;
 using System.Security.Cryptography;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -139,36 +140,42 @@ namespace Trivial.Security
             /// Gets or sets the optional user identifer.
             /// </summary>
             [DataMember(Name = "uid", EmitDefaultValue = false)]
+            [JsonPropertyName("uid")]
             public string UserId { get; set; }
 
             /// <summary>
             /// Gets or sets the token or the token encrypted if supports.
             /// </summary>
             [DataMember(Name = "val", EmitDefaultValue = false)]
+            [JsonPropertyName("val")]
             public string Value { get; set; }
 
             /// <summary>
             /// Gets or sets a value indicating whether the value is encrypted.
             /// </summary>
             [DataMember(Name = "ien")]
+            [JsonPropertyName("ien")]
             public bool IsEncrypted { get; set; }
 
             /// <summary>
             /// Gets or sets the optional current encrypt key identifier if has.
             /// </summary>
             [DataMember(Name = "cei", EmitDefaultValue = false)]
+            [JsonPropertyName("cei")]
             public string CurrentEncryptId { get; set; }
 
             /// <summary>
             /// Gets or sets the optional encrypt key identifier expected for next operation back.
             /// </summary>
             [DataMember(Name = "eei", EmitDefaultValue = false)]
+            [JsonPropertyName("eei")]
             public string ExpectFutureEncryptId { get; set; }
 
             /// <summary>
             /// Gets or sets the optional creation identifier.
             /// </summary>
             [DataMember(Name = "jci", EmitDefaultValue = false)]
+            [JsonPropertyName("jci")]
             public string CreationId { get; set; } = Guid.NewGuid().ToString("n");
 
             /// <summary>

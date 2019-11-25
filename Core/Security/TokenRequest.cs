@@ -8,6 +8,7 @@ using System.Runtime.Serialization;
 using System.Security;
 using System.Text;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 using Trivial.Collection;
@@ -98,24 +99,28 @@ namespace Trivial.Security
         /// <summary>
         /// Gets the client identifier and secret key.
         /// </summary>
+        [JsonIgnore]
         public AppAccessingKey ClientCredentials { get; private set; }
 
         /// <summary>
         /// Gets the body.
         /// </summary>
         [DataMember(Name = "data")]
+        [JsonPropertyName("data")]
         public TokenRequestBody Body { get; }
 
         /// <summary>
         /// Gets the grant type.
         /// </summary>
         [DataMember(Name = TokenRequestBody.GrantTypeProperty)]
+        [JsonPropertyName(TokenRequestBody.GrantTypeProperty)]
         public string GrantType => Body?.GrantType;
 
         /// <summary>
         /// Gets the client identifier.
         /// </summary>
         [DataMember(Name = TokenRequestBody.ClientIdProperty)]
+        [JsonPropertyName(TokenRequestBody.ClientIdProperty)]
         public string ClientId
         {
             get
@@ -140,12 +145,14 @@ namespace Trivial.Security
         /// <summary>
         /// Gets the scope to use.
         /// </summary>
+        [JsonIgnore]
         public IList<string> Scope { get; private set; } = new List<string>();
 
         /// <summary>
         /// Gets or sets the scope string.
         /// </summary>
         [DataMember(Name = TokenInfo.ScopeProperty, EmitDefaultValue = false)]
+        [JsonPropertyName(TokenInfo.ScopeProperty)]
         public string ScopeString
         {
             get
@@ -435,6 +442,7 @@ namespace Trivial.Security
         /// Gets the grant type.
         /// </summary>
         [DataMember(Name = GrantTypeProperty)]
+        [JsonPropertyName(GrantTypeProperty)]
         public string GrantType { get; }
 
         /// <summary>
@@ -703,24 +711,28 @@ namespace Trivial.Security
         /// Gets or sets the authorization code.
         /// </summary>
         [DataMember(Name = CodeProperty)]
+        [JsonPropertyName(CodeProperty)]
         public string Code { get; set; }
 
         /// <summary>
         /// Gets or sets the redirect URI.
         /// </summary>
         [DataMember(Name = RedirectUriProperty, EmitDefaultValue = false)]
+        [JsonPropertyName(RedirectUriProperty)]
         public Uri RedirectUri { get; set; }
 
         /// <summary>
         /// Gets or sets the code verifier.
         /// </summary>
         [DataMember(Name = CodeVerifierProperty, EmitDefaultValue = false)]
+        [JsonPropertyName(CodeVerifierProperty)]
         public string CodeVerifier { get; set; }
 
         /// <summary>
         /// Gets or sets the service provider.
         /// </summary>
         [DataMember(Name = ServiceProviderProperty, EmitDefaultValue = false)]
+        [JsonPropertyName(ServiceProviderProperty)]
         public string ServiceProvider { get; set; }
 
         /// <summary>
@@ -866,6 +878,7 @@ namespace Trivial.Security
         /// <summary>
         /// Gets the authorization code.
         /// </summary>
+        [JsonIgnore]
         public string Code
         {
             get => Body?.Code;
@@ -875,6 +888,7 @@ namespace Trivial.Security
         /// <summary>
         /// Gets the redirect URI.
         /// </summary>
+        [JsonIgnore]
         public Uri RedirectUri
         {
             get => Body?.RedirectUri;
@@ -884,6 +898,7 @@ namespace Trivial.Security
         /// <summary>
         /// Gets the service provider.
         /// </summary>
+        [JsonIgnore]
         public string ServiceProvider
         {
             get => Body?.ServiceProvider;
@@ -964,6 +979,7 @@ namespace Trivial.Security
         /// Gets or sets the refresh token.
         /// </summary>
         [DataMember(Name = TokenInfo.RefreshTokenProperty)]
+        [JsonPropertyName(TokenInfo.RefreshTokenProperty)]
         public string RefreshToken { get; set; }
 
         /// <summary>
@@ -1090,17 +1106,20 @@ namespace Trivial.Security
         /// Gets or sets the user name.
         /// </summary>
         [DataMember(Name = UserNameProperty)]
+        [JsonPropertyName(UserNameProperty)]
         public string UserName { get; set; }
 
         /// <summary>
         /// Gets or sets the password.
         /// </summary>
+        [JsonIgnore]
         public SecureString Password { get; set; }
 
         /// <summary>
         /// Gets or sets the LDAP.
         /// </summary>
         [DataMember(Name = LdapProperty, EmitDefaultValue = false)]
+        [JsonPropertyName(LdapProperty)]
         public string Ldap { get; set; }
 
         /// <summary>

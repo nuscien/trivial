@@ -8,7 +8,7 @@ using System.Text.Json.Serialization;
 namespace Trivial.UnitTest.Text
 {
     [DataContract]
-    public class JsonModel
+    class JsonModel
     {
         [DataMember(Name = "str-a")]
         [JsonPropertyName("str-a")]

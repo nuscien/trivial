@@ -12,8 +12,9 @@ using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using System.Security;
 using System.Runtime.Serialization;
+using System.Security;
+using System.Text.Json.Serialization;
 
 using Trivial.Text;
 using Trivial.Data;
@@ -174,18 +175,21 @@ namespace Trivial.Security
         /// Gets or sets the access token.
         /// </summary>
         [DataMember(Name = AccessTokenProperty)]
+        [JsonPropertyName(AccessTokenProperty)]
         public string AccessToken { get; set; }
 
         /// <summary>
         /// Gets or sets the token type.
         /// </summary>
         [DataMember(Name = TokenTypeProperty)]
+        [JsonPropertyName(TokenTypeProperty)]
         public string TokenType { get; set; }
 
         /// <summary>
         /// Gets or sets the expiration seconds.
         /// </summary>
         [DataMember(Name = ExpiresInProperty, EmitDefaultValue = false)]
+        [JsonPropertyName(ExpiresInProperty)]
         public int? ExpiredInSecond {
             get
             {
@@ -204,18 +208,21 @@ namespace Trivial.Security
         /// <summary>
         /// Gets or sets the expiration seconds.
         /// </summary>
+        [JsonIgnore]
         public TimeSpan? ExpiredAfter { get; set; }
 
         /// <summary>
         /// Gets or sets the refresh token.
         /// </summary>
         [DataMember(Name = RefreshTokenProperty, EmitDefaultValue = false)]
+        [JsonPropertyName(RefreshTokenProperty)]
         public string RefreshToken { get; set; }
 
         /// <summary>
         /// Gets or sets the error code.
         /// </summary>
         [DataMember(Name = ErrorCodeProperty, EmitDefaultValue = false)]
+        [JsonPropertyName(ErrorCodeProperty)]
         public string ErrorCode { get; set; }
 
         /// <summary>
@@ -224,6 +231,7 @@ namespace Trivial.Security
         /// used to assist the client developer in understanding the error that occurred.
         /// </summary>
         [DataMember(Name = ErrorDescriptionProperty, EmitDefaultValue = false)]
+        [JsonPropertyName(ErrorDescriptionProperty)]
         public string ErrorDescription { get; set; }
 
         /// <summary>
@@ -232,6 +240,7 @@ namespace Trivial.Security
         /// used to provide the client developer with additional information about the error.
         /// </summary>
         [DataMember(Name = ErrorUriProperty, EmitDefaultValue = false)]
+        [JsonPropertyName(ErrorUriProperty)]
         public string ErrorUrl
         {
             get
@@ -288,35 +297,41 @@ namespace Trivial.Security
         /// A URI identifying a human-readable web page with information about the error,
         /// used to provide the client developer with additional information about the error.
         /// </summary>
+        [JsonIgnore]
         public Uri ErrorUri { get; set; }
 
         /// <summary>
         /// Gets or sets the state sent by client authorization request.
         /// </summary>
         [DataMember(Name = StateProperty, EmitDefaultValue = false)]
+        [JsonPropertyName(StateProperty)]
         public virtual string State { get; set; }
 
         /// <summary>
         /// Gets or sets the resource identifier.
         /// </summary>
         [DataMember(Name = ResourceIdProperty, EmitDefaultValue = false)]
+        [JsonPropertyName(ResourceIdProperty)]
         public virtual string ResourceId { get; set; }
 
         /// <summary>
         /// Gets or sets the user identifier.
         /// </summary>
         [DataMember(Name = UserIdProperty, EmitDefaultValue = false)]
+        [JsonPropertyName(UserIdProperty)]
         public virtual string UserId { get; set; }
 
         /// <summary>
         /// Gets the permission scope.
         /// </summary>
+        [JsonIgnore]
         public IList<string> Scope { get; private set; } = new List<string>();
 
         /// <summary>
         /// Gets or sets the scope string.
         /// </summary>
         [DataMember(Name = ScopeProperty, EmitDefaultValue = false)]
+        [JsonPropertyName(ScopeProperty)]
         public string ScopeString
         {
             get
@@ -339,11 +354,13 @@ namespace Trivial.Security
         /// <summary>
         /// Gets the additional data.
         /// </summary>
+        [JsonIgnore]
         public Dictionary<string, string> AdditionalData { get; } = new Dictionary<string, string>();
 
         /// <summary>
         /// Gets a value indicating whether the access token is null, empty or consists only of white-space characters.
         /// </summary>
+        [JsonIgnore]
         public bool IsEmpty => string.IsNullOrWhiteSpace(AccessToken);
 
         /// <summary>
