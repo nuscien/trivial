@@ -13,7 +13,7 @@ namespace Trivial.Text
     /// <summary>
     /// Represents a specific JSON object.
     /// </summary>
-    public class JsonObject : IJsonValue, IReadOnlyDictionary<string, IJsonValue>, ICloneable
+    public class JsonObject : IJsonComplexValue, IReadOnlyDictionary<string, IJsonValue>
     {
         private readonly IDictionary<string, IJsonValue> store = new Dictionary<string, IJsonValue>();
 
@@ -64,11 +64,25 @@ namespace Trivial.Text
         /// <returns>The value.</returns>
         /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
         /// <exception cref="ArgumentOutOfRangeException">The property does not exist.</exception>
-        /// <exception cref="InvalidCastException">The value type is not the expected one.</exception>
+        /// <exception cref="InvalidOperationException">The value type is not the expected one.</exception>
         public IJsonValue this[string key] => GetValue(key);
 
         /// <summary>
-        /// Determines the property value of the specific key is null or undefined.
+        /// Determines the property value of the specific key is null.
+        /// </summary>
+        /// <param name="key">The property key.</param>
+        /// <returns>true if there is no such key or the property value is null; otherwise, false.</returns>
+        /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">The property does not exist.</exception>
+        public bool IsNull(string key)
+        {
+            AssertKey(key);
+            var value = store[key];
+            return value.ValueKind == JsonValueKind.Null;
+        }
+
+        /// <summary>
+        /// Determines the property value of the specific key is null, undefined or nonexisted.
         /// </summary>
         /// <param name="key">The property key.</param>
         /// <returns>true if there is no such key or the property value is null; otherwise, false.</returns>
@@ -95,7 +109,7 @@ namespace Trivial.Text
         /// <returns>The value.</returns>
         /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
         /// <exception cref="ArgumentOutOfRangeException">The property does not exist.</exception>
-        /// <exception cref="InvalidCastException">The value type is not the expected one.</exception>
+        /// <exception cref="InvalidOperationException">The value type is not the expected one.</exception>
         public string GetRawText(string key)
         {
             AssertKey(key);
@@ -129,23 +143,33 @@ namespace Trivial.Text
         /// Gets the value of the specific property.
         /// </summary>
         /// <param name="key">The property key.</param>
-        /// <param name="convert">true if want to convert to string; otherwise, false.</param>
-        /// <returns>The value.</returns>
+        /// <param name="convert">true if want to convert to string if it is a number or a boolean; otherwise, false.</param>
+        /// <returns>The value. It will be null if the value is null.</returns>
         /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
         /// <exception cref="ArgumentOutOfRangeException">The property does not exist.</exception>
-        /// <exception cref="InvalidCastException">The value type is not the expected one.</exception>
+        /// <exception cref="InvalidOperationException">The value type is not the expected one.</exception>
         public string GetStringValue(string key, bool convert = false)
         {
             AssertKey(key);
             var data = store[key];
-            if (data is null) return null;
+            if (data is null)
+            {
+                return null;
+            }
+
             if (data is JsonStringValue str)
             {
                 return str.Value;
             }
 
-            if (convert) return data.ToString();
-            throw new InvalidCastException($"The value type of property {key} is {data.ValueKind}.");
+            if (convert) return data.ValueKind switch
+            {
+                JsonValueKind.True => JsonBooleanValue.TrueString,
+                JsonValueKind.False => JsonBooleanValue.TrueString,
+                JsonValueKind.Number => data.ToString(),
+                _ => throw new InvalidOperationException($"The value type of property {key} should be string but it is {data.ValueKind.ToString().ToLowerInvariant()}.")
+            };
+            throw new InvalidOperationException($"The value type of property {key} should be string but it is {data.ValueKind.ToString().ToLowerInvariant()}.");
         }
 
         /// <summary>
@@ -156,7 +180,7 @@ namespace Trivial.Text
         /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
         /// <exception cref="ArgumentOutOfRangeException">The property does not exist.</exception>
         /// <exception cref="FormatException">The value is not in a recognized format.</exception>
-        /// <exception cref="InvalidCastException">The value type is not the expected one.</exception>
+        /// <exception cref="InvalidOperationException">The value type is not the expected one.</exception>
         public Guid GetGuidValue(string key)
         {
             return Guid.Parse(GetStringValue(key));
@@ -169,12 +193,12 @@ namespace Trivial.Text
         /// <returns>The value.</returns>
         /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
         /// <exception cref="ArgumentOutOfRangeException">The property does not exist.</exception>
-        /// <exception cref="InvalidCastException">The value type is not the expected one.</exception>
+        /// <exception cref="InvalidOperationException">The value type is not the expected one.</exception>
         public uint GetUInt32Value(string key)
         {
             AssertKey(key);
             if (TryGetJsonValue<JsonIntegerValue>(key, out var v)) return (uint)v;
-            var p = GetJsonValue<JsonFloatValue>(key);
+            var p = GetJsonValue<JsonFloatValue>(key, JsonValueKind.Number);
             return (uint)p;
         }
 
@@ -185,12 +209,12 @@ namespace Trivial.Text
         /// <returns>The value.</returns>
         /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
         /// <exception cref="ArgumentOutOfRangeException">The property does not exist.</exception>
-        /// <exception cref="InvalidCastException">The value type is not the expected one.</exception>
+        /// <exception cref="InvalidOperationException">The value type is not the expected one.</exception>
         public int GetInt32Value(string key)
         {
             AssertKey(key);
             if (TryGetJsonValue<JsonIntegerValue>(key, out var v)) return (int)v;
-            var p = GetJsonValue<JsonFloatValue>(key);
+            var p = GetJsonValue<JsonFloatValue>(key, JsonValueKind.Number);
             return (int)p;
         }
 
@@ -201,12 +225,12 @@ namespace Trivial.Text
         /// <returns>The value.</returns>
         /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
         /// <exception cref="ArgumentOutOfRangeException">The property does not exist.</exception>
-        /// <exception cref="InvalidCastException">The value type is not the expected one.</exception>
+        /// <exception cref="InvalidOperationException">The value type is not the expected one.</exception>
         public long GetInt64Value(string key)
         {
             AssertKey(key);
             if (TryGetJsonValue<JsonIntegerValue>(key, out var v)) return v.Value;
-            var p = GetJsonValue<JsonFloatValue>(key);
+            var p = GetJsonValue<JsonFloatValue>(key, JsonValueKind.Number);
             return (long)p;
         }
 
@@ -217,12 +241,12 @@ namespace Trivial.Text
         /// <returns>The value.</returns>
         /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
         /// <exception cref="ArgumentOutOfRangeException">The property does not exist.</exception>
-        /// <exception cref="InvalidCastException">The value type is not the expected one.</exception>
+        /// <exception cref="InvalidOperationException">The value type is not the expected one.</exception>
         public float GetSingleValue(string key)
         {
             AssertKey(key);
             if (TryGetJsonValue<JsonFloatValue>(key, out var v)) return (float)v;
-            var p = GetJsonValue<JsonIntegerValue>(key);
+            var p = GetJsonValue<JsonIntegerValue>(key, JsonValueKind.Number);
             return (float)p;
         }
 
@@ -233,12 +257,12 @@ namespace Trivial.Text
         /// <returns>The value.</returns>
         /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
         /// <exception cref="ArgumentOutOfRangeException">The property does not exist.</exception>
-        /// <exception cref="InvalidCastException">The value type is not the expected one.</exception>
+        /// <exception cref="InvalidOperationException">The value type is not the expected one.</exception>
         public double GetDoubleValue(string key)
         {
             AssertKey(key);
             if (TryGetJsonValue<JsonFloatValue>(key, out var v)) return v.Value;
-            var p = GetJsonValue<JsonIntegerValue>(key);
+            var p = GetJsonValue<JsonIntegerValue>(key, JsonValueKind.Number);
             return (double)p;
         }
 
@@ -249,12 +273,18 @@ namespace Trivial.Text
         /// <returns>The value.</returns>
         /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
         /// <exception cref="ArgumentOutOfRangeException">The property does not exist.</exception>
-        /// <exception cref="InvalidCastException">The value type is not the expected one.</exception>
+        /// <exception cref="InvalidOperationException">The value type is not the expected one.</exception>
         public bool GetBooleanValue(string key)
         {
             AssertKey(key);
-            var p = GetJsonValue<JsonBooleanValue>(key);
-            return p.Value;
+            if (TryGetJsonValue<JsonBooleanValue>(key, out var v)) return v.Value;
+            var p = GetJsonValue<JsonStringValue>(key);
+            return p.Value switch
+            {
+                JsonBooleanValue.TrueString => true,
+                JsonBooleanValue.FalseString => false,
+                _ => throw new InvalidOperationException($"The value type of property {key} should be boolean but it is string.")
+            };
         }
 
         /// <summary>
@@ -264,11 +294,11 @@ namespace Trivial.Text
         /// <returns>The value.</returns>
         /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
         /// <exception cref="ArgumentOutOfRangeException">The property does not exist.</exception>
-        /// <exception cref="InvalidCastException">The value type is not the expected one.</exception>
+        /// <exception cref="InvalidOperationException">The value type is not the expected one.</exception>
         public JsonObject GetObjectValue(string key)
         {
             AssertKey(key);
-            return GetJsonValue<JsonObject>(key);
+            return GetJsonValue<JsonObject>(key, JsonValueKind.Object);
         }
 
         /// <summary>
@@ -278,11 +308,11 @@ namespace Trivial.Text
         /// <returns>The value.</returns>
         /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
         /// <exception cref="ArgumentOutOfRangeException">The property does not exist.</exception>
-        /// <exception cref="InvalidCastException">The value type is not the expected one.</exception>
+        /// <exception cref="InvalidOperationException">The value type is not the expected one.</exception>
         public JsonArray GetArrayValue(string key)
         {
             AssertKey(key);
-            return GetJsonValue<JsonArray>(key);
+            return GetJsonValue<JsonArray>(key, JsonValueKind.Array);
         }
 
         /// <summary>
@@ -294,7 +324,7 @@ namespace Trivial.Text
         /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
         /// <exception cref="ArgumentOutOfRangeException">The property does not exist.</exception>
         /// <exception cref="FormatException">The value is not in a recognized format.</exception>
-        /// <exception cref="InvalidCastException">The value type is not the expected one.</exception>
+        /// <exception cref="InvalidOperationException">The value type is not the expected one.</exception>
         public DateTime GetDateTimeValue(string key, bool useUnixTimestampsFallback = false)
         {
             AssertKey(key);
@@ -302,7 +332,7 @@ namespace Trivial.Text
             {
                 var date = Web.WebFormat.ParseDate(s.Value);
                 if (date.HasValue) return date.Value;
-                throw new InvalidCastException("The value is not a date time.");
+                throw new InvalidOperationException("The value is not a date time.");
             }
 
             var num = GetJsonValue<JsonIntegerValue>(key);
@@ -316,7 +346,22 @@ namespace Trivial.Text
         /// <returns>The value.</returns>
         /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
         /// <exception cref="ArgumentOutOfRangeException">The property does not exist.</exception>
-        /// <exception cref="InvalidCastException">The value type is not the expected one.</exception>
+        /// <exception cref="FormatException">The value is not encoded as Base64 text and hence cannot be decoded to bytes.</exception>
+        /// <exception cref="InvalidOperationException">The value type is not the expected one.</exception>
+        public byte[] GetBytesFromBase64(string key)
+        {
+            var str = GetStringValue(key);
+            return Convert.FromBase64String(str);
+        }
+
+        /// <summary>
+        /// Gets the value of the specific property.
+        /// </summary>
+        /// <param name="key">The property key.</param>
+        /// <returns>The value.</returns>
+        /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">The property does not exist.</exception>
+        /// <exception cref="InvalidOperationException">The value type is not the expected one.</exception>
         public IJsonValue GetValue(string key)
         {
             AssertKey(key);
@@ -327,9 +372,8 @@ namespace Trivial.Text
         /// Tries to get the value of the specific property.
         /// </summary>
         /// <param name="key">The property key.</param>
-        /// <param name="convert">true if want to convert to string; otherwise, false.</param>
         /// <returns>A string.</returns>
-        public string TryGetStringValue(string key, bool convert = false)
+        public string TryGetStringValue(string key)
         {
             if (!store.TryGetValue(key, out var data))
             {
@@ -346,12 +390,13 @@ namespace Trivial.Text
                 return str.Value;
             }
 
-            if (convert)
+            return data.ValueKind switch
             {
-                return data.ToString();
-            }
-
-            return null;
+                JsonValueKind.True => JsonBooleanValue.TrueString,
+                JsonValueKind.False => JsonBooleanValue.TrueString,
+                JsonValueKind.Number => data.ToString(),
+                _ => null
+            };
         }
 
         /// <summary>
@@ -359,9 +404,8 @@ namespace Trivial.Text
         /// </summary>
         /// <param name="key">The property key.</param>
         /// <param name="result">The result.</param>
-        /// <param name="convert">true if want to convert to string; otherwise, false.</param>
         /// <returns>true if has the property and the type is the one expected; otherwise, false.</returns>
-        public bool TryGetStringValue(string key, out string result, bool convert = false)
+        public bool TryGetStringValue(string key, out string result)
         {
             if (!store.TryGetValue(key, out var data))
             {
@@ -381,14 +425,15 @@ namespace Trivial.Text
                 return true;
             }
 
-            if (convert)
+            result = data.ValueKind switch
             {
-                result = data.ToString();
-                return true;
-            }
+                JsonValueKind.True => JsonBooleanValue.TrueString,
+                JsonValueKind.False => JsonBooleanValue.TrueString,
+                JsonValueKind.Number => data.ToString(),
+                _ => null
+            };
 
-            result = null;
-            return false;
+            return result != null;
         }
 
         /// <summary>
@@ -655,6 +700,19 @@ namespace Trivial.Text
         /// Tries to get the value of the specific property.
         /// </summary>
         /// <param name="key">The property key.</param>
+        /// <param name="bytes">The result.</param>
+        /// <param name="bytesWritten">The count of bytes written.</param>
+        /// <returns>true if has the property and the type is the one expected; otherwise, false.</returns>
+        public bool TryGetBytesFromBase64(string key, Span<byte> bytes, out int bytesWritten)
+        {
+            var str = GetStringValue(key);
+            return Convert.TryFromBase64String(str, bytes, out bytesWritten);
+        }
+
+        /// <summary>
+        /// Tries to get the value of the specific property.
+        /// </summary>
+        /// <param name="key">The property key.</param>
         /// <returns>The value.</returns>
         public IJsonValue TryGetValue(string key)
         {
@@ -706,26 +764,6 @@ namespace Trivial.Text
         }
 
         /// <summary>
-        /// Sets properties.
-        /// </summary>
-        /// <param name="data">Key value pairs to set.</param>
-        /// <returns>The count to set.</returns>
-        /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
-        public int SetRange(IEnumerable<KeyValuePair<string, string>> data)
-        {
-            var count = 0;
-            if (data == null) return count;
-            foreach (var props in data)
-            {
-                if (string.IsNullOrWhiteSpace(props.Key)) continue;
-                count++;
-                SetValue(props.Key, props.Value);
-            }
-
-            return count;
-        }
-
-        /// <summary>
         /// Sets the value of the specific property.
         /// </summary>
         /// <param name="key">The property key.</param>
@@ -742,8 +780,33 @@ namespace Trivial.Text
         /// </summary>
         /// <param name="key">The property key.</param>
         /// <param name="value">The value to set.</param>
+        /// <param name="args">An object array that contains zero or more objects to format.</param>
+        /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+        public void SetFormatValue(string key, string value, params object[] args)
+        {
+            AssertKey(key);
+            store[key] = new JsonStringValue(string.Format(value, args));
+        }
+
+        /// <summary>
+        /// Sets the value of the specific property.
+        /// </summary>
+        /// <param name="key">The property key.</param>
+        /// <param name="value">The value to set.</param>
         /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
         public void SetValue(string key, Guid value)
+        {
+            AssertKey(key);
+            store[key] = new JsonStringValue(value);
+        }
+
+        /// <summary>
+        /// Sets the value of the specific property.
+        /// </summary>
+        /// <param name="key">The property key.</param>
+        /// <param name="value">The value to set.</param>
+        /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+        public void SetValue(string key, DateTime value)
         {
             AssertKey(key);
             store[key] = new JsonStringValue(value);
@@ -818,7 +881,7 @@ namespace Trivial.Text
         public void SetValue(string key, bool value)
         {
             AssertKey(key);
-            store[key] = new JsonBooleanValue(value);
+            store[key] = value ? JsonBooleanValue.True : JsonBooleanValue.False;
         }
 
         /// <summary>
@@ -916,6 +979,80 @@ namespace Trivial.Text
         }
 
         /// <summary>
+        /// Sets properties.
+        /// </summary>
+        /// <param name="data">Key value pairs to set.</param>
+        /// <returns>The count to set.</returns>
+        /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+        public int SetRange(IEnumerable<KeyValuePair<string, string>> data)
+        {
+            var count = 0;
+            if (data == null) return count;
+            foreach (var props in data)
+            {
+                if (string.IsNullOrWhiteSpace(props.Key)) continue;
+                count++;
+                SetValue(props.Key, props.Value);
+            }
+
+            return count;
+        }
+
+        /// <summary>
+        /// Sets properties.
+        /// </summary>
+        /// <param name="data">Key value pairs to set.</param>
+        /// <returns>The count to set.</returns>
+        /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+        public int SetRange(IEnumerable<KeyValuePair<string, int>> data)
+        {
+            var count = 0;
+            if (data == null) return count;
+            foreach (var props in data)
+            {
+                if (string.IsNullOrWhiteSpace(props.Key)) continue;
+                count++;
+                SetValue(props.Key, props.Value);
+            }
+
+            return count;
+        }
+
+        /// <summary>
+        /// Adds a JSON object.
+        /// </summary>
+        /// <param name="json">Another JSON object to add.</param>
+        /// <param name="skipDuplicate">true if skip the duplicate properties; otherwise, false.</param>
+        /// <returns>The count of property added.</returns>
+        /// <exception cref="ArgumentException">readerOptions contains unsupported options.</exception>
+        public int SetRange(JsonObject json, bool skipDuplicate = false)
+        {
+            var count = 0;
+            if (json == null) return count;
+            if (skipDuplicate)
+            {
+                if (json == this) return count;
+                foreach (var prop in json)
+                {
+                    if (ContainsKey(prop.Key)) continue;
+                    store[prop.Key] = prop.Value;
+                    count++;
+                }
+            }
+            else
+            {
+                if (json == this) json = json.Clone();
+                foreach (var prop in json)
+                {
+                    store[prop.Key] = prop.Value;
+                    count++;
+                }
+            }
+
+            return count;
+        }
+
+        /// <summary>
         /// Removes all properties from the object.
         /// </summary>
         public void Clear()
@@ -947,7 +1084,7 @@ namespace Trivial.Text
                         writer.WriteNull(prop.Key);
                         break;
                     case JsonValueKind.String:
-                        writer.WriteString(prop.Key, prop.ToString());
+                        if (prop.Value is JsonStringValue strJson) writer.WriteString(prop.Key, strJson.Value);
                         break;
                     case JsonValueKind.Number:
                         if (prop.Value is JsonIntegerValue intJson) writer.WriteNumber(prop.Key, (long)intJson);
@@ -1056,16 +1193,18 @@ namespace Trivial.Text
             return store.GetEnumerator();
         }
 
-        private T GetJsonValue<T>(string key) where T : IJsonValue
+        private T GetJsonValue<T>(string key, JsonValueKind? valueKind = null) where T : IJsonValue
         {
             var data = store[key];
-            if (data is null) throw new InvalidCastException($"The value of property {key} is null.");
+            if (data is null) throw new InvalidOperationException($"The value of property {key} is null.");
             if (data is T v)
             {
                 return v;
             }
 
-            throw new InvalidCastException($"The value type of property {key} is {data.ValueKind}.");
+            throw new InvalidOperationException(valueKind.HasValue
+                ? $"The value type of property {key} should be {valueKind.Value.ToString().ToLowerInvariant()} but it is {data.ValueKind.ToString().ToLowerInvariant()}."
+                : $"The value type of property {key} is {data.ValueKind.ToString().ToLowerInvariant()}.");
         }
 
         private bool TryGetJsonValue<T>(string key, out T property) where T : IJsonValue

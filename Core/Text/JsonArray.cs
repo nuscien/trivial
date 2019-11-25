@@ -13,7 +13,7 @@ namespace Trivial.Text
     /// <summary>
     /// Represents a specific JSON object.
     /// </summary>
-    public class JsonArray : IJsonValue, IReadOnlyList<IJsonValue>, ICloneable
+    public class JsonArray : IJsonComplexValue, IReadOnlyList<IJsonValue>
     {
         private readonly IList<IJsonValue> store = new List<IJsonValue>();
 
@@ -52,13 +52,31 @@ namespace Trivial.Text
         /// </summary>
         /// <param name="index">The zero-based index of the element to get.</param>
         /// <returns>The element at the specified index in the array.</returns>
-        /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
         /// <exception cref="ArgumentOutOfRangeException">The property does not exist.</exception>
-        /// <exception cref="InvalidCastException">The value type is not the expected one.</exception>
+        /// <exception cref="InvalidOperationException">The value type is not the expected one.</exception>
         public IJsonValue this[int index] => GetValue(index);
 
         /// <summary>
-        /// Determines the property value of the specific key is null or undefined.
+        /// Gets the System.Char object at a specified position in the source value.
+        /// </summary>
+        /// <param name="index">A position in the current string.</param>
+        /// <returns>The character at position index.</returns>
+        public IJsonValue this[Index index] => GetValue(index.IsFromEnd ? Count - index.Value - 1 : index.Value);
+
+        /// <summary>
+        /// Determines the property value of the specific key is null.
+        /// </summary>
+        /// <param name="index">The zero-based index of the element to get.</param>
+        /// <returns>true if there is no such key or the property value is null; otherwise, false.</returns>
+        /// <exception cref="ArgumentOutOfRangeException">The property does not exist.</exception>
+        public bool IsNull(int index)
+        {
+            var value = store[index];
+            return value is null || value.ValueKind == JsonValueKind.Null;
+        }
+
+        /// <summary>
+        /// Determines the property value of the specific key is null, undefined or nonexisted.
         /// </summary>
         /// <param name="index">The zero-based index of the element to get.</param>
         /// <returns>true if there is no such key or the property value is null; otherwise, false.</returns>
@@ -91,7 +109,7 @@ namespace Trivial.Text
         /// </summary>
         /// <param name="index">The zero-based index of the element to get.</param>
         /// <returns>The value.</returns>
-        /// <exception cref="InvalidCastException">The value type is not the expected one.</exception>
+        /// <exception cref="InvalidOperationException">The value type is not the expected one.</exception>
         public string GetRawText(int index)
         {
             var data = store[index];
@@ -134,10 +152,10 @@ namespace Trivial.Text
         /// Gets the value at the specific index.
         /// </summary>
         /// <param name="index">The zero-based index of the element to get.</param>
-        /// <param name="convert">true if want to convert to string; otherwise, false.</param>
-        /// <returns>The value.</returns>
+        /// <param name="convert">true if want to convert to string if it is a number or a boolean; otherwise, false.</param>
+        /// <returns>The value. It will be null if the value is null.</returns>
         /// <exception cref="ArgumentOutOfRangeException">The index is out of range.</exception>
-        /// <exception cref="InvalidCastException">The value type is not the expected one.</exception>
+        /// <exception cref="InvalidOperationException">The value type is not the expected one.</exception>
         public string GetStringValue(int index, bool convert = false)
         {
             var data = store[index];
@@ -147,8 +165,14 @@ namespace Trivial.Text
                 return str.Value;
             }
 
-            if (convert) return data.ToString();
-            throw new InvalidCastException($"The type of item {index} is {data.ValueKind}.");
+            if (convert) return data.ValueKind switch
+            {
+                JsonValueKind.True => JsonBooleanValue.TrueString,
+                JsonValueKind.False => JsonBooleanValue.TrueString,
+                JsonValueKind.Number => data.ToString(),
+                _ => throw new InvalidOperationException($"The type of item {index} should be string but it is {data.ValueKind.ToString().ToLowerInvariant()}.")
+            };
+            throw new InvalidOperationException($"The type of item {index} should be string but it is {data.ValueKind.ToString().ToLowerInvariant()}.");
         }
 
         /// <summary>
@@ -158,7 +182,7 @@ namespace Trivial.Text
         /// <returns>The value.</returns>
         /// <exception cref="ArgumentOutOfRangeException">The index is out of range.</exception>
         /// <exception cref="FormatException">The value is not in a recognized format.</exception>
-        /// <exception cref="InvalidCastException">The value type is not the expected one.</exception>
+        /// <exception cref="InvalidOperationException">The value type is not the expected one.</exception>
         public Guid GetGuidValue(int index)
         {
             return Guid.Parse(GetStringValue(index));
@@ -170,11 +194,11 @@ namespace Trivial.Text
         /// <param name="index">The zero-based index of the element to get.</param>
         /// <returns>The value.</returns>
         /// <exception cref="ArgumentOutOfRangeException">The index is out of range.</exception>
-        /// <exception cref="InvalidCastException">The value type is not the expected one.</exception>
+        /// <exception cref="InvalidOperationException">The value type is not the expected one.</exception>
         public uint GetUInt32Value(int index)
         {
             if (TryGetJsonValue<JsonIntegerValue>(index, out var v)) return (uint)v;
-            var p = GetJsonValue<JsonFloatValue>(index);
+            var p = GetJsonValue<JsonFloatValue>(index, JsonValueKind.Number);
             return (uint)p;
         }
 
@@ -183,11 +207,11 @@ namespace Trivial.Text
         /// </summary>
         /// <param name="index">The zero-based index of the element to get.</param>
         /// <returns>The value.</returns>
-        /// <exception cref="InvalidCastException">The value type is not the expected one.</exception>
+        /// <exception cref="InvalidOperationException">The value type is not the expected one.</exception>
         public int GetInt32Value(int index)
         {
             if (TryGetJsonValue<JsonIntegerValue>(index, out var v)) return (int)v;
-            var p = GetJsonValue<JsonFloatValue>(index);
+            var p = GetJsonValue<JsonFloatValue>(index, JsonValueKind.Number);
             return (int)p;
         }
 
@@ -197,11 +221,11 @@ namespace Trivial.Text
         /// <param name="index">The zero-based index of the element to get.</param>
         /// <returns>The value.</returns>
         /// <exception cref="ArgumentOutOfRangeException">The index is out of range.</exception>
-        /// <exception cref="InvalidCastException">The value type is not the expected one.</exception>
+        /// <exception cref="InvalidOperationException">The value type is not the expected one.</exception>
         public long GetInt64Value(int index)
         {
             if (TryGetJsonValue<JsonIntegerValue>(index, out var v)) return v.Value;
-            var p = GetJsonValue<JsonFloatValue>(index);
+            var p = GetJsonValue<JsonFloatValue>(index, JsonValueKind.Number);
             return (long)p;
         }
 
@@ -211,11 +235,11 @@ namespace Trivial.Text
         /// <param name="index">The zero-based index of the element to get.</param>
         /// <returns>The value.</returns>
         /// <exception cref="ArgumentOutOfRangeException">The index is out of range.</exception>
-        /// <exception cref="InvalidCastException">The value type is not the expected one.</exception>
+        /// <exception cref="InvalidOperationException">The value type is not the expected one.</exception>
         public float GetSingleValue(int index)
         {
             if (TryGetJsonValue<JsonFloatValue>(index, out var v)) return (float)v;
-            var p = GetJsonValue<JsonIntegerValue>(index);
+            var p = GetJsonValue<JsonIntegerValue>(index, JsonValueKind.Number);
             return (float)p;
         }
 
@@ -225,11 +249,11 @@ namespace Trivial.Text
         /// <param name="index">The zero-based index of the element to get.</param>
         /// <returns>The value.</returns>
         /// <exception cref="ArgumentOutOfRangeException">The index is out of range.</exception>
-        /// <exception cref="InvalidCastException">The value type is not the expected one.</exception>
+        /// <exception cref="InvalidOperationException">The value type is not the expected one.</exception>
         public double GetDoubleValue(int index)
         {
             if (TryGetJsonValue<JsonFloatValue>(index, out var v)) return v.Value;
-            var p = GetJsonValue<JsonIntegerValue>(index);
+            var p = GetJsonValue<JsonIntegerValue>(index, JsonValueKind.Number);
             return (double)p;
         }
 
@@ -239,11 +263,17 @@ namespace Trivial.Text
         /// <param name="index">The zero-based index of the element to get.</param>
         /// <returns>The value.</returns>
         /// <exception cref="ArgumentOutOfRangeException">The index is out of range.</exception>
-        /// <exception cref="InvalidCastException">The value type is not the expected one.</exception>
+        /// <exception cref="InvalidOperationException">The value type is not the expected one.</exception>
         public bool GetBooleanValue(int index)
         {
-            var p = GetJsonValue<JsonBooleanValue>(index);
-            return p.Value;
+            if (TryGetJsonValue<JsonBooleanValue>(index, out var v)) return v.Value;
+            var p = GetJsonValue<JsonStringValue>(index);
+            return p.Value switch
+            {
+                JsonBooleanValue.TrueString => true,
+                JsonBooleanValue.FalseString => false,
+                _ => throw new InvalidOperationException($"The type of item {index} should be boolean but it is string.")
+            };
         }
 
         /// <summary>
@@ -252,10 +282,10 @@ namespace Trivial.Text
         /// <param name="index">The zero-based index of the element to get.</param>
         /// <returns>The value.</returns>
         /// <exception cref="ArgumentOutOfRangeException">The index is out of range.</exception>
-        /// <exception cref="InvalidCastException">The value type is not the expected one.</exception>
+        /// <exception cref="InvalidOperationException">The value type is not the expected one.</exception>
         public JsonObject GetObjectValue(int index)
         {
-            return GetJsonValue<JsonObject>(index);
+            return GetJsonValue<JsonObject>(index, JsonValueKind.Object);
         }
 
         /// <summary>
@@ -264,10 +294,10 @@ namespace Trivial.Text
         /// <param name="index">The zero-based index of the element to get.</param>
         /// <returns>The value.</returns>
         /// <exception cref="ArgumentOutOfRangeException">The index is out of range.</exception>
-        /// <exception cref="InvalidCastException">The value type is not the expected one.</exception>
+        /// <exception cref="InvalidOperationException">The value type is not the expected one.</exception>
         public JsonArray GetArrayValue(int index)
         {
-            return GetJsonValue<JsonArray>(index);
+            return GetJsonValue<JsonArray>(index, JsonValueKind.Array);
         }
 
         /// <summary>
@@ -278,7 +308,7 @@ namespace Trivial.Text
         /// <returns>The value.</returns>
         /// <exception cref="ArgumentOutOfRangeException">The index is out of range.</exception>
         /// <exception cref="FormatException">The value is not in a recognized format.</exception>
-        /// <exception cref="InvalidCastException">The value type is not the expected one.</exception>
+        /// <exception cref="InvalidOperationException">The value type is not the expected one.</exception>
         public DateTime GetDateTimeValue(int index, bool useUnixTimestampsFallback = false)
         {
             if (TryGetJsonValue<JsonStringValue>(index, out var s))
@@ -293,12 +323,27 @@ namespace Trivial.Text
         }
 
         /// <summary>
+        /// Gets the value of the specific property.
+        /// </summary>
+        /// <param name="index">The zero-based index of the element to get.</param>
+        /// <returns>The value.</returns>
+        /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">The property does not exist.</exception>
+        /// <exception cref="FormatException">The value is not encoded as Base64 text and hence cannot be decoded to bytes.</exception>
+        /// <exception cref="InvalidOperationException">The value type is not the expected one.</exception>
+        public byte[] GetBytesFromBase64(int index)
+        {
+            var str = GetStringValue(index);
+            return Convert.FromBase64String(str);
+        }
+
+        /// <summary>
         /// Gets the value at the specific index.
         /// </summary>
         /// <param name="index">The zero-based index of the element to get.</param>
         /// <returns>The value.</returns>
         /// <exception cref="ArgumentOutOfRangeException">The index is out of range.</exception>
-        /// <exception cref="InvalidCastException">The value type is not the expected one.</exception>
+        /// <exception cref="InvalidOperationException">The value type is not the expected one.</exception>
         public IJsonValue GetValue(int index)
         {
             return store[index] ?? JsonValues.Null;
@@ -308,9 +353,8 @@ namespace Trivial.Text
         /// Gets the value at the specific index.
         /// </summary>
         /// <param name="index">The zero-based index of the element to get.</param>
-        /// <param name="convert">true if want to convert to string; otherwise, false.</param>
         /// <returns>A string.</returns>
-        public string TryGetStringValue(int index, bool convert = false)
+        public string TryGetStringValue(int index)
         {
             if (index < 0 || index >= store.Count)
             {
@@ -330,10 +374,13 @@ namespace Trivial.Text
                     return str.Value;
                 }
 
-                if (convert)
+                return data.ValueKind switch
                 {
-                    return data.ToString();
-                }
+                    JsonValueKind.True => JsonBooleanValue.TrueString,
+                    JsonValueKind.False => JsonBooleanValue.TrueString,
+                    JsonValueKind.Number => data.ToString(),
+                    _ => null
+                };
             }
             catch (ArgumentException)
             {
@@ -347,9 +394,8 @@ namespace Trivial.Text
         /// </summary>
         /// <param name="index">The zero-based index of the element to get.</param>
         /// <param name="result">The result.</param>
-        /// <param name="convert">true if want to convert to string; otherwise, false.</param>
         /// <returns>true if has the property and the type is the one expected; otherwise, false.</returns>
-        public bool TryGetStringValue(int index, out string result, bool convert = false)
+        public bool TryGetStringValue(int index, out string result)
         {
             if (index < 0 || index >= store.Count)
             {
@@ -372,13 +418,17 @@ namespace Trivial.Text
                     return true;
                 }
 
-                if (convert)
+                result = data.ValueKind switch
                 {
-                    result = data.ToString();
-                    return true;
-                }
+                    JsonValueKind.True => JsonBooleanValue.TrueString,
+                    JsonValueKind.False => JsonBooleanValue.TrueString,
+                    JsonValueKind.Number => data.ToString(),
+                    _ => null
+                };
+
+                return result != null;
             }
-            catch(ArgumentException)
+            catch (ArgumentException)
             {
             }
 
@@ -646,6 +696,19 @@ namespace Trivial.Text
         }
 
         /// <summary>
+        /// Gets the value of the specific property.
+        /// </summary>
+        /// <param name="index">The zero-based index of the element to get.</param>
+        /// <param name="bytes">The result.</param>
+        /// <param name="bytesWritten">The count of bytes written.</param>
+        /// <returns>true if has the property and the type is the one expected; otherwise, false.</returns>
+        public bool TryGetBytesFromBase64(int index, Span<byte> bytes, out int bytesWritten)
+        {
+            var str = GetStringValue(index);
+            return Convert.TryFromBase64String(str, bytes, out bytesWritten);
+        }
+
+        /// <summary>
         /// Tries to get the value at the specific index.
         /// </summary>
         /// <param name="index">The zero-based index of the element to get.</param>
@@ -692,6 +755,16 @@ namespace Trivial.Text
         }
 
         /// <summary>
+        /// Removes the element at the specific index.
+        /// </summary>
+        /// <param name="index">The zero-based index of the element to get.</param>
+        /// <exception cref="ArgumentOutOfRangeException">The index is out of range.</exception>
+        public void Remove(Index index)
+        {
+            store.RemoveAt(index.IsFromEnd ? store.Count - index.Value - 1 : index.Value);
+        }
+
+        /// <summary>
         /// Sets null at the specific index.
         /// </summary>
         /// <param name="index">The zero-based index of the element to get.</param>
@@ -713,12 +786,35 @@ namespace Trivial.Text
         }
 
         /// <summary>
+        /// Inserts the value at the specific index.
+        /// </summary>
+        /// <param name="index">The zero-based index of the element to get.</param>
+        /// <param name="value">The value to set.</param>
+        /// <param name="args">An object array that contains zero or more objects to format.</param>
+        /// <exception cref="ArgumentOutOfRangeException">The index is out of range.</exception>
+        public void SetValueFormat(int index, string value, params object[] args)
+        {
+            store[index] = new JsonStringValue(string.Format(value, args));
+        }
+
+        /// <summary>
         /// Sets the value at the specific index.
         /// </summary>
         /// <param name="index">The zero-based index of the element to get.</param>
         /// <param name="value">The value to set.</param>
         /// <exception cref="ArgumentOutOfRangeException">The index is out of range.</exception>
         public void SetValue(int index, Guid value)
+        {
+            store[index] = new JsonStringValue(value);
+        }
+
+        /// <summary>
+        /// Sets the value at the specific index.
+        /// </summary>
+        /// <param name="index">The zero-based index of the element to get.</param>
+        /// <param name="value">The value to set.</param>
+        /// <exception cref="ArgumentOutOfRangeException">The index is out of range.</exception>
+        public void SetValue(int index, DateTime value)
         {
             store[index] = new JsonStringValue(value);
         }
@@ -786,7 +882,7 @@ namespace Trivial.Text
         /// <exception cref="ArgumentOutOfRangeException">The index is out of range.</exception>
         public void SetValue(int index, bool value)
         {
-            store[index] = new JsonBooleanValue(value);
+            store[index] = value ? JsonBooleanValue.True : JsonBooleanValue.False;
         }
 
         /// <summary>
@@ -887,7 +983,26 @@ namespace Trivial.Text
         /// Adds a value.
         /// </summary>
         /// <param name="value">The value to set.</param>
+        /// <param name="args">An object array that contains zero or more objects to format.</param>
+        public void AddFormat(string value, params object[] args)
+        {
+            store.Add(new JsonStringValue(string.Format(value, args)));
+        }
+
+        /// <summary>
+        /// Adds a value.
+        /// </summary>
+        /// <param name="value">The value to set.</param>
         public void Add(Guid value)
+        {
+            store.Add(new JsonStringValue(value));
+        }
+
+        /// <summary>
+        /// Adds a value.
+        /// </summary>
+        /// <param name="value">The value to set.</param>
+        public void Add(DateTime value)
         {
             store.Add(new JsonStringValue(value));
         }
@@ -943,7 +1058,7 @@ namespace Trivial.Text
         /// <param name="value">The value to set.</param>
         public void Add(bool value)
         {
-            store.Add(new JsonBooleanValue(value));
+            store.Add(value ? JsonBooleanValue.True : JsonBooleanValue.False);
         }
 
 
@@ -1002,6 +1117,63 @@ namespace Trivial.Text
         }
 
         /// <summary>
+        /// Adds a collection of string.
+        /// </summary>
+        /// <param name="values">A string collection to add.</param>
+        /// <returns>The count of item added.</returns>
+        public int AddRange(IEnumerable<string> values)
+        {
+            var count = 0;
+            if (values == null) return count;
+            foreach (var item in values)
+            {
+                store.Add(new JsonStringValue(item));
+                count++;
+            }
+
+            return count;
+        }
+
+        /// <summary>
+        /// Adds a collection of integer.
+        /// </summary>
+        /// <param name="values">An integer collection to add.</param>
+        /// <returns>The count of item added.</returns>
+        /// <exception cref="ArgumentException">readerOptions contains unsupported options.</exception>
+        public int AddRange(IEnumerable<int> values)
+        {
+            var count = 0;
+            if (values == null) return count;
+            foreach (var item in values)
+            {
+                store.Add(new JsonIntegerValue(item));
+                count++;
+            }
+
+            return count;
+        }
+
+        /// <summary>
+        /// Adds a JSON array.
+        /// </summary>
+        /// <param name="json">Another JSON array to add.</param>
+        /// <returns>The count of item added.</returns>
+        /// <exception cref="ArgumentException">readerOptions contains unsupported options.</exception>
+        public int AddRange(JsonArray json)
+        {
+            var count = 0;
+            if (json == null) return count;
+            if (json == this) json = json.Clone();
+            foreach (var props in json)
+            {
+                store.Add(props);
+                count++;
+            }
+
+            return count;
+        }
+
+        /// <summary>
         /// Inserts null at the specific index.
         /// </summary>
         /// <param name="index">The zero-based index of the element to get.</param>
@@ -1027,8 +1199,31 @@ namespace Trivial.Text
         /// </summary>
         /// <param name="index">The zero-based index of the element to get.</param>
         /// <param name="value">The value to set.</param>
+        /// <param name="args">An object array that contains zero or more objects to format.</param>
+        /// <exception cref="ArgumentOutOfRangeException">The index is out of range.</exception>
+        public void InsertFormat(int index, string value, params object[] args)
+        {
+            store.Insert(index, new JsonStringValue(string.Format(value, args)));
+        }
+
+        /// <summary>
+        /// Inserts the value at the specific index.
+        /// </summary>
+        /// <param name="index">The zero-based index of the element to get.</param>
+        /// <param name="value">The value to set.</param>
         /// <exception cref="ArgumentOutOfRangeException">The index is out of range.</exception>
         public void Insert(int index, Guid value)
+        {
+            store.Insert(index, new JsonStringValue(value));
+        }
+
+        /// <summary>
+        /// Inserts the value at the specific index.
+        /// </summary>
+        /// <param name="index">The zero-based index of the element to get.</param>
+        /// <param name="value">The value to set.</param>
+        /// <exception cref="ArgumentOutOfRangeException">The index is out of range.</exception>
+        public void Insert(int index, DateTime value)
         {
             store.Insert(index, new JsonStringValue(value));
         }
@@ -1096,7 +1291,7 @@ namespace Trivial.Text
         /// <exception cref="ArgumentOutOfRangeException">The index is out of range.</exception>
         public void Insert(int index, bool value)
         {
-            store.Insert(index, new JsonBooleanValue(value));
+            store.Insert(index, value ? JsonBooleanValue.True : JsonBooleanValue.False);
         }
 
         /// <summary>
@@ -1166,6 +1361,27 @@ namespace Trivial.Text
         }
 
         /// <summary>
+        /// Adds a JSON array.
+        /// </summary>
+        /// <param name="index">The zero-based index of the element to get.</param>
+        /// <param name="json">Another JSON array to add.</param>
+        /// <returns>The count of item added.</returns>
+        /// <exception cref="ArgumentOutOfRangeException">The index is out of range.</exception>
+        public int InsertRange(int index, JsonArray json)
+        {
+            var count = 0;
+            if (json == null) return count;
+            if (json == this) json = json.Clone();
+            foreach (var props in json)
+            {
+                store.Insert(index + count, props);
+                count++;
+            }
+
+            return count;
+        }
+
+        /// <summary>
         /// Removes all items from the array.
         /// </summary>
         public void Clear()
@@ -1196,7 +1412,7 @@ namespace Trivial.Text
                         writer.WriteNullValue();
                         break;
                     case JsonValueKind.String:
-                        writer.WriteStringValue(prop.ToString());
+                        if (prop is JsonStringValue strJson) writer.WriteStringValue(strJson.Value);
                         break;
                     case JsonValueKind.Number:
                         if (prop is JsonIntegerValue intJson) writer.WriteNumberValue((long)intJson);
@@ -1301,16 +1517,18 @@ namespace Trivial.Text
             return Clone();
         }
 
-        private T GetJsonValue<T>(int index) where T : IJsonValue
+        private T GetJsonValue<T>(int index, JsonValueKind? valueKind = null) where T : IJsonValue
         {
             var data = store[index];
-            if (data is null) throw new InvalidCastException($"The item {index} is null.");
+            if (data is null) throw new InvalidOperationException($"The item {index} is null.");
             if (data is T v)
             {
                 return v;
             }
 
-            throw new InvalidCastException($"The type of item {index} is {data.ValueKind}.");
+            throw new InvalidOperationException(valueKind.HasValue
+                ? $"The type of item {index} should be {valueKind.Value.ToString().ToLowerInvariant()} but it is {data.ValueKind.ToString().ToLowerInvariant()}."
+                : $"The type of item {index} is {data.ValueKind.ToString().ToLowerInvariant()}.");
         }
 
         private bool TryGetJsonValue<T>(int index, out T property) where T : IJsonValue

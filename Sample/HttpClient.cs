@@ -8,6 +8,7 @@ using System.Runtime.Serialization;
 using Trivial.Net;
 using Trivial.Reflection;
 using Trivial.Tasks;
+using System.Text.Json.Serialization;
 
 namespace Trivial.Sample
 {
@@ -17,9 +18,11 @@ namespace Trivial.Sample
         internal class NameAndDescription
         {
             [DataMember(Name = "name")]
+            [JsonPropertyName("name")]
             public string Name { get; set; }
 
             [DataMember(Name = "description")]
+            [JsonPropertyName("description")]
             public string Description { get; set; }
         }
 
@@ -42,9 +45,9 @@ namespace Trivial.Sample
             // JSON HTTP web client.
             url = "https://github.com/compositejs/datasense/raw/master/package.json";
             var webClient = new JsonHttpClient<NameAndDescription>();
-            var resp = await webClient.SendAsync(new HttpRequestMessage(HttpMethod.Get, url));
+            var resp = await webClient.SendAsync(HttpMethod.Get, url);
             ConsoleLine.WriteLine(resp.Name);
-            resp = await webClient.SendAsync(new HttpRequestMessage(HttpMethod.Get, url));
+            resp = await webClient.SendAsync(HttpMethod.Get, url);
             ConsoleLine.WriteLine(resp.Name);
 
             //"{ \"access_token\": \"abc\", \"token_type\": \"Bearer\" }"

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -141,7 +142,7 @@ namespace Trivial.Console
             var cancel = cancellationToken ?? CancellationToken.None;
 
             var p = new Process();
-            p.StartInfo.FileName = "cmd.exe";
+            p.StartInfo.FileName = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "cmd.exe" : "bash";
             p.StartInfo.UseShellExecute = false;
             p.StartInfo.RedirectStandardInput = true;
             p.StartInfo.RedirectStandardOutput = true;
@@ -177,7 +178,8 @@ namespace Trivial.Console
         /// <returns>true if a process resource is started; false if no new process resource is started.</returns>
         public static bool Directory(string dir)
         {
-            var p = new Process();
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) return false;
+            using var p = new Process();
             p.StartInfo.FileName = "explorer.exe";
             p.StartInfo.Arguments = dir;
             return p.Start();
@@ -192,6 +194,32 @@ namespace Trivial.Console
         public static bool Directory(DirectoryInfo dir)
         {
             return Directory(dir.ToString());
+        }
+
+        /// <summary>
+        /// Select a file or directory in file browser.
+        /// Only for Windows NT OS.
+        /// </summary>
+        /// <param name="path">The file or directory path.</param>
+        /// <returns>true if a process resource is started; false if no new process resource is started.</returns>
+        public static bool DirectorySelect(string path)
+        {
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) return false;
+            using var p = new Process();
+            p.StartInfo.FileName = "explorer.exe";
+            p.StartInfo.Arguments = "/select," + path;
+            return p.Start();
+        }
+
+        /// <summary>
+        /// Open a file or directory in file browser.
+        /// Only for Windows NT OS.
+        /// </summary>
+        /// <param name="path">The file or directory information instance.</param>
+        /// <returns>true if a process resource is started; false if no new process resource is started.</returns>
+        public static bool DirectorySelect(FileSystemInfo path)
+        {
+            return DirectorySelect(path.ToString());
         }
     }
 }
