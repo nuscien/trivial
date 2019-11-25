@@ -363,6 +363,36 @@ namespace Trivial.Text
         }
 
         /// <summary>
+        /// Converts to JSON value.
+        /// </summary>
+        /// <param name="value">The source value.</param>
+        /// <returns>A JSON value.</returns>
+        public static implicit operator JsonIntegerValue(uint value)
+        {
+            return new JsonIntegerValue(value);
+        }
+
+        /// <summary>
+        /// Converts to JSON value.
+        /// </summary>
+        /// <param name="value">The source value.</param>
+        /// <returns>A JSON value.</returns>
+        public static implicit operator JsonIntegerValue(int value)
+        {
+            return new JsonIntegerValue(value);
+        }
+
+        /// <summary>
+        /// Converts to JSON value.
+        /// </summary>
+        /// <param name="value">The source value.</param>
+        /// <returns>A JSON value.</returns>
+        public static implicit operator JsonIntegerValue(long value)
+        {
+            return new JsonIntegerValue(value);
+        }
+
+        /// <summary>
         /// Converts the JSON raw back.
         /// </summary>
         /// <param name="json">The JSON value.</param>
@@ -1257,6 +1287,26 @@ namespace Trivial.Text
         public int CompareTo(float other)
         {
             return Value.CompareTo(other);
+        }
+
+        /// <summary>
+        /// Converts to JSON value.
+        /// </summary>
+        /// <param name="value">The source value.</param>
+        /// <returns>A JSON value.</returns>
+        public static implicit operator JsonFloatValue(float value)
+        {
+            return new JsonFloatValue(value);
+        }
+
+        /// <summary>
+        /// Converts to JSON value.
+        /// </summary>
+        /// <param name="value">The source value.</param>
+        /// <returns>A JSON value.</returns>
+        public static implicit operator JsonFloatValue(double value)
+        {
+            return new JsonFloatValue(value);
         }
 
         /// <summary>
