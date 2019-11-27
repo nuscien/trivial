@@ -1364,6 +1364,46 @@ namespace Trivial.Text
         /// Adds a JSON array.
         /// </summary>
         /// <param name="index">The zero-based index of the element to get.</param>
+        /// <param name="values">A string collection to add.</param>
+        /// <returns>The count of item added.</returns>
+        /// <exception cref="ArgumentOutOfRangeException">The index is out of range.</exception>
+        public int InsertRange(int index, IEnumerable<string> values)
+        {
+            var count = 0;
+            if (values == null) return count;
+            foreach (var item in values)
+            {
+                store.Insert(index + count, new JsonStringValue(item));
+                count++;
+            }
+
+            return count;
+        }
+
+        /// <summary>
+        /// Adds a JSON array.
+        /// </summary>
+        /// <param name="index">The zero-based index of the element to get.</param>
+        /// <param name="values">A string collection to add.</param>
+        /// <returns>The count of item added.</returns>
+        /// <exception cref="ArgumentOutOfRangeException">The index is out of range.</exception>
+        public int InsertRange(int index, IEnumerable<int> values)
+        {
+            var count = 0;
+            if (values == null) return count;
+            foreach (var item in values)
+            {
+                store.Insert(index + count, new JsonIntegerValue(item));
+                count++;
+            }
+
+            return count;
+        }
+
+        /// <summary>
+        /// Adds a JSON array.
+        /// </summary>
+        /// <param name="index">The zero-based index of the element to get.</param>
         /// <param name="json">Another JSON array to add.</param>
         /// <returns>The count of item added.</returns>
         /// <exception cref="ArgumentOutOfRangeException">The index is out of range.</exception>
@@ -1372,9 +1412,9 @@ namespace Trivial.Text
             var count = 0;
             if (json == null) return count;
             if (json == this) json = json.Clone();
-            foreach (var props in json)
+            foreach (var item in json)
             {
-                store.Insert(index + count, props);
+                store.Insert(index + count, item);
                 count++;
             }
 

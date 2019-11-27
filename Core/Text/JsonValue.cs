@@ -64,7 +64,7 @@ namespace Trivial.Text
     /// <summary>
     /// Represents a specific JSON string value.
     /// </summary>
-    public struct JsonStringValue : IJsonValue<string>, IComparable<IJsonValue<string>>, IComparable<string>, IReadOnlyList<char>
+    public class JsonStringValue : IJsonValue<string>, IComparable<IJsonValue<string>>, IComparable<string>, IReadOnlyList<char>
     {
         /// <summary>
         /// Initializes a new instance of the JsonStringValue class.
@@ -94,6 +94,38 @@ namespace Trivial.Text
         {
             Value = value.ToString();
             ValueKind = JsonValueKind.String;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the JsonStringValue class.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        public JsonStringValue(System.Security.SecureString value) : this(Security.SecureStringExtensions.ToUnsecureString(value))
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the JsonStringValue class.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        public JsonStringValue(StringBuilder value) : this(value?.ToString())
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the JsonStringValue class.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        public JsonStringValue(char[] value) : this(value != null ? new string(value) : null)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the JsonStringValue class.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        public JsonStringValue(ReadOnlySpan<char> value) : this(value != null ? new string(value) : null)
+        {
         }
 
         /// <summary>
@@ -146,6 +178,24 @@ namespace Trivial.Text
                 if (s == null) throw new ArgumentOutOfRangeException("s is null");
                 return s[index.IsFromEnd ? s.Length - index.Value - 1 : index.Value];
             }
+        }
+
+        /// <summary>
+        /// Indicates whether the specified string is null or an empty string ("").
+        /// </summary>
+        /// <returns>true if the source value is null or an empty string (""); otherwise, false.</returns>
+        public bool IsNullOrEmpty()
+        {
+            return string.IsNullOrEmpty(Value);
+        }
+
+        /// <summary>
+        /// Indicates whether the specified string is null, empty, or consists only of white-space characters.
+        /// </summary>
+        /// <returns>true if the source value is null or System.String.Empty, or if value consists exclusively of white-space characters; otherwise, false.</returns>
+        public bool IsNullOrWhiteSpace()
+        {
+            return string.IsNullOrWhiteSpace(Value);
         }
 
         /// <summary>
@@ -237,7 +287,8 @@ namespace Trivial.Text
         /// </returns>
         public int CompareTo(IJsonValue<string> other)
         {
-            return Value.CompareTo(other?.Value);
+            if (Value == null && other?.Value == null) return 0;
+            return Value == null ? -other.Value.CompareTo(Value) : Value.CompareTo(other?.Value);
         }
 
         /// <summary>
@@ -257,7 +308,8 @@ namespace Trivial.Text
         /// </returns>
         public int CompareTo(string other)
         {
-            return Value.CompareTo(other);
+            if (Value == null && other == null) return 0;
+            return Value == null ? -other.CompareTo(Value) : Value.CompareTo(other);
         }
 
         /// <summary>
@@ -266,7 +318,7 @@ namespace Trivial.Text
         /// <returns>An enumerator that can be used to iterate through the string.</returns>
         public IEnumerator<char> GetEnumerator()
         {
-            return Value.GetEnumerator();
+            return (Value ?? string.Empty).GetEnumerator();
         }
 
         /// <summary>
@@ -275,7 +327,57 @@ namespace Trivial.Text
         /// <returns>An enumerator that can be used to iterate through the string.</returns>
         IEnumerator IEnumerable.GetEnumerator()
         {
-            return Value.GetEnumerator();
+            return (Value ?? string.Empty).GetEnumerator();
+        }
+
+        /// <summary>
+        /// Converts to JSON value.
+        /// </summary>
+        /// <param name="value">The source value.</param>
+        /// <returns>A JSON value.</returns>
+        public static implicit operator JsonStringValue(string value)
+        {
+            return new JsonStringValue(value);
+        }
+
+        /// <summary>
+        /// Converts to JSON value.
+        /// </summary>
+        /// <param name="value">The source value.</param>
+        /// <returns>A JSON value.</returns>
+        public static implicit operator JsonStringValue(ReadOnlySpan<char> value)
+        {
+            return new JsonStringValue(value);
+        }
+
+        /// <summary>
+        /// Converts to JSON value.
+        /// </summary>
+        /// <param name="value">The source value.</param>
+        /// <returns>A JSON value.</returns>
+        public static implicit operator JsonStringValue(char[] value)
+        {
+            return new JsonStringValue(value);
+        }
+
+        /// <summary>
+        /// Converts to JSON value.
+        /// </summary>
+        /// <param name="value">The source value.</param>
+        /// <returns>A JSON value.</returns>
+        public static implicit operator JsonStringValue(StringBuilder value)
+        {
+            return new JsonStringValue(value);
+        }
+
+        /// <summary>
+        /// Converts to JSON value.
+        /// </summary>
+        /// <param name="value">The source value.</param>
+        /// <returns>A JSON value.</returns>
+        public static implicit operator JsonStringValue(Guid value)
+        {
+            return new JsonStringValue(value);
         }
 
         /// <summary>
@@ -285,7 +387,27 @@ namespace Trivial.Text
         /// <returns>A string.</returns>
         public static explicit operator string(JsonStringValue json)
         {
-            return json.Value;
+            return json?.Value;
+        }
+
+        /// <summary>
+        /// Indicates whether the specified string is null or an empty string ("").
+        /// </summary>
+        /// <param name="value">A string JSON value to test</param>
+        /// <returns>true if the source value is null or an empty string (""); otherwise, false.</returns>
+        public static bool IsNullOrEmpty(IJsonValue<string> value)
+        {
+            return string.IsNullOrEmpty(value?.Value);
+        }
+
+        /// <summary>
+        /// Indicates whether the specified string is null, empty, or consists only of white-space characters.
+        /// </summary>
+        /// <param name="value">A string JSON value to test</param>
+        /// <returns>true if the source value is null or System.String.Empty, or if value consists exclusively of white-space characters; otherwise, false.</returns>
+        public static bool IsNullOrWhiteSpace(IJsonValue<string> value)
+        {
+            return string.IsNullOrWhiteSpace(value?.Value);
         }
 
         /// <summary>
@@ -310,6 +432,58 @@ namespace Trivial.Text
                 .Replace("\"", "\\\"");
             if (!removeQuotes) s = string.Format("\"{0}\"", s);
             return s;
+        }
+
+        /// <summary>
+        /// Compares two instances to indicate if they are same.
+        /// leftValue == rightValue
+        /// </summary>
+        /// <param name="leftValue">The left value to compare.</param>
+        /// <param name="rightValue">The right value to compare.</param>
+        /// <returns>true if they are same; otherwise, false.</returns>
+        public static bool operator ==(JsonStringValue leftValue, IJsonValue<string> rightValue)
+        {
+            if (ReferenceEquals(leftValue, rightValue)) return true;
+            if (rightValue is null || leftValue is null) return false;
+            return leftValue.Value == rightValue.Value;
+        }
+
+        /// <summary>
+        /// Compares two instances to indicate if they are different.
+        /// leftValue != rightValue
+        /// </summary>
+        /// <param name="leftValue">The left value to compare.</param>
+        /// <param name="rightValue">The right value to compare.</param>
+        /// <returns>true if they are different; otherwise, false.</returns>
+        public static bool operator !=(JsonStringValue leftValue, IJsonValue<string> rightValue)
+        {
+            if (ReferenceEquals(leftValue, rightValue)) return false;
+            if (rightValue is null || leftValue is null) return true;
+            return leftValue.Value != rightValue.Value;
+        }
+
+        /// <summary>
+        /// Compares two instances to indicate if they are same.
+        /// leftValue == rightValue
+        /// </summary>
+        /// <param name="leftValue">The left value to compare.</param>
+        /// <param name="rightValue">The right value to compare.</param>
+        /// <returns>true if they are same; otherwise, false.</returns>
+        public static bool operator ==(JsonStringValue leftValue, string rightValue)
+        {
+            return !(leftValue is null) && leftValue.Value == rightValue;
+        }
+
+        /// <summary>
+        /// Compares two instances to indicate if they are different.
+        /// leftValue != rightValue
+        /// </summary>
+        /// <param name="leftValue">The left value to compare.</param>
+        /// <param name="rightValue">The right value to compare.</param>
+        /// <returns>true if they are different; otherwise, false.</returns>
+        public static bool operator !=(JsonStringValue leftValue, string rightValue)
+        {
+            return leftValue is null || leftValue.Value != rightValue;
         }
     }
 
@@ -411,6 +585,16 @@ namespace Trivial.Text
         public override int GetHashCode()
         {
             return Value.GetHashCode();
+        }
+
+        /// <summary>
+        /// Converts to JSON value.
+        /// </summary>
+        /// <param name="value">The source value.</param>
+        /// <returns>A JSON value.</returns>
+        public static implicit operator JsonBooleanValue(bool value)
+        {
+            return value ? True : False;
         }
 
         /// <summary>

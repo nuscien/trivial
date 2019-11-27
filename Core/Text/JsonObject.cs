@@ -97,9 +97,23 @@ namespace Trivial.Text
         /// </summary>
         /// <param name="key">The property key.</param>
         /// <returns>true if there is no such key; otherwise, false.</returns>
+        /// <exception cref="ArgumentNullException">key was null, empty or consists only of white-space characters.</exception>
         public bool ContainsKey(string key)
         {
+            AssertKey(key);
             return store.ContainsKey(key);
+        }
+
+        /// <summary>
+        /// Determines whether it contains an property value with the specific key.
+        /// </summary>
+        /// <param name="key">The property key.</param>
+        /// <returns>true if there is no such key; otherwise, false.</returns>
+        /// <exception cref="ArgumentNullException">key was null, empty or consists only of white-space characters.</exception>
+        public bool ContainsKey(ReadOnlySpan<char> key)
+        {
+            if (key == null) throw new ArgumentNullException("key", "key should not be null.");
+            return ContainsKey(new string(key));
         }
 
         /// <summary>
@@ -116,6 +130,20 @@ namespace Trivial.Text
             var data = store[key];
             if (data is null) return null;
             return data.ToString();
+        }
+
+        /// <summary>
+        /// Gets the raw value of the specific property.
+        /// </summary>
+        /// <param name="key">The property key.</param>
+        /// <returns>The value.</returns>
+        /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">The property does not exist.</exception>
+        /// <exception cref="InvalidOperationException">The value type is not the expected one.</exception>
+        public string GetRawText(ReadOnlySpan<char> key)
+        {
+            if (key == null) throw new ArgumentNullException("key", "key should not be null.");
+            return GetRawText(new string(key));
         }
 
         /// <summary>
@@ -137,6 +165,20 @@ namespace Trivial.Text
 
             if (data is null) return JsonValueKind.Null;
             return data.ValueKind;
+        }
+
+        /// <summary>
+        /// Gets the value kind of the specific property.
+        /// </summary>
+        /// <param name="key">The property key.</param>
+        /// <param name="strictMode">true if enable strict mode; otherwise, false, to return undefined for non-existing.</param>
+        /// <returns>The value.</returns>
+        /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">The property does not exist.</exception>
+        public JsonValueKind GetValueKind(ReadOnlySpan<char> key, bool strictMode = false)
+        {
+            if (key == null) throw new ArgumentNullException("key", "key should not be null.");
+            return GetValueKind(new string(key), strictMode);
         }
 
         /// <summary>
