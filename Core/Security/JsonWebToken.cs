@@ -771,7 +771,10 @@ namespace Trivial.Security
         /// <returns>A string that represents the current object.</returns>
         public override string ToString()
         {
-            return Text.StringExtensions.ToJson(this);
+            return Text.StringExtensions.ToJson(this, new System.Text.Json.JsonSerializerOptions
+            {
+                IgnoreNullValues = true
+            });
         }
     }
 }

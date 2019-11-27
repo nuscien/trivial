@@ -223,13 +223,14 @@ namespace Trivial.Web
         /// Encodes a specific object into JSON Base64Url format.
         /// </summary>
         /// <param name="obj">The object to encode.</param>
+        /// <param name="options">Options to control the behavior during parsing.</param>
         /// <returns>A Base64Url string.</returns>
-        public static string Base64UrlEncode(object obj)
+        public static string Base64UrlEncode(object obj, JsonSerializerOptions options = null)
         {
             if (obj == null) return string.Empty;
             var t = obj.GetType();
-            if (t == typeof(string)) return Base64UrlEncode(obj.ToString());
-            return Base64UrlEncode(StringExtensions.ToJson(obj));
+            if (t == typeof(string)) return Base64UrlEncode(obj.ToString(), Encoding.UTF8);
+            return Base64UrlEncode(StringExtensions.ToJson(obj, options));
         }
 
         /// <summary>
@@ -266,6 +267,7 @@ namespace Trivial.Web
         /// </summary>
         /// <typeparam name="T">The type of the object to deserialize.</typeparam>
         /// <param name="s">A Base64Url encoded string.</param>
+        /// <param name="options">Options to control the behavior during parsing.</param>
         /// <returns>The object typed.</returns>
         public static T Base64UrlDecodeTo<T>(string s, JsonSerializerOptions options = null)
         {

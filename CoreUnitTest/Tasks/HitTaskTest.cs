@@ -138,7 +138,7 @@ namespace Trivial.UnitTest.Tasks
             Assert.AreEqual("rst", result);
             _ = ProcessHit(taskTokens, task, "xyz");
             await Task.Delay(110);
-            Assert.AreEqual("rst", result);
+            Assert.AreEqual("xyz", result);
             Task.WaitAll(taskTokens.ToArray());
             taskTokens.Clear();
         }
