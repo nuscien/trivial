@@ -63,15 +63,13 @@ namespace Trivial.Sample
             ConsoleLine.WriteLine();
 
             // JWT RS512
-            using (var rs = RSASignatureProvider.CreateRS512(rsa))
-            {
-                jwt = new JsonWebToken<HttpClientVerb.NameAndDescription>(jwt.Payload, rs);
-                header = jwt.ToAuthenticationHeaderValue();
-                jwt = JsonWebToken<HttpClientVerb.NameAndDescription>.Parse(header.ToString(), rs);
-                jwtStr = jwt.ToEncodedString();
-                ConsoleLine.WriteLine(jwtStr != header.Parameter ? "Failed JWT RS512 testing." : header.Parameter);
-                ConsoleLine.WriteLine();
-            }
+            using var rs = RSASignatureProvider.CreateRS512(rsa);
+            jwt = new JsonWebToken<HttpClientVerb.NameAndDescription>(jwt.Payload, rs);
+            header = jwt.ToAuthenticationHeaderValue();
+            jwt = JsonWebToken<HttpClientVerb.NameAndDescription>.Parse(header.ToString(), rs);
+            jwtStr = jwt.ToEncodedString();
+            ConsoleLine.WriteLine(jwtStr != header.Parameter ? "Failed JWT RS512 testing." : header.Parameter);
+            ConsoleLine.WriteLine();
         }
     }
 }

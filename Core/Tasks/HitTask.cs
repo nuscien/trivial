@@ -607,7 +607,6 @@ namespace Trivial.Tasks
             return task;
         }
 
-
         /// <summary>
         /// Creates a hit task responded at a specific times.
         /// </summary>
@@ -717,6 +716,116 @@ namespace Trivial.Tasks
                 Timeout = timeout,
                 MinCount = min,
                 MaxCount = max,
+                Mode = ConcurrencyFilters.Debounce
+            };
+            if (action != null) task.Processed += (sender, ev) =>
+            {
+                action(task, ev);
+            };
+            return task;
+        }
+
+        /// <summary>
+        /// Creates a hit task responded at a specific times.
+        /// </summary>
+        /// <param name="action">The action.</param>
+        /// <param name="count">The maxmum hit count.</param>
+        /// <param name="timeout">The time span between each hit.</param>
+        /// <returns>The hit task instance.</returns>
+        /// <remarks>
+        /// A handler to process for the specific times only and it will be reset after a while.
+        /// A sample scenario is double click.
+        /// </remarks>
+        public static HitTask Times(Action action, int count, TimeSpan timeout)
+        {
+            var task = new HitTask
+            {
+                Delay = timeout,
+                Timeout = timeout,
+                MinCount = count,
+                Mode = ConcurrencyFilters.Debounce
+            };
+            if (action != null) task.Processed += (sender, ev) =>
+            {
+                action();
+            };
+            return task;
+        }
+
+        /// <summary>
+        /// Creates a hit task responded at a specific times.
+        /// </summary>
+        /// <param name="action">The action.</param>
+        /// <param name="count">The hit count.</param>
+        /// <param name="timeout">The time span between each hit.</param>
+        /// <returns>The hit task instance.</returns>
+        /// <remarks>
+        /// A handler to process for the specific times only and it will be reset after a while.
+        /// A sample scenario is double click.
+        /// </remarks>
+        public static HitTask Times(HitEventHandler action, int count, TimeSpan timeout)
+        {
+            var task = new HitTask
+            {
+                Delay = timeout,
+                Timeout = timeout,
+                MinCount = count,
+                Mode = ConcurrencyFilters.Debounce
+            };
+            if (action != null) task.Processed += (sender, ev) =>
+            {
+                action(task, ev);
+            };
+            return task;
+        }
+
+        /// <summary>
+        /// Creates a hit task responded at a specific times.
+        /// </summary>
+        /// <typeparam name="T">The type of argument.</typeparam>
+        /// <param name="action">The action.</param>
+        /// <param name="count">The hit count.</param>
+        /// <param name="timeout">The time span between each hit.</param>
+        /// <returns>The hit task instance.</returns>
+        /// <remarks>
+        /// A handler to process for the specific times only and it will be reset after a while.
+        /// A sample scenario is double click.
+        /// </remarks>
+        public static HitTask<T> Times<T>(Action<T> action, int count, TimeSpan timeout)
+        {
+            var task = new HitTask<T>
+            {
+                Delay = timeout,
+                Timeout = timeout,
+                MinCount = count,
+                Mode = ConcurrencyFilters.Debounce
+            };
+            if (action != null) task.Processed += (sender, ev) =>
+            {
+                action(ev.Argument);
+            };
+            return task;
+        }
+
+        /// <summary>
+        /// Creates a hit task responded at a specific times.
+        /// </summary>
+        /// <typeparam name="T">The type of argument.</typeparam>
+        /// <param name="action">The action.</param>
+        /// <param name="count">The hit count.</param>
+        /// <param name="timeout">The time span between each hit.</param>
+        /// <returns>The hit task instance.</returns>
+        /// <remarks>
+        /// A handler to process for the specific times only and it will be reset after a while.
+        /// A sample scenario is double click.
+        /// </remarks>
+        public static HitTask<T> Times<T>(HitEventHandler<T> action, int count, TimeSpan timeout)
+        {
+            var task = new HitTask<T>
+            {
+                Delay = timeout,
+                Timeout = timeout,
+                MinCount = count,
                 Mode = ConcurrencyFilters.Debounce
             };
             if (action != null) task.Processed += (sender, ev) =>

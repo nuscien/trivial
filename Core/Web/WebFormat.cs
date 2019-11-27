@@ -229,7 +229,7 @@ namespace Trivial.Web
             if (obj == null) return string.Empty;
             var t = obj.GetType();
             if (t == typeof(string)) return Base64UrlEncode(obj.ToString());
-            return Base64UrlEncode(Text.StringExtensions.ToJson(obj));
+            return Base64UrlEncode(StringExtensions.ToJson(obj));
         }
 
         /// <summary>
@@ -267,15 +267,13 @@ namespace Trivial.Web
         /// <typeparam name="T">The type of the object to deserialize.</typeparam>
         /// <param name="s">A Base64Url encoded string.</param>
         /// <returns>The object typed.</returns>
-        public static T Base64UrlDecodeTo<T>(string s)
+        public static T Base64UrlDecodeTo<T>(string s, JsonSerializerOptions options = null)
         {
             if (string.IsNullOrEmpty(s)) return default;
-            var bytes = Base64UrlDecode(s);
+            s = Base64UrlDecodeToString(s, Encoding.UTF8);
             var d = GetJsonDeserializer<T>();
             if (d != null) return d(s);
-            var serializer = new DataContractJsonSerializer(typeof(T));
-            using var stream = new MemoryStream(bytes);
-            return (T)serializer.ReadObject(stream);
+            return (T)JsonSerializer.Deserialize(s, typeof(T), options);
         }
 
         /// <summary>
@@ -293,18 +291,19 @@ namespace Trivial.Web
                     return (T)(object)JsonDocument.Parse(str);
                 };
             }
-            else if (t == typeof(IJsonValue))
+            else if (t == typeof(JsonObject))
             {
-                if (t == typeof (JsonObject))
-                    return str =>
-                    {
-                        return (T)(object)JsonObject.Parse(str);
-                    };
-                if (t == typeof(JsonArray))
-                    return str =>
-                    {
-                        return (T)(object)JsonArray.Parse(str);
-                    };
+                return str =>
+                {
+                    return (T)(object)JsonObject.Parse(str);
+                };
+            }
+            else if (t == typeof(JsonArray))
+            {
+                return str =>
+                {
+                    return (T)(object)JsonArray.Parse(str);
+                };
             }
             else if (t.FullName.StartsWith("Newtonsoft.Json.Linq.J", StringComparison.InvariantCulture))
             {

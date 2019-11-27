@@ -40,7 +40,7 @@ namespace Trivial.Tasks
             Working = 1,
 
             /// <summary>
-            /// Run succeeded.
+            /// Run succeeded (either of all or partial).
             /// </summary>
             Success = 2,
 
