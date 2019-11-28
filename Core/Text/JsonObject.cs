@@ -236,12 +236,15 @@ namespace Trivial.Text
         /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
         /// <exception cref="ArgumentOutOfRangeException">The property does not exist.</exception>
         /// <exception cref="InvalidOperationException">The value type is not the expected one.</exception>
+        /// <exception cref="FormatException">The value is not of the correct format.</exception>
+        /// <exception cref="OverflowException">represents a number that is less than the minimum number or greater than the maximum number.</exception>
         public uint GetUInt32Value(string key)
         {
             AssertKey(key);
             if (TryGetJsonValue<JsonIntegerValue>(key, out var v)) return (uint)v;
-            var p = GetJsonValue<JsonFloatValue>(key, JsonValueKind.Number);
-            return (uint)p;
+            if (TryGetJsonValue<JsonFloatValue>(key, out var f)) return (uint)f;
+            var p = GetJsonValue<JsonStringValue>(key, JsonValueKind.Number);
+            return uint.Parse(p.Value);
         }
 
         /// <summary>
@@ -252,12 +255,15 @@ namespace Trivial.Text
         /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
         /// <exception cref="ArgumentOutOfRangeException">The property does not exist.</exception>
         /// <exception cref="InvalidOperationException">The value type is not the expected one.</exception>
+        /// <exception cref="FormatException">The value is not of the correct format.</exception>
+        /// <exception cref="OverflowException">represents a number that is less than the minimum number or greater than the maximum number.</exception>
         public int GetInt32Value(string key)
         {
             AssertKey(key);
             if (TryGetJsonValue<JsonIntegerValue>(key, out var v)) return (int)v;
-            var p = GetJsonValue<JsonFloatValue>(key, JsonValueKind.Number);
-            return (int)p;
+            if (TryGetJsonValue<JsonFloatValue>(key, out var f)) return (int)f;
+            var p = GetJsonValue<JsonStringValue>(key, JsonValueKind.Number);
+            return int.Parse(p.Value);
         }
 
         /// <summary>
@@ -268,12 +274,15 @@ namespace Trivial.Text
         /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
         /// <exception cref="ArgumentOutOfRangeException">The property does not exist.</exception>
         /// <exception cref="InvalidOperationException">The value type is not the expected one.</exception>
+        /// <exception cref="FormatException">The value is not of the correct format.</exception>
+        /// <exception cref="OverflowException">represents a number that is less than the minimum number or greater than the maximum number.</exception>
         public long GetInt64Value(string key)
         {
             AssertKey(key);
             if (TryGetJsonValue<JsonIntegerValue>(key, out var v)) return v.Value;
-            var p = GetJsonValue<JsonFloatValue>(key, JsonValueKind.Number);
-            return (long)p;
+            if (TryGetJsonValue<JsonFloatValue>(key, out var f)) return (long)f;
+            var p = GetJsonValue<JsonStringValue>(key, JsonValueKind.Number);
+            return long.Parse(p.Value);
         }
 
         /// <summary>
@@ -284,12 +293,15 @@ namespace Trivial.Text
         /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
         /// <exception cref="ArgumentOutOfRangeException">The property does not exist.</exception>
         /// <exception cref="InvalidOperationException">The value type is not the expected one.</exception>
+        /// <exception cref="FormatException">The value is not of the correct format.</exception>
+        /// <exception cref="OverflowException">represents a number that is less than the minimum number or greater than the maximum number.</exception>
         public float GetSingleValue(string key)
         {
             AssertKey(key);
             if (TryGetJsonValue<JsonFloatValue>(key, out var v)) return (float)v;
-            var p = GetJsonValue<JsonIntegerValue>(key, JsonValueKind.Number);
-            return (float)p;
+            if (TryGetJsonValue<JsonIntegerValue>(key, out var f)) return (float)f;
+            var p = GetJsonValue<JsonStringValue>(key, JsonValueKind.Number);
+            return float.Parse(p.Value);
         }
 
         /// <summary>
@@ -304,8 +316,9 @@ namespace Trivial.Text
         {
             AssertKey(key);
             if (TryGetJsonValue<JsonFloatValue>(key, out var v)) return v.Value;
-            var p = GetJsonValue<JsonIntegerValue>(key, JsonValueKind.Number);
-            return (double)p;
+            if (TryGetJsonValue<JsonIntegerValue>(key, out var f)) return (float)f;
+            var p = GetJsonValue<JsonStringValue>(key, JsonValueKind.Number);
+            return double.Parse(p.Value);
         }
 
         /// <summary>
@@ -321,7 +334,7 @@ namespace Trivial.Text
             AssertKey(key);
             if (TryGetJsonValue<JsonBooleanValue>(key, out var v)) return v.Value;
             var p = GetJsonValue<JsonStringValue>(key);
-            return p.Value switch
+            return p.Value?.ToLower() switch
             {
                 JsonBooleanValue.TrueString => true,
                 JsonBooleanValue.FalseString => false,
@@ -394,6 +407,22 @@ namespace Trivial.Text
         {
             var str = GetStringValue(key);
             return Convert.FromBase64String(str);
+        }
+
+        /// <summary>
+        /// Gets the value of the specific property.
+        /// </summary>
+        /// <param name="key">The property key.</param>
+        /// <returns>The value.</returns>
+        /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">The property does not exist.</exception>
+        /// <exception cref="OverflowException">value is outside the range of the underlying type of enumType.</exception>
+        /// <exception cref="InvalidOperationException">The value type is not the expected one.</exception>
+        public T GetEnumValue<T>(string key) where T : Enum
+        {
+            if (TryGetInt32Value(key, out var v)) return (T)(object)v;
+            var str = GetStringValue(key);
+            return (T)Enum.Parse(typeof(T), str);
         }
 
         /// <summary>
@@ -1290,6 +1319,7 @@ namespace Trivial.Text
         /// <exception cref="JsonException">json does not represent a valid single JSON array.</exception>
         public static implicit operator JsonObject(JsonDocument json)
         {
+            if (json is null) return null;
             return json.RootElement;
         }
 

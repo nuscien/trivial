@@ -198,8 +198,9 @@ namespace Trivial.Text
         public uint GetUInt32Value(int index)
         {
             if (TryGetJsonValue<JsonIntegerValue>(index, out var v)) return (uint)v;
-            var p = GetJsonValue<JsonFloatValue>(index, JsonValueKind.Number);
-            return (uint)p;
+            if (TryGetJsonValue<JsonFloatValue>(index, out var f)) return (uint)f;
+            var p = GetJsonValue<JsonStringValue>(index, JsonValueKind.Number);
+            return uint.Parse(p.Value);
         }
 
         /// <summary>
@@ -211,8 +212,9 @@ namespace Trivial.Text
         public int GetInt32Value(int index)
         {
             if (TryGetJsonValue<JsonIntegerValue>(index, out var v)) return (int)v;
-            var p = GetJsonValue<JsonFloatValue>(index, JsonValueKind.Number);
-            return (int)p;
+            if (TryGetJsonValue<JsonFloatValue>(index, out var f)) return (int)f;
+            var p = GetJsonValue<JsonStringValue>(index, JsonValueKind.Number);
+            return int.Parse(p.Value);
         }
 
         /// <summary>
@@ -225,8 +227,9 @@ namespace Trivial.Text
         public long GetInt64Value(int index)
         {
             if (TryGetJsonValue<JsonIntegerValue>(index, out var v)) return v.Value;
-            var p = GetJsonValue<JsonFloatValue>(index, JsonValueKind.Number);
-            return (long)p;
+            if (TryGetJsonValue<JsonFloatValue>(index, out var f)) return (long)f;
+            var p = GetJsonValue<JsonStringValue>(index, JsonValueKind.Number);
+            return long.Parse(p.Value);
         }
 
         /// <summary>
@@ -239,8 +242,9 @@ namespace Trivial.Text
         public float GetSingleValue(int index)
         {
             if (TryGetJsonValue<JsonFloatValue>(index, out var v)) return (float)v;
-            var p = GetJsonValue<JsonIntegerValue>(index, JsonValueKind.Number);
-            return (float)p;
+            if (TryGetJsonValue<JsonIntegerValue>(index, out var f)) return (float)f;
+            var p = GetJsonValue<JsonStringValue>(index, JsonValueKind.Number);
+            return float.Parse(p.Value);
         }
 
         /// <summary>
@@ -253,8 +257,9 @@ namespace Trivial.Text
         public double GetDoubleValue(int index)
         {
             if (TryGetJsonValue<JsonFloatValue>(index, out var v)) return v.Value;
-            var p = GetJsonValue<JsonIntegerValue>(index, JsonValueKind.Number);
-            return (double)p;
+            if (TryGetJsonValue<JsonIntegerValue>(index, out var f)) return (double)f;
+            var p = GetJsonValue<JsonStringValue>(index, JsonValueKind.Number);
+            return double.Parse(p.Value);
         }
 
         /// <summary>
@@ -268,7 +273,7 @@ namespace Trivial.Text
         {
             if (TryGetJsonValue<JsonBooleanValue>(index, out var v)) return v.Value;
             var p = GetJsonValue<JsonStringValue>(index);
-            return p.Value switch
+            return p.Value?.ToLower() switch
             {
                 JsonBooleanValue.TrueString => true,
                 JsonBooleanValue.FalseString => false,
@@ -327,14 +332,28 @@ namespace Trivial.Text
         /// </summary>
         /// <param name="index">The zero-based index of the element to get.</param>
         /// <returns>The value.</returns>
-        /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
-        /// <exception cref="ArgumentOutOfRangeException">The property does not exist.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">The index is out of range.</exception>
         /// <exception cref="FormatException">The value is not encoded as Base64 text and hence cannot be decoded to bytes.</exception>
         /// <exception cref="InvalidOperationException">The value type is not the expected one.</exception>
         public byte[] GetBytesFromBase64(int index)
         {
             var str = GetStringValue(index);
             return Convert.FromBase64String(str);
+        }
+
+        /// <summary>
+        /// Gets the value of the specific property.
+        /// </summary>
+        /// <param name="index">The zero-based index of the element to get.</param>
+        /// <returns>The value.</returns>
+        /// <exception cref="ArgumentOutOfRangeException">The index is out of range.</exception>
+        /// <exception cref="OverflowException">value is outside the range of the underlying type of enumType.</exception>
+        /// <exception cref="InvalidOperationException">The value type is not the expected one.</exception>
+        public T GetEnumValue<T>(int index) where T : Enum
+        {
+            if (TryGetInt32Value(index, out var v)) return (T)(object)v;
+            var str = GetStringValue(index);
+            return (T)Enum.Parse(typeof(T), str);
         }
 
         /// <summary>
@@ -706,6 +725,37 @@ namespace Trivial.Text
         {
             var str = GetStringValue(index);
             return Convert.TryFromBase64String(str, bytes, out bytesWritten);
+        }
+
+        /// <summary>
+        /// Gets the value of the specific property.
+        /// </summary>
+        /// <param name="index">The zero-based index of the element to get.</param>
+        /// <param name="result">The result.</param>
+        /// <returns>true if has the property and the type is the one expected; otherwise, false.</returns>
+        public bool TryGetEnumValue<T>(int index, out T result) where T : Enum
+        {
+            if (TryGetInt32Value(index, out var v))
+            {
+                result = (T)(object)v;
+                return true;
+            }
+
+            var str = TryGetStringValue(index);
+            if (string.IsNullOrWhiteSpace(str))
+            {
+                result = default;
+                return false;
+            }
+
+            if (Enum.TryParse(typeof(T), str, out var obj))
+            {
+                result = (T)obj;
+                return true;
+            }
+
+            result = default;
+            return false;
         }
 
         /// <summary>
