@@ -49,7 +49,6 @@ namespace Trivial.UnitTest.Security
             Assert.AreEqual(hash.Name, jwt.AlgorithmName);
             var header = jwt.ToAuthenticationHeaderValue();
             Assert.IsTrue(header.Parameter.Length > 10);
-            Console.WriteLine(jwt.ToString());
             var jwt2 = JsonWebToken<JsonObject>.Parse(header.Parameter, hash);
             Assert.AreEqual(header.Parameter, jwt2.ToEncodedString());
             var parser = new JsonWebToken<JsonObject>.Parser(header.Parameter);
