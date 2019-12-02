@@ -64,6 +64,7 @@ namespace Trivial.Net
                 var level = new List<char>();
                 StringBuilder backSlash = null;
                 bool ignoreRest = false;
+                bool lastBackSlash = false;
                 foreach (var c in queryTrim)
                 {
                     if (ignoreRest)
@@ -76,15 +77,26 @@ namespace Trivial.Net
                                 break;
                         }
 
+                        lastBackSlash = false;
                         continue;
                     }
 
                     if (c == '\\')
                     {
-                        backSlash = new StringBuilder();
+                        if (lastBackSlash)
+                        {
+                            sb.Append(c);
+                        }
+                        else
+                        {
+                            backSlash = new StringBuilder();
+                        }
+
+                        lastBackSlash = !lastBackSlash;
                         continue;
                     }
 
+                    lastBackSlash = false;
                     if (backSlash != null)
                     {
                         if (StringExtensions.ReplaceBackSlash(sb, backSlash, c)) backSlash = null;

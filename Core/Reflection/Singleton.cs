@@ -144,7 +144,7 @@ namespace Trivial.Reflection
             try
             {
                 var resolver = GetResolver<T>();
-                if (resolver != null) return resolver(key, out result);
+                if (!(resolver is null)) return resolver(key, out result);
                 result = default;
                 return false;
             }
