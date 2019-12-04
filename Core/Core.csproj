@@ -17,9 +17,10 @@
     <AssemblyVersion>3.0.0.0</AssemblyVersion>
     <FileVersion>3.0.0.0</FileVersion>
     <RepositoryUrl>https://github.com/nuscien/trivial</RepositoryUrl>
-    <RepositoryType></RepositoryType>
-    <PackageTags>tasks numerals utilities oauth2-client jwt-token csv-parser stream pem coordinates</PackageTags>
+    <RepositoryType>git</RepositoryType>
+    <PackageIcon>logo.jpg</PackageIcon>
     <PackageIconUrl>https://github.com/nuscien/trivial/raw/master/Materials/logo.jpg</PackageIconUrl>
+    <PackageTags>tasks numerals utilities oauth2-client jwt-token csv-parser stream pem coordinates</PackageTags>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -34,5 +35,6 @@
 
   <ItemGroup>
     <None Include="..\LICENSE" Pack="true" PackagePath="LICENSE.md" />
+    <None Include="..\Materials\logo.jpg" Pack="true" PackagePath="logo.jpg" />
   </ItemGroup>
 </Project>

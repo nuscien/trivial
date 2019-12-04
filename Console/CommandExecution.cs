@@ -180,6 +180,7 @@ namespace Trivial.Console
         {
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) return false;
             using var p = new Process();
+            p.StartInfo.UseShellExecute = true;
             p.StartInfo.FileName = "explorer.exe";
             p.StartInfo.Arguments = dir;
             return p.Start();
@@ -206,6 +207,7 @@ namespace Trivial.Console
         {
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) return false;
             using var p = new Process();
+            p.StartInfo.UseShellExecute = true;
             p.StartInfo.FileName = "explorer.exe";
             p.StartInfo.Arguments = "/select," + path;
             return p.Start();
