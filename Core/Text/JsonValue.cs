@@ -82,7 +82,7 @@ namespace Trivial.Text
         /// <param name="value">The value.</param>
         public JsonStringValue(DateTime value)
         {
-            Value = value.ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ss.fffZ");
+            Value = ToJson(value, true);
             ValueKind = JsonValueKind.String;
         }
 
@@ -430,6 +430,19 @@ namespace Trivial.Text
                 .Replace("\v", "\\v")
                 .Replace("\0", "\\0")
                 .Replace("\"", "\\\"");
+            if (!removeQuotes) s = string.Format("\"{0}\"", s);
+            return s;
+        }
+
+        /// <summary>
+        /// Converts a string to JSON format.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <param name="removeQuotes">true if remove the quotes; otherwise, false.</param>
+        /// <returns>A JSON format string.</returns>
+        public static string ToJson(DateTime value, bool removeQuotes = false)
+        {
+            var s = value.ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ss.fffZ");
             if (!removeQuotes) s = string.Format("\"{0}\"", s);
             return s;
         }

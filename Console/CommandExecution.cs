@@ -178,7 +178,7 @@ namespace Trivial.Console
         /// <returns>true if a process resource is started; false if no new process resource is started.</returns>
         public static bool Directory(string dir)
         {
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) return false;
+            if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) return false;
             using var p = new Process();
             p.StartInfo.UseShellExecute = true;
             p.StartInfo.FileName = "explorer.exe";
@@ -205,7 +205,7 @@ namespace Trivial.Console
         /// <returns>true if a process resource is started; false if no new process resource is started.</returns>
         public static bool DirectorySelect(string path)
         {
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) return false;
+            if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) return false;
             using var p = new Process();
             p.StartInfo.UseShellExecute = true;
             p.StartInfo.FileName = "explorer.exe";

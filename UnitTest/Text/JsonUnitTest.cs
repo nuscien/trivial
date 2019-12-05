@@ -102,5 +102,37 @@ namespace Trivial.UnitTest.Text
             Assert.AreEqual(9, json.Keys.Count());
             Assert.AreEqual(jsonStr, json.ToString());
         }
+
+        [TestMethod]
+        public void TestJsonAttribute()
+        {
+            var model = new JsonAttributeModel
+            {
+                A = new DateTime(2020, 1, 1),
+                B = new DateTime(2020, 1, 2),
+                C = new DateTime(2020, 1, 3),
+                D = new DateTime(2020, 1, 4)
+            };
+            var str = JsonSerializer.Serialize(model);
+            var model2 = JsonSerializer.Deserialize<JsonAttributeModel>(str);
+            Assert.AreEqual(model.A, model2.A);
+            Assert.AreEqual(model.B, model2.B);
+            Assert.AreEqual(model.C, model2.C);
+            Assert.AreEqual(model.D, model2.D);
+
+            model = new JsonAttributeModel
+            {
+                A = new DateTime(2020, 1, 1),
+                B = null,
+                C = new DateTime(2020, 1, 3),
+                D = null
+            };
+            str = JsonSerializer.Serialize(model);
+            model2 = JsonSerializer.Deserialize<JsonAttributeModel>(str);
+            Assert.AreEqual(model.A, model2.A);
+            Assert.AreEqual(model.B, model2.B);
+            Assert.AreEqual(model.C, model2.C);
+            Assert.AreEqual(model.D, model2.D);
+        }
     }
 }
