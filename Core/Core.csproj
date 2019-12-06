@@ -8,7 +8,7 @@
     <Product>Trivial</Product>
     <Authors>Kingcean Tuan</Authors>
     <Company>Nanchang Jinchen Software Co., Ltd.</Company>
-    <Version>3.0.0-preview.1</Version>
+    <Version>3.0.0-preview.2</Version>
     <Description>A library providing lots of useful utilities, models and services, including hit task, retry policy, PEM, JWT, stream combination, JSON HTTP web client, CSV parser, numerals, coordinates, angle, arithmetic, sets, etc.</Description>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <Copyright>Copyright (c) 2018 Kingcean Tuan.</Copyright>
@@ -20,7 +20,7 @@
     <RepositoryType>git</RepositoryType>
     <PackageIcon>logo.jpg</PackageIcon>
     <PackageIconUrl>https://github.com/nuscien/trivial/raw/master/Materials/logo.jpg</PackageIconUrl>
-    <PackageTags>tasks numerals utilities oauth2-client jwt-token csv-parser stream pem coordinates</PackageTags>
+    <PackageTags>tasks numerals json utilities oauth2-client jwt-token csv-parser stream pem coordinates uri</PackageTags>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
