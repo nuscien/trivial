@@ -106,33 +106,60 @@ namespace Trivial.UnitTest.Text
         [TestMethod]
         public void TestJsonAttribute()
         {
-            var model = new JsonAttributeModel
+            var jArr = new JsonArray
+            {
+                "abc",
+                true,
+                "defg"
+            };
+            jArr.AddNull();
+            jArr.Add(1234);
+            var jObj = new JsonObject();
+            jObj.SetValue("hijk", jArr);
+            jObj.SetValue("lmn", "opq");
+            jObj.SetValue("rst", 56789);
+            jObj.SetValue("uvw", false);
+            jObj.SetNullValue("x");
+            jObj.SetValue("y", new JsonObject());
+            jObj.SetValue("z", 0);
+
+            var model = new JsonAttributeTestModel
             {
                 A = new DateTime(2020, 1, 1),
                 B = new DateTime(2020, 1, 2),
                 C = new DateTime(2020, 1, 3),
-                D = new DateTime(2020, 1, 4)
+                D = new DateTime(2020, 1, 4),
+                E = new DateTime(2020, 1, 5),
+                F = jObj,
+                G = jArr
             };
             var str = JsonSerializer.Serialize(model);
-            var model2 = JsonSerializer.Deserialize<JsonAttributeModel>(str);
+            var model2 = JsonSerializer.Deserialize<JsonAttributeTestModel>(str);
             Assert.AreEqual(model.A, model2.A);
             Assert.AreEqual(model.B, model2.B);
             Assert.AreEqual(model.C, model2.C);
             Assert.AreEqual(model.D, model2.D);
+            Assert.AreEqual(model.E, model2.E);
+            Assert.AreEqual(model.F.Count, model2.F.Count);
+            Assert.AreEqual(model.G.Count, model2.G.Count);
 
-            model = new JsonAttributeModel
+            model = new JsonAttributeTestModel
             {
                 A = new DateTime(2020, 1, 1),
                 B = null,
                 C = new DateTime(2020, 1, 3),
-                D = null
+                D = null,
+                E = new DateTime(2020, 1, 5)
             };
             str = JsonSerializer.Serialize(model);
-            model2 = JsonSerializer.Deserialize<JsonAttributeModel>(str);
+            model2 = JsonSerializer.Deserialize<JsonAttributeTestModel>(str);
             Assert.AreEqual(model.A, model2.A);
             Assert.AreEqual(model.B, model2.B);
             Assert.AreEqual(model.C, model2.C);
             Assert.AreEqual(model.D, model2.D);
+            Assert.AreEqual(model.E, model2.E);
+            Assert.AreEqual(null, model2.F);
+            Assert.AreEqual(null, model2.G);
         }
     }
 }

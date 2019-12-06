@@ -20,6 +20,12 @@ namespace Trivial.Text
         public sealed class NullableConverter : JsonConverter<DateTime?>
         {
             /// <inheritdoc />
+            public override bool CanConvert(Type typeToConvert)
+            {
+                return base.CanConvert(typeToConvert) || typeToConvert == typeof(DateTime);
+            }
+
+            /// <inheritdoc />
             public override DateTime? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
             {
                 if (reader.TokenType == JsonTokenType.Null)
@@ -39,9 +45,9 @@ namespace Trivial.Text
         }
 
         /// <summary>
-        /// Nullable Javascript ticks JSON string converter.
+        /// Nullable date time JSON converter with Javascript ticks fallback.
         /// </summary>
-        public sealed class NullableStringConverter : JsonConverter<DateTime?>
+        public sealed class FallbackNullableConverter : JsonConverter<DateTime?>
         {
             /// <inheritdoc />
             public override DateTime? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
@@ -62,9 +68,9 @@ namespace Trivial.Text
         }
 
         /// <summary>
-        /// Javascript ticks JSON string converter.
+        /// Date time JSON converter with Javascript ticks fallback.
         /// </summary>
-        public sealed class StringConverter : JsonConverter<DateTime>
+        public sealed class FallbackConverter : JsonConverter<DateTime>
         {
             /// <inheritdoc />
             public override DateTime Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
@@ -101,7 +107,7 @@ namespace Trivial.Text
     /// <summary>
     /// Unix timestamp JSON number converter.
     /// </summary>
-    public sealed class JsonUnixTimetampConverter : JsonConverter<DateTime>
+    public sealed class JsonUnixTimestampConverter : JsonConverter<DateTime>
     {
         /// <summary>
         /// Nullable Unix timestamp JSON number converter.
@@ -128,9 +134,9 @@ namespace Trivial.Text
         }
 
         /// <summary>
-        /// Nullable Unix timestamp JSON string converter.
+        /// Nullable date time JSON converter with Unix timestamp fallback.
         /// </summary>
-        public sealed class NullableStringConverter : JsonConverter<DateTime?>
+        public sealed class FallbackNullableConverter : JsonConverter<DateTime?>
         {
             /// <inheritdoc />
             public override DateTime? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
@@ -151,9 +157,9 @@ namespace Trivial.Text
         }
 
         /// <summary>
-        /// Unix timestamp JSON string converter.
+        /// Date time JSON converter with Unix timestamp fallback.
         /// </summary>
-        public sealed class StringConverter : JsonConverter<DateTime>
+        public sealed class FallbackConverter : JsonConverter<DateTime>
         {
             /// <inheritdoc />
             public override DateTime Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
@@ -184,6 +190,66 @@ namespace Trivial.Text
         {
             var num = WebFormat.ParseUnixTimestamp(value);
             writer.WriteNumberValue(num);
+        }
+    }
+
+    /// <summary>
+    /// Nullable Unix timestamp JSON string converter.
+    /// </summary>
+    public sealed class JsonObjectConverter : JsonConverter<IJsonValue>
+    {
+        /// <inheritdoc />
+        public override bool CanConvert(Type typeToConvert)
+        {
+            return typeof(IJsonValue).IsAssignableFrom(typeToConvert);
+        }
+
+        /// <inheritdoc />
+        public override IJsonValue Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+        {
+            switch (reader.TokenType)
+            {
+                case JsonTokenType.Null:
+                    return null;
+                case JsonTokenType.StartObject:
+                    var obj = new JsonObject();
+                    obj.SetRange(ref reader);
+                    return obj;
+                case JsonTokenType.StartArray:
+                    return JsonArray.ParseValue(ref reader);
+                case JsonTokenType.String:
+                    return new JsonStringValue(reader.GetString());
+                case JsonTokenType.Number:
+                    if (reader.TryGetInt64(out var int64v)) return new JsonIntegerValue(int64v);
+                    return new JsonFloatValue(reader.GetDouble());
+                case JsonTokenType.True:
+                    return JsonBooleanValue.True;
+                case JsonTokenType.False:
+                    return JsonBooleanValue.False;
+                default:
+                    return null;
+            }
+        }
+
+        /// <inheritdoc />
+        public override void Write(Utf8JsonWriter writer, IJsonValue value, JsonSerializerOptions options)
+        {
+            if (value is null) writer.WriteNullValue();
+            else if (value is JsonObject jObj) jObj.WriteTo(writer);
+            else if (value is JsonArray jArr) jArr.WriteTo(writer);
+            else if (value is IJsonValue<string> jStr)
+            {
+                if (jStr.Value == null) writer.WriteNullValue();
+                else writer.WriteStringValue(jStr.Value);
+            }
+            else if (value is IJsonValue<long> jInt64) writer.WriteNumberValue(jInt64.Value);
+            else if (value is IJsonValue<double> jDouble) writer.WriteNumberValue(jDouble.Value);
+            else if (value is IJsonValue<bool> jB) writer.WriteBooleanValue(jB.Value);
+            else if (value is IJsonValue<int> jInt32) writer.WriteNumberValue(jInt32.Value);
+            else if (value is IJsonValue<uint> jUInt32) writer.WriteNumberValue(jUInt32.Value);
+            else if (value is IJsonValue<ulong> jUInt64) writer.WriteNumberValue(jUInt64.Value);
+            else if (value is IJsonValue<float> jFloat) writer.WriteNumberValue(jFloat.Value);
+            else writer.WriteNullValue();
         }
     }
 }

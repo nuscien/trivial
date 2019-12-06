@@ -156,7 +156,7 @@ namespace Trivial.Tasks
         /// <summary>
         /// Retry times.
         /// </summary>
-        private List<DateTime> retryTimes = new List<DateTime>();
+        private readonly List<DateTime> retryTimes = new List<DateTime>();
 
         /// <summary>
         /// The result cache.

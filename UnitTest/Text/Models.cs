@@ -33,7 +33,7 @@ namespace Trivial.UnitTest.Text
         public IEnumerable<int> Col { get; set; }
     }
 
-    class JsonAttributeModel
+    class JsonAttributeTestModel
     {
         [JsonConverter(typeof(JsonJavaScriptTicksConverter))]
         public DateTime A { get; set; }
@@ -41,10 +41,19 @@ namespace Trivial.UnitTest.Text
         [JsonConverter(typeof(JsonJavaScriptTicksConverter.NullableConverter))]
         public DateTime? B { get; set; }
 
-        [JsonConverter(typeof(JsonJavaScriptTicksConverter.StringConverter))]
+        [JsonConverter(typeof(JsonJavaScriptTicksConverter.FallbackConverter))]
         public DateTime C { get; set; }
 
-        [JsonConverter(typeof(JsonJavaScriptTicksConverter.NullableStringConverter))]
+        [JsonConverter(typeof(JsonJavaScriptTicksConverter.FallbackNullableConverter))]
         public DateTime? D { get; set; }
+
+        [JsonConverter(typeof(JsonUnixTimestampConverter))]
+        public DateTime E { get; set; }
+
+        [JsonConverter(typeof(JsonObjectConverter))]
+        public JsonObject F { get; set; }
+
+        [JsonConverter(typeof(JsonObjectConverter))]
+        public JsonArray G { get; set; }
     }
 }

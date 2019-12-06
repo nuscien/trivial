@@ -1090,7 +1090,7 @@ namespace Trivial.Text
         }
 
         /// <summary>
-        /// Adds a JSON object.
+        /// Sets properties.
         /// </summary>
         /// <param name="json">Another JSON object to add.</param>
         /// <param name="skipDuplicate">true if skip the duplicate properties; otherwise, false.</param>
@@ -1118,6 +1118,100 @@ namespace Trivial.Text
                     store[prop.Key] = prop.Value;
                     count++;
                 }
+            }
+
+            return count;
+        }
+
+        /// <summary>
+        /// Sets properties.
+        /// </summary>
+        /// <param name="reader">The reader to read.</param>
+        /// <param name="skipDuplicate">true if skip the duplicate properties; otherwise, false.</param>
+        /// <returns>The count of property added.</returns>
+        /// <exception cref="JsonException">reader contains unsupported options or value.</exception>
+        /// <exception cref="ArgumentException">readerOptions contains unsupported options.</exception>
+        public int SetRange(ref Utf8JsonReader reader, bool skipDuplicate = false)
+        {
+            var count = 0;
+            switch (reader.TokenType)
+            {
+                case JsonTokenType.None:        // A new reader was created and has never been read, so we need to move to the first token; or a reader has terminated and we're about to throw.
+                case JsonTokenType.PropertyName:// Using a reader loop the caller has identified a property they wish to hydrate into a JsonDocument. Move to the value first.
+                case JsonTokenType.Comment:     // Ignore comment.
+                    if (!reader.Read()) return 0;
+                    break;
+                case JsonTokenType.Null:        // Nothing to read for value null.
+                    return 0;
+            }
+
+            if (reader.TokenType != JsonTokenType.StartObject) throw new JsonException("JSON object only.");
+            while (reader.Read())
+            {
+                var needBreak = false;
+                while (reader.TokenType == JsonTokenType.None || reader.TokenType == JsonTokenType.Comment)
+                {
+                    if (reader.Read()) continue;
+                    needBreak = true;
+                    break;
+                }
+
+                if (needBreak || reader.TokenType != JsonTokenType.PropertyName) break;
+                var key = reader.GetString();
+                if (!reader.Read()) break;
+                while (reader.TokenType == JsonTokenType.None || reader.TokenType == JsonTokenType.Comment)
+                {
+                    if (reader.Read()) continue;
+                    needBreak = true;
+                    break;
+                }
+
+                if (needBreak || reader.TokenType == JsonTokenType.EndObject) break;
+                switch (reader.TokenType)
+                {
+                    case JsonTokenType.Null:
+                        if (!skipDuplicate || !ContainsKey(key)) SetNullValue(key);
+                        break;
+                    case JsonTokenType.String:
+                        if (!skipDuplicate || !ContainsKey(key)) SetValue(key, reader.GetString());
+                        break;
+                    case JsonTokenType.Number:
+                        if (!skipDuplicate || !ContainsKey(key))
+                        {
+                            if (reader.TryGetInt64(out var int64v)) SetValue(key, int64v);
+                            else SetValue(key, reader.GetDouble());
+                        }
+
+                        break;
+                    case JsonTokenType.True:
+                        if (!skipDuplicate || !ContainsKey(key)) SetValue(key, true);
+                        break;
+                    case JsonTokenType.False:
+                        if (!skipDuplicate || !ContainsKey(key)) SetValue(key, false);
+                        break;
+                    case JsonTokenType.StartObject:
+                        if (!skipDuplicate || !ContainsKey(key))
+                        {
+                            var obj = new JsonObject();
+                            obj.SetRange(ref reader);
+                            SetValue(key, obj);
+                        }
+
+                        break;
+                    case JsonTokenType.StartArray:
+                        if (!skipDuplicate || !ContainsKey(key))
+                        {
+                            var arr = JsonArray.ParseValue(ref reader);
+                            SetValue(key, arr);
+                        }
+
+                        break;
+                    default:
+                        count--;
+                        break;
+                }
+
+                count++;
             }
 
             return count;
