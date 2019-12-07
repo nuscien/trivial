@@ -7,7 +7,7 @@
     <Authors>Kingcean Tuan</Authors>
     <Company>Nanchang Jinchen Software Co., Ltd</Company>
     <Copyright>Copyright (c) 2018 Kingcean Tuan.</Copyright>
-    <Version>3.0.0-preview.2</Version>
+    <Version>3.0.0</Version>
     <AssemblyVersion>3.0.0.0</AssemblyVersion>
     <FileVersion>3.0.0.0</FileVersion>
     <Description>The useful utilities for console application including command dispatcher, arguments parser and some rich user interface console controls.</Description>

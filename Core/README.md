@@ -244,6 +244,10 @@ foreach (var model in csv.ConvertTo<Model>(new[] { "A", "B" }))
 }
 ```
 
+### JSON
+
+You can use `JsonJavaScriptTicksConverter` for JavaScript ticks serialization.
+
 ## Further
 
 - [Geography](https://github.com/nuscien/trivial/wiki/geo)

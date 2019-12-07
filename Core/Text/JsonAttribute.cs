@@ -194,7 +194,7 @@ namespace Trivial.Text
     }
 
     /// <summary>
-    /// Nullable Unix timestamp JSON string converter.
+    /// JSON object and JSON array converter.
     /// </summary>
     public sealed class JsonObjectConverter : JsonConverter<IJsonValue>
     {
@@ -210,6 +210,9 @@ namespace Trivial.Text
             switch (reader.TokenType)
             {
                 case JsonTokenType.Null:
+                    if (typeToConvert == typeof(JsonObject) || typeToConvert == typeof(JsonArray)) return null;
+                    if (typeToConvert == typeof(JsonStringValue)) return new JsonStringValue(null as string);
+                    if (typeToConvert == typeof(IJsonValue)) return JsonValues.Null;
                     return null;
                 case JsonTokenType.StartObject:
                     var obj = new JsonObject();
