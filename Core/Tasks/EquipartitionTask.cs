@@ -795,12 +795,12 @@ namespace Trivial.Tasks
             sb.AppendFormat(
                 CultureInfo.InvariantCulture,
                 "\"id\":{0},\"job\":{1},\"creation\":{2},\"update\":{3}\"done\":{4}",
-                JsonStringValue.ToJson(Id),
-                JsonStringValue.ToJson(JobId),
+                JsonString.ToJson(Id),
+                JsonString.ToJson(JobId),
                 WebFormat.ParseDate(Creation),
                 WebFormat.ParseDate(Modification),
                 IsDone);
-            if (desc != null) sb.Append($",\"desc\":{JsonStringValue.ToJson(desc)}");
+            if (desc != null) sb.Append($",\"desc\":{JsonString.ToJson(desc)}");
             if (additionalFragment != null) sb.Append($",\"fragment\":{additionalFragment.ToJsonString()}");
             if (containFragments)
             {
@@ -817,7 +817,7 @@ namespace Trivial.Tasks
             {
                 foreach (var kvp in additionalProperties)
                 {
-                    sb.AppendFormat(",{0}:{1}", JsonStringValue.ToJson(kvp.Key), JsonStringValue.ToJson(kvp.Value));
+                    sb.AppendFormat(",{0}:{1}", JsonString.ToJson(kvp.Key), JsonString.ToJson(kvp.Value));
                 }
             }
 

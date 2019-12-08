@@ -62,7 +62,7 @@ namespace Trivial.Text
             /// <inheritdoc />
             public override void Write(Utf8JsonWriter writer, DateTime? value, JsonSerializerOptions options)
             {
-                if (value.HasValue) writer.WriteStringValue(JsonStringValue.ToJson(value.Value, true));
+                if (value.HasValue) writer.WriteStringValue(JsonString.ToJson(value.Value, true));
                 else writer.WriteNullValue();
             }
         }
@@ -83,7 +83,7 @@ namespace Trivial.Text
             /// <inheritdoc />
             public override void Write(Utf8JsonWriter writer, DateTime value, JsonSerializerOptions options)
             {
-                writer.WriteStringValue(JsonStringValue.ToJson(value, true));
+                writer.WriteStringValue(JsonString.ToJson(value, true));
             }
         }
 
@@ -151,7 +151,7 @@ namespace Trivial.Text
             /// <inheritdoc />
             public override void Write(Utf8JsonWriter writer, DateTime? value, JsonSerializerOptions options)
             {
-                if (value.HasValue) writer.WriteStringValue(JsonStringValue.ToJson(value.Value, true));
+                if (value.HasValue) writer.WriteStringValue(JsonString.ToJson(value.Value, true));
                 else writer.WriteNullValue();
             }
         }
@@ -172,7 +172,7 @@ namespace Trivial.Text
             /// <inheritdoc />
             public override void Write(Utf8JsonWriter writer, DateTime value, JsonSerializerOptions options)
             {
-                writer.WriteStringValue(JsonStringValue.ToJson(value, true));
+                writer.WriteStringValue(JsonString.ToJson(value, true));
             }
         }
 
@@ -211,7 +211,7 @@ namespace Trivial.Text
             {
                 case JsonTokenType.Null:
                     if (typeToConvert == typeof(JsonObject) || typeToConvert == typeof(JsonArray)) return null;
-                    if (typeToConvert == typeof(JsonStringValue)) return new JsonStringValue(null as string);
+                    if (typeToConvert == typeof(JsonString)) return new JsonString(null as string);
                     if (typeToConvert == typeof(IJsonValue)) return JsonValues.Null;
                     return null;
                 case JsonTokenType.StartObject:
@@ -221,14 +221,14 @@ namespace Trivial.Text
                 case JsonTokenType.StartArray:
                     return JsonArray.ParseValue(ref reader);
                 case JsonTokenType.String:
-                    return new JsonStringValue(reader.GetString());
+                    return new JsonString(reader.GetString());
                 case JsonTokenType.Number:
-                    if (reader.TryGetInt64(out var int64v)) return new JsonIntegerValue(int64v);
-                    return new JsonFloatValue(reader.GetDouble());
+                    if (reader.TryGetInt64(out var int64v)) return new JsonInteger(int64v);
+                    return new JsonFloat(reader.GetDouble());
                 case JsonTokenType.True:
-                    return JsonBooleanValue.True;
+                    return JsonBoolean.True;
                 case JsonTokenType.False:
-                    return JsonBooleanValue.False;
+                    return JsonBoolean.False;
                 default:
                     return null;
             }

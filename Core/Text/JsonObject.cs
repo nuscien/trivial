@@ -13,7 +13,7 @@ namespace Trivial.Text
     /// <summary>
     /// Represents a specific JSON object.
     /// </summary>
-    public class JsonObject : IJsonComplexValue, IReadOnlyDictionary<string, IJsonValue>
+    public class JsonObject : IJsonComplex, IReadOnlyDictionary<string, IJsonValue>
     {
         private readonly IDictionary<string, IJsonValue> store = new Dictionary<string, IJsonValue>();
 
@@ -199,15 +199,15 @@ namespace Trivial.Text
                 return null;
             }
 
-            if (data is JsonStringValue str)
+            if (data is JsonString str)
             {
                 return str.Value;
             }
 
             if (convert) return data.ValueKind switch
             {
-                JsonValueKind.True => JsonBooleanValue.TrueString,
-                JsonValueKind.False => JsonBooleanValue.TrueString,
+                JsonValueKind.True => JsonBoolean.TrueString,
+                JsonValueKind.False => JsonBoolean.TrueString,
                 JsonValueKind.Number => data.ToString(),
                 _ => throw new InvalidOperationException($"The value type of property {key} should be string but it is {data.ValueKind.ToString().ToLowerInvariant()}.")
             };
@@ -241,9 +241,9 @@ namespace Trivial.Text
         public uint GetUInt32Value(string key)
         {
             AssertKey(key);
-            if (TryGetJsonValue<JsonIntegerValue>(key, out var v)) return (uint)v;
-            if (TryGetJsonValue<JsonFloatValue>(key, out var f)) return (uint)f;
-            var p = GetJsonValue<JsonStringValue>(key, JsonValueKind.Number);
+            if (TryGetJsonValue<JsonInteger>(key, out var v)) return (uint)v;
+            if (TryGetJsonValue<JsonFloat>(key, out var f)) return (uint)f;
+            var p = GetJsonValue<JsonString>(key, JsonValueKind.Number);
             return uint.Parse(p.Value);
         }
 
@@ -260,9 +260,9 @@ namespace Trivial.Text
         public int GetInt32Value(string key)
         {
             AssertKey(key);
-            if (TryGetJsonValue<JsonIntegerValue>(key, out var v)) return (int)v;
-            if (TryGetJsonValue<JsonFloatValue>(key, out var f)) return (int)f;
-            var p = GetJsonValue<JsonStringValue>(key, JsonValueKind.Number);
+            if (TryGetJsonValue<JsonInteger>(key, out var v)) return (int)v;
+            if (TryGetJsonValue<JsonFloat>(key, out var f)) return (int)f;
+            var p = GetJsonValue<JsonString>(key, JsonValueKind.Number);
             return int.Parse(p.Value);
         }
 
@@ -279,9 +279,9 @@ namespace Trivial.Text
         public long GetInt64Value(string key)
         {
             AssertKey(key);
-            if (TryGetJsonValue<JsonIntegerValue>(key, out var v)) return v.Value;
-            if (TryGetJsonValue<JsonFloatValue>(key, out var f)) return (long)f;
-            var p = GetJsonValue<JsonStringValue>(key, JsonValueKind.Number);
+            if (TryGetJsonValue<JsonInteger>(key, out var v)) return v.Value;
+            if (TryGetJsonValue<JsonFloat>(key, out var f)) return (long)f;
+            var p = GetJsonValue<JsonString>(key, JsonValueKind.Number);
             return long.Parse(p.Value);
         }
 
@@ -298,9 +298,9 @@ namespace Trivial.Text
         public float GetSingleValue(string key)
         {
             AssertKey(key);
-            if (TryGetJsonValue<JsonFloatValue>(key, out var v)) return (float)v;
-            if (TryGetJsonValue<JsonIntegerValue>(key, out var f)) return (float)f;
-            var p = GetJsonValue<JsonStringValue>(key, JsonValueKind.Number);
+            if (TryGetJsonValue<JsonFloat>(key, out var v)) return (float)v;
+            if (TryGetJsonValue<JsonInteger>(key, out var f)) return (float)f;
+            var p = GetJsonValue<JsonString>(key, JsonValueKind.Number);
             return float.Parse(p.Value);
         }
 
@@ -315,9 +315,9 @@ namespace Trivial.Text
         public double GetDoubleValue(string key)
         {
             AssertKey(key);
-            if (TryGetJsonValue<JsonFloatValue>(key, out var v)) return v.Value;
-            if (TryGetJsonValue<JsonIntegerValue>(key, out var f)) return (float)f;
-            var p = GetJsonValue<JsonStringValue>(key, JsonValueKind.Number);
+            if (TryGetJsonValue<JsonFloat>(key, out var v)) return v.Value;
+            if (TryGetJsonValue<JsonInteger>(key, out var f)) return (float)f;
+            var p = GetJsonValue<JsonString>(key, JsonValueKind.Number);
             return double.Parse(p.Value);
         }
 
@@ -332,12 +332,12 @@ namespace Trivial.Text
         public bool GetBooleanValue(string key)
         {
             AssertKey(key);
-            if (TryGetJsonValue<JsonBooleanValue>(key, out var v)) return v.Value;
-            var p = GetJsonValue<JsonStringValue>(key);
+            if (TryGetJsonValue<JsonBoolean>(key, out var v)) return v.Value;
+            var p = GetJsonValue<JsonString>(key);
             return p.Value?.ToLower() switch
             {
-                JsonBooleanValue.TrueString => true,
-                JsonBooleanValue.FalseString => false,
+                JsonBoolean.TrueString => true,
+                JsonBoolean.FalseString => false,
                 _ => throw new InvalidOperationException($"The value type of property {key} should be boolean but it is string.")
             };
         }
@@ -383,14 +383,14 @@ namespace Trivial.Text
         public DateTime GetDateTimeValue(string key, bool useUnixTimestampsFallback = false)
         {
             AssertKey(key);
-            if (TryGetJsonValue<JsonStringValue>(key, out var s))
+            if (TryGetJsonValue<JsonString>(key, out var s))
             {
                 var date = Web.WebFormat.ParseDate(s.Value);
                 if (date.HasValue) return date.Value;
                 throw new InvalidOperationException("The value is not a date time.");
             }
 
-            var num = GetJsonValue<JsonIntegerValue>(key);
+            var num = GetJsonValue<JsonInteger>(key);
             return useUnixTimestampsFallback ? Web.WebFormat.ParseUnixTimestamp(num.Value) : Web.WebFormat.ParseDate(num.Value);
         }
 
@@ -456,15 +456,15 @@ namespace Trivial.Text
                 return null;
             }
 
-            if (data is JsonStringValue str)
+            if (data is JsonString str)
             {
                 return str.Value;
             }
 
             return data.ValueKind switch
             {
-                JsonValueKind.True => JsonBooleanValue.TrueString,
-                JsonValueKind.False => JsonBooleanValue.TrueString,
+                JsonValueKind.True => JsonBoolean.TrueString,
+                JsonValueKind.False => JsonBoolean.TrueString,
                 JsonValueKind.Number => data.ToString(),
                 _ => null
             };
@@ -490,7 +490,7 @@ namespace Trivial.Text
                 return true;
             }
 
-            if (data is JsonStringValue str)
+            if (data is JsonString str)
             {
                 result = str.Value;
                 return true;
@@ -498,8 +498,8 @@ namespace Trivial.Text
 
             result = data.ValueKind switch
             {
-                JsonValueKind.True => JsonBooleanValue.TrueString,
-                JsonValueKind.False => JsonBooleanValue.TrueString,
+                JsonValueKind.True => JsonBoolean.TrueString,
+                JsonValueKind.False => JsonBoolean.TrueString,
                 JsonValueKind.Number => data.ToString(),
                 _ => null
             };
@@ -546,8 +546,8 @@ namespace Trivial.Text
         /// <returns>The value; or null if fail to resolve.</returns>
         public uint? TryGetUInt32Value(string key)
         {
-            if (TryGetJsonValue<JsonIntegerValue>(key, out var p1)) return (uint)p1;
-            if (TryGetJsonValue<JsonFloatValue>(key, out var p2)) return (uint)p2;
+            if (TryGetJsonValue<JsonInteger>(key, out var p1)) return (uint)p1;
+            if (TryGetJsonValue<JsonFloat>(key, out var p2)) return (uint)p2;
             var str = TryGetStringValue(key);
             if (string.IsNullOrWhiteSpace(str) || !uint.TryParse(str, out var p3)) return null;
             return p3;
@@ -573,8 +573,8 @@ namespace Trivial.Text
         /// <returns>The value; or null if fail to resolve.</returns>
         public int? TryGetInt32Value(string key)
         {
-            if (TryGetJsonValue<JsonIntegerValue>(key, out var p1)) return (int)p1;
-            if (TryGetJsonValue<JsonFloatValue>(key, out var p2)) return (int)p2;
+            if (TryGetJsonValue<JsonInteger>(key, out var p1)) return (int)p1;
+            if (TryGetJsonValue<JsonFloat>(key, out var p2)) return (int)p2;
             var str = TryGetStringValue(key);
             if (string.IsNullOrWhiteSpace(str) || !int.TryParse(str, out var p3)) return null;
             return p3;
@@ -600,8 +600,8 @@ namespace Trivial.Text
         /// <returns>The value; or null if fail to resolve.</returns>
         public long? TryGetInt64Value(string key)
         {
-            if (TryGetJsonValue<JsonIntegerValue>(key, out var p1)) return p1.Value;
-            if (TryGetJsonValue<JsonFloatValue>(key, out var p2)) return (long)p2;
+            if (TryGetJsonValue<JsonInteger>(key, out var p1)) return p1.Value;
+            if (TryGetJsonValue<JsonFloat>(key, out var p2)) return (long)p2;
             var str = TryGetStringValue(key);
             if (string.IsNullOrWhiteSpace(str) || !long.TryParse(str, out var p3)) return null;
             return p3;
@@ -627,8 +627,8 @@ namespace Trivial.Text
         /// <returns>The value; or null if fail to resolve.</returns>
         public float? TryGetFloatValue(string key)
         {
-            if (TryGetJsonValue<JsonFloatValue>(key, out var p1)) return (float)p1;
-            if (TryGetJsonValue<JsonIntegerValue>(key, out var p2)) return (float)p2;
+            if (TryGetJsonValue<JsonFloat>(key, out var p1)) return (float)p1;
+            if (TryGetJsonValue<JsonInteger>(key, out var p2)) return (float)p2;
             var str = TryGetStringValue(key);
             if (string.IsNullOrWhiteSpace(str) || !float.TryParse(str, out var p3)) return null;
             return p3;
@@ -654,8 +654,8 @@ namespace Trivial.Text
         /// <returns>The value; or null if fail to resolve.</returns>
         public double? TryGetDoubleValue(string key)
         {
-            if (TryGetJsonValue<JsonFloatValue>(key, out var p1)) return p1.Value;
-            if (TryGetJsonValue<JsonIntegerValue>(key, out var p2)) return (double)p2;
+            if (TryGetJsonValue<JsonFloat>(key, out var p1)) return p1.Value;
+            if (TryGetJsonValue<JsonInteger>(key, out var p2)) return (double)p2;
             var str = TryGetStringValue(key);
             if (string.IsNullOrWhiteSpace(str) || !double.TryParse(str, out var p3)) return null;
             return p3;
@@ -681,7 +681,7 @@ namespace Trivial.Text
         /// <returns>The value; or null if fail to resolve.</returns>
         public bool? TryGetBooleanValue(string key)
         {
-            if (TryGetJsonValue<JsonBooleanValue>(key, out var p)) return p.Value;
+            if (TryGetJsonValue<JsonBoolean>(key, out var p)) return p.Value;
             var str = TryGetStringValue(key);
             if (string.IsNullOrWhiteSpace(str) || !bool.TryParse(str, out var p3)) return null;
             return p3;
@@ -757,13 +757,13 @@ namespace Trivial.Text
         public DateTime? TryGetDateTimeValue(string key, bool useUnixTimestampsFallback = false)
         {
             AssertKey(key);
-            if (TryGetJsonValue<JsonStringValue>(key, out var s))
+            if (TryGetJsonValue<JsonString>(key, out var s))
             {
                 var date = Web.WebFormat.ParseDate(s.Value);
                 return date;
             }
 
-            if (!TryGetJsonValue<JsonIntegerValue>(key, out var num)) return null;
+            if (!TryGetJsonValue<JsonInteger>(key, out var num)) return null;
             return useUnixTimestampsFallback ? Web.WebFormat.ParseUnixTimestamp(num.Value) : Web.WebFormat.ParseDate(num.Value);
         }
 
@@ -843,7 +843,7 @@ namespace Trivial.Text
         public void SetValue(string key, string value)
         {
             AssertKey(key);
-            store[key] = new JsonStringValue(value);
+            store[key] = new JsonString(value);
         }
 
         /// <summary>
@@ -856,7 +856,7 @@ namespace Trivial.Text
         public void SetFormatValue(string key, string value, params object[] args)
         {
             AssertKey(key);
-            store[key] = new JsonStringValue(string.Format(value, args));
+            store[key] = new JsonString(string.Format(value, args));
         }
 
         /// <summary>
@@ -868,7 +868,7 @@ namespace Trivial.Text
         public void SetValue(string key, Guid value)
         {
             AssertKey(key);
-            store[key] = new JsonStringValue(value);
+            store[key] = new JsonString(value);
         }
 
         /// <summary>
@@ -880,7 +880,7 @@ namespace Trivial.Text
         public void SetValue(string key, DateTime value)
         {
             AssertKey(key);
-            store[key] = new JsonStringValue(value);
+            store[key] = new JsonString(value);
         }
 
         /// <summary>
@@ -892,7 +892,7 @@ namespace Trivial.Text
         public void SetValue(string key, uint value)
         {
             AssertKey(key);
-            store[key] = new JsonIntegerValue(value);
+            store[key] = new JsonInteger(value);
         }
 
         /// <summary>
@@ -904,7 +904,7 @@ namespace Trivial.Text
         public void SetValue(string key, int value)
         {
             AssertKey(key);
-            store[key] = new JsonIntegerValue(value);
+            store[key] = new JsonInteger(value);
         }
 
         /// <summary>
@@ -916,7 +916,7 @@ namespace Trivial.Text
         public void SetValue(string key, long value)
         {
             AssertKey(key);
-            store[key] = new JsonIntegerValue(value);
+            store[key] = new JsonInteger(value);
         }
 
         /// <summary>
@@ -928,7 +928,7 @@ namespace Trivial.Text
         public void SetValue(string key, float value)
         {
             AssertKey(key);
-            store[key] = new JsonFloatValue(value);
+            store[key] = new JsonFloat(value);
         }
 
         /// <summary>
@@ -940,7 +940,7 @@ namespace Trivial.Text
         public void SetValue(string key, double value)
         {
             AssertKey(key);
-            store[key] = new JsonFloatValue(value);
+            store[key] = new JsonFloat(value);
         }
 
         /// <summary>
@@ -952,7 +952,7 @@ namespace Trivial.Text
         public void SetValue(string key, bool value)
         {
             AssertKey(key);
-            store[key] = value ? JsonBooleanValue.True : JsonBooleanValue.False;
+            store[key] = value ? JsonBoolean.True : JsonBoolean.False;
         }
 
         /// <summary>
@@ -1010,7 +1010,7 @@ namespace Trivial.Text
         public void SetDateTimeStringValue(string key, DateTime value)
         {
             AssertKey(key);
-            store[key] = new JsonStringValue(value);
+            store[key] = new JsonString(value);
         }
 
         /// <summary>
@@ -1022,7 +1022,7 @@ namespace Trivial.Text
         public void SetJavaScriptDateTicksValue(string key, DateTime value)
         {
             AssertKey(key);
-            store[key] = new JsonIntegerValue(Web.WebFormat.ParseDate(value));
+            store[key] = new JsonInteger(Web.WebFormat.ParseDate(value));
         }
 
         /// <summary>
@@ -1034,7 +1034,7 @@ namespace Trivial.Text
         public void SetUnixTimestampValue(string key, DateTime value)
         {
             AssertKey(key);
-            store[key] = new JsonIntegerValue(Web.WebFormat.ParseUnixTimestamp(value));
+            store[key] = new JsonInteger(Web.WebFormat.ParseUnixTimestamp(value));
         }
 
         /// <summary>
@@ -1046,7 +1046,7 @@ namespace Trivial.Text
         public void SetWindowsFileTimeUtcValue(string key, DateTime value)
         {
             AssertKey(key);
-            store[key] = new JsonIntegerValue(value.ToFileTimeUtc());
+            store[key] = new JsonInteger(value.ToFileTimeUtc());
         }
 
         /// <summary>
@@ -1249,11 +1249,11 @@ namespace Trivial.Text
                         writer.WriteNull(prop.Key);
                         break;
                     case JsonValueKind.String:
-                        if (prop.Value is JsonStringValue strJson) writer.WriteString(prop.Key, strJson.Value);
+                        if (prop.Value is JsonString strJson) writer.WriteString(prop.Key, strJson.Value);
                         break;
                     case JsonValueKind.Number:
-                        if (prop.Value is JsonIntegerValue intJson) writer.WriteNumber(prop.Key, (long)intJson);
-                        else if (prop.Value is JsonFloatValue floatJson) writer.WriteNumber(prop.Key, (double)floatJson);
+                        if (prop.Value is JsonInteger intJson) writer.WriteNumber(prop.Key, (long)intJson);
+                        else if (prop.Value is JsonFloat floatJson) writer.WriteNumber(prop.Key, (double)floatJson);
                         break;
                     case JsonValueKind.True:
                         writer.WriteBoolean(prop.Key, true);
@@ -1284,7 +1284,7 @@ namespace Trivial.Text
             var str = new StringBuilder("{");
             foreach (var prop in store)
             {
-                str.Append(JsonStringValue.ToJson(prop.Key));
+                str.Append(JsonString.ToJson(prop.Key));
                 str.Append(':');
                 if (prop.Value is null)
                 {
