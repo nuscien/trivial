@@ -9,6 +9,7 @@ Trivial libraries contain a lot of utilities, models and components, which are t
 A library providing lots of useful utilities, models and services, including hit task, retry policy, PEM, JWT, stream combination, JSON HTTP web client, CSV parser, numerals, coordinates, angle, arithmetic, sets, etc.
 
 - [Task and retry policy](https://github.com/nuscien/trivial/wiki/tasks)
+- [Text (including CSV and JSON)](https://github.com/nuscien/trivial/wiki/text)
 - [Data](https://github.com/nuscien/trivial/wiki/data)
 - [Maths and numbers](https://github.com/nuscien/trivial/wiki/maths)
 - [Network](https://github.com/nuscien/trivial/wiki/net)
