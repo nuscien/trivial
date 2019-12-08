@@ -13,15 +13,6 @@ namespace Trivial.Text
     public struct JsonIntegerValue : IJsonValue<long>, IComparable<JsonIntegerValue>, IComparable<JsonFloatValue>, IComparable<uint>, IComparable<int>, IComparable<long>, IComparable<double>, IComparable<float>, IEquatable<IJsonValue<uint>>, IEquatable<IJsonValue<int>>, IEquatable<IJsonValue<float>>, IEquatable<IJsonValue<double>>, IEquatable<uint>, IEquatable<int>, IEquatable<float>, IEquatable<double>, IFormattable
     {
         /// <summary>
-        /// Initializes a new instance of the JsonIntegerValue class.
-        /// </summary>
-        /// <param name="value">The value.</param>
-        public JsonIntegerValue(uint value)
-        {
-            Value = value;
-        }
-
-        /// <summary>
         /// Gets the value.
         /// </summary>
         public long Value { get; }
@@ -39,6 +30,15 @@ namespace Trivial.Text
         /// Initializes a new instance of the JsonIntegerValue class.
         /// </summary>
         /// <param name="value">The value.</param>
+        public JsonIntegerValue(uint value)
+        {
+            Value = value;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the JsonIntegerValue class.
+        /// </summary>
+        /// <param name="value">The value.</param>
         public JsonIntegerValue(long value)
         {
             Value = value;
@@ -48,9 +48,10 @@ namespace Trivial.Text
         /// Initializes a new instance of the JsonIntegerValue class.
         /// </summary>
         /// <param name="value">The value.</param>
-        public JsonIntegerValue(DateTime value)
+        /// <param name="isUnixTimestamp">true if uses Unix timestamp; otherwise, false, to use JavaScript ticks, by default.</param>
+        public JsonIntegerValue(DateTime value, bool isUnixTimestamp = false)
         {
-            Value = Web.WebFormat.ParseDate(value);
+            Value = isUnixTimestamp ? Web.WebFormat.ParseUnixTimestamp(value) : Web.WebFormat.ParseDate(value);
         }
 
         /// <summary>
@@ -958,6 +959,24 @@ namespace Trivial.Text
     /// </summary>
     public struct JsonFloatValue : IJsonValue<double>, IComparable<JsonIntegerValue>, IComparable<JsonFloatValue>, IComparable<uint>, IComparable<int>, IComparable<long>, IComparable<double>, IComparable<float>, IEquatable<IJsonValue<uint>>, IEquatable<IJsonValue<int>>, IEquatable<IJsonValue<long>>, IEquatable<IJsonValue<float>>, IEquatable<uint>, IEquatable<int>, IEquatable<long>, IEquatable<float>, IFormattable
     {
+        /// <summary>
+        /// Initializes a new instance of the JsonFloatValue class.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        public JsonFloatValue(int value)
+        {
+            Value = value;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the JsonFloatValue class.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        public JsonFloatValue(long value)
+        {
+            Value = value;
+        }
+
         /// <summary>
         /// Initializes a new instance of the JsonFloatValue class.
         /// </summary>
