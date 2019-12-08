@@ -242,7 +242,7 @@ namespace Trivial.Text
         {
             AssertKey(key);
             if (TryGetJsonValue<JsonInteger>(key, out var v)) return (uint)v;
-            if (TryGetJsonValue<JsonFloat>(key, out var f)) return (uint)f;
+            if (TryGetJsonValue<JsonDouble>(key, out var f)) return (uint)f;
             var p = GetJsonValue<JsonString>(key, JsonValueKind.Number);
             return uint.Parse(p.Value);
         }
@@ -261,7 +261,7 @@ namespace Trivial.Text
         {
             AssertKey(key);
             if (TryGetJsonValue<JsonInteger>(key, out var v)) return (int)v;
-            if (TryGetJsonValue<JsonFloat>(key, out var f)) return (int)f;
+            if (TryGetJsonValue<JsonDouble>(key, out var f)) return (int)f;
             var p = GetJsonValue<JsonString>(key, JsonValueKind.Number);
             return int.Parse(p.Value);
         }
@@ -280,7 +280,7 @@ namespace Trivial.Text
         {
             AssertKey(key);
             if (TryGetJsonValue<JsonInteger>(key, out var v)) return v.Value;
-            if (TryGetJsonValue<JsonFloat>(key, out var f)) return (long)f;
+            if (TryGetJsonValue<JsonDouble>(key, out var f)) return (long)f;
             var p = GetJsonValue<JsonString>(key, JsonValueKind.Number);
             return long.Parse(p.Value);
         }
@@ -298,7 +298,7 @@ namespace Trivial.Text
         public float GetSingleValue(string key)
         {
             AssertKey(key);
-            if (TryGetJsonValue<JsonFloat>(key, out var v)) return (float)v;
+            if (TryGetJsonValue<JsonDouble>(key, out var v)) return (float)v;
             if (TryGetJsonValue<JsonInteger>(key, out var f)) return (float)f;
             var p = GetJsonValue<JsonString>(key, JsonValueKind.Number);
             return float.Parse(p.Value);
@@ -315,7 +315,7 @@ namespace Trivial.Text
         public double GetDoubleValue(string key)
         {
             AssertKey(key);
-            if (TryGetJsonValue<JsonFloat>(key, out var v)) return v.Value;
+            if (TryGetJsonValue<JsonDouble>(key, out var v)) return v.Value;
             if (TryGetJsonValue<JsonInteger>(key, out var f)) return (float)f;
             var p = GetJsonValue<JsonString>(key, JsonValueKind.Number);
             return double.Parse(p.Value);
@@ -547,7 +547,7 @@ namespace Trivial.Text
         public uint? TryGetUInt32Value(string key)
         {
             if (TryGetJsonValue<JsonInteger>(key, out var p1)) return (uint)p1;
-            if (TryGetJsonValue<JsonFloat>(key, out var p2)) return (uint)p2;
+            if (TryGetJsonValue<JsonDouble>(key, out var p2)) return (uint)p2;
             var str = TryGetStringValue(key);
             if (string.IsNullOrWhiteSpace(str) || !uint.TryParse(str, out var p3)) return null;
             return p3;
@@ -574,7 +574,7 @@ namespace Trivial.Text
         public int? TryGetInt32Value(string key)
         {
             if (TryGetJsonValue<JsonInteger>(key, out var p1)) return (int)p1;
-            if (TryGetJsonValue<JsonFloat>(key, out var p2)) return (int)p2;
+            if (TryGetJsonValue<JsonDouble>(key, out var p2)) return (int)p2;
             var str = TryGetStringValue(key);
             if (string.IsNullOrWhiteSpace(str) || !int.TryParse(str, out var p3)) return null;
             return p3;
@@ -601,7 +601,7 @@ namespace Trivial.Text
         public long? TryGetInt64Value(string key)
         {
             if (TryGetJsonValue<JsonInteger>(key, out var p1)) return p1.Value;
-            if (TryGetJsonValue<JsonFloat>(key, out var p2)) return (long)p2;
+            if (TryGetJsonValue<JsonDouble>(key, out var p2)) return (long)p2;
             var str = TryGetStringValue(key);
             if (string.IsNullOrWhiteSpace(str) || !long.TryParse(str, out var p3)) return null;
             return p3;
@@ -627,7 +627,7 @@ namespace Trivial.Text
         /// <returns>The value; or null if fail to resolve.</returns>
         public float? TryGetFloatValue(string key)
         {
-            if (TryGetJsonValue<JsonFloat>(key, out var p1)) return (float)p1;
+            if (TryGetJsonValue<JsonDouble>(key, out var p1)) return (float)p1;
             if (TryGetJsonValue<JsonInteger>(key, out var p2)) return (float)p2;
             var str = TryGetStringValue(key);
             if (string.IsNullOrWhiteSpace(str) || !float.TryParse(str, out var p3)) return null;
@@ -654,7 +654,7 @@ namespace Trivial.Text
         /// <returns>The value; or null if fail to resolve.</returns>
         public double? TryGetDoubleValue(string key)
         {
-            if (TryGetJsonValue<JsonFloat>(key, out var p1)) return p1.Value;
+            if (TryGetJsonValue<JsonDouble>(key, out var p1)) return p1.Value;
             if (TryGetJsonValue<JsonInteger>(key, out var p2)) return (double)p2;
             var str = TryGetStringValue(key);
             if (string.IsNullOrWhiteSpace(str) || !double.TryParse(str, out var p3)) return null;
@@ -928,7 +928,7 @@ namespace Trivial.Text
         public void SetValue(string key, float value)
         {
             AssertKey(key);
-            store[key] = new JsonFloat(value);
+            store[key] = new JsonDouble(value);
         }
 
         /// <summary>
@@ -940,7 +940,7 @@ namespace Trivial.Text
         public void SetValue(string key, double value)
         {
             AssertKey(key);
-            store[key] = new JsonFloat(value);
+            store[key] = new JsonDouble(value);
         }
 
         /// <summary>
@@ -1253,7 +1253,7 @@ namespace Trivial.Text
                         break;
                     case JsonValueKind.Number:
                         if (prop.Value is JsonInteger intJson) writer.WriteNumber(prop.Key, (long)intJson);
-                        else if (prop.Value is JsonFloat floatJson) writer.WriteNumber(prop.Key, (double)floatJson);
+                        else if (prop.Value is JsonDouble floatJson) writer.WriteNumber(prop.Key, (double)floatJson);
                         break;
                     case JsonValueKind.True:
                         writer.WriteBoolean(prop.Key, true);

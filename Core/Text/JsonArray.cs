@@ -198,7 +198,7 @@ namespace Trivial.Text
         public uint GetUInt32Value(int index)
         {
             if (TryGetJsonValue<JsonInteger>(index, out var v)) return (uint)v;
-            if (TryGetJsonValue<JsonFloat>(index, out var f)) return (uint)f;
+            if (TryGetJsonValue<JsonDouble>(index, out var f)) return (uint)f;
             var p = GetJsonValue<JsonString>(index, JsonValueKind.Number);
             return uint.Parse(p.Value);
         }
@@ -212,7 +212,7 @@ namespace Trivial.Text
         public int GetInt32Value(int index)
         {
             if (TryGetJsonValue<JsonInteger>(index, out var v)) return (int)v;
-            if (TryGetJsonValue<JsonFloat>(index, out var f)) return (int)f;
+            if (TryGetJsonValue<JsonDouble>(index, out var f)) return (int)f;
             var p = GetJsonValue<JsonString>(index, JsonValueKind.Number);
             return int.Parse(p.Value);
         }
@@ -227,7 +227,7 @@ namespace Trivial.Text
         public long GetInt64Value(int index)
         {
             if (TryGetJsonValue<JsonInteger>(index, out var v)) return v.Value;
-            if (TryGetJsonValue<JsonFloat>(index, out var f)) return (long)f;
+            if (TryGetJsonValue<JsonDouble>(index, out var f)) return (long)f;
             var p = GetJsonValue<JsonString>(index, JsonValueKind.Number);
             return long.Parse(p.Value);
         }
@@ -241,7 +241,7 @@ namespace Trivial.Text
         /// <exception cref="InvalidOperationException">The value type is not the expected one.</exception>
         public float GetSingleValue(int index)
         {
-            if (TryGetJsonValue<JsonFloat>(index, out var v)) return (float)v;
+            if (TryGetJsonValue<JsonDouble>(index, out var v)) return (float)v;
             if (TryGetJsonValue<JsonInteger>(index, out var f)) return (float)f;
             var p = GetJsonValue<JsonString>(index, JsonValueKind.Number);
             return float.Parse(p.Value);
@@ -256,7 +256,7 @@ namespace Trivial.Text
         /// <exception cref="InvalidOperationException">The value type is not the expected one.</exception>
         public double GetDoubleValue(int index)
         {
-            if (TryGetJsonValue<JsonFloat>(index, out var v)) return v.Value;
+            if (TryGetJsonValue<JsonDouble>(index, out var v)) return v.Value;
             if (TryGetJsonValue<JsonInteger>(index, out var f)) return (double)f;
             var p = GetJsonValue<JsonString>(index, JsonValueKind.Number);
             return double.Parse(p.Value);
@@ -495,7 +495,7 @@ namespace Trivial.Text
         public uint? TryGetUInt32Value(int index)
         {
             if (TryGetJsonValue<JsonInteger>(index, out var p1)) return (uint)p1;
-            if (TryGetJsonValue<JsonFloat>(index, out var p2)) return (uint)p2;
+            if (TryGetJsonValue<JsonDouble>(index, out var p2)) return (uint)p2;
             var str = TryGetStringValue(index);
             if (string.IsNullOrWhiteSpace(str) || !uint.TryParse(str, out var p3)) return null;
             return p3;
@@ -522,7 +522,7 @@ namespace Trivial.Text
         public int? TryGetInt32Value(int index)
         {
             if (TryGetJsonValue<JsonInteger>(index, out var p1)) return (int)p1;
-            if (TryGetJsonValue<JsonFloat>(index, out var p2)) return (int)p2;
+            if (TryGetJsonValue<JsonDouble>(index, out var p2)) return (int)p2;
             var str = TryGetStringValue(index);
             if (string.IsNullOrWhiteSpace(str) || !int.TryParse(str, out var p3)) return null;
             return p3;
@@ -549,7 +549,7 @@ namespace Trivial.Text
         public long? TryGetInt64Value(int index)
         {
             if (TryGetJsonValue<JsonInteger>(index, out var p1)) return p1.Value;
-            if (TryGetJsonValue<JsonFloat>(index, out var p2)) return (long)p2;
+            if (TryGetJsonValue<JsonDouble>(index, out var p2)) return (long)p2;
             var str = TryGetStringValue(index);
             if (string.IsNullOrWhiteSpace(str) || !long.TryParse(str, out var p3)) return null;
             return p3;
@@ -575,7 +575,7 @@ namespace Trivial.Text
         /// <returns>The value; or null if fail to resolve.</returns>
         public float? TryGetFloatValue(int index)
         {
-            if (TryGetJsonValue<JsonFloat>(index, out var p1)) return (float)p1;
+            if (TryGetJsonValue<JsonDouble>(index, out var p1)) return (float)p1;
             if (TryGetJsonValue<JsonInteger>(index, out var p2)) return (float)p2;
             var str = TryGetStringValue(index);
             if (string.IsNullOrWhiteSpace(str) || !float.TryParse(str, out var p3)) return null;
@@ -602,7 +602,7 @@ namespace Trivial.Text
         /// <returns>The value; or null if fail to resolve.</returns>
         public double? TryGetDoubleValue(int index)
         {
-            if (TryGetJsonValue<JsonFloat>(index, out var p1)) return p1.Value;
+            if (TryGetJsonValue<JsonDouble>(index, out var p1)) return p1.Value;
             if (TryGetJsonValue<JsonInteger>(index, out var p2)) return (double)p2;
             var str = TryGetStringValue(index);
             if (string.IsNullOrWhiteSpace(str) || !double.TryParse(str, out var p3)) return null;
@@ -910,7 +910,7 @@ namespace Trivial.Text
         /// <exception cref="ArgumentOutOfRangeException">The index is out of range.</exception>
         public void SetValue(int index, float value)
         {
-            store[index] = new JsonFloat(value);
+            store[index] = new JsonDouble(value);
         }
 
         /// <summary>
@@ -921,7 +921,7 @@ namespace Trivial.Text
         /// <exception cref="ArgumentOutOfRangeException">The index is out of range.</exception>
         public void SetValue(int index, double value)
         {
-            store[index] = new JsonFloat(value);
+            store[index] = new JsonDouble(value);
         }
 
         /// <summary>
@@ -1090,7 +1090,7 @@ namespace Trivial.Text
         /// <param name="value">The value to set.</param>
         public void Add(float value)
         {
-            store.Add(new JsonFloat(value));
+            store.Add(new JsonDouble(value));
         }
 
         /// <summary>
@@ -1099,7 +1099,7 @@ namespace Trivial.Text
         /// <param name="value">The value to set.</param>
         public void Add(double value)
         {
-            store.Add(new JsonFloat(value));
+            store.Add(new JsonDouble(value));
         }
 
         /// <summary>
@@ -1319,7 +1319,7 @@ namespace Trivial.Text
         /// <exception cref="ArgumentOutOfRangeException">The index is out of range.</exception>
         public void Insert(int index, float value)
         {
-            store.Insert(index, new JsonFloat(value));
+            store.Insert(index, new JsonDouble(value));
         }
 
         /// <summary>
@@ -1330,7 +1330,7 @@ namespace Trivial.Text
         /// <exception cref="ArgumentOutOfRangeException">The index is out of range.</exception>
         public void Insert(int index, double value)
         {
-            store.Insert(index, new JsonFloat(value));
+            store.Insert(index, new JsonDouble(value));
         }
 
         /// <summary>
@@ -1506,7 +1506,7 @@ namespace Trivial.Text
                         break;
                     case JsonValueKind.Number:
                         if (prop is JsonInteger intJson) writer.WriteNumberValue((long)intJson);
-                        else if (prop is JsonFloat floatJson) writer.WriteNumberValue((double)floatJson);
+                        else if (prop is JsonDouble floatJson) writer.WriteNumberValue((double)floatJson);
                         break;
                     case JsonValueKind.True:
                         writer.WriteBooleanValue(true);

@@ -338,7 +338,7 @@ namespace Trivial.Text
                     return new JsonString(reader.GetString());
                 case JsonTokenType.Number:
                     if (reader.TryGetInt64(out var int64v)) return new JsonInteger(int64v);
-                    return new JsonFloat(reader.GetDouble());
+                    return new JsonDouble(reader.GetDouble());
                 case JsonTokenType.True:
                     return JsonBoolean.True;
                 case JsonTokenType.False:

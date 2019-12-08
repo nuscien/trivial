@@ -10,7 +10,7 @@ namespace Trivial.Text
     /// <summary>
     /// Represents a specific JSON integer number value.
     /// </summary>
-    public struct JsonInteger : IJsonValue<long>, IComparable<JsonInteger>, IComparable<JsonFloat>, IComparable<uint>, IComparable<int>, IComparable<long>, IComparable<double>, IComparable<float>, IEquatable<IJsonValue<uint>>, IEquatable<IJsonValue<int>>, IEquatable<IJsonValue<float>>, IEquatable<IJsonValue<double>>, IEquatable<uint>, IEquatable<int>, IEquatable<float>, IEquatable<double>, IFormattable
+    public struct JsonInteger : IJsonValue<long>, IComparable<JsonInteger>, IComparable<JsonDouble>, IComparable<uint>, IComparable<int>, IComparable<long>, IComparable<double>, IComparable<float>, IEquatable<IJsonValue<uint>>, IEquatable<IJsonValue<int>>, IEquatable<IJsonValue<float>>, IEquatable<IJsonValue<double>>, IEquatable<uint>, IEquatable<int>, IEquatable<float>, IEquatable<double>, IFormattable
     {
         /// <summary>
         /// Gets the value.
@@ -258,7 +258,7 @@ namespace Trivial.Text
         /// <item>Greater than zero This instance is greater than value.</item>
         /// </list>
         /// </returns>
-        public int CompareTo(JsonFloat other)
+        public int CompareTo(JsonDouble other)
         {
             return Value.CompareTo(other.Value);
         }
@@ -955,42 +955,42 @@ namespace Trivial.Text
     }
 
     /// <summary>
-    /// Represents a specific JSON float number value.
+    /// Represents a specific JSON double float number value.
     /// </summary>
-    public struct JsonFloat : IJsonValue<double>, IComparable<JsonInteger>, IComparable<JsonFloat>, IComparable<uint>, IComparable<int>, IComparable<long>, IComparable<double>, IComparable<float>, IEquatable<IJsonValue<uint>>, IEquatable<IJsonValue<int>>, IEquatable<IJsonValue<long>>, IEquatable<IJsonValue<float>>, IEquatable<uint>, IEquatable<int>, IEquatable<long>, IEquatable<float>, IFormattable
+    public struct JsonDouble : IJsonValue<double>, IComparable<JsonInteger>, IComparable<JsonDouble>, IComparable<uint>, IComparable<int>, IComparable<long>, IComparable<double>, IComparable<float>, IEquatable<IJsonValue<uint>>, IEquatable<IJsonValue<int>>, IEquatable<IJsonValue<long>>, IEquatable<IJsonValue<float>>, IEquatable<uint>, IEquatable<int>, IEquatable<long>, IEquatable<float>, IFormattable
     {
         /// <summary>
-        /// Initializes a new instance of the JsonFloat class.
+        /// Initializes a new instance of the JsonDouble class.
         /// </summary>
         /// <param name="value">The value.</param>
-        public JsonFloat(int value)
+        public JsonDouble(int value)
         {
             Value = value;
         }
 
         /// <summary>
-        /// Initializes a new instance of the JsonFloat class.
+        /// Initializes a new instance of the JsonDouble class.
         /// </summary>
         /// <param name="value">The value.</param>
-        public JsonFloat(long value)
+        public JsonDouble(long value)
         {
             Value = value;
         }
 
         /// <summary>
-        /// Initializes a new instance of the JsonFloatValue class.
+        /// Initializes a new instance of the JsonDoubleValue class.
         /// </summary>
         /// <param name="value">The value.</param>
-        public JsonFloat(float value)
+        public JsonDouble(float value)
         {
             Value = value;
         }
 
         /// <summary>
-        /// Initializes a new instance of the JsonFloat class.
+        /// Initializes a new instance of the JsonDouble class.
         /// </summary>
         /// <param name="value">The value.</param>
-        public JsonFloat(double value)
+        public JsonDouble(double value)
         {
             Value = value;
         }
@@ -1203,7 +1203,7 @@ namespace Trivial.Text
         /// <item>Greater than zero This instance is greater than value.</item>
         /// </list>
         /// </returns>
-        public int CompareTo(JsonFloat other)
+        public int CompareTo(JsonDouble other)
         {
             return Value.CompareTo(other.Value);
         }
@@ -1313,9 +1313,9 @@ namespace Trivial.Text
         /// </summary>
         /// <param name="value">The source value.</param>
         /// <returns>A JSON value.</returns>
-        public static implicit operator JsonFloat(float value)
+        public static implicit operator JsonDouble(float value)
         {
-            return new JsonFloat(value);
+            return new JsonDouble(value);
         }
 
         /// <summary>
@@ -1323,9 +1323,9 @@ namespace Trivial.Text
         /// </summary>
         /// <param name="value">The source value.</param>
         /// <returns>A JSON value.</returns>
-        public static implicit operator JsonFloat(double value)
+        public static implicit operator JsonDouble(double value)
         {
-            return new JsonFloat(value);
+            return new JsonDouble(value);
         }
 
         /// <summary>
@@ -1333,7 +1333,7 @@ namespace Trivial.Text
         /// </summary>
         /// <param name="json">The JSON value.</param>
         /// <returns>A number.</returns>
-        public static explicit operator double(JsonFloat json)
+        public static explicit operator double(JsonDouble json)
         {
             return json.Value;
         }
@@ -1343,7 +1343,7 @@ namespace Trivial.Text
         /// </summary>
         /// <param name="json">The JSON value.</param>
         /// <returns>A number.</returns>
-        public static explicit operator float(JsonFloat json)
+        public static explicit operator float(JsonDouble json)
         {
             return (float)json.Value;
         }
@@ -1353,7 +1353,7 @@ namespace Trivial.Text
         /// </summary>
         /// <param name="json">The JSON value.</param>
         /// <returns>A number.</returns>
-        public static explicit operator uint(JsonFloat json)
+        public static explicit operator uint(JsonDouble json)
         {
             return (uint)json.Value;
         }
@@ -1363,7 +1363,7 @@ namespace Trivial.Text
         /// </summary>
         /// <param name="json">The JSON value.</param>
         /// <returns>A number.</returns>
-        public static explicit operator int(JsonFloat json)
+        public static explicit operator int(JsonDouble json)
         {
             return (int)json.Value;
         }
@@ -1373,7 +1373,7 @@ namespace Trivial.Text
         /// </summary>
         /// <param name="json">The JSON value.</param>
         /// <returns>A number.</returns>
-        public static explicit operator ulong(JsonFloat json)
+        public static explicit operator ulong(JsonDouble json)
         {
             return (ulong)json.Value;
         }
@@ -1383,7 +1383,7 @@ namespace Trivial.Text
         /// </summary>
         /// <param name="json">The JSON value.</param>
         /// <returns>A number.</returns>
-        public static explicit operator long(JsonFloat json)
+        public static explicit operator long(JsonDouble json)
         {
             return (long)json.Value;
         }
@@ -1395,7 +1395,7 @@ namespace Trivial.Text
         /// <param name="leftValue">The left value to compare.</param>
         /// <param name="rightValue">The right value to compare.</param>
         /// <returns>true if they are same; otherwise, false.</returns>
-        public static bool operator ==(JsonFloat leftValue, IJsonValue<double> rightValue)
+        public static bool operator ==(JsonDouble leftValue, IJsonValue<double> rightValue)
         {
             if (ReferenceEquals(leftValue, rightValue)) return true;
             if (rightValue is null) return false;
@@ -1407,7 +1407,7 @@ namespace Trivial.Text
         /// </summary>
         /// <param name="json">The JSON value.</param>
         /// <returns>A string.</returns>
-        public static explicit operator string(JsonFloat json)
+        public static explicit operator string(JsonDouble json)
         {
             return json.ToString();
         }
@@ -1419,7 +1419,7 @@ namespace Trivial.Text
         /// <param name="leftValue">The left value to compare.</param>
         /// <param name="rightValue">The right value to compare.</param>
         /// <returns>true if they are different; otherwise, false.</returns>
-        public static bool operator !=(JsonFloat leftValue, IJsonValue<double> rightValue)
+        public static bool operator !=(JsonDouble leftValue, IJsonValue<double> rightValue)
         {
             if (ReferenceEquals(leftValue, rightValue)) return false;
             if (rightValue is null) return true;
@@ -1432,7 +1432,7 @@ namespace Trivial.Text
         /// <param name="leftValue">The left value to compare.</param>
         /// <param name="rightValue">The right value to compare.</param>
         /// <returns>true if the left one is smaller than the right one; otherwise, false.</returns>
-        public static bool operator <(JsonFloat leftValue, IJsonValue<double> rightValue)
+        public static bool operator <(JsonDouble leftValue, IJsonValue<double> rightValue)
         {
             if (ReferenceEquals(leftValue, rightValue)) return false;
             if (rightValue is null) return true;
@@ -1445,7 +1445,7 @@ namespace Trivial.Text
         /// <param name="leftValue">The left value to compare.</param>
         /// <param name="rightValue">The right value to compare.</param>
         /// <returns>true if the left one is greater than the right one; otherwise, false.</returns>
-        public static bool operator >(JsonFloat leftValue, IJsonValue<double> rightValue)
+        public static bool operator >(JsonDouble leftValue, IJsonValue<double> rightValue)
         {
             if (ReferenceEquals(leftValue, rightValue)) return false;
             if (rightValue is null) return false;
@@ -1458,7 +1458,7 @@ namespace Trivial.Text
         /// <param name="leftValue">The left value to compare.</param>
         /// <param name="rightValue">The right value to compare.</param>
         /// <returns>true if the left one is smaller than or equals to the right one; otherwise, false.</returns>
-        public static bool operator <=(JsonFloat leftValue, IJsonValue<double> rightValue)
+        public static bool operator <=(JsonDouble leftValue, IJsonValue<double> rightValue)
         {
             if (ReferenceEquals(leftValue, rightValue)) return true;
             if (rightValue is null) return true;
@@ -1471,7 +1471,7 @@ namespace Trivial.Text
         /// <param name="leftValue">The left value to compare.</param>
         /// <param name="rightValue">The right value to compare.</param>
         /// <returns>true if the left one is greater than or equals to the right one; otherwise, false.</returns>
-        public static bool operator >=(JsonFloat leftValue, IJsonValue<double> rightValue)
+        public static bool operator >=(JsonDouble leftValue, IJsonValue<double> rightValue)
         {
             if (ReferenceEquals(leftValue, rightValue)) return true;
             if (rightValue is null) return false;
@@ -1485,7 +1485,7 @@ namespace Trivial.Text
         /// <param name="leftValue">The left value to compare.</param>
         /// <param name="rightValue">The right value to compare.</param>
         /// <returns>true if they are same; otherwise, false.</returns>
-        public static bool operator ==(JsonFloat leftValue, IJsonValue<long> rightValue)
+        public static bool operator ==(JsonDouble leftValue, IJsonValue<long> rightValue)
         {
             if (ReferenceEquals(leftValue, rightValue)) return true;
             if (rightValue is null) return false;
@@ -1499,7 +1499,7 @@ namespace Trivial.Text
         /// <param name="leftValue">The left value to compare.</param>
         /// <param name="rightValue">The right value to compare.</param>
         /// <returns>true if they are different; otherwise, false.</returns>
-        public static bool operator !=(JsonFloat leftValue, IJsonValue<long> rightValue)
+        public static bool operator !=(JsonDouble leftValue, IJsonValue<long> rightValue)
         {
             if (ReferenceEquals(leftValue, rightValue)) return false;
             if (rightValue is null) return true;
@@ -1512,7 +1512,7 @@ namespace Trivial.Text
         /// <param name="leftValue">The left value to compare.</param>
         /// <param name="rightValue">The right value to compare.</param>
         /// <returns>true if the left one is smaller than the right one; otherwise, false.</returns>
-        public static bool operator <(JsonFloat leftValue, IJsonValue<long> rightValue)
+        public static bool operator <(JsonDouble leftValue, IJsonValue<long> rightValue)
         {
             if (ReferenceEquals(leftValue, rightValue)) return false;
             if (rightValue is null) return true;
@@ -1525,7 +1525,7 @@ namespace Trivial.Text
         /// <param name="leftValue">The left value to compare.</param>
         /// <param name="rightValue">The right value to compare.</param>
         /// <returns>true if the left one is greater than the right one; otherwise, false.</returns>
-        public static bool operator >(JsonFloat leftValue, IJsonValue<long> rightValue)
+        public static bool operator >(JsonDouble leftValue, IJsonValue<long> rightValue)
         {
             if (ReferenceEquals(leftValue, rightValue)) return false;
             if (rightValue is null) return false;
@@ -1538,7 +1538,7 @@ namespace Trivial.Text
         /// <param name="leftValue">The left value to compare.</param>
         /// <param name="rightValue">The right value to compare.</param>
         /// <returns>true if the left one is smaller than or equals to the right one; otherwise, false.</returns>
-        public static bool operator <=(JsonFloat leftValue, IJsonValue<long> rightValue)
+        public static bool operator <=(JsonDouble leftValue, IJsonValue<long> rightValue)
         {
             if (ReferenceEquals(leftValue, rightValue)) return true;
             if (rightValue is null) return true;
@@ -1551,7 +1551,7 @@ namespace Trivial.Text
         /// <param name="leftValue">The left value to compare.</param>
         /// <param name="rightValue">The right value to compare.</param>
         /// <returns>true if the left one is greater than or equals to the right one; otherwise, false.</returns>
-        public static bool operator >=(JsonFloat leftValue, IJsonValue<long> rightValue)
+        public static bool operator >=(JsonDouble leftValue, IJsonValue<long> rightValue)
         {
             if (ReferenceEquals(leftValue, rightValue)) return true;
             if (rightValue is null) return false;
@@ -1565,7 +1565,7 @@ namespace Trivial.Text
         /// <param name="leftValue">The left value to compare.</param>
         /// <param name="rightValue">The right value to compare.</param>
         /// <returns>true if they are same; otherwise, false.</returns>
-        public static bool operator ==(JsonFloat leftValue, double rightValue)
+        public static bool operator ==(JsonDouble leftValue, double rightValue)
         {
             return leftValue.Value == rightValue;
         }
@@ -1577,7 +1577,7 @@ namespace Trivial.Text
         /// <param name="leftValue">The left value to compare.</param>
         /// <param name="rightValue">The right value to compare.</param>
         /// <returns>true if they are different; otherwise, false.</returns>
-        public static bool operator !=(JsonFloat leftValue, double rightValue)
+        public static bool operator !=(JsonDouble leftValue, double rightValue)
         {
             return leftValue.Value != rightValue;
         }
@@ -1588,7 +1588,7 @@ namespace Trivial.Text
         /// <param name="leftValue">The left value to compare.</param>
         /// <param name="rightValue">The right value to compare.</param>
         /// <returns>true if the left one is smaller than the right one; otherwise, false.</returns>
-        public static bool operator <(JsonFloat leftValue, double rightValue)
+        public static bool operator <(JsonDouble leftValue, double rightValue)
         {
             return leftValue.Value < rightValue;
         }
@@ -1599,7 +1599,7 @@ namespace Trivial.Text
         /// <param name="leftValue">The left value to compare.</param>
         /// <param name="rightValue">The right value to compare.</param>
         /// <returns>true if the left one is greater than the right one; otherwise, false.</returns>
-        public static bool operator >(JsonFloat leftValue, double rightValue)
+        public static bool operator >(JsonDouble leftValue, double rightValue)
         {
             return leftValue.Value < rightValue;
         }
@@ -1610,7 +1610,7 @@ namespace Trivial.Text
         /// <param name="leftValue">The left value to compare.</param>
         /// <param name="rightValue">The right value to compare.</param>
         /// <returns>true if the left one is smaller than or equals to the right one; otherwise, false.</returns>
-        public static bool operator <=(JsonFloat leftValue, double rightValue)
+        public static bool operator <=(JsonDouble leftValue, double rightValue)
         {
             return leftValue.Value <= rightValue;
         }
@@ -1621,7 +1621,7 @@ namespace Trivial.Text
         /// <param name="leftValue">The left value to compare.</param>
         /// <param name="rightValue">The right value to compare.</param>
         /// <returns>true if the left one is greater than or equals to the right one; otherwise, false.</returns>
-        public static bool operator >=(JsonFloat leftValue, double rightValue)
+        public static bool operator >=(JsonDouble leftValue, double rightValue)
         {
             return leftValue.Value <= rightValue;
         }
@@ -1632,7 +1632,7 @@ namespace Trivial.Text
         /// <param name="leftValue">The left value to compare.</param>
         /// <param name="rightValue">The right value to compare.</param>
         /// <returns>true if they are same; otherwise, false.</returns>
-        public static bool operator ==(JsonFloat leftValue, float rightValue)
+        public static bool operator ==(JsonDouble leftValue, float rightValue)
         {
             return leftValue.Value == rightValue;
         }
@@ -1644,7 +1644,7 @@ namespace Trivial.Text
         /// <param name="leftValue">The left value to compare.</param>
         /// <param name="rightValue">The right value to compare.</param>
         /// <returns>true if they are different; otherwise, false.</returns>
-        public static bool operator !=(JsonFloat leftValue, float rightValue)
+        public static bool operator !=(JsonDouble leftValue, float rightValue)
         {
             return leftValue.Value != rightValue;
         }
@@ -1655,7 +1655,7 @@ namespace Trivial.Text
         /// <param name="leftValue">The left value to compare.</param>
         /// <param name="rightValue">The right value to compare.</param>
         /// <returns>true if the left one is smaller than the right one; otherwise, false.</returns>
-        public static bool operator <(JsonFloat leftValue, float rightValue)
+        public static bool operator <(JsonDouble leftValue, float rightValue)
         {
             return leftValue.Value < rightValue;
         }
@@ -1666,7 +1666,7 @@ namespace Trivial.Text
         /// <param name="leftValue">The left value to compare.</param>
         /// <param name="rightValue">The right value to compare.</param>
         /// <returns>true if the left one is greater than the right one; otherwise, false.</returns>
-        public static bool operator >(JsonFloat leftValue, float rightValue)
+        public static bool operator >(JsonDouble leftValue, float rightValue)
         {
             return leftValue.Value < rightValue;
         }
@@ -1677,7 +1677,7 @@ namespace Trivial.Text
         /// <param name="leftValue">The left value to compare.</param>
         /// <param name="rightValue">The right value to compare.</param>
         /// <returns>true if the left one is smaller than or equals to the right one; otherwise, false.</returns>
-        public static bool operator <=(JsonFloat leftValue, float rightValue)
+        public static bool operator <=(JsonDouble leftValue, float rightValue)
         {
             return leftValue.Value <= rightValue;
         }
@@ -1688,75 +1688,7 @@ namespace Trivial.Text
         /// <param name="leftValue">The left value to compare.</param>
         /// <param name="rightValue">The right value to compare.</param>
         /// <returns>true if the left one is greater than or equals to the right one; otherwise, false.</returns>
-        public static bool operator >=(JsonFloat leftValue, float rightValue)
-        {
-            return leftValue.Value <= rightValue;
-        }
-
-        /// <summary>
-        /// Compares two instances to indicate if they are same.
-        /// leftValue == rightValue
-        /// </summary>
-        /// <param name="leftValue">The left value to compare.</param>
-        /// <param name="rightValue">The right value to compare.</param>
-        /// <returns>true if they are same; otherwise, false.</returns>
-        public static bool operator ==(JsonFloat leftValue, long rightValue)
-        {
-            return leftValue.Value == rightValue;
-        }
-
-        /// <summary>
-        /// Compares two instances to indicate if they are different.
-        /// leftValue != rightValue
-        /// </summary>
-        /// <param name="leftValue">The left value to compare.</param>
-        /// <param name="rightValue">The right value to compare.</param>
-        /// <returns>true if they are different; otherwise, false.</returns>
-        public static bool operator !=(JsonFloat leftValue, long rightValue)
-        {
-            return leftValue.Value != rightValue;
-        }
-
-        /// <summary>
-        /// Compares if left is smaller than right.
-        /// </summary>
-        /// <param name="leftValue">The left value to compare.</param>
-        /// <param name="rightValue">The right value to compare.</param>
-        /// <returns>true if the left one is smaller than the right one; otherwise, false.</returns>
-        public static bool operator <(JsonFloat leftValue, long rightValue)
-        {
-            return leftValue.Value < rightValue;
-        }
-
-        /// <summary>
-        /// Compares if left is greater than right.
-        /// </summary>
-        /// <param name="leftValue">The left value to compare.</param>
-        /// <param name="rightValue">The right value to compare.</param>
-        /// <returns>true if the left one is greater than the right one; otherwise, false.</returns>
-        public static bool operator >(JsonFloat leftValue, long rightValue)
-        {
-            return leftValue.Value < rightValue;
-        }
-
-        /// <summary>
-        /// Compares if left is smaller than or equals to right.
-        /// </summary>
-        /// <param name="leftValue">The left value to compare.</param>
-        /// <param name="rightValue">The right value to compare.</param>
-        /// <returns>true if the left one is smaller than or equals to the right one; otherwise, false.</returns>
-        public static bool operator <=(JsonFloat leftValue, long rightValue)
-        {
-            return leftValue.Value <= rightValue;
-        }
-
-        /// <summary>
-        /// Compares if left is greater than or equals to right.
-        /// </summary>
-        /// <param name="leftValue">The left value to compare.</param>
-        /// <param name="rightValue">The right value to compare.</param>
-        /// <returns>true if the left one is greater than or equals to the right one; otherwise, false.</returns>
-        public static bool operator >=(JsonFloat leftValue, long rightValue)
+        public static bool operator >=(JsonDouble leftValue, float rightValue)
         {
             return leftValue.Value <= rightValue;
         }
@@ -1768,7 +1700,7 @@ namespace Trivial.Text
         /// <param name="leftValue">The left value to compare.</param>
         /// <param name="rightValue">The right value to compare.</param>
         /// <returns>true if they are same; otherwise, false.</returns>
-        public static bool operator ==(JsonFloat leftValue, int rightValue)
+        public static bool operator ==(JsonDouble leftValue, long rightValue)
         {
             return leftValue.Value == rightValue;
         }
@@ -1780,7 +1712,7 @@ namespace Trivial.Text
         /// <param name="leftValue">The left value to compare.</param>
         /// <param name="rightValue">The right value to compare.</param>
         /// <returns>true if they are different; otherwise, false.</returns>
-        public static bool operator !=(JsonFloat leftValue, int rightValue)
+        public static bool operator !=(JsonDouble leftValue, long rightValue)
         {
             return leftValue.Value != rightValue;
         }
@@ -1791,7 +1723,7 @@ namespace Trivial.Text
         /// <param name="leftValue">The left value to compare.</param>
         /// <param name="rightValue">The right value to compare.</param>
         /// <returns>true if the left one is smaller than the right one; otherwise, false.</returns>
-        public static bool operator <(JsonFloat leftValue, int rightValue)
+        public static bool operator <(JsonDouble leftValue, long rightValue)
         {
             return leftValue.Value < rightValue;
         }
@@ -1802,7 +1734,7 @@ namespace Trivial.Text
         /// <param name="leftValue">The left value to compare.</param>
         /// <param name="rightValue">The right value to compare.</param>
         /// <returns>true if the left one is greater than the right one; otherwise, false.</returns>
-        public static bool operator >(JsonFloat leftValue, int rightValue)
+        public static bool operator >(JsonDouble leftValue, long rightValue)
         {
             return leftValue.Value < rightValue;
         }
@@ -1813,7 +1745,7 @@ namespace Trivial.Text
         /// <param name="leftValue">The left value to compare.</param>
         /// <param name="rightValue">The right value to compare.</param>
         /// <returns>true if the left one is smaller than or equals to the right one; otherwise, false.</returns>
-        public static bool operator <=(JsonFloat leftValue, int rightValue)
+        public static bool operator <=(JsonDouble leftValue, long rightValue)
         {
             return leftValue.Value <= rightValue;
         }
@@ -1824,7 +1756,7 @@ namespace Trivial.Text
         /// <param name="leftValue">The left value to compare.</param>
         /// <param name="rightValue">The right value to compare.</param>
         /// <returns>true if the left one is greater than or equals to the right one; otherwise, false.</returns>
-        public static bool operator >=(JsonFloat leftValue, int rightValue)
+        public static bool operator >=(JsonDouble leftValue, long rightValue)
         {
             return leftValue.Value <= rightValue;
         }
@@ -1836,7 +1768,7 @@ namespace Trivial.Text
         /// <param name="leftValue">The left value to compare.</param>
         /// <param name="rightValue">The right value to compare.</param>
         /// <returns>true if they are same; otherwise, false.</returns>
-        public static bool operator ==(JsonFloat leftValue, uint rightValue)
+        public static bool operator ==(JsonDouble leftValue, int rightValue)
         {
             return leftValue.Value == rightValue;
         }
@@ -1848,7 +1780,7 @@ namespace Trivial.Text
         /// <param name="leftValue">The left value to compare.</param>
         /// <param name="rightValue">The right value to compare.</param>
         /// <returns>true if they are different; otherwise, false.</returns>
-        public static bool operator !=(JsonFloat leftValue, uint rightValue)
+        public static bool operator !=(JsonDouble leftValue, int rightValue)
         {
             return leftValue.Value != rightValue;
         }
@@ -1859,7 +1791,7 @@ namespace Trivial.Text
         /// <param name="leftValue">The left value to compare.</param>
         /// <param name="rightValue">The right value to compare.</param>
         /// <returns>true if the left one is smaller than the right one; otherwise, false.</returns>
-        public static bool operator <(JsonFloat leftValue, uint rightValue)
+        public static bool operator <(JsonDouble leftValue, int rightValue)
         {
             return leftValue.Value < rightValue;
         }
@@ -1870,7 +1802,7 @@ namespace Trivial.Text
         /// <param name="leftValue">The left value to compare.</param>
         /// <param name="rightValue">The right value to compare.</param>
         /// <returns>true if the left one is greater than the right one; otherwise, false.</returns>
-        public static bool operator >(JsonFloat leftValue, uint rightValue)
+        public static bool operator >(JsonDouble leftValue, int rightValue)
         {
             return leftValue.Value < rightValue;
         }
@@ -1881,7 +1813,7 @@ namespace Trivial.Text
         /// <param name="leftValue">The left value to compare.</param>
         /// <param name="rightValue">The right value to compare.</param>
         /// <returns>true if the left one is smaller than or equals to the right one; otherwise, false.</returns>
-        public static bool operator <=(JsonFloat leftValue, uint rightValue)
+        public static bool operator <=(JsonDouble leftValue, int rightValue)
         {
             return leftValue.Value <= rightValue;
         }
@@ -1892,7 +1824,75 @@ namespace Trivial.Text
         /// <param name="leftValue">The left value to compare.</param>
         /// <param name="rightValue">The right value to compare.</param>
         /// <returns>true if the left one is greater than or equals to the right one; otherwise, false.</returns>
-        public static bool operator >=(JsonFloat leftValue, uint rightValue)
+        public static bool operator >=(JsonDouble leftValue, int rightValue)
+        {
+            return leftValue.Value <= rightValue;
+        }
+
+        /// <summary>
+        /// Compares two instances to indicate if they are same.
+        /// leftValue == rightValue
+        /// </summary>
+        /// <param name="leftValue">The left value to compare.</param>
+        /// <param name="rightValue">The right value to compare.</param>
+        /// <returns>true if they are same; otherwise, false.</returns>
+        public static bool operator ==(JsonDouble leftValue, uint rightValue)
+        {
+            return leftValue.Value == rightValue;
+        }
+
+        /// <summary>
+        /// Compares two instances to indicate if they are different.
+        /// leftValue != rightValue
+        /// </summary>
+        /// <param name="leftValue">The left value to compare.</param>
+        /// <param name="rightValue">The right value to compare.</param>
+        /// <returns>true if they are different; otherwise, false.</returns>
+        public static bool operator !=(JsonDouble leftValue, uint rightValue)
+        {
+            return leftValue.Value != rightValue;
+        }
+
+        /// <summary>
+        /// Compares if left is smaller than right.
+        /// </summary>
+        /// <param name="leftValue">The left value to compare.</param>
+        /// <param name="rightValue">The right value to compare.</param>
+        /// <returns>true if the left one is smaller than the right one; otherwise, false.</returns>
+        public static bool operator <(JsonDouble leftValue, uint rightValue)
+        {
+            return leftValue.Value < rightValue;
+        }
+
+        /// <summary>
+        /// Compares if left is greater than right.
+        /// </summary>
+        /// <param name="leftValue">The left value to compare.</param>
+        /// <param name="rightValue">The right value to compare.</param>
+        /// <returns>true if the left one is greater than the right one; otherwise, false.</returns>
+        public static bool operator >(JsonDouble leftValue, uint rightValue)
+        {
+            return leftValue.Value < rightValue;
+        }
+
+        /// <summary>
+        /// Compares if left is smaller than or equals to right.
+        /// </summary>
+        /// <param name="leftValue">The left value to compare.</param>
+        /// <param name="rightValue">The right value to compare.</param>
+        /// <returns>true if the left one is smaller than or equals to the right one; otherwise, false.</returns>
+        public static bool operator <=(JsonDouble leftValue, uint rightValue)
+        {
+            return leftValue.Value <= rightValue;
+        }
+
+        /// <summary>
+        /// Compares if left is greater than or equals to right.
+        /// </summary>
+        /// <param name="leftValue">The left value to compare.</param>
+        /// <param name="rightValue">The right value to compare.</param>
+        /// <returns>true if the left one is greater than or equals to the right one; otherwise, false.</returns>
+        public static bool operator >=(JsonDouble leftValue, uint rightValue)
         {
             return leftValue.Value <= rightValue;
         }

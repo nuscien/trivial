@@ -856,7 +856,7 @@ namespace Trivial.Text
                 JsonValueKind.String => new JsonString(json.GetString()),
                 JsonValueKind.Number => json.TryGetInt64(out var l)
                     ? new JsonInteger(l)
-                    : (json.TryGetDouble(out var d) ? new JsonFloat(d) : Null),
+                    : (json.TryGetDouble(out var d) ? new JsonDouble(d) : Null),
                 JsonValueKind.True => new JsonBoolean(true),
                 JsonValueKind.False => new JsonBoolean(false),
                 JsonValueKind.Array => (JsonArray)json,
