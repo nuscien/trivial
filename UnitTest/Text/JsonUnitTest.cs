@@ -131,7 +131,12 @@ namespace Trivial.UnitTest.Text
                 D = new DateTime(2020, 1, 4),
                 E = new DateTime(2020, 1, 5),
                 F = jObj,
-                G = jArr
+                G = jArr,
+                H = new List<string>
+                {
+                    "!@#$%^",
+                    "&*()_+-="
+                }
             };
             var str = JsonSerializer.Serialize(model);
             var model2 = JsonSerializer.Deserialize<JsonAttributeTestModel>(str);
@@ -142,6 +147,7 @@ namespace Trivial.UnitTest.Text
             Assert.AreEqual(model.E, model2.E);
             Assert.AreEqual(model.F.Count, model2.F.Count);
             Assert.AreEqual(model.G.Count, model2.G.Count);
+            Assert.AreEqual(model.H.Count, model2.H.Count);
 
             model = new JsonAttributeTestModel
             {
@@ -160,6 +166,14 @@ namespace Trivial.UnitTest.Text
             Assert.AreEqual(model.E, model2.E);
             Assert.AreEqual(null, model2.F);
             Assert.AreEqual(null, model2.G);
+            Assert.AreEqual(null, model2.H);
+
+            str = @"{
+    ""H"": "":,.;/| ""
+}";
+            model2 = JsonSerializer.Deserialize<JsonAttributeTestModel>(str);
+            Assert.AreEqual(1, model2.H.Count);
+            Assert.AreEqual(":,.;/| ", model2.H[0]);
         }
     }
 }

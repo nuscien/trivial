@@ -6,6 +6,7 @@ using System.Security;
 using System.Text;
 using System.Text.Json.Serialization;
 
+using Trivial.Text;
 using Trivial.Web;
 
 namespace Trivial.Security
@@ -680,6 +681,7 @@ namespace Trivial.Security
         /// </summary>
         [DataMember(Name = "aud", EmitDefaultValue = false)]
         [JsonPropertyName("aud")]
+        [JsonConverter(typeof(JsonStringListConverter))]
         public IEnumerable<string> Audience { get; set; }
 
         /// <summary>

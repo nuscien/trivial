@@ -55,5 +55,8 @@ namespace Trivial.UnitTest.Text
 
         [JsonConverter(typeof(JsonObjectConverter))]
         public JsonArray G { get; set; }
+
+        [JsonConverter(typeof(JsonStringListConverter))]
+        public IList<string> H { get; set; }
     }
 }

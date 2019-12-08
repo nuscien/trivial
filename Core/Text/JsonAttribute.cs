@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Text;
 using System.Text.Json;
@@ -190,6 +192,118 @@ namespace Trivial.Text
         {
             var num = WebFormat.ParseUnixTimestamp(value);
             writer.WriteNumberValue(num);
+        }
+    }
+
+    /// <summary>
+    /// JSON object and JSON array converter.
+    /// </summary>
+    public sealed class JsonStringListConverter : JsonConverter<IEnumerable<string>>
+    {
+        /// <inheritdoc />
+        public override bool CanConvert(Type typeToConvert)
+        {
+            return base.CanConvert(typeToConvert)
+                || typeToConvert == typeof(List<string>)
+                || typeToConvert == typeof(string[])
+                || typeToConvert == typeof(ObservableCollection<string>)
+                || typeToConvert == typeof(ConcurrentBag<string>)
+                || typeToConvert == typeof(ICollection<string>)
+                || typeToConvert == typeof(IList<string>);
+        }
+
+        /// <inheritdoc />
+        public override IEnumerable<string> Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+        {
+            var col = new List<string>();
+            if (reader.TokenType == JsonTokenType.Null)
+            {
+                return null;
+            }
+
+            if (TryGetString(ref reader, out var str))
+            {
+                col.Add(str);
+            }
+            else if (reader.TokenType == JsonTokenType.StartArray)
+            {
+                while (reader.Read() && reader.TokenType != JsonTokenType.EndArray)
+                {
+                    while (reader.TokenType == JsonTokenType.None || reader.TokenType == JsonTokenType.Comment)
+                    {
+                        reader.Read();
+                    }
+
+                    if (!TryGetString(ref reader, out var value))
+                    {
+                        throw new JsonException($"The token type is {reader.TokenType} but expect string or null.");
+                    }
+
+                    col.Add(value);
+                }
+            }
+
+            if (typeToConvert == typeof(List<string>) || typeToConvert.IsInterface)
+            {
+                return col;
+            }
+
+            if (typeToConvert == typeof(string[]))
+            {
+                return col.ToArray();
+            }
+
+            if (typeToConvert == typeof(ObservableCollection<string>))
+            {
+                return new ObservableCollection<string>(col);
+            }
+
+            if (typeToConvert == typeof(ConcurrentBag<string>))
+            {
+                return new ConcurrentBag<string>(col);
+            }
+
+            return col;
+        }
+
+        /// <inheritdoc />
+        public override void Write(Utf8JsonWriter writer, IEnumerable<string> value, JsonSerializerOptions options)
+        {
+            if (value is null)
+            {
+                writer.WriteNullValue();
+                return;
+            }
+
+            writer.WriteStartArray();
+            foreach (var item in value)
+            {
+                if (item == null) writer.WriteNullValue();
+                else writer.WriteStringValue(item);
+            }
+
+            writer.WriteEndArray();
+        }
+
+        private static bool TryGetString(ref Utf8JsonReader reader, out string result)
+        {
+            switch (reader.TokenType)
+            {
+                case JsonTokenType.Null:
+                    result = null;
+                    return true;
+                case JsonTokenType.String:
+                    result = reader.GetString();
+                    return true;
+                case JsonTokenType.Number:
+                    result = reader.TryGetInt64(out var int64v)
+                        ? int64v.ToString("g", CultureInfo.InvariantCulture)
+                        : reader.GetDouble().ToString("g", CultureInfo.InvariantCulture);
+                    return true;
+                default:
+                    result = null;
+                    return false;
+            };
         }
     }
 
