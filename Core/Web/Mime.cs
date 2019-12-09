@@ -40,6 +40,11 @@ namespace Trivial.Web
         public const string HtmlMIME = "text/html";
 
         /// <summary>
+        /// Gets the MIME value of octet stream.
+        /// </summary>
+        public const string StreamMIME = "application/octet-stream";
+
+        /// <summary>
         /// Gets or sets the MIME handler.
         /// </summary>
         internal static Func<FileInfo, string> GetMimeHandler { get; set; }
@@ -438,6 +443,7 @@ namespace Trivial.Web
                     return "application/x-msclip";
                 case "jar":
                     return "application/java-archive";
+                case "lib":
                 case "dll":
                 case "exe":
                 case "bat":
@@ -445,10 +451,12 @@ namespace Trivial.Web
                 case "msu":
                 case "com":
                     return "application/x-msdownload";
+                case "appx":
                 case "3mf":
                 case "bin":
                 case "dat":
                 case "data":
+                case "ini":
                 case "db":
                 case "dms":
                 case "lrf":
@@ -459,7 +467,8 @@ namespace Trivial.Web
                 case "vso":
                 case "nupkg":
                 case "xsn":
-                    return "application/octet-stream";
+                case "sln":
+                    return StreamMIME;
                 case "pdb":
                 case "pqa":
                 case "oprc":
