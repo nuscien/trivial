@@ -3,6 +3,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Globalization;
+using System.Linq;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -12,204 +13,75 @@ using Trivial.Web;
 namespace Trivial.Text
 {
     /// <summary>
-    /// Javascript ticks JSON number converter.
-    /// </summary>
-    public sealed class JsonJavaScriptTicksConverter : JsonConverter<DateTime>
-    {
-        /// <summary>
-        /// Nullable Javascript ticks JSON number converter.
-        /// </summary>
-        public sealed class NullableConverter : JsonConverter<DateTime?>
-        {
-            /// <inheritdoc />
-            public override bool CanConvert(Type typeToConvert)
-            {
-                return base.CanConvert(typeToConvert) || typeToConvert == typeof(DateTime);
-            }
-
-            /// <inheritdoc />
-            public override DateTime? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-            {
-                if (reader.TokenType == JsonTokenType.Null)
-                    return null;
-                if (reader.TokenType == JsonTokenType.Number)
-                    return WebFormat.ParseDate(reader.GetInt64());
-                return WebFormat.ParseDate(reader.GetString());
-            }
-
-            /// <inheritdoc />
-            public override void Write(Utf8JsonWriter writer, DateTime? value, JsonSerializerOptions options)
-            {
-                var num = WebFormat.ParseDate(value);
-                if (num.HasValue) writer.WriteNumberValue(num.Value);
-                else writer.WriteNullValue();
-            }
-        }
-
-        /// <summary>
-        /// Nullable date time JSON converter with Javascript ticks fallback.
-        /// </summary>
-        public sealed class FallbackNullableConverter : JsonConverter<DateTime?>
-        {
-            /// <inheritdoc />
-            public override DateTime? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-            {
-                if (reader.TokenType == JsonTokenType.Null)
-                    return null;
-                if (reader.TokenType == JsonTokenType.String)
-                    return WebFormat.ParseDate(reader.GetString());
-                return WebFormat.ParseDate(reader.GetInt64());
-            }
-
-            /// <inheritdoc />
-            public override void Write(Utf8JsonWriter writer, DateTime? value, JsonSerializerOptions options)
-            {
-                if (value.HasValue) writer.WriteStringValue(JsonString.ToJson(value.Value, true));
-                else writer.WriteNullValue();
-            }
-        }
-
-        /// <summary>
-        /// Date time JSON converter with Javascript ticks fallback.
-        /// </summary>
-        public sealed class FallbackConverter : JsonConverter<DateTime>
-        {
-            /// <inheritdoc />
-            public override DateTime Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-            {
-                if (reader.TokenType == JsonTokenType.String)
-                    return WebFormat.ParseDate(reader.GetString()) ?? default;
-                return WebFormat.ParseDate(reader.GetInt64());
-            }
-
-            /// <inheritdoc />
-            public override void Write(Utf8JsonWriter writer, DateTime value, JsonSerializerOptions options)
-            {
-                writer.WriteStringValue(JsonString.ToJson(value, true));
-            }
-        }
-
-        /// <inheritdoc />
-        public override DateTime Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-        {
-            if (reader.TokenType == JsonTokenType.Number)
-                return WebFormat.ParseDate(reader.GetInt64());
-            var v = WebFormat.ParseDate(reader.GetString());
-            return v ?? default;
-        }
-
-        /// <inheritdoc />
-        public override void Write(Utf8JsonWriter writer, DateTime value, JsonSerializerOptions options)
-        {
-            var num = WebFormat.ParseDate(value);
-            writer.WriteNumberValue(num);
-        }
-    }
-
-    /// <summary>
-    /// Unix timestamp JSON number converter.
-    /// </summary>
-    public sealed class JsonUnixTimestampConverter : JsonConverter<DateTime>
-    {
-        /// <summary>
-        /// Nullable Unix timestamp JSON number converter.
-        /// </summary>
-        public sealed class NullableConverter : JsonConverter<DateTime?>
-        {
-            /// <inheritdoc />
-            public override DateTime? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-            {
-                if (reader.TokenType == JsonTokenType.Null)
-                    return null;
-                if (reader.TokenType == JsonTokenType.Number)
-                    return WebFormat.ParseUnixTimestamp(reader.GetInt64());
-                return WebFormat.ParseDate(reader.GetString());
-            }
-
-            /// <inheritdoc />
-            public override void Write(Utf8JsonWriter writer, DateTime? value, JsonSerializerOptions options)
-            {
-                var num = WebFormat.ParseUnixTimestamp(value);
-                if (num.HasValue) writer.WriteNumberValue(num.Value);
-                else writer.WriteNullValue();
-            }
-        }
-
-        /// <summary>
-        /// Nullable date time JSON converter with Unix timestamp fallback.
-        /// </summary>
-        public sealed class FallbackNullableConverter : JsonConverter<DateTime?>
-        {
-            /// <inheritdoc />
-            public override DateTime? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-            {
-                if (reader.TokenType == JsonTokenType.Null)
-                    return null;
-                if (reader.TokenType == JsonTokenType.String)
-                    return WebFormat.ParseDate(reader.GetString());
-                return WebFormat.ParseUnixTimestamp(reader.GetInt64());
-            }
-
-            /// <inheritdoc />
-            public override void Write(Utf8JsonWriter writer, DateTime? value, JsonSerializerOptions options)
-            {
-                if (value.HasValue) writer.WriteStringValue(JsonString.ToJson(value.Value, true));
-                else writer.WriteNullValue();
-            }
-        }
-
-        /// <summary>
-        /// Date time JSON converter with Unix timestamp fallback.
-        /// </summary>
-        public sealed class FallbackConverter : JsonConverter<DateTime>
-        {
-            /// <inheritdoc />
-            public override DateTime Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-            {
-                if (reader.TokenType == JsonTokenType.String)
-                    return WebFormat.ParseDate(reader.GetString()) ?? default;
-                return WebFormat.ParseUnixTimestamp(reader.GetInt64());
-            }
-
-            /// <inheritdoc />
-            public override void Write(Utf8JsonWriter writer, DateTime value, JsonSerializerOptions options)
-            {
-                writer.WriteStringValue(JsonString.ToJson(value, true));
-            }
-        }
-
-        /// <inheritdoc />
-        public override DateTime Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-        {
-            if (reader.TokenType == JsonTokenType.Number)
-                return WebFormat.ParseUnixTimestamp(reader.GetInt64());
-            var v = WebFormat.ParseDate(reader.GetString());
-            return v ?? default;
-        }
-
-        /// <inheritdoc />
-        public override void Write(Utf8JsonWriter writer, DateTime value, JsonSerializerOptions options)
-        {
-            var num = WebFormat.ParseUnixTimestamp(value);
-            writer.WriteNumberValue(num);
-        }
-    }
-
-    /// <summary>
-    /// JSON object and JSON array converter.
+    /// JSON string list and json array converter.
     /// </summary>
     public sealed class JsonStringListConverter : JsonConverter<IEnumerable<string>>
     {
+        /// <summary>
+        /// JSON string collection with white space separated.
+        /// </summary>
+        public sealed class WhiteSpaceSeparatedConverter : JsonConverter<IEnumerable<string>>
+        {
+            private static readonly char[] splitChars = new[] { ' ', '\r', '\n', '\t' };
+
+            /// <inheritdoc />
+            public override bool CanConvert(Type typeToConvert)
+            {
+                return typeof(IEnumerable<string>).IsAssignableFrom(typeToConvert);
+            }
+
+            /// <inheritdoc />
+            public override IEnumerable<string> Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+            {
+                var col = new List<string>();
+                if (reader.TokenType == JsonTokenType.Null)
+                {
+                    return null;
+                }
+
+                if (TryGetString(ref reader, out var str))
+                {
+                    if (str != null) col.AddRange(str.Split(splitChars, StringSplitOptions.RemoveEmptyEntries));
+                }
+                else if (reader.TokenType == JsonTokenType.StartArray)
+                {
+                    while (reader.Read() && reader.TokenType != JsonTokenType.EndArray)
+                    {
+                        while (reader.TokenType == JsonTokenType.Comment || reader.TokenType == JsonTokenType.None)
+                        {
+                            reader.Read();
+                        }
+
+                        if (!TryGetString(ref reader, out var value))
+                        {
+                            throw new JsonException($"The token type is {reader.TokenType} but expect string or null.");
+                        }
+
+                        if (value != null) col.Add(value);
+                    }
+                }
+
+                return ToList(col, typeToConvert);
+            }
+
+            /// <inheritdoc />
+            public override void Write(Utf8JsonWriter writer, IEnumerable<string> value, JsonSerializerOptions options)
+            {
+                if (value is null)
+                {
+                    writer.WriteNullValue();
+                    return;
+                }
+
+                var str = string.Join(' ', value.Where(ele => !string.IsNullOrWhiteSpace(ele)));
+                writer.WriteStringValue(str);
+            }
+        }
+
         /// <inheritdoc />
         public override bool CanConvert(Type typeToConvert)
         {
-            return base.CanConvert(typeToConvert)
-                || typeToConvert == typeof(List<string>)
-                || typeToConvert == typeof(string[])
-                || typeToConvert == typeof(ObservableCollection<string>)
-                || typeToConvert == typeof(ConcurrentBag<string>)
-                || typeToConvert == typeof(ICollection<string>)
-                || typeToConvert == typeof(IList<string>);
+            return typeof(IEnumerable<string>).IsAssignableFrom(typeToConvert);
         }
 
         /// <inheritdoc />
@@ -223,13 +95,13 @@ namespace Trivial.Text
 
             if (TryGetString(ref reader, out var str))
             {
-                col.Add(str);
+                if (str != null) col.Add(str);
             }
             else if (reader.TokenType == JsonTokenType.StartArray)
             {
                 while (reader.Read() && reader.TokenType != JsonTokenType.EndArray)
                 {
-                    while (reader.TokenType == JsonTokenType.None || reader.TokenType == JsonTokenType.Comment)
+                    while (reader.TokenType == JsonTokenType.Comment || reader.TokenType == JsonTokenType.None)
                     {
                         reader.Read();
                     }
@@ -243,27 +115,7 @@ namespace Trivial.Text
                 }
             }
 
-            if (typeToConvert == typeof(List<string>) || typeToConvert.IsInterface)
-            {
-                return col;
-            }
-
-            if (typeToConvert == typeof(string[]))
-            {
-                return col.ToArray();
-            }
-
-            if (typeToConvert == typeof(ObservableCollection<string>))
-            {
-                return new ObservableCollection<string>(col);
-            }
-
-            if (typeToConvert == typeof(ConcurrentBag<string>))
-            {
-                return new ConcurrentBag<string>(col);
-            }
-
-            return col;
+            return ToList(col, typeToConvert);
         }
 
         /// <inheritdoc />
@@ -285,11 +137,27 @@ namespace Trivial.Text
             writer.WriteEndArray();
         }
 
+        private static IEnumerable<string> ToList(List<string> col, Type typeToConvert)
+        {
+            if (typeToConvert == typeof(List<string>) || typeToConvert.IsInterface)
+            {
+                return col;
+            }
+
+            if (typeToConvert == typeof(string[]))
+            {
+                return col.ToArray();
+            }
+
+            return (IEnumerable<string>)Activator.CreateInstance(typeToConvert, new[] { col });
+        }
+
         private static bool TryGetString(ref Utf8JsonReader reader, out string result)
         {
             switch (reader.TokenType)
             {
                 case JsonTokenType.Null:
+                case JsonTokenType.False:
                     result = null;
                     return true;
                 case JsonTokenType.String:

@@ -4,8 +4,6 @@ This library includes utilities and services for tasks, IO, security, etc.
 
 ## [Tasks](https://github.com/nuscien/trivial/wiki/tasks)
 
-Just add following namespace to your code file to use.
-
 ```csharp
 using Trivial.Tasks;
 ```
@@ -29,75 +27,20 @@ You can create a task controller to manage when a handler should be raised.
 Following is an example for debounce.
 
 ```csharp
-// An action you need to process.
-Action action = () => {
+// Create a task.
+var task = HitTask.Debounce(() =>
+{
     // Do something...
-};
+}, TimeSpan.FromMilliseconds(200));
 
-// Set up when the action can be processed.
-var task = HitTask.Debounce(action, TimeSpan.FromMilliseconds(200));
-
-// Somewhere to raise.
+// Raise somewhere.
 task.ProcessAsync();
 ```
 
 ### Retry
 
-You can create a linear retry policy or even a customized to process an action with the specific retry policy.
+You can create a linear retry policy by `LinearRetryPolicy` or a customized one to process an action with the specific retry policy.
 And you can use `ObservableTask` to observe the state of an action processing.
-
-## [Mathematics](https://github.com/nuscien/trivial/wiki/maths)
-
-Just add following namespace to your code file to use.
-
-```csharp
-using Trivial.Maths;
-```
-
-### Arithmetic
-
-There a lot of arithmetic functions.
-
-```csharp
-Arithmetic.IsPrime(2147483647); // True
-await Arithmetic.IsPrimeAsync(2305843009213693951); // False
-
-Arithmetic.Gcd(192, 128); // 64
-Arithmetic.Lcm(192, 128); // 384
-```
-
-### Numerals
-
-You can get the number symbols as you want.
-
-You can also get the number string in English words.
-
-```csharp
-EnglishNumerals.Default.ToString(12345.67);
-// twelve thousand three hundred and forty-five point six seven
-
-EnglishNumerals.Default.ToApproximationString(1234567);
-// 1.2M
-```
-
-And `ChineseNumerals` for Chinese and `JapaneseNumerals` for Japanese.
-
-### Angle and polar point
-
-- `Angle` Angle.
-- `PolarPoint` The point in polar coordinates.
-- `SphericalPoint` The point in spherical coordinates.
-
-### Set
-
-- `NullableValueSimpleInterval<T>` Interval, such as [20, 100).
-
-### Rectangular coordinates
-
-- `OneDimensionalPoint` The point in 1D (line) coordinates.
-- `TwoDimensionalPoint` The point in 2D (flat) coordinates.
-- `ThreeDimensionalPoint` The point in 3D (stereoscophic) coordinates.
-- `FourDimensionalPoint` The point in 4D (spacetime) coordinates.
 
 ## [Network](https://github.com/nuscien/trivial/wiki/net)
 
@@ -111,8 +54,6 @@ And you can also use `JsonHttpClient` to serialize the JSON format response with
 And `HttpUri` for HTTP URI fields accessing.
 
 ## [Security](https://github.com/nuscien/trivial/wiki/security)
-
-Just add following namespace to your code file to use.
 
 ```csharp
 using Trivial.Security;
@@ -182,59 +123,31 @@ var header = jwt.ToAuthenticationHeaderValue();
 var jwtSame = JsonWebToken<Model>.Parse(jwtStr, sign); // jwtSame.ToEncodedString() == jwtStr
 ```
 
-### Secure string utiltiy
+### Secure string
 
 You can use the extension methods in the `SecureStringExtensions` class to convert the secret between `SecureString` and `String`/`StringBuilder`/`Byte[]`.
 
 You can also use the class `RSASecretExchange` to transfer the secret with RSA encryption.
 
-## [Data](https://github.com/nuscien/trivial/wiki/data)
-
-Contains lots of data readers, parsers and utilities.
-
-```csharp
-using Trivial.Data;
-```
-
-### Data cache collection
-
-You can create a collection to cache data with expiration and count limitation by following way.
-
-```csharp
-var cache = new DataCacheCollection<Model>
-{
-    MaxCount = 1000,
-    Expiration = TimeSpan.FromSeconds(100)
-};
-```
-
-So that you can get the data from the cache if has and or add new one if necessary.
-
-```csharp
-if (!cache.TryGet("abcd", out Model item)) item = new Model();
-```
-
 ## [Text](https://github.com/nuscien/trivial/wiki/text)
-
-Contains the text utilities.
 
 ```csharp
 using Trivial.Text;
 ```
 
+### JSON
+
+Includes writable JSON DOM `JsonObject` and `JsonArray`.
+And includes lots of useful converter like following.
+
+- `JsonJavaScriptTicksConverter` and `JsonUnixTimestampConverter`, and their nullable value conveters and fallback converters.
+- `JsonNumberStringConverter`.
+- `JsonObjectConverter`.
+
 ### CSV
 
-You can read CSV file into a list of the specific models. For example, you have a model like following.
-
-```csharp
-class Model
-{
-    public string A { get; set; }
-    public string B { get; set; }
-}
-```
-
-Now you can map to the CSV file.
+You can read CSV file into a list of the specific models.
+For example, you have a model class `Model` with string properties `A` and `B`, now you can map to the CSV file.
 
 ```csharp
 var csv = new CsvParser("abcd,efg\nhijk,lmn");
@@ -244,12 +157,69 @@ foreach (var model in csv.ConvertTo<Model>(new[] { "A", "B" }))
 }
 ```
 
-### JSON
 
-You can use `JsonJavaScriptTicksConverter` for JavaScript ticks serialization.
+## [Data](https://github.com/nuscien/trivial/wiki/data)
+
+```csharp
+using Trivial.Data;
+```
+
+### Cache
+
+You can save a number of model in memory cache by generic class `DataCacheCollection`.
+
+## [Mathematics](https://github.com/nuscien/trivial/wiki/maths)
+
+```csharp
+using Trivial.Maths;
+```
+
+### Arithmetic
+
+There a lot of arithmetic functions.
+
+```csharp
+Arithmetic.IsPrime(2147483647); // True
+await Arithmetic.IsPrimeAsync(2305843009213693951); // False
+
+Arithmetic.Gcd(192, 128); // 64
+```
+
+### Numerals
+
+You can get the number symbols as you want.
+
+You can also get the number string in English words.
+
+```csharp
+EnglishNumerals.Default.ToString(12345.67);
+// twelve thousand three hundred and forty-five point six seven
+
+EnglishNumerals.Default.ToApproximationString(1234567);
+// 1.2M
+```
+
+And `ChineseNumerals` for Chinese and `JapaneseNumerals` for Japanese.
+
+### Angle and polar point
+
+- `Angle` Angle.
+- `PolarPoint` The point in polar coordinates.
+- `SphericalPoint` The point in spherical coordinates.
+
+### Set
+
+- `NullableValueSimpleInterval<T>` Interval, such as [20, 100).
+
+### Rectangular coordinates
+
+- `OneDimensionalPoint` The point in 1D (line) coordinates.
+- `TwoDimensionalPoint` The point in 2D (flat) coordinates.
+- `ThreeDimensionalPoint` The point in 3D (stereoscophic) coordinates.
+- `FourDimensionalPoint` The point in 4D (spacetime) coordinates.
 
 ## Further
 
+- [IO](https://github.com/nuscien/trivial/wiki/io)
 - [Geography](https://github.com/nuscien/trivial/wiki/geo)
 - [Reflection](https://github.com/nuscien/trivial/wiki/reflection)
-- [IO](https://github.com/nuscien/trivial/wiki/io)

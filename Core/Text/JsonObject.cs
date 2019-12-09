@@ -1495,7 +1495,9 @@ namespace Trivial.Text
         /// <exception cref="ArgumentException">readerOptions contains unsupported options.</exception>
         public static JsonObject ParseValue(ref Utf8JsonReader reader)
         {
-            return JsonDocument.ParseValue(ref reader);
+            var obj = new JsonObject();
+            obj.SetRange(ref reader);
+            return obj;
         }
     }
 }

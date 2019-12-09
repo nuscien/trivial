@@ -135,7 +135,14 @@ namespace Trivial.UnitTest.Text
                 H = new List<string>
                 {
                     "!@#$%^",
-                    "&*()_+-="
+                    null,
+                    "&()_+-="
+                },
+                I = new HashSet<string>
+                {
+                    "***",
+                    string.Empty,
+                    "|||||||"
                 }
             };
             var str = JsonSerializer.Serialize(model);
@@ -148,6 +155,7 @@ namespace Trivial.UnitTest.Text
             Assert.AreEqual(model.F.Count, model2.F.Count);
             Assert.AreEqual(model.G.Count, model2.G.Count);
             Assert.AreEqual(model.H.Count, model2.H.Count);
+            Assert.AreEqual(model.I.Count - 1, model2.I.Count);
 
             model = new JsonAttributeTestModel
             {
@@ -167,13 +175,18 @@ namespace Trivial.UnitTest.Text
             Assert.AreEqual(null, model2.F);
             Assert.AreEqual(null, model2.G);
             Assert.AreEqual(null, model2.H);
+            Assert.AreEqual(null, model2.I);
 
             str = @"{
-    ""H"": "":,.;/| ""
+    ""H"": "":,.;/| "",
+    ""I"": ""abcdefg hijklmn    opq\trst\n\nuvw\rxyz"",
+    ""J"": ""123456""
 }";
             model2 = JsonSerializer.Deserialize<JsonAttributeTestModel>(str);
             Assert.AreEqual(1, model2.H.Count);
             Assert.AreEqual(":,.;/| ", model2.H[0]);
+            Assert.AreEqual(6, model2.I.Count);
+            Assert.AreEqual((uint)123456, model2.J);
         }
     }
 }

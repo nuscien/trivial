@@ -4,16 +4,19 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <AssemblyName>Trivial.Console</AssemblyName>
     <RootNamespace>Trivial.Console</RootNamespace>
+    <PackageId>Trivial.Console</PackageId>
+    <Product>Trivial</Product>
     <Authors>Kingcean Tuan</Authors>
-    <Company>Nanchang Jinchen Software Co., Ltd</Company>
-    <Copyright>Copyright (c) 2018 Kingcean Tuan.</Copyright>
+    <Company>Nanchang Jinchen Software Co., Ltd.</Company>
     <Version>3.0.0</Version>
     <AssemblyVersion>3.0.0.0</AssemblyVersion>
     <FileVersion>3.0.0.0</FileVersion>
     <Description>The useful utilities for console application including command dispatcher, arguments parser and some rich user interface console controls.</Description>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Copyright>Copyright (c) 2018 Kingcean Tuan.</Copyright>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/nuscien/trivial/wiki/console</PackageProjectUrl>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <IncludeSymbols>true</IncludeSymbols>
     <RepositoryUrl>https://github.com/nuscien/trivial</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageIcon>logo.jpg</PackageIcon>
