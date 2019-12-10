@@ -10,7 +10,7 @@ namespace Trivial.Text
     /// <summary>
     /// Represents a specific JSON integer number value.
     /// </summary>
-    public struct JsonInteger : IJsonValue<long>, IComparable<JsonInteger>, IComparable<JsonDouble>, IComparable<uint>, IComparable<int>, IComparable<long>, IComparable<double>, IComparable<float>, IEquatable<IJsonValue<uint>>, IEquatable<IJsonValue<int>>, IEquatable<IJsonValue<float>>, IEquatable<IJsonValue<double>>, IEquatable<uint>, IEquatable<int>, IEquatable<float>, IEquatable<double>, IFormattable
+    public class JsonInteger : IJsonValue<long>, IComparable<JsonInteger>, IComparable<JsonDouble>, IComparable<uint>, IComparable<int>, IComparable<long>, IComparable<double>, IComparable<float>, IEquatable<IJsonValue<uint>>, IEquatable<IJsonValue<int>>, IEquatable<IJsonValue<float>>, IEquatable<IJsonValue<double>>, IEquatable<uint>, IEquatable<int>, IEquatable<float>, IEquatable<double>, IFormattable
     {
         /// <summary>
         /// Gets the value.
@@ -957,7 +957,7 @@ namespace Trivial.Text
     /// <summary>
     /// Represents a specific JSON double float number value.
     /// </summary>
-    public struct JsonDouble : IJsonValue<double>, IComparable<JsonInteger>, IComparable<JsonDouble>, IComparable<uint>, IComparable<int>, IComparable<long>, IComparable<double>, IComparable<float>, IEquatable<IJsonValue<uint>>, IEquatable<IJsonValue<int>>, IEquatable<IJsonValue<long>>, IEquatable<IJsonValue<float>>, IEquatable<uint>, IEquatable<int>, IEquatable<long>, IEquatable<float>, IFormattable
+    public class JsonDouble : IJsonValue<double>, IComparable<JsonInteger>, IComparable<JsonDouble>, IComparable<uint>, IComparable<int>, IComparable<long>, IComparable<double>, IComparable<float>, IEquatable<IJsonValue<uint>>, IEquatable<IJsonValue<int>>, IEquatable<IJsonValue<long>>, IEquatable<IJsonValue<float>>, IEquatable<uint>, IEquatable<int>, IEquatable<long>, IEquatable<float>, IFormattable
     {
         /// <summary>
         /// Initializes a new instance of the JsonDouble class.

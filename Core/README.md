@@ -142,6 +142,7 @@ And includes lots of useful converter like following.
 
 - `JsonJavaScriptTicksConverter` and `JsonUnixTimestampConverter`, and their nullable value conveters and fallback converters.
 - `JsonNumberStringConverter`.
+- `JsonStringListConverter` and `JsonStringListConverter.WhiteSpaceSeparatedConverter`.
 - `JsonObjectConverter`.
 
 ### CSV
