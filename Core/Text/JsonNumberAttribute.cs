@@ -15,7 +15,7 @@ namespace Trivial.Text
     /// <summary>
     /// Json number converter with number string fallback.
     /// </summary>
-    public sealed class JsonNumberStringConverter : JsonConverterFactory
+    public sealed class JsonNumberConverter : JsonConverterFactory
     {
         /// <summary>
         /// Json number converter with number string fallback.
@@ -492,6 +492,62 @@ namespace Trivial.Text
             }
         }
 
+        /// <summary>
+        /// Json number converter with number string fallback.
+        /// </summary>
+        sealed class JsonIntegerConverter : JsonConverter<JsonInteger>
+        {
+            /// <inheritdoc />
+            public override JsonInteger Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+            {
+                var num = reader.TokenType switch
+                {
+                    JsonTokenType.Null => null,
+                    JsonTokenType.Number => reader.TryGetInt64(out var integer) ? integer : (long)reader.GetDouble(),
+                    JsonTokenType.String => ParseNullableNumber(ref reader, long.Parse),
+                    JsonTokenType.False => 0,
+                    JsonTokenType.True => 1,
+                    _ => throw new JsonException($"The token type is {reader.TokenType} but expect number.")
+                };
+                return num.HasValue ? new JsonInteger(num.Value) : null;
+            }
+
+            /// <inheritdoc />
+            public override void Write(Utf8JsonWriter writer, JsonInteger value, JsonSerializerOptions options)
+            {
+                if (value is null) writer.WriteNullValue();
+                else writer.WriteNumberValue(value.Value);
+            }
+        }
+
+        /// <summary>
+        /// Json number converter with number string fallback.
+        /// </summary>
+        sealed class JsonDoubleConverter : JsonConverter<JsonDouble>
+        {
+            /// <inheritdoc />
+            public override JsonDouble Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+            {
+                var num = reader.TokenType switch
+                {
+                    JsonTokenType.Null => null,
+                    JsonTokenType.Number => reader.GetDouble(),
+                    JsonTokenType.String => ParseNullableNumber(ref reader, double.Parse),
+                    JsonTokenType.False => 0,
+                    JsonTokenType.True => 1,
+                    _ => throw new JsonException($"The token type is {reader.TokenType} but expect number.")
+                };
+                return num.HasValue ? new JsonDouble(num.Value) : null;
+            }
+
+            /// <inheritdoc />
+            public override void Write(Utf8JsonWriter writer, JsonDouble value, JsonSerializerOptions options)
+            {
+                if (value is null) writer.WriteNullValue(); 
+                else writer.WriteNumberValue(value.Value);
+            }
+        }
+
         /// <inheritdoc />
         public override JsonConverter CreateConverter(Type typeToConvert, JsonSerializerOptions options)
         {
@@ -517,6 +573,8 @@ namespace Trivial.Text
             if (typeToConvert == typeof(ushort?)) return new UInt16NullableConverter();
             if (typeToConvert == typeof(DateTime?)) return new JsonJavaScriptTicksConverter.NullableConverter();
             if (typeToConvert == typeof(TimeSpan?)) return new JsonTimeSpanSecondConverter.NullableConverter();
+            if (typeToConvert == typeof(JsonInteger)) return new JsonIntegerConverter();
+            if (typeToConvert == typeof(JsonDouble)) return new JsonDoubleConverter();
             throw new JsonException(typeToConvert.Name + " is not expected.");
         }
 
@@ -544,7 +602,9 @@ namespace Trivial.Text
                 || typeToConvert == typeof(short?)
                 || typeToConvert == typeof(ushort?)
                 || typeToConvert == typeof(DateTime?)
-                || typeToConvert == typeof(TimeSpan?);
+                || typeToConvert == typeof(TimeSpan?)
+                || typeToConvert == typeof(JsonInteger)
+                || typeToConvert == typeof(JsonDouble);
         }
 
         private static T ParseNumber<T>(ref Utf8JsonReader reader, Func<string, T> parser) where T : struct

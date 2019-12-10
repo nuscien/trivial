@@ -349,11 +349,27 @@ namespace Trivial.Text
         /// <exception cref="ArgumentOutOfRangeException">The index is out of range.</exception>
         /// <exception cref="OverflowException">value is outside the range of the underlying type of enumType.</exception>
         /// <exception cref="InvalidOperationException">The value type is not the expected one.</exception>
-        public T GetEnumValue<T>(int index) where T : Enum
+        public T GetEnumValue<T>(int index) where T : struct, Enum
         {
             if (TryGetInt32Value(index, out var v)) return (T)(object)v;
             var str = GetStringValue(index);
-            return (T)Enum.Parse(typeof(T), str);
+            return Enum.Parse<T>(str);
+        }
+
+        /// <summary>
+        /// Gets the value of the specific property.
+        /// </summary>
+        /// <param name="index">The zero-based index of the element to get.</param>
+        /// <param name="ignoreCase">true if ignore case; otherwise, false.</param>
+        /// <returns>The value.</returns>
+        /// <exception cref="ArgumentOutOfRangeException">The index is out of range.</exception>
+        /// <exception cref="OverflowException">value is outside the range of the underlying type of enumType.</exception>
+        /// <exception cref="InvalidOperationException">The value type is not the expected one.</exception>
+        public T GetEnumValue<T>(int index, bool ignoreCase) where T : struct, Enum
+        {
+            if (TryGetInt32Value(index, out var v)) return (T)(object)v;
+            var str = GetStringValue(index);
+            return Enum.Parse<T>(str, ignoreCase);
         }
 
         /// <summary>
@@ -715,7 +731,7 @@ namespace Trivial.Text
         }
 
         /// <summary>
-        /// Gets the value of the specific property.
+        /// Tries to get the value of the specific property.
         /// </summary>
         /// <param name="index">The zero-based index of the element to get.</param>
         /// <param name="bytes">The result.</param>
@@ -728,12 +744,35 @@ namespace Trivial.Text
         }
 
         /// <summary>
-        /// Gets the value of the specific property.
+        /// Tries to get the value of the specific property.
+        /// </summary>
+        /// <param name="index">The zero-based index of the element to get.</param>
+        /// <returns>The enum.</returns>
+        public T? TryGetEnumValue<T>(int index) where T : struct, Enum
+        {
+            if (TryGetEnumValue<T>(index, out var v)) return v;
+            return null;
+        }
+
+        /// <summary>
+        /// Tries to get the value of the specific property.
+        /// </summary>
+        /// <param name="index">The zero-based index of the element to get.</param>
+        /// <param name="ignoreCase">true if ignore case; otherwise, false.</param>
+        /// <returns>The enum.</returns>
+        public T? TryGetEnumValue<T>(int index, bool ignoreCase) where T : struct, Enum
+        {
+            if (TryGetEnumValue<T>(index, ignoreCase, out var v)) return v;
+            return null;
+        }
+
+        /// <summary>
+        /// Tries to get the value of the specific property.
         /// </summary>
         /// <param name="index">The zero-based index of the element to get.</param>
         /// <param name="result">The result.</param>
         /// <returns>true if has the property and the type is the one expected; otherwise, false.</returns>
-        public bool TryGetEnumValue<T>(int index, out T result) where T : Enum
+        public bool TryGetEnumValue<T>(int index, out T result) where T : struct, Enum
         {
             if (TryGetInt32Value(index, out var v))
             {
@@ -748,9 +787,41 @@ namespace Trivial.Text
                 return false;
             }
 
-            if (Enum.TryParse(typeof(T), str, out var obj))
+            if (Enum.TryParse<T>(str, out var obj))
             {
-                result = (T)obj;
+                result = obj;
+                return true;
+            }
+
+            result = default;
+            return false;
+        }
+
+        /// <summary>
+        /// Tries to get the value of the specific property.
+        /// </summary>
+        /// <param name="index">The zero-based index of the element to get.</param>
+        /// <param name="ignoreCase">true if ignore case; otherwise, false.</param>
+        /// <param name="result">The result.</param>
+        /// <returns>true if has the property and the type is the one expected; otherwise, false.</returns>
+        public bool TryGetEnumValue<T>(int index, bool ignoreCase, out T result) where T : struct, Enum
+        {
+            if (TryGetInt32Value(index, out var v))
+            {
+                result = (T)(object)v;
+                return true;
+            }
+
+            var str = TryGetStringValue(index);
+            if (string.IsNullOrWhiteSpace(str))
+            {
+                result = default;
+                return false;
+            }
+
+            if (Enum.TryParse<T>(str, ignoreCase, out var obj))
+            {
+                result = obj;
                 return true;
             }
 
@@ -1529,6 +1600,7 @@ namespace Trivial.Text
         /// <summary>
         /// Deserializes.
         /// </summary>
+        /// <typeparam name="T">The type of model to deserialize.</typeparam>
         /// <param name="options">Options to control the behavior during parsing.</param>
         /// <returns>A JSON object instance.</returns>
         /// <exception cref="ArgumentException">readerOptions contains unsupported options.</exception>
@@ -1540,7 +1612,7 @@ namespace Trivial.Text
         /// <summary>
         /// Gets the JSON format string of the value.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>A JSON format string.</returns>
         public override string ToString()
         {
             var str = new StringBuilder("[");

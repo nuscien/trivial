@@ -418,11 +418,28 @@ namespace Trivial.Text
         /// <exception cref="ArgumentOutOfRangeException">The property does not exist.</exception>
         /// <exception cref="OverflowException">value is outside the range of the underlying type of enumType.</exception>
         /// <exception cref="InvalidOperationException">The value type is not the expected one.</exception>
-        public T GetEnumValue<T>(string key) where T : Enum
+        public T GetEnumValue<T>(string key) where T : struct, Enum
         {
             if (TryGetInt32Value(key, out var v)) return (T)(object)v;
             var str = GetStringValue(key);
-            return (T)Enum.Parse(typeof(T), str);
+            return Enum.Parse<T>(str);
+        }
+
+        /// <summary>
+        /// Gets the value of the specific property.
+        /// </summary>
+        /// <param name="key">The property key.</param>
+        /// <param name="ignoreCase">true if ignore case; otherwise, false.</param>
+        /// <returns>The value.</returns>
+        /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">The property does not exist.</exception>
+        /// <exception cref="OverflowException">value is outside the range of the underlying type of enumType.</exception>
+        /// <exception cref="InvalidOperationException">The value type is not the expected one.</exception>
+        public T GetEnumValue<T>(string key, bool ignoreCase) where T : struct, Enum
+        {
+            if (TryGetInt32Value(key, out var v)) return (T)(object)v;
+            var str = GetStringValue(key);
+            return Enum.Parse<T>(str, ignoreCase);
         }
 
         /// <summary>
@@ -778,6 +795,72 @@ namespace Trivial.Text
         {
             var str = GetStringValue(key);
             return Convert.TryFromBase64String(str, bytes, out bytesWritten);
+        }
+
+        /// <summary>
+        /// Gets the value of the specific property.
+        /// </summary>
+        /// <param name="key">The property key.</param>
+        /// <returns>The value.</returns>
+        public T? TryGetEnumValue<T>(string key) where T : struct, Enum
+        {
+            if (TryGetInt32Value(key, out var v)) return (T)(object)v;
+            var str = GetStringValue(key);
+            if (Enum.TryParse<T>(str, out var result)) return result;
+            return null;
+        }
+
+        /// <summary>
+        /// Gets the value of the specific property.
+        /// </summary>
+        /// <param name="key">The property key.</param>
+        /// <param name="ignoreCase">true if ignore case; otherwise, false.</param>
+        /// <returns>The value.</returns>
+        public T? TryGetEnumValue<T>(string key, bool ignoreCase) where T : struct, Enum
+        {
+            if (TryGetInt32Value(key, out var v)) return (T)(object)v;
+            var str = GetStringValue(key);
+            if (Enum.TryParse<T>(str, ignoreCase, out var result)) return result;
+            return null;
+        }
+
+        /// <summary>
+        /// Gets the value of the specific property.
+        /// </summary>
+        /// <param name="key">The property key.</param>
+        /// <param name="result">The result output.</param>
+        /// <returns>true if parse succeeded; otherwise, false.</returns>
+        public bool TryGetEnumValue<T>(string key, out T result) where T : struct, Enum
+        {
+            var r = TryGetEnumValue<T>(key);
+            if (r == null)
+            {
+                result = default;
+                return false;
+            }
+
+            result = r.Value;
+            return true;
+        }
+
+        /// <summary>
+        /// Gets the value of the specific property.
+        /// </summary>
+        /// <param name="key">The property key.</param>
+        /// <param name="ignoreCase">true if ignore case; otherwise, false.</param>
+        /// <param name="result">The result output.</param>
+        /// <returns>true if parse succeeded; otherwise, false.</returns>
+        public bool TryGetEnumValue<T>(string key, bool ignoreCase, out T result) where T : struct, Enum
+        {
+            var r = TryGetEnumValue<T>(key, ignoreCase);
+            if (r == null)
+            {
+                result = default;
+                return false;
+            }
+
+            result = r.Value;
+            return true;
         }
 
         /// <summary>
@@ -1278,7 +1361,7 @@ namespace Trivial.Text
         /// <summary>
         /// Gets the JSON format string of the value.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>A JSON format string.</returns>
         public override string ToString()
         {
             var str = new StringBuilder("{");
@@ -1314,6 +1397,7 @@ namespace Trivial.Text
         /// <summary>
         /// Deserializes.
         /// </summary>
+        /// <typeparam name="T">The type of model to deserialize.</typeparam>
         /// <param name="options">Options to control the behavior during parsing.</param>
         /// <returns>A JSON object instance.</returns>
         /// <exception cref="ArgumentException">readerOptions contains unsupported options.</exception>

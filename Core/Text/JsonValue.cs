@@ -64,7 +64,7 @@ namespace Trivial.Text
     /// <summary>
     /// Represents a specific JSON string value.
     /// </summary>
-    public class JsonString : IJsonValue<string>, IComparable<IJsonValue<string>>, IComparable<string>, IReadOnlyList<char>
+    public class JsonString : IJsonValue<string>, IComparable<IJsonValue<string>>, IComparable<string>, IEquatable<IJsonValue<string>>, IEquatable<string>, IReadOnlyList<char>
     {
         /// <summary>
         /// Initializes a new instance of the JsonString class.
@@ -141,7 +141,7 @@ namespace Trivial.Text
         /// <summary>
         /// Gets the type of the current JSON value.
         /// </summary>
-        public JsonValueKind ValueKind { get; private set; }
+        public JsonValueKind ValueKind { get; }
 
         /// <summary>
         /// Gets the number of characters in the source value.
@@ -159,7 +159,7 @@ namespace Trivial.Text
             get
             {
                 var s = Value;
-                if (s == null) throw new ArgumentOutOfRangeException("s is null");
+                if (s == null) throw new ArgumentOutOfRangeException("s is null", new InvalidOperationException("s is null"));
                 return s[index];
             }
         }
@@ -175,7 +175,7 @@ namespace Trivial.Text
             get
             {
                 var s = Value;
-                if (s == null) throw new ArgumentOutOfRangeException("s is null");
+                if (s == null) throw new ArgumentOutOfRangeException("s is null", new InvalidOperationException("s is null"));
                 return s[index.IsFromEnd ? s.Length - index.Value - 1 : index.Value];
             }
         }
@@ -205,6 +205,90 @@ namespace Trivial.Text
         public override string ToString()
         {
             return Value != null ? ToJson(Value) : "null";
+        }
+
+        /// <summary>
+        /// Parses the value to an enum.
+        /// </summary>
+        /// <typeparam name="T">The enum type to parse.</typeparam>
+        /// <returns>An enum.</returns>
+        /// <exception cref="InvalidOperationException">Value was null.</exception>
+        public T ToEnum<T>() where T : struct, Enum
+        {
+            if (Value == null) throw new InvalidOperationException("Value is null.");
+            return Enum.Parse<T>(Value);
+        }
+
+        /// <summary>
+        /// Parses the value to an enum.
+        /// </summary>
+        /// <typeparam name="T">The enum type to parse.</typeparam>
+        /// <returns>An enum.</returns>
+        /// <exception cref="InvalidOperationException">Value was null.</exception>
+        public T ToEnum<T>(bool ignoreCase) where T : struct, Enum
+        {
+            if (Value == null) throw new InvalidOperationException("Value is null.");
+            return Enum.Parse<T>(Value, ignoreCase);
+        }
+
+        /// <summary>
+        /// Tries to parse the value to an enum.
+        /// </summary>
+        /// <typeparam name="T">The enum type to parse.</typeparam>
+        /// <returns>An enum.</returns>
+        /// <exception cref="InvalidOperationException">Value was null.</exception>
+        public T? TryToEnum<T>() where T : struct, Enum
+        {
+            if (Value == null) return null;
+            if (Enum.TryParse<T>(Value, out var result)) return result;
+            return null;
+        }
+
+        /// <summary>
+        /// Tries to parse the value to an enum.
+        /// </summary>
+        /// <typeparam name="T">The enum type to parse.</typeparam>
+        /// <param name="ignoreCase">true if ignore case; otherwise, false.</param>
+        /// <returns>An enum.</returns>
+        /// <exception cref="InvalidOperationException">Value was null.</exception>
+        public T? TryToEnum<T>(bool ignoreCase) where T : struct, Enum
+        {
+            if (Value == null) return null;
+            if (Enum.TryParse<T>(Value, ignoreCase, out var result)) return result;
+            return null;
+        }
+
+        /// <summary>
+        /// Tries to parse the value to an enum.
+        /// </summary>
+        /// <typeparam name="T">The enum type to parse.</typeparam>
+        /// <param name="result">The result output.</param>
+        /// <returns>true if parse succeeded; otherwise, false.</returns>
+        /// <exception cref="InvalidOperationException">Value was null.</exception>
+        public bool TryToEnum<T>(out T result) where T : struct, Enum
+        {
+            if (Value != null && Enum.TryParse(Value, out result))
+                return true;
+
+            result = default;
+            return false;
+        }
+
+        /// <summary>
+        /// Tries to parse the value to an enum.
+        /// </summary>
+        /// <typeparam name="T">The enum type to parse.</typeparam>
+        /// <param name="ignoreCase">true if ignore case; otherwise, false.</param>
+        /// <param name="result">The result output.</param>
+        /// <returns>true if parse succeeded; otherwise, false.</returns>
+        /// <exception cref="InvalidOperationException">Value was null.</exception>
+        public bool TryToEnum<T>(bool ignoreCase, out T result) where T : struct, Enum
+        {
+            if (Value != null && Enum.TryParse(Value, ignoreCase, out result))
+                return true;
+
+            result = default;
+            return false;
         }
 
         /// <summary>
@@ -547,7 +631,7 @@ namespace Trivial.Text
         /// <summary>
         /// Gets the type of the current JSON value.
         /// </summary>
-        public JsonValueKind ValueKind { get; private set; }
+        public JsonValueKind ValueKind { get; }
 
         /// <summary>
         /// Gets the JSON format string of the value.
@@ -714,6 +798,50 @@ namespace Trivial.Text
         {
             return leftValue is null || leftValue.Value != rightValue;
         }
+
+        /// <summary>
+        /// And operation.
+        /// </summary>
+        /// <param name="leftValue">The left value.</param>
+        /// <param name="rightValue">The right value.</param>
+        /// <returns>true if they are all true; otherwise, false.</returns>
+        public static bool operator &(JsonBoolean leftValue, bool rightValue)
+        {
+            return leftValue?.Value == true && rightValue;
+        }
+
+        /// <summary>
+        /// And operation.
+        /// </summary>
+        /// <param name="leftValue">The left value.</param>
+        /// <param name="rightValue">The right value.</param>
+        /// <returns>true if they are all true; otherwise, false.</returns>
+        public static bool operator &(JsonBoolean leftValue, JsonBoolean rightValue)
+        {
+            return leftValue?.Value == true && rightValue?.Value == true;
+        }
+
+        /// <summary>
+        /// Or operation.
+        /// </summary>
+        /// <param name="leftValue">The left value.</param>
+        /// <param name="rightValue">The right value.</param>
+        /// <returns>true if any is true; otherwise, false.</returns>
+        public static bool operator |(JsonBoolean leftValue, bool rightValue)
+        {
+            return leftValue?.Value == true || rightValue;
+        }
+
+        /// <summary>
+        /// Or operation.
+        /// </summary>
+        /// <param name="leftValue">The left value.</param>
+        /// <param name="rightValue">The right value.</param>
+        /// <returns>true if any is true; otherwise, false.</returns>
+        public static bool operator |(JsonBoolean leftValue, JsonBoolean rightValue)
+        {
+            return leftValue?.Value == true || rightValue?.Value == true;
+        }
     }
 
     /// <summary>
@@ -733,7 +861,7 @@ namespace Trivial.Text
         /// <summary>
         /// Gets the type of the current JSON value.
         /// </summary>
-        public JsonValueKind ValueKind { get; private set; }
+        public JsonValueKind ValueKind { get; }
 
         /// <summary>
         /// Gets the JSON format string of the value.

@@ -35,10 +35,10 @@ namespace Trivial.UnitTest.Text
 
     class JsonAttributeTestModel
     {
-        [JsonConverter(typeof(JsonNumberStringConverter))]
+        [JsonConverter(typeof(JsonNumberConverter))]
         public DateTime A { get; set; }
 
-        [JsonConverter(typeof(JsonNumberStringConverter))]
+        [JsonConverter(typeof(JsonNumberConverter))]
         public DateTime? B { get; set; }
 
         [JsonConverter(typeof(JsonJavaScriptTicksConverter.FallbackConverter))]
@@ -62,7 +62,7 @@ namespace Trivial.UnitTest.Text
         [JsonConverter(typeof(JsonStringListConverter.WhiteSpaceSeparatedConverter))]
         public HashSet<string> I { get; set; }
 
-        [JsonConverter(typeof(JsonNumberStringConverter))]
+        [JsonConverter(typeof(JsonNumberConverter))]
         public uint J { get; set; }
     }
 }

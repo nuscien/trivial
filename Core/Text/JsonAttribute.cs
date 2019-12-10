@@ -8,8 +8,6 @@ using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-using Trivial.Web;
-
 namespace Trivial.Text
 {
     /// <summary>
@@ -22,7 +20,7 @@ namespace Trivial.Text
         /// </summary>
         public sealed class WhiteSpaceSeparatedConverter : JsonConverter<IEnumerable<string>>
         {
-            private static readonly char[] splitChars = new[] { ' ', '\r', '\n', '\t' };
+            private static readonly char[] splitChars = new[] { ' ', '　', '\r', '\n', '\t' };
 
             /// <inheritdoc />
             public override bool CanConvert(Type typeToConvert)
@@ -234,6 +232,9 @@ namespace Trivial.Text
             else if (value is IJsonValue<uint> jUInt32) writer.WriteNumberValue(jUInt32.Value);
             else if (value is IJsonValue<ulong> jUInt64) writer.WriteNumberValue(jUInt64.Value);
             else if (value is IJsonValue<float> jFloat) writer.WriteNumberValue(jFloat.Value);
+            else if (value is IJsonValue<short> jInt16) writer.WriteNumberValue(jInt16.Value);
+            else if (value is IJsonValue<ushort> jUInt16) writer.WriteNumberValue(jUInt16.Value);
+            else if (value is IJsonValue<decimal> jDecimal) writer.WriteNumberValue(jDecimal.Value);
             else writer.WriteNullValue();
         }
     }

@@ -89,7 +89,7 @@ namespace Trivial.Text
         public BaseStringTableParser(FileInfo file, bool detectEncodingFromByteOrderMarks, Encoding encoding = null)
         {
             if (file == null) return;
-            text = Parse(file, encoding);
+            text = Parse(file, detectEncodingFromByteOrderMarks, encoding);
         }
 
         /// <summary>
@@ -254,10 +254,8 @@ namespace Trivial.Text
         private IEnumerable<IReadOnlyList<string>> Parse(Stream stream, Encoding encoding = null)
         {
             if (stream == null) throw new ArgumentNullException(nameof(stream), "stream could not be null.");
-            using (var reader = new StreamReader(stream, encoding))
-            {
-                return Parse(reader);
-            }
+            using var reader = new StreamReader(stream, encoding);
+            return Parse(reader);
         }
 
         /// <summary>
@@ -271,10 +269,8 @@ namespace Trivial.Text
         private IEnumerable<IReadOnlyList<string>> Parse(Stream stream, bool detectEncodingFromByteOrderMarks, Encoding encoding = null)
         {
             if (stream == null) throw new ArgumentNullException(nameof(stream), "stream could not be null.");
-            using (var reader = encoding != null ? new StreamReader(stream, detectEncodingFromByteOrderMarks) : new StreamReader(stream, encoding, detectEncodingFromByteOrderMarks))
-            {
-                return Parse(reader);
-            }
+            using var reader = encoding != null ? new StreamReader(stream, detectEncodingFromByteOrderMarks) : new StreamReader(stream, encoding, detectEncodingFromByteOrderMarks);
+            return Parse(reader);
         }
 
         /// <summary>
@@ -287,10 +283,8 @@ namespace Trivial.Text
         private IEnumerable<IReadOnlyList<string>> Parse(FileInfo file, Encoding encoding)
         {
             if (file == null) throw new ArgumentNullException(nameof(file), "file could not be null.");
-            using (var reader = encoding != null ? new StreamReader(file.FullName, encoding) : new StreamReader(file.FullName))
-            {
-                return Parse(reader);
-            }
+            using var reader = encoding != null ? new StreamReader(file.FullName, encoding) : new StreamReader(file.FullName);
+            return Parse(reader);
         }
 
         /// <summary>
@@ -304,10 +298,8 @@ namespace Trivial.Text
         private IEnumerable<IReadOnlyList<string>> Parse(FileInfo file, bool detectEncodingFromByteOrderMarks, Encoding encoding = null)
         {
             if (file == null) throw new ArgumentNullException(nameof(file), "file could not be null.");
-            using (var reader = encoding != null ? new StreamReader(file.FullName, detectEncodingFromByteOrderMarks) : new StreamReader(file.FullName, encoding, detectEncodingFromByteOrderMarks))
-            {
-                return Parse(reader);
-            }
+            using var reader = encoding != null ? new StreamReader(file.FullName, detectEncodingFromByteOrderMarks) : new StreamReader(file.FullName, encoding, detectEncodingFromByteOrderMarks);
+            return Parse(reader);
         }
 
         /// <summary>
@@ -620,7 +612,6 @@ namespace Trivial.Text
             var str = new StringBuilder();
             for (var i = 0; i < Math.Min(line.Count, FieldLength.Count); i++)
             {
-                var field = line[i];
                 var len = FieldLength[i];
                 str.Append(FixField(line[i], i, len));
             }

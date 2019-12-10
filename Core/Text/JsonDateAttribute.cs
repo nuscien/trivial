@@ -31,7 +31,7 @@ namespace Trivial.Text
             /// <inheritdoc />
             public override DateTime? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
             {
-                if (reader.TokenType == JsonTokenType.Null)
+                if (reader.TokenType == JsonTokenType.Null || reader.TokenType == JsonTokenType.False)
                     return null;
                 if (reader.TokenType == JsonTokenType.Number)
                     return WebFormat.ParseDate(reader.GetInt64());
@@ -55,7 +55,7 @@ namespace Trivial.Text
             /// <inheritdoc />
             public override DateTime? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
             {
-                if (reader.TokenType == JsonTokenType.Null)
+                if (reader.TokenType == JsonTokenType.Null || reader.TokenType == JsonTokenType.False)
                     return null;
                 if (reader.TokenType == JsonTokenType.String)
                     return WebFormat.ParseDate(reader.GetString());
@@ -120,7 +120,7 @@ namespace Trivial.Text
             /// <inheritdoc />
             public override DateTime? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
             {
-                if (reader.TokenType == JsonTokenType.Null)
+                if (reader.TokenType == JsonTokenType.Null || reader.TokenType == JsonTokenType.False)
                     return null;
                 if (reader.TokenType == JsonTokenType.Number)
                     return WebFormat.ParseUnixTimestamp(reader.GetInt64());
@@ -144,7 +144,7 @@ namespace Trivial.Text
             /// <inheritdoc />
             public override DateTime? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
             {
-                if (reader.TokenType == JsonTokenType.Null)
+                if (reader.TokenType == JsonTokenType.Null || reader.TokenType == JsonTokenType.False)
                     return null;
                 if (reader.TokenType == JsonTokenType.String)
                     return WebFormat.ParseDate(reader.GetString());
@@ -209,7 +209,7 @@ namespace Trivial.Text
             /// <inheritdoc />
             public override TimeSpan? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
             {
-                if (reader.TokenType == JsonTokenType.Null)
+                if (reader.TokenType == JsonTokenType.Null || reader.TokenType == JsonTokenType.False)
                     return null;
                 if (reader.TokenType == JsonTokenType.Number)
                 {
@@ -236,7 +236,7 @@ namespace Trivial.Text
         /// <inheritdoc />
         public override TimeSpan Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
-            if (reader.TokenType == JsonTokenType.Null)
+            if (reader.TokenType == JsonTokenType.Null || reader.TokenType == JsonTokenType.False)
                 return TimeSpan.Zero;
             if (reader.TokenType == JsonTokenType.Number)
             {
