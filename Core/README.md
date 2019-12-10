@@ -181,16 +181,12 @@ There a lot of arithmetic functions.
 
 ```csharp
 Arithmetic.IsPrime(2147483647); // True
-await Arithmetic.IsPrimeAsync(2305843009213693951); // False
-
 Arithmetic.Gcd(192, 128); // 64
 ```
 
 ### Numerals
 
-You can get the number symbols as you want.
-
-You can also get the number string in English words.
+You can get the number symbols as you want. And get the numerals in English.
 
 ```csharp
 EnglishNumerals.Default.ToString(12345.67);

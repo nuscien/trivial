@@ -21,7 +21,7 @@
     <RepositoryType>git</RepositoryType>
     <PackageIcon>logo.jpg</PackageIcon>
     <PackageIconUrl>https://github.com/nuscien/trivial/raw/master/Materials/logo.jpg</PackageIconUrl>
-    <PackageTags>console utilities</PackageTags>
+    <PackageTags>console args-parser</PackageTags>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
