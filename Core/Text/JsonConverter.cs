@@ -13,67 +13,79 @@ namespace Trivial.Text
     /// <summary>
     /// JSON string list and json array converter.
     /// </summary>
-    public sealed class JsonStringListConverter : JsonConverter<IEnumerable<string>>
+    public class JsonStringListConverter : JsonConverter<IEnumerable<string>>
     {
+        private readonly char[] chars;
+        private readonly bool trim;
+
         /// <summary>
         /// JSON string collection with white space separated.
         /// </summary>
-        public sealed class WhiteSpaceSeparatedConverter : JsonConverter<IEnumerable<string>>
+        public sealed class WhiteSpaceSeparatedConverter : JsonStringListConverter
         {
             private static readonly char[] splitChars = new[] { ' ', '　', '\r', '\n', '\t' };
 
-            /// <inheritdoc />
-            public override bool CanConvert(Type typeToConvert)
+            /// <summary>
+            /// Initializes a new instance of the WhiteSpaceSeparatedConverter class.
+            /// </summary>
+            public WhiteSpaceSeparatedConverter() : base(splitChars, false)
             {
-                return typeof(IEnumerable<string>).IsAssignableFrom(typeToConvert);
             }
+        }
 
-            /// <inheritdoc />
-            public override IEnumerable<string> Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+        /// <summary>
+        /// JSON string collection with comma separated.
+        /// </summary>
+        public sealed class CommaSeparatedConverter : JsonStringListConverter
+        {
+            /// <summary>
+            /// Initializes a new instance of the CommaSeparatedConverter class.
+            /// </summary>
+            public CommaSeparatedConverter() : base(',')
             {
-                var col = new List<string>();
-                if (reader.TokenType == JsonTokenType.Null)
-                {
-                    return null;
-                }
-
-                if (TryGetString(ref reader, out var str))
-                {
-                    if (str != null) col.AddRange(str.Split(splitChars, StringSplitOptions.RemoveEmptyEntries));
-                }
-                else if (reader.TokenType == JsonTokenType.StartArray)
-                {
-                    while (reader.Read() && reader.TokenType != JsonTokenType.EndArray)
-                    {
-                        while (reader.TokenType == JsonTokenType.Comment || reader.TokenType == JsonTokenType.None)
-                        {
-                            reader.Read();
-                        }
-
-                        if (!TryGetString(ref reader, out var value))
-                        {
-                            throw new JsonException($"The token type is {reader.TokenType} but expect string or null.");
-                        }
-
-                        if (value != null) col.Add(value);
-                    }
-                }
-
-                return ToList(col, typeToConvert);
             }
+        }
 
-            /// <inheritdoc />
-            public override void Write(Utf8JsonWriter writer, IEnumerable<string> value, JsonSerializerOptions options)
+        /// <summary>
+        /// JSON string collection with semicolon separated.
+        /// </summary>
+        public sealed class SemicolonSeparatedConverter : JsonStringListConverter
+        {
+            /// <summary>
+            /// Initializes a new instance of the SemicolonSeparatedConverter class.
+            /// </summary>
+            public SemicolonSeparatedConverter() : base(';')
             {
-                if (value is null)
-                {
-                    writer.WriteNullValue();
-                    return;
-                }
-
-                var str = string.Join(' ', value.Where(ele => !string.IsNullOrWhiteSpace(ele)));
-                writer.WriteStringValue(str);
             }
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the JsonStringListConverter class.
+        /// </summary>
+        public JsonStringListConverter()
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the JsonStringListConverter class.
+        /// </summary>
+        /// <param name="split">The split characters.</param>
+        /// <param name="needTrim">true if need trim each string item.</param>
+        public JsonStringListConverter(char split, bool needTrim = true)
+        {
+            chars = new[] { split };
+            trim = needTrim;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the JsonStringListConverter class.
+        /// </summary>
+        /// <param name="split">The split characters.</param>
+        /// <param name="needTrim">true if need trim each string item.</param>
+        public JsonStringListConverter(char[] split, bool needTrim = true)
+        {
+            chars = split;
+            trim = needTrim;
         }
 
         /// <inheritdoc />
@@ -93,13 +105,25 @@ namespace Trivial.Text
 
             if (TryGetString(ref reader, out var str))
             {
-                if (str != null) col.Add(str);
+                if (str != null)
+                {
+                    if (chars != null && chars.Length > 0)
+                    {
+                        IEnumerable<string> arr = str.Split(chars, StringSplitOptions.RemoveEmptyEntries);
+                        if (trim) arr = arr.Select(ele => ele.Trim()).Where(ele => ele.Length > 0);
+                        else col.AddRange(arr);
+                    }
+                    else
+                    {
+                        col.Add(str);
+                    }
+                }
             }
             else if (reader.TokenType == JsonTokenType.StartArray)
             {
                 while (reader.Read() && reader.TokenType != JsonTokenType.EndArray)
                 {
-                    while (reader.TokenType == JsonTokenType.Comment || reader.TokenType == JsonTokenType.None)
+                    while (reader.TokenType == JsonTokenType.Comment || reader.TokenType == JsonTokenType.None || reader.TokenType == JsonTokenType.Null)
                     {
                         reader.Read();
                     }
@@ -109,6 +133,7 @@ namespace Trivial.Text
                         throw new JsonException($"The token type is {reader.TokenType} but expect string or null.");
                     }
 
+                    if (trim) value = value.Trim();
                     col.Add(value);
                 }
             }
@@ -125,10 +150,20 @@ namespace Trivial.Text
                 return;
             }
 
+            if (chars != null && chars.Length > 0)
+            {
+                var arr = value.Where(ele => !string.IsNullOrWhiteSpace(ele));
+                if (trim) arr = arr.Select(ele => ele.Trim()).Where(ele => ele.Length > 0);
+                var str = string.Join(chars[0], arr);
+                writer.WriteStringValue(str);
+                return;
+            }
+
             writer.WriteStartArray();
             foreach (var item in value)
             {
                 if (item == null) writer.WriteNullValue();
+                else if (trim) writer.WriteStringValue(item.Trim());
                 else writer.WriteStringValue(item);
             }
 
