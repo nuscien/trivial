@@ -495,6 +495,70 @@ namespace Trivial.Text
         /// <summary>
         /// Json number converter with number string fallback.
         /// </summary>
+        sealed class StringConverter : JsonConverter<string>
+        {
+            /// <inheritdoc />
+            public override string Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+            {
+                return reader.TokenType switch
+                {
+                    JsonTokenType.Null => null,
+                    JsonTokenType.Number => reader.GetDouble().ToString("g", CultureInfo.InvariantCulture),
+                    JsonTokenType.String => reader.GetString(),
+                    JsonTokenType.False => JsonBoolean.FalseString,
+                    JsonTokenType.True => JsonBoolean.TrueString,
+                    _ => throw new JsonException($"The token type is {reader.TokenType} but expect number.")
+                };
+            }
+
+            /// <inheritdoc />
+            public override void Write(Utf8JsonWriter writer, string value, JsonSerializerOptions options)
+            {
+                if (string.IsNullOrWhiteSpace(value))
+                {
+                    writer.WriteNullValue();
+                    return;
+                }
+
+                value = value.ToLowerInvariant();
+                if (value == JsonBoolean.TrueString)
+                {
+                    writer.WriteBooleanValue(true);
+                    return;
+                }
+
+                if (value == JsonBoolean.FalseString)
+                {
+                    writer.WriteBooleanValue(true);
+                    return;
+                }
+
+                if (long.TryParse(value, out var l))
+                {
+                    writer.WriteNumberValue(l);
+                    return;
+                }
+
+                if (ulong.TryParse(value, out var ul))
+                {
+                    writer.WriteNumberValue(ul);
+                    return;
+                }
+
+
+                if (double.TryParse(value, out var d))
+                {
+                    writer.WriteNumberValue(d);
+                    return;
+                }
+
+                writer.WriteStringValue(value);
+            }
+        }
+
+        /// <summary>
+        /// Json number converter with number string fallback.
+        /// </summary>
         sealed class JsonIntegerConverter : JsonConverter<JsonInteger>
         {
             /// <inheritdoc />
@@ -575,6 +639,7 @@ namespace Trivial.Text
             if (typeToConvert == typeof(TimeSpan?)) return new JsonTimeSpanSecondConverter.NullableConverter();
             if (typeToConvert == typeof(JsonInteger)) return new JsonIntegerConverter();
             if (typeToConvert == typeof(JsonDouble)) return new JsonDoubleConverter();
+            if (typeToConvert == typeof(string)) return new StringConverter();
             throw new JsonException(typeToConvert.Name + " is not expected.");
         }
 
@@ -604,7 +669,8 @@ namespace Trivial.Text
                 || typeToConvert == typeof(DateTime?)
                 || typeToConvert == typeof(TimeSpan?)
                 || typeToConvert == typeof(JsonInteger)
-                || typeToConvert == typeof(JsonDouble);
+                || typeToConvert == typeof(JsonDouble)
+                || typeToConvert == typeof(string);
         }
 
         private static T ParseNumber<T>(ref Utf8JsonReader reader, Func<string, T> parser) where T : struct

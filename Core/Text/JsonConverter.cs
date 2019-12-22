@@ -70,7 +70,7 @@ namespace Trivial.Text
         /// Initializes a new instance of the JsonStringListConverter class.
         /// </summary>
         /// <param name="split">The split characters.</param>
-        /// <param name="needTrim">true if need trim each string item.</param>
+        /// <param name="needTrim">true if need trim each string item; otherwise, false. Default value is true.</param>
         public JsonStringListConverter(char split, bool needTrim = true)
         {
             chars = new[] { split };
@@ -81,7 +81,7 @@ namespace Trivial.Text
         /// Initializes a new instance of the JsonStringListConverter class.
         /// </summary>
         /// <param name="split">The split characters.</param>
-        /// <param name="needTrim">true if need trim each string item.</param>
+        /// <param name="needTrim">true if need trim each string item; otherwise, false. Default value is true.</param>
         public JsonStringListConverter(char[] split, bool needTrim = true)
         {
             chars = split;
