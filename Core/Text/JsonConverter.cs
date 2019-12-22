@@ -70,7 +70,7 @@ namespace Trivial.Text
         /// Initializes a new instance of the JsonStringListConverter class.
         /// </summary>
         /// <param name="split">The split characters.</param>
-        /// <param name="needTrim">true if need trim each string item; otherwise, false. Default value is true.</param>
+        /// <param name="needTrim">true if need trim each string item and ignore empty; otherwise, false. Default value is true.</param>
         public JsonStringListConverter(char split, bool needTrim = true)
         {
             chars = new[] { split };
@@ -81,7 +81,7 @@ namespace Trivial.Text
         /// Initializes a new instance of the JsonStringListConverter class.
         /// </summary>
         /// <param name="split">The split characters.</param>
-        /// <param name="needTrim">true if need trim each string item; otherwise, false. Default value is true.</param>
+        /// <param name="needTrim">true if need trim each string item and ignore empty; otherwise, false. Default value is true.</param>
         public JsonStringListConverter(char[] split, bool needTrim = true)
         {
             chars = split;
@@ -123,7 +123,7 @@ namespace Trivial.Text
             {
                 while (reader.Read() && reader.TokenType != JsonTokenType.EndArray)
                 {
-                    while (reader.TokenType == JsonTokenType.Comment || reader.TokenType == JsonTokenType.None || reader.TokenType == JsonTokenType.Null)
+                    while (reader.TokenType == JsonTokenType.Comment || reader.TokenType == JsonTokenType.None)
                     {
                         reader.Read();
                     }
@@ -133,7 +133,13 @@ namespace Trivial.Text
                         throw new JsonException($"The token type is {reader.TokenType} but expect string or null.");
                     }
 
-                    if (trim) value = value.Trim();
+                    if (trim)
+                    {
+                        if (value == null) continue;
+                        value = value.Trim();
+                        if (value.Length == 0) continue;
+                    }
+
                     col.Add(value);
                 }
             }
