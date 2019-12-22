@@ -353,7 +353,61 @@ namespace Trivial.Text
         public JsonObject GetObjectValue(string key)
         {
             AssertKey(key);
-            return GetJsonValue<JsonObject>(key, JsonValueKind.Object);
+            return GetJsonValue<JsonObject>(key, JsonValueKind.Object, true);
+        }
+
+        /// <summary>
+        /// Gets the value of the specific property.
+        /// </summary>
+        /// <param name="key">The property key.</param>
+        /// <param name="subKey">The sub-key of the previous property.</param>
+        /// <param name="keyPath">The additional property key path.</param>
+        /// <returns>The value.</returns>
+        /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">The property does not exist.</exception>
+        /// <exception cref="InvalidOperationException">The value type is not the expected one.</exception>
+        public JsonObject GetObjectValue(string key, string subKey, params string[] keyPath)
+        {
+            AssertKey(key);
+            var json = GetJsonValue<JsonObject>(key, JsonValueKind.Object, true);
+            if (string.IsNullOrWhiteSpace(subKey))
+            {
+                if (keyPath == null || keyPath.Length == 0) return json;
+                throw new ArgumentNullException("subKey should not be null, empty, or consists only of white-space characters.");
+            }
+
+            if (json is null) throw new InvalidOperationException($"The value of property {key} is null.");
+            json = json.GetJsonValue<JsonObject>(subKey, JsonValueKind.Object);
+            foreach (var k in keyPath)
+            {
+                if (string.IsNullOrEmpty(k)) continue;
+                if (json is null) throw new InvalidOperationException($"Cannot get property {k} of null.");
+                json = json.GetJsonValue<JsonObject>(k, JsonValueKind.Object);
+            }
+
+            return json;
+        }
+
+        /// <summary>
+        /// Gets the value of the specific property.
+        /// </summary>
+        /// <param name="keyPath">The property key path.</param>
+        /// <returns>The value.</returns>
+        /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">The property does not exist.</exception>
+        /// <exception cref="InvalidOperationException">The value type is not the expected one.</exception>
+        public JsonObject GetObjectValue(IEnumerable<string> keyPath)
+        {
+            var json = this;
+            if (keyPath == null) return json;
+            foreach (var k in keyPath)
+            {
+                if (string.IsNullOrEmpty(k)) continue;
+                if (json is null) throw new InvalidOperationException($"Cannot get property {k} of null.");
+                json = json.GetJsonValue<JsonObject>(k, JsonValueKind.Object, true);
+            }
+
+            return json;
         }
 
         /// <summary>
@@ -724,8 +778,55 @@ namespace Trivial.Text
         /// <returns>The value.</returns>
         public JsonObject TryGetObjectValue(string key)
         {
+            if (string.IsNullOrEmpty(key)) return this;
             if (TryGetJsonValue<JsonObject>(key, out var p)) return p;
             return null;
+        }
+
+        /// <summary>
+        /// Tries to get the value of the specific property.
+        /// </summary>
+        /// <param name="key">The property key.</param>
+        /// <param name="subKey">The sub-key of the previous property.</param>
+        /// <param name="keyPath">The additional property key path.</param>
+        /// <returns>The value.</returns>
+        public JsonObject TryGetObjectValue(string key, string subKey, params string[] keyPath)
+        {
+            var json = TryGetObjectValue(key);
+            if (!string.IsNullOrWhiteSpace(subKey))
+            {
+                if (json is null) return null;
+                json = json.TryGetObjectValue(subKey);
+            }
+
+            foreach (var k in keyPath)
+            {
+                if (json is null) return null;
+                json = json.TryGetObjectValue(k);
+            }
+
+            return json;
+        }
+
+        /// <summary>
+        /// Tries to get the value of the specific property.
+        /// </summary>
+        /// <param name="keyPath">The property key path.</param>
+        /// <returns>The value.</returns>
+        /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">The property does not exist.</exception>
+        /// <exception cref="InvalidOperationException">The value type is not the expected one.</exception>
+        public JsonObject TryGetObjectValue(IEnumerable<string> keyPath)
+        {
+            var json = this;
+            if (keyPath == null) return json;
+            foreach (var k in keyPath)
+            {
+                if (json is null) throw new InvalidOperationException($"Cannot get property {k} of null.");
+                json = json.TryGetObjectValue(k);
+            }
+
+            return json;
         }
 
         /// <summary>
@@ -738,7 +839,37 @@ namespace Trivial.Text
         {
             var v = TryGetObjectValue(key);
             result = v;
-            return !(v is null);
+            return !(v is null) || IsNull(key);
+        }
+
+        /// <summary>
+        /// Tries to get the value of the specific property.
+        /// </summary>
+        /// <param name="keyPath">The property key path.</param>
+        /// <param name="result">The result.</param>
+        /// <returns>true if has the property and the type is the one expected; otherwise, false.</returns>
+        public bool TryGetObjectValue(IEnumerable<string> keyPath, out JsonObject result)
+        {
+            var json = this;
+            if (keyPath == null)
+            {
+                result = json;
+                return false;
+            }
+
+            foreach (var k in keyPath)
+            {
+                if (json is null)
+                {
+                    result = null;
+                    return false;
+                }
+
+                json = json.TryGetObjectValue(k);
+            }
+
+            result = json;
+            return true;
         }
 
         /// <summary>
@@ -1442,10 +1573,15 @@ namespace Trivial.Text
             return store.GetEnumerator();
         }
 
-        private T GetJsonValue<T>(string key, JsonValueKind? valueKind = null) where T : IJsonValue
+        private T GetJsonValue<T>(string key, JsonValueKind? valueKind = null, bool ignoreNull = false) where T : IJsonValue
         {
             var data = store[key];
-            if (data is null) throw new InvalidOperationException($"The value of property {key} is null.");
+            if (data is null)
+            {
+                if (ignoreNull) return default;
+                throw new InvalidOperationException($"The value of property {key} is null.");
+            }
+
             if (data is T v)
             {
                 return v;

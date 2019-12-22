@@ -19,7 +19,7 @@ namespace Trivial.Text
         private readonly bool trim;
 
         /// <summary>
-        /// JSON string collection with white space separated.
+        /// JSON string collection with white space and new line separated.
         /// </summary>
         public sealed class WhiteSpaceSeparatedConverter : JsonStringListConverter
         {
