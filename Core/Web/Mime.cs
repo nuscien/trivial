@@ -40,6 +40,11 @@ namespace Trivial.Web
         public const string HtmlMIME = "text/html";
 
         /// <summary>
+        /// Gets the MIME value of octet stream.
+        /// </summary>
+        public const string StreamMIME = "application/octet-stream";
+
+        /// <summary>
         /// Gets or sets the MIME handler.
         /// </summary>
         internal static Func<FileInfo, string> GetMimeHandler { get; set; }
@@ -60,6 +65,7 @@ namespace Trivial.Web
                 if (!string.IsNullOrWhiteSpace(result)) return result;
             }
 
+            // http://www.iana.org/assignments/media-types/media-types.xhtml
             switch (file.Extension.ToLowerInvariant().Remove(0, 1))
             {
                 // Office document
@@ -348,6 +354,7 @@ namespace Trivial.Web
                 case "inkml":
                     return "application/inkml+xml";
                 case "js":
+                case "jsx":
                     return JavaScriptMIME;
                 case "json":
                 case "map":
@@ -445,10 +452,13 @@ namespace Trivial.Web
                 case "msu":
                 case "com":
                     return "application/x-msdownload";
+                case "appx":
                 case "3mf":
+                case "lib":
                 case "bin":
                 case "dat":
                 case "data":
+                case "ini":
                 case "db":
                 case "dms":
                 case "lrf":
@@ -459,7 +469,11 @@ namespace Trivial.Web
                 case "vso":
                 case "nupkg":
                 case "xsn":
-                    return "application/octet-stream";
+                case "sln":
+                case "ts":
+                case "tsx":
+                case "bson":
+                    return StreamMIME;
                 case "pdb":
                 case "pqa":
                 case "oprc":
