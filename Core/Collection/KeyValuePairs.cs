@@ -59,6 +59,7 @@ namespace Trivial.Collection
                 ListExtensions.Set(this, key, value);
             }
         }
+
         /// <summary>
         /// Adds a key and a set of value to the end of the key value pairs.
         /// </summary>
