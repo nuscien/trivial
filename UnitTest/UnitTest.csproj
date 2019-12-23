@@ -14,7 +14,7 @@
     <Copyright>Copyright (c) 2018 Kingcean Tuan.</Copyright>
     <StartupObject>Trivial.UnitTest.Program</StartupObject>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <PackageIconUrl>https://github.com/nuscien/trivial/raw/master/Materials/logo.jpg</PackageIconUrl>
+    <PackageIconUrl>https://github.com/nuscien/trivial/raw/master/Materials/logo.png</PackageIconUrl>
     <RepositoryUrl>https://github.com/nuscien/trivial</RepositoryUrl>
   </PropertyGroup>
 
