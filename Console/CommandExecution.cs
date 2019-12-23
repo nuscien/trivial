@@ -78,9 +78,9 @@ namespace Trivial.Console
             done = true;
 
             ThrowIfCancellationRequested();
-            var p = new Process();
+            using var p = new Process();
             void closeProcess() => p.Close();
-            p.StartInfo.FileName = "cmd.exe";
+            p.StartInfo.FileName = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "cmd.exe" : "bash";
             p.StartInfo.UseShellExecute = false;
             p.StartInfo.RedirectStandardInput = true;
             p.StartInfo.RedirectStandardOutput = true;

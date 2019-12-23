@@ -65,6 +65,7 @@ namespace Trivial.Web
                 if (!string.IsNullOrWhiteSpace(result)) return result;
             }
 
+            // http://www.iana.org/assignments/media-types/media-types.xhtml
             switch (file.Extension.ToLowerInvariant().Remove(0, 1))
             {
                 // Office document
@@ -353,6 +354,7 @@ namespace Trivial.Web
                 case "inkml":
                     return "application/inkml+xml";
                 case "js":
+                case "jsx":
                     return JavaScriptMIME;
                 case "json":
                 case "map":
@@ -443,7 +445,6 @@ namespace Trivial.Web
                     return "application/x-msclip";
                 case "jar":
                     return "application/java-archive";
-                case "lib":
                 case "dll":
                 case "exe":
                 case "bat":
@@ -453,6 +454,7 @@ namespace Trivial.Web
                     return "application/x-msdownload";
                 case "appx":
                 case "3mf":
+                case "lib":
                 case "bin":
                 case "dat":
                 case "data":
@@ -468,6 +470,9 @@ namespace Trivial.Web
                 case "nupkg":
                 case "xsn":
                 case "sln":
+                case "ts":
+                case "tsx":
+                case "bson":
                     return StreamMIME;
                 case "pdb":
                 case "pqa":

@@ -5,13 +5,14 @@ using System.Runtime.CompilerServices;
 using System.Runtime.Serialization;
 using System.Text.Json.Serialization;
 using System.Text;
+using System.Collections;
 
 namespace Trivial.Reflection
 {
     /// <summary>
     /// Base model with observable properties.
     /// </summary>
-    public abstract class BaseObservableProperties : INotifyPropertyChanged
+    public abstract class BaseObservableProperties : INotifyPropertyChanged, IEnumerable<KeyValuePair<string, object>>
     {
         /// <summary>
         /// Data cache.
@@ -19,9 +20,36 @@ namespace Trivial.Reflection
         private readonly Dictionary<string, object> cache = new Dictionary<string, object>();
 
         /// <summary>
+        /// Gets an enumerable collection that contains the keys in this instance.
+        /// </summary>
+        protected IEnumerable<string> Keys => cache.Keys;
+
+        /// <summary>
         /// Adds or removes the event handler raised on property changed.
         /// </summary>
         public event PropertyChangedEventHandler PropertyChanged;
+
+        /// <summary>
+        /// Determines whether this instance contains an element that has the specified key.
+        /// </summary>
+        /// <param name="key">The key to locate.</param>
+        /// <returns>true if this instance contains an element that has the specified key; otherwise, false.</returns>
+        protected bool ContainsKey(string key)
+        {
+            return cache.ContainsKey(key);
+        }
+
+        /// <summary>
+        /// Sets and property initialize. This change will not occur the event property changed,
+        /// </summary>
+        /// <typeparam name="T">The type of the property value.</typeparam>
+        /// <param name="key">The property key.</param>
+        /// <param name="initializer">A handler to resolve value of the specific property.</param>
+        protected void InitializeProperty<T>(string key, Func<T> initializer)
+        {
+            if (initializer is null || cache.ContainsKey(key)) return;
+            cache[key] = initializer();
+        }
 
         /// <summary>
         /// Gets a property value.
@@ -127,6 +155,24 @@ namespace Trivial.Reflection
         protected void ForceNotify(string key)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(key));
+        }
+
+        /// <summary>
+        /// Returns an enumerator that iterates through the collection.
+        /// </summary>
+        /// <returns>An enumerator that can be used to iterate through the collection.</returns>
+        IEnumerator<KeyValuePair<string, object>> IEnumerable<KeyValuePair<string, object>>.GetEnumerator()
+        {
+            return cache.GetEnumerator();
+        }
+
+        /// <summary>
+        /// Returns an enumerator that iterates through the collection.
+        /// </summary>
+        /// <returns>An enumerator that can be used to iterate through the collection.</returns>
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return cache.GetEnumerator();
         }
     }
 
