@@ -5,8 +5,6 @@ using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Runtime.Serialization;
 using System.Text.Json.Serialization;
-using System.Text;
-using System.Collections;
 
 namespace Trivial.Reflection
 {
