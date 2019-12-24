@@ -372,7 +372,7 @@ namespace Trivial.Text
             var json = GetJsonValue<JsonObject>(key, JsonValueKind.Object, true);
             if (string.IsNullOrWhiteSpace(subKey))
             {
-                if (keyPath == null || keyPath.Length == 0) return json;
+                if (keyPath.Length == 0) return json;
                 throw new ArgumentNullException("subKey should not be null, empty, or consists only of white-space characters.");
             }
 

@@ -51,6 +51,16 @@ namespace Trivial.UnitTest.Text
             Assert.AreEqual(JsonValueKind.Object, json.GetValueKind("props"));
             Assert.AreEqual(JsonValueKind.Array, json.GetValueKind("arr"));
 
+            var props = json.GetObjectValue("props");
+            var p1 = new JsonObject();
+            p1.SetValue("p2", true);
+            p1.SetValue("p3", p1);
+            props.SetValue("p1", p1);
+            props.SetValue("p4", "p5");
+            Assert.IsNotNull(json.GetObjectValue("props", "p1", "p3"));
+            Assert.IsTrue(json.GetObjectValue("props", "p1", "p3").GetBooleanValue("p2"));
+            Assert.IsNull(json.TryGetObjectValue("props", "p1", "p3", "p6"));
+
             var jsonArray = json.GetArrayValue("arr");
             Assert.AreEqual(0, jsonArray.Count);
             jsonArray.Add("*+-\"\'\\");

@@ -9,6 +9,9 @@ namespace Trivial.UnitTest
     {
         static async Task Main(string[] args)
         {
+            System.Console.WriteLine("Trivial Sample");
+            System.Console.WriteLine();
+
             var dispatcher = new Dispatcher();
             dispatcher.Register<Console.SelectionVerb>("selection");
             dispatcher.Register<Tasks.HitTasksVerb>("hittask");
