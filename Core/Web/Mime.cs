@@ -322,6 +322,9 @@ namespace Trivial.Web
                 case "text":
                 case "log":
                 case "def":
+                case "ini":
+                case "gitignore":
+                case "editorconfig":
                     return "text/plain";
                 case "csv":
                     return "text/csv";
@@ -471,7 +474,6 @@ namespace Trivial.Web
                 case "bin":
                 case "dat":
                 case "data":
-                case "ini":
                 case "db":
                 case "dms":
                 case "lrf":
