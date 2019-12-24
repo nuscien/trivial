@@ -18,7 +18,8 @@
     <RepositoryUrl>https://github.com/nuscien/trivial</RepositoryUrl>
     <RepositoryType></RepositoryType>
     <LangVersion>7.3</LangVersion>
-    <PackageIconUrl>https://github.com/nuscien/trivial/raw/master/Materials/logo.jpg</PackageIconUrl>
+    <PackageIcon>logo.png</PackageIcon>
+    <PackageIconUrl>https://github.com/nuscien/trivial/raw/master/Materials/logo.png</PackageIconUrl>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -45,5 +46,10 @@
       <LastGenOutput>Resource.Designer.cs</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
-
+  
+  <ItemGroup>
+    <None Include="..\LICENSE" Pack="true" PackagePath="LICENSE.md" />
+    <None Include="..\Materials\logo.png" Pack="true" PackagePath="logo.png" />
+  </ItemGroup>
+  
 </Project>

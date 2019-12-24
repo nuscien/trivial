@@ -20,8 +20,8 @@
     <RepositoryType>git</RepositoryType>
     <LangVersion>7.3</LangVersion>
     <PackageTags>tasks numerals utilities oauth2-client jwt-token csv-parser stream pem coordinates</PackageTags>
-    <PackageIcon>logo.jpg</PackageIcon>
-    <PackageIconUrl>https://github.com/nuscien/trivial/raw/master/Materials/logo.jpg</PackageIconUrl>
+    <PackageIcon>logo.png</PackageIcon>
+    <PackageIconUrl>https://github.com/nuscien/trivial/raw/master/Materials/logo.png</PackageIconUrl>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -36,6 +36,6 @@
 
   <ItemGroup>
     <None Include="..\LICENSE" Pack="true" PackagePath="LICENSE.md" />
-    <None Include="..\Materials\logo.jpg" Pack="true" PackagePath="logo.jpg" />
+    <None Include="..\Materials\logo.png" Pack="true" PackagePath="logo.png" />
   </ItemGroup>
 </Project>

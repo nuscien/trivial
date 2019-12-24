@@ -168,6 +168,8 @@ namespace Trivial.Web
                     return "image/bmp";
                 case "dwg":
                     return "image/vnd.dwg";
+                case "dxf":
+                    return "image/vnd.dxf";
                 case "gif":
                     return "image/gif";
                 case "heic":
@@ -182,6 +184,10 @@ namespace Trivial.Web
                     return "image/jpeg";
                 case "psd":
                     return "image/vnd.adobe.photoshop";
+                case "ai":
+                    return "application/illustrator";
+                case "cdr":
+                    return "application/vnd.corel-draw";
                 case "tif":
                 case "tiff":
                     return "image/tiff";
@@ -190,6 +196,8 @@ namespace Trivial.Web
                     return "image/svg+xml";
                 case "webp":
                     return "image/webp";
+                case "3ds":
+                    return "image/x-3ds";
                 case "wmf":
                 case "emf":
                 case "emz":
@@ -404,16 +412,21 @@ namespace Trivial.Web
                 case "cc":
                 case "cpp":
                 case "cxx":
-                case "h":
-                case "hh":
                 case "dic":
                     return "text/x-c";
+                case "h":
+                    return "text/x-chdr";
+                case "hh":
+                case "hpp":
+                    return "text/x-c++hdr";
                 case "java":
                     return "text/x-java-source";
                 case "cs":
+                    return "text/x-csharp";
+                case "vb":
+                    return "text/x-vb";
                 case "csproj":
                 case "csdproj":
-                case "vb":
                 case "vbproj":
                 case "vbdproj":
                     return "text/plain";
@@ -472,6 +485,8 @@ namespace Trivial.Web
                 case "sln":
                 case "ts":
                 case "tsx":
+                case "usr":
+                case "user":
                 case "bson":
                     return StreamMIME;
                 case "pdb":
@@ -480,6 +495,12 @@ namespace Trivial.Web
                     return "application/vnd.palm";
                 case "lnk":
                     return "application/x-ms-shortcut";
+                case "123":
+                    return "application/vnd.lotus-1-2-3";
+                case "o":
+                    return "application/x-object";
+                case "obj":
+                    return "application/x-tgif";
                 case "zip":
                     return "application/zip";
                 case "7z":
