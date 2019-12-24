@@ -1,8 +1,7 @@
 # Trivial libraries
 
 [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/nuscien/trivial/blob/master/LICENSE)
-
-_Version 2_
+[![Version 2](https://img.shields.io/badge/version-v2.1-blue)](https://github.com/nuscien/trivial/releases/tag/v2.1)
 
 Trivial libraries contain a lot of utilities, models and components, which are trivial but useful, to help you to focus on the business logic of your projects.
 
