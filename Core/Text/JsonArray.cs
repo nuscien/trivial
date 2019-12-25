@@ -338,6 +338,7 @@ namespace Trivial.Text
         public byte[] GetBytesFromBase64(int index)
         {
             var str = GetStringValue(index);
+            if (string.IsNullOrEmpty(str)) return Array.Empty<byte>();
             return Convert.FromBase64String(str);
         }
 
@@ -740,6 +741,12 @@ namespace Trivial.Text
         public bool TryGetBytesFromBase64(int index, Span<byte> bytes, out int bytesWritten)
         {
             var str = GetStringValue(index);
+            if (string.IsNullOrEmpty(str))
+            {
+                bytesWritten = 0;
+                return false;
+            }
+
             return Convert.TryFromBase64String(str, bytes, out bytesWritten);
         }
 
@@ -907,7 +914,7 @@ namespace Trivial.Text
         }
 
         /// <summary>
-        /// Inserts the value at the specific index.
+        /// Sets the value at the specific index.
         /// </summary>
         /// <param name="index">The zero-based index of the element to get.</param>
         /// <param name="value">The value to set.</param>
@@ -922,8 +929,34 @@ namespace Trivial.Text
         /// Sets the value at the specific index.
         /// </summary>
         /// <param name="index">The zero-based index of the element to get.</param>
+        /// <param name="inArray">An array of 8-bit unsigned integers.</param>
+        /// <param name="options">A formatting options.</param>
+        /// <exception cref="ArgumentOutOfRangeException">The index is out of range.</exception>
+        public void SetBase64(int index, byte[] inArray, Base64FormattingOptions options = Base64FormattingOptions.None)
+        {
+            store[index] = new JsonString(Convert.ToBase64String(inArray, options));
+        }
+
+        /// <summary>
+        /// Sets the value at the specific index.
+        /// </summary>
+        /// <param name="index">The zero-based index of the element to get.</param>
+        /// <param name="bytes">The bytes to convert to base 64 string.</param>
+        /// <param name="options">A formatting options.</param>
+        /// <exception cref="ArgumentOutOfRangeException">The index is out of range.</exception>
+        /// <exception cref="ArgumentNullException">The bytes should not be null.</exception>
+        public void SetBase64(int index, Span<byte> bytes, Base64FormattingOptions options = Base64FormattingOptions.None)
+        {
+            store[index] = new JsonString(Convert.ToBase64String(bytes, options));
+        }
+
+        /// <summary>
+        /// Sets the value at the specific index.
+        /// </summary>
+        /// <param name="index">The zero-based index of the element to get.</param>
         /// <param name="value">The value to set.</param>
         /// <exception cref="ArgumentOutOfRangeException">The index is out of range.</exception>
+        /// <exception cref="ArgumentNullException">The bytes should not be null.</exception>
         public void SetValue(int index, Guid value)
         {
             store[index] = new JsonString(value);
@@ -1211,6 +1244,28 @@ namespace Trivial.Text
         }
 
         /// <summary>
+        /// Adds a value.
+        /// </summary>
+        /// <param name="inArray">An array of 8-bit unsigned integers.</param>
+        /// <param name="options">A formatting options.</param>
+        /// <exception cref="ArgumentNullException">The bytes should not be null.</exception>
+        public void AddBase64(byte[] inArray, Base64FormattingOptions options = Base64FormattingOptions.None)
+        {
+            store.Add(new JsonString(Convert.ToBase64String(inArray, options)));
+        }
+
+        /// <summary>
+        /// Adds a value.
+        /// </summary>
+        /// <param name="bytes">The bytes to convert to base 64 string.</param>
+        /// <param name="options">A formatting options.</param>
+        /// <exception cref="ArgumentNullException">The bytes should not be null.</exception>
+        public void AddBase64(Span<byte> bytes, Base64FormattingOptions options = Base64FormattingOptions.None)
+        {
+            store.Add(new JsonString(Convert.ToBase64String(bytes, options)));
+        }
+
+        /// <summary>
         /// Adds a date time string.
         /// </summary>
         /// <param name="value">The value to set.</param>
@@ -1446,6 +1501,32 @@ namespace Trivial.Text
         public void Insert(int index, JsonElement value)
         {
             store.Insert(index, JsonValues.ToJsonValue(value));
+        }
+
+        /// <summary>
+        /// Inserts the value at the specific index.
+        /// </summary>
+        /// <param name="index">The zero-based index of the element to get.</param>
+        /// <param name="inArray">An array of 8-bit unsigned integers.</param>
+        /// <param name="options">A formatting options.</param>
+        /// <exception cref="ArgumentOutOfRangeException">The index is out of range.</exception>
+        /// <exception cref="ArgumentNullException">The bytes should not be null.</exception>
+        public void InsertBase64(int index, byte[] inArray, Base64FormattingOptions options = Base64FormattingOptions.None)
+        {
+            store.Insert(index, new JsonString(Convert.ToBase64String(inArray, options)));
+        }
+
+        /// <summary>
+        /// Inserts the value at the specific index.
+        /// </summary>
+        /// <param name="index">The zero-based index of the element to get.</param>
+        /// <param name="bytes">The bytes to convert to base 64 string.</param>
+        /// <param name="options">A formatting options.</param>
+        /// <exception cref="ArgumentOutOfRangeException">The index is out of range.</exception>
+        /// <exception cref="ArgumentNullException">The bytes should not be null.</exception>
+        public void InsertBase64(int index, Span<byte> bytes, Base64FormattingOptions options = Base64FormattingOptions.None)
+        {
+            store.Insert(index, new JsonString(Convert.ToBase64String(bytes, options)));
         }
 
         /// <summary>

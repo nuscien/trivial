@@ -55,9 +55,28 @@ namespace Trivial.Text
         }
 
         /// <summary>
+        /// Initializes a new instance of the JsonInteger class.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        public JsonInteger(TimeSpan value)
+        {
+            Value = (long)value.TotalSeconds;
+        }
+
+        /// <summary>
         /// Gets the type of the current JSON value.
         /// </summary>
         public JsonValueKind ValueKind => JsonValueKind.Number;
+
+        /// <summary>
+        /// Converts to a date time instance.
+        /// </summary>
+        /// <param name="isUnixTimestamp">true if uses Unix timestamp; otherwise, false, to use JavaScript ticks, by default.</param>
+        /// <returns>A date time.</returns>
+        public DateTime ToDateTime(bool isUnixTimestamp = false)
+        {
+            return isUnixTimestamp ? Web.WebFormat.ParseUnixTimestamp(Value) : Web.WebFormat.ParseDate(Value);
+        }
 
         /// <summary>
         /// Gets the JSON format string of the value.
@@ -209,6 +228,11 @@ namespace Trivial.Text
                 if (other is IJsonValue<float> fJson) return Value.Equals(fJson.Value);
                 if (other is IJsonValue<int> iJson) return Value.Equals(iJson.Value);
                 if (other is IJsonValue<uint> uiJson) return Value.Equals(uiJson.Value);
+                if (other is IJsonValue<short> sJson) return Value.Equals(sJson.Value);
+                if (other is IJsonValue<ulong> ulJson) return Value.Equals(ulJson.Value);
+                if (other is IJsonValue<decimal> dcmJson) return Value.Equals(dcmJson.Value);
+                if (other is IJsonValue<ushort> usJson) return Value.Equals(usJson.Value);
+                return ToString().Equals(other.ToString(), StringComparison.InvariantCultureIgnoreCase);
             }
 
             return Value.Equals(other);
@@ -451,6 +475,16 @@ namespace Trivial.Text
         public static explicit operator string(JsonInteger json)
         {
             return json.ToString();
+        }
+
+        /// <summary>
+        /// Converts the JSON raw back.
+        /// </summary>
+        /// <param name="json">The JSON value.</param>
+        /// <returns>A string.</returns>
+        public static explicit operator JsonString(JsonInteger json)
+        {
+            return new JsonString(json.ToString());
         }
 
         /// <summary>
@@ -978,6 +1012,24 @@ namespace Trivial.Text
         }
 
         /// <summary>
+        /// Initializes a new instance of the JsonDouble class.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        public JsonDouble(uint value)
+        {
+            Value = value;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the JsonDouble class.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        public JsonDouble(ulong value)
+        {
+            Value = value;
+        }
+
+        /// <summary>
         /// Initializes a new instance of the JsonDoubleValue class.
         /// </summary>
         /// <param name="value">The value.</param>
@@ -993,6 +1045,24 @@ namespace Trivial.Text
         public JsonDouble(double value)
         {
             Value = value;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the JsonDouble class.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        public JsonDouble(decimal value)
+        {
+            Value = (double)value;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the JsonDouble class.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        public JsonDouble(TimeSpan value)
+        {
+            Value = value.TotalSeconds;
         }
 
         /// <summary>
@@ -1155,6 +1225,11 @@ namespace Trivial.Text
                 if (other is IJsonValue<float> fJson) return Value.Equals(fJson.Value);
                 if (other is IJsonValue<int> iJson) return Value.Equals(iJson.Value);
                 if (other is IJsonValue<uint> uiJson) return Value.Equals(uiJson.Value);
+                if (other is IJsonValue<short> sJson) return Value.Equals(sJson.Value);
+                if (other is IJsonValue<ulong> ulJson) return Value.Equals(ulJson.Value);
+                if (other is IJsonValue<decimal> dcmJson) return Value.Equals(dcmJson.Value);
+                if (other is IJsonValue<ushort> usJson) return Value.Equals(usJson.Value);
+                return ToString().Equals(other.ToString(), StringComparison.InvariantCultureIgnoreCase);
             }
 
             return Value.Equals(other);

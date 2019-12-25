@@ -480,6 +480,7 @@ namespace Trivial.Text
         public byte[] GetBytesFromBase64(string key)
         {
             var str = GetStringValue(key);
+            if (string.IsNullOrEmpty(str)) return Array.Empty<byte>();
             return Convert.FromBase64String(str);
         }
 
@@ -945,6 +946,12 @@ namespace Trivial.Text
         public bool TryGetBytesFromBase64(string key, Span<byte> bytes, out int bytesWritten)
         {
             var str = GetStringValue(key);
+            if (string.IsNullOrEmpty(str))
+            {
+                bytesWritten = 0;
+                return false;
+            }
+
             return Convert.TryFromBase64String(str, bytes, out bytesWritten);
         }
 
@@ -1223,6 +1230,30 @@ namespace Trivial.Text
         {
             AssertKey(key);
             store[key] = JsonValues.ToJsonValue(value);
+        }
+
+        /// <summary>
+        /// Sets the value of the specific property.
+        /// </summary>
+        /// <param name="key">The property key.</param>
+        /// <param name="inArray">An array of 8-bit unsigned integers.</param>
+        /// <param name="options">A formatting options.</param>
+        /// <exception cref="ArgumentNullException">The property key and bytes should not be null, empty, or consists only of white-space characters.</exception>
+        public void SetBase64(string key, byte[] inArray, Base64FormattingOptions options = Base64FormattingOptions.None)
+        {
+            SetValue(key, Convert.ToBase64String(inArray, options));
+        }
+
+        /// <summary>
+        /// Sets the value of the specific property.
+        /// </summary>
+        /// <param name="key">The property key.</param>
+        /// <param name="bytes">The bytes to convert to base 64 string.</param>
+        /// <param name="options">A formatting options.</param>
+        /// <exception cref="ArgumentNullException">The property key and bytes should not be null, empty, or consists only of white-space characters.</exception>
+        public void SetBase64(string key, Span<byte> bytes, Base64FormattingOptions options = Base64FormattingOptions.None)
+        {
+            SetValue(key, Convert.ToBase64String(bytes, options));
         }
 
         /// <summary>
