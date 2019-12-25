@@ -1235,6 +1235,58 @@ namespace Trivial.Text
         /// <summary>
         /// Sets the value of the specific property.
         /// </summary>
+        /// <param name="property">The property.</param>
+        /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+        public void SetValue(JsonProperty property)
+        {
+            SetValue(property.Name, property.Value);
+        }
+
+        /// <summary>
+        /// Sets the value of the specific property.
+        /// </summary>
+        /// <param name="key">The property key.</param>
+        /// <param name="value">The value to set.</param>
+        /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+        public void SetValue(string key, IEnumerable<string> value)
+        {
+            AssertKey(key);
+            var arr = new JsonArray();
+            arr.AddRange(value);
+            store[key] = arr;
+        }
+
+        /// <summary>
+        /// Sets the value of the specific property.
+        /// </summary>
+        /// <param name="key">The property key.</param>
+        /// <param name="value">The value to set.</param>
+        /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+        public void SetValue(string key, IEnumerable<int> value)
+        {
+            AssertKey(key);
+            var arr = new JsonArray();
+            arr.AddRange(value);
+            store[key] = arr;
+        }
+
+        /// <summary>
+        /// Sets the value of the specific property.
+        /// </summary>
+        /// <param name="key">The property key.</param>
+        /// <param name="value">The value to set.</param>
+        /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+        public void SetValue(string key, IEnumerable<JsonObject> value)
+        {
+            AssertKey(key);
+            var arr = new JsonArray();
+            arr.AddRange(value);
+            store[key] = arr;
+        }
+
+        /// <summary>
+        /// Sets the value of the specific property.
+        /// </summary>
         /// <param name="key">The property key.</param>
         /// <param name="inArray">An array of 8-bit unsigned integers.</param>
         /// <param name="options">A formatting options.</param>
@@ -1254,16 +1306,6 @@ namespace Trivial.Text
         public void SetBase64(string key, Span<byte> bytes, Base64FormattingOptions options = Base64FormattingOptions.None)
         {
             SetValue(key, Convert.ToBase64String(bytes, options));
-        }
-
-        /// <summary>
-        /// Sets the value of the specific property.
-        /// </summary>
-        /// <param name="property">The property.</param>
-        /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
-        public void SetValue(JsonProperty property)
-        {
-            SetValue(property.Name, property.Value);
         }
 
         /// <summary>
@@ -1831,6 +1873,17 @@ namespace Trivial.Text
         /// <summary>
         /// Adds a property with the provided key and value to the JSON object.
         /// </summary>
+        /// <param name="item">The property to add to the JSON object.</param>
+        /// <exception cref="ArgumentNullException">key is null.</exception>
+        /// <exception cref="ArgumentException">An element with the same key already exists in the JSON object.</exception>
+        public void Add(KeyValuePair<string, IJsonValue> item)
+        {
+            store.Add(item.Key, JsonValues.ConvertValue(item.Value, this));
+        }
+
+        /// <summary>
+        /// Adds a property with the provided key and value to the JSON object.
+        /// </summary>
         /// <param name="key">The property key.</param>
         /// <param name="value">The value of the property.</param>
         /// <exception cref="ArgumentNullException">key is null.</exception>
@@ -1843,17 +1896,6 @@ namespace Trivial.Text
         /// <summary>
         /// Adds a property with the provided key and value to the JSON object.
         /// </summary>
-        /// <param name="item">The property to add to the JSON object.</param>
-        /// <exception cref="ArgumentNullException">key is null.</exception>
-        /// <exception cref="ArgumentException">An element with the same key already exists in the JSON object.</exception>
-        public void Add(KeyValuePair<string, IJsonValue> item)
-        {
-            store.Add(item.Key, JsonValues.ConvertValue(item.Value, this));
-        }
-
-        /// <summary>
-        /// Determines whether the JSON object contains a specific property.
-        /// </summary>
         /// <param name="key">The property key.</param>
         /// <param name="value">The value of the property.</param>
         /// <exception cref="ArgumentNullException">key is null.</exception>
@@ -1864,7 +1906,7 @@ namespace Trivial.Text
         }
 
         /// <summary>
-        /// Determines whether the JSON object contains a specific property.
+        /// Adds a property with the provided key and value to the JSON object.
         /// </summary>
         /// <param name="key">The property key.</param>
         /// <param name="value">The value of the property.</param>
@@ -1876,7 +1918,7 @@ namespace Trivial.Text
         }
 
         /// <summary>
-        /// Determines whether the JSON object contains a specific property.
+        /// Adds a property with the provided key and value to the JSON object.
         /// </summary>
         /// <param name="key">The property key.</param>
         /// <param name="value">The value of the property.</param>
@@ -1888,7 +1930,7 @@ namespace Trivial.Text
         }
 
         /// <summary>
-        /// Determines whether the JSON object contains a specific property.
+        /// Adds a property with the provided key and value to the JSON object.
         /// </summary>
         /// <param name="key">The property key.</param>
         /// <param name="value">The value of the property.</param>
@@ -1900,7 +1942,7 @@ namespace Trivial.Text
         }
 
         /// <summary>
-        /// Determines whether the JSON object contains a specific property.
+        /// Adds a property with the provided key and value to the JSON object.
         /// </summary>
         /// <param name="key">The property key.</param>
         /// <param name="value">The value of the property.</param>
@@ -1912,7 +1954,7 @@ namespace Trivial.Text
         }
 
         /// <summary>
-        /// Determines whether the JSON object contains a specific property.
+        /// Adds a property with the provided key and value to the JSON object.
         /// </summary>
         /// <param name="key">The property key.</param>
         /// <param name="value">The value of the property.</param>
@@ -1924,7 +1966,7 @@ namespace Trivial.Text
         }
 
         /// <summary>
-        /// Determines whether the JSON object contains a specific property.
+        /// Adds a property with the provided key and value to the JSON object.
         /// </summary>
         /// <param name="key">The property key.</param>
         /// <param name="value">The value of the property.</param>
@@ -1936,7 +1978,7 @@ namespace Trivial.Text
         }
 
         /// <summary>
-        /// Determines whether the JSON object contains a specific property.
+        /// Adds a property with the provided key and value to the JSON object.
         /// </summary>
         /// <param name="key">The property key.</param>
         /// <param name="value">The value of the property.</param>
@@ -1948,7 +1990,7 @@ namespace Trivial.Text
         }
 
         /// <summary>
-        /// Determines whether the JSON object contains a specific property.
+        /// Adds a property with the provided key and value to the JSON object.
         /// </summary>
         /// <param name="key">The property key.</param>
         /// <param name="value">The value of the property.</param>
@@ -1957,6 +1999,48 @@ namespace Trivial.Text
         public void Add(string key, Guid value)
         {
             store.Add(key, new JsonString(value));
+        }
+
+        /// <summary>
+        /// Adds a property with the provided key and value to the JSON object.
+        /// </summary>
+        /// <param name="key">The property key.</param>
+        /// <param name="value">The value of the property.</param>
+        /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+        public void Add(string key, IEnumerable<string> value)
+        {
+            AssertKey(key);
+            var arr = new JsonArray();
+            arr.AddRange(value);
+            store.Add(key, arr);
+        }
+
+        /// <summary>
+        /// Adds a property with the provided key and value to the JSON object.
+        /// </summary>
+        /// <param name="key">The property key.</param>
+        /// <param name="value">The value of the property.</param>
+        /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+        public void Add(string key, IEnumerable<int> value)
+        {
+            AssertKey(key);
+            var arr = new JsonArray();
+            arr.AddRange(value);
+            store.Add(key, arr);
+        }
+
+        /// <summary>
+        /// Adds a property with the provided key and value to the JSON object.
+        /// </summary>
+        /// <param name="key">The property key.</param>
+        /// <param name="value">The value of the property.</param>
+        /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+        public void Add(string key, IEnumerable<JsonObject> value)
+        {
+            AssertKey(key);
+            var arr = new JsonArray();
+            arr.AddRange(value);
+            store.Add(key, arr);
         }
 
         /// <summary>
