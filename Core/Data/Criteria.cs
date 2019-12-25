@@ -57,7 +57,7 @@ namespace Trivial.Data
         /// <summary>
         /// Gets the query criteria type.
         /// </summary>
-        public CriteriaType CriteriaType { get { return CriteriaType.Collection; } }
+        public CriteriaType CriteriaType => CriteriaType.Collection;
 
         /// <summary>
         /// Gets or sets the value of operator.
@@ -309,7 +309,7 @@ namespace Trivial.Data
         /// <summary>
         /// Gets the query criteria type.
         /// </summary>
-        public CriteriaType CriteriaType { get { return CriteriaType.Property; } }
+        public CriteriaType CriteriaType => CriteriaType.Property;
 
         /// <summary>
         /// Gets or sets property name.

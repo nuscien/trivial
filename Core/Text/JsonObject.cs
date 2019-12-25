@@ -1569,6 +1569,23 @@ namespace Trivial.Text
         /// <summary>
         /// Creates a new object that is a copy of the current instance.
         /// </summary>
+        /// <param name="keys">The keys to copy; or null to clone all.</param>
+        /// <returns>A new object that is a copy of this instance.</returns>
+        public JsonObject Clone(IEnumerable<string> keys)
+        {
+            if (keys == null) return new JsonObject(store);
+            var json = new JsonObject();
+            foreach (var key in keys)
+            {
+                if (store.TryGetValue(key, out var v)) json.store.Add(key, v);
+            }
+
+            return json;
+        }
+
+        /// <summary>
+        /// Creates a new object that is a copy of the current instance.
+        /// </summary>
         /// <returns>A new object that is a copy of this instance.</returns>
         object ICloneable.Clone()
         {
