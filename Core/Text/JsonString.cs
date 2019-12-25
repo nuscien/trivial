@@ -138,6 +138,14 @@ namespace Trivial.Text
         /// Initializes a new instance of the JsonString class.
         /// </summary>
         /// <param name="value">The value.</param>
+        public JsonString(ulong value) : this(value.ToString("g", CultureInfo.InvariantCulture))
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the JsonString class.
+        /// </summary>
+        /// <param name="value">The value.</param>
         public JsonString(double value) : this(value.ToString("g", CultureInfo.InvariantCulture))
         {
         }
@@ -147,6 +155,14 @@ namespace Trivial.Text
         /// </summary>
         /// <param name="value">The value.</param>
         public JsonString(float value) : this(value.ToString("g", CultureInfo.InvariantCulture))
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the JsonString class.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        public JsonString(decimal value) : this(value.ToString("g", CultureInfo.InvariantCulture))
         {
         }
 
@@ -174,14 +190,14 @@ namespace Trivial.Text
         public int Length => Value?.Length ?? 0;
 
         /// <summary>
-        /// Gets the type of the current JSON value.
-        /// </summary>
-        public JsonValueKind ValueKind { get; }
-
-        /// <summary>
         /// Gets the number of characters in the source value.
         /// </summary>
         public int Count => Value?.Length ?? 0;
+
+        /// <summary>
+        /// Gets the type of the current JSON value.
+        /// </summary>
+        public JsonValueKind ValueKind { get; }
 
         /// <summary>
         /// Gets the System.Char object at a specified position in the source value.

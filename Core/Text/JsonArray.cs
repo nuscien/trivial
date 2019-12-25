@@ -118,6 +118,19 @@ namespace Trivial.Text
         }
 
         /// <summary>
+        /// Gets the raw value of the specific value.
+        /// </summary>
+        /// <param name="index">The zero-based index of the element to get.</param>
+        /// <returns>The value.</returns>
+        /// <exception cref="InvalidOperationException">The value type is not the expected one.</exception>
+        public string GetRawText(Index index)
+        {
+            var data = store[index.IsFromEnd ? Count - index.Value - 1 : index.Value];
+            if (data is null) return null;
+            return data.ToString();
+        }
+
+        /// <summary>
         /// Gets the value kind of the specific property.
         /// </summary>
         /// <param name="index">The zero-based index of the element to get.</param>
@@ -1330,6 +1343,25 @@ namespace Trivial.Text
         }
 
         /// <summary>
+        /// Adds a collection of JSON object.
+        /// </summary>
+        /// <param name="values">A JSON object collection to add.</param>
+        /// <returns>The count of item added.</returns>
+        /// <exception cref="ArgumentException">readerOptions contains unsupported options.</exception>
+        public int AddRange(IEnumerable<JsonObject> values)
+        {
+            var count = 0;
+            if (values == null) return count;
+            foreach (var item in values)
+            {
+                store.Add(item);
+                count++;
+            }
+
+            return count;
+        }
+
+        /// <summary>
         /// Adds a JSON array.
         /// </summary>
         /// <param name="json">Another JSON array to add.</param>
@@ -1596,6 +1628,26 @@ namespace Trivial.Text
             foreach (var item in values)
             {
                 store.Insert(index + count, new JsonInteger(item));
+                count++;
+            }
+
+            return count;
+        }
+
+        /// <summary>
+        /// Adds a JSON array.
+        /// </summary>
+        /// <param name="index">The zero-based index of the element to get.</param>
+        /// <param name="values">A string collection to add.</param>
+        /// <returns>The count of item added.</returns>
+        /// <exception cref="ArgumentOutOfRangeException">The index is out of range.</exception>
+        public int InsertRange(int index, IEnumerable<JsonObject> values)
+        {
+            var count = 0;
+            if (values == null) return count;
+            foreach (var item in values)
+            {
+                store.Insert(index + count, item);
                 count++;
             }
 

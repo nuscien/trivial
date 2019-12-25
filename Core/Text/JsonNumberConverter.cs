@@ -829,7 +829,7 @@ namespace Trivial.Text
         /// <summary>
         /// Json number converter with number string fallback and zero for null.
         /// </summary>
-        public sealed class NumberStrictConverter : JsonConverterFactory
+        public sealed class StrictConverter : JsonConverterFactory
         {
             /// <inheritdoc />
             public override JsonConverter CreateConverter(Type typeToConvert, JsonSerializerOptions options)

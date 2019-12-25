@@ -1357,6 +1357,46 @@ namespace Trivial.Text
         /// <summary>
         /// Sets properties.
         /// </summary>
+        /// <param name="data">Key value pairs to set.</param>
+        /// <returns>The count to set.</returns>
+        /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+        public int SetRange(IEnumerable<KeyValuePair<string, JsonObject>> data)
+        {
+            var count = 0;
+            if (data == null) return count;
+            foreach (var props in data)
+            {
+                if (string.IsNullOrWhiteSpace(props.Key)) continue;
+                count++;
+                SetValue(props.Key, props.Value);
+            }
+
+            return count;
+        }
+
+        /// <summary>
+        /// Sets properties.
+        /// </summary>
+        /// <param name="data">Key value pairs to set.</param>
+        /// <returns>The count to set.</returns>
+        /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+        public int SetRange(IEnumerable<KeyValuePair<string, JsonArray>> data)
+        {
+            var count = 0;
+            if (data == null) return count;
+            foreach (var props in data)
+            {
+                if (string.IsNullOrWhiteSpace(props.Key)) continue;
+                count++;
+                SetValue(props.Key, props.Value);
+            }
+
+            return count;
+        }
+
+        /// <summary>
+        /// Sets properties.
+        /// </summary>
         /// <param name="json">Another JSON object to add.</param>
         /// <param name="skipDuplicate">true if skip the duplicate properties; otherwise, false.</param>
         /// <returns>The count of property added.</returns>
