@@ -32,6 +32,17 @@ namespace Trivial.Text
     }
 
     /// <summary>
+    /// Represents a specific string JSON value with source.
+    /// </summary>
+    public interface IJsonString : IJsonValue, IEquatable<IJsonValue<string>>, IEquatable<string>
+    {
+        /// <summary>
+        /// Gets the source value.
+        /// </summary>
+        public string StringValue { get; }
+    }
+
+    /// <summary>
     /// Represents a complex JSON value.
     /// </summary>
     public interface IJsonComplex : IJsonValue, ICloneable, IEnumerable
@@ -64,7 +75,7 @@ namespace Trivial.Text
     /// <summary>
     /// Represents a specific JSON string value.
     /// </summary>
-    public class JsonString : IJsonValue<string>, IComparable<IJsonValue<string>>, IComparable<string>, IEquatable<IJsonValue<string>>, IEquatable<string>, IReadOnlyList<char>
+    public class JsonString : IJsonString, IJsonValue<string>, IComparable<IJsonValue<string>>, IComparable<string>, IEquatable<IJsonValue<string>>, IEquatable<string>, IReadOnlyList<char>
     {
         /// <summary>
         /// Initializes a new instance of the JsonString class.
@@ -132,6 +143,11 @@ namespace Trivial.Text
         /// Gets the value.
         /// </summary>
         public string Value { get; }
+
+        /// <summary>
+        /// Gets the string value.
+        /// </summary>
+        public string StringValue => Value;
 
         /// <summary>
         /// Gets the number of characters in the source value.
@@ -1075,6 +1091,60 @@ namespace Trivial.Text
 
             value = default;
             return false;
+        }
+
+        /// <summary>
+        /// Compares two instances to indicate if they are same.
+        /// leftValue == rightValue
+        /// </summary>
+        /// <param name="leftValue">The left value to compare.</param>
+        /// <param name="rightValue">The right value to compare.</param>
+        /// <returns>true if they are same; otherwise, false.</returns>
+        internal static bool Equals(IJsonValue leftValue, IJsonValue rightValue)
+        {
+            if (leftValue is null || leftValue.ValueKind == JsonValueKind.Null || leftValue.ValueKind == JsonValueKind.Undefined)
+            {
+                return rightValue is null || rightValue.ValueKind == JsonValueKind.Null || rightValue.ValueKind == JsonValueKind.Undefined;
+            }
+
+            if (rightValue is null || rightValue.ValueKind != leftValue.ValueKind) return false;
+            return leftValue.Equals(rightValue);
+        }
+
+        internal static IJsonValue ConvertValue(IJsonValue value, IJsonValue thisInstance = null)
+        {
+            if (value is null || value.ValueKind == JsonValueKind.Null || value.ValueKind == JsonValueKind.Undefined) return null;
+            if (value is JsonObject obj) return obj == thisInstance ? obj.Clone() : obj;
+            if (value is JsonArray || value is JsonString || value is JsonInteger || value is JsonDouble || value is JsonBoolean) return value;
+            if (value.ValueKind == JsonValueKind.True) return JsonBoolean.True;
+            if (value.ValueKind == JsonValueKind.False) return JsonBoolean.False;
+            if (value.ValueKind == JsonValueKind.String)
+            {
+                if (value is IJsonValue<string> str) return new JsonString(str.Value);
+                if (value is IJsonValue<DateTime> date) return new JsonString(date.Value);
+                if (value is IJsonValue<Guid> guid) return new JsonString(guid.Value);
+            }
+
+            if (value.ValueKind == JsonValueKind.Number)
+            {
+                if (value is IJsonValue<int> int32) return new JsonInteger(int32.Value);
+                if (value is IJsonValue<long> int64) return new JsonInteger(int64.Value);
+                if (value is IJsonValue<short> int16) return new JsonInteger(int16.Value);
+                if (value is IJsonValue<double> d) return new JsonDouble(d.Value);
+                if (value is IJsonValue<float> f) return new JsonDouble(f.Value);
+                if (value is IJsonValue<decimal> fd) return new JsonDouble((double)fd.Value);
+                if (value is IJsonValue<bool> b) return b.Value ? JsonBoolean.True : JsonBoolean.False;
+                if (value is IJsonValue<uint> uint32) return new JsonInteger(uint32.Value);
+                if (value is IJsonValue<ulong> uint64) return new JsonDouble(uint64.Value);
+                if (value is IJsonValue<ushort> uint16) return new JsonInteger(uint16.Value);
+                if (value is IJsonValue<DateTime> date) return new JsonInteger(date.Value);
+                var s = value.ToString();
+                if (long.TryParse(s, out var l)) return new JsonInteger(l);
+                if (double.TryParse(s, out var db)) return new JsonDouble(db);
+                return null;
+            }
+
+            return null;
         }
     }
 }

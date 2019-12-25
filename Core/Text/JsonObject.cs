@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Text.Json;
 using System.Threading;
@@ -13,7 +14,7 @@ namespace Trivial.Text
     /// <summary>
     /// Represents a specific JSON object.
     /// </summary>
-    public class JsonObject : IJsonComplex, IReadOnlyDictionary<string, IJsonValue>
+    public class JsonObject : IJsonComplex, IDictionary<string, IJsonValue>, IReadOnlyDictionary<string, IJsonValue>
     {
         private readonly IDictionary<string, IJsonValue> store = new Dictionary<string, IJsonValue>();
 
@@ -43,29 +44,48 @@ namespace Trivial.Text
         public JsonValueKind ValueKind => JsonValueKind.Object;
 
         /// <summary>
-        /// Gets a collection containing the property keys of the object.
-        /// </summary>
-        public IEnumerable<string> Keys => store.Keys;
-
-        /// <summary>
-        /// Gets a collection containing the property values of the object.
-        /// </summary>
-        public IEnumerable<IJsonValue> Values => store.Values;
-
-        /// <summary>
         /// Gets the number of elements contained in the System.Collections.Generic.ICollection`1
         /// </summary>
         public int Count => store.Count;
 
         /// <summary>
-        /// Gets the value of the specific property.
+        /// Gets a collection containing the property keys of the object.
+        /// </summary>
+        public ICollection<string> Keys => store.Keys;
+
+        /// <summary>
+        /// Gets a collection containing the property values of the object.
+        /// </summary>
+        public ICollection<IJsonValue> Values => store.Values;
+
+        /// <summary>
+        /// Gets a collection containing the property keys of the object.
+        /// </summary>
+        IEnumerable<string> IReadOnlyDictionary<string, IJsonValue>.Keys => store.Keys;
+
+        /// <summary>
+        /// Gets a collection containing the property values of the object.
+        /// </summary>
+        IEnumerable<IJsonValue> IReadOnlyDictionary<string, IJsonValue>.Values => store.Values;
+
+        /// <summary>
+        /// Gets a value indicating whether the JSON object is read-only.
+        /// </summary>
+        public bool IsReadOnly => store.IsReadOnly;
+
+        /// <summary>
+        /// Gets or sets the value of the specific property.
         /// </summary>
         /// <param name="key">The property key.</param>
         /// <returns>The value.</returns>
         /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
         /// <exception cref="ArgumentOutOfRangeException">The property does not exist.</exception>
         /// <exception cref="InvalidOperationException">The value type is not the expected one.</exception>
-        public IJsonValue this[string key] => GetValue(key);
+        public IJsonValue this[string key]
+        {
+            get => GetValue(key);
+            set => store[key] = JsonValues.ConvertValue(value, this);
+        }
 
         /// <summary>
         /// Determines the property value of the specific key is null.
@@ -1718,6 +1738,184 @@ namespace Trivial.Text
             var obj = new JsonObject();
             obj.SetRange(ref reader);
             return obj;
+        }
+
+        /// <summary>
+        /// Adds a property with the provided key and value to the JSON object.
+        /// </summary>
+        /// <param name="key">The property key.</param>
+        /// <param name="value">The value of the property.</param>
+        /// <exception cref="ArgumentNullException">key is null.</exception>
+        /// <exception cref="ArgumentException">An element with the same key already exists in the JSON object.</exception>
+        public void Add(string key, IJsonValue value)
+        {
+            store.Add(key, JsonValues.ConvertValue(value, this));
+        }
+
+        /// <summary>
+        /// Adds a property with the provided key and value to the JSON object.
+        /// </summary>
+        /// <param name="item">The property to add to the JSON object.</param>
+        /// <exception cref="ArgumentNullException">key is null.</exception>
+        /// <exception cref="ArgumentException">An element with the same key already exists in the JSON object.</exception>
+        public void Add(KeyValuePair<string, IJsonValue> item)
+        {
+            store.Add(item.Key, JsonValues.ConvertValue(item.Value, this));
+        }
+
+        /// <summary>
+        /// Determines whether the JSON object contains a specific property.
+        /// </summary>
+        /// <param name="key">The property key.</param>
+        /// <param name="value">The value of the property.</param>
+        /// <exception cref="ArgumentNullException">key is null.</exception>
+        /// <exception cref="ArgumentException">An element with the same key already exists in the JSON object.</exception>
+        public void Add(string key, string value)
+        {
+            store.Add(key, new JsonString(value));
+        }
+
+        /// <summary>
+        /// Determines whether the JSON object contains a specific property.
+        /// </summary>
+        /// <param name="key">The property key.</param>
+        /// <param name="value">The value of the property.</param>
+        /// <exception cref="ArgumentNullException">key is null.</exception>
+        /// <exception cref="ArgumentException">An element with the same key already exists in the JSON object.</exception>
+        public void Add(string key, int value)
+        {
+            store.Add(key, new JsonInteger(value));
+        }
+
+        /// <summary>
+        /// Determines whether the JSON object contains a specific property.
+        /// </summary>
+        /// <param name="key">The property key.</param>
+        /// <param name="value">The value of the property.</param>
+        /// <exception cref="ArgumentNullException">key is null.</exception>
+        /// <exception cref="ArgumentException">An element with the same key already exists in the JSON object.</exception>
+        public void Add(string key, long value)
+        {
+            store.Add(key, new JsonInteger(value));
+        }
+
+        /// <summary>
+        /// Determines whether the JSON object contains a specific property.
+        /// </summary>
+        /// <param name="key">The property key.</param>
+        /// <param name="value">The value of the property.</param>
+        /// <exception cref="ArgumentNullException">key is null.</exception>
+        /// <exception cref="ArgumentException">An element with the same key already exists in the JSON object.</exception>
+        public void Add(string key, uint value)
+        {
+            store.Add(key, new JsonInteger(value));
+        }
+
+        /// <summary>
+        /// Determines whether the JSON object contains a specific property.
+        /// </summary>
+        /// <param name="key">The property key.</param>
+        /// <param name="value">The value of the property.</param>
+        /// <exception cref="ArgumentNullException">key is null.</exception>
+        /// <exception cref="ArgumentException">An element with the same key already exists in the JSON object.</exception>
+        public void Add(string key, float value)
+        {
+            store.Add(key, new JsonDouble(value));
+        }
+
+        /// <summary>
+        /// Determines whether the JSON object contains a specific property.
+        /// </summary>
+        /// <param name="key">The property key.</param>
+        /// <param name="value">The value of the property.</param>
+        /// <exception cref="ArgumentNullException">key is null.</exception>
+        /// <exception cref="ArgumentException">An element with the same key already exists in the JSON object.</exception>
+        public void Add(string key, double value)
+        {
+            store.Add(key, new JsonDouble(value));
+        }
+
+        /// <summary>
+        /// Determines whether the JSON object contains a specific property.
+        /// </summary>
+        /// <param name="key">The property key.</param>
+        /// <param name="value">The value of the property.</param>
+        /// <exception cref="ArgumentNullException">key is null.</exception>
+        /// <exception cref="ArgumentException">An element with the same key already exists in the JSON object.</exception>
+        public void Add(string key, bool value)
+        {
+            store.Add(key, value ? JsonBoolean.True : JsonBoolean.False);
+        }
+
+        /// <summary>
+        /// Determines whether the JSON object contains a specific property.
+        /// </summary>
+        /// <param name="key">The property key.</param>
+        /// <param name="value">The value of the property.</param>
+        /// <exception cref="ArgumentNullException">key is null.</exception>
+        /// <exception cref="ArgumentException">An element with the same key already exists in the JSON object.</exception>
+        public void Add(string key, DateTime value)
+        {
+            store.Add(key, new JsonString(value));
+        }
+
+        /// <summary>
+        /// Determines whether the JSON object contains a specific property.
+        /// </summary>
+        /// <param name="key">The property key.</param>
+        /// <param name="value">The value of the property.</param>
+        /// <exception cref="ArgumentNullException">key is null.</exception>
+        /// <exception cref="ArgumentException">An element with the same key already exists in the JSON object.</exception>
+        public void Add(string key, Guid value)
+        {
+            store.Add(key, new JsonString(value));
+        }
+
+        /// <summary>
+        /// Determines whether the JSON object contains a specific property.
+        /// </summary>
+        /// <param name="item">The property to locate in the JSON object.</param>
+        /// <returns>true if property is found in the JSON object; otherwise, false.</returns>
+        public bool Contains(KeyValuePair<string, IJsonValue> item)
+        {
+            foreach (var ele in store)
+            {
+                if (JsonValues.Equals(ele.Value, item.Value)) return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Copies the elements of the JSON object to an System.Array, starting at a particular System.Array index.
+        /// </summary>
+        /// <param name="array">The one-dimensional System.Array that is the destination of the elements copied from JSON object. The System.Array must have zero-based indexing.</param>
+        /// <param name="arrayIndex">The zero-based index in array at which copying begins.</param>
+        /// <exception cref="ArgumentNullException">array is null.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">arrayIndex is less than 0.</exception>
+        /// <exception cref="ArgumentException">The number of elements in the source  is greater than the available space from arrayIndex to the end of the destination array.</exception>
+        public void CopyTo(KeyValuePair<string, IJsonValue>[] array, int arrayIndex)
+        {
+            store.CopyTo(array, arrayIndex);
+        }
+
+        /// <summary>
+        /// Removes the first occurrence of a specific property from the JSON object.
+        /// </summary>
+        /// <param name="item">The property to remove from the JSON object.</param>
+        /// <returns>true if property was successfully removed from the JSON object; otherwise, false. This method also returns false if property is not found in the original JSON object.</returns>
+        public bool Remove(KeyValuePair<string, IJsonValue> item)
+        {
+            KeyValuePair<string, IJsonValue>? kvp = null;
+            foreach (var ele in store)
+            {
+                if (!JsonValues.Equals(ele.Value, item.Value)) continue;
+                kvp = ele;
+                break;
+            }
+
+            if (!kvp.HasValue) return false;
+            return store.Remove(kvp.Value);
         }
     }
 }

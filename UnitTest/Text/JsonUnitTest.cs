@@ -52,7 +52,11 @@ namespace Trivial.UnitTest.Text
             Assert.AreEqual(JsonValueKind.Array, json.GetValueKind("arr"));
 
             var props = json.GetObjectValue("props");
-            var p1 = new JsonObject();
+            var p1 = new JsonObject
+            {
+                { "p6", "()()" },
+                { "p7", 4567 }
+            };
             p1.SetValue("p2", true);
             p1.SetValue("p3", p1);
             props.SetValue("p1", p1);
@@ -60,6 +64,7 @@ namespace Trivial.UnitTest.Text
             Assert.IsNotNull(json.GetObjectValue("props", "p1", "p3"));
             Assert.IsTrue(json.GetObjectValue("props", "p1", "p3").GetBooleanValue("p2"));
             Assert.IsNull(json.TryGetObjectValue("props", "p1", "p3", "p6"));
+            Assert.AreEqual(4567, p1.GetInt32Value("p7"));
 
             var jsonArray = json.GetArrayValue("arr");
             Assert.AreEqual(0, jsonArray.Count);
@@ -97,6 +102,11 @@ namespace Trivial.UnitTest.Text
             Assert.AreEqual(456, list[2]);
             Assert.AreEqual(8, list[6]);
             Assert.AreEqual(9, list[7]);
+            jsonArray.Add(new JsonArray
+            {
+                8, 9, 0
+            });
+            Assert.AreEqual(JsonValueKind.Array, jsonArray[^0].ValueKind);
 
             var jsonDoc = (JsonDocument)json;
             var jsonStr = json.ToString();
