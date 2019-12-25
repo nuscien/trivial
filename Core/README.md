@@ -143,7 +143,7 @@ Includes writable JSON DOM `JsonObject` and `JsonArray`.
 And includes lots of useful converter like following.
 
 - `JsonJavaScriptTicksConverter` and `JsonUnixTimestampConverter`, and their nullable value conveters and fallback converters.
-- `JsonNumberStringConverter`.
+- `JsonNumberConverter` and `JsonNumberConverter.NumberStringConverter`.
 - `JsonStringListConverter` and `JsonStringListConverter.WhiteSpaceSeparatedConverter`.
 - `JsonObjectConverter`.
 

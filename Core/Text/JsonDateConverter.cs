@@ -79,7 +79,12 @@ namespace Trivial.Text
             public override DateTime Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
             {
                 if (reader.TokenType == JsonTokenType.String)
-                    return WebFormat.ParseDate(reader.GetString()) ?? default;
+                {
+                    var v = WebFormat.ParseDate(reader.GetString());
+                    if (v.HasValue) return v.Value;
+                    throw new JsonException("The format is not correct.", new FormatException("The value should be a date time JSON token format."));
+                }
+
                 return WebFormat.ParseDate(reader.GetInt64());
             }
 
@@ -96,7 +101,8 @@ namespace Trivial.Text
             if (reader.TokenType == JsonTokenType.Number)
                 return WebFormat.ParseDate(reader.GetInt64());
             var v = WebFormat.ParseDate(reader.GetString());
-            return v ?? default;
+            if (v.HasValue) return v.Value;
+            throw new JsonException("The format is not correct.", new FormatException("The value should be a date time JSON token format."));
         }
 
         /// <inheritdoc />
@@ -168,7 +174,12 @@ namespace Trivial.Text
             public override DateTime Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
             {
                 if (reader.TokenType == JsonTokenType.String)
-                    return WebFormat.ParseDate(reader.GetString()) ?? default;
+                {
+                    var v = WebFormat.ParseDate(reader.GetString());
+                    if (v.HasValue) return v.Value;
+                    throw new JsonException("The format is not correct.", new FormatException("The value should be a date time JSON token format."));
+                }
+
                 return WebFormat.ParseUnixTimestamp(reader.GetInt64());
             }
 
@@ -185,7 +196,8 @@ namespace Trivial.Text
             if (reader.TokenType == JsonTokenType.Number)
                 return WebFormat.ParseUnixTimestamp(reader.GetInt64());
             var v = WebFormat.ParseDate(reader.GetString());
-            return v ?? default;
+            if (v.HasValue) return v.Value;
+            throw new JsonException("The format is not correct.", new FormatException("The value should be a date time JSON token format."));
         }
 
         /// <inheritdoc />
@@ -209,20 +221,7 @@ namespace Trivial.Text
             /// <inheritdoc />
             public override TimeSpan? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
             {
-                if (reader.TokenType == JsonTokenType.Null || reader.TokenType == JsonTokenType.False)
-                    return null;
-                if (reader.TokenType == JsonTokenType.Number)
-                {
-                    if (reader.TryGetInt64(out var integer))
-                        return TimeSpan.FromSeconds(integer);
-                    return TimeSpan.FromSeconds(reader.GetDouble());
-                }
-
-                var str = reader.GetString();
-                if (string.IsNullOrWhiteSpace(str)) return null;
-                if (long.TryParse(str, out var integerParsed))
-                    return TimeSpan.FromSeconds(integerParsed);
-                return TimeSpan.FromSeconds(double.Parse(str));
+                return ReadValue(ref reader);
             }
 
             /// <inheritdoc />
@@ -233,11 +232,30 @@ namespace Trivial.Text
             }
         }
 
+        /// <summary>
+        /// Gets or sets a value indicating whether need throw exception for null value.
+        /// </summary>
+        public bool NeedThrowForNull { get; set; }
+
         /// <inheritdoc />
         public override TimeSpan Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
+            var v = ReadValue(ref reader);
+            if (v.HasValue) return v.Value;
+            if (NeedThrowForNull) throw new JsonException("The value should not be null.");
+            return TimeSpan.Zero;
+        }
+
+        /// <inheritdoc />
+        public override void Write(Utf8JsonWriter writer, TimeSpan value, JsonSerializerOptions options)
+        {
+            writer.WriteNumberValue((long)value.TotalSeconds);
+        }
+
+        private static TimeSpan? ReadValue(ref Utf8JsonReader reader)
+        {
             if (reader.TokenType == JsonTokenType.Null || reader.TokenType == JsonTokenType.False)
-                return TimeSpan.Zero;
+                return null;
             if (reader.TokenType == JsonTokenType.Number)
             {
                 if (reader.TryGetInt64(out var integer))
@@ -246,16 +264,10 @@ namespace Trivial.Text
             }
 
             var str = reader.GetString();
-            if (string.IsNullOrWhiteSpace(str)) return TimeSpan.Zero;
+            if (string.IsNullOrWhiteSpace(str)) return null;
             if (long.TryParse(str, out var integerParsed))
                 return TimeSpan.FromSeconds(integerParsed);
             return TimeSpan.FromSeconds(double.Parse(str));
-        }
-
-        /// <inheritdoc />
-        public override void Write(Utf8JsonWriter writer, TimeSpan value, JsonSerializerOptions options)
-        {
-            writer.WriteNumberValue((long)value.TotalSeconds);
         }
     }
 }
