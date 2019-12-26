@@ -89,7 +89,7 @@ namespace Trivial.UnitTest.Text
             Assert.AreEqual(jsonArray.GetInt32Value(0), 7);
             Assert.AreNotEqual(jsonArray.GetInt32Value(0), jsonArray.GetInt32Value(1));
 
-            jsonArray.Remove(new Index(0, true));
+            jsonArray.Remove(^1);
             var m = json.Deserialize<JsonModel>();
             Assert.AreEqual(json.GetStringValue("str-a"), m.A);
             Assert.AreEqual(json.GetStringValue("str-b"), m.B);

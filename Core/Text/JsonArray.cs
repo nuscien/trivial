@@ -61,7 +61,7 @@ namespace Trivial.Text
         /// </summary>
         /// <param name="index">A position in the current string.</param>
         /// <returns>The character at position index.</returns>
-        public IJsonValue this[Index index] => GetValue(index.IsFromEnd ? Count - index.Value - 1 : index.Value);
+        public IJsonValue this[Index index] => GetValue(index.IsFromEnd ? Count - index.Value : index.Value);
 
         /// <summary>
         /// Determines the property value of the specific key is null.
@@ -125,7 +125,7 @@ namespace Trivial.Text
         /// <exception cref="InvalidOperationException">The value type is not the expected one.</exception>
         public string GetRawText(Index index)
         {
-            var data = store[index.IsFromEnd ? Count - index.Value - 1 : index.Value];
+            var data = store[index.IsFromEnd ? Count - index.Value : index.Value];
             if (data is null) return null;
             return data.ToString();
         }
@@ -902,7 +902,7 @@ namespace Trivial.Text
         /// <exception cref="ArgumentOutOfRangeException">The index is out of range.</exception>
         public void Remove(Index index)
         {
-            store.RemoveAt(index.IsFromEnd ? store.Count - index.Value - 1 : index.Value);
+            store.RemoveAt(index.IsFromEnd ? store.Count - index.Value : index.Value);
         }
 
         /// <summary>

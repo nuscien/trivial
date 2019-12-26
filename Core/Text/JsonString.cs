@@ -227,7 +227,7 @@ namespace Trivial.Text
             {
                 var s = Value;
                 if (s == null) throw new ArgumentOutOfRangeException("s is null", new InvalidOperationException("s is null"));
-                return s[index.IsFromEnd ? s.Length - index.Value - 1 : index.Value];
+                return s[index.IsFromEnd ? s.Length - index.Value : index.Value];
             }
         }
 
