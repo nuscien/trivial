@@ -14,7 +14,7 @@ namespace Trivial.Text
     /// <summary>
     /// Represents a specific JSON object.
     /// </summary>
-    public class JsonObject : IJsonComplex, IDictionary<string, IJsonValue>, IReadOnlyDictionary<string, IJsonValue>
+    public class JsonObject : IJsonComplex, IDictionary<string, IJsonValue>, IReadOnlyDictionary<string, IJsonValue>, IEquatable<JsonObject>, IEquatable<IJsonValue>
     {
         private readonly IDictionary<string, IJsonValue> store = new Dictionary<string, IJsonValue>();
 
@@ -1573,6 +1573,61 @@ namespace Trivial.Text
         }
 
         /// <summary>
+        /// Indicates whether this instance and a specified object are equal.
+        /// </summary>
+        /// <param name="other">The object to compare with the current instance.</param>
+        /// <returns>true if obj and this instance represent the same value; otherwise, false.</returns>
+        public bool Equals(JsonObject other)
+        {
+            if (other is null) return false;
+            if (base.Equals(other)) return true;
+            if (other.Count != Count) return false;
+            foreach (var prop in store)
+            {
+                var isNull = !other.TryGetValue(prop.Key, out var r) || r is null || r.ValueKind == JsonValueKind.Null || r.ValueKind == JsonValueKind.Undefined;
+                if (prop.Value is null || prop.Value.ValueKind == JsonValueKind.Null || prop.Value.ValueKind == JsonValueKind.Undefined)
+                    return isNull;
+                if (isNull) return false;
+                JsonValues.Equals(prop.Value, r);
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Indicates whether this instance and a specified object are equal.
+        /// </summary>
+        /// <param name="other">The object to compare with the current instance.</param>
+        /// <returns>true if obj and this instance represent the same value; otherwise, false.</returns>
+        public bool Equals(IJsonValue other)
+        {
+            if (other is null) return false;
+            if (other is JsonArray json) return Equals(json);
+            return false;
+        }
+
+        /// <summary>
+        /// Indicates whether this instance and a specified object are equal.
+        /// </summary>
+        /// <param name="other">The object to compare with the current instance.</param>
+        /// <returns>true if obj and this instance represent the same value; otherwise, false.</returns>
+        public override bool Equals(object other)
+        {
+            if (other is null) return false;
+            if (other is JsonObject json) return Equals(json);
+            return false;
+        }
+
+        /// <summary>
+        /// Returns the hash code for this instance.
+        /// </summary>
+        /// <returns>A hash code for the current instance.</returns>
+        public override int GetHashCode()
+        {
+            return store.GetHashCode();
+        }
+
+        /// <summary>
         /// Writes this instance to the specified writer as a JSON value.
         /// </summary>
         /// <param name="writer">The writer to which to write this instance.</param>
@@ -1665,9 +1720,32 @@ namespace Trivial.Text
         /// <param name="options">Options to control the behavior during parsing.</param>
         /// <returns>A JSON object instance.</returns>
         /// <exception cref="ArgumentException">readerOptions contains unsupported options.</exception>
+        /// <exception cref="JsonException">The JSON is invalid. -or- TValue is not compatible with the JSON.</exception>
         public T Deserialize<T>(JsonSerializerOptions options = default)
         {
             return JsonSerializer.Deserialize<T>(ToString(), options);
+        }
+
+        /// <summary>
+        /// Deserializes.
+        /// </summary>
+        /// <typeparam name="T">The type of model to deserialize.</typeparam>
+        /// <param name="key">The property key.</param>
+        /// <param name="options">Options to control the behavior during parsing.</param>
+        /// <returns>A JSON object instance.</returns>
+        /// <exception cref="ArgumentException">readerOptions contains unsupported options.</exception>
+        /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+        /// <exception cref="JsonException">The JSON is invalid. -or- TValue is not compatible with the JSON.</exception>
+        public T DeserializeValue<T>(string key, JsonSerializerOptions options = default)
+        {
+            AssertKey(key);
+            var item = store[key];
+            if (item is null || item.ValueKind == JsonValueKind.Null || item.ValueKind == JsonValueKind.Undefined)
+            {
+                return default;
+            }
+
+            return JsonSerializer.Deserialize<T>(item.ToString(), options);
         }
 
         /// <summary>
@@ -2088,6 +2166,34 @@ namespace Trivial.Text
 
             if (!kvp.HasValue) return false;
             return store.Remove(kvp.Value);
+        }
+
+        /// <summary>
+        /// Compares two instances to indicate if they are same.
+        /// leftValue == rightValue
+        /// </summary>
+        /// <param name="leftValue">The left value to compare.</param>
+        /// <param name="rightValue">The right value to compare.</param>
+        /// <returns>true if they are same; otherwise, false.</returns>
+        public static bool operator ==(JsonObject leftValue, IJsonValue rightValue)
+        {
+            if (ReferenceEquals(leftValue, rightValue)) return true;
+            if (rightValue is null || leftValue is null) return false;
+            return leftValue.Equals(rightValue);
+        }
+
+        /// <summary>
+        /// Compares two instances to indicate if they are different.
+        /// leftValue != rightValue
+        /// </summary>
+        /// <param name="leftValue">The left value to compare.</param>
+        /// <param name="rightValue">The right value to compare.</param>
+        /// <returns>true if they are different; otherwise, false.</returns>
+        public static bool operator !=(JsonObject leftValue, IJsonValue rightValue)
+        {
+            if (ReferenceEquals(leftValue, rightValue)) return false;
+            if (rightValue is null || leftValue is null) return true;
+            return !leftValue.Equals(rightValue);
         }
     }
 }

@@ -218,6 +218,11 @@ namespace Trivial.Text
         /// </summary>
         internal sealed class NullableConverter : JsonConverter<TimeSpan?>
         {
+            /// <summary>
+            /// Gets or sets a value indicating whether need also write to a string.
+            /// </summary>
+            public bool NeedWriteAsString { get; set; }
+
             /// <inheritdoc />
             public override TimeSpan? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
             {
@@ -227,8 +232,9 @@ namespace Trivial.Text
             /// <inheritdoc />
             public override void Write(Utf8JsonWriter writer, TimeSpan? value, JsonSerializerOptions options)
             {
-                if (value.HasValue) writer.WriteNumberValue((long)value.Value.TotalSeconds);
-                else writer.WriteNullValue();
+                if (!value.HasValue) writer.WriteNullValue();
+                if (NeedWriteAsString) writer.WriteStringValue(value.Value.ToString("c"));
+                else writer.WriteNumberValue((long)value.Value.TotalSeconds);
             }
         }
 
@@ -236,6 +242,11 @@ namespace Trivial.Text
         /// Gets or sets a value indicating whether need throw exception for null value.
         /// </summary>
         public bool NeedThrowForNull { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether need also write to a string.
+        /// </summary>
+        public bool NeedWriteAsString { get; set; }
 
         /// <inheritdoc />
         public override TimeSpan Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
@@ -249,7 +260,8 @@ namespace Trivial.Text
         /// <inheritdoc />
         public override void Write(Utf8JsonWriter writer, TimeSpan value, JsonSerializerOptions options)
         {
-            writer.WriteNumberValue((long)value.TotalSeconds);
+            if (NeedWriteAsString) writer.WriteStringValue(value.ToString("c"));
+            else writer.WriteNumberValue((long)value.TotalSeconds);
         }
 
         private static TimeSpan? ReadValue(ref Utf8JsonReader reader)

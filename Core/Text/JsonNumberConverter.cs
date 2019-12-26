@@ -800,8 +800,8 @@ namespace Trivial.Text
                 if (typeToConvert == typeof(decimal)) return new SingleConverter { NeedWriteAsString = true };
                 if (typeToConvert == typeof(short)) return new Int16Converter { NeedWriteAsString = true };
                 if (typeToConvert == typeof(ushort)) return new UInt16Converter { NeedWriteAsString = true };
-                if (typeToConvert == typeof(DateTime)) return new JsonJavaScriptTicksConverter();
-                if (typeToConvert == typeof(TimeSpan)) return new JsonTimeSpanSecondConverter();
+                if (typeToConvert == typeof(DateTime)) return new JsonJavaScriptTicksConverter.FallbackConverter();
+                if (typeToConvert == typeof(TimeSpan)) return new JsonTimeSpanSecondConverter { NeedWriteAsString = true };
                 if (typeToConvert == typeof(int?)) return new Int32NullableConverter { NeedWriteAsString = true };
                 if (typeToConvert == typeof(long?)) return new Int64NullableConverter { NeedWriteAsString = true };
                 if (typeToConvert == typeof(double?)) return new DoubleNullableConverter { NeedWriteAsString = true };
@@ -811,8 +811,8 @@ namespace Trivial.Text
                 if (typeToConvert == typeof(decimal?)) return new SingleNullableConverter { NeedWriteAsString = true };
                 if (typeToConvert == typeof(short?)) return new Int16NullableConverter { NeedWriteAsString = true };
                 if (typeToConvert == typeof(ushort?)) return new UInt16NullableConverter { NeedWriteAsString = true };
-                if (typeToConvert == typeof(DateTime?)) return new JsonJavaScriptTicksConverter.NullableConverter();
-                if (typeToConvert == typeof(TimeSpan?)) return new JsonTimeSpanSecondConverter.NullableConverter();
+                if (typeToConvert == typeof(DateTime?)) return new JsonJavaScriptTicksConverter.FallbackNullableConverter();
+                if (typeToConvert == typeof(TimeSpan?)) return new JsonTimeSpanSecondConverter.NullableConverter { NeedWriteAsString = true };
                 if (typeToConvert == typeof(JsonInteger)) return new JsonIntegerConverter { NeedWriteAsString = true };
                 if (typeToConvert == typeof(JsonDouble)) return new JsonDoubleConverter { NeedWriteAsString = true };
                 if (typeToConvert == typeof(string)) return new StringConverter { NeedWriteAsString = true };
