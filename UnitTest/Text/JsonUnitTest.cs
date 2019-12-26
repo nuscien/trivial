@@ -106,7 +106,7 @@ namespace Trivial.UnitTest.Text
             {
                 8, 9, 0
             });
-            Assert.AreEqual(JsonValueKind.Array, jsonArray[^0].ValueKind);
+            Assert.AreEqual(JsonValueKind.Array, jsonArray[^1].ValueKind);
 
             var jsonDoc = (JsonDocument)json;
             var jsonStr = json.ToString();
