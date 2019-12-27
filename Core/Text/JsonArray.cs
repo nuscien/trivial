@@ -13,7 +13,7 @@ namespace Trivial.Text
     /// <summary>
     /// Represents a specific JSON object.
     /// </summary>
-    public class JsonArray : IJsonComplex, IReadOnlyList<IJsonValue>, IEquatable<JsonArray>, IEquatable<IJsonValue>
+    public class JsonArray : IJsonComplex, IJsonValueResolver, IReadOnlyList<IJsonValue>, IEquatable<JsonArray>, IEquatable<IJsonValue>
     {
         private readonly IList<IJsonValue> store = new List<IJsonValue>();
 
@@ -159,6 +159,19 @@ namespace Trivial.Text
             }
 
             return JsonValueKind.Undefined;
+        }
+
+        /// <summary>
+        /// Gets the value kind of the specific property.
+        /// </summary>
+        /// <param name="index">The zero-based index of the element to get.</param>
+        /// <param name="strictMode">true if enable strict mode; otherwise, false, to return undefined for non-existing.</param>
+        /// <returns>The value.</returns>
+        /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">The property does not exist.</exception>
+        public JsonValueKind GetValueKind(Index index, bool strictMode = false)
+        {
+            return GetValueKind(index.IsFromEnd ? store.Count - index.Value : index.Value);
         }
 
         /// <summary>
@@ -392,10 +405,43 @@ namespace Trivial.Text
         /// <param name="index">The zero-based index of the element to get.</param>
         /// <returns>The value.</returns>
         /// <exception cref="ArgumentOutOfRangeException">The index is out of range.</exception>
-        /// <exception cref="InvalidOperationException">The value type is not the expected one.</exception>
-        public IJsonValue GetValue(int index)
+        public IJsonValueResolver GetValue(int index)
         {
-            return store[index] ?? JsonValues.Null;
+            return (store[index] as IJsonValueResolver) ?? JsonValues.Null;
+        }
+
+        /// <summary>
+        /// Gets the value at the specific index.
+        /// </summary>
+        /// <param name="index">The zero-based index of the element to get.</param>
+        /// <returns>The value.</returns>
+        /// <exception cref="ArgumentOutOfRangeException">The index is out of range.</exception>
+        public IJsonValueResolver GetValue(Index index)
+        {
+            return (store[index.IsFromEnd ? store.Count - index.Value : index.Value] as IJsonValueResolver) ?? JsonValues.Null;
+        }
+
+        /// <summary>
+        /// Gets the value of the specific property.
+        /// </summary>
+        /// <param name="key">The property key.</param>
+        /// <returns>The value.</returns>
+        /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
+        IJsonValueResolver IJsonValueResolver.GetValue(string key)
+        {
+            if (int.TryParse(key, out var i)) return GetValue(i);
+            throw new InvalidOperationException("Expect an object but it is an array.");
+        }
+
+        /// <summary>
+        /// Gets the value of the specific property.
+        /// </summary>
+        /// <param name="key">The property key.</param>
+        /// <returns>The value.</returns>
+        /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
+        IJsonValueResolver IJsonValueResolver.GetValue(ReadOnlySpan<char> key)
+        {
+            return (this as IJsonValueResolver).GetValue(new string(key));
         }
 
         /// <summary>
@@ -1873,6 +1919,97 @@ namespace Trivial.Text
         }
 
         /// <summary>
+        /// Gets the value of the element as a boolean.
+        /// </summary>
+        /// <returns>The value of the element as a boolean.</returns>
+        /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
+        bool IJsonValueResolver.GetBoolean() => throw new InvalidOperationException("Expect a boolean but it is an array.");
+
+        /// <summary>
+        /// Gets the value of the element as a byte array.
+        /// </summary>
+        /// <returns>The value decoded as a byte array.</returns>
+        /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
+        byte[] IJsonValueResolver.GetBytesFromBase64() => throw new InvalidOperationException("Expect a string but it is an array.");
+
+        /// <summary>
+        /// Gets the value of the element as a date time.
+        /// </summary>
+        /// <returns>The value of the element as a date time.</returns>
+        /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
+        DateTime IJsonValueResolver.GetDateTime() => throw new InvalidOperationException("Expect a date time but it is an array.");
+
+        /// <summary>
+        /// Gets the value of the element as a number.
+        /// </summary>
+        /// <returns>The value of the element as a number.</returns>
+        /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
+        decimal IJsonValueResolver.GetDecimal() => throw new InvalidOperationException("Expect a number but it is an array.");
+
+        /// <summary>
+        /// Gets the value of the element as a number.
+        /// </summary>
+        /// <returns>The value of the element as a number.</returns>
+        /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
+        float IJsonValueResolver.GetSingle() => throw new InvalidOperationException("Expect a number but it is an array.");
+
+        /// <summary>
+        /// Gets the value of the element as a number.
+        /// </summary>
+        /// <returns>The value of the element as a number.</returns>
+        /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
+        double IJsonValueResolver.GetDouble() => throw new InvalidOperationException("Expect a number but it is an array.");
+
+        /// <summary>
+        /// Gets the value of the element as a number.
+        /// </summary>
+        /// <returns>The value of the element as a number.</returns>
+        /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
+        short IJsonValueResolver.GetInt16() => throw new InvalidOperationException("Expect a number but it is an array.");
+
+        /// <summary>
+        /// Gets the value of the element as a number.
+        /// </summary>
+        /// <returns>The value of the element as a number.</returns>
+        /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
+        uint IJsonValueResolver.GetUInt32() => throw new InvalidOperationException("Expect a number but it is an array.");
+
+        /// <summary>
+        /// Gets the value of the element as a number.
+        /// </summary>
+        /// <returns>The value of the element as a number.</returns>
+        /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
+        int IJsonValueResolver.GetInt32() => throw new InvalidOperationException("Expect a number but it is an array.");
+
+        /// <summary>
+        /// Gets the value of the element as a number.
+        /// </summary>
+        /// <returns>The value of the element as a number.</returns>
+        /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
+        long IJsonValueResolver.GetInt64() => throw new InvalidOperationException("Expect a number but it is an array.");
+
+        /// <summary>
+        /// Gets the value of the element as a number.
+        /// </summary>
+        /// <returns>The value of the element as a number.</returns>
+        /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
+        string IJsonValueResolver.GetString() => throw new InvalidOperationException("Expect a string but it is an array.");
+
+        /// <summary>
+        /// Gets the value of the element as a number.
+        /// </summary>
+        /// <returns>The value of the element as a number.</returns>
+        /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
+        Guid IJsonValueResolver.GetGuid() => throw new InvalidOperationException("Expect a string but it is an array.");
+
+        /// <summary>
+        /// Gets all property keys.
+        /// </summary>
+        /// <returns>The property keys.</returns>
+        /// <exception cref="InvalidOperationException">The value kind is not an object.</exception>
+        IEnumerable<string> IJsonValueResolver.GetKeys() => throw new InvalidOperationException("Expect an object but it is a number.");
+
+        /// <summary>
         /// Creates a new object that is a copy of the current instance.
         /// </summary>
         /// <returns>A new object that is a copy of this instance.</returns>
@@ -1928,8 +2065,8 @@ namespace Trivial.Text
             }
 
             throw new InvalidOperationException(valueKind.HasValue
-                ? $"The type of item {index} should be {valueKind.Value.ToString().ToLowerInvariant()} but it is {data.ValueKind.ToString().ToLowerInvariant()}."
-                : $"The type of item {index} is {data.ValueKind.ToString().ToLowerInvariant()}.");
+                ? $"The kind of item {index} should be {valueKind.Value.ToString().ToLowerInvariant()} but it is {data.ValueKind.ToString().ToLowerInvariant()}."
+                : $"The kind of item {index} is {data.ValueKind.ToString().ToLowerInvariant()}, not expected.");
         }
 
         private bool TryGetJsonValue<T>(int index, out T property) where T : IJsonValue
