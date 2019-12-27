@@ -11,7 +11,7 @@ using System.Text.Json.Serialization;
 namespace Trivial.Text
 {
     /// <summary>
-    /// JSON string list and json array converter.
+    /// JSON string collection and json array converter.
     /// </summary>
     public class JsonStringListConverter : JsonConverter<IEnumerable<string>>
     {

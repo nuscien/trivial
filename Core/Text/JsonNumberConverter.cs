@@ -991,6 +991,11 @@ namespace Trivial.Text
             return CanConvertType(typeToConvert);
         }
 
+        /// <summary>
+        /// Tests if the specific type can convert.
+        /// </summary>
+        /// <param name="typeToConvert">The type to convert.</param>
+        /// <returns>true if can; otherwise, false.</returns>
         private static bool CanConvertType(Type typeToConvert)
         {
             return typeToConvert == typeof(int)
@@ -1017,7 +1022,10 @@ namespace Trivial.Text
                 || typeToConvert == typeof(TimeSpan?)
                 || typeToConvert == typeof(JsonInteger)
                 || typeToConvert == typeof(JsonDouble)
-                || typeToConvert == typeof(string);
+                || typeToConvert == typeof(string)
+                || typeToConvert == typeof(Maths.Angle)
+                || typeToConvert == typeof(Maths.Angle.Model)
+                || typeToConvert == typeof(Maths.Angle?);
         }
 
         private static T ParseNumber<T>(ref Utf8JsonReader reader, Func<string, T> parser) where T : struct
