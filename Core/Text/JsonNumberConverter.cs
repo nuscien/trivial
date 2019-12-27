@@ -784,6 +784,82 @@ namespace Trivial.Text
         }
 
         /// <summary>
+        /// Json angle struct converter.
+        /// </summary>
+        sealed class AngleConverter : JsonConverter<Maths.Angle>
+        {
+            /// <inheritdoc />
+            public override Maths.Angle Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+            {
+                return reader.TokenType switch
+                {
+                    JsonTokenType.Number => reader.GetDouble(),
+                    JsonTokenType.String => ParseNumber(ref reader, double.Parse),
+                    _ => throw new JsonException($"The token type is {reader.TokenType} but expect number.")
+                };
+            }
+
+            /// <inheritdoc />
+            public override void Write(Utf8JsonWriter writer, Maths.Angle value, JsonSerializerOptions options)
+            {
+                writer.WriteNumberValue(value.Degrees);
+            }
+        }
+
+        /// <summary>
+        /// Json nullable angle converter.
+        /// </summary>
+        sealed class AngleNullableConverter : JsonConverter<Maths.Angle?>
+        {
+            /// <inheritdoc />
+            public override Maths.Angle? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+            {
+                var num = reader.TokenType switch
+                {
+                    JsonTokenType.Null => null,
+                    JsonTokenType.Number => reader.GetDouble(),
+                    JsonTokenType.String => ParseNullableNumber(ref reader, double.Parse),
+                    _ => throw new JsonException($"The token type is {reader.TokenType} but expect number.")
+                };
+                if (num.HasValue) return num.Value;
+                return null;
+            }
+
+            /// <inheritdoc />
+            public override void Write(Utf8JsonWriter writer, Maths.Angle? value, JsonSerializerOptions options)
+            {
+                if (value.HasValue) writer.WriteNumberValue(value.Value.Degrees);
+                else writer.WriteNullValue();
+            }
+        }
+
+        /// <summary>
+        /// Json angle model converter.
+        /// </summary>
+        sealed class AngleModelConverter : JsonConverter<Maths.Angle.Model>
+        {
+            /// <inheritdoc />
+            public override Maths.Angle.Model Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+            {
+                var num = reader.TokenType switch
+                {
+                    JsonTokenType.Null => null,
+                    JsonTokenType.Number => reader.GetDouble(),
+                    JsonTokenType.String => ParseNullableNumber(ref reader, double.Parse),
+                    _ => throw new JsonException($"The token type is {reader.TokenType} but expect number.")
+                };
+                return num.HasValue ? new Maths.Angle.Model(num.Value) : null;
+            }
+
+            /// <inheritdoc />
+            public override void Write(Utf8JsonWriter writer, Maths.Angle.Model value, JsonSerializerOptions options)
+            {
+                if (value is null) writer.WriteNullValue();
+                else writer.WriteNumberValue(value.Degrees);
+            }
+        }
+
+        /// <summary>
         /// Json number string converter.
         /// </summary>
         public sealed class NumberStringConverter : JsonConverterFactory
@@ -816,6 +892,9 @@ namespace Trivial.Text
                 if (typeToConvert == typeof(JsonInteger)) return new JsonIntegerConverter { NeedWriteAsString = true };
                 if (typeToConvert == typeof(JsonDouble)) return new JsonDoubleConverter { NeedWriteAsString = true };
                 if (typeToConvert == typeof(string)) return new StringConverter { NeedWriteAsString = true };
+                if (typeToConvert == typeof(Maths.Angle)) return new AngleConverter();
+                if (typeToConvert == typeof(Maths.Angle.Model)) return new AngleModelConverter();
+                if (typeToConvert == typeof(Maths.Angle?)) return new AngleNullableConverter();
                 throw new JsonException(typeToConvert.Name + " is not expected.");
             }
 
@@ -859,6 +938,9 @@ namespace Trivial.Text
                 if (typeToConvert == typeof(JsonInteger)) return new JsonIntegerConverter();
                 if (typeToConvert == typeof(JsonDouble)) return new JsonDoubleConverter();
                 if (typeToConvert == typeof(string)) return new StringConverter();
+                if (typeToConvert == typeof(Maths.Angle)) return new AngleConverter();
+                if (typeToConvert == typeof(Maths.Angle.Model)) return new AngleModelConverter();
+                if (typeToConvert == typeof(Maths.Angle?)) return new AngleNullableConverter();
                 throw new JsonException(typeToConvert.Name + " is not expected.");
             }
 
@@ -897,6 +979,9 @@ namespace Trivial.Text
             if (typeToConvert == typeof(JsonInteger)) return new JsonIntegerConverter();
             if (typeToConvert == typeof(JsonDouble)) return new JsonDoubleConverter();
             if (typeToConvert == typeof(string)) return new StringConverter();
+            if (typeToConvert == typeof(Maths.Angle)) return new AngleConverter();
+            if (typeToConvert == typeof(Maths.Angle.Model)) return new AngleModelConverter();
+            if (typeToConvert == typeof(Maths.Angle?)) return new AngleNullableConverter();
             throw new JsonException(typeToConvert.Name + " is not expected.");
         }
 

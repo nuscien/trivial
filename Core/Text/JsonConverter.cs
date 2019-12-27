@@ -60,6 +60,19 @@ namespace Trivial.Text
         }
 
         /// <summary>
+        /// JSON string collection with vertical bar separated.
+        /// </summary>
+        public sealed class VerticalBarSeparatedConverter : JsonStringListConverter
+        {
+            /// <summary>
+            /// Initializes a new instance of the VerticalBarSeparatedConverter class.
+            /// </summary>
+            public VerticalBarSeparatedConverter() : base('|')
+            {
+            }
+        }
+
+        /// <summary>
         /// Initializes a new instance of the JsonStringListConverter class.
         /// </summary>
         public JsonStringListConverter()
