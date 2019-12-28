@@ -2,8 +2,6 @@
 
 You can use the library for your console application to parse the arguments, write the selection, dispatch verbs, etc.
 
-[![NuGet package](https://img.shields.io/nuget/dt/Trivial.Console)](https://www.nuget.org/packages/Trivial.Console)
-
 ## Import
 
 Just add following namespace to your code file to use.

@@ -2,8 +2,6 @@
 
 This library includes utilities and services for tasks, security, JSON, etc.
 
-[![NuGet package](https://img.shields.io/nuget/dt/Trivial)](https://www.nuget.org/packages/Trivial)
-
 ## [Tasks](https://github.com/nuscien/trivial/wiki/tasks)
 
 ```csharp
