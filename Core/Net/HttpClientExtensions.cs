@@ -110,14 +110,34 @@ namespace Trivial.Net
         /// </summary>
         /// <typeparam name="T">The type of the result expected.</typeparam>
         /// <param name="httpContent">The http response content.</param>
-        /// <param name="options">The options for serialization.</param>
+        /// <param name="cancellationToken">The optional cancellation token.</param>
         /// <returns>The result serialized.</returns>
         /// <exception cref="ArgumentNullException">The argument is null.</exception>
-        public static async Task<T> DeserializeJsonAsync<T>(this HttpContent httpContent, JsonSerializerOptions options = default)
+        public static async Task<T> DeserializeJsonAsync<T>(this HttpContent httpContent, CancellationToken cancellationToken = default)
         {
             if (httpContent == null) throw new ArgumentNullException(nameof(httpContent), "httpContent should not be null.");
             using var stream = await httpContent.ReadAsStreamAsync();
-            return await JsonSerializer.DeserializeAsync<T>(stream, options);
+            var type = typeof(T);
+            if (type == typeof(JsonObject)) return (T)(object)await JsonObject.ParseAsync(stream, default, cancellationToken);
+            if (type == typeof(JsonDocument)) return (T)(object)await JsonDocument.ParseAsync(stream, default, cancellationToken);
+            if (type == typeof(JsonArray)) return (T)(object)await JsonArray.ParseAsync(stream, default, cancellationToken);
+            return await JsonSerializer.DeserializeAsync<T>(stream, default, cancellationToken);
+        }
+
+        /// <summary>
+        /// Deserializes the HTTP JSON content into an object as the specific type.
+        /// </summary>
+        /// <typeparam name="T">The type of the result expected.</typeparam>
+        /// <param name="httpContent">The http response content.</param>
+        /// <param name="options">The options for serialization.</param>
+        /// <param name="cancellationToken">The optional cancellation token.</param>
+        /// <returns>The result serialized.</returns>
+        /// <exception cref="ArgumentNullException">The argument is null.</exception>
+        public static async Task<T> DeserializeJsonAsync<T>(this HttpContent httpContent, JsonSerializerOptions options, CancellationToken cancellationToken = default)
+        {
+            if (httpContent == null) throw new ArgumentNullException(nameof(httpContent), "httpContent should not be null.");
+            using var stream = await httpContent.ReadAsStreamAsync();
+            return await JsonSerializer.DeserializeAsync<T>(stream, options, cancellationToken);
         }
 
         /// <summary>

@@ -252,7 +252,7 @@ namespace Trivial.Net
         /// </summary>
         public JsonHttpClient()
         {
-            var d = Web.WebFormat.GetJsonDeserializer<T>();
+            var d = WebFormat.GetJsonDeserializer<T>(true);
             if (d != null) Deserializer = d;
         }
 

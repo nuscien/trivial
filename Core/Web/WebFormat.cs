@@ -283,11 +283,12 @@ namespace Trivial.Web
         /// </summary>
         /// <typeparam name="T">The type of the instance.</typeparam>
         /// <returns>A function for deserialization.</returns>
-        internal static Func<string, T> GetJsonDeserializer<T>()
+        internal static Func<string, T> GetJsonDeserializer<T>(bool ignoreJsonDoc = false)
         {
             var t = typeof(T);
             if (t == typeof(JsonDocument))
             {
+                if (ignoreJsonDoc) return null;
                 return str =>
                 {
                     return (T)(object)JsonDocument.Parse(str);
@@ -295,6 +296,7 @@ namespace Trivial.Web
             }
             else if (t == typeof(JsonObject))
             {
+                if (ignoreJsonDoc) return null;
                 return str =>
                 {
                     return (T)(object)JsonObject.Parse(str);
@@ -302,6 +304,7 @@ namespace Trivial.Web
             }
             else if (t == typeof(JsonArray))
             {
+                if (ignoreJsonDoc) return null;
                 return str =>
                 {
                     return (T)(object)JsonArray.Parse(str);
