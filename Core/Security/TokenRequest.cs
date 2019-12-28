@@ -180,19 +180,14 @@ namespace Trivial.Security
         public string Property(string name)
         {
             if (string.IsNullOrWhiteSpace(name)) return null;
-            switch (name)
+            return name switch
             {
-                case TokenRequestBody.GrantTypeProperty:
-                    return GrantType;
-                case TokenRequestBody.ClientIdProperty:
-                    return ClientId;
-                case TokenRequestBody.ClientSecretProperty:
-                    return ClientCredentials.Secret.ToUnsecureString();
-                case TokenInfo.ScopeProperty:
-                    return ScopeString;
-                default:
-                    return Body?.Property(name);
-            }
+                TokenRequestBody.GrantTypeProperty => GrantType,
+                TokenRequestBody.ClientIdProperty => ClientId,
+                TokenRequestBody.ClientSecretProperty => ClientCredentials.Secret.ToUnsecureString(),
+                TokenInfo.ScopeProperty => ScopeString,
+                _ => Body?.Property(name),
+            };
         }
 
         /// <summary>

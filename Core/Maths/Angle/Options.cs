@@ -60,7 +60,7 @@ namespace Trivial.Maths
             }
 
             /// <summary>
-            /// The maximum degree supported. Should be greater than 0.
+            /// Gets the maximum degree supported. Should be greater than 0.
             /// </summary>
             public int MaxDegree { get; }
 
@@ -70,7 +70,7 @@ namespace Trivial.Maths
             public bool Negative { get; }
 
             /// <summary>
-            /// The mode to rectify if the value is out of the scope.
+            /// Gets the mode to rectify if the value is out of the scope.
             /// </summary>
             public RectifyModes RectifyMode { get; }
         }
