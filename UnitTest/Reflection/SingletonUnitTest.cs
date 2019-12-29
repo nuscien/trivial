@@ -13,7 +13,7 @@ using Trivial.Text;
 namespace Trivial.UnitTest.Reflection
 {
     [TestClass]
-    public class SingletonTest
+    public class SingletonUnitTest
     {
         [TestMethod]
         public async Task TestSingletonKeeperAsync()

@@ -17,53 +17,55 @@ namespace Trivial.Web
     /// </summary>
     public static partial class WebFormat
     {
+        private const long ticksOffset = 621355968000000000;
+
         /// <summary>
         /// Parses JavaScript date tick to date and time.
         /// </summary>
-        /// <param name="tick">The JavaScript date tick.</param>
+        /// <param name="ticks">The JavaScript date ticks.</param>
         /// <returns>A date and time.</returns>
-        public static DateTime ParseDate(long tick)
+        public static DateTime ParseDate(long ticks)
         {
-            var time = new DateTime(tick * 10000 + 621355968000000000, DateTimeKind.Utc);
+            var time = new DateTime(ticks * 10000 + ticksOffset, DateTimeKind.Utc);
             return time.ToLocalTime();
         }
 
         /// <summary>
         /// Parses JavaScript date tick to date and time.
         /// </summary>
-        /// <param name="tick">The JavaScript date tick.</param>
+        /// <param name="ticks">The JavaScript date ticks.</param>
         /// <returns>A date and time.</returns>
-        public static DateTime? ParseDate(long? tick)
+        public static DateTime? ParseDate(long? ticks)
         {
-            if (!tick.HasValue) return null;
-            return ParseDate(tick.Value);
+            if (!ticks.HasValue) return null;
+            return ParseDate(ticks.Value);
         }
 
         /// <summary>
-        /// Parses JavaScript date tick to date and time back.
+        /// Parses JavaScript date ticks to date and time back.
         /// </summary>
         /// <param name="date">A date and time.</param>
-        /// <returns>The JavaScript date tick.</returns>
+        /// <returns>The JavaScript date ticks.</returns>
         public static long ParseDate(DateTime date)
         {
-            return (date.ToUniversalTime().Ticks - 621355968000000000) / 10000;
+            return (date.ToUniversalTime().Ticks - ticksOffset) / 10000;
         }
 
         /// <summary>
-        /// Parses JavaScript date tick to date and time back.
+        /// Parses JavaScript date ticks to date and time back.
         /// </summary>
         /// <param name="date">A date and time.</param>
-        /// <returns>The JavaScript date tick.</returns>
+        /// <returns>The JavaScript date ticks.</returns>
         public static long ParseDate(DateTimeOffset date)
         {
-            return (date.ToUniversalTime().Ticks - 621355968000000000) / 10000;
+            return (date.ToUniversalTime().Ticks - ticksOffset) / 10000;
         }
 
         /// <summary>
-        /// Parses JavaScript date tick to date and time back.
+        /// Parses JavaScript date ticks to date and time back.
         /// </summary>
         /// <param name="date">A date and time.</param>
-        /// <returns>The JavaScript date tick.</returns>
+        /// <returns>The JavaScript date ticks.</returns>
         public static long? ParseDate(DateTime? date)
         {
             if (!date.HasValue) return null;
@@ -71,10 +73,10 @@ namespace Trivial.Web
         }
 
         /// <summary>
-        /// Parses JavaScript date tick to date and time back.
+        /// Parses JavaScript date ticks to date and time back.
         /// </summary>
         /// <param name="date">A date and time.</param>
-        /// <returns>The JavaScript date tick.</returns>
+        /// <returns>The JavaScript date ticks.</returns>
         public static long? ParseDate(DateTimeOffset? date)
         {
             if (!date.HasValue) return null;
@@ -84,39 +86,39 @@ namespace Trivial.Web
         /// <summary>
         /// Parses JavaScript date JSON string to date and time.
         /// </summary>
-        /// <param name="tick">The JSON token value of JavaScript date.</param>
+        /// <param name="s">The JSON token value of JavaScript date.</param>
         /// <returns>A date and time.</returns>
-        public static DateTime? ParseDate(string tick)
+        public static DateTime? ParseDate(string s)
         {
-            if (string.IsNullOrWhiteSpace(tick)) return null;
-            tick = tick.Trim().ToUpperInvariant();
-            if (tick.Length == 8)
+            if (string.IsNullOrWhiteSpace(s)) return null;
+            s = s.Trim().ToUpperInvariant();
+            if (s.Length == 8)
             {
-                var y2 = GetNaturalNumber(tick, 0, 4);
+                var y2 = GetNaturalNumber(s, 0, 4);
                 if (y2 < 0) return null;
-                var m2 = GetNaturalNumber(tick, 4, 2);
+                var m2 = GetNaturalNumber(s, 4, 2);
                 if (m2 < 0) return null;
-                var d2 = GetNaturalNumber(tick, 6);
+                var d2 = GetNaturalNumber(s, 6);
                 if (d2 < 0) return null;
                 return new DateTime(y2, m2, d2, 0, 0, 0, DateTimeKind.Utc);
             }
 
-            if (tick.Length < 10 || tick[4] != '-') return null;
-            var y = GetNaturalNumber(tick, 0, 4);
+            if (s.Length < 10 || s[4] != '-') return null;
+            var y = GetNaturalNumber(s, 0, 4);
             if (y < 0) return null;
-            var pos = tick[7] == '-' ? 8 : 7;
-            var m = GetNaturalNumber(tick, 5, 2);
+            var pos = s[7] == '-' ? 8 : 7;
+            var m = GetNaturalNumber(s, 5, 2);
             if (m < 0)
             {
-                if (tick[6] == '-') m = GetNaturalNumber(tick, 5, 1);
+                if (s[6] == '-') m = GetNaturalNumber(s, 5, 1);
                 if (m < 0) return null;
             }
 
-            var d = GetNaturalNumber(tick, pos, 2);
+            var d = GetNaturalNumber(s, pos, 2);
             if (d < 1)
             {
                 pos += 4;
-                d = GetNaturalNumber(tick, pos, 1);
+                d = GetNaturalNumber(s, pos, 1);
                 if (d < 1) return null;
             }
             else
@@ -125,9 +127,9 @@ namespace Trivial.Web
             }
 
             var date = new DateTime(y, m, d, 0, 0, 0, DateTimeKind.Utc);
-            if (pos >= tick.Length) return date;
-            tick = tick.Substring(pos);
-            var arr = tick.Split(':');
+            if (pos >= s.Length) return date;
+            s = s.Substring(pos);
+            var arr = s.Split(':');
             if (arr.Length < 2) return date;
             if (!int.TryParse(arr[0], out var h)) return date;
             if (!int.TryParse(arr[1], out var mm)) return date;
@@ -145,12 +147,12 @@ namespace Trivial.Web
                 return sf > 0 ? t.AddSeconds(sf) : t;
             }
 
-            var s = GetNaturalNumber(arr[2], 0, 2);
-            if (s < 0 || !int.TryParse(arr[3], out var rm)) return t;
+            var sec = GetNaturalNumber(arr[2], 0, 2);
+            if (sec < 0 || !int.TryParse(arr[3], out var rm)) return t;
             var neg = arr[2][2] == '-' ? 1 : -1;
             var hasSep = (neg == 1) || (arr[2][2] == '+');
             var rh = GetNaturalNumber(arr[2], hasSep ? 3 : 2);
-            return t.AddSeconds(s).AddMinutes(neg * rm).AddHours(neg * rh);
+            return t.AddSeconds(sec).AddMinutes(neg * rm).AddHours(neg * rh);
         }
 
         /// <summary>
@@ -175,24 +177,24 @@ namespace Trivial.Web
         }
 
         /// <summary>
-        /// Parses Unix timestamp tick to date and time.
+        /// Parses Unix timestamp to date and time.
         /// </summary>
-        /// <param name="tick">The JavaScript date tick.</param>
+        /// <param name="timestamp">The JavaScript date timestamp.</param>
         /// <returns>A date and time.</returns>
-        internal static DateTime ParseUnixTimestamp(long tick)
+        internal static DateTime ParseUnixTimestamp(long timestamp)
         {
-            return ParseDate(tick * 1000);
+            return ParseDate(timestamp * 1000);
         }
 
         /// <summary>
-        /// Parses Unix timestamp tick to date and time.
+        /// Parses Unix timestamp to date and time.
         /// </summary>
-        /// <param name="tick">The JavaScript date tick.</param>
+        /// <param name="timestamp">The Unix timestamp.</param>
         /// <returns>A date and time.</returns>
-        internal static DateTime? ParseUnixTimestamp(long? tick)
+        internal static DateTime? ParseUnixTimestamp(long? timestamp)
         {
-            if (!tick.HasValue) return null;
-            return ParseUnixTimestamp(tick.Value);
+            if (!timestamp.HasValue) return null;
+            return ParseUnixTimestamp(timestamp.Value);
         }
 
         /// <summary>

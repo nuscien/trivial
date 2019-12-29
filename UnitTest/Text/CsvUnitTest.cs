@@ -12,7 +12,7 @@ using Trivial.Text;
 namespace Trivial.UnitTest.Text
 {
     [TestClass]
-    public class CsvTest
+    public class CsvUnitTest
     {
         public void TestCsvParser()
         {

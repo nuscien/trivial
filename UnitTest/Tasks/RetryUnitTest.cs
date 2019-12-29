@@ -13,7 +13,7 @@ using Trivial.Tasks;
 namespace Trivial.UnitTest.Tasks
 {
     [TestClass]
-    public class RetryTest
+    public class RetryUnitTest
     {
         [TestMethod]
         public async Task TestLinearAsync()

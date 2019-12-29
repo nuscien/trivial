@@ -12,7 +12,7 @@ using Trivial.Text;
 namespace Trivial.UnitTest.Security
 {
     [TestClass]
-    public class JwtTest
+    public class JwtUnitTest
     {
         [TestMethod]
         public void TestStandardJwt()

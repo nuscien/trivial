@@ -201,7 +201,42 @@ namespace Trivial.Text
                 return col.ToArray();
             }
 
-            return (IEnumerable<string>)Activator.CreateInstance(typeToConvert, new[] { col });
+            if (col.Count == 0)
+            {
+                try
+                {
+                    return (IEnumerable<string>)Activator.CreateInstance(typeToConvert);
+                }
+                catch (MemberAccessException)
+                {
+                }
+            }
+
+            try
+            {
+                return (IEnumerable<string>)Activator.CreateInstance(typeToConvert, new[] { col });
+            }
+            catch (MemberAccessException ex)
+            {
+                if (!typeof(ICollection<string>).IsAssignableFrom(typeToConvert))
+                    throw new JsonException("The enumerable type is not supported.", ex);
+
+                try
+                {
+                    var c = (ICollection<string>)Activator.CreateInstance(typeToConvert);
+                    if (c.IsReadOnly) throw new JsonException("Cannot add items because the collection is read-only.", new NotSupportedException("The collection is read-only."));
+                    foreach (var item in col)
+                    {
+                        c.Add(item);
+                    }
+
+                    return c;
+                }
+                catch (MemberAccessException ex2)
+                {
+                    throw new JsonException("Cannot create the enumerable instance by no argument.", ex2);
+                }
+            }
         }
 
         private static bool TryGetString(ref Utf8JsonReader reader, out string result)

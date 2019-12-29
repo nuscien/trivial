@@ -12,7 +12,7 @@ using Trivial.Text;
 namespace Trivial.UnitTest.Net
 {
     [TestClass]
-    public class UriTest
+    public class UriUnitTest
     {
         [TestMethod]
         public void TestQueryData()

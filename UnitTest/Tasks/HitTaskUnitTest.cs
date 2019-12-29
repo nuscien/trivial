@@ -12,7 +12,7 @@ using Trivial.Tasks;
 namespace Trivial.UnitTest.Tasks
 {
     [TestClass]
-    public class HitTaskTest
+    public class HitTaskUnitTest
     {
         [TestMethod]
         public async Task TestDebounceAsync()

@@ -11,7 +11,7 @@ using Trivial.IO;
 namespace Trivial.UnitTest.IO
 {
     [TestClass]
-    public class StreamTest
+    public class StreamUnitTest
     {
         [TestMethod]
         public void TestStream()

@@ -12,7 +12,7 @@ using Trivial.Tasks;
 namespace Trivial.UnitTest.Tasks
 {
     [TestClass]
-    public class HitTaEquipmentTaskTestskTest
+    public class EquipmentTaskUnitTest
     {
         [TestMethod]
         public async Task TestTaskAsync()
