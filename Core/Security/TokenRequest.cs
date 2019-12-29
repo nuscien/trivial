@@ -631,6 +631,23 @@ namespace Trivial.Security
             body.Fill(q);
             return new TokenRequest<ClientTokenRequestBody>(body, q);
         }
+
+        /// <summary>
+        /// Registers a token request handler into a route.
+        /// </summary>
+        /// <typeparam name="T">The type of entity.</typeparam>
+        /// <param name="route">The token request route.</param>
+        /// <param name="h">A token request handler.</param>
+        public static void Register<T>(TokenRequestRoute<T> route, Func<TokenRequest<ClientTokenRequestBody>, Task<(T, TokenInfo)>> h)
+        {
+            if (route == null || h == null) return;
+            route.Register(ClientCredentialsGrantType, q =>
+            {
+                var body = new ClientTokenRequestBody();
+                body.Fill(q);
+                return new TokenRequest<ClientTokenRequestBody>(body, q);
+            }, h);
+        }
     }
 
     /// <summary>
@@ -780,6 +797,23 @@ namespace Trivial.Security
             var body = new CodeTokenRequestBody();
             body.Fill(q);
             return new CodeTokenRequest(body, q);
+        }
+
+        /// <summary>
+        /// Registers a token request handler into a route.
+        /// </summary>
+        /// <typeparam name="T">The type of entity.</typeparam>
+        /// <param name="route">The token request route.</param>
+        /// <param name="h">A token request handler.</param>
+        public static void Register<T>(TokenRequestRoute<T> route, Func<TokenRequest<CodeTokenRequestBody>, Task<(T, TokenInfo)>> h)
+        {
+            if (route == null || h == null) return;
+            route.Register(AuthorizationCodeGrantType, q =>
+            {
+                var body = new CodeTokenRequestBody();
+                body.Fill(q);
+                return new TokenRequest<CodeTokenRequestBody>(body, q);
+            }, h);
         }
     }
 
@@ -1023,6 +1057,23 @@ namespace Trivial.Security
             body.Fill(q);
             return new TokenRequest<RefreshTokenRequestBody>(body, q);
         }
+
+        /// <summary>
+        /// Registers a token request handler into a route.
+        /// </summary>
+        /// <typeparam name="T">The type of entity.</typeparam>
+        /// <param name="route">The token request route.</param>
+        /// <param name="h">A token request handler.</param>
+        public static void Register<T>(TokenRequestRoute<T> route, Func<TokenRequest<RefreshTokenRequestBody>, Task<(T, TokenInfo)>> h)
+        {
+            if (route == null || h == null) return;
+            route.Register(RefreshTokenGrantType, q =>
+            {
+                var body = new RefreshTokenRequestBody();
+                body.Fill(q);
+                return new TokenRequest<RefreshTokenRequestBody>(body, q);
+            }, h);
+        }
     }
 
     /// <summary>
@@ -1215,6 +1266,23 @@ namespace Trivial.Security
             var body = new PasswordTokenRequestBody();
             body.Fill(q);
             return new TokenRequest<PasswordTokenRequestBody>(body, q);
+        }
+
+        /// <summary>
+        /// Registers a token request handler into a route.
+        /// </summary>
+        /// <typeparam name="T">The type of entity.</typeparam>
+        /// <param name="route">The token request route.</param>
+        /// <param name="h">A token request handler.</param>
+        public static void Register<T>(TokenRequestRoute<T> route, Func<TokenRequest<PasswordTokenRequestBody>, Task<(T, TokenInfo)>> h)
+        {
+            if (route == null || h == null) return;
+            route.Register(PasswordGrantType, q =>
+            {
+                var body = new PasswordTokenRequestBody();
+                body.Fill(q);
+                return new TokenRequest<PasswordTokenRequestBody>(body, q);
+            }, h);
         }
     }
 
