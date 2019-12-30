@@ -26,4 +26,5 @@ A library providing lots of useful utilities, models and services, including hit
 The useful utilities for console application including command dispatcher, arguments parser and some rich user interface console controls.
 
 [![NuGet package](https://img.shields.io/nuget/dt/Trivial.Console?label=nuget+downloads)](https://www.nuget.org/packages/Trivial.Console)
+
 - [Console utilities and components](https://github.com/nuscien/trivial/wiki/console)
