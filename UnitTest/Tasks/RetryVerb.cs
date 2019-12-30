@@ -8,7 +8,7 @@ using Trivial.Net;
 
 namespace Trivial.UnitTest.Tasks
 {
-    public class RetryVerb : Trivial.Console.AsyncVerb
+    class RetryVerb : Trivial.Console.AsyncVerb
     {
         public override string Description => "Retry";
 

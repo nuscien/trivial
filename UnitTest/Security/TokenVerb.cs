@@ -14,7 +14,7 @@ using Trivial.Web;
 
 namespace Trivial.UnitTest.Security
 {
-    public class TokenClientVerb : Trivial.Console.Verb
+    class TokenClientVerb : Trivial.Console.Verb
     {
         public override string Description => "Access token";
 

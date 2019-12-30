@@ -12,7 +12,7 @@ using System.Text.Json.Serialization;
 
 namespace Trivial.UnitTest.Net
 {
-    public class HttpClientVerb : Trivial.Console.AsyncVerb
+    class HttpClientVerb : Trivial.Console.AsyncVerb
     {
         [DataContract]
         internal class NameAndDescription

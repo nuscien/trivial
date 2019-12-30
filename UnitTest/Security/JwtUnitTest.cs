@@ -17,6 +17,9 @@ namespace Trivial.UnitTest.Security
     [TestClass]
     public class JwtUnitTest
     {
+        /// <summary>
+        /// Tests standard JWT payload.
+        /// </summary>
         [TestMethod]
         public void TestStandardJwt()
         {
@@ -39,6 +42,9 @@ namespace Trivial.UnitTest.Security
             Assert.AreEqual(header.Parameter, parser.ToString());
         }
 
+        /// <summary>
+        /// Tests customized JWT payload.
+        /// </summary>
         [TestMethod]
         public void TestCustomizedJwt()
         {

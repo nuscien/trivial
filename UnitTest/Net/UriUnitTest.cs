@@ -17,6 +17,9 @@ namespace Trivial.UnitTest.Net
     [TestClass]
     public class UriUnitTest
     {
+        /// <summary>
+        /// Tests query data.
+        /// </summary>
         [TestMethod]
         public void TestQueryData()
         {
@@ -49,6 +52,9 @@ namespace Trivial.UnitTest.Net
             Assert.AreEqual(query.Replace("%20", "+").Replace("\\", "%5c"), q.ToString());
         }
 
+        /// <summary>
+        /// Tests HTTP URI.
+        /// </summary>
         [TestMethod]
         public void TestHttpUri()
         {
