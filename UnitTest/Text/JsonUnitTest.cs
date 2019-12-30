@@ -61,7 +61,8 @@ namespace Trivial.UnitTest.Text
             var p1 = new JsonObject
             {
                 { "p6", "()()" },
-                { "p7", 4567 }
+                { "p7", 4567 },
+                { "p9", "2020W295" },
             };
             p1.SetValue("p2", true);
             p1.SetValue("p3", p1);
@@ -69,6 +70,8 @@ namespace Trivial.UnitTest.Text
             props.SetValue("p4", "p5");
             Assert.IsNotNull(json.GetObjectValue("props", "p1", "p3"));
             Assert.IsTrue(json.GetObjectValue("props", "p1", "p3").GetBooleanValue("p2"));
+            Assert.IsFalse(json.TryGetObjectValue("props", "p1").ContainsKey("p8"));
+            Assert.AreEqual(17, json.GetObjectValue("props", "p1").GetDateTimeValue("p9").Day);
             Assert.IsNull(json.TryGetObjectValue("props", "p1", "p3", "p6"));
             Assert.AreEqual(4567, p1.GetInt32Value("p7"));
 

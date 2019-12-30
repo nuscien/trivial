@@ -61,41 +61,20 @@ using Trivial.Security;
 
 ### RSA
 
-You can convert a PEM (OpenSSL RSA key) or an XML string to the `RSAParametersConvert` class.
+You can convert a PEM (OpenSSL RSA key) or an XML string to the `RSAParameters` struct.
 
 ```csharp
 var parameters = RSAParametersConvert.Parse(pem);
 ```
 
 And you can convert back by using the extension method `ToPrivatePEMString` or `ToPublicPEMString`.
-And also you can use the extension method `ToXElement` to export the XML.
+And the extension method `ToXElement` to XML.
 
-### Symmetric
+### Symmetric & Hash
 
-You can encrypt and decrypt a string by symmetric algorithm.
-
-```csharp
-// AES sample.
-var original = "Original secret string";
-var cipher = SymmetricUtilities.Encrypt(Aes.Create, original, key, iv);
-var back = SymmetricUtilities.DecryptText(Aes.Create, cipher, key, iv); // back == original
-```
-
-### Hash
+You can use a symmetric algorithm to encrypt and decrypt a string by calling `SymmetricUtilities.Encrypt` and `SymmetricUtilities.DecryptText` functions.
 
 For hash algorithm, you can call `HashUtilities.ToHashString` function to get hash from a plain string and call `HashUtilities.Verify` to verify.
-
-```csharp
-var original = "The string to hash";
-
-// SHA-512 (of SHA-2 family)
-var sha512Str = HashUtilities.ToHashString(SHA512.Create, original);
-var isVerified = HashUtilities.Verify(SHA512.Create, original, sha512Str); // --> true
-
-// SHA-3-512
-var sha3512Str = HashUtilities.ToHashString(new HashAlgorithmName("SHA3512"), original);
-var isVerified3512 = HashUtilities.Verify(sha3512Name, original, sha3512Str); // --> true
-```
 
 ### Access token
 
@@ -113,14 +92,17 @@ You can create a JSON web token to get the string encoded by initializing a new 
 
 ```csharp
 var sign = HashSignatureProvider.CreateHS512("a secret string");
-var jwt = new JsonWebToken<Model>(new Model(), sign);
-var jwtStr = jwt.ToEncodedString();
+var jwt = new JsonWebToken<JsonWebTokenPayload>(new JsonWebTokenPayload
+{
+    Id = Guid.NewGuid().ToString("n"),
+    Issuer = "example"
+}, sign);
 
 // Get authenticiation header value.
 var header = jwt.ToAuthenticationHeaderValue();
 
 // Parse.
-var jwtSame = JsonWebToken<Model>.Parse(jwtStr, sign); // jwtSame.ToEncodedString() == jwtStr
+var jwtSame = JsonWebToken<Model>.Parse(jwtStr, sign); // jwtSame.ToEncodedString() == header.Parameter
 ```
 
 ### Secure string
@@ -140,19 +122,20 @@ using Trivial.Text;
 Includes writable JSON DOM `JsonObject` and `JsonArray`.
 And includes lots of useful converter like following.
 
-- `JsonJavaScriptTicksConverter` and `JsonUnixTimestampConverter`, and their nullable value conveters and fallback converters.
-- `JsonNumberConverter` and `JsonNumberConverter.NumberStringConverter`.
-- `JsonStringListConverter` and `JsonStringListConverter.WhiteSpaceSeparatedConverter`.
-- `JsonObjectConverter`.
+- `JsonJavaScriptTicksConverter`, and its nullable value conveters and fallback converters, to convert `DateTime` or `DateTime?` from/to JavaScript ticks number in JSON.
+- `JsonUnixTimestampConverter`, and its nullable value conveters and fallback converters, to convert `DateTime` or `DateTime?` from/to Unix timestamp number in JSON.
+- `JsonNumberConverter` and `JsonNumberConverter.NumberStringConverter`, to read number string in JSON.
+- `JsonStringListConverter` and its character separated converters (such as `JsonStringListConverter.WhiteSpaceSeparatedConverter`), to convert a string list from/to a string in JSON.
+- `JsonObjectConverter`, to convert `JsonObject` and `JsonArray`.
 
 ### CSV
 
 You can read CSV file into a list of the specific models.
-For example, you have a model class `Model` with string properties `A` and `B`, now you can map to the CSV file.
+For example, you have a model class `CsvModel` with string properties `A` and `B`, now you can map to the CSV file.
 
 ```csharp
 var csv = new CsvParser("abcd,efg\nhijk,lmn");
-foreach (var model in csv.ConvertTo<Model>(new[] { "A", "B" }))
+foreach (var model in csv.ConvertTo<CsvModel>(new[] { "A", "B" }))
 {
     Console.WriteLine("{0},{1}", model.A, model.B);
 }

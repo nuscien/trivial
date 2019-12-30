@@ -85,7 +85,7 @@ namespace Trivial.Web
         }
 
         /// <summary>
-        /// Parses JavaScript date JSON string to date and time.
+        /// Parses a ISO 8601 date string to date time.
         /// </summary>
         /// <param name="s">The JSON token value of JavaScript date.</param>
         /// <returns>A date and time.</returns>
@@ -97,16 +97,38 @@ namespace Trivial.Web
             {
                 var y2 = GetNaturalNumber(s, 0, 4);
                 if (y2 < 0) return null;
+                if (s[4] == 'W')
+                {
+                    var w3 = GetNaturalNumber(s, 5, 2);
+                    if (w3 < 0) return null;
+                    var d3 = GetNaturalNumber(s, 7);
+                    if (d3 < 0) return null;
+                    var r = new DateTime(y2, 1, 4, 0, 0, 0, DateTimeKind.Utc);
+                    r = r.AddDays((r.DayOfWeek == DayOfWeek.Sunday ? -7 : -(int)r.DayOfWeek) + w3 * 7 - 7 + d3);
+                    return r;
+                }
+
                 var m2 = GetNaturalNumber(s, 4, 2);
                 if (m2 < 0) return null;
                 var d2 = GetNaturalNumber(s, 6);
                 if (d2 < 0) return null;
                 return new DateTime(y2, m2, d2, 0, 0, 0, DateTimeKind.Utc);
             }
-
+            
             if (s.Length < 10 || s[4] != '-') return null;
             var y = GetNaturalNumber(s, 0, 4);
             if (y < 0) return null;
+            if (s[5] == 'W')
+            {
+                var w3 = GetNaturalNumber(s, 6, 2);
+                if (w3 < 0) return null;
+                var d3 = GetNaturalNumber(s, s[8] == '-' ? 9 : 8, 1);
+                if (d3 < 0) return null;
+                var r = new DateTime(y, 1, 4, 0, 0, 0, DateTimeKind.Utc);
+                r = r.AddDays((r.DayOfWeek == DayOfWeek.Sunday ? -7 : -(int)r.DayOfWeek) + w3 * 7 - 7 + d3);
+                return r;
+            }
+
             var pos = s[7] == '-' ? 8 : 7;
             var m = GetNaturalNumber(s, 5, 2);
             if (m < 0)
