@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Text.Json;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Trivial.IO;
@@ -22,7 +21,7 @@ namespace Trivial.UnitTest.IO
         [TestMethod]
         public void TestStream()
         {
-            var str = "abcdefghijklmnopqrstuvwxyz";
+            var str = "abcdefghijklmnopqrstuvwxyz 中文";
             using var stream = new MemoryStream(Encoding.UTF8.GetBytes(str));
             var streamArr = stream.Separate(10).ToList();
             Assert.IsTrue(streamArr.Count > 0);
