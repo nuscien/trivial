@@ -10,9 +10,15 @@ using Trivial.Text;
 
 namespace Trivial.UnitTest.Text
 {
+    /// <summary>
+    /// JSON unit test.
+    /// </summary>
     [TestClass]
     public class JsonUnitTest
     {
+        /// <summary>
+        /// Tests writable JSON DOM.
+        /// </summary>
         [TestMethod]
         public void TestJsonObject()
         {
@@ -123,6 +129,9 @@ namespace Trivial.UnitTest.Text
             Assert.AreEqual(jsonStr, json.ToString());
         }
 
+        /// <summary>
+        /// Tests JSON attributes.
+        /// </summary>
         [TestMethod]
         public void TestJsonAttribute()
         {

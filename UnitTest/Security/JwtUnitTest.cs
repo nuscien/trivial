@@ -11,6 +11,9 @@ using Trivial.Text;
 
 namespace Trivial.UnitTest.Security
 {
+    /// <summary>
+    /// JWT unit test.
+    /// </summary>
     [TestClass]
     public class JwtUnitTest
     {

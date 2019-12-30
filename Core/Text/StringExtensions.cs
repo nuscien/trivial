@@ -383,7 +383,7 @@ namespace Trivial.Text
         }
 
         /// <summary>
-        /// Reads lines from a specific stream reader.
+        /// Reads lines from a string.
         /// </summary>
         /// <param name="source">The source string to split.</param>
         /// <param name="removeEmptyLine">true if need remove the empty line; otherwise, false.</param>
@@ -391,6 +391,20 @@ namespace Trivial.Text
         public static IEnumerable<string> ReadLines(string source, bool removeEmptyLine = false)
         {
             return YieldSplit(source, new[] { "\r\n", "\n", "\r" }, removeEmptyLine ? StringSplitOptions.RemoveEmptyEntries : StringSplitOptions.None);
+        }
+
+        /// <summary>
+        /// Reads lines from a specific stream reader.
+        /// </summary>
+        /// <param name="reader">The stream reader.</param>
+        /// <param name="removeEmptyLine">true if need remove the empty line; otherwise, false.</param>
+        /// <returns>Lines from the specific string.</returns>
+        /// <exception cref="NotSupportedException">The stream does not support reading.</exception>
+        /// <exception cref="IOException">An I/O error occurs.</exception>
+        /// <exception cref="ObjectDisposedException">The stream has disposed.</exception>
+        public static IEnumerable<string> ReadLines(TextReader reader, bool removeEmptyLine = false)
+        {
+            return IO.CharsReader.ReadLines(reader, removeEmptyLine);
         }
 
         /// <summary>

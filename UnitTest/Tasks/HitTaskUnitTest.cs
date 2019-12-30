@@ -11,9 +11,16 @@ using Trivial.Tasks;
 
 namespace Trivial.UnitTest.Tasks
 {
+    /// <summary>
+    /// Hit task unit test.
+    /// </summary>
     [TestClass]
     public class HitTaskUnitTest
     {
+        /// <summary>
+        /// Tests debounce hit task.
+        /// </summary>
+        /// <returns>The task object representing the asynchronous operation.</returns>
         [TestMethod]
         public async Task TestDebounceAsync()
         {
@@ -41,6 +48,10 @@ namespace Trivial.UnitTest.Tasks
             taskTokens.Clear();
         }
 
+        /// <summary>
+        /// Tests throttle hit task.
+        /// </summary>
+        /// <returns>The task object representing the asynchronous operation.</returns>
         [TestMethod]
         public async Task TestThrottleAsync()
         {
@@ -65,6 +76,10 @@ namespace Trivial.UnitTest.Tasks
             taskTokens.Clear();
         }
 
+        /// <summary>
+        /// Tests multiple hit task.
+        /// </summary>
+        /// <returns>The task object representing the asynchronous operation.</returns>
         [TestMethod]
         public async Task TestMutlipleHitsAsync()
         {
@@ -102,6 +117,10 @@ namespace Trivial.UnitTest.Tasks
             taskTokens.Clear();
         }
 
+        /// <summary>
+        /// Tests times hit task.
+        /// </summary>
+        /// <returns>The task object representing the asynchronous operation.</returns>
         [TestMethod]
         public async Task TestTimesHitsAsync()
         {

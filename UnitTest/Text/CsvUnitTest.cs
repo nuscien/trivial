@@ -11,9 +11,15 @@ using Trivial.Text;
 
 namespace Trivial.UnitTest.Text
 {
+    /// <summary>
+    /// CSV unit test.
+    /// </summary>
     [TestClass]
     public class CsvUnitTest
     {
+        /// <summary>
+        /// Tests CSV parser.
+        /// </summary>
         public void TestCsvParser()
         {
             var text = "ab,cd,\"efg\",56789,!!!\nhijk,l,mn,43210";

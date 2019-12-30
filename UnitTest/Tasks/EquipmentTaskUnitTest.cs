@@ -11,11 +11,17 @@ using Trivial.Tasks;
 
 namespace Trivial.UnitTest.Tasks
 {
+    /// <summary>
+    /// Equipment task unit test.
+    /// </summary>
     [TestClass]
     public class EquipmentTaskUnitTest
     {
+        /// <summary>
+        /// Tests equipment task.
+        /// </summary>
         [TestMethod]
-        public async Task TestTaskAsync()
+        public void TestTask()
         {
             var tasks = new EquipartitionTaskContainer();
             var task1 = tasks.Create("a", "o", 5, "task1");

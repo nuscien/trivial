@@ -389,10 +389,8 @@ namespace Trivial.IO
         public static IEnumerable<string> ReadLines(Stream stream, Encoding encoding, bool removeEmptyLine = false)
         {
             if (stream == null) throw new ArgumentNullException(nameof(stream), "stream should not be null.");
-            using (var reader = new StreamReader(stream, encoding))
-            {
-                return ReadLines(reader, removeEmptyLine);
-            }
+            using var reader = new StreamReader(stream, encoding ?? Encoding.UTF8);
+            return ReadLines(reader, removeEmptyLine);
         }
 
         /// <summary>

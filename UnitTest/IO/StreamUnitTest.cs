@@ -10,9 +10,15 @@ using Trivial.IO;
 
 namespace Trivial.UnitTest.IO
 {
+    /// <summary>
+    /// Stream unit test.
+    /// </summary>
     [TestClass]
     public class StreamUnitTest
     {
+        /// <summary>
+        /// Test stream utilities.
+        /// </summary>
         [TestMethod]
         public void TestStream()
         {

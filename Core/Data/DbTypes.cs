@@ -15,39 +15,44 @@ namespace Trivial.Data
     public enum DbValueType
     {
         /// <summary>
-        /// String format.
+        /// String.
         /// </summary>
         LiteralString = 0,
 
         /// <summary>
-        /// Int32 format.
+        /// Integer with 32 bit length.
         /// </summary>
         Int32 = 1,
 
         /// <summary>
-        /// Single format.
+        /// Single float number.
         /// </summary>
-        SingleDecimal = 2,
+        SingleFloat = 2,
 
         /// <summary>
-        /// DateTime GMT format.
+        /// Date time UTC.
         /// </summary>
-        DateTimeGmt = 3,
+        DateTimeUtc = 3,
         
         /// <summary>
-        /// Boolean format.
+        /// Boolean.
         /// </summary>
         Boolean = 4,
 
         /// <summary>
-        /// Int64 format.
+        /// Integer with 64 bit length.
         /// </summary>
         Int64 = 5,
 
         /// <summary>
-        /// Single format.
+        /// Double float number.
         /// </summary>
-        DoubleDecimal = 6
+        DoubleFloat = 6,
+
+        /// <summary>
+        /// Date time with offset.
+        /// </summary>
+        DateTimeOffset = 7
     }
 
     /// <summary>

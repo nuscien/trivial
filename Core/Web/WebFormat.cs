@@ -232,7 +232,10 @@ namespace Trivial.Web
             if (obj == null) return string.Empty;
             var t = obj.GetType();
             if (t == typeof(string)) return Base64UrlEncode(obj.ToString(), Encoding.UTF8);
-            return Base64UrlEncode(StringExtensions.ToJson(obj, options));
+            return Base64UrlEncode(StringExtensions.ToJson(obj, options ?? new JsonSerializerOptions
+            {
+                IgnoreNullValues = true
+            }));
         }
 
         /// <summary>

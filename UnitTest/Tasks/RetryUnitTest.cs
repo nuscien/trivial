@@ -12,9 +12,16 @@ using Trivial.Tasks;
 
 namespace Trivial.UnitTest.Tasks
 {
+    /// <summary>
+    /// Retry unit test.
+    /// </summary>
     [TestClass]
     public class RetryUnitTest
     {
+        /// <summary>
+        /// Tests linear retry policy.
+        /// </summary>
+        /// <returns>The task object representing the asynchronous operation.</returns>
         [TestMethod]
         public async Task TestLinearAsync()
         {

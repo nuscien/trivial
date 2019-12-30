@@ -11,6 +11,9 @@ using Trivial.Text;
 
 namespace Trivial.UnitTest.Net
 {
+    /// <summary>
+    /// HTTP URI unit test.
+    /// </summary>
     [TestClass]
     public class UriUnitTest
     {

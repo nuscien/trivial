@@ -12,9 +12,16 @@ using Trivial.Text;
 
 namespace Trivial.UnitTest.Reflection
 {
+    /// <summary>
+    /// Singleton unit test.
+    /// </summary>
     [TestClass]
     public class SingletonUnitTest
     {
+        /// <summary>
+        /// Tests singleton keeper.
+        /// </summary>
+        /// <returns>The task object representing the asynchronous operation.</returns>
         [TestMethod]
         public async Task TestSingletonKeeperAsync()
         {
@@ -31,6 +38,9 @@ namespace Trivial.UnitTest.Reflection
             Assert.AreEqual(1, j);
         }
 
+        /// <summary>
+        /// Tests observable properties instance.
+        /// </summary>
         [TestMethod]
         public void TestObservableProperties()
         {
