@@ -9,6 +9,7 @@
 // --------------------------------------------------------------------------------------------------------------------
 
 using System;
+using System.Text.Json.Serialization;
 
 namespace Trivial.Maths
 {
@@ -72,6 +73,7 @@ namespace Trivial.Maths
             /// <summary>
             /// Gets or sets a value indicating whether it is positive.
             /// </summary>
+            [JsonIgnore]
             public bool Positive
             {
                 get
@@ -90,6 +92,7 @@ namespace Trivial.Maths
             /// <summary>
             /// Gets or sets the absolute degree of the angle.
             /// </summary>
+            [JsonIgnore]
             public int AbsDegree => Math.Abs((int)raw);
 
             /// <summary>
@@ -140,11 +143,13 @@ namespace Trivial.Maths
             /// <summary>
             /// Gets the absolute total degrees with float format.
             /// </summary>
+            [JsonIgnore]
             public double AbsDegrees => Math.Abs(Degrees);
 
             /// <summary>
             /// Gets or sets the total degrees.
             /// </summary>
+            [JsonIgnore]
             public double Degrees
             {
                 get
@@ -162,6 +167,7 @@ namespace Trivial.Maths
             /// Converts to radians value.
             /// </summary>
             /// <returns>A double number for the angle.</returns>
+            [JsonIgnore]
             public double Radians
             {
                 get { return Degrees / 180 * Math.PI; }
@@ -172,6 +178,7 @@ namespace Trivial.Maths
             /// Converts to radians value which has not muliplied PI.
             /// </summary>
             /// <returns>A double number for the angle before mulipling PI.</returns>
+            [JsonIgnore]
             public double RadiansWithoutPi
             {
                 get { return Degrees / 180; }
@@ -182,6 +189,7 @@ namespace Trivial.Maths
             /// Converts to turns value.
             /// </summary>
             /// <returns>A single float about turns.</returns>
+            [JsonIgnore]
             public double Turns
             {
                 get { return Degrees / 360; }
@@ -192,6 +200,7 @@ namespace Trivial.Maths
             /// Converts to grads value.
             /// </summary>
             /// <returns>A single float about grads.</returns>
+            [JsonIgnore]
             public double Grads
             {
                 get { return Degrees / 0.9; }
@@ -201,11 +210,13 @@ namespace Trivial.Maths
             /// <summary>
             /// Gets a value indicating whether the angle is a zero degree angle.
             /// </summary>
+            [JsonIgnore]
             public bool IsZero => raw == 0;
 
             /// <summary>
             /// Gets a value indicating whether the angle is a negative angle.
             /// </summary>
+            [JsonIgnore]
             public bool IsNegative => raw < 0;
 
             /// <summary>

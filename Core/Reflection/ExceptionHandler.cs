@@ -168,7 +168,6 @@ namespace Trivial.Reflection
         /// <returns>true if contains; otherwise, false.</returns>
         public bool Contains<T>(Func<T, Exception> catchHandler = null) where T : Exception
         {
-            var type = typeof(T);
             foreach (var item in list)
             {
                 if (item is Item<T> itemConverted && itemConverted.Handler == catchHandler) return true;
@@ -244,7 +243,7 @@ namespace Trivial.Reflection
             var removing = new List<Item>();
             foreach (var item in list)
             {
-                if (item is Item<T> itemConverted) removing.Add(item);
+                if (item is Item<T>) removing.Add(item);
             }
 
             var count = removing.Count;

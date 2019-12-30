@@ -11,7 +11,7 @@ namespace Trivial.Reflection
     /// <summary>
     /// Base model with observable properties.
     /// </summary>
-    public abstract class BaseObservableProperties : INotifyPropertyChanged, IEnumerable<KeyValuePair<string, object>>
+    public abstract class BaseObservableProperties : INotifyPropertyChanged
     {
         /// <summary>
         /// Data cache.
@@ -160,19 +160,78 @@ namespace Trivial.Reflection
         /// Returns an enumerator that iterates through the collection.
         /// </summary>
         /// <returns>An enumerator that can be used to iterate through the collection.</returns>
-        IEnumerator<KeyValuePair<string, object>> IEnumerable<KeyValuePair<string, object>>.GetEnumerator()
+        protected IEnumerator<KeyValuePair<string, object>> GetEnumerator()
         {
             return cache.GetEnumerator();
         }
+    }
+
+    /// <summary>
+    /// The model with observable properties.
+    /// </summary>
+    public class ObservableProperties : BaseObservableProperties, IEnumerable<KeyValuePair<string, object>>
+    {
+        /// <summary>
+        /// Gets an enumerable collection that contains the keys in this instance.
+        /// </summary>
+        public new IEnumerable<string> Keys => base.Keys;
+
+        /// <summary>
+        /// Determines whether this instance contains an element that has the specified key.
+        /// </summary>
+        /// <param name="key">The key to locate.</param>
+        /// <returns>true if this instance contains an element that has the specified key; otherwise, false.</returns>
+        public new bool ContainsKey(string key) => base.ContainsKey(key);
+
+        /// <summary>
+        /// Sets and property initialize. This change will not occur the event property changed,
+        /// </summary>
+        /// <typeparam name="T">The type of the property value.</typeparam>
+        /// <param name="key">The property key.</param>
+        /// <param name="initializer">A handler to resolve value of the specific property.</param>
+        public new void InitializeProperty<T>(string key, Func<T> initializer) => base.InitializeProperty(key, initializer);
+
+        /// <summary>
+        /// Gets a property value.
+        /// </summary>
+        /// <typeparam name="T">The type of the property value.</typeparam>
+        /// <param name="key">The key.</param>
+        /// <param name="defaultValue">The default value.</param>
+        /// <returns>A property value.</returns>
+        public new T GetProperty<T>(string key, T defaultValue = default) => base.GetProperty<T>(key, defaultValue);
+
+        /// <summary>
+        /// Sets a property.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <param name="value">The value.</param>
+        /// <returns>true if set succeeded; otherwise, false.</returns>
+        public new bool SetProperty(string key, object value) => base.SetProperty(key, value);
+
+        /// <summary>
+        /// Removes a property.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <returns>true if the element is successfully found and removed; otherwise, false.</returns>
+        public new bool RemoveProperty(string key) => base.RemoveProperty(key);
+
+        /// <summary>
+        /// Forces rasing the property changed notification.
+        /// </summary>
+        /// <param name="key">The property key.</param>
+        public new void ForceNotify(string key) => base.ForceNotify(key);
 
         /// <summary>
         /// Returns an enumerator that iterates through the collection.
         /// </summary>
         /// <returns>An enumerator that can be used to iterate through the collection.</returns>
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return cache.GetEnumerator();
-        }
+        public new IEnumerator<KeyValuePair<string, object>> GetEnumerator() => base.GetEnumerator();
+
+        /// <summary>
+        /// Returns an enumerator that iterates through the collection.
+        /// </summary>
+        /// <returns>An enumerator that can be used to iterate through the collection.</returns>
+        IEnumerator IEnumerable.GetEnumerator() => base.GetEnumerator();
     }
 
     /// <summary>

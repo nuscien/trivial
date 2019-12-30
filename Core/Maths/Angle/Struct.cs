@@ -9,6 +9,7 @@
 // --------------------------------------------------------------------------------------------------------------------
 
 using System;
+using System.Text.Json.Serialization;
 
 namespace Trivial.Maths
 {
@@ -43,11 +44,13 @@ namespace Trivial.Maths
         /// <summary>
         /// Gets or sets a value indicating whether it is positive.
         /// </summary>
+        [JsonIgnore]
         public bool Positive { get; }
 
         /// <summary>
         /// Gets or sets the absolute degree of the angle.
         /// </summary>
+        [JsonIgnore]
         public int AbsDegree { get; }
 
         /// <summary>
@@ -68,45 +71,53 @@ namespace Trivial.Maths
         /// <summary>
         /// Gets the absolute total degrees with float format.
         /// </summary>
+        [JsonIgnore]
         public double AbsDegrees { get; }
 
         /// <summary>
         /// Gets or sets the total degrees.
         /// </summary>
+        [JsonIgnore]
         public double Degrees { get; }
 
         /// <summary>
         /// Converts to radians value.
         /// </summary>
         /// <returns>A double number for the angle.</returns>
+        [JsonIgnore]
         public double Radians => Degrees / 180 * Math.PI;
 
         /// <summary>
         /// Converts to radians value which has not muliplied PI.
         /// </summary>
         /// <returns>A double number for the angle before mulipling PI.</returns>
+        [JsonIgnore]
         public double RadiansWithoutPi => Degrees / 180;
 
         /// <summary>
         /// Converts to turns value.
         /// </summary>
         /// <returns>A single float about turns.</returns>
+        [JsonIgnore]
         public double Turns => Degrees / 360;
 
         /// <summary>
         /// Converts to grads value.
         /// </summary>
         /// <returns>A single float about grads.</returns>
+        [JsonIgnore]
         public double Grads => Degrees / 0.9;
 
         /// <summary>
         /// Gets a value indicating whether the angle is a zero degree angle.
         /// </summary>
+        [JsonIgnore]
         public bool IsZero => Arcsecond.Equals(0) && Arcminute == 0 && Degree == 0;
 
         /// <summary>
         /// Gets a value indicating whether the angle is a negative angle.
         /// </summary>
+        [JsonIgnore]
         public bool IsNegative { get; }
 
         /// <summary>

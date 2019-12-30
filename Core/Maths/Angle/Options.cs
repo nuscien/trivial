@@ -9,6 +9,7 @@
 // --------------------------------------------------------------------------------------------------------------------
 
 using System;
+using System.Text.Json.Serialization;
 
 namespace Trivial.Maths
 {
@@ -62,16 +63,20 @@ namespace Trivial.Maths
             /// <summary>
             /// Gets the maximum degree supported. Should be greater than 0.
             /// </summary>
+            [JsonPropertyName("max")]
             public int MaxDegree { get; }
 
             /// <summary>
             /// Gets a value indicating whether set the mirror mode.
             /// </summary>
+            [JsonPropertyName("negative")]
             public bool Negative { get; }
 
             /// <summary>
             /// Gets the mode to rectify if the value is out of the scope.
             /// </summary>
+            [JsonPropertyName("rectify")]
+            [JsonConverter(typeof(JsonStringEnumConverter))]
             public RectifyModes RectifyMode { get; }
         }
     }

@@ -1209,7 +1209,7 @@ namespace Trivial.Data
         /// </summary>
         public override DbValueType ValueType
         {
-            get { return DbValueType.DateTimeGmt; }
+            get { return DbValueType.DateTimeUtc; }
         }
 
         /// <summary>

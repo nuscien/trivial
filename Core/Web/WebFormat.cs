@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Json;
@@ -246,7 +247,7 @@ namespace Trivial.Web
         public static byte[] Base64UrlDecode(string s)
         {
             if (s == null) return null;
-            if (s == string.Empty) return new byte[0];
+            if (s == string.Empty) return Array.Empty<byte>();
             s = s.Replace("-", "+").Replace("_", "/");
             var rest = s.Length % 4;
             if (rest > 0) s = s.PadRight(4 - rest + s.Length, '=');

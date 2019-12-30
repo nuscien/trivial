@@ -25,9 +25,9 @@ namespace Trivial.Data
         Int32 = 1,
 
         /// <summary>
-        /// Single float number.
+        /// Single decimal number.
         /// </summary>
-        SingleFloat = 2,
+        SingleDecimal = 2,
 
         /// <summary>
         /// Date time UTC.
@@ -45,9 +45,9 @@ namespace Trivial.Data
         Int64 = 5,
 
         /// <summary>
-        /// Double float number.
+        /// Double decimal number.
         /// </summary>
-        DoubleFloat = 6,
+        DoubleDecimal = 6,
 
         /// <summary>
         /// Date time with offset.
