@@ -49,7 +49,7 @@ namespace Trivial.UnitTest.Text
             Assert.AreEqual("uvw", json.GetStringValue("str-c"));
             Assert.AreEqual("0123456789", json.GetStringValue("str-d"));
             Assert.AreEqual(123, json.GetInt32Value("num"));
-            Assert.AreEqual("123", json.GetStringValue("num", true));
+            Assert.AreEqual("123", json.GetStringValue("num"));
             Assert.AreEqual(now.Second, json.GetDateTimeValue("now").Second);
             Assert.AreEqual(now.Second, json.GetDateTimeValue("ticks").Second);
             Assert.AreEqual(JsonValueKind.String, json.GetValueKind("now"));
