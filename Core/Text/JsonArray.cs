@@ -54,14 +54,23 @@ namespace Trivial.Text
         /// <returns>The element at the specified index in the array.</returns>
         /// <exception cref="ArgumentOutOfRangeException">The property does not exist.</exception>
         /// <exception cref="InvalidOperationException">The value type is not the expected one.</exception>
-        public IJsonValue this[int index] => GetValue(index);
+        public IJsonValueResolver this[int index] => GetValue(index);
+
+        /// <summary>
+        /// Gets the element at the specified index in the array.
+        /// </summary>
+        /// <param name="index">The zero-based index of the element to get.</param>
+        /// <returns>The element at the specified index in the array.</returns>
+        /// <exception cref="ArgumentOutOfRangeException">The property does not exist.</exception>
+        /// <exception cref="InvalidOperationException">The value type is not the expected one.</exception>
+        IJsonValue IReadOnlyList<IJsonValue>.this[int index] => GetValue(index);
 
         /// <summary>
         /// Gets the System.Char object at a specified position in the source value.
         /// </summary>
         /// <param name="index">A position in the current string.</param>
         /// <returns>The character at position index.</returns>
-        public IJsonValue this[Index index] => GetValue(index.IsFromEnd ? Count - index.Value : index.Value);
+        public IJsonValueResolver this[Index index] => GetValue(index.IsFromEnd ? Count - index.Value : index.Value);
 
         /// <summary>
         /// Determines the property value of the specific key is null.
@@ -171,7 +180,7 @@ namespace Trivial.Text
         /// <exception cref="ArgumentOutOfRangeException">The property does not exist.</exception>
         public JsonValueKind GetValueKind(Index index, bool strictMode = false)
         {
-            return GetValueKind(index.IsFromEnd ? store.Count - index.Value : index.Value);
+            return GetValueKind(index.IsFromEnd ? store.Count - index.Value : index.Value, strictMode);
         }
 
         /// <summary>
@@ -1808,6 +1817,34 @@ namespace Trivial.Text
             }
 
             return JsonSerializer.Deserialize<T>(item.ToString(), options);
+        }
+
+        /// <summary>
+        /// Gets the JSON value kind groups.
+        /// </summary>
+        /// <returns>A dictionary of JSON value kind summary.</returns>
+        public IDictionary<JsonValueKind, List<int>> GetJsonValueKindGroups()
+        {
+            var dict = new Dictionary<JsonValueKind, List<int>>
+            {
+                { JsonValueKind.Array, new List<int>() },
+                { JsonValueKind.False, new List<int>() },
+                { JsonValueKind.Null, new List<int>() },
+                { JsonValueKind.Number, new List<int>() },
+                { JsonValueKind.Object, new List<int>() },
+                { JsonValueKind.String, new List<int>() },
+                { JsonValueKind.True, new List<int>() },
+            };
+            var i = -1;
+            foreach (var item in store)
+            {
+                i++;
+                var valueKind = item?.ValueKind ?? JsonValueKind.Null;
+                if (valueKind == JsonValueKind.Undefined) continue;
+                dict[valueKind].Add(i);
+            }
+
+            return dict;
         }
 
         /// <summary>

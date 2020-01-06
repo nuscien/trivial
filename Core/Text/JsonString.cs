@@ -54,6 +54,16 @@ namespace Trivial.Text
         /// Initializes a new instance of the JsonString class.
         /// </summary>
         /// <param name="value">The value.</param>
+        public JsonString(DateTimeOffset value)
+        {
+            Value = value.ToString("yyyy-MM-ddTHH:mm:ss.fffzzz");
+            ValueKind = JsonValueKind.String;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the JsonString class.
+        /// </summary>
+        /// <param name="value">The value.</param>
         public JsonString(Guid value)
         {
             Value = value.ToString();

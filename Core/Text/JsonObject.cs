@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.IO;
-using System.Linq;
 using System.Text;
 using System.Text.Json;
 using System.Threading;
@@ -81,10 +79,37 @@ namespace Trivial.Text
         /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
         /// <exception cref="ArgumentOutOfRangeException">The property does not exist.</exception>
         /// <exception cref="InvalidOperationException">The value type is not the expected one.</exception>
-        public IJsonValue this[string key]
+        public IJsonValueResolver this[string key]
         {
             get => GetValue(key);
             set => store[key] = JsonValues.ConvertValue(value, this);
+        }
+
+        /// <summary>
+        /// Gets or sets the value of the specific property.
+        /// </summary>
+        /// <param name="key">The property key.</param>
+        /// <returns>The value.</returns>
+        /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">The property does not exist.</exception>
+        /// <exception cref="InvalidOperationException">The value type is not the expected one.</exception>
+        IJsonValue IDictionary<string, IJsonValue>.this[string key]
+        {
+            get => GetValue(key);
+            set => store[key] = JsonValues.ConvertValue(value, this);
+        }
+
+        /// <summary>
+        /// Gets the value of the specific property.
+        /// </summary>
+        /// <param name="key">The property key.</param>
+        /// <returns>The value.</returns>
+        /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">The property does not exist.</exception>
+        /// <exception cref="InvalidOperationException">The value type is not the expected one.</exception>
+        IJsonValue IReadOnlyDictionary<string, IJsonValue>.this[string key]
+        {
+            get => GetValue(key);
         }
 
         /// <summary>
@@ -205,12 +230,12 @@ namespace Trivial.Text
         /// Gets the value of the specific property.
         /// </summary>
         /// <param name="key">The property key.</param>
-        /// <param name="convert">true if want to convert to string if it is a number or a boolean; otherwise, false.</param>
+        /// <param name="strictMode">true if want to convert to string only when it is a string; otherwise, false.</param>
         /// <returns>The value. It will be null if the value is null.</returns>
         /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
         /// <exception cref="ArgumentOutOfRangeException">The property does not exist.</exception>
         /// <exception cref="InvalidOperationException">The value type is not the expected one.</exception>
-        public string GetStringValue(string key, bool convert = false)
+        public string GetStringValue(string key, bool strictMode = false)
         {
             AssertKey(key);
             var data = store[key];
@@ -224,7 +249,7 @@ namespace Trivial.Text
                 return str.Value;
             }
 
-            if (convert) return data.ValueKind switch
+            if (!strictMode) return data.ValueKind switch
             {
                 JsonValueKind.True => JsonBoolean.TrueString,
                 JsonValueKind.False => JsonBoolean.TrueString,
@@ -840,17 +865,17 @@ namespace Trivial.Text
         /// <returns>The value.</returns>
         public JsonObject TryGetObjectValue(string key, string subKey, params string[] keyPath)
         {
-            var json = TryGetObjectValue(key);
+            var json = TryGetObjectValueByProperty(this, key);
             if (!string.IsNullOrWhiteSpace(subKey))
             {
                 if (json is null) return null;
-                json = json.TryGetObjectValue(subKey);
+                json = TryGetObjectValueByProperty(json, subKey);
             }
 
             foreach (var k in keyPath)
             {
                 if (json is null) return null;
-                json = json.TryGetObjectValue(k);
+                json = TryGetObjectValueByProperty(json, k);
             }
 
             return json;
@@ -2022,6 +2047,61 @@ namespace Trivial.Text
         }
 
         /// <summary>
+        /// Gets the JSON value kind groups.
+        /// </summary>
+        /// <returns>A dictionary of JSON value kind summary.</returns>
+        public IDictionary<JsonValueKind, List<string>> GetJsonValueKindGroups()
+        {
+            var dict = new Dictionary<JsonValueKind, List<string>>
+            {
+                { JsonValueKind.Array, new List<string>() },
+                { JsonValueKind.False, new List<string>() },
+                { JsonValueKind.Null, new List<string>() },
+                { JsonValueKind.Number, new List<string>() },
+                { JsonValueKind.Object, new List<string>() },
+                { JsonValueKind.String, new List<string>() },
+                { JsonValueKind.True, new List<string>() },
+            };
+            foreach (var item in store)
+            {
+                var valueKind = item.Value?.ValueKind ?? JsonValueKind.Null;
+                if (valueKind == JsonValueKind.Undefined) continue;
+                dict[valueKind].Add(item.Key);
+            }
+
+            return dict;
+        }
+
+        /// <summary>
+        /// Gets a dictionary of specific keys.
+        /// </summary>
+        /// <param name="keys">The properties keys.</param>
+        /// <param name="removeNull">true if skip null values; otherwise, false.</param>
+        /// <returns>A dictionary of values of the specific keys.</returns>
+        public IDictionary<string, IJsonValueResolver> Select(IEnumerable<string> keys, bool removeNull = false)
+        {
+            var dict = new Dictionary<string, IJsonValueResolver>();
+            if (removeNull)
+            {
+                foreach (var item in keys)
+                {
+                    if (store.TryGetValue(item, out var r) && !(r is null) && r.ValueKind != JsonValueKind.Null && r.ValueKind != JsonValueKind.Undefined)
+                        dict[item] = r as IJsonValueResolver;
+                }
+            }
+            else
+            {
+                foreach (var item in keys)
+                {
+                    if (store.TryGetValue(item, out var r))
+                        dict[item] = r as IJsonValueResolver;
+                }
+            }
+
+            return dict;
+        }
+
+        /// <summary>
         /// Creates a new object that is a copy of the current instance.
         /// </summary>
         /// <returns>A new object that is a copy of this instance.</returns>
@@ -2337,6 +2417,17 @@ namespace Trivial.Text
             if (ReferenceEquals(leftValue, rightValue)) return false;
             if (rightValue is null || leftValue is null) return true;
             return !leftValue.Equals(rightValue);
+        }
+
+        private static JsonObject TryGetObjectValueByProperty(JsonObject json, string key)
+        {
+            if (json.GetValueKind(key) == JsonValueKind.Array)
+            {
+                if (!int.TryParse(key, out var i)) return null;
+                return json.TryGetArrayValue(key).TryGetObjectValue(i);
+            }
+
+            return json.TryGetObjectValue(key);
         }
     }
 }
