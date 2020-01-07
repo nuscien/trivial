@@ -95,8 +95,12 @@ namespace Trivial.UnitTest.Text
             jsonArray.AddRange(new[] { 8, 9 });
             jsonArray.AddNull();
             Assert.AreEqual(9, jsonArray.Count);
-            Assert.AreEqual(jsonArray.GetInt32Value(0), 7);
+            Assert.AreEqual(7, jsonArray.GetInt32Value(0));
             Assert.AreNotEqual(jsonArray.GetInt32Value(0), jsonArray.GetInt32Value(1));
+            Assert.AreEqual(7, json.GetValue("arr", "0").GetInt32());
+            Assert.AreEqual(7, json.GetValue("arr", null, null, "0", string.Empty).GetInt32());
+            Assert.IsNull(json.TryGetValue(new[] { "arr", "0", "x" }));
+            Assert.AreEqual(9, jsonArray.GetStringCollection().ToList().Count);
 
             jsonArray.Remove(^1);
             var m = json.Deserialize<JsonModel>();

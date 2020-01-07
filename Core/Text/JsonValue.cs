@@ -961,11 +961,11 @@ namespace Trivial.Text
             return leftValue.Equals(rightValue);
         }
 
-        internal static IJsonValue ConvertValue(IJsonValue value, IJsonValue thisInstance = null)
+        internal static IJsonValueResolver ConvertValue(IJsonValue value, IJsonValue thisInstance = null)
         {
-            if (value is null || value.ValueKind == JsonValueKind.Null || value.ValueKind == JsonValueKind.Undefined) return null;
+            if (value is null || value.ValueKind == JsonValueKind.Null || value.ValueKind == JsonValueKind.Undefined) return Null;
             if (value is JsonObject obj) return obj == thisInstance ? obj.Clone() : obj;
-            if (value is JsonArray || value is JsonString || value is JsonInteger || value is JsonDouble || value is JsonBoolean) return value;
+            if (value is JsonArray || value is JsonString || value is JsonInteger || value is JsonDouble || value is JsonBoolean) return value as IJsonValueResolver;
             if (value.ValueKind == JsonValueKind.True) return JsonBoolean.True;
             if (value.ValueKind == JsonValueKind.False) return JsonBoolean.False;
             if (value.ValueKind == JsonValueKind.String)
@@ -991,10 +991,10 @@ namespace Trivial.Text
                 var s = value.ToString();
                 if (long.TryParse(s, out var l)) return new JsonInteger(l);
                 if (double.TryParse(s, out var db)) return new JsonDouble(db);
-                return null;
+                return Null;
             }
 
-            return null;
+            return Null;
         }
     }
 }
