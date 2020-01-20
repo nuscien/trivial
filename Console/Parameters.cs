@@ -170,6 +170,16 @@ namespace Trivial.Console
         }
 
         /// <summary>
+        /// Converts the value to its time span equivalent.
+        /// </summary>
+        /// <param name="result">The result value converted when this method returns.</param>
+        /// <returns>true if the value was converted successfully; otherwise, false.</returns>
+        public bool TryParse(out TimeSpan result)
+        {
+            return TimeSpan.TryParse(Value, out result);
+        }
+
+        /// <summary>
         /// Converts the value to its URI equivalent.
         /// </summary>
         /// <returns>The result value converted.</returns>

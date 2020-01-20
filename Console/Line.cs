@@ -155,8 +155,8 @@ namespace Trivial.Console
         /// <param name="arg">An array of objects to write using format.</param>
         public void Write(string value, params object[] arg)
         {
-            if (value == null) return;
-            var str = string.Format(value, arg);
+            if (string.IsNullOrEmpty(value)) return;
+            var str = arg.Length > 0 ? string.Format(value, arg) : value;
             if (AutoFlush)
             {
                 line.Append(str);
@@ -401,7 +401,8 @@ namespace Trivial.Console
         /// <param name="arg">An array of objects to write using format.</param>
         public void Write(ConsoleColor foregroundColor, string value, params object[] arg)
         {
-            var str = string.Format(value, arg);
+            if (string.IsNullOrEmpty(value)) return;
+            var str = arg.Length > 0 ? string.Format(value, arg) : value;
             if (AutoFlush)
             {
                 line.Append(str);
@@ -425,7 +426,8 @@ namespace Trivial.Console
         /// <param name="arg">An array of objects to write using format.</param>
         public void Write(ConsoleColor? foregroundColor, ConsoleColor? backgroundColor, string value, params object[] arg)
         {
-            var str = string.Format(value, arg);
+            if (string.IsNullOrEmpty(value)) return;
+            var str = arg.Length > 0 ? string.Format(value, arg) : value;
             if (AutoFlush)
             {
                 line.Append(str);
@@ -624,6 +626,30 @@ namespace Trivial.Console
         /// <summary>
         /// Writes the current line terminator for each item, to the standard output stream.
         /// </summary>
+        /// <param name="foregroundColor">The foreground color of the console.</param>
+        /// <param name="col">The string collection to write. Each one in a line.</param>
+        public void WriteLines(ConsoleColor foregroundColor, IEnumerable<string> col)
+        {
+            if (col == null)
+            {
+                End();
+                return;
+            }
+
+            var c = System.Console.ForegroundColor;
+            System.Console.ForegroundColor = foregroundColor;
+            foreach (var item in col)
+            {
+                Write(item);
+                End(true);
+            }
+
+            System.Console.ForegroundColor = c;
+        }
+
+        /// <summary>
+        /// Writes the current line terminator for each item, to the standard output stream.
+        /// </summary>
         /// <param name="col">The string collection to write. Each one in a line.</param>
         /// <param name="converter">A string converter.</param>
         public void WriteLines<T>(IEnumerable<T> col, Func<T, string> converter)
@@ -654,6 +680,44 @@ namespace Trivial.Console
             LineIndex++;
             initLeft = -1;
             return System.Console.ReadLine();
+        }
+
+        /// <summary>
+        /// Reads the next line of characters from the standard input stream.
+        /// </summary>
+        /// <param name="question">The question message to output.</param>
+        /// <param name="questionColor">The question message color.</param>
+        /// <returns>The next line of characters from the input stream, or null if no more lines are available.</returns>
+        public string ReadLine(string question, ConsoleColor questionColor)
+        {
+            Write(questionColor, question);
+            Flush();
+            LineIndex++;
+            initLeft = -1;
+            return System.Console.ReadLine();
+        }
+
+        /// <summary>
+        /// Reads the next line of characters from the standard input stream.
+        /// </summary>
+        /// <param name="retry">The maximum retry count for empty.</param>
+        /// <param name="prefix">The prefix text to output.</param>
+        /// <param name="prefixColor">The prefix text color.</param>
+        /// <returns>The next line of characters from the input stream, or null if no more lines are available.</returns>
+        public string ReadLine(int retry, string prefix = null, ConsoleColor? prefixColor = null)
+        {
+            for (var i = 0; i < retry; i++)
+            {
+                if (prefixColor.HasValue) Write(prefixColor.Value, prefix);
+                else Write(prefix);
+                Flush();
+                LineIndex++;
+                initLeft = -1;
+                var str = System.Console.ReadLine();
+                if (!string.IsNullOrEmpty(str)) return str;
+            }
+
+            return string.Empty;
         }
 
         /// <summary>
@@ -1055,7 +1119,8 @@ namespace Trivial.Console
             if (string.IsNullOrEmpty(value)) return;
             var c = System.Console.ForegroundColor;
             System.Console.ForegroundColor = foregroundColor;
-            System.Console.Write(value, arg);
+            if (arg.Length > 0) System.Console.Write(value, arg);
+            else System.Console.Write(value);
             System.Console.ForegroundColor = c;
         }
 
@@ -1073,7 +1138,8 @@ namespace Trivial.Console
             var back = System.Console.BackgroundColor;
             if (foregroundColor.HasValue) System.Console.ForegroundColor = foregroundColor.Value;
             if (backgroundColor.HasValue) System.Console.BackgroundColor = backgroundColor.Value;
-            System.Console.Write(value, arg);
+            if (arg.Length > 0) System.Console.Write(value, arg);
+            else System.Console.Write(value);
             if (foregroundColor.HasValue) System.Console.ForegroundColor = fore;
             if (backgroundColor.HasValue) System.Console.BackgroundColor = back;
         }
@@ -1134,6 +1200,24 @@ namespace Trivial.Console
             {
                 System.Console.WriteLine(item);
             }
+        }
+
+        /// <summary>
+        /// Writes the current line terminator for each item, to the standard output stream.
+        /// </summary>
+        /// <param name="foregroundColor">The foreground color of the console.</param>
+        /// <param name="col">The string collection to write. Each one in a line.</param>
+        public static void WriteLines(ConsoleColor foregroundColor, IEnumerable<string> col)
+        {
+            if (col == null) return;
+            var c = System.Console.ForegroundColor;
+            System.Console.ForegroundColor = foregroundColor;
+            foreach (var item in col)
+            {
+                System.Console.WriteLine(item);
+            }
+
+            System.Console.ForegroundColor = c;
         }
 
         /// <summary>
