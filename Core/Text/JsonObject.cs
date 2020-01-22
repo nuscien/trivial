@@ -2561,7 +2561,7 @@ namespace Trivial.Text
         /// <param name="options">Options to control the reader behavior during parsing.</param>
         /// <returns>A JSON object instance.</returns>
         /// <exception cref="JsonException">json does not represent a valid single JSON object.</exception>
-        /// <exception cref="ArgumentException">readerOptions contains unsupported options.</exception>
+        /// <exception cref="ArgumentException">options contains unsupported options.</exception>
         public static JsonObject Parse(string json, JsonDocumentOptions options = default)
         {
             return JsonDocument.Parse(json, options);
@@ -2569,13 +2569,13 @@ namespace Trivial.Text
 
         /// <summary>
         /// Parses a stream as UTF-8-encoded data representing a JSON object.
-        /// The stream is read to completio
+        /// The stream is read to completion.
         /// </summary>
         /// <param name="utf8Json">The JSON data to parse.</param>
         /// <param name="options">Options to control the reader behavior during parsing.</param>
         /// <returns>A JSON object instance.</returns>
         /// <exception cref="JsonException">json does not represent a valid single JSON object.</exception>
-        /// <exception cref="ArgumentException">readerOptions contains unsupported options.</exception>
+        /// <exception cref="ArgumentException">options contains unsupported options.</exception>
         public static JsonObject Parse(Stream utf8Json, JsonDocumentOptions options = default)
         {
             return JsonDocument.Parse(utf8Json, options);
@@ -2583,14 +2583,14 @@ namespace Trivial.Text
 
         /// <summary>
         /// Parses a stream as UTF-8-encoded data representing a JSON object.
-        /// The stream is read to completio
+        /// The stream is read to completion.
         /// </summary>
         /// <param name="utf8Json">The JSON data to parse.</param>
         /// <param name="options">Options to control the reader behavior during parsing.</param>
         /// <param name="cancellationToken">The token to monitor for cancellation requests.</param>
         /// <returns>A JSON object instance.</returns>
         /// <exception cref="JsonException">json does not represent a valid single JSON object.</exception>
-        /// <exception cref="ArgumentException">readerOptions contains unsupported options.</exception>
+        /// <exception cref="ArgumentException">options contains unsupported options.</exception>
         public static async Task<JsonObject> ParseAsync(Stream utf8Json, JsonDocumentOptions options = default, CancellationToken cancellationToken = default)
         {
             return await JsonDocument.ParseAsync(utf8Json, options, cancellationToken);
@@ -2602,12 +2602,70 @@ namespace Trivial.Text
         /// <param name="reader">A JSON object.</param>
         /// <returns>A JSON object instance.</returns>
         /// <exception cref="JsonException">json does not represent a valid single JSON object.</exception>
-        /// <exception cref="ArgumentException">readerOptions contains unsupported options.</exception>
         public static JsonObject ParseValue(ref Utf8JsonReader reader)
         {
             var obj = new JsonObject();
             obj.SetRange(ref reader);
             return obj;
+        }
+
+        /// <summary>
+        /// Converts an object to JSON object.
+        /// </summary>
+        /// <param name="obj">The object to convert.</param>
+        /// <param name="options">Options to control the reader behavior during parsing.</param>
+        /// <returns>A JSON object instance.</returns>
+        /// <exception cref="JsonException">json does not represent a valid single JSON object.</exception>
+        public static JsonObject ConvertFrom(object obj, JsonSerializerOptions options = default)
+        {
+            if (obj is null) return null;
+            if (obj is IJsonValue)
+            {
+                if (obj is JsonObject jObj) return jObj;
+                if (obj is JsonArray jArr)
+                {
+                    var r = new JsonObject();
+                    var i = 0;
+                    foreach (var item in jArr)
+                    {
+                        r.Add(i.ToString(), item);
+                        i++;
+                    }
+
+                    return r;
+                }
+
+                if (obj is JsonNull) return null;
+                var valueKind = (obj as IJsonValue).ValueKind;
+                switch (valueKind)
+                {
+                    case JsonValueKind.Null:
+                    case JsonValueKind.Undefined:
+                    case JsonValueKind.False:
+                        return null;
+                    case JsonValueKind.True:
+                        return new JsonObject();
+                }
+            }
+
+            if (obj is JsonDocument doc) return doc;
+            if (obj is string str) return Parse(str);
+            if (obj is StringBuilder sb) return Parse(sb.ToString());
+            if (obj is Stream stream) return Parse(stream);
+            if (obj is IEnumerable<KeyValuePair<string, object>> dict)
+            {
+                var r = new JsonObject();
+                foreach (var kvp in dict)
+                {
+                    if (string.IsNullOrWhiteSpace(kvp.Key)) continue;
+                    r.SetValue(kvp.Key, ConvertFrom(kvp.Value));
+                }
+
+                return r;
+            }
+
+            var s = JsonSerializer.Serialize(obj, obj.GetType(), options);
+            return Parse(s);
         }
 
         /// <summary>

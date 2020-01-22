@@ -2286,5 +2286,71 @@ namespace Trivial.Text
         {
             return JsonDocument.ParseValue(ref reader);
         }
+
+        /// <summary>
+        /// Converts an object to JSON object.
+        /// </summary>
+        /// <param name="obj">The object to convert.</param>
+        /// <param name="options">Options to control the reader behavior during parsing.</param>
+        /// <returns>A JSON object instance.</returns>
+        /// <exception cref="JsonException">json does not represent a valid single JSON object.</exception>
+        public static JsonArray ConvertFrom(object obj, JsonSerializerOptions options = default)
+        {
+            if (obj is null) return null;
+            if (obj is IJsonValue)
+            {
+                if (obj is JsonArray jArr) return jArr;
+                if (obj is JsonObject jObj) return new JsonArray { jObj };
+                if (obj is IJsonString jStr) return new JsonArray { jStr.StringValue };
+                if (obj is IJsonValue<string> jStr2) return new JsonArray { jStr2.Value };
+                if (obj is IJsonValue<bool> jBool) return new JsonArray { jBool.Value };
+                if (obj is JsonInteger jInt) return new JsonArray { jInt.Value };
+                if (obj is JsonDouble jFloat) return new JsonArray { jFloat.Value };
+                if (obj is JsonNull) return null;
+                var jValue = obj as IJsonValue;
+                var valueKind = jValue.ValueKind;
+                switch (valueKind)
+                {
+                    case JsonValueKind.Null:
+                    case JsonValueKind.Undefined:
+                        return null;
+                    case JsonValueKind.False:
+                        return new JsonArray { false };
+                    case JsonValueKind.True:
+                        return new JsonArray { true };
+                    case JsonValueKind.Number:
+                        return new JsonArray { jValue.ToString() };
+                }
+            }
+
+            if (obj is JsonDocument doc) return doc;
+            if (obj is string str) return Parse(str);
+            if (obj is StringBuilder sb) return Parse(sb.ToString());
+            if (obj is Stream stream) return Parse(stream);
+            if (obj is IEnumerable<object> arr)
+            {
+                var r = new JsonArray();
+                foreach (var item in arr)
+                {
+                    r.Add(ConvertFrom(item));
+                }
+
+                return r;
+            }
+
+            if (obj is IEnumerable<JsonObject> arr2)
+            {
+                var r = new JsonArray();
+                foreach (var item in arr2)
+                {
+                    r.Add(item);
+                }
+
+                return r;
+            }
+
+            var s = JsonSerializer.Serialize(obj, obj.GetType(), options);
+            return Parse(s);
+        }
     }
 }
