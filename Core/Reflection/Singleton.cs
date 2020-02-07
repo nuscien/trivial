@@ -644,6 +644,150 @@ namespace Trivial.Reflection
     }
 
     /// <summary>
+    /// The item client for singleton resolver.
+    /// </summary>
+    /// <typeparam name="T">The type of the model.</typeparam>
+    public class SingletonResolverItem<T>
+    {
+        private readonly SemaphoreSlim locker = new SemaphoreSlim(1, 1);
+        private Func<Task<T>> resolver;
+        private readonly SingletonResolver instance;
+
+        /// <summary>
+        /// Initializes a new instance of the SingletonResolverItem class.
+        /// </summary>
+        /// <param name="singletonResolver">The singleton resolver.</param>
+        public SingletonResolverItem(SingletonResolver singletonResolver)
+        {
+            instance = singletonResolver;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the SingletonResolverItem class.
+        /// </summary>
+        /// <param name="singletonResolver">The singleton resolver.</param>
+        /// <param name="resolve">The model.</param>
+        public SingletonResolverItem(SingletonResolver singletonResolver, Func<Task<T>> resolve)
+            : this(singletonResolver)
+        {
+            resolver = resolve;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the SingletonResolverItem class.
+        /// </summary>
+        /// <param name="singletonResolver">The singleton resolver.</param>
+        /// <param name="key">The singleton key.</param>
+        public SingletonResolverItem(SingletonResolver singletonResolver, string key)
+            : this(singletonResolver)
+        {
+            key = key?.Trim();
+            if (!string.IsNullOrEmpty(key)) this.Key = key;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the SingletonResolverItem class.
+        /// </summary>
+        /// <param name="singletonResolver">The singleton resolver.</param>
+        /// <param name="key">The singleton key.</param>
+        /// <param name="resolve">The model.</param>
+        public SingletonResolverItem(SingletonResolver singletonResolver, string key, Func<Task<T>> resolve)
+            : this(singletonResolver, key)
+        {
+            resolver = resolve;
+        }
+
+        /// <summary>
+        /// Gets the property key.
+        /// </summary>
+        public string Key { get; }
+
+        /// <summary>
+        /// Resolves a singleton instance.
+        /// </summary>
+        /// <param name="result">An instance resolved.</param>
+        /// <returns>true if resolve succeeded; otherwise, false.</returns>
+        public bool TryResolve(out T result)
+        {
+            return Key == null ? instance.TryResolve(out result) : instance.TryResolve(Key, out result);
+        }
+
+        /// <summary>
+        /// Resolves the singleton instance.
+        /// </summary>
+        /// <returns>The resource access client instance.</returns>
+        public async Task<T> ResolveAsync()
+        {
+            if (TryResolve(out var r)) return r;
+            var h = resolver;
+            if (h == null) return Key == null ? instance.Resolve<T>() : instance.Resolve<T>(Key);
+            try
+            {
+                resolver = null;
+                await locker.WaitAsync();
+                r = await h();
+                Register(r);
+            }
+            finally
+            {
+                locker.Release();
+            }
+
+            return r;
+        }
+
+        /// <summary>
+        /// Resolves the singleton instance. Registers one if non-exist.
+        /// </summary>
+        /// <param name="resolve">The model.</param>
+        /// <returns>The resource access client instance.</returns>
+        public async Task<T> EnsureResolveAsync(Func<Task<T>> resolve)
+        {
+            if (TryResolve(out var r)) return r;
+            try
+            {
+                r = Key == null
+                    ? await instance.EnsureResolveAsync(resolve)
+                    : await instance.EnsureResolveAsync(Key, resolve);
+            }
+            finally
+            {
+                locker.Release();
+            }
+
+            return r;
+        }
+
+        /// <summary>
+        /// Gets the singleton result.
+        /// </summary>
+        /// <returns>The resource access client instance.</returns>
+        public T GetResult()
+        {
+            return Key == null ? instance.Resolve<T>() : instance.Resolve<T>(Key);
+        }
+
+        /// <summary>
+        /// Registers an instance.
+        /// </summary>
+        /// <param name="obj">The resource access client instance.</param>
+        public void Register(T obj)
+        {
+            if (Key == null) instance.Register(obj);
+            else instance.Register(Key, obj);
+        }
+
+        /// <summary>
+        /// Registers an instance.
+        /// </summary>
+        /// <param name="resolve">The model.</param>
+        public void RegisterAsync(Func<Task<T>> resolve)
+        {
+            resolver = resolve;
+        }
+    }
+
+    /// <summary>
     /// Singleton keeper with optional renew ability in thread-safe mode.
     /// </summary>
     /// <typeparam name="T">The type of value.</typeparam>

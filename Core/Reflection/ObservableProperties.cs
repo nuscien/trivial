@@ -9,6 +9,27 @@ using System.Text.Json.Serialization;
 namespace Trivial.Reflection
 {
     /// <summary>
+    /// The policies used to set property.
+    /// </summary>
+    public enum PropertySettingPolicies
+    {
+        /// <summary>
+        /// Writable property.
+        /// </summary>
+        Allow = 0,
+
+        /// <summary>
+        /// Read-only property but skip error when set value.
+        /// </summary>
+        Skip = 1,
+
+        /// <summary>
+        /// Read-only property and require to throw an exception when set value.
+        /// </summary>
+        Forbidden = 2
+    }
+
+    /// <summary>
     /// Base model with observable properties.
     /// </summary>
     public abstract class BaseObservableProperties : INotifyPropertyChanged
@@ -22,6 +43,11 @@ namespace Trivial.Reflection
         /// Gets an enumerable collection that contains the keys in this instance.
         /// </summary>
         protected IEnumerable<string> Keys => cache.Keys;
+
+        /// <summary>
+        /// Gets or sets the policy used to set property value.
+        /// </summary>
+        protected PropertySettingPolicies PropertiesSettingPolicy { get; set; } = PropertySettingPolicies.Allow;
 
         /// <summary>
         /// Adds or removes the event handler raised on property changed.
@@ -85,11 +111,23 @@ namespace Trivial.Reflection
         /// <returns>true if set succeeded; otherwise, false.</returns>
         protected bool SetCurrentProperty(object value, [CallerMemberName] string key = null)
         {
-            if (string.IsNullOrWhiteSpace(key)) return false;
+            if (string.IsNullOrWhiteSpace(key))
+            {
+                if (PropertiesSettingPolicy == PropertySettingPolicies.Forbidden)
+                    throw new ArgumentNullException(nameof(key), "The property key should not be null, empty, or consists only of white-space characters.");
+                return false;
+            }
+
             if (cache.TryGetValue(key, out var v) && v == value) return false;
-            cache[key] = value;
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(key));
-            return true;
+            if (PropertiesSettingPolicy == PropertySettingPolicies.Allow)
+            {
+                cache[key] = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(key));
+                return true;
+            }
+
+            if (PropertiesSettingPolicy == PropertySettingPolicies.Skip) return false;
+            throw new InvalidOperationException("Forbid to set property.");
         }
 
         /// <summary>
@@ -127,11 +165,23 @@ namespace Trivial.Reflection
         /// <returns>true if set succeeded; otherwise, false.</returns>
         protected bool SetProperty(string key, object value)
         {
-            if (string.IsNullOrWhiteSpace(key)) return false;
+            if (string.IsNullOrWhiteSpace(key))
+            {
+                if (PropertiesSettingPolicy == PropertySettingPolicies.Forbidden)
+                    throw new ArgumentNullException(nameof(key), "The property key should not be null, empty, or consists only of white-space characters.");
+                return false;
+            }
+
             if (cache.TryGetValue(key, out var v) && v == value) return false;
-            cache[key] = value;
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(key));
-            return true;
+            if (PropertiesSettingPolicy == PropertySettingPolicies.Allow)
+            {
+                cache[key] = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(key));
+                return true;
+            }
+
+            if (PropertiesSettingPolicy == PropertySettingPolicies.Skip) return false;
+            throw new InvalidOperationException("Forbid to set property.");
         }
 
         /// <summary>
@@ -141,10 +191,22 @@ namespace Trivial.Reflection
         /// <returns>true if the element is successfully found and removed; otherwise, false.</returns>
         protected bool RemoveProperty(string key)
         {
-            if (string.IsNullOrWhiteSpace(key)) return false;
-            var result = cache.Remove(key);
-            if (result) PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(key));
-            return result;
+            if (string.IsNullOrWhiteSpace(key))
+            {
+                if (PropertiesSettingPolicy == PropertySettingPolicies.Forbidden)
+                    throw new ArgumentNullException(nameof(key), "The property key should not be null, empty, or consists only of white-space characters.");
+                return false;
+            }
+
+            if (PropertiesSettingPolicy == PropertySettingPolicies.Allow)
+            {
+                var result = cache.Remove(key);
+                if (result) PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(key));
+                return result;
+            }
+
+            if (PropertiesSettingPolicy == PropertySettingPolicies.Skip) return false;
+            throw new InvalidOperationException("Forbid to set property.");
         }
 
         /// <summary>
