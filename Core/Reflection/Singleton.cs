@@ -715,7 +715,7 @@ namespace Trivial.Reflection
         /// <summary>
         /// Resolves the singleton instance.
         /// </summary>
-        /// <returns>The resource access client instance.</returns>
+        /// <returns>The model.</returns>
         public async Task<T> ResolveAsync()
         {
             if (TryResolve(out var r)) return r;
@@ -740,7 +740,7 @@ namespace Trivial.Reflection
         /// Resolves the singleton instance. Registers one if non-exist.
         /// </summary>
         /// <param name="resolve">The model.</param>
-        /// <returns>The resource access client instance.</returns>
+        /// <returns>The model.</returns>
         public async Task<T> EnsureResolveAsync(Func<Task<T>> resolve)
         {
             if (TryResolve(out var r)) return r;
@@ -761,7 +761,7 @@ namespace Trivial.Reflection
         /// <summary>
         /// Gets the singleton result.
         /// </summary>
-        /// <returns>The resource access client instance.</returns>
+        /// <returns>The model.</returns>
         public T GetResult()
         {
             return Key == null ? instance.Resolve<T>() : instance.Resolve<T>(Key);
@@ -770,7 +770,7 @@ namespace Trivial.Reflection
         /// <summary>
         /// Registers an instance.
         /// </summary>
-        /// <param name="obj">The resource access client instance.</param>
+        /// <param name="obj">The model.</param>
         public void Register(T obj)
         {
             if (Key == null) instance.Register(obj);
@@ -778,10 +778,10 @@ namespace Trivial.Reflection
         }
 
         /// <summary>
-        /// Registers an instance.
+        /// Registers the resolve handler.
         /// </summary>
-        /// <param name="resolve">The model.</param>
-        public void RegisterAsync(Func<Task<T>> resolve)
+        /// <param name="resolve">The resolve handler.</param>
+        public void Register(Func<Task<T>> resolve)
         {
             resolver = resolve;
         }
