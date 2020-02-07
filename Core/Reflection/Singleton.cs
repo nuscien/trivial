@@ -659,14 +659,14 @@ namespace Trivial.Reflection
         /// <param name="singletonResolver">The singleton resolver.</param>
         public SingletonResolverItem(SingletonResolver singletonResolver)
         {
-            instance = singletonResolver;
+            instance = singletonResolver ?? SingletonResolver.Instance;
         }
 
         /// <summary>
         /// Initializes a new instance of the SingletonResolverItem class.
         /// </summary>
         /// <param name="singletonResolver">The singleton resolver.</param>
-        /// <param name="resolve">The model.</param>
+        /// <param name="resolve">The model resolve handler.</param>
         public SingletonResolverItem(SingletonResolver singletonResolver, Func<Task<T>> resolve)
             : this(singletonResolver)
         {
@@ -690,7 +690,7 @@ namespace Trivial.Reflection
         /// </summary>
         /// <param name="singletonResolver">The singleton resolver.</param>
         /// <param name="key">The singleton key.</param>
-        /// <param name="resolve">The model.</param>
+        /// <param name="resolve">The model resolve handler.</param>
         public SingletonResolverItem(SingletonResolver singletonResolver, string key, Func<Task<T>> resolve)
             : this(singletonResolver, key)
         {
@@ -739,7 +739,7 @@ namespace Trivial.Reflection
         /// <summary>
         /// Resolves the singleton instance. Registers one if non-exist.
         /// </summary>
-        /// <param name="resolve">The model.</param>
+        /// <param name="resolve">The model resolve handler.</param>
         /// <returns>The model.</returns>
         public async Task<T> EnsureResolveAsync(Func<Task<T>> resolve)
         {
@@ -759,7 +759,7 @@ namespace Trivial.Reflection
         }
 
         /// <summary>
-        /// Gets the singleton result.
+        /// Gets the model.
         /// </summary>
         /// <returns>The model.</returns>
         public T GetResult()
@@ -780,7 +780,7 @@ namespace Trivial.Reflection
         /// <summary>
         /// Registers the resolve handler.
         /// </summary>
-        /// <param name="resolve">The resolve handler.</param>
+        /// <param name="resolve">The model resolve handler.</param>
         public void Register(Func<Task<T>> resolve)
         {
             resolver = resolve;
