@@ -392,11 +392,47 @@ namespace Trivial.Geography
         /// </summary>
         public class Model : Angle.Model
         {
+            private bool celestial;
+
             /// <summary>
             /// Initializes a new instance of the Longitude.Model class.
             /// </summary>
             public Model() : base(new Angle.BoundaryOptions(180, true, Angle.RectifyModes.Cycle))
             {
+            }
+
+            /// <summary>
+            /// Initializes a new instance of the Longitude.Model class.
+            /// </summary>
+            /// <param name="isCelestial">true if it is celestial longitude; otherwise, false.</param>
+            public Model(bool isCelestial) : base(isCelestial ? new Angle.BoundaryOptions(360, false, Angle.RectifyModes.Cycle) : new Angle.BoundaryOptions(180, true, Angle.RectifyModes.Cycle))
+            {
+                IsCelestial = isCelestial;
+            }
+
+            /// <summary>
+            /// Gets a value indicating wether it is celestial longitude.
+            /// </summary>
+            public bool IsCelestial
+            {
+                get
+                {
+                    return celestial;
+                }
+
+                set
+                {
+                    if (value == celestial) return;
+                    var degrees = Degrees;
+                    celestial = value;
+                    if (value)
+                    {
+                        if (degrees < 0) Degrees = degrees + 360;
+                        return;
+                    }
+
+                    if (degrees > 180) Degrees = degrees - 360;
+                }
             }
 
             /// <summary>
@@ -409,6 +445,7 @@ namespace Trivial.Geography
                     var degrees = Degrees;
                     if (degrees == 0) return Longitudes.PrimeMeridian;
                     if (degrees == 180 || degrees == -180) return Longitudes.CalendarLine;
+                    if (IsCelestial) return degrees > 180 ? Longitudes.West : Longitudes.East;
                     return degrees > 0 ? Longitudes.East : Longitudes.West;
                 }
 
@@ -423,9 +460,23 @@ namespace Trivial.Geography
                             Degrees = 180;
                             break;
                         case Longitudes.East:
+                            if (IsCelestial)
+                            {
+                                var degrees = Degrees;
+                                if (degrees > 180) Degrees = degrees - 180;
+                                break;
+                            }
+                            
                             if (IsNegative) Degree = -Degree;
                             break;
                         case Longitudes.West:
+                            if (IsCelestial)
+                            {
+                                var degrees = Degrees;
+                                if (degrees < 180 && degrees > 0) Degrees = degrees + 180;
+                                break;
+                            }
+                            
                             if (Positive) Degree = -Degree;
                             break;
                     }
@@ -558,7 +609,6 @@ namespace Trivial.Geography
         /// <param name="degrees">The total degrees.</param>
         public Longitude(double degrees)
         {
-            var i = (int)(degrees + 180) / 360 - 180;
             degrees = degrees - (int)degrees + degrees;
             Value = new Angle(Math.Abs(degrees));
             if (degrees == 180 || degrees == -180) Type = Longitudes.CalendarLine;
