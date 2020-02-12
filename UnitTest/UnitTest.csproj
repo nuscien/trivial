@@ -5,14 +5,14 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <IsPackable>false</IsPackable>
     <AssemblyName>Trivial.UnitTest</AssemblyName>
-    <RootNamespace>Trivial.UnitTest</RootNamespace>
+    <RootNamespace>Trivial</RootNamespace>
     <Product>Trivial</Product>
     <Authors>Kingcean Tuan</Authors>
     <Company>Nanchang Jinchen Software Co., Ltd.</Company>
     <Version>3.2.0</Version>
     <Description>The sample of Trivial libraries.</Description>
     <Copyright>Copyright (c) 2018 Kingcean Tuan.</Copyright>
-    <StartupObject>Trivial.UnitTest.Program</StartupObject>
+    <StartupObject>Trivial.Console.Program</StartupObject>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageIconUrl>https://github.com/nuscien/trivial/raw/master/Materials/logo.png</PackageIconUrl>
     <RepositoryUrl>https://github.com/nuscien/trivial</RepositoryUrl>

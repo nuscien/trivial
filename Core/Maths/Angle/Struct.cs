@@ -42,29 +42,29 @@ namespace Trivial.Maths
         }
 
         /// <summary>
-        /// Gets or sets a value indicating whether it is positive.
+        /// Gets a value indicating whether it is positive.
         /// </summary>
         [JsonIgnore]
         public bool Positive { get; }
 
         /// <summary>
-        /// Gets or sets the absolute degree of the angle.
+        /// Gets the absolute degree of the angle.
         /// </summary>
         [JsonIgnore]
         public int AbsDegree { get; }
 
         /// <summary>
-        /// Gets or sets the degree of the angle.
+        /// Gets the degree of the angle.
         /// </summary>
         public int Degree { get; }
 
         /// <summary>
-        /// Gets or sets the arcminute of the angle.
+        /// Gets the arcminute of the angle.
         /// </summary>
         public int Arcminute { get; }
 
         /// <summary>
-        /// Gets or sets the arcsecond of the angle.
+        /// Gets the arcsecond of the angle.
         /// </summary>
         public float Arcsecond { get; }
 
@@ -75,7 +75,7 @@ namespace Trivial.Maths
         public double AbsDegrees { get; }
 
         /// <summary>
-        /// Gets or sets the total degrees.
+        /// Gets the total degrees.
         /// </summary>
         [JsonIgnore]
         public double Degrees { get; }

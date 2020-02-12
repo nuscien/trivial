@@ -6,10 +6,8 @@ using System.Text;
 using System.Text.Json;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Trivial.Data;
-using Trivial.Text;
 
-namespace Trivial.UnitTest.Text
+namespace Trivial.Text
 {
     /// <summary>
     /// CSV unit test.

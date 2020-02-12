@@ -5,11 +5,10 @@ using System.Text;
 using System.Threading.Tasks;
 
 using Trivial.Data;
-using Trivial.Text;
 
-namespace Trivial.UnitTest.Text
+namespace Trivial.Text
 {
-    class CsvVerb : Trivial.Console.Verb
+    class CsvVerb : Console.Verb
     {
         public override string Description => "CSV";
 

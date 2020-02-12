@@ -3,13 +3,9 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 
-using Trivial.Reflection;
-using Trivial.Security;
-using Trivial.Tasks;
-
-namespace Trivial.UnitTest.Reflection
+namespace Trivial.Reflection
 {
-    class SingletonKeeperVerb : Trivial.Console.AsyncVerb
+    class SingletonKeeperVerb : Console.AsyncVerb
     {
         public override string Description => "Singleton keeper and renew scheduler";
 

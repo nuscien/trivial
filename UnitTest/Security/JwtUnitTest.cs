@@ -6,10 +6,9 @@ using System.Text;
 using System.Text.Json;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Trivial.Security;
 using Trivial.Text;
 
-namespace Trivial.UnitTest.Security
+namespace Trivial.Security
 {
     /// <summary>
     /// JWT unit test.

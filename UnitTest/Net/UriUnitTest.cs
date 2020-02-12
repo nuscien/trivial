@@ -6,10 +6,9 @@ using System.Text;
 using System.Text.Json;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Trivial.Net;
 using Trivial.Text;
 
-namespace Trivial.UnitTest.Net
+namespace Trivial.Net
 {
     /// <summary>
     /// HTTP URI unit test.

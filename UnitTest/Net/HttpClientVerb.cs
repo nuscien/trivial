@@ -6,13 +6,9 @@ using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using System.Runtime.Serialization;
 
-using Trivial.Net;
-using Trivial.Reflection;
-using Trivial.Tasks;
-
-namespace Trivial.UnitTest.Net
+namespace Trivial.Net
 {
-    class HttpClientVerb : Trivial.Console.AsyncVerb
+    class HttpClientVerb : Console.AsyncVerb
     {
         [DataContract]
         internal class NameAndDescription

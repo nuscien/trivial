@@ -4,9 +4,9 @@ using System.Text;
 using SysConsole = System.Console;
 using TrivialConsole = Trivial.Console;
 
-namespace Trivial.UnitTest.Console
+namespace Trivial.Console
 {
-    class SelectionVerb : TrivialConsole.Verb
+    class SelectionVerb : Verb
     {
         public override string Description => "Selection";
 

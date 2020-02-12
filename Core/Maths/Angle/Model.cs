@@ -50,7 +50,7 @@ namespace Trivial.Maths
             /// <param name="boundary">The boundary options.</param>
             public Model(double degrees, BoundaryOptions boundary = null)
             {
-                raw = degrees;
+                raw = boundary is null ? degrees : AdaptValue(boundary, degrees);
                 Boundary = boundary;
             }
 
@@ -60,8 +60,18 @@ namespace Trivial.Maths
             /// <param name="degree">The degree part.</param>
             /// <param name="minute">The minute part.</param>
             /// <param name="second">The second part.</param>
+            public Model(int degree, int minute, float second = 0) : this(GetDegrees(degree, minute, second), null)
+            {
+            }
+
+            /// <summary>
+            /// Initializes a new instance of the Angle.Model class.
+            /// </summary>
+            /// <param name="degree">The degree part.</param>
+            /// <param name="minute">The minute part.</param>
+            /// <param name="second">The second part.</param>
             /// <param name="boundary">The boundary options.</param>
-            public Model(int degree, int minute, float second, BoundaryOptions boundary = null) : this(GetDegrees(degree, minute, second), boundary)
+            public Model(int degree, int minute, float second, BoundaryOptions boundary) : this(GetDegrees(degree, minute, second), boundary)
             {
             }
 

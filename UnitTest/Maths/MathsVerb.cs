@@ -4,11 +4,9 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-using Trivial.Maths;
-
-namespace Trivial.UnitTest.Maths
+namespace Trivial.Maths
 {
-    class MathsVerb : Trivial.Console.AsyncVerb
+    class MathsVerb : Console.AsyncVerb
     {
         public override string Description => "Maths library";
 

@@ -7,9 +7,8 @@ using System.Text.Json;
 using System.Threading.Tasks;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Trivial.Tasks;
 
-namespace Trivial.UnitTest.Tasks
+namespace Trivial.Tasks
 {
     /// <summary>
     /// Hit task unit test.

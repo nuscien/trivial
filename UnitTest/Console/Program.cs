@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 
-using Trivial.Console;
-
-namespace Trivial.UnitTest
+namespace Trivial.Console
 {
     class Program
     {

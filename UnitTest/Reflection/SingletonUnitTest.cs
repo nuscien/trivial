@@ -7,10 +7,8 @@ using System.Text.Json;
 using System.Threading.Tasks;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Trivial.Reflection;
-using Trivial.Text;
 
-namespace Trivial.UnitTest.Reflection
+namespace Trivial.Reflection
 {
     /// <summary>
     /// Singleton unit test.

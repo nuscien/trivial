@@ -2,13 +2,12 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
-using Trivial.Reflection;
-using Trivial.Tasks;
-using Trivial.Net;
 
-namespace Trivial.UnitTest.Tasks
+using Trivial.Reflection;
+
+namespace Trivial.Tasks
 {
-    class RetryVerb : Trivial.Console.AsyncVerb
+    class RetryVerb : Console.AsyncVerb
     {
         public override string Description => "Retry";
 

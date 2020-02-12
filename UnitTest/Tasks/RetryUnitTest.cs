@@ -8,9 +8,8 @@ using System.Threading.Tasks;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Trivial.Reflection;
-using Trivial.Tasks;
 
-namespace Trivial.UnitTest.Tasks
+namespace Trivial.Tasks
 {
     /// <summary>
     /// Retry unit test.

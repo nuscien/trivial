@@ -4,12 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-using Trivial.Reflection;
-using Trivial.Tasks;
-
-namespace Trivial.UnitTest.Tasks
+namespace Trivial.Tasks
 {
-    class HitTasksVerb : Trivial.Console.AsyncVerb
+    class HitTasksVerb : Console.AsyncVerb
     {
         private int checkCount = 0;
 

@@ -5,9 +5,8 @@ using System.Linq;
 using System.Text;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Trivial.IO;
 
-namespace Trivial.UnitTest.IO
+namespace Trivial.IO
 {
     /// <summary>
     /// Stream unit test.
