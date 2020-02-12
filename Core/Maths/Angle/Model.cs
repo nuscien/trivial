@@ -203,7 +203,9 @@ namespace Trivial.Maths
                     if (r.HasValue) return r.Value;
                     var pos = degree >= 0;
                     var rest = Math.Abs(degree) + minute / 60d + second / 3600d;
-                    return pos ? rest : -rest;
+                    rest = pos ? rest : -rest;
+                    raw = rest;
+                    return rest;
                 }
 
                 set
