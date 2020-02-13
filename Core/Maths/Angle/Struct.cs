@@ -706,8 +706,8 @@ namespace Trivial.Maths
                         var delta = 0;
                         if (boundary.CanBeNegative)
                         {
-                            degree += max;
                             delta = max;
+                            degree += delta;
                             max *= 2;
                         }
 
@@ -726,22 +726,25 @@ namespace Trivial.Maths
                             return;
                         }
 
+                        var isGreaterMax = degree > (delta > 0 ? delta : max);
                         if (second > 0)
                         {
-                            minute++;
                             second = 60 - second;
+                            minute++;
                         }
 
                         if (minute > 0)
                         {
                             minute = 60 - minute;
-                            degree--;
+                            if (isGreaterMax) degree--;
+                            else degree++;
                         }
 
                         if (minute < 0)
                         {
                             minute += 60;
-                            degree--;
+                            if (isGreaterMax) degree--;
+                            else degree++;
                         }
 
                         AdaptBounceValue(delta, ref degree, ref minute, ref second);
@@ -752,8 +755,8 @@ namespace Trivial.Maths
                         var delta = 0;
                         if (boundary.CanBeNegative)
                         {
-                            degree += max;
                             delta = max;
+                            degree += delta;
                             max *= 2;
                         }
 
