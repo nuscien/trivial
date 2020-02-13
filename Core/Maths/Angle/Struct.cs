@@ -656,7 +656,7 @@ namespace Trivial.Maths
             if (second > 0)
             {
                 second = 60 - second;
-                minute--;
+                minute++;
             }
 
             if (minute > 0)
@@ -726,9 +726,24 @@ namespace Trivial.Maths
                             return;
                         }
 
-                        degree--;
-                        minute = 60 - minute;
-                        second = 60 - second;
+                        if (second > 0)
+                        {
+                            minute++;
+                            second = 60 - second;
+                        }
+
+                        if (minute > 0)
+                        {
+                            minute = 60 - minute;
+                            degree--;
+                        }
+
+                        if (minute < 0)
+                        {
+                            minute += 60;
+                            degree--;
+                        }
+
                         AdaptBounceValue(delta, ref degree, ref minute, ref second);
                         return;
                     }

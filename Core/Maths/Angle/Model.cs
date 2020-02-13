@@ -140,10 +140,13 @@ namespace Trivial.Maths
                     if (degree == value) return;
                     degree = value;
                     var r = raw;
+                    var m = 0;
+                    var s = 0f;
+                    AdaptValue(Boundary, ref degree, ref m, ref s);
                     AdaptValue(Boundary, ref degree, ref minute, ref second);
                     if (!r.HasValue) return;
                     var abs = Math.Abs(r.Value);
-                    raw = abs - (int)abs + value;
+                    raw = abs - (int)abs + degree;
                 }
             }
 

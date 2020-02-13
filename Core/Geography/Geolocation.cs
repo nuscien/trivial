@@ -67,7 +67,7 @@ namespace Trivial.Geography
             /// <summary>
             /// Initializes a new instance of the Latitude.Model class.
             /// </summary>
-            public Model() : base(new Angle.BoundaryOptions(90, true, Angle.RectifyModes.Bounce))
+            public Model() : base(BoundaryOptions)
             {
             }
 
@@ -75,7 +75,7 @@ namespace Trivial.Geography
             /// Initializes a new instance of the Latitude.Model class.
             /// </summary>
             /// <param name="degrees">The total degrees.</param>
-            public Model(double degrees) : base(degrees, new Angle.BoundaryOptions(90, true, Angle.RectifyModes.Bounce))
+            public Model(double degrees) : base(degrees, BoundaryOptions)
             {
             }
 
@@ -85,7 +85,7 @@ namespace Trivial.Geography
             /// <param name="degree">The degree part.</param>
             /// <param name="minute">The minute part.</param>
             /// <param name="second">The second part.</param>
-            public Model(int degree, int minute, float second = 0) : base(degree, minute, second, new Angle.BoundaryOptions(90, true, Angle.RectifyModes.Bounce))
+            public Model(int degree, int minute, float second = 0) : base(degree, minute, second, BoundaryOptions)
             {
             }
 
@@ -215,14 +215,33 @@ namespace Trivial.Geography
         }
 
         /// <summary>
+        /// The angle boundary of the latitude.
+        /// </summary>
+        public static readonly Angle.BoundaryOptions BoundaryOptions = new Angle.BoundaryOptions(90, true, Angle.RectifyModes.Bounce);
+
+        /// <summary>
         /// Initializes a new instance of the Latitude struct.
         /// </summary>
         /// <param name="type">The latitude type.</param>
         /// <param name="degree">The degree part.</param>
         /// <param name="minute">The minute part.</param>
         /// <param name="second">The second part.</param>
-        public Latitude(Latitudes type, int degree, int minute, float second) : this(GetDegrees(type, Angle.GetDegrees(degree, minute, second)))
+        public Latitude(Latitudes type, int degree, int minute, float second)
         {
+            Type = type;
+            switch (type)
+            {
+                case Latitudes.South:
+                    degree = -degree;
+                    break;
+                case Latitudes.Equator:
+                    Value = new Angle(0, 0, 0);
+                    return;
+                default:
+                    break;
+            }
+
+            Value = new Angle(degree, minute, second, BoundaryOptions);
         }
 
         /// <summary>
@@ -231,21 +250,10 @@ namespace Trivial.Geography
         /// <param name="degree">The degree part.</param>
         /// <param name="minute">The minute part.</param>
         /// <param name="second">The second part.</param>
-        public Latitude(int degree, int minute, float second) : this(Angle.GetDegrees(degree, minute, second))
+        public Latitude(int degree, int minute, float second)
         {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the Latitude struct.
-        /// </summary>
-        /// <param name="degrees">The total degrees.</param>
-        public Latitude(double degrees)
-        {
-            var i = (int)degrees / 180;
-            if (i != 0) degrees += i * 180;
-            if (degrees > 90) degrees = 180 - degrees;
-            else if (degrees < -90) degrees = -180 - degrees;
-            Value = new Angle(degrees);
+            Value = new Angle(degree, minute, second, BoundaryOptions);
+            var degrees = Value.Degrees;
             if (degrees > 0) Type = Latitudes.North;
             else if (degrees < 0) Type = Latitudes.South;
             else Type = Latitudes.Equator;
@@ -254,8 +262,16 @@ namespace Trivial.Geography
         /// <summary>
         /// Initializes a new instance of the Latitude struct.
         /// </summary>
+        /// <param name="degrees">The total degrees.</param>
+        public Latitude(double degrees) : this(new Angle(degrees, BoundaryOptions))
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the Latitude struct.
+        /// </summary>
         /// <param name="angle">The angle.</param>
-        public Latitude(Angle angle) : this(angle.Degrees)
+        public Latitude(Angle angle) : this(angle.Degree, angle.Arcminute, angle.Arcsecond)
         {
         }
 
@@ -691,7 +707,7 @@ namespace Trivial.Geography
         public Longitude(Longitudes type, int degree, int minute, float second = 0)
         {
             IsCelestial = false;
-                Type = type;
+            Type = type;
             switch (type)
             {
                 case Longitudes.PrimeMeridian:
