@@ -314,7 +314,7 @@ namespace Trivial.Console
         public void Register(Func<string, bool> match, Func<Verb> verbFactory, string matchDesc = null)
         {
             if (match == null || verbFactory == null) return;
-            items.Add(new Item(match, verbFactory));
+            items.Add(new Item(match, verbFactory, matchDesc));
         }
 
         /// <summary>

@@ -29,7 +29,7 @@ namespace Trivial.Console
     /// <summary>
     /// The selection options.
     /// </summary>
-    public class SelectionOptions
+    public class SelectionOptions : ICloneable
     {
         /// <summary>
         /// Gets or sets the minimum length for each item.
@@ -150,6 +150,24 @@ namespace Trivial.Console
         /// Gets or sets the prefix for the item selected.
         /// </summary>
         public string SelectedPrefix { get; set; }
+        
+        /// <summary>
+        /// Clones an object.
+        /// </summary>
+        /// <returns>The object copied from this instance.</returns>
+        public virtual SelectionOptions Clone()
+        {
+            return MemberwiseClone() as SelectionOptions;
+        }
+
+        /// <summary>
+        /// Clones an object.
+        /// </summary>
+        /// <returns>The object copied from this instance.</returns>
+        object ICloneable.Clone()
+        {
+            return MemberwiseClone();
+        }
     }
 
     /// <summary>

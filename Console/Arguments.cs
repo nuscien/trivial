@@ -16,12 +16,12 @@ namespace Trivial.Console
         /// <summary>
         /// Original arguments list.
         /// </summary>
-        private List<string> args;
+        private readonly List<string> args;
 
         /// <summary>
         /// The parameters.
         /// </summary>
-        private List<Parameter> parameters = new List<Parameter>();
+        private readonly List<Parameter> parameters = new List<Parameter>();
 
         /// <summary>
         /// Initializes a new instance of the Arguments class.
@@ -50,7 +50,7 @@ namespace Trivial.Console
                     if (item.LastIndexOf("\"") == item.Length - 1 && item.LastIndexOf("\\\"") == item.Length - 2)
                     {
                         merge = false;
-                        str = item.Substring(0, item.Length - 1);
+                        str = item[0..^1];
                     }
 
                     this.args[this.args.Count - 1] += str;

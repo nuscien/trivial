@@ -21,7 +21,7 @@ namespace Trivial.Maths
         /// <summary>
         /// The angle model.
         /// </summary>
-        public class Model : IAngle, IComparable, IComparable<IAngle>, IEquatable<IAngle>, IComparable<double>, IEquatable<double>, IComparable<int>, IEquatable<int>, IAdvancedAdditionCapable<Model>
+        public class Model : IAngle, ICloneable, IComparable, IComparable<IAngle>, IEquatable<IAngle>, IComparable<double>, IEquatable<double>, IComparable<int>, IEquatable<int>, IAdvancedAdditionCapable<Model>
         {
             /// <summary>
             /// The total degrees value.
@@ -274,31 +274,6 @@ namespace Trivial.Maths
             public bool IsNegative => raw < 0;
 
             /// <summary>
-            /// Sets a total degrees.
-            /// </summary>
-            /// <param name="degrees">The total degrees.</param>
-            private void SetDegrees(double degrees)
-            {
-                degree = (int)degrees;
-                var d = degree;
-                var boundary = Boundary;
-                var rest = (Math.Abs(degrees) - Math.Abs(degree)) * 60;
-                var m = minute = (int)rest;
-                var s = second = (float)((rest - minute) * 60);
-                AdaptValue(boundary, ref degree, ref minute, ref second);
-                if (minute != m || second != s) return;
-                if (degree == d)
-                {
-                    raw = degrees;
-                    return;
-                }
-
-                var abs = Math.Abs(degrees);
-                rest = abs - (int)abs;
-                raw = degree + (degree >= 0 ? rest : -rest);
-            }
-
-            /// <summary>
             /// Converts a number to angle model.
             /// </summary>
             /// <param name="value">The raw value.</param>
@@ -533,8 +508,7 @@ namespace Trivial.Maths
             /// <returns>A new Angle object with the same value as this instance.</returns>
             public static Model Copy(Model obj)
             {
-                if (obj is null) return null;
-                return new Model(obj.Degree, obj.Arcminute, obj.Arcsecond);
+                return obj?.Clone();
             }
 
             /// <summary>
@@ -684,6 +658,27 @@ namespace Trivial.Maths
             }
 
             /// <summary>
+            /// Clones an object.
+            /// </summary>
+            /// <returns>The object copied from this instance.</returns>
+            public virtual Model Clone()
+            {
+                return new Model(Degree, Arcminute, Arcsecond, Boundary)
+                {
+                    raw = raw
+                };
+            }
+
+            /// <summary>
+            /// Clones an object.
+            /// </summary>
+            /// <returns>The object copied from this instance.</returns>
+            object ICloneable.Clone()
+            {
+                return Clone();
+            }
+
+            /// <summary>
             /// Pluses another value.
             /// this + value
             /// </summary>
@@ -742,6 +737,31 @@ namespace Trivial.Maths
             public override string ToString()
             {
                 return (Positive ? string.Empty : "-") + this.ToAbsAngleString();
+            }
+
+            /// <summary>
+            /// Sets a total degrees.
+            /// </summary>
+            /// <param name="degrees">The total degrees.</param>
+            private void SetDegrees(double degrees)
+            {
+                degree = (int)degrees;
+                var d = degree;
+                var boundary = Boundary;
+                var rest = (Math.Abs(degrees) - Math.Abs(degree)) * 60;
+                var m = minute = (int)rest;
+                var s = second = (float)((rest - minute) * 60);
+                AdaptValue(boundary, ref degree, ref minute, ref second);
+                if (minute != m || second != s) return;
+                if (degree == d)
+                {
+                    raw = degrees;
+                    return;
+                }
+
+                var abs = Math.Abs(degrees);
+                rest = abs - (int)abs;
+                raw = degree + (degree >= 0 ? rest : -rest);
             }
         }
     }

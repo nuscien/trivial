@@ -62,7 +62,7 @@ namespace Trivial.Geography
         /// <summary>
         /// Latitude model.
         /// </summary>
-        public class Model : Angle.Model
+        public class Model : Angle.Model, ICloneable
         {
             /// <summary>
             /// Initializes a new instance of the Latitude.Model class.
@@ -150,6 +150,24 @@ namespace Trivial.Geography
             {
                 if (IsZero) return NumberSymbols.NumberZero + Angle.Symbols.DegreeUnit;
                 return this.ToAbsAngleString() + (Positive ? "N" : "S");
+            }
+
+            /// <summary>
+            /// Clones an object.
+            /// </summary>
+            /// <returns>The object copied from this instance.</returns>
+            public new Model Clone()
+            {
+                return new Model(Degree, Arcminute, Arcsecond);
+            }
+
+            /// <summary>
+            /// Clones an object.
+            /// </summary>
+            /// <returns>The object copied from this instance.</returns>
+            object ICloneable.Clone()
+            {
+                return Clone();
             }
 
             /// <summary>
@@ -451,7 +469,7 @@ namespace Trivial.Geography
         /// <summary>
         /// Longitude model.
         /// </summary>
-        public class Model : Angle.Model
+        public class Model : Angle.Model, ICloneable
         {
             /// <summary>
             /// The flag indicating whether it is celestial longitude.
@@ -623,6 +641,24 @@ namespace Trivial.Geography
                 if (degrees == 0) return NumberSymbols.NumberZero + Angle.Symbols.DegreeUnit;
                 if (degrees == 180 || degrees == -180) return "180" + Angle.Symbols.DegreeUnit;
                 return this.ToAbsAngleString() + (Positive ? "E" : "W");
+            }
+
+            /// <summary>
+            /// Clones an object.
+            /// </summary>
+            /// <returns>The object copied from this instance.</returns>
+            public new Model Clone()
+            {
+                return new Model(IsCelestial, Degree, Arcminute, Arcsecond);
+            }
+
+            /// <summary>
+            /// Clones an object.
+            /// </summary>
+            /// <returns>The object copied from this instance.</returns>
+            object ICloneable.Clone()
+            {
+                return Clone();
             }
 
             /// <summary>

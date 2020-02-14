@@ -1261,6 +1261,50 @@ namespace Trivial.Console
         /// <summary>
         /// Writes a collection of item for selecting.
         /// </summary>
+        /// <param name="path">The parent foler path.</param>
+        /// <param name="options">The selection display options.</param>
+        /// <param name="searchPattern">The search string to match against the names of directories and files. This parameter can contain a combination of valid literal path and wildcard (* and ?) characters, but it doesn't support regular expressions.</param>
+        /// <returns>The result of selection.</returns>
+        /// <exception cref="ArgumentException">searchPattern contains one or more invalid characters defined by the System.IO.Path.GetInvalidPathChars method.</exception>
+        /// <exception cref="DirectoryNotFoundException">The specified path is invalid (for example, it is on an unmapped drive).</exception>
+        /// <exception cref="SecurityException">The caller does not have the required permission.</exception>
+        public static SelectionResult<FileSystemInfo> Select(DirectoryInfo path, SelectionOptions options = null, string searchPattern = null)
+        {
+            var c = new SelectionData<FileSystemInfo>();
+            var col = string.IsNullOrEmpty(searchPattern) ? path.GetFileSystemInfos() : path.GetFileSystemInfos(searchPattern);
+            foreach (var f in col)
+            {
+                c.Add(f.Name, f);
+            }
+
+            return Select(c, options);
+        }
+
+        /// <summary>
+        /// Writes a collection of item for selecting.
+        /// </summary>
+        /// <param name="path">The parent foler path.</param>
+        /// <param name="predicate">A function to test each element for a condition.</param>
+        /// <param name="options">The selection display options.</param>
+        /// <returns>The result of selection.</returns>
+        /// <exception cref="DirectoryNotFoundException">The specified path is invalid (for example, it is on an unmapped drive).</exception>
+        /// <exception cref="SecurityException">The caller does not have the required permission.</exception>
+        public static SelectionResult<FileSystemInfo> Select(DirectoryInfo path, Func<FileSystemInfo, bool> predicate, SelectionOptions options = null)
+        {
+            var c = new SelectionData<FileSystemInfo>();
+            IEnumerable<FileSystemInfo> col = path.GetFileSystemInfos();
+            if (predicate != null) col = col.Where(predicate);
+            foreach (var f in col)
+            {
+                c.Add(f.Name, f);
+            }
+
+            return Select(c, options);
+        }
+
+        /// <summary>
+        /// Writes a collection of item for selecting.
+        /// </summary>
         /// <typeparam name="T">The type of data.</typeparam>
         /// <param name="collection">The collection data.</param>
         /// <param name="options">The selection display options.</param>
