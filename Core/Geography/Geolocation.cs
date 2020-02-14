@@ -756,6 +756,7 @@ namespace Trivial.Geography
             Value = new Angle(degree, minute, second, isCelestial ? CelestialBoundaryOptions : BoundaryOptions);
             var degrees = Value.Degrees;
             if (degrees == 180 || degrees == -180) Type = Longitudes.CalendarLine;
+            else if (isCelestial && degrees > 180) Type = Longitudes.West;
             else if (degrees > 0) Type = Longitudes.East;
             else if (degrees < 0) Type = Longitudes.West;
             else Type = Longitudes.PrimeMeridian;

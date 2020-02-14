@@ -43,7 +43,7 @@ namespace Trivial.Maths
         }
 
         /// <summary>
-        /// The boundary options.
+        /// The angle boundary guard options.
         /// </summary>
         public class BoundaryOptions
         {
@@ -67,7 +67,7 @@ namespace Trivial.Maths
             public int MaxDegree { get; }
 
             /// <summary>
-            /// Gets a value indicating whether use the mirror mode.
+            /// Gets a value indicating whether the angle value can be negative.
             /// </summary>
             [JsonPropertyName("negative")]
             public bool CanBeNegative { get; }

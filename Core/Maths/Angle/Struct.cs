@@ -643,31 +643,6 @@ namespace Trivial.Maths
             return (Positive ? string.Empty : "-") + this.ToAbsAngleString();
         }
 
-        private static void AdaptBounceValue(int delta, ref int degree, ref int minute, ref float second)
-        {
-            if (degree > 0)
-            {
-                degree -= delta;
-                return;
-            }
-
-            degree = delta;
-            if (minute == 0 && second == 0) return;
-            if (second > 0)
-            {
-                second = 60 - second;
-                minute++;
-            }
-
-            if (minute > 0)
-            {
-                minute = 60 - minute;
-                degree--;
-            }
-
-            return;
-        }
-
         internal static void AdaptValue(BoundaryOptions boundary, ref int degree, ref int minute, ref float second)
         {
             if (boundary == null) return;
@@ -703,92 +678,72 @@ namespace Trivial.Maths
             {
                 case RectifyModes.Bounce:
                     {
-                        var delta = 0;
-                        if (boundary.CanBeNegative)
+                        var len = max * 2;
+                        if (!boundary.CanBeNegative)
                         {
-                            delta = max;
-                            degree += delta;
-                            max *= 2;
+                            degree %= len;
+                            if (degree < 0) degree += len;
+                            if (degree < max) return;
+                            if (degree == max && minute == 0 && second == 0) return;
+                            degree -= max;
+                            ReverseInDegree(ref degree, ref minute, ref second);
+                            return;
                         }
 
-                        degree %= max * 2;
-                        if (degree < 0) degree += max * 2;
+                        degree %= len * 2;
+                        if (degree < max && degree > -max) return;
+                        var isPos = degree > 0;
+                        if (degree > max)
+                        {
+                            degree = len - degree;
+                            if (degree >= 0) ReverseInDegree(ref degree, ref minute, ref second);
+                            return;
+                        }
+
                         if (degree < max)
                         {
-                            AdaptBounceValue(delta, ref degree, ref minute, ref second);
+                            degree = -len - degree;
+                            if (degree <= 0) ReverseInDegree(ref degree, ref minute, ref second);
                             return;
                         }
 
-                        degree = max * 2 - degree;
-                        if (minute == 0 && second == 0)
-                        {
-                            AdaptBounceValue(delta, ref degree, ref minute, ref second);
-                            return;
-                        }
-
-                        var isGreaterMax = degree > (delta > 0 ? delta : max);
-                        if (second > 0)
-                        {
-                            second = 60 - second;
-                            minute++;
-                        }
-
-                        if (minute > 0)
-                        {
-                            minute = 60 - minute;
-                            if (isGreaterMax) degree--;
-                            else degree++;
-                        }
-
-                        if (minute < 0)
-                        {
-                            minute += 60;
-                            if (isGreaterMax) degree--;
-                            else degree++;
-                        }
-
-                        AdaptBounceValue(delta, ref degree, ref minute, ref second);
+                        if (minute == 0 && second == 0) return;
+                        degree += isPos ? -1 : 1;
+                        ReverseInDegree(ref degree, ref minute, ref second);
                         return;
                     }
                 case RectifyModes.Cycle:
                     {
-                        var delta = 0;
-                        if (boundary.CanBeNegative)
+                        if (!boundary.CanBeNegative)
                         {
-                            delta = max;
-                            degree += delta;
-                            max *= 2;
-                        }
-
-                        degree %= max;
-                        if (degree < 0) degree += max;
-                        if (degree > 0)
-                        {
-                            degree -= delta;
+                            degree %= max;
+                            if (degree >= 0) return;
+                            degree += max;
+                            ReverseInDegree(ref degree, ref minute, ref second);
                             return;
                         }
 
-                        degree = delta;
+                        var len = max * 2;
+                        degree %= len;
+                        if (degree < max && degree > -max) return;
+                        var isPos = degree > 0;
+                        if (degree > max)
+                        {
+                            degree -= len;
+                            ReverseInDegree(ref degree, ref minute, ref second);
+                            return;
+                        }
+
+                        if (degree < max)
+                        {
+                            degree += len;
+                            ReverseInDegree(ref degree, ref minute, ref second);
+                            return;
+                        }
+
                         if (minute == 0 && second == 0) return;
-                        if (delta == 0)
-                        {
-                            degree = 0;
-                            return;
-                        }
-
-                        degree = -delta;
-                        if (second > 0)
-                        {
-                            second = 60 - second;
-                            minute--;
-                        }
-
-                        if (minute > 0)
-                        {
-                            minute = 60 - minute;
-                            degree++;
-                        }
-
+                        degree = isPos ? -max : max;
+                        ReverseInDegree(ref degree, ref minute, ref second);
                         return;
                     }
                 default:
@@ -801,6 +756,24 @@ namespace Trivial.Maths
                             throw new ArgumentOutOfRangeException(nameof(Degree), string.Format("Cannot be greater than {0} degrees.", boundary.MaxDegree));
                         return;
                     }
+            }
+        }
+
+        private static void ReverseInDegree(ref int degree, ref int minute, ref float second)
+        {
+            second = -second;
+            if (second < 0)
+            {
+                second += 60;
+                minute++;
+            }
+
+            minute = -minute;
+            if (minute < 0)
+            {
+                minute += 60;
+                if (degree > 0) degree--;
+                else degree++;
             }
         }
     }
