@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Security;
 using System.Text;
 using System.Threading;
@@ -448,6 +449,15 @@ namespace Trivial.Console
         }
 
         /// <summary>
+        /// Writes a secure string to the standard output stream.
+        /// </summary>
+        /// <param name="value">The value to write.</param>
+        public void Write(SecureString value)
+        {
+            Write(LineUtilities.ToUnsecureString(value));
+        }
+
+        /// <summary>
         /// Writes the current line terminator in given count, to the standard output stream.
         /// </summary>
         /// <param name="count">The line count.</param>
@@ -581,6 +591,16 @@ namespace Trivial.Console
         public void WriteLine(double value)
         {
             Write(value);
+            End();
+        }
+
+        /// <summary>
+        /// Writes a secure string to the standard output stream.
+        /// </summary>
+        /// <param name="value">The value to write.</param>
+        public void WriteLine(SecureString value)
+        {
+            Write(LineUtilities.ToUnsecureString(value));
             End();
         }
 
@@ -749,26 +769,24 @@ namespace Trivial.Console
         /// <summary>
         /// Obtains the password pressed by the user.
         /// </summary>
-        /// <param name="intercept">Determines whether to display the pressed key in the console window. true to not display the pressed key; otherwise, false.</param>
         /// <returns>
         /// The password.
         /// </returns>
-        public SecureString ReadPassword(bool intercept = false)
+        public SecureString ReadPassword()
         {
-            return ReadPassword(null, null, intercept);
+            return ReadPassword(null, null);
         }
 
         /// <summary>
         /// Obtains the password pressed by the user.
         /// </summary>
         /// <param name="replaceChar">The optional charactor to output to replace the original one, such as *.</param>
-        /// <param name="intercept">Determines whether to display the pressed key in the console window. true to not display the pressed key; otherwise, false.</param>
         /// <returns>
         /// The password.
         /// </returns>
-        public SecureString ReadPassword(char? replaceChar, bool intercept = false)
+        public SecureString ReadPassword(char replaceChar)
         {
-            return ReadPassword(replaceChar, null, intercept);
+            return ReadPassword(replaceChar, null);
         }
 
         /// <summary>
@@ -776,17 +794,16 @@ namespace Trivial.Console
         /// </summary>
         /// <param name="replaceChar">The optional charactor to output to replace the original one, such as *.</param>
         /// <param name="foregroundColor">The replace charactor color.</param>
-        /// <param name="intercept">Determines whether to display the pressed key in the console window. true to not display the pressed key; otherwise, false.</param>
         /// <returns>
         /// The password.
         /// </returns>
-        public SecureString ReadPassword(char? replaceChar, ConsoleColor? foregroundColor, bool intercept = false)
+        public SecureString ReadPassword(char? replaceChar, ConsoleColor? foregroundColor)
         {
             Flush();
             var str = new SecureString();
             while (true)
             {
-                var key = System.Console.ReadKey(intercept);
+                var key = System.Console.ReadKey(true);
                 var len = str.Length;
                 switch (key.Key)
                 {
@@ -812,6 +829,7 @@ namespace Trivial.Console
                         if (str.Length == 0) break;
                         str.RemoveAt(str.Length - 1);
                         Backspace();
+                        if (replaceChar.HasValue) Backspace();
                         break;
                     case ConsoleKey.Delete:
                         str.Clear();
@@ -822,7 +840,6 @@ namespace Trivial.Console
                         var hasKey = key.KeyChar != '\0';
                         if (hasKey) str.AppendChar(key.KeyChar);
                         SaveCursorPosition();
-                        Backspace();
                         if (hasKey && replaceChar.HasValue) Write(foregroundColor, replaceChar.Value);
                         break;
                 }
@@ -1756,6 +1773,26 @@ namespace Trivial.Console
                 {
                     select();
                 }
+            }
+        }
+
+        /// <summary>
+        /// Converts a secure string to unsecure string.
+        /// </summary>
+        /// <param name="value">The secure string to convert.</param>
+        /// <returns>The unsecure string.</returns>
+        internal static string ToUnsecureString(SecureString value)
+        {
+            if (value == null) return null;
+            IntPtr unmanagedString = IntPtr.Zero;
+            try
+            {
+                unmanagedString = Marshal.SecureStringToGlobalAllocUnicode(value);
+                return Marshal.PtrToStringUni(unmanagedString);
+            }
+            finally
+            {
+                Marshal.ZeroFreeGlobalAllocUnicode(unmanagedString);
             }
         }
     }

@@ -194,7 +194,7 @@ namespace Trivial.Text
                         break;
                     }
 
-                    yield return source.Substring(index, i - index);
+                    yield return source[index..i];
                     index = i + seperator.Length;
                     if (index >= source.Length) break;
                 }
@@ -211,7 +211,7 @@ namespace Trivial.Text
                     }
 
                     if (i <= index) continue;
-                    yield return source.Substring(index, i - index);
+                    yield return source[index..i];
                     index = i + seperator.Length;
                     if (index >= source.Length) break;
                 }
@@ -301,7 +301,7 @@ namespace Trivial.Text
                         break;
                     }
 
-                    yield return source.Substring(index, i - index);
+                    yield return source[index..i];
                     index = i + 1;
                     if (index >= source.Length) break;
                 }
@@ -318,7 +318,7 @@ namespace Trivial.Text
                     }
 
                     if (i <= index) continue;
-                    yield return source.Substring(index, i - index);
+                    yield return source[index..i];
                     index = i + 1;
                     if (index >= source.Length) break;
                 }
@@ -356,7 +356,7 @@ namespace Trivial.Text
 
                     var i = indexes.Min(ele => ele.Index);
                     var len = indexes.Where(ele => ele.Index == i).Max(ele => ele.Length);
-                    yield return source.Substring(index, i - index);
+                    yield return source[index..i];
                     index = i + len;
                     if (index >= source.Length) break;
                 }
@@ -375,7 +375,7 @@ namespace Trivial.Text
                     var i = indexes.Min(ele => ele.Index);
                     if (i <= index) continue;
                     var len = indexes.Where(ele => ele.Index == i).Max(ele => ele.Length);
-                    yield return source.Substring(index, i - index);
+                    yield return source[index..i];
                     index = i + len;
                     if (index >= source.Length) break;
                 }

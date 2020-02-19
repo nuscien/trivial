@@ -8,9 +8,90 @@ using System.Text.Json;
 namespace Trivial.Text
 {
     /// <summary>
+    /// Represents a specific string JSON value with source.
+    /// </summary>
+    public interface IJsonNumber : IJsonValue, IEquatable<IJsonNumber>, IEquatable<long>, IEquatable<int>, IEquatable<double>, IEquatable<float>
+    {
+        /// <summary>
+        /// Gets a value indicating whether the number value is an whole number.
+        /// </summary>
+        public bool IsInteger { get; }
+
+        /// <summary>
+        /// Gets the value of the element as a number.
+        /// </summary>
+        /// <returns>The value of the element as a number.</returns>
+        /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
+        /// <exception cref="InvalidCastException">The bit of value is more than the one need to convert.</exception>
+        /// <exception cref="OverflowException">The value is greater than the most maximum value or less than the most minimum value defined of the number type.</exception>
+        public decimal GetDecimal();
+
+        /// <summary>
+        /// Gets the value of the element as a number.
+        /// </summary>
+        /// <returns>The value of the element as a number.</returns>
+        /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
+        /// <exception cref="InvalidCastException">The bit of value is more than the one need to convert.</exception>
+        /// <exception cref="OverflowException">The value is greater than the most maximum value or less than the most minimum value defined of the number type.</exception>
+        public float GetSingle();
+
+        /// <summary>
+        /// Gets the value of the element as a number.
+        /// </summary>
+        /// <returns>The value of the element as a number.</returns>
+        /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
+        public double GetDouble();
+
+        /// <summary>
+        /// Gets the value of the element as a number.
+        /// </summary>
+        /// <returns>The value of the element as a number.</returns>
+        /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
+        /// <exception cref="InvalidCastException">The bit of value is more than the one need to convert.</exception>
+        /// <exception cref="OverflowException">The value is greater than the most maximum value or less than the most minimum value defined of the number type.</exception>
+        public ushort GetUInt16();
+
+        /// <summary>
+        /// Gets the value of the element as a number.
+        /// </summary>
+        /// <returns>The value of the element as a number.</returns>
+        /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
+        /// <exception cref="InvalidCastException">The bit of value is more than the one need to convert.</exception>
+        /// <exception cref="OverflowException">The value is greater than the most maximum value or less than the most minimum value defined of the number type.</exception>
+        public short GetInt16();
+
+        /// <summary>
+        /// Gets the value of the element as a number.
+        /// </summary>
+        /// <returns>The value of the element as a number.</returns>
+        /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
+        /// <exception cref="InvalidCastException">The bit of value is more than the one need to convert.</exception>
+        /// <exception cref="OverflowException">The value is greater than the most maximum value or less than the most minimum value defined of the number type.</exception>
+        public uint GetUInt32();
+
+        /// <summary>
+        /// Gets the value of the element as a number.
+        /// </summary>
+        /// <returns>The value of the element as a number.</returns>
+        /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
+        /// <exception cref="InvalidCastException">The bit of value is more than the one need to convert.</exception>
+        /// <exception cref="OverflowException">The value is greater than the most maximum value or less than the most minimum value defined of the number type.</exception>
+        public int GetInt32();
+
+        /// <summary>
+        /// Gets the value of the element as a number.
+        /// </summary>
+        /// <returns>The value of the element as a number.</returns>
+        /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
+        /// <exception cref="InvalidCastException">The bit of value is more than the one need to convert.</exception>
+        /// <exception cref="OverflowException">The value is greater than the most maximum value or less than the most minimum value defined of the number type.</exception>
+        public long GetInt64();
+    }
+
+    /// <summary>
     /// Represents a specific JSON integer number value.
     /// </summary>
-    public class JsonInteger : IJsonValue<long>, IJsonValueResolver, IComparable<JsonInteger>, IComparable<JsonDouble>, IComparable<uint>, IComparable<int>, IComparable<long>, IComparable<double>, IComparable<float>, IEquatable<IJsonValue<uint>>, IEquatable<IJsonValue<int>>, IEquatable<IJsonValue<float>>, IEquatable<IJsonValue<double>>, IEquatable<uint>, IEquatable<int>, IEquatable<float>, IEquatable<double>, IFormattable
+    public class JsonInteger : IJsonValue<long>, IJsonValueResolver, IJsonNumber, IComparable<JsonInteger>, IComparable<JsonDouble>, IComparable<uint>, IComparable<int>, IComparable<long>, IComparable<double>, IComparable<float>, IEquatable<IJsonValue<uint>>, IEquatable<IJsonValue<int>>, IEquatable<IJsonValue<float>>, IEquatable<IJsonValue<double>>, IEquatable<uint>, IEquatable<int>, IEquatable<float>, IEquatable<double>, IFormattable
     {
         /// <summary>
         /// Gets the value.
@@ -62,6 +143,11 @@ namespace Trivial.Text
         {
             Value = (long)value.TotalSeconds;
         }
+
+        /// <summary>
+        /// Gets a value indicating whether the number value is an whole number.
+        /// </summary>
+        public bool IsInteger => true;
 
         /// <summary>
         /// Gets the type of the current JSON value.
@@ -161,6 +247,17 @@ namespace Trivial.Text
         {
             if (other is null) return false;
             return Value.Equals(other.Value);
+        }
+
+        /// <summary>
+        /// Indicates whether this instance and a specified object are equal.
+        /// </summary>
+        /// <param name="other">The object to compare with the current instance.</param>
+        /// <returns>true if obj and this instance represent the same value; otherwise, false.</returns>
+        public bool Equals(IJsonNumber other)
+        {
+            if (other is null || !other.IsInteger) return false;
+            return Value.Equals(other.GetInt64());
         }
 
         /// <summary>
@@ -454,6 +551,7 @@ namespace Trivial.Text
         /// </summary>
         /// <returns>The value of the element as a number.</returns>
         /// <exception cref="InvalidCastException">The value is an Int64.</exception>
+        /// <exception cref="OverflowException">The value is greater than the most maximum value or less than the most minimum value defined of the number type.</exception>
         short IJsonValueResolver.GetInt16() => (short)Value;
 
         /// <summary>
@@ -461,6 +559,7 @@ namespace Trivial.Text
         /// </summary>
         /// <returns>The value of the element as a number.</returns>
         /// <exception cref="InvalidCastException">The value is an Int64.</exception>
+        /// <exception cref="OverflowException">The value is greater than the most maximum value or less than the most minimum value defined of the number type.</exception>
         uint IJsonValueResolver.GetUInt32() => (uint)Value;
 
         /// <summary>
@@ -468,6 +567,7 @@ namespace Trivial.Text
         /// </summary>
         /// <returns>The value of the element as a number.</returns>
         /// <exception cref="InvalidCastException">The value is an Int64.</exception>
+        /// <exception cref="OverflowException">The value is greater than the most maximum value or less than the most minimum value defined of the number type.</exception>
         int IJsonValueResolver.GetInt32() => (int)Value;
 
         /// <summary>
@@ -475,6 +575,62 @@ namespace Trivial.Text
         /// </summary>
         /// <returns>The value of the element as a number.</returns>
         long IJsonValueResolver.GetInt64() => Value;
+
+        /// <summary>
+        /// Gets the value of the element as a number.
+        /// </summary>
+        /// <returns>The value of the element as a number.</returns>
+        decimal IJsonNumber.GetDecimal() => Value;
+
+        /// <summary>
+        /// Gets the value of the element as a number.
+        /// </summary>
+        /// <returns>The value of the element as a number.</returns>
+        float IJsonNumber.GetSingle() => Value;
+
+        /// <summary>
+        /// Gets the value of the element as a number.
+        /// </summary>
+        /// <returns>The value of the element as a number.</returns>
+        double IJsonNumber.GetDouble() => Value;
+
+        /// <summary>
+        /// Gets the value of the element as a number.
+        /// </summary>
+        /// <returns>The value of the element as a number.</returns>
+        /// <exception cref="InvalidCastException">The value is an Int64.</exception>
+        /// <exception cref="OverflowException">The value is greater than the most maximum value or less than the most minimum value defined of the number type.</exception>
+        ushort IJsonNumber.GetUInt16() => (ushort)Value;
+
+        /// <summary>
+        /// Gets the value of the element as a number.
+        /// </summary>
+        /// <returns>The value of the element as a number.</returns>
+        /// <exception cref="InvalidCastException">The value is an Int64.</exception>
+        /// <exception cref="OverflowException">The value is greater than the most maximum value or less than the most minimum value defined of the number type.</exception>
+        short IJsonNumber.GetInt16() => (short)Value;
+
+        /// <summary>
+        /// Gets the value of the element as a number.
+        /// </summary>
+        /// <returns>The value of the element as a number.</returns>
+        /// <exception cref="InvalidCastException">The value is an Int64.</exception>
+        /// <exception cref="OverflowException">The value is greater than the most maximum value or less than the most minimum value defined of the number type.</exception>
+        uint IJsonNumber.GetUInt32() => (uint)Value;
+
+        /// <summary>
+        /// Gets the value of the element as a number.
+        /// </summary>
+        /// <returns>The value of the element as a number.</returns>
+        /// <exception cref="InvalidCastException">The value is an Int64.</exception>
+        /// <exception cref="OverflowException">The value is greater than the most maximum value or less than the most minimum value defined of the number type.</exception>
+        int IJsonNumber.GetInt32() => (int)Value;
+
+        /// <summary>
+        /// Gets the value of the element as a number.
+        /// </summary>
+        /// <returns>The value of the element as a number.</returns>
+        long IJsonNumber.GetInt64() => Value;
 
         /// <summary>
         /// Gets the value of the element as a number.
@@ -620,13 +776,23 @@ namespace Trivial.Text
         }
 
         /// <summary>
-        /// Converts the JSON raw back.
+        /// Converts to a JSON string.
         /// </summary>
         /// <param name="json">The JSON value.</param>
-        /// <returns>A string.</returns>
+        /// <returns>A JSON string instance.</returns>
         public static explicit operator JsonString(JsonInteger json)
         {
             return new JsonString(json.ToString());
+        }
+
+        /// <summary>
+        /// Converts to a JSON double object.
+        /// </summary>
+        /// <param name="json">The JSON value.</param>
+        /// <returns>A JSON double instance.</returns>
+        public static explicit operator JsonDouble(JsonInteger json)
+        {
+            return new JsonDouble(json.Value);
         }
 
         /// <summary>
@@ -1133,7 +1299,7 @@ namespace Trivial.Text
     /// <summary>
     /// Represents a specific JSON double float number value.
     /// </summary>
-    public class JsonDouble : IJsonValue<double>, IJsonValueResolver, IComparable<JsonInteger>, IComparable<JsonDouble>, IComparable<uint>, IComparable<int>, IComparable<long>, IComparable<double>, IComparable<float>, IEquatable<IJsonValue<uint>>, IEquatable<IJsonValue<int>>, IEquatable<IJsonValue<long>>, IEquatable<IJsonValue<float>>, IEquatable<uint>, IEquatable<int>, IEquatable<long>, IEquatable<float>, IFormattable
+    public class JsonDouble : IJsonValue<double>, IJsonValueResolver, IJsonNumber, IComparable<JsonInteger>, IComparable<JsonDouble>, IComparable<uint>, IComparable<int>, IComparable<long>, IComparable<double>, IComparable<float>, IEquatable<IJsonValue<uint>>, IEquatable<IJsonValue<int>>, IEquatable<IJsonValue<long>>, IEquatable<IJsonValue<float>>, IEquatable<uint>, IEquatable<int>, IEquatable<long>, IEquatable<float>, IFormattable
     {
         /// <summary>
         /// Initializes a new instance of the JsonDouble class.
@@ -1142,6 +1308,8 @@ namespace Trivial.Text
         public JsonDouble(int value)
         {
             Value = value;
+            ValueKind = JsonValueKind.Number;
+            IsInteger = true;
         }
 
         /// <summary>
@@ -1151,6 +1319,8 @@ namespace Trivial.Text
         public JsonDouble(long value)
         {
             Value = value;
+            ValueKind = JsonValueKind.Number;
+            IsInteger = true;
         }
 
         /// <summary>
@@ -1160,6 +1330,8 @@ namespace Trivial.Text
         public JsonDouble(uint value)
         {
             Value = value;
+            ValueKind = JsonValueKind.Number;
+            IsInteger = true;
         }
 
         /// <summary>
@@ -1169,6 +1341,8 @@ namespace Trivial.Text
         public JsonDouble(ulong value)
         {
             Value = value;
+            ValueKind = JsonValueKind.Number;
+            IsInteger = true;
         }
 
         /// <summary>
@@ -1178,6 +1352,24 @@ namespace Trivial.Text
         public JsonDouble(float value)
         {
             Value = value;
+            if (float.IsNaN(value) || float.IsInfinity(value))
+            {
+                ValueKind = JsonValueKind.Null;
+                return;
+            }
+
+            ValueKind = JsonValueKind.Number;
+            try
+            {
+                if (value > long.MaxValue || value < long.MinValue) return;
+                IsInteger = (long)value == value;
+            }
+            catch (InvalidCastException)
+            {
+            }
+            catch (OverflowException)
+            {
+            }
         }
 
         /// <summary>
@@ -1187,6 +1379,24 @@ namespace Trivial.Text
         public JsonDouble(double value)
         {
             Value = value;
+            if (double.IsNaN(value) || double.IsInfinity(value))
+            {
+                ValueKind = JsonValueKind.Null;
+                return;
+            }
+
+            ValueKind = JsonValueKind.Number;
+            try
+            {
+                if (value > long.MaxValue || value < long.MinValue) return;
+                IsInteger = (long)value == value;
+            }
+            catch (InvalidCastException)
+            {
+            }
+            catch (OverflowException)
+            {
+            }
         }
 
         /// <summary>
@@ -1196,6 +1406,18 @@ namespace Trivial.Text
         public JsonDouble(decimal value)
         {
             Value = (double)value;
+            ValueKind = JsonValueKind.Number;
+            try
+            {
+                if (value > long.MaxValue || value < long.MinValue) return;
+                IsInteger = (long)value == value;
+            }
+            catch (InvalidCastException)
+            {
+            }
+            catch (OverflowException)
+            {
+            }
         }
 
         /// <summary>
@@ -1205,7 +1427,14 @@ namespace Trivial.Text
         public JsonDouble(TimeSpan value)
         {
             Value = value.TotalSeconds;
+            ValueKind = JsonValueKind.Number;
+            IsInteger = value.Milliseconds == 0;
         }
+
+        /// <summary>
+        /// Gets a value indicating whether the number value is an whole number.
+        /// </summary>
+        public bool IsInteger { get; }
 
         /// <summary>
         /// Gets the value.
@@ -1215,7 +1444,7 @@ namespace Trivial.Text
         /// <summary>
         /// Gets the type of the current JSON value.
         /// </summary>
-        public JsonValueKind ValueKind => JsonValueKind.Number;
+        public JsonValueKind ValueKind { get; }
 
         /// <summary>
         /// Gets the JSON format string of the value.
@@ -1300,6 +1529,17 @@ namespace Trivial.Text
         {
             if (other is null) return false;
             return Value.Equals(other.Value);
+        }
+
+        /// <summary>
+        /// Indicates whether this instance and a specified object are equal.
+        /// </summary>
+        /// <param name="other">The object to compare with the current instance.</param>
+        /// <returns>true if obj and this instance represent the same value; otherwise, false.</returns>
+        public bool Equals(IJsonNumber other)
+        {
+            if (other is null) return false;
+            return Value.Equals(other.GetDouble());
         }
 
         /// <summary>
@@ -1572,6 +1812,7 @@ namespace Trivial.Text
         /// </summary>
         /// <returns>The value of the element as a number.</returns>
         /// <exception cref="InvalidCastException">The value is an Double.</exception>
+        /// <exception cref="OverflowException">The value is greater than the most maximum value or less than the most minimum value defined of the number type.</exception>
         float IJsonValueResolver.GetSingle() => (float)Value;
 
         /// <summary>
@@ -1585,6 +1826,7 @@ namespace Trivial.Text
         /// </summary>
         /// <returns>The value of the element as a number.</returns>
         /// <exception cref="InvalidCastException">The value is an Double.</exception>
+        /// <exception cref="OverflowException">The value is greater than the most maximum value or less than the most minimum value defined of the number type.</exception>
         short IJsonValueResolver.GetInt16() => (short)Value;
 
         /// <summary>
@@ -1592,6 +1834,7 @@ namespace Trivial.Text
         /// </summary>
         /// <returns>The value of the element as a number.</returns>
         /// <exception cref="InvalidCastException">The value is an Double.</exception>
+        /// <exception cref="OverflowException">The value is greater than the most maximum value or less than the most minimum value defined of the number type.</exception>
         uint IJsonValueResolver.GetUInt32() => (uint)Value;
 
         /// <summary>
@@ -1599,6 +1842,7 @@ namespace Trivial.Text
         /// </summary>
         /// <returns>The value of the element as a number.</returns>
         /// <exception cref="InvalidCastException">The value is an Double.</exception>
+        /// <exception cref="OverflowException">The value is greater than the most maximum value or less than the most minimum value defined of the number type.</exception>
         int IJsonValueResolver.GetInt32() => (int)Value;
 
         /// <summary>
@@ -1606,7 +1850,69 @@ namespace Trivial.Text
         /// </summary>
         /// <returns>The value of the element as a number.</returns>
         /// <exception cref="InvalidCastException">The value is an Double.</exception>
+        /// <exception cref="OverflowException">The value is greater than the most maximum value or less than the most minimum value defined of the number type.</exception>
         long IJsonValueResolver.GetInt64() => (long)Value;
+
+        /// <summary>
+        /// Gets the value of the element as a number.
+        /// </summary>
+        /// <returns>The value of the element as a number.</returns>
+        /// <exception cref="InvalidCastException">The value is an Double.</exception>
+        /// <exception cref="OverflowException">The value is greater than the most maximum value or less than the most minimum value defined of the number type.</exception>
+        decimal IJsonNumber.GetDecimal() => (decimal)Value;
+
+        /// <summary>
+        /// Gets the value of the element as a number.
+        /// </summary>
+        /// <returns>The value of the element as a number.</returns>
+        /// <exception cref="InvalidCastException">The value is an Double.</exception>
+        /// <exception cref="OverflowException">The value is greater than the most maximum value or less than the most minimum value defined of the number type.</exception>
+        float IJsonNumber.GetSingle() => (float)Value;
+
+        /// <summary>
+        /// Gets the value of the element as a number.
+        /// </summary>
+        /// <returns>The value of the element as a number.</returns>
+        double IJsonNumber.GetDouble() => Value;
+
+        /// <summary>
+        /// Gets the value of the element as a number.
+        /// </summary>
+        /// <returns>The value of the element as a number.</returns>
+        /// <exception cref="InvalidCastException">The value is an Double.</exception>
+        /// <exception cref="OverflowException">The value is greater than the most maximum value or less than the most minimum value defined of the number type.</exception>
+        ushort IJsonNumber.GetUInt16() => (ushort)Value;
+
+        /// <summary>
+        /// Gets the value of the element as a number.
+        /// </summary>
+        /// <returns>The value of the element as a number.</returns>
+        /// <exception cref="InvalidCastException">The value is an Double.</exception>
+        /// <exception cref="OverflowException">The value is greater than the most maximum value or less than the most minimum value defined of the number type.</exception>
+        short IJsonNumber.GetInt16() => (short)Value;
+
+        /// <summary>
+        /// Gets the value of the element as a number.
+        /// </summary>
+        /// <returns>The value of the element as a number.</returns>
+        /// <exception cref="InvalidCastException">The value is an Double.</exception>
+        uint IJsonNumber.GetUInt32() => (uint)Value;
+
+        /// <summary>
+        /// Gets the value of the element as a number.
+        /// </summary>
+        /// <returns>The value of the element as a number.</returns>
+        /// <exception cref="InvalidCastException">The value is an Double.</exception>
+        /// <exception cref="OverflowException">The value is greater than the most maximum value or less than the most minimum value defined of the number type.</exception>
+        int IJsonNumber.GetInt32() => (int)Value;
+
+        /// <summary>
+        /// Gets the value of the element as a number.
+        /// </summary>
+        /// <returns>The value of the element as a number.</returns>
+        /// <exception cref="InvalidCastException">The value is an Double.</exception>
+        /// <exception cref="OverflowException">The value is greater than the most maximum value or less than the most minimum value defined of the number type.</exception>
+        long IJsonNumber.GetInt64() => (long)Value;
 
         /// <summary>
         /// Gets the value of the element as a number.
@@ -1742,6 +2048,36 @@ namespace Trivial.Text
         }
 
         /// <summary>
+        /// Converts the JSON raw back.
+        /// </summary>
+        /// <param name="json">The JSON value.</param>
+        /// <returns>A string.</returns>
+        public static explicit operator string(JsonDouble json)
+        {
+            return json.ToString();
+        }
+
+        /// <summary>
+        /// Converts to a JSON string.
+        /// </summary>
+        /// <param name="json">The JSON value.</param>
+        /// <returns>A JSON string instance.</returns>
+        public static explicit operator JsonString(JsonDouble json)
+        {
+            return new JsonString(json.ToString());
+        }
+
+        /// <summary>
+        /// Converts to a JSON integer object.
+        /// </summary>
+        /// <param name="json">The JSON value.</param>
+        /// <returns>A JSON integer instance.</returns>
+        public static explicit operator JsonInteger(JsonDouble json)
+        {
+            return new JsonInteger((long)json.Value);
+        }
+
+        /// <summary>
         /// Compares two instances to indicate if they are same.
         /// leftValue == rightValue
         /// </summary>
@@ -1753,16 +2089,6 @@ namespace Trivial.Text
             if (ReferenceEquals(leftValue, rightValue)) return true;
             if (rightValue is null) return false;
             return leftValue.Value == rightValue.Value;
-        }
-
-        /// <summary>
-        /// Converts the JSON raw back.
-        /// </summary>
-        /// <param name="json">The JSON value.</param>
-        /// <returns>A string.</returns>
-        public static explicit operator string(JsonDouble json)
-        {
-            return json.ToString();
         }
 
         /// <summary>

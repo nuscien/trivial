@@ -50,7 +50,7 @@ namespace Trivial.Console
                     if (item.LastIndexOf("\"") == item.Length - 1 && item.LastIndexOf("\\\"") == item.Length - 2)
                     {
                         merge = false;
-                        str = item[0..^1];
+                        str = item.Substring(0, item.Length - 1);
                     }
 
                     this.args[this.args.Count - 1] += str;

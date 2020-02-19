@@ -71,6 +71,7 @@ namespace Trivial.Text
         /// <returns>The value of the element as a number.</returns>
         /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
         /// <exception cref="InvalidCastException">The bit of value is more than the one need to convert.</exception>
+        /// <exception cref="OverflowException">The value is greater than the most maximum value or less than the most minimum value defined of the number type.</exception>
         public decimal GetDecimal();
 
         /// <summary>
@@ -79,6 +80,7 @@ namespace Trivial.Text
         /// <returns>The value of the element as a number.</returns>
         /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
         /// <exception cref="InvalidCastException">The bit of value is more than the one need to convert.</exception>
+        /// <exception cref="OverflowException">The value is greater than the most maximum value or less than the most minimum value defined of the number type.</exception>
         public float GetSingle();
 
         /// <summary>
@@ -94,6 +96,7 @@ namespace Trivial.Text
         /// <returns>The value of the element as a number.</returns>
         /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
         /// <exception cref="InvalidCastException">The bit of value is more than the one need to convert.</exception>
+        /// <exception cref="OverflowException">The value is greater than the most maximum value or less than the most minimum value defined of the number type.</exception>
         public short GetInt16();
 
         /// <summary>
@@ -102,6 +105,7 @@ namespace Trivial.Text
         /// <returns>The value of the element as a number.</returns>
         /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
         /// <exception cref="InvalidCastException">The bit of value is more than the one need to convert.</exception>
+        /// <exception cref="OverflowException">The value is greater than the most maximum value or less than the most minimum value defined of the number type.</exception>
         public uint GetUInt32();
 
         /// <summary>
@@ -110,6 +114,7 @@ namespace Trivial.Text
         /// <returns>The value of the element as a number.</returns>
         /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
         /// <exception cref="InvalidCastException">The bit of value is more than the one need to convert.</exception>
+        /// <exception cref="OverflowException">The value is greater than the most maximum value or less than the most minimum value defined of the number type.</exception>
         public int GetInt32();
 
         /// <summary>
@@ -118,6 +123,7 @@ namespace Trivial.Text
         /// <returns>The value of the element as a number.</returns>
         /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
         /// <exception cref="InvalidCastException">The bit of value is more than the one need to convert.</exception>
+        /// <exception cref="OverflowException">The value is greater than the most maximum value or less than the most minimum value defined of the number type.</exception>
         public long GetInt64();
 
         /// <summary>

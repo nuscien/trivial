@@ -11,7 +11,7 @@ namespace Trivial.Console
             System.Console.WriteLine();
 
             var dispatcher = new Dispatcher();
-            dispatcher.Register<Console.SelectionVerb>("selection");
+            dispatcher.Register<SelectionVerb>("selection");
             dispatcher.Register<Tasks.HitTasksVerb>("hittask");
             dispatcher.Register<Reflection.SingletonKeeperVerb>("singleton");
             dispatcher.Register<Maths.MathsVerb>("maths");
