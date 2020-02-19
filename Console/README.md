@@ -168,7 +168,6 @@ var Main(string[] args)
         col.Add("num " + i, i.ToString());
     }
 
-
     // Create an options for display.
     var options = new SelectionOptions
     {
