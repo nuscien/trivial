@@ -20,48 +20,104 @@ namespace Trivial.Maths
         /// <summary>
         /// Initializes a new instance of the Angle struct.
         /// </summary>
-        public Angle(double degrees, BoundaryOptions boundary = null)
+        /// <param name="degrees">The total degrees.</param>
+        /// <param name="boundary">The boundary options.</param>
+        public Angle(double degrees, BoundaryOptions boundary)
         {
-            Degrees = AdaptValue(boundary, degrees);
-            AbsDegrees = Math.Abs(Degrees);
-            Positive = Degrees > 0;
-            IsNegative = Degrees < 0;
-            Degree = (int)Degrees;
-            AbsDegree = Math.Abs(Degree);
-            var restValue = Math.Abs(AbsDegrees - AbsDegree) * 60;
-            Arcminute = (int)restValue;
-            Arcsecond = (float)((restValue - Arcminute) * 60);
+            var degree = (int)degrees;
+            var restValue = (Math.Abs(degrees) - Math.Abs(degree)) * 60;
+            var minute = (int)restValue;
+            var second = (float)((restValue - minute) * 60);
+            var d = degree;
+            var m = minute;
+            var s = second;
+            AdaptValue(boundary, ref degree, ref minute, ref second);
+            Degree = degree;
+            AbsDegree = Math.Abs(degree);
+            Arcminute = minute;
+            Arcsecond = second;
+            IsNegative = Degree < 0;
+            Positive = Degree > 0;
+            if (minute == m && second == s)
+            {
+                if (degree == d)
+                {
+                    Degrees = degrees;
+                    AbsDegrees = Math.Abs(Degrees);
+                    return;
+                }
+
+                var abs = Math.Abs(degrees);
+                AbsDegrees = Math.Abs(degree) + abs - (int)abs;
+            }
+            else
+            {
+                AbsDegrees = Math.Abs(degree) + minute / 60d + second / 3600d;
+            }
+
+            Degrees = degree > 0 ? AbsDegrees : -AbsDegrees;
         }
 
         /// <summary>
         /// Initializes a new instance of the Angle struct.
         /// </summary>
-        public Angle(int degree, int minute, float second, BoundaryOptions boundary = null) : this(GetDegrees(degree, minute, second), boundary)
+        /// <param name="degrees">The total degrees.</param>
+        public Angle(double degrees) : this(degrees, null)
         {
         }
 
         /// <summary>
-        /// Gets or sets a value indicating whether it is positive.
+        /// Initializes a new instance of the Angle struct.
+        /// </summary>
+        /// <param name="degree">The degree part.</param>
+        /// <param name="minute">The minute part.</param>
+        /// <param name="second">The second part.</param>
+        /// <param name="boundary">The boundary options.</param>
+        public Angle(int degree, int minute, float second, BoundaryOptions boundary)
+        {
+            AdaptValue(boundary, ref degree, ref minute, ref second);
+            Degree = degree;
+            AbsDegree = Math.Abs(degree);
+            Arcminute = minute;
+            Arcsecond = second;
+            IsNegative = Degree < 0;
+            Positive = Degree > 0;
+            AbsDegrees = AbsDegree + minute / 60d + second / 3600d;
+            Degrees = degree > 0 ? AbsDegrees : -AbsDegrees;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the Angle struct.
+        /// </summary>
+        /// <param name="degree">The degree part.</param>
+        /// <param name="minute">The minute part.</param>
+        /// <param name="second">The second part.</param>
+        public Angle(int degree, int minute, float second) : this(degree, minute, second, null)
+        {
+        }
+
+        /// <summary>
+        /// Gets a value indicating whether it is positive.
         /// </summary>
         public bool Positive { get; }
 
         /// <summary>
-        /// Gets or sets the absolute degree of the angle.
+        /// Gets the absolute degree of the angle.
         /// </summary>
         public int AbsDegree { get; }
 
         /// <summary>
-        /// Gets or sets the degree of the angle.
+        /// Gets the degree of the angle.
         /// </summary>
         public int Degree { get; }
 
         /// <summary>
-        /// Gets or sets the arcminute of the angle.
+        /// Gets the arcminute of the angle.
         /// </summary>
         public int Arcminute { get; }
 
         /// <summary>
-        /// Gets or sets the arcsecond of the angle.
+        /// Gets the arcsecond of the angle.
         /// </summary>
         public float Arcsecond { get; }
 
@@ -71,7 +127,7 @@ namespace Trivial.Maths
         public double AbsDegrees { get; }
 
         /// <summary>
-        /// Gets or sets the total degrees.
+        /// Gets the total degrees.
         /// </summary>
         public double Degrees { get; }
 
@@ -357,7 +413,7 @@ namespace Trivial.Maths
 
             if (split.Length < 2)
             {
-                split = s.Split(new[] {Symbols.DegreeUnit, Symbols.ArcminuteUnit, Symbols.ArcsecondUnit }, StringSplitOptions.RemoveEmptyEntries);
+                split = s.Split(new[] { Symbols.DegreeUnit, Symbols.ArcminuteUnit, Symbols.ArcsecondUnit }, StringSplitOptions.RemoveEmptyEntries);
             }
 
             if (split.Length < 2)
@@ -576,48 +632,137 @@ namespace Trivial.Maths
             return (Positive ? string.Empty : "-") + this.ToAbsAngleString();
         }
 
-        internal static double AdaptValue(BoundaryOptions boundary, double value)
+        internal static void AdaptValue(BoundaryOptions boundary, ref int degree, ref int minute, ref float second)
         {
-            if (boundary == null) return value;
-            if (boundary.MaxDegree <= 0) throw new ArgumentOutOfRangeException(nameof(boundary), "MaxDegree should be greater than 0.");
+            if (boundary == null) return;
+            var max = boundary.MaxDegree;
+            if (max <= 0) throw new ArgumentOutOfRangeException(nameof(boundary), "MaxDegree should be greater than 0.");
+            if (second >= 60 || second < 0)
+            {
+                var m = (int)second / 60;
+                second %= 60;
+                if (second < 0)
+                {
+                    second += 60;
+                    m--;
+                }
+
+                minute += m;
+            }
+
+            if (minute >= 60 || minute < 0)
+            {
+                var d = minute / 60;
+                minute %= 60;
+                if (minute < 0)
+                {
+                    minute += 60;
+                    d--;
+                }
+
+                degree += d;
+            }
+
             switch (boundary.RectifyMode)
             {
                 case RectifyModes.Bounce:
                     {
-                        if (!boundary.Negative)
+                        var len = max * 2;
+                        if (!boundary.CanBeNegative)
                         {
-                            var integer = (int)value % (boundary.MaxDegree * 2);
-                            value = value - (int)value + integer;
-                            if (value > boundary.MaxDegree) value = boundary.MaxDegree * 2 - value;
-                            return value;
+                            degree %= len;
+                            if (degree < 0) degree += len;
+                            if (degree < max) return;
+                            if (degree == max && minute == 0 && second == 0) return;
+                            degree -= max;
+                            ReverseInDegree(ref degree, ref minute, ref second);
+                            return;
                         }
 
-                        value = (value + boundary.MaxDegree) % (boundary.MaxDegree * 4) - boundary.MaxDegree;
-                        if (value > boundary.MaxDegree) return boundary.MaxDegree * 2 - value;
-                        if (value < -boundary.MaxDegree) return -boundary.MaxDegree * 2 - value;
-                        return value;
+                        degree %= len * 2;
+                        if (degree < max && degree > -max) return;
+                        var isPos = degree > 0;
+                        if (degree > max)
+                        {
+                            degree = len - degree;
+                            if (degree >= 0) ReverseInDegree(ref degree, ref minute, ref second);
+                            return;
+                        }
+
+                        if (degree < max)
+                        {
+                            degree = -len - degree;
+                            if (degree <= 0) ReverseInDegree(ref degree, ref minute, ref second);
+                            return;
+                        }
+
+                        if (minute == 0 && second == 0) return;
+                        degree += isPos ? -1 : 1;
+                        ReverseInDegree(ref degree, ref minute, ref second);
+                        return;
                     }
                 case RectifyModes.Cycle:
                     {
-                        if (!boundary.Negative)
+                        if (!boundary.CanBeNegative)
                         {
-                            value %= boundary.MaxDegree;
-                            if (value < 0) value += boundary.MaxDegree;
-                            return value;
+                            degree %= max;
+                            if (degree >= 0) return;
+                            degree += max;
+                            ReverseInDegree(ref degree, ref minute, ref second);
+                            return;
                         }
 
-                        return (value + boundary.MaxDegree) % (boundary.MaxDegree * 2) - boundary.MaxDegree;
+                        var len = max * 2;
+                        degree %= len;
+                        if (degree < max && degree > -max) return;
+                        var isPos = degree > 0;
+                        if (degree > max)
+                        {
+                            degree -= len;
+                            ReverseInDegree(ref degree, ref minute, ref second);
+                            return;
+                        }
+
+                        if (degree < max)
+                        {
+                            degree += len;
+                            ReverseInDegree(ref degree, ref minute, ref second);
+                            return;
+                        }
+
+                        if (minute == 0 && second == 0) return;
+                        degree = isPos ? -max : max;
+                        ReverseInDegree(ref degree, ref minute, ref second);
+                        return;
                     }
                 default:
                     {
-                        if (value > boundary.MaxDegree)
-                            throw new ArgumentOutOfRangeException(nameof(Degree), string.Format("Cannot be greater than {0} degrees.", boundary.MaxDegree));
-                        if (boundary.Negative && value < -boundary.MaxDegree)
-                            throw new ArgumentOutOfRangeException(nameof(Degree), string.Format("Cannot be less than -{0} degrees.", boundary.MaxDegree));
-                        if (!boundary.Negative && value < 0)
+
+                        if (!boundary.CanBeNegative && degree < 0)
                             throw new ArgumentOutOfRangeException(nameof(Degree), "Cannot be less than 0 degree.");
-                        return value;
+                        var abs = Math.Abs(degree);
+                        if (abs > max || (abs == max && minute > 0 && second > 0))
+                            throw new ArgumentOutOfRangeException(nameof(Degree), string.Format("Cannot be greater than {0} degrees.", boundary.MaxDegree));
+                        return;
                     }
+            }
+        }
+
+        private static void ReverseInDegree(ref int degree, ref int minute, ref float second)
+        {
+            second = -second;
+            if (second < 0)
+            {
+                second += 60;
+                minute++;
+            }
+
+            minute = -minute;
+            if (minute < 0)
+            {
+                minute += 60;
+                if (degree > 0) degree--;
+                else degree++;
             }
         }
     }

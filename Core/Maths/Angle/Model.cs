@@ -20,12 +20,27 @@ namespace Trivial.Maths
         /// <summary>
         /// The angle model.
         /// </summary>
-        public class Model : IAngle, IComparable, IComparable<IAngle>, IEquatable<IAngle>, IComparable<double>, IEquatable<double>, IComparable<int>, IEquatable<int>, IAdvancedAdditionCapable<Model>
+        public class Model : IAngle, ICloneable, IComparable, IComparable<IAngle>, IEquatable<IAngle>, IComparable<double>, IEquatable<double>, IComparable<int>, IEquatable<int>, IAdvancedAdditionCapable<Model>
         {
             /// <summary>
             /// The total degrees value.
             /// </summary>
-            private double raw;
+            private double? raw;
+
+            /// <summary>
+            /// The degree value.
+            /// </summary>
+            private int degree;
+
+            /// <summary>
+            /// The minute value.
+            /// </summary>
+            private int minute;
+
+            /// <summary>
+            /// The second value.
+            /// </summary>
+            private float second;
 
             /// <summary>
             /// Initializes a new instance of the Angle.Model class.
@@ -49,8 +64,19 @@ namespace Trivial.Maths
             /// <param name="boundary">The boundary options.</param>
             public Model(double degrees, BoundaryOptions boundary = null)
             {
-                raw = degrees;
                 Boundary = boundary;
+                SetDegrees(degrees);
+            }
+
+            /// <summary>
+            /// Initializes a new instance of the Angle.Model class.
+            /// </summary>
+            /// <param name="degree">The degree part.</param>
+            /// <param name="minute">The minute part.</param>
+            /// <param name="second">The second part.</param>
+            public Model(int degree, int minute, float second = 0)
+            {
+                AdaptValue(null, ref degree, ref minute, ref second);
             }
 
             /// <summary>
@@ -60,8 +86,10 @@ namespace Trivial.Maths
             /// <param name="minute">The minute part.</param>
             /// <param name="second">The second part.</param>
             /// <param name="boundary">The boundary options.</param>
-            public Model(int degree, int minute, float second, BoundaryOptions boundary = null) : this(GetDegrees(degree, minute, second), boundary)
+            public Model(int degree, int minute, float second, BoundaryOptions boundary)
             {
+                Boundary = boundary;
+                AdaptValue(boundary, ref degree, ref minute, ref second);
             }
 
             /// <summary>
@@ -76,14 +104,16 @@ namespace Trivial.Maths
             {
                 get
                 {
-                    return raw > 0;
+                    return degree > 0;
                 }
 
                 set
                 {
-                    if (raw > 0 && value) return;
-                    if (raw < 0 && !value) return;
-                    raw *= -1;
+                    if (degree > 0 && value) return;
+                    if (degree < 0 && !value) return;
+                    degree = -degree;
+                    var r = raw;
+                    if (r.HasValue) raw = -r.Value;
                 }
             }
 
@@ -97,8 +127,24 @@ namespace Trivial.Maths
             /// </summary>
             public int Degree
             {
-                get => (int)raw;
-                set => Degrees = raw - (int)raw + value;
+                get
+                {
+                    return degree;
+                }
+
+                set
+                {
+                    if (degree == value) return;
+                    degree = value;
+                    var r = raw;
+                    var m = 0;
+                    var s = 0f;
+                    AdaptValue(Boundary, ref degree, ref m, ref s);
+                    AdaptValue(Boundary, ref degree, ref minute, ref second);
+                    if (!r.HasValue) return;
+                    var abs = Math.Abs(r.Value);
+                    raw = abs - (int)abs + degree;
+                }
             }
 
             /// <summary>
@@ -108,13 +154,15 @@ namespace Trivial.Maths
             {
                 get
                 {
-                    return (int)((raw - (int)raw) * 60);
+                    return minute;
                 }
 
                 set
                 {
-                    var min = (int)((raw - (int)raw) * 60);
-                    Degrees = raw - min / 60.0 + value;
+                    if (minute == value) return;
+                    minute = value;
+                    raw = null;
+                    AdaptValue(Boundary, ref degree, ref minute, ref second);
                 }
             }
 
@@ -125,15 +173,15 @@ namespace Trivial.Maths
             {
                 get
                 {
-                    var min = (raw - (int)raw) * 60;
-                    return (float)((min - (int)min) * 60);
+                    return second;
                 }
 
                 set
                 {
-                    var min = (raw - (int)raw) * 60;
-                    var sec = (float)((min - (int)min) * 60);
-                    Degrees = raw - sec / 3600.0 + value;
+                    if (second == value) return;
+                    second = value;
+                    raw = null;
+                    AdaptValue(Boundary, ref degree, ref minute, ref second);
                 }
             }
 
@@ -149,12 +197,18 @@ namespace Trivial.Maths
             {
                 get
                 {
-                    return raw;
+                    var r = raw;
+                    if (r.HasValue) return r.Value;
+                    var pos = degree >= 0;
+                    var rest = Math.Abs(degree) + minute / 60d + second / 3600d;
+                    rest = pos ? rest : -rest;
+                    raw = rest;
+                    return rest;
                 }
 
                 set
                 {
-                    raw = AdaptValue(Boundary, value);
+                    SetDegrees(value);
                 }
             }
 
@@ -443,7 +497,7 @@ namespace Trivial.Maths
             /// <returns>A new Angle object with the same value as this instance.</returns>
             public static Model Copy(Model obj)
             {
-                return new Model(obj.Degrees);
+                return obj?.Clone();
             }
 
             /// <summary>
@@ -593,6 +647,27 @@ namespace Trivial.Maths
             }
 
             /// <summary>
+            /// Clones an object.
+            /// </summary>
+            /// <returns>The object copied from this instance.</returns>
+            public virtual Model Clone()
+            {
+                return new Model(Degree, Arcminute, Arcsecond, Boundary)
+                {
+                    raw = raw
+                };
+            }
+
+            /// <summary>
+            /// Clones an object.
+            /// </summary>
+            /// <returns>The object copied from this instance.</returns>
+            object ICloneable.Clone()
+            {
+                return Clone();
+            }
+
+            /// <summary>
             /// Pluses another value.
             /// this + value
             /// </summary>
@@ -651,6 +726,31 @@ namespace Trivial.Maths
             public override string ToString()
             {
                 return (Positive ? string.Empty : "-") + this.ToAbsAngleString();
+            }
+
+            /// <summary>
+            /// Sets a total degrees.
+            /// </summary>
+            /// <param name="degrees">The total degrees.</param>
+            private void SetDegrees(double degrees)
+            {
+                degree = (int)degrees;
+                var d = degree;
+                var boundary = Boundary;
+                var rest = (Math.Abs(degrees) - Math.Abs(degree)) * 60;
+                var m = minute = (int)rest;
+                var s = second = (float)((rest - minute) * 60);
+                AdaptValue(boundary, ref degree, ref minute, ref second);
+                if (minute != m || second != s) return;
+                if (degree == d)
+                {
+                    raw = degrees;
+                    return;
+                }
+
+                var abs = Math.Abs(degrees);
+                rest = abs - (int)abs;
+                raw = degree + (degree >= 0 ? rest : -rest);
             }
         }
     }

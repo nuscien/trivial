@@ -360,6 +360,7 @@ namespace Trivial.Web
                 case "htm":
                 case "html":
                 case "shtml":
+                case "cshtml":
                     return HtmlMIME;
                 case "ink":
                 case "inkml":
@@ -469,6 +470,9 @@ namespace Trivial.Web
                 case "com":
                     return "application/x-msdownload";
                 case "appx":
+                case "aspx":
+                case "jsp":
+                case "php":
                 case "3mf":
                 case "lib":
                 case "bin":

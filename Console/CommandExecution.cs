@@ -69,6 +69,11 @@ namespace Trivial.Console
         public bool IsCancellationRequested { get; private set; }
 
         /// <summary>
+        /// Gets a value indicating whether disable to append exit suffix command.
+        /// </summary>
+        public bool DisableExitCommand { get; set; }
+
+        /// <summary>
         /// Processes a specific command line.
         /// </summary>
         /// <returns>The async processing task.</returns>
@@ -90,10 +95,18 @@ namespace Trivial.Console
                 p.Start();
                 ThrowIfCancellationRequested(closeProcess);
 
-                var cmd = CommandLine;
-                var lastCharIndex = cmd.Length - 1;
-                if (cmd.LastIndexOf("&") == lastCharIndex) cmd = cmd.Substring(0, lastCharIndex);
-                p.StandardInput.WriteLine(cmd + "&exit");
+                if (DisableExitCommand)
+                {
+                    p.StandardInput.WriteLine(CommandLine);
+                }
+                else
+                {
+                    var cmd = CommandLine;
+                    var lastCharIndex = cmd.Length - 1;
+                    if (cmd.LastIndexOf("&") == lastCharIndex) cmd = cmd.Substring(0, lastCharIndex);
+                    p.StandardInput.WriteLine(cmd + "&exit");
+                }
+
                 p.StandardInput.AutoFlush = true;
                 while (!p.HasExited)
                 {
@@ -137,43 +150,60 @@ namespace Trivial.Console
 
         /// <summary>
         /// Processes a specific command line.
-        /// Only for Windows NT OS.
         /// </summary>
+        /// <param name="cmd">The command line.</param>
+        /// <param name="disableExitCommand">true if disable to append exit suffix command; otherwise, false.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>The output string.</returns>
-        public static async Task<string> Process(string cmd, CancellationToken? cancellationToken = null)
+        /// <exception cref="OperationCanceledException">The cancellation token has requested cancellation.</exception>
+        public static async Task<string> Process(string cmd, bool disableExitCommand, CancellationToken? cancellationToken = null)
         {
             var cancel = cancellationToken ?? CancellationToken.None;
 
-            var str = new StringBuilder();
-            using (var p = new Process())
-            {
-                p.StartInfo.FileName = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "cmd.exe" : "bash";
-                p.StartInfo.UseShellExecute = false;
-                p.StartInfo.RedirectStandardInput = true;
-                p.StartInfo.RedirectStandardOutput = true;
-                p.StartInfo.RedirectStandardError = true;
-                p.StartInfo.CreateNoWindow = true;
-                cancel.ThrowIfCancellationRequested();
-                p.Start();
+            var p = new Process();
+            p.StartInfo.FileName = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "cmd.exe" : "bash";
+            p.StartInfo.UseShellExecute = false;
+            p.StartInfo.RedirectStandardInput = true;
+            p.StartInfo.RedirectStandardOutput = true;
+            p.StartInfo.RedirectStandardError = true;
+            p.StartInfo.CreateNoWindow = true;
+            cancel.ThrowIfCancellationRequested();
+            p.Start();
 
-                cancel.Register(() => p.Close());
+            cancel.Register(() => p.Close());
+            if (!disableExitCommand)
+            {
                 var lastCharIndex = cmd.Length - 1;
                 if (cmd.LastIndexOf("&") == lastCharIndex) cmd = cmd.Substring(0, lastCharIndex);
-                p.StandardInput.WriteLine(cmd + "&exit");
-                p.StandardInput.AutoFlush = true;
-
-                while (!p.HasExited)
-                {
-                    cancel.ThrowIfCancellationRequested();
-                    var line = await p.StandardOutput.ReadLineAsync();
-                    System.Console.WriteLine(line);
-                    str.AppendLine(line);
-                }
-
-                p.Close();
+                cmd += "&exit";
             }
 
+            p.StandardInput.WriteLine(cmd);
+            p.StandardInput.AutoFlush = true;
+
+            var str = new StringBuilder();
+            while (!p.HasExited)
+            {
+                cancel.ThrowIfCancellationRequested();
+                var line = await p.StandardOutput.ReadLineAsync();
+                System.Console.WriteLine(line);
+                str.AppendLine(line);
+            }
+
+            p.Close();
             return str.ToString();
+        }
+
+        /// <summary>
+        /// Processes a specific command line.
+        /// </summary>
+        /// <param name="cmd">The command line.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns>The output string.</returns>
+        /// <exception cref="OperationCanceledException">The cancellation token has requested cancellation.</exception>
+        public static Task<string> Process(string cmd, CancellationToken? cancellationToken = null)
+        {
+            return Process(cmd, cancellationToken);
         }
 
         /// <summary>
@@ -184,14 +214,35 @@ namespace Trivial.Console
         /// <returns>true if a process resource is started; false if no new process resource is started.</returns>
         public static bool Directory(string dir)
         {
-            if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) return false;
-            using (var p = new Process())
+            string appName = null;
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
-                p.StartInfo.UseShellExecute = true;
-                p.StartInfo.FileName = "explorer.exe";
-                p.StartInfo.Arguments = dir;
-                return p.Start();
+                appName = "explorer.exe";
             }
+            else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+            {
+                appName = "Finder";
+            }
+
+            if (appName == null) return false;
+            try
+            {
+                using (var p = new Process())
+                {
+                    p.StartInfo.UseShellExecute = true;
+                    p.StartInfo.FileName = appName;
+                    p.StartInfo.Arguments = dir;
+                    return p.Start();
+                }
+            }
+            catch (InvalidOperationException)
+            {
+            }
+            catch (PlatformNotSupportedException)
+            {
+            }
+
+            return false;
         }
 
         /// <summary>
@@ -219,7 +270,18 @@ namespace Trivial.Console
                 p.StartInfo.UseShellExecute = true;
                 p.StartInfo.FileName = "explorer.exe";
                 p.StartInfo.Arguments = "/select," + path;
-                return p.Start();
+                try
+                {
+                    return p.Start();
+                }
+                catch (InvalidOperationException)
+                {
+                }
+                catch (PlatformNotSupportedException)
+                {
+                }
+
+                return false;
             }
         }
 

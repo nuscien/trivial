@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Net.Http.Headers;
 using System.Reflection;
@@ -1303,6 +1304,25 @@ namespace Trivial.Security
             var info = new SelectionRelationship<T, TokenInfo>(token);
             SignedIn?.Invoke(this, new DataEventArgs<SelectionRelationship<T, TokenInfo>>(info));
             return info;
+        }
+
+        /// <summary>
+        /// Signs in.
+        /// </summary>
+        /// <param name="utf8Stream">The UTF-8 stream input.</param>
+        /// <returns>The login response.</returns>
+        /// <exception cref="ArgumentException">stream does not support reading.</exception>
+        /// <exception cref="IOException">An I/O error occurs.</exception>
+        /// <exception cref="OutOfMemoryException">There is insufficient memory to allocate a buffer for the returned string.</exception>
+        public Task<SelectionRelationship<T, TokenInfo>> SignInAsync(Stream utf8Stream)
+        {
+            string input;
+            using (var reader = new StreamReader(utf8Stream, Encoding.UTF8))
+            {
+                input = reader.ReadToEnd();
+            }
+
+            return SignInAsync(input);
         }
     }
 }

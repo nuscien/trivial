@@ -13,9 +13,16 @@ namespace Trivial.Maths
         /// <summary>
         /// Initializes a new instance of the EnglishNumerals class.
         /// </summary>
-        protected internal EnglishNumerals()
+        /// <param name="standard">true if use standard mode style; otherwise, false.</param>
+        protected internal EnglishNumerals(bool standard)
         {
+            IsStandard = standard;
         }
+
+        /// <summary>
+        /// Gets a value indicating whether it is standard mode style.
+        /// </summary>
+        public bool IsStandard { get; }
 
         /// <summary>
         /// Gets a value indicating whether it supports number 0.
@@ -180,7 +187,7 @@ namespace Trivial.Maths
         /// <summary>
         /// Number 100.
         /// </summary>
-        public string OneHundred => "a hundred";
+        public string OneHundred => IsStandard ? "one hundred" : "a hundred";
 
         /// <summary>
         /// Number 200.
@@ -195,7 +202,7 @@ namespace Trivial.Maths
         /// <summary>
         /// Number 1,000.
         /// </summary>
-        public string OneThousand => "a thousand";
+        public string OneThousand => IsStandard ? "one thousand" : "a thousand";
 
         /// <summary>
         /// Number 2,000.
@@ -215,12 +222,12 @@ namespace Trivial.Maths
         /// <summary>
         /// Number 100,000.
         /// </summary>
-        public string OneHundredThousand => "a hundred thousand";
+        public string OneHundredThousand => IsStandard ? "one hundred thousand" : "a hundred thousand";
 
         /// <summary>
         /// Number 1,000,000.
         /// </summary>
-        public string OneMillion => "a million";
+        public string OneMillion => IsStandard ? "one million" : "a million";
 
         /// <summary>
         /// The order of magnitude 10e2.
@@ -346,13 +353,14 @@ namespace Trivial.Maths
                 var numStr = number.ToString(CultureInfo.InvariantCulture);
                 if (numStr.Length < 6) return GetAllDigitsString(numStr, 6);
                 if (numStr.Length == 6 || numStr.Length == 9) return GetAllDigitsString(numStr, 3);
-                switch (numStr.Length % 4)
+                var groupLen = numStr.Length % 4;
+                switch (groupLen)
                 {
                     case 2:
                         return string.Format("{0}, {1}, {2}",
-                            GetAllDigitsString(numStr.Substring(0, 3), 3),
-                            GetAllDigitsString(numStr.Substring(3, numStr.Length - 6), 4),
-                            GetAllDigitsString(numStr.Substring(numStr.Length - 3), 3));
+                                               GetAllDigitsString(numStr.Substring(0, 3), 3),
+                                               GetAllDigitsString(numStr.Substring(3, numStr.Length - 6), 4),
+                                               GetAllDigitsString(numStr.Substring(numStr.Length - 3), 3));
                     case 3:
                         return GetAllDigitsString(numStr.Substring(0, 3), 3) + ", " + GetAllDigitsString(numStr.Substring(4), 4);
                     default:
@@ -364,7 +372,7 @@ namespace Trivial.Maths
             {
                 if (number == 100) return OneHundred;
                 var remainder = number % 100;
-                if (remainder > 10)
+                if (remainder > 10 && !IsStandard)
                 {
                     var a = (int)(number - remainder) / 100;
                     if (a > 0) str.Append(GetDigitString(a) + " ");
@@ -389,6 +397,19 @@ namespace Trivial.Maths
                 {
                     str.Append(OneThousand + " and ");
                 }
+                else if (IsStandard)
+                {
+                    var c = (int)a % 10;
+                    str.Append(GetDigitString(((int)a - c) / 10));
+                    str.Append(" thousand ");
+                    if (c > 0)
+                    {
+                        str.Append(GetDigitString(c));
+                        str.Append(" hundred ");
+                    }
+
+                    str.Append("and ");
+                }
                 else if (a % 10 > 0)
                 {
                     str.Append(Get2DigitsString((int)a));
@@ -396,7 +417,8 @@ namespace Trivial.Maths
                 }
                 else
                 {
-                    str.Append(GetDigitString((int)a / 10) + " k");
+                    str.Append(GetDigitString((int)a / 10));
+                    str.Append(" k");
                     str.Append(b < 10 ? " and " : " ");
                 }
 
@@ -702,6 +724,26 @@ namespace Trivial.Maths
         /// var num3 = EnglishNumber.Default.ToApproximationString(1234567);
         /// </code>
         /// </example>
-        public static EnglishNumerals Default = new EnglishNumerals();
+        public static EnglishNumerals Default = new EnglishNumerals(false);
+
+        /// <summary>
+        /// English number in standard mode style.
+        /// </summary>
+        /// <example>
+        /// <code>
+        /// // Get the string for a specific number. It should be following.
+        /// // twelve thousand three hundred and forty-five point six seven
+        /// var num1 = EnglishNumber.Default.ToString(12345.67);
+        /// 
+        /// // Get the string of the digit one by one by setting the 2nd arg as true. It should be following.
+        /// // one two three four five
+        /// var num2 = EnglishNumber.Default.ToString(12345, true);
+        /// 
+        /// // Get the string of an approximation for a specific number. It should be following.
+        /// // 1.2M
+        /// var num3 = EnglishNumber.Default.ToApproximationString(1234567);
+        /// </code>
+        /// </example>
+        public static EnglishNumerals Standard = new EnglishNumerals(true);
     }
 }

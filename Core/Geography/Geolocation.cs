@@ -62,12 +62,30 @@ namespace Trivial.Geography
         /// <summary>
         /// Latitude model.
         /// </summary>
-        public class Model : Angle.Model
+        public class Model : Angle.Model, ICloneable
         {
             /// <summary>
             /// Initializes a new instance of the Latitude.Model class.
             /// </summary>
-            public Model() : base(new Angle.BoundaryOptions(90, true, Angle.RectifyModes.Bounce))
+            public Model() : base(BoundaryOptions)
+            {
+            }
+
+            /// <summary>
+            /// Initializes a new instance of the Latitude.Model class.
+            /// </summary>
+            /// <param name="degrees">The total degrees.</param>
+            public Model(double degrees) : base(degrees, BoundaryOptions)
+            {
+            }
+
+            /// <summary>
+            /// Initializes a new instance of the Latitude.Model class.
+            /// </summary>
+            /// <param name="degree">The degree part.</param>
+            /// <param name="minute">The minute part.</param>
+            /// <param name="second">The second part.</param>
+            public Model(int degree, int minute, float second = 0) : base(degree, minute, second, BoundaryOptions)
             {
             }
 
@@ -135,6 +153,24 @@ namespace Trivial.Geography
             }
 
             /// <summary>
+            /// Clones an object.
+            /// </summary>
+            /// <returns>The object copied from this instance.</returns>
+            public new Model Clone()
+            {
+                return new Model(Degree, Arcminute, Arcsecond);
+            }
+
+            /// <summary>
+            /// Clones an object.
+            /// </summary>
+            /// <returns>The object copied from this instance.</returns>
+            object ICloneable.Clone()
+            {
+                return Clone();
+            }
+
+            /// <summary>
             /// Compares two latitudes to indicate if they are same.
             /// leftValue == rightValue
             /// </summary>
@@ -197,14 +233,33 @@ namespace Trivial.Geography
         }
 
         /// <summary>
+        /// The angle boundary of the latitude.
+        /// </summary>
+        public static readonly Angle.BoundaryOptions BoundaryOptions = new Angle.BoundaryOptions(90, true, Angle.RectifyModes.Bounce);
+
+        /// <summary>
         /// Initializes a new instance of the Latitude struct.
         /// </summary>
         /// <param name="type">The latitude type.</param>
         /// <param name="degree">The degree part.</param>
         /// <param name="minute">The minute part.</param>
         /// <param name="second">The second part.</param>
-        public Latitude(Latitudes type, int degree, int minute, float second) : this(GetDegrees(type, Angle.GetDegrees(degree, minute, second)))
+        public Latitude(Latitudes type, int degree, int minute, float second)
         {
+            Type = type;
+            switch (type)
+            {
+                case Latitudes.South:
+                    degree = -degree;
+                    break;
+                case Latitudes.Equator:
+                    Value = new Angle(0, 0, 0);
+                    return;
+                default:
+                    break;
+            }
+
+            Value = new Angle(degree, minute, second, BoundaryOptions);
         }
 
         /// <summary>
@@ -213,21 +268,10 @@ namespace Trivial.Geography
         /// <param name="degree">The degree part.</param>
         /// <param name="minute">The minute part.</param>
         /// <param name="second">The second part.</param>
-        public Latitude(int degree, int minute, float second) : this(Angle.GetDegrees(degree, minute, second))
+        public Latitude(int degree, int minute, float second)
         {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the Latitude struct.
-        /// </summary>
-        /// <param name="degrees">The total degrees.</param>
-        public Latitude(double degrees)
-        {
-            var i = (int)degrees / 180;
-            if (i != 0) degrees += i * 180;
-            if (degrees > 90) degrees = 180 - degrees;
-            else if (degrees < -90) degrees = -180 - degrees;
-            Value = new Angle(Math.Abs(degrees));
+            Value = new Angle(degree, minute, second, BoundaryOptions);
+            var degrees = Value.Degrees;
             if (degrees > 0) Type = Latitudes.North;
             else if (degrees < 0) Type = Latitudes.South;
             else Type = Latitudes.Equator;
@@ -236,8 +280,16 @@ namespace Trivial.Geography
         /// <summary>
         /// Initializes a new instance of the Latitude struct.
         /// </summary>
+        /// <param name="degrees">The total degrees.</param>
+        public Latitude(double degrees) : this(new Angle(degrees, BoundaryOptions))
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the Latitude struct.
+        /// </summary>
         /// <param name="angle">The angle.</param>
-        public Latitude(Angle angle) : this(angle.Degrees)
+        public Latitude(Angle angle) : this(angle.Degree, angle.Arcminute, angle.Arcsecond)
         {
         }
 
@@ -256,10 +308,40 @@ namespace Trivial.Geography
         public Latitudes Type { get; }
 
         /// <summary>
-        /// The absolute angle value in the latitude type.
+        /// The angle value in the latitude type.
         /// </summary>
         public Angle Value { get; }
-        
+
+        /// <summary>
+        /// The angle degrees of the latitude.
+        /// </summary>
+        public double Degrees => Value.Degrees;
+
+        /// <summary>
+        /// The absolute angle degrees in the latitude type.
+        /// </summary>
+        public double AbsDegrees => Value.AbsDegrees;
+
+        /// <summary>
+        /// The angle degrees of the latitude.
+        /// </summary>
+        public int Degree => Value.Degree;
+
+        /// <summary>
+        /// The absolute angle degrees in the latitude type.
+        /// </summary>
+        public int AbsDegree => Value.Degree;
+
+        /// <summary>
+        /// Gets the arcminute of the latitude.
+        /// </summary>
+        public int Arcminute => Value.Arcminute;
+
+        /// <summary>
+        /// Gets the arcsecond of the latitude.
+        /// </summary>
+        public float Arcsecond => Value.Arcsecond;
+
         /// <summary>
         /// Returns the hash code for this instance.
         /// </summary>
@@ -375,7 +457,7 @@ namespace Trivial.Geography
                 case Latitudes.North:
                     return degrees;
                 case Latitudes.South:
-                    return -degrees;
+                    return degrees;
                 default:
                     return 0;
             }
@@ -390,13 +472,92 @@ namespace Trivial.Geography
         /// <summary>
         /// Longitude model.
         /// </summary>
-        public class Model : Angle.Model
+        public class Model : Angle.Model, ICloneable
         {
+            /// <summary>
+            /// The flag indicating whether it is celestial longitude.
+            /// </summary>
+            private bool celestial;
+
             /// <summary>
             /// Initializes a new instance of the Longitude.Model class.
             /// </summary>
-            public Model() : base(new Angle.BoundaryOptions(180, true, Angle.RectifyModes.Cycle))
+            public Model() : base(BoundaryOptions)
             {
+            }
+
+            /// <summary>
+            /// Initializes a new instance of the Longitude.Model class.
+            /// </summary>
+            /// <param name="isCelestial">true if it is celestial longitude; otherwise, false.</param>
+            public Model(bool isCelestial) : base(isCelestial ? CelestialBoundaryOptions : BoundaryOptions)
+            {
+                IsCelestial = isCelestial;
+            }
+
+            /// <summary>
+            /// Initializes a new instance of the Longitude.Model class.
+            /// </summary>
+            /// <param name="degrees">The total degrees.</param>
+            public Model(double degrees) : base(degrees, BoundaryOptions)
+            {
+            }
+
+            /// <summary>
+            /// Initializes a new instance of the Longitude.Model class.
+            /// </summary>
+            /// <param name="degree">The degree part.</param>
+            /// <param name="minute">The minute part.</param>
+            /// <param name="second">The second part.</param>
+            public Model(int degree, int minute, float second = 0) : base(degree, minute, second, BoundaryOptions)
+            {
+            }
+
+            /// <summary>
+            /// Initializes a new instance of the Longitude.Model class.
+            /// </summary>
+            /// <param name="isCelestial">true if it is celestial longitude; otherwise, false.</param>
+            /// <param name="degrees">The total degrees.</param>
+            public Model(bool isCelestial, double degrees) : base(degrees, isCelestial ? CelestialBoundaryOptions : BoundaryOptions)
+            {
+                IsCelestial = isCelestial;
+            }
+
+            /// <summary>
+            /// Initializes a new instance of the Longitude.Model class.
+            /// </summary>
+            /// <param name="isCelestial">true if it is celestial longitude; otherwise, false.</param>
+            /// <param name="degree">The degree part.</param>
+            /// <param name="minute">The minute part.</param>
+            /// <param name="second">The second part.</param>
+            public Model(bool isCelestial, int degree, int minute, float second = 0) : base(degree, minute, second, isCelestial ? CelestialBoundaryOptions : BoundaryOptions)
+            {
+                IsCelestial = isCelestial;
+            }
+
+            /// <summary>
+            /// Gets a value indicating wether it is celestial longitude.
+            /// </summary>
+            public bool IsCelestial
+            {
+                get
+                {
+                    return celestial;
+                }
+
+                set
+                {
+                    if (value == celestial) return;
+                    var degrees = Degrees;
+                    celestial = value;
+                    if (value)
+                    {
+                        if (degrees < 0) Degrees = degrees + 360;
+                        return;
+                    }
+
+                    if (degrees > 180) Degrees = degrees - 360;
+                }
             }
 
             /// <summary>
@@ -407,8 +568,9 @@ namespace Trivial.Geography
                 get
                 {
                     var degrees = Degrees;
-                    if (degrees == 0) return Longitudes.PrimeMeridian;
+                    if (degrees == 0 || degrees == 360) return Longitudes.PrimeMeridian;
                     if (degrees == 180 || degrees == -180) return Longitudes.CalendarLine;
+                    if (IsCelestial) return degrees > 180 ? Longitudes.West : Longitudes.East;
                     return degrees > 0 ? Longitudes.East : Longitudes.West;
                 }
 
@@ -423,9 +585,23 @@ namespace Trivial.Geography
                             Degrees = 180;
                             break;
                         case Longitudes.East:
+                            if (IsCelestial)
+                            {
+                                var degrees = Degrees;
+                                if (degrees > 180) Degrees = degrees - 180;
+                                break;
+                            }
+
                             if (IsNegative) Degree = -Degree;
                             break;
                         case Longitudes.West:
+                            if (IsCelestial)
+                            {
+                                var degrees = Degrees;
+                                if (degrees < 180 && degrees > 0) Degrees = degrees + 180;
+                                break;
+                            }
+
                             if (Positive) Degree = -Degree;
                             break;
                     }
@@ -463,10 +639,29 @@ namespace Trivial.Geography
             /// <returns>A System.String containing this longitude.</returns>
             public override string ToString()
             {
+                if (IsCelestial) return base.ToString();
                 var degrees = Degrees;
                 if (degrees == 0) return NumberSymbols.NumberZero + Angle.Symbols.DegreeUnit;
                 if (degrees == 180 || degrees == -180) return "180" + Angle.Symbols.DegreeUnit;
                 return this.ToAbsAngleString() + (Positive ? "E" : "W");
+            }
+
+            /// <summary>
+            /// Clones an object.
+            /// </summary>
+            /// <returns>The object copied from this instance.</returns>
+            public new Model Clone()
+            {
+                return new Model(IsCelestial, Degree, Arcminute, Arcsecond);
+            }
+
+            /// <summary>
+            /// Clones an object.
+            /// </summary>
+            /// <returns>The object copied from this instance.</returns>
+            object ICloneable.Clone()
+            {
+                return Clone();
             }
 
             /// <summary>
@@ -532,35 +727,45 @@ namespace Trivial.Geography
         }
 
         /// <summary>
+        /// The angle boundary of the longitude.
+        /// </summary>
+        public static readonly Angle.BoundaryOptions BoundaryOptions = new Angle.BoundaryOptions(180, true, Angle.RectifyModes.Cycle);
+
+        /// <summary>
+        /// The angle boundary of the celestial longitude.
+        /// </summary>
+        public static readonly Angle.BoundaryOptions CelestialBoundaryOptions = new Angle.BoundaryOptions(360, false, Angle.RectifyModes.Cycle);
+
+        /// <summary>
         /// Initializes a new instance of the Longitude struct.
         /// </summary>
         /// <param name="type">The latitude type.</param>
         /// <param name="degree">The degree part.</param>
         /// <param name="minute">The minute part.</param>
         /// <param name="second">The second part.</param>
-        public Longitude(Longitudes type, int degree, int minute, float second) : this(GetDegrees(type, Angle.GetDegrees(degree, minute, second)))
+        public Longitude(Longitudes type, int degree, int minute, float second = 0)
         {
-        }
+            IsCelestial = false;
+            Type = type;
+            switch (type)
+            {
+                case Longitudes.PrimeMeridian:
+                    Value = new Angle(0);
+                    return;
+                case Longitudes.CalendarLine:
+                    Value = new Angle(degree == -180 ? -180 : 180);
+                    Type = Longitudes.CalendarLine;
+                    return;
+                case Longitudes.West:
+                    Value = new Angle(-Math.Abs(degree % 360));
+                    return;
+                case Longitudes.East:
+                    Value = new Angle(Math.Abs(degree % 360));
+                    return;
+            }
 
-        /// <summary>
-        /// Initializes a new instance of the Longitude struct.
-        /// </summary>
-        /// <param name="degree">The degree part.</param>
-        /// <param name="minute">The minute part.</param>
-        /// <param name="second">The second part.</param>
-        public Longitude(int degree, int minute, float second) : this(Angle.GetDegrees(degree, minute, second))
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the Longitude struct.
-        /// </summary>
-        /// <param name="degrees">The total degrees.</param>
-        public Longitude(double degrees)
-        {
-            var i = (int)(degrees + 180) / 360 - 180;
-            degrees = degrees - (int)degrees + degrees;
-            Value = new Angle(Math.Abs(degrees));
+            Value = new Angle(degree, minute, second, BoundaryOptions);
+            var degrees = Value.Degrees;
             if (degrees == 180 || degrees == -180) Type = Longitudes.CalendarLine;
             else if (degrees > 0) Type = Longitudes.East;
             else if (degrees < 0) Type = Longitudes.West;
@@ -570,8 +775,63 @@ namespace Trivial.Geography
         /// <summary>
         /// Initializes a new instance of the Longitude struct.
         /// </summary>
+        /// <param name="degree">The degree part.</param>
+        /// <param name="minute">The minute part.</param>
+        /// <param name="second">The second part.</param>
+        public Longitude(int degree, int minute, float second = 0) : this(false, degree, minute, second)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the Longitude struct.
+        /// </summary>
+        /// <param name="isCelestial">true if it is celestial longitude; otherwise, false.</param>
+        /// <param name="degree">The degree part.</param>
+        /// <param name="minute">The minute part.</param>
+        /// <param name="second">The second part.</param>
+        public Longitude(bool isCelestial, int degree, int minute, float second = 0)
+        {
+            IsCelestial = isCelestial;
+            Value = new Angle(degree, minute, second, isCelestial ? CelestialBoundaryOptions : BoundaryOptions);
+            var degrees = Value.Degrees;
+            if (degrees == 180 || degrees == -180) Type = Longitudes.CalendarLine;
+            else if (isCelestial && degrees > 180) Type = Longitudes.West;
+            else if (degrees > 0) Type = Longitudes.East;
+            else if (degrees < 0) Type = Longitudes.West;
+            else Type = Longitudes.PrimeMeridian;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the Longitude struct.
+        /// </summary>
+        /// <param name="degrees">The total degrees.</param>
+        public Longitude(double degrees) : this(false, new Angle(degrees, BoundaryOptions))
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the Longitude struct.
+        /// </summary>
+        /// <param name="isCelestial">true if it is celestial longitude; otherwise, false.</param>
+        /// <param name="degrees">The total degrees.</param>
+        public Longitude(bool isCelestial, double degrees) : this(isCelestial, new Angle(degrees, isCelestial ? CelestialBoundaryOptions : BoundaryOptions))
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the Longitude struct.
+        /// </summary>
         /// <param name="angle">The angle.</param>
-        public Longitude(Angle angle) : this(angle.Degrees)
+        public Longitude(Angle angle) : this(false, angle.Degree, angle.Arcminute, angle.Arcsecond)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the Longitude struct.
+        /// </summary>
+        /// <param name="isCelestial">true if it is celestial longitude; otherwise, false.</param>
+        /// <param name="angle">The angle.</param>
+        public Longitude(bool isCelestial, Angle angle) : this(isCelestial, angle.Degree, angle.Arcminute, angle.Arcsecond)
         {
         }
 
@@ -585,14 +845,49 @@ namespace Trivial.Geography
         }
 
         /// <summary>
+        /// Gets a value indicating wether it is celestial longitude.
+        /// </summary>
+        public bool IsCelestial { get; }
+
+        /// <summary>
         /// Gets the longitude zone.
         /// </summary>
         public Longitudes Type { get; }
 
         /// <summary>
-        /// The absolute angle value in the latitude type.
+        /// The angle value in the longitude type.
         /// </summary>
         public Angle Value { get; }
+
+        /// <summary>
+        /// The angle degrees of the longitude.
+        /// </summary>
+        public double Degrees => Value.Degrees;
+
+        /// <summary>
+        /// The absolute angle degrees in the longitude type.
+        /// </summary>
+        public double AbsDegrees => Value.AbsDegrees;
+
+        /// <summary>
+        /// The angle degrees of the longitude.
+        /// </summary>
+        public int Degree => Value.Degree;
+
+        /// <summary>
+        /// The absolute angle degrees in the longitude type.
+        /// </summary>
+        public int AbsDegree => Value.Degree;
+
+        /// <summary>
+        /// Gets the arcminute of the longitude.
+        /// </summary>
+        public int Arcminute => Value.Arcminute;
+
+        /// <summary>
+        /// Gets the arcsecond of the longitude.
+        /// </summary>
+        public float Arcsecond => Value.Arcsecond;
 
         /// <summary>
         /// Returns the hash code for this instance.
@@ -636,6 +931,7 @@ namespace Trivial.Geography
         /// <returns>A System.String containing this latitude.</returns>
         public override string ToString()
         {
+            if (IsCelestial) return base.ToString();
             var degrees = Value.Degrees;
             if (degrees == 0) return NumberSymbols.NumberZero + Angle.Symbols.DegreeUnit;
             if (degrees == 180 || degrees == -180) return "180" + Angle.Symbols.DegreeUnit;
@@ -711,7 +1007,7 @@ namespace Trivial.Geography
                 case Longitudes.East:
                     return degrees;
                 case Longitudes.West:
-                    return -degrees;
+                    return degrees;
                 case Longitudes.CalendarLine:
                     return 180;
                 default:

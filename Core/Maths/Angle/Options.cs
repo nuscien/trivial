@@ -42,7 +42,7 @@ namespace Trivial.Maths
         }
 
         /// <summary>
-        /// The boundary options.
+        /// The angle boundary guard options.
         /// </summary>
         public class BoundaryOptions
         {
@@ -50,27 +50,27 @@ namespace Trivial.Maths
             /// Initializes a new instance of the BoundaryOptions class.
             /// </summary>
             /// <param name="max">The maximum degree.</param>
-            /// <param name="negative">true if the minimum degree is the negatived of the maximum one; otherwise, false, the minimum is 0.</param>
+            /// <param name="canBeNegative">true if the minimum degree is the negatived of the maximum one; otherwise, false, the minimum is 0.</param>
             /// <param name="rectify">The mode to rectify.</param>
-            public BoundaryOptions(int max, bool negative, RectifyModes rectify)
+            public BoundaryOptions(int max, bool canBeNegative, RectifyModes rectify)
             {
                 MaxDegree = max;
-                Negative = negative;
+                CanBeNegative = canBeNegative;
                 RectifyMode = rectify;
             }
 
             /// <summary>
-            /// The maximum degree supported. Should be greater than 0.
+            /// Gets the maximum degree supported. Should be greater than 0.
             /// </summary>
             public int MaxDegree { get; }
 
             /// <summary>
-            /// Gets a value indicating whether set the mirror mode.
+            /// Gets a value indicating whether the angle value can be negative.
             /// </summary>
-            public bool Negative { get; }
+            public bool CanBeNegative { get; }
 
             /// <summary>
-            /// The mode to rectify if the value is out of the scope.
+            /// Gets the mode to rectify if the value is out of the scope.
             /// </summary>
             public RectifyModes RectifyMode { get; }
         }
