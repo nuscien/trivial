@@ -210,6 +210,25 @@ namespace Trivial.Reflection
         }
 
         /// <summary>
+        /// Gets the type of a specific property.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <returns>The type of the property value; or null, if no such property.</returns>
+        protected Type GetPropertyType(string key)
+        {
+            if (string.IsNullOrWhiteSpace(key)) return null;
+            try
+            {
+                return cache.TryGetValue(key, out var v) ? v?.GetType() : null;
+            }
+            catch (ArgumentException)
+            {
+            }
+
+            return null;
+        }
+
+        /// <summary>
         /// Forces rasing the property changed notification.
         /// </summary>
         /// <param name="key">The property key.</param>
@@ -237,6 +256,15 @@ namespace Trivial.Reflection
         /// Gets an enumerable collection that contains the keys in this instance.
         /// </summary>
         public new IEnumerable<string> Keys => base.Keys;
+
+        /// <summary>
+        /// Gets or sets the policy used to set property value.
+        /// </summary>
+        public new PropertySettingPolicies PropertiesSettingPolicy
+        {
+            get => base.PropertiesSettingPolicy;
+            set => base.PropertiesSettingPolicy = value;
+        }
 
         /// <summary>
         /// Determines whether this instance contains an element that has the specified key.
@@ -276,6 +304,13 @@ namespace Trivial.Reflection
         /// <param name="key">The key.</param>
         /// <returns>true if the element is successfully found and removed; otherwise, false.</returns>
         public new bool RemoveProperty(string key) => base.RemoveProperty(key);
+
+        /// <summary>
+        /// Gets the type of a specific property.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <returns>The type of the property value; or null, if no such property.</returns>
+        public new Type GetPropertyType(string key) => base.GetPropertyType(key);
 
         /// <summary>
         /// Forces rasing the property changed notification.
