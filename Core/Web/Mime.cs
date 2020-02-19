@@ -383,8 +383,11 @@ namespace Trivial.Web
                 case "uris":
                 case "urls":
                     return "text/uri-list";
+                case "xaml":
+                    return "application/xaml+xml";
                 case "xml":
                 case "xsl":
+                case "config":
                     return "application/xml";
                 case "vbs":
                     return "text/vbscript";
@@ -462,6 +465,10 @@ namespace Trivial.Web
                     return "application/x-msclip";
                 case "jar":
                     return "application/java-archive";
+                case "wasm":
+                    return "application/wasm";
+                case "aspx":
+                    return "application/x-aspx";
                 case "dll":
                 case "exe":
                 case "bat":
@@ -469,12 +476,13 @@ namespace Trivial.Web
                 case "msu":
                 case "com":
                     return "application/x-msdownload";
+                case "app":
                 case "appx":
-                case "aspx":
                 case "php":
                 case "jsp":
                 case "cshtml":
                 case "vbhtml":
+                case "razor":
                 case "3mf":
                 case "lib":
                 case "bin":
