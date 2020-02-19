@@ -1,13 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Security;
 using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Trivial.Console
 {
@@ -451,9 +448,33 @@ namespace Trivial.Console
         /// <summary>
         /// Writes a secure string to the standard output stream.
         /// </summary>
+        /// <param name="foregroundColor">The foreground color of the console.</param>
+        /// <param name="backgroundColor">The background color of the console.</param>
+        /// <param name="value">The value to write.</param>
+        public void Write(ConsoleColor? foregroundColor, ConsoleColor backgroundColor, SecureString value)
+        {
+            if (value == null || value.Length == 0) return;
+            Write(foregroundColor, backgroundColor, LineUtilities.ToUnsecureString(value));
+        }
+
+        /// <summary>
+        /// Writes a secure string to the standard output stream.
+        /// </summary>
+        /// <param name="foregroundColor">The foreground color of the console.</param>
+        /// <param name="value">The value to write.</param>
+        public void Write(ConsoleColor foregroundColor, SecureString value)
+        {
+            if (value == null || value.Length == 0) return;
+            Write(foregroundColor, LineUtilities.ToUnsecureString(value));
+        }
+
+        /// <summary>
+        /// Writes a secure string to the standard output stream.
+        /// </summary>
         /// <param name="value">The value to write.</param>
         public void Write(SecureString value)
         {
+            if (value == null || value.Length == 0) return;
             Write(LineUtilities.ToUnsecureString(value));
         }
 
@@ -600,7 +621,33 @@ namespace Trivial.Console
         /// <param name="value">The value to write.</param>
         public void WriteLine(SecureString value)
         {
+            if (value == null || value.Length == 0) return;
             Write(LineUtilities.ToUnsecureString(value));
+            End();
+        }
+
+        /// <summary>
+        /// Writes a secure string to the standard output stream.
+        /// </summary>
+        /// <param name="foregroundColor">The foreground color of the console.</param>
+        /// <param name="value">The value to write.</param>
+        public void WriteLine(ConsoleColor foregroundColor, SecureString value)
+        {
+            if (value == null || value.Length == 0) return;
+            Write(foregroundColor, LineUtilities.ToUnsecureString(value));
+            End();
+        }
+
+        /// <summary>
+        /// Writes a secure string to the standard output stream.
+        /// </summary>
+        /// <param name="foregroundColor">The foreground color of the console.</param>
+        /// <param name="backgroundColor">The background color of the console.</param>
+        /// <param name="value">The value to write.</param>
+        public void WriteLine(ConsoleColor? foregroundColor, ConsoleColor backgroundColor, SecureString value)
+        {
+            if (value == null || value.Length == 0) return;
+            Write(foregroundColor, backgroundColor, LineUtilities.ToUnsecureString(value));
             End();
         }
 

@@ -290,13 +290,40 @@ namespace Trivial.Text
                 case JsonTokenType.StartArray:
                     return JsonArray.ParseValue(ref reader);
                 case JsonTokenType.String:
+                    var str = reader.GetString();
+                    if (typeToConvert == typeof(JsonString)) return new JsonString(str);
+                    if (typeToConvert == typeof(JsonInteger)) return new JsonInteger(long.Parse(str.Trim()));
+                    if (typeToConvert == typeof(JsonDouble)) return new JsonDouble(double.Parse(str.Trim()));
+                    if (typeToConvert == typeof(IJsonNumber))
+                    {
+                        str = str.Trim();
+                        if (str == "null") return null;
+                        if (str.IndexOf('.') < 0 && long.TryParse(str, out var l))
+                            return new JsonInteger(l);
+                        return new JsonDouble(double.Parse(str));
+                    }
+
                     return new JsonString(reader.GetString());
                 case JsonTokenType.Number:
+                    if (typeToConvert == typeof(JsonString))
+                    {
+                        if (reader.TryGetInt64(out var l)) return new JsonString(l);
+                        return new JsonString(reader.GetDouble());
+                    }
+
                     if (reader.TryGetInt64(out var int64v)) return new JsonInteger(int64v);
                     return new JsonDouble(reader.GetDouble());
                 case JsonTokenType.True:
+                    if (typeToConvert == typeof(JsonBoolean)) return JsonBoolean.True;
+                    if (typeToConvert == typeof(JsonString)) return new JsonString(JsonBoolean.TrueString);
+                    if (typeToConvert == typeof(JsonInteger)) return new JsonInteger(1);
+                    if (typeToConvert == typeof(IJsonNumber)) return new JsonInteger(1);
                     return JsonBoolean.True;
                 case JsonTokenType.False:
+                    if (typeToConvert == typeof(JsonBoolean)) return JsonBoolean.False;
+                    if (typeToConvert == typeof(JsonString)) return new JsonString(JsonBoolean.FalseString);
+                    if (typeToConvert == typeof(JsonInteger)) return new JsonInteger(0);
+                    if (typeToConvert == typeof(IJsonNumber)) return new JsonInteger(0);
                     return JsonBoolean.False;
                 default:
                     return null;
