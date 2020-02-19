@@ -94,11 +94,6 @@ namespace Trivial.Text
     public class JsonInteger : IJsonValue<long>, IJsonValueResolver, IJsonNumber, IComparable<JsonInteger>, IComparable<JsonDouble>, IComparable<uint>, IComparable<int>, IComparable<long>, IComparable<double>, IComparable<float>, IEquatable<IJsonValue<uint>>, IEquatable<IJsonValue<int>>, IEquatable<IJsonValue<float>>, IEquatable<IJsonValue<double>>, IEquatable<uint>, IEquatable<int>, IEquatable<float>, IEquatable<double>, IFormattable
     {
         /// <summary>
-        /// Gets the value.
-        /// </summary>
-        public long Value { get; }
-
-        /// <summary>
         /// Initializes a new instance of the JsonInteger class.
         /// </summary>
         /// <param name="value">The value.</param>
@@ -143,6 +138,11 @@ namespace Trivial.Text
         {
             Value = (long)value.TotalSeconds;
         }
+
+        /// <summary>
+        /// Gets the value.
+        /// </summary>
+        public long Value { get; }
 
         /// <summary>
         /// Gets a value indicating whether the number value is an whole number.
