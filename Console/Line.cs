@@ -93,7 +93,8 @@ namespace Trivial.Console
         /// <summary>
         /// Gets or sets a value indicating whether write to standard output stream immediately.
         /// </summary>
-        public bool AutoFlush {
+        public bool AutoFlush
+        {
             get
             {
                 return autoFlush;

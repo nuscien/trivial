@@ -424,7 +424,7 @@ namespace Trivial.Maths
 
             if (split.Length < 2)
             {
-                split = s.Split(new[] {Symbols.DegreeUnit, Symbols.ArcminuteUnit, Symbols.ArcsecondUnit }, StringSplitOptions.RemoveEmptyEntries);
+                split = s.Split(new[] { Symbols.DegreeUnit, Symbols.ArcminuteUnit, Symbols.ArcsecondUnit }, StringSplitOptions.RemoveEmptyEntries);
             }
 
             if (split.Length < 2)
