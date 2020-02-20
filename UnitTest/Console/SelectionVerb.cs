@@ -40,7 +40,7 @@ namespace Trivial.Console
             {
                 case "aaa":
                 case "bbb":
-                    SysConsole.WriteLine(result.Title + '\t' + result.Value + '\t');
+                    SysConsole.WriteLine(result.Value + '\t' + result.Title + '\t' + result.InputType);
                     return;
                 case "password":
                     var l = new Line();

@@ -879,6 +879,8 @@ namespace Trivial.Console
                         if (replaceChar.HasValue) Backspace();
                         break;
                     case ConsoleKey.Delete:
+                    case ConsoleKey.Clear:
+                    case ConsoleKey.F5:
                         str.Clear();
                         SaveCursorPosition();
                         if (replaceChar.HasValue) Backspace(len + 1);
@@ -1642,7 +1644,7 @@ namespace Trivial.Console
                     if (question != null) System.Console.WriteLine(sel.Value);
                     return new SelectionResult<T>(sel.Value, selected, sel.Data, sel.Title);
                 }
-                else if (key.Key == ConsoleKey.Backspace || key.Key == ConsoleKey.Delete)
+                else if (key.Key == ConsoleKey.Backspace || key.Key == ConsoleKey.Delete || key.Key == ConsoleKey.Clear)
                 {
                     if (questionM == null)
                     {
