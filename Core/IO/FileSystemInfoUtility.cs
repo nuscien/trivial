@@ -252,6 +252,7 @@ namespace Trivial.IO
         /// <param name="path3">The third path to combine.</param>
         /// <param name="path4">The forth path to combine.</param>
         /// <returns>The path.</returns>
+        /// <remarks>For Windows OS only.</remarks>
         public static string GetLocalPath(string path, string path2 = null, string path3 = null, string path4 = null)
         {
             if (string.IsNullOrWhiteSpace(path)) return null;

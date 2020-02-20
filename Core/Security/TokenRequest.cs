@@ -1252,6 +1252,51 @@ namespace Trivial.Security
         }
 
         /// <summary>
+        /// Creates the password token request body from basic token authentication value.
+        /// </summary>
+        /// <param name="token">The token value.</param>
+        /// <param name="encoding">The optional encoding.</param>
+        /// <returns>The password token request.</returns>
+        /// <exception cref="FormatException">The token value is invalid.</exception>
+        public static PasswordTokenRequestBody CreateByBasicToken(string token, Encoding encoding = null)
+        {
+            token = token?.Trim();
+            if (string.IsNullOrEmpty(token)) return null;
+            if (token.ToLower().StartsWith("basic ")) token = token.Substring(6).Trim();
+            if (token.ToLower().StartsWith("basic ")) token = token.Substring(6).Trim();
+            if (token.IndexOf(' ') > 0 || token.Length < 4)
+                throw new FormatException("The token value is invalid.");
+            try
+            {
+                var bytes = Convert.FromBase64String(token);
+                token = (encoding ?? Encoding.UTF8).GetString(bytes);
+                var arr = token.Split(':');
+                if (arr.Length == 0) return null;
+                return new PasswordTokenRequestBody(arr[0], arr.Length > 1 ? arr[1] : null);
+            }
+            catch (ArgumentException ex)
+            {
+                throw new FormatException("The token value is invalid.", ex);
+            }
+            catch (FormatException ex)
+            {
+                throw new FormatException("The token value is invalid.", ex);
+            }
+        }
+
+        /// <summary>
+        /// Creates the password token request body from basic token authentication value.
+        /// </summary>
+        /// <param name="token">The token value.</param>
+        /// <param name="encoding">The optional encoding.</param>
+        /// <returns>The password token request.</returns>
+        /// <exception cref="FormatException">The token value is invalid.</exception>
+        public static PasswordTokenRequestBody CreateByBasicToken(AuthenticationHeaderValue token, Encoding encoding = null)
+        {
+            return CreateByBasicToken(token?.Parameter, encoding);
+        }
+
+        /// <summary>
         /// Parses a string to code access token request.
         /// </summary>
         /// <param name="s">The string to parse.</param>

@@ -4,8 +4,6 @@ using System.IO;
 using System.Linq;
 using System.Text;
 
-using Trivial.Text;
-
 namespace Trivial.Text
 {
     /// <summary>
@@ -159,12 +157,10 @@ namespace Trivial.Text
         /// <param name="csv">The stream contains CSV.</param>
         /// <param name="encoding">The character encoding to use.</param>
         /// <returns>Content of CSV.</returns>
-        public static IEnumerable<IReadOnlyList<string>> Parse(Stream csv, Encoding encoding)
+        public static IEnumerable<IReadOnlyList<string>> Parse(Stream csv, Encoding encoding = null)
         {
-            using (var reader = new StreamReader(csv, encoding))
-            {
-                return Parse(reader);
-            }
+            using var reader = new StreamReader(csv, encoding ?? Encoding.UTF8);
+            return Parse(reader);
         }
 
         /// <summary>
@@ -173,12 +169,10 @@ namespace Trivial.Text
         /// <param name="csv">The CSV file.</param>
         /// <param name="encoding">The character encoding to use.</param>
         /// <returns>Content of CSV.</returns>
-        public static IEnumerable<IReadOnlyList<string>> Parse(FileInfo csv, Encoding encoding)
+        public static IEnumerable<IReadOnlyList<string>> Parse(FileInfo csv, Encoding encoding = null)
         {
-            using (var reader = new StreamReader(csv.FullName, encoding))
-            {
-                return Parse(reader);
-            }
+            using var reader = new StreamReader(csv.FullName, encoding ?? Encoding.UTF8);
+            return Parse(reader);
         }
 
         /// <summary>
@@ -189,10 +183,8 @@ namespace Trivial.Text
         /// <returns>Content of CSV.</returns>
         public static IEnumerable<IReadOnlyList<string>> Parse(FileInfo csv, bool detectEncodingFromByteOrderMarks)
         {
-            using (var reader = new StreamReader(csv.FullName, detectEncodingFromByteOrderMarks))
-            {
-                return Parse(reader);
-            }
+            using var reader = new StreamReader(csv.FullName, detectEncodingFromByteOrderMarks);
+            return Parse(reader);
         }
 
         /// <summary>
@@ -230,9 +222,9 @@ namespace Trivial.Text
                 {
                     if (item.Length > 0 && item[0] == '"')
                     {
-                        if (item.Length > 1 && item[item.Length - 1] == '"' && item[item.Length - 2] != '\\')
+                        if (item.Length > 1 && item[^1] == '"' && item[^2] != '\\')
                         {
-                            list.Add(StringExtensions.ReplaceBackSlash(item.Substring(1, item.Length - 2)));
+                            list.Add(StringExtensions.ReplaceBackSlash(item[1..^1]));
                         }
                         else
                         {
@@ -248,9 +240,9 @@ namespace Trivial.Text
                     continue;
                 }
 
-                if (item.Length > 0 && item[item.Length - 1] == '"' && (item.Length == 1 || item[item.Length - 2] != '\\'))
+                if (item.Length > 0 && item[^1] == '"' && (item.Length == 1 || item[^2] != '\\'))
                 {
-                    list[list.Count - 1] += "," + StringExtensions.ReplaceBackSlash(item.Substring(0, item.Length - 1));
+                    list[list.Count - 1] += "," + StringExtensions.ReplaceBackSlash(item[0..^1]);
                     inScope = false;
                 }
                 else

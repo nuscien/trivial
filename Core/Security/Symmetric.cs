@@ -47,21 +47,19 @@ namespace Trivial.Security
             if (h == null || data == null || key == null || key.Length <= 0 || iv == null || iv.Length <= 0) return null;
 
             // Create an Aes object with the specified key and IV.
-            using (var alg = h())
-            {
-                if (alg == null) return null;
-                alg.Key = key;
-                alg.IV = iv ?? key;
+            using var alg = h();
+            if (alg == null) return null;
+            alg.Key = key;
+            alg.IV = iv ?? key;
 
-                // Create a decrytor to perform the stream transform.
-                var encryptor = alg.CreateEncryptor(alg.Key, alg.IV);
+            // Create a decrytor to perform the stream transform.
+            var encryptor = alg.CreateEncryptor(alg.Key, alg.IV);
 
-                // Encrypt.
-                var result = encryptor.TransformFinalBlock(data, 0, data.Length);
+            // Encrypt.
+            var result = encryptor.TransformFinalBlock(data, 0, data.Length);
 
-                // Return the Base64 string.
-                return Convert.ToBase64String(result);
-            }
+            // Return the Base64 string.
+            return Convert.ToBase64String(result);
         }
 
         /// <summary>
@@ -92,20 +90,16 @@ namespace Trivial.Security
                 var encryptor = alg.CreateEncryptor(alg.Key, alg.IV);
 
                 // Create the streams used for encryption.
-                using (var msEncrypt = new MemoryStream())
+                using var msEncrypt = new MemoryStream();
+                using CryptoStream csEncrypt = new CryptoStream(msEncrypt, encryptor, CryptoStreamMode.Write);
+                using (StreamWriter swEncrypt = new StreamWriter(csEncrypt, encoding ?? Encoding.UTF8))
                 {
-                    using (CryptoStream csEncrypt = new CryptoStream(msEncrypt, encryptor, CryptoStreamMode.Write))
-                    {
-                        using (StreamWriter swEncrypt = new StreamWriter(csEncrypt, encoding ?? Encoding.UTF8))
-                        {
-                            // Write all data to the stream.
-                            swEncrypt.Write(plainText);
-                        }
-
-                        // Convert the encrypted bytes from the memory stream.
-                        data = msEncrypt.ToArray();
-                    }
+                    // Write all data to the stream.
+                    swEncrypt.Write(plainText);
                 }
+
+                // Convert the encrypted bytes from the memory stream.
+                data = msEncrypt.ToArray();
             }
 
             // Return the Base64 string.
@@ -166,17 +160,12 @@ namespace Trivial.Security
                 var decryptor = alg.CreateDecryptor(alg.Key, alg.IV);
 
                 // Create the streams used for decryption.
-                using (var msDecrypt = new MemoryStream(cipherBytes))
-                {
-                    using (var csDecrypt = new CryptoStream(msDecrypt, decryptor, CryptoStreamMode.Read))
-                    {
-                        using (var srDecrypt = new StreamReader(csDecrypt, encoding ?? Encoding.UTF8))
-                        {
-                            // Read the decrypted bytes from the decrypting stream and place them in a string.
-                            plaintext = srDecrypt.ReadToEnd();
-                        }
-                    }
-                }
+                using var msDecrypt = new MemoryStream(cipherBytes);
+                using var csDecrypt = new CryptoStream(msDecrypt, decryptor, CryptoStreamMode.Read);
+                using var srDecrypt = new StreamReader(csDecrypt, encoding ?? Encoding.UTF8);
+
+                // Read the decrypted bytes from the decrypting stream and place them in a string.
+                plaintext = srDecrypt.ReadToEnd();
             }
 
             return plaintext;
