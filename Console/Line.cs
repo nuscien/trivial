@@ -616,7 +616,7 @@ namespace Trivial.Console
         }
 
         /// <summary>
-        /// Writes a secure string to the standard output stream.
+        /// Writes a secure string, followed by the current line terminator, to the standard output stream.
         /// </summary>
         /// <param name="value">The value to write.</param>
         public void WriteLine(SecureString value)
@@ -627,7 +627,7 @@ namespace Trivial.Console
         }
 
         /// <summary>
-        /// Writes a secure string to the standard output stream.
+        /// Writes a secure string, followed by the current line terminator, to the standard output stream.
         /// </summary>
         /// <param name="foregroundColor">The foreground color of the console.</param>
         /// <param name="value">The value to write.</param>
@@ -639,7 +639,7 @@ namespace Trivial.Console
         }
 
         /// <summary>
-        /// Writes a secure string to the standard output stream.
+        /// Writes a secure string, followed by the current line terminator, to the standard output stream.
         /// </summary>
         /// <param name="foregroundColor">The foreground color of the console.</param>
         /// <param name="backgroundColor">The background color of the console.</param>

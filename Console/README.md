@@ -106,14 +106,16 @@ static async Task Main(string[] args)
 This is the verb handler 1.
 Name is Test.
 Name is Test.
-> a.ext two
+> a.exe two
 This is the verb handler 2. Step 1.
 This is the verb handler 2. Step 2.
 ```
 
 ## Line
 
-You can write a specified string value to the standard output stream and then change it. Following is a sample.
+We provide a line component for the standard output stream that you can write a string which you can update before the line terminator.
+You can also read the password into a `SecureString` with the text mask.
+Following is a sample.
 
 ```csharp
 var Main(string[] args)
