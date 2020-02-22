@@ -44,9 +44,12 @@ namespace Trivial.Console
                     return;
                 case "password":
                     var l = new Line();
-                    var p = l.ReadPassword('*');
+                    l.Write("Type password: ");
+                    var p = l.ReadPassword('*', ConsoleColor.Yellow);
                     l.WriteLine();
-                    l.WriteLine(p);
+                    l.Write("Your password is ");
+                    l.Write(ConsoleColor.Magenta, p);
+                    l.WriteLine('.');
                     return;
                 case "?":
                     SysConsole.WriteLine("This is a sample.");

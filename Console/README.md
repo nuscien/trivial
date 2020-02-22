@@ -1,6 +1,9 @@
 ﻿# [Trivial.Console](https://github.com/nuscien/trivial/wiki/console)
 
-You can use the library for your console application to parse the arguments, write the selection, dispatch verbs, etc.
+This library includes these useful tools and components about console app.
+
+- Cmd arguments parser and processor.
+- Rich components of CLI.
 
 ## Import
 
@@ -12,37 +15,39 @@ using Trivial.Console;
 
 ## Parse
 
-You can parse the arguments which is in string array or just in string to a readable object by programming.
+The cmd arguments is an array of string.
+You can parse it to a program readable object with structured information.
 
 ```csharp
-// Suppose the arguments is:
-// a.exe --name Kingcean Tuan --say Hello
-
 void Main(string[] args)
 {
     var arguments = new Arguments(args);
     Console.WriteLine("{0} {1}", arguments["say"], arguments["name"]);
-
-    // Console -> Hello Kingcean Tuan
 }
 ```
 
-It still work well when the arguments is from a string.
+```sh
+> a.exe --name Kingcean Tuan --say Hello
+Hello Kingcean Tuan
+```
+
+You can also parse a string directly.
 
 ```csharp
 void Main(string[] args)
 {
     var str = Console.ReadLine();
-
-    // Suppose the str is:
-    // hijklmn abcdefg
-
     var arguments = new Arguments(str);
     Console.WriteLine("{0} {1}", arguments[1], arguments[0]);
-
-    // Console -> abcdefg hijklmn
 }
 ```
+
+```sh
+> a.exe
+> hijklmn abcdefg
+abcdefg hijklmn
+```
+
 
 ## Verb
 
@@ -93,16 +98,17 @@ static async Task Main(string[] args)
     dispatcher.Register<SecondVerb>("two");
 
     await dispatcher.ProcessAsync(args);
-
-    // a.exe one --name Test
-    // Console -> This is the verb handler 1.
-    // Console -> Name is Test.
-    // Console -> Name is Test.
-
-    // a.ext two
-    // Console -> This is the verb handler 2. Step 1.
-    // Console -> This is the verb handler 2. Step 2.
 }
+```
+
+```sh
+> a.exe one --name Test
+This is the verb handler 1.
+Name is Test.
+Name is Test.
+> a.ext two
+This is the verb handler 2. Step 1.
+This is the verb handler 2. Step 2.
 ```
 
 ## Line
@@ -146,12 +152,22 @@ var Main(string[] args)
     line.Write(" Hello?");
     line.AutoFlush = true;
     line.End();
+
+    // Read password.
+    line.Write("Type password: ");
+    var password = line.ReadPassword('*', ConsoleColor.Yellow);
+    line.WriteLine();
+    line.Write("Your password is ");
+    line.Write(ConsoleColor.Magenta, password);
+    line.WriteLine('.');
 }
 ```
 
 ## Select
 
-You can output a list to console and let user select one just by arrow in keyboard.
+You can output a beautiful list to console so that user just need press the arrow buttons in keyboard to select.
+The one selected will be highlighted as the style defined by you.
+Then press `ENTER` to select to continue the rest business logic.
 
 ```csharp
 var Main(string[] args)
