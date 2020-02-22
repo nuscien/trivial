@@ -114,7 +114,6 @@ This is the verb handler 2. Step 2.
 ## Line
 
 We provide a line component for the standard output stream that you can write a string which you can update before the line terminator.
-You can also read the password into a `SecureString` with the text mask.
 Following is a sample.
 
 ```csharp
@@ -154,11 +153,22 @@ var Main(string[] args)
     line.Write(" Hello?");
     line.AutoFlush = true;
     line.End();
+}
+```
+
+And you can also read the password into a `SecureString` with the optional text mask.
+
+```csharp
+var Main(string[] args)
+{
+    var line = new Line();
 
     // Read password.
     line.Write("Type password: ");
     var password = line.ReadPassword('*', ConsoleColor.Yellow);
     line.WriteLine();
+
+    // Write a secure string to the standard output stream.
     line.Write("Your password is ");
     line.Write(ConsoleColor.Magenta, password);
     line.WriteLine('.');
@@ -167,9 +177,8 @@ var Main(string[] args)
 
 ## Select
 
-You can output a beautiful list to console so that user just need press the arrow buttons in keyboard to select.
-The one selected will be highlighted as the style defined by you.
-Then press `ENTER` to select to continue the rest business logic.
+You can output a beautiful list or table with customized style to the standard output stream 
+so that user just need press the arrow buttons and `ENTER` in keyboard to select.
 
 ```csharp
 var Main(string[] args)
