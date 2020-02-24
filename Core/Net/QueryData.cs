@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Text;
+using System.Threading.Tasks;
 using System.Web;
 
 using Trivial.Collection;
@@ -349,6 +351,42 @@ namespace Trivial.Net
         {
             var q = new QueryData();
             q.ParseSet(query);
+            return q;
+        }
+
+        /// <summary>
+        /// Parses a string to the query data.
+        /// </summary>
+        /// <param name="stream">Thestream of the query string.</param>
+        /// <param name="encoding">The optional encoding.</param>
+        /// <returns>A query data instance.</returns>
+        /// <exception cref="FormatException">The format is not correct.</exception>
+        public static QueryData Parse(Stream stream, Encoding encoding = null)
+        {
+            if (stream == null) return null;
+            if (encoding == null) encoding = Encoding.UTF8;
+            using var reader = new StreamReader(stream, encoding);
+            var query = reader.ReadToEnd();
+            var q = new QueryData();
+            q.ParseSet(query, false, encoding);
+            return q;
+        }
+
+        /// <summary>
+        /// Parses a string to the query data.
+        /// </summary>
+        /// <param name="stream">Thestream of the query string.</param>
+        /// <param name="encoding">The optional encoding.</param>
+        /// <returns>A query data instance.</returns>
+        /// <exception cref="FormatException">The format is not correct.</exception>
+        public static async Task<QueryData> ParseAsync(Stream stream, Encoding encoding = null)
+        {
+            if (stream == null) return null;
+            if (encoding == null) encoding = Encoding.UTF8;
+            using var reader = new StreamReader(stream, encoding);
+            var query = await reader.ReadToEndAsync();
+            var q = new QueryData();
+            q.ParseSet(query, false, encoding);
             return q;
         }
     }

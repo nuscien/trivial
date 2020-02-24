@@ -279,7 +279,7 @@ namespace Trivial.Net
             if (webResponse == null) throw new ArgumentNullException(nameof(webResponse));
             if (deserializer == null) throw new ArgumentNullException(nameof(deserializer));
             using var stream = webResponse.GetResponseStream();
-            var reader = new StreamReader(stream, encoding ?? Encoding.UTF8);
+            using var reader = new StreamReader(stream, encoding ?? Encoding.UTF8);
             var str = await reader.ReadToEndAsync();
             return deserializer(str);
         }
