@@ -478,6 +478,8 @@ namespace Trivial.Web
                     return "application/x-msdownload";
                 case "app":
                 case "appx":
+                case "glif":
+                case "resx":
                 case "php":
                 case "jsp":
                 case "cshtml":
