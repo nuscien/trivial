@@ -736,7 +736,7 @@ namespace Trivial.Maths
             /// <returns>A System.String containing this angle.</returns>
             public override string ToString()
             {
-                return (Positive ? string.Empty : "-") + this.ToAbsAngleString();
+                return (IsNegative ? "-" : string.Empty) + this.ToAbsAngleString();
             }
 
             /// <summary>

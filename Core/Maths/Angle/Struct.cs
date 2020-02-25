@@ -640,7 +640,7 @@ namespace Trivial.Maths
         /// <returns>A System.String containing this angle.</returns>
         public override string ToString()
         {
-            return (Positive ? string.Empty : "-") + this.ToAbsAngleString();
+            return (IsNegative ? "-" : string.Empty) + this.ToAbsAngleString();
         }
 
         internal static void AdaptValue(BoundaryOptions boundary, ref int degree, ref int minute, ref float second)
