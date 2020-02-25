@@ -61,6 +61,18 @@ namespace Trivial.Collection
         }
 
         /// <summary>
+        /// Adds a key and the value to the end of the key value pairs.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <param name="value">The value.</param>
+        /// <param name="clearOthers">true if clear the others of the property before adding; otherwise, false.</param>
+        public void Add(string key, string value, bool clearOthers = false)
+        {
+            if (clearOthers) ListExtensions.Remove(this, key);
+            Add(new KeyValuePair<string, string>(key, value));
+        }
+
+        /// <summary>
         /// Adds a key and a set of value to the end of the key value pairs.
         /// </summary>
         /// <param name="key">The key.</param>
@@ -98,8 +110,7 @@ namespace Trivial.Collection
         public string GetFirstValue(string key, bool ignoreEmpty = false)
         {
             var col = ListExtensions.GetValues(this, key);
-            if (ignoreEmpty) col = col.Where(item => !string.IsNullOrWhiteSpace(item));
-            return col.FirstOrDefault();
+            return ignoreEmpty ? col.FirstOrDefault(item => !string.IsNullOrWhiteSpace(item)) : col.FirstOrDefault();
         }
 
         /// <summary>
@@ -111,8 +122,7 @@ namespace Trivial.Collection
         public string GetLastValue(string key, bool ignoreEmpty = false)
         {
             var col = ListExtensions.GetValues(this, key);
-            if (ignoreEmpty) col = col.Where(item => !string.IsNullOrWhiteSpace(item));
-            return col.LastOrDefault();
+            return ignoreEmpty ? col.LastOrDefault(item => !string.IsNullOrWhiteSpace(item)) : col.LastOrDefault();
         }
 
         /// <summary>
@@ -123,7 +133,31 @@ namespace Trivial.Collection
         public int? TryGetInt32Value(string key)
         {
             var v = GetFirstValue(key, true);
-            if (v != null && int.TryParse(v, out int result)) return result;
+            if (v != null && int.TryParse(v, out var result)) return result;
+            return null;
+        }
+
+        /// <summary>
+        /// Gets the query value as an interger by a specific key.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <returns>The query value as Int32.</returns>
+        public long? TryGetInt64Value(string key)
+        {
+            var v = GetFirstValue(key, true);
+            if (v != null && long.TryParse(v, out var result)) return result;
+            return null;
+        }
+
+        /// <summary>
+        /// Gets the query value as an interger by a specific key.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <returns>The query value as Int32.</returns>
+        public double? TryGetDoubleValue(string key)
+        {
+            var v = GetFirstValue(key, true);
+            if (v != null && double.TryParse(v, out var result)) return result;
             return null;
         }
 
