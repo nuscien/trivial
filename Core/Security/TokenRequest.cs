@@ -1125,9 +1125,20 @@ namespace Trivial.Security
         /// Initializes a new instance of the TokenRequest class.
         /// </summary>
         /// <param name="credential">A network credential instance.</param>
-        public PasswordTokenRequestBody(NetworkCredential credential) : base(PasswordGrantType)
+        /// <param name="ignoreDomain">true if ignore the domain; otherwise, set user name as domain and user name.</param>
+        public PasswordTokenRequestBody(NetworkCredential credential, bool ignoreDomain = false) : base(PasswordGrantType)
         {
-            UserName = credential.UserName;
+            if (string.IsNullOrWhiteSpace(credential.Domain) || ignoreDomain)
+            {
+                UserName = credential.Domain;
+            }
+            else
+            {
+                var domain = credential.Domain + '\\';
+                var username = credential.UserName ?? string.Empty;
+                UserName = credential.UserName.StartsWith(domain) ? username : (domain + username);
+            }
+
             Password = credential.SecurePassword;
         }
 

@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Security;
 using System.Text;
 using System.Text.Json;
 using System.Threading;
@@ -1031,6 +1032,17 @@ namespace Trivial.Text
         /// </summary>
         /// <param name="index">The zero-based index of the element to get.</param>
         /// <param name="value">The value to set.</param>
+        /// <exception cref="ArgumentOutOfRangeException">The index is out of range.</exception>
+        public void SetValue(int index, SecureString value)
+        {
+            store[index] = new JsonString(value);
+        }
+
+        /// <summary>
+        /// Sets the value at the specific index.
+        /// </summary>
+        /// <param name="index">The zero-based index of the element to get.</param>
+        /// <param name="value">The value to set.</param>
         /// <param name="args">An object array that contains zero or more objects to format.</param>
         /// <exception cref="ArgumentOutOfRangeException">The index is out of range.</exception>
         public void SetValueFormat(int index, string value, params object[] args)
@@ -1242,6 +1254,15 @@ namespace Trivial.Text
         /// </summary>
         /// <param name="value">The value to set.</param>
         public void Add(string value)
+        {
+            store.Add(new JsonString(value));
+        }
+
+        /// <summary>
+        /// Adds a value.
+        /// </summary>
+        /// <param name="value">The value to set.</param>
+        public void Add(SecureString value)
         {
             store.Add(new JsonString(value));
         }
@@ -1498,6 +1519,17 @@ namespace Trivial.Text
         /// <param name="value">The value to set.</param>
         /// <exception cref="ArgumentOutOfRangeException">The index is out of range.</exception>
         public void Insert(int index, string value)
+        {
+            store.Insert(index, new JsonString(value));
+        }
+
+        /// <summary>
+        /// Inserts the value at the specific index.
+        /// </summary>
+        /// <param name="index">The zero-based index of the element to get.</param>
+        /// <param name="value">The value to set.</param>
+        /// <exception cref="ArgumentOutOfRangeException">The index is out of range.</exception>
+        public void Insert(int index, SecureString value)
         {
             store.Insert(index, new JsonString(value));
         }

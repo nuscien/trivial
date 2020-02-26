@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Globalization;
 using System.Linq;
+using System.Security;
 using System.Text;
 using System.Web;
 
@@ -70,6 +72,72 @@ namespace Trivial.Collection
         {
             if (clearOthers) ListExtensions.Remove(this, key);
             Add(new KeyValuePair<string, string>(key, value));
+        }
+
+        /// <summary>
+        /// Adds a key and the value to the end of the key value pairs.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <param name="value">The value.</param>
+        /// <param name="clearOthers">true if clear the others of the property before adding; otherwise, false.</param>
+        public void Add(string key, SecureString value, bool clearOthers = false)
+        {
+            Add(key, Security.SecureStringExtensions.ToUnsecureString(value), clearOthers);
+        }
+
+        /// <summary>
+        /// Adds a key and the value to the end of the key value pairs.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <param name="value">The value.</param>
+        /// <param name="clearOthers">true if clear the others of the property before adding; otherwise, false.</param>
+        public void Add(string key, StringBuilder value, bool clearOthers = false)
+        {
+            Add(key, value.ToString(), clearOthers);
+        }
+
+        /// <summary>
+        /// Adds a key and the value to the end of the key value pairs.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <param name="value">The value.</param>
+        /// <param name="clearOthers">true if clear the others of the property before adding; otherwise, false.</param>
+        public void Add(string key, int value, bool clearOthers = false)
+        {
+            Add(key, value.ToString("g", CultureInfo.InvariantCulture), clearOthers);
+        }
+
+        /// <summary>
+        /// Adds a key and the value to the end of the key value pairs.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <param name="value">The value.</param>
+        /// <param name="clearOthers">true if clear the others of the property before adding; otherwise, false.</param>
+        public void Add(string key, long value, bool clearOthers = false)
+        {
+            Add(key, value.ToString("g", CultureInfo.InvariantCulture), clearOthers);
+        }
+
+        /// <summary>
+        /// Adds a key and the value to the end of the key value pairs.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <param name="value">The value.</param>
+        /// <param name="clearOthers">true if clear the others of the property before adding; otherwise, false.</param>
+        public void Add(string key, double value, bool clearOthers = false)
+        {
+            Add(key, value.ToString("g", CultureInfo.InvariantCulture), clearOthers);
+        }
+
+        /// <summary>
+        /// Adds a key and the value to the end of the key value pairs.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <param name="value">The value.</param>
+        /// <param name="clearOthers">true if clear the others of the property before adding; otherwise, false.</param>
+        public void Add(string key, bool value, bool clearOthers = false)
+        {
+            Add(key, value ? Text.JsonBoolean.TrueString : Text.JsonBoolean.FalseString, clearOthers);
         }
 
         /// <summary>

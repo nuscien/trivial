@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Security;
 using System.Text;
 using System.Text.Json;
 using System.Threading;
@@ -1310,6 +1311,18 @@ namespace Trivial.Text
         /// </summary>
         /// <param name="key">The property key.</param>
         /// <param name="value">The value to set.</param>
+        /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+        public void SetValue(string key, SecureString value)
+        {
+            AssertKey(key);
+            store[key] = new JsonString(value);
+        }
+
+        /// <summary>
+        /// Sets the value of the specific property.
+        /// </summary>
+        /// <param name="key">The property key.</param>
+        /// <param name="value">The value to set.</param>
         /// <param name="args">An object array that contains zero or more objects to format.</param>
         /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
         public void SetFormatValue(string key, string value, params object[] args)
@@ -1836,6 +1849,18 @@ namespace Trivial.Text
         /// <exception cref="ArgumentNullException">key is null.</exception>
         /// <exception cref="ArgumentException">An element with the same key already exists in the JSON object.</exception>
         public void Add(string key, string value)
+        {
+            store.Add(key, new JsonString(value));
+        }
+
+        /// <summary>
+        /// Adds a property with the provided key and value to the JSON object.
+        /// </summary>
+        /// <param name="key">The property key.</param>
+        /// <param name="value">The value of the property.</param>
+        /// <exception cref="ArgumentNullException">key is null.</exception>
+        /// <exception cref="ArgumentException">An element with the same key already exists in the JSON object.</exception>
+        public void Add(string key, SecureString value)
         {
             store.Add(key, new JsonString(value));
         }
