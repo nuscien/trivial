@@ -1128,7 +1128,7 @@ namespace Trivial.Security
         /// <param name="ignoreDomain">true if ignore the domain; otherwise, set user name as domain and user name.</param>
         public PasswordTokenRequestBody(NetworkCredential credential, bool ignoreDomain = false) : base(PasswordGrantType)
         {
-            if (string.IsNullOrWhiteSpace(credential.Domain) || ignoreDomain)
+            if (string.IsNullOrWhiteSpace(credential.Domain) || ignoreDomain || credential.Domain.IndexOf('@') >= 0)
             {
                 UserName = credential.Domain;
             }
