@@ -1124,6 +1124,16 @@ namespace Trivial.Security
         /// <summary>
         /// Initializes a new instance of the TokenRequest class.
         /// </summary>
+        /// <param name="credential">A network credential instance.</param>
+        public PasswordTokenRequestBody(NetworkCredential credential) : base(PasswordGrantType)
+        {
+            UserName = credential.UserName;
+            Password = credential.SecurePassword;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the TokenRequest class.
+        /// </summary>
         /// <param name="userName">The user name.</param>
         /// <param name="password">The password.</param>
         /// <param name="ldap">The optional LDAP.</param>
