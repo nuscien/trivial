@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Net.Http.Headers;
 using System.Reflection;
 using System.Runtime.Serialization;
@@ -1081,7 +1082,7 @@ namespace Trivial.Security
     /// The access token request with password grant type.
     /// </summary>
     [DataContract]
-    public class PasswordTokenRequestBody : TokenRequestBody
+    public class PasswordTokenRequestBody : TokenRequestBody, ICredentials, ICredentialsByHost
     {
         /// <summary>
         /// The grant type value of password.
@@ -1107,6 +1108,11 @@ namespace Trivial.Security
         /// The token type.
         /// </summary>
         public const string BasicTokenType = "Basic";
+
+        /// <summary>
+        /// The network credential.
+        /// </summary>
+        private NetworkCredential credential;
 
         /// <summary>
         /// Initializes a new instance of the TokenRequest class.
@@ -1220,6 +1226,31 @@ namespace Trivial.Security
             var query = base.ToQueryData() ?? new QueryData();
             query[PasswordProperty] = Password.ToUnsecureString();
             return query;
+        }
+
+        /// <summary>
+        /// Gets a network credential instance for the specified Uniform Resource Identifier (URI) and authentication type.
+        /// </summary>
+        /// <param name="uri">The URI that the client provides authentication for.</param>
+        /// <param name="authType">The type of authentication requested, as defined in the <seealso cref="System.Net.IAuthenticationModule.AuthenticationType" /> property.</param>
+        /// <returns>A network credential object.</returns>
+        public NetworkCredential GetCredential(Uri uri, string authType)
+        {
+            if (credential is null) credential = new NetworkCredential(UserName, Password);
+            return credential.GetCredential(uri, authType);
+        }
+
+        /// <summary>
+        /// Gets a network credential instance for the specified Uniform Resource Identifier (URI) and authentication type.
+        /// </summary>
+        /// <param name="host">The host computer that authenticates the client.</param>
+        /// <param name="port">The port on the host that the client communicates with.</param>
+        /// <param name="authType">The type of authentication requested, as defined in the <seealso cref="System.Net.IAuthenticationModule.AuthenticationType" /> property.</param>
+        /// <returns>A network credential object.</returns>
+        public NetworkCredential GetCredential(string host, int port, string authType)
+        {
+            if (credential is null) credential = new NetworkCredential(UserName, Password);
+            return credential.GetCredential(host, port, authType);
         }
 
         /// <summary>
