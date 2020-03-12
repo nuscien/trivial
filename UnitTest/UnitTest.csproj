@@ -2,20 +2,21 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <TargetFrameworks>netcoreapp3.1;netcoreapp2.2</TargetFrameworks>
     <IsPackable>false</IsPackable>
     <AssemblyName>Trivial.UnitTest</AssemblyName>
     <RootNamespace>Trivial</RootNamespace>
     <Product>Trivial</Product>
     <Authors>Kingcean Tuan</Authors>
     <Company>Nanchang Jinchen Software Co., Ltd.</Company>
-    <Version>3.4.0</Version>
+    <Version>3.4.2</Version>
     <Description>The sample of Trivial libraries.</Description>
     <Copyright>Copyright (c) 2018 Kingcean Tuan.</Copyright>
     <StartupObject>Trivial.Console.Program</StartupObject>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageIconUrl>https://github.com/nuscien/trivial/raw/master/Materials/logo.png</PackageIconUrl>
     <RepositoryUrl>https://github.com/nuscien/trivial</RepositoryUrl>
+    <LangVersion>8.0</LangVersion>
   </PropertyGroup>
 
   <ItemGroup>

@@ -170,6 +170,7 @@ namespace Trivial.Text
         /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
         public IJsonValueResolver GetValue(int index);
 
+#if !NETSTANDARD2_0
         /// <summary>
         /// Gets the value of the specific property.
         /// </summary>
@@ -178,6 +179,7 @@ namespace Trivial.Text
         /// <exception cref="ArgumentOutOfRangeException">The index is out of range.</exception>
         /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
         public IJsonValueResolver GetValue(Index index);
+#endif
 
         /// <summary>
         /// Gets all property keys.
@@ -422,6 +424,7 @@ namespace Trivial.Text
         /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
         IJsonValueResolver IJsonValueResolver.GetValue(int index) => throw new InvalidOperationException("Expect an array but it is a boolean value.");
 
+#if !NETSTANDARD2_0
         /// <summary>
         /// Gets the value at the specific index.
         /// </summary>
@@ -429,6 +432,7 @@ namespace Trivial.Text
         /// <returns>The value.</returns>
         /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
         IJsonValueResolver IJsonValueResolver.GetValue(Index index) => throw new InvalidOperationException("Expect an array but it is a boolean value.");
+#endif
 
         /// <summary>
         /// Gets all property keys.
@@ -775,6 +779,7 @@ namespace Trivial.Text
         /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
         IJsonValueResolver IJsonValueResolver.GetValue(int index) => throw new InvalidOperationException("Expect an array but it is null.");
 
+#if !NETSTANDARD2_0
         /// <summary>
         /// Gets the value at the specific index.
         /// </summary>
@@ -782,6 +787,7 @@ namespace Trivial.Text
         /// <returns>The value.</returns>
         /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
         IJsonValueResolver IJsonValueResolver.GetValue(Index index) => throw new InvalidOperationException("Expect an array but it is null.");
+#endif
 
         /// <summary>
         /// Gets all property keys.

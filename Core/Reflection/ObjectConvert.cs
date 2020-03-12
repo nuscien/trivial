@@ -359,6 +359,24 @@ namespace Trivial.Reflection
             return false;
         }
 
+        internal static T ParseEnum<T>(string s) where T : struct
+        {
+#if NETSTANDARD2_0
+            return (T)Enum.Parse(typeof(T), s);
+#else
+            return Enum.Parse<T>(s);
+#endif
+        }
+
+        internal static T ParseEnum<T>(string s, bool ignoreCase) where T : struct
+        {
+#if NETSTANDARD2_0
+            return (T)Enum.Parse(typeof(T), s, ignoreCase);
+#else
+            return Enum.Parse<T>(s, ignoreCase);
+#endif
+        }
+
         private static bool IsNullableValueType(Type type)
         {
             return type.IsValueType && type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>);

@@ -101,7 +101,7 @@ namespace Trivial.Text
             Assert.IsNull(json.TryGetValue(new[] { "arr", "0", "x" }));
             Assert.AreEqual(9, jsonArray.GetStringCollection().ToList().Count);
 
-            jsonArray.Remove(^1);
+            jsonArray.Remove(jsonArray.Count - 1);
             var m = json.Deserialize<JsonModel>();
             Assert.AreEqual(json.GetStringValue("str-a"), m.A);
             Assert.AreEqual(json.GetStringValue("str-b"), m.B);
@@ -118,7 +118,7 @@ namespace Trivial.Text
             {
                 8, 9, 0
             });
-            Assert.AreEqual(JsonValueKind.Array, jsonArray[^1].ValueKind);
+            Assert.AreEqual(JsonValueKind.Array, jsonArray[jsonArray.Count - 1].ValueKind);
 
             var jsonDoc = (JsonDocument)json;
             var jsonStr = json.ToString();

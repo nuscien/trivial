@@ -9,6 +9,8 @@ using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 
+using Trivial.Reflection;
+
 namespace Trivial.Text
 {
     /// <summary>
@@ -175,7 +177,7 @@ namespace Trivial.Text
         public bool ContainsKey(ReadOnlySpan<char> key)
         {
             if (key == null) throw new ArgumentNullException("key", "key should not be null.");
-            return ContainsKey(new string(key));
+            return ContainsKey(key.ToString());
         }
 
         /// <summary>
@@ -205,7 +207,7 @@ namespace Trivial.Text
         public string GetRawText(ReadOnlySpan<char> key)
         {
             if (key == null) throw new ArgumentNullException("key", "key should not be null.");
-            return GetRawText(new string(key));
+            return GetRawText(key.ToString());
         }
 
         /// <summary>
@@ -240,7 +242,7 @@ namespace Trivial.Text
         public JsonValueKind GetValueKind(ReadOnlySpan<char> key, bool strictMode = false)
         {
             if (key == null) throw new ArgumentNullException("key", "key should not be null.");
-            return GetValueKind(new string(key), strictMode);
+            return GetValueKind(key.ToString(), strictMode);
         }
 
         /// <summary>
@@ -448,7 +450,7 @@ namespace Trivial.Text
             var result = GetValue(keyPath);
             if (result is null) return null;
             if (result is JsonObject jObj) return jObj;
-            throw new InvalidOperationException($"The property {string.Join('.', keyPath)} is not a JSON object.", new InvalidCastException("The result is not a JSON object."));
+            throw new InvalidOperationException($"The property {string.Join(".", keyPath)} is not a JSON object.", new InvalidCastException("The result is not a JSON object."));
         }
 
         /// <summary>
@@ -512,13 +514,14 @@ namespace Trivial.Text
         /// <returns>The value.</returns>
         /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
         /// <exception cref="ArgumentOutOfRangeException">The property does not exist.</exception>
+        /// <exception cref="ArgumentException">The type is not an System.Enum. -or- the value is either an empty string or only contains white space.  -or- value is a name, but not one of the named constants defined for the enumeration.</exception>
         /// <exception cref="OverflowException">value is outside the range of the underlying type of enumType.</exception>
         /// <exception cref="InvalidOperationException">The value kind is not the expected one.</exception>
         public T GetEnumValue<T>(string key) where T : struct, Enum
         {
             if (TryGetInt32Value(key, out var v)) return (T)(object)v;
             var str = GetStringValue(key);
-            return Enum.Parse<T>(str);
+            return ObjectConvert.ParseEnum<T>(str);
         }
 
         /// <summary>
@@ -529,13 +532,14 @@ namespace Trivial.Text
         /// <returns>The value.</returns>
         /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
         /// <exception cref="ArgumentOutOfRangeException">The property does not exist.</exception>
+        /// <exception cref="ArgumentException">The type is not an System.Enum. -or- the value is either an empty string or only contains white space.  -or- value is a name, but not one of the named constants defined for the enumeration.</exception>
         /// <exception cref="OverflowException">value is outside the range of the underlying type of enumType.</exception>
         /// <exception cref="InvalidOperationException">The value kind is not the expected one.</exception>
         public T GetEnumValue<T>(string key, bool ignoreCase) where T : struct, Enum
         {
             if (TryGetInt32Value(key, out var v)) return (T)(object)v;
             var str = GetStringValue(key);
-            return Enum.Parse<T>(str, ignoreCase);
+            return ObjectConvert.ParseEnum<T>(str, ignoreCase);
         }
 
         /// <summary>
@@ -643,7 +647,7 @@ namespace Trivial.Text
         /// <exception cref="ArgumentOutOfRangeException">The property does not exist.</exception>
         public IJsonValueResolver GetValue(ReadOnlySpan<char> key)
         {
-            return GetValue(new string(key));
+            return GetValue(key.ToString());
         }
 
         /// <summary>
@@ -654,6 +658,7 @@ namespace Trivial.Text
         /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
         IJsonValueResolver IJsonValueResolver.GetValue(int index) => throw new InvalidOperationException("Expect an array but it is an object.");
 
+#if !NETSTANDARD2_0
         /// <summary>
         /// Gets the value at the specific index.
         /// </summary>
@@ -661,6 +666,7 @@ namespace Trivial.Text
         /// <returns>The value.</returns>
         /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
         IJsonValueResolver IJsonValueResolver.GetValue(Index index) => throw new InvalidOperationException("Expect an array but it is an object.");
+#endif
 
         /// <summary>
         /// Tries to get the value of the specific property.
@@ -1063,6 +1069,7 @@ namespace Trivial.Text
             return useUnixTimestampsFallback ? Web.WebFormat.ParseUnixTimestamp(num.Value) : Web.WebFormat.ParseDate(num.Value);
         }
 
+#if !NETSTANDARD2_0
         /// <summary>
         /// Tries to get the value of the specific property.
         /// </summary>
@@ -1081,6 +1088,7 @@ namespace Trivial.Text
 
             return Convert.TryFromBase64String(str, bytes, out bytesWritten);
         }
+#endif
 
         /// <summary>
         /// Gets the value of the specific property.
@@ -1536,7 +1544,11 @@ namespace Trivial.Text
         /// <exception cref="ArgumentNullException">The property key and bytes should not be null, empty, or consists only of white-space characters.</exception>
         public void SetBase64(string key, Span<byte> bytes, Base64FormattingOptions options = Base64FormattingOptions.None)
         {
+#if NETSTANDARD2_0
+            SetValue(key, Convert.ToBase64String(bytes.ToArray(), options));
+#else
             SetValue(key, Convert.ToBase64String(bytes, options));
+#endif
         }
 
         /// <summary>

@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Text;
 using System.Text.Json;
+
+using Trivial.Reflection;
 
 namespace Trivial.Text
 {
@@ -108,7 +109,7 @@ namespace Trivial.Text
         /// Initializes a new instance of the JsonString class.
         /// </summary>
         /// <param name="value">The value.</param>
-        public JsonString(ReadOnlySpan<char> value) : this(value != null ? new string(value) : null)
+        public JsonString(ReadOnlySpan<char> value) : this(value != null ? value.ToString() : null)
         {
         }
 
@@ -225,6 +226,7 @@ namespace Trivial.Text
             }
         }
 
+#if !NETSTANDARD2_0
         /// <summary>
         /// Gets the System.Char object at a specified position in the source value.
         /// </summary>
@@ -240,6 +242,7 @@ namespace Trivial.Text
                 return s[index.IsFromEnd ? s.Length - index.Value : index.Value];
             }
         }
+#endif
 
         /// <summary>
         /// Indicates whether the specified string is null or an empty string ("").
@@ -286,7 +289,7 @@ namespace Trivial.Text
         public T ToEnum<T>() where T : struct, Enum
         {
             if (Value == null) throw new InvalidOperationException("Value is null.");
-            return Enum.Parse<T>(Value);
+            return ObjectConvert.ParseEnum<T>(Value);
         }
 
         /// <summary>
@@ -298,7 +301,7 @@ namespace Trivial.Text
         public T ToEnum<T>(bool ignoreCase) where T : struct, Enum
         {
             if (Value == null) throw new InvalidOperationException("Value is null.");
-            return Enum.Parse<T>(Value, ignoreCase);
+            return ObjectConvert.ParseEnum<T>(Value, ignoreCase);
         }
 
         /// <summary>
@@ -672,6 +675,7 @@ namespace Trivial.Text
         /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
         IJsonValueResolver IJsonValueResolver.GetValue(int index) => throw new InvalidOperationException("Expect an array but it is a string.");
 
+#if !NETSTANDARD2_0
         /// <summary>
         /// Gets the value at the specific index.
         /// </summary>
@@ -679,6 +683,7 @@ namespace Trivial.Text
         /// <returns>The value.</returns>
         /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
         IJsonValueResolver IJsonValueResolver.GetValue(Index index) => throw new InvalidOperationException("Expect an array but it is a string.");
+#endif
 
         /// <summary>
         /// Gets all property keys.

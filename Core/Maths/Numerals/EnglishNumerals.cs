@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Text;
 
+using Trivial.Text;
+
 namespace Trivial.Maths
 {
     /// <summary>
@@ -348,7 +350,7 @@ namespace Trivial.Maths
                 {
                     2 => string.Format("{0}, {1}, {2}",
                                                GetAllDigitsString(numStr.Substring(0, 3), 3),
-                                               GetAllDigitsString(numStr[3..^3], 4),
+                                               GetAllDigitsString(numStr.SubRangeString(3, 3, true), 4),
                                                GetAllDigitsString(numStr.Substring(numStr.Length - 3), 3)),
                     3 => GetAllDigitsString(numStr.Substring(0, 3), 3) + ", " + GetAllDigitsString(numStr.Substring(4), 4),
                     _ => GetAllDigitsString(numStr, 4),

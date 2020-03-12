@@ -222,9 +222,9 @@ namespace Trivial.Text
                 {
                     if (item.Length > 0 && item[0] == '"')
                     {
-                        if (item.Length > 1 && item[^1] == '"' && item[^2] != '\\')
+                        if (item.Length > 1 && item[item.Length - 1] == '"' && item[item.Length - 2] != '\\')
                         {
-                            list.Add(StringExtensions.ReplaceBackSlash(item[1..^1]));
+                            list.Add(StringExtensions.ReplaceBackSlash(item.SubRangeString(1, 1, true)));
                         }
                         else
                         {
@@ -240,9 +240,9 @@ namespace Trivial.Text
                     continue;
                 }
 
-                if (item.Length > 0 && item[^1] == '"' && (item.Length == 1 || item[^2] != '\\'))
+                if (item.Length > 0 && item[item.Length - 1] == '"' && (item.Length == 1 || item[item.Length - 2] != '\\'))
                 {
-                    list[list.Count - 1] += "," + StringExtensions.ReplaceBackSlash(item[0..^1]);
+                    list[list.Count - 1] += "," + StringExtensions.ReplaceBackSlash(item.SubRangeString(0, 1, true));
                     inScope = false;
                 }
                 else

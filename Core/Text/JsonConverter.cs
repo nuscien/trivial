@@ -173,7 +173,11 @@ namespace Trivial.Text
             {
                 var arr = value.Where(ele => !string.IsNullOrWhiteSpace(ele));
                 if (trim) arr = arr.Select(ele => ele.Trim()).Where(ele => ele.Length > 0);
+#if NETSTANDARD2_0
+                var str = string.Join(new string(chars[0], 1), arr);
+#else
                 var str = string.Join(chars[0], arr);
+#endif
                 writer.WriteStringValue(str);
                 return;
             }

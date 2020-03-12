@@ -670,6 +670,7 @@ namespace Trivial.Text
         /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
         IJsonValueResolver IJsonValueResolver.GetValue(int index) => throw new InvalidOperationException("Expect an array but it is a number.");
 
+#if !NETSTANDARD2_0
         /// <summary>
         /// Gets the value at the specific index.
         /// </summary>
@@ -677,6 +678,7 @@ namespace Trivial.Text
         /// <returns>The value.</returns>
         /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
         IJsonValueResolver IJsonValueResolver.GetValue(Index index) => throw new InvalidOperationException("Expect an array but it is a number.");
+#endif
 
         /// <summary>
         /// Gets all property keys.
@@ -1952,6 +1954,7 @@ namespace Trivial.Text
         /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
         IJsonValueResolver IJsonValueResolver.GetValue(int index) => throw new InvalidOperationException("Expect an array but it is a number.");
 
+#if !NETSTANDARD2_0
         /// <summary>
         /// Gets the value at the specific index.
         /// </summary>
@@ -1959,6 +1962,7 @@ namespace Trivial.Text
         /// <returns>The value.</returns>
         /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
         IJsonValueResolver IJsonValueResolver.GetValue(Index index) => throw new InvalidOperationException("Expect an array but it is a number.");
+#endif
 
         /// <summary>
         /// Gets all property keys.

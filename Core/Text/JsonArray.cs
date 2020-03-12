@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Security;
@@ -8,6 +9,8 @@ using System.Text;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
+
+using Trivial.Reflection;
 
 namespace Trivial.Text
 {
@@ -66,12 +69,14 @@ namespace Trivial.Text
         /// <exception cref="InvalidOperationException">The value kind is not the expected one.</exception>
         IJsonValue IReadOnlyList<IJsonValue>.this[int index] => GetValue(index);
 
+#if !NETSTANDARD2_0
         /// <summary>
         /// Gets the System.Char object at a specified position in the source value.
         /// </summary>
         /// <param name="index">A position in the current string.</param>
         /// <returns>The character at position index.</returns>
         public IJsonValueResolver this[Index index] => GetValue(index.IsFromEnd ? Count - index.Value : index.Value);
+#endif
 
         /// <summary>
         /// Determines the property value of the specific key is null.
@@ -127,6 +132,7 @@ namespace Trivial.Text
             return data.ToString();
         }
 
+#if !NETSTANDARD2_0
         /// <summary>
         /// Gets the raw value of the specific value.
         /// </summary>
@@ -139,6 +145,7 @@ namespace Trivial.Text
             if (data is null) return null;
             return data.ToString();
         }
+#endif
 
         /// <summary>
         /// Gets the value kind of the specific property.
@@ -171,6 +178,7 @@ namespace Trivial.Text
             return JsonValueKind.Undefined;
         }
 
+#if !NETSTANDARD2_0
         /// <summary>
         /// Gets the value kind of the specific property.
         /// </summary>
@@ -183,6 +191,7 @@ namespace Trivial.Text
         {
             return GetValueKind(index.IsFromEnd ? store.Count - index.Value : index.Value, strictMode);
         }
+#endif
 
         /// <summary>
         /// Gets the value at the specific index.
@@ -384,13 +393,14 @@ namespace Trivial.Text
         /// <param name="index">The zero-based index of the element to get.</param>
         /// <returns>The value.</returns>
         /// <exception cref="ArgumentOutOfRangeException">The index is out of range.</exception>
+        /// <exception cref="ArgumentException">The type is not an System.Enum. -or- the value is either an empty string or only contains white space.  -or- value is a name, but not one of the named constants defined for the enumeration.</exception>
         /// <exception cref="OverflowException">value is outside the range of the underlying type of enumType.</exception>
         /// <exception cref="InvalidOperationException">The value kind is not the expected one.</exception>
         public T GetEnumValue<T>(int index) where T : struct, Enum
         {
             if (TryGetInt32Value(index, out var v)) return (T)(object)v;
             var str = GetStringValue(index);
-            return Enum.Parse<T>(str);
+            return ObjectConvert.ParseEnum<T>(str);
         }
 
         /// <summary>
@@ -400,13 +410,14 @@ namespace Trivial.Text
         /// <param name="ignoreCase">true if ignore case; otherwise, false.</param>
         /// <returns>The value.</returns>
         /// <exception cref="ArgumentOutOfRangeException">The index is out of range.</exception>
+        /// <exception cref="ArgumentException">The type is not an System.Enum. -or- the value is either an empty string or only contains white space.  -or- value is a name, but not one of the named constants defined for the enumeration.</exception>
         /// <exception cref="OverflowException">value is outside the range of the underlying type of enumType.</exception>
         /// <exception cref="InvalidOperationException">The value kind is not the expected one.</exception>
         public T GetEnumValue<T>(int index, bool ignoreCase) where T : struct, Enum
         {
             if (TryGetInt32Value(index, out var v)) return (T)(object)v;
             var str = GetStringValue(index);
-            return Enum.Parse<T>(str, ignoreCase);
+            return ObjectConvert.ParseEnum<T>(str, ignoreCase);
         }
 
         /// <summary>
@@ -420,6 +431,7 @@ namespace Trivial.Text
             return (store[index] as IJsonValueResolver) ?? JsonValues.Null;
         }
 
+#if !NETSTANDARD2_0
         /// <summary>
         /// Gets the value at the specific index.
         /// </summary>
@@ -430,6 +442,7 @@ namespace Trivial.Text
         {
             return (store[index.IsFromEnd ? store.Count - index.Value : index.Value] as IJsonValueResolver) ?? JsonValues.Null;
         }
+#endif
 
         /// <summary>
         /// Gets the value of the specific property.
@@ -440,7 +453,7 @@ namespace Trivial.Text
         IJsonValueResolver IJsonValueResolver.GetValue(string key)
         {
             if (int.TryParse(key, out var i)) return GetValue(i);
-            throw new InvalidOperationException("Expect an object but it is an array.");
+            throw new InvalidOperationException("key should be an integer.", new FormatException("key should be an integer."));
         }
 
         /// <summary>
@@ -448,10 +461,13 @@ namespace Trivial.Text
         /// </summary>
         /// <param name="key">The property key.</param>
         /// <returns>The value.</returns>
+        /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">The property does not exist.</exception>
         /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
         IJsonValueResolver IJsonValueResolver.GetValue(ReadOnlySpan<char> key)
         {
-            return (this as IJsonValueResolver).GetValue(new string(key));
+            if (key == null) throw new ArgumentNullException(nameof(key), "key should not be null.");
+            return (this as IJsonValueResolver).GetValue(key.ToString());
         }
 
         /// <summary>
@@ -845,6 +861,7 @@ namespace Trivial.Text
             return useUnixTimestampsFallback ? Web.WebFormat.ParseUnixTimestamp(num.Value) : Web.WebFormat.ParseDate(num.Value);
         }
 
+#if !NETSTANDARD2_0
         /// <summary>
         /// Tries to get the value of the specific property.
         /// </summary>
@@ -863,6 +880,7 @@ namespace Trivial.Text
 
             return Convert.TryFromBase64String(str, bytes, out bytesWritten);
         }
+#endif
 
         /// <summary>
         /// Tries to get the value of the specific property.
@@ -996,6 +1014,7 @@ namespace Trivial.Text
             store.RemoveAt(index);
         }
 
+#if !NETSTANDARD2_0
         /// <summary>
         /// Removes the element at the specific index.
         /// </summary>
@@ -1005,6 +1024,7 @@ namespace Trivial.Text
         {
             store.RemoveAt(index.IsFromEnd ? store.Count - index.Value : index.Value);
         }
+#endif
 
         /// <summary>
         /// Sets null at the specific index.
@@ -1072,7 +1092,12 @@ namespace Trivial.Text
         /// <exception cref="ArgumentNullException">The bytes should not be null.</exception>
         public void SetBase64(int index, Span<byte> bytes, Base64FormattingOptions options = Base64FormattingOptions.None)
         {
+#if NETSTANDARD2_0
+            if (bytes == null) throw new ArgumentNullException(nameof(bytes), "bytes should not be null.");
+            store[index] = new JsonString(Convert.ToBase64String(bytes.ToArray(), options));
+#else
             store[index] = new JsonString(Convert.ToBase64String(bytes, options));
+#endif
         }
 
         /// <summary>
@@ -1396,7 +1421,12 @@ namespace Trivial.Text
         /// <exception cref="ArgumentNullException">The bytes should not be null.</exception>
         public void AddBase64(Span<byte> bytes, Base64FormattingOptions options = Base64FormattingOptions.None)
         {
+#if NETSTANDARD2_0
+            if (bytes == null) throw new ArgumentNullException(nameof(bytes), "bytes should not be null.");
+            store.Add(new JsonString(Convert.ToBase64String(bytes.ToArray(), options)));
+#else
             store.Add(new JsonString(Convert.ToBase64String(bytes, options)));
+#endif
         }
 
         /// <summary>
@@ -1690,7 +1720,12 @@ namespace Trivial.Text
         /// <exception cref="ArgumentNullException">The bytes should not be null.</exception>
         public void InsertBase64(int index, Span<byte> bytes, Base64FormattingOptions options = Base64FormattingOptions.None)
         {
+#if NETSTANDARD2_0
+            if (bytes == null) throw new ArgumentNullException(nameof(bytes), "bytes should not be null.");
+            store.Insert(index, new JsonString(Convert.ToBase64String(bytes.ToArray(), options)));
+#else
             store.Insert(index, new JsonString(Convert.ToBase64String(bytes, options)));
+#endif
         }
 
         /// <summary>
