@@ -172,6 +172,8 @@ namespace Trivial.Web
                     return "image/vnd.dxf";
                 case "gif":
                     return "image/gif";
+                case "heif":
+                    return "image/heif";
                 case "heic":
                     return "image/heic";
                 case "ico":
@@ -341,6 +343,9 @@ namespace Trivial.Web
                     return "text/x-vcard";
                 case "vtt":
                     return "text/vtt";
+                case "diff":
+                case "patch":
+                    return "text/x-diff";
 
                 // Web
                 case "ac":
@@ -367,6 +372,7 @@ namespace Trivial.Web
                     return "application/inkml+xml";
                 case "js":
                 case "jsx":
+                case "esm":
                     return JavaScriptMIME;
                 case "json":
                 case "map":

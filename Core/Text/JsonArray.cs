@@ -2050,6 +2050,75 @@ namespace Trivial.Text
         }
 
         /// <summary>
+        /// Gets the JSON format string of the value.
+        /// </summary>
+        /// <param name="indentStyle">The indent style.</param>
+        /// <returns>A JSON format string.</returns>
+        public string ToString(IndentStyles indentStyle)
+        {
+            return ToString(indentStyle, 0);
+        }
+
+        /// <summary>
+        /// Gets the JSON format string of the value.
+        /// </summary>
+        /// <param name="indentStyle">The indent style.</param>
+        /// <param name="indentLevel">The current indent level.</param>
+        /// <returns>A JSON format string.</returns>
+        internal string ToString(IndentStyles indentStyle, int indentLevel)
+        {
+            if (indentStyle == IndentStyles.Minified) return ToString();
+            var indentStr = StringExtensions.GetString(indentStyle);
+            var indentPrefix = new StringBuilder();
+            for (var i = 0; i < indentLevel; i++)
+            {
+                indentPrefix.Append(indentStr);
+            }
+
+            var indentStr2 = indentPrefix.ToString();
+            indentPrefix.Append(indentStr);
+            indentStr = indentPrefix.ToString();
+            var str = new StringBuilder();
+            indentLevel++;
+            str.Append("[");
+            foreach (var prop in store)
+            {
+                str.AppendLine();
+                str.Append(indentStr);
+                if (prop is null)
+                {
+                    str.Append("null,");
+                    continue;
+                }
+
+                switch (prop.ValueKind)
+                {
+                    case JsonValueKind.Undefined:
+                    case JsonValueKind.Null:
+                        str.Append("null");
+                        break;
+                    case JsonValueKind.Array:
+                        str.Append((prop is JsonArray jArr) ? jArr.ToString(indentStyle, indentLevel) : "[]");
+                        break;
+                    case JsonValueKind.Object:
+                        str.Append((prop is JsonObject jObj) ? jObj.ToString(indentStyle, indentLevel) : "{}");
+                        break;
+                    default:
+                        str.Append(prop.ToString());
+                        break;
+                }
+
+                str.Append(',');
+            }
+
+            if (str.Length > 1) str.Remove(str.Length - 1, 1);
+            str.AppendLine();
+            str.Append(indentStr2);
+            str.Append(']');
+            return str.ToString();
+        }
+
+        /// <summary>
         /// Returns an enumerator that iterates through the array.
         /// </summary>
         /// <returns>An enumerator that can be used to iterate through the array.</returns>

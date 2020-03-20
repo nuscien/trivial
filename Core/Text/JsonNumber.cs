@@ -94,12 +94,23 @@ namespace Trivial.Text
     public class JsonInteger : IJsonValue<long>, IJsonValueResolver, IJsonNumber, IComparable<JsonInteger>, IComparable<JsonDouble>, IComparable<uint>, IComparable<int>, IComparable<long>, IComparable<double>, IComparable<float>, IEquatable<IJsonValue<uint>>, IEquatable<IJsonValue<int>>, IEquatable<IJsonValue<float>>, IEquatable<IJsonValue<double>>, IEquatable<uint>, IEquatable<int>, IEquatable<float>, IEquatable<double>, IFormattable
     {
         /// <summary>
+        /// Maximum safe integer in JavaScript and JSON.
+        /// </summary>
+        public const long MaxSafeInteger = 9007199254740991;
+
+        /// <summary>
+        /// Minimum safe integer in JavaScript and JSON.
+        /// </summary>
+        public const long MinSafeInteger = -9007199254740991;
+
+        /// <summary>
         /// Initializes a new instance of the JsonInteger class.
         /// </summary>
         /// <param name="value">The value.</param>
         public JsonInteger(int value)
         {
             Value = value;
+            IsSafe = true;
         }
 
         /// <summary>
@@ -109,6 +120,7 @@ namespace Trivial.Text
         public JsonInteger(uint value)
         {
             Value = value;
+            IsSafe = true;
         }
 
         /// <summary>
@@ -118,6 +130,7 @@ namespace Trivial.Text
         public JsonInteger(long value)
         {
             Value = value;
+            IsSafe = value <= MaxSafeInteger && value >= MinSafeInteger;
         }
 
         /// <summary>
@@ -128,6 +141,7 @@ namespace Trivial.Text
         public JsonInteger(DateTime value, bool isUnixTimestamp = false)
         {
             Value = isUnixTimestamp ? Web.WebFormat.ParseUnixTimestamp(value) : Web.WebFormat.ParseDate(value);
+            IsSafe = true;
         }
 
         /// <summary>
@@ -137,6 +151,7 @@ namespace Trivial.Text
         public JsonInteger(TimeSpan value)
         {
             Value = (long)value.TotalSeconds;
+            IsSafe = true;
         }
 
         /// <summary>
@@ -148,6 +163,11 @@ namespace Trivial.Text
         /// Gets a value indicating whether the number value is an whole number.
         /// </summary>
         public bool IsInteger => true;
+
+        /// <summary>
+        /// Gets a value indicating whether the integer is safe.
+        /// </summary>
+        public bool IsSafe { get; }
 
         /// <summary>
         /// Gets the type of the current JSON value.

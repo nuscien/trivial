@@ -407,6 +407,35 @@ namespace Trivial.Text
             return IO.CharsReader.ReadLines(reader, removeEmptyLine);
         }
 
+        /// <summary>
+        /// Gets the indent string.
+        /// </summary>
+        /// <param name="indentStyle">The indent style.</param>
+        /// <param name="indentLevel">The current indent level.</param>
+        /// <returns>A string.</returns>
+        public static string GetString(IndentStyles indentStyle, int indentLevel = 1)
+        {
+            if (indentLevel < 1) return indentLevel == 0 ? string.Empty : null;
+            var str = indentStyle switch
+            {
+                IndentStyles.Minified => string.Empty,
+                IndentStyles.Empty => string.Empty,
+                IndentStyles.Tab => "\t",
+                IndentStyles.Space => " ",
+                IndentStyles.Compact => "  ",
+                IndentStyles.Wide => "        ",
+                _ => "    "
+            };
+            if (indentLevel < 1) return str;
+            var sb = new StringBuilder(str);
+            for (var i = 1; i < indentLevel; i++)
+            {
+                sb.Append(str);
+            }
+
+            return sb.ToString();
+        }
+
         internal static string SubRangeString(this string s, int start, int end, bool reverseEnd = false)
         {
 #if NETSTANDARD2_0

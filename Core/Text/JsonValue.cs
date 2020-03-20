@@ -214,6 +214,13 @@ namespace Trivial.Text
         public void WriteTo(Utf8JsonWriter writer);
 
         /// <summary>
+        /// Gets the JSON format string of the value.
+        /// </summary>
+        /// <param name="indentStyle">The indent style.</param>
+        /// <returns>A JSON format string.</returns>
+        public string ToString(IndentStyles indentStyle);
+
+        /// <summary>
         /// Removes all items from the array.
         /// </summary>
         public void Clear();
@@ -823,6 +830,47 @@ namespace Trivial.Text
             if (leftValue is null || rightValue is null) return false;
             return leftValue.Equals(rightValue);
         }
+    }
+
+    /// <summary>
+    /// The indent styles.
+    /// </summary>
+    public enum IndentStyles
+    {
+        /// <summary>
+        /// Minified format. Without any extra white space.
+        /// </summary>
+        Minified = 0,
+
+        /// <summary>
+        /// Without any extra white space.
+        /// </summary>
+        Empty = 1,
+
+        /// <summary>
+        /// Tab indent style.
+        /// </summary>
+        Tab = 2,
+
+        /// <summary>
+        /// 4 white spaces indent style.
+        /// </summary>
+        Normal = 3,
+
+        /// <summary>
+        /// 2 white spaces indent style.
+        /// </summary>
+        Compact = 4,
+
+        /// <summary>
+        /// 8 white spaces indent style.
+        /// </summary>
+        Wide = 5,
+
+        /// <summary>
+        /// 1 white space indent style.
+        /// </summary>
+        Space = 6
     }
 
     /// <summary>
