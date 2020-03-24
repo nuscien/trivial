@@ -536,6 +536,21 @@ namespace Trivial.Console
         }
 
         /// <summary>
+        /// Writes a progress component after ending the current pending output, followed by the current line terminator, to the standard output stream.
+        /// </summary>
+        /// <param name="caption">The caption.</param>
+        /// <param name="options">The options.</param>
+        public ProgressLineResult WriteLine(string caption, ProgressLineOptions options)
+        {
+            End();
+            var result = LineUtilities.WriteLine(caption, options);
+            initTop = System.Console.CursorTop;
+            curTop = System.Console.CursorTop;
+            curLeft = System.Console.CursorLeft;
+            return result;
+        }
+
+        /// <summary>
         /// Writes the specified characters, followed by the current line terminator, to the standard output stream.
         /// </summary>
         /// <param name="value">The value to write.</param>
@@ -1217,6 +1232,97 @@ namespace Trivial.Console
         public static void WriteLine()
         {
             System.Console.WriteLine();
+        }
+
+        /// <summary>
+        /// Writes a progress component, followed by the current line terminator, to the standard output stream.
+        /// </summary>
+        /// <param name="caption">The caption.</param>
+        /// <param name="options">The options.</param>
+        public static ProgressLineResult WriteLine(string caption, ProgressLineOptions options)
+        {
+            if (options == null) options = ProgressLineOptions.Empty;
+            var width = options.Style switch
+            {
+                ProgressLineOptions.Styles.None => 0,
+                ProgressLineOptions.Styles.Normal => 20,
+                ProgressLineOptions.Styles.Short => 10,
+                ProgressLineOptions.Styles.Wide => 40,
+                _ => 20
+            };
+
+            var sb = new StringBuilder();
+            sb.Append(' ', width);
+            var fore = System.Console.ForegroundColor;
+            var back = System.Console.BackgroundColor;
+            if (!string.IsNullOrEmpty(caption))
+            {
+                var foregroundColor = options?.CaptionColor;
+                var backgroundColor = options?.BackgroundColor;
+                if (foregroundColor.HasValue) System.Console.ForegroundColor = foregroundColor.Value;
+                if (backgroundColor.HasValue) System.Console.BackgroundColor = backgroundColor.Value;
+                System.Console.Write(caption);
+            }
+
+            var left = System.Console.CursorLeft;
+            var top = System.Console.CursorTop;
+            if (options.Style == ProgressLineOptions.Styles.Full)
+            {
+                width = System.Console.WindowWidth - left - 6;
+                sb.Clear();
+                sb.Append(' ', width);
+            }
+
+            var progress = new ProgressLineResult();
+            System.Console.ForegroundColor = options.PendingColor;
+            System.Console.BackgroundColor = options.PendingColor;
+            System.Console.Write(sb.ToString());
+            System.Console.ForegroundColor = options.ValueColor ?? fore;
+            System.Console.BackgroundColor = options.BackgroundColor ?? back;
+            System.Console.WriteLine(" ... ");
+            System.Console.ForegroundColor = fore;
+            System.Console.BackgroundColor = back;
+            var locker = new object();
+            progress.ProgressChanged += (sender, ev) =>
+            {
+                var left2 = System.Console.CursorLeft;
+                var top2 = System.Console.CursorTop;
+                var fore2 = System.Console.ForegroundColor;
+                var back2 = System.Console.BackgroundColor;
+                if (width > 0)
+                {
+                    var w = (int)Math.Round(width * ev);
+                    var sb2 = new StringBuilder();
+                    sb2.Append(' ', w);
+                    var sb3 = new StringBuilder();
+                    sb3.Append(' ', width - w);
+                    System.Console.CursorLeft = left;
+                    System.Console.CursorTop = top;
+                    System.Console.ForegroundColor = progress.IsFailed ? options.ErrorColor : options.BarColor;
+                    System.Console.BackgroundColor = progress.IsFailed ? options.ErrorColor : options.BarColor;
+                    System.Console.Write(sb2.ToString());
+                    System.Console.ForegroundColor = options.PendingColor;
+                    System.Console.BackgroundColor = options.PendingColor;
+                    System.Console.Write(sb3.ToString());
+                    System.Console.ForegroundColor = options.ValueColor ?? fore2;
+                    System.Console.BackgroundColor = options.BackgroundColor ?? back2;
+                    System.Console.Write(' ');
+                }
+                else
+                {
+                    System.Console.CursorLeft = left;
+                    System.Console.CursorTop = top;
+                    System.Console.ForegroundColor = options.ValueColor ?? fore2;
+                    System.Console.BackgroundColor = options.BackgroundColor ?? back2;
+                }
+
+                System.Console.Write(ev.ToString("#0%"));
+                System.Console.CursorLeft = left2;
+                System.Console.CursorTop = top2;
+                System.Console.ForegroundColor = fore2;
+                System.Console.BackgroundColor = back2;
+            };
+            return progress;
         }
 
         /// <summary>

@@ -241,3 +241,24 @@ var Main(string[] args)
     Console.WriteLine("The result is {0}.", result.Value);
 }
 ```
+
+## Progress
+
+You can output a progress bar to update during a task running.
+
+```csharp
+// Define an options that you can custom the style.
+var progressOptions = new ProgressLineOptions();
+
+// Ouput the component in console and get the progress instance to update.
+var progress = LineUtilities.WriteLine("Processing a job ", progressOptions);
+
+// A time-consuming work here.
+for (var i = 0; i <= 50; i++)
+{
+    await Task.Delay(10);
+
+    // And report the progress updated.
+    progress.Report(0.02 * i);
+}
+```
