@@ -13,15 +13,9 @@ namespace Trivial.Console
 
         public override async Task ProcessAsync()
         {
-            var progress = LineUtilities.WriteLine("Running 1: ", new ProgressLineOptions
-            {
-                Style = ProgressLineOptions.Styles.Full
-            });
+            var progress = LineUtilities.WriteLine("Running 1: ", new ProgressLineOptions());
             SysConsole.WriteLine("And another one...");
-            var progress2 = ConsoleLine.WriteLine("Running 2: ", new ProgressLineOptions
-            {
-                Style = ProgressLineOptions.Styles.Full
-            });
+            var progress2 = ConsoleLine.WriteLine("Running 2: ", new ProgressLineOptions());
             for (var i = 0; i <= 50; i++)
             {
                 await Task.Delay(10);
@@ -33,10 +27,7 @@ namespace Trivial.Console
 
             ConsoleLine.Write(" And following is failed.");
             ConsoleLine.End();
-            progress = LineUtilities.WriteLine("Running 3: ", new ProgressLineOptions
-            {
-                Style = ProgressLineOptions.Styles.Full
-            });
+            progress = LineUtilities.WriteLine("Running 3: ", new ProgressLineOptions());
             progress.Report(0.6);
             await Task.Delay(10);
             progress.Fail();

@@ -538,7 +538,7 @@ namespace Trivial.Console
         /// <summary>
         /// Writes a progress component after ending the current pending output, followed by the current line terminator, to the standard output stream.
         /// </summary>
-        /// <param name="caption">The caption.</param>
+        /// <param name="caption">The caption; or null if no caption. It will be better if it is less than 20 characters.</param>
         /// <param name="options">The options.</param>
         public ProgressLineResult WriteLine(string caption, ProgressLineOptions options)
         {
@@ -1237,18 +1237,29 @@ namespace Trivial.Console
         /// <summary>
         /// Writes a progress component, followed by the current line terminator, to the standard output stream.
         /// </summary>
-        /// <param name="caption">The caption.</param>
+        /// <param name="caption">The caption; or null if no caption. It will be better if it is less than 20 characters.</param>
         /// <param name="options">The options.</param>
         public static ProgressLineResult WriteLine(string caption, ProgressLineOptions options)
         {
             if (options == null) options = ProgressLineOptions.Empty;
+            var winWidth = 70;
+            try
+            {
+                winWidth = System.Console.WindowWidth;
+            }
+            catch (ArgumentException)
+            {
+            }
+            catch (IOException)
+            {
+            }
+
             var width = options.Style switch
             {
                 ProgressLineOptions.Styles.None => 0,
-                ProgressLineOptions.Styles.Normal => 20,
-                ProgressLineOptions.Styles.Short => 10,
-                ProgressLineOptions.Styles.Wide => 40,
-                _ => 20
+                ProgressLineOptions.Styles.Short => winWidth > 70 ? 20 : 10,
+                ProgressLineOptions.Styles.Wide => winWidth > 88 ? 60 : 40,
+                _ => winWidth > 70 ? (winWidth > 88 ? 40 : 30) : 20
             };
 
             var sb = new StringBuilder();
