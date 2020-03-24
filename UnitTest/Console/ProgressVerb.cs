@@ -28,8 +28,7 @@ namespace Trivial.Console
             ConsoleLine.Write(" And following is failed.");
             ConsoleLine.End();
             progress = LineUtilities.WriteLine("Running 3: ", new ProgressLineOptions());
-            progress.Report(0.6);
-            await Task.Delay(10);
+            await progress.IncreaseAsync(null, 0.02, 0.6, 10);
             progress.Fail();
             SysConsole.WriteLine();
         }

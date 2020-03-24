@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace Trivial.Console
 {
@@ -117,7 +118,7 @@ namespace Trivial.Console
         /// <param name="value">The value of the updated progress. It should be 0 - 1.</param>
         public void Report(double value)
         {
-            if (IsCompleted || double.IsNaN(value)) return;
+            if (IsCompleted || double.IsNaN(value) || value == Value) return;
             if (value >= 1)
             {
                 Value = 1;
@@ -138,9 +139,107 @@ namespace Trivial.Console
         /// <summary>
         /// Increases a percent.
         /// </summary>
-        public void Increase()
+        /// <param name="delta">The delta value to update.</param>
+        public void Increase(double delta = 0.01)
         {
-            Report(Value + 0.01);
+            Report(Value + delta);
+        }
+
+        /// <summary>
+        /// Increases
+        /// </summary>
+        /// <param name="task">The task to wait.</param>
+        /// <param name="delta">The delta value to update.</param>
+        /// <param name="max">The maximum value to update.</param>
+        /// <param name="millisecondsDelay">The milliseconds to delay per checking.</param>
+        /// <param name="millisecondsIncrease">The increase milliseconds for each delay.</param>
+        /// <returns>true if the task is completed; otherwise, false.</returns>
+        public async Task<bool> IncreaseAsync(Task task, double delta, double max, int millisecondsDelay, int millisecondsIncrease = 0)
+        {
+            if (max > 1) max = 1;
+            var delay = millisecondsDelay;
+            if (task == null)
+            {
+                if (delta == 0) return false;
+                while (Value < max)
+                {
+                    await Task.Delay(delay);
+                    Increase(delta);
+                    if (Value <= 0) return false;
+                    delay += millisecondsIncrease;
+                }
+
+                return true;
+            }
+
+            if (delta == 0)
+            {
+                try
+                {
+                    await task;
+                }
+                catch (Exception)
+                {
+                    Fail();
+                    return false;
+                }
+
+                Report(max);
+                return true;
+            }
+            
+            while (Value < max)
+            {
+                if (task.IsCompleted)
+                {
+                    Report(max);
+                    return true;
+                }
+
+                try
+                {
+                    await Task.WhenAny(task, Task.Delay(delay));
+                }
+                catch (Exception)
+                {
+                    Fail();
+                    return false;
+                }
+
+                Increase(delta);
+                if (Value <= 0) break;
+                delay += millisecondsIncrease;
+            }
+
+            var result = task.IsCompleted;
+            if (result) Report(max);
+            return result;
+        }
+
+        /// <summary>
+        /// Increases
+        /// </summary>
+        /// <param name="task">The task to wait.</param>
+        /// <param name="delta">The delta value to update.</param>
+        /// <param name="max">The maximum value to update.</param>
+        /// <param name="delay">The time span to delay per checking.</param>
+        /// <returns>true if the task is completed; otherwise, false.</returns>
+        public async Task<bool> IncreaseAsync(Task task, double delta, double max, TimeSpan delay)
+        {
+            if (max > 1) max = 1;
+            while (Value < max)
+            {
+                if (task.IsCompleted)
+                {
+                    Report(max);
+                    return true;
+                }
+
+                await Task.WhenAny(task, Task.Delay(delay));
+                Increase(delta);
+            }
+
+            return task.IsCompleted;
         }
 
         /// <summary>
