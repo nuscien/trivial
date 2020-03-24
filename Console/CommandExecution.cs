@@ -83,37 +83,35 @@ namespace Trivial.Console
             done = true;
 
             ThrowIfCancellationRequested();
-            using (var p = new Process())
+            using var p = new Process();
+            p.StartInfo.FileName = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "cmd.exe" : "bash";
+            p.StartInfo.UseShellExecute = false;
+            p.StartInfo.RedirectStandardInput = true;
+            p.StartInfo.RedirectStandardOutput = true;
+            p.StartInfo.RedirectStandardError = true;
+            p.StartInfo.CreateNoWindow = true;
+            p.Start();
+            ThrowIfCancellationRequested(p.Close);
+
+            if (DisableExitCommand)
             {
-                p.StartInfo.FileName = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "cmd.exe" : "bash";
-                p.StartInfo.UseShellExecute = false;
-                p.StartInfo.RedirectStandardInput = true;
-                p.StartInfo.RedirectStandardOutput = true;
-                p.StartInfo.RedirectStandardError = true;
-                p.StartInfo.CreateNoWindow = true;
-                p.Start();
+                p.StandardInput.WriteLine(CommandLine);
+            }
+            else
+            {
+                var cmd = CommandLine;
+                var lastCharIndex = cmd.Length - 1;
+                if (cmd.LastIndexOf("&") == lastCharIndex) cmd = cmd.Substring(0, lastCharIndex);
+                p.StandardInput.WriteLine(cmd + "&exit");
+            }
+
+            p.StandardInput.AutoFlush = true;
+            while (!p.HasExited)
+            {
                 ThrowIfCancellationRequested(p.Close);
-
-                if (DisableExitCommand)
-                {
-                    p.StandardInput.WriteLine(CommandLine);
-                }
-                else
-                {
-                    var cmd = CommandLine;
-                    var lastCharIndex = cmd.Length - 1;
-                    if (cmd.LastIndexOf("&") == lastCharIndex) cmd = cmd.Substring(0, lastCharIndex);
-                    p.StandardInput.WriteLine(cmd + "&exit");
-                }
-
-                p.StandardInput.AutoFlush = true;
-                while (!p.HasExited)
-                {
-                    ThrowIfCancellationRequested(p.Close);
-                    var line = await p.StandardOutput.ReadLineAsync();
-                    if (AutoFlush) System.Console.WriteLine(line);
-                    WrotenLine?.Invoke(this, new LineWritenEventArgs(line));
-                }
+                var line = await p.StandardOutput.ReadLineAsync();
+                if (AutoFlush) System.Console.WriteLine(line);
+                WrotenLine?.Invoke(this, new LineWritenEventArgs(line));
             }
         }
 
@@ -224,13 +222,11 @@ namespace Trivial.Console
             if (appName == null) return false;
             try
             {
-                using (var p = new Process())
-                {
-                    p.StartInfo.UseShellExecute = true;
-                    p.StartInfo.FileName = appName;
-                    p.StartInfo.Arguments = dir;
-                    return p.Start();
-                }
+                using var p = new Process();
+                p.StartInfo.UseShellExecute = true;
+                p.StartInfo.FileName = appName;
+                p.StartInfo.Arguments = dir;
+                return p.Start();
             }
             catch (InvalidOperationException)
             {
@@ -262,24 +258,22 @@ namespace Trivial.Console
         public static bool DirectorySelect(string path)
         {
             if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) return false;
-            using (var p = new Process())
+            using var p = new Process();
+            p.StartInfo.UseShellExecute = true;
+            p.StartInfo.FileName = "explorer.exe";
+            p.StartInfo.Arguments = "/select," + path;
+            try
             {
-                p.StartInfo.UseShellExecute = true;
-                p.StartInfo.FileName = "explorer.exe";
-                p.StartInfo.Arguments = "/select," + path;
-                try
-                {
-                    return p.Start();
-                }
-                catch (InvalidOperationException)
-                {
-                }
-                catch (PlatformNotSupportedException)
-                {
-                }
-
-                return false;
+                return p.Start();
             }
+            catch (InvalidOperationException)
+            {
+            }
+            catch (PlatformNotSupportedException)
+            {
+            }
+
+            return false;
         }
 
         /// <summary>

@@ -10,6 +10,9 @@ namespace Trivial.Console
     /// </summary>
     public class ProgressLineOptions
     {
+        /// <summary>
+        /// The empty options.
+        /// </summary>
         internal static readonly ProgressLineOptions Empty = new ProgressLineOptions
         {
             Style = Styles.None
@@ -83,7 +86,7 @@ namespace Trivial.Console
     }
 
     /// <summary>
-    /// The result.
+    /// The progress result.
     /// </summary>
     public class ProgressLineResult : IProgress<double>
     {
