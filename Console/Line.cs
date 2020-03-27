@@ -1254,42 +1254,72 @@ namespace Trivial.Console
             {
             }
 
-            var width = options.Style switch
+            var width = options.Size switch
             {
-                ProgressLineOptions.Styles.None => 0,
-                ProgressLineOptions.Styles.Short => winWidth > 70 ? 20 : 10,
-                ProgressLineOptions.Styles.Wide => winWidth > 88 ? 60 : 40,
+                ProgressLineOptions.Sizes.None => 0,
+                ProgressLineOptions.Sizes.Short => winWidth > 70 ? 20 : 10,
+                ProgressLineOptions.Sizes.Wide => winWidth > 88 ? 60 : 40,
                 _ => winWidth > 70 ? (winWidth > 88 ? 40 : 30) : 20
             };
 
             var sb = new StringBuilder();
-            sb.Append(' ', width);
+            var barChar = options.Style switch
+            {
+                ProgressLineOptions.Styles.AngleBracket => '>',
+                ProgressLineOptions.Styles.Plus => '+',
+                ProgressLineOptions.Styles.Sharp => '#',
+                ProgressLineOptions.Styles.X => options.UsePendingBackgroundForAll ? 'X' : 'x',
+                ProgressLineOptions.Styles.O => options.UsePendingBackgroundForAll ? 'O' : 'o',
+                _ => ' ',
+            };
+            var pendingChar = options.UsePendingBackgroundForAll ? ' ' : (options.Style switch
+            {
+                ProgressLineOptions.Styles.AngleBracket => '=',
+                ProgressLineOptions.Styles.Plus => '-',
+                ProgressLineOptions.Styles.Sharp => '-',
+                ProgressLineOptions.Styles.X => '.',
+                ProgressLineOptions.Styles.O => '.',
+                _ => ' ',
+            });
+            sb.Append(pendingChar, width);
             var fore = System.Console.ForegroundColor;
             var back = System.Console.BackgroundColor;
+            var background = options.BackgroundColor ?? back;
+            var barBackground = background;
+            var progressBackground = background;
+            if (barChar == ' ')
+            {
+                barBackground = options.BarColor;
+                progressBackground = options.PendingColor;
+            }
+            else if (pendingChar == ' ')
+            {
+                progressBackground = barBackground = options.PendingColor;
+            }
+
             if (!string.IsNullOrEmpty(caption))
             {
-                var foregroundColor = options?.CaptionColor;
-                var backgroundColor = options?.BackgroundColor;
-                if (foregroundColor.HasValue) System.Console.ForegroundColor = foregroundColor.Value;
-                if (backgroundColor.HasValue) System.Console.BackgroundColor = backgroundColor.Value;
+                if (options.CaptionColor.HasValue) System.Console.ForegroundColor = options.CaptionColor.Value;
+                System.Console.BackgroundColor = background;
                 System.Console.Write(caption);
+                if (!options.IgnoreCaptionSeparator && caption[caption.Length - 1] != ' ') System.Console.Write(' ');
             }
 
             var left = System.Console.CursorLeft;
             var top = System.Console.CursorTop;
-            if (options.Style == ProgressLineOptions.Styles.Full)
+            if (options.Size == ProgressLineOptions.Sizes.Full)
             {
                 width = System.Console.WindowWidth - left - 6;
                 sb.Clear();
-                sb.Append(' ', width);
+                sb.Append(pendingChar, width);
             }
 
             var progress = new ProgressLineResult();
             System.Console.ForegroundColor = options.PendingColor;
-            System.Console.BackgroundColor = options.PendingColor;
+            System.Console.BackgroundColor = progressBackground;
             System.Console.Write(sb.ToString());
             System.Console.ForegroundColor = options.ValueColor ?? fore;
-            System.Console.BackgroundColor = options.BackgroundColor ?? back;
+            System.Console.BackgroundColor = background;
             System.Console.WriteLine(" ... ");
             System.Console.ForegroundColor = fore;
             System.Console.BackgroundColor = back;
@@ -1304,16 +1334,16 @@ namespace Trivial.Console
                 {
                     var w = (int)Math.Round(width * ev);
                     var sb2 = new StringBuilder();
-                    sb2.Append(' ', w);
+                    sb2.Append(barChar, w);
                     var sb3 = new StringBuilder();
-                    sb3.Append(' ', width - w);
+                    sb3.Append(pendingChar, width - w);
                     System.Console.CursorLeft = left;
                     System.Console.CursorTop = top;
                     System.Console.ForegroundColor = progress.IsFailed ? options.ErrorColor : options.BarColor;
-                    System.Console.BackgroundColor = progress.IsFailed ? options.ErrorColor : options.BarColor;
+                    System.Console.BackgroundColor = progress.IsFailed ? options.ErrorColor : barBackground;
                     System.Console.Write(sb2.ToString());
                     System.Console.ForegroundColor = options.PendingColor;
-                    System.Console.BackgroundColor = options.PendingColor;
+                    System.Console.BackgroundColor = progressBackground;
                     System.Console.Write(sb3.ToString());
                     System.Console.ForegroundColor = options.ValueColor ?? fore2;
                     System.Console.BackgroundColor = options.BackgroundColor ?? back2;

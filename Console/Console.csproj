@@ -8,7 +8,7 @@
     <Product>Trivial</Product>
     <Authors>Kingcean Tuan</Authors>
     <Company>Nanchang Jinchen Software Co., Ltd.</Company>
-    <Version>3.5.0-preview2</Version>
+    <Version>3.5.0-preview3</Version>
     <AssemblyVersion>3.5.0.0</AssemblyVersion>
     <FileVersion>3.5.0.0</FileVersion>
     <Description>The useful utilities for console application including command dispatcher, arguments parser and some rich user interface console controls.</Description>

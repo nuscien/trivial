@@ -15,13 +15,13 @@ namespace Trivial.Console
         /// </summary>
         internal static readonly ProgressLineOptions Empty = new ProgressLineOptions
         {
-            Style = Styles.None
+            Size = Sizes.None
         };
 
         /// <summary>
-        /// Progress styles.
+        /// Progress sizes (width).
         /// </summary>
-        public enum Styles
+        public enum Sizes
         {
             /// <summary>
             /// Normal size.
@@ -47,6 +47,42 @@ namespace Trivial.Console
             /// No progress bar but only a value.
             /// </summary>
             None = 4
+        }
+
+        /// <summary>
+        /// Progress styles.
+        /// </summary>
+        public enum Styles
+        {
+            /// <summary>
+            /// White space (rectangle).
+            /// </summary>
+            Full = 0,
+
+            /// <summary>
+            /// Left angle bracket (less sign).
+            /// </summary>
+            AngleBracket = 1,
+
+            /// <summary>
+            /// Plus sign.
+            /// </summary>
+            Plus = 2,
+
+            /// <summary>
+            /// Sharp.
+            /// </summary>
+            Sharp = 3,
+
+            /// <summary>
+            /// Character x.
+            /// </summary>
+            X = 4,
+
+            /// <summary>
+            /// Character o.
+            /// </summary>
+            O = 5
         }
 
         /// <summary>
@@ -80,9 +116,24 @@ namespace Trivial.Console
         public ConsoleColor? ValueColor { get; set; } = ConsoleColor.Gray;
 
         /// <summary>
+        /// Gets or sets the progress size (width).
+        /// </summary>
+        public Sizes Size { get; set; }
+
+        /// <summary>
         /// Gets or sets the progress style.
         /// </summary>
         public Styles Style { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether use the pending background as the progress background.
+        /// </summary>
+        public bool UsePendingBackgroundForAll { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether remove the white space between caption and progress.
+        /// </summary>
+        public bool IgnoreCaptionSeparator { get; set; }
     }
 
     /// <summary>
@@ -172,6 +223,7 @@ namespace Trivial.Console
                     delay += millisecondsIncrease;
                 }
 
+                Report(max);
                 return true;
             }
 
@@ -193,30 +245,94 @@ namespace Trivial.Console
             
             while (Value < max)
             {
-                if (task.IsCompleted)
-                {
-                    Report(max);
-                    return true;
-                }
-
-                try
-                {
-                    await Task.WhenAny(task, Task.Delay(delay));
-                }
-                catch (Exception)
-                {
-                    Fail();
-                    return false;
-                }
-
+                await Task.WhenAny(task, Task.Delay(delay));
                 Increase(delta);
                 if (Value <= 0) break;
                 delay += millisecondsIncrease;
+                if (!task.IsCompleted) continue;
+                if (task.IsFaulted)
+                {
+                    Fail();
+                    break;
+                }
+
+                Report(max);
+                return true;
             }
 
             var result = task.IsCompleted;
             if (result) Report(max);
             return result;
+        }
+
+        /// <summary>
+        /// Increases
+        /// </summary>
+        /// <param name="task">The task to wait.</param>
+        /// <param name="validation">The result validation handler for task.</param>
+        /// <param name="delta">The delta value to update.</param>
+        /// <param name="max">The maximum value to update.</param>
+        /// <param name="millisecondsDelay">The milliseconds to delay per checking.</param>
+        /// <param name="millisecondsIncrease">The increase milliseconds for each delay.</param>
+        /// <returns>true if the task is completed; otherwise, false.</returns>
+        public async Task<bool> IncreaseAsync<T>(Task<T> task, Func<T, bool> validation, double delta, double max, int millisecondsDelay, int millisecondsIncrease = 0)
+        {
+            if (max > 1) max = 1;
+            if (validation == null) validation = t => true;
+            var delay = millisecondsDelay;
+            if (task == null)
+            {
+                if (delta == 0) return false;
+                while (Value < max)
+                {
+                    await Task.Delay(delay);
+                    Increase(delta);
+                    if (Value <= 0) return false;
+                    delay += millisecondsIncrease;
+                }
+
+                Report(max);
+                return true;
+            }
+
+            if (delta == 0)
+            {
+                try
+                {
+                    var r = await task;
+                    if (validation(r))
+                    {
+                        Report(max);
+                        return true;
+                    }
+                }
+                catch (Exception)
+                {
+                }
+
+                Fail();
+                return false;
+            }
+
+            while (Value < max)
+            {
+                await Task.WhenAny(task, Task.Delay(delay));
+                Increase(delta);
+                if (Value <= 0) break;
+                delay += millisecondsIncrease;
+                if (!task.IsCompleted) continue;
+                if (task.IsFaulted || !validation(task.Result))
+                {
+                    Fail();
+                    break;
+                }
+
+                Report(max);
+                return true;
+            }
+
+            if (Value > max) Report(max);
+            return false;
         }
 
         /// <summary>
@@ -230,19 +346,84 @@ namespace Trivial.Console
         public async Task<bool> IncreaseAsync(Task task, double delta, double max, TimeSpan delay)
         {
             if (max > 1) max = 1;
-            while (Value < max)
+            if (task == null)
             {
-                if (task.IsCompleted)
+                if (delta == 0) return false;
+                while (Value < max)
                 {
-                    Report(max);
-                    return true;
+                    await Task.Delay(delay);
+                    Increase(delta);
+                    if (Value <= 0) return false;
                 }
 
-                await Task.WhenAny(task, Task.Delay(delay));
-                Increase(delta);
+                Report(max);
+                return true;
             }
 
-            return task.IsCompleted;
+            while (Value < max)
+            {
+                await Task.WhenAny(task, Task.Delay(delay));
+                Increase(delta);
+                if (Value <= 0) break;
+                if (!task.IsCompleted) continue;
+                if (task.IsFaulted)
+                {
+                    Fail();
+                    break;
+                }
+
+                Report(max);
+                return true;
+            }
+
+            if (Value > max) Report(max);
+            return false;
+        }
+
+        /// <summary>
+        /// Increases
+        /// </summary>
+        /// <param name="task">The task to wait.</param>
+        /// <param name="validation">The result validation handler for task.</param>
+        /// <param name="delta">The delta value to update.</param>
+        /// <param name="max">The maximum value to update.</param>
+        /// <param name="delay">The time span to delay per checking.</param>
+        /// <returns>true if the task is completed; otherwise, false.</returns>
+        public async Task<bool> IncreaseAsync<T>(Task<T> task, Func<T, bool> validation, double delta, double max, TimeSpan delay)
+        {
+            if (max > 1) max = 1;
+            if (task == null)
+            {
+                if (delta == 0) return false;
+                while (Value < max)
+                {
+                    await Task.Delay(delay);
+                    Increase(delta);
+                    if (Value <= 0) return false;
+                }
+
+                Report(max);
+                return true;
+            }
+
+            while (Value < max)
+            {
+                await Task.WhenAny(task, Task.Delay(delay));
+                Increase(delta);
+                if (Value <= 0) break;
+                if (!task.IsCompleted) continue;
+                if (task.IsFaulted || !validation(task.Result))
+                {
+                    Fail();
+                    break;
+                }
+
+                Report(max);
+                return true;
+            }
+
+            if (Value > max) Report(max);
+            return false;
         }
 
         /// <summary>

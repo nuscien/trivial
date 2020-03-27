@@ -13,7 +13,12 @@ namespace Trivial.Console
 
         public override async Task ProcessAsync()
         {
-            var progress = LineUtilities.WriteLine("Running 1: ", new ProgressLineOptions());
+            var progress = LineUtilities.WriteLine("Running 1: ", new ProgressLineOptions
+            {
+                Style = ProgressLineOptions.Styles.AngleBracket,
+                BarColor = ConsoleColor.White,
+                BackgroundColor = ConsoleColor.DarkBlue
+            });
             SysConsole.WriteLine("And another one...");
             var progress2 = ConsoleLine.WriteLine("Running 2: ", new ProgressLineOptions());
             for (var i = 0; i <= 50; i++)
