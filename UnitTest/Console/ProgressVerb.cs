@@ -13,7 +13,7 @@ namespace Trivial.Console
 
         public override async Task ProcessAsync()
         {
-            var progress = LineUtilities.WriteLine("Running 1: ", new ProgressLineOptions
+            var progress = LineUtilities.WriteLine("Running 1:", new ProgressLineOptions
             {
                 Style = ProgressLineOptions.Styles.AngleBracket,
                 BarColor = ConsoleColor.White,
@@ -32,7 +32,7 @@ namespace Trivial.Console
 
             ConsoleLine.Write(" And following is failed.");
             ConsoleLine.End();
-            progress = LineUtilities.WriteLine("Running 3: ", new ProgressLineOptions());
+            progress = LineUtilities.WriteLine("Running 3:", new ProgressLineOptions());
             await progress.IncreaseAsync(null, 0.02, 0.6, 10);
             progress.Fail();
             SysConsole.WriteLine();

@@ -200,7 +200,7 @@ namespace Trivial.Console
         }
 
         /// <summary>
-        /// Increases
+        /// Increases value in a given time inteval.
         /// </summary>
         /// <param name="task">The task to wait.</param>
         /// <param name="delta">The delta value to update.</param>
@@ -266,7 +266,7 @@ namespace Trivial.Console
         }
 
         /// <summary>
-        /// Increases
+        /// Increases value in a given time inteval.
         /// </summary>
         /// <param name="task">The task to wait.</param>
         /// <param name="validation">The result validation handler for task.</param>
@@ -336,7 +336,7 @@ namespace Trivial.Console
         }
 
         /// <summary>
-        /// Increases
+        /// Increases value in a given time inteval.
         /// </summary>
         /// <param name="task">The task to wait.</param>
         /// <param name="delta">The delta value to update.</param>
@@ -381,7 +381,7 @@ namespace Trivial.Console
         }
 
         /// <summary>
-        /// Increases
+        /// Increases value in a given time inteval.
         /// </summary>
         /// <param name="task">The task to wait.</param>
         /// <param name="validation">The result validation handler for task.</param>
