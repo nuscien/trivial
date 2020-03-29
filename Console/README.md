@@ -1,6 +1,6 @@
 ﻿# [Trivial.Console](https://github.com/nuscien/trivial/wiki/console)
 
-This library includes these useful tools and components about console app.
+This library includes these useful tools and controls about console app.
 
 - Cmd arguments parser and processor.
 - Rich components of CLI.

@@ -2,7 +2,7 @@
 
 Trivial libraries contain a lot of utilities, models and components, which are trivial but useful, to help you to focus on the business logic of your projects.
 
-[![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/nuscien/trivial/blob/master/LICENSE)
+[![MIT licensed](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/nuscien/trivial/blob/master/LICENSE)
 [![Build Status](https://dev.azure.com/nuscien/trivial/_apis/build/status/nuscien.trivial?branchName=master)](https://dev.azure.com/nuscien/trivial/_build/latest?definitionId=1&branchName=master)
 
 ## [Trivial](https://github.com/nuscien/trivial/wiki/core)
@@ -25,7 +25,7 @@ including hit task, retry policy, writable JSON DOM, PEM, JWT, stream combinatio
 
 ## [Trivial.Console](https://github.com/nuscien/trivial/wiki/console)
 
-The useful utilities for console application including command dispatcher, arguments parser and some rich user interface console controls.
+The useful utilities for console application including command dispatcher, arguments parser and some rich UX CLI controls.
 
 [![NuGet package](https://img.shields.io/nuget/dt/Trivial.Console?label=nuget+downloads)](https://www.nuget.org/packages/Trivial.Console)
 
