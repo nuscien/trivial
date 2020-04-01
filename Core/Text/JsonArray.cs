@@ -471,15 +471,15 @@ namespace Trivial.Text
         }
 
         /// <summary>
-        /// Gets the value at the specific index.
+        /// Gets the value as a string collection.
         /// </summary>
-        /// <returns>The value. It will be null if the value is null.</returns>
+        /// <returns>The string collection.</returns>
         /// <exception cref="InvalidOperationException">The item value kind is not string.</exception>
         public IEnumerable<string> GetStringCollection()
         {
             foreach (var item in store)
             {
-                if (item is null) yield return null;
+                if (item is null) yield return JsonValues.Null.ToString();
                 if (item is IJsonValueResolver ele) yield return ele.GetString();
                 else yield return null;
             }
@@ -513,6 +513,66 @@ namespace Trivial.Text
                 if (ele is null) return JsonValues.Null;
                 return ele as IJsonValueResolver;
             }).Where(predicate).Select(ele => ele?.GetString());
+        }
+
+        /// <summary>
+        /// Gets all string values.
+        /// </summary>
+        /// <param name="nullForOtherKinds">true if set null in the result for other kinds; otherwise, false, to skip.</param>
+        /// <returns>The JSON string value collection.</returns>
+        public IEnumerable<JsonString> GetStringValues(bool nullForOtherKinds = false)
+        {
+            return GetSpecificKindValues<JsonString>(nullForOtherKinds);
+        }
+
+        /// <summary>
+        /// Gets all integer values.
+        /// </summary>
+        /// <param name="nullForOtherKinds">true if set null in the result for other kinds; otherwise, false, to skip.</param>
+        /// <returns>The JSON integer value collection.</returns>
+        public IEnumerable<JsonInteger> GetIntegerValues(bool nullForOtherKinds = false)
+        {
+            return GetSpecificKindValues<JsonInteger>(nullForOtherKinds);
+        }
+
+        /// <summary>
+        /// Gets all double float number values.
+        /// </summary>
+        /// <param name="nullForOtherKinds">true if set null in the result for other kinds; otherwise, false, to skip.</param>
+        /// <returns>The JSON double float number value collection.</returns>
+        public IEnumerable<JsonDouble> GetDoubleValues(bool nullForOtherKinds = false)
+        {
+            return GetSpecificKindValues<JsonDouble>(nullForOtherKinds);
+        }
+
+        /// <summary>
+        /// Gets all boolean values.
+        /// </summary>
+        /// <param name="nullForOtherKinds">true if set null in the result for other kinds; otherwise, false, to skip.</param>
+        /// <returns>The JSON boolean value collection.</returns>
+        public IEnumerable<JsonBoolean> GetBooleanValues(bool nullForOtherKinds = false)
+        {
+            return GetSpecificKindValues<JsonBoolean>(nullForOtherKinds);
+        }
+
+        /// <summary>
+        /// Gets all JSON object values.
+        /// </summary>
+        /// <param name="nullForOtherKinds">true if set null in the result for other kinds; otherwise, false, to skip.</param>
+        /// <returns>The JSON object value collection.</returns>
+        public IEnumerable<JsonObject> GetObjectValues(bool nullForOtherKinds = false)
+        {
+            return GetSpecificKindValues<JsonObject>(nullForOtherKinds);
+        }
+
+        /// <summary>
+        /// Gets all JSON array values.
+        /// </summary>
+        /// <param name="nullForOtherKinds">true if set null in the result for other kinds; otherwise, false, to skip.</param>
+        /// <returns>The JSON array value collection.</returns>
+        public IEnumerable<JsonArray> GetArrayValues(bool nullForOtherKinds = false)
+        {
+            return GetSpecificKindValues<JsonArray>(nullForOtherKinds);
         }
 
         /// <summary>
@@ -1027,6 +1087,28 @@ namespace Trivial.Text
 #endif
 
         /// <summary>
+        /// Removes the first occurrence of a specific value from the array.
+        /// </summary>
+        /// <param name="item">The item matched.</param>
+        /// <returns>true if item was successfully removed from the array; otherwise, false. This method also returns false if item is not found in the array.</returns>
+        public bool Remove(IJsonValue item)
+        {
+            if (!(item is IJsonValueResolver ele)) return false;
+            return store.Remove(ele);
+        }
+
+        /// <summary>
+        /// Removes all null value.
+        /// </summary>
+        /// <returns>true if item was successfully removed from the array; otherwise, false. This method also returns false if item is not found in the array.</returns>
+        public int RemoveNull()
+        {
+            var count = 0;
+            while (store.Remove(null)) count++;
+            return count;
+        }
+
+        /// <summary>
         /// Sets null at the specific index.
         /// </summary>
         /// <param name="index">The zero-based index of the element to get.</param>
@@ -1479,7 +1561,6 @@ namespace Trivial.Text
         /// </summary>
         /// <param name="values">An integer collection to add.</param>
         /// <returns>The count of item added.</returns>
-        /// <exception cref="ArgumentException">readerOptions contains unsupported options.</exception>
         public int AddRange(IEnumerable<int> values)
         {
             var count = 0;
@@ -1498,7 +1579,6 @@ namespace Trivial.Text
         /// </summary>
         /// <param name="values">A JSON object collection to add.</param>
         /// <returns>The count of item added.</returns>
-        /// <exception cref="ArgumentException">readerOptions contains unsupported options.</exception>
         public int AddRange(IEnumerable<JsonObject> values)
         {
             var count = 0;
@@ -1517,7 +1597,6 @@ namespace Trivial.Text
         /// </summary>
         /// <param name="json">Another JSON array to add.</param>
         /// <returns>The count of item added.</returns>
-        /// <exception cref="ArgumentException">readerOptions contains unsupported options.</exception>
         public int AddRange(JsonArray json)
         {
             var count = 0;
@@ -1526,6 +1605,26 @@ namespace Trivial.Text
             foreach (var props in json)
             {
                 store.Add(props);
+                count++;
+            }
+
+            return count;
+        }
+
+        /// <summary>
+        /// Adds a set of value from a JSON object.
+        /// </summary>
+        /// <param name="json">A JSON object to copy its properties to add.</param>
+        /// <param name="propertyKeys">A sort of property keys to copy.</param>
+        /// <returns>The count of item added.</returns>
+        /// <exception cref="ArgumentException">readerOptions contains unsupported options.</exception>
+        public int AddRange(JsonObject json, IEnumerable<string> propertyKeys)
+        {
+            var count = 0;
+            if (json == null || propertyKeys == null) return count;
+            foreach (var key in propertyKeys)
+            {
+                store.Add(json.TryGetValue(key));
                 count++;
             }
 
@@ -1843,6 +1942,27 @@ namespace Trivial.Text
         }
 
         /// <summary>
+        /// Adds a set of value from a JSON object.
+        /// </summary>
+        /// <param name="index">The zero-based index of the element to get.</param>
+        /// <param name="json">A JSON object to copy its properties to add.</param>
+        /// <param name="propertyKeys">A sort of property keys to copy.</param>
+        /// <returns>The count of item added.</returns>
+        /// <exception cref="ArgumentOutOfRangeException">The index is out of range.</exception>
+        public int InsertRange(int index, JsonObject json, IEnumerable<string> propertyKeys)
+        {
+            var count = 0;
+            if (json == null || propertyKeys == null) return count;
+            foreach (var key in propertyKeys)
+            {
+                store.Insert(index + count, json.TryGetValue(key));
+                count++;
+            }
+
+            return count;
+        }
+
+        /// <summary>
         /// Removes all items from the array.
         /// </summary>
         public void Clear()
@@ -2010,10 +2130,7 @@ namespace Trivial.Text
         /// Returns the hash code for this instance.
         /// </summary>
         /// <returns>A hash code for the current instance.</returns>
-        public override int GetHashCode()
-        {
-            return store.GetHashCode();
-        }
+        public override int GetHashCode() => store.GetHashCode();
 
         /// <summary>
         /// Gets the JSON format string of the value.
@@ -2282,6 +2399,29 @@ namespace Trivial.Text
             return !leftValue.Equals(rightValue);
         }
 
+        /// <summary>
+        /// Gets all values of specific kind.
+        /// </summary>
+        /// <param name="nullForOtherKinds">true if set null in the result for other kinds; otherwise, false, to skip.</param>
+        /// <returns>The JSON value collection.</returns>
+        private IEnumerable<T> GetSpecificKindValues<T>(bool nullForOtherKinds) where T : IJsonValueResolver
+        {
+            if (nullForOtherKinds)
+            {
+                foreach (var item in store)
+                {
+                    yield return item is T ele ? ele : default;
+                }
+            }
+            else
+            {
+                foreach (var item in store)
+                {
+                    if (item is T ele && item.ValueKind != JsonValueKind.Null) yield return ele;
+                }
+            }
+        }
+
         private T GetJsonValue<T>(int index, JsonValueKind? valueKind = null) where T : IJsonValue
         {
             var data = store[index];
@@ -2335,7 +2475,7 @@ namespace Trivial.Text
         /// Converts from JSON document.
         /// </summary>
         /// <param name="json">The JSON value.</param>
-        /// <returns>An instance of the JsonObject class.</returns>
+        /// <returns>An instance of the JsonArray class.</returns>
         /// <exception cref="JsonException">json does not represent a valid single JSON array.</exception>
         public static implicit operator JsonArray(JsonDocument json)
         {
@@ -2346,7 +2486,7 @@ namespace Trivial.Text
         /// Converts from JSON element.
         /// </summary>
         /// <param name="json">The JSON value.</param>
-        /// <returns>An instance of the JsonObject class.</returns>
+        /// <returns>An instance of the JsonArray class.</returns>
         /// <exception cref="JsonException">json does not represent a valid single JSON array.</exception>
         public static implicit operator JsonArray(JsonElement json)
         {

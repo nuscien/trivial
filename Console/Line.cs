@@ -539,6 +539,7 @@ namespace Trivial.Console
         /// Writes a progress component after ending the current pending output, followed by the current line terminator, to the standard output stream.
         /// </summary>
         /// <param name="options">The options.</param>
+        /// <returns>The progress result.</returns>
         public ProgressLineResult WriteLine(ProgressLineOptions options)
         {
             return WriteLine(null, options);
@@ -549,11 +550,29 @@ namespace Trivial.Console
         /// </summary>
         /// <param name="caption">The caption; or null if no caption. It will be better if it is less than 20 characters.</param>
         /// <param name="progressSize">The progress size.</param>
-        public ProgressLineResult WriteLine(string caption, ProgressLineOptions.Sizes progressSize)
+        /// <param name="style">The progress style.</param>
+        /// <returns>The progress result.</returns>
+        public ProgressLineResult WriteLine(string caption, ProgressLineOptions.Sizes progressSize, ProgressLineOptions.Styles style = ProgressLineOptions.Styles.Full)
         {
             return WriteLine(caption, progressSize != ProgressLineOptions.Sizes.None ? new ProgressLineOptions
             {
-                Size = progressSize
+                Size = progressSize,
+                Style = style
+            } : null);
+        }
+
+        /// <summary>
+        /// Writes a progress component after ending the current pending output, followed by the current line terminator, to the standard output stream.
+        /// </summary>
+        /// <param name="progressSize">The progress size.</param>
+        /// <param name="style">The progress style.</param>
+        /// <returns>The progress result.</returns>
+        public ProgressLineResult WriteLine(ProgressLineOptions.Sizes progressSize, ProgressLineOptions.Styles style = ProgressLineOptions.Styles.Full)
+        {
+            return WriteLine(null, progressSize != ProgressLineOptions.Sizes.None ? new ProgressLineOptions
+            {
+                Size = progressSize,
+                Style = style
             } : null);
         }
 
@@ -562,6 +581,7 @@ namespace Trivial.Console
         /// </summary>
         /// <param name="caption">The caption; or null if no caption. It will be better if it is less than 20 characters.</param>
         /// <param name="options">The options.</param>
+        /// <returns>The progress result.</returns>
         public ProgressLineResult WriteLine(string caption, ProgressLineOptions options)
         {
             End();
@@ -1260,6 +1280,7 @@ namespace Trivial.Console
         /// Writes a progress component, followed by the current line terminator, to the standard output stream.
         /// </summary>
         /// <param name="options">The options.</param>
+        /// <returns>The progress result.</returns>
         public static ProgressLineResult WriteLine(ProgressLineOptions options)
         {
             return WriteLine(null, options);
@@ -1270,11 +1291,29 @@ namespace Trivial.Console
         /// </summary>
         /// <param name="caption">The caption; or null if no caption. It will be better if it is less than 20 characters.</param>
         /// <param name="progressSize">The progress size.</param>
-        public static ProgressLineResult WriteLine(string caption, ProgressLineOptions.Sizes progressSize)
+        /// <param name="style">The progress style.</param>
+        /// <returns>The progress result.</returns>
+        public static ProgressLineResult WriteLine(string caption, ProgressLineOptions.Sizes progressSize, ProgressLineOptions.Styles style = ProgressLineOptions.Styles.Full)
         {
             return WriteLine(caption, progressSize != ProgressLineOptions.Sizes.None ? new ProgressLineOptions
             {
-                Size = progressSize
+                Size = progressSize,
+                Style = style
+            } : null);
+        }
+
+        /// <summary>
+        /// Writes a progress component, followed by the current line terminator, to the standard output stream.
+        /// </summary>
+        /// <param name="progressSize">The progress size.</param>
+        /// <param name="style">The progress style.</param>
+        /// <returns>The progress result.</returns>
+        public static ProgressLineResult WriteLine(ProgressLineOptions.Sizes progressSize, ProgressLineOptions.Styles style = ProgressLineOptions.Styles.Full)
+        {
+            return WriteLine(null, progressSize != ProgressLineOptions.Sizes.None ? new ProgressLineOptions
+            {
+                Size = progressSize,
+                Style = style
             } : null);
         }
 
@@ -1283,6 +1322,7 @@ namespace Trivial.Console
         /// </summary>
         /// <param name="caption">The caption; or null if no caption. It will be better if it is less than 20 characters.</param>
         /// <param name="options">The options.</param>
+        /// <returns>The progress result.</returns>
         public static ProgressLineResult WriteLine(string caption, ProgressLineOptions options)
         {
             if (options == null) options = ProgressLineOptions.Empty;

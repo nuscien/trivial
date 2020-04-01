@@ -572,7 +572,7 @@ namespace Trivial.Text
                 if (json is null)
                 {
                     path.Remove(0, 1);
-                    var message = $"Cannot get property {key} because property {path.ToString()} is null.";
+                    var message = $"Cannot get property {key} because property {path} is null.";
                     throw new InvalidOperationException(
                         message,
                         new ArgumentException(message, nameof(keyPath)));
@@ -585,7 +585,7 @@ namespace Trivial.Text
                     if (!jObj.ContainsKey(key))
                     {
                         path.Remove(0, 1);
-                        var message = $"Cannot get property {key} because property {path.ToString()} is not a JSON object.";
+                        var message = $"Cannot get property {key} because property {path} is not a JSON object.";
                         throw new InvalidOperationException(
                             message,
                             new ArgumentOutOfRangeException(nameof(keyPath), message));
@@ -598,7 +598,7 @@ namespace Trivial.Text
                 if (!(json is JsonArray jArr) || !int.TryParse(key, out var i))
                 {
                     path.Remove(0, 1);
-                    var message = $"Cannot get property {key} because property {path.ToString()} is not a JSON object.";
+                    var message = $"Cannot get property {key} because property {path} is not a JSON object.";
                     throw new InvalidOperationException(
                         message,
                         new ArgumentOutOfRangeException(nameof(keyPath), message));
@@ -607,7 +607,7 @@ namespace Trivial.Text
                 if (!jArr.Contains(i))
                 {
                     path.Remove(0, 1);
-                    var message = $"Cannot get item {key} because property {path.ToString()} is not a JSON array.";
+                    var message = $"Cannot get item {key} because property {path} is not a JSON array.";
                     throw new InvalidOperationException(
                         message,
                         new ArgumentOutOfRangeException(nameof(keyPath), message));
@@ -1161,6 +1161,17 @@ namespace Trivial.Text
         /// </summary>
         /// <param name="key">The property key.</param>
         /// <returns>The value.</returns>
+        public IJsonValueResolver TryGetValue(ReadOnlySpan<char> key)
+        {
+            if (key == null) return null;
+            return TryGetValue(key.ToString());
+        }
+
+        /// <summary>
+        /// Tries to get the value of the specific property.
+        /// </summary>
+        /// <param name="key">The property key.</param>
+        /// <returns>The value.</returns>
         public IJsonValueResolver TryGetValue(string key)
         {
             try
@@ -1280,7 +1291,59 @@ namespace Trivial.Text
         }
 
         /// <summary>
-        /// Gets the value of the specific property.
+        /// Tries to get the value of the specific property.
+        /// </summary>
+        /// <param name="key">The property key.</param>
+        /// <param name="subKey">The sub-key of the previous property.</param>
+        /// <param name="keyPath">The additional property key path.</param>
+        /// <returns>The value.</returns>
+        public IJsonValueResolver TryGetValue(string key, string subKey, params string[] keyPath)
+        {
+            var path = new List<string>
+            {
+                key,
+                subKey
+            };
+            if (keyPath != null) path.AddRange(keyPath);
+            return TryGetValue(path);
+        }
+
+        /// <summary>
+        /// Tries to get the value of the specific property.
+        /// </summary>
+        /// <param name="keyPath">The additional property key path.</param>
+        /// <returns>The value.</returns>
+        public T TryGetValue<T>(params string[] keyPath) where T : IJsonValueResolver
+        {
+            return TryGetValue(keyPath) is T result ? result : default;
+        }
+
+        /// <summary>
+        /// Tries to get the value of the specific property.
+        /// </summary>
+        /// <param name="keyPath">The additional property key path.</param>
+        /// <param name="result">The result.</param>
+        /// <returns>true if has the property and the type is the one expected; otherwise, false.</returns>
+        public bool TryGetValue<T>(IEnumerable<string> keyPath, out T result) where T : IJsonValueResolver
+        {
+            if (!TryGetValue(keyPath, out var r))
+            {
+                result = default;
+                return false;
+            }
+
+            if (r is T v)
+            {
+                result = v;
+                return true;
+            }
+
+            result = default;
+            return false;
+        }
+
+        /// <summary>
+        /// Removes property of the specific key.
         /// </summary>
         /// <param name="key">The property key.</param>
         /// <returns>true if the element is successfully removed; otherwise, false. This method also returns false if key was not found.</returns>
@@ -1289,6 +1352,35 @@ namespace Trivial.Text
         {
             AssertKey(key);
             return store.Remove(key);
+        }
+
+        /// <summary>
+        /// Removes property of the specific key.
+        /// </summary>
+        /// <param name="key">The property key.</param>
+        /// <returns>true if the element is successfully removed; otherwise, false. This method also returns false if key was not found.</returns>
+        /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+        public bool Remove(ReadOnlySpan<char> key)
+        {
+            if (key == null) throw new ArgumentNullException(nameof(key), "key was null.");
+            return store.Remove(key.ToString());
+        }
+
+        /// <summary>
+        /// Removes all properties of the specific key.
+        /// </summary>
+        /// <param name="keys">The property key collection.</param>
+        /// <returns>The count of value removed.</returns>
+        public int Remove(IEnumerable<string> keys)
+        {
+            var count = 0;
+            foreach (var key in keys)
+            {
+                if (string.IsNullOrEmpty(key)) continue;
+                if (store.Remove(key)) count++;
+            }
+
+            return count;
         }
 
         /// <summary>
@@ -1708,6 +1800,65 @@ namespace Trivial.Text
                     store[prop.Key] = prop.Value;
                     count++;
                 }
+            }
+
+            return count;
+        }
+
+        /// <summary>
+        /// Sets properties.
+        /// </summary>
+        /// <param name="array">The JSON array to add.</param>
+        /// <param name="propertyMapping">The mapping of index to property key; or null for convert index to string format.</param>
+        /// <param name="skipDuplicate">true if skip the duplicate properties; otherwise, false.</param>
+        /// <returns>The count of property added.</returns>
+        /// <exception cref="ArgumentException">readerOptions contains unsupported options.</exception>
+        public int SetRange(JsonArray array, IEnumerable<string> propertyMapping = null, bool skipDuplicate = false)
+        {
+            if (propertyMapping == null)
+            {
+                if (skipDuplicate)
+                {
+                    var count2 = 0;
+                    for (var i = 0; i < array.Count; i++)
+                    {
+                        var key = i.ToString("g");
+                        if (store.ContainsKey(key)) continue;
+                        store[i.ToString("g")] = array[i];
+                        count2++;
+                    }
+
+                    return count2;
+                }
+
+                for (var i = 0; i < array.Count; i++)
+                {
+                    store[i.ToString("g")] = array[i];
+                }
+
+                return array.Count;
+            }
+
+            var keys = propertyMapping.ToList();
+            var count = Math.Min(keys.Count, array.Count);
+            if (skipDuplicate)
+            {
+                var count2 = 0;
+                for (var i = 0; i < count; i++)
+                {
+                    var key = keys[i];
+                    if (string.IsNullOrEmpty(key) || store.ContainsKey(key)) continue;
+                    store[key] = array[i];
+                }
+
+                return count2;
+            }
+
+            for (var i = 0; i < count; i++)
+            {
+                var key = keys[i];
+                if (string.IsNullOrEmpty(key)) continue;
+                store[key] = array[i];
             }
 
             return count;
@@ -2167,10 +2318,7 @@ namespace Trivial.Text
         /// Returns the hash code for this instance.
         /// </summary>
         /// <returns>A hash code for the current instance.</returns>
-        public override int GetHashCode()
-        {
-            return store.GetHashCode();
-        }
+        public override int GetHashCode() => store.GetHashCode();
 
         /// <summary>
         /// Writes this instance to the specified writer as a JSON value.
