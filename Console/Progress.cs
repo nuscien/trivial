@@ -439,6 +439,7 @@ namespace Trivial.Console
         /// </summary>
         public void Fail()
         {
+            if (IsCompleted) return;
             IsCompleted = true;
             ProgressChanged?.Invoke(this, Value);
         }
