@@ -1624,7 +1624,7 @@ namespace Trivial.Text
             if (json == null || propertyKeys == null) return count;
             foreach (var key in propertyKeys)
             {
-                store.Add(json.TryGetValue(key));
+                store.Add(json.TryGetValue(key) ?? JsonValues.Null);
                 count++;
             }
 
@@ -1955,7 +1955,7 @@ namespace Trivial.Text
             if (json == null || propertyKeys == null) return count;
             foreach (var key in propertyKeys)
             {
-                store.Insert(index + count, json.TryGetValue(key));
+                store.Insert(index + count, json.TryGetValue(key) ?? JsonValues.Null);
                 count++;
             }
 
