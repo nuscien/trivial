@@ -2,7 +2,7 @@
 
 You can use criteria models and manage your query.
 
-In `Trivial.Data` [namespace](./) of `Trivial.dll` [library](../).
+In `Trivial.Data` [namespace](../) of `Trivial.dll` [library](../../).
 
 ## PropertyCriteria
 

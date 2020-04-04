@@ -2,7 +2,7 @@
 
 The data reader.
 
-In `Trivial.Data` [namespace](./) of `Trivial.dll` [library](../).
+In `Trivial.Data` [namespace](../) of `Trivial.dll` [library](../../).
 
 ## List data reader
 

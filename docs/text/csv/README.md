@@ -2,9 +2,7 @@
 
 CSV accessing.
 
-In `Trivial.Text` [namespace](./) of `Trivial.dll` [library](../).
-
-> In version 1.x of `Trivial.dll`, it is in `Trivial.Data` namespace.
+In `Trivial.Text` [namespace](../) of `Trivial.dll` [library](../../).
 
 ## CSV parser
 

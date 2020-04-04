@@ -1,6 +1,6 @@
 # Maths
 
-In `Trivial.Maths` [namespace](./) of `Trivial.dll` [library](../).
+In `Trivial.Maths` namespace of `Trivial.dll` [library](../).
 
 - [Arithmetic](./arithmetic)
 - [Numerals and positional notation](./numerals)

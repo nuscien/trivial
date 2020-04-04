@@ -1,6 +1,6 @@
 # Security & Authentication
 
-In `Trivial.Security` [namespace](./) of `Trivial.dll` [library](../).
+In `Trivial.Security` namespace of `Trivial.dll` [library](../).
 
 - [OAuth](./oauth)
 - [RSA](./rsa)

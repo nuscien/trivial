@@ -2,7 +2,7 @@
 
 Secure string utility and secret exchange.
 
-In `Trivial.Security` [namespace](./) of `Trivial.dll` [library](../).
+In `Trivial.Security` [namespace](../) of `Trivial.dll` [library](../../).
 
 ## Secure string extensions
 

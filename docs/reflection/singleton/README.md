@@ -2,7 +2,7 @@
 
 A way to manage the singleton instance.
 
-In `Trivial.Reflection` [namespace](./) of `Trivial.dll` [library](../).
+In `Trivial.Reflection` [namespace](../) of `Trivial.dll` [library](../../).
 
 ## Singleton resolver
 

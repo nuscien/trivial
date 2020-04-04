@@ -2,7 +2,7 @@
 
 You can set up a task and a retry policy so that the task will process and retry automatically expected when it fails.
 
-In `Trivial.Tasks` [namespace](./) of `Trivial.dll` library.
+In `Trivial.Tasks` [namespace](../) of `Trivial.dll` library.
 
 ## Linear retry policy
 

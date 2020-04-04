@@ -2,7 +2,7 @@
 
 The numerals, mathematics symbols and number utilities.
 
-In `Trivial.Maths` [namespace](./) of `Trivial.dll` [library](../).
+In `Trivial.Maths` [namespace](../) of `Trivial.dll` [library](../../).
 
 ## Symbols
 

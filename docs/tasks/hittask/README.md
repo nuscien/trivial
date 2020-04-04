@@ -2,7 +2,7 @@
 
 You can create a task controller to manage when a handler shoud be raised.
 
-In `Trivial.Tasks` [namespace](./) of `Trivial.dll` library.
+In `Trivial.Tasks` [namespace](../) of `Trivial.dll` library.
 
 ### Debounce
 

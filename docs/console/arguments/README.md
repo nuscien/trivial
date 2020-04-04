@@ -2,7 +2,7 @@
 
 A console component to let user write text.
 
-In `Trivial.Console` [namespace](./) of `Trivial.Console.dll` [library](../).
+In `Trivial.Console` [namespace](../) of `Trivial.Console.dll` [library](../../).
 
 ## Arguments
 

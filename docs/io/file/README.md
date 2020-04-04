@@ -2,7 +2,7 @@
 
 Provide the helper functions and extension functions for file and directory.
 
-In `Trivial.IO` [namespace](./) of `Trivial.dll` [library](../).
+In `Trivial.IO` [namespace](../) of `Trivial.dll` [library](../../).
 
 ## Directory copy
 

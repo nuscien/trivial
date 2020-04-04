@@ -2,7 +2,7 @@
 
 You can create a set of equipartition task fragment to ask the distributed client to process.
 
-In `Trivial.Tasks` [namespace](./) of `Trivial.dll` library.
+In `Trivial.Tasks` [namespace](../) of `Trivial.dll` library.
 
 ## Task and fragments
 

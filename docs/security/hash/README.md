@@ -2,7 +2,7 @@
 
 Hash algorithm utility.
 
-In `Trivial.Security` [namespace](./) of `Trivial.dll` [library](../).
+In `Trivial.Security` [namespace](../) of `Trivial.dll` [library](../../).
 
 ### Hash utility
 

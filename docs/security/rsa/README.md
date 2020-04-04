@@ -2,7 +2,7 @@
 
 RSA utility and related models.
 
-In `Trivial.Security` [namespace](./) of `Trivial.dll` [library](../).
+In `Trivial.Security` [namespace](../) of `Trivial.dll` [library](../../).
 
 ## RSA parameters convert
 

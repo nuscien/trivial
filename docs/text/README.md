@@ -1,6 +1,6 @@
 # Text
 
-In `Trivial.Text` [namespace](./) of `Trivial.dll` [library](../).
+In `Trivial.Text` namespace of `Trivial.dll` [library](../).
 
 - [JSON](./json)
 - [CSV](./csv)

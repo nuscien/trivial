@@ -2,7 +2,7 @@
 
 This library contains a lot of models for spatial.
 
-In `Trivial.Maths` [namespace](./maths) of `Trivial.dll` [library](../).
+In `Trivial.Maths` [namespace](./maths) of `Trivial.dll` [library](../../).
 
 ## Angle and polar point
 

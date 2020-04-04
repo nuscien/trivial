@@ -2,7 +2,7 @@
 
 This library contains a lot of models for geography.
 
-In `Trivial.Geography` [namespace](./) of `Trivial.dll` [library](../).
+In `Trivial.Geography` namespace of `Trivial.dll` [library](../).
 
 ## Geolocation
 

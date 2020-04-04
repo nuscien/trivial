@@ -2,7 +2,7 @@
 
 Provides collection utilities.
 
-In `Trivial.Collection` [namespace](./) of `Trivial.dll` [library](../).
+In `Trivial.Collection` namespace of `Trivial.dll` [library](../).
 
 ## Extensions
 

@@ -2,7 +2,7 @@
 
 Symmetric algorithm utility.
 
-In `Trivial.Security` [namespace](./) of `Trivial.dll` [library](../).
+In `Trivial.Security` [namespace](../) of `Trivial.dll` [library](../../).
 
 ## Symmetric utility
 

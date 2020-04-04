@@ -2,7 +2,7 @@
 
 A console component to let user select an item in a specific list by keyboard.
 
-In `Trivial.Console` [namespace](./) of `Trivial.Console.dll` [library](../).
+In `Trivial.Console` [namespace](../) of `Trivial.Console.dll` [library](../../).
 
 ## Console selection component
 

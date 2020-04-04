@@ -2,7 +2,7 @@
 
 You may use `System.Math` class for most scenarios you will use mathematics. The class `Arithmetic` is the supplementary.
 
-In `Trivial.Maths` [namespace](./) of `Trivial.dll` [library](../).
+In `Trivial.Maths` [namespace](../) of `Trivial.dll` [library](../../).
 
 ## Prime
 

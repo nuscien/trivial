@@ -2,7 +2,7 @@
 
 You can access the parts of HTTP URI directly and convert from/to `Uri`.
 
-In `Trivial.Net` [namespace](./net) of `Trivial.dll` [library](../).
+In `Trivial.Net` [namespace](./net) of `Trivial.dll` [library](../../).
 
 ## Uri
 

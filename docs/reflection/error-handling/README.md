@@ -2,7 +2,7 @@
 
 You can handle the exception as what you want.
 
-In `Trivial.Reflection` [namespace](./) of `Trivial.dll` [library](../).
+In `Trivial.Reflection` [namespace](../) of `Trivial.dll` [library](../../).
 
 ## Customized exception handler
 

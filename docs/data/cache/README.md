@@ -2,7 +2,7 @@
 
 Data cache.
 
-In `Trivial.Data` [namespace](./) of `Trivial.dll` [library](../).
+In `Trivial.Data` [namespace](../) of `Trivial.dll` [library](../../).
 
 ## Data cache collection
 

@@ -2,7 +2,7 @@
 
 A console component of progress bar to let user know the status updated of the job.
 
-In `Trivial.Console` [namespace](./) of `Trivial.Console.dll` [library](../).
+In `Trivial.Console` [namespace](../) of `Trivial.Console.dll` [library](../../).
 
 ## Console progress component
 

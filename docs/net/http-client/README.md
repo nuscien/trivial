@@ -2,7 +2,7 @@
 
 HTTP client extensions and JSON HTTP client.
 
-In `Trivial.Net` [namespace](./net) of `Trivial.dll` [library](../).
+In `Trivial.Net` [namespace](./net) of `Trivial.dll` [library](../../).
 
 ## HTTP client extensions
 

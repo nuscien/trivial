@@ -2,7 +2,7 @@
 
 This library contains a lot of models for sets.
 
-In `Trivial.Maths` [namespace](./) of `Trivial.dll` [library](../).
+In `Trivial.Maths` [namespace](../) of `Trivial.dll` [library](../../).
 
 ## Interval
 

@@ -1,6 +1,6 @@
 # Observable properties
 
-In `Trivial.Data` [namespace](./) of `Trivial.dll` [library](../).
+In `Trivial.Data` [namespace](../) of `Trivial.dll` [library](../../).
 
 ## Base observable properties
 

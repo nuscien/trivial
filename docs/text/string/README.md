@@ -2,7 +2,7 @@
 
 Provides some helper functions and extension functions for text.
 
-In `Trivial.Text` [namespace](./text) of `Trivial.dll` [library](../).
+In `Trivial.Text` [namespace](./text) of `Trivial.dll` [library](../../).
 
 ## String case
 

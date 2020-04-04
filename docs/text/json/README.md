@@ -2,7 +2,7 @@
 
 Includes writable JSON DOM and lots of commonly used JSON converters.
 
-In `Trivial.Text` [namespace](./text) of `Trivial.dll` [library](../). For version 3.0 and above only.
+In `Trivial.Text` [namespace](./text) of `Trivial.dll` [library](../../). For version 3.0 and above only.
 
 ## JSON DOM
 

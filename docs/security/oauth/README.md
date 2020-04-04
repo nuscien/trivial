@@ -2,7 +2,7 @@
 
 OAuth 2.0 client/server and JWT supports.
 
-In `Trivial.Security` [namespace](./security) of `Trivial.dll` [library](../).
+In `Trivial.Security` [namespace](./security) of `Trivial.dll` [library](../../).
 
 ## Authentication
 
