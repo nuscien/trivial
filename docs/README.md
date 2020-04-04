@@ -18,15 +18,15 @@ PM > Install-Package Trivial
 
 [![NuGet package](https://img.shields.io/nuget/dt/Trivial)](https://www.nuget.org/packages/Trivial)
 
-- [Task and retry policy](./tasks/README)
-- [Text (also including JSON and CSV)](./text/README)
-- [Network](./net/README)
-- [Security and authentication](./security/README)
-- [Data](./data/README)
-- [File and stream](./io/README)
-- [Maths and numerals](./maths/README)
-- [Reflection](./reflection/README)
-- [Geography](./geo/README)
+- [Task and retry policy](./tasks/)
+- [Text (also including JSON and CSV)](./text/)
+- [Network](./net/)
+- [Security and authentication](./security/)
+- [Data](./data/)
+- [File and stream](./io/)
+- [Maths and numerals](./maths/)
+- [Reflection](./reflection/)
+- [Geography](./geo/)
 
 ### Trivial.Console
 
@@ -40,4 +40,4 @@ PM > Install-Package Trivial.Console
 
 [![NuGet package](https://img.shields.io/nuget/dt/Trivial.Console?label=nuget+downloads)](https://www.nuget.org/packages/Trivial.Console)
 
-- [Console utilities and components](./console/README)
+- [Console utilities and components](./console/)

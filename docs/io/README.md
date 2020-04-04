@@ -1,6 +1,6 @@
 # I/O
 
-In `Trivial.IO` [namespace](./README) of `Trivial.dll` [library](../README).
+In `Trivial.IO` [namespace](./) of `Trivial.dll` [library](../).
 
 - [File & directory](./file)
 - [Stream](./stream)

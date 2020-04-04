@@ -1,6 +1,6 @@
 # Reflection
 
-In `Trivial.Reflection` [namespace](./README) of `Trivial.dll` [library](../README).
+In `Trivial.Reflection` [namespace](./) of `Trivial.dll` [library](../).
 
 - [Observable properties](./observable)
 - [Singleton and renew](./singleton)

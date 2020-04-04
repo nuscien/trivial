@@ -1,4 +1,4 @@
-﻿# [Trivial.Console](https://github.com/nuscien/trivial/wiki/console)
+﻿# [Trivial.Console](../docs/console)
 
 This library includes these useful tools and controls about console app.
 

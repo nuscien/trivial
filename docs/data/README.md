@@ -1,6 +1,6 @@
 # Data
 
-In `Trivial.Data` [namespace](./README) of `Trivial.dll` [library](../README).
+In `Trivial.Data` [namespace](./) of `Trivial.dll` [library](../).
 
 - [Cache](./cache)
 - [Criteria](./criteria)

@@ -1,8 +1,8 @@
-﻿# [Trivial](https://github.com/nuscien/trivial/wiki/core)
+﻿# [Trivial](../docs/core)
 
 This library includes utilities and services for tasks, security, JSON, etc.
 
-## [Tasks](https://github.com/nuscien/trivial/wiki/tasks)
+## [Tasks](../docs/tasks)
 
 ```csharp
 using Trivial.Tasks;
@@ -42,7 +42,7 @@ task.ProcessAsync();
 You can create a linear retry policy by `LinearRetryPolicy` or a customized one to process an action with the specific retry policy.
 And you can use `ObservableTask` to observe the state of an action processing.
 
-## [Network](https://github.com/nuscien/trivial/wiki/net)
+## [Network](../docs/net)
 
 Contains the helper functions and extension functions for network, such as HTTP web client and its content.
 
@@ -53,7 +53,7 @@ using Trivial.Net;
 And you can also use `JsonHttpClient` to serialize the JSON format response with retry policy supports.
 And `HttpUri` for HTTP URI fields accessing.
 
-## [Security](https://github.com/nuscien/trivial/wiki/security)
+## [Security](../docs/security)
 
 ```csharp
 using Trivial.Security;
@@ -111,7 +111,7 @@ You can use the extension methods in the `SecureStringExtensions` class to conve
 
 You can also use the class `RSASecretExchange` to transfer the secret with RSA encryption.
 
-## [Text](https://github.com/nuscien/trivial/wiki/text)
+## [Text](../docs/text)
 
 ```csharp
 using Trivial.Text;
@@ -142,7 +142,7 @@ foreach (var model in csv.ConvertTo<CsvModel>(new[] { "A", "B" }))
 ```
 
 
-## [Data](https://github.com/nuscien/trivial/wiki/data)
+## [Data](../docs/data)
 
 ```csharp
 using Trivial.Data;
@@ -152,7 +152,7 @@ using Trivial.Data;
 
 You can save a number of model in memory cache by generic class `DataCacheCollection`.
 
-## [Mathematics](https://github.com/nuscien/trivial/wiki/maths)
+## [Mathematics](../docs/maths)
 
 ```csharp
 using Trivial.Maths;
@@ -200,6 +200,6 @@ And `ChineseNumerals` for Chinese and `JapaneseNumerals` for Japanese.
 
 ## Further
 
-- [IO](https://github.com/nuscien/trivial/wiki/io)
-- [Geography](https://github.com/nuscien/trivial/wiki/geo)
-- [Reflection](https://github.com/nuscien/trivial/wiki/reflection)
+- [IO](../docs/io)
+- [Geography](../docs/geo)
+- [Reflection](../docs/reflection)
