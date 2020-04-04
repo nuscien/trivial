@@ -1,0 +1,26 @@
+# Cache
+
+Data cache.
+
+In `Trivial.Data` [namespace](./README) of `Trivial.dll` [library](../README).
+
+## Data cache collection
+
+You can create a collection to cache data with expiration and count limitation by following way.
+
+```csharp
+var cache = new DataCacheCollection<Model>
+{
+    MaxCount = 1000,
+    Expiration = TimeSpan.FromSeconds(100)
+};
+```
+
+So that you can get the data from the cache if has and or add new one if necessary.
+
+```csharp
+if (!cache.TryGet("abcd", out item))
+{
+    item = new Model();
+}
+```
