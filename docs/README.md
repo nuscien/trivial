@@ -1,5 +1,6 @@
 # Trivial libraries
 
+[![GitHub Repository](./assets/badge_GitHub-Repo.svg)](https://github.com/nuscien/trivial)
 [![MIT licensed](./assets/badge_lisence_MIT.svg)](https://github.com/nuscien/trivial/blob/master/LICENSE)
 [![Build Status](https://dev.azure.com/nuscien/trivial/_apis/build/status/nuscien.trivial?branchName=master)](https://dev.azure.com/nuscien/trivial/_build/latest?definitionId=1&branchName=master)
 
