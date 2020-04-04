@@ -17,7 +17,7 @@ This library includes utilities and services for tasks, security, JSON, etc.
 PM > Install-Package Trivial
 ```
 
-[![NuGet package](https://img.shields.io/nuget/dt/Trivial)](https://www.nuget.org/packages/Trivial)
+[![NuGet package](https://img.shields.io/nuget/dt/Trivial?label=nuget+downloads)](https://www.nuget.org/packages/Trivial)
 
 - [Task and retry policy](./tasks/)
 - [Text (also including JSON and CSV)](./text/)
