@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFrameworks>netcoreapp3.1;netstandard2.0</TargetFrameworks>
     <AssemblyName>Trivial.Console</AssemblyName>
     <RootNamespace>Trivial.Console</RootNamespace>
     <PackageId>Trivial.Console</PackageId>
@@ -17,8 +17,10 @@
     <PackageProjectUrl>https://github.com/nuscien/trivial/wiki/console</PackageProjectUrl>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
     <RepositoryUrl>https://github.com/nuscien/trivial</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <PackageIcon>logo.png</PackageIcon>
     <PackageIconUrl>https://github.com/nuscien/trivial/raw/master/Materials/logo.png</PackageIconUrl>
     <PackageTags>console args-parser</PackageTags>
@@ -36,6 +38,15 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All"/>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\LICENSE" Pack="true" PackagePath="LICENSE.md" />
+    <None Include="..\Materials\logo.png" Pack="true" PackagePath="logo.png" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Compile Update="Resource.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
@@ -48,11 +59,6 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resource.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Include="..\LICENSE" Pack="true" PackagePath="LICENSE.md" />
-    <None Include="..\Materials\logo.png" Pack="true" PackagePath="logo.png" />
   </ItemGroup>
 
 </Project>
