@@ -13,4 +13,4 @@
 
 ## Reporting a Vulnerability
 
-You can reposrt security issues and bugs by GitHub issues and mark it is about security.
+You can report security issues and bugs by GitHub issues directly and we will fix it as high priority.
