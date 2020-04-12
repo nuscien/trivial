@@ -248,7 +248,7 @@ namespace Trivial.Net
             if (pos >= 0) query = query.Substring(pos + 1);
             pos = query.IndexOf("#");
             if (pos >= 0) query = query.Substring(0, pos);
-            var arr = query.Split('&');
+            var arr = query.Split('&', '\r', '\n');
             foreach (var item in arr)
             {
                 pos = item.IndexOf("=");

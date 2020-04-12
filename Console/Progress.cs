@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -139,7 +140,7 @@ namespace Trivial.Console
     /// <summary>
     /// The progress result.
     /// </summary>
-    public class ProgressLineResult : IProgress<double>
+    public class ProgressLineResult : IProgress<double>, System.ComponentModel.INotifyPropertyChanged
     {
         /// <summary>
         /// Gets the current value of the updated progress.
@@ -167,7 +168,13 @@ namespace Trivial.Console
         public event EventHandler<double> ProgressChanged;
 
         /// <summary>
+        /// Occurs when a property value changes.
+        /// </summary>
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        /// <summary>
         /// Reports a progress update.
+        /// The status will change automatically when the value is 1.
         /// </summary>
         /// <param name="value">The value of the updated progress. It should be 0 - 1.</param>
         public void Report(double value)
@@ -177,6 +184,7 @@ namespace Trivial.Console
             {
                 Value = 1;
                 IsCompleted = true;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsCompleted)));
             }
             else if (value < 0)
             {
@@ -188,6 +196,31 @@ namespace Trivial.Console
             }
 
             ProgressChanged?.Invoke(this, Value);
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Value)));
+        }
+
+        /// <summary>
+        /// Reports a progress update and enforce the status is processing.
+        /// </summary>
+        /// <param name="value">The value of the updated progress. It should be 0 - 1.</param>
+        public void ReportProcessing(double value)
+        {
+            if (IsCompleted || double.IsNaN(value) || value == Value) return;
+            if (value >= 1)
+            {
+                Value = 1;
+            }
+            else if (value < 0)
+            {
+                Value = 0;
+            }
+            else
+            {
+                Value = value;
+            }
+
+            ProgressChanged?.Invoke(this, Value);
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Value)));
         }
 
         /// <summary>
@@ -441,17 +474,20 @@ namespace Trivial.Console
         {
             if (IsCompleted) return;
             IsCompleted = true;
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsCompleted)));
             ProgressChanged?.Invoke(this, Value);
         }
 
         /// <summary>
-        /// Resets the status.
+        /// Resets the status to processing.
         /// </summary>
         /// <param name="value">Optional value of the updated progress to set.</param>
         public void ResetStatus(double value = double.NaN)
         {
+            var wasCompleted = IsCompleted;
             IsCompleted = false;
-            Report(value);
+            ReportProcessing(value);
+            if (wasCompleted != IsCompleted) PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsCompleted)));
         }
     }
 }
