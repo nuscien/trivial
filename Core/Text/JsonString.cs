@@ -29,7 +29,7 @@ namespace Trivial.Text
     /// <summary>
     /// Represents a specific JSON string value.
     /// </summary>
-    public class JsonString : IJsonString, IJsonValue<string>, IJsonValueResolver, IComparable<IJsonValue<string>>, IComparable<string>, IEquatable<IJsonValue<string>>, IEquatable<string>, IReadOnlyList<char>
+    public class JsonString : IJsonString, IJsonValue<string>, IJsonValueResolver, IComparable<IJsonValue<string>>, IComparable<string>, IEquatable<IJsonValue<string>>, IEquatable<string>, IEquatable<StringBuilder>, IReadOnlyList<char>
     {
         /// <summary>
         /// Initializes a new instance of the JsonString class.
@@ -242,6 +242,22 @@ namespace Trivial.Text
                 return s[index.IsFromEnd ? s.Length - index.Value : index.Value];
             }
         }
+
+        /// <summary>
+        /// Gets the sub-string in the source value.
+        /// </summary>
+        /// <param name="range">A range in the current string.</param>
+        /// <returns>The sub-string.</returns>
+        /// <exception cref="ArgumentOutOfRangeException">The property does not exist.</exception>
+        public string this[Range range]
+        {
+            get
+            {
+                var s = Value;
+                if (s == null) throw new ArgumentOutOfRangeException("s is null", new InvalidOperationException("s is null"));
+                return s[range];
+            }
+        }
 #endif
 
         /// <summary>
@@ -407,6 +423,29 @@ namespace Trivial.Text
         {
             if (Value is null) return other is null;
             return Value.Equals(other, comparisonType);
+        }
+
+        /// <summary>
+        /// Indicates whether this instance and a specified object are equal.
+        /// </summary>
+        /// <param name="other">The object to compare with the current instance.</param>
+        /// <returns>true if obj and this instance represent the same value; otherwise, false.</returns>
+        public bool Equals(StringBuilder other)
+        {
+            if (Value is null) return other is null;
+            return Value.Equals(other.ToString());
+        }
+
+        /// <summary>
+        /// Indicates whether this instance and a specified object are equal.
+        /// </summary>
+        /// <param name="other">The object to compare with the current instance.</param>
+        /// <param name="comparisonType">One of the enumeration values that specifies how the strings will be compared.</param>
+        /// <returns>true if obj and this instance represent the same value; otherwise, false.</returns>
+        public bool Equals(StringBuilder other, StringComparison comparisonType)
+        {
+            if (Value is null) return other is null;
+            return Value.Equals(other.ToString(), comparisonType);
         }
 
         /// <summary>

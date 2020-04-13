@@ -65,7 +65,7 @@ namespace Trivial.Text
         /// </summary>
         /// <param name="index">The zero-based index of the element to get.</param>
         /// <returns>The element at the specified index in the array.</returns>
-        /// <exception cref="ArgumentOutOfRangeException">The property does not exist.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">The index is out of range.</exception>
         /// <exception cref="InvalidOperationException">The value kind is not the expected one.</exception>
         IJsonValue IReadOnlyList<IJsonValue>.this[int index] => GetValue(index);
 
@@ -75,7 +75,32 @@ namespace Trivial.Text
         /// </summary>
         /// <param name="index">A position in the current string.</param>
         /// <returns>The character at position index.</returns>
+        /// <exception cref="ArgumentOutOfRangeException">The index is out of range.</exception>
         public IJsonValueResolver this[Index index] => GetValue(index.IsFromEnd ? Count - index.Value : index.Value);
+
+        /// <summary>
+        /// Gets the System.Char object at a specified position in the source value.
+        /// </summary>
+        /// <param name="range">The range.</param>
+        /// <returns>The character at position index.</returns>
+        /// <exception cref="ArgumentOutOfRangeException">The range is out of range.</exception>
+        public JsonArray this[Range range]
+        {
+            get
+            {
+                var startIndex = range.Start;
+                var start = startIndex.IsFromEnd ? Count - startIndex.Value : startIndex.Value;
+                var endIndex = range.End;
+                var end = endIndex.IsFromEnd ? Count - endIndex.Value : endIndex.Value;
+                var arr = new List<IJsonValueResolver>();
+                for (var i = start; i <= end; i++)
+                {
+                    arr.Add(GetValue(i));
+                }
+
+                return new JsonArray(arr);
+            }
+        }
 #endif
 
         /// <summary>
@@ -2538,7 +2563,7 @@ namespace Trivial.Text
 
         /// <summary>
         /// Parses a stream as UTF-8-encoded data representing a JSON array.
-        /// The stream is read to completio
+        /// The stream is read to completion.
         /// </summary>
         /// <param name="utf8Json">The JSON data to parse.</param>
         /// <param name="options">Options to control the reader behavior during parsing.</param>
