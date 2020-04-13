@@ -252,8 +252,18 @@ namespace Trivial.Net
             foreach (var item in arr)
             {
                 pos = item.IndexOf("=");
-                if (pos < 0) ListExtensions.Add(this, HttpUtility.UrlDecode(item, encoding), string.Empty);
-                else ListExtensions.Add(this, HttpUtility.UrlDecode(item.Substring(0, pos), encoding), HttpUtility.UrlDecode(item.Substring(pos + 1), encoding));
+                if (pos < 0)
+                {
+                    if (item.Length == 0) continue;
+                    ListExtensions.Add(this, HttpUtility.UrlDecode(item, encoding), string.Empty);
+                }
+                else
+                {
+                    var key = item.Substring(0, pos);
+                    var value = item.Substring(pos + 1);
+                    if (key.Length == 0 && value.Length == 0) continue;
+                    ListExtensions.Add(this, HttpUtility.UrlDecode(key, encoding), HttpUtility.UrlDecode(value, encoding));
+                }
             }
 
             return arr.Length;
