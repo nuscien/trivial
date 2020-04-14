@@ -523,15 +523,12 @@ namespace Trivial.Console
         /// <returns>The words of the value of a specific parameter.</returns>
         public IReadOnlyList<string> Values(ParameterModes mode = ParameterModes.First)
         {
-            switch (mode)
+            return mode switch
             {
-                case ParameterModes.All:
-                    return MergedValues;
-                case ParameterModes.Last:
-                    return LastValues;
-                default:
-                    return FirstValues;
-            }
+                ParameterModes.All => MergedValues,
+                ParameterModes.Last => LastValues,
+                _ => FirstValues,
+            };
         }
 
         /// <summary>
@@ -543,6 +540,28 @@ namespace Trivial.Console
         {
             return Items[index].Values;
         }
+
+#if !NETSTANDARD2_0
+        /// <summary>
+        /// Gets the string value of a specific parameter matched the key.
+        /// </summary>
+        /// <param name="index">The parameter index.</param>
+        /// <returns>A string value of a specific parameter.</returns>
+        public string Value(Index index)
+        {
+            return Items[index].Value;
+        }
+
+        /// <summary>
+        /// Gets the words of the string value of a specific parameter matched the key.
+        /// </summary>
+        /// <param name="index">The parameter index.</param>
+        /// <returns>The words of the value of a specific parameter.</returns>
+        public IReadOnlyList<string> Values(Index index)
+        {
+            return Items[index].Values;
+        }
+#endif
 
         /// <summary>
         /// Converts the value to its boolean equivalent.

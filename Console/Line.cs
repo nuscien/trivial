@@ -929,8 +929,8 @@ namespace Trivial.Console
                         }
 
                         SaveCursorPosition();
-                        Write('\0');
                         if (str.Length == 0) break;
+                        Write(' ');
                         str.RemoveAt(str.Length - 1);
                         Backspace();
                         if (replaceChar.HasValue) Backspace();
@@ -940,7 +940,7 @@ namespace Trivial.Console
                     case ConsoleKey.F5:
                         str.Clear();
                         SaveCursorPosition();
-                        if (replaceChar.HasValue) Backspace(len + 1);
+                        if (replaceChar.HasValue) Backspace(len);
                         break;
                     default:
                         var hasKey = key.KeyChar != '\0';
@@ -1200,7 +1200,7 @@ namespace Trivial.Console
             str.Append('\b', count);
             if (!doNotRemoveOutput)
             {
-                str.Append('\0', count);
+                str.Append(' ', count);
                 str.Append('\b', count);
             }
 
@@ -1215,7 +1215,7 @@ namespace Trivial.Console
         {
             try
             {
-                System.Console.SetCursorPosition(System.Console.BufferWidth - 1, row ?? System.Console.CursorTop);
+                SetCursorPosition(System.Console.BufferWidth - 1, row ?? System.Console.CursorTop);
                 Backspace(System.Console.CursorLeft);
             }
             catch (SecurityException)
@@ -1680,7 +1680,7 @@ namespace Trivial.Console
                 if (str.Length > itemLen2) str = str.Substring(0, itemLen2);
                 var curLeft2 = curLeft + itemLen2;
                 var curLeftDiff = itemLen2;
-                System.Console.SetCursorPosition(curLeft, top + rowI);
+                SetCursorPosition(curLeft, top + rowI);
                 var strOffset = (int)Math.Floor(str.Length * 1.0 / 2);
                 if (isSel) Write(foreSel, backSel, str.Substring(0, strOffset));
                 else Write(fore, back, str.Substring(0, strOffset));
@@ -1706,12 +1706,12 @@ namespace Trivial.Console
                 if (curLeftDiff < 0)
                 {
                     var spaces = new StringBuilder();
-                    spaces.Append('\0', -curLeftDiff);
+                    spaces.Append(' ', -curLeftDiff);
                     if (isSel) Write(foreSel, backSel, spaces.ToString());
                     else Write(fore, back, spaces.ToString());
                 }
 
-                if (inputTop >= 0) System.Console.SetCursorPosition(inputLeft, inputTop);
+                if (inputTop >= 0) SetCursorPosition(inputLeft, inputTop);
             }
 
             void select()
@@ -1730,7 +1730,7 @@ namespace Trivial.Console
                     change(selected);
                 }
 
-                System.Console.SetCursorPosition(inputLeft, inputTop);
+                SetCursorPosition(inputLeft, inputTop);
                 var sel = list[selected];
                 if (question != null) Write(foreDef, backDef, sel.Value);
                 oldSelected = selected;
@@ -1742,7 +1742,7 @@ namespace Trivial.Console
                 else if (selected >= list.Count) selected = list.Count - 1;
                 if (selected < offset || selected >= offset + pageSize) offset = (int)Math.Floor(selected * 1.0 / pageSize) * pageSize;
                 var k = 0;
-                System.Console.SetCursorPosition(0, top);
+                SetCursorPosition(0, top);
                 ClearLine();
                 SelectionData.Some(list, (item, i, j) =>
                 {
@@ -1755,13 +1755,13 @@ namespace Trivial.Console
                     var curLeft = index * itemLen;
                     var curLeft2 = curLeft + itemLen2;
                     var curTop = top + row;
-                    System.Console.SetCursorPosition(curLeft, curTop);
+                    SetCursorPosition(curLeft, curTop);
                     if (selected == i) Write(foreSel, backSel, str);
                     else Write(fore, back, str);
                     if (System.Console.CursorTop != curTop)
                     {
                         Backspace(System.Console.CursorLeft);
-                        System.Console.SetCursorPosition(maxWidth - 1, curTop);
+                        SetCursorPosition(maxWidth - 1, curTop);
                     }
 
                     if (System.Console.CursorLeft > curLeft2)
@@ -1771,7 +1771,7 @@ namespace Trivial.Console
                     else if (System.Console.CursorLeft < curLeft2)
                     {
                         var spaces = new StringBuilder();
-                        spaces.Append('\0', curLeft2 - System.Console.CursorLeft);
+                        spaces.Append(' ', curLeft2 - System.Console.CursorLeft);
                         if (selected == i) Write(foreSel, backSel, spaces.ToString());
                         else Write(fore, back, spaces.ToString());
                     }
@@ -1839,7 +1839,7 @@ namespace Trivial.Console
                 }
 
                 tipsTop2 = Math.Max(tipsTop, System.Console.CursorTop);
-                System.Console.SetCursorPosition(curLeft, curTop);
+                SetCursorPosition(curLeft, curTop);
             }
 
             render();
@@ -1857,7 +1857,7 @@ namespace Trivial.Console
 
                     if (inputLeft >= 0 && System.Console.CursorLeft != inputLeft)
                     {
-                        System.Console.SetCursorPosition(maxWidth - 1, inputTop);
+                        SetCursorPosition(maxWidth - 1, inputTop);
                         Backspace(System.Console.CursorLeft - inputLeft);
                     }
                 }
@@ -1872,7 +1872,7 @@ namespace Trivial.Console
                     tipsTop = -1;
                 }
 
-                if (inputTop > 0) System.Console.SetCursorPosition(inputLeft, inputTop);
+                if (inputTop > 0) SetCursorPosition(inputLeft, inputTop);
                 if (key.Key == ConsoleKey.Enter || key.Key == ConsoleKey.Select)
                 {
                     var sel = list[selected];
@@ -2077,6 +2077,28 @@ namespace Trivial.Console
             finally
             {
                 Marshal.ZeroFreeGlobalAllocUnicode(unmanagedString);
+            }
+        }
+
+        private static void SetCursorPosition(int left, int top)
+        {
+            try
+            {
+                System.Console.SetCursorPosition(left, top);
+            }
+            catch (ArgumentOutOfRangeException)
+            {
+                if (System.Console.BufferHeight > top) throw;
+                try
+                {
+                    System.Console.BufferHeight = top + 64;
+                }
+                catch (OverflowException)
+                {
+                    System.Console.BufferHeight = int.MaxValue;
+                }
+
+                System.Console.SetCursorPosition(left, top);
             }
         }
     }
