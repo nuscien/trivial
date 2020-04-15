@@ -8,6 +8,7 @@ Trivial libraries contain a lot of utilities, models and components, which are t
 
 ### Trivial
 
+[![NuGet package](https://img.shields.io/nuget/dt/Trivial?label=nuget+downloads)](https://www.nuget.org/packages/Trivial)
 ![.NET Core 3.1](./assets/badge_NET_Core_3_1.svg)
 ![.NET Standard 2.0](./assets/badge_NET_Standard_2_0.svg)
 
@@ -16,8 +17,6 @@ This library includes utilities and services for tasks, security, JSON, etc.
 ```sh
 PM > Install-Package Trivial
 ```
-
-[![NuGet package](https://img.shields.io/nuget/dt/Trivial?label=nuget+downloads)](https://www.nuget.org/packages/Trivial)
 
 - [Task and retry policy](./tasks/)
 - [Text (also including JSON and CSV)](./text/)
@@ -31,6 +30,8 @@ PM > Install-Package Trivial
 
 ### Trivial.Console
 
+[![NuGet package](https://img.shields.io/nuget/dt/Trivial.Console?label=nuget+downloads)](https://www.nuget.org/packages/Trivial.Console)
+![.NET Core 3.1](./assets/badge_NET_Core_3_1.svg)
 ![.NET Standard 2.0](./assets/badge_NET_Standard_2_0.svg)
 
 The useful utilities for console application including command dispatcher, arguments parser and some rich UX CLI controls.
@@ -38,7 +39,5 @@ The useful utilities for console application including command dispatcher, argum
 ```sh
 PM > Install-Package Trivial.Console
 ```
-
-[![NuGet package](https://img.shields.io/nuget/dt/Trivial.Console?label=nuget+downloads)](https://www.nuget.org/packages/Trivial.Console)
 
 - [Console utilities and components](./console/)

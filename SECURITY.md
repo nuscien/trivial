@@ -2,14 +2,11 @@
 
 ## Supported Versions
 
-| Version | Supported          |
-| ------- | ------------------ |
-| 3.5   | :white_check_mark: |
-| 3.0 - 3.4   | Please update to 3.5 or higher |
-| 2.2 | :white_check_mark: |
-| 2.0 - 2.1 | Please update to 2.2 or higher |
-| 1.0 - 1.2   | :x:                |
-| 0.x   | :x:                |
+[![Trivial NuGet package](https://img.shields.io/nuget/v/Trivial.svg?label=Trivial)](https://www.nuget.org/packages/Trivial)
+[![Trivial.Console NuGet package](https://img.shields.io/nuget/v/Trivial.Console.svg?label=Trivial.Console)](https://www.nuget.org/packages/Trivial.Console)
+
+- [Current and EOL versions](https://github.com/nuscien/trivial/wiki/versions)
+- [Major releases](https://github.com/nuscien/trivial/releases)
 
 ## Reporting a Vulnerability
 

@@ -4,9 +4,11 @@ A console component of progress bar to let user know the status updated of the j
 
 In `Trivial.Console` [namespace](../) of `Trivial.Console.dll` [library](../../).
 
-## Console progress component
+## Progress control
 
-You can output a progress bar with customized style to the standard output stream.
+We would like to do better than print `Loading...` when the program is proccessing a task for a long while.
+Now we have the progress control `ProgressLine` to output a progress bar to the standard output stream.
+And we can customize its style and other settings by using an instance of `ProgressLineOptions` class as a parameter.
 
 ```csharp
 var Main(string[] args)

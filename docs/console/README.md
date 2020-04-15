@@ -4,7 +4,7 @@ The useful utilities for console application. You can use the library free for y
 
 ### Import
 
-This library targets .NET Standard 2.0.
+This library targets .NET Core 3.1 and .NET Standard 2.0.
 
 You can install the package from [NuGet](https://www.nuget.org/packages/Trivial.Console) to your project by following way.
 
@@ -28,3 +28,9 @@ using Trivial.Console;
 - [Line](./line) You can write a temporary line to the standard output stream and update it later when need before the line terminator.
 - [Selection](./selection) You can write a selection to the standard output stream so that use can use arrow key and other keys to select the item.
 - [Progress](./progress) You can write a progress bar to the standard output stream to show a status value update.
+
+### 简体中文教程
+
+Following is the tutorial in Chinese Simplified.
+
+- [开发有趣的命令行应用](https://weibo.com/ttarticle/p/show?id=2309404491344071491616)

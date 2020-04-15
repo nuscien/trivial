@@ -4,9 +4,15 @@ A console component to let user write text.
 
 In `Trivial.Console` [namespace](../) of `Trivial.Console.dll` [library](../../).
 
-## Console line component
+## Line control
 
-We provide a line component for the standard output stream that you can write a string which you can update before the line terminator. Following is a sample.
+Line control `Line` is used to control the I/O behavior and result of standard output stream.
+
+- We can output a string with specific foreground (text) color and background color;
+- we can output the string into a buffer and flush it when we need, and;
+- we can remove the string in the buffer or already in the standard output stream before the line terminator.
+
+Following is a sample.
 
 ```csharp
 var Main(string[] args)
@@ -48,7 +54,8 @@ var Main(string[] args)
 }
 ```
 
-And you can also read the password into a `SecureString` with the optional text mask.
+And we can also read password into a `SecureString` with the optional text mask.
+It also support to remove the last input by `BACKSPACE` key and clear by `DELETE` key.
 
 ```csharp
 var Main(string[] args)

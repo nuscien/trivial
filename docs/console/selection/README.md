@@ -4,9 +4,20 @@ A console component to let user select an item in a specific list by keyboard.
 
 In `Trivial.Console` [namespace](../) of `Trivial.Console.dll` [library](../../).
 
-## Console selection component
+## Selection control
 
-You can output a beautiful list or table with customized style to the standard output stream so that user just need press the arrow keys and `ENTER` in keyboard to select.
+Sometimes we need provide some options to users to select to continue the rest workflow or action.
+The simplist and old-style way is to show a hint which tells user the options and their shortcut keys (or keyword to type).
+It is hard to handle when either the count of options are greater than 3 or any of the option tips is too long.
+
+But with this control, you can output a beautiful list or table with customized style to the standard output stream
+so that the user just need press the arrow keys and `ENTER` in keyboard to select.
+
+To do so, you need define a list `SelectionData` to add all options.
+Then call `LineUtilities.Select(SelectionData, SelectionOptions)` static method to output the control to But with this component, you can output a beautiful list or table with customized style to the standard output stream.
+The second parameter of the method is optional that you can initialize an instance to cusotmize the style and other settings.
+This method returns a result containing the information about what user select.
+Following is a sample.
 
 ```csharp
 var Main(string[] args)
@@ -22,7 +33,6 @@ var Main(string[] args)
     {
         col.Add("num " + i, i.ToString());
     }
-
 
     // Create an options for display.
     var options = new SelectionOptions
