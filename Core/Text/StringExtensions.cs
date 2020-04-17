@@ -50,7 +50,7 @@ namespace Trivial.Text
         /// <summary>
         /// Special characters of YAML.
         /// </summary>
-        internal static readonly char[] YamlSpecialChars = new[] { ':', '\r', '\n', '\\', '\'', '\"', '\t' };
+        internal static readonly char[] YamlSpecialChars = new[] { ':', '\r', '\n', '\\', '\'', '\"', '\t', ' ', '#', '.', '[', '{', '\\', '/', '@' };
 
         /// <summary>
         /// Gets the MIME value of plain text format text.
