@@ -288,6 +288,34 @@ namespace Trivial.Collection
         }
 
         /// <summary>
+        /// Gets the YAML format string of the value.
+        /// </summary>
+        /// <returns>A YAML format string.</returns>
+        public string ToYamlString()
+        {
+            var str = new StringBuilder();
+            foreach (var prop in this)
+            {
+                if (prop.Key == null) continue;
+                str.Append(prop.Key.IndexOfAny(Text.StringExtensions.YamlSpecialChars) >= 0
+                    ? Text.JsonString.ToJson(prop.Key)
+                    : prop.Key);
+                str.AppendLine(": ");
+                if (prop.Value == null)
+                {
+                    str.AppendLine(": !!null null");
+                    continue;
+                }
+
+                str.AppendLine(prop.Value.IndexOfAny(Text.StringExtensions.YamlSpecialChars) >= 0
+                    ? Text.JsonString.ToJson(prop.Value)
+                    : prop.Value);
+            }
+
+            return str.ToString();
+        }
+
+        /// <summary>
         /// Adds 2 elements.
         /// </summary>
         /// <param name="a">Left element.</param>

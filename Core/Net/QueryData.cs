@@ -352,34 +352,6 @@ namespace Trivial.Net
         }
 
         /// <summary>
-        /// Gets the YAML format string of the value.
-        /// </summary>
-        /// <returns>A YAML format string.</returns>
-        public string ToYamlString()
-        {
-            var str = new StringBuilder();
-            foreach (var prop in this)
-            {
-                if (prop.Key == null) continue;
-                str.Append(prop.Key.IndexOfAny(StringExtensions.YamlSpecialChars) >= 0
-                    ? JsonString.ToJson(prop.Key)
-                    : prop.Key);
-                str.AppendLine(": ");
-                if (prop.Value == null)
-                {
-                    str.AppendLine(": !!null null");
-                    continue;
-                }
-
-                str.AppendLine(prop.Value.IndexOfAny(StringExtensions.YamlSpecialChars) >= 0
-                    ? JsonString.ToJson(prop.Value)
-                    : prop.Value);
-            }
-
-            return str.ToString();
-        }
-
-        /// <summary>
         /// Parses a string to the query data.
         /// </summary>
         /// <param name="query">The query string.</param>
