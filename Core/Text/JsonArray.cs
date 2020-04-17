@@ -2243,7 +2243,7 @@ namespace Trivial.Text
                         str.Append((prop is JsonArray jArr) ? jArr.ToString(indentStyle, indentLevel) : "[]");
                         break;
                     case JsonValueKind.Object:
-                        str.Append((prop is JsonObject jObj) ? jObj.ToString(indentStyle, indentLevel) : "{}");
+                        str.Append((prop is JsonObject jObj) ? jObj.ConvertToString(indentStyle, indentLevel) : "{}");
                         break;
                     default:
                         str.Append(prop.ToString());
@@ -2257,6 +2257,95 @@ namespace Trivial.Text
             str.AppendLine();
             str.Append(indentStr2);
             str.Append(']');
+            return str.ToString();
+        }
+
+        /// <summary>
+        /// Gets the YAML format string of the value.
+        /// </summary>
+        /// <returns>A YAML format string.</returns>
+        public string ToYamlString()
+        {
+            return ConvertToYamlString(0);
+        }
+
+        /// <summary>
+        /// Gets the YAML format string of the value.
+        /// </summary>
+        /// <param name="indentLevel">The current indent level.</param>
+        /// <returns>A YAML format string.</returns>
+        internal string ConvertToYamlString(int indentLevel)
+        {
+            var indentStr = "  ";
+            var indentPrefix = new StringBuilder();
+            for (var i = 0; i < indentLevel; i++)
+            {
+                indentPrefix.Append(indentStr);
+            }
+
+
+            var indentStr2 = indentPrefix.ToString();
+            indentPrefix.Append(indentStr);
+            indentLevel++;
+            var str = new StringBuilder();
+            foreach (var item in store)
+            {
+                str.Append(indentStr2);
+                str.Append("- ");
+                if (item is null)
+                {
+                    str.AppendLine("!!null null");
+                    continue;
+                }
+
+                switch (item.ValueKind)
+                {
+                    case JsonValueKind.Undefined:
+                    case JsonValueKind.Null:
+                        str.AppendLine("!!null null");
+                        break;
+                    case JsonValueKind.Array:
+                        if (!(item is JsonArray jArr))
+                        {
+                            str.AppendLine("[]");
+                            break;
+                        }
+
+                        str.AppendLine();
+                        str.Append(jArr.ConvertToYamlString(indentLevel));
+                        break;
+                    case JsonValueKind.Object:
+                        if (!(item is JsonObject jObj))
+                        {
+                            str.AppendLine("{}");
+                            break;
+                        }
+
+                        str.AppendLine();
+                        str.Append(jObj.ConvertToYamlString(indentLevel));
+                        break;
+                    case JsonValueKind.String:
+                        if (!(item is IJsonString jStr))
+                        {
+                            str.AppendLine(item.ToString());
+                            break;
+                        }
+
+                        var text = jStr.StringValue;
+                        if (text == null)
+                        {
+                            str.AppendLine("!!null null");
+                            break;
+                        }
+
+                        str.AppendLine(item.ToString());
+                        break;
+                    default:
+                        str.AppendLine(item.ToString());
+                        break;
+                }
+            }
+
             return str.ToString();
         }
 

@@ -48,6 +48,11 @@ namespace Trivial.Text
     public static class StringExtensions
     {
         /// <summary>
+        /// Special characters of YAML.
+        /// </summary>
+        internal static readonly char[] YamlSpecialChars = new[] { ':', '\r', '\n', '\\', '\'', '\"', '\t' };
+
+        /// <summary>
         /// Gets the MIME value of plain text format text.
         /// </summary>
         public const string PlainTextMIME = "text/plain";

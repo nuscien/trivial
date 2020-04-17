@@ -397,6 +397,9 @@ namespace Trivial.Web
                     return "application/xml";
                 case "vbs":
                     return "text/vbscript";
+                case "yaml":
+                case "yml":
+                    return "application/x-yaml";
 
                 // Font
                 case "eot":

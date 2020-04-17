@@ -2413,7 +2413,7 @@ namespace Trivial.Text
         /// <returns>A JSON format string.</returns>
         public string ToString(IndentStyles indentStyle)
         {
-            return ToString(indentStyle, 0);
+            return ConvertToString(indentStyle, 0);
         }
 
         /// <summary>
@@ -2422,7 +2422,7 @@ namespace Trivial.Text
         /// <param name="indentStyle">The indent style.</param>
         /// <param name="indentLevel">The current indent level.</param>
         /// <returns>A JSON format string.</returns>
-        internal string ToString(IndentStyles indentStyle, int indentLevel)
+        internal string ConvertToString(IndentStyles indentStyle, int indentLevel)
         {
             if (indentStyle == IndentStyles.Minified) return ToString();
             var indentStr = StringExtensions.GetString(indentStyle);
@@ -2459,7 +2459,7 @@ namespace Trivial.Text
                         str.Append((prop.Value is JsonArray jArr) ? jArr.ToString(indentStyle, indentLevel) : "[]");
                         break;
                     case JsonValueKind.Object:
-                        str.Append((prop.Value is JsonObject jObj) ? jObj.ToString(indentStyle, indentLevel) : "{}");
+                        str.Append((prop.Value is JsonObject jObj) ? jObj.ConvertToString(indentStyle, indentLevel) : "{}");
                         break;
                     default:
                         str.Append(prop.Value.ToString());
@@ -2473,6 +2473,105 @@ namespace Trivial.Text
             str.AppendLine();
             str.Append(indentStr2);
             str.Append('}');
+            return str.ToString();
+        }
+
+        /// <summary>
+        /// Gets the YAML format string of the value.
+        /// </summary>
+        /// <returns>A YAML format string.</returns>
+        public string ToYamlString()
+        {
+            return ConvertToYamlString(0);
+        }
+
+        /// <summary>
+        /// Gets the YAML format string of the value.
+        /// </summary>
+        /// <param name="indentLevel">The current indent level.</param>
+        /// <returns>A YAML format string.</returns>
+        internal string ConvertToYamlString(int indentLevel)
+        {
+            var indentStr = "  ";
+            var indentPrefix = new StringBuilder();
+            for (var i = 0; i < indentLevel; i++)
+            {
+                indentPrefix.Append(indentStr);
+            }
+
+            var indentStr2 = indentPrefix.ToString();
+            indentPrefix.Append(indentStr);
+            indentStr = indentPrefix.ToString();
+            indentLevel++;
+            var str = new StringBuilder();
+            foreach (var prop in store)
+            {
+                str.Append(indentStr2);
+                str.Append(prop.Key.IndexOfAny(StringExtensions.YamlSpecialChars) >= 0
+                    ? JsonString.ToJson(prop.Key)
+                    : prop.Key);
+                str.Append(": ");
+                if (prop.Value is null)
+                {
+                    str.AppendLine("!!null null");
+                    continue;
+                }
+
+                switch (prop.Value.ValueKind)
+                {
+                    case JsonValueKind.Undefined:
+                    case JsonValueKind.Null:
+                        str.AppendLine("!!null null");
+                        break;
+                    case JsonValueKind.Array:
+                        if (!(prop.Value is JsonArray jArr))
+                        {
+                            str.AppendLine("[]");
+                            break;
+                        }
+                        
+                        str.AppendLine();
+                        str.Append(jArr.ConvertToYamlString(indentLevel));
+                        break;
+                    case JsonValueKind.Object:
+                        if (!(prop.Value is JsonObject jObj))
+                        {
+                            str.AppendLine("{}");
+                            break;
+                        }
+
+                        str.AppendLine();
+                        str.Append(jObj.ConvertToYamlString(indentLevel));
+                        break;
+                    case JsonValueKind.String:
+                        if (!(prop.Value is IJsonString jStr))
+                        {
+                            str.AppendLine(prop.Value.ToString());
+                            break;
+                        }
+
+                        var text = jStr.StringValue;
+                        if (text == null)
+                        {
+                            str.AppendLine("!!null null");
+                            break;
+                        }
+
+                        str.Append('|');
+                        str.AppendLine();
+                        foreach (var line in StringExtensions.ReadLines(text))
+                        {
+                            str.Append(indentStr);
+                            str.AppendLine(line);
+                        }
+
+                        break;
+                    default:
+                        str.AppendLine(prop.Value.ToString());
+                        break;
+                }
+            }
+
             return str.ToString();
         }
 
