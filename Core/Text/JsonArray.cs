@@ -2284,13 +2284,12 @@ namespace Trivial.Text
             }
 
 
-            var indentStr2 = indentPrefix.ToString();
-            indentPrefix.Append(indentStr);
+            indentStr = indentPrefix.ToString();
             indentLevel++;
             var str = new StringBuilder();
             foreach (var item in store)
             {
-                str.Append(indentStr2);
+                str.Append(indentStr);
                 str.Append("- ");
                 if (item is null)
                 {
@@ -2338,7 +2337,9 @@ namespace Trivial.Text
                             break;
                         }
 
-                        str.AppendLine(item.ToString());
+                        str.AppendLine(text.IndexOfAny(StringExtensions.YamlSpecialChars) >= 0
+                            ? JsonString.ToJson(text)
+                            : text);
                         break;
                     default:
                         str.AppendLine(item.ToString());

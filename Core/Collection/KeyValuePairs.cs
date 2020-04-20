@@ -7,6 +7,9 @@ using System.Security;
 using System.Text;
 using System.Web;
 
+using Trivial.Text;
+using Trivial.Web;
+
 namespace Trivial.Collection
 {
     /// <summary>
@@ -137,7 +140,7 @@ namespace Trivial.Collection
         /// <param name="clearOthers">true if clear the others of the property before adding; otherwise, false.</param>
         public void Add(string key, bool value, bool clearOthers = false)
         {
-            Add(key, value ? Text.JsonBoolean.TrueString : Text.JsonBoolean.FalseString, clearOthers);
+            Add(key, value ? JsonBoolean.TrueString : JsonBoolean.FalseString, clearOthers);
         }
 
         /// <summary>
@@ -197,7 +200,7 @@ namespace Trivial.Collection
         /// Gets the query value as an interger by a specific key.
         /// </summary>
         /// <param name="key">The key.</param>
-        /// <returns>The query value as Int32.</returns>
+        /// <returns>The query value as Int32; or null, if the value type is incorrect, or the value is null.</returns>
         public int? TryGetInt32Value(string key)
         {
             var v = GetFirstValue(key, true);
@@ -209,7 +212,7 @@ namespace Trivial.Collection
         /// Gets the query value as an interger by a specific key.
         /// </summary>
         /// <param name="key">The key.</param>
-        /// <returns>The query value as Int32.</returns>
+        /// <returns>The query value as Int64; or null, if the value type is incorrect, or the value is null.</returns>
         public long? TryGetInt64Value(string key)
         {
             var v = GetFirstValue(key, true);
@@ -218,15 +221,40 @@ namespace Trivial.Collection
         }
 
         /// <summary>
-        /// Gets the query value as an interger by a specific key.
+        /// Gets the query value as a single-precision floating-point number by a specific key.
         /// </summary>
         /// <param name="key">The key.</param>
-        /// <returns>The query value as Int32.</returns>
+        /// <returns>The query value as Single; or null, if the value type is incorrect, or the value is null.</returns>
+        public float? TryGetSingleValue(string key)
+        {
+            var v = GetFirstValue(key, true);
+            if (v != null && float.TryParse(v, out var result)) return result;
+            return null;
+        }
+
+        /// <summary>
+        /// Gets the query value as a double-precision floating-point number by a specific key.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <returns>The query value as Double; or null, if the value type is incorrect, or the value is null.</returns>
         public double? TryGetDoubleValue(string key)
         {
             var v = GetFirstValue(key, true);
             if (v != null && double.TryParse(v, out var result)) return result;
             return null;
+        }
+
+        /// <summary>
+        /// Gets the query value as a date and time by a specific key.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <param name="useUnixTimestamp">true if the value is unix timestamp; otherwise, false.</param>
+        /// <returns>The query value as DateTime.</returns>
+        public DateTime? TryGetDateTimeValue(string key, bool useUnixTimestamp = false)
+        {
+            var v = GetFirstValue(key, true);
+            var l = TryGetInt64Value(key);
+            return l.HasValue ? (useUnixTimestamp ? WebFormat.ParseUnixTimestamp(l.Value) : WebFormat.ParseDate(l.Value)) : WebFormat.ParseDate(v);
         }
 
         /// <summary>
@@ -291,25 +319,62 @@ namespace Trivial.Collection
         /// Gets the YAML format string of the value.
         /// </summary>
         /// <returns>A YAML format string.</returns>
-        public string ToYamlString()
+        public virtual string ToYamlString()
         {
             var str = new StringBuilder();
-            foreach (var prop in this)
+            foreach (var prop in ListExtensions.ToGroups(this))
             {
                 if (prop.Key == null) continue;
-                str.Append(prop.Key.IndexOfAny(Text.StringExtensions.YamlSpecialChars) >= 0
-                    ? Text.JsonString.ToJson(prop.Key)
+                str.Append(prop.Key.IndexOfAny(StringExtensions.YamlSpecialChars) >= 0
+                    ? JsonString.ToJson(prop.Key)
                     : prop.Key);
-                str.AppendLine(": ");
-                if (prop.Value == null)
+                str.Append(": ");
+                var values = prop.ToList();
+                if (values == null || values.Count == 0)
                 {
-                    str.AppendLine(": !!null null");
+                    str.AppendLine("!!null null");
                     continue;
                 }
 
-                str.AppendLine(prop.Value.IndexOfAny(Text.StringExtensions.YamlSpecialChars) >= 0
-                    ? Text.JsonString.ToJson(prop.Value)
-                    : prop.Value);
+                if (values.Count == 1)
+                {
+                    var item = values[0];
+                    if (item == null)
+                    {
+                        str.AppendLine("!!null null");
+                        continue;
+                    }
+
+                    if (item.Length < 100 && item.IndexOfAny(StringExtensions.YamlSpecialChars) < 0)
+                    {
+                        str.AppendLine(item);
+                        continue;
+                    }
+
+                    str.AppendLine("|");
+                    foreach (var line in StringExtensions.ReadLines(item))
+                    {
+                        str.Append("  ");
+                        str.AppendLine(line);
+                    }
+
+                    continue;
+                }
+                
+                foreach (var item in values)
+                {
+                    str.AppendLine();
+                    str.Append("- ");
+                    if (item == null)
+                    {
+                        str.AppendLine("!!null null");
+                        continue;
+                    }
+
+                    str.AppendLine(item.IndexOfAny(StringExtensions.YamlSpecialChars) >= 0
+                        ? JsonString.ToJson(item)
+                        : item);
+                }
             }
 
             return str.ToString();
