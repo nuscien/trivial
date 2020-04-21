@@ -345,19 +345,9 @@ namespace Trivial.Collection
                         continue;
                     }
 
-                    if (item.Length < 100 && item.IndexOfAny(StringExtensions.YamlSpecialChars) < 0)
-                    {
-                        str.AppendLine(item);
-                        continue;
-                    }
-
-                    str.AppendLine("|");
-                    foreach (var line in StringExtensions.ReadLines(item))
-                    {
-                        str.Append("  ");
-                        str.AppendLine(line);
-                    }
-
+                    str.AppendLine(item.Length > 100 || item.IndexOfAny(StringExtensions.YamlSpecialChars) >= 0
+                        ? JsonString.ToJson(item)
+                        : item);
                     continue;
                 }
                 

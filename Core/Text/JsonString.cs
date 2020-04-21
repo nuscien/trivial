@@ -49,6 +49,7 @@ namespace Trivial.Text
         {
             Value = ToJson(value, true);
             ValueKind = JsonValueKind.String;
+            ValueType = 1;
         }
 
         /// <summary>
@@ -59,6 +60,7 @@ namespace Trivial.Text
         {
             Value = value.ToString("yyyy-MM-ddTHH:mm:ss.fffzzz");
             ValueKind = JsonValueKind.String;
+            ValueType = 1;
         }
 
         /// <summary>
@@ -69,6 +71,7 @@ namespace Trivial.Text
         {
             Value = value.ToString();
             ValueKind = JsonValueKind.String;
+            ValueType = 4;
         }
 
         /// <summary>
@@ -127,6 +130,7 @@ namespace Trivial.Text
         /// <param name="value">The value.</param>
         public JsonString(int value) : this(value.ToString("g", CultureInfo.InvariantCulture))
         {
+            ValueType = 2;
         }
 
         /// <summary>
@@ -135,6 +139,7 @@ namespace Trivial.Text
         /// <param name="value">The value.</param>
         public JsonString(long value) : this(value.ToString("g", CultureInfo.InvariantCulture))
         {
+            ValueType = 2;
         }
 
         /// <summary>
@@ -143,6 +148,7 @@ namespace Trivial.Text
         /// <param name="value">The value.</param>
         public JsonString(uint value) : this(value.ToString("g", CultureInfo.InvariantCulture))
         {
+            ValueType = 2;
         }
 
         /// <summary>
@@ -151,6 +157,7 @@ namespace Trivial.Text
         /// <param name="value">The value.</param>
         public JsonString(ulong value) : this(value.ToString("g", CultureInfo.InvariantCulture))
         {
+            ValueType = 2;
         }
 
         /// <summary>
@@ -159,6 +166,7 @@ namespace Trivial.Text
         /// <param name="value">The value.</param>
         public JsonString(double value) : this(value.ToString("g", CultureInfo.InvariantCulture))
         {
+            ValueType = 3;
         }
 
         /// <summary>
@@ -167,6 +175,7 @@ namespace Trivial.Text
         /// <param name="value">The value.</param>
         public JsonString(float value) : this(value.ToString("g", CultureInfo.InvariantCulture))
         {
+            ValueType = 3;
         }
 
         /// <summary>
@@ -175,6 +184,7 @@ namespace Trivial.Text
         /// <param name="value">The value.</param>
         public JsonString(decimal value) : this(value.ToString("g", CultureInfo.InvariantCulture))
         {
+            ValueType = 3;
         }
 
         /// <summary>
@@ -183,6 +193,7 @@ namespace Trivial.Text
         /// <param name="value">The value.</param>
         public JsonString(bool value) : this(value ? JsonBoolean.TrueString : JsonBoolean.FalseString)
         {
+            ValueType = 5;
         }
 
         /// <summary>
@@ -209,6 +220,12 @@ namespace Trivial.Text
         /// Gets the type of the current JSON value.
         /// </summary>
         public JsonValueKind ValueKind { get; }
+
+        /// <summary>
+        /// Gets or sets the internal type mark.
+        /// 0 - literal; 1 - date; 2 - integer; 3 - floating number; 4 - guid; 5 - boolean; total 6.
+        /// </summary>
+        internal int ValueType { get; }
 
         /// <summary>
         /// Gets the System.Char object at a specified position in the source value.

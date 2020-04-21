@@ -2310,8 +2310,7 @@ namespace Trivial.Text
                             break;
                         }
 
-                        str.AppendLine();
-                        str.Append(jArr.ConvertToYamlString(indentLevel));
+                        str.AppendLine(jArr.ToString());
                         break;
                     case JsonValueKind.Object:
                         if (!(item is JsonObject jObj))

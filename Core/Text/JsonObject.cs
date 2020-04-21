@@ -2499,14 +2499,12 @@ namespace Trivial.Text
                 indentPrefix.Append(indentStr);
             }
 
-            var indentStr2 = indentPrefix.ToString();
-            indentPrefix.Append(indentStr);
             indentStr = indentPrefix.ToString();
-            indentLevel++;
+            var nextIndentLevel = indentLevel + 1;
             var str = new StringBuilder();
             foreach (var prop in store)
             {
-                str.Append(indentStr2);
+                str.Append(indentStr);
                 str.Append(prop.Key.IndexOfAny(StringExtensions.YamlSpecialChars) >= 0
                     ? JsonString.ToJson(prop.Key)
                     : prop.Key);
@@ -2541,10 +2539,10 @@ namespace Trivial.Text
                         }
 
                         str.AppendLine();
-                        str.Append(jObj.ConvertToYamlString(indentLevel));
+                        str.Append(jObj.ConvertToYamlString(nextIndentLevel));
                         break;
                     case JsonValueKind.String:
-                        if (!(prop.Value is IJsonString jStr))
+                        if (!(prop.Value is JsonString jStr))
                         {
                             str.AppendLine(prop.Value.ToString());
                             break;
@@ -2557,12 +2555,19 @@ namespace Trivial.Text
                             break;
                         }
 
-                        str.Append('|');
-                        str.AppendLine();
-                        foreach (var line in StringExtensions.ReadLines(text))
+                        switch (jStr.ValueType)
                         {
-                            str.Append(indentStr);
-                            str.AppendLine(line);
+                            case 1:
+                            case 2:
+                            case 3:
+                            case 5:
+                                str.AppendLine(text);
+                                break;
+                            default:
+                                str.AppendLine(text.Length > 100 || text.IndexOfAny(StringExtensions.YamlSpecialChars) >= 0
+                                    ? JsonString.ToJson(text)
+                                    : text);
+                                break;
                         }
 
                         break;
