@@ -2564,7 +2564,7 @@ namespace Trivial.Text
                                 str.AppendLine(text);
                                 break;
                             default:
-                                str.AppendLine(text.Length > 100 || text.IndexOfAny(StringExtensions.YamlSpecialChars) >= 0
+                                str.AppendLine(text.Length == 0 || text.Length > 100 || text.IndexOfAny(StringExtensions.YamlSpecialChars) >= 0
                                     ? JsonString.ToJson(text)
                                     : text);
                                 break;

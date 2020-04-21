@@ -301,7 +301,18 @@ namespace Trivial.Text
         /// <returns>A date time.</returns>
         public DateTime? TryGetDateTime()
         {
-            return Web.WebFormat.ParseDate(Value);
+            var s = Value;
+            if (s == null) return null;
+            switch (ValueType)
+            {
+                case 2:
+                    if (long.TryParse(s, out var l)) return Web.WebFormat.ParseDate(l);
+                    break;
+                default:
+                    break;
+            }
+
+            return Web.WebFormat.ParseDate(s);
         }
 
         /// <summary>
@@ -492,10 +503,7 @@ namespace Trivial.Text
         /// Returns the hash code for this instance.
         /// </summary>
         /// <returns>A hash code for the current instance.</returns>
-        public override int GetHashCode()
-        {
-            return Value == null ? (-1).GetHashCode() : Value.GetHashCode();
-        }
+        public override int GetHashCode() => Value == null ? (-1).GetHashCode() : Value.GetHashCode();
 
         /// <summary>
         /// Compares this instance to a specified number and returns an indication of their relative values.
@@ -594,7 +602,17 @@ namespace Trivial.Text
         /// <exception cref="FormatException">The value is not formatted for a date time.</exception>
         public DateTime GetDateTime()
         {
-            var date = Web.WebFormat.ParseDate(Value);
+            var s = Value;
+            switch (ValueType)
+            {
+                case 2:
+                    if (long.TryParse(s, out var l)) return Web.WebFormat.ParseDate(l);
+                    break;
+                default:
+                    break;
+            }
+
+            var date = Web.WebFormat.ParseDate(s);
             if (date.HasValue) return date.Value;
             throw new FormatException("The string is not JSON date format.");
         }

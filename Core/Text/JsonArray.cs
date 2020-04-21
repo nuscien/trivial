@@ -2336,7 +2336,7 @@ namespace Trivial.Text
                             break;
                         }
 
-                        str.AppendLine(text.IndexOfAny(StringExtensions.YamlSpecialChars) >= 0
+                        str.AppendLine(text.Length == 0 || text.Length > 100 || text.IndexOfAny(StringExtensions.YamlSpecialChars) >= 0
                             ? JsonString.ToJson(text)
                             : text);
                         break;

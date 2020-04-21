@@ -345,7 +345,7 @@ namespace Trivial.Collection
                         continue;
                     }
 
-                    str.AppendLine(item.Length > 100 || item.IndexOfAny(StringExtensions.YamlSpecialChars) >= 0
+                    str.AppendLine(item.Length == 0 || item.Length > 100 || item.IndexOfAny(StringExtensions.YamlSpecialChars) >= 0
                         ? JsonString.ToJson(item)
                         : item);
                     continue;
