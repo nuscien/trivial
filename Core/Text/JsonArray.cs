@@ -2454,11 +2454,120 @@ namespace Trivial.Text
         string IJsonValueResolver.GetString() => throw new InvalidOperationException("Expect a string but it is an array.");
 
         /// <summary>
-        /// Gets the value of the element as a number.
+        /// Gets the value of the element as a GUID.
         /// </summary>
-        /// <returns>The value of the element as a number.</returns>
+        /// <returns>The value of the element as a GUID.</returns>
         /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
         Guid IJsonValueResolver.GetGuid() => throw new InvalidOperationException("Expect a string but it is an array.");
+        /// <summary>
+        /// Tries to get the value of the element as a boolean.
+        /// </summary>
+        /// <param name="result">The result.</param>
+        /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+        bool IJsonValueResolver.TryGetBoolean(out bool result)
+        {
+            result = false;
+            return false;
+        }
+
+        /// <summary>
+        /// Tries to get the value of the element as a date time.
+        /// </summary>
+        /// <param name="result">The result.</param>
+        /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+        bool IJsonValueResolver.TryGetDateTime(out DateTime result)
+        {
+            result = Web.WebFormat.ParseDate(0);
+            return false;
+        }
+
+        /// <summary>
+        /// Tries to get the value of the element as a number.
+        /// </summary>
+        /// <param name="result">The result.</param>
+        /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+        bool IJsonValueResolver.TryGetDecimal(out decimal result)
+        {
+            result = 0;
+            return false;
+        }
+
+        /// <summary>
+        /// Tries to get the value of the element as a number.
+        /// </summary>
+        /// <param name="result">The result.</param>
+        /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+        bool IJsonValueResolver.TryGetSingle(out float result)
+        {
+            result = 0;
+            return false;
+        }
+
+        /// <summary>
+        /// Tries to get the value of the element as a number.
+        /// </summary>
+        /// <param name="result">The result.</param>
+        /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+        bool IJsonValueResolver.TryGetDouble(out double result)
+        {
+            result = 0;
+            return false;
+        }
+
+        /// <summary>
+        /// Tries to get the value of the element as a number.
+        /// </summary>
+        /// <param name="result">The result.</param>
+        /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+        bool IJsonValueResolver.TryGetUInt32(out uint result)
+        {
+            result = 0;
+            return false;
+        }
+
+        /// <summary>
+        /// Tries to get the value of the element as a number.
+        /// </summary>
+        /// <param name="result">The result.</param>
+        /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+        bool IJsonValueResolver.TryGetInt32(out int result)
+        {
+            result = 0;
+            return false;
+        }
+
+        /// <summary>
+        /// Tries to get the value of the element as a number.
+        /// </summary>
+        /// <param name="result">The result.</param>
+        /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+        bool IJsonValueResolver.TryGetInt64(out long result)
+        {
+            result = 0;
+            return false;
+        }
+
+        /// <summary>
+        /// Tries to get the value of the element as a number.
+        /// </summary>
+        /// <param name="result">The result.</param>
+        /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+        bool IJsonValueResolver.TryGetString(out string result)
+        {
+            result = null;
+            return false;
+        }
+
+        /// <summary>
+        /// Tries to get the value of the element as a GUID.
+        /// </summary>
+        /// <param name="result">The result.</param>
+        /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+        bool IJsonValueResolver.TryGetGuid(out Guid result)
+        {
+            result = Guid.Empty;
+            return false;
+        }
 
         /// <summary>
         /// Gets all property keys.

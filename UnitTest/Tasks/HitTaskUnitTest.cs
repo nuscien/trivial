@@ -61,10 +61,10 @@ namespace Trivial.Tasks
                 result = ev.Argument;
             }, TimeSpan.FromMilliseconds(100));
             _ = ProcessHit(taskTokens, task, "opq");
-            await Task.Delay(20);
+            await Task.Delay(10);
             Assert.AreEqual("opq", result);
             _ = ProcessHit(taskTokens, task, "rst");
-            await Task.Delay(20);
+            await Task.Delay(10);
             Assert.AreEqual("opq", result);
             _ = ProcessHit(taskTokens, task, "uvw");
             await Task.Delay(110);

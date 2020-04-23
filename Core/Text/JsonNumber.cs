@@ -4,6 +4,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Text;
 using System.Text.Json;
+using Trivial.Web;
 
 namespace Trivial.Text
 {
@@ -359,10 +360,7 @@ namespace Trivial.Text
         /// Returns the hash code for this instance.
         /// </summary>
         /// <returns>A hash code for the current instance.</returns>
-        public override int GetHashCode()
-        {
-            return Value.GetHashCode();
-        }
+        public override int GetHashCode() => Value.GetHashCode();
 
         /// <summary>
         /// Compares this instance to a specified number and returns an indication of their relative values.
@@ -660,11 +658,216 @@ namespace Trivial.Text
         string IJsonValueResolver.GetString() => ToString();
 
         /// <summary>
-        /// Gets the value of the element as a number.
+        /// Gets the value of the element as a GUID.
         /// </summary>
-        /// <returns>The value of the element as a number.</returns>
+        /// <returns>The value of the element as a GUID.</returns>
         /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
         Guid IJsonValueResolver.GetGuid() => throw new InvalidOperationException("Expect a string but it is a number.");
+
+        /// <summary>
+        /// Tries to get the value of the element as a boolean.
+        /// </summary>
+        /// <param name="result">The result.</param>
+        /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+        bool IJsonValueResolver.TryGetBoolean(out bool result)
+        {
+            if (Value == 0)
+            {
+                result = false;
+                return true;
+            }
+
+            if (Value == 1)
+            {
+                result = true;
+                return true;
+            }
+
+            result = false;
+            return false;
+        }
+
+        /// <summary>
+        /// Tries to get the value of the element as a date time.
+        /// </summary>
+        /// <param name="result">The result.</param>
+        /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+        bool IJsonValueResolver.TryGetDateTime(out DateTime result)
+        {
+            result = WebFormat.ParseDate(Value);
+            return true;
+        }
+
+        /// <summary>
+        /// Tries to get the value of the element as a number.
+        /// </summary>
+        /// <param name="result">The result.</param>
+        /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+        bool IJsonValueResolver.TryGetDecimal(out decimal result)
+        {
+            try
+            {
+                result = Value;
+                return true;
+            }
+            catch (OverflowException)
+            {
+            }
+            catch (InvalidCastException)
+            {
+            }
+
+            result = 0;
+            return false;
+        }
+
+        /// <summary>
+        /// Tries to get the value of the element as a number.
+        /// </summary>
+        /// <param name="result">The result.</param>
+        /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+        bool IJsonValueResolver.TryGetSingle(out float result)
+        {
+            try
+            {
+                result = Value;
+                return true;
+            }
+            catch (OverflowException)
+            {
+            }
+            catch (InvalidCastException)
+            {
+            }
+
+            result = 0;
+            return false;
+        }
+
+        /// <summary>
+        /// Tries to get the value of the element as a number.
+        /// </summary>
+        /// <param name="result">The result.</param>
+        /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+        bool IJsonValueResolver.TryGetDouble(out double result)
+        {
+            try
+            {
+                result = Value;
+                return true;
+            }
+            catch (OverflowException)
+            {
+            }
+            catch (InvalidCastException)
+            {
+            }
+
+            result = 0;
+            return false;
+        }
+
+        /// <summary>
+        /// Tries to get the value of the element as a number.
+        /// </summary>
+        /// <param name="result">The result.</param>
+        /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+        public bool TryGetUInt16(out ushort result)
+        {
+            try
+            {
+                result = (ushort)Value;
+                return true;
+            }
+            catch (OverflowException)
+            {
+            }
+            catch (InvalidCastException)
+            {
+            }
+
+            result = 0;
+            return false;
+        }
+
+        /// <summary>
+        /// Tries to get the value of the element as a number.
+        /// </summary>
+        /// <param name="result">The result.</param>
+        /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+        public bool TryGetUInt32(out uint result)
+        {
+            try
+            {
+                result = (uint)Value;
+                return true;
+            }
+            catch (OverflowException)
+            {
+            }
+            catch (InvalidCastException)
+            {
+            }
+
+            result = 0;
+            return false;
+        }
+
+        /// <summary>
+        /// Tries to get the value of the element as a number.
+        /// </summary>
+        /// <param name="result">The result.</param>
+        /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+        public bool TryGetInt32(out int result)
+        {
+            try
+            {
+                result = (int)Value;
+                return true;
+            }
+            catch (OverflowException)
+            {
+            }
+            catch (InvalidCastException)
+            {
+            }
+
+            result = 0;
+            return false;
+        }
+
+        /// <summary>
+        /// Tries to get the value of the element as a number.
+        /// </summary>
+        /// <param name="result">The result.</param>
+        /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+        bool IJsonValueResolver.TryGetInt64(out long result)
+        {
+            result = Value;
+            return true;
+        }
+
+        /// <summary>
+        /// Tries to get the value of the element as a number.
+        /// </summary>
+        /// <param name="result">The result.</param>
+        /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+        bool IJsonValueResolver.TryGetString(out string result)
+        {
+            result = ToString();
+            return true;
+        }
+
+        /// <summary>
+        /// Tries to get the value of the element as a GUID.
+        /// </summary>
+        /// <param name="result">The result.</param>
+        /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+        bool IJsonValueResolver.TryGetGuid(out Guid result)
+        {
+            result = Guid.Empty;
+            return false;
+        }
 
         /// <summary>
         /// Gets the value of the specific property.
@@ -1643,10 +1846,8 @@ namespace Trivial.Text
         /// Returns the hash code for this instance.
         /// </summary>
         /// <returns>A hash code for the current instance.</returns>
-        public override int GetHashCode()
-        {
-            return Value.GetHashCode();
-        }
+        public override int GetHashCode() => Value.GetHashCode();
+
         /// <summary>
         /// Compares this instance to a specified number and returns an indication of their relative values.
         /// </summary>
@@ -1944,11 +2145,205 @@ namespace Trivial.Text
         string IJsonValueResolver.GetString() => ToString();
 
         /// <summary>
-        /// Gets the value of the element as a number.
+        /// Gets the value of the element as a GUID.
         /// </summary>
-        /// <returns>The value of the element as a number.</returns>
+        /// <returns>The value of the element as a GUID.</returns>
         /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
         Guid IJsonValueResolver.GetGuid() => throw new InvalidOperationException("Expect a string but it is a number.");
+
+        /// <summary>
+        /// Tries to get the value of the element as a boolean.
+        /// </summary>
+        /// <param name="result">The result.</param>
+        /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+        public bool TryGetBoolean(out bool result)
+        {
+            if (Value == 0)
+            {
+                result = false;
+                return true;
+            }
+
+            if (Value == 1)
+            {
+                result = true;
+                return true;
+            }
+
+            result = false;
+            return false;
+        }
+
+        /// <summary>
+        /// Tries to get the value of the element as a date time.
+        /// </summary>
+        /// <param name="result">The result.</param>
+        /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+        public bool TryGetDateTime(out DateTime result)
+        {
+            try
+            {
+                result = WebFormat.ParseDate((long)Value);
+                return true;
+            }
+            catch (OverflowException)
+            {
+            }
+            catch (InvalidCastException)
+            {
+            }
+
+            result = WebFormat.ParseDate(0);
+            return false;
+        }
+
+        /// <summary>
+        /// Tries to get the value of the element as a number.
+        /// </summary>
+        /// <param name="result">The result.</param>
+        /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+        public bool TryGetDecimal(out decimal result)
+        {
+            try
+            {
+                result = (decimal)Value;
+                return true;
+            }
+            catch (OverflowException)
+            {
+            }
+            catch (InvalidCastException)
+            {
+            }
+
+            result = 0;
+            return false;
+        }
+
+        /// <summary>
+        /// Tries to get the value of the element as a number.
+        /// </summary>
+        /// <param name="result">The result.</param>
+        /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+        public bool TryGetSingle(out float result)
+        {
+            try
+            {
+                result = (float)Value;
+                return true;
+            }
+            catch (OverflowException)
+            {
+            }
+            catch (InvalidCastException)
+            {
+            }
+
+            result = 0;
+            return false;
+        }
+
+        /// <summary>
+        /// Tries to get the value of the element as a number.
+        /// </summary>
+        /// <param name="result">The result.</param>
+        /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+        bool IJsonValueResolver.TryGetDouble(out double result)
+        {
+            result = Value;
+            return true;
+        }
+
+        /// <summary>
+        /// Tries to get the value of the element as a number.
+        /// </summary>
+        /// <param name="result">The result.</param>
+        /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+        public bool TryGetUInt32(out uint result)
+        {
+            try
+            {
+                result = (uint)Value;
+                return true;
+            }
+            catch (OverflowException)
+            {
+            }
+            catch (InvalidCastException)
+            {
+            }
+
+            result = 0;
+            return false;
+        }
+
+        /// <summary>
+        /// Tries to get the value of the element as a number.
+        /// </summary>
+        /// <param name="result">The result.</param>
+        /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+        public bool TryGetInt32(out int result)
+        {
+            try
+            {
+                result = (int)Value;
+                return true;
+            }
+            catch (OverflowException)
+            {
+            }
+            catch (InvalidCastException)
+            {
+            }
+
+            result = 0;
+            return false;
+        }
+
+        /// <summary>
+        /// Tries to get the value of the element as a number.
+        /// </summary>
+        /// <param name="result">The result.</param>
+        /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+        public bool TryGetInt64(out long result)
+        {
+            try
+            {
+                result = (long)Value;
+                return true;
+            }
+            catch (OverflowException)
+            {
+            }
+            catch (InvalidCastException)
+            {
+            }
+
+            result = 0;
+            return false;
+        }
+
+        /// <summary>
+        /// Tries to get the value of the element as a number.
+        /// </summary>
+        /// <param name="result">The result.</param>
+        /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+        bool IJsonValueResolver.TryGetString(out string result)
+        {
+            result = ToString();
+            return true;
+        }
+
+        /// <summary>
+        /// Tries to get the value of the element as a GUID.
+        /// </summary>
+        /// <param name="result">The result.</param>
+        /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+        bool IJsonValueResolver.TryGetGuid(out Guid result)
+        {
+            result = Guid.Empty;
+            return false;
+        }
 
         /// <summary>
         /// Gets the value of the specific property.

@@ -6,6 +6,7 @@ using System.Text;
 using System.Text.Json;
 
 using Trivial.Reflection;
+using Trivial.Web;
 
 namespace Trivial.Text
 {
@@ -312,16 +313,44 @@ namespace Trivial.Text
                     break;
             }
 
-            return Web.WebFormat.ParseDate(s);
+            return WebFormat.ParseDate(s);
+        }
+
+        /// <summary>
+        /// Tries to get the value of the element as a date time.
+        /// </summary>
+        /// <param name="result">The result.</param>
+        /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+        public bool TryGetDateTime(out DateTime result)
+        {
+            var date = TryGetDateTime();
+            if (date.HasValue)
+            {
+                result = date.Value;
+                return true;
+            }
+
+            result = WebFormat.ParseDate(0);
+            return false;
         }
 
         /// <summary>
         /// Gets the JSON format string of the value.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>The JSON format string.</returns>
         public override string ToString()
         {
             return Value != null ? ToJson(Value) : "null";
+        }
+
+        /// <summary>
+        /// Gets the JSON format string of the value.
+        /// </summary>
+        /// <param name="removeQuotes">true if remove the quotes; otherwise, false.</param>
+        /// <returns>The JSON format string.</returns>
+        public string ToString(bool removeQuotes)
+        {
+            return Value != null ? ToJson(Value, removeQuotes) : (removeQuotes ? null : "null");
         }
 
         /// <summary>
@@ -578,6 +607,8 @@ namespace Trivial.Text
             {
                 JsonBoolean.TrueString => true,
                 JsonBoolean.FalseString => false,
+                "0" => false,
+                "1" => true,
                 _ => throw new InvalidOperationException("Expect a boolean but it is a string.")
             };
         }
@@ -622,7 +653,7 @@ namespace Trivial.Text
         /// </summary>
         /// <returns>The value of the element as a number.</returns>
         /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
-        decimal IJsonValueResolver.GetDecimal()
+        public decimal GetDecimal()
         {
             if (string.IsNullOrEmpty(Value)) return 0;
             if (decimal.TryParse(Value, out var num)) return num;
@@ -634,75 +665,82 @@ namespace Trivial.Text
         /// </summary>
         /// <returns>The value of the element as a number.</returns>
         /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
-        float IJsonValueResolver.GetSingle()
+        public float GetSingle()
         {
             if (string.IsNullOrEmpty(Value)) return 0;
             if (float.TryParse(Value, out var num)) return num;
             throw new InvalidOperationException("Expect a number but it is a string.");
         }
 
-
         /// <summary>
         /// Gets the value of the element as a number.
         /// </summary>
         /// <returns>The value of the element as a number.</returns>
         /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
-        double IJsonValueResolver.GetDouble()
+        public double GetDouble()
         {
             if (string.IsNullOrEmpty(Value)) return 0;
             if (double.TryParse(Value, out var num)) return num;
+            if (ValueType == 1)
+            {
+                var date = TryGetDateTime();
+                if (date.HasValue) return WebFormat.ParseDate(date.Value);
+            }
+
             throw new InvalidOperationException("Expect a number but it is a string.");
         }
-
 
         /// <summary>
         /// Gets the value of the element as a number.
         /// </summary>
         /// <returns>The value of the element as a number.</returns>
         /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
-        short IJsonValueResolver.GetInt16()
+        public short GetInt16()
         {
             if (string.IsNullOrEmpty(Value)) return 0;
             if (short.TryParse(Value, out var num)) return num;
             throw new InvalidOperationException("Expect a number but it is a string.");
         }
 
-
         /// <summary>
         /// Gets the value of the element as a number.
         /// </summary>
         /// <returns>The value of the element as a number.</returns>
         /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
-        uint IJsonValueResolver.GetUInt32()
+        public uint GetUInt32()
         {
             if (string.IsNullOrEmpty(Value)) return 0;
             if (uint.TryParse(Value, out var num)) return num;
             throw new InvalidOperationException("Expect a number but it is a string.");
         }
 
-
         /// <summary>
         /// Gets the value of the element as a number.
         /// </summary>
         /// <returns>The value of the element as a number.</returns>
         /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
-        int IJsonValueResolver.GetInt32()
+        public int GetInt32()
         {
             if (string.IsNullOrEmpty(Value)) return 0;
             if (int.TryParse(Value, out var num)) return num;
             throw new InvalidOperationException("Expect a number but it is a string.");
         }
 
-
         /// <summary>
         /// Gets the value of the element as a number.
         /// </summary>
         /// <returns>The value of the element as a number.</returns>
         /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
-        long IJsonValueResolver.GetInt64()
+        public long GetInt64()
         {
             if (string.IsNullOrEmpty(Value)) return 0;
             if (long.TryParse(Value, out var num)) return num;
+            if (ValueType == 1)
+            {
+                var date = TryGetDateTime();
+                if (date.HasValue) return WebFormat.ParseDate(date.Value);
+            }
+
             throw new InvalidOperationException("Expect a number but it is a string.");
         }
 
@@ -714,15 +752,184 @@ namespace Trivial.Text
         string IJsonValueResolver.GetString() => Value;
 
         /// <summary>
-        /// Gets the value of the element as a number.
+        /// Gets the value of the element as a GUID.
         /// </summary>
-        /// <returns>The value of the element as a number.</returns>
+        /// <returns>The value of the element as a GUID.</returns>
         /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
         /// <exception cref="FormatException">The value is not formatted for a Guid.</exception>
-        Guid IJsonValueResolver.GetGuid()
+        public Guid GetGuid()
         {
             if (string.IsNullOrEmpty(Value)) return Guid.Empty;
             return Guid.Parse(Value);
+        }
+
+        /// <summary>
+        /// Tries to get the value of the element as a boolean.
+        /// </summary>
+        /// <param name="result">The result.</param>
+        /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+        public bool TryGetBoolean(out bool result)
+        {
+            if (string.IsNullOrEmpty(Value))
+            {
+                result = false;
+                return true;
+            }
+
+            var v = Value.ToLower();
+            switch (v)
+            {
+                case JsonBoolean.TrueString:
+                case "1":
+                    result = true;
+                    return true;
+                case JsonBoolean.FalseString:
+                case "0":
+                    result = false;
+                    return true;
+                default:
+                    result = false;
+                    return false;
+            }
+        }
+
+        /// <summary>
+        /// Tries to get the value of the element as a number.
+        /// </summary>
+        /// <param name="result">The result.</param>
+        /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+        public bool TryGetDecimal(out decimal result)
+        {
+            if (string.IsNullOrEmpty(Value))
+            {
+                result = 0;
+                return true;
+            }
+
+            return decimal.TryParse(Value, out result);
+        }
+
+        /// <summary>
+        /// Tries to get the value of the element as a number.
+        /// </summary>
+        /// <param name="result">The result.</param>
+        /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+        public bool TryGetSingle(out float result)
+        {
+            if (string.IsNullOrEmpty(Value))
+            {
+                result = 0;
+                return true;
+            }
+
+            return float.TryParse(Value, out result);
+        }
+
+        /// <summary>
+        /// Tries to get the value of the element as a number.
+        /// </summary>
+        /// <param name="result">The result.</param>
+        /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+        public bool TryGetDouble(out double result)
+        {
+            if (string.IsNullOrEmpty(Value))
+            {
+                result = 0;
+                return true;
+            }
+
+            return double.TryParse(Value, out result);
+        }
+
+        /// <summary>
+        /// Tries to get the value of the element as a number.
+        /// </summary>
+        /// <param name="result">The result.</param>
+        /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+        public bool TryGetUInt16(out ushort result)
+        {
+            if (string.IsNullOrEmpty(Value))
+            {
+                result = 0;
+                return true;
+            }
+
+            return ushort.TryParse(Value, out result);
+        }
+
+        /// <summary>
+        /// Tries to get the value of the element as a number.
+        /// </summary>
+        /// <param name="result">The result.</param>
+        /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+        public bool TryGetUInt32(out uint result)
+        {
+            if (string.IsNullOrEmpty(Value))
+            {
+                result = 0;
+                return true;
+            }
+
+            return uint.TryParse(Value, out result);
+        }
+
+        /// <summary>
+        /// Tries to get the value of the element as a number.
+        /// </summary>
+        /// <param name="result">The result.</param>
+        /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+        public bool TryGetInt32(out int result)
+        {
+            if (string.IsNullOrEmpty(Value))
+            {
+                result = 0;
+                return true;
+            }
+
+            return int.TryParse(Value, out result);
+        }
+
+        /// <summary>
+        /// Tries to get the value of the element as a number.
+        /// </summary>
+        /// <param name="result">The result.</param>
+        /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+        public bool TryGetInt64(out long result)
+        {
+            if (string.IsNullOrEmpty(Value))
+            {
+                result = 0;
+                return true;
+            }
+
+            return long.TryParse(Value, out result);
+        }
+
+        /// <summary>
+        /// Tries to get the value of the element as a number.
+        /// </summary>
+        /// <param name="result">The result.</param>
+        /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+        bool IJsonValueResolver.TryGetString(out string result)
+        {
+            result = Value;
+            return true;
+        }
+
+        /// <summary>
+        /// Tries to get the value of the element as a GUID.
+        /// </summary>
+        /// <param name="result">The result.</param>
+        /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+        public bool TryGetGuid(out Guid result)
+        {
+            if (string.IsNullOrEmpty(Value))
+            {
+                result = Guid.Empty;
+                return true;
+            }
+
+            return Guid.TryParse(Value, out result);
         }
 
         /// <summary>
