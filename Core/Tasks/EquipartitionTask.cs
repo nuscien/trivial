@@ -425,7 +425,7 @@ namespace Trivial.Tasks
                     );
                 }
 
-                var m = StringExtensions.FromJson<FragmentModel>(s);
+                var m = JsonSerializer.Deserialize<FragmentModel>(s);
                 if (string.IsNullOrWhiteSpace(m.State) || !Enum.TryParse(m.State, true, out FragmentStates state)) state = FragmentStates.Pending;
                 return new Fragment(m.Id, m.Index ?? 0, state, WebFormat.ParseDate(m.Creation), WebFormat.ParseDate(m.Modification), m.Tag);
             }

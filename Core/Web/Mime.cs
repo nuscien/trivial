@@ -15,6 +15,16 @@ namespace Trivial.Web
     public static partial class WebFormat
     {
         /// <summary>
+        /// Gets the MIME value of document type definition format text.
+        /// </summary>
+        public const string DocumentTypeDefinitionMIME = "application/xml-dtd";
+        
+        /// <summary>
+        /// Gets the MIME value of XML format text.
+        /// </summary>
+        public const string XmlMIME = "application/xml";
+
+        /// <summary>
         /// Gets the MIME value of JSON format text.
         /// </summary>
         public const string JsonMIME = "application/json";
@@ -23,6 +33,11 @@ namespace Trivial.Web
         /// Gets the MIME value of JavaScript (ECMAScript) format text.
         /// </summary>
         public const string JavaScriptMIME = "text/javascript";
+
+        /// <summary>
+        /// Gets the MIME value of YAML format text.
+        /// </summary>
+        public const string YamlMIME = "application/x-yaml";
 
         /// <summary>
         /// Gets the MIME value of the URL encoded.
@@ -38,6 +53,21 @@ namespace Trivial.Web
         /// Gets the MIME value of HTML format text.
         /// </summary>
         public const string HtmlMIME = "text/html";
+
+        /// <summary>
+        /// Gets the MIME value of SVG format text.
+        /// </summary>
+        public const string SvgMIME = "image/svg+xml";
+
+        /// <summary>
+        /// Gets the MIME value of markdown format text.
+        /// </summary>
+        public const string MarkdownMIME = "text/markdown";
+
+        /// <summary>
+        /// Gets the MIME value of web assembly format text.
+        /// </summary>
+        public const string WebAssemblyMIME = "application/wasm";
 
         /// <summary>
         /// Gets the MIME value of octet stream.
@@ -87,6 +117,8 @@ namespace Trivial.Web
                 case "mpp":
                 case "mpt":
                     return "application/vnd.ms-project";
+                case "msg":
+                    return "application/vnd.ms-outlook";
                 case "ppt":
                     return "application/vnd.ms-powerpoint";
                 case "pptm":
@@ -195,7 +227,7 @@ namespace Trivial.Web
                     return "image/tiff";
                 case "svg":
                 case "svgz":
-                    return "image/svg+xml";
+                    return SvgMIME;
                 case "webp":
                     return "image/webp";
                 case "3ds":
@@ -327,15 +359,15 @@ namespace Trivial.Web
                 case "ini":
                 case "gitignore":
                 case "editorconfig":
-                    return "text/plain";
+                    return Text.StringExtensions.PlainTextMIME;
                 case "csv":
-                    return "text/csv";
+                    return Text.CsvParser.MIME;
                 case "md":
-                    return "text/markdown";
+                    return MarkdownMIME;
                 case "mml":
                     return "text/mathml";
                 case "rtx":
-                    return "text/richtext";
+                    return Text.StringExtensions.RichTextMIME;
                 case "sgml":
                 case "sgm":
                     return "text/sgml";
@@ -354,10 +386,16 @@ namespace Trivial.Web
                     return "application/pkix-cert";
                 case "css":
                     return CssMIME;
+                case "sass":
+                    return "text/x-sass";
+                case "scss":
+                    return "text/x-scss";
+                case "less":
+                    return "text/x-less";
                 case "crl":
                     return "application/pkix-crl";
                 case "dtd":
-                    return "application/xml-dtd";
+                    return DocumentTypeDefinitionMIME;
                 case "ecma":
                     return "application/ecmascript";
                 case "epub":
@@ -394,12 +432,12 @@ namespace Trivial.Web
                 case "xml":
                 case "xsl":
                 case "config":
-                    return "application/xml";
+                    return XmlMIME;
                 case "vbs":
                     return "text/vbscript";
                 case "yaml":
                 case "yml":
-                    return "application/x-yaml";
+                    return YamlMIME;
 
                 // Font
                 case "eot":
@@ -445,18 +483,18 @@ namespace Trivial.Web
                 case "csdproj":
                 case "vbproj":
                 case "vbdproj":
-                    return "text/plain";
+                    return Text.StringExtensions.PlainTextMIME;
                 case "py":
                 case "py2":
                 case "py3":
                 case "pyw":
                     return "text/x-python";
                 case "settings":
-                    return "application/xml";
+                    return XmlMIME;
                 case "sql":
                     return "application/x-sql";
                 case "ps1":
-                    return "text/plain";
+                    return Text.StringExtensions.PlainTextMIME;
 
                 // Others
                 case "application":
@@ -475,7 +513,7 @@ namespace Trivial.Web
                 case "jar":
                     return "application/java-archive";
                 case "wasm":
-                    return "application/wasm";
+                    return WebAssemblyMIME;
                 case "aspx":
                     return "application/x-aspx";
                 case "dll":

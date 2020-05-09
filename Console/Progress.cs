@@ -140,7 +140,7 @@ namespace Trivial.Console
     /// <summary>
     /// The progress result.
     /// </summary>
-    public class ProgressLineResult : IProgress<double>, System.ComponentModel.INotifyPropertyChanged
+    public class ProgressLineResult : IProgress<double>, INotifyPropertyChanged
     {
         /// <summary>
         /// Gets the current value of the updated progress.
@@ -488,6 +488,50 @@ namespace Trivial.Console
             IsCompleted = false;
             ReportProcessing(value);
             if (wasCompleted != IsCompleted) PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(IsCompleted)));
+        }
+
+        /// <summary>
+        /// Returns a string that represents the current object.
+        /// </summary>
+        /// <returns>A string that represents the current object.</returns>
+        public override string ToString()
+        {
+            if (IsCompleted)
+            {
+                return IsSuccessful ? "√" : $"× ({Value:#0.0%})";
+            }
+
+            return Value.ToString("#0.0%");
+        }
+
+        /// <summary>
+        /// Converts the progress result to a floating-point number.
+        /// </summary>
+        /// <param name="progress">The progress result value.</param>
+        /// <returns>The current value of the updated progress.</returns>
+        public static explicit operator double(ProgressLineResult progress)
+        {
+            return progress == null ? 0 : progress.Value;
+        }
+
+        /// <summary>
+        /// Converts the progress result to a floating-point number.
+        /// </summary>
+        /// <param name="progress">The progress result value.</param>
+        /// <returns>The current value of the updated progress.</returns>
+        public static explicit operator float(ProgressLineResult progress)
+        {
+            return progress == null ? 0 : (float)progress.Value;
+        }
+
+        /// <summary>
+        /// Converts the progress result to a boolean value.
+        /// </summary>
+        /// <param name="progress">The progress result value.</param>
+        /// <returns>A value indicating whether it is completed.</returns>
+        public static explicit operator bool(ProgressLineResult progress)
+        {
+            return progress == null ? false : progress.IsCompleted;
         }
     }
 }

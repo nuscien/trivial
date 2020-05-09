@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Numerics;
 using System.Text;
 using System.Text.Json;
 
@@ -186,6 +187,14 @@ namespace Trivial.Text
         public JsonString(decimal value) : this(value.ToString("g", CultureInfo.InvariantCulture))
         {
             ValueType = 3;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the JsonString class.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        public JsonString(BigInteger value) : this(value.ToString("g", CultureInfo.InvariantCulture))
+        {
         }
 
         /// <summary>

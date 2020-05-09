@@ -391,7 +391,7 @@ namespace Trivial.Text
         /// <summary>
         /// Gets or sets a value indicating whether need enable ToString() method to return the raw string in the source format of the parser.
         /// </summary>
-        public bool IsSourceToStringEnabled { get; }
+        public virtual bool IsSourceToStringEnabled { get; }
 
         /// <summary>
         /// Converts lines string and each line is in the source format of this parser.

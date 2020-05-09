@@ -319,6 +319,7 @@ namespace Trivial.Web
                 if (ignoreJsonDoc) return null;
                 return str =>
                 {
+                    if (string.IsNullOrWhiteSpace(str)) return default;
                     return (T)(object)JsonDocument.Parse(str);
                 };
             }
@@ -327,6 +328,7 @@ namespace Trivial.Web
                 if (ignoreJsonDoc) return null;
                 return str =>
                 {
+                    if (string.IsNullOrWhiteSpace(str)) return default;
                     return (T)(object)JsonObject.Parse(str);
                 };
             }
@@ -335,8 +337,54 @@ namespace Trivial.Web
                 if (ignoreJsonDoc) return null;
                 return str =>
                 {
+                    if (string.IsNullOrWhiteSpace(str)) return default;
                     return (T)(object)JsonArray.Parse(str);
                 };
+            }
+            else if (t.FullName.StartsWith("System.Text.Json.Json", StringComparison.InvariantCulture) && t.IsClass)
+            {
+                try
+                {
+                    var n = t;
+                    if (t.Name.Equals("JsonNode", StringComparison.InvariantCulture))
+                    {
+                    }
+                    else if (t.Name.Equals("JsonObject", StringComparison.InvariantCulture) || t.Name.Equals("JsonArray", StringComparison.InvariantCulture))
+                    {
+                        n = t.Assembly.GetType("System.Text.Json.JsonNode", false);
+                        if (n == null) return null;
+                    }
+                    else
+                    {
+                        return null;
+                    }
+
+                    var parser = n.GetMethod("Parse", new[] { typeof(string) });
+                    if (parser != null && parser.IsStatic)
+                    {
+                        return str =>
+                        {
+                            if (string.IsNullOrWhiteSpace(str)) return default;
+                            return (T)parser.Invoke(null, new object[] { str });
+                        };
+                    }
+
+                    parser = n.GetMethod("Parse", new[] { typeof(string), typeof(JsonDocumentOptions) });
+                    if (parser != null && parser.IsStatic)
+                    {
+                        return str =>
+                        {
+                            if (string.IsNullOrWhiteSpace(str)) return default;
+                            return (T)parser.Invoke(null, new object[] { str, default(JsonDocumentOptions) });
+                        };
+                    }
+                }
+                catch (AmbiguousMatchException)
+                {
+                }
+                catch (ArgumentException)
+                {
+                }
             }
             else if (t.FullName.StartsWith("Newtonsoft.Json.Linq.J", StringComparison.InvariantCulture))
             {
@@ -347,6 +395,7 @@ namespace Trivial.Web
                     {
                         return str =>
                         {
+                            if (string.IsNullOrWhiteSpace(str)) return default;
                             return (T)parser.Invoke(null, new object[] { str });
                         };
                     }

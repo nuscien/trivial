@@ -495,15 +495,12 @@ namespace Trivial.Console
         /// <returns>A string value of a specific parameter.</returns>
         public string Value(ParameterModes mode = ParameterModes.First)
         {
-            switch (mode)
+            return mode switch
             {
-                case ParameterModes.All:
-                    return MergedValue;
-                case ParameterModes.Last:
-                    return LastValue;
-                default:
-                    return FirstValue;
-            }
+                ParameterModes.All => MergedValue,
+                ParameterModes.Last => LastValue,
+                _ => FirstValue,
+            };
         }
 
         /// <summary>

@@ -58,6 +58,11 @@ namespace Trivial.Text
         public const string PlainTextMIME = "text/plain";
 
         /// <summary>
+        /// Gets the MIME value of plain text format text.
+        /// </summary>
+        public const string RichTextMIME = "text/richtext";
+
+        /// <summary>
         /// Returns a copy of this string converted to specific case, using the casing rules of the specified culture.
         /// </summary>
         /// <param name="source">The source string.</param>
@@ -451,19 +456,6 @@ namespace Trivial.Text
         }
 
         /// <summary>
-        /// Deserializes an object into JSON format.
-        /// </summary>
-        /// <param name="s">A JSON format string to deserialize.</param>
-        /// <returns>An object deserialized.</returns>
-        internal static T FromJson<T>(string s)
-        {
-            var bytes = Encoding.UTF8.GetBytes(s);
-            using var stream = new MemoryStream(bytes);
-            var serializer = new DataContractJsonSerializer(typeof(T));
-            return (T)serializer.ReadObject(stream);
-        }
-
-        /// <summary>
         /// Serializes an object into JSON format.
         /// </summary>
         /// <param name="obj">The object to serialize.</param>
@@ -522,6 +514,13 @@ namespace Trivial.Text
                 if (t.FullName.Equals("Newtonsoft.Json.Linq.JObject", StringComparison.InvariantCulture)
                     || t.FullName.Equals("Newtonsoft.Json.Linq.JArray", StringComparison.InvariantCulture))
                     return obj.ToString();
+            }
+
+            if (t.FullName.StartsWith("System.Text.Json.Json", StringComparison.InvariantCulture) && t.IsClass)
+            {
+                var method = t.GetMethod("ToJsonString", Type.EmptyTypes);
+                if (method != null && !method.IsStatic)
+                    return method.Invoke(obj, null)?.ToString();
             }
 
             if (obj is Security.TokenRequest tokenReq)
