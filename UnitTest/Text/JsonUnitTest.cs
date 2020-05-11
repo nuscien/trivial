@@ -114,10 +114,15 @@ namespace Trivial.Text
             Assert.AreEqual(456, list[2]);
             Assert.AreEqual(8, list[6]);
             Assert.AreEqual(9, list[7]);
+            jsonArray.AddNull();
+            Assert.AreEqual(JsonValues.Null, jsonArray[jsonArray.Count - 1]);
             jsonArray.Add(new JsonArray
             {
                 8, 9, 0
             });
+            jsonArray.Add(null as string);
+            jsonArray.AddNull();
+            jsonArray.RemoveNull();
             Assert.AreEqual(JsonValueKind.Array, jsonArray[jsonArray.Count - 1].ValueKind);
 
             var jsonDoc = (JsonDocument)json;

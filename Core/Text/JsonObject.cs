@@ -659,6 +659,18 @@ namespace Trivial.Text
         /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
         IJsonValueResolver IJsonValueResolver.GetValue(int index) => throw new InvalidOperationException("Expect an array but it is an object.");
 
+        /// <summary>
+        /// Tries to get the value of the specific property.
+        /// </summary>
+        /// <param name="index">The zero-based index of the element to get.</param>
+        /// <param name="result">The result.</param>
+        /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+        bool IJsonValueResolver.TryGetValue(int index, out IJsonValueResolver result)
+        {
+            result = default;
+            return false;
+        }
+
 #if !NETSTANDARD2_0
         /// <summary>
         /// Gets the value at the specific index.
@@ -667,6 +679,18 @@ namespace Trivial.Text
         /// <returns>The value.</returns>
         /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
         IJsonValueResolver IJsonValueResolver.GetValue(Index index) => throw new InvalidOperationException("Expect an array but it is an object.");
+
+        /// <summary>
+        /// Tries to get the value of the specific property.
+        /// </summary>
+        /// <param name="index">The zero-based index of the element to get.</param>
+        /// <param name="result">The result.</param>
+        /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+        bool IJsonValueResolver.TryGetValue(Index index, out IJsonValueResolver result)
+        {
+            result = default;
+            return false;
+        }
 #endif
 
         /// <summary>
@@ -1162,22 +1186,11 @@ namespace Trivial.Text
         /// </summary>
         /// <param name="key">The property key.</param>
         /// <returns>The value.</returns>
-        public IJsonValueResolver TryGetValue(ReadOnlySpan<char> key)
-        {
-            if (key == null) return null;
-            return TryGetValue(key.ToString());
-        }
-
-        /// <summary>
-        /// Tries to get the value of the specific property.
-        /// </summary>
-        /// <param name="key">The property key.</param>
-        /// <returns>The value.</returns>
         public IJsonValueResolver TryGetValue(string key)
         {
             try
             {
-                if (!string.IsNullOrWhiteSpace(key) && store.TryGetValue(key, out var value)) return (value as IJsonValueResolver) ?? JsonValues.Null;
+                if (!string.IsNullOrWhiteSpace(key) && store.TryGetValue(key, out var value)) return value ?? JsonValues.Null;
             }
             catch (ArgumentException)
             {
@@ -1190,13 +1203,52 @@ namespace Trivial.Text
         /// Tries to get the value of the specific property.
         /// </summary>
         /// <param name="key">The property key.</param>
+        /// <returns>The value.</returns>
+        public IJsonValueResolver TryGetValue(ReadOnlySpan<char> key)
+        {
+            if (key == null) return null;
+            return TryGetValue(key.ToString());
+        }
+
+        /// <summary>
+        /// Tries to get the value of the specific property.
+        /// </summary>
+        /// <param name="key">The property key.</param>
         /// <param name="result">The result.</param>
-        /// <returns>true if has the property and the type is the one expected; otherwise, false.</returns>
+        /// <returns>true if the kind is the one expected; otherwise, false.</returns>
         public bool TryGetValue(string key, out IJsonValueResolver result)
         {
-            var v = TryGetValue(key);
-            result = v;
-            return !(v is null);
+            try
+            {
+                if (!string.IsNullOrWhiteSpace(key) && store.TryGetValue(key, out var value))
+                {
+                    result = value ?? JsonValues.Null;
+                    return true;
+                }
+            }
+            catch (ArgumentException)
+            {
+            }
+
+            result = default;
+            return false;
+        }
+
+        /// <summary>
+        /// Tries to get the value of the specific property.
+        /// </summary>
+        /// <param name="key">The property key.</param>
+        /// <param name="result">The result.</param>
+        /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+        public bool TryGetValue(ReadOnlySpan<char> key, out IJsonValueResolver result)
+        {
+            if (key == null)
+            {
+                result = default;
+                return false;
+            }
+
+            return TryGetValue(key.ToString(), out result);
         }
 
         /// <summary>

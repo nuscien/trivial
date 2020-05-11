@@ -958,12 +958,48 @@ namespace Trivial.Text
         IJsonValueResolver IJsonValueResolver.GetValue(ReadOnlySpan<char> key) => throw new InvalidOperationException("Expect an object but it is a string.");
 
         /// <summary>
+        /// Tries to get the value of the specific property.
+        /// </summary>
+        /// <param name="key">The property key.</param>
+        /// <param name="result">The result.</param>
+        /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+        bool IJsonValueResolver.TryGetValue(string key, out IJsonValueResolver result)
+        {
+            result = default;
+            return false;
+        }
+
+        /// <summary>
+        /// Tries to get the value of the specific property.
+        /// </summary>
+        /// <param name="key">The property key.</param>
+        /// <param name="result">The result.</param>
+        /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+        bool IJsonValueResolver.TryGetValue(ReadOnlySpan<char> key, out IJsonValueResolver result)
+        {
+            result = default;
+            return false;
+        }
+
+        /// <summary>
         /// Gets the value at the specific index.
         /// </summary>
         /// <param name="index">The zero-based index of the element to get.</param>
         /// <returns>The value.</returns>
         /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
         IJsonValueResolver IJsonValueResolver.GetValue(int index) => throw new InvalidOperationException("Expect an array but it is a string.");
+
+        /// <summary>
+        /// Tries to get the value of the specific property.
+        /// </summary>
+        /// <param name="index">The zero-based index of the element to get.</param>
+        /// <param name="result">The result.</param>
+        /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+        bool IJsonValueResolver.TryGetValue(int index, out IJsonValueResolver result)
+        {
+            result = default;
+            return false;
+        }
 
 #if !NETSTANDARD2_0
         /// <summary>
@@ -973,6 +1009,18 @@ namespace Trivial.Text
         /// <returns>The value.</returns>
         /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
         IJsonValueResolver IJsonValueResolver.GetValue(Index index) => throw new InvalidOperationException("Expect an array but it is a string.");
+
+        /// <summary>
+        /// Tries to get the value of the specific property.
+        /// </summary>
+        /// <param name="index">The zero-based index of the element to get.</param>
+        /// <param name="result">The result.</param>
+        /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+        bool IJsonValueResolver.TryGetValue(Index index, out IJsonValueResolver result)
+        {
+            result = default;
+            return false;
+        }
 #endif
 
         /// <summary>

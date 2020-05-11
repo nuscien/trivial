@@ -1058,7 +1058,7 @@ namespace Trivial.Text
         /// </summary>
         /// <param name="index">The zero-based index of the element to get.</param>
         /// <returns>The value.</returns>
-        public IJsonValue TryGetValue(int index)
+        public IJsonValueResolver TryGetValue(int index)
         {
             if (index < 0 || index >= store.Count)
             {
@@ -1082,7 +1082,7 @@ namespace Trivial.Text
         /// <param name="index">The zero-based index of the element to get.</param>
         /// <param name="result">The result.</param>
         /// <returns>true if has the property and the type is the one expected; otherwise, false.</returns>
-        public bool TryGetValue(int index, out IJsonValue result)
+        public bool TryGetValue(int index, out IJsonValueResolver result)
         {
             var v = TryGetValue(index);
             result = v;
@@ -1100,6 +1100,27 @@ namespace Trivial.Text
         }
 
 #if !NETSTANDARD2_0
+        /// <summary>
+        /// Tries to get the value at the specific index.
+        /// </summary>
+        /// <param name="index">The zero-based index of the element to get.</param>
+        /// <returns>The value.</returns>
+        public IJsonValueResolver TryGetValue(Index index)
+        {
+            return TryGetValue(index.IsFromEnd ? Count - index.Value : index.Value);
+        }
+
+        /// <summary>
+        /// Tries to get the value at the specific index.
+        /// </summary>
+        /// <param name="index">The zero-based index of the element to get.</param>
+        /// <param name="result">The result.</param>
+        /// <returns>true if has the property and the type is the one expected; otherwise, false.</returns>
+        public bool TryGetValue(Index index, out IJsonValueResolver result)
+        {
+            return TryGetValue(index.IsFromEnd ? Count - index.Value : index.Value, out result);
+        }
+
         /// <summary>
         /// Removes the element at the specific index.
         /// </summary>
@@ -1130,6 +1151,17 @@ namespace Trivial.Text
         {
             var count = 0;
             while (store.Remove(null)) count++;
+            var list = new List<IJsonValueResolver>();
+            foreach (var ele in store)
+            {
+                if (ele is null || ele.ValueKind == JsonValueKind.Null || ele.ValueKind == JsonValueKind.Undefined) list.Add(ele);
+            }
+
+            foreach (var ele in list)
+            {
+                while (store.Remove(ele)) count++;
+            }
+
             return count;
         }
 
@@ -2570,11 +2602,50 @@ namespace Trivial.Text
         }
 
         /// <summary>
+        /// Tries to get the value of the specific property.
+        /// </summary>
+        /// <param name="key">The property key.</param>
+        /// <param name="result">The result.</param>
+        /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+        bool IJsonValueResolver.TryGetValue(string key, out IJsonValueResolver result)
+        {
+            if (key != null && int.TryParse(key, out var i)) return TryGetValue(i, out result);
+            result = default;
+            return false;
+        }
+
+        /// <summary>
+        /// Tries to get the value of the specific property.
+        /// </summary>
+        /// <param name="key">The property key.</param>
+        /// <param name="result">The result.</param>
+        /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+        bool IJsonValueResolver.TryGetValue(ReadOnlySpan<char> key, out IJsonValueResolver result)
+        {
+#if !NETSTANDARD2_0
+            if (key != null && int.TryParse(key, out var i)) return TryGetValue(i, out result);
+#else
+            if (key != null && int.TryParse(key.ToString(), out var i)) return TryGetValue(i, out result);
+#endif
+            result = default;
+            return false;
+        }
+
+        /// <summary>
         /// Gets all property keys.
         /// </summary>
         /// <returns>The property keys.</returns>
         /// <exception cref="InvalidOperationException">The value kind is not an object.</exception>
-        IEnumerable<string> IJsonValueResolver.GetKeys() => throw new InvalidOperationException("Expect an object but it is a number.");
+        IEnumerable<string> IJsonValueResolver.GetKeys()
+        {
+            var list = new List<string>();
+            for (var i = 0; i < Count; i++)
+            {
+                list.Add(i.ToString("g"));
+            }
+
+            return list;
+        }
 
         /// <summary>
         /// Creates a new object that is a copy of the current instance.
