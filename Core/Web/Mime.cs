@@ -18,9 +18,9 @@ namespace Trivial.Web
         /// Gets the MIME value of document type definition format text.
         /// </summary>
         public const string DocumentTypeDefinitionMIME = "application/xml-dtd";
-        
+
         /// <summary>
-        /// Gets the MIME value of XML format text.
+        /// Gets the MIME value of extensible markup language format text.
         /// </summary>
         public const string XmlMIME = "application/xml";
 

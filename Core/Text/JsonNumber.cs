@@ -2261,6 +2261,12 @@ namespace Trivial.Text
         {
             try
             {
+                if (double.IsNaN(Value))
+                {
+                    result = WebFormat.ParseDate(0);
+                    return false;
+                }
+
                 result = WebFormat.ParseDate((long)Value);
                 return true;
             }
@@ -2284,7 +2290,10 @@ namespace Trivial.Text
         {
             try
             {
-                result = (decimal)Value;
+                if (double.IsNaN(Value))
+                    result = 0;
+                else
+                    result = (decimal)Value;
                 return true;
             }
             catch (OverflowException)
@@ -2341,7 +2350,10 @@ namespace Trivial.Text
         {
             try
             {
-                result = (uint)Value;
+                if (double.IsNaN(Value))
+                    result = 0;
+                else
+                    result = (uint)Value;
                 return true;
             }
             catch (OverflowException)
@@ -2364,7 +2376,10 @@ namespace Trivial.Text
         {
             try
             {
-                result = (int)Value;
+                if (double.IsNaN(Value))
+                    result = 0;
+                else
+                    result = (int)Value;
                 return true;
             }
             catch (OverflowException)
@@ -2387,7 +2402,36 @@ namespace Trivial.Text
         {
             try
             {
-                result = (long)Value;
+                if (double.IsNaN(Value))
+                    result = 0;
+                else
+                    result = (long)Value;
+                return true;
+            }
+            catch (OverflowException)
+            {
+            }
+            catch (InvalidCastException)
+            {
+            }
+
+            result = 0;
+            return false;
+        }
+
+        /// <summary>
+        /// Tries to get the value of the element as a number.
+        /// </summary>
+        /// <param name="result">The result.</param>
+        /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+        public bool TryGetUInt64(out ulong result)
+        {
+            try
+            {
+                if (double.IsNaN(Value))
+                    result = 0;
+                else
+                    result = (ulong)Value;
                 return true;
             }
             catch (OverflowException)
