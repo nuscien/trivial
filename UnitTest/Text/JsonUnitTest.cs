@@ -55,6 +55,7 @@ namespace Trivial.Text
             Assert.AreEqual(JsonValueKind.Number, json.GetValueKind("ticks"));
             Assert.AreEqual(JsonValueKind.Object, json.GetValueKind("props"));
             Assert.AreEqual(JsonValueKind.Array, json.GetValueKind("arr"));
+            Assert.AreEqual(json, json.Clone());
 
             var props = json.GetObjectValue("props");
             var p1 = new JsonObject
@@ -67,6 +68,7 @@ namespace Trivial.Text
             p1.SetValue("p3", p1);
             props.SetValue("p1", p1);
             props.SetValue("p4", "p5");
+            Assert.AreNotEqual(json, p1);
             Assert.IsNotNull(json.GetObjectValue("props", "p1", "p3"));
             Assert.IsTrue(json.GetObjectValue("props", "p1", "p3").GetBooleanValue("p2"));
             Assert.IsFalse(json.TryGetObjectValue("props", "p1").ContainsKey("p8"));

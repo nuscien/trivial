@@ -216,6 +216,16 @@ namespace Trivial.Text
         }
 
         /// <summary>
+        /// Converts to a specific positional notation format string.
+        /// </summary>
+        /// <param name="type">The positional notation.</param>
+        /// <returns>A string of the number in the specific positional notation.</returns>
+        public string ToPositionalNotationString(int type)
+        {
+            return Maths.Arithmetic.ToPositionalNotationString(Value, type);
+        }
+
+        /// <summary>
         /// Indicates whether this instance and a specified object are equal.
         /// </summary>
         /// <param name="other">The object to compare with the current instance.</param>
@@ -504,9 +514,9 @@ namespace Trivial.Text
 
         /// <summary>
         /// Gets the item value count.
+        /// It always return 0 because it is not an array or object.
         /// </summary>
-        /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
-        public int Count => throw new InvalidOperationException("It is not an array nor object.");
+        public int Count => 0;
 
         /// <summary>
         /// Gets the value of the element as a boolean.
@@ -1034,6 +1044,16 @@ namespace Trivial.Text
         /// <param name="json">The JSON value.</param>
         /// <returns>A number.</returns>
         public static explicit operator double(JsonInteger json)
+        {
+            return json.Value;
+        }
+
+        /// <summary>
+        /// Converts the JSON raw back.
+        /// </summary>
+        /// <param name="json">The JSON value.</param>
+        /// <returns>A number.</returns>
+        public static explicit operator System.Numerics.BigInteger(JsonInteger json)
         {
             return json.Value;
         }
@@ -1750,6 +1770,16 @@ namespace Trivial.Text
         }
 
         /// <summary>
+        /// Converts to a specific positional notation format string.
+        /// </summary>
+        /// <param name="type">The positional notation.</param>
+        /// <returns>A string of the number in the specific positional notation.</returns>
+        public string ToPositionalNotationString(int type)
+        {
+            return Maths.Arithmetic.ToPositionalNotationString(Value, type);
+        }
+
+        /// <summary>
         /// Indicates whether this instance and a specified object are equal.
         /// </summary>
         /// <param name="other">The object to compare with the current instance.</param>
@@ -2038,9 +2068,9 @@ namespace Trivial.Text
 
         /// <summary>
         /// Gets the item value count.
+        /// It always return 0 because it is not an array or object.
         /// </summary>
-        /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
-        public int Count => throw new InvalidOperationException("It is not an array nor object.");
+        public int Count => 0;
 
         /// <summary>
         /// Gets the value of the element as a boolean.

@@ -1657,8 +1657,8 @@ namespace Trivial.Text
         public int AddRange(JsonArray json)
         {
             var count = 0;
-            if (json == null) return count;
-            if (json == this) json = json.Clone();
+            if (json is null) return count;
+            if (ReferenceEquals(json, this)) json = json.Clone();
             foreach (var props in json)
             {
                 store.Add(props);
@@ -1678,7 +1678,7 @@ namespace Trivial.Text
         public int AddRange(JsonObject json, IEnumerable<string> propertyKeys)
         {
             var count = 0;
-            if (json == null || propertyKeys == null) return count;
+            if (json is null || propertyKeys == null) return count;
             foreach (var key in propertyKeys)
             {
                 store.Add(json.TryGetValue(key) ?? JsonValues.Null);
@@ -1987,8 +1987,8 @@ namespace Trivial.Text
         public int InsertRange(int index, JsonArray json)
         {
             var count = 0;
-            if (json == null) return count;
-            if (json == this) json = json.Clone();
+            if (json is null) return count;
+            if (ReferenceEquals(json, this)) json = json.Clone();
             foreach (var item in json)
             {
                 store.Insert(index + count, item);
@@ -2009,7 +2009,7 @@ namespace Trivial.Text
         public int InsertRange(int index, JsonObject json, IEnumerable<string> propertyKeys)
         {
             var count = 0;
-            if (json == null || propertyKeys == null) return count;
+            if (json is null || propertyKeys == null) return count;
             foreach (var key in propertyKeys)
             {
                 store.Insert(index + count, json.TryGetValue(key) ?? JsonValues.Null);
@@ -2137,6 +2137,81 @@ namespace Trivial.Text
         }
 
         /// <summary>
+        /// Gets a collection of the specific JSON value kind.
+        /// </summary>
+        /// <param name="kind">The data type of JSON value to filter.</param>
+        /// <param name="predicate">An optional function to test each source element for a condition; the second parameter of the function represents the index of the source element; the third is the index of the element after filter.</param>
+        /// <returns>A collection of values of the specific JSON value kind.</returns>
+        public IEnumerable<IJsonValueResolver> Where(JsonValueKind kind, Func<IJsonValueResolver, int, int, bool> predicate = null)
+        {
+            if (predicate == null) predicate = PassTrue;
+            var i = -1;
+            var j = -1;
+            if (kind == JsonValueKind.Null || kind == JsonValueKind.Undefined)
+            {
+                foreach (var item in store)
+                {
+                    i++;
+                    if (item == null)
+                    {
+                        j++;
+                        if (predicate(JsonValues.Null, i, j)) yield return JsonValues.Null;
+                        continue;
+                    }
+                    
+                    if (item.ValueKind == kind)
+                    {
+                        j++;
+                        if (predicate(item, i, j)) yield return item;
+                    }
+                }
+
+                yield break;
+            }
+
+            foreach (var item in store)
+            {
+                i++;
+                if (item != null && item.ValueKind == kind)
+                {
+                    j++;
+                    if (predicate(item, i, j)) yield return item;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Filters a sequence of values based on a predicate.
+        /// </summary>
+        /// <param name="predicate">A function to test each source element for a condition.</param>
+        /// <returns>A collection that contains elements from the input sequence that satisfy the condition.</returns>
+        public IEnumerable<IJsonValueResolver> Where(Func<IJsonValueResolver, bool> predicate)
+        {
+            if (predicate == null) return store.Where(ele => true);
+            return store.Where(predicate);
+        }
+
+        /// <summary>
+        /// Filters a sequence of values based on a predicate.
+        /// </summary>
+        /// <param name="predicate">A function to test each source element for a condition; the second parameter of the function represents the index of the source element.</param>
+        /// <returns>A collection that contains elements from the input sequence that satisfy the condition.</returns>
+        public IEnumerable<IJsonValueResolver> Where(Func<IJsonValueResolver, int, bool> predicate)
+        {
+            if (predicate == null) return store.Where(ele => true);
+            return store.Where(predicate);
+        }
+
+        /// <summary>
+        /// Creates a list from this instance.
+        /// </summary>
+        /// <returns>A list that contains elements from this sequence.</returns>
+        public List<IJsonValueResolver> ToList()
+        {
+            return new List<IJsonValueResolver>(store);
+        }
+
+        /// <summary>
         /// Indicates whether this instance and a specified object are equal.
         /// </summary>
         /// <param name="other">The object to compare with the current instance.</param>
@@ -2152,11 +2227,10 @@ namespace Trivial.Text
                 var prop = store[i];
                 if (prop is null || prop.ValueKind == JsonValueKind.Null || prop.ValueKind == JsonValueKind.Undefined)
                     return isNull;
-                if (isNull) return false;
-                JsonValues.Equals(prop, r);
+                if (isNull || !JsonValues.Equals(prop, r)) return false;
             }
 
-            return false;
+            return true;
         }
 
         /// <summary>
@@ -2230,7 +2304,7 @@ namespace Trivial.Text
         /// <returns>A JSON format string.</returns>
         public string ToString(IndentStyles indentStyle)
         {
-            return ToString(indentStyle, 0);
+            return ConvertToString(indentStyle, 0);
         }
 
         /// <summary>
@@ -2239,7 +2313,7 @@ namespace Trivial.Text
         /// <param name="indentStyle">The indent style.</param>
         /// <param name="indentLevel">The current indent level.</param>
         /// <returns>A JSON format string.</returns>
-        internal string ToString(IndentStyles indentStyle, int indentLevel)
+        internal string ConvertToString(IndentStyles indentStyle, int indentLevel)
         {
             if (indentStyle == IndentStyles.Minified) return ToString();
             var indentStr = StringExtensions.GetString(indentStyle);
@@ -2272,7 +2346,7 @@ namespace Trivial.Text
                         str.Append("null");
                         break;
                     case JsonValueKind.Array:
-                        str.Append((prop is JsonArray jArr) ? jArr.ToString(indentStyle, indentLevel) : "[]");
+                        str.Append((prop is JsonArray jArr) ? jArr.ConvertToString(indentStyle, indentLevel) : "[]");
                         break;
                     case JsonValueKind.Object:
                         str.Append((prop is JsonObject jObj) ? jObj.ConvertToString(indentStyle, indentLevel) : "{}");
@@ -2921,6 +2995,11 @@ namespace Trivial.Text
 
             var s = JsonSerializer.Serialize(obj, obj.GetType(), options);
             return Parse(s);
+        }
+
+        private static bool PassTrue(IJsonValueResolver data, int index, int index2)
+        {
+            return true;
         }
     }
 }

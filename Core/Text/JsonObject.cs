@@ -1834,10 +1834,10 @@ namespace Trivial.Text
         public int SetRange(JsonObject json, bool skipDuplicate = false)
         {
             var count = 0;
-            if (json == null) return count;
+            if (json is null) return count;
             if (skipDuplicate)
             {
-                if (json == this) return count;
+                if (ReferenceEquals(json, this)) return count;
                 foreach (var prop in json)
                 {
                     if (ContainsKey(prop.Key)) continue;
@@ -1847,7 +1847,7 @@ namespace Trivial.Text
             }
             else
             {
-                if (json == this) json = json.Clone();
+                if (ReferenceEquals(json, this)) json = json.Clone();
                 foreach (var prop in json)
                 {
                     store[prop.Key] = prop.Value;
@@ -1868,6 +1868,7 @@ namespace Trivial.Text
         /// <exception cref="ArgumentException">readerOptions contains unsupported options.</exception>
         public int SetRange(JsonArray array, IEnumerable<string> propertyMapping = null, bool skipDuplicate = false)
         {
+            if (array is null) return 0;
             if (propertyMapping == null)
             {
                 if (skipDuplicate)
@@ -2336,11 +2337,10 @@ namespace Trivial.Text
                 var isNull = !other.TryGetValue(prop.Key, out var r) || r is null || r.ValueKind == JsonValueKind.Null || r.ValueKind == JsonValueKind.Undefined;
                 if (prop.Value is null || prop.Value.ValueKind == JsonValueKind.Null || prop.Value.ValueKind == JsonValueKind.Undefined)
                     return isNull;
-                if (isNull) return false;
-                JsonValues.Equals(prop.Value, r);
+                if (isNull || !JsonValues.Equals(prop.Value, r)) return false;
             }
 
-            return false;
+            return true;
         }
 
         /// <summary>
@@ -2351,7 +2351,7 @@ namespace Trivial.Text
         public bool Equals(IJsonValue other)
         {
             if (other is null) return false;
-            if (other is JsonArray json) return Equals(json);
+            if (other is JsonObject json) return Equals(json);
             return false;
         }
 
@@ -2509,7 +2509,7 @@ namespace Trivial.Text
                         str.Append("null");
                         break;
                     case JsonValueKind.Array:
-                        str.Append((prop.Value is JsonArray jArr) ? jArr.ToString(indentStyle, indentLevel) : "[]");
+                        str.Append((prop.Value is JsonArray jArr) ? jArr.ConvertToString(indentStyle, indentLevel) : "[]");
                         break;
                     case JsonValueKind.Object:
                         str.Append((prop.Value is JsonObject jObj) ? jObj.ConvertToString(indentStyle, indentLevel) : "{}");
@@ -2700,7 +2700,7 @@ namespace Trivial.Text
         /// <param name="keys">The properties keys.</param>
         /// <param name="removeNull">true if skip null values; otherwise, false.</param>
         /// <returns>A dictionary of values of the specific keys.</returns>
-        public IDictionary<string, IJsonValueResolver> Select(IEnumerable<string> keys, bool removeNull = false)
+        public IDictionary<string, IJsonValueResolver> Where(IEnumerable<string> keys, bool removeNull = false)
         {
             var dict = new Dictionary<string, IJsonValueResolver>();
             if (removeNull)
@@ -2708,7 +2708,7 @@ namespace Trivial.Text
                 foreach (var item in keys)
                 {
                     if (store.TryGetValue(item, out var r) && !(r is null) && r.ValueKind != JsonValueKind.Null && r.ValueKind != JsonValueKind.Undefined)
-                        dict[item] = r as IJsonValueResolver;
+                        dict[item] = r;
                 }
             }
             else
@@ -2716,11 +2716,88 @@ namespace Trivial.Text
                 foreach (var item in keys)
                 {
                     if (store.TryGetValue(item, out var r))
-                        dict[item] = r as IJsonValueResolver;
+                        dict[item] = r;
                 }
             }
 
             return dict;
+        }
+
+        /// <summary>
+        /// Gets a dictionary of JSON value kind.
+        /// </summary>
+        /// <param name="kind">The data type of JSON value to filter.</param>
+        /// <param name="predicate">An optional function to test each source element for a condition; the second parameter of the function represents the property key; the third is the index of the element after filter.</param>
+        /// <returns>A dictionary of values of the specific keys.</returns>
+        public IDictionary<string, IJsonValueResolver> Where(JsonValueKind kind, Func<IJsonValueResolver, string, int, bool> predicate = null)
+        {
+            if (predicate == null) predicate = PassTrue;
+            var dict = new Dictionary<string, IJsonValueResolver>();
+            var i = -1;
+            if (kind == JsonValueKind.Null || kind == JsonValueKind.Undefined)
+            {
+                foreach (var item in store)
+                {
+                    var value = item.Value;
+                    if (value == null)
+                    {
+                        i++;
+                        if (predicate(JsonValues.Null, item.Key, i)) dict[item.Key] = JsonValues.Null;
+                        continue;
+                    }
+
+                    if (value.ValueKind == kind)
+                    {
+                        i++;
+                        if (predicate(value, item.Key, i)) dict[item.Key] = value;
+                    }
+                }
+            }
+            else
+            {
+                foreach (var item in store)
+                {
+                    var value = item.Value;
+                    if (value != null && value.ValueKind == kind)
+                    {
+                        i++;
+                        if (predicate(value, item.Key, i)) dict[item.Key] = value;
+                    }
+                }
+            }
+
+            return dict;
+        }
+
+        /// <summary>
+        /// Filters a sequence of values based on a predicate.
+        /// </summary>
+        /// <param name="predicate">A function to test each source element for a condition.</param>
+        /// <returns>A collection that contains elements from the input sequence that satisfy the condition.</returns>
+        public IEnumerable<KeyValuePair<string, IJsonValueResolver>> Where(Func<KeyValuePair<string, IJsonValueResolver>, bool> predicate)
+        {
+            if (predicate == null) return store.Where(ele => true);
+            return store.Where(predicate);
+        }
+
+        /// <summary>
+        /// Filters a sequence of values based on a predicate.
+        /// </summary>
+        /// <param name="predicate">A function to test each source element for a condition; the second parameter of the function represents the index of the source element.</param>
+        /// <returns>A collection that contains elements from the input sequence that satisfy the condition.</returns>
+        public IEnumerable<KeyValuePair<string, IJsonValueResolver>> Where(Func<KeyValuePair<string, IJsonValueResolver>, int, bool> predicate)
+        {
+            if (predicate == null) return store.Where(ele => true);
+            return store.Where(predicate);
+        }
+
+        /// <summary>
+        /// Creates a dictionary from this instance.
+        /// </summary>
+        /// <returns>A dictionary that contains the key value pairs from this instance.</returns>
+        public Dictionary<string, IJsonValueResolver> ToDictionary()
+        {
+            return new Dictionary<string, IJsonValueResolver>(store);
         }
 
         /// <summary>
@@ -3227,6 +3304,11 @@ namespace Trivial.Text
             }
 
             return json.TryGetObjectValue(key);
+        }
+
+        private static bool PassTrue(IJsonValueResolver data, string key, int index)
+        {
+            return true;
         }
     }
 }

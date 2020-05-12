@@ -22,6 +22,11 @@ namespace Trivial.Text
         public string StringValue { get; }
 
         /// <summary>
+        /// Gets the number of characters in the source value; or 0, if it is null.
+        /// </summary>
+        public int Length { get; }
+
+        /// <summary>
         /// Indicates whether the specified string is null or an empty string ("").
         /// </summary>
         /// <returns>true if the source value is null or an empty string (""); otherwise, false.</returns>
@@ -222,9 +227,10 @@ namespace Trivial.Text
         public int Length => Value?.Length ?? 0;
 
         /// <summary>
-        /// Gets the number of characters in the source value.
+        /// Gets the item value count.
+        /// It always return 0 because it is not an array or object.
         /// </summary>
-        public int Count => Value?.Length ?? 0;
+        public int Count => 0;
 
         /// <summary>
         /// Gets the type of the current JSON value.

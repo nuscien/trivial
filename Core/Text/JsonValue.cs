@@ -38,9 +38,8 @@ namespace Trivial.Text
     public interface IJsonValueResolver : IJsonValue
     {
         /// <summary>
-        /// Gets the item value count.
+        /// Gets the item value count; or 0, if the value kind is not expected.
         /// </summary>
-        /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
         public int Count { get; }
 
         /// <summary>
@@ -298,7 +297,7 @@ namespace Trivial.Text
     public interface IJsonComplex : IJsonValue, ICloneable, IEnumerable
     {
         /// <summary>
-        /// Gets the number of elements contained in the System.Collections.Generic.ICollection`1
+        /// Gets the number of elements contained in JSON container.
         /// </summary>
         public int Count { get; }
 
@@ -428,9 +427,9 @@ namespace Trivial.Text
 
         /// <summary>
         /// Gets the item value count.
+        /// It always return 0 because it is not an array or object.
         /// </summary>
-        /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
-        public int Count => throw new InvalidOperationException("It is not an array nor object.");
+        public int Count => 0;
 
         /// <summary>
         /// Gets the value of the element as a boolean.
@@ -939,6 +938,7 @@ namespace Trivial.Text
 
         /// <summary>
         /// Gets the item value count.
+        /// It always return 0 because it is not an array or object.
         /// </summary>
         public int Count => 0;
 
@@ -1437,8 +1437,19 @@ namespace Trivial.Text
         internal static IJsonValueResolver ConvertValue(IJsonValue value, IJsonValue thisInstance = null)
         {
             if (value is null || value.ValueKind == JsonValueKind.Null || value.ValueKind == JsonValueKind.Undefined) return Null;
-            if (value is JsonObject obj) return obj == thisInstance ? obj.Clone() : obj;
-            if (value is JsonArray || value is JsonString || value is JsonInteger || value is JsonDouble || value is JsonBoolean) return value as IJsonValueResolver;
+            if (value is JsonObject obj)
+            {
+                if (ReferenceEquals(obj, thisInstance)) return obj.Clone();
+                return obj;
+            }
+
+            if (value is JsonArray arr)
+            {
+                if (ReferenceEquals(arr, thisInstance)) return arr.Clone();
+                return arr;
+            }
+
+            if (value is JsonString || value is JsonInteger || value is JsonDouble || value is JsonBoolean) return value as IJsonValueResolver;
             if (value.ValueKind == JsonValueKind.True) return JsonBoolean.True;
             if (value.ValueKind == JsonValueKind.False) return JsonBoolean.False;
             if (value.ValueKind == JsonValueKind.String)
