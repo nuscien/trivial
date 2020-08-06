@@ -10,6 +10,8 @@
 
 using System;
 using System.Globalization;
+using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 
 namespace Trivial.Maths
 {
@@ -68,6 +70,8 @@ namespace Trivial.Maths
         /// <summary>
         /// Gets or sets the length between center point and the specific point (r).
         /// </summary>
+        [JsonPropertyName("r")]
+        [DataMember(Name = "r")]
         public double Radius
         {
             get;
@@ -77,6 +81,8 @@ namespace Trivial.Maths
         /// <summary>
         /// Gets or sets the angel (θ).
         /// </summary>
+        [JsonPropertyName("theta")]
+        [DataMember(Name = "theta")]
         public Angle Theta
         {
             get;
@@ -86,6 +92,8 @@ namespace Trivial.Maths
         /// <summary>
         /// Gets or sets the angel (φ).
         /// </summary>
+        [JsonPropertyName("phi")]
+        [DataMember(Name = "phi")]
         public Angle Phi
         {
             get;

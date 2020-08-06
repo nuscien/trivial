@@ -75,7 +75,7 @@ namespace Trivial.Text
                 return reader.TokenType switch
                 {
                     JsonTokenType.Null => GetDefaultValue<int>(NeedThrowForNull),
-                    JsonTokenType.Number => reader.TryGetInt32(out var integer) ? integer : (int)reader.GetDouble(),
+                    JsonTokenType.Number => GetInt32(ref reader),
                     JsonTokenType.String => ParseNumber(ref reader, int.Parse),
                     JsonTokenType.False => 0,
                     JsonTokenType.True => 1,
@@ -398,7 +398,7 @@ namespace Trivial.Text
                 return reader.TokenType switch
                 {
                     JsonTokenType.Null => null,
-                    JsonTokenType.Number => reader.TryGetInt32(out var integer) ? integer : (int)reader.GetDouble(),
+                    JsonTokenType.Number => GetInt32(ref reader),
                     JsonTokenType.String => ParseNullableNumber(ref reader, int.Parse),
                     JsonTokenType.False => 0,
                     JsonTokenType.True => 1,
@@ -906,6 +906,186 @@ namespace Trivial.Text
         }
 
         /// <summary>
+        /// Json angle struct converter.
+        /// </summary>
+        sealed class Int32IntervalConverter : JsonConverter<Maths.StructValueSimpleInterval<int>>
+        {
+            private const string ErrorParseMessage = "The value is not the internal format string.";
+            private const string digits = "0123456789+-∞";
+
+            /// <inheritdoc />
+            public override Maths.StructValueSimpleInterval<int> Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+            {
+                return reader.TokenType switch
+                {
+                    JsonTokenType.Null => null,
+                    JsonTokenType.Number => FromNumber(ref reader),
+                    JsonTokenType.String => FromString(ref reader, 0, int.Parse),
+                    JsonTokenType.StartObject => JsonSerializer.Deserialize<Maths.StructValueSimpleInterval<int>>(ref reader, options),
+                    _ => throw new JsonException($"The token type is {reader.TokenType} but expect a JSON object or an interval format string.")
+                };
+            }
+
+            /// <inheritdoc />
+            public override void Write(Utf8JsonWriter writer, Maths.StructValueSimpleInterval<int> value, JsonSerializerOptions options)
+            {
+                writer.WriteStringValue(value.ToString());
+            }
+
+            internal static Maths.StructValueSimpleInterval<T> FromString<T>(ref Utf8JsonReader reader, T defaultValue, Func<string, T> convert) where T : struct, IComparable<T>
+            {
+                var s = reader.GetString()?.Trim();
+                if (string.IsNullOrEmpty(s) || s.Length < 2) return null;
+                var v = new Maths.StructValueSimpleInterval<T>(defaultValue, defaultValue, false, false);
+                if (s[0] == '(' || s[0] == ']')
+                {
+                    v.LeftOpen = false;
+                }
+                else if (s[0] != '[')
+                {
+                    if (digits.Contains(s[0]))
+                    {
+                        try
+                        {
+                            v.MaxValue = v.MinValue = convert(s);
+                            return v;
+                        }
+                        catch (OverflowException ex)
+                        {
+                            throw new JsonException(ErrorParseMessage, ex);
+                        }
+                        catch (FormatException ex)
+                        {
+                            throw new JsonException(ErrorParseMessage, ex);
+                        }
+                    }
+
+                    throw new JsonException(ErrorParseMessage, new FormatException($"Expect the first character is ( or [ but it is {s[0]}."));
+                }
+
+                var last = s.Length - 1;
+                if (s[last] == ')' || s[last] == '[') v.LeftOpen = false;
+                else if (s[last] != ']') throw new JsonException(ErrorParseMessage, new FormatException($"Expect the last character ] or ) but it is {s[last]}."));
+                var split = ';';
+                if (s.IndexOf(split) < 0) split = ',';
+
+                #pragma warning disable IDE0057
+                var arr = s.Substring(1, s.Length - 2).Split(split);
+                #pragma warning restore IDE0057
+                
+                if (arr.Length == 0) return v;
+                try
+                {
+                    var ele = arr[0]?.Trim();
+                    var n = string.IsNullOrEmpty(ele) ? defaultValue : convert(ele);
+                    if (v.IsGreaterThanMaxValue(n)) v.MaxValue = n; 
+                    v.MinValue = string.IsNullOrEmpty(ele) ? defaultValue : convert(ele);
+                }
+                catch (OverflowException ex)
+                {
+                    throw new JsonException(ErrorParseMessage, ex);
+                }
+                catch (FormatException ex)
+                {
+                    throw new JsonException(ErrorParseMessage, ex);
+                }
+
+                try
+                {
+                    var ele = arr[1]?.Trim();
+                    var n = string.IsNullOrEmpty(ele) ? defaultValue : convert(ele);
+                    if (v.IsLessThanMinValue(n))
+                    {
+                        v.MaxValue = v.MinValue;
+                        v.MinValue = n;
+                    }
+                    else
+                    {
+                        v.MaxValue = n;
+                    }
+                }
+                catch (OverflowException ex)
+                {
+                    throw new JsonException(ErrorParseMessage, ex);
+                }
+                catch (FormatException ex)
+                {
+                    throw new JsonException(ErrorParseMessage, ex);
+                }
+
+                return v;
+            }
+
+            private static Maths.StructValueSimpleInterval<int> FromNumber(ref Utf8JsonReader reader)
+            {
+                var i = GetInt32(ref reader);
+                return new Maths.StructValueSimpleInterval<int>(i, i, true, true);
+            }
+        }
+
+        /// <summary>
+        /// Json angle struct converter.
+        /// </summary>
+        sealed class Int64IntervalConverter : JsonConverter<Maths.StructValueSimpleInterval<long>>
+        {
+            /// <inheritdoc />
+            public override Maths.StructValueSimpleInterval<long> Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+            {
+                return reader.TokenType switch
+                {
+                    JsonTokenType.Null => null,
+                    JsonTokenType.Number => FromNumber(ref reader),
+                    JsonTokenType.String => Int32IntervalConverter.FromString(ref reader, 0, long.Parse),
+                    JsonTokenType.StartObject => JsonSerializer.Deserialize<Maths.StructValueSimpleInterval<long>>(ref reader, options),
+                    _ => throw new JsonException($"The token type is {reader.TokenType} but expect a JSON object or an interval format string.")
+                };
+            }
+
+            /// <inheritdoc />
+            public override void Write(Utf8JsonWriter writer, Maths.StructValueSimpleInterval<long> value, JsonSerializerOptions options)
+            {
+                writer.WriteStringValue(value.ToString());
+            }
+
+            private static Maths.StructValueSimpleInterval<long> FromNumber(ref Utf8JsonReader reader)
+            {
+                var i = reader.TryGetInt32(out var integer) ? integer : (long)reader.GetDouble();
+                return new Maths.StructValueSimpleInterval<long>(i, i, true, true);
+            }
+        }
+
+        /// <summary>
+        /// Json angle struct converter.
+        /// </summary>
+        sealed class DoubleIntervalConverter : JsonConverter<Maths.StructValueSimpleInterval<double>>
+        {
+            /// <inheritdoc />
+            public override Maths.StructValueSimpleInterval<double> Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+            {
+                return reader.TokenType switch
+                {
+                    JsonTokenType.Null => null,
+                    JsonTokenType.Number => FromNumber(ref reader),
+                    JsonTokenType.String => Int32IntervalConverter.FromString(ref reader, 0, double.Parse),
+                    JsonTokenType.StartObject => JsonSerializer.Deserialize<Maths.StructValueSimpleInterval<double>>(ref reader, options),
+                    _ => throw new JsonException($"The token type is {reader.TokenType} but expect a JSON object or an interval format string.")
+                };
+            }
+
+            /// <inheritdoc />
+            public override void Write(Utf8JsonWriter writer, Maths.StructValueSimpleInterval<double> value, JsonSerializerOptions options)
+            {
+                writer.WriteStringValue(value.ToString());
+            }
+
+            private static Maths.StructValueSimpleInterval<double> FromNumber(ref Utf8JsonReader reader)
+            {
+                var i = reader.GetDouble();
+                return new Maths.StructValueSimpleInterval<double>(i, i, true, true);
+            }
+        }
+
+        /// <summary>
         /// Json number string converter.
         /// </summary>
         public sealed class NumberStringConverter : JsonConverterFactory
@@ -939,6 +1119,9 @@ namespace Trivial.Text
                 if (typeToConvert == typeof(JsonDouble)) return new JsonDoubleConverter { NeedWriteAsString = true };
                 if (typeToConvert == typeof(IJsonNumber)) return new JsonNumberInterfaceConverter { NeedWriteAsString = true };
                 if (typeToConvert == typeof(string)) return new StringConverter { NeedWriteAsString = true };
+                if (typeToConvert == typeof(Maths.StructValueSimpleInterval<int>)) return new Int32IntervalConverter();
+                if (typeToConvert == typeof(Maths.StructValueSimpleInterval<long>)) return new Int64IntervalConverter();
+                if (typeToConvert == typeof(Maths.StructValueSimpleInterval<double>)) return new DoubleIntervalConverter();
                 if (typeToConvert == typeof(Maths.Angle)) return new AngleConverter();
                 if (typeToConvert == typeof(Maths.Angle.Model)) return new AngleModelConverter();
                 if (typeToConvert == typeof(Maths.Angle?)) return new AngleNullableConverter();
@@ -986,6 +1169,9 @@ namespace Trivial.Text
                 if (typeToConvert == typeof(JsonDouble)) return new JsonDoubleConverter();
                 if (typeToConvert == typeof(IJsonNumber)) return new JsonNumberInterfaceConverter();
                 if (typeToConvert == typeof(string)) return new StringConverter();
+                if (typeToConvert == typeof(Maths.StructValueSimpleInterval<int>)) return new Int32IntervalConverter();
+                if (typeToConvert == typeof(Maths.StructValueSimpleInterval<long>)) return new Int64IntervalConverter();
+                if (typeToConvert == typeof(Maths.StructValueSimpleInterval<double>)) return new DoubleIntervalConverter();
                 if (typeToConvert == typeof(Maths.Angle)) return new AngleConverter();
                 if (typeToConvert == typeof(Maths.Angle.Model)) return new AngleModelConverter();
                 if (typeToConvert == typeof(Maths.Angle?)) return new AngleNullableConverter();
@@ -1028,6 +1214,9 @@ namespace Trivial.Text
             if (typeToConvert == typeof(JsonDouble)) return new JsonDoubleConverter();
             if (typeToConvert == typeof(IJsonNumber)) return new JsonNumberInterfaceConverter();
             if (typeToConvert == typeof(string)) return new StringConverter();
+            if (typeToConvert == typeof(Maths.StructValueSimpleInterval<int>)) return new Int32IntervalConverter();
+            if (typeToConvert == typeof(Maths.StructValueSimpleInterval<long>)) return new Int64IntervalConverter();
+            if (typeToConvert == typeof(Maths.StructValueSimpleInterval<double>)) return new DoubleIntervalConverter();
             if (typeToConvert == typeof(Maths.Angle)) return new AngleConverter();
             if (typeToConvert == typeof(Maths.Angle.Model)) return new AngleModelConverter();
             if (typeToConvert == typeof(Maths.Angle?)) return new AngleNullableConverter();
@@ -1098,6 +1287,11 @@ namespace Trivial.Text
         {
             if (throwForNull) throw new JsonException("The value should not be null.");
             return default;
+        }
+
+        private static int GetInt32(ref Utf8JsonReader reader)
+        {
+            return reader.TryGetInt32(out var integer) ? integer : (int)reader.GetDouble();
         }
     }
 }

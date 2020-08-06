@@ -10,6 +10,8 @@
 
 using System;
 using System.Collections.Generic;
+using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 
 namespace Trivial.Maths
 {
@@ -284,6 +286,7 @@ namespace Trivial.Maths
     /// <summary>
     /// The simple closed interval base class.
     /// </summary>
+    [DataContract]
     public abstract class SimpleInterval<T> : ISimpleInterval<T>
     {
         /// <summary>
@@ -344,27 +347,35 @@ namespace Trivial.Maths
         /// <summary>
         /// Gets a value indicating whether it is left bounded.
         /// </summary>
+        [JsonIgnore]
         public abstract bool LeftBounded { get; }
 
         /// <summary>
         /// Gets a value indicating whether it is right bounded.
         /// </summary>
+        [JsonIgnore]
         public abstract bool RightBounded { get; }
 
         /// <summary>
         /// Gets or sets a value indicating whether it is left open.
         /// </summary>
+        [JsonPropertyName("leftopen")]
+        [DataMember(Name = "leftopen")]
         public bool LeftOpen { get { return _leftOpen || !LeftBounded; } set { _leftOpen = value; } }
 
         /// <summary>
         /// Gets or sets a value indicating whether it is right open.
         /// </summary>
+        [JsonPropertyName("rightopen")]
+        [DataMember(Name = "rightopen")]
         public bool RightOpen { get { return _rightOpen || !RightBounded; } set { _rightOpen = value; } }
 
         /// <summary>
         /// Gets or sets the minimum value of the interval.
         /// </summary>
         /// <exception cref="ArgumentOutOfRangeException">The value should be less than MaxValue.</exception>
+        [JsonPropertyName("left")]
+        [DataMember(Name = "left")]
         public T MinValue
         {
             get
@@ -380,11 +391,13 @@ namespace Trivial.Maths
                 _minValue = value;
             }
         }
-        
+
         /// <summary>
         /// Gets or sets the maximum value of the interval.
         /// </summary>
         /// <exception cref="ArgumentOutOfRangeException">The value should be greater than MinValue.</exception>
+        [JsonPropertyName("right")]
+        [DataMember(Name = "right")]
         public T MaxValue
         {
             get

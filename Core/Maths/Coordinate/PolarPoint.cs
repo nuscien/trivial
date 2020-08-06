@@ -10,12 +10,15 @@
 
 using System;
 using System.Globalization;
+using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 
 namespace Trivial.Maths
 {
     /// <summary>
     /// The polar coordinate point.
     /// </summary>
+    [DataContract]
     public class PolarPoint : IEquatable<PolarPoint>, ICloneable
     {
         /// <summary>
@@ -69,6 +72,8 @@ namespace Trivial.Maths
         /// <summary>
         /// Gets or sets the length between center point and the specific point (r).
         /// </summary>
+        [JsonPropertyName("r")]
+        [DataMember(Name = "r")]
         public double Radius
         {
             get;
@@ -78,6 +83,8 @@ namespace Trivial.Maths
         /// <summary>
         /// Gets or sets the angel (θ).
         /// </summary>
+        [JsonPropertyName("theta")]
+        [DataMember(Name = "theta")]
         public Angle Theta
         {
             get;
