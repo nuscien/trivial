@@ -35,6 +35,12 @@ namespace Trivial.Console
                 return;
             }
 
+            if (result.IsNotSupported)
+            {
+                SysConsole.WriteLine("The selection control is not supported.");
+                return;
+            }
+
             SysConsole.WriteLine("-> {0}", result.Value);
             switch (result.Value)
             {

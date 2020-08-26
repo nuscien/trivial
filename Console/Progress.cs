@@ -531,7 +531,7 @@ namespace Trivial.Console
         /// <returns>A value indicating whether it is completed.</returns>
         public static explicit operator bool(ProgressLineResult progress)
         {
-            return progress == null ? false : progress.IsCompleted;
+            return progress != null && progress.IsCompleted;
         }
     }
 }

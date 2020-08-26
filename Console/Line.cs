@@ -586,9 +586,19 @@ namespace Trivial.Console
         {
             End();
             var result = LineUtilities.WriteLine(caption, options);
-            initTop = System.Console.CursorTop;
-            curTop = System.Console.CursorTop;
-            curLeft = System.Console.CursorLeft;
+            try
+            {
+                initTop = System.Console.CursorTop;
+                curTop = System.Console.CursorTop;
+                curLeft = System.Console.CursorLeft;
+            }
+            catch (IOException)
+            {
+            }
+            catch (SecurityException)
+            {
+            }
+
             return result;
         }
 
@@ -762,14 +772,14 @@ namespace Trivial.Console
             }
 
             var c = System.Console.ForegroundColor;
-            System.Console.ForegroundColor = foregroundColor;
+            LineUtilities.SetColor(foregroundColor, false);
             foreach (var item in col)
             {
                 Write(item);
                 End(true);
             }
 
-            System.Console.ForegroundColor = c;
+            LineUtilities.SetColor(c, false);
         }
 
         /// <summary>
@@ -970,13 +980,33 @@ namespace Trivial.Console
             Flush();
             initLeft = -1;
             if (line.Length < 1 && !evenEmpty) return;
-            System.Console.ResetColor();
+            try
+            {
+                System.Console.ResetColor();
+            }
+            catch (IOException)
+            {
+            }
+            catch (SecurityException)
+            {
+            }
+
             System.Console.WriteLine();
             LineIndex++;
             line.Clear();
-            initTop = System.Console.CursorTop;
-            curTop = System.Console.CursorTop;
-            curLeft = System.Console.CursorLeft;
+            try
+            {
+                initTop = System.Console.CursorTop;
+                curTop = System.Console.CursorTop;
+                curLeft = System.Console.CursorLeft;
+            }
+            catch (IOException)
+            {
+            }
+            catch (SecurityException)
+            {
+            }
+
         }
 
         /// <summary>
@@ -997,9 +1027,18 @@ namespace Trivial.Console
             LineUtilities.Backspace(line.Length);
             if (initLeft >= 0)
             {
-                if (System.Console.CursorTop == initTop && System.Console.CursorLeft > initLeft)
+                try
                 {
-                    LineUtilities.Backspace(System.Console.CursorLeft - initLeft);
+                    if (System.Console.CursorTop == initTop && System.Console.CursorLeft > initLeft)
+                    {
+                        LineUtilities.Backspace(System.Console.CursorLeft - initLeft);
+                    }
+                }
+                catch (IOException)
+                {
+                }
+                catch (SecurityException)
+                {
                 }
 
                 SaveCursorPosition();
@@ -1037,7 +1076,9 @@ namespace Trivial.Console
             Pending.RemoveAll(item => item == null);
             while (count > 0 && Pending.Count > 0)
             {
+                #pragma warning disable IDE0056 // 使用索引运算符
                 var last = Pending[Pending.Count - 1]?.Value;
+                #pragma warning restore IDE0056 // 使用索引运算符
                 if (last != null && last.Length >= count)
                 {
                     last.Remove(last.Length - count, count);
@@ -1116,7 +1157,9 @@ namespace Trivial.Console
         private Item GetLastPendingItem()
         {
             Pending.RemoveAll(item => item == null);
+            #pragma warning disable IDE0056
             return Pending.Count > 0 ? Pending[Pending.Count - 1] : null;
+            #pragma warning restore IDE0056
         }
 
         /// <summary>
@@ -1242,10 +1285,10 @@ namespace Trivial.Console
         {
             if (string.IsNullOrEmpty(value)) return;
             var c = System.Console.ForegroundColor;
-            System.Console.ForegroundColor = foregroundColor;
+            SetColor(foregroundColor, false);
             if (arg.Length > 0) System.Console.Write(value, arg);
             else System.Console.Write(value);
-            System.Console.ForegroundColor = c;
+            SetColor(c, false);
         }
 
         /// <summary>
@@ -1260,12 +1303,12 @@ namespace Trivial.Console
             if (string.IsNullOrEmpty(value)) return;
             var fore = System.Console.ForegroundColor;
             var back = System.Console.BackgroundColor;
-            if (foregroundColor.HasValue) System.Console.ForegroundColor = foregroundColor.Value;
-            if (backgroundColor.HasValue) System.Console.BackgroundColor = backgroundColor.Value;
+            SetColor(foregroundColor, false);
+            SetColor(backgroundColor, true);
             if (arg.Length > 0) System.Console.Write(value, arg);
             else System.Console.Write(value);
-            if (foregroundColor.HasValue) System.Console.ForegroundColor = fore;
-            if (backgroundColor.HasValue) System.Console.BackgroundColor = back;
+            SetColor(fore, false);
+            SetColor(back, true);
         }
 
         /// <summary>
@@ -1331,10 +1374,10 @@ namespace Trivial.Console
             {
                 winWidth = System.Console.WindowWidth;
             }
-            catch (ArgumentException)
+            catch (IOException)
             {
             }
-            catch (IOException)
+            catch (PlatformNotSupportedException)
             {
             }
 
@@ -1383,34 +1426,51 @@ namespace Trivial.Console
 
             if (!string.IsNullOrEmpty(caption))
             {
-                if (options.CaptionColor.HasValue) System.Console.ForegroundColor = options.CaptionColor.Value;
-                System.Console.BackgroundColor = background;
+                SetColor(options.CaptionColor, false);
+                SetColor(background, true);
                 System.Console.Write(caption);
                 if (!options.IgnoreCaptionSeparator)
                 {
+                    #pragma warning disable IDE0056
                     var lastChar = caption[caption.Length - 1];
+                    #pragma warning restore IDE0056
                     if (lastChar != ' ' && lastChar != '\r' && lastChar != '\n' && lastChar != '\t') System.Console.Write(' ');
                 }
             }
 
-            var left = System.Console.CursorLeft;
+            var progress = new ProgressLineResult();
+            var left = 0;
+            try
+            {
+                left = System.Console.CursorLeft;
+            }
+            catch (IOException)
+            {
+                System.Console.WriteLine();
+                return progress;
+            }
+            catch (PlatformNotSupportedException)
+            {
+                System.Console.WriteLine();
+                return progress;
+            }
+
             var top = System.Console.CursorTop;
             if (options.Size == ProgressLineOptions.Sizes.Full)
             {
-                width = System.Console.WindowWidth - left - 6;
+                width = winWidth - left - 6;
                 sb.Clear();
                 sb.Append(pendingChar, width);
             }
 
-            var progress = new ProgressLineResult();
-            System.Console.ForegroundColor = options.PendingColor;
-            System.Console.BackgroundColor = progressBackground;
+            SetColor(options.PendingColor, false);
+            SetColor(progressBackground, true);
             System.Console.Write(sb.ToString());
-            System.Console.ForegroundColor = options.ValueColor ?? fore;
-            System.Console.BackgroundColor = background;
+            SetColor(options.ValueColor ?? fore, false);
+            SetColor(background, true);
             System.Console.WriteLine(" ... ");
-            System.Console.ForegroundColor = fore;
-            System.Console.BackgroundColor = back;
+            SetColor(fore, false);
+            SetColor(back, true);
             var locker = new object();
             progress.ProgressChanged += (sender, ev) =>
             {
@@ -1427,29 +1487,29 @@ namespace Trivial.Console
                     sb3.Append(pendingChar, width - w);
                     System.Console.CursorLeft = left;
                     System.Console.CursorTop = top;
-                    System.Console.ForegroundColor = progress.IsFailed ? options.ErrorColor : options.BarColor;
-                    System.Console.BackgroundColor = progress.IsFailed ? options.ErrorColor : barBackground;
+                    SetColor(progress.IsFailed ? options.ErrorColor : options.BarColor, false);
+                    SetColor(progress.IsFailed ? options.ErrorColor : barBackground, true);
                     System.Console.Write(sb2.ToString());
-                    System.Console.ForegroundColor = options.PendingColor;
-                    System.Console.BackgroundColor = progressBackground;
+                    SetColor(options.PendingColor, false);
+                    SetColor(progressBackground, true);
                     System.Console.Write(sb3.ToString());
-                    System.Console.ForegroundColor = options.ValueColor ?? fore2;
-                    System.Console.BackgroundColor = options.BackgroundColor ?? back2;
+                    SetColor(options.ValueColor ?? fore2, false);
+                    SetColor(options.BackgroundColor ?? back2, true);
                     System.Console.Write(' ');
                 }
                 else
                 {
                     System.Console.CursorLeft = left;
                     System.Console.CursorTop = top;
-                    System.Console.ForegroundColor = options.ValueColor ?? fore2;
-                    System.Console.BackgroundColor = options.BackgroundColor ?? back2;
+                    SetColor(options.ValueColor ?? fore2, false);
+                    SetColor(options.BackgroundColor ?? back2, true);
                 }
 
                 System.Console.Write(ev.ToString("#0%"));
                 System.Console.CursorLeft = left2;
                 System.Console.CursorTop = top2;
-                System.Console.ForegroundColor = fore2;
-                System.Console.BackgroundColor = back2;
+                SetColor(fore2, false);
+                SetColor(back2, true);
             };
             return progress;
         }
@@ -1513,13 +1573,13 @@ namespace Trivial.Console
         {
             if (col == null) return;
             var c = System.Console.ForegroundColor;
-            System.Console.ForegroundColor = foregroundColor;
+            SetColor(foregroundColor, false);
             foreach (var item in col)
             {
                 System.Console.WriteLine(item);
             }
 
-            System.Console.ForegroundColor = c;
+            SetColor(c, false);
         }
 
         /// <summary>
@@ -1615,7 +1675,24 @@ namespace Trivial.Console
         {
             if (collection == null) return null;
             if (options == null) options = new SelectionOptions();
-            var maxWidth = System.Console.BufferWidth;
+            var maxWidth = 0;
+            try
+            {
+                maxWidth = System.Console.BufferWidth;
+            }
+            catch (IOException)
+            {
+                return new SelectionResult<T>(null, SelectionResultTypes.NotSupported);
+            }
+            catch (SecurityException)
+            {
+                return new SelectionResult<T>(null, SelectionResultTypes.NotSupported);
+            }
+            catch (PlatformNotSupportedException)
+            {
+                return new SelectionResult<T>(null, SelectionResultTypes.NotSupported);
+            }
+
             var itemLen = options.Column.HasValue ? (int)Math.Floor(maxWidth * 1.0 / options.Column.Value) : maxWidth;
             if (options.MaxLength.HasValue) itemLen = Math.Min(options.MaxLength.Value, itemLen);
             if (options.MinLength.HasValue) itemLen = Math.Max(options.MinLength.Value, itemLen);
@@ -2078,6 +2155,26 @@ namespace Trivial.Console
             {
                 Marshal.ZeroFreeGlobalAllocUnicode(unmanagedString);
             }
+        }
+
+        internal static void SetColor(ConsoleColor color, bool background)
+        {
+            try
+            {
+                if (background) System.Console.BackgroundColor = color;
+                else System.Console.ForegroundColor = color;
+            }
+            catch (IOException)
+            {
+            }
+            catch (SecurityException)
+            {
+            }
+        }
+
+        internal static void SetColor(ConsoleColor? color, bool background)
+        {
+            if (color.HasValue) SetColor(color.Value, background);
         }
 
         private static void SetCursorPosition(int left, int top)

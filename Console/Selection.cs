@@ -23,7 +23,12 @@ namespace Trivial.Console
         /// <summary>
         /// The result is by manual input.
         /// </summary>
-        Typed = 2
+        Typed = 2,
+
+        /// <summary>
+        /// The selection is not supported.
+        /// </summary>
+        NotSupported = 3
     }
 
     /// <summary>
@@ -363,6 +368,11 @@ namespace Trivial.Console
         /// Gets a value indicating whether it is cancelled.
         /// </summary>
         public bool IsCanceled => InputType == SelectionResultTypes.Canceled;
+
+        /// <summary>
+        /// Gets a value indicating whether it is not supported.
+        /// </summary>
+        public bool IsNotSupported => InputType == SelectionResultTypes.NotSupported;
 
         /// <summary>
         /// Gets the index of item displayed.
