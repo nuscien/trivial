@@ -3108,7 +3108,7 @@ namespace Trivial.Text
         /// Converts to JSON document.
         /// </summary>
         /// <param name="json">The JSON value.</param>
-        /// <returns>An instance of the JsonObject class.</returns>
+        /// <returns>An instance of the JsonDocument class.</returns>
         public static explicit operator JsonDocument(JsonObject json)
         {
             return json != null ? JsonDocument.Parse(json.ToString()) : null;

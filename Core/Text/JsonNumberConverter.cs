@@ -939,7 +939,7 @@ namespace Trivial.Text
                 var v = new Maths.StructValueSimpleInterval<T>(defaultValue, defaultValue, false, false);
                 if (s[0] == '(' || s[0] == ']')
                 {
-                    v.LeftOpen = false;
+                    v.LeftOpen = true;
                 }
                 else if (s[0] != '[')
                 {
@@ -964,7 +964,7 @@ namespace Trivial.Text
                 }
 
                 var last = s.Length - 1;
-                if (s[last] == ')' || s[last] == '[') v.LeftOpen = false;
+                if (s[last] == ')' || s[last] == '[') v.RightOpen = true;
                 else if (s[last] != ']') throw new JsonException(ErrorParseMessage, new FormatException($"Expect the last character ] or ) but it is {s[last]}."));
                 var split = ';';
                 if (s.IndexOf(split) < 0) split = ',';
@@ -1262,6 +1262,9 @@ namespace Trivial.Text
                 || typeToConvert == typeof(JsonDouble)
                 || typeToConvert == typeof(IJsonNumber)
                 || typeToConvert == typeof(string)
+                || typeToConvert == typeof(Maths.StructValueSimpleInterval<int>)
+                || typeToConvert == typeof(Maths.StructValueSimpleInterval<long>)
+                || typeToConvert == typeof(Maths.StructValueSimpleInterval<double>)
                 || typeToConvert == typeof(Maths.Angle)
                 || typeToConvert == typeof(Maths.Angle.Model)
                 || typeToConvert == typeof(Maths.Angle?);

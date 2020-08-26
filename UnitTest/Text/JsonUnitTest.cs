@@ -222,13 +222,19 @@ namespace Trivial.Text
             str = @"{
     ""H"": "":,.;/| "",
     ""I"": ""abcdefg hijklmn    opq\trst\n\nuvw\rxyz"",
-    ""J"": ""123456""
+    ""J"": ""123456"",
+    ""K"": ""[12, 34)""
 }";
             model2 = JsonSerializer.Deserialize<JsonAttributeTestModel>(str);
             Assert.AreEqual(1, model2.H.Count);
             Assert.AreEqual(":,.;/| ", model2.H[0]);
             Assert.AreEqual(6, model2.I.Count);
             Assert.AreEqual((uint)123456, model2.J);
+            Assert.IsNotNull(model2.K);
+            Assert.AreEqual(12, model2.K.MinValue);
+            Assert.IsFalse(model2.K.LeftOpen);
+            Assert.AreEqual(34, model2.K.MaxValue);
+            Assert.IsTrue(model2.K.RightOpen);
         }
     }
 }

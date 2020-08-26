@@ -106,6 +106,11 @@ namespace Trivial.Data
         public int? MaxCount { get; set; }
 
         /// <summary>
+        /// Gets or sets a value indicating whether need keep only one instance.
+        /// </summary>
+        public bool SingleCacheInstance { get; set; }
+
+        /// <summary>
         /// Gets the optional expiration.
         /// </summary>
         public TimeSpan? Expiration { get; set; }
@@ -129,7 +134,7 @@ namespace Trivial.Data
         public ItemInfo this[int index] => items[index];
 
         /// <summary>
-        /// Gets the element at the specified index.
+        /// Gets or sets the element at the specified index.
         /// </summary>
         /// <param name="id">The identifier.</param>
         /// <returns>The value.</returns>
@@ -146,13 +151,12 @@ namespace Trivial.Data
             set
             {
                 if (string.IsNullOrWhiteSpace(id)) throw new ArgumentNullException(nameof(id), "id should not be null, empty or consists only of white-space characters.");
-                if (value == null) Remove(value);
-                else Add(new ItemInfo(id, value));
+                Add(new ItemInfo(id, value));
             }
         }
 
         /// <summary>
-        /// Gets the element at the specified index.
+        /// Gets or sets the element at the specified index.
         /// </summary>
         /// <param name="idPrefix">The prefix of the identifier for resource group.</param>
         /// <param name="id">The identifier in the resource group.</param>
@@ -170,8 +174,7 @@ namespace Trivial.Data
             set
             {
                 if (string.IsNullOrWhiteSpace(id)) throw new ArgumentNullException(nameof(id), "id should not be null, empty or consists only of white-space characters.");
-                if (value == null) Remove(value);
-                else Add(new ItemInfo(idPrefix, id, value));
+                Add(new ItemInfo(idPrefix, id, value));
             }
         }
 
@@ -260,9 +263,8 @@ namespace Trivial.Data
                 return Add(prefix, id, initialization, expiration);
             }
 
-            if (info.Value == null || info.IsExpired(Expiration))
+            if (info.IsExpired(Expiration))
             {
-                Remove(prefix, id);
                 return Add(prefix, id, initialization, expiration);
             }
 
@@ -300,7 +302,6 @@ namespace Trivial.Data
 
             if (info.Value == null || info.IsExpired(Expiration))
             {
-                Remove(prefix, id);
                 return await AddAsync(prefix, id, initialization, expiration);
             }
 
@@ -382,14 +383,7 @@ namespace Trivial.Data
         public void Add(ItemInfo item)
         {
             if (item == null || item.Value == null || item.IsExpired(Expiration)) return;
-            Remove(item.Value);
-            if (TryGetInfo(item.Prefix, item.Id, out ItemInfo info))
-            {
-                if (info.UpdateDate > item.UpdateDate && !info.IsExpired(Expiration)) return;
-                if (info.CreationDate < item.CreationDate) item.CreationDate = info.CreationDate;
-                Remove(info);
-            }
-
+            Remove(item.Prefix, item.Id);
             items.Add(item);
         }
 
@@ -510,12 +504,9 @@ namespace Trivial.Data
         public bool Remove(ItemInfo item)
         {
             if (item == null) return false;
-            if (item.Value == null)
-            {
-                return Remove(item.Prefix, item.Id);
-            }
-
-            var result = items.RemoveAll(ele => item.Value.Equals(ele.Value) || (item.Prefix == ele.Prefix && item.Id == ele.Id)) > 0;
+            var result = item.Value == null
+                ? items.RemoveAll(ele => ele.Value == null && item.Prefix == ele.Prefix && item.Id == ele.Id) > 0 
+                : items.RemoveAll(ele => item.Value.Equals(ele.Value) && item.Prefix == ele.Prefix && item.Id == ele.Id) > 0;
             RemoveExpired();
             return result;
         }
@@ -525,7 +516,7 @@ namespace Trivial.Data
         /// </summary>
         /// <param name="item">The object to remove from the collection.</param>
         /// <returns>true if item is successfully removed; otherwise, false. This method also returns false if item was not found in the collection.</returns>
-        public bool Remove(T item)
+        public bool RemoveValue(T item)
         {
             if (item == null) return false;
             var result = items.RemoveAll(ele => item.Equals(ele.Value)) > 0;

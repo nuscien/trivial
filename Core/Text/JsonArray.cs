@@ -504,9 +504,8 @@ namespace Trivial.Text
         {
             foreach (var item in store)
             {
-                if (item is null) yield return JsonValues.Null.ToString();
+                if (item is null) yield return null;
                 if (item is IJsonValueResolver ele) yield return ele.GetString();
-                else yield return null;
             }
         }
 
@@ -521,7 +520,7 @@ namespace Trivial.Text
             return store.Select(ele =>
             {
                 if (ele is null) return JsonValues.Null;
-                return ele as IJsonValueResolver;
+                return ele;
             }).Where(predicate).Select(ele => ele?.GetString());
         }
 
@@ -536,8 +535,30 @@ namespace Trivial.Text
             return store.Select(ele =>
             {
                 if (ele is null) return JsonValues.Null;
-                return ele as IJsonValueResolver;
+                return ele;
             }).Where(predicate).Select(ele => ele?.GetString());
+        }
+
+        /// <summary>
+        /// Gets the value as a string collection.
+        /// </summary>
+        /// <param name="predicate">A function to test each element for a condition.</param>
+        /// <returns>The value. It will be null if the value is null.</returns>
+        /// <exception cref="InvalidOperationException">The item value kind is not string.</exception>
+        public IEnumerable<string> GetStringCollection(Func<string, bool> predicate)
+        {
+            return store.Select(ele => ele?.GetString()).Where(predicate);
+        }
+
+        /// <summary>
+        /// Gets the value as a string collection.
+        /// </summary>
+        /// <param name="predicate">A function to test each element for a condition.</param>
+        /// <returns>The value. It will be null if the value is null.</returns>
+        /// <exception cref="InvalidOperationException">The item value kind is not string.</exception>
+        public IEnumerable<string> GetStringCollection(Func<string, int, bool> predicate)
+        {
+            return store.Select(ele => ele?.GetString()).Where(predicate);
         }
 
         /// <summary>
@@ -1146,7 +1167,7 @@ namespace Trivial.Text
         /// <summary>
         /// Removes all null value.
         /// </summary>
-        /// <returns>true if item was successfully removed from the array; otherwise, false. This method also returns false if item is not found in the array.</returns>
+        /// <returns>The count of item removed.</returns>
         public int RemoveNull()
         {
             var count = 0;
@@ -1155,6 +1176,208 @@ namespace Trivial.Text
             foreach (var ele in store)
             {
                 if (ele is null || ele.ValueKind == JsonValueKind.Null || ele.ValueKind == JsonValueKind.Undefined) list.Add(ele);
+            }
+
+            foreach (var ele in list)
+            {
+                while (store.Remove(ele)) count++;
+            }
+
+            return count;
+        }
+
+        /// <summary>
+        /// Removes all the specific value.
+        /// </summary>
+        /// <param name="value">The value to delete.</param>
+        /// <returns>The count of item removed.</returns>
+        public int RemoveValue(string value)
+        {
+            if (value == null) return RemoveNull();
+            var count = 0;
+            var list = new List<IJsonValueResolver>();
+            foreach (var ele in store)
+            {
+                if (ele is JsonString s && value == s.Value) list.Add(ele);
+            }
+
+            foreach (var ele in list)
+            {
+                while (store.Remove(ele)) count++;
+            }
+
+            return count;
+        }
+
+        /// <summary>
+        /// Removes all the specific value.
+        /// </summary>
+        /// <param name="value">The value to delete.</param>
+        /// <param name="comparisonType">One of the enumeration values that specifies how the strings will be compared.</param>
+        /// <returns>The count of item removed.</returns>
+        public int RemoveValue(string value, StringComparison comparisonType)
+        {
+            if (value == null) return RemoveNull();
+            var count = 0;
+            var list = new List<IJsonValueResolver>();
+            foreach (var ele in store)
+            {
+                if (ele is JsonString s && value.Equals(s.Value, comparisonType)) list.Add(ele);
+            }
+
+            foreach (var ele in list)
+            {
+                while (store.Remove(ele)) count++;
+            }
+
+            return count;
+        }
+
+        /// <summary>
+        /// Removes all the specific value.
+        /// </summary>
+        /// <param name="value">The value to delete.</param>
+        /// <returns>The count of item removed.</returns>
+        public int RemoveValue(int value)
+        {
+            var count = 0;
+            var list = new List<IJsonValueResolver>();
+            foreach (var ele in store)
+            {
+                if (ele is JsonInteger s)
+                {
+                    if (value == s.Value) list.Add(ele);
+                }
+                else if (ele is JsonDouble d)
+                {
+                    if (value == d.Value) list.Add(ele);
+                }
+            }
+
+            foreach (var ele in list)
+            {
+                while (store.Remove(ele)) count++;
+            }
+
+            return count;
+        }
+
+        /// <summary>
+        /// Removes all the specific value.
+        /// </summary>
+        /// <param name="value">The value to delete.</param>
+        /// <returns>The count of item removed.</returns>
+        public int RemoveValue(long value)
+        {
+            var count = 0;
+            var list = new List<IJsonValueResolver>();
+            foreach (var ele in store)
+            {
+                if (ele is JsonInteger s)
+                {
+                    if (value == s.Value) list.Add(ele);
+                }
+                else if (ele is JsonDouble d)
+                {
+                    if (value == d.Value) list.Add(ele);
+                }
+            }
+
+            foreach (var ele in list)
+            {
+                while (store.Remove(ele)) count++;
+            }
+
+            return count;
+        }
+
+        /// <summary>
+        /// Removes all the specific value.
+        /// </summary>
+        /// <param name="value">The value to delete.</param>
+        /// <returns>The count of item removed.</returns>
+        public int RemoveValue(double value)
+        {
+            var count = 0;
+            var list = new List<IJsonValueResolver>();
+            foreach (var ele in store)
+            {
+                if (ele is JsonDouble d)
+                {
+                    if (value == d.Value) list.Add(ele);
+                }
+                else if (ele is JsonInteger s)
+                {
+                    if (value == s.Value) list.Add(ele);
+                }
+            }
+
+            foreach (var ele in list)
+            {
+                while (store.Remove(ele)) count++;
+            }
+
+            return count;
+        }
+
+        /// <summary>
+        /// Removes all the specific value.
+        /// </summary>
+        /// <param name="value">The value to delete.</param>
+        /// <returns>The count of item removed.</returns>
+        public int RemoveValue(bool value)
+        {
+            var count = 0;
+            var list = new List<IJsonValueResolver>();
+            foreach (var ele in store)
+            {
+                if (ele is JsonBoolean b && value == b.Value) list.Add(ele);
+            }
+
+            foreach (var ele in list)
+            {
+                while (store.Remove(ele)) count++;
+            }
+
+            return count;
+        }
+
+        /// <summary>
+        /// Removes all the specific value.
+        /// </summary>
+        /// <param name="value">The value to delete.</param>
+        /// <returns>The count of item removed.</returns>
+        public int RemoveValue(JsonObject value)
+        {
+            if (value == null) return RemoveNull();
+            var count = 0;
+            var list = new List<IJsonValueResolver>();
+            foreach (var ele in store)
+            {
+                if (value == ele) list.Add(ele);
+            }
+
+            foreach (var ele in list)
+            {
+                while (store.Remove(ele)) count++;
+            }
+
+            return count;
+        }
+
+        /// <summary>
+        /// Removes all the specific value.
+        /// </summary>
+        /// <param name="value">The value to delete.</param>
+        /// <returns>The count of item removed.</returns>
+        public int RemoveValue(JsonArray value)
+        {
+            if (value == null) return RemoveNull();
+            var count = 0;
+            var list = new List<IJsonValueResolver>();
+            foreach (var ele in store)
+            {
+                if (value == ele) list.Add(ele);
             }
 
             foreach (var ele in list)
@@ -2833,10 +3056,29 @@ namespace Trivial.Text
         /// Converts to JSON document.
         /// </summary>
         /// <param name="json">The JSON value.</param>
-        /// <returns>An instance of the JsonObject class.</returns>
+        /// <returns>An instance of the JsonDocument class.</returns>
         public static explicit operator JsonDocument(JsonArray json)
         {
             return json != null ? JsonDocument.Parse(json.ToString()) : null;
+        }
+
+        /// <summary>
+        /// Converts to JSON object.
+        /// </summary>
+        /// <param name="json">The JSON value.</param>
+        /// <returns>An instance of the JsonObject class.</returns>
+        public static explicit operator JsonObject(JsonArray json)
+        {
+            if (json == null) return null;
+            var i = 0;
+            var obj = new JsonObject();
+            foreach (var item in json)
+            {
+                obj[i.ToString("g")] = item;
+                i++;
+            }
+
+            return obj;
         }
 
         /// <summary>

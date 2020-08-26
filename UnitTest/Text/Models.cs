@@ -62,5 +62,8 @@ namespace Trivial.Text
 
         [JsonConverter(typeof(JsonNumberConverter))]
         public uint J { get; set; }
+
+        [JsonConverter(typeof(JsonNumberConverter))]
+        public Maths.StructValueSimpleInterval<int> K { get; set; }
     }
 }
