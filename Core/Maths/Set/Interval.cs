@@ -20,6 +20,8 @@ namespace Trivial.Maths
     /// </summary>
     public static class IntervalUtility
     {
+        private const string ErrorParseMessage = "The value is not the internal format string.";
+
         /// <summary>
         /// Loads a copier into current instance.
         /// </summary>
@@ -187,6 +189,114 @@ namespace Trivial.Maths
         public static bool IsGreaterThanOrEqualMaxValue<T>(this ISimpleInterval<T> interval, T value)
         {
             return interval.IsGreaterThanMaxValue(value) || interval.EqualsMaxValue(value);
+        }
+
+        /// <summary>
+        /// Parses the interval.
+        /// </summary>
+        /// <param name="s">The interval format string.</param>
+        /// <returns>The interval instance parsed.</returns>
+        public static StructValueSimpleInterval<int> ParseForInt32(string s) => ParseForX(s, 0, int.Parse);
+
+        /// <summary>
+        /// Parses the interval.
+        /// </summary>
+        /// <param name="s">The interval format string.</param>
+        /// <returns>The interval instance parsed.</returns>
+        public static StructValueSimpleInterval<long> ParseForInt64(string s) => ParseForX(s, 0, long.Parse);
+
+        /// <summary>
+        /// Parses the interval.
+        /// </summary>
+        /// <param name="s">The interval format string.</param>
+        /// <returns>The interval instance parsed.</returns>
+        public static StructValueSimpleInterval<double> ParseForDouble(string s) => ParseForX(s, 0, double.Parse);
+
+        private const string digits = "0123456789+-∞";
+        private static StructValueSimpleInterval<T> ParseForX<T>(string s, T defaultValue, Func<string, T> convert) where T : struct, IComparable<T>
+        {
+            try
+            {
+                return FromString(s, defaultValue, convert);
+            }
+            catch (FormatException ex)
+            {
+                throw new FormatException(ErrorParseMessage, ex);
+            }
+            catch (OverflowException ex)
+            {
+                throw new FormatException(ErrorParseMessage, ex);
+            }
+            catch (ArgumentException ex)
+            {
+                throw new FormatException(ErrorParseMessage, ex);
+            }
+            catch (InvalidCastException ex)
+            {
+                throw new FormatException(ErrorParseMessage, ex);
+            }
+            catch (InvalidOperationException ex)
+            {
+                throw new FormatException(ErrorParseMessage, ex);
+            }
+            catch (System.Text.Json.JsonException ex)
+            {
+                throw new FormatException(ErrorParseMessage, ex);
+            }
+        }
+        internal static StructValueSimpleInterval<T> FromString<T>(string s, T defaultValue, Func<string, T> convert) where T : struct, IComparable<T>
+        {
+            if (string.IsNullOrEmpty(s) || s.Length < 2) return null;
+            var v = new StructValueSimpleInterval<T>(defaultValue, defaultValue, false, false);
+            if (s.StartsWith("{") && s.IndexOf(":") > 0) return System.Text.Json.JsonSerializer.Deserialize<StructValueSimpleInterval<T>>(s);
+            if (s[0] == '(' || s[0] == ']')
+            {
+                v.LeftOpen = true;
+            }
+            else if (s[0] != '[')
+            {
+#if !NETSTANDARD2_0
+                if (digits.Contains(s[0]))
+#else
+                if (digits.Contains(s[0].ToString()))
+#endif
+                {
+                    v.MaxValue = v.MinValue = convert(s);
+                    return v;
+                }
+
+                throw new FormatException($"Expect the first character is ( or [ but it is {s[0]}.");
+            }
+
+            var last = s.Length - 1;
+            if (s[last] == ')' || s[last] == '[') v.RightOpen = true;
+            else if (s[last] != ']') throw new FormatException($"Expect the last character ] or ) but it is {s[last]}.");
+            var split = ';';
+            if (s.IndexOf(split) < 0) split = ',';
+
+#pragma warning disable IDE0057
+            var arr = s.Substring(1, s.Length - 2).Split(split);
+#pragma warning restore IDE0057
+
+            if (arr.Length == 0) return v;
+            var ele = arr[0]?.Trim();
+            var n = string.IsNullOrEmpty(ele) ? defaultValue : convert(ele);
+            if (v.IsGreaterThanMaxValue(n)) v.MaxValue = n;
+            v.MinValue = string.IsNullOrEmpty(ele) ? defaultValue : convert(ele);
+
+            ele = arr[1]?.Trim();
+            n = string.IsNullOrEmpty(ele) ? defaultValue : convert(ele);
+            if (v.IsLessThanMinValue(n))
+            {
+                v.MaxValue = v.MinValue;
+                v.MinValue = n;
+            }
+            else
+            {
+                v.MaxValue = n;
+            }
+
+            return v;
         }
     }
 

@@ -935,85 +935,34 @@ namespace Trivial.Text
             internal static Maths.StructValueSimpleInterval<T> FromString<T>(ref Utf8JsonReader reader, T defaultValue, Func<string, T> convert) where T : struct, IComparable<T>
             {
                 var s = reader.GetString()?.Trim();
-                if (string.IsNullOrEmpty(s) || s.Length < 2) return null;
-                var v = new Maths.StructValueSimpleInterval<T>(defaultValue, defaultValue, false, false);
-                if (s[0] == '(' || s[0] == ']')
-                {
-                    v.LeftOpen = true;
-                }
-                else if (s[0] != '[')
-                {
-                    if (digits.Contains(s[0]))
-                    {
-                        try
-                        {
-                            v.MaxValue = v.MinValue = convert(s);
-                            return v;
-                        }
-                        catch (OverflowException ex)
-                        {
-                            throw new JsonException(ErrorParseMessage, ex);
-                        }
-                        catch (FormatException ex)
-                        {
-                            throw new JsonException(ErrorParseMessage, ex);
-                        }
-                    }
-
-                    throw new JsonException(ErrorParseMessage, new FormatException($"Expect the first character is ( or [ but it is {s[0]}."));
-                }
-
-                var last = s.Length - 1;
-                if (s[last] == ')' || s[last] == '[') v.RightOpen = true;
-                else if (s[last] != ']') throw new JsonException(ErrorParseMessage, new FormatException($"Expect the last character ] or ) but it is {s[last]}."));
-                var split = ';';
-                if (s.IndexOf(split) < 0) split = ',';
-
-                #pragma warning disable IDE0057
-                var arr = s.Substring(1, s.Length - 2).Split(split);
-                #pragma warning restore IDE0057
-                
-                if (arr.Length == 0) return v;
                 try
                 {
-                    var ele = arr[0]?.Trim();
-                    var n = string.IsNullOrEmpty(ele) ? defaultValue : convert(ele);
-                    if (v.IsGreaterThanMaxValue(n)) v.MaxValue = n; 
-                    v.MinValue = string.IsNullOrEmpty(ele) ? defaultValue : convert(ele);
-                }
-                catch (OverflowException ex)
-                {
-                    throw new JsonException(ErrorParseMessage, ex);
+                    return Maths.IntervalUtility.FromString(s, defaultValue, convert);
                 }
                 catch (FormatException ex)
                 {
                     throw new JsonException(ErrorParseMessage, ex);
                 }
-
-                try
-                {
-                    var ele = arr[1]?.Trim();
-                    var n = string.IsNullOrEmpty(ele) ? defaultValue : convert(ele);
-                    if (v.IsLessThanMinValue(n))
-                    {
-                        v.MaxValue = v.MinValue;
-                        v.MinValue = n;
-                    }
-                    else
-                    {
-                        v.MaxValue = n;
-                    }
-                }
                 catch (OverflowException ex)
                 {
                     throw new JsonException(ErrorParseMessage, ex);
                 }
-                catch (FormatException ex)
+                catch (ArgumentException ex)
                 {
                     throw new JsonException(ErrorParseMessage, ex);
                 }
-
-                return v;
+                catch (InvalidCastException ex)
+                {
+                    throw new JsonException(ErrorParseMessage, ex);
+                }
+                catch (InvalidOperationException ex)
+                {
+                    throw new JsonException(ErrorParseMessage, ex);
+                }
+                catch (JsonException ex)
+                {
+                    throw new JsonException(ErrorParseMessage, ex);
+                }
             }
 
             private static Maths.StructValueSimpleInterval<int> FromNumber(ref Utf8JsonReader reader)
