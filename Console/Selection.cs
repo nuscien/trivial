@@ -87,6 +87,12 @@ namespace Trivial.Console
         public string ManualQuestion { get; set; }
 
         /// <summary>
+        /// Gets or sets the question message displayed when it is not supported.
+        /// null for disable manual mode.
+        /// </summary>
+        public string QuestionWhenNotSupported { get; set; }
+
+        /// <summary>
         /// Gets or sets the foreground color for item.
         /// </summary>
         public ConsoleColor? ForegroundColor { get; set; }
@@ -346,6 +352,7 @@ namespace Trivial.Console
             Index = -1;
             Data = default;
             InputType = type;
+            if (type == SelectionResultTypes.NotSupported) IsNotSupported = true;
         }
 
         /// <summary>
@@ -372,7 +379,7 @@ namespace Trivial.Console
         /// <summary>
         /// Gets a value indicating whether it is not supported.
         /// </summary>
-        public bool IsNotSupported => InputType == SelectionResultTypes.NotSupported;
+        public bool IsNotSupported { get; internal set; }
 
         /// <summary>
         /// Gets the index of item displayed.

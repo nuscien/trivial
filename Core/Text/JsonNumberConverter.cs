@@ -910,9 +910,6 @@ namespace Trivial.Text
         /// </summary>
         sealed class Int32IntervalConverter : JsonConverter<Maths.StructValueSimpleInterval<int>>
         {
-            private const string ErrorParseMessage = "The value is not the internal format string.";
-            private const string digits = "0123456789+-∞";
-
             /// <inheritdoc />
             public override Maths.StructValueSimpleInterval<int> Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
             {
@@ -941,27 +938,27 @@ namespace Trivial.Text
                 }
                 catch (FormatException ex)
                 {
-                    throw new JsonException(ErrorParseMessage, ex);
+                    throw new JsonException(Maths.IntervalUtility.ErrorParseMessage, ex);
                 }
                 catch (OverflowException ex)
                 {
-                    throw new JsonException(ErrorParseMessage, ex);
+                    throw new JsonException(Maths.IntervalUtility.ErrorParseMessage, ex);
                 }
                 catch (ArgumentException ex)
                 {
-                    throw new JsonException(ErrorParseMessage, ex);
+                    throw new JsonException(Maths.IntervalUtility.ErrorParseMessage, ex);
                 }
                 catch (InvalidCastException ex)
                 {
-                    throw new JsonException(ErrorParseMessage, ex);
+                    throw new JsonException(Maths.IntervalUtility.ErrorParseMessage, ex);
                 }
                 catch (InvalidOperationException ex)
                 {
-                    throw new JsonException(ErrorParseMessage, ex);
+                    throw new JsonException(Maths.IntervalUtility.ErrorParseMessage, ex);
                 }
                 catch (JsonException ex)
                 {
-                    throw new JsonException(ErrorParseMessage, ex);
+                    throw new JsonException(Maths.IntervalUtility.ErrorParseMessage, ex);
                 }
             }
 

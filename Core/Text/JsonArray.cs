@@ -2311,7 +2311,7 @@ namespace Trivial.Text
         }
 
         /// <summary>
-        /// Deserializes.
+        /// Deserializes an item.
         /// </summary>
         /// <typeparam name="T">The type of model to deserialize.</typeparam>
         /// <param name="index">The zero-based index of the element to get.</param>
@@ -2328,6 +2328,29 @@ namespace Trivial.Text
                 return default;
             }
 
+            return JsonSerializer.Deserialize<T>(item.ToString(), options);
+        }
+
+        /// <summary>
+        /// Deserializes an item.
+        /// </summary>
+        /// <typeparam name="T">The type of model to deserialize.</typeparam>
+        /// <param name="index">The zero-based index of the element to get.</param>
+        /// <param name="parser">The string parser.</param>
+        /// <param name="options">Options to control the behavior during parsing.</param>
+        /// <returns>A JSON object instance.</returns>
+        /// <exception cref="ArgumentException">readerOptions contains unsupported options.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">The index is out of range.</exception>
+        /// <exception cref="JsonException">The JSON is invalid. -or- TValue is not compatible with the JSON.</exception>
+        public T DeserializeValue<T>(int index, Func<string, T> parser, JsonSerializerOptions options = default)
+        {
+            var item = store[index];
+            if (item is null || item.ValueKind == JsonValueKind.Null || item.ValueKind == JsonValueKind.Undefined)
+            {
+                return default;
+            }
+
+            if (parser != null && item is IJsonString s) return parser(s.StringValue);
             return JsonSerializer.Deserialize<T>(item.ToString(), options);
         }
 

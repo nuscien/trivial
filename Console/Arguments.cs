@@ -53,7 +53,9 @@ namespace Trivial.Console
                         str = item.Substring(0, item.Length - 1);
                     }
 
+                    #pragma warning disable IDE0056
                     this.args[this.args.Count - 1] += str;
+                    #pragma warning restore IDE0056
                 }
                 else
                 {

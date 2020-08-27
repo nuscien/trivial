@@ -20,7 +20,7 @@ namespace Trivial.Maths
     /// </summary>
     public static class IntervalUtility
     {
-        private const string ErrorParseMessage = "The value is not the internal format string.";
+        internal const string ErrorParseMessage = "The value is not the internal format string.";
 
         /// <summary>
         /// Loads a copier into current instance.

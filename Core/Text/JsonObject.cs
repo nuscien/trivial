@@ -2647,7 +2647,7 @@ namespace Trivial.Text
         }
 
         /// <summary>
-        /// Deserializes.
+        /// Deserializes a property value.
         /// </summary>
         /// <typeparam name="T">The type of model to deserialize.</typeparam>
         /// <param name="key">The property key.</param>
@@ -2665,6 +2665,30 @@ namespace Trivial.Text
                 return default;
             }
 
+            return JsonSerializer.Deserialize<T>(item.ToString(), options);
+        }
+
+        /// <summary>
+        /// Deserializes a property value.
+        /// </summary>
+        /// <typeparam name="T">The type of model to deserialize.</typeparam>
+        /// <param name="key">The property key.</param>
+        /// <param name="parser">The string parser.</param>
+        /// <param name="options">Options to control the behavior during parsing.</param>
+        /// <returns>A JSON object instance.</returns>
+        /// <exception cref="ArgumentException">readerOptions contains unsupported options.</exception>
+        /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+        /// <exception cref="JsonException">The JSON is invalid. -or- TValue is not compatible with the JSON.</exception>
+        public T DeserializeValue<T>(string key, Func<string, T> parser, JsonSerializerOptions options = default)
+        {
+            AssertKey(key);
+            var item = store[key];
+            if (item is null || item.ValueKind == JsonValueKind.Null || item.ValueKind == JsonValueKind.Undefined)
+            {
+                return default;
+            }
+
+            if (parser != null && item is IJsonString s) return parser(s.StringValue);
             return JsonSerializer.Deserialize<T>(item.ToString(), options);
         }
 

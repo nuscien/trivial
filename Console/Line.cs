@@ -1446,11 +1446,13 @@ namespace Trivial.Console
             }
             catch (IOException)
             {
+                progress.IsNotSupported = true;
                 System.Console.WriteLine();
                 return progress;
             }
             catch (PlatformNotSupportedException)
             {
+                progress.IsNotSupported = true;
                 System.Console.WriteLine();
                 return progress;
             }
@@ -1682,15 +1684,23 @@ namespace Trivial.Console
             }
             catch (IOException)
             {
-                return new SelectionResult<T>(null, SelectionResultTypes.NotSupported);
             }
             catch (SecurityException)
             {
-                return new SelectionResult<T>(null, SelectionResultTypes.NotSupported);
             }
             catch (PlatformNotSupportedException)
             {
-                return new SelectionResult<T>(null, SelectionResultTypes.NotSupported);
+            }
+
+            if (maxWidth < 1)
+            {
+                if (string.IsNullOrWhiteSpace(options.QuestionWhenNotSupported)) return new SelectionResult<T>(null, SelectionResultTypes.NotSupported);
+                Write(options.QuestionForegroundColor, options.QuestionBackgroundColor, options.QuestionWhenNotSupported);
+                var inputStr = System.Console.ReadLine();
+                return new SelectionResult<T>(inputStr, SelectionResultTypes.Typed)
+                {
+                    IsNotSupported = true
+                };
             }
 
             var itemLen = options.Column.HasValue ? (int)Math.Floor(maxWidth * 1.0 / options.Column.Value) : maxWidth;

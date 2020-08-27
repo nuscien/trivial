@@ -153,6 +153,11 @@ namespace Trivial.Console
         public bool IsCompleted { get; private set; }
 
         /// <summary>
+        /// Gets a value indicating whether it is not supported.
+        /// </summary>
+        public bool IsNotSupported { get; internal set; }
+
+        /// <summary>
         /// Gets a value indicating whether it is successful.
         /// </summary>
         public bool IsSuccessful => IsCompleted && Value == 1;
