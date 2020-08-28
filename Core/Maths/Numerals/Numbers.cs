@@ -449,6 +449,11 @@ namespace Trivial.Maths
         public const string NegativeSign = "-";
 
         /// <summary>
+        /// The infinite.
+        /// </summary>
+        public const string InfiniteSymbol = "∞";
+
+        /// <summary>
         /// The positive infinite.
         /// </summary>
         public const string PositiveInfiniteSymbol = "+∞";

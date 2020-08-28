@@ -196,28 +196,58 @@ namespace Trivial.Maths
         /// </summary>
         /// <param name="s">The interval format string.</param>
         /// <returns>The interval instance parsed.</returns>
-        public static StructValueSimpleInterval<int> ParseForInt32(string s) => ParseForX(s, 0, int.Parse);
+        public static StructValueSimpleInterval<int> ParseForInt32(string s) => ParseForX(s, int.MinValue, int.MaxValue, ele =>
+        {
+            if (int.TryParse(ele, out var r)) return r;
+            return (int)double.Parse(ele);
+        });
 
         /// <summary>
         /// Parses the interval.
         /// </summary>
         /// <param name="s">The interval format string.</param>
         /// <returns>The interval instance parsed.</returns>
-        public static StructValueSimpleInterval<long> ParseForInt64(string s) => ParseForX(s, 0, long.Parse);
+        public static StructValueSimpleInterval<long> ParseForInt64(string s) => ParseForX(s, long.MinValue, long.MaxValue, ele =>
+        {
+            if (long.TryParse(ele, out var r)) return r;
+            return (long)double.Parse(ele);
+        });
 
         /// <summary>
         /// Parses the interval.
         /// </summary>
         /// <param name="s">The interval format string.</param>
         /// <returns>The interval instance parsed.</returns>
-        public static StructValueSimpleInterval<double> ParseForDouble(string s) => ParseForX(s, 0, double.Parse);
+        public static NullableValueSimpleInterval<int> ParseForNullableInt32(string s) => ParseForX(s, ele =>
+        {
+            if (int.TryParse(ele, out var r)) return r;
+            return (int)double.Parse(ele);
+        });
+
+        /// <summary>
+        /// Parses the interval.
+        /// </summary>
+        /// <param name="s">The interval format string.</param>
+        /// <returns>The interval instance parsed.</returns>
+        public static NullableValueSimpleInterval<long> ParseForNullableInt64(string s) => ParseForX(s, ele =>
+        {
+            if (long.TryParse(ele, out var r)) return r;
+            return (long)double.Parse(ele);
+        });
+
+        /// <summary>
+        /// Parses the interval.
+        /// </summary>
+        /// <param name="s">The interval format string.</param>
+        /// <returns>The interval instance parsed.</returns>
+        public static StructValueSimpleInterval<double> ParseForDouble(string s) => ParseForX(s, double.NegativeInfinity, double.PositiveInfinity, double.Parse);
 
         private const string digits = "0123456789+-∞";
-        private static StructValueSimpleInterval<T> ParseForX<T>(string s, T defaultValue, Func<string, T> convert) where T : struct, IComparable<T>
+        private static StructValueSimpleInterval<T> ParseForX<T>(string s, T minValue, T maxValue, Func<string, T> convert) where T : struct, IComparable<T>
         {
             try
             {
-                return FromString(s, defaultValue, convert);
+                return FromString(s, minValue, maxValue, convert);
             }
             catch (FormatException ex)
             {
@@ -244,14 +274,46 @@ namespace Trivial.Maths
                 throw new FormatException(ErrorParseMessage, ex);
             }
         }
-        internal static StructValueSimpleInterval<T> FromString<T>(string s, T defaultValue, Func<string, T> convert) where T : struct, IComparable<T>
+        private static NullableValueSimpleInterval<T> ParseForX<T>(string s, Func<string, T> convert) where T : struct, IComparable<T>
         {
-            if (string.IsNullOrEmpty(s) || s.Length < 2) return null;
-            var v = new StructValueSimpleInterval<T>(defaultValue, defaultValue, false, false);
-            if (s.StartsWith("{") && s.IndexOf(":") > 0) return System.Text.Json.JsonSerializer.Deserialize<StructValueSimpleInterval<T>>(s);
+            try
+            {
+                return FromString(s, convert);
+            }
+            catch (FormatException ex)
+            {
+                throw new FormatException(ErrorParseMessage, ex);
+            }
+            catch (OverflowException ex)
+            {
+                throw new FormatException(ErrorParseMessage, ex);
+            }
+            catch (ArgumentException ex)
+            {
+                throw new FormatException(ErrorParseMessage, ex);
+            }
+            catch (InvalidCastException ex)
+            {
+                throw new FormatException(ErrorParseMessage, ex);
+            }
+            catch (InvalidOperationException ex)
+            {
+                throw new FormatException(ErrorParseMessage, ex);
+            }
+            catch (System.Text.Json.JsonException ex)
+            {
+                throw new FormatException(ErrorParseMessage, ex);
+            }
+        }
+        private static (T?, bool, T?, bool) ParseFromString<T>(string s, Func<string, T> convert) where T : struct, IComparable<T>
+        {
+            T? left = null;
+            var leftOpen = false;
+            T? right = null;
+            var rightOpen = false;
             if (s[0] == '(' || s[0] == ']')
             {
-                v.LeftOpen = true;
+                leftOpen = true;
             }
             else if (s[0] != '[')
             {
@@ -261,15 +323,15 @@ namespace Trivial.Maths
                 if (digits.Contains(s[0].ToString()))
 #endif
                 {
-                    v.MaxValue = v.MinValue = convert(s);
-                    return v;
+                    right = left = convert(s);
+                    return (left, leftOpen, right, rightOpen);
                 }
 
                 throw new FormatException($"Expect the first character is ( or [ but it is {s[0]}.");
             }
 
             var last = s.Length - 1;
-            if (s[last] == ')' || s[last] == '[') v.RightOpen = true;
+            if (s[last] == ')' || s[last] == '[') rightOpen = true;
             else if (s[last] != ']') throw new FormatException($"Expect the last character ] or ) but it is {s[last]}.");
             var split = ';';
             if (s.IndexOf(split) < 0) split = ',';
@@ -278,25 +340,46 @@ namespace Trivial.Maths
             var arr = s.Substring(1, s.Length - 2).Split(split);
 #pragma warning restore IDE0057
 
-            if (arr.Length == 0) return v;
+            if (arr.Length == 0) return (left, leftOpen, right, rightOpen);
             var ele = arr[0]?.Trim();
-            var n = string.IsNullOrEmpty(ele) ? defaultValue : convert(ele);
-            if (v.IsGreaterThanMaxValue(n)) v.MaxValue = n;
-            v.MinValue = string.IsNullOrEmpty(ele) ? defaultValue : convert(ele);
+            if (!string.IsNullOrEmpty(ele) && ele != NumberSymbols.NegativeInfiniteSymbol && ele != NumberSymbols.InfiniteSymbol)
+            {
+                left = convert(ele);
+            }
 
             ele = arr[1]?.Trim();
-            n = string.IsNullOrEmpty(ele) ? defaultValue : convert(ele);
-            if (v.IsLessThanMinValue(n))
+            if (!string.IsNullOrEmpty(ele) && ele != NumberSymbols.PositiveInfiniteSymbol && ele != NumberSymbols.InfiniteSymbol)
             {
-                v.MaxValue = v.MinValue;
-                v.MinValue = n;
-            }
-            else
-            {
-                v.MaxValue = n;
+                right = convert(ele);
             }
 
-            return v;
+            return (left, leftOpen, right, rightOpen);
+        }
+        internal static StructValueSimpleInterval<T> FromString<T>(string s, T minValue, T maxValue, Func<string, T> convert) where T : struct, IComparable<T>
+        {
+            if (string.IsNullOrEmpty(s) || s.Length < 2) return null;
+            if (s.StartsWith("{") && s.IndexOf(":") > 0) return System.Text.Json.JsonSerializer.Deserialize<StructValueSimpleInterval<T>>(s);
+            var tuple = ParseFromString(s, convert);
+            return new StructValueSimpleInterval<T>
+            {
+                MinValue = tuple.Item1 ?? minValue,
+                MaxValue = tuple.Item3 ?? maxValue,
+                LeftOpen = tuple.Item2,
+                RightOpen = tuple.Item4
+            };
+        }
+        internal static NullableValueSimpleInterval<T> FromString<T>(string s, Func<string, T> convert) where T : struct, IComparable<T>
+        {
+            if (string.IsNullOrEmpty(s) || s.Length < 2) return null;
+            if (s.StartsWith("{") && s.IndexOf(":") > 0) return System.Text.Json.JsonSerializer.Deserialize<NullableValueSimpleInterval<T>>(s);
+            var tuple = ParseFromString(s, convert);
+            return new NullableValueSimpleInterval<T>
+            {
+                MinValue = tuple.Item1,
+                MaxValue = tuple.Item3,
+                LeftOpen = tuple.Item2,
+                RightOpen = tuple.Item4
+            };
         }
     }
 
@@ -481,6 +564,12 @@ namespace Trivial.Maths
         public bool RightOpen { get { return _rightOpen || !RightBounded; } set { _rightOpen = value; } }
 
         /// <summary>
+        /// Gets or sets a value indicating whether throw an exception if the value is not valid.
+        /// </summary>
+        [JsonIgnore]
+        public bool ValidateValueSetting { get; set; }
+
+        /// <summary>
         /// Gets or sets the minimum value of the interval.
         /// </summary>
         /// <exception cref="ArgumentOutOfRangeException">The value should be less than MaxValue.</exception>
@@ -495,9 +584,9 @@ namespace Trivial.Maths
 
             set
             {
-                const string errStr = "The value should be less than MaxValue.";
-                if (!this.IsLessThanOrEqualMinValue(value) && IsGreaterThanMaxValue(value) && RightBounded)
-                    throw new ArgumentOutOfRangeException("value", errStr);
+                if (value is null && _minValue is null) return;
+                if (ValidateValueSetting && IsGreaterThanMinValue(value) && IsGreaterThanMaxValue(value) && RightBounded)
+                    throw new ArgumentOutOfRangeException("value", "The value should be less than MaxValue.");
                 _minValue = value;
             }
         }
@@ -517,8 +606,9 @@ namespace Trivial.Maths
 
             set
             {
-                const string errStr = "The value should be greater than MinValue.";
-                if (!this.IsGreaterThanOrEqualMaxValue(value) && IsLessThanMinValue(value) && LeftBounded) throw new ArgumentOutOfRangeException("value", errStr);
+                if (value is null && _maxValue is null) return;
+                if (ValidateValueSetting && IsLessThanMaxValue(value) && IsLessThanMinValue(value) && LeftBounded)
+                    throw new ArgumentOutOfRangeException("value", "The value should be greater than MinValue.");
                 _maxValue = value;
             }
         }
@@ -607,8 +697,8 @@ namespace Trivial.Maths
         /// <returns>A System.String containing this interval.</returns>
         public override string ToString()
         {
-            var leftStr = LeftBounded ? MinValue.ToString() : NumberSymbols.NegativeInfiniteSymbol;
-            var rightStr = RightBounded ? MaxValue.ToString() : NumberSymbols.PositiveInfiniteSymbol;
+            var leftStr = LeftBounded ? ToValueString(MinValue) : NumberSymbols.NegativeInfiniteSymbol;
+            var rightStr = RightBounded ? ToValueString(MaxValue) : NumberSymbols.PositiveInfiniteSymbol;
             var longStr = string.Format("{0} - {1}", leftStr, rightStr);
             var sep = false;
             if (longStr.IndexOfAny(new[] { ',', ';' }) > -1) sep = true;
@@ -620,6 +710,17 @@ namespace Trivial.Maths
             }
 
             return string.Format("{0}{1}{2} {3}{4}", LeftOpen ? "(" : "[", leftStr, sep ? ";" : ",", rightStr, RightOpen ? ")" : "]");
+        }
+
+        /// <summary>
+        /// Gets the string format of the value.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <returns>A string.</returns>
+        protected virtual string ToValueString(T value)
+        {
+            if (value is null) return string.Empty;
+            return value.ToString();
         }
     }
 
@@ -674,8 +775,8 @@ namespace Trivial.Maths
         /// <returns>true if the specific value is less than or equal MinValue; otherwise, false.</returns>
         public override bool IsLessThanMinValue(T value)
         {
-            if (value == null) return true;
             if (MinValue == null) return false;
+            if (value == null) return true;
             return 0 < MinValue.CompareTo(value);
         }
 
@@ -686,8 +787,8 @@ namespace Trivial.Maths
         /// <returns>true if the specific value is greater than or equal MinValue; otherwise, false.</returns>
         public override bool IsGreaterThanMinValue(T value)
         {
-            if (MinValue == null) return true;
             if (value == null) return false;
+            if (MinValue == null) return true;
             return 0 > MinValue.CompareTo(value);
         }
 
@@ -710,8 +811,8 @@ namespace Trivial.Maths
         /// <returns>true if the specific value is less than or equal MaxValue; otherwise, false.</returns>
         public override bool IsLessThanMaxValue(T value)
         {
-            if (MaxValue == null) return true;
             if (value == null) return false;
+            if (MaxValue == null) return true;
             return 0 < MaxValue.CompareTo(value);
         }
 
@@ -722,8 +823,8 @@ namespace Trivial.Maths
         /// <returns>true if the specific value is greater than or equal MaxValue; otherwise, false.</returns>
         public override bool IsGreaterThanMaxValue(T value)
         {
-            if (value == null) return true;
             if (MaxValue == null) return false;
+            if (value == null) return true;
             return 0 > MaxValue.CompareTo(value);
         }
 
@@ -896,8 +997,8 @@ namespace Trivial.Maths
         /// <returns>true if the specific value is less than or equal MinValue; otherwise, false.</returns>
         public override bool IsLessThanMinValue(T? value)
         {
-            if (value == null) return true;
             if (MinValue == null) return false;
+            if (value == null) return true;
             return 0 < MinValue.Value.CompareTo(value.Value);
         }
 
@@ -908,8 +1009,8 @@ namespace Trivial.Maths
         /// <returns>true if the specific value is greater than or equal MinValue; otherwise, false.</returns>
         public override bool IsGreaterThanMinValue(T? value)
         {
-            if (MinValue == null) return true;
             if (value == null) return false;
+            if (MinValue == null) return true;
             return 0 > MinValue.Value.CompareTo(value.Value);
         }
 
@@ -932,8 +1033,8 @@ namespace Trivial.Maths
         /// <returns>true if the specific value is less than or equal MaxValue; otherwise, false.</returns>
         public override bool IsLessThanMaxValue(T? value)
         {
-            if (MaxValue == null) return true;
             if (value == null) return false;
+            if (MaxValue == null) return true;
             return 0 < MaxValue.Value.CompareTo(value.Value);
         }
 
@@ -944,8 +1045,8 @@ namespace Trivial.Maths
         /// <returns>true if the specific value is greater than or equal MaxValue; otherwise, false.</returns>
         public override bool IsGreaterThanMaxValue(T? value)
         {
-            if (value == null) return true;
             if (MaxValue == null) return false;
+            if (value == null) return true;
             return 0 > MaxValue.Value.CompareTo(value.Value);
         }
 

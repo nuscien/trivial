@@ -223,7 +223,7 @@ namespace Trivial.Text
     ""H"": "":,.;/| "",
     ""I"": ""abcdefg hijklmn    opq\trst\n\nuvw\rxyz"",
     ""J"": ""123456"",
-    ""K"": ""[12, 34)""
+    ""K"": ""[12, 34.2)""
 }";
             model2 = JsonSerializer.Deserialize<JsonAttributeTestModel>(str);
             Assert.AreEqual(1, model2.H.Count);
