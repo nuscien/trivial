@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Text.Json;
 
+using Trivial.Maths;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Trivial.Text
@@ -223,7 +224,10 @@ namespace Trivial.Text
     ""H"": "":,.;/| "",
     ""I"": ""abcdefg hijklmn    opq\trst\n\nuvw\rxyz"",
     ""J"": ""123456"",
-    ""K"": ""[12, 34.2)""
+    ""K"": ""[12, 76.1)"",
+    ""L"": ""[, 999999999999)"",
+    ""M"": ""[3.1415926, ¡Þ]"",
+    ""N"": ""[3.6.0, 5.0.0)""
 }";
             model2 = JsonSerializer.Deserialize<JsonAttributeTestModel>(str);
             Assert.AreEqual(1, model2.H.Count);
@@ -233,8 +237,41 @@ namespace Trivial.Text
             Assert.IsNotNull(model2.K);
             Assert.AreEqual(12, model2.K.MinValue);
             Assert.IsFalse(model2.K.LeftOpen);
-            Assert.AreEqual(34, model2.K.MaxValue);
+            Assert.AreEqual(76, model2.K.MaxValue);
             Assert.IsTrue(model2.K.RightOpen);
+            Assert.IsFalse(model2.K.IsInInterval(10));
+            Assert.IsTrue(model2.K.IsInInterval(12));
+            Assert.IsFalse(model2.K.IsInInterval(77));
+            Assert.IsNotNull(model2.L);
+            Assert.IsNull(model2.L.MinValue);
+            Assert.IsTrue(model2.L.LeftOpen);
+            Assert.IsFalse(model2.L.LeftBounded);
+            Assert.AreEqual(999999999999, model2.L.MaxValue);
+            Assert.IsTrue(model2.L.RightOpen);
+            Assert.IsTrue(model2.L.RightBounded);
+            Assert.IsNotNull(model2.M);
+            Assert.AreEqual(3.1415926, model2.M.MinValue);
+            Assert.IsFalse(model2.M.LeftOpen);
+            Assert.IsTrue(model2.M.LeftBounded);
+            Assert.IsTrue(model2.M.RightOpen);
+            Assert.IsFalse(model2.M.RightBounded);
+            Assert.IsFalse(model2.M.IsInInterval(3));
+            Assert.IsTrue(model2.M.IsInInterval(3.1415926));
+            Assert.IsTrue(model2.M.IsInInterval(200000000000000));
+            Assert.IsNotNull(model2.N);
+            Assert.AreEqual("3.6.0", model2.N.MinValue);
+            Assert.IsFalse(model2.N.LeftOpen);
+            Assert.IsTrue(model2.N.LeftBounded);
+            Assert.AreEqual("5.0.0", model2.N.MaxValue);
+            Assert.IsTrue(model2.N.RightOpen);
+            Assert.IsTrue(model2.N.RightBounded);
+            Assert.IsFalse(model2.N.IsInInterval("3.0.0.0"));
+            Assert.IsTrue(model2.N.IsInInterval("3.6.0.0"));
+            Assert.IsTrue(model2.N.IsInInterval("4.2.0.0"));
+            Assert.IsFalse(model2.N.IsInInterval("5.0.0.0"));
+            Assert.IsFalse(model2.N.IsInInterval("6.0.0.0"));
+            Assert.IsNotNull(model2.N.MinVersion);
+            Assert.AreEqual(6, model2.N.MinVersion.Minor);
         }
     }
 }

@@ -10,6 +10,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.Serialization;
 using System.Text.Json.Serialization;
 
@@ -20,7 +21,7 @@ namespace Trivial.Maths
     /// </summary>
     public static class IntervalUtility
     {
-        internal const string ErrorParseMessage = "The value is not the internal format string.";
+        internal const string ErrorParseMessage = "The string to parse is not the internal format.";
 
         /// <summary>
         /// Loads a copier into current instance.
@@ -199,8 +200,10 @@ namespace Trivial.Maths
         public static StructValueSimpleInterval<int> ParseForInt32(string s) => ParseForX(s, int.MinValue, int.MaxValue, ele =>
         {
             if (int.TryParse(ele, out var r)) return r;
+            if (ele == NumberSymbols.InfiniteSymbol || ele == NumberSymbols.PositiveInfiniteSymbol) return int.MaxValue;
+            else if (ele == NumberSymbols.NegativeInfiniteSymbol) return int.MinValue;
             return (int)double.Parse(ele);
-        });
+        }, null, null);
 
         /// <summary>
         /// Parses the interval.
@@ -210,17 +213,20 @@ namespace Trivial.Maths
         public static StructValueSimpleInterval<long> ParseForInt64(string s) => ParseForX(s, long.MinValue, long.MaxValue, ele =>
         {
             if (long.TryParse(ele, out var r)) return r;
+            if (ele == NumberSymbols.InfiniteSymbol || ele == NumberSymbols.PositiveInfiniteSymbol) return long.MaxValue;
+            else if (ele == NumberSymbols.NegativeInfiniteSymbol) return long.MinValue;
             return (long)double.Parse(ele);
-        });
+        }, null, null);
 
         /// <summary>
         /// Parses the interval.
         /// </summary>
         /// <param name="s">The interval format string.</param>
         /// <returns>The interval instance parsed.</returns>
-        public static NullableValueSimpleInterval<int> ParseForNullableInt32(string s) => ParseForX(s, ele =>
+        public static NullableValueSimpleInterval<int> ParseForNullableInt32(string s) => ParseForX<int>(s, ele =>
         {
             if (int.TryParse(ele, out var r)) return r;
+            if (ele == NumberSymbols.InfiniteSymbol || ele == NumberSymbols.PositiveInfiniteSymbol || ele == NumberSymbols.NegativeInfiniteSymbol) return null;
             return (int)double.Parse(ele);
         });
 
@@ -229,9 +235,11 @@ namespace Trivial.Maths
         /// </summary>
         /// <param name="s">The interval format string.</param>
         /// <returns>The interval instance parsed.</returns>
-        public static NullableValueSimpleInterval<long> ParseForNullableInt64(string s) => ParseForX(s, ele =>
+        /// <exception cref="FormatException">The string to parse is not the internal format.</exception>
+        public static NullableValueSimpleInterval<long> ParseForNullableInt64(string s) => ParseForX<long>(s, ele =>
         {
             if (long.TryParse(ele, out var r)) return r;
+            if (ele == NumberSymbols.InfiniteSymbol || ele == NumberSymbols.PositiveInfiniteSymbol || ele == NumberSymbols.NegativeInfiniteSymbol) return null;
             return (long)double.Parse(ele);
         });
 
@@ -240,14 +248,15 @@ namespace Trivial.Maths
         /// </summary>
         /// <param name="s">The interval format string.</param>
         /// <returns>The interval instance parsed.</returns>
-        public static StructValueSimpleInterval<double> ParseForDouble(string s) => ParseForX(s, double.NegativeInfinity, double.PositiveInfinity, double.Parse);
+        /// <exception cref="FormatException">The string to parse is not the internal format.</exception>
+        public static StructValueSimpleInterval<double> ParseForDouble(string s) => ParseForX(s, double.NegativeInfinity, double.PositiveInfinity, double.Parse, double.NegativeInfinity, double.PositiveInfinity);
 
         private const string digits = "0123456789+-∞";
-        private static StructValueSimpleInterval<T> ParseForX<T>(string s, T minValue, T maxValue, Func<string, T> convert) where T : struct, IComparable<T>
+        private static StructValueSimpleInterval<T> ParseForX<T>(string s, T minValue, T maxValue, Func<string, T> convert, T? negativeInfinite, T? positiveInfinite) where T : struct, IComparable<T>
         {
             try
             {
-                return FromString(s, minValue, maxValue, convert);
+                return FromString(s, minValue, maxValue, convert, negativeInfinite, positiveInfinite);
             }
             catch (FormatException ex)
             {
@@ -274,7 +283,7 @@ namespace Trivial.Maths
                 throw new FormatException(ErrorParseMessage, ex);
             }
         }
-        private static NullableValueSimpleInterval<T> ParseForX<T>(string s, Func<string, T> convert) where T : struct, IComparable<T>
+        private static NullableValueSimpleInterval<T> ParseForX<T>(string s, Func<string, T?> convert) where T : struct, IComparable<T>
         {
             try
             {
@@ -305,11 +314,11 @@ namespace Trivial.Maths
                 throw new FormatException(ErrorParseMessage, ex);
             }
         }
-        private static (T?, bool, T?, bool) ParseFromString<T>(string s, Func<string, T> convert) where T : struct, IComparable<T>
+        private static (T, bool, T, bool) ParseFromString<T>(string s, Func<string, T> convert, T defaultValue)
         {
-            T? left = null;
+            var left = defaultValue;
             var leftOpen = false;
-            T? right = null;
+            var right = defaultValue;
             var rightOpen = false;
             if (s[0] == '(' || s[0] == ']')
             {
@@ -317,22 +326,80 @@ namespace Trivial.Maths
             }
             else if (s[0] != '[')
             {
+                while (s[0] == '=') s = s.Substring(1);
+                if (s.Length < 1) throw new FormatException("Expect it is an interval format string but it only contains equal sign.");
+
+                var side = 0;
+                if (s.StartsWith("<="))
+                {
+                    side = -1;
+                    leftOpen = true;
+                    s = s.Substring(2);
+                }
+                else if (s.StartsWith(">="))
+                {
+                    side = 1;
+                    rightOpen = true;
+                    s = s.Substring(2);
+                }
+                else if (s.StartsWith("≤"))
+                {
+                    side = -1;
+                    leftOpen = true;
+                    s = s.Substring(1);
+                }
+                else if (s.StartsWith("≥"))
+                {
+                    side = 1;
+                    rightOpen = true;
+                    s = s.Substring(1);
+                }
+                else if (s.StartsWith("<"))
+                {
+                    side = -1;
+                    leftOpen = true;
+                    rightOpen = true;
+                    s = s.Substring(1);
+                }
+                else if (s.StartsWith(">"))
+                {
+                    side = 1;
+                    leftOpen = true;
+                    rightOpen = true;
+                    s = s.Substring(1);
+                }
+
+                if (s.Length < 1) throw new FormatException("Expect it is an interval format string but it only contains operator.");
+
 #if !NETSTANDARD2_0
                 if (digits.Contains(s[0]))
 #else
                 if (digits.Contains(s[0].ToString()))
 #endif
                 {
-                    right = left = convert(s);
-                    return (left, leftOpen, right, rightOpen);
+                    try
+                    {
+                        if (side == 1) left = convert(s);
+                        else if (side == -1) right = convert(s);
+                        else right = left = convert(s);
+                        return (left, leftOpen, right, rightOpen);
+                    }
+                    catch (ArgumentException ex)
+                    {
+                        throw new FormatException("Expect it is an interval format string.", ex);
+                    }
+                    catch (OverflowException ex)
+                    {
+                        throw new FormatException("Expect it is an interval format string.", ex);
+                    }
                 }
 
-                throw new FormatException($"Expect the first character is ( or [ but it is {s[0]}.");
+                throw new FormatException("Expect the first character is ( or [.");
             }
 
             var last = s.Length - 1;
             if (s[last] == ')' || s[last] == '[') rightOpen = true;
-            else if (s[last] != ']') throw new FormatException($"Expect the last character ] or ) but it is {s[last]}.");
+            else if (s[last] != ']') throw new FormatException("Expect the last character ] or ).");
             var split = ';';
             if (s.IndexOf(split) < 0) split = ',';
 
@@ -347,39 +414,80 @@ namespace Trivial.Maths
                 left = convert(ele);
             }
 
-            ele = arr[1]?.Trim();
-            if (!string.IsNullOrEmpty(ele) && ele != NumberSymbols.PositiveInfiniteSymbol && ele != NumberSymbols.InfiniteSymbol)
+            if (arr.Length > 1)
             {
-                right = convert(ele);
+                ele = arr[1]?.Trim();
+                if (!string.IsNullOrEmpty(ele) && ele != NumberSymbols.PositiveInfiniteSymbol && ele != NumberSymbols.InfiniteSymbol)
+                {
+                    right = convert(ele);
+                }
+            }
+            else
+            {
+                right = left;
             }
 
             return (left, leftOpen, right, rightOpen);
         }
-        internal static StructValueSimpleInterval<T> FromString<T>(string s, T minValue, T maxValue, Func<string, T> convert) where T : struct, IComparable<T>
+        internal static StructValueSimpleInterval<T> FromString<T>(string s, T minValue, T maxValue, Func<string, T> convert, T? negativeInfinite, T? positiveInfinite) where T : struct, IComparable<T>
         {
             if (string.IsNullOrEmpty(s) || s.Length < 2) return null;
             if (s.StartsWith("{") && s.IndexOf(":") > 0) return System.Text.Json.JsonSerializer.Deserialize<StructValueSimpleInterval<T>>(s);
-            var tuple = ParseFromString(s, convert);
-            return new StructValueSimpleInterval<T>
-            {
-                MinValue = tuple.Item1 ?? minValue,
-                MaxValue = tuple.Item3 ?? maxValue,
-                LeftOpen = tuple.Item2,
-                RightOpen = tuple.Item4
-            };
+            var tuple = ParseFromString<T?>(s, ele => convert(ele), null);
+            return new StructValueSimpleInterval<T>(tuple.Item1 ?? minValue, tuple.Item3 ?? maxValue, tuple.Item2, tuple.Item4, negativeInfinite, positiveInfinite);
         }
-        internal static NullableValueSimpleInterval<T> FromString<T>(string s, Func<string, T> convert) where T : struct, IComparable<T>
+        internal static NullableValueSimpleInterval<T> FromString<T>(string s, Func<string, T?> convert) where T : struct, IComparable<T>
         {
             if (string.IsNullOrEmpty(s) || s.Length < 2) return null;
             if (s.StartsWith("{") && s.IndexOf(":") > 0) return System.Text.Json.JsonSerializer.Deserialize<NullableValueSimpleInterval<T>>(s);
-            var tuple = ParseFromString(s, convert);
-            return new NullableValueSimpleInterval<T>
+            var tuple = ParseFromString(s, convert, null);
+            return new NullableValueSimpleInterval<T>(tuple.Item1, tuple.Item3, tuple.Item2, tuple.Item4);
+        }
+
+        /// <summary>
+        /// Parses an interval string.
+        /// </summary>
+        /// <typeparam name="T1">The type of the interval.</typeparam>
+        /// <typeparam name="T2">The type of the value.</typeparam>
+        /// <param name="s">The string to parse.</param>
+        /// <param name="factory">The interval factory.</param>
+        /// <param name="convert">The value parser.</param>
+        /// <param name="defaultValue">The default value.</param>
+        /// <returns>An interval instance.</returns>
+        /// <exception cref="FormatException">The string to parse is not the internal format.</exception>
+        public static T1 Parse<T1, T2>(string s, Func<T2, bool, T2, bool, T1> factory, Func<string, T2> convert, T2 defaultValue) where T1 : ISimpleInterval<T2>
+        {
+            try
             {
-                MinValue = tuple.Item1,
-                MaxValue = tuple.Item3,
-                LeftOpen = tuple.Item2,
-                RightOpen = tuple.Item4
-            };
+                if (string.IsNullOrEmpty(s) || s.Length < 2) return default;
+                if (s.StartsWith("{") && s.IndexOf(":") > 0) return System.Text.Json.JsonSerializer.Deserialize<T1>(s);
+                var tuple = ParseFromString(s, convert, defaultValue);
+                return factory(tuple.Item1, tuple.Item2, tuple.Item3, tuple.Item4);
+            }
+            catch (FormatException ex)
+            {
+                throw new FormatException(ErrorParseMessage, ex);
+            }
+            catch (OverflowException ex)
+            {
+                throw new FormatException(ErrorParseMessage, ex);
+            }
+            catch (ArgumentException ex)
+            {
+                throw new FormatException(ErrorParseMessage, ex);
+            }
+            catch (InvalidCastException ex)
+            {
+                throw new FormatException(ErrorParseMessage, ex);
+            }
+            catch (InvalidOperationException ex)
+            {
+                throw new FormatException(ErrorParseMessage, ex);
+            }
+            catch (System.Text.Json.JsonException ex)
+            {
+                throw new FormatException(ErrorParseMessage, ex);
+            }
         }
     }
 
@@ -501,30 +609,103 @@ namespace Trivial.Maths
         /// The value indicating whether it is right open.
         /// </summary>
         private bool _rightOpen;
-        
+
         /// <summary>
-        /// Initializes a new instance of the SimpleClosedInterval class.
+        /// Initializes a new instance of the SimpleInterval class.
         /// </summary>
         protected SimpleInterval()
         {
-            LeftOpen = false;
-            RightOpen = false;
+            LeftOpen = true;
+            RightOpen = true;
         }
 
         /// <summary>
-        /// Initializes a new instance of the SimpleClosedInterval class.
+        /// Initializes a new instance of the SimpleInterval class.
+        /// </summary>
+        /// <param name="value">The value to set.</param>
+        /// <param name="op">The operation.</param>
+        /// <param name="minValue">The minimum value.</param>
+        /// <param name="maxValue">The maximum value.</param>
+        protected SimpleInterval(T value, BasicCompareOperator op, T minValue, T maxValue)
+        {
+            this.SetValues(value, value);
+            switch (op)
+            {
+                case BasicCompareOperator.Greater:
+                    MinValue = value;
+                    MaxValue = maxValue;
+                    LeftOpen = true;
+                    RightOpen = true;
+                    break;
+                case BasicCompareOperator.GreaterOrEqual:
+                    MinValue = value;
+                    MaxValue = maxValue;
+                    LeftOpen = false;
+                    RightOpen = true;
+                    break;
+                case BasicCompareOperator.Less:
+                    MinValue = minValue;
+                    MaxValue = value;
+                    LeftOpen = true;
+                    RightOpen = false;
+                    break;
+                case BasicCompareOperator.LessOrEqual:
+                    MinValue = minValue;
+                    MaxValue = value;
+                    LeftOpen = true;
+                    RightOpen = false;
+                    break;
+                default:
+                    MinValue = value;
+                    MaxValue = value;
+                    LeftOpen = false;
+                    RightOpen = false;
+                    break;
+            }
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the SimpleInterval class.
+        /// </summary>
+        /// <param name="value">The value to set.</param>
+        /// <param name="op">The operation.</param>
+        protected SimpleInterval(T value, BasicCompareOperator op) : this(value, op, default, default)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the SimpleInterval class.
         /// </summary>
         /// <param name="valueA">The first value.</param>
         /// <param name="valueB">The seconde value.</param>
-        protected SimpleInterval(T valueA, T valueB)
+        protected SimpleInterval(T valueA, T valueB) : this(valueA, valueB, false)
         {
-            this.SetValues(valueA, valueB);
-            LeftOpen = false;
-            RightOpen = false;
         }
 
         /// <summary>
-        /// Initializes a new instance of the SimpleClosedInterval class.
+        /// Initializes a new instance of the SimpleInterval class.
+        /// </summary>
+        /// <param name="valueA">The first value.</param>
+        /// <param name="valueB">The seconde value.</param>
+        /// <param name="autoFix">true if fix the order automatically; otherwise, false.</param>
+        protected SimpleInterval(T valueA, T valueB, bool autoFix)
+        {
+            if (autoFix)
+            {
+                this.SetValues(valueA, valueB);
+            }
+            else
+            {
+                MinValue = valueA;
+                MaxValue = valueB;
+            }
+
+            LeftOpen = valueA is null;
+            RightOpen = valueB is null;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the SimpleInterval class.
         /// </summary>
         /// <param name="valueA">The first value.</param>
         /// <param name="valueB">The seconde value.</param>
@@ -536,6 +717,16 @@ namespace Trivial.Maths
             LeftOpen = leftOpen;
             RightOpen = rightOpen;
         }
+
+        /// <summary>
+        /// Occurs on minimum (left) value is changed.
+        /// </summary>
+        public event Data.ChangeEventHandler<T> MinValueChanged;
+
+        /// <summary>
+        /// Occurs on maximum (right) value is changed.
+        /// </summary>
+        public event Data.ChangeEventHandler<T> MaxValueChanged;
 
         /// <summary>
         /// Gets a value indicating whether it is left bounded.
@@ -554,14 +745,35 @@ namespace Trivial.Maths
         /// </summary>
         [JsonPropertyName("leftopen")]
         [DataMember(Name = "leftopen")]
-        public bool LeftOpen { get { return _leftOpen || !LeftBounded; } set { _leftOpen = value; } }
+        public bool LeftOpen
+        { 
+            get
+            {
+                return _leftOpen || !LeftBounded;
+            }
+
+            set
+            {
+                _leftOpen = value;
+            }
+        }
 
         /// <summary>
         /// Gets or sets a value indicating whether it is right open.
         /// </summary>
         [JsonPropertyName("rightopen")]
         [DataMember(Name = "rightopen")]
-        public bool RightOpen { get { return _rightOpen || !RightBounded; } set { _rightOpen = value; } }
+        public bool RightOpen {
+            get
+            {
+                return _rightOpen || !RightBounded;
+            }
+            
+            set
+            {
+                _rightOpen = value;
+            }
+        }
 
         /// <summary>
         /// Gets or sets a value indicating whether throw an exception if the value is not valid.
@@ -570,7 +782,7 @@ namespace Trivial.Maths
         public bool ValidateValueSetting { get; set; }
 
         /// <summary>
-        /// Gets or sets the minimum value of the interval.
+        /// Gets or sets the minimum (left) value of the interval.
         /// </summary>
         /// <exception cref="ArgumentOutOfRangeException">The value should be less than MaxValue.</exception>
         [JsonPropertyName("left")]
@@ -587,12 +799,14 @@ namespace Trivial.Maths
                 if (value is null && _minValue is null) return;
                 if (ValidateValueSetting && IsGreaterThanMinValue(value) && IsGreaterThanMaxValue(value) && RightBounded)
                     throw new ArgumentOutOfRangeException("value", "The value should be less than MaxValue.");
+                var oldValue = _minValue;
                 _minValue = value;
+                MinValueChanged?.Invoke(this, new Data.ChangeEventArgs<T>(oldValue, value, Data.ChangeMethods.Update, nameof(MinValue)));
             }
         }
 
         /// <summary>
-        /// Gets or sets the maximum value of the interval.
+        /// Gets or sets the maximum (right) value of the interval.
         /// </summary>
         /// <exception cref="ArgumentOutOfRangeException">The value should be greater than MinValue.</exception>
         [JsonPropertyName("right")]
@@ -609,7 +823,9 @@ namespace Trivial.Maths
                 if (value is null && _maxValue is null) return;
                 if (ValidateValueSetting && IsLessThanMaxValue(value) && IsLessThanMinValue(value) && LeftBounded)
                     throw new ArgumentOutOfRangeException("value", "The value should be greater than MinValue.");
+                var oldValue = _minValue;
                 _maxValue = value;
+                MaxValueChanged?.Invoke(this, new Data.ChangeEventArgs<T>(oldValue, value, Data.ChangeMethods.Update, nameof(MaxValue)));
             }
         }
 
@@ -727,6 +943,7 @@ namespace Trivial.Maths
     /// <summary>
     /// The simple interval with class value.
     /// </summary>
+    [DataContract]
     public class RefValueSimpleInterval<T> : SimpleInterval<T> where T : class, IComparable<T>
     {
         /// <summary>
@@ -739,13 +956,34 @@ namespace Trivial.Maths
         /// <summary>
         /// Initializes a new instance of the RefValueSimpleInterval class.
         /// </summary>
+        /// <param name="value">The value.</param>
+        /// <param name="op">The operation.</param>
+        public RefValueSimpleInterval(T value, BasicCompareOperator op)
+            : base(value, op, null, null)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the RefValueSimpleInterval class.
+        /// </summary>
         /// <param name="valueA">The first value.</param>
         /// <param name="valueB">The seconde value.</param>
         public RefValueSimpleInterval(T valueA, T valueB)
             : base(valueA, valueB)
         {
         }
-        
+
+        /// <summary>
+        /// Initializes a new instance of the RefValueSimpleInterval class.
+        /// </summary>
+        /// <param name="valueA">The first value.</param>
+        /// <param name="valueB">The seconde value.</param>
+        /// <param name="autoFix">true if fix the order automatically; otherwise, false.</param>
+        public RefValueSimpleInterval(T valueA, T valueB, bool autoFix)
+            : base(valueA, valueB, autoFix)
+        {
+        }
+
         /// <summary>
         /// Initializes a new instance of the RefValueSimpleInterval class.
         /// </summary>
@@ -761,11 +999,13 @@ namespace Trivial.Maths
         /// <summary>
         /// Gets a value indicating whether it is left bounded.
         /// </summary>
+        [JsonIgnore]
         public override bool LeftBounded { get { return MinValue != null; } }
 
         /// <summary>
         /// Gets a value indicating whether it is right bounded.
         /// </summary>
+        [JsonIgnore]
         public override bool RightBounded { get { return MaxValue != null; } }
 
         /// <summary>
@@ -777,7 +1017,7 @@ namespace Trivial.Maths
         {
             if (MinValue == null) return false;
             if (value == null) return true;
-            return 0 < MinValue.CompareTo(value);
+            return 0 < (ValueComparer?.Compare(MinValue, value) ?? MinValue.CompareTo(value));
         }
 
         /// <summary>
@@ -789,7 +1029,7 @@ namespace Trivial.Maths
         {
             if (value == null) return false;
             if (MinValue == null) return true;
-            return 0 > MinValue.CompareTo(value);
+            return 0 > (ValueComparer?.Compare(MinValue, value) ?? MinValue.CompareTo(value));
         }
 
         /// <summary>
@@ -801,7 +1041,7 @@ namespace Trivial.Maths
         {
             if (MinValue == null && value == null) return true;
             if (MinValue == null || value == null) return false;
-            return 0 == MinValue.CompareTo(value);
+            return 0 == (ValueComparer?.Compare(MinValue, value) ?? MinValue.CompareTo(value));
         }
 
         /// <summary>
@@ -813,7 +1053,7 @@ namespace Trivial.Maths
         {
             if (value == null) return false;
             if (MaxValue == null) return true;
-            return 0 < MaxValue.CompareTo(value);
+            return 0 < (ValueComparer?.Compare(MaxValue, value) ?? MaxValue.CompareTo(value));
         }
 
         /// <summary>
@@ -825,7 +1065,7 @@ namespace Trivial.Maths
         {
             if (MaxValue == null) return false;
             if (value == null) return true;
-            return 0 > MaxValue.CompareTo(value);
+            return 0 > (ValueComparer?.Compare(MaxValue, value) ?? MaxValue.CompareTo(value));
         }
 
         /// <summary>
@@ -837,24 +1077,46 @@ namespace Trivial.Maths
         {
             if (MaxValue == null && value == null) return true;
             if (MaxValue == null || value == null) return false;
-            return 0 == MaxValue.CompareTo(value);
+            return 0 == (ValueComparer?.Compare(MaxValue, value) ?? MaxValue.CompareTo(value));
         }
+
+        /// <summary>
+        /// Gets the value comparer.
+        /// </summary>
+        [JsonIgnore]
+        protected virtual IComparer<T> ValueComparer { get; }
     }
 
     /// <summary>
     /// The simple interval with struct value.
     /// </summary>
+    [DataContract]
     public class StructValueSimpleInterval<T> : SimpleInterval<T> where T : struct, IComparable<T>
     {
+        private readonly T? positiveInfiniteValue;
+        private readonly T? negativeInfiniteValue;
+
         /// <summary>
-        /// Initializes a new instance of the NullableValueSimpleInterval class.
+        /// Initializes a new instance of the StructValueSimpleInterval class.
         /// </summary>
         public StructValueSimpleInterval()
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the NullableValueSimpleInterval class.
+        /// Initializes a new instance of the StructValueSimpleInterval class.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <param name="op">The operation.</param>
+        /// <param name="minValue">The minimum value.</param>
+        /// <param name="maxValue">The maximum value.</param>
+        public StructValueSimpleInterval(T value, BasicCompareOperator op, T minValue, T maxValue)
+            : base(value, op, minValue, maxValue)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the StructValueSimpleInterval class.
         /// </summary>
         /// <param name="valueA">The first value.</param>
         /// <param name="valueB">The seconde value.</param>
@@ -864,7 +1126,18 @@ namespace Trivial.Maths
         }
 
         /// <summary>
-        /// Initializes a new instance of the NullableValueSimpleInterval class.
+        /// Initializes a new instance of the StructValueSimpleInterval class.
+        /// </summary>
+        /// <param name="valueA">The first value.</param>
+        /// <param name="valueB">The seconde value.</param>
+        /// <param name="autoFix">true if fix the order automatically; otherwise, false.</param>
+        public StructValueSimpleInterval(T valueA, T valueB, bool autoFix)
+            : base(valueA, valueB, autoFix)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the StructValueSimpleInterval class.
         /// </summary>
         /// <param name="valueA">The first value.</param>
         /// <param name="valueB">The seconde value.</param>
@@ -876,14 +1149,32 @@ namespace Trivial.Maths
         }
 
         /// <summary>
+        /// Initializes a new instance of the StructValueSimpleInterval class.
+        /// </summary>
+        /// <param name="valueA">The first value.</param>
+        /// <param name="valueB">The seconde value.</param>
+        /// <param name="leftOpen">true if it is left open; otherwise, left closed.</param>
+        /// <param name="rightOpen">true if it is right open; otherwise, right closed.</param>
+        /// <param name="negativeInfinite">The negative infinite value.</param>
+        /// <param name="positiveInfinite">The positive infinite value.</param>
+        public StructValueSimpleInterval(T valueA, T valueB, bool leftOpen, bool rightOpen, T? negativeInfinite, T? positiveInfinite)
+            : base(valueA, valueB, leftOpen, rightOpen)
+        {
+            positiveInfiniteValue = positiveInfinite;
+            negativeInfiniteValue = negativeInfinite;
+        }
+
+        /// <summary>
         /// Gets a value indicating whether it is left bounded.
         /// </summary>
-        public override bool LeftBounded { get { return true; } }
+        [JsonIgnore]
+        public override bool LeftBounded => negativeInfiniteValue.HasValue ? !negativeInfiniteValue.Value.Equals(MinValue) : true;
 
         /// <summary>
         /// Gets a value indicating whether it is right bounded.
         /// </summary>
-        public override bool RightBounded { get { return true; } }
+        [JsonIgnore]
+        public override bool RightBounded => positiveInfiniteValue.HasValue ? !positiveInfiniteValue.Value.Equals(MaxValue) : true;
 
         /// <summary>
         /// Checks if the value is less than MinValue.
@@ -892,7 +1183,7 @@ namespace Trivial.Maths
         /// <returns>true if the specific value is less than or equal MinValue; otherwise, false.</returns>
         public override bool IsLessThanMinValue(T value)
         {
-            return 0 < MinValue.CompareTo(value);
+            return 0 < (ValueComparer?.Compare(MinValue, value) ?? MinValue.CompareTo(value));
         }
 
         /// <summary>
@@ -902,7 +1193,7 @@ namespace Trivial.Maths
         /// <returns>true if the specific value is greater than or equal MinValue; otherwise, false.</returns>
         public override bool IsGreaterThanMinValue(T value)
         {
-            return 0 > MinValue.CompareTo(value);
+            return 0 > (ValueComparer?.Compare(MinValue, value) ?? MinValue.CompareTo(value));
         }
 
         /// <summary>
@@ -912,7 +1203,7 @@ namespace Trivial.Maths
         /// <returns>true if the specific value equals MinValue; otherwise, false.</returns>
         public override bool EqualsMinValue(T value)
         {
-            return 0 == MinValue.CompareTo(value);
+            return 0 == (ValueComparer?.Compare(MinValue, value) ?? MinValue.CompareTo(value));
         }
 
         /// <summary>
@@ -922,7 +1213,7 @@ namespace Trivial.Maths
         /// <returns>true if the specific value is less than or equal MaxValue; otherwise, false.</returns>
         public override bool IsLessThanMaxValue(T value)
         {
-            return 0 < MaxValue.CompareTo(value);
+            return 0 < (ValueComparer?.Compare(MaxValue, value) ?? MaxValue.CompareTo(value));
         }
 
         /// <summary>
@@ -932,7 +1223,7 @@ namespace Trivial.Maths
         /// <returns>true if the specific value is greater than or equal MaxValue; otherwise, false.</returns>
         public override bool IsGreaterThanMaxValue(T value)
         {
-            return 0 > MaxValue.CompareTo(value);
+            return 0 > (ValueComparer?.Compare(MaxValue, value) ?? MaxValue.CompareTo(value));
         }
 
         /// <summary>
@@ -942,13 +1233,20 @@ namespace Trivial.Maths
         /// <returns>true if the specific value equals MaxValue; otherwise, false.</returns>
         public override bool EqualsMaxValue(T value)
         {
-            return 0 == MaxValue.CompareTo(value);
+            return 0 == (ValueComparer?.Compare(MaxValue, value) ?? MaxValue.CompareTo(value));
         }
+
+        /// <summary>
+        /// Gets the value comparer.
+        /// </summary>
+        [JsonIgnore]
+        protected virtual IComparer<T> ValueComparer { get; }
     }
 
     /// <summary>
     /// The simple interval with nullable value.
     /// </summary>
+    [DataContract]
     public class NullableValueSimpleInterval<T> : SimpleInterval<T?> where T : struct, IComparable<T>
     {
         /// <summary>
@@ -959,15 +1257,36 @@ namespace Trivial.Maths
         }
 
         /// <summary>
+        /// Initializes a new instance of the NullableValuedSimpleInterval class.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <param name="op">The operation.</param>
+        public NullableValueSimpleInterval(T value, BasicCompareOperator op)
+            : base(value, op, null, null)
+        {
+        }
+
+        /// <summary>
         /// Initializes a new instance of the NullableValueSimpleInterval class.
         /// </summary>
         /// <param name="valueA">The first value.</param>
         /// <param name="valueB">The seconde value.</param>
-        public NullableValueSimpleInterval(T valueA, T valueB)
+        public NullableValueSimpleInterval(T? valueA, T? valueB)
             : base(valueA, valueB)
         {
         }
-        
+
+        /// <summary>
+        /// Initializes a new instance of the NullableValueSimpleInterval class.
+        /// </summary>
+        /// <param name="valueA">The first value.</param>
+        /// <param name="valueB">The seconde value.</param>
+        /// <param name="autoFix">true if fix the order automatically; otherwise, false.</param>
+        public NullableValueSimpleInterval(T? valueA, T? valueB, bool autoFix)
+            : base(valueA, valueB, autoFix)
+        {
+        }
+
         /// <summary>
         /// Initializes a new instance of the NullableValueSimpleInterval class.
         /// </summary>
@@ -975,19 +1294,21 @@ namespace Trivial.Maths
         /// <param name="valueB">The seconde value.</param>
         /// <param name="leftOpen">true if it is left open; otherwise, left closed.</param>
         /// <param name="rightOpen">true if it is right open; otherwise, right closed.</param>
-        public NullableValueSimpleInterval(T valueA, T valueB, bool leftOpen, bool rightOpen)
-            : base(valueA, valueB, leftOpen, rightOpen)
+        public NullableValueSimpleInterval(T? valueA, T? valueB, bool leftOpen, bool rightOpen)
+            : base(valueA, valueB, leftOpen || !valueA.HasValue, rightOpen || !valueB.HasValue)
         {
         }
 
         /// <summary>
         /// Gets a value indicating whether it is left bounded.
         /// </summary>
+        [JsonIgnore]
         public override bool LeftBounded { get { return MinValue != null; } }
 
         /// <summary>
         /// Gets a value indicating whether it is right bounded.
         /// </summary>
+        [JsonIgnore]
         public override bool RightBounded { get { return MaxValue != null; } }
 
         /// <summary>
@@ -999,7 +1320,7 @@ namespace Trivial.Maths
         {
             if (MinValue == null) return false;
             if (value == null) return true;
-            return 0 < MinValue.Value.CompareTo(value.Value);
+            return 0 < (ValueComparer?.Compare(MinValue.Value, value.Value) ?? MinValue.Value.CompareTo(value.Value));
         }
 
         /// <summary>
@@ -1011,7 +1332,7 @@ namespace Trivial.Maths
         {
             if (value == null) return false;
             if (MinValue == null) return true;
-            return 0 > MinValue.Value.CompareTo(value.Value);
+            return 0 > (ValueComparer?.Compare(MinValue.Value, value.Value) ?? MinValue.Value.CompareTo(value.Value));
         }
 
         /// <summary>
@@ -1023,7 +1344,7 @@ namespace Trivial.Maths
         {
             if (MinValue == null && value == null) return true;
             if (MinValue == null || value == null) return false;
-            return 0 == MinValue.Value.CompareTo(value.Value);
+            return 0 == (ValueComparer?.Compare(MinValue.Value, value.Value) ?? MinValue.Value.CompareTo(value.Value));
         }
 
         /// <summary>
@@ -1035,7 +1356,7 @@ namespace Trivial.Maths
         {
             if (value == null) return false;
             if (MaxValue == null) return true;
-            return 0 < MaxValue.Value.CompareTo(value.Value);
+            return 0 < (ValueComparer?.Compare(MaxValue.Value, value.Value) ?? MaxValue.Value.CompareTo(value.Value));
         }
 
         /// <summary>
@@ -1047,7 +1368,7 @@ namespace Trivial.Maths
         {
             if (MaxValue == null) return false;
             if (value == null) return true;
-            return 0 > MaxValue.Value.CompareTo(value.Value);
+            return 0 > (ValueComparer?.Compare(MaxValue.Value, value.Value) ?? MaxValue.Value.CompareTo(value.Value));
         }
 
         /// <summary>
@@ -1059,7 +1380,134 @@ namespace Trivial.Maths
         {
             if (MaxValue == null && value == null) return true;
             if (MaxValue == null || value == null) return false;
-            return 0 == MaxValue.Value.CompareTo(value.Value);
+            return 0 == (ValueComparer?.Compare(MaxValue.Value, value.Value) ?? MaxValue.Value.CompareTo(value.Value));
+        }
+
+        /// <summary>
+        /// Gets the value comparer.
+        /// </summary>
+        [JsonIgnore]
+        protected virtual IComparer<T> ValueComparer { get; }
+    }
+
+    /// <summary>
+    /// The semantic version interval with class value.
+    /// </summary>
+    [DataContract]
+    public class VersionSimpleInterval : RefValueSimpleInterval<string>
+    {
+        private Version minVer;
+        private Version maxVer;
+
+        /// <summary>
+        /// Initializes a new instance of the VersionSimpleInterval class.
+        /// </summary>
+        public VersionSimpleInterval()
+        {
+            OnInit();
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the VersionSimpleInterval class.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <param name="op">The operation.</param>
+        public VersionSimpleInterval(string value, BasicCompareOperator op)
+            : base(value, op)
+        {
+            OnInit();
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the VersionSimpleInterval class.
+        /// </summary>
+        /// <param name="valueA">The first value.</param>
+        /// <param name="valueB">The seconde value.</param>
+        public VersionSimpleInterval(string valueA, string valueB)
+            : base(valueA, valueB)
+        {
+            OnInit();
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the VersionSimpleInterval class.
+        /// </summary>
+        /// <param name="valueA">The first value.</param>
+        /// <param name="valueB">The seconde value.</param>
+        /// <param name="autoFix">true if fix the order automatically; otherwise, false.</param>
+        public VersionSimpleInterval(string valueA, string valueB, bool autoFix)
+            : base(valueA, valueB, autoFix)
+        {
+            OnInit();
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the VersionSimpleInterval class.
+        /// </summary>
+        /// <param name="valueA">The first value.</param>
+        /// <param name="valueB">The seconde value.</param>
+        /// <param name="leftOpen">true if it is left open; otherwise, left closed.</param>
+        /// <param name="rightOpen">true if it is right open; otherwise, right closed.</param>
+        public VersionSimpleInterval(string valueA, string valueB, bool leftOpen, bool rightOpen)
+            : base(valueA, valueB, leftOpen, rightOpen)
+        {
+            OnInit();
+        }
+
+        /// <summary>
+        /// Gets the minimum version.
+        /// </summary>
+        [JsonIgnore]
+        public Version MinVersion
+        {
+            get
+            {
+                var v = minVer;
+                if (v == null) v = Reflection.VersionComparer.ToVersion(MinValue);
+                return minVer = v;
+            }
+        }
+
+        /// <summary>
+        /// Gets the maximum version.
+        /// </summary>
+        [JsonIgnore]
+        public Version MaxVersion
+        {
+            get
+            {
+                var v = maxVer;
+                if (v == null) v = Reflection.VersionComparer.ToVersion(MaxValue);
+                return maxVer = v;
+            }
+        }
+
+        /// <summary>
+        /// Parses a version interval.
+        /// </summary>
+        /// <param name="s">The version interval string.</param>
+        /// <returns>A version interval.</returns>
+        public static VersionSimpleInterval Parse(string s)
+        {
+            return IntervalUtility.Parse(s, (left, leftOpen, right, rightOpen) => new VersionSimpleInterval(left, right, leftOpen, rightOpen), ele => ele, null);
+        }
+
+        /// <summary>
+        /// Gets the value comparer.
+        /// </summary>
+        [JsonIgnore]
+        protected override IComparer<string> ValueComparer { get; } = new Reflection.VersionComparer { IsWideX = true };
+
+        private void OnInit()
+        {
+            MinValueChanged += (sender, ev) =>
+            {
+                minVer = null;
+            };
+            MaxValueChanged += (sender, ev) =>
+            {
+                maxVer = null;
+            };
         }
     }
 }
