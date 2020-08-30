@@ -200,12 +200,12 @@ namespace Trivial.Maths
         public static StructValueSimpleInterval<int> ParseForInt32(string s) => ParseForX(s, int.MinValue, int.MaxValue, (ele, pos) =>
         {
             if (int.TryParse(ele, out var r)) return (r, null);
-            if (ele == NumberSymbols.InfiniteSymbol || ele == NumberSymbols.PositiveInfiniteSymbol)
+            if (ele == NumberSymbols.InfiniteSymbol || ele == NumberSymbols.PositiveInfiniteSymbol || ele == "Infinity" || ele == "NaN" || ele == "null")
             {
                 if (pos >= 0) return (int.MaxValue, false);
                 return (int.MaxValue, true);
             }
-            else if (ele == NumberSymbols.NegativeInfiniteSymbol)
+            else if (ele == NumberSymbols.NegativeInfiniteSymbol || ele == "-Infinity" || ele == "NaN" || ele == "null")
             {
                 if (pos <= 0) return (int.MinValue, false);
                 return (int.MinValue, true);
@@ -225,12 +225,12 @@ namespace Trivial.Maths
         public static StructValueSimpleInterval<long> ParseForInt64(string s) => ParseForX(s, long.MinValue, long.MaxValue, (ele, pos) =>
         {
             if (long.TryParse(ele, out var r)) return (r, null);
-            if (ele == NumberSymbols.InfiniteSymbol || ele == NumberSymbols.PositiveInfiniteSymbol)
+            if (ele == NumberSymbols.InfiniteSymbol || ele == NumberSymbols.PositiveInfiniteSymbol || ele == "Infinity" || ele == "NaN" || ele == "null")
             {
                 if (pos >= 0) return (long.MaxValue, false);
                 return (long.MaxValue, true);
             }
-            else if (ele == NumberSymbols.NegativeInfiniteSymbol)
+            else if (ele == NumberSymbols.NegativeInfiniteSymbol || ele == "-Infinity" || ele == "NaN" || ele == "null")
             {
                 if (pos <= 0) return (long.MinValue, false);
                 return (long.MinValue, true);
@@ -250,12 +250,12 @@ namespace Trivial.Maths
         public static NullableValueSimpleInterval<int> ParseForNullableInt32(string s) => ParseForX<int>(s, (ele, pos) =>
         {
             if (int.TryParse(ele, out var r)) return (r, null);
-            if (ele == NumberSymbols.InfiniteSymbol || ele == NumberSymbols.PositiveInfiniteSymbol)
+            if (ele == NumberSymbols.InfiniteSymbol || ele == NumberSymbols.PositiveInfiniteSymbol || ele == "Infinity" || ele == "NaN" || ele == "null")
             {
                 if (pos >= 0) return (null, true);
                 return (int.MaxValue, true);
             }
-            else if (ele == NumberSymbols.NegativeInfiniteSymbol)
+            else if (ele == NumberSymbols.NegativeInfiniteSymbol || ele == "-Infinity" || ele == "NaN" || ele == "null")
             {
                 if (pos <= 0) return (null, true);
                 return (int.MinValue, true);
@@ -276,12 +276,12 @@ namespace Trivial.Maths
         public static NullableValueSimpleInterval<long> ParseForNullableInt64(string s) => ParseForX<long>(s, (ele, pos) =>
         {
             if (long.TryParse(ele, out var r)) return (r, null);
-            if (ele == NumberSymbols.InfiniteSymbol || ele == NumberSymbols.PositiveInfiniteSymbol)
+            if (ele == NumberSymbols.InfiniteSymbol || ele == NumberSymbols.PositiveInfiniteSymbol || ele == "Infinity" || ele == "NaN" || ele == "null")
             {
                 if (pos >= 0) return (null, true);
                 return (long.MaxValue, true);
             }
-            else if (ele == NumberSymbols.NegativeInfiniteSymbol)
+            else if (ele == NumberSymbols.NegativeInfiniteSymbol || ele == "-Infinity" || ele == "NaN" || ele == "null")
             {
                 if (pos <= 0) return (null, true);
                 return (long.MinValue, true);
@@ -299,7 +299,13 @@ namespace Trivial.Maths
         /// <param name="s">The interval format string.</param>
         /// <returns>The interval instance parsed.</returns>
         /// <exception cref="FormatException">The string to parse is not the internal format.</exception>
-        public static StructValueSimpleInterval<double> ParseForDouble(string s) => ParseForX(s, double.NegativeInfinity, double.PositiveInfinity, (ele, pos) => (double.Parse(ele), null), double.NegativeInfinity, double.PositiveInfinity);
+        public static StructValueSimpleInterval<double> ParseForDouble(string s) => ParseForX(s, double.NegativeInfinity, double.PositiveInfinity, (ele, pos) =>
+        {
+            if (ele == "NaN" || ele == "null") return (null, false);
+            if (ele == "Infinity") return (double.PositiveInfinity, false);
+            if (ele == "-Infinity") return (double.NegativeInfinity, false);
+            return (double.Parse(ele), null);
+        }, double.NegativeInfinity, double.PositiveInfinity);
 
         private const string digits = "0123456789+-∞";
         private static StructValueSimpleInterval<T> ParseForX<T>(string s, T minValue, T maxValue, Func<string, int, (T?, bool?)> convert, T? negativeInfinite, T? positiveInfinite) where T : struct, IComparable<T>
@@ -495,9 +501,12 @@ namespace Trivial.Maths
             }
             else
             {
-                var resultTuple = convert(ele, 1);
-                right = resultTuple.Item1;
-                if (resultTuple.Item2.HasValue) rightOpen = resultTuple.Item2.Value;
+                if (!string.IsNullOrEmpty(ele))
+                {
+                    var resultTuple = convert(ele, 1);
+                    right = resultTuple.Item1;
+                    if (resultTuple.Item2.HasValue) rightOpen = resultTuple.Item2.Value;
+                }
             }
 
             return (left, leftOpen, right, rightOpen);
