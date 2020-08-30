@@ -476,7 +476,7 @@ namespace Trivial.Maths
 
             if (arr.Length == 0) return (left, leftOpen, right, rightOpen);
             var ele = arr[0]?.Trim();
-            if (!string.IsNullOrEmpty(ele) && ele != NumberSymbols.NegativeInfiniteSymbol && ele != NumberSymbols.InfiniteSymbol)
+            if (!string.IsNullOrEmpty(ele))
             {
                 var resultTuple = convert(ele, arr.Length > 1 ? -2 : -1);
                 left = resultTuple.Item1;
@@ -486,7 +486,7 @@ namespace Trivial.Maths
             if (arr.Length > 1)
             {
                 ele = arr[1]?.Trim();
-                if (!string.IsNullOrEmpty(ele) && ele != NumberSymbols.PositiveInfiniteSymbol && ele != NumberSymbols.InfiniteSymbol)
+                if (!string.IsNullOrEmpty(ele))
                 {
                     var resultTuple = convert(ele, 2);
                     right = resultTuple.Item1;
@@ -520,7 +520,20 @@ namespace Trivial.Maths
             {
                 if (string.IsNullOrEmpty(s) || s.Length < 2) return default;
                 if (s.StartsWith("{") && s.IndexOf(":") > 0) return System.Text.Json.JsonSerializer.Deserialize<T1>(s);
-                var tuple = ParseFromString(s, (ele, pos) => (convert(ele), null), defaultValue);
+                var tuple = ParseFromString(s, (ele, pos) =>
+                {
+                    if (pos < 0 && ele == NumberSymbols.NegativeInfiniteSymbol)
+                    {
+                        return (defaultValue, true);
+                    }
+
+                    if (pos > 0 && (ele == NumberSymbols.NegativeInfiniteSymbol || ele == NumberSymbols.InfiniteSymbol))
+                    {
+                        return (defaultValue, true);
+                    }
+
+                    return (convert(ele), null);
+                }, defaultValue);
                 return factory(tuple.Item1, tuple.Item2, tuple.Item3, tuple.Item4);
             }
             catch (FormatException ex)
