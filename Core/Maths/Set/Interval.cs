@@ -21,7 +21,7 @@ namespace Trivial.Maths
     /// </summary>
     public static class IntervalUtility
     {
-        internal const string ErrorParseMessage = "The string to parse is not the internal format.";
+        internal const string ErrorParseMessage = "The string to parse was not in the internal format.";
 
         /// <summary>
         /// Loads a copier into current instance.
@@ -197,12 +197,24 @@ namespace Trivial.Maths
         /// </summary>
         /// <param name="s">The interval format string.</param>
         /// <returns>The interval instance parsed.</returns>
-        public static StructValueSimpleInterval<int> ParseForInt32(string s) => ParseForX(s, int.MinValue, int.MaxValue, ele =>
+        public static StructValueSimpleInterval<int> ParseForInt32(string s) => ParseForX(s, int.MinValue, int.MaxValue, (ele, pos) =>
         {
-            if (int.TryParse(ele, out var r)) return r;
-            if (ele == NumberSymbols.InfiniteSymbol || ele == NumberSymbols.PositiveInfiniteSymbol) return int.MaxValue;
-            else if (ele == NumberSymbols.NegativeInfiniteSymbol) return int.MinValue;
-            return (int)double.Parse(ele);
+            if (int.TryParse(ele, out var r)) return (r, null);
+            if (ele == NumberSymbols.InfiniteSymbol || ele == NumberSymbols.PositiveInfiniteSymbol)
+            {
+                if (pos >= 0) return (int.MaxValue, false);
+                return (int.MaxValue, true);
+            }
+            else if (ele == NumberSymbols.NegativeInfiniteSymbol)
+            {
+                if (pos <= 0) return (int.MinValue, false);
+                return (int.MinValue, true);
+            }
+
+            if (pos >= 0) return ((int)double.Parse(ele), false);
+            var num = double.Parse(ele);
+            if (num < int.MaxValue) num += 1;
+            return ((int)num, false);
         }, null, null);
 
         /// <summary>
@@ -210,12 +222,24 @@ namespace Trivial.Maths
         /// </summary>
         /// <param name="s">The interval format string.</param>
         /// <returns>The interval instance parsed.</returns>
-        public static StructValueSimpleInterval<long> ParseForInt64(string s) => ParseForX(s, long.MinValue, long.MaxValue, ele =>
+        public static StructValueSimpleInterval<long> ParseForInt64(string s) => ParseForX(s, long.MinValue, long.MaxValue, (ele, pos) =>
         {
-            if (long.TryParse(ele, out var r)) return r;
-            if (ele == NumberSymbols.InfiniteSymbol || ele == NumberSymbols.PositiveInfiniteSymbol) return long.MaxValue;
-            else if (ele == NumberSymbols.NegativeInfiniteSymbol) return long.MinValue;
-            return (long)double.Parse(ele);
+            if (long.TryParse(ele, out var r)) return (r, null);
+            if (ele == NumberSymbols.InfiniteSymbol || ele == NumberSymbols.PositiveInfiniteSymbol)
+            {
+                if (pos >= 0) return (long.MaxValue, false);
+                return (long.MaxValue, true);
+            }
+            else if (ele == NumberSymbols.NegativeInfiniteSymbol)
+            {
+                if (pos <= 0) return (long.MinValue, false);
+                return (long.MinValue, true);
+            }
+
+            if (pos >= 0) return ((long)double.Parse(ele), false);
+            var num = double.Parse(ele);
+            if (num < long.MaxValue) num += 1;
+            return ((long)num, false);
         }, null, null);
 
         /// <summary>
@@ -223,11 +247,24 @@ namespace Trivial.Maths
         /// </summary>
         /// <param name="s">The interval format string.</param>
         /// <returns>The interval instance parsed.</returns>
-        public static NullableValueSimpleInterval<int> ParseForNullableInt32(string s) => ParseForX<int>(s, ele =>
+        public static NullableValueSimpleInterval<int> ParseForNullableInt32(string s) => ParseForX<int>(s, (ele, pos) =>
         {
-            if (int.TryParse(ele, out var r)) return r;
-            if (ele == NumberSymbols.InfiniteSymbol || ele == NumberSymbols.PositiveInfiniteSymbol || ele == NumberSymbols.NegativeInfiniteSymbol) return null;
-            return (int)double.Parse(ele);
+            if (int.TryParse(ele, out var r)) return (r, null);
+            if (ele == NumberSymbols.InfiniteSymbol || ele == NumberSymbols.PositiveInfiniteSymbol)
+            {
+                if (pos >= 0) return (null, true);
+                return (int.MaxValue, true);
+            }
+            else if (ele == NumberSymbols.NegativeInfiniteSymbol)
+            {
+                if (pos <= 0) return (null, true);
+                return (int.MinValue, true);
+            }
+
+            if (pos >= 0) return ((int)double.Parse(ele), false);
+            var num = double.Parse(ele);
+            if (num < int.MaxValue) num += 1;
+            return ((int)num, false);
         });
 
         /// <summary>
@@ -236,11 +273,24 @@ namespace Trivial.Maths
         /// <param name="s">The interval format string.</param>
         /// <returns>The interval instance parsed.</returns>
         /// <exception cref="FormatException">The string to parse is not the internal format.</exception>
-        public static NullableValueSimpleInterval<long> ParseForNullableInt64(string s) => ParseForX<long>(s, ele =>
+        public static NullableValueSimpleInterval<long> ParseForNullableInt64(string s) => ParseForX<long>(s, (ele, pos) =>
         {
-            if (long.TryParse(ele, out var r)) return r;
-            if (ele == NumberSymbols.InfiniteSymbol || ele == NumberSymbols.PositiveInfiniteSymbol || ele == NumberSymbols.NegativeInfiniteSymbol) return null;
-            return (long)double.Parse(ele);
+            if (long.TryParse(ele, out var r)) return (r, null);
+            if (ele == NumberSymbols.InfiniteSymbol || ele == NumberSymbols.PositiveInfiniteSymbol)
+            {
+                if (pos >= 0) return (null, true);
+                return (long.MaxValue, true);
+            }
+            else if (ele == NumberSymbols.NegativeInfiniteSymbol)
+            {
+                if (pos <= 0) return (null, true);
+                return (long.MinValue, true);
+            }
+
+            if (pos >= 0) return ((long)double.Parse(ele), false);
+            var num = double.Parse(ele);
+            if (num < long.MaxValue) num += 1;
+            return ((long)num, false);
         });
 
         /// <summary>
@@ -249,14 +299,17 @@ namespace Trivial.Maths
         /// <param name="s">The interval format string.</param>
         /// <returns>The interval instance parsed.</returns>
         /// <exception cref="FormatException">The string to parse is not the internal format.</exception>
-        public static StructValueSimpleInterval<double> ParseForDouble(string s) => ParseForX(s, double.NegativeInfinity, double.PositiveInfinity, double.Parse, double.NegativeInfinity, double.PositiveInfinity);
+        public static StructValueSimpleInterval<double> ParseForDouble(string s) => ParseForX(s, double.NegativeInfinity, double.PositiveInfinity, (ele, pos) => (double.Parse(ele), null), double.NegativeInfinity, double.PositiveInfinity);
 
         private const string digits = "0123456789+-∞";
-        private static StructValueSimpleInterval<T> ParseForX<T>(string s, T minValue, T maxValue, Func<string, T> convert, T? negativeInfinite, T? positiveInfinite) where T : struct, IComparable<T>
+        private static StructValueSimpleInterval<T> ParseForX<T>(string s, T minValue, T maxValue, Func<string, int, (T?, bool?)> convert, T? negativeInfinite, T? positiveInfinite) where T : struct, IComparable<T>
         {
             try
             {
-                return FromString(s, minValue, maxValue, convert, negativeInfinite, positiveInfinite);
+                if (string.IsNullOrEmpty(s) || s.Length < 2) return null;
+                if (s.StartsWith("{") && s.IndexOf(":") > 0) return System.Text.Json.JsonSerializer.Deserialize<StructValueSimpleInterval<T>>(s);
+                var tuple = ParseFromString(s, convert, null);
+                return new StructValueSimpleInterval<T>(tuple.Item1 ?? minValue, tuple.Item3 ?? maxValue, tuple.Item2, tuple.Item4, negativeInfinite, positiveInfinite);
             }
             catch (FormatException ex)
             {
@@ -283,11 +336,14 @@ namespace Trivial.Maths
                 throw new FormatException(ErrorParseMessage, ex);
             }
         }
-        private static NullableValueSimpleInterval<T> ParseForX<T>(string s, Func<string, T?> convert) where T : struct, IComparable<T>
+        private static NullableValueSimpleInterval<T> ParseForX<T>(string s, Func<string, int, (T?, bool?)> convert) where T : struct, IComparable<T>
         {
             try
             {
-                return FromString(s, convert);
+                if (string.IsNullOrEmpty(s) || s.Length < 2) return null;
+                if (s.StartsWith("{") && s.IndexOf(":") > 0) return System.Text.Json.JsonSerializer.Deserialize<NullableValueSimpleInterval<T>>(s);
+                var tuple = ParseFromString(s, convert, null);
+                return new NullableValueSimpleInterval<T>(tuple.Item1, tuple.Item3, tuple.Item2, tuple.Item4);
             }
             catch (FormatException ex)
             {
@@ -314,7 +370,7 @@ namespace Trivial.Maths
                 throw new FormatException(ErrorParseMessage, ex);
             }
         }
-        private static (T, bool, T, bool) ParseFromString<T>(string s, Func<string, T> convert, T defaultValue)
+        private static (T, bool, T, bool) ParseFromString<T>(string s, Func<string, int, (T, bool?)> convert, T defaultValue)
         {
             var left = defaultValue;
             var leftOpen = false;
@@ -332,38 +388,38 @@ namespace Trivial.Maths
                 var side = 0;
                 if (s.StartsWith("<="))
                 {
-                    side = -1;
+                    side = 1;
                     leftOpen = true;
                     s = s.Substring(2);
                 }
                 else if (s.StartsWith(">="))
                 {
-                    side = 1;
+                    side = -1;
                     rightOpen = true;
                     s = s.Substring(2);
                 }
                 else if (s.StartsWith("≤"))
                 {
-                    side = -1;
+                    side = 1;
                     leftOpen = true;
                     s = s.Substring(1);
                 }
                 else if (s.StartsWith("≥"))
                 {
-                    side = 1;
+                    side = -1;
                     rightOpen = true;
                     s = s.Substring(1);
                 }
                 else if (s.StartsWith("<"))
                 {
-                    side = -1;
+                    side = 1;
                     leftOpen = true;
                     rightOpen = true;
                     s = s.Substring(1);
                 }
                 else if (s.StartsWith(">"))
                 {
-                    side = 1;
+                    side = -1;
                     leftOpen = true;
                     rightOpen = true;
                     s = s.Substring(1);
@@ -379,9 +435,20 @@ namespace Trivial.Maths
                 {
                     try
                     {
-                        if (side == 1) left = convert(s);
-                        else if (side == -1) right = convert(s);
-                        else right = left = convert(s);
+                        if (side <= 0)
+                        {
+                            var resultTuple = convert(s, side - 1);
+                            left = resultTuple.Item1;
+                            if (resultTuple.Item2.HasValue) leftOpen = resultTuple.Item2.Value;
+                        }
+
+                        if (side >= 0)
+                        {
+                            var resultTuple = convert(s, side + 1);
+                            right = resultTuple.Item1;
+                            if (resultTuple.Item2.HasValue) rightOpen = resultTuple.Item2.Value;
+                        }
+
                         return (left, leftOpen, right, rightOpen);
                     }
                     catch (ArgumentException ex)
@@ -411,7 +478,9 @@ namespace Trivial.Maths
             var ele = arr[0]?.Trim();
             if (!string.IsNullOrEmpty(ele) && ele != NumberSymbols.NegativeInfiniteSymbol && ele != NumberSymbols.InfiniteSymbol)
             {
-                left = convert(ele);
+                var resultTuple = convert(ele, arr.Length > 1 ? -2 : -1);
+                left = resultTuple.Item1;
+                if (resultTuple.Item2.HasValue) leftOpen = resultTuple.Item2.Value;
             }
 
             if (arr.Length > 1)
@@ -419,29 +488,19 @@ namespace Trivial.Maths
                 ele = arr[1]?.Trim();
                 if (!string.IsNullOrEmpty(ele) && ele != NumberSymbols.PositiveInfiniteSymbol && ele != NumberSymbols.InfiniteSymbol)
                 {
-                    right = convert(ele);
+                    var resultTuple = convert(ele, 2);
+                    right = resultTuple.Item1;
+                    if (resultTuple.Item2.HasValue) rightOpen = resultTuple.Item2.Value;
                 }
             }
             else
             {
-                right = left;
+                var resultTuple = convert(ele, 1);
+                right = resultTuple.Item1;
+                if (resultTuple.Item2.HasValue) rightOpen = resultTuple.Item2.Value;
             }
 
             return (left, leftOpen, right, rightOpen);
-        }
-        internal static StructValueSimpleInterval<T> FromString<T>(string s, T minValue, T maxValue, Func<string, T> convert, T? negativeInfinite, T? positiveInfinite) where T : struct, IComparable<T>
-        {
-            if (string.IsNullOrEmpty(s) || s.Length < 2) return null;
-            if (s.StartsWith("{") && s.IndexOf(":") > 0) return System.Text.Json.JsonSerializer.Deserialize<StructValueSimpleInterval<T>>(s);
-            var tuple = ParseFromString<T?>(s, ele => convert(ele), null);
-            return new StructValueSimpleInterval<T>(tuple.Item1 ?? minValue, tuple.Item3 ?? maxValue, tuple.Item2, tuple.Item4, negativeInfinite, positiveInfinite);
-        }
-        internal static NullableValueSimpleInterval<T> FromString<T>(string s, Func<string, T?> convert) where T : struct, IComparable<T>
-        {
-            if (string.IsNullOrEmpty(s) || s.Length < 2) return null;
-            if (s.StartsWith("{") && s.IndexOf(":") > 0) return System.Text.Json.JsonSerializer.Deserialize<NullableValueSimpleInterval<T>>(s);
-            var tuple = ParseFromString(s, convert, null);
-            return new NullableValueSimpleInterval<T>(tuple.Item1, tuple.Item3, tuple.Item2, tuple.Item4);
         }
 
         /// <summary>
@@ -461,7 +520,7 @@ namespace Trivial.Maths
             {
                 if (string.IsNullOrEmpty(s) || s.Length < 2) return default;
                 if (s.StartsWith("{") && s.IndexOf(":") > 0) return System.Text.Json.JsonSerializer.Deserialize<T1>(s);
-                var tuple = ParseFromString(s, convert, defaultValue);
+                var tuple = ParseFromString(s, (ele, pos) => (convert(ele), null), defaultValue);
                 return factory(tuple.Item1, tuple.Item2, tuple.Item3, tuple.Item4);
             }
             catch (FormatException ex)

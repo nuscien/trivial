@@ -917,13 +917,7 @@ namespace Trivial.Text
                 {
                     JsonTokenType.Null => null,
                     JsonTokenType.Number => FromNumber(ref reader),
-                    JsonTokenType.String => FromString(ref reader, int.MinValue, int.MaxValue, ele =>
-                    {
-                        if (int.TryParse(ele, out var r)) return r;
-                        if (ele == Maths.NumberSymbols.InfiniteSymbol || ele == Maths.NumberSymbols.PositiveInfiniteSymbol) return int.MaxValue;
-                        else if (ele == Maths.NumberSymbols.NegativeInfiniteSymbol) return int.MinValue;
-                        return (int)double.Parse(ele);
-                    }, null, null),
+                    JsonTokenType.String => FromString(ref reader, Maths.IntervalUtility.ParseForInt32),
                     JsonTokenType.StartObject => JsonSerializer.Deserialize<Maths.StructValueSimpleInterval<int>>(ref reader, options),
                     _ => throw new JsonException($"The token type is {reader.TokenType} but expect a JSON object or an interval format string.")
                 };
@@ -935,69 +929,29 @@ namespace Trivial.Text
                 writer.WriteStringValue(value.ToString());
             }
 
-            internal static Maths.StructValueSimpleInterval<T> FromString<T>(ref Utf8JsonReader reader, T minValue, T maxValue, Func<string, T> convert, T? negativeInfinite, T? positiveInfinite) where T : struct, IComparable<T>
+            internal static Maths.StructValueSimpleInterval<T> FromString<T>(ref Utf8JsonReader reader, Func<string, Maths.StructValueSimpleInterval<T>> convert) where T : struct, IComparable<T>
             {
                 var s = reader.GetString()?.Trim();
                 try
                 {
-                    return Maths.IntervalUtility.FromString(s, minValue, maxValue, convert, negativeInfinite, positiveInfinite);
+                    return convert(s);
                 }
                 catch (FormatException ex)
                 {
-                    throw new JsonException(Maths.IntervalUtility.ErrorParseMessage, ex);
-                }
-                catch (OverflowException ex)
-                {
-                    throw new JsonException(Maths.IntervalUtility.ErrorParseMessage, ex);
-                }
-                catch (ArgumentException ex)
-                {
-                    throw new JsonException(Maths.IntervalUtility.ErrorParseMessage, ex);
-                }
-                catch (InvalidCastException ex)
-                {
-                    throw new JsonException(Maths.IntervalUtility.ErrorParseMessage, ex);
-                }
-                catch (InvalidOperationException ex)
-                {
-                    throw new JsonException(Maths.IntervalUtility.ErrorParseMessage, ex);
-                }
-                catch (JsonException ex)
-                {
-                    throw new JsonException(Maths.IntervalUtility.ErrorParseMessage, ex);
+                    throw new JsonException(ex.Message, ex.InnerException ?? ex);
                 }
             }
 
-            internal static Maths.NullableValueSimpleInterval<T> FromString<T>(ref Utf8JsonReader reader, Func<string, T?> convert) where T : struct, IComparable<T>
+            internal static Maths.NullableValueSimpleInterval<T> FromString<T>(ref Utf8JsonReader reader, Func<string, Maths.NullableValueSimpleInterval<T>> convert) where T : struct, IComparable<T>
             {
                 var s = reader.GetString()?.Trim();
                 try
                 {
-                    return Maths.IntervalUtility.FromString(s, convert);
+                    return convert(s);
                 }
                 catch (FormatException ex)
                 {
-                    throw new JsonException(Maths.IntervalUtility.ErrorParseMessage, ex);
-                }
-                catch (OverflowException ex)
-                {
-                    throw new JsonException(Maths.IntervalUtility.ErrorParseMessage, ex);
-                }
-                catch (ArgumentException ex)
-                {
-                    throw new JsonException(Maths.IntervalUtility.ErrorParseMessage, ex);
-                }
-                catch (InvalidCastException ex)
-                {
-                    throw new JsonException(Maths.IntervalUtility.ErrorParseMessage, ex);
-                }
-                catch (InvalidOperationException ex)
-                {
-                    throw new JsonException(Maths.IntervalUtility.ErrorParseMessage, ex);
-                }
-                catch (JsonException ex)
-                {
-                    throw new JsonException(Maths.IntervalUtility.ErrorParseMessage, ex);
+                    throw new JsonException(ex.Message, ex.InnerException ?? ex);
                 }
             }
 
@@ -1040,12 +994,7 @@ namespace Trivial.Text
                 {
                     JsonTokenType.Null => null,
                     JsonTokenType.Number => FromNumber(ref reader),
-                    JsonTokenType.String => Int32IntervalConverter.FromString<int>(ref reader, ele =>
-                    {
-                        if (int.TryParse(ele, out var r)) return r;
-                        if (ele == Maths.NumberSymbols.InfiniteSymbol || ele == Maths.NumberSymbols.PositiveInfiniteSymbol || ele == Maths.NumberSymbols.NegativeInfiniteSymbol) return null;
-                        return (int)double.Parse(ele);
-                    }),
+                    JsonTokenType.String => Int32IntervalConverter.FromString(ref reader, Maths.IntervalUtility.ParseForNullableInt32),
                     JsonTokenType.StartObject => JsonSerializer.Deserialize<Maths.NullableValueSimpleInterval<int>>(ref reader, options),
                     _ => throw new JsonException($"The token type is {reader.TokenType} but expect a JSON object or an interval format string.")
                 };
@@ -1095,13 +1044,7 @@ namespace Trivial.Text
                 {
                     JsonTokenType.Null => null,
                     JsonTokenType.Number => FromNumber(ref reader),
-                    JsonTokenType.String => Int32IntervalConverter.FromString(ref reader, long.MinValue, long.MaxValue, ele =>
-                    {
-                        if (long.TryParse(ele, out var r)) return r;
-                        if (ele == Maths.NumberSymbols.InfiniteSymbol || ele == Maths.NumberSymbols.PositiveInfiniteSymbol) return long.MaxValue;
-                        else if (ele == Maths.NumberSymbols.NegativeInfiniteSymbol) return long.MinValue;
-                        return (long)double.Parse(ele);
-                    }, null, null),
+                    JsonTokenType.String => Int32IntervalConverter.FromString(ref reader, Maths.IntervalUtility.ParseForInt64),
                     JsonTokenType.StartObject => JsonSerializer.Deserialize<Maths.StructValueSimpleInterval<long>>(ref reader, options),
                     _ => throw new JsonException($"The token type is {reader.TokenType} but expect a JSON object or an interval format string.")
                 };
@@ -1152,12 +1095,7 @@ namespace Trivial.Text
                 {
                     JsonTokenType.Null => null,
                     JsonTokenType.Number => FromNumber(ref reader),
-                    JsonTokenType.String => Int32IntervalConverter.FromString<long>(ref reader, ele =>
-                    {
-                        if (long.TryParse(ele, out var r)) return r;
-                        if (ele == Maths.NumberSymbols.InfiniteSymbol || ele == Maths.NumberSymbols.PositiveInfiniteSymbol || ele == Maths.NumberSymbols.NegativeInfiniteSymbol) return null;
-                        return (long)double.Parse(ele);
-                    }),
+                    JsonTokenType.String => Int32IntervalConverter.FromString(ref reader, Maths.IntervalUtility.ParseForNullableInt64),
                     JsonTokenType.StartObject => JsonSerializer.Deserialize<Maths.NullableValueSimpleInterval<long>>(ref reader, options),
                     _ => throw new JsonException($"The token type is {reader.TokenType} but expect a JSON object or an interval format string.")
                 };
@@ -1208,7 +1146,7 @@ namespace Trivial.Text
                 {
                     JsonTokenType.Null => null,
                     JsonTokenType.Number => FromNumber(ref reader),
-                    JsonTokenType.String => Int32IntervalConverter.FromString(ref reader, double.NegativeInfinity, double.PositiveInfinity, double.Parse, double.NegativeInfinity, double.PositiveInfinity),
+                    JsonTokenType.String => Int32IntervalConverter.FromString(ref reader, Maths.IntervalUtility.ParseForDouble),
                     JsonTokenType.StartObject => JsonSerializer.Deserialize<Maths.StructValueSimpleInterval<double>>(ref reader, options),
                     _ => throw new JsonException($"The token type is {reader.TokenType} but expect a JSON object or an interval format string.")
                 };

@@ -224,7 +224,7 @@ namespace Trivial.Text
     ""H"": "":,.;/| "",
     ""I"": ""abcdefg hijklmn    opq\trst\n\nuvw\rxyz"",
     ""J"": ""123456"",
-    ""K"": ""[12, 76.1)"",
+    ""K"": ""[11.1, 76.9)"",
     ""L"": ""[, 999999999999)"",
     ""M"": ""[3.1415926, ¡Þ]"",
     ""N"": ""[3.6.0, 5.0.0)""
@@ -238,9 +238,10 @@ namespace Trivial.Text
             Assert.AreEqual(12, model2.K.MinValue);
             Assert.IsFalse(model2.K.LeftOpen);
             Assert.AreEqual(76, model2.K.MaxValue);
-            Assert.IsTrue(model2.K.RightOpen);
-            Assert.IsFalse(model2.K.IsInInterval(10));
+            Assert.IsFalse(model2.K.RightOpen);
+            Assert.IsFalse(model2.K.IsInInterval(11));
             Assert.IsTrue(model2.K.IsInInterval(12));
+            Assert.IsTrue(model2.K.IsInInterval(76));
             Assert.IsFalse(model2.K.IsInInterval(77));
             Assert.IsNotNull(model2.L);
             Assert.IsNull(model2.L.MinValue);
