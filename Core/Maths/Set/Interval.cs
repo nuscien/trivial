@@ -197,7 +197,7 @@ namespace Trivial.Maths
         /// </summary>
         /// <param name="s">The interval format string.</param>
         /// <returns>The interval instance parsed.</returns>
-        public static StructValueSimpleInterval<int> ParseForInt32(string s) => ParseForX(s, int.MinValue, int.MaxValue, (ele, pos) =>
+        public static StructValueSimpleInterval<int> ParseForInt32(string s) => ParseForX(s, int.MinValue, int.MaxValue, false, (ele, pos) =>
         {
             if (int.TryParse(ele, out var r)) return (r, null);
             if (ele == NumberSymbols.InfiniteSymbol || ele == NumberSymbols.PositiveInfiniteSymbol || ele == "Infinity" || ele == "NaN" || ele == "null")
@@ -222,7 +222,7 @@ namespace Trivial.Maths
         /// </summary>
         /// <param name="s">The interval format string.</param>
         /// <returns>The interval instance parsed.</returns>
-        public static StructValueSimpleInterval<long> ParseForInt64(string s) => ParseForX(s, long.MinValue, long.MaxValue, (ele, pos) =>
+        public static StructValueSimpleInterval<long> ParseForInt64(string s) => ParseForX(s, long.MinValue, long.MaxValue, false, (ele, pos) =>
         {
             if (long.TryParse(ele, out var r)) return (r, null);
             if (ele == NumberSymbols.InfiniteSymbol || ele == NumberSymbols.PositiveInfiniteSymbol || ele == "Infinity" || ele == "NaN" || ele == "null")
@@ -299,23 +299,30 @@ namespace Trivial.Maths
         /// <param name="s">The interval format string.</param>
         /// <returns>The interval instance parsed.</returns>
         /// <exception cref="FormatException">The string to parse is not the internal format.</exception>
-        public static StructValueSimpleInterval<double> ParseForDouble(string s) => ParseForX(s, double.NegativeInfinity, double.PositiveInfinity, (ele, pos) =>
-        {
-            if (ele == "NaN" || ele == "null") return (null, false);
-            if (ele == "Infinity") return (double.PositiveInfinity, false);
-            if (ele == "-Infinity") return (double.NegativeInfinity, false);
-            return (double.Parse(ele), null);
-        }, double.NegativeInfinity, double.PositiveInfinity);
+        public static StructValueSimpleInterval<double> ParseForDouble(string s) => ParseForX(
+            s,
+            double.NegativeInfinity,
+            double.PositiveInfinity,
+            true,
+            (ele, pos) => (double.Parse(ele), null),
+            double.NegativeInfinity,
+            double.PositiveInfinity);
 
         private const string digits = "0123456789+-∞";
-        private static StructValueSimpleInterval<T> ParseForX<T>(string s, T minValue, T maxValue, Func<string, int, (T?, bool?)> convert, T? negativeInfinite, T? positiveInfinite) where T : struct, IComparable<T>
+        private static StructValueSimpleInterval<T> ParseForX<T>(string s, T minValue, T maxValue, bool supportInfinite, Func<string, int, (T?, bool?)> convert, T? negativeInfinite, T? positiveInfinite) where T : struct, IComparable<T>
         {
             try
             {
                 if (string.IsNullOrEmpty(s) || s.Length < 2) return null;
                 if (s.StartsWith("{") && s.IndexOf(":") > 0) return System.Text.Json.JsonSerializer.Deserialize<StructValueSimpleInterval<T>>(s);
                 var tuple = ParseFromString(s, convert, null);
-                return new StructValueSimpleInterval<T>(tuple.Item1 ?? minValue, tuple.Item3 ?? maxValue, tuple.Item2, tuple.Item4, negativeInfinite, positiveInfinite);
+                return new StructValueSimpleInterval<T>(
+                    tuple.Item1 ?? minValue,
+                    tuple.Item3 ?? maxValue,
+                    supportInfinite || tuple.Item1.HasValue ? tuple.Item2 : true,
+                    supportInfinite || tuple.Item3.HasValue ? tuple.Item4 : true,
+                    negativeInfinite,
+                    positiveInfinite);
             }
             catch (FormatException ex)
             {
@@ -476,37 +483,27 @@ namespace Trivial.Maths
             var split = ';';
             if (s.IndexOf(split) < 0) split = ',';
 
-#pragma warning disable IDE0057
+            #pragma warning disable IDE0057
             var arr = s.Substring(1, s.Length - 2).Split(split);
-#pragma warning restore IDE0057
+            #pragma warning restore IDE0057
 
             if (arr.Length == 0) return (left, leftOpen, right, rightOpen);
             var ele = arr[0]?.Trim();
-            if (!string.IsNullOrEmpty(ele))
+            if (!string.IsNullOrEmpty(ele) && ele != NumberSymbols.NegativeInfiniteSymbol && ele != "-Infinity" && ele != "NaN" && ele != "null")
             {
                 var resultTuple = convert(ele, arr.Length > 1 ? -2 : -1);
                 left = resultTuple.Item1;
                 if (resultTuple.Item2.HasValue) leftOpen = resultTuple.Item2.Value;
             }
 
-            if (arr.Length > 1)
+            var rightPos = 2;
+            if (arr.Length > 1) ele = arr[1]?.Trim();
+            else rightPos = 1;
+            if (!string.IsNullOrEmpty(ele) && ele != NumberSymbols.InfiniteSymbol && ele != NumberSymbols.PositiveInfiniteSymbol && ele != "Infinity" && ele != "NaN" && ele != "null")
             {
-                ele = arr[1]?.Trim();
-                if (!string.IsNullOrEmpty(ele))
-                {
-                    var resultTuple = convert(ele, 2);
-                    right = resultTuple.Item1;
-                    if (resultTuple.Item2.HasValue) rightOpen = resultTuple.Item2.Value;
-                }
-            }
-            else
-            {
-                if (!string.IsNullOrEmpty(ele))
-                {
-                    var resultTuple = convert(ele, 1);
-                    right = resultTuple.Item1;
-                    if (resultTuple.Item2.HasValue) rightOpen = resultTuple.Item2.Value;
-                }
+                var resultTuple = convert(ele, rightPos);
+                right = resultTuple.Item1;
+                if (resultTuple.Item2.HasValue) rightOpen = resultTuple.Item2.Value;
             }
 
             return (left, leftOpen, right, rightOpen);
@@ -709,7 +706,6 @@ namespace Trivial.Maths
         /// <param name="maxValue">The maximum value.</param>
         protected SimpleInterval(T value, BasicCompareOperator op, T minValue, T maxValue)
         {
-            this.SetValues(value, value);
             switch (op)
             {
                 case BasicCompareOperator.Greater:
@@ -794,7 +790,8 @@ namespace Trivial.Maths
         /// <param name="rightOpen">true if it is right open; otherwise, right closed.</param>
         protected SimpleInterval(T valueA, T valueB, bool leftOpen, bool rightOpen)
         {
-            this.SetValues(valueA, valueB);
+            MinValue = valueA;
+            MaxValue = valueB;
             LeftOpen = leftOpen;
             RightOpen = rightOpen;
         }
