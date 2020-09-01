@@ -138,8 +138,8 @@ namespace Trivial.Maths
         /// <summary>
         /// Checks if a value is in the interval.
         /// </summary>
-        /// <param name="value">A value to check.</param>
         /// <param name="interval">The interval to compare.</param>
+        /// <param name="value">A value to check.</param>
         /// <returns>true if the value is in the interval; otherwise, false.</returns>
         public static bool IsInInterval<T>(this ISimpleInterval<T> interval, T value)
         {
@@ -319,8 +319,8 @@ namespace Trivial.Maths
                 return new StructValueSimpleInterval<T>(
                     tuple.Item1 ?? minValue,
                     tuple.Item3 ?? maxValue,
-                    supportInfinite || tuple.Item1.HasValue ? tuple.Item2 : true,
-                    supportInfinite || tuple.Item3.HasValue ? tuple.Item4 : true,
+                    supportInfinite || tuple.Item1.HasValue ? tuple.Item2 : false,
+                    supportInfinite || tuple.Item3.HasValue ? tuple.Item4 : false,
                     negativeInfinite,
                     positiveInfinite);
             }
@@ -526,20 +526,7 @@ namespace Trivial.Maths
             {
                 if (string.IsNullOrEmpty(s) || s.Length < 2) return default;
                 if (s.StartsWith("{") && s.IndexOf(":") > 0) return System.Text.Json.JsonSerializer.Deserialize<T1>(s);
-                var tuple = ParseFromString(s, (ele, pos) =>
-                {
-                    if (pos < 0 && ele == NumberSymbols.NegativeInfiniteSymbol)
-                    {
-                        return (defaultValue, true);
-                    }
-
-                    if (pos > 0 && (ele == NumberSymbols.NegativeInfiniteSymbol || ele == NumberSymbols.InfiniteSymbol))
-                    {
-                        return (defaultValue, true);
-                    }
-
-                    return (convert(ele), null);
-                }, defaultValue);
+                var tuple = ParseFromString(s, (ele, pos) => (convert(ele), null), defaultValue);
                 return factory(tuple.Item1, tuple.Item2, tuple.Item3, tuple.Item4);
             }
             catch (FormatException ex)
@@ -1559,6 +1546,13 @@ namespace Trivial.Maths
                 return maxVer = v;
             }
         }
+
+        /// <summary>
+        /// Checks if a value is in the interval.
+        /// </summary>
+        /// <param name="value">A value to check.</param>
+        /// <returns>true if the value is in the interval; otherwise, false.</returns>
+        public bool IsInInterval(Version value) => value != null && this.IsInInterval(value.ToString());
 
         /// <summary>
         /// Parses a version interval.
