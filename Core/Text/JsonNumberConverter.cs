@@ -929,12 +929,12 @@ namespace Trivial.Text
                 writer.WriteStringValue(value.ToString());
             }
 
-            internal static Maths.StructValueSimpleInterval<T> FromString<T>(ref Utf8JsonReader reader, Func<string, Maths.StructValueSimpleInterval<T>> convert) where T : struct, IComparable<T>
+            internal static Maths.StructValueSimpleInterval<T> FromString<T>(ref Utf8JsonReader reader, Func<string, NumberStyles, IFormatProvider, Maths.StructValueSimpleInterval<T>> convert) where T : struct, IComparable<T>
             {
                 var s = reader.GetString()?.Trim();
                 try
                 {
-                    return convert(s);
+                    return convert(s, NumberStyles.Any, CultureInfo.InvariantCulture);
                 }
                 catch (FormatException ex)
                 {
@@ -942,12 +942,12 @@ namespace Trivial.Text
                 }
             }
 
-            internal static Maths.NullableValueSimpleInterval<T> FromString<T>(ref Utf8JsonReader reader, Func<string, Maths.NullableValueSimpleInterval<T>> convert) where T : struct, IComparable<T>
+            internal static Maths.NullableValueSimpleInterval<T> FromString<T>(ref Utf8JsonReader reader, Func<string, NumberStyles, IFormatProvider, Maths.NullableValueSimpleInterval<T>> convert) where T : struct, IComparable<T>
             {
                 var s = reader.GetString()?.Trim();
                 try
                 {
-                    return convert(s);
+                    return convert(s, NumberStyles.Any, CultureInfo.InvariantCulture);
                 }
                 catch (FormatException ex)
                 {

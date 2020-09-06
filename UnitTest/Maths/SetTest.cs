@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -21,7 +22,7 @@ namespace Trivial.Maths
         [TestMethod]
         public void TestSimpleInterval()
         {
-            var a = IntervalUtility.ParseForInt32("(3.6, 100.9)");
+            var a = IntervalUtility.ParseForInt32("(3.6, 100.9)", NumberStyles.Any, CultureInfo.InvariantCulture);
             Assert.AreEqual(4, a.MinValue);
             Assert.AreEqual(100, a.MaxValue);
             Assert.IsFalse(a.LeftOpen);
@@ -35,7 +36,7 @@ namespace Trivial.Maths
             Assert.IsFalse(a.IsInInterval(101));
             Assert.IsFalse(a.IsInInterval(102));
 
-            a = IntervalUtility.ParseForInt32("[4, 9)");
+            a = IntervalUtility.ParseForInt32("[4, 9)", NumberStyles.Any, CultureInfo.InvariantCulture);
             Assert.AreEqual(4, a.MinValue);
             Assert.AreEqual(9, a.MaxValue);
             Assert.IsFalse(a.LeftOpen);
@@ -46,13 +47,13 @@ namespace Trivial.Maths
             Assert.IsFalse(a.IsInInterval(9));
             Assert.IsFalse(a.IsInInterval(10));
 
-            a = IntervalUtility.ParseForInt32("(-20, 30]");
+            a = IntervalUtility.ParseForInt32("(-20, 30]", NumberStyles.Any, CultureInfo.InvariantCulture);
             Assert.AreEqual(-20, a.MinValue);
             Assert.AreEqual(30, a.MaxValue);
             Assert.IsTrue(a.LeftOpen);
             Assert.IsFalse(a.RightOpen);
 
-            a = IntervalUtility.ParseForInt32("(20, )");
+            a = IntervalUtility.ParseForInt32("(20, )", NumberStyles.Any, CultureInfo.InvariantCulture);
             Assert.AreEqual(20, a.MinValue);
             Assert.AreEqual(int.MaxValue, a.MaxValue);
             Assert.IsTrue(a.LeftOpen);
@@ -64,7 +65,7 @@ namespace Trivial.Maths
             Assert.IsTrue(a.IsInInterval(100000));
             Assert.IsTrue(a.IsInInterval(int.MaxValue));
 
-            a = IntervalUtility.ParseForInt32("(-Infinity, ¡Þ]");
+            a = IntervalUtility.ParseForInt32("(-Infinity, ¡Þ]", NumberStyles.Any, CultureInfo.InvariantCulture);
             Assert.AreEqual(int.MinValue, a.MinValue);
             Assert.AreEqual(int.MaxValue, a.MaxValue);
             Assert.IsFalse(a.LeftOpen);
@@ -74,7 +75,7 @@ namespace Trivial.Maths
             Assert.IsTrue(a.IsInInterval(0));
             Assert.IsTrue(a.IsInInterval(int.MaxValue));
 
-            var b = IntervalUtility.ParseForDouble("(null, +¡Þ]");
+            var b = IntervalUtility.ParseForDouble("(null, +¡Þ]", NumberStyles.Any, CultureInfo.InvariantCulture);
             Assert.AreEqual(double.NegativeInfinity, b.MinValue);
             Assert.AreEqual(double.PositiveInfinity, b.MaxValue);
             Assert.IsTrue(b.LeftOpen);
@@ -84,7 +85,7 @@ namespace Trivial.Maths
             Assert.IsTrue(b.IsInInterval(0));
             Assert.IsTrue(b.IsInInterval(int.MaxValue));
 
-            b = IntervalUtility.ParseForDouble("(3.1415926, 900]");
+            b = IntervalUtility.ParseForDouble("(3.1415926, 900]", NumberStyles.Any, CultureInfo.InvariantCulture);
             Assert.AreEqual(3.1415926, b.MinValue);
             Assert.AreEqual(900, b.MaxValue);
             Assert.IsTrue(b.LeftOpen);
@@ -96,7 +97,7 @@ namespace Trivial.Maths
             Assert.IsFalse(b.IsInInterval(1920));
             Assert.IsFalse(b.IsInInterval(int.MaxValue));
 
-            var c = IntervalUtility.ParseForNullableInt64("(-1000, +¡Þ]");
+            var c = IntervalUtility.ParseForNullableInt64("(-1000, +¡Þ]", NumberStyles.Any, CultureInfo.InvariantCulture);
             Assert.AreEqual(-1000, c.MinValue);
             Assert.IsNull(c.MaxValue);
             Assert.IsTrue(c.LeftOpen);
@@ -106,7 +107,7 @@ namespace Trivial.Maths
             Assert.IsTrue(c.IsInInterval(0));
             Assert.IsTrue(c.IsInInterval(int.MaxValue));
 
-            c = IntervalUtility.ParseForNullableInt64("[100, -2]");
+            c = IntervalUtility.ParseForNullableInt64("[100, -2]", NumberStyles.Any, CultureInfo.InvariantCulture);
             Assert.AreEqual(100, c.MinValue);
             Assert.AreEqual(-2, c.MaxValue);
             Assert.IsFalse(c.LeftOpen);

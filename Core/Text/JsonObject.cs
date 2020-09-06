@@ -483,13 +483,13 @@ namespace Trivial.Text
             AssertKey(key);
             if (TryGetJsonValue<JsonString>(key, out var s))
             {
-                var date = Web.WebFormat.ParseDate(s.Value);
+                var date = WebFormat.ParseDate(s.Value);
                 if (date.HasValue) return date.Value;
                 throw new InvalidOperationException("The value is not a date time.");
             }
 
             var num = GetJsonValue<JsonInteger>(key);
-            return useUnixTimestampsFallback ? Web.WebFormat.ParseUnixTimestamp(num.Value) : Web.WebFormat.ParseDate(num.Value);
+            return useUnixTimestampsFallback ? WebFormat.ParseUnixTimestamp(num.Value) : WebFormat.ParseDate(num.Value);
         }
 
         /// <summary>
@@ -553,7 +553,7 @@ namespace Trivial.Text
         public IJsonValueResolver GetValue(string key)
         {
             AssertKey(key);
-            return (store[key] as IJsonValueResolver) ?? JsonValues.Null;
+            return store[key] ?? JsonValues.Null;
         }
 
         /// <summary>
@@ -592,7 +592,7 @@ namespace Trivial.Text
                             new ArgumentOutOfRangeException(nameof(keyPath), message));
                     }
 
-                    json = jObj.TryGetValue(key) as IJsonValueResolver;
+                    json = jObj.TryGetValue(key);
                     continue;
                 }
 
@@ -614,7 +614,7 @@ namespace Trivial.Text
                         new ArgumentOutOfRangeException(nameof(keyPath), message));
                 }
 
-                json = jArr.TryGetValue(i) as IJsonValueResolver;
+                json = jArr.TryGetValue(i);
             }
 
             return json;
@@ -1086,12 +1086,12 @@ namespace Trivial.Text
             AssertKey(key);
             if (TryGetJsonValue<JsonString>(key, out var s))
             {
-                var date = Web.WebFormat.ParseDate(s.Value);
+                var date = WebFormat.ParseDate(s.Value);
                 return date;
             }
 
             if (!TryGetJsonValue<JsonInteger>(key, out var num)) return null;
-            return useUnixTimestampsFallback ? Web.WebFormat.ParseUnixTimestamp(num.Value) : Web.WebFormat.ParseDate(num.Value);
+            return useUnixTimestampsFallback ? WebFormat.ParseUnixTimestamp(num.Value) : WebFormat.ParseDate(num.Value);
         }
 
 #if !NETSTANDARD2_0
@@ -1283,7 +1283,7 @@ namespace Trivial.Text
                         return false;
                     }
 
-                    json = jObj.TryGetValue(key) as IJsonValueResolver;
+                    json = jObj.TryGetValue(key);
                     continue;
                 }
 
@@ -1299,7 +1299,7 @@ namespace Trivial.Text
                     return false;
                 }
 
-                json = jArr.TryGetValue(i) as IJsonValueResolver;
+                json = jArr.TryGetValue(i);
             }
 
             result = json;
@@ -1717,7 +1717,7 @@ namespace Trivial.Text
         public void SetJavaScriptDateTicksValue(string key, DateTime value)
         {
             AssertKey(key);
-            store[key] = new JsonInteger(Web.WebFormat.ParseDate(value));
+            store[key] = new JsonInteger(WebFormat.ParseDate(value));
         }
 
         /// <summary>
@@ -1729,7 +1729,7 @@ namespace Trivial.Text
         public void SetUnixTimestampValue(string key, DateTime value)
         {
             AssertKey(key);
-            store[key] = new JsonInteger(Web.WebFormat.ParseUnixTimestamp(value));
+            store[key] = new JsonInteger(WebFormat.ParseUnixTimestamp(value));
         }
 
         /// <summary>
