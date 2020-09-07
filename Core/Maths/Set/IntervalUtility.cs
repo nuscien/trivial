@@ -209,6 +209,22 @@ namespace Trivial.Maths
         {
             var r = parseInt32(ele);
             if (r.HasValue) return (r.Value, null);
+            if (ele.StartsWith("0") && ele.Length > 2)
+            {
+                switch (ele[1])
+                {
+                    case 'x':
+                    case 'X':
+                        return (Convert.ToInt32(ele.Substring(2), 16), null);
+                    case 'b':
+                    case 'B':
+                        return (Convert.ToInt32(ele.Substring(2), 2), null);
+                    case 'o':
+                    case 'O':
+                        return (Convert.ToInt32(ele.Substring(2), 8), null);
+                }
+            }
+
             if (ele == NumberSymbols.InfiniteSymbol || ele == NumberSymbols.PositiveInfiniteSymbol || ele == "Infinity" || ele == "NaN" || ele == "null")
             {
                 if (pos >= 0) return (int.MaxValue, false);
@@ -263,6 +279,22 @@ namespace Trivial.Maths
         {
             var r = parseInt64(ele);
             if (r.HasValue) return (r.Value, null);
+            if (ele.StartsWith("0") && ele.Length > 2)
+            {
+                switch (ele[1])
+                {
+                    case 'x':
+                    case 'X':
+                        return (Convert.ToInt64(ele.Substring(2), 16), null);
+                    case 'b':
+                    case 'B':
+                        return (Convert.ToInt64(ele.Substring(2), 2), null);
+                    case 'o':
+                    case 'O':
+                        return (Convert.ToInt64(ele.Substring(2), 8), null);
+                }
+            }
+
             if (ele == NumberSymbols.InfiniteSymbol || ele == NumberSymbols.PositiveInfiniteSymbol || ele == "Infinity" || ele == "NaN" || ele == "null")
             {
                 if (pos >= 0) return (long.MaxValue, false);
@@ -317,6 +349,22 @@ namespace Trivial.Maths
         {
             var r = parseInt32(ele);
             if (r.HasValue) return (r.Value, null);
+            if (ele.StartsWith("0") && ele.Length > 2)
+            {
+                switch (ele[1])
+                {
+                    case 'x':
+                    case 'X':
+                        return (Convert.ToInt32(ele.Substring(2), 16), null);
+                    case 'b':
+                    case 'B':
+                        return (Convert.ToInt32(ele.Substring(2), 2), null);
+                    case 'o':
+                    case 'O':
+                        return (Convert.ToInt32(ele.Substring(2), 8), null);
+                }
+            }
+
             if (ele == NumberSymbols.InfiniteSymbol || ele == NumberSymbols.PositiveInfiniteSymbol || ele == "Infinity" || ele == "NaN" || ele == "null")
             {
                 if (pos >= 0) return (null, true);
@@ -372,6 +420,22 @@ namespace Trivial.Maths
         {
             var r = parseInt64(ele);
             if (r.HasValue) return (r.Value, null);
+            if (ele.StartsWith("0") && ele.Length > 2)
+            {
+                switch (ele[1])
+                {
+                    case 'x':
+                    case 'X':
+                        return (Convert.ToInt64(ele.Substring(2), 16), null);
+                    case 'b':
+                    case 'B':
+                        return (Convert.ToInt64(ele.Substring(2), 2), null);
+                    case 'o':
+                    case 'O':
+                        return (Convert.ToInt64(ele.Substring(2), 8), null);
+                }
+            }
+
             if (ele == NumberSymbols.InfiniteSymbol || ele == NumberSymbols.PositiveInfiniteSymbol || ele == "Infinity" || ele == "NaN" || ele == "null")
             {
                 if (pos >= 0) return (null, true);
@@ -466,6 +530,7 @@ namespace Trivial.Maths
             double.PositiveInfinity);
 
         private const string digits = "0123456789+-∞";
+
         private static StructValueSimpleInterval<T> ParseForX<T>(string s, T minValue, T maxValue, bool supportInfinite, Func<string, int, (T?, bool?)> convert, T? negativeInfinite, T? positiveInfinite) where T : struct, IComparable<T>
         {
             try
@@ -476,8 +541,8 @@ namespace Trivial.Maths
                 return new StructValueSimpleInterval<T>(
                     tuple.Item1 ?? minValue,
                     tuple.Item3 ?? maxValue,
-                    supportInfinite || tuple.Item1.HasValue ? tuple.Item2 : false,
-                    supportInfinite || tuple.Item3.HasValue ? tuple.Item4 : false,
+                    (supportInfinite || tuple.Item1.HasValue) && tuple.Item2,
+                    (supportInfinite || tuple.Item3.HasValue) && tuple.Item4,
                     negativeInfinite,
                     positiveInfinite);
             }

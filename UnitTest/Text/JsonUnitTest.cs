@@ -226,7 +226,7 @@ namespace Trivial.Text
     ""J"": ""123456"",
     ""K"": ""[11.1, 76.9)"",
     ""L"": ""[, 999999999999)"",
-    ""M"": ""[3.1415926, ¡Þ]"",
+    ""M"": ""[3.1415926, " + NumberSymbols.InfiniteSymbol + @"]"",
     ""N"": ""[3.6.0, 5.0.0)""
 }";
             model2 = JsonSerializer.Deserialize<JsonAttributeTestModel>(str);
