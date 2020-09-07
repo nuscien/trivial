@@ -203,7 +203,7 @@ namespace Trivial.Maths
         /// </summary>
         /// <param name="s">The interval format string.</param>
         /// <param name="parseInt32">The parser for integer.</param>
-        /// <param name="parseDouble">The parser for floating number.</param>
+        /// <param name="parseDouble">The parser for floating-point number.</param>
         /// <returns>The interval instance parsed.</returns>
         private static StructValueSimpleInterval<int> ParseForInt32(string s, Func<string, int?> parseInt32, Func<string, double> parseDouble) => ParseForX(s, int.MinValue, int.MaxValue, false, (ele, pos) =>
         {
@@ -220,7 +220,6 @@ namespace Trivial.Maths
                 return (int.MinValue, true);
             }
 
-            Console.WriteLine($"Parse floating-point number {ele} (len {ele.Length} pos {pos}) in interval.");  // ToDo: Need remove it.
             var num = parseDouble(ele);
             if (pos >= 0) return (num >= int.MaxValue ? int.MaxValue : (int)num, false);
             if (num >= int.MaxValue) return (int.MaxValue, true);
@@ -258,7 +257,7 @@ namespace Trivial.Maths
         /// </summary>
         /// <param name="s">The interval format string.</param>
         /// <param name="parseInt64">The parser for integer.</param>
-        /// <param name="parseDouble">The parser for floating number.</param>
+        /// <param name="parseDouble">The parser for floating-point number.</param>
         /// <returns>The interval instance parsed.</returns>
         private static StructValueSimpleInterval<long> ParseForInt64(string s, Func<string, long?> parseInt64, Func<string, double> parseDouble) => ParseForX(s, long.MinValue, long.MaxValue, false, (ele, pos) =>
         {
@@ -312,7 +311,7 @@ namespace Trivial.Maths
         /// </summary>
         /// <param name="s">The interval format string.</param>
         /// <param name="parseInt32">The parser for integer.</param>
-        /// <param name="parseDouble">The parser for floating number.</param>
+        /// <param name="parseDouble">The parser for floating-point number.</param>
         /// <returns>The interval instance parsed.</returns>
         private static NullableValueSimpleInterval<int> ParseForNullableInt32(string s, Func<string, int?> parseInt32, Func<string, double> parseDouble) => ParseForX<int>(s, (ele, pos) =>
         {
@@ -366,7 +365,7 @@ namespace Trivial.Maths
         /// </summary>
         /// <param name="s">The interval format string.</param>
         /// <param name="parseInt64">The parser for integer.</param>
-        /// <param name="parseDouble">The parser for floating number.</param>
+        /// <param name="parseDouble">The parser for floating-point number.</param>
         /// <returns>The interval instance parsed.</returns>
         /// <exception cref="FormatException">The string to parse is not the internal format.</exception>
         private static NullableValueSimpleInterval<long> ParseForNullableInt64(string s, Func<string, long?> parseInt64, Func<string, double> parseDouble) => ParseForX<long>(s, (ele, pos) =>
