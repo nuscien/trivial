@@ -220,6 +220,7 @@ namespace Trivial.Maths
                 return (int.MinValue, true);
             }
 
+            Console.WriteLine($"Parse floating-point number {ele} (len {ele.Length} pos {pos}) in interval.");  // ToDo: Need remove it.
             var num = parseDouble(ele);
             if (pos >= 0) return (num >= int.MaxValue ? int.MaxValue : (int)num, false);
             if (num >= int.MaxValue) return (int.MaxValue, true);

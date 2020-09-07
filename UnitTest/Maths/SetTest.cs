@@ -16,6 +16,13 @@ namespace Trivial.Maths
     [TestClass]
     public class SetUnitTest
     {
+        [TestMethod]
+        public void TestDoubleParse()
+        {
+            var a = double.Parse("100.9");
+            Assert.AreEqual(100.9, a);
+        }
+
         /// <summary>
         /// Tests writable JSON DOM.
         /// </summary>
