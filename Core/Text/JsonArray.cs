@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -19,7 +20,7 @@ namespace Trivial.Text
     /// </summary>
     public class JsonArray : IJsonComplex, IJsonValueResolver, IReadOnlyList<IJsonValue>, IReadOnlyList<IJsonValueResolver>, IEquatable<JsonArray>, IEquatable<IJsonValue>
     {
-        private readonly IList<IJsonValueResolver> store = new List<IJsonValueResolver>();
+        private IList<IJsonValueResolver> store = new List<IJsonValueResolver>();
 
         /// <summary>
         /// Initializes a new instance of the JsonArray class.
@@ -102,6 +103,59 @@ namespace Trivial.Text
             }
         }
 #endif
+        /// <summary>
+        /// Enables thread-safe (concurrent) mode.
+        /// </summary>
+        public void EnableThreadSafeMode()
+        {
+            EnableThreadSafeMode(1);
+            EnableThreadSafeMode(0);
+        }
+
+        /// <summary>
+        /// Enables thread-safe (concurrent) mode.
+        /// </summary>
+        /// <param name="depth">The recurrence depth.</param>
+        public void EnableThreadSafeMode(int depth)
+        {
+            if (!(store is Collection.ConcurrentList<IJsonValueResolver>))
+            {
+                if (depth < 0) return;
+                var i = 3;
+                while (i > 0)
+                {
+                    try
+                    {
+                        store = new Collection.ConcurrentList<IJsonValueResolver>(store);
+                        break;
+                    }
+                    catch (ArgumentException)
+                    {
+                    }
+                    catch (InvalidOperationException)
+                    {
+                    }
+                    catch (NullReferenceException)
+                    {
+                    }
+                    catch (NotSupportedException)
+                    {
+                        break;
+                    }
+
+                    i--;
+                }
+            }
+
+            if (depth < 1) return;
+            depth--;
+            foreach (var ele in store)
+            {
+                if (ele is JsonObject json) json.EnableThreadSafeMode(depth);
+                else if (ele is JsonArray arr) arr.EnableThreadSafeMode(depth);
+            }
+        }
+
 
         /// <summary>
         /// Determines the property value of the specific key is null.
@@ -453,7 +507,7 @@ namespace Trivial.Text
         /// <exception cref="ArgumentOutOfRangeException">The index is out of range.</exception>
         public IJsonValueResolver GetValue(int index)
         {
-            return (store[index] as IJsonValueResolver) ?? JsonValues.Null;
+            return store[index] ?? JsonValues.Null;
         }
 
 #if !NETSTANDARD2_0
@@ -465,7 +519,7 @@ namespace Trivial.Text
         /// <exception cref="ArgumentOutOfRangeException">The index is out of range.</exception>
         public IJsonValueResolver GetValue(Index index)
         {
-            return (store[index.IsFromEnd ? store.Count - index.Value : index.Value] as IJsonValueResolver) ?? JsonValues.Null;
+            return store[index.IsFromEnd ? store.Count - index.Value : index.Value] ?? JsonValues.Null;
         }
 #endif
 

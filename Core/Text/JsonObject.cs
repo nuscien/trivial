@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -19,7 +20,7 @@ namespace Trivial.Text
     /// </summary>
     public class JsonObject : IJsonComplex, IJsonValueResolver, IDictionary<string, IJsonValue>, IDictionary<string, IJsonValueResolver>, IReadOnlyDictionary<string, IJsonValue>, IReadOnlyDictionary<string, IJsonValueResolver>, IEquatable<JsonObject>, IEquatable<IJsonValue>
     {
-        private readonly IDictionary<string, IJsonValueResolver> store = new Dictionary<string, IJsonValueResolver>();
+        private IDictionary<string, IJsonValueResolver> store = new Dictionary<string, IJsonValueResolver>();
 
         /// <summary>
         /// Initializes a new instance of the JsonObject class.
@@ -130,6 +131,59 @@ namespace Trivial.Text
         IJsonValue IReadOnlyDictionary<string, IJsonValue>.this[string key]
         {
             get => GetValue(key);
+        }
+
+        /// <summary>
+        /// Enables thread-safe (concurrent) mode.
+        /// </summary>
+        public void EnableThreadSafeMode()
+        {
+            EnableThreadSafeMode(1);
+            EnableThreadSafeMode(0);
+        }
+
+        /// <summary>
+        /// Enables thread-safe (concurrent) mode.
+        /// </summary>
+        /// <param name="depth">The recurrence depth.</param>
+        public void EnableThreadSafeMode(int depth)
+        {
+            if (!(store is ConcurrentDictionary<string, IJsonValueResolver>))
+            {
+                if (depth < 0) return;
+                var i = 3;
+                while (i > 0)
+                {
+                    try
+                    {
+                        store = new ConcurrentDictionary<string, IJsonValueResolver>(store);
+                        break;
+                    }
+                    catch (ArgumentException)
+                    {
+                    }
+                    catch (InvalidOperationException)
+                    {
+                    }
+                    catch (NullReferenceException)
+                    {
+                    }
+                    catch (NotSupportedException)
+                    {
+                        break;
+                    }
+
+                    i--;
+                }
+            }
+
+            if (depth < 1) return;
+            depth--;
+            foreach (var ele in store)
+            {
+                if (ele.Value is JsonObject json) json.EnableThreadSafeMode(depth);
+                else if (ele.Value is JsonArray arr) arr.EnableThreadSafeMode(depth);
+            }
         }
 
         /// <summary>
