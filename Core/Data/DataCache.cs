@@ -257,7 +257,7 @@ namespace Trivial.Data
         public ItemInfo GetInfo(string prefix, string id, Func<T> initialization = null, TimeSpan? expiration = null)
         {
             if (string.IsNullOrWhiteSpace(id)) return null;
-            var info = items.LastOrDefault(ele => ele.Prefix == prefix && ele.Id == id);
+            var info = GetInfo(ele => ele.Prefix == prefix && ele.Id == id);
             if (info == null)
             {
                 return Add(prefix, id, initialization, expiration);
@@ -269,6 +269,39 @@ namespace Trivial.Data
             }
 
             return info;
+        }
+
+        /// <summary>
+        /// Gets the cache item info.
+        /// </summary>
+        /// <param name="predicate">A function to test each element for a condition.</param>
+        /// <returns>The cache item info.</returns>
+        public ItemInfo GetInfo(Func<ItemInfo, bool> predicate)
+        {
+            if (predicate is null) predicate = ele => true;
+            try
+            {
+                return items.LastOrDefault(predicate);
+            }
+            catch (InvalidOperationException)
+            {
+            }
+            catch (NullReferenceException)
+            {
+            }
+
+            try
+            {
+                return items.LastOrDefault(predicate);
+            }
+            catch (InvalidOperationException)
+            {
+            }
+            catch (NullReferenceException)
+            {
+            }
+
+            return items.LastOrDefault(predicate);
         }
 
         /// <summary>
@@ -294,7 +327,7 @@ namespace Trivial.Data
         public async Task<ItemInfo> GetInfoAsync(string prefix, string id, Func<Task<T>> initialization = null, TimeSpan? expiration = null)
         {
             if (string.IsNullOrWhiteSpace(id)) return null;
-            var info = items.LastOrDefault(ele => ele.Prefix == prefix && ele.Id == id);
+            var info = GetInfo(ele => ele.Prefix == prefix && ele.Id == id);
             if (info == null)
             {
                 return await AddAsync(prefix, id, initialization, expiration);
@@ -334,7 +367,7 @@ namespace Trivial.Data
                 return false;
             }
 
-            var info = items.LastOrDefault(ele => ele.Prefix == prefix && ele.Id == id);
+            var info = GetInfo(ele => ele.Prefix == prefix && ele.Id == id);
             result = info;
             return info != null && info.Value != null && !info.IsExpired(Expiration);
         }
@@ -365,7 +398,7 @@ namespace Trivial.Data
                 return false;
             }
 
-            var info = items.LastOrDefault(ele => ele.Prefix == prefix && ele.Id == id);
+            var info = GetInfo(ele => ele.Prefix == prefix && ele.Id == id);
             if (info == null || info.Value == null)
             {
                 data = default;

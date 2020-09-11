@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Text;
 using Trivial.Tasks;
 
@@ -118,6 +119,15 @@ namespace Trivial.Data
         /// <param name="method">The method to change.</param>
         /// <param name="key">The property key of the value changed.</param>
         public ChangeEventArgs(T oldValue, T newValue, ChangeMethods method, string key = null) : this(oldValue, newValue, key) => Method = method;
+
+        /// <summary>
+        /// Initializes a new instance of the ChangeEventArgs class.
+        /// </summary>
+        /// <param name="oldValue">The old value.</param>
+        /// <param name="newValue">The new value.</param>
+        /// <param name="method">The method to change.</param>
+        /// <param name="index">The index of the value in a list changed.</param>
+        public ChangeEventArgs(T oldValue, T newValue, ChangeMethods method, int index) : this(oldValue, newValue, index.ToString("g", CultureInfo.InvariantCulture)) => Method = method;
 
         /// <summary>
         /// Initializes a new instance of the ChangeEventArgs class.

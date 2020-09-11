@@ -103,22 +103,28 @@ namespace Trivial.Text
             }
         }
 #endif
+
         /// <summary>
         /// Enables thread-safe (concurrent) mode.
         /// </summary>
         public void EnableThreadSafeMode()
         {
             EnableThreadSafeMode(1);
-            EnableThreadSafeMode(0);
+            EnableThreadSafeMode(0, true);
         }
 
         /// <summary>
         /// Enables thread-safe (concurrent) mode.
         /// </summary>
         /// <param name="depth">The recurrence depth.</param>
-        public void EnableThreadSafeMode(int depth)
+        /// <param name="skipIfEnabled">true if skip if this instance is in thread-safe (concurrent) mode; otherwise, false.</param>
+        public void EnableThreadSafeMode(int depth, bool skipIfEnabled = false)
         {
-            if (!(store is Collection.ConcurrentList<IJsonValueResolver>))
+            if (store is Collection.ConcurrentList<IJsonValueResolver>)
+            {
+                if (skipIfEnabled) return;
+            }
+            else
             {
                 if (depth < 0) return;
                 var i = 3;

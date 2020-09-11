@@ -3,6 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
+using Trivial.Data;
 
 namespace Trivial.Collection
 {
@@ -10,27 +12,91 @@ namespace Trivial.Collection
     /// Represents a thread-safe list of objects.
     /// </summary>
     /// <typeparam name="T">The type of the elements to be stored in the list.</typeparam>
-    public class ConcurrentList<T> : IList<T>
+    public class ConcurrentList<T> : IList<T>, ICloneable
     {
         private readonly List<T> list;
-        private readonly object locker = new object();
+        private readonly object locker;
 
         /// <summary>
         /// Initializes a new instance of the ConcurrentList class.
         /// </summary>
         public ConcurrentList()
         {
+            locker = new object();
             list = new List<T>();
         }
 
         /// <summary>
         /// Initializes a new instance of the ConcurrentList class.
         /// </summary>
-        /// <param name="collection">The collection to copy.</param>
+        /// <param name="collection">The collection of elements used to initialize the thread-safe collection.</param>
         public ConcurrentList(IEnumerable<T> collection)
         {
-            list = collection != null ? new List<T>(collection) : new List<T>();
+            locker = new object();
+            if (list is null)
+            {
+                list = new List<T>();
+                return;
+            }
+
+            try
+            {
+                list = new List<T>(collection);
+            }
+            catch (NullReferenceException)
+            {
+                list = new List<T>(collection);
+            }
+            catch (InvalidOperationException)
+            {
+                list = new List<T>(collection);
+            }
         }
+
+        /// <summary>
+        /// Initializes a new instance of the ConcurrentList class.
+        /// </summary>
+        /// <param name="syncRoot">The object used to synchronize access the thread-safe collection.</param>
+        /// <param name="collection">The collection of elements used to initialize the thread-safe collection.</param>
+        /// <param name="useSource">true if set the collection as source directly instead of copying; otherwise, false.</param>
+        public ConcurrentList(object syncRoot, IEnumerable<T> collection, bool useSource)
+        {
+            locker = syncRoot ?? new object();
+            if (list is null)
+            {
+                list = new List<T>();
+                return;
+            }
+
+            if (useSource && collection is List<T> l)
+            {
+                list = l;
+                return;
+            }
+
+            try
+            {
+                list = new List<T>(collection);
+            }
+            catch (NullReferenceException)
+            {
+                list = new List<T>(collection);
+            }
+            catch (InvalidOperationException)
+            {
+                list = new List<T>(collection);
+            }
+        }
+
+        /// <summary>
+        /// Adds or removes the event handler raised on item is added or removed.
+        /// </summary>
+        public event ChangeEventHandler<T> Changed;
+
+        /// <summary>
+        /// Adds or removes the event handler raised on items sorted.
+        /// </summary>
+        public event EventHandler Sorted;
 
         /// <inheritdoc />
         public T this[int index]
@@ -45,10 +111,14 @@ namespace Trivial.Collection
 
             set
             {
+                T old;
                 lock (locker)
                 {
+                    old = index < list.Count ? list[index] : default;
                     list[index] = value;
                 }
+
+                Changed?.Invoke(this, new ChangeEventArgs<T>(old, value, ChangeMethods.Update, index));
             }
         }
 
@@ -71,10 +141,16 @@ namespace Trivial.Collection
 
             set
             {
+                T old;
+                var i = -1;
                 lock (locker)
                 {
-                    list[index] = value;
+                    i = index.GetOffset(list.Count);
+                    old = i < list.Count ? list[i] : default;
+                    list[i] = value;
                 }
+
+                Changed?.Invoke(this, new ChangeEventArgs<T>(old, value, ChangeMethods.Update, i));
             }
         }
 #endif
@@ -95,24 +171,6 @@ namespace Trivial.Collection
         public bool IsReadOnly => false;
 
         /// <summary>
-        /// Gets the rage at the specified index.
-        /// </summary>
-        /// <param name="index">The zero-based starting index of the range to get.</param>
-        /// <param name="count">The number of elements in the range to get.</param>
-        /// <returns>The sub list.</returns>
-        /// <exception cref="ArgumentOutOfRangeException">index is less than 0. -or- count is less than 0.</exception>
-        /// <exception cref="ArgumentException">index and count do not denote a valid range of elements in the list.</exception>
-        public ConcurrentList<T> SubList(int index, int? count = null)
-        {
-            lock (locker)
-            {
-                var col = list.Skip(index);
-                if (count.HasValue) col = col.Take(count.Value);
-                return new ConcurrentList<T>(col);
-            }
-        }
-
-        /// <summary>
         /// Reverses the order of the elements in the specified range.
         /// </summary>
         /// <param name="index">The zero-based starting index of the range to reverse.</param>
@@ -128,6 +186,7 @@ namespace Trivial.Collection
                     list.Reverse(index, list.Count - index);
                 }
 
+                Sorted?.Invoke(this, new EventArgs());
                 return;
             }
 
@@ -135,6 +194,8 @@ namespace Trivial.Collection
             {
                 list.Reverse(index, count.Value);
             }
+
+            Sorted?.Invoke(this, new EventArgs());
         }
 
         /// <summary>
@@ -155,6 +216,7 @@ namespace Trivial.Collection
                     list.Sort(index, list.Count - index, comparer);
                 }
 
+                Sorted?.Invoke(this, new EventArgs());
                 return;
             }
 
@@ -162,15 +224,21 @@ namespace Trivial.Collection
             {
                 list.Sort(index, count.Value, comparer);
             }
+
+            Sorted?.Invoke(this, new EventArgs());
         }
 
         /// <inheritdoc />
         public void Add(T item)
         {
+            var count = 0;
             lock (locker)
             {
+                count = list.Count;
                 list.Add(item);
             }
+
+            Changed?.Invoke(this, new ChangeEventArgs<T>(default, item, ChangeMethods.Add, count));
         }
 
         /// <summary>
@@ -180,18 +248,44 @@ namespace Trivial.Collection
         public void AddRange(IEnumerable<T> collection)
         {
             if (collection is null) return;
+            if (Changed == null)
+            {
+                lock (locker)
+                {
+                    list.AddRange(collection);
+                }
+
+                return;
+            }
+
+            var copied = new List<T>(collection);
+            var count = 0;
             lock (locker)
             {
-                list.AddRange(collection);
+                count = list.Count;
+                list.AddRange(copied);
+            }
+
+            for (var i = 0; i < copied.Count; i++)
+            {
+                Changed?.Invoke(this, new ChangeEventArgs<T>(default, copied[i], ChangeMethods.Add, i + count));
             }
         }
 
         /// <inheritdoc />
         public void Clear()
         {
+            List<T> copied = null;
             lock (locker)
             {
+                if (Changed != null) copied = new List<T>(list);
                 list.Clear();
+            }
+
+            if (copied == null || Changed == null) return;
+            for (var i = 0; i < copied.Count; i++)
+            {
+                Changed?.Invoke(this, new ChangeEventArgs<T>(copied[i], default, ChangeMethods.Remove, i));
             }
         }
 
@@ -216,10 +310,13 @@ namespace Trivial.Collection
         /// <inheritdoc />
         public IEnumerator<T> GetEnumerator()
         {
+            List<T> col;
             lock (locker)
             {
-                return list.GetEnumerator();
+                col = new List<T>(list);
             }
+
+            return col.GetEnumerator();
         }
 
         /// <inheritdoc />
@@ -313,6 +410,8 @@ namespace Trivial.Collection
             {
                 list.Insert(index, item);
             }
+
+            Changed?.Invoke(this, new ChangeEventArgs<T>(default, item, ChangeMethods.Add, index));
         }
 
         /// <summary>
@@ -328,24 +427,50 @@ namespace Trivial.Collection
             {
                 list.InsertRange(index, collection);
             }
+
+            if (Changed == null) return;
+            var copied = new List<T>(collection);
+            foreach (var item in copied)
+            {
+                Changed?.Invoke(this, new ChangeEventArgs<T>(default, item, ChangeMethods.Add, index));
+            }
         }
 
         /// <inheritdoc />
         public bool Remove(T item)
         {
+            var i = -1;
             lock (locker)
             {
-                return list.Remove(item);
+                if (Changed != null) i = list.IndexOf(item);
+                if (!list.Remove(item)) return false;
             }
+
+            if (i >= 0) Changed?.Invoke(this, new ChangeEventArgs<T>(item, default, ChangeMethods.Remove, i));
+            return true;
         }
 
         /// <inheritdoc />
         public void RemoveAt(int index)
         {
+            if (Changed == null)
+            {
+                lock (locker)
+                {
+                    list.RemoveAt(index);
+                }
+
+                return;
+            }
+
+            T item = default;
             lock (locker)
             {
+                item = list[index];
                 list.RemoveAt(index);
             }
+
+            Changed?.Invoke(this, new ChangeEventArgs<T>(item, default, ChangeMethods.Remove, index));
         }
 
         /// <summary>
@@ -356,10 +481,23 @@ namespace Trivial.Collection
         public int RemoveAll(Predicate<T> match)
         {
             if (match is null) return 0;
+            List<T> copied = null;
+            var result = 0;
             lock (locker)
             {
-                return list.RemoveAll(match);
+                if (Changed != null) copied = list.Where(ele => match(ele)).ToList();
+                result = list.RemoveAll(match);
             }
+
+            if (Changed != null && copied != null)
+            {
+                for (var i = 0; i < copied.Count; i++)
+                {
+                    Changed?.Invoke(this, new ChangeEventArgs<T>(copied[i], default, ChangeMethods.Remove, i));
+                }
+            }
+
+            return result;
         }
 
         /// <summary>
@@ -371,19 +509,60 @@ namespace Trivial.Collection
         /// <exception cref="ArgumentException">index and count do not denote a valid range of elements in the list.</exception>
         public void RemoveRange(int index, int count)
         {
+            List<T> copied = null;
             lock (locker)
             {
+                if (Changed != null) copied = list.Skip(index).Take(count).ToList();
                 list.RemoveRange(index, count);
+            }
+
+            if (Changed == null || copied == null) return;
+            for (var i = 0; i < copied.Count; i++)
+            {
+                Changed?.Invoke(this, new ChangeEventArgs<T>(copied[i], default, ChangeMethods.Remove, i));
             }
         }
 
         /// <inheritdoc />
         IEnumerator IEnumerable.GetEnumerator()
         {
+            return GetEnumerator();
+        }
+
+        /// <summary>
+        /// Creates a new concurrent list that is a copy of the current instance.
+        /// </summary>
+        /// <returns>A new concurrent list that is a copy of this instance.</returns>
+        public ConcurrentList<T> Clone()
+        {
             lock (locker)
             {
-                return ((IEnumerable)list).GetEnumerator();
+                return new ConcurrentList<T>(list);
             }
+        }
+
+        /// <summary>
+        /// Gets the rage at the specified index.
+        /// </summary>
+        /// <param name="index">The zero-based starting index of the range to get.</param>
+        /// <param name="count">The number of elements in the range to get.</param>
+        /// <returns>The sub list.</returns>
+        /// <exception cref="ArgumentOutOfRangeException">index is less than 0. -or- count is less than 0.</exception>
+        /// <exception cref="ArgumentException">index and count do not denote a valid range of elements in the list.</exception>
+        public ConcurrentList<T> Clone(int index, int? count = null)
+        {
+            lock (locker)
+            {
+                var col = list.Skip(index);
+                if (count.HasValue) col = col.Take(count.Value);
+                return new ConcurrentList<T>(col);
+            }
+        }
+
+        /// <inheritdoc />
+        object ICloneable.Clone()
+        {
+            return Clone();
         }
     }
 }

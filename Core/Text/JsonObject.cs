@@ -139,16 +139,21 @@ namespace Trivial.Text
         public void EnableThreadSafeMode()
         {
             EnableThreadSafeMode(1);
-            EnableThreadSafeMode(0);
+            EnableThreadSafeMode(0, true);
         }
 
         /// <summary>
         /// Enables thread-safe (concurrent) mode.
         /// </summary>
         /// <param name="depth">The recurrence depth.</param>
-        public void EnableThreadSafeMode(int depth)
+        /// <param name="skipIfEnabled">true if skip if this instance is in thread-safe (concurrent) mode; otherwise, false.</param>
+        public void EnableThreadSafeMode(int depth, bool skipIfEnabled = false)
         {
-            if (!(store is ConcurrentDictionary<string, IJsonValueResolver>))
+            if (store is ConcurrentDictionary<string, IJsonValueResolver>)
+            {
+                if (skipIfEnabled) return;
+            }
+            else
             {
                 if (depth < 0) return;
                 var i = 3;
@@ -181,8 +186,8 @@ namespace Trivial.Text
             depth--;
             foreach (var ele in store)
             {
-                if (ele.Value is JsonObject json) json.EnableThreadSafeMode(depth);
-                else if (ele.Value is JsonArray arr) arr.EnableThreadSafeMode(depth);
+                if (ele.Value is JsonObject json) json.EnableThreadSafeMode(depth, true);
+                else if (ele.Value is JsonArray arr) arr.EnableThreadSafeMode(depth, true);
             }
         }
 
