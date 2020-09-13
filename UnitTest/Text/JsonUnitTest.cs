@@ -77,6 +77,10 @@ namespace Trivial.Text
             Assert.IsNull(json.TryGetObjectValue("props", "p1", "p3", "p6"));
             Assert.AreEqual(4567, p1.GetInt32Value("p7"));
 
+            json.EnableThreadSafeMode(3);
+            Assert.IsTrue(json.GetObjectValue("props", "p1", "p3").GetBooleanValue("p2"));
+            Assert.AreEqual(4567, p1.GetInt32Value("p7"));
+
             var jsonArray = json.GetArrayValue("arr");
             Assert.AreEqual(0, jsonArray.Count);
             jsonArray.Add("*+-\"\'\\");

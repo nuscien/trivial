@@ -559,6 +559,24 @@ namespace Trivial.Collection
             }
         }
 
+        /// <summary>
+        /// Gets the rage at the specified index.
+        /// </summary>
+        /// <param name="indexes">The zero-based starting indexex to get.</param>
+        /// <returns>The sub list.</returns>
+        /// <exception cref="ArgumentOutOfRangeException">index is less than 0. -or- count is less than 0.</exception>
+        /// <exception cref="ArgumentException">index and count do not denote a valid range of elements in the list.</exception>
+        public ConcurrentList<T> Clone(IEnumerable<int> indexes)
+        {
+            var col = new ConcurrentList<T>();
+            lock (locker)
+            {
+                col.AddRange(indexes.Select(ele => list[ele]));
+            }
+
+            return col;
+        }
+
         /// <inheritdoc />
         object ICloneable.Clone()
         {
