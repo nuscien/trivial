@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.Json;
-
+using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Trivial.Text;
 
@@ -30,7 +30,6 @@ namespace Trivial.Data
                 { "opq", "hijklmn", 20 }
             };
             Assert.AreEqual(4, cache.Count);
-            Assert.AreEqual(12, cache[0].Value);
             Assert.AreEqual(12, cache["abcdefg"]);
             Assert.AreEqual(17, cache["opq", "abcdefg"]);
             Assert.AreEqual(17, cache["hijklmn"]);
@@ -40,8 +39,18 @@ namespace Trivial.Data
             cache.MaxCount = 3;
             cache.RemoveExpired();
             Assert.AreEqual(3, cache.Count);
-            Assert.AreEqual(17, cache[0].Value);
-            Assert.AreEqual(20, cache[2].Value);
+            Assert.AreEqual(17, cache["opq", "abcdefg"]);
+            Assert.AreEqual(20, cache["opq", "hijklmn"]);
+
+            Parallel.For(0, 100, i =>
+            {
+                for (var j = 0; j < 100; j++)
+                {
+                    cache["rst"] = j;
+                }
+            });
+            Assert.AreEqual(3, cache.Count);
+            Assert.AreEqual(99, cache["rst"]);
         }
     }
 }

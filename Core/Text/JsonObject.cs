@@ -1163,7 +1163,7 @@ namespace Trivial.Text
         /// <returns>true if has the property and the type is the one expected; otherwise, false.</returns>
         public bool TryGetBytesFromBase64(string key, Span<byte> bytes, out int bytesWritten)
         {
-            var str = GetStringValue(key);
+            var str = TryGetStringValue(key);
             if (string.IsNullOrEmpty(str))
             {
                 bytesWritten = 0;
@@ -1182,7 +1182,7 @@ namespace Trivial.Text
         public T? TryGetEnumValue<T>(string key) where T : struct, Enum
         {
             if (TryGetInt32Value(key, out var v)) return (T)(object)v;
-            var str = GetStringValue(key);
+            var str = TryGetStringValue(key);
             if (Enum.TryParse<T>(str, out var result)) return result;
             return null;
         }
@@ -1196,7 +1196,7 @@ namespace Trivial.Text
         public T? TryGetEnumValue<T>(string key, bool ignoreCase) where T : struct, Enum
         {
             if (TryGetInt32Value(key, out var v)) return (T)(object)v;
-            var str = GetStringValue(key);
+            var str = TryGetStringValue(key);
             if (Enum.TryParse<T>(str, ignoreCase, out var result)) return result;
             return null;
         }
