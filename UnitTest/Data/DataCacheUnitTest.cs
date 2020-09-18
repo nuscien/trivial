@@ -29,6 +29,7 @@ namespace Trivial.Data
                 { "hijklmn", 17 },
                 { "opq", "hijklmn", 20 }
             };
+            cache.Expiration = TimeSpan.FromMilliseconds(1000);
             Assert.AreEqual(4, cache.Count);
             Assert.AreEqual(12, cache["abcdefg"]);
             Assert.AreEqual(17, cache["opq", "abcdefg"]);
@@ -42,13 +43,39 @@ namespace Trivial.Data
             Assert.AreEqual(17, cache["opq", "abcdefg"]);
             Assert.AreEqual(20, cache["opq", "hijklmn"]);
 
+            var i = 0;
+            cache.Register("xyz", async id =>
+            {
+                await Task.Delay(40);
+                i++;
+                return i;
+            });
+
             Parallel.For(0, 100, i =>
             {
                 for (var j = 0; j < 100; j++)
                 {
                     cache["rst"] = j;
+                    Assert.IsTrue(cache["rst"] >= 0);
+                    cache["uvw"] = j;
+                    Assert.IsTrue(cache["uvw"] >= 0);
                 }
             });
+
+            var tasks = new List<Task>();
+            for (var k = 0; k < 100; k++)
+            {
+                async Task task()
+                {
+                    var j = await cache.GetInfoAsync("xyz", "1234567890");
+                    Assert.IsNotNull(j);
+                    Assert.IsTrue(j.Value < 7);
+                }
+                tasks.Add(task());
+            }
+
+            Task.WaitAll(tasks.ToArray());
+
             Assert.AreEqual(3, cache.Count);
             Assert.AreEqual(99, cache["rst"]);
         }

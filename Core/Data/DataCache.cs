@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices.ComTypes;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Trivial.Data
@@ -15,6 +16,11 @@ namespace Trivial.Data
     /// <typeparam name="T">The type of data model.</typeparam>
     public class DataCacheCollection<T> : ICollection<DataCacheCollection<T>.ItemInfo>, IReadOnlyList<DataCacheCollection<T>.ItemInfo>
     {
+        private class FactoryInfo : ConcurrentDictionary<string, SemaphoreSlim>
+        {
+            public Func<string, Task<T>> Factory { get; set; }
+        }
+
         /// <summary>
         /// The cache item info.
         /// </summary>
@@ -120,12 +126,7 @@ namespace Trivial.Data
         /// <summary>
         /// The cache data list for prefix ones.
         /// </summary>
-        private ConcurrentDictionary<string, Task<ItemInfo>> items3;
-
-        /// <summary>
-        /// The cache data list for prefix ones.
-        /// </summary>
-        private ConcurrentDictionary<string, Task<ItemInfo>> items4;
+        private ConcurrentDictionary<string, FactoryInfo> items3;
 
         /// <summary>
         /// Gets the maxinum count of the elements contained in the cache item collection.
@@ -166,7 +167,7 @@ namespace Trivial.Data
         /// <param name="id">The identifier.</param>
         /// <returns>The value.</returns>
         /// <exception cref="ArgumentNullException">id was null, empty or consists only of white-space characters.</exception>
-        /// <exception cref="InvalidOperationException">The identifier does not exist.</exception>
+        /// <exception cref="KeyNotFoundException">The identifier does not exist.</exception>
         public T this[string id]
         {
             get
@@ -190,7 +191,7 @@ namespace Trivial.Data
         /// <param name="id">The identifier in the resource group.</param>
         /// <returns>The value.</returns>
         /// <exception cref="ArgumentNullException">id was null, empty or consists only of white-space characters.</exception>
-        /// <exception cref="InvalidOperationException">The identifier does not exist.</exception>
+        /// <exception cref="KeyNotFoundException">The identifier does not exist.</exception>
         public T this[string idPrefix, string id]
         {
             get
@@ -506,6 +507,34 @@ namespace Trivial.Data
         }
 
         /// <summary>
+        /// Registers a value resolving factory.
+        /// </summary>
+        /// <param name="factory">The value resovling factory.</param>
+        public void Register(Func<string, Task<T>> factory)
+        {
+            Register(string.Empty, factory);
+        }
+
+        /// <summary>
+        /// Registers a value resolving factory.
+        /// </summary>
+        /// <param name="prefix">The prefix of the identifier for resource group.</param>
+        /// <param name="factory">The value resovling factory.</param>
+        public void Register(string prefix, Func<string, Task<T>> factory)
+        {
+            if (items3 == null)
+            {
+                lock (locker)
+                {
+                    if (items3 == null) items3 = new ConcurrentDictionary<string, FactoryInfo>();
+                }
+            }
+
+            if (factory is null) items3.TryRemove(prefix, out _);
+            else items3[prefix] = new FactoryInfo() { Factory = factory };
+        }
+
+        /// <summary>
         /// Copies the entire collection to a compatible one-dimensional array, starting at the specified index of the target array.
         /// </summary>
         /// <param name="array">The one-dimensional System.Array that is the destination of the elements copied from System.Collections.Generic.List`1. The System.Array must have zero-based indexing.</param>
@@ -693,7 +722,17 @@ namespace Trivial.Data
             }
 
             if (!MaxCount.HasValue) return;
-            var maxCount = MaxCount.Value;
+            var maxCount = 0;
+            try
+            {
+                maxCount = MaxCount.Value;
+            }
+            catch (InvalidOperationException)
+            {
+                cleanUpTime = DateTime.Now;
+                return;
+            }
+
             if (maxCount < 1)
             {
                 items.Clear();
@@ -703,6 +742,8 @@ namespace Trivial.Data
             {
                 while (Count > maxCount) RemoveEarliest();
             }
+
+            cleanUpTime = DateTime.Now;
         }
 
         /// <summary>
@@ -881,7 +922,12 @@ namespace Trivial.Data
 
         private ItemInfo Add(string prefix, string id, Func<T> initialization = null, TimeSpan? expiration = null)
         {
-            if (initialization == null) return null;
+            if (initialization == null)
+            {
+                _ = GetByFactoryAsync(prefix, id);
+                return null;
+            }
+
             var obj = initialization();
             var info = new ItemInfo(prefix, id, obj, expiration);
             if (info.IsExpired(Expiration)) return null;
@@ -891,7 +937,7 @@ namespace Trivial.Data
 
         private async Task<ItemInfo> AddAsync(string prefix, string id, Func<Task<T>> initialization = null, TimeSpan? expiration = null)
         {
-            if (initialization == null) return null;
+            if (initialization == null) return await GetByFactoryAsync(prefix, id);
             var obj = await initialization();
             var info = new ItemInfo(prefix, id, obj, expiration);
             if (info.IsExpired(Expiration)) return null;
@@ -899,15 +945,164 @@ namespace Trivial.Data
             return info;
         }
 
+        private async Task<ItemInfo> GetByFactoryAsync(string prefix, string id)
+        {
+            if (string.IsNullOrEmpty(id) || items3 == null || !items3.TryGetValue(prefix ?? string.Empty, out var factory)) return null;
+            if (!string.IsNullOrEmpty(prefix)) GetItemsForPrefix();
+            factory.TryGetValue(id, out var slim);
+            if (slim is null)
+            {
+                var newSlim = new SemaphoreSlim(1);
+                if (factory.TryGetValue(id, out slim))
+                {
+                    if (factory.TryGetValue(id, out slim))
+                    {
+                        try
+                        {
+                            newSlim.Dispose();
+                        }
+                        catch (InvalidOperationException)
+                        {
+                        }
+                        catch (NullReferenceException)
+                        {
+                        }
+                    }
+                    else
+                    {
+                        factory[id] = newSlim;
+                        slim = newSlim;
+                    }
+                }
+                else
+                {
+                    factory[id] = newSlim;
+                    slim = newSlim;
+                }
+            }
+
+            try
+            {
+                await slim.WaitAsync();
+            }
+            catch (InvalidOperationException)
+            {
+            }
+            catch (NullReferenceException)
+            {
+            }
+
+            #pragma warning disable IDE0018
+            ItemInfo r;
+            #pragma warning restore IDE0018
+            if (string.IsNullOrEmpty(prefix) ? items.TryGetValue(id, out r) : items2.TryGetValue(GetIdWithPrefix(prefix, id), out r))
+            {
+                try
+                {
+                    slim.Release();
+                }
+                catch (InvalidOperationException)
+                {
+                }
+                catch (NullReferenceException)
+                {
+                }
+
+                return r;
+            }
+
+            try
+            {
+                var v = await factory.Factory(id);
+                if (string.IsNullOrEmpty(prefix))
+                {
+                    r = new ItemInfo(id, v);
+                    items[id] = r;
+                }
+                else
+                {
+                    r = new ItemInfo(prefix, id, v);
+                    items2[GetIdWithPrefix(prefix, id)] = r;
+                }
+
+                return r;
+            }
+            finally
+            {
+                try
+                {
+                    factory.TryRemove(id, out _);
+                    slim.Release();
+                    if (slim.CurrentCount > 0)
+                    {
+                        slim.Dispose();
+                    }
+                    else
+                    {
+                        _ = Task.Run(async () =>
+                        {
+                            try
+                            {
+                                await Task.Delay(10);
+                                if (slim.CurrentCount > 0)
+                                {
+                                    slim.Dispose();
+                                    return;
+                                }
+
+                                await Task.Delay(30);
+                                if (slim.CurrentCount > 0)
+                                {
+                                    slim.Dispose();
+                                    return;
+                                }
+
+                                await Task.Delay(60);
+                                if (slim.CurrentCount > 0)
+                                {
+                                    slim.Dispose();
+                                    return;
+                                }
+
+                                await Task.Delay(100);
+                                slim.Dispose();
+                            }
+                            catch (InvalidOperationException)
+                            {
+                            }
+                            catch (NullReferenceException)
+                            {
+                            }
+                        });
+                    }
+
+                    RemoveExpiredAuto();
+                }
+                catch (InvalidOperationException)
+                {
+                }
+                catch (NullReferenceException)
+                {
+                }
+            }
+        }
 
         /// <summary>
         /// Removes the elements expired.
         /// </summary>
         private void RemoveExpiredAuto()
         {
-            if (DateTime.Now < (cleanUpTime + (Expiration ?? TimeSpan.Zero))) return;
+            var greater = false;
+            try
+            {
+                greater = Count > MaxCount.Value;
+            }
+            catch (InvalidOperationException)
+            {
+            }
+
+            if (!greater && DateTime.Now < (cleanUpTime + (Expiration ?? TimeSpan.Zero))) return;
             RemoveExpired();
         }
-
     }
 }
