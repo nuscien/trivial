@@ -904,7 +904,7 @@ namespace Trivial.Data
         /// <returns>A list copied.</returns>
         public List<ItemInfo> ToList()
         {
-            return items.Select(ele => ele.Value).ToList();
+            return ToList(false);
         }
 
         /// <summary>
@@ -914,18 +914,18 @@ namespace Trivial.Data
         /// <returns>A list copied.</returns>
         public List<ItemInfo> ToList(string prefix)
         {
-            return (string.IsNullOrEmpty(prefix) ? items : GetItemsForPrefix().Where(ele => ele.Key.StartsWith(prefix))).Select(ele => ele.Value).ToList(); ;
+            return (string.IsNullOrEmpty(prefix) ? items : GetItemsForPrefix().Where(ele => ele.Value.Prefix == prefix)).Select(ele => ele.Value).ToList(); ;
         }
 
         /// <summary>
         /// Converts to a list.
         /// </summary>
-        /// <param name="containsAll">true if returns all; otherwise, false.</param>
+        /// <param name="onlyNoPrefix">true if clear the items with no prefix only; otherwise, false.</param>
         /// <returns>A list copied.</returns>
-        public List<ItemInfo> ToList(bool containsAll)
+        public List<ItemInfo> ToList(bool onlyNoPrefix)
         {
             var col = items.Select(ele => ele.Value);
-            if (containsAll && items2 != null) col = col.Union(items2.Select(ele => ele.Value));
+            if (!onlyNoPrefix && items2 != null) col = col.Union(items2.Select(ele => ele.Value));
             return col.ToList();
         }
 
@@ -945,18 +945,18 @@ namespace Trivial.Data
         /// <returns>An enumerator that can be used to iterate through the collection.</returns>
         public IEnumerator<ItemInfo> GetEnumerator(string prefix)
         {
-            if (string.IsNullOrEmpty(prefix)) return GetEnumerator();
             return ToList(prefix).GetEnumerator();
         }
 
-        ///// <summary>
-        ///// Registers an instance generation factory.
-        ///// </summary>
-        ///// <param name="factory"></param>
-        //public void Register(Func<string, Task<T>> factory)
-        //{
-
-        //}
+        /// <summary>
+        /// Returns an enumerator that iterates through the collection.
+        /// </summary>
+        /// <param name="onlyNoPrefix">true if clear the items with no prefix only; otherwise, false.</param>
+        /// <returns>An enumerator that can be used to iterate through the collection.</returns>
+        public IEnumerator<ItemInfo> GetEnumerator(bool onlyNoPrefix)
+        {
+            return ToList(onlyNoPrefix).GetEnumerator();
+        }
 
         /// <summary>
         /// Returns an enumerator that iterates through the collection.
@@ -964,7 +964,7 @@ namespace Trivial.Data
         /// <returns>An enumerator that can be used to iterate through the collection.</returns>
         IEnumerator IEnumerable.GetEnumerator()
         {
-            return items.Values.GetEnumerator();
+            return GetEnumerator();
         }
 
         private string GetIdWithPrefix(ItemInfo info)

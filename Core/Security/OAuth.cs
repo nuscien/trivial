@@ -36,6 +36,11 @@ namespace Trivial.Security
         private readonly AppAccessingKey appInfo;
 
         /// <summary>
+        /// The locker.
+        /// </summary>
+        private SemaphoreSlim slim;
+
+        /// <summary>
         /// Initializes a new instance of the OAuthClient class.
         /// </summary>
         /// <param name="tokenCached">The token information instance cached.</param>
@@ -208,6 +213,11 @@ namespace Trivial.Security
         public long? MaxResponseContentBufferSize { get; set; }
 
         /// <summary>
+        /// Gets the date and time of token resolved.
+        /// </summary>
+        public DateTime TokenResolvedTime { get; private set; } = DateTime.Now;
+
+        /// <summary>
         /// Creates a JSON HTTP client.
         /// </summary>
         /// <typeparam name="T">The type of response.</typeparam>
@@ -347,6 +357,145 @@ namespace Trivial.Security
         /// <summary>
         /// Sends a POST request and gets the result serialized by JSON.
         /// </summary>
+        /// <param name="content">The HTTP request content sent to the server.</param>
+        /// <param name="oldTokenValidation">The validation of old token. The resolving will be in thread-safe mode.</param>
+        /// <param name="cancellationToken">The optional cancellation token.</param>
+        /// <returns>A result serialized.</returns>
+        /// <exception cref="ArgumentNullException">content was null.</exception>
+        /// <exception cref="InvalidOperationException">TokenResolverUri property was null.</exception>
+        /// <exception cref="FailedHttpException">HTTP response contains failure status code.</exception>
+        /// <exception cref="HttpRequestException">The request failed due to an underlying issue such as network connectivity, DNS failure, server certificate validation or timeout.</exception>
+        /// <exception cref="InvalidOperationException">Cannot pass the request by the TokenRequestInfoValidator because it is not valid.</exception>
+        /// <exception cref="OperationCanceledException">The task is cancelled.</exception>
+        public async Task<TokenInfo> ResolveTokenAsync(TokenRequestBody content, Func<TokenInfo, bool> oldTokenValidation, CancellationToken cancellationToken = default)
+        {
+            if (TokenResolverUri == null) throw new InvalidOperationException("TokenResolverUri property should not be null.");
+            var token = Token;
+            if (oldTokenValidation is null) oldTokenValidation = t => t?.IsEmpty == false;
+            if (token?.IsEmpty == false && oldTokenValidation(token)) return token;
+            var locker = slim;
+            if (locker is null)
+            {
+                locker = new SemaphoreSlim(1);
+                if (slim is null)
+                {
+                    slim = locker;
+                }
+                else
+                {
+                    try
+                    {
+                        locker.Dispose();
+                    }
+                    catch (InvalidOperationException)
+                    {
+                    }
+                    catch (NullReferenceException)
+                    {
+                    }
+
+                    locker = slim;
+                }
+            }
+
+            await locker.WaitAsync();
+            token = Token;
+            if (token?.IsEmpty == false && oldTokenValidation(token)) return token;
+            try
+            {
+                return await ResolveTokenAsync(TokenResolverUri, content, cancellationToken);
+            }
+            finally
+            {
+                try
+                {
+                    locker.Release();
+                }
+                catch (InvalidOperationException)
+                {
+                }
+                catch (NullReferenceException)
+                {
+                }
+                catch (SemaphoreFullException)
+                {
+                }
+            }
+        }
+
+        /// <summary>
+        /// Sends a POST request and gets the result serialized by JSON.
+        /// </summary>
+        /// <typeparam name="T">The token info type.</typeparam>
+        /// <param name="content">The HTTP request content sent to the server.</param>
+        /// <param name="oldTokenValidation">The validation of old token. The resolving will be in thread-safe mode.</param>
+        /// <param name="cancellationToken">The optional cancellation token.</param>
+        /// <returns>A result serialized.</returns>
+        /// <exception cref="ArgumentNullException">content was null.</exception>
+        /// <exception cref="InvalidOperationException">TokenResolverUri property was null.</exception>
+        /// <exception cref="FailedHttpException">HTTP response contains failure status code.</exception>
+        /// <exception cref="HttpRequestException">The request failed due to an underlying issue such as network connectivity, DNS failure, server certificate validation or timeout.</exception>
+        /// <exception cref="InvalidOperationException">Cannot pass the request by the TokenRequestInfoValidator because it is not valid.</exception>
+        /// <exception cref="OperationCanceledException">The task is cancelled.</exception>
+        public async Task<T> ResolveTokenAsync<T>(TokenRequestBody content, Func<TokenInfo, bool> oldTokenValidation, CancellationToken cancellationToken = default) where T : TokenInfo
+        {
+            if (TokenResolverUri == null) throw new InvalidOperationException("TokenResolverUri property should not be null.");
+            var token = Token as T;
+            if (oldTokenValidation is null) oldTokenValidation = t => t?.IsEmpty == false;
+            if (token?.IsEmpty == false && oldTokenValidation(token)) return token;
+            var locker = slim;
+            if (locker is null)
+            {
+                locker = new SemaphoreSlim(1);
+                if (slim is null)
+                {
+                    slim = locker;
+                }
+                else
+                {
+                    try
+                    {
+                        locker.Dispose();
+                    }
+                    catch (InvalidOperationException)
+                    {
+                    }
+                    catch (NullReferenceException)
+                    {
+                    }
+
+                    locker = slim;
+                }
+            }
+
+            await locker.WaitAsync();
+            token = Token as T;
+            if (token?.IsEmpty == false && oldTokenValidation(token)) return token;
+            try
+            {
+                return await ResolveTokenAsync<T>(TokenResolverUri, content, cancellationToken);
+            }
+            finally
+            {
+                try
+                {
+                    locker.Release();
+                }
+                catch (InvalidOperationException)
+                {
+                }
+                catch (NullReferenceException)
+                {
+                }
+                catch (SemaphoreFullException)
+                {
+                }
+            }
+        }
+
+        /// <summary>
+        /// Sends a POST request and gets the result serialized by JSON.
+        /// </summary>
         /// <param name="requestUri">The Uri the request is sent to.</param>
         /// <param name="content">The HTTP request content sent to the server.</param>
         /// <param name="cancellationToken">The optional cancellation token.</param>
@@ -458,6 +607,7 @@ namespace Trivial.Security
                     return;
                 }
 
+                TokenResolvedTime = DateTime.Now;
                 Token = ev.Result;
                 TokenResolved?.Invoke(sender, ev);
             };
@@ -489,6 +639,7 @@ namespace Trivial.Security
                     return;
                 }
 
+                TokenResolvedTime = DateTime.Now;
                 Token = ev.Result;
                 TokenResolved?.Invoke(sender, ev.ConvertTo<TokenInfo>());
             };
@@ -550,7 +701,29 @@ namespace Trivial.Security
         protected virtual void Dispose(bool disposing)
         {
             if (!disposing) return;
-            if (needDisposeAppInfo && appInfo != null) appInfo.Dispose();
+            try
+            {
+                if (needDisposeAppInfo && appInfo != null) appInfo.Dispose();
+            }
+            catch (InvalidOperationException)
+            {
+            }
+            catch (NullReferenceException)
+            {
+            }
+            finally
+            {
+                try
+                {
+                    if (slim != null) slim.Dispose();
+                }
+                catch (InvalidOperationException)
+                {
+                }
+                catch (NullReferenceException)
+                {
+                }
+            }
         }
     }
 
@@ -869,6 +1042,23 @@ namespace Trivial.Security
         /// <summary>
         /// Sends a POST request and gets the result serialized by JSON.
         /// </summary>
+        /// <param name="content">The HTTP request content sent to the server.</param>
+        /// <param name="oldTokenValidation">The validation of old token. The resolving will be in thread-safe mode.</param>
+        /// <param name="cancellationToken">The optional cancellation token.</param>
+        /// <returns>A result serialized.</returns>
+        /// <exception cref="ArgumentNullException">content was null.</exception>
+        /// <exception cref="InvalidOperationException">TokenResolverUri property was null.</exception>
+        /// <exception cref="FailedHttpException">HTTP response contains failure status code.</exception>
+        /// <exception cref="HttpRequestException">The request failed due to an underlying issue such as network connectivity, DNS failure, server certificate validation or timeout.</exception>
+        /// <exception cref="OperationCanceledException">The task is cancelled.</exception>
+        protected Task<TokenInfo> ResolveTokenAsync(TokenRequestBody content, Func<TokenInfo, bool> oldTokenValidation, CancellationToken cancellationToken = default)
+        {
+            return oauth.ResolveTokenAsync(content, oldTokenValidation, cancellationToken);
+        }
+
+        /// <summary>
+        /// Sends a POST request and gets the result serialized by JSON.
+        /// </summary>
         /// <param name="requestUri">The Uri the request is sent to.</param>
         /// <param name="content">The HTTP request content sent to the server.</param>
         /// <param name="cancellationToken">The optional cancellation token.</param>
@@ -1018,6 +1208,23 @@ namespace Trivial.Security
         protected new Task<T> ResolveTokenAsync(TokenRequestBody content, CancellationToken cancellationToken = default)
         {
             return oauth.ResolveTokenAsync<T>(content, cancellationToken);
+        }
+
+        /// <summary>
+        /// Sends a POST request and gets the result serialized by JSON.
+        /// </summary>
+        /// <param name="content">The HTTP request content sent to the server.</param>
+        /// <param name="oldTokenValidation">The validation of old token. The resolving will be in thread-safe mode.</param>
+        /// <param name="cancellationToken">The optional cancellation token.</param>
+        /// <returns>A result serialized.</returns>
+        /// <exception cref="ArgumentNullException">content was null.</exception>
+        /// <exception cref="InvalidOperationException">TokenResolverUri property was null.</exception>
+        /// <exception cref="FailedHttpException">HTTP response contains failure status code.</exception>
+        /// <exception cref="HttpRequestException">The request failed due to an underlying issue such as network connectivity, DNS failure, server certificate validation or timeout.</exception>
+        /// <exception cref="OperationCanceledException">The task is cancelled.</exception>
+        protected new Task<T> ResolveTokenAsync(TokenRequestBody content, Func<TokenInfo, bool> oldTokenValidation, CancellationToken cancellationToken = default)
+        {
+            return oauth.ResolveTokenAsync<T>(content, oldTokenValidation, cancellationToken);
         }
 
         /// <summary>
