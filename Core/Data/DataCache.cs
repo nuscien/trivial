@@ -18,7 +18,15 @@ namespace Trivial.Data
     {
         private class FactoryInfo : ConcurrentDictionary<string, SemaphoreSlim>
         {
+            /// <summary>
+            /// Gets or sets the factory.
+            /// </summary>
             public Func<string, Task<T>> Factory { get; set; }
+
+            /// <summary>
+            /// Gets or sets the optional time span that represents the number of milliseconds to wait.
+            /// </summary>
+            public TimeSpan? Timeout { get; set; }
         }
 
         /// <summary>
@@ -411,6 +419,33 @@ namespace Trivial.Data
         public void Clear()
         {
             items.Clear();
+            if (items2 != null) items2.Clear();
+        }
+
+        /// <summary>
+        /// Removes all elements from the collection.
+        /// </summary>
+        /// <param name="onlyNoPrefix">true if clear the items with no prefix only; otherwise, false.</param>
+        public void Clear(bool onlyNoPrefix)
+        {
+            items.Clear();
+            if (!onlyNoPrefix && items2 != null) items2.Clear();
+        }
+
+        /// <summary>
+        /// Removes all elements from the collection.
+        /// </summary>
+        /// <param name="prefix">The prefix.</param>
+        public void Clear(string prefix)
+        {
+            if (string.IsNullOrEmpty(prefix))
+            {
+                items.Clear();
+                return;
+            }
+
+            if (items2 is null) return;
+            var col = RemoveAll(ele => ele.Prefix == prefix);
         }
 
         /// <summary>
@@ -510,9 +545,10 @@ namespace Trivial.Data
         /// Registers a value resolving factory.
         /// </summary>
         /// <param name="factory">The value resovling factory.</param>
-        public void Register(Func<string, Task<T>> factory)
+        /// <param name="timeout">An optional time span that represents the number of milliseconds to wait</param>
+        public void Register(Func<string, Task<T>> factory, TimeSpan? timeout = null)
         {
-            Register(string.Empty, factory);
+            Register(string.Empty, factory, timeout);
         }
 
         /// <summary>
@@ -520,7 +556,8 @@ namespace Trivial.Data
         /// </summary>
         /// <param name="prefix">The prefix of the identifier for resource group.</param>
         /// <param name="factory">The value resovling factory.</param>
-        public void Register(string prefix, Func<string, Task<T>> factory)
+        /// <param name="timeout">An optional time span that represents the number of milliseconds to wait</param>
+        public void Register(string prefix, Func<string, Task<T>> factory, TimeSpan? timeout = null)
         {
             if (items3 == null)
             {
@@ -531,7 +568,7 @@ namespace Trivial.Data
             }
 
             if (factory is null) items3.TryRemove(prefix, out _);
-            else items3[prefix] = new FactoryInfo() { Factory = factory };
+            else items3[prefix] = new FactoryInfo() { Factory = factory, Timeout = timeout };
         }
 
         /// <summary>
@@ -611,6 +648,37 @@ namespace Trivial.Data
         /// <returns>true if item is successfully removed; otherwise, false. This method also returns false if item was not found in the collection.</returns>
         public int RemoveAll(Predicate<ItemInfo> predicate)
         {
+            return RemoveAll(false, predicate);
+        }
+
+        /// <summary>
+        /// Removes the occurrence of a specific value from the collection.
+        /// </summary>
+        /// <param name="prefix">The prefix of the identifier for resource group.</param>
+        /// <param name="predicate">A function to test each element for a condition.</param>
+        /// <returns>true if item is successfully removed; otherwise, false. This method also returns false if item was not found in the collection.</returns>
+        public int RemoveAll(string prefix, Predicate<ItemInfo> predicate)
+        {
+            if (string.IsNullOrEmpty(prefix)) return RemoveAll(true, predicate);
+            if (items2 is null) return 0;
+            var i = 0;
+            var col = items2.Where(ele => predicate(ele.Value)).Select(ele => ele.Key).ToList();
+            foreach (var item in col)
+            {
+                if (items2.TryRemove(item, out _)) i++;
+            }
+
+            return i;
+        }
+
+        /// <summary>
+        /// Removes the occurrence of a specific value from the collection.
+        /// </summary>
+        /// <param name="predicate">A function to test each element for a condition.</param>
+        /// <param name="onlyNoPrefix">true if clear the items with no prefix only; otherwise, false.</param>
+        /// <returns>true if item is successfully removed; otherwise, false. This method also returns false if item was not found in the collection.</returns>
+        public int RemoveAll(bool onlyNoPrefix, Predicate<ItemInfo> predicate)
+        {
             if (predicate == null) return 0;
             var i = 0;
             var col = items.Where(ele => predicate(ele.Value)).Select(ele => ele.Key).ToList();
@@ -619,12 +687,12 @@ namespace Trivial.Data
                 if (items.TryRemove(item, out _)) i++;
             }
 
-            if (items2 != null)
+            if (!onlyNoPrefix && items2 != null)
             {
-                col = GetItemsForPrefix().Where(ele => predicate(ele.Value)).Select(ele => ele.Key).ToList();
+                col = items2.Where(ele => predicate(ele.Value)).Select(ele => ele.Key).ToList();
                 foreach (var item in col)
                 {
-                    if (items.TryRemove(item, out _)) i++;
+                    if (items2.TryRemove(item, out _)) i++;
                 }
             }
 
@@ -983,7 +1051,18 @@ namespace Trivial.Data
 
             try
             {
-                await slim.WaitAsync();
+                var timeout = factory.Timeout;
+                if (timeout.HasValue)
+                {
+                    await slim.WaitAsync(timeout.Value);
+                }
+                else
+                {
+                    await slim.WaitAsync();
+                }
+            }
+            catch (ArgumentException)
+            {
             }
             catch (InvalidOperationException)
             {
@@ -1005,6 +1084,9 @@ namespace Trivial.Data
                 {
                 }
                 catch (NullReferenceException)
+                {
+                }
+                catch (SemaphoreFullException)
                 {
                 }
 
@@ -1082,6 +1164,9 @@ namespace Trivial.Data
                 {
                 }
                 catch (NullReferenceException)
+                {
+                }
+                catch (SemaphoreFullException)
                 {
                 }
             }

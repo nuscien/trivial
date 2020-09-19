@@ -78,6 +78,11 @@ namespace Trivial.Data
 
             Assert.AreEqual(3, cache.Count);
             Assert.AreEqual(99, cache["rst"]);
+
+            cache.RemoveAll(ele => ele.Id == "1234567890");
+            Assert.AreEqual(2, cache.Count);
+            cache.Clear();
+            Assert.AreEqual(0, cache.Count);
         }
     }
 }

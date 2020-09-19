@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading;
+
 using Trivial.Data;
 
 namespace Trivial.Collection
@@ -12,7 +13,7 @@ namespace Trivial.Collection
     /// Represents a thread-safe list of objects.
     /// </summary>
     /// <typeparam name="T">The type of the elements to be stored in the list.</typeparam>
-    public class ConcurrentList<T> : IList<T>, ICloneable
+    internal class ConcurrentList<T> : IList<T>, ICloneable
     {
         private readonly List<T> list;
         private readonly object locker;
