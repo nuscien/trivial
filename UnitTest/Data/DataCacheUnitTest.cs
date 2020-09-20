@@ -43,6 +43,7 @@ namespace Trivial.Data
             Assert.AreEqual(17, cache["opq", "abcdefg"]);
             Assert.AreEqual(20, cache["opq", "hijklmn"]);
 
+            cache.MaxCount = 4;
             var i = 0;
             cache.Register("xyz", async id =>
             {
@@ -67,20 +68,23 @@ namespace Trivial.Data
             {
                 async Task task()
                 {
+                    var no = cache.GetAsync("xyz", "*#06#");
                     var j = await cache.GetInfoAsync("xyz", "1234567890");
                     Assert.IsNotNull(j);
                     Assert.IsTrue(j.Value < 7);
+                    Assert.IsTrue(await no < 7);
                 }
+
                 tasks.Add(task());
             }
 
             Task.WaitAll(tasks.ToArray());
-
-            Assert.AreEqual(3, cache.Count);
+            Assert.IsTrue(cache["xyz", "*#06#"] < 7);
+            Assert.AreEqual(4, cache.Count);
             Assert.AreEqual(99, cache["rst"]);
 
             cache.RemoveAll(ele => ele.Id == "1234567890");
-            Assert.AreEqual(2, cache.Count);
+            Assert.AreEqual(3, cache.Count);
             cache.Clear();
             Assert.AreEqual(0, cache.Count);
         }

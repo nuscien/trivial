@@ -324,6 +324,35 @@ namespace Trivial.Data
         }
 
         /// <summary>
+        /// Gets the cache item info.
+        /// </summary>
+        /// <param name="id">The identifier.</param>
+        /// <param name="initialization">The value initialization. It will be called to generate a new value when no cache.</param>
+        /// <param name="expiration">The expiration for initialization.</param>
+        /// <returns>The cache item info.</returns>
+        public async Task<T> GetAsync(string id, Func<Task<T>> initialization = null, TimeSpan? expiration = null)
+        {
+            var result = await GetInfoAsync(null, id, initialization, expiration);
+            if (result is null) throw new KeyNotFoundException("The identifier does not exist.");
+            return result.Value;
+        }
+
+        /// <summary>
+        /// Gets the cache item info.
+        /// </summary>
+        /// <param name="prefix">The prefix of the identifier for resource group.</param>
+        /// <param name="id">The identifier.</param>
+        /// <param name="initialization">The value initialization. It will be called to generate a new value when no cache.</param>
+        /// <param name="expiration">The expiration for initialization.</param>
+        /// <returns>The cache item info.</returns>
+        public async Task<T> GetAsync(string prefix, string id, Func<Task<T>> initialization = null, TimeSpan? expiration = null)
+        {
+            var result = await GetInfoAsync(prefix, id, initialization, expiration);
+            if (result is null) throw new KeyNotFoundException("The identifier does not exist.");
+            return result.Value;
+        }
+
+        /// <summary>
         /// Tries to get the cache item info.
         /// </summary>
         /// <param name="id">The identifier.</param>
