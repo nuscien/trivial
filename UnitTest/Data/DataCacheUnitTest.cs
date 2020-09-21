@@ -84,6 +84,11 @@ namespace Trivial.Data
             Assert.AreEqual(99, cache["rst"]);
 
             cache.RemoveAll(ele => ele.Id == "1234567890");
+            Assert.IsFalse(cache.Contains("xyz", "1234567890"));
+            var r = cache.GetInfo("xyz", "*#06#");
+            Assert.IsTrue(cache.Contains("xyz", "*#06#"));
+            Assert.IsFalse(cache.Contains("*#06#"));
+            Assert.IsTrue(cache.Contains("rst"));
             Assert.AreEqual(3, cache.Count);
             cache.Clear();
             Assert.AreEqual(0, cache.Count);

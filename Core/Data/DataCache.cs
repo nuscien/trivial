@@ -181,7 +181,9 @@ namespace Trivial.Data
             get
             {
                 if (string.IsNullOrWhiteSpace(id)) throw new ArgumentNullException(nameof(id), "id should not be null, empty or consists only of white-space characters.");
-                return items[id].Value;
+                var info = GetInfo(null, id);
+                if (info == null) throw new KeyNotFoundException("The identifier does not exist.");
+                return info.Value;
             }
 
             set
@@ -205,8 +207,9 @@ namespace Trivial.Data
             get
             {
                 if (string.IsNullOrWhiteSpace(id)) throw new ArgumentNullException(nameof(id), "id should not be null, empty or consists only of white-space characters.");
-                if (string.IsNullOrEmpty(idPrefix)) return items[id].Value;
-                return GetItemsForPrefix()[GetIdWithPrefix(idPrefix, id)].Value;
+                var info = GetInfo(idPrefix, id);
+                if (info == null) throw new KeyNotFoundException("The identifier does not exist.");
+                return info.Value;
             }
 
             set
@@ -241,7 +244,16 @@ namespace Trivial.Data
         public ItemInfo GetInfo(string prefix, string id, Func<T> initialization = null, TimeSpan? expiration = null)
         {
             if (string.IsNullOrEmpty(id)) return null;
-            var info = GetInfo(ele => ele.Prefix == prefix && ele.Id == id);
+            ItemInfo info = null;
+            if (string.IsNullOrEmpty(prefix))
+            {
+                items.TryGetValue(id, out info);
+            }
+            else if (items2 != null)
+            {
+                items2.TryGetValue(GetIdWithPrefix(prefix, id), out info);
+            }
+
             if (info == null)
             {
                 return Add(prefix, id, initialization, expiration);
@@ -249,6 +261,7 @@ namespace Trivial.Data
 
             if (info.IsExpired(Expiration))
             {
+                if (string.IsNullOrEmpty(prefix)) items.TryRemove(id, out _);
                 return Add(prefix, id, initialization, expiration);
             }
 
@@ -486,8 +499,8 @@ namespace Trivial.Data
         {
             if (string.IsNullOrEmpty(item.Id)) return false;
             return string.IsNullOrEmpty(item.Prefix)
-                ? items.ContainsKey(item.Id)
-                : GetItemsForPrefix().ContainsKey(GetIdWithPrefix(item));
+                ? Contains(item.Id)
+                : Contains(item.Prefix, item.Id);
         }
 
         /// <summary>
@@ -501,7 +514,7 @@ namespace Trivial.Data
             {
                 foreach (var ele in items)
                 {
-                    if (ele.Value is null) return true;
+                    if (ele.Value is null && !ele.Value.IsExpired(Expiration)) return true;
                 }
 
                 return false;
@@ -509,7 +522,7 @@ namespace Trivial.Data
 
             foreach (var ele in items)
             {
-                if (item.Equals(ele.Value)) return true;
+                if (item.Equals(ele.Value) && !ele.Value.IsExpired(Expiration)) return true;
             }
 
             return false;
@@ -524,22 +537,22 @@ namespace Trivial.Data
         public bool ContainsValue(string idPrefix, T item)
         {
             if (string.IsNullOrEmpty(idPrefix)) return ContainsValue(item);
-            var col = GetItemsForPrefix();
+            if (items2 == null) return false;
             if (item is null)
             {
-                foreach (var ele in col)
+                foreach (var ele in items2)
                 {
                     if (!ele.Key.StartsWith(idPrefix)) continue;
-                    if (ele.Value is null) return true;
+                    if (ele.Value is null && !ele.Value.IsExpired(Expiration)) return true;
                 }
 
                 return false;
             }
 
-            foreach (var ele in col)
+            foreach (var ele in items2)
             {
                 if (!ele.Key.StartsWith(idPrefix)) continue;
-                if (item.Equals(ele.Value)) return true;
+                if (item.Equals(ele.Value) && !ele.Value.IsExpired(Expiration)) return true;
             }
 
             return false;
@@ -553,7 +566,10 @@ namespace Trivial.Data
         public bool Contains(string id)
         {
             if (string.IsNullOrEmpty(id)) return false;
-            return items.ContainsKey(id);
+            if (!items.TryGetValue(id, out var info) || info == null) return false;
+            if (!info.IsExpired(Expiration)) return true;
+            items.TryRemove(id, out _);
+            return false;
         }
 
         /// <summary>
@@ -565,9 +581,13 @@ namespace Trivial.Data
         public bool Contains(string prefix, string id)
         {
             if (string.IsNullOrEmpty(id)) return false;
-            return string.IsNullOrEmpty(prefix)
-                ? Contains(id)
-                : GetItemsForPrefix().ContainsKey(GetIdWithPrefix(prefix, id));
+            if (string.IsNullOrEmpty(prefix)) return Contains(id);
+            if (items2 == null) return false;
+            var key = GetIdWithPrefix(prefix, id);
+            if (!items2.TryGetValue(key, out var info) || info == null) return false;
+            if (!info.IsExpired(Expiration)) return true;
+            items2.TryRemove(key, out _);
+            return false;
         }
 
         /// <summary>
@@ -943,7 +963,7 @@ namespace Trivial.Data
         /// <returns>A list copied.</returns>
         public List<ItemInfo> ToList(string prefix)
         {
-            return (string.IsNullOrEmpty(prefix) ? items : GetItemsForPrefix().Where(ele => ele.Value.Prefix == prefix)).Select(ele => ele.Value).ToList(); ;
+            return (string.IsNullOrEmpty(prefix) ? items : GetItemsForPrefix().Where(ele => ele.Value?.Prefix == prefix && !ele.Value.IsExpired(Expiration))).Select(ele => ele.Value).ToList(); ;
         }
 
         /// <summary>
@@ -953,8 +973,8 @@ namespace Trivial.Data
         /// <returns>A list copied.</returns>
         public List<ItemInfo> ToList(bool onlyNoPrefix)
         {
-            var col = items.Select(ele => ele.Value);
-            if (!onlyNoPrefix && items2 != null) col = col.Union(items2.Select(ele => ele.Value));
+            var col = items.Select(ele => ele.Value).Where(ele => ele?.IsExpired(Expiration) == false);
+            if (!onlyNoPrefix && items2 != null) col = col.Union(items2.Select(ele => ele.Value).Where(ele => ele?.IsExpired(Expiration) == false));
             return col.ToList();
         }
 
@@ -1034,10 +1054,23 @@ namespace Trivial.Data
 
         private async Task<ItemInfo> AddAsync(string prefix, string id, Func<Task<T>> initialization = null, TimeSpan? expiration = null)
         {
-            if (initialization == null) return await GetByFactoryAsync(prefix, id);
+            if (initialization == null)
+            {
+                if (string.IsNullOrEmpty(prefix)) items.TryRemove(id, out _);
+                else if (items2 != null) items2.TryRemove(GetIdWithPrefix(prefix, id), out _);
+                return await GetByFactoryAsync(prefix, id);
+            }
+
             var obj = await initialization();
             var info = new ItemInfo(prefix, id, obj, expiration);
-            if (info.IsExpired(Expiration)) return null;
+            if (info.IsExpired(Expiration))
+            {
+                if (string.IsNullOrEmpty(prefix)) items.TryGetValue(id, out info);
+                else if (items2 != null) items2.TryGetValue(GetIdWithPrefix(prefix, id), out info);
+                if (info == null) return null;
+                return null;
+            }
+
             Add(info);
             return info;
         }
