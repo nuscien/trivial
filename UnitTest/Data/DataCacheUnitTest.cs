@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.Json;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Trivial.Text;
@@ -29,7 +30,7 @@ namespace Trivial.Data
                 { "hijklmn", 17 },
                 { "opq", "hijklmn", 20 }
             };
-            cache.Expiration = TimeSpan.FromMilliseconds(600);
+            cache.Expiration = TimeSpan.FromMilliseconds(900);
             Assert.AreEqual(4, cache.Count);
             Assert.AreEqual(12, cache["abcdefg"]);
             Assert.AreEqual(17, cache["opq", "abcdefg"]);
@@ -47,7 +48,7 @@ namespace Trivial.Data
             var i = 0;
             cache.Register("xyz", async id =>
             {
-                await Task.Delay(40);
+                await Task.Delay(30);
                 i++;
                 return i;
             });
@@ -91,6 +92,14 @@ namespace Trivial.Data
             Assert.AreEqual(3, cache.Count);
             cache.Clear();
             Assert.AreEqual(0, cache.Count);
+
+            cache.Expiration = TimeSpan.FromMilliseconds(30);
+            cache.Add("abcdefg", 17);
+            Assert.IsNull(cache.GetInfo("xyz", "*#06#"));
+            Assert.AreEqual(17, cache["abcdefg"]);
+            Thread.Sleep(50);
+            Assert.IsFalse(cache.Contains("abcdefg"));
+            Assert.IsNotNull(cache.Contains("xyz", "*#06#"));
         }
     }
 }

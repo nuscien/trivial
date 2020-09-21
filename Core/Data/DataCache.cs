@@ -963,7 +963,7 @@ namespace Trivial.Data
         /// <returns>A list copied.</returns>
         public List<ItemInfo> ToList(string prefix)
         {
-            return (string.IsNullOrEmpty(prefix) ? items : GetItemsForPrefix().Where(ele => ele.Value?.Prefix == prefix && !ele.Value.IsExpired(Expiration))).Select(ele => ele.Value).ToList(); ;
+            return (string.IsNullOrEmpty(prefix) ? items : GetItemsForPrefix().Where(ele => ele.Value?.Prefix == prefix && !ele.Value.IsExpired(Expiration))).Select(ele => ele.Value).ToList();
         }
 
         /// <summary>
