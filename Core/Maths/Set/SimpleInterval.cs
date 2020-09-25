@@ -179,6 +179,12 @@ namespace Trivial.Maths
                     LeftOpen = true;
                     RightOpen = false;
                     break;
+                case BasicCompareOperator.NotEqual:
+                    MinValue = maxValue;
+                    MaxValue = minValue;
+                    LeftOpen = false;
+                    RightOpen = false;
+                    break;
                 default:
                     MinValue = value;
                     MaxValue = value;

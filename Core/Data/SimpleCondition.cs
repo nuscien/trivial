@@ -687,6 +687,27 @@ namespace Trivial.Data
 
             return false;
         }
+
+        /// <summary>
+        /// Converts to simple interval.
+        /// </summary>
+        /// <param name="value">The original value.</param>
+        public static explicit operator NullableValueSimpleInterval<int>(Int32Condition value)
+        {
+            if (value is null) return null;
+            if (value.ValueIsNull) return new NullableValueSimpleInterval<int>();
+            return new NullableValueSimpleInterval<int>(value.Value.Value, value.Operator switch
+            {
+                DbCompareOperator.Greater => BasicCompareOperator.Greater,
+                DbCompareOperator.GreaterOrEqual => BasicCompareOperator.GreaterOrEqual,
+                DbCompareOperator.StartsWith => BasicCompareOperator.GreaterOrEqual,
+                DbCompareOperator.Less => BasicCompareOperator.Less,
+                DbCompareOperator.LessOrEqual => BasicCompareOperator.LessOrEqual,
+                DbCompareOperator.EndsWith => BasicCompareOperator.LessOrEqual,
+                DbCompareOperator.NotEqual => BasicCompareOperator.NotEqual,
+                _ => BasicCompareOperator.Equal
+            });
+        }
     }
 
     /// <summary>
@@ -826,6 +847,27 @@ namespace Trivial.Data
             }
 
             return false;
+        }
+
+        /// <summary>
+        /// Converts to simple interval.
+        /// </summary>
+        /// <param name="value">The original value.</param>
+        public static explicit operator NullableValueSimpleInterval<long>(Int64Condition value)
+        {
+            if (value is null) return null;
+            if (value.ValueIsNull) return new NullableValueSimpleInterval<long>();
+            return new NullableValueSimpleInterval<long>(value.Value.Value, value.Operator switch
+            {
+                DbCompareOperator.Greater => BasicCompareOperator.Greater,
+                DbCompareOperator.GreaterOrEqual => BasicCompareOperator.GreaterOrEqual,
+                DbCompareOperator.StartsWith => BasicCompareOperator.GreaterOrEqual,
+                DbCompareOperator.Less => BasicCompareOperator.Less,
+                DbCompareOperator.LessOrEqual => BasicCompareOperator.LessOrEqual,
+                DbCompareOperator.EndsWith => BasicCompareOperator.LessOrEqual,
+                DbCompareOperator.NotEqual => BasicCompareOperator.NotEqual,
+                _ => BasicCompareOperator.Equal
+            });
         }
     }
 
@@ -967,6 +1009,27 @@ namespace Trivial.Data
 
             return false;
         }
+
+        /// <summary>
+        /// Converts to simple interval.
+        /// </summary>
+        /// <param name="value">The original value.</param>
+        public static explicit operator StructValueSimpleInterval<float>(SingleCondition value)
+        {
+            if (value is null) return null;
+            if (value.ValueIsNull) return new StructValueSimpleInterval<float>(float.NegativeInfinity, float.PositiveInfinity, true, true, float.NegativeInfinity, float.PositiveInfinity);
+            return new StructValueSimpleInterval<float>(value.Value.Value, value.Operator switch
+            {
+                DbCompareOperator.Greater => BasicCompareOperator.Greater,
+                DbCompareOperator.GreaterOrEqual => BasicCompareOperator.GreaterOrEqual,
+                DbCompareOperator.StartsWith => BasicCompareOperator.GreaterOrEqual,
+                DbCompareOperator.Less => BasicCompareOperator.Less,
+                DbCompareOperator.LessOrEqual => BasicCompareOperator.LessOrEqual,
+                DbCompareOperator.EndsWith => BasicCompareOperator.LessOrEqual,
+                DbCompareOperator.NotEqual => BasicCompareOperator.NotEqual,
+                _ => BasicCompareOperator.Equal
+            }, float.NegativeInfinity, float.PositiveInfinity);
+        }
     }
 
     /// <summary>
@@ -1106,6 +1169,27 @@ namespace Trivial.Data
             }
 
             return false;
+        }
+
+        /// <summary>
+        /// Converts to simple interval.
+        /// </summary>
+        /// <param name="value">The original value.</param>
+        public static explicit operator StructValueSimpleInterval<double>(DoubleCondition value)
+        {
+            if (value is null) return null;
+            if (value.ValueIsNull) return new StructValueSimpleInterval<double>(double.NegativeInfinity, double.PositiveInfinity, true, true, double.NegativeInfinity, double.PositiveInfinity);
+            return new StructValueSimpleInterval<double>(value.Value.Value, value.Operator switch
+            {
+                DbCompareOperator.Greater => BasicCompareOperator.Greater,
+                DbCompareOperator.GreaterOrEqual => BasicCompareOperator.GreaterOrEqual,
+                DbCompareOperator.StartsWith => BasicCompareOperator.GreaterOrEqual,
+                DbCompareOperator.Less => BasicCompareOperator.Less,
+                DbCompareOperator.LessOrEqual => BasicCompareOperator.LessOrEqual,
+                DbCompareOperator.EndsWith => BasicCompareOperator.LessOrEqual,
+                DbCompareOperator.NotEqual => BasicCompareOperator.NotEqual,
+                _ => BasicCompareOperator.Equal
+            }, double.NegativeInfinity, double.PositiveInfinity);
         }
     }
 
