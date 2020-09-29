@@ -699,13 +699,13 @@ namespace Trivial.Maths
         /// Gets a value indicating whether it is left bounded.
         /// </summary>
         [JsonIgnore]
-        public override bool LeftBounded => negativeInfiniteValue.HasValue ? !negativeInfiniteValue.Value.Equals(MinValue) : true;
+        public override bool LeftBounded => !negativeInfiniteValue.HasValue || !negativeInfiniteValue.Value.Equals(MinValue);
 
         /// <summary>
         /// Gets a value indicating whether it is right bounded.
         /// </summary>
         [JsonIgnore]
-        public override bool RightBounded => positiveInfiniteValue.HasValue ? !positiveInfiniteValue.Value.Equals(MaxValue) : true;
+        public override bool RightBounded => !positiveInfiniteValue.HasValue || !positiveInfiniteValue.Value.Equals(MaxValue);
 
         /// <summary>
         /// Checks if the value is less than MinValue.
@@ -772,6 +772,16 @@ namespace Trivial.Maths
         /// </summary>
         [JsonIgnore]
         protected virtual IComparer<T> ValueComparer { get; }
+
+        /// <summary>
+        /// Converts to nullable interval.
+        /// </summary>
+        /// <param name="value">The original value.</param>
+        public static explicit operator NullableValueSimpleInterval<T>(StructValueSimpleInterval<T> value)
+        {
+            if (value is null) return null;
+            return new NullableValueSimpleInterval<T>(value.MinValue, value.MaxValue, value.LeftOpen, value.RightOpen);
+        }
     }
 
     /// <summary>
@@ -834,13 +844,27 @@ namespace Trivial.Maths
         /// Gets a value indicating whether it is left bounded.
         /// </summary>
         [JsonIgnore]
-        public override bool LeftBounded { get { return MinValue != null; } }
+        public override bool LeftBounded => MinValue != null;
 
         /// <summary>
         /// Gets a value indicating whether it is right bounded.
         /// </summary>
         [JsonIgnore]
-        public override bool RightBounded { get { return MaxValue != null; } }
+        public override bool RightBounded => MaxValue != null;
+
+        /// <summary>
+        /// Gets the left value.
+        /// </summary>
+        /// <exception cref="InvalidOperationException">The left value is null.</exception>
+        [JsonIgnore]
+        public T LeftValue => MinValue.Value;
+
+        /// <summary>
+        /// Gets the right value.
+        /// </summary>
+        /// <exception cref="InvalidOperationException">The right value is null.</exception>
+        [JsonIgnore]
+        public T RightValue => MaxValue.Value;
 
         /// <summary>
         /// Checks if the value is less than MinValue.

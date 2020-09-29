@@ -199,7 +199,7 @@ namespace Trivial.Maths
         #region Parse number interval
 
         /// <summary>
-        /// Parses the interval.
+        /// Parses the interval in integer number.
         /// </summary>
         /// <param name="s">The interval format string.</param>
         /// <param name="parseInt32">The parser for integer.</param>
@@ -245,7 +245,7 @@ namespace Trivial.Maths
         }, null, null);
 
         /// <summary>
-        /// Parses the interval.
+        /// Parses the interval in integer number.
         /// </summary>
         /// <param name="s">The interval format string.</param>
         /// <returns>The interval instance parsed.</returns>
@@ -256,7 +256,7 @@ namespace Trivial.Maths
         }, double.Parse);
 
         /// <summary>
-        /// Parses the interval.
+        /// Parses the interval in integer number.
         /// </summary>
         /// <param name="s">The interval format string.</param>
         /// <param name="style">A bitwise combination of enumeration values that indicate the style elements that can be present in s.</param>
@@ -269,7 +269,7 @@ namespace Trivial.Maths
         }, ele => double.Parse(ele, style, provider));
 
         /// <summary>
-        /// Parses the interval.
+        /// Parses the interval in integer number.
         /// </summary>
         /// <param name="s">The interval format string.</param>
         /// <param name="parseInt64">The parser for integer.</param>
@@ -315,7 +315,7 @@ namespace Trivial.Maths
         }, null, null);
 
         /// <summary>
-        /// Parses the interval.
+        /// Parses the interval in integer number.
         /// </summary>
         /// <param name="s">The interval format string.</param>
         /// <returns>The interval instance parsed.</returns>
@@ -339,7 +339,7 @@ namespace Trivial.Maths
         }, ele => double.Parse(ele, style, provider));
 
         /// <summary>
-        /// Parses the interval.
+        /// Parses the interval in integer number.
         /// </summary>
         /// <param name="s">The interval format string.</param>
         /// <param name="parseInt32">The parser for integer.</param>
@@ -385,7 +385,7 @@ namespace Trivial.Maths
         });
 
         /// <summary>
-        /// Parses the interval.
+        /// Parses the interval in integer number.
         /// </summary>
         /// <param name="s">The interval format string.</param>
         /// <returns>The interval instance parsed.</returns>
@@ -396,7 +396,7 @@ namespace Trivial.Maths
         }, double.Parse);
 
         /// <summary>
-        /// Parses the interval.
+        /// Parses the interval in integer number.
         /// </summary>
         /// <param name="s">The interval format string.</param>
         /// <param name="style">A bitwise combination of enumeration values that indicate the style elements that can be present in s.</param>
@@ -409,7 +409,44 @@ namespace Trivial.Maths
         }, ele => double.Parse(ele, style, provider));
 
         /// <summary>
-        /// Parses the interval.
+        /// Parses the interval in integer number.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <param name="op">The operation.</param>
+        /// <returns>The interval instance parsed.</returns>
+        /// <exception cref="FormatException">The string to parse is not the internal format.</exception>
+        public static NullableValueSimpleInterval<int> ParseForNullableInt32(int value, BasicCompareOperator op) => new NullableValueSimpleInterval<int>(
+            value,
+            op);
+
+        /// <summary>
+        /// Parses the interval in integer number.
+        /// </summary>
+        /// <param name="valueA">The first value.</param>
+        /// <param name="valueB">The seconde value.</param>
+        /// <returns>The interval instance parsed.</returns>
+        /// <exception cref="FormatException">The string to parse is not the internal format.</exception>
+        public static NullableValueSimpleInterval<int> ParseForNullableInt32(int valueA, int valueB) => new NullableValueSimpleInterval<int>(
+            valueA,
+            valueB);
+
+        /// <summary>
+        /// Parses the interval in integer number.
+        /// </summary>
+        /// <param name="valueA">The first value.</param>
+        /// <param name="valueB">The seconde value.</param>
+        /// <param name="leftOpen">true if it is left open; otherwise, left closed.</param>
+        /// <param name="rightOpen">true if it is right open; otherwise, right closed.</param>
+        /// <returns>The interval instance parsed.</returns>
+        /// <exception cref="FormatException">The string to parse is not the internal format.</exception>
+        public static NullableValueSimpleInterval<int> ParseForNullableInt32(int valueA, int valueB, bool leftOpen, bool rightOpen) => new NullableValueSimpleInterval<int>(
+            valueA,
+            valueB,
+            leftOpen,
+            rightOpen);
+
+        /// <summary>
+        /// Parses the interval in integer number.
         /// </summary>
         /// <param name="s">The interval format string.</param>
         /// <param name="parseInt64">The parser for integer.</param>
@@ -456,7 +493,7 @@ namespace Trivial.Maths
         });
 
         /// <summary>
-        /// Parses the interval.
+        /// Parses the interval in integer number.
         /// </summary>
         /// <param name="s">The interval format string.</param>
         /// <returns>The interval instance parsed.</returns>
@@ -468,7 +505,7 @@ namespace Trivial.Maths
         }, double.Parse);
 
         /// <summary>
-        /// Parses the interval.
+        /// Parses the interval in integer number.
         /// </summary>
         /// <param name="s">The interval format string.</param>
         /// <param name="style">A bitwise combination of enumeration values that indicate the style elements that can be present in s.</param>
@@ -482,7 +519,44 @@ namespace Trivial.Maths
         }, ele => double.Parse(ele, style, provider));
 
         /// <summary>
-        /// Parses the interval.
+        /// Parses the interval in integer number.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <param name="op">The operation.</param>
+        /// <returns>The interval instance parsed.</returns>
+        /// <exception cref="FormatException">The string to parse is not the internal format.</exception>
+        public static NullableValueSimpleInterval<long> ParseForNullableInt64(long value, BasicCompareOperator op) => new NullableValueSimpleInterval<long>(
+            value,
+            op);
+
+        /// <summary>
+        /// Parses the interval in integer number.
+        /// </summary>
+        /// <param name="valueA">The first value.</param>
+        /// <param name="valueB">The seconde value.</param>
+        /// <returns>The interval instance parsed.</returns>
+        /// <exception cref="FormatException">The string to parse is not the internal format.</exception>
+        public static NullableValueSimpleInterval<long> ParseForNullableInt64(long valueA, long valueB) => new NullableValueSimpleInterval<long>(
+            valueA,
+            valueB);
+
+        /// <summary>
+        /// Parses the interval in integer number.
+        /// </summary>
+        /// <param name="valueA">The first value.</param>
+        /// <param name="valueB">The seconde value.</param>
+        /// <param name="leftOpen">true if it is left open; otherwise, left closed.</param>
+        /// <param name="rightOpen">true if it is right open; otherwise, right closed.</param>
+        /// <returns>The interval instance parsed.</returns>
+        /// <exception cref="FormatException">The string to parse is not the internal format.</exception>
+        public static NullableValueSimpleInterval<long> ParseForNullableInt64(long valueA, long valueB, bool leftOpen, bool rightOpen) => new NullableValueSimpleInterval<long>(
+            valueA,
+            valueB,
+            leftOpen,
+            rightOpen);
+
+        /// <summary>
+        /// Parses the interval in double floating-point number.
         /// </summary>
         /// <param name="s">The interval format string.</param>
         /// <returns>The interval instance parsed.</returns>
@@ -497,7 +571,7 @@ namespace Trivial.Maths
             double.PositiveInfinity);
 
         /// <summary>
-        /// Parses the interval.
+        /// Parses the interval in double floating-point number.
         /// </summary>
         /// <param name="s">The interval format string.</param>
         /// <param name="provider">An object that supplies culture-specific formatting information about s.</param>
@@ -513,7 +587,7 @@ namespace Trivial.Maths
             double.PositiveInfinity);
 
         /// <summary>
-        /// Parses the interval.
+        /// Parses the interval in double floating-point number.
         /// </summary>
         /// <param name="s">The interval format string.</param>
         /// <param name="style">A bitwise combination of enumeration values that indicate the style elements that can be present in s.</param>
@@ -526,6 +600,51 @@ namespace Trivial.Maths
             double.PositiveInfinity,
             true,
             (ele, pos) => (double.Parse(ele, style, provider), null),
+            double.NegativeInfinity,
+            double.PositiveInfinity);
+
+        /// <summary>
+        /// Parses the interval in double floating-point number.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <param name="op">The operation.</param>
+        /// <returns>The interval instance parsed.</returns>
+        /// <exception cref="FormatException">The string to parse is not the internal format.</exception>
+        public static StructValueSimpleInterval<double> ParseForDouble(double value, BasicCompareOperator op) => new StructValueSimpleInterval<double>(
+            value,
+            op,
+            double.NegativeInfinity,
+            double.PositiveInfinity);
+
+        /// <summary>
+        /// Parses the interval in double floating-point number.
+        /// </summary>
+        /// <param name="valueA">The first value.</param>
+        /// <param name="valueB">The seconde value.</param>
+        /// <returns>The interval instance parsed.</returns>
+        /// <exception cref="FormatException">The string to parse is not the internal format.</exception>
+        public static StructValueSimpleInterval<double> ParseForDouble(double valueA, double valueB) => new StructValueSimpleInterval<double>(
+            valueA,
+            valueB,
+            false,
+            false,
+            double.NegativeInfinity,
+            double.PositiveInfinity);
+
+        /// <summary>
+        /// Parses the interval in double floating-point number.
+        /// </summary>
+        /// <param name="valueA">The first value.</param>
+        /// <param name="valueB">The seconde value.</param>
+        /// <param name="leftOpen">true if it is left open; otherwise, left closed.</param>
+        /// <param name="rightOpen">true if it is right open; otherwise, right closed.</param>
+        /// <returns>The interval instance parsed.</returns>
+        /// <exception cref="FormatException">The string to parse is not the internal format.</exception>
+        public static StructValueSimpleInterval<double> ParseForDouble(double valueA, double valueB, bool leftOpen, bool rightOpen) => new StructValueSimpleInterval<double>(
+            valueA,
+            valueB,
+            leftOpen,
+            rightOpen,
             double.NegativeInfinity,
             double.PositiveInfinity);
 
