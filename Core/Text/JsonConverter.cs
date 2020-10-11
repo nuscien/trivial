@@ -292,12 +292,20 @@ namespace Trivial.Text
                     obj.SetRange(ref reader);
                     return obj;
                 case JsonTokenType.StartArray:
-                    return JsonArray.ParseValue(ref reader);
+                    var arr = JsonArray.ParseValue(ref reader);
+                    if (arr is null) return null;
+                    if (typeToConvert == typeof(JsonArray)) return arr;
+                    if (typeToConvert == typeof(JsonObject)) return (JsonObject)arr;
+                    if (arr.Count <= 1 && (typeToConvert == typeof(JsonString)
+                        || typeToConvert == typeof(JsonInteger)
+                        || typeToConvert == typeof(JsonDouble)
+                        || typeToConvert == typeof(JsonBoolean))) return arr.Count == 1 ? arr[0] : default;
+                    return arr;
                 case JsonTokenType.String:
                     var str = reader.GetString();
-                    if (typeToConvert == typeof(JsonString)) return new JsonString(str);
-                    if (typeToConvert == typeof(JsonInteger)) return new JsonInteger(long.Parse(str.Trim()));
-                    if (typeToConvert == typeof(JsonDouble)) return new JsonDouble(double.Parse(str.Trim()));
+                    if (typeToConvert == typeof(JsonString) || typeToConvert == typeof(IJsonString) || typeToConvert == typeof(IJsonValue<string>)) return new JsonString(str);
+                    if (typeToConvert == typeof(JsonInteger) || typeToConvert == typeof(IJsonValue<int>)) return new JsonInteger(long.Parse(str.Trim()));
+                    if (typeToConvert == typeof(JsonDouble) || typeToConvert == typeof(IJsonValue<double>)) return new JsonDouble(double.Parse(str.Trim()));
                     if (typeToConvert == typeof(IJsonNumber))
                     {
                         str = str.Trim();
@@ -307,7 +315,48 @@ namespace Trivial.Text
                         return new JsonDouble(double.Parse(str));
                     }
 
-                    return new JsonString(reader.GetString());
+                    if (typeToConvert == typeof(JsonBoolean) || typeToConvert == typeof(IJsonValue<bool>))
+                    {
+                        str = str.Trim();
+                        if (!bool.TryParse(str, out var b))
+                        {
+                            if (long.TryParse(str, out var l)) b = l > 0;
+                            else b = str.ToLowerInvariant() switch
+                            {
+                                JsonBoolean.TrueString => true,
+                                "t" => true,
+                                "a" => true,
+                                "y" => true,
+                                "yes" => true,
+                                "ok" => true,
+                                "s" => true,
+                                "sel" => true,
+                                "select" => true,
+                                "selected" => true,
+                                "c" => true,
+                                "check" => true,
+                                "checked" => true,
+                                "r" => true,
+                                "right" => true,
+                                "真" => true,
+                                "是" => true,
+                                "对" => true,
+                                "好" => true,
+                                "确定" => true,
+                                "选中" => true,
+                                "√" => true,
+                                "✅" => true,
+                                "🆗" => true,
+                                "✔" => true,
+                                "🈶" => true,
+                                _ => false
+                            };
+                        }
+
+                        return b ? JsonBoolean.True : JsonBoolean.False;
+                    }
+
+                    return new JsonString(str);
                 case JsonTokenType.Number:
                     if (typeToConvert == typeof(JsonString))
                     {

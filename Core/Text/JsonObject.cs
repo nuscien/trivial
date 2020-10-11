@@ -134,6 +134,115 @@ namespace Trivial.Text
         }
 
         /// <summary>
+        /// Gets or sets the value of the specific property.
+        /// </summary>
+        /// <param name="key">The property key.</param>
+        /// <param name="index">The index of the array.</param>
+        /// <returns>The value.</returns>
+        /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">The property does not exist; or the index is less than zero.</exception>
+        /// <exception cref="InvalidOperationException">The value kind is not the expected one.</exception>
+        public IJsonValueResolver this[string key, int index]
+        {
+            get
+            {
+                if (index < 0) throw new ArgumentOutOfRangeException("index", "index should be a natural number.");
+                var result = GetValue(key);
+                if (result is JsonArray arr) return arr[index];
+                else if (result is JsonObject json) return json[index.ToString("g")];
+                else if (result is IJsonString str) return new JsonString(str.StringValue[index].ToString());
+                else if (index == 0) return result;
+                throw new InvalidOperationException($"The property of {key} should be an array, but its kind is {result?.ValueKind ?? JsonValueKind.Null}.");
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the value of the specific property.
+        /// </summary>
+        /// <param name="key">The property key.</param>
+        /// <param name="index">The index of the array.</param>
+        /// <param name="subIndex">The optional sub index of the value of the array.</param>
+        /// <returns>The value.</returns>
+        /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">The property does not exist; or the index is less than zero.</exception>
+        /// <exception cref="InvalidOperationException">The value kind is not the expected one.</exception>
+        public IJsonValueResolver this[string key, int index, int subIndex]
+        {
+            get
+            {
+                if (subIndex < 0) throw new ArgumentOutOfRangeException("subIndex", "subIndex should be a natural number.");
+                var result = this[key, index];
+                if (result is JsonArray arr) return arr[subIndex];
+                else if (result is JsonObject json) return json[subIndex.ToString("g")];
+                else if (result is IJsonString str) return new JsonString(str.StringValue[subIndex].ToString());
+                throw new InvalidOperationException($"The property of {key}.{index} should be an array, but its kind is {result?.ValueKind ?? JsonValueKind.Null}.");
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the value of the specific property.
+        /// </summary>
+        /// <param name="key">The property key.</param>
+        /// <param name="index">The index of the array.</param>
+        /// <param name="keyPath">The additional property key path.</param>
+        /// <returns>The value.</returns>
+        /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">The property does not exist; or the index is less than zero.</exception>
+        /// <exception cref="InvalidOperationException">The value kind is not the expected one.</exception>
+        public IJsonValueResolver this[string key, int index, params string[] keyPath]
+        {
+            get
+            {
+                var result = this[key, index];
+                if (keyPath == null || keyPath.Length == 0) return result;
+                if (result is JsonObject json) return json.GetValue(keyPath);
+                if (result is JsonArray arr)
+                {
+                    var subKey = keyPath[0];
+                    var i = 1;
+                    while (subKey == null)
+                    {
+                        if (keyPath.Length <= i) return result;
+                        subKey = keyPath[i];
+                        i++;
+                    }
+
+                    if (int.TryParse(subKey, out var index2))
+                    {
+                        if (keyPath.Length == i) return arr[index2];
+                        return arr[index2, keyPath[i], keyPath.Skip(i + 1)?.ToArray()];
+                    }
+                }
+
+                throw new InvalidOperationException($"The property of {key}.{index} should be a JSON object, but its kind is {result?.ValueKind ?? JsonValueKind.Null}.");
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the value of the specific property.
+        /// </summary>
+        /// <param name="key">The property key.</param>
+        /// <param name="subKey">The optional sub-property key of the value of the array.</param>
+        /// <param name="keyPath">The additional property key path.</param>
+        /// <returns>The value.</returns>
+        /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">The property does not exist.</exception>
+        /// <exception cref="InvalidOperationException">The value kind is not the expected one.</exception>
+        public IJsonValueResolver this[string key, string subKey, params string[] keyPath]
+        {
+            get
+            {
+                var path = new List<string>
+                {
+                    key,
+                    subKey
+                };
+                path.AddRange(keyPath);
+                return GetValue(path);
+            }
+        }
+
+        /// <summary>
         /// Enables thread-safe (concurrent) mode.
         /// </summary>
         public void EnableThreadSafeMode()

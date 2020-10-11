@@ -105,6 +105,110 @@ namespace Trivial.Text
 #endif
 
         /// <summary>
+        /// Gets the element at the specified index in the array.
+        /// </summary>
+        /// <param name="index">The zero-based index of the element to get.</param>
+        /// <param name="subKey">The optional sub-property key of the value of the array.</param>
+        /// <param name="keyPath">The additional property key path.</param>
+        /// <returns>The value.</returns>
+        /// <exception cref="ArgumentOutOfRangeException">The index is out of range.</exception>
+        /// <exception cref="InvalidOperationException">The value kind is not the expected one.</exception>
+        public IJsonValueResolver this[int index, string subKey, params string[] keyPath]
+        {
+            get
+            {
+                if (index < 0) throw new ArgumentOutOfRangeException("index", "index was less than zero.");
+                var result = store[index];
+                if (result is JsonObject json)
+                {
+                    var keyArr = new List<string> { subKey };
+                    if (keyPath != null) keyArr.AddRange(keyPath);
+                    return json.GetValue(keyArr);
+                }
+
+                var keyPath2 = keyPath?.Where(ele => ele != null)?.ToList() ?? new List<string>();
+                if (result is JsonArray arr)
+                {
+                    if (subKey != null)
+                    {
+                        if (!int.TryParse(subKey, out index)) return default;
+                        result = arr[index];
+                        if (keyPath2.Count == 0) return result ?? JsonValues.Null;
+                        if (result is JsonObject json2) return json2.GetValue(keyPath2);
+                        if (result is JsonArray arr2) arr = arr2;
+                        else new InvalidOperationException($"The element at {index}.{subKey} should be a JSON object, but its kind is {result?.ValueKind ?? JsonValueKind.Null}.");
+                    }
+
+                    if (int.TryParse(keyPath2[0], out index))
+                    {
+                        if (keyPath2.Count == 1) return arr[index];
+                        try
+                        {
+                            return arr[index, keyPath[1], keyPath.Skip(2).ToArray()];
+                        }
+                        catch (InvalidOperationException ex)
+                        {
+                            throw new InvalidOperationException($"Get value failed.", ex);
+                        }
+                    }
+                }
+
+                if (subKey == null && keyPath2.Count == 0) return result ?? JsonValues.Null;
+                throw new InvalidOperationException($"The element at {index} should be a JSON object, but its kind is {result?.ValueKind ?? JsonValueKind.Null}.");
+            }
+        }
+
+        /// <summary>
+        /// Gets the element at the specified index in the array.
+        /// </summary>
+        /// <param name="index">The zero-based index of the element to get.</param>
+        /// <param name="subIndex">The optional sub-index of the value of the array.</param>
+        /// <param name="keyPath">The additional property key path.</param>
+        /// <returns>The value.</returns>
+        /// <exception cref="ArgumentOutOfRangeException">The indexor subIndex is out of range.</exception>
+        /// <exception cref="InvalidOperationException">The value kind is not the expected one.</exception>
+        public IJsonValueResolver this[int index, int subIndex, params string[] keyPath]
+        {
+            get
+            {
+                if (index < 0) throw new ArgumentOutOfRangeException("index", "index was less than zero.");
+                if (subIndex < 0) throw new ArgumentOutOfRangeException("subIndex", "subIndex was less than zero.");
+                var result = store[index];
+                if (result is JsonObject json)
+                {
+                    var keyArr = new List<string> { subIndex.ToString("g") };
+                    if (keyPath != null) keyArr.AddRange(keyPath);
+                    return json.GetValue(keyArr);
+                }
+
+                var keyPath2 = keyPath?.Where(ele => ele != null)?.ToList() ?? new List<string>();
+                if (result is JsonArray arr)
+                {
+                    result = arr[subIndex];
+                    if (keyPath2.Count == 0) return result ?? JsonValues.Null;
+                    if (result is JsonObject json2) return json2.GetValue(keyPath2);
+                    if (result is JsonArray arr2) arr = arr2;
+                    else new InvalidOperationException($"The element at {index}.{subIndex} should be a JSON object, but its kind is {result?.ValueKind ?? JsonValueKind.Null}.");
+
+                    if (int.TryParse(keyPath2[0], out index))
+                    {
+                        if (keyPath2.Count == 1) return arr[index];
+                        try
+                        {
+                            return arr[index, keyPath[1], keyPath.Skip(2).ToArray()];
+                        }
+                        catch (InvalidOperationException ex)
+                        {
+                            throw new InvalidOperationException($"Get value failed.", ex);
+                        }
+                    }
+                }
+
+                throw new InvalidOperationException($"The element at {index} should be a JSON object, but its kind is {result?.ValueKind ?? JsonValueKind.Null}.");
+            }
+        }
+
+        /// <summary>
         /// Enables thread-safe (concurrent) mode.
         /// </summary>
         public void EnableThreadSafeMode()
@@ -1171,6 +1275,112 @@ namespace Trivial.Text
         }
 
         /// <summary>
+        /// Tries to get the value at the specific index.
+        /// </summary>
+        /// <param name="index">The zero-based index of the element to get.</param>
+        /// <param name="subKey">The optional sub-property key of the value of the array.</param>
+        /// <param name="keyPath">The additional property key path.</param>
+        /// <returns>The value.</returns>
+        public IJsonValueResolver TryGetValue(int index, string subKey, params string[] keyPath)
+        {
+            if (index < 0 || index >= store.Count)
+            {
+                return default;
+            }
+
+            try
+            {
+                var result = store[index];
+                if (result is JsonObject json)
+                {
+                    var keyArr = new List<string> { subKey };
+                    if (keyPath != null) keyArr.AddRange(keyPath);
+                    return json.TryGetValue(keyArr);
+                }
+
+                var keyPath2 = keyPath?.Where(ele => ele != null)?.ToList() ?? new List<string>();
+                if (result is JsonArray arr)
+                {
+                    if (subKey != null)
+                    {
+                        if (!int.TryParse(subKey, out index)) return default;
+                        result = arr[index];
+                        if (keyPath2.Count == 0) return result ?? JsonValues.Null;
+                        if (result is JsonObject json2) return json2.TryGetValue(keyPath2);
+                        if (result is JsonArray arr2) arr = arr2;
+                        else return default;
+                    }
+
+                    if (int.TryParse(keyPath2[0], out index))
+                    {
+                        if (keyPath2.Count == 1) return arr[index];
+                        return arr.TryGetValue(index, keyPath[1], keyPath.Skip(2).ToArray());
+                    }
+                }
+
+                if (subKey == null && keyPath2.Count == 0) return result ?? JsonValues.Null;
+            }
+            catch (ArgumentException)
+            {
+            }
+
+            return default;
+        }
+
+        /// <summary>
+        /// Tries to get the value at the specific index.
+        /// </summary>
+        /// <param name="index">The zero-based index of the element to get.</param>
+        /// <param name="subIndex">The optional sub-index of the value of the array.</param>
+        /// <param name="keyPath">The additional property key path.</param>
+        /// <returns>The value.</returns>
+        public IJsonValueResolver TryGetValue(int index, int subIndex, params string[] keyPath)
+        {
+            if (index < 0 || index >= store.Count)
+            {
+                return default;
+            }
+
+            try
+            {
+                var result = store[index];
+                if (result is JsonObject json)
+                {
+                    var keyArr = new List<string> { subIndex.ToString("g") };
+                    if (keyPath != null) keyArr.AddRange(keyPath);
+                    return json.TryGetValue(keyArr);
+                }
+
+                var keyPath2 = keyPath?.Where(ele => ele != null)?.ToList() ?? new List<string>();
+                if (result is JsonArray arr)
+                {
+                    result = arr[subIndex];
+                    if (keyPath2.Count == 0) return result ?? JsonValues.Null;
+                    if (result is JsonObject json2) return json2.TryGetValue(keyPath2);
+                    if (result is JsonArray arr2) arr = arr2;
+                    else return default;
+
+                    if (int.TryParse(keyPath2[0], out index))
+                    {
+                        if (keyPath2.Count == 1) return arr[index];
+                        return arr.TryGetValue(index, keyPath[1], keyPath.Skip(2).ToArray());
+                    }
+                }
+
+                if (subIndex == 0 && keyPath2.Count == 0)
+                {
+                    if (result is IJsonString str) return new JsonString(str.StringValue[subIndex].ToString());
+                    return result ?? JsonValues.Null;
+                }
+            }
+            catch (ArgumentException)
+            {
+            }
+
+            return default;
+        }
+
+        /// <summary>
         /// Removes the element at the specific index.
         /// </summary>
         /// <param name="index">The zero-based index of the element to get.</param>
@@ -1964,7 +2174,7 @@ namespace Trivial.Text
             if (json is null || propertyKeys == null) return count;
             foreach (var key in propertyKeys)
             {
-                store.Add(json.TryGetValue(key) ?? JsonValues.Null);
+                store.Add(json.TryGetValue(key) ?? JsonValues.Undefined);
                 count++;
             }
 
