@@ -1899,6 +1899,45 @@ namespace Trivial.Text
         }
 
         /// <summary>
+        /// Projects each element of a sequence into a new form.
+        /// </summary>
+        /// <typeparam name="T">The type of the value returned by selector.</typeparam>
+        /// <param name="selector">A transform function to apply to each element.</param>
+        /// <returns>A collection whose elements are the result of invoking the transform function on each element of source.</returns>
+        public IEnumerable<T> Select<T>(Func<IJsonValueResolver, T> selector)
+        {
+            return Enumerable.Select(this, selector);
+        }
+
+        /// <summary>
+        /// Projects each element of a sequence into a new form.
+        /// </summary>
+        /// <typeparam name="T">The type of the value returned by selector.</typeparam>
+        /// <param name="selector">A transform function to apply to each element.</param>
+        /// <returns>A collection whose elements are the result of invoking the transform function on each element of source.</returns>
+        public IEnumerable<T> Select<T>(Func<IJsonValueResolver, int, T> selector)
+        {
+            return Enumerable.Select(this, selector);
+        }
+
+        /// <summary>
+        /// Gets a collection of all property values for each element.
+        /// </summary>
+        /// <param name="key">The specific property key.</param>
+        /// <returns>A collection whose elements are the result of invoking the transform function on each element of source.</returns>
+        public IEnumerable<IJsonValueResolver> SelectProperty(string key)
+        {
+            return Select(ele =>
+            {
+                if (ele is null) return null;
+                if (ele is JsonObject json) return json.TryGetValue(key);
+                if (ele is JsonArray jArr) return jArr.TryGetValue(key);
+                if (ele is JsonString jStr && (jStr as IJsonValueResolver).TryGetValue(key, out var subStr)) return subStr;
+                return null;
+            });
+        }
+
+        /// <summary>
         /// Add null.
         /// </summary>
         public void AddNull()
