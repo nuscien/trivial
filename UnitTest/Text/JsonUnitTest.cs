@@ -79,6 +79,32 @@ namespace Trivial.Text
 
             json.EnableThreadSafeMode(3);
             Assert.IsTrue(json.GetObjectValue("props", "p1", "p3").GetBooleanValue("p2"));
+            Assert.IsTrue(json["props", "p1", "p3", "p2"].GetBoolean());
+            Assert.IsTrue(json.TryGetValue("props.p1.p3.p2", true).GetBoolean());
+            try
+            {
+                var testError = json["props", "p1", "q", "p3"];
+                Assert.Fail();
+            }
+            catch (InvalidOperationException)
+            {
+            }
+            catch (ArgumentException)
+            {
+            }
+
+            try
+            {
+                var testError = json["props", "p1", "p3", "q"];
+                Assert.Fail();
+            }
+            catch (InvalidOperationException)
+            {
+            }
+            catch (ArgumentException)
+            {
+            }
+
             Assert.AreEqual(4567, p1.GetInt32Value("p7"));
 
             var jsonArray = json.GetArrayValue("arr");

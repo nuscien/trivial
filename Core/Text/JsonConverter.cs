@@ -317,43 +317,7 @@ namespace Trivial.Text
 
                     if (typeToConvert == typeof(JsonBoolean) || typeToConvert == typeof(IJsonValue<bool>))
                     {
-                        str = str.Trim();
-                        if (!bool.TryParse(str, out var b))
-                        {
-                            if (long.TryParse(str, out var l)) b = l > 0;
-                            else b = str.ToLowerInvariant() switch
-                            {
-                                JsonBoolean.TrueString => true,
-                                "t" => true,
-                                "a" => true,
-                                "y" => true,
-                                "yes" => true,
-                                "ok" => true,
-                                "s" => true,
-                                "sel" => true,
-                                "select" => true,
-                                "selected" => true,
-                                "c" => true,
-                                "check" => true,
-                                "checked" => true,
-                                "r" => true,
-                                "right" => true,
-                                "真" => true,
-                                "是" => true,
-                                "对" => true,
-                                "好" => true,
-                                "确定" => true,
-                                "选中" => true,
-                                "√" => true,
-                                "✅" => true,
-                                "🆗" => true,
-                                "✔" => true,
-                                "🈶" => true,
-                                _ => false
-                            };
-                        }
-
-                        return b ? JsonBoolean.True : JsonBoolean.False;
+                        return JsonBoolean.TryParse(str);
                     }
 
                     return new JsonString(str);

@@ -131,15 +131,15 @@ namespace Trivial.Text
                 {
                     if (subKey != null)
                     {
-                        if (!int.TryParse(subKey, out index)) return default;
-                        result = arr[index];
-                        if (keyPath2.Count == 0) return result ?? JsonValues.Null;
+                        result = arr.TryGetValue(subKey);
+                        if (result is null) throw new InvalidOperationException($"The element at {index} should be a JSON object but it is a JSON array; or subKey should be a natural number.");
+                        if (keyPath2.Count == 0) return result;
                         if (result is JsonObject json2) return json2.GetValue(keyPath2);
                         if (result is JsonArray arr2) arr = arr2;
-                        else new InvalidOperationException($"The element at {index}.{subKey} should be a JSON object, but its kind is {result?.ValueKind ?? JsonValueKind.Null}.");
+                        else throw new InvalidOperationException($"The element at {index}.{subKey} should be a JSON object or array, but its kind is {result?.ValueKind ?? JsonValueKind.Null}.");
                     }
 
-                    if (int.TryParse(keyPath2[0], out index))
+                    if (int.TryParse(keyPath2[0] ?? string.Empty, out index))
                     {
                         if (keyPath2.Count == 1) return arr[index];
                         try
@@ -154,7 +154,7 @@ namespace Trivial.Text
                 }
 
                 if (subKey == null && keyPath2.Count == 0) return result ?? JsonValues.Null;
-                throw new InvalidOperationException($"The element at {index} should be a JSON object, but its kind is {result?.ValueKind ?? JsonValueKind.Null}.");
+                throw new InvalidOperationException($"The element at {index} should be a JSON object or array, but its kind is {result?.ValueKind ?? JsonValueKind.Null}.");
             }
         }
 
@@ -188,9 +188,9 @@ namespace Trivial.Text
                     if (keyPath2.Count == 0) return result ?? JsonValues.Null;
                     if (result is JsonObject json2) return json2.GetValue(keyPath2);
                     if (result is JsonArray arr2) arr = arr2;
-                    else new InvalidOperationException($"The element at {index}.{subIndex} should be a JSON object, but its kind is {result?.ValueKind ?? JsonValueKind.Null}.");
+                    else throw new InvalidOperationException($"The element at {index}.{subIndex} should be a JSON object, but its kind is {result?.ValueKind ?? JsonValueKind.Null}.");
 
-                    if (int.TryParse(keyPath2[0], out index))
+                    if (int.TryParse(keyPath2[0] ?? string.Empty, out index))
                     {
                         if (keyPath2.Count == 1) return arr[index];
                         try
@@ -641,7 +641,7 @@ namespace Trivial.Text
         /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
         IJsonValueResolver IJsonValueResolver.GetValue(string key)
         {
-            if (int.TryParse(key, out var i)) return GetValue(i);
+            if (TryGetValue(key, out var result)) return result;
             throw new InvalidOperationException("key should be an integer.", new FormatException("key should be an integer."));
         }
 
@@ -1367,10 +1367,10 @@ namespace Trivial.Text
                     }
                 }
 
-                if (subIndex == 0 && keyPath2.Count == 0)
+                if (keyPath2.Count == 0)
                 {
-                    if (result is IJsonString str) return new JsonString(str.StringValue[subIndex].ToString());
-                    return result ?? JsonValues.Null;
+                    if (result is IJsonString && result.TryGetValue(subIndex, out var subStr)) return subStr;
+                    if (subIndex == 0) return result ?? JsonValues.Null;
                 }
             }
             catch (ArgumentException)
@@ -3197,9 +3197,27 @@ namespace Trivial.Text
         /// <param name="key">The property key.</param>
         /// <param name="result">The result.</param>
         /// <returns>true if the kind is the one expected; otherwise, false.</returns>
-        bool IJsonValueResolver.TryGetValue(string key, out IJsonValueResolver result)
+        public bool TryGetValue(string key, out IJsonValueResolver result)
         {
-            if (key != null && int.TryParse(key, out var i)) return TryGetValue(i, out result);
+            if (key != null)
+            {
+                if (int.TryParse(key, out var i)) return TryGetValue(i, out result);
+                switch (key.Trim().ToLower())
+                {
+                    case "len":
+                    case "length":
+                    case "count":
+                        result = new JsonInteger(Count);
+                        return true;
+                    case "first":
+                        if (Count == 0) break;
+                        return TryGetValue(0, out result);
+                    case "last":
+                        if (Count == 0) break;
+                        return TryGetValue(Count - 1, out result);
+                }
+            }
+
             result = default;
             return false;
         }
@@ -3210,15 +3228,21 @@ namespace Trivial.Text
         /// <param name="key">The property key.</param>
         /// <param name="result">The result.</param>
         /// <returns>true if the kind is the one expected; otherwise, false.</returns>
-        bool IJsonValueResolver.TryGetValue(ReadOnlySpan<char> key, out IJsonValueResolver result)
+        public bool TryGetValue(ReadOnlySpan<char> key, out IJsonValueResolver result)
         {
-#if !NETSTANDARD2_0
-            if (key != null && int.TryParse(key, out var i)) return TryGetValue(i, out result);
-#else
-            if (key != null && int.TryParse(key.ToString(), out var i)) return TryGetValue(i, out result);
-#endif
+            if (key != null) return TryGetValue(key.ToString(), out result);
             result = default;
             return false;
+        }
+
+        /// <summary>
+        /// Tries to get the value of the specific property.
+        /// </summary>
+        /// <param name="key">The property key.</param>
+        /// <returns>The element; or null, if get failed.</returns>
+        public IJsonValueResolver TryGetValue(string key)
+        {
+            return TryGetValue(key, out var result) ? result : default;
         }
 
         /// <summary>
@@ -3415,7 +3439,7 @@ namespace Trivial.Text
         /// <summary>
         /// Parses JSON array.
         /// </summary>
-        /// <param name="json">A JSON array string.</param>
+        /// <param name="json">A specific JSON array string to parse.</param>
         /// <param name="options">Options to control the reader behavior during parsing.</param>
         /// <returns>A JSON array instance.</returns>
         /// <exception cref="JsonException">json does not represent a valid single JSON array.</exception>
@@ -3464,6 +3488,43 @@ namespace Trivial.Text
         public static JsonArray ParseValue(ref Utf8JsonReader reader)
         {
             return JsonDocument.ParseValue(ref reader);
+        }
+
+        /// <summary>
+        /// Tries to parse a string to a JSON array.
+        /// </summary>
+        /// <param name="json">A specific JSON array string to parse.</param>
+        /// <param name="options">Options to control the reader behavior during parsing.</param>
+        /// <returns>A JSON array instance; or null, if error format.</returns>
+        public static JsonArray TryParse(string json, JsonDocumentOptions options = default)
+        {
+            try
+            {
+                return Parse(json, options);
+            }
+            catch (ArgumentException)
+            {
+            }
+            catch (InvalidOperationException)
+            {
+            }
+            catch (JsonException)
+            {
+            }
+            catch (FormatException)
+            {
+            }
+            catch (InvalidCastException)
+            {
+            }
+            catch (NullReferenceException)
+            {
+            }
+            catch (AggregateException)
+            {
+            }
+
+            return null;
         }
 
         /// <summary>

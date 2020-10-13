@@ -971,6 +971,64 @@ namespace Trivial.Text
         /// <returns>true if the kind is the one expected; otherwise, false.</returns>
         bool IJsonValueResolver.TryGetValue(string key, out IJsonValueResolver result)
         {
+            if (key == null)
+            {
+                result = default;
+                return false;
+            }
+
+            var s = Value?.Trim();
+            if (string.IsNullOrEmpty(s))
+            {
+                result = default;
+                return false;
+            }
+
+            if (s.StartsWith("{") && s.EndsWith("}"))
+            {
+                var json = JsonObject.TryParse(s);
+                if (json is null)
+                {
+                    result = default;
+                    return false;
+                }
+
+                return json.TryGetValue(key, out result);
+            }
+
+            if (s.StartsWith("[") && s.EndsWith("]"))
+            {
+                var jArr = JsonArray.TryParse(s);
+                if (jArr is null)
+                {
+                    result = default;
+                    return false;
+                }
+
+                return jArr.TryGetValue(key, out result);
+            }
+
+            switch (key.ToLowerInvariant())
+            {
+                case "len":
+                case "length":
+                case "count":
+                    result = new JsonInteger(Length);
+                    return true;
+            }
+
+            if (int.TryParse(key, out var i) && i >= 0 && i < Length)
+            {
+                try
+                {
+                    result = new JsonString(Value[i].ToString());
+                    return true;
+                }
+                catch (ArgumentException)
+                {
+                }
+            }
+
             result = default;
             return false;
         }
@@ -983,6 +1041,7 @@ namespace Trivial.Text
         /// <returns>true if the kind is the one expected; otherwise, false.</returns>
         bool IJsonValueResolver.TryGetValue(ReadOnlySpan<char> key, out IJsonValueResolver result)
         {
+            if (key != null) return (this as IJsonValueResolver).TryGetValue(key.ToString(), out result);
             result = default;
             return false;
         }
@@ -1003,6 +1062,61 @@ namespace Trivial.Text
         /// <returns>true if the kind is the one expected; otherwise, false.</returns>
         bool IJsonValueResolver.TryGetValue(int index, out IJsonValueResolver result)
         {
+            if (index < 0)
+            {
+                result = default;
+                return false;
+            }
+
+            var s = Value?.Trim();
+            if (string.IsNullOrEmpty(s))
+            {
+                result = default;
+                return false;
+            }
+
+            if (Value.StartsWith("[") && Value.EndsWith("]"))
+            {
+                try
+                {
+                    var arr = JsonArray.Parse(Value);
+                    return arr.TryGetValue(index, out result);
+                }
+                catch (ArgumentException)
+                {
+                }
+                catch (InvalidOperationException)
+                {
+                }
+                catch (JsonException)
+                {
+                }
+                catch (FormatException)
+                {
+                }
+                catch (InvalidCastException)
+                {
+                }
+                catch (NullReferenceException)
+                {
+                }
+                catch (AggregateException)
+                {
+                }
+            }
+
+            if (index >= 0 && index < Length)
+            {
+                try
+                {
+                    result = new JsonString(Value[index].ToString());
+                    return true;
+                }
+                catch (ArgumentException)
+                {
+                }
+            }
+
             result = default;
             return false;
         }
@@ -1024,6 +1138,36 @@ namespace Trivial.Text
         /// <returns>true if the kind is the one expected; otherwise, false.</returns>
         bool IJsonValueResolver.TryGetValue(Index index, out IJsonValueResolver result)
         {
+            if (!string.IsNullOrWhiteSpace(Value) && Value.StartsWith("[") && Value.EndsWith("]"))
+            {
+                try
+                {
+                    var arr = JsonArray.Parse(Value);
+                    return arr.TryGetValue(index, out result);
+                }
+                catch (ArgumentException)
+                {
+                }
+                catch (InvalidOperationException)
+                {
+                }
+                catch (JsonException)
+                {
+                }
+                catch (FormatException)
+                {
+                }
+                catch (InvalidCastException)
+                {
+                }
+                catch (NullReferenceException)
+                {
+                }
+                catch (AggregateException)
+                {
+                }
+            }
+
             result = default;
             return false;
         }

@@ -172,9 +172,17 @@ namespace Trivial.Text
             {
                 if (subIndex < 0) throw new ArgumentOutOfRangeException("subIndex", "subIndex should be a natural number.");
                 var result = this[key, index];
-                if (result is JsonArray arr) return arr[subIndex];
-                else if (result is JsonObject json) return json[subIndex.ToString("g")];
-                else if (result is IJsonString str) return new JsonString(str.StringValue[subIndex].ToString());
+                try
+                {
+                    if (result is JsonArray arr) return arr[subIndex];
+                    else if (result is JsonObject json) return json[subIndex.ToString("g")];
+                    else if (result is IJsonString str) return new JsonString(str.StringValue[subIndex].ToString());
+                }
+                catch (ArgumentOutOfRangeException ex)
+                {
+                    throw new ArgumentOutOfRangeException("subIndex", ex.Message);
+                }
+
                 throw new InvalidOperationException($"The property of {key}.{index} should be an array, but its kind is {result?.ValueKind ?? JsonValueKind.Null}.");
             }
         }
@@ -738,7 +746,7 @@ namespace Trivial.Text
             foreach (var key in keyPath)
             {
                 if (string.IsNullOrEmpty(key)) continue;
-                if (json is null)
+                if (json is null || json.ValueKind == JsonValueKind.Null || json.ValueKind == JsonValueKind.Undefined)
                 {
                     path.Remove(0, 1);
                     var message = $"Cannot get property {key} because property {path} is null.";
@@ -754,7 +762,7 @@ namespace Trivial.Text
                     if (!jObj.ContainsKey(key))
                     {
                         path.Remove(0, 1);
-                        var message = $"Cannot get property {key} because property {path} is not a JSON object.";
+                        var message = $"Cannot get property {key} in property {path}.";
                         throw new InvalidOperationException(
                             message,
                             new ArgumentOutOfRangeException(nameof(keyPath), message));
@@ -764,7 +772,31 @@ namespace Trivial.Text
                     continue;
                 }
 
-                if (!(json is JsonArray jArr) || !int.TryParse(key, out var i))
+                if (json is JsonArray jArr)
+                {
+                    var jValue = jArr.TryGetValue(key);
+                    if (jValue is null)
+                    {
+                        path.Remove(0, 1);
+                        var message = $"Cannot get item at {key} in property {path}.";
+                        throw new InvalidOperationException(
+                            message,
+                            new ArgumentOutOfRangeException(nameof(keyPath), message));
+                    }
+
+                    json = jValue;
+                    continue;
+                }
+                
+                if (json is JsonString)
+                {
+                    if (json.TryGetValue(key, out var jValue))
+                    {
+                        json = jValue;
+                        continue;
+                    }
+                }
+
                 {
                     path.Remove(0, 1);
                     var message = $"Cannot get property {key} because property {path} is not a JSON object.";
@@ -772,17 +804,6 @@ namespace Trivial.Text
                         message,
                         new ArgumentOutOfRangeException(nameof(keyPath), message));
                 }
-
-                if (!jArr.Contains(i))
-                {
-                    path.Remove(0, 1);
-                    var message = $"Cannot get item {key} because property {path} is not a JSON array.";
-                    throw new InvalidOperationException(
-                        message,
-                        new ArgumentOutOfRangeException(nameof(keyPath), message));
-                }
-
-                json = jArr.TryGetValue(i);
             }
 
             return json;
@@ -816,6 +837,7 @@ namespace Trivial.Text
         /// <exception cref="ArgumentOutOfRangeException">The property does not exist.</exception>
         public IJsonValueResolver GetValue(ReadOnlySpan<char> key)
         {
+            if (key == null) throw new ArgumentNullException("key", "key should not be null.");
             return GetValue(key.ToString());
         }
 
@@ -1455,19 +1477,30 @@ namespace Trivial.Text
                     continue;
                 }
 
-                if (!(json is JsonArray jArr) || !int.TryParse(key, out var i))
+                if (json is JsonArray jArr)
                 {
-                    result = null;
-                    return false;
+                    var jValue = jArr.TryGetValue(key);
+                    if (jValue is null)
+                    {
+                        result = null;
+                        return false;
+                    }
+
+                    json = jValue;
+                    continue;
                 }
 
-                if (!jArr.Contains(i))
+                if (json is JsonString)
                 {
-                    result = null;
-                    return false;
+                    if (json.TryGetValue(key, out var jValue))
+                    {
+                        json = jValue;
+                        continue;
+                    }
                 }
 
-                json = jArr.TryGetValue(i);
+                result = null;
+                return false;
             }
 
             result = json;
@@ -1561,6 +1594,50 @@ namespace Trivial.Text
 
             result = default;
             return false;
+        }
+
+        /// <summary>
+        /// Tries to get the value of the specific property.
+        /// </summary>
+        /// <param name="key">The property key or key path.</param>
+        /// <param name="isPath">true if the key is a path; otherwise, false.</param>
+        /// <returns>The value.</returns>
+        public IJsonValueResolver TryGetValue(string key, bool isPath)
+        {
+            if (!isPath) return TryGetValue(key);
+            if (key == null) return this;
+            var arr = key.Split('.');
+            var path = new List<string>();
+            string quote = null;
+            foreach (var prop in arr)
+            {
+                if (string.IsNullOrEmpty(prop)) continue;
+                if (quote != null)
+                {
+                    if (prop.EndsWith(quote)) quote = null;
+                    #pragma warning disable IDE0056
+                    path[path.Count - 1] += quote != null ? prop : prop.Substring(0, prop.Length - 1);
+                    #pragma warning restore IDE0056
+                    continue;
+                }
+
+                if (prop.StartsWith("\""))
+                {
+                    path.Add(prop.Substring(0, prop.Length - 1));
+                    quote = "\"";
+                }
+                else if (prop.StartsWith("\'"))
+                {
+                    path.Add(prop.Substring(0, prop.Length - 1));
+                    quote = "\'";
+                }
+                else
+                {
+                    path.Add(prop);
+                }
+            }
+
+            return TryGetValue(path);
         }
 
         /// <summary>
@@ -3348,7 +3425,7 @@ namespace Trivial.Text
         /// <summary>
         /// Parses JSON object.
         /// </summary>
-        /// <param name="json">A JSON object.</param>
+        /// <param name="json">A specific JSON object string to parse.</param>
         /// <param name="options">Options to control the reader behavior during parsing.</param>
         /// <returns>A JSON object instance.</returns>
         /// <exception cref="JsonException">json does not represent a valid single JSON object.</exception>
@@ -3398,6 +3475,43 @@ namespace Trivial.Text
             var obj = new JsonObject();
             obj.SetRange(ref reader);
             return obj;
+        }
+
+        /// <summary>
+        /// Tries to parse a string to a JSON object.
+        /// </summary>
+        /// <param name="json">A specific JSON object string to parse.</param>
+        /// <param name="options">Options to control the reader behavior during parsing.</param>
+        /// <returns>A JSON object instance; or null, if error format.</returns>
+        public static JsonObject TryParse(string json, JsonDocumentOptions options = default)
+        {
+            try
+            {
+                return Parse(json, options);
+            }
+            catch (ArgumentException)
+            {
+            }
+            catch (InvalidOperationException)
+            {
+            }
+            catch (JsonException)
+            {
+            }
+            catch (FormatException)
+            {
+            }
+            catch (InvalidCastException)
+            {
+            }
+            catch (NullReferenceException)
+            {
+            }
+            catch (AggregateException)
+            {
+            }
+
+            return null;
         }
 
         /// <summary>

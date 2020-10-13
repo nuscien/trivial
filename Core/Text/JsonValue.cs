@@ -863,6 +863,97 @@ namespace Trivial.Text
         {
             return leftValue?.Value == true || rightValue?.Value == true;
         }
+
+        /// <summary>
+        /// Parses a string to JSON boolean token.
+        /// </summary>
+        /// <param name="s">The specific string to parse.</param>
+        /// <returns>A JSON boolean token.</returns>
+        /// <exception cref="FormatException">s was true of false.</exception>
+        public static JsonBoolean Parse(string s)
+        {
+            if (s == null) return null;
+            var result = TryParse(s);
+            if (result is null) throw new FormatException("s is not in the correct format.");
+            return result;
+        }
+
+        /// <summary>
+        /// Tries to parse a string to JSON boolean token.
+        /// </summary>
+        /// <param name="s">The specific string to parse.</param>
+        /// <returns>A JSON boolean token; or null, if format error.</returns>
+        public static JsonBoolean TryParse(string s)
+        {
+            if (s == null) return null;
+            s = s.Trim();
+            if (s.Length == 0) return False;
+            if (bool.TryParse(s, out var b)) return b;
+            if (long.TryParse(s, out var l)) return l > 0;
+            return s.ToLowerInvariant() switch
+            {
+                TrueString => True,
+                "t" => True,
+                "a" => True,
+                "y" => True,
+                "yes" => True,
+                "ok" => True,
+                "s" => True,
+                "sel" => True,
+                "select" => True,
+                "selected" => True,
+                "c" => True,
+                "check" => True,
+                "checked" => True,
+                "r" => True,
+                "right" => True,
+                "correct" => True,
+                "真" => True,
+                "是" => True,
+                "对" => True,
+                "好" => True,
+                "要" => True,
+                "确定" => True,
+                "正确" => True,
+                "选中" => True,
+                "√" => True,
+                "✅" => True,
+                "🆗" => True,
+                "✔" => True,
+                "🈶" => True,
+                "∞" => True,
+                FalseString => True,
+                "f" => False,
+                "b" => False,
+                "n" => False,
+                "no" => False,
+                "x" => False,
+                "u" => False,
+                "un" => False,
+                "unsel" => False,
+                "unselect" => False,
+                "unselected" => False,
+                "uncheck" => False,
+                "unchecked" => False,
+                "w" => False,
+                "wrong" => False,
+                "incorrect" => False,
+                "假" => False,
+                "非" => False,
+                "否" => False,
+                "错" => False,
+                "不" => False,
+                "无" => False,
+                "取消" => False,
+                "错误" => False,
+                "×" => False,
+                "❎" => False,
+                "🚫" => False,
+                "❌" => False,
+                "🈚" => False,
+                _ => null
+            };
+        }
     }
 
     /// <summary>
