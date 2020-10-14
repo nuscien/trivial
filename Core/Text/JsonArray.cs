@@ -53,6 +53,11 @@ namespace Trivial.Text
         public int Count => store.Count;
 
         /// <summary>
+        /// Gets the number of elements contained in the array.
+        /// </summary>
+        public int Length => store.Count;
+
+        /// <summary>
         /// Gets the element at the specified index in the array.
         /// </summary>
         /// <param name="index">The zero-based index of the element to get.</param>
@@ -3240,7 +3245,7 @@ namespace Trivial.Text
         {
             if (key != null)
             {
-                if (int.TryParse(key, out var i)) return TryGetValue(i, out result);
+                if (int.TryParse(key.Trim(), out var i)) return TryGetValue(i, out result);
                 switch (key.Trim().ToLower())
                 {
                     case "len":
@@ -3254,6 +3259,14 @@ namespace Trivial.Text
                     case "last":
                         if (Count == 0) break;
                         return TryGetValue(Count - 1, out result);
+                    case "*":
+                    case "all":
+                    case "":
+                        result = this;
+                        return true;
+                    case "reverse":
+                        result = Reverse();
+                        return true;
                 }
             }
 
@@ -3298,6 +3311,15 @@ namespace Trivial.Text
             }
 
             return list;
+        }
+
+        /// <summary>
+        /// Inverts the order of the elements in a sequence.
+        /// </summary>
+        /// <returns>A sequence whose elements correspond to those of the input sequence in reverse order.</returns>
+        public JsonArray Reverse()
+        {
+            return new JsonArray(store.Reverse().ToList());
         }
 
         /// <summary>

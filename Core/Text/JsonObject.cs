@@ -1606,37 +1606,60 @@ namespace Trivial.Text
         {
             if (!isPath) return TryGetValue(key);
             if (key == null) return this;
-            var arr = key.Split('.');
+
+#pragma warning disable IDE0057
+            var traditional = key.StartsWith("[") && key.EndsWith("]");
+            var arr = traditional ? key.Substring(1, key.Length - 2).Split(new [] { "][" }, StringSplitOptions.None) : key.Split('.');
             var path = new List<string>();
             string quote = null;
-            foreach (var prop in arr)
+            foreach (var ele in arr)
             {
-                if (string.IsNullOrEmpty(prop)) continue;
+                if (string.IsNullOrEmpty(ele)) continue;
+                var prop = StringExtensions.ReplaceBackSlash(ele);
                 if (quote != null)
                 {
-                    if (prop.EndsWith(quote)) quote = null;
+                    var propTrim3 = prop.TrimEnd();
+                    if (propTrim3.EndsWith(quote)) quote = null;
+                    var appendStr = (traditional ? "][" : ".") + (quote != null ? prop : propTrim3.Substring(0, propTrim3.Length - 1));
+
                     #pragma warning disable IDE0056
-                    path[path.Count - 1] += quote != null ? prop : prop.Substring(0, prop.Length - 1);
+                    path[path.Count - 1] += appendStr;
                     #pragma warning restore IDE0056
                     continue;
                 }
 
-                if (prop.StartsWith("\""))
+                string quoteStart = null;
+                var propTrim = prop.TrimStart();
+                if (propTrim.StartsWith("\""))
                 {
-                    path.Add(prop.Substring(0, prop.Length - 1));
-                    quote = "\"";
+                    quoteStart = "\"";
                 }
-                else if (prop.StartsWith("\'"))
+                else if (propTrim.StartsWith("\'"))
                 {
-                    path.Add(prop.Substring(0, prop.Length - 1));
-                    quote = "\'";
+                    quoteStart = "\'";
+                }
+
+                if (quoteStart == null)
+                {
+                    path.Add(prop);
+                    continue;
+                }
+
+                propTrim = propTrim.Substring(1);
+                var propTrim2 = propTrim.TrimEnd();
+                if (propTrim2.EndsWith(quoteStart))
+                {
+                    propTrim = propTrim2.Substring(0, propTrim2.Length - 1);
                 }
                 else
                 {
-                    path.Add(prop);
+                    quote = quoteStart;
                 }
+
+                path.Add(propTrim);
             }
 
+            #pragma warning restore IDE0057
             return TryGetValue(path);
         }
 

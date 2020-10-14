@@ -453,6 +453,20 @@ namespace Trivial.Text
         }
 
         /// <summary>
+        /// Retrieves a substring from this instance. The substring starts at a specified character position and has a specified length.
+        /// </summary>
+        /// <param name="startIndex">The zero-based starting character position of a substring in this instance.</param>
+        /// <param name="length">The number of characters in the substring.</param>
+        /// <returns>A JSON string that is equivalent to the substring of length length that begins at startIndex in this instance, or instance with empty string value if startIndex is equal to the length of this instance and length is zero.</returns>
+        public JsonString Substring(int startIndex, int? length = null)
+        {
+            if (Value == null) return this;
+            var str = length.HasValue ? Value.Substring(startIndex, length.Value) : Value.Substring(startIndex);
+            if (str != null && str.Length == Length) return this;
+            return new JsonString(str);
+        }
+
+        /// <summary>
         /// Indicates whether this instance and a specified object are equal.
         /// </summary>
         /// <param name="other">The object to compare with the current instance.</param>
@@ -1015,9 +1029,14 @@ namespace Trivial.Text
                 case "count":
                     result = new JsonInteger(Length);
                     return true;
+                case "*":
+                case "all":
+                case "":
+                    result = this;
+                    return true;
             }
 
-            if (int.TryParse(key, out var i) && i >= 0 && i < Length)
+            if (int.TryParse(key.Trim(), out var i) && i >= 0 && i < Length)
             {
                 try
                 {
