@@ -691,15 +691,15 @@ namespace Trivial.Text
             StringBuilder backSlash = null;
             foreach (var c in s)
             {
-                if (c == '\\')
-                {
-                    backSlash = new StringBuilder();
-                    continue;
-                }
-
                 if (backSlash != null)
                 {
                     if (ReplaceBackSlash(sb, backSlash, c)) backSlash = null;
+                    continue;
+                }
+
+                if (c == '\\')
+                {
+                    backSlash = new StringBuilder();
                     continue;
                 }
 

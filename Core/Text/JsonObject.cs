@@ -1607,15 +1607,14 @@ namespace Trivial.Text
             if (!isPath) return TryGetValue(key);
             if (key == null) return this;
 
-#pragma warning disable IDE0057
+            #pragma warning disable IDE0057
             var traditional = key.StartsWith("[") && key.EndsWith("]");
             var arr = traditional ? key.Substring(1, key.Length - 2).Split(new [] { "][" }, StringSplitOptions.None) : key.Split('.');
             var path = new List<string>();
             string quote = null;
             foreach (var ele in arr)
             {
-                if (string.IsNullOrEmpty(ele)) continue;
-                var prop = StringExtensions.ReplaceBackSlash(ele);
+                var prop = StringExtensions.ReplaceBackSlash(ele ?? string.Empty);
                 if (quote != null)
                 {
                     var propTrim3 = prop.TrimEnd();
@@ -1628,6 +1627,7 @@ namespace Trivial.Text
                     continue;
                 }
 
+                if (string.IsNullOrEmpty(prop)) continue;
                 string quoteStart = null;
                 var propTrim = prop.TrimStart();
                 if (propTrim.StartsWith("\""))

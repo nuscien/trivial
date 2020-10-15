@@ -805,21 +805,15 @@ namespace Trivial.Text
                 return true;
             }
 
-            var v = Value.ToLower();
-            switch (v)
+            var r = JsonBoolean.TryParse(Value);
+            if (r == null)
             {
-                case JsonBoolean.TrueString:
-                case "1":
-                    result = true;
-                    return true;
-                case JsonBoolean.FalseString:
-                case "0":
-                    result = false;
-                    return true;
-                default:
-                    result = false;
-                    return false;
+                result = false;
+                return false;
             }
+
+            result = r.Value;
+            return true;
         }
 
         /// <summary>
@@ -1026,7 +1020,6 @@ namespace Trivial.Text
             {
                 case "len":
                 case "length":
-                case "count":
                     result = new JsonInteger(Length);
                     return true;
                 case "*":

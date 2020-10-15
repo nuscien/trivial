@@ -107,7 +107,23 @@ namespace Trivial.Text
             {
             }
 
+            json["dot.net"] = new JsonArray
+            {
+                "Text",
+                new JsonObject
+                {
+                    { "name", "value" },
+                    { ".[][][]....\"\'\\.", "test" }
+                }
+            };
             Assert.AreEqual(4567, p1.GetInt32Value("p7"));
+            Assert.IsTrue(json.ContainsKey("dot.net"));
+            Assert.AreEqual(JsonValueKind.Array, json["dot.net"].ValueKind);
+            Assert.AreEqual("e", json.TryGetValue("[dot.net][1]['.[][][]....\\\"\\\'\\\\.'][1]", true).GetString());
+            Assert.AreEqual(4, json.TryGetValue("'dot.net'.1.\".[][][]....\\\"\\\'\\\\.\".length", true).GetInt32());
+            json.Remove("dot.net");
+            Assert.IsFalse(json.ContainsKey("dot.net"));
+            Assert.IsNull(json.TryGetValue("dot.net"));
 
             var jsonArray = json.GetArrayValue("arr");
             Assert.AreEqual(0, jsonArray.Count);
