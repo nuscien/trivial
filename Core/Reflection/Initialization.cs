@@ -178,9 +178,11 @@ namespace Trivial.Reflection
             }
             catch (NullReferenceException)
             {
+                if (semaphoreSlim == null) return;
             }
             catch (ObjectDisposedException)
             {
+                if (semaphoreSlim == null) return;
             }
 
             await Task.Delay(delay);
