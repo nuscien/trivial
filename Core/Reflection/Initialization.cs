@@ -23,12 +23,6 @@ namespace Trivial.Reflection
         }
 
         /// <summary>
-        /// Gets a System.Threading.WaitHandle that can be used to wait on the semaphore.
-        /// </summary>
-        /// <exception cref="ObjectDisposedException">The System.Threading.SemaphoreSlim has been disposed.</exception>
-        protected WaitHandle SemaphoreSlimAvailableWaitHandle => semaphoreSlim.AvailableWaitHandle;
-
-        /// <summary>
         /// Initializes a new instance of the Initialization class.
         /// </summary>
         /// <param name="initialization">The initialization handler.</param>
@@ -36,6 +30,12 @@ namespace Trivial.Reflection
         {
             init = initialization;
         }
+
+        /// <summary>
+        /// Gets a System.Threading.WaitHandle that can be used to wait on the semaphore.
+        /// </summary>
+        /// <exception cref="ObjectDisposedException">The System.Threading.SemaphoreSlim has been disposed.</exception>
+        protected WaitHandle SemaphoreSlimAvailableWaitHandle => semaphoreSlim.AvailableWaitHandle;
 
         /// <summary>
         /// Gets a value indicating whether it has initialized.
@@ -72,7 +72,7 @@ namespace Trivial.Reflection
             {
                 try
                 {
-                    semaphoreSlim.Release();
+                    if (semaphoreSlim != null) semaphoreSlim.Release();
                 }
                 catch (ObjectDisposedException)
                 {
@@ -102,12 +102,89 @@ namespace Trivial.Reflection
         }
 
         /// <summary>
+        /// Waits for initialization.
+        /// </summary>
+        /// <returns>The async task returned.</returns>
+        protected async Task WaitInitAsync()
+        {
+            if (semaphoreSlim == null) return;
+            try
+            {
+                await semaphoreSlim.WaitAsync();
+                if (semaphoreSlim != null) semaphoreSlim.Release();
+            }
+            catch (NullReferenceException)
+            {
+            }
+            catch (ObjectDisposedException)
+            {
+            }
+        }
+
+        /// <summary>
+        /// Waits for initialization.
+        /// </summary>
+        /// <param name="timeout">A System.TimeSpan that represents the number of milliseconds to wait.</param>
+        /// <returns>true if initialization completes; otherwise, false..</returns>
+        protected async Task<bool> WaitInitAsync(TimeSpan timeout)
+        {
+            var result = true;
+            if (semaphoreSlim == null) return result;
+            try
+            {
+                result = await semaphoreSlim.WaitAsync(timeout);
+                if (result && semaphoreSlim != null) semaphoreSlim.Release();
+            }
+            catch (NullReferenceException)
+            {
+            }
+            catch (ObjectDisposedException)
+            {
+            }
+
+            return result;
+        }
+
+        /// <summary>
         /// Disposes the semaphore slim.
         /// </summary>
         protected void DisposeSemaphoreSlim()
         {
-            semaphoreSlim.Dispose();
-            semaphoreSlim = null;
+            if (semaphoreSlim == null) return;
+            try
+            {
+                semaphoreSlim.Dispose();
+                semaphoreSlim = null;
+            }
+            catch (NullReferenceException)
+            {
+            }
+            catch (ObjectDisposedException)
+            {
+            }
+        }
+
+        /// <summary>
+        /// Disposes the semaphore slim.
+        /// </summary>
+        /// <param name="delay">The time span to wait before completing the returned task.</param>
+        /// <exception cref="ArgumentOutOfRangeException">delay represents a negative time interval other than TimeSpan.FromMilliseconds(-1). -or- The delay argument's System.TimeSpan.TotalMilliseconds property is greater than System.Int32.MaxValue.</exception>
+        protected async Task DisposeSemaphoreSlimAsync(TimeSpan delay)
+        {
+            if (semaphoreSlim == null) return;
+            try
+            {
+                if (semaphoreSlim.CurrentCount == 1) semaphoreSlim.Dispose();
+            }
+            catch (NullReferenceException)
+            {
+            }
+            catch (ObjectDisposedException)
+            {
+            }
+
+            await Task.Delay(delay);
+            DisposeSemaphoreSlim();
         }
     }
 }
