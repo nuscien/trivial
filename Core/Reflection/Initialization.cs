@@ -168,6 +168,7 @@ namespace Trivial.Reflection
         /// Disposes the semaphore slim.
         /// </summary>
         /// <param name="delay">The time span to wait before completing the returned task.</param>
+        /// <returns>The async task returned.</returns>
         /// <exception cref="ArgumentOutOfRangeException">delay represents a negative time interval other than TimeSpan.FromMilliseconds(-1). -or- The delay argument's System.TimeSpan.TotalMilliseconds property is greater than System.Int32.MaxValue.</exception>
         protected async Task DisposeSemaphoreSlimAsync(TimeSpan delay)
         {
