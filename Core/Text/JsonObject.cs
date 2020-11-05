@@ -1724,7 +1724,8 @@ namespace Trivial.Text
         public void SetValue(string key, string value)
         {
             AssertKey(key);
-            store[key] = new JsonString(value);
+            if (value == null) store[key] = JsonValues.Null;
+            else store[key] = new JsonString(value);
         }
 
         /// <summary>
@@ -1736,7 +1737,8 @@ namespace Trivial.Text
         public void SetValue(string key, SecureString value)
         {
             AssertKey(key);
-            store[key] = new JsonString(value);
+            if (value == null) store[key] = JsonValues.Null;
+            else store[key] = new JsonString(value);
         }
 
         /// <summary>
@@ -2278,6 +2280,258 @@ namespace Trivial.Text
             }
 
             return count;
+        }
+
+        /// <summary>
+        /// Increases a number property.
+        /// </summary>
+        /// <param name="key">The key of the property.</param>
+        /// <param name="value">The value to increase.</param>
+        /// <exception cref="ArgumentNullException">key was null, empty, or consists only of white-space characters.</exception>
+        /// <exception cref="InvalidOperationException">The property kind was not number.</exception>
+        public void IncreaseValue(string key, int value = 1)
+        {
+            AssertKey(key);
+            var v = TryGetValue(key);
+            if (v is null || v.ValueKind == JsonValueKind.Null || v.ValueKind == JsonValueKind.Undefined)
+            {
+                SetValue(key, value);
+                return;
+            }
+
+            if (v is JsonInteger i)
+            {
+                SetValue(key, i.Value + value);
+                return;
+            }
+
+            if (v is JsonDouble j)
+            {
+                SetValue(key, j.Value + value);
+                return;
+            }
+
+            if (v is JsonString s)
+            {
+                if (s.Length == 0)
+                {
+                    store[key] = new JsonString(value);
+                    return;
+                }
+
+                if (s.TryGetDouble(out var d))
+                {
+                    if (s.TryGetInt64(out var l) && d == l) SetValue(key, l + value);
+                    else SetValue(key, d + value);
+                    return;
+                }
+            }
+
+            if (v is JsonArray a && a.Count == 0)
+            {
+                a.Add(value);
+                return;
+            }
+
+            throw new InvalidOperationException($"Expect a number but its kind is {v.ValueKind}.");
+        }
+
+        /// <summary>
+        /// Increases a number property.
+        /// </summary>
+        /// <param name="key">The key of the property.</param>
+        /// <param name="value">The value to increase.</param>
+        /// <exception cref="ArgumentNullException">key was null, empty, or consists only of white-space characters.</exception>
+        /// <exception cref="InvalidOperationException">The property kind was not number.</exception>
+        public void IncreaseValue(string key, long value = 1)
+        {
+            AssertKey(key);
+            var v = TryGetValue(key);
+            if (v is null || v.ValueKind == JsonValueKind.Null || v.ValueKind == JsonValueKind.Undefined)
+            {
+                SetValue(key, value);
+                return;
+            }
+
+            if (v is JsonInteger i)
+            {
+                SetValue(key, i.Value + value);
+                return;
+            }
+
+            if (v is JsonDouble j)
+            {
+                SetValue(key, j.Value + value);
+                return;
+            }
+
+            if (v is JsonString s)
+            {
+                if (s.Length == 0)
+                {
+                    store[key] = new JsonString(value);
+                    return;
+                }
+
+                if (s.TryGetDouble(out var d))
+                {
+                    if (s.TryGetInt64(out var l) && d == l) SetValue(key, l + value);
+                    else SetValue(key, d + value);
+                    return;
+                }
+            }
+
+            if (v is JsonArray a && a.Count == 0)
+            {
+                a.Add(value);
+                return;
+            }
+
+            throw new InvalidOperationException($"Expect a number but its kind is {v.ValueKind}.");
+        }
+
+        /// <summary>
+        /// Increases a number property.
+        /// </summary>
+        /// <param name="key">The key of the property.</param>
+        /// <param name="value">The value to increase.</param>
+        /// <exception cref="ArgumentNullException">key was null, empty, or consists only of white-space characters.</exception>
+        /// <exception cref="InvalidOperationException">The property kind was not number.</exception>
+        public void IncreaseValue(string key, double value = 1)
+        {
+            AssertKey(key);
+            var v = TryGetValue(key);
+            if (v is null || v.ValueKind == JsonValueKind.Null || v.ValueKind == JsonValueKind.Undefined)
+            {
+                SetValue(key, value);
+                return;
+            }
+
+            if (v is JsonInteger i)
+            {
+                SetValue(key, i.Value + value);
+                return;
+            }
+
+            if (v is JsonDouble j)
+            {
+                SetValue(key, j.Value + value);
+                return;
+            }
+
+            if (v is JsonString s)
+            {
+                if (s.Length == 0)
+                {
+                    store[key] = new JsonString(value);
+                    return;
+                }
+
+                if (s.TryGetDouble(out var d))
+                {
+                    SetValue(key, d + value);
+                    return;
+                }
+            }
+
+            if (v is JsonArray a && a.Count == 0)
+            {
+                a.Add(value);
+                return;
+            }
+
+            throw new InvalidOperationException($"Expect a number but its kind is {v.ValueKind}.");
+        }
+
+        /// <summary>
+        /// Decreases a number property.
+        /// </summary>
+        /// <param name="key">The key of the property.</param>
+        /// <param name="value">The value to decrease.</param>
+        /// <exception cref="ArgumentNullException">key was null, empty, or consists only of white-space characters.</exception>
+        /// <exception cref="InvalidOperationException">The property kind was not number.</exception>
+        public void DecreaseValue(string key, int value = 1)
+        {
+            IncreaseValue(key, -value);
+        }
+
+        /// <summary>
+        /// Decreases a number property.
+        /// </summary>
+        /// <param name="key">The key of the property.</param>
+        /// <param name="value">The value to decrease.</param>
+        /// <exception cref="ArgumentNullException">key was null, empty, or consists only of white-space characters.</exception>
+        /// <exception cref="InvalidOperationException">The property kind was not number.</exception>
+        public void DecreaseValue(string key, long value = 1)
+        {
+            IncreaseValue(key, -value);
+        }
+
+        /// <summary>
+        /// Decreases a number property.
+        /// </summary>
+        /// <param name="key">The key of the property.</param>
+        /// <param name="value">The value to decrease.</param>
+        /// <exception cref="ArgumentNullException">key was null, empty, or consists only of white-space characters.</exception>
+        /// <exception cref="InvalidOperationException">The property kind was not number.</exception>
+        public void DecreaseValue(string key, double value = 1)
+        {
+            IncreaseValue(key, -value);
+        }
+
+        /// <summary>
+        /// Appends a value into a string property.
+        /// </summary>
+        /// <param name="key">The key of the property.</param>
+        /// <param name="value">The string value to append.</param>
+        /// <returns>The string value.</returns>
+        /// <exception cref="ArgumentNullException">key was null, empty, or consists only of white-space characters.</exception>
+        /// <exception cref="InvalidOperationException">The property kind was not string.</exception>
+        public string AppendValue(string key, string value)
+        {
+            AssertKey(key);
+            var v = TryGetValue(key);
+            if (v is null || v.ValueKind == JsonValueKind.Null || v.ValueKind == JsonValueKind.Undefined)
+            {
+                SetValue(key, value);
+                return value;
+            }
+
+            if (v is JsonString s)
+            {
+                value = (s.Value ?? string.Empty) + value;
+                SetValue(key, value);
+                return value;
+            }
+
+            if (v.ValueKind != JsonValueKind.Array && v.ValueKind != JsonValueKind.Object)
+            {
+                value = (v.ToString() ?? string.Empty) + value;
+                SetValue(key, value);
+                return value;
+            }
+
+            if (v is JsonArray a && a.Count == 0)
+            {
+                a.Add(value);
+                return value;
+            }
+
+            throw new InvalidOperationException($"Expect a string but its kind is {v.ValueKind}.");
+        }
+
+        /// <summary>
+        /// Appends a value into a string property.
+        /// </summary>
+        /// <param name="key">The key of the property.</param>
+        /// <param name="format">The string value to append.</param>
+        /// <param name="args">An object array that contains zero or more objects to format.</param>
+        /// <returns>The string value.</returns>
+        /// <exception cref="ArgumentNullException">key was null, empty, or consists only of white-space characters.</exception>
+        /// <exception cref="InvalidOperationException">The property kind was not string.</exception>
+        public string AppendValueFormat(string key, string format, params object[] args)
+        {
+            return AppendValue(key, string.Format(format, args));
         }
 
         /// <summary>
@@ -3068,8 +3322,8 @@ namespace Trivial.Text
         /// <returns>A collection that contains elements from the input sequence that satisfy the condition.</returns>
         public IEnumerable<KeyValuePair<string, IJsonValueResolver>> Where(Func<KeyValuePair<string, IJsonValueResolver>, bool> predicate)
         {
-            if (predicate == null) return store.Where(ele => true);
-            return store.Where(predicate);
+            if (predicate == null) return store.Select(ele => ele.Value is null ? new KeyValuePair<string, IJsonValueResolver>(ele.Key, JsonValues.Null) : ele);
+            return store.Select(ele => ele.Value is null ? new KeyValuePair<string, IJsonValueResolver>(ele.Key, JsonValues.Null) : ele).Where(predicate);
         }
 
         /// <summary>
@@ -3079,8 +3333,8 @@ namespace Trivial.Text
         /// <returns>A collection that contains elements from the input sequence that satisfy the condition.</returns>
         public IEnumerable<KeyValuePair<string, IJsonValueResolver>> Where(Func<KeyValuePair<string, IJsonValueResolver>, int, bool> predicate)
         {
-            if (predicate == null) return store.Where(ele => true);
-            return store.Where(predicate);
+            if (predicate == null) return store.Select(ele => ele.Value is null ? new KeyValuePair<string, IJsonValueResolver>(ele.Key, JsonValues.Null) : ele);
+            return store.Select(ele => ele.Value is null ? new KeyValuePair<string, IJsonValueResolver>(ele.Key, JsonValues.Null) : ele).Where(predicate);
         }
 
         /// <summary>

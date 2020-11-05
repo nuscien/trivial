@@ -1911,7 +1911,7 @@ namespace Trivial.Text
         /// <returns>A collection whose elements are the result of invoking the transform function on each element of source.</returns>
         public IEnumerable<T> Select<T>(Func<IJsonValueResolver, T> selector)
         {
-            return Enumerable.Select(this, selector);
+            return store.Select(ele => selector(ele ?? JsonValues.Null));
         }
 
         /// <summary>
@@ -1922,7 +1922,7 @@ namespace Trivial.Text
         /// <returns>A collection whose elements are the result of invoking the transform function on each element of source.</returns>
         public IEnumerable<T> Select<T>(Func<IJsonValueResolver, int, T> selector)
         {
-            return Enumerable.Select(this, selector);
+            return store.Select((ele, i) => selector(ele ?? JsonValues.Null, i));
         }
 
         /// <summary>
@@ -2747,8 +2747,8 @@ namespace Trivial.Text
         /// <returns>A collection that contains elements from the input sequence that satisfy the condition.</returns>
         public IEnumerable<IJsonValueResolver> Where(Func<IJsonValueResolver, bool> predicate)
         {
-            if (predicate == null) return store.Where(ele => true);
-            return store.Where(predicate);
+            if (predicate == null) return store.Select(ele => ele ?? JsonValues.Null);
+            return store.Select(ele => ele ?? JsonValues.Null).Where(predicate);
         }
 
         /// <summary>
@@ -2758,8 +2758,8 @@ namespace Trivial.Text
         /// <returns>A collection that contains elements from the input sequence that satisfy the condition.</returns>
         public IEnumerable<IJsonValueResolver> Where(Func<IJsonValueResolver, int, bool> predicate)
         {
-            if (predicate == null) return store.Where(ele => true);
-            return store.Where(predicate);
+            if (predicate == null) return store.Select(ele => ele ?? JsonValues.Null);
+            return store.Select(ele => ele ?? JsonValues.Null).Where(predicate);
         }
 
         /// <summary>
@@ -2768,7 +2768,33 @@ namespace Trivial.Text
         /// <returns>A list that contains elements from this sequence.</returns>
         public List<IJsonValueResolver> ToList()
         {
-            return new List<IJsonValueResolver>(store);
+            return store.Select(ele => ele ?? JsonValues.Null).ToList();
+        }
+
+        /// <summary>
+        /// Creates an array from this instance.
+        /// </summary>
+        /// <returns>An array that contains elements from this sequence.</returns>
+        public IJsonValueResolver[] ToArray()
+        {
+            return store.Select(ele => ele ?? JsonValues.Null).ToArray();
+        }
+
+        /// <summary>
+        /// Creates a dictionary from this instance.
+        /// </summary>
+        /// <returns>A dictionary that contains elements from this sequence.</returns>
+        public Dictionary<int, IJsonValueResolver> ToDictionary()
+        {
+            var d = new Dictionary<int, IJsonValueResolver>();
+            var i = 0;
+            foreach (var item in store)
+            {
+                d[i] = item ?? JsonValues.Null;
+                i++;
+            }
+
+            return d;
         }
 
         /// <summary>
