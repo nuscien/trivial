@@ -117,10 +117,8 @@ namespace Trivial.Security
             if (h == null || plainText == null) return null;
 
             // Return the hash string computed.
-            using (var alg = h())
-            {
-                return ComputeHashString(alg, plainText, encoding);
-            }
+            using var alg = h();
+            return ComputeHashString(alg, plainText, encoding);
         }
 
         /// <summary>
@@ -135,10 +133,8 @@ namespace Trivial.Security
             if (h == null || plainText == null) return null;
 
             // Return the hash string computed.
-            using (var alg = h())
-            {
-                return ComputeHashString(h(), plainText);
-            }
+            using var alg = h();
+            return ComputeHashString(h(), plainText);
         }
 
         /// <summary>
@@ -165,11 +161,8 @@ namespace Trivial.Security
         /// <exception cref="NotSupportedException">The hash algorithm name is not supported.</exception>
         public static string ComputeHashString(HashAlgorithmName name, string plainText, Encoding encoding = null)
         {
-            if (name == null) return ComputeHashString(null, plainText, encoding);
-            using (var alg = Create(name))
-            {
-                return ComputeHashString(alg, plainText, encoding);
-            }
+            using var alg = Create(name);
+            return ComputeHashString(alg, plainText, encoding);
         }
 
         /// <summary>
@@ -195,42 +188,25 @@ namespace Trivial.Security
         /// <exception cref="NotSupportedException">The hash algorithm name is not supported.</exception>
         public static HashAlgorithm Create(HashAlgorithmName name)
         {
-            if (name == null) throw new ArgumentNullException(nameof(name), "name should not be null.");
             if (name == HashAlgorithmName.SHA512) return SHA512.Create();
             if (name == HashAlgorithmName.MD5) return MD5.Create();
             if (name == HashAlgorithmName.SHA256) return SHA256.Create();
             if (name == HashAlgorithmName.SHA1) return SHA1.Create();
             if (name == HashAlgorithmName.SHA384) return SHA384.Create();
             if (string.IsNullOrWhiteSpace(name.Name)) throw new ArgumentException("name.Name should not be null or empty.", nameof(name));
-            switch (name.Name.ToUpperInvariant().Replace("-", string.Empty))
+            return (name.Name.ToUpperInvariant().Replace("-", string.Empty)) switch
             {
-                case "SHA3512":
-                case "KECCAK512":
-                case "SHA3":
-                    return SHA3Managed.Create512();
-                case "SHA3384":
-                case "KECCAK384":
-                    return SHA3Managed.Create384();
-                case "SHA3256":
-                case "KECCAK256":
-                    return SHA3Managed.Create256();
-                case "SHA3224":
-                case "KECCAK224":
-                    return SHA3Managed.Create224();
-                case "SHA256":
-                    return SHA256.Create();
-                case "SHA384":
-                    return SHA384.Create();
-                case "SHA512":
-                case "SHA2":
-                    return SHA512.Create();
-                case "MD5":
-                    return MD5.Create();
-                case "SHA1":
-                    return SHA1.Create();
-            }
-
-            return HashAlgorithm.Create(name.Name);
+                "SHA3512" or "KECCAK512" or "SHA3" => SHA3Managed.Create512(),
+                "SHA3384" or "KECCAK384" => SHA3Managed.Create384(),
+                "SHA3256" or "KECCAK256" => SHA3Managed.Create256(),
+                "SHA3224" or "KECCAK224" => SHA3Managed.Create224(),
+                "SHA256" => SHA256.Create(),
+                "SHA384" => SHA384.Create(),
+                "SHA512" or "SHA2" => SHA512.Create(),
+                "MD5" => MD5.Create(),
+                "SHA1" => SHA1.Create(),
+                _ => HashAlgorithm.Create(name.Name),
+            };
         }
 
         /// <summary>
@@ -447,9 +423,7 @@ namespace Trivial.Security
         public static bool Verify(HashAlgorithmName name, string plainText, string hash, Encoding encoding = null)
         {
             // Return the result after StringComparer comparing.
-            return name != null ?
-                StringComparer.OrdinalIgnoreCase.Equals(ComputeHashString(name, plainText, encoding), hash) :
-                (string.IsNullOrEmpty(hash) || StringComparer.OrdinalIgnoreCase.Equals(plainText, hash));
+            return StringComparer.OrdinalIgnoreCase.Equals(ComputeHashString(name, plainText, encoding), hash);
         }
 
         /// <summary>

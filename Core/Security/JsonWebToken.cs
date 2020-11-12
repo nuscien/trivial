@@ -639,6 +639,9 @@ namespace Trivial.Security
         /// </summary>
         [DataMember(Name = "jti", EmitDefaultValue = false)]
         [JsonPropertyName("jti")]
+#if !NETCOREAPP3_1
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+#endif
         public string Id { get; set; }
 
         /// <summary>
@@ -649,6 +652,9 @@ namespace Trivial.Security
         /// </summary>
         [DataMember(Name = "iss", EmitDefaultValue = false)]
         [JsonPropertyName("iss")]
+#if !NETCOREAPP3_1
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+#endif
         public string Issuer { get; set; }
 
         /// <summary>
@@ -663,6 +669,9 @@ namespace Trivial.Security
         /// </summary>
         [DataMember(Name = "sub", EmitDefaultValue = false)]
         [JsonPropertyName("sub")]
+#if !NETCOREAPP3_1
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+#endif
         public string Subject { get; set; }
 
         /// <summary>
@@ -682,6 +691,9 @@ namespace Trivial.Security
         [DataMember(Name = "aud", EmitDefaultValue = false)]
         [JsonPropertyName("aud")]
         [JsonConverter(typeof(JsonStringListConverter))]
+#if !NETCOREAPP3_1
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+#endif
         public IEnumerable<string> Audience { get; set; }
 
         /// <summary>
@@ -702,6 +714,9 @@ namespace Trivial.Security
         /// </summary>
         [DataMember(Name = "exp", EmitDefaultValue = false)]
         [JsonPropertyName("exp")]
+#if !NETCOREAPP3_1
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+#endif
         public long? ExpirationTick
         {
             get => WebFormat.ParseUnixTimestamp(Expiration);
@@ -726,6 +741,9 @@ namespace Trivial.Security
         /// </summary>
         [DataMember(Name = "nbf", EmitDefaultValue = false)]
         [JsonPropertyName("nbf")]
+#if !NETCOREAPP3_1
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+#endif
         public long? NotBeforeTick
         {
             get => WebFormat.ParseUnixTimestamp(NotBefore);
@@ -746,6 +764,9 @@ namespace Trivial.Security
         /// </summary>
         [DataMember(Name = "iat", EmitDefaultValue = false)]
         [JsonPropertyName("iat")]
+#if !NETCOREAPP3_1
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+#endif
         public long? IssuedAtTick
         {
             get => WebFormat.ParseUnixTimestamp(IssuedAt);

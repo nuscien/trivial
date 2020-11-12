@@ -220,6 +220,7 @@ namespace Trivial.Text
         /// </summary>
         /// <param name="type">The positional notation.</param>
         /// <returns>A string of the number in the specific positional notation.</returns>
+        /// <exception cref="ArgumentOutOfRangeException">type should be in 2-36.</exception>
         public string ToPositionalNotationString(int type)
         {
             return Maths.Arithmetic.ToPositionalNotationString(Value, type);

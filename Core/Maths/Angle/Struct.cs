@@ -319,7 +319,6 @@ namespace Trivial.Maths
         /// <returns>true if they are same; otherwise, false.</returns>
         public static bool operator ==(Angle leftValue, IAngle rightValue)
         {
-            if (ReferenceEquals(leftValue, rightValue)) return true;
             if (rightValue is null) return false;
             return leftValue.Degrees == rightValue.Degrees;
         }
@@ -333,7 +332,6 @@ namespace Trivial.Maths
         /// <returns>true if they are different; otherwise, false.</returns>
         public static bool operator !=(Angle leftValue, IAngle rightValue)
         {
-            if (ReferenceEquals(leftValue, rightValue)) return false;
             if (rightValue is null) return true;
             return leftValue.Degrees != rightValue.Degrees;
         }
@@ -346,7 +344,6 @@ namespace Trivial.Maths
         /// <returns>true if the left one is smaller than the right one; otherwise, false.</returns>
         public static bool operator <(Angle leftValue, IAngle rightValue)
         {
-            if (ReferenceEquals(leftValue, rightValue)) return false;
             if (rightValue is null) return true;
             return leftValue.Degrees < rightValue.Degrees;
         }
@@ -359,7 +356,6 @@ namespace Trivial.Maths
         /// <returns>true if the left one is greater than the right one; otherwise, false.</returns>
         public static bool operator >(Angle leftValue, IAngle rightValue)
         {
-            if (ReferenceEquals(leftValue, rightValue)) return false;
             if (rightValue is null) return false;
             return leftValue.Degrees < rightValue.Degrees;
         }
@@ -372,7 +368,6 @@ namespace Trivial.Maths
         /// <returns>true if the left one is smaller than or equals to the right one; otherwise, false.</returns>
         public static bool operator <=(Angle leftValue, IAngle rightValue)
         {
-            if (ReferenceEquals(leftValue, rightValue)) return true;
             if (rightValue is null) return true;
             return leftValue.Degrees <= rightValue.Degrees;
         }
@@ -385,7 +380,6 @@ namespace Trivial.Maths
         /// <returns>true if the left one is greater than or equals to the right one; otherwise, false.</returns>
         public static bool operator >=(Angle leftValue, IAngle rightValue)
         {
-            if (ReferenceEquals(leftValue, rightValue)) return true;
             if (rightValue is null) return false;
             return leftValue.Degrees <= rightValue.Degrees;
         }

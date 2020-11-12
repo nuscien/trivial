@@ -179,7 +179,6 @@ namespace Trivial.Geography
             /// <returns>true if they are same; otherwise, false.</returns>
             public static bool operator ==(Model leftValue, Latitude rightValue)
             {
-                if (ReferenceEquals(leftValue, rightValue)) return true;
                 return !(leftValue is null) && leftValue.Equals(rightValue);
             }
 
@@ -205,7 +204,6 @@ namespace Trivial.Geography
             /// <returns>true if they are different; otherwise, false.</returns>
             public static bool operator !=(Model leftValue, Latitude rightValue)
             {
-                if (ReferenceEquals(leftValue, rightValue)) return false;
                 return leftValue is null || !leftValue.Equals(rightValue);
             }
 
@@ -397,7 +395,6 @@ namespace Trivial.Geography
         /// <returns>true if they are same; otherwise, false.</returns>
         public static bool operator ==(Latitude leftValue, Latitude rightValue)
         {
-            if (ReferenceEquals(leftValue, rightValue)) return true;
             return leftValue.Value.Degrees == rightValue.Value.Degrees;
         }
 
@@ -410,7 +407,6 @@ namespace Trivial.Geography
         /// <returns>true if they are same; otherwise, false.</returns>
         public static bool operator ==(Latitude leftValue, Model rightValue)
         {
-            if (ReferenceEquals(leftValue, rightValue)) return true;
             return !(rightValue is null) && leftValue.Value.Degrees == rightValue.Degrees;
         }
 
@@ -423,7 +419,6 @@ namespace Trivial.Geography
         /// <returns>true if they are different; otherwise, false.</returns>
         public static bool operator !=(Latitude leftValue, Latitude rightValue)
         {
-            if (ReferenceEquals(leftValue, rightValue)) return false;
             return leftValue.Value.Degrees != rightValue.Value.Degrees;
         }
 
@@ -436,7 +431,6 @@ namespace Trivial.Geography
         /// <returns>true if they are different; otherwise, false.</returns>
         public static bool operator !=(Latitude leftValue, Model rightValue)
         {
-            if (ReferenceEquals(leftValue, rightValue)) return false;
             return rightValue is null || leftValue.Value.Degrees != rightValue.Degrees;
         }
 
@@ -670,7 +664,6 @@ namespace Trivial.Geography
             /// <returns>true if they are same; otherwise, false.</returns>
             public static bool operator ==(Model leftValue, Longitude rightValue)
             {
-                if (ReferenceEquals(leftValue, rightValue)) return true;
                 return !(leftValue is null) && leftValue.Equals(rightValue);
             }
 
@@ -696,7 +689,6 @@ namespace Trivial.Geography
             /// <returns>true if they are different; otherwise, false.</returns>
             public static bool operator !=(Model leftValue, Longitude rightValue)
             {
-                if (ReferenceEquals(leftValue, rightValue)) return false;
                 return leftValue is null || !leftValue.Equals(rightValue);
             }
 
@@ -944,7 +936,6 @@ namespace Trivial.Geography
         /// <returns>true if they are same; otherwise, false.</returns>
         public static bool operator ==(Longitude leftValue, Longitude rightValue)
         {
-            if (ReferenceEquals(leftValue, rightValue)) return true;
             return leftValue.Value.Degrees == rightValue.Value.Degrees;
         }
 
@@ -957,7 +948,6 @@ namespace Trivial.Geography
         /// <returns>true if they are same; otherwise, false.</returns>
         public static bool operator ==(Longitude leftValue, Model rightValue)
         {
-            if (ReferenceEquals(leftValue, rightValue)) return true;
             return !(rightValue is null) && leftValue.Value.Degrees == rightValue.Degrees;
         }
 
@@ -970,7 +960,6 @@ namespace Trivial.Geography
         /// <returns>true if they are different; otherwise, false.</returns>
         public static bool operator !=(Longitude leftValue, Longitude rightValue)
         {
-            if (ReferenceEquals(leftValue, rightValue)) return false;
             return leftValue.Value.Degrees != rightValue.Value.Degrees;
         }
 
@@ -983,7 +972,6 @@ namespace Trivial.Geography
         /// <returns>true if they are different; otherwise, false.</returns>
         public static bool operator !=(Longitude leftValue, Model rightValue)
         {
-            if (ReferenceEquals(leftValue, rightValue)) return false;
             return rightValue is null || leftValue.Value.Degrees != rightValue.Degrees;
         }
 
@@ -1169,7 +1157,6 @@ namespace Trivial.Geography
             /// <returns>true if they are same; otherwise, false.</returns>
             public static bool operator ==(Model leftValue, Geolocation rightValue)
             {
-                if (ReferenceEquals(leftValue, rightValue)) return true;
                 return !(leftValue is null) && leftValue.Equals(rightValue);
             }
 
@@ -1195,7 +1182,6 @@ namespace Trivial.Geography
             /// <returns>true if they are different; otherwise, false.</returns>
             public static bool operator !=(Model leftValue, Geolocation rightValue)
             {
-                if (ReferenceEquals(leftValue, rightValue)) return false;
                 return leftValue is null || !leftValue.Equals(rightValue);
             }
 
@@ -1372,7 +1358,6 @@ namespace Trivial.Geography
         /// <returns>true if they are same; otherwise, false.</returns>
         public static bool operator ==(Geolocation leftValue, Geolocation rightValue)
         {
-            if (ReferenceEquals(leftValue, rightValue)) return true;
             return leftValue.Equals(rightValue);
         }
 
@@ -1385,7 +1370,6 @@ namespace Trivial.Geography
         /// <returns>true if they are same; otherwise, false.</returns>
         public static bool operator ==(Geolocation leftValue, Model rightValue)
         {
-            if (ReferenceEquals(leftValue, rightValue)) return true;
             return leftValue.Equals(rightValue);
         }
 
@@ -1398,7 +1382,6 @@ namespace Trivial.Geography
         /// <returns>true if they are different; otherwise, false.</returns>
         public static bool operator !=(Geolocation leftValue, Geolocation rightValue)
         {
-            if (ReferenceEquals(leftValue, rightValue)) return false;
             return !leftValue.Equals(rightValue);
         }
 
@@ -1411,7 +1394,6 @@ namespace Trivial.Geography
         /// <returns>true if they are different; otherwise, false.</returns>
         public static bool operator !=(Geolocation leftValue, Model rightValue)
         {
-            if (ReferenceEquals(leftValue, rightValue)) return false;
             return !leftValue.Equals(rightValue);
         }
     }

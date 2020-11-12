@@ -96,6 +96,7 @@ namespace Trivial.Maths
         /// <param name="value">The number to convert.</param>
         /// <param name="type">The positional notation.</param>
         /// <returns>A string of the number in the specific positional notation.</returns>
+        /// <exception cref="ArgumentOutOfRangeException">type should be in 2-36.</exception>
         public static string ToPositionalNotationString(int value, int type)
         {
             return ToPositionalNotationString((double)value, type);
@@ -107,6 +108,7 @@ namespace Trivial.Maths
         /// <param name="value">The number to convert.</param>
         /// <param name="type">The positional notation.</param>
         /// <returns>A string of the number in the specific positional notation.</returns>
+        /// <exception cref="ArgumentOutOfRangeException">type should be in 2-36.</exception>
         public static string ToPositionalNotationString(long value, int type)
         {
             if (type < 2 || type > 36) throw new ArgumentOutOfRangeException(nameof(type), "type should be in 2-36.");
