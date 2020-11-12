@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>netcoreapp3.1;netstandard2.0</TargetFrameworks>
+    <TargetFrameworks>net5.0;netcoreapp3.1;netstandard2.0</TargetFrameworks>
     <AssemblyName>Trivial</AssemblyName>
     <RootNamespace>Trivial</RootNamespace>
     <PackageId>Trivial</PackageId>
@@ -24,7 +24,7 @@
     <PackageIcon>logo.png</PackageIcon>
     <PackageIconUrl>https://github.com/nuscien/trivial/raw/master/Materials/logo.png</PackageIconUrl>
     <PackageTags>tasks numerals json oauth2-client jwt-token csv-parser stream pem coordinates uri</PackageTags>
-    <LangVersion>8.0</LangVersion>
+    <LangVersion>9.0</LangVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -38,11 +38,11 @@
   </PropertyGroup>
 
   <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
-    <PackageReference Include="System.Text.Json" Version="4.7.2" />
+    <PackageReference Include="System.Text.Json" Version="5.0.0" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All"/>
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
   </ItemGroup>
 
   <ItemGroup>
