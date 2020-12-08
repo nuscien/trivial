@@ -985,6 +985,15 @@ namespace Trivial.Console
                 {
                     System.Console.BufferHeight = int.MaxValue;
                 }
+                catch (PlatformNotSupportedException)
+                {
+                }
+                catch (IOException)
+                {
+                }
+                catch (SecurityException)
+                {
+                }
 
                 System.Console.SetCursorPosition(left, top);
             }

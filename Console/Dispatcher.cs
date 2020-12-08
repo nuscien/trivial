@@ -507,7 +507,7 @@ namespace Trivial.Console
             catch (Exception ex)
             {
                 ProcessFailed?.Invoke(this, new FailedProcessEventArgs(args, verb, ex));
-                throw ex;
+                throw;
             }
             finally
             {
