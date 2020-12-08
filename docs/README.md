@@ -9,6 +9,7 @@ Trivial libraries contain a lot of utilities, models and components, which are t
 ### Trivial
 
 [![NuGet package](https://img.shields.io/nuget/dt/Trivial?label=nuget+downloads)](https://www.nuget.org/packages/Trivial)
+![.NET 5.0](./assets/badge_NET_5_0.svg)
 ![.NET Core 3.1](./assets/badge_NET_Core_3_1.svg)
 ![.NET Standard 2.0](./assets/badge_NET_Standard_2_0.svg)
 
@@ -31,6 +32,7 @@ PM > Install-Package Trivial
 ### Trivial.Console
 
 [![NuGet package](https://img.shields.io/nuget/dt/Trivial.Console?label=nuget+downloads)](https://www.nuget.org/packages/Trivial.Console)
+![.NET 5.0](./assets/badge_NET_5_0.svg)
 ![.NET Core 3.1](./assets/badge_NET_Core_3_1.svg)
 ![.NET Standard 2.0](./assets/badge_NET_Standard_2_0.svg)
 
