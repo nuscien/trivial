@@ -2589,7 +2589,19 @@ namespace Trivial.Text
         /// <exception cref="ArgumentException">An element with the same key already exists in the JSON object.</exception>
         public void Add(string key, string value)
         {
-            store.Add(key, new JsonString(value));
+            store.Add(key, value != null ? new JsonString(value) : JsonValues.Null);
+        }
+
+        /// <summary>
+        /// Adds a property with the provided key and value to the JSON object.
+        /// </summary>
+        /// <param name="key">The property key.</param>
+        /// <param name="value">The value of the property.</param>
+        /// <exception cref="ArgumentNullException">key is null.</exception>
+        /// <exception cref="ArgumentException">An element with the same key already exists in the JSON object.</exception>
+        public void Add(string key, StringBuilder value)
+        {
+            store.Add(key, value != null ? new JsonString(value) : JsonValues.Null);
         }
 
         /// <summary>
@@ -2601,7 +2613,7 @@ namespace Trivial.Text
         /// <exception cref="ArgumentException">An element with the same key already exists in the JSON object.</exception>
         public void Add(string key, SecureString value)
         {
-            store.Add(key, new JsonString(value));
+            store.Add(key, value != null ? new JsonString(value) : JsonValues.Null);
         }
 
         /// <summary>

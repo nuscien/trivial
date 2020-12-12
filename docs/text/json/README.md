@@ -18,7 +18,24 @@ var json = new JsonObject
 };
 ```
 
-And you can write to an instance of `System.Text.Json.Utf8JsonWriter` by `WriteTo` member method or get the JSON format string by `ToString` member method.
+You can also get or set the property of JSON object as you want.
+
+```csharp
+var num = json.GetInt32Value("prop-a"); // 1234
+var numStr = json.GetStringValue("prop-a"); // "1234"
+```
+
+For scenarios of concurrency, you can enable thread-safe mode.
+
+```csharp
+json.EnableThreadSafeMode();
+```
+
+At last, you can write to an instance of `System.Text.Json.Utf8JsonWriter` by `WriteTo` member method or get the JSON format string by `ToString` member method.
+
+```csharp
+var jsonStr = json.ToString(IndentStyles.Compact);
+```
 
 ## JSON converters
 
