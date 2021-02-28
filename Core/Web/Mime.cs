@@ -300,11 +300,18 @@ namespace Trivial.Web
                 case "h264":
                     return "video/h264";
                 case "h265":
+                case "hevc":
                     return "video/h265";
                 case "h266":
                     return "video/h266";
                 case "h267":
                     return "video/h267";
+                case "h268":
+                    return "video/h268";
+                case "av1":
+                    return "video/av1";
+                case "av2":
+                    return "video/av2";
                 case "jpgv":
                     return "video/jpeg";
                 case "jpm":

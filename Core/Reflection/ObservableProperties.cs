@@ -4,7 +4,9 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Runtime.Serialization;
+using System.Text.Json;
 using System.Text.Json.Serialization;
+using Trivial.Text;
 
 namespace Trivial.Reflection
 {
@@ -238,10 +240,31 @@ namespace Trivial.Reflection
         }
 
         /// <summary>
+        /// Gets the property in JSON format string.
+        /// </summary>
+        /// <typeparam name="T">The type of the propery value.</typeparam>
+        /// <param name="key">The property key.</param>
+        /// <param name="options">The optional JSON serializer options.</param>
+        /// <returns>The propery value in JSON format string.</returns>
+        protected string GetPropertyJson<T>(string key, JsonSerializerOptions options = null)
+        {
+            var v = GetProperty<T>(key);
+            if (v is null) return null;
+            if (v is string s) return JsonString.ToJson(s);
+            return JsonSerializer.Serialize(v, options);
+        }
+
+        /// <summary>
+        /// Writes this instance to the specified writer as a JSON value.
+        /// </summary>
+        /// <param name="writer">The writer to which to write this instance.</param>
+        protected void WriteTo(Utf8JsonWriter writer) => JsonObject.ConvertFrom(this).WriteTo(writer);
+
+        /// <summary>
         /// Returns an enumerator that iterates through the collection.
         /// </summary>
         /// <returns>An enumerator that can be used to iterate through the collection.</returns>
-        protected IEnumerator<KeyValuePair<string, object>> GetEnumerator()
+        protected IEnumerator<KeyValuePair<string, object>> EnumerateObject()
         {
             return cache.GetEnumerator();
         }
@@ -250,7 +273,7 @@ namespace Trivial.Reflection
     /// <summary>
     /// The model with observable properties.
     /// </summary>
-    public class ObservableProperties : BaseObservableProperties, IEnumerable<KeyValuePair<string, object>>
+    public class ObservableProperties : BaseObservableProperties
     {
         /// <summary>
         /// Gets an enumerable collection that contains the keys in this instance.
@@ -319,16 +342,10 @@ namespace Trivial.Reflection
         public new void ForceNotify(string key) => base.ForceNotify(key);
 
         /// <summary>
-        /// Returns an enumerator that iterates through the collection.
+        /// Writes this instance to the specified writer as a JSON value.
         /// </summary>
-        /// <returns>An enumerator that can be used to iterate through the collection.</returns>
-        public new IEnumerator<KeyValuePair<string, object>> GetEnumerator() => base.GetEnumerator();
-
-        /// <summary>
-        /// Returns an enumerator that iterates through the collection.
-        /// </summary>
-        /// <returns>An enumerator that can be used to iterate through the collection.</returns>
-        IEnumerator IEnumerable.GetEnumerator() => base.GetEnumerator();
+        /// <param name="writer">The writer to which to write this instance.</param>
+        public new void WriteTo(Utf8JsonWriter writer) => JsonObject.ConvertFrom(this).WriteTo(writer);
     }
 
     /// <summary>

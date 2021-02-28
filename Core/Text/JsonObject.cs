@@ -170,7 +170,7 @@ namespace Trivial.Text
         {
             get
             {
-                if (subIndex < 0) throw new ArgumentOutOfRangeException("subIndex", "subIndex should be a natural number.");
+                if (subIndex < 0) throw new ArgumentOutOfRangeException(nameof(subIndex), "subIndex should be a natural number.");
                 var result = this[key, index];
                 try
                 {
@@ -180,7 +180,7 @@ namespace Trivial.Text
                 }
                 catch (ArgumentOutOfRangeException ex)
                 {
-                    throw new ArgumentOutOfRangeException("subIndex", ex.Message);
+                    throw new ArgumentOutOfRangeException(nameof(subIndex), ex.Message);
                 }
 
                 throw new InvalidOperationException($"The property of {key}.{index} should be an array, but its kind is {result?.ValueKind ?? JsonValueKind.Null}.");
@@ -353,7 +353,7 @@ namespace Trivial.Text
         /// <exception cref="ArgumentNullException">key was null, empty or consists only of white-space characters.</exception>
         public bool ContainsKey(ReadOnlySpan<char> key)
         {
-            if (key == null) throw new ArgumentNullException("key", "key should not be null.");
+            if (key == null) throw new ArgumentNullException(nameof(key), "key should not be null.");
             return ContainsKey(key.ToString());
         }
 
@@ -383,7 +383,7 @@ namespace Trivial.Text
         /// <exception cref="InvalidOperationException">The value kind is not the expected one.</exception>
         public string GetRawText(ReadOnlySpan<char> key)
         {
-            if (key == null) throw new ArgumentNullException("key", "key should not be null.");
+            if (key == null) throw new ArgumentNullException(nameof(key), "key should not be null.");
             return GetRawText(key.ToString());
         }
 
@@ -400,7 +400,7 @@ namespace Trivial.Text
             if (strictMode) AssertKey(key);
             if (string.IsNullOrWhiteSpace(key) || !store.TryGetValue(key, out var data))
             {
-                if (strictMode) throw new ArgumentOutOfRangeException("key does not exist.");
+                if (strictMode) throw new ArgumentOutOfRangeException(nameof(key), "key does not exist.");
                 return JsonValueKind.Undefined;
             }
 
