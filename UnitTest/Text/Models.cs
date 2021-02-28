@@ -74,5 +74,14 @@ namespace Trivial.Text
 
         [JsonConverter(typeof(JsonNumberConverter))]
         public Maths.VersionSimpleInterval N { get; set; }
+
+        [JsonConverter(typeof(JsonIntegerEnumConverter))]
+        public Data.ChangeErrorKinds O { get; set; }
+
+        [JsonConverter(typeof(JsonIntegerEnumConverter))]
+        public Data.ChangeErrorKinds P { get; set; }
+
+        [JsonConverter(typeof(JsonIntegerEnumConverter))]
+        public Data.ChangeErrorKinds Q { get; set; }
     }
 }

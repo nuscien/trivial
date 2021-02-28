@@ -22,9 +22,14 @@ namespace Trivial.Text
         /// <inheritdoc />
         public override JsonConverter CreateConverter(Type typeToConvert, JsonSerializerOptions options)
         {
+            return CreateConverter(typeof(JsonIntegerEnumConverter<>), typeToConvert, options);
+        }
+
+        internal static JsonConverter CreateConverter(Type converterType, Type typeToConvert, JsonSerializerOptions options)
+        {
             try
             {
-                var t = typeof(JsonIntegerEnumConverter<>).MakeGenericType(typeToConvert);
+                var t = converterType.MakeGenericType(typeToConvert);
                 return (JsonConverter)Activator.CreateInstance(t);
             }
             catch (InvalidOperationException)
@@ -42,6 +47,7 @@ namespace Trivial.Text
 
             throw new JsonException("Only integer enum supported.");
         }
+
     }
 
     /// <summary>
@@ -52,6 +58,17 @@ namespace Trivial.Text
     {
         /// <inheritdoc />
         public override T Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+        {
+            return Read(ref reader, typeToConvert);
+        }
+
+        /// <inheritdoc />
+        public override void Write(Utf8JsonWriter writer, T value, JsonSerializerOptions options)
+        {
+            writer.WriteNumberValue(System.Runtime.CompilerServices.Unsafe.As<T, int>(ref value));
+        }
+
+        internal static T Read(ref Utf8JsonReader reader, Type typeToConvert)
         {
             switch (reader.TokenType)
             {
@@ -76,7 +93,7 @@ namespace Trivial.Text
                     try
                     {
                         var s = reader.GetString();
-                        return Enum.TryParse<T>(s, out var r)
+                        return Enum.TryParse<T>(s, true, out var r)
                             ? r
                             : (int.TryParse(s, out var i)
                             ? (T)Enum.ToObject(typeToConvert, i)
@@ -90,11 +107,42 @@ namespace Trivial.Text
                     throw new JsonException("Expect an integer or a string.");
             }
         }
+    }
+
+    /// <summary>
+    /// The JSON converter for integer enum. The output will be a string value.
+    /// </summary>
+    public class JsonStringIntegerEnumConverter : JsonConverterFactory
+    {
+        /// <inheritdoc />
+        public override bool CanConvert(Type typeToConvert)
+        {
+            return typeToConvert.IsEnum;
+        }
+
+        /// <inheritdoc />
+        public override JsonConverter CreateConverter(Type typeToConvert, JsonSerializerOptions options)
+        {
+            return JsonIntegerEnumConverter.CreateConverter(typeof(JsonStringIntegerEnumConverter<>), typeToConvert, options);
+        }
+    }
+
+    /// <summary>
+    /// The JSON converter for integer enum.
+    /// </summary>
+    public class JsonStringIntegerEnumConverter<T> : JsonConverter<T>
+        where T : struct, Enum
+    {
+        /// <inheritdoc />
+        public override T Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+        {
+            return JsonIntegerEnumConverter<T>.Read(ref reader, typeToConvert);
+        }
 
         /// <inheritdoc />
         public override void Write(Utf8JsonWriter writer, T value, JsonSerializerOptions options)
         {
-            writer.WriteNumberValue(System.Runtime.CompilerServices.Unsafe.As<T, int>(ref value));
+            writer.WriteStringValue(value.ToString());
         }
     }
 }

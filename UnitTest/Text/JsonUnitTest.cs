@@ -275,7 +275,9 @@ namespace Trivial.Text
     ""K"": ""[11.1, 76.9)"",
     ""L"": ""[, 999999999999)"",
     ""M"": ""[3.1415926, " + NumberSymbols.InfiniteSymbol + @"]"",
-    ""N"": ""[3.6.0, 5.0.0)""
+    ""N"": ""[3.6.0, 5.0.0)"",
+    ""O"": 2,
+    ""P"": ""unauthorized""
 }";
             model2 = JsonSerializer.Deserialize<JsonAttributeTestModel>(str);
             Assert.AreEqual(1, model2.H.Count);
@@ -321,6 +323,11 @@ namespace Trivial.Text
             Assert.IsFalse(model2.N.IsInInterval("6.0.0.0"));
             Assert.IsNotNull(model2.N.MinVersion);
             Assert.AreEqual(6, model2.N.MinVersion.Minor);
+            Assert.AreEqual(Data.ChangeErrorKinds.Unauthorized, model2.O);
+            Assert.AreEqual(Data.ChangeErrorKinds.Unauthorized, model2.P);
+            Assert.AreEqual(Data.ChangeErrorKinds.None, model2.Q);
+            str = JsonSerializer.Serialize(model2);
+            Assert.IsNotNull(str);
         }
     }
 }
