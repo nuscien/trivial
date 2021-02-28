@@ -1470,7 +1470,7 @@ namespace Trivial.Security
         public async Task<SelectionRelationship<T, TokenInfo>> SignInAsync(QueryData q)
         {
             if (q == null) return null;
-            var grantType = TokenRequestBody.GrantTypeProperty;
+            var grantType = q[TokenRequestBody.GrantTypeProperty];
             if (string.IsNullOrWhiteSpace(grantType)) return null;
             if (!handlers.TryGetValue(grantType, out var h)) return null;
             var token = await h(q);
@@ -1487,15 +1487,15 @@ namespace Trivial.Security
         /// <exception cref="ArgumentException">stream does not support reading.</exception>
         /// <exception cref="IOException">An I/O error occurs.</exception>
         /// <exception cref="OutOfMemoryException">There is insufficient memory to allocate a buffer for the returned string.</exception>
-        public Task<SelectionRelationship<T, TokenInfo>> SignInAsync(Stream utf8Stream)
+        public async Task<SelectionRelationship<T, TokenInfo>> SignInAsync(Stream utf8Stream)
         {
             string input;
             using (var reader = new StreamReader(utf8Stream, Encoding.UTF8))
             {
-                input = reader.ReadToEnd();
+                input = await reader.ReadToEndAsync();
             }
 
-            return SignInAsync(input);
+            return await SignInAsync(input);
         }
     }
 }
