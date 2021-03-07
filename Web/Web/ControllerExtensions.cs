@@ -1,0 +1,532 @@
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Security;
+using System.Security.Claims;
+using System.Text;
+using System.Text.Json;
+using System.Threading;
+using System.Threading.Tasks;
+
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
+using Trivial.Collection;
+using Trivial.Data;
+using Trivial.Net;
+using Trivial.Security;
+using Trivial.Text;
+
+namespace Trivial.Web
+{
+    /// <summary>
+    /// The controller extensions.
+    /// </summary>
+    public static class ControllerExtensions
+    {
+        /// <summary>
+        /// Gets the first string value.
+        /// </summary>
+        /// <param name="request">The form collection.</param>
+        /// <param name="key">The key.</param>
+        /// <param name="trim">true if need trim; otherwise, false.</param>
+        /// <returns>The string value; or null, if non-exist.</returns>
+        public static string GetFirstStringValue(this IFormCollection request, string key, bool trim = false)
+        {
+            var col = request[key];
+            string str = null;
+            if (trim)
+            {
+                foreach (var ele in col)
+                {
+                    if (ele == null) continue;
+                    var s = ele.Trim();
+                    if (s.Length == 0)
+                    {
+                        if (str == null) str = string.Empty;
+                        continue;
+                    }
+
+                    str = s;
+                }
+            }
+            else
+            {
+                foreach (var ele in col)
+                {
+                    if (ele == null) continue;
+                    if (ele.Length == 0)
+                    {
+                        if (str == null) str = string.Empty;
+                        continue;
+                    }
+
+                    str = ele;
+                }
+            }
+
+            return str;
+        }
+
+        /// <summary>
+        /// Gets the merged string value.
+        /// </summary>
+        /// <param name="request">The form collection.</param>
+        /// <param name="key">The key.</param>
+        /// <param name="split">The splitter charactor.</param>
+        /// <param name="trim">true if need trim; otherwise, false.</param>
+        /// <returns>The string value; or null, if non-exist.</returns>
+        public static string GetMergedStringValue(this IFormCollection request, string key, char split = ',', bool trim = false)
+        {
+            IEnumerable<string> col = request[key];
+            if (trim) col = col.Select(ele => ele?.Trim()).Where(ele => !string.IsNullOrEmpty(ele));
+            return string.Join(split, col);
+        }
+
+        /// <summary>
+        /// Gets the first string value.
+        /// </summary>
+        /// <param name="request">The query collection.</param>
+        /// <param name="key">The key.</param>
+        /// <param name="trim">true if need trim; otherwise, false.</param>
+        /// <returns>The string value; or null, if non-exist.</returns>
+        public static string GetFirstStringValue(this IQueryCollection request, string key, bool trim = false)
+        {
+            var col = request[key];
+            string str = null;
+            if (trim)
+            {
+                foreach (var ele in col)
+                {
+                    if (ele == null) continue;
+                    var s = ele.Trim();
+                    if (s.Length == 0)
+                    {
+                        if (str == null) str = string.Empty;
+                        continue;
+                    }
+
+                    str = s;
+                }
+            }
+            else
+            {
+                foreach (var ele in col)
+                {
+                    if (ele == null) continue;
+                    if (ele.Length == 0)
+                    {
+                        if (str == null) str = string.Empty;
+                        continue;
+                    }
+
+                    str = ele;
+                }
+            }
+
+            return str;
+        }
+
+        /// <summary>
+        /// Gets the merged string value.
+        /// </summary>
+        /// <param name="request">The query collection.</param>
+        /// <param name="key">The key.</param>
+        /// <param name="split">The splitter charactor.</param>
+        /// <param name="trim">true if need trim; otherwise, false.</param>
+        /// <returns>The string value; or null, if non-exist.</returns>
+        public static string GetMergedStringValue(this IQueryCollection request, string key, char split = ',', bool trim = false)
+        {
+            IEnumerable<string> col = request[key];
+            if (trim) col = col.Select(ele => ele?.Trim()).Where(ele => !string.IsNullOrEmpty(ele));
+            return string.Join(split, col);
+        }
+
+        /// <summary>
+        /// Gets the integer value.
+        /// </summary>
+        /// <param name="request">The query collection.</param>
+        /// <param name="key">The key.</param>
+        /// <returns>The string value; or null, if non-exist.</returns>
+        public static int? TryGetInt32Value(this IQueryCollection request, string key)
+        {
+            var s = request[key].Select(ele => ele?.Trim()).FirstOrDefault(ele => !string.IsNullOrEmpty(ele));
+            if (int.TryParse(s, out var r)) return r;
+            return null;
+        }
+
+        /// <summary>
+        /// Gets the query data.
+        /// </summary>
+        /// <param name="request">The HTTP request.</param>
+        /// <param name="encoding">The optional encoding.</param>
+        /// <returns>The string value; or null, if non-exist.</returns>
+        public static async Task<QueryData> ReadBodyAsQueryDataAsync(this HttpRequest request, Encoding encoding = null)
+        {
+            if (request == null || request.Body == null) return null;
+            if (encoding == null) encoding = Encoding.UTF8;
+            using var reader = new StreamReader(request.Body, encoding);
+            var query = await reader.ReadToEndAsync();
+            var q = new QueryData();
+            q.ParseSet(query, false, encoding);
+            return q;
+        }
+
+        /// <summary>
+        /// Gets the JSON object from body.
+        /// </summary>
+        /// <param name="request">The HTTP request.</param>
+        /// <param name="cancellationToken">The token to monitor for cancellation requests.</param>
+        /// <returns>A JSON object instance; or null, if no body.</returns>
+        /// <exception cref="JsonException">json does not represent a valid single JSON object.</exception>
+        /// <exception cref="ArgumentException">options contains unsupported options.</exception>
+        public static Task<JsonObject> ReadBodyAsJsonAsync(this HttpRequest request, CancellationToken cancellationToken)
+        {
+            if (request == null || request.Body == null) return null;
+            return JsonObject.ParseAsync(request.Body, default, cancellationToken);
+        }
+
+        /// <summary>
+        /// Gets the JSON object from body.
+        /// </summary>
+        /// <param name="request">The HTTP request.</param>
+        /// <param name="options">Options to control the reader behavior during parsing.</param>
+        /// <param name="cancellationToken">The token to monitor for cancellation requests.</param>
+        /// <returns>A JSON object instance; or null, if no body.</returns>
+        /// <exception cref="JsonException">json does not represent a valid single JSON object.</exception>
+        /// <exception cref="ArgumentException">options contains unsupported options.</exception>
+        public static Task<JsonObject> ReadBodyAsJsonAsync(this HttpRequest request, JsonDocumentOptions options, CancellationToken cancellationToken)
+        {
+            if (request == null || request.Body == null) return null;
+            return JsonObject.ParseAsync(request.Body, options, cancellationToken);
+        }
+
+        /// <summary>
+        /// Gets the JSON array from body.
+        /// </summary>
+        /// <param name="request">The HTTP request.</param>
+        /// <param name="cancellationToken">The token to monitor for cancellation requests.</param>
+        /// <returns>A JSON array instance; or null, if no body.</returns>
+        /// <exception cref="JsonException">json does not represent a valid single JSON object.</exception>
+        /// <exception cref="ArgumentException">options contains unsupported options.</exception>
+        public static Task<JsonArray> ReadBodyAsJsonArrayAsync(this HttpRequest request, CancellationToken cancellationToken)
+        {
+            if (request == null || request.Body == null) return null;
+            return JsonArray.ParseAsync(request.Body, default, cancellationToken);
+        }
+
+        /// <summary>
+        /// Gets the JSON array from body.
+        /// </summary>
+        /// <param name="request">The HTTP request.</param>
+        /// <param name="options">Options to control the reader behavior during parsing.</param>
+        /// <param name="cancellationToken">The token to monitor for cancellation requests.</param>
+        /// <returns>A JSON array instance; or null, if no body.</returns>
+        /// <exception cref="JsonException">json does not represent a valid single JSON object.</exception>
+        /// <exception cref="ArgumentException">options contains unsupported options.</exception>
+        public static Task<JsonArray> ReadBodyAsJsonArrayAsync(this HttpRequest request, JsonDocumentOptions options, CancellationToken cancellationToken)
+        {
+            if (request == null || request.Body == null) return null;
+            return JsonArray.ParseAsync(request.Body, options, cancellationToken);
+        }
+
+        /// <summary>
+        /// Convert to an action result.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <returns>The action result.</returns>
+        public static ActionResult ToActionResult(this ChangingResultInfo value)
+        {
+            if (value == null) return new NotFoundResult();
+            var ex = value.GetException();
+            var status = ex != null ? (GetStatusCode(ex) ?? 500) : 200;
+            if (status >= 300)
+            {
+                status = value.ErrorCode switch
+                {
+                    ChangeErrorKinds.NotFound => 404,
+                    ChangeErrorKinds.Busy => 503,
+                    ChangeErrorKinds.Unsupported => 501,
+                    ChangeErrorKinds.Conflict => 409,
+                    _ => status
+                };
+            }
+
+            return new JsonResult(value)
+            {
+                StatusCode = status
+            };
+        }
+
+        /// <summary>
+        /// Convert to an action result.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <returns>The action result.</returns>
+        public static ActionResult ToActionResult(this ChangeMethods value)
+        {
+            return ToActionResult(new ChangingResultInfo(value));
+        }
+
+        /// <summary>
+        /// Convert to an action result.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <param name="message">The error message.</param>
+        /// <returns>The action result.</returns>
+        public static ActionResult ToActionResult(this ChangeErrorKinds value, string message)
+        {
+            return ToActionResult(new ChangingResultInfo(value, message));
+        }
+
+        /// <summary>
+        /// Convert to an action result.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <returns>The action result.</returns>
+        public static ContentResult ToActionResult(this JsonObject value)
+        {
+            return new ContentResult
+            {
+                ContentType = WebFormat.JsonMIME,
+                StatusCode = 200,
+                Content = value.ToString()
+            };
+        }
+
+        /// <summary>
+        /// Convert to an action result.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <returns>The action result.</returns>
+        public static ContentResult ToActionResult(this JsonArray value)
+        {
+            return new ContentResult
+            {
+                ContentType = WebFormat.JsonMIME,
+                StatusCode = 200,
+                Content = value.ToString()
+            };
+        }
+
+        /// <summary>
+        /// Converts an exception to action result with exception message.
+        /// </summary>
+        /// <param name="controller">The controller.</param>
+        /// <param name="ex">The exception.</param>
+        /// <param name="ignoreUnknownException">true if return null for unknown exception; otherwise, false.</param>
+        /// <returns>The action result.</returns>
+        public static ActionResult ExceptionResult(this ControllerBase controller, Exception ex, bool ignoreUnknownException = false)
+        {
+            if (ex == null) return controller.StatusCode(500);
+            var result = new ErrorMessageResult(ex);
+            var status = GetStatusCode(ex, ignoreUnknownException);
+            if (!status.HasValue) return null;
+            return new JsonResult(result)
+            {
+                StatusCode = status.Value
+            };
+        }
+
+        /// <summary>
+        /// Converts an exception to action result with exception message.
+        /// </summary>
+        /// <param name="controller">The controller.</param>
+        /// <param name="status">The HTTP status code.</param>
+        /// <param name="ex">The exception.</param>
+        /// <returns>The action result.</returns>
+        public static ActionResult ExceptionResult(this ControllerBase controller, int status, Exception ex)
+        {
+            if (ex == null) return controller.StatusCode(status);
+            var result = new ErrorMessageResult(ex);
+            return new JsonResult(result)
+            {
+                StatusCode = status
+            };
+        }
+
+        /// <summary>
+        /// Converts an exception to action result with exception message.
+        /// </summary>
+        /// <param name="controller">The controller.</param>
+        /// <param name="status">The HTTP status code.</param>
+        /// <param name="ex">The exception message.</param>
+        /// <param name="errorCode">The optional error code.</param>
+        /// <returns>The action result.</returns>
+#pragma warning disable IDE0060
+        public static ActionResult ExceptionResult(this ControllerBase controller, int status, string ex, string errorCode = null)
+#pragma warning restore IDE0060
+        {
+            var result = new ErrorMessageResult(ex, errorCode);
+            return new JsonResult(result)
+            {
+                StatusCode = status
+            };
+        }
+
+        /// <summary>
+        /// Gets the query data instance.
+        /// </summary>
+        /// <param name="request">The request.</param>
+        /// <returns>The query data instance.</returns>
+        public static QueryData GetQueryData(this IQueryCollection request)
+        {
+            if (request == null) return null;
+            var q = new QueryData();
+            foreach (var item in request)
+            {
+                q.Add(item.Key, item.Value as IEnumerable<string>);
+            }
+
+            q.Remove("random");
+            return q;
+        }
+
+        /// <summary>
+        /// Tries get a property as boolean.
+        /// </summary>
+        /// <param name="request">The query.</param>
+        /// <param name="key">The property key.</param>
+        /// <returns>true if it is true; or false, if it is false; or null, if not supported.</returns>
+        public static bool? TryGetBoolean(this IQueryCollection request, string key)
+        {
+            var plain = request?.GetFirstStringValue(key, true)?.ToLowerInvariant();
+            var isPlain = JsonBoolean.TryParse(plain);
+            return isPlain?.Value;
+        }
+
+        /// <summary>
+        /// Tries get a property as boolean.
+        /// </summary>
+        /// <param name="request">The query.</param>
+        /// <param name="key">The property key.</param>
+        /// <param name="result">The result.</param>
+        /// <returns>true if parse succeeded; otherwise, false.</returns>
+        public static bool TryGetBoolean(this IQueryCollection request, string key, out bool result)
+        {
+            var plain = request?.GetFirstStringValue(key, true)?.ToLowerInvariant();
+            var isPlain = JsonBoolean.TryParse(plain);
+            if (isPlain == null)
+            {
+                result = false;
+                return false;
+            }
+
+            result = isPlain.Value;
+            return true;
+        }
+
+        /// <summary>
+        /// Signs in.
+        /// </summary>
+        /// <param name="controller">The controller.</param>
+        /// <param name="route">The token request route.</param>
+        /// <param name="tokenMaker">The token maker.</param>
+        /// <returns>The login response.</returns>
+        public static async Task<TToken> SignInAsync<TToken, TAccount>(ControllerBase controller, TokenRequestRoute<TAccount> route, Func<TToken> tokenMaker) where TToken : TokenInfo
+        {
+            TToken result;
+            try
+            {
+                if (controller is null) return default;
+                var stream = controller.Request.Body;
+                if (stream is null)
+                {
+                    result = tokenMaker();
+                    result.ErrorCode = TokenInfo.ErrorCodeConstants.InvalidRequest;
+                    result.ErrorDescription = "The body was empty.";
+                    return default;
+                }
+
+                if (tokenMaker is null) tokenMaker = () => Activator.CreateInstance<TToken>();
+                string input;
+                using (var reader = new StreamReader(controller.Request.Body, Encoding.UTF8))
+                {
+                    input = await reader.ReadToEndAsync();
+                }
+
+                var r = await route.SignInAsync(input);
+                result = r?.ItemSelected as TToken;
+                if (result != null) return result;
+                result = tokenMaker();
+                result.ErrorCode = TokenInfo.ErrorCodeConstants.InvalidRequest;
+                result.ErrorDescription = "Cannot sign in.";
+                return result;
+            }
+            catch (ArgumentException ex)
+            {
+                result = tokenMaker();
+                result.ErrorCode = TokenInfo.ErrorCodeConstants.InvalidRequest;
+                result.ErrorDescription = ex.Message;
+                return result;
+            }
+            catch (IOException ex)
+            {
+                result = tokenMaker();
+                result.ErrorCode = TokenInfo.ErrorCodeConstants.ServerError;
+                result.ErrorDescription = ex.Message;
+                return result;
+            }
+        }
+
+        internal static ActionResult EmptyEntity(this ControllerBase controller)
+        {
+            return controller.NotFound();
+        }
+
+        internal static ContentResult JsonStringResult(string json)
+        {
+            return new ContentResult
+            {
+                StatusCode = 200,
+                ContentType = WebFormat.JsonMIME,
+                Content = json
+            };
+        }
+
+        /// <summary>
+        /// Gets the status code.
+        /// </summary>
+        /// <param name="ex">The exception.</param>
+        /// <param name="ignoreUnknownException">true if return null for unknown exception; otherwise, false.</param>
+        /// <returns>The action result.</returns>
+        private static int? GetStatusCode(Exception ex, bool ignoreUnknownException = false)
+        {
+            if (ex == null) return 500;
+            if (ex.InnerException != null)
+            {
+                if (ex is AggregateException)
+                {
+                    ex = ex.InnerException;
+                }
+                else if (ex is InvalidOperationException)
+                {
+                    ex = ex.InnerException;
+                    ignoreUnknownException = false;
+                }
+            }
+
+            if (ex is SecurityException) return 403;
+            else if (ex is UnauthorizedAccessException) return 401;
+            else if (ex is NotSupportedException) return 502;
+            else if (ex is NotImplementedException) return 502;
+            else if (ex is TimeoutException) return 408;
+            else if (ex is OperationCanceledException) return 408;
+            if (ignoreUnknownException && !(
+                ex is InvalidOperationException
+                || ex is ArgumentException
+                || ex is NullReferenceException
+                || ex is System.Data.Common.DbException
+                || ex is System.Text.Json.JsonException
+                || ex is System.Runtime.Serialization.SerializationException
+                || ex is FailedHttpException
+                || ex is IOException
+                || ex is ApplicationException
+                || ex is InvalidCastException
+                || ex is FormatException
+                || ex is InvalidDataException)) return null;
+            return 500;
+        }
+    }
+}
