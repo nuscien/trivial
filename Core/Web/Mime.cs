@@ -303,6 +303,7 @@ namespace Trivial.Web
                 case "hevc":
                     return "video/h265";
                 case "h266":
+                case "vvc":
                     return "video/h266";
                 case "h267":
                     return "video/h267";
@@ -585,6 +586,8 @@ namespace Trivial.Web
                     return "application/tar";
                 case "gz":
                     return "application/gzip";
+                case "br":
+                    return "application/brotli";
                 case "tgz":
                 case "tar.gz":
                     return "application/tar+gzip";
