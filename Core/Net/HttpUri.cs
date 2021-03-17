@@ -140,6 +140,21 @@ namespace Trivial.Net
         }
 
         /// <summary>
+        /// Determines whether the specified object is equal to the current object.
+        /// </summary>
+        /// <param name="other">The instance to compare.</param>
+        /// <returns>true if they are equal; otherwise, false.</returns>
+        public override bool Equals(object other)
+        {
+            if (other is null) return false;
+            if (ReferenceEquals(this, other)) return true;
+            if (other is HttpUri h) return Equals(h);
+            if (other is Uri u) return Equals(u);
+            if (other is string s) return Equals(s);
+            return false;
+        }
+
+        /// <summary>
         /// Returns a string that represents the current object.
         /// </summary>
         /// <returns>The URI string.</returns>
