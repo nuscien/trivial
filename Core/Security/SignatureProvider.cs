@@ -467,7 +467,7 @@ namespace Trivial.Security
         }
     }
 
-#if !NET461
+#if !NETFRAMEWORK
     /// <summary>
     /// The ECDSA hash signature for string.
     /// </summary>

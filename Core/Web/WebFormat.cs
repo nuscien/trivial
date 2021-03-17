@@ -152,7 +152,9 @@ namespace Trivial.Web
 
             var date = new DateTime(y, m, d, 0, 0, 0, DateTimeKind.Utc);
             if (pos >= s.Length) return date;
+            #pragma warning disable IDE0057
             s = s.Substring(pos);
+            #pragma warning restore IDE0057
             var arr = s.Split(':');
             if (arr.Length < 2) return date;
             if (!int.TryParse(arr[0], out var h)) return date;
