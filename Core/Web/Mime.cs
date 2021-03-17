@@ -96,503 +96,206 @@ namespace Trivial.Web
             }
 
             // http://www.iana.org/assignments/media-types/media-types.xhtml
-            switch (file.Extension.ToLowerInvariant().Remove(0, 1))
+            return file.Extension.ToLowerInvariant().Remove(0, 1) switch
             {
                 // Office document
-                case "cat":
-                    return "application/vnd.ms-pki.seccat";
-                case "doc":
-                    return "application/msword";
-                case "docm":
-                    return "application/vnd.ms-word.document.macroenabled.12";
-                case "docx":
-                    return "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
-                case "dotx":
-                    return "application/vnd.openxmlformats-officedocument.wordprocessingml.template";
-                case "mda":
-                case "mdb":
-                case "mde":
-                case "accdb":
-                    return "application/x-msaccess";
-                case "mpp":
-                case "mpt":
-                    return "application/vnd.ms-project";
-                case "msg":
-                    return "application/vnd.ms-outlook";
-                case "ppt":
-                    return "application/vnd.ms-powerpoint";
-                case "pptm":
-                    return "application/vnd.ms-powerpoint.presentation.macroEnabled.12";
-                case "pptx":
-                    return "application/vnd.openxmlformats-officedocument.presentationml.presentation";
-                case "ppsx":
-                    return "application/vnd.openxmlformats-officedocument.presentationml.slideshow";
-                case "sldx":
-                    return "application/vnd.openxmlformats-officedocument.presentationml.slide";
-                case "potx":
-                    return "application/vnd.openxmlformats-officedocument.presentationml.template";
-                case "xls":
-                    return "application/vnd.ms-excel";
-                case "xlsm":
-                    return "application/vnd.ms-excel.sheet.macroEnabled.12";
-                case "xlsx":
-                    return "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
-                case "xltx":
-                    return "application/vnd.openxmlformats-officedocument.spreadsheetml.template";
-                case "onetoc":
-                case "onetok2":
-                case "onetmp":
-                case "onepkg":
-                    return "application/onenote";
-                case "xps":
-                    return "application/vnd.ms-xpsdocument";
-                case "oxps":
-                    return "application/oxps";
-                case "vsd":
-                case "vst":
-                case "vss":
-                case "vsw":
-                    return "application/vnd.visio";
+                "cat" => "application/vnd.ms-pki.seccat",
+                "doc" => "application/msword",
+                "docm" => "application/vnd.ms-word.document.macroenabled.12",
+                "docx" => "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                "dotx" => "application/vnd.openxmlformats-officedocument.wordprocessingml.template",
+                "mda" or "mdb" or "mde" or "accdb" => "application/x-msaccess",
+                "mpp" or "mpt" => "application/vnd.ms-project",
+                "msg" => "application/vnd.ms-outlook",
+                "ppt" => "application/vnd.ms-powerpoint",
+                "pptm" => "application/vnd.ms-powerpoint.presentation.macroEnabled.12",
+                "pptx" => "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+                "ppsx" => "application/vnd.openxmlformats-officedocument.presentationml.slideshow",
+                "sldx" => "application/vnd.openxmlformats-officedocument.presentationml.slide",
+                "potx" => "application/vnd.openxmlformats-officedocument.presentationml.template",
+                "xls" => "application/vnd.ms-excel",
+                "xlsm" => "application/vnd.ms-excel.sheet.macroEnabled.12",
+                "xlsx" => "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                "xltx" => "application/vnd.openxmlformats-officedocument.spreadsheetml.template",
+                "onetoc" or "onetok2" or "onetmp" or "onepkg" => "application/onenote",
+                "xps" => "application/vnd.ms-xpsdocument",
+                "oxps" => "application/oxps",
+                "vsd" or "vst" or "vss" or "vsw" => "application/vnd.visio",
 
                 // Open Document
-                case "odc":
-                    return "application/vnd.oasis.opendocument.chart";
-                case "otc":
-                    return "application/vnd.oasis.opendocument.chart-template";
-                case "odb":
-                    return "application/vnd.oasis.opendocument.database";
-                case "odf":
-                    return "application/vnd.oasis.opendocument.formula";
-                case "odft":
-                    return "application/vnd.oasis.opendocument.formula-template";
-                case "odg":
-                    return "application/vnd.oasis.opendocument.graphics";
-                case "otg":
-                    return "application/vnd.oasis.opendocument.graphics-template";
-                case "odi":
-                    return "application/vnd.oasis.opendocument.image";
-                case "oti":
-                    return "application/vnd.oasis.opendocument.image-template";
-                case "odp":
-                    return "application/vnd.oasis.opendocument.presentation";
-                case "otp":
-                    return "application/vnd.oasis.opendocument.presentation-template";
-                case "ods":
-                    return "application/vnd.oasis.opendocument.spreadsheet";
-                case "ots":
-                    return "application/vnd.oasis.opendocument.spreadsheet-template";
-                case "odt":
-                    return "application/vnd.oasis.opendocument.text";
-                case "odm":
-                    return "application/vnd.oasis.opendocument.text-master";
-                case "ott":
-                    return "application/vnd.oasis.opendocument.text-template";
-                case "oth":
-                    return "application/vnd.oasis.opendocument.text-web";
+                "odc" => "application/vnd.oasis.opendocument.chart",
+                "otc" => "application/vnd.oasis.opendocument.chart-template",
+                "odb" => "application/vnd.oasis.opendocument.database",
+                "odf" => "application/vnd.oasis.opendocument.formula",
+                "odft" => "application/vnd.oasis.opendocument.formula-template",
+                "odg" => "application/vnd.oasis.opendocument.graphics",
+                "otg" => "application/vnd.oasis.opendocument.graphics-template",
+                "odi" => "application/vnd.oasis.opendocument.image",
+                "oti" => "application/vnd.oasis.opendocument.image-template",
+                "odp" => "application/vnd.oasis.opendocument.presentation",
+                "otp" => "application/vnd.oasis.opendocument.presentation-template",
+                "ods" => "application/vnd.oasis.opendocument.spreadsheet",
+                "ots" => "application/vnd.oasis.opendocument.spreadsheet-template",
+                "odt" => "application/vnd.oasis.opendocument.text",
+                "odm" => "application/vnd.oasis.opendocument.text-master",
+                "ott" => "application/vnd.oasis.opendocument.text-template",
+                "oth" => "application/vnd.oasis.opendocument.text-web",
 
                 // Image
-                case "apng":
-                    return "image/apng";
-                case "png":
-                    return "image/png";
-                case "bmp":
-                case "dib":
-                    return "image/bmp";
-                case "dwg":
-                    return "image/vnd.dwg";
-                case "dxf":
-                    return "image/vnd.dxf";
-                case "gif":
-                    return "image/gif";
-                case "heif":
-                    return "image/heif";
-                case "heic":
-                    return "image/heic";
-                case "ico":
-                case "cur":
-                    return "image/x-icon";
-                case "jpe":
-                case "jpeg":
-                case "jpg":
-                case "jfif":
-                    return "image/jpeg";
-                case "psd":
-                    return "image/vnd.adobe.photoshop";
-                case "ai":
-                    return "application/illustrator";
-                case "cdr":
-                    return "application/vnd.corel-draw";
-                case "tif":
-                case "tiff":
-                    return "image/tiff";
-                case "svg":
-                case "svgz":
-                    return SvgMIME;
-                case "webp":
-                    return "image/webp";
-                case "3ds":
-                    return "image/x-3ds";
-                case "wmf":
-                case "emf":
-                case "emz":
-                    return "application/x-msmetafile";
+                "apng" => "image/apng",
+                "png" => "image/png",
+                "bmp" or "dib" => "image/bmp",
+                "dwg" => "image/vnd.dwg",
+                "dxf" => "image/vnd.dxf",
+                "gif" => "image/gif",
+                "heif" => "image/heif",
+                "heic" => "image/heic",
+                "ico" or "cur" => "image/x-icon",
+                "jpe" or "jpeg" or "jpg" or "jfif" => "image/jpeg",
+                "psd" => "image/vnd.adobe.photoshop",
+                "ai" => "application/illustrator",
+                "cdr" => "application/vnd.corel-draw",
+                "tif" or "tiff" => "image/tiff",
+                "svg" or "svgz" => SvgMIME,
+                "webp" => "image/webp",
+                "3ds" => "image/x-3ds",
+                "wmf" or "emf" or "emz" => "application/x-msmetafile",
 
                 // Audio
-                case "au":
-                case "snd":
-                    return "audio/basic";
-                case "mid":
-                case "midi":
-                case "kar":
-                case "rmi":
-                    return "audio/midi";
-                case "m4a":
-                case "mp4a":
-                    return "audio/mp4";
-                case "mp3":
-                case "mpga":
-                case "mp2":
-                case "mp2a":
-                case "m2a":
-                case "m3a":
-                    return "audio/mpeg";
-                case "ogg":
-                case "oga":
-                case "spx":
-                    return "audio/ogg";
-                case "pya":
-                    return "audio/vnd.ms-playready.media.pya";
-                case "weba":
-                    return "audio/webm";
-                case "aac":
-                    return "audio/x-aac";
-                case "aif":
-                case "aiff":
-                case "aifc":
-                    return "audio/x-aiff";
-                case "flac":
-                    return "audio/x-flac";
-                case "mka":
-                    return "audio/x-matroska";
-                case "m3u":
-                    return "audio/x-mpegurl";
-                case "wax":
-                    return "audio/x-ms-wax";
-                case "wma":
-                    return "audio/x-ms-wma";
-                case "wav":
-                case "wave":
-                    return "audio/wav";
+                "au" or "snd" => "audio/basic",
+                "mid" or "midi" or "kar" or "rmi" => "audio/midi",
+                "m4a" or "mp4a" => "audio/mp4",
+                "mp3" or "mpga" or "mp2" or "mp2a" or "m2a" or "m3a" => "audio/mpeg",
+                "ogg" or "oga" or "spx" => "audio/ogg",
+                "pya" => "audio/vnd.ms-playready.media.pya",
+                "weba" => "audio/webm",
+                "aac" => "audio/x-aac",
+                "aif" or "aiff" or "aifc" => "audio/x-aiff",
+                "flac" => "audio/x-flac",
+                "mka" => "audio/x-matroska",
+                "m3u" => "audio/x-mpegurl",
+                "wax" => "audio/x-ms-wax",
+                "wma" => "audio/x-ms-wma",
+                "wav" or "wave" => "audio/wav",
 
                 // Video
-                case "3gp":
-                case "3gpp":
-                    return "video/3gpp";
-                case "3g2":
-                case "3gp2":
-                    return "video/3gpp2";
-                case "avi":
-                    return "video/x-msvideo";
-                case "h261":
-                    return "video/h261";
-                case "h263":
-                    return "video/h263";
-                case "h264":
-                    return "video/h264";
-                case "h265":
-                case "hevc":
-                    return "video/h265";
-                case "h266":
-                    return "video/h266";
-                case "h267":
-                    return "video/h267";
-                case "h268":
-                    return "video/h268";
-                case "av1":
-                    return "video/av1";
-                case "av2":
-                    return "video/av2";
-                case "jpgv":
-                    return "video/jpeg";
-                case "jpm":
-                case "jpgm":
-                    return "video/jpm";
-                case "mp4":
-                case "mp4v":
-                case "mpg4":
-                    return "video/mp4";
-                case "mpeg":
-                case "mpg":
-                case "mpe":
-                case "m1v":
-                case "m2v":
-                    return "video/mpeg";
-                case "ogv":
-                    return "video/ogg";
-                case "mov":
-                    return "video/quicktime";
-                case "dvd":
-                    return "video/vnd.dvb.file";
-                case "mxu":
-                case "m4u":
-                    return "video/vnd.mpegurl";
-                case "pyv":
-                    return "video/vnd.ms-playready.media.pyv";
-                case "webm":
-                    return "video/webm";
-                case "flv":
-                    return "video/x-flv";
-                case "m4v":
-                    return "video/x-m4v";
-                case "mkv":
-                case "mk3d":
-                case "mks":
-                    return "video/x-matroska";
-                case "asf":
-                case "asx":
-                    return "video/x-ms-asf";
-                case "wm":
-                    return "video/x-ms-wm";
-                case "wmv":
-                    return "video/x-ms-wm";
-                case "wmx":
-                    return "video/x-ms-wmx";
+                "3gp" or "3gpp" => "video/3gpp",
+                "3g2" or "3gp2" => "video/3gpp2",
+                "avi" => "video/x-msvideo",
+                "h261" => "video/h261",
+                "h263" => "video/h263",
+                "h264" => "video/h264",
+                "h265" or "hevc" => "video/h265",
+                "h266" or "vvc" => "video/h266",
+                "h267" => "video/h267",
+                "h268" => "video/h268",
+                "av1" => "video/av1",
+                "av2" => "video/av2",
+                "jpgv" => "video/jpeg",
+                "jpm" or "jpgm" => "video/jpm",
+                "mp4" or "mp4v" or "mpg4" => "video/mp4",
+                "mpeg" or "mpg" or "mpe" or "m1v" or "m2v" => "video/mpeg",
+                "ogv" => "video/ogg",
+                "mov" => "video/quicktime",
+                "dvd" => "video/vnd.dvb.file",
+                "mxu" or "m4u" => "video/vnd.mpegurl",
+                "pyv" => "video/vnd.ms-playready.media.pyv",
+                "webm" => "video/webm",
+                "flv" => "video/x-flv",
+                "m4v" => "video/x-m4v",
+                "mkv" or "mk3d" or "mks" => "video/x-matroska",
+                "asf" or "asx" => "video/x-ms-asf",
+                "wm" => "video/x-ms-wm",
+                "wmv" => "video/x-ms-wm",
+                "wmx" => "video/x-ms-wmx",
 
                 // Text
-                case "txt":
-                case "text":
-                case "log":
-                case "def":
-                case "ini":
-                case "gitignore":
-                case "editorconfig":
-                    return Text.StringExtensions.PlainTextMIME;
-                case "csv":
-                    return Text.CsvParser.MIME;
-                case "md":
-                    return MarkdownMIME;
-                case "mml":
-                    return "text/mathml";
-                case "rtx":
-                    return Text.StringExtensions.RichTextMIME;
-                case "sgml":
-                case "sgm":
-                    return "text/sgml";
-                case "vcf":
-                    return "text/x-vcard";
-                case "vtt":
-                    return "text/vtt";
-                case "diff":
-                case "patch":
-                    return "text/x-diff";
+                "txt" or "text" or "log" or "def" or "ini" or "gitignore" or "editorconfig" => Text.StringExtensions.PlainTextMIME,
+                "csv" => Text.CsvParser.MIME,
+                "md" => MarkdownMIME,
+                "mml" => "text/mathml",
+                "rtx" => Text.StringExtensions.RichTextMIME,
+                "sgml" or "sgm" => "text/sgml",
+                "vcf" => "text/x-vcard",
+                "vtt" => "text/vtt",
+                "diff" or "patch" => "text/x-diff",
 
                 // Web
-                case "ac":
-                    return "application/pkix-attr-cert";
-                case "cer":
-                    return "application/pkix-cert";
-                case "css":
-                    return CssMIME;
-                case "sass":
-                    return "text/x-sass";
-                case "scss":
-                    return "text/x-scss";
-                case "less":
-                    return "text/x-less";
-                case "crl":
-                    return "application/pkix-crl";
-                case "dtd":
-                    return DocumentTypeDefinitionMIME;
-                case "ecma":
-                    return "application/ecmascript";
-                case "epub":
-                    return "application/epub+zip";
-                case "htm":
-                case "html":
-                case "shtml":
-                case "hta":
-                    return HtmlMIME;
-                case "ink":
-                case "inkml":
-                    return "application/inkml+xml";
-                case "js":
-                case "jsx":
-                case "esm":
-                    return JavaScriptMIME;
-                case "json":
-                case "map":
-                    return JsonMIME;
-                case "p8":
-                    return "application/pkcs8";
-                case "pem":
-                    return "application/x-x509-ca-cert";
-                case "pki":
-                    return "application/pkixcmp";
-                case "pkipath":
-                    return "application/pkix-pkipath";
-                case "uri":
-                case "uris":
-                case "urls":
-                    return "text/uri-list";
-                case "xaml":
-                    return "application/xaml+xml";
-                case "xml":
-                case "xsl":
-                case "config":
-                    return XmlMIME;
-                case "vbs":
-                    return "text/vbscript";
-                case "yaml":
-                case "yml":
-                    return YamlMIME;
+                "ac" => "application/pkix-attr-cert",
+                "cer" => "application/pkix-cert",
+                "css" => CssMIME,
+                "sass" => "text/x-sass",
+                "scss" => "text/x-scss",
+                "less" => "text/x-less",
+                "crl" => "application/pkix-crl",
+                "dtd" => DocumentTypeDefinitionMIME,
+                "ecma" => "application/ecmascript",
+                "epub" => "application/epub+zip",
+                "htm" or "html" or "shtml" or "hta" => HtmlMIME,
+                "ink" or "inkml" => "application/inkml+xml",
+                "js" or "jsx" or "esm" => JavaScriptMIME,
+                "json" or "map" => JsonMIME,
+                "p8" => "application/pkcs8",
+                "pem" => "application/x-x509-ca-cert",
+                "pki" => "application/pkixcmp",
+                "pkipath" => "application/pkix-pkipath",
+                "uri" or "uris" or "urls" => "text/uri-list",
+                "xaml" => "application/xaml+xml",
+                "xml" or "xsl" or "config" => XmlMIME,
+                "vbs" => "text/vbscript",
+                "yaml" or "yml" => YamlMIME,
 
                 // Font
-                case "eot":
-                    return "application/vnd.ms-fontobject";
-                case "pcf":
-                    return "application/x-font-pcf";
-                case "pfr":
-                    return "application/font-tdpfr";
-                case "snf":
-                    return "application/x-font-snf";
-                case "ttf":
-                case "ttc":
-                    return "application/x-font-ttf";
-                case "otf":
-                    return "application/x-font-otf";
-                case "pfa":
-                case "pfb":
-                case "pfm":
-                case "afm":
-                    return "application/x-font-type1";
-                case "woff":
-                    return "application/font-woff";
+                "eot" => "application/vnd.ms-fontobject",
+                "pcf" => "application/x-font-pcf",
+                "pfr" => "application/font-tdpfr",
+                "snf" => "application/x-font-snf",
+                "ttf" or "ttc" => "application/x-font-ttf",
+                "otf" => "application/x-font-otf",
+                "pfa" or "pfb" or "pfm" or "afm" => "application/x-font-type1",
+                "woff" => "application/font-woff",
 
                 // Programming
-                case "c":
-                case "cc":
-                case "cpp":
-                case "cxx":
-                case "dic":
-                    return "text/x-c";
-                case "h":
-                    return "text/x-chdr";
-                case "hh":
-                case "hpp":
-                    return "text/x-c++hdr";
-                case "java":
-                    return "text/x-java-source";
-                case "cs":
-                    return "text/x-csharp";
-                case "vb":
-                    return "text/x-vb";
-                case "csproj":
-                case "csdproj":
-                case "vbproj":
-                case "vbdproj":
-                    return Text.StringExtensions.PlainTextMIME;
-                case "py":
-                case "py2":
-                case "py3":
-                case "pyw":
-                    return "text/x-python";
-                case "settings":
-                    return XmlMIME;
-                case "sql":
-                    return "application/x-sql";
-                case "ps1":
-                    return Text.StringExtensions.PlainTextMIME;
+                "c" or "cc" or "cpp" or "cxx" or "dic" => "text/x-c",
+                "h" => "text/x-chdr",
+                "hh" or "hpp" => "text/x-c++hdr",
+                "java" => "text/x-java-source",
+                "cs" => "text/x-csharp",
+                "vb" => "text/x-vb",
+                "csproj" or "csdproj" or "vbproj" or "vbdproj" => Text.StringExtensions.PlainTextMIME,
+                "py" or "py2" or "py3" or "pyw" => "text/x-python",
+                "settings" => XmlMIME,
+                "sql" => "application/x-sql",
+                "ps1" => Text.StringExtensions.PlainTextMIME,
 
                 // Others
-                case "application":
-                    return "application/x-ms-application";
-                case "iso":
-                    return "application/x-iso9660-image";
-                case "ics":
-                case "ifb":
-                    return "text/calendar";
-                case "pdf":
-                    return "application/pdf";
-                case "crd":
-                    return "application/x-mscardfile";
-                case "clp":
-                    return "application/x-msclip";
-                case "jar":
-                    return "application/java-archive";
-                case "wasm":
-                    return WebAssemblyMIME;
-                case "aspx":
-                    return "application/x-aspx";
-                case "dll":
-                case "exe":
-                case "bat":
-                case "msi":
-                case "msu":
-                case "com":
-                    return "application/x-msdownload";
-                case "app":
-                case "appx":
-                case "glif":
-                case "resx":
-                case "php":
-                case "jsp":
-                case "cshtml":
-                case "vbhtml":
-                case "razor":
-                case "3mf":
-                case "lib":
-                case "bin":
-                case "dat":
-                case "data":
-                case "db":
-                case "dms":
-                case "lrf":
-                case "msix":
-                case "pkg":
-                case "dump":
-                case "deploy":
-                case "vso":
-                case "nupkg":
-                case "xsn":
-                case "sln":
-                case "ts":
-                case "tsx":
-                case "usr":
-                case "user":
-                case "bson":
-                    return StreamMIME;
-                case "pdb":
-                case "pqa":
-                case "oprc":
-                    return "application/vnd.palm";
-                case "lnk":
-                    return "application/x-ms-shortcut";
-                case "123":
-                    return "application/vnd.lotus-1-2-3";
-                case "o":
-                    return "application/x-object";
-                case "obj":
-                    return "application/x-tgif";
-                case "zip":
-                    return "application/zip";
-                case "7z":
-                    return "application/x-7z-compressed";
-                case "cab":
-                    return "application/vnd.ms-cab-compressed";
-                case "rar":
-                    return "application/x-rar-compressed";
-                case "tar":
-                    return "application/tar";
-                case "gz":
-                    return "application/gzip";
-                case "tgz":
-                case "tar.gz":
-                    return "application/tar+gzip";
-                case "z":
-                    return "application/x-compress";
-                default:
-                    return null;
-            }
+                "application" => "application/x-ms-application",
+                "iso" => "application/x-iso9660-image",
+                "ics" or "ifb" => "text/calendar",
+                "pdf" => "application/pdf",
+                "crd" => "application/x-mscardfile",
+                "clp" => "application/x-msclip",
+                "jar" => "application/java-archive",
+                "wasm" => WebAssemblyMIME,
+                "aspx" => "application/x-aspx",
+                "dll" or "exe" or "bat" or "msi" or "msu" or "com" => "application/x-msdownload",
+                "app" or "appx" or "glif" or "resx" or "php" or "jsp" or "cshtml" or "vbhtml" or "razor" or "3mf" or "lib" or "bin" or "dat" or "data" or "db" or "dms" or "lrf" or "msix" or "pkg" or "dump" or "deploy" or "vso" or "nupkg" or "xsn" or "sln" or "ts" or "tsx" or "usr" or "user" or "bson" => StreamMIME,
+                "pdb" or "pqa" or "oprc" => "application/vnd.palm",
+                "lnk" => "application/x-ms-shortcut",
+                "123" => "application/vnd.lotus-1-2-3",
+                "o" => "application/x-object",
+                "obj" => "application/x-tgif",
+                "zip" => "application/zip",
+                "7z" => "application/x-7z-compressed",
+                "cab" => "application/vnd.ms-cab-compressed",
+                "rar" => "application/x-rar-compressed",
+                "tar" => "application/tar",
+                "gz" => "application/gzip",
+                "br" => "application/brotli",
+                "tgz" or "tar.gz" => "application/tar+gzip",
+                "z" => "application/x-compress",
+                _ => null,
+            };
         }
     }
 }
