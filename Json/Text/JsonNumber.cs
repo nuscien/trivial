@@ -952,7 +952,7 @@ namespace Trivial.Text
             return false;
         }
 
-#if !NETSTANDARD2_0
+#if !NETOLDVER
         /// <summary>
         /// Gets the value at the specific index.
         /// </summary>
@@ -2579,7 +2579,7 @@ namespace Trivial.Text
             return false;
         }
 
-#if !NETSTANDARD2_0
+#if !NETOLDVER
         /// <summary>
         /// Gets the value at the specific index.
         /// </summary>

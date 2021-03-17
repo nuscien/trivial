@@ -340,7 +340,7 @@ namespace Trivial.Text
 
         internal static T ParseEnum<T>(string s) where T : struct
         {
-#if NETSTANDARD2_0
+#if NETOLDVER
             return (T)Enum.Parse(typeof(T), s);
 #else
             return Enum.Parse<T>(s);
@@ -349,7 +349,7 @@ namespace Trivial.Text
 
         internal static T ParseEnum<T>(string s, bool ignoreCase) where T : struct
         {
-#if NETSTANDARD2_0
+#if NETOLDVER
             return (T)Enum.Parse(typeof(T), s, ignoreCase);
 #else
             return Enum.Parse<T>(s, ignoreCase);
@@ -387,7 +387,7 @@ namespace Trivial.Text
 
         internal static string SubRangeString(this string s, int start, int end, bool reverseEnd = false)
         {
-#if NETSTANDARD2_0
+#if NETOLDVER
             return s.Substring(start, reverseEnd ? (s.Length - end - start) : (end - start));
 #else
             return reverseEnd ? s[start..^end] : s[start..end];

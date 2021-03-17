@@ -157,6 +157,7 @@ namespace Trivial.Tasks
             Assert.AreEqual("rst", result);
             _ = ProcessHit(taskTokens, task, "xyz");
             await Task.Delay(140);
+            if (result == "rst") await Task.Delay(20);
             Assert.AreEqual("xyz", result);
             Task.WaitAll(taskTokens.ToArray());
             taskTokens.Clear();

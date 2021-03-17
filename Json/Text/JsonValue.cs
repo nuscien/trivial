@@ -263,7 +263,7 @@ namespace Trivial.Text
         /// <returns>true if the kind is the one expected; otherwise, false.</returns>
         public bool TryGetValue(int index, out IJsonValueResolver result);
 
-#if !NETSTANDARD2_0
+#if !NETOLDVER
         /// <summary>
         /// Gets the value of the specific property.
         /// </summary>
@@ -675,7 +675,7 @@ namespace Trivial.Text
             return false;
         }
 
-#if !NETSTANDARD2_0
+#if !NETOLDVER
         /// <summary>
         /// Gets the value at the specific index.
         /// </summary>
@@ -1277,7 +1277,7 @@ namespace Trivial.Text
             return false;
         }
 
-#if !NETSTANDARD2_0
+#if !NETOLDVER
         /// <summary>
         /// Gets the value at the specific index.
         /// </summary>
