@@ -1,4 +1,4 @@
-﻿# [Trivial](../docs/core)
+﻿# Trivial
 
 This library includes utilities and services for tasks, security, JSON, etc.
 
@@ -140,7 +140,6 @@ foreach (var model in csv.ConvertTo<CsvModel>(new[] { "A", "B" }))
     Console.WriteLine("{0},{1}", model.A, model.B);
 }
 ```
-
 
 ## [Data](../docs/data)
 
