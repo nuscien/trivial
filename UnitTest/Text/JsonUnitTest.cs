@@ -187,7 +187,7 @@ namespace Trivial.Text
             Assert.AreEqual(jsonStr, Encoding.UTF8.GetString(stream.ToArray()));
             stream.Position = 0;
             json = JsonObject.Parse(stream);
-            Assert.AreEqual(9, json.Keys.Count());
+            Assert.AreEqual(9, json.Keys.Count);
             Assert.AreEqual(jsonStr, json.ToString());
         }
 

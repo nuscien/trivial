@@ -311,8 +311,12 @@ namespace Trivial.Net
                     if (!SerializeEvenIfFailed && !resp.IsSuccessStatusCode)
                         throw FailedHttpException.Create(resp, "Failed to send JSON HTTP web request because of unsuccess status code.");
                     var obj = Deserializer != null
+#if NET5_0_OR_GREATER
+                        ? await HttpClientExtensions.DeserializeAsync(resp.Content, Deserializer, cancellationToken)
+#else
                         ? await HttpClientExtensions.DeserializeAsync(resp.Content, Deserializer)
-                        : await HttpClientExtensions.DeserializeJsonAsync<T>(resp.Content);
+#endif
+                        : await HttpClientExtensions.DeserializeJsonAsync<T>(resp.Content, cancellationToken);
                     return obj;
                 }, GetExceptionInternal, cancellationToken);
                 valueResult = result.Result;

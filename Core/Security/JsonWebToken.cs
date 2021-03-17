@@ -17,6 +17,7 @@ namespace Trivial.Security
     /// <typeparam name="T">The type of payload.</typeparam>
     public class JsonWebToken<T>
     {
+#pragma warning disable IDE0057
         /// <summary>
         /// The JSON web token parser.
         /// </summary>
@@ -34,11 +35,8 @@ namespace Trivial.Security
                 if (s == null) return;
                 s = s.Trim();
                 var prefix = $"{TokenInfo.BearerTokenType} ";
-                if (s.IndexOf(prefix) == 0)
-                {
-                    s = s.Substring(prefix.Length);
-                }
-
+                if (s.IndexOf(prefix) == 0) s = s.Substring(prefix.Length);
+                if (s.IndexOf(prefix) == 0) s = s.Substring(prefix.Length);
                 var arr = s.Split('.');
                 if (arr.Length == 0) return;
                 if (arr.Length == 1)
@@ -785,5 +783,6 @@ namespace Trivial.Security
                 IgnoreNullValues = true
             });
         }
+#pragma warning restore IDE0057
     }
 }

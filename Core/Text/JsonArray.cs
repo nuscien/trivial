@@ -3463,7 +3463,13 @@ namespace Trivial.Text
         /// <returns>An instance of the JsonDocument class.</returns>
         public static explicit operator JsonDocument(JsonArray json)
         {
-            return json != null ? JsonDocument.Parse(json.ToString()) : null;
+            if (json == null) return null;
+            using var stream = new MemoryStream();
+            using var writer = new Utf8JsonWriter(stream);
+            json.WriteTo(writer);
+            writer.Flush();
+            stream.Position = 0;
+            return JsonDocument.Parse(stream);
         }
 
         /// <summary>
@@ -3537,6 +3543,45 @@ namespace Trivial.Text
         }
 
         /// <summary>
+        /// Parses JSON object.
+        /// </summary>
+        /// <param name="json">A specific JSON object string to parse.</param>
+        /// <param name="options">Options to control the reader behavior during parsing.</param>
+        /// <returns>A JSON object instance.</returns>
+        /// <exception cref="JsonException">json does not represent a valid single JSON object.</exception>
+        /// <exception cref="ArgumentException">options contains unsupported options.</exception>
+        public static JsonArray Parse(System.Buffers.ReadOnlySequence<byte> json, JsonDocumentOptions options = default)
+        {
+            return JsonDocument.Parse(json, options);
+        }
+
+        /// <summary>
+        /// Parses JSON object.
+        /// </summary>
+        /// <param name="json">A specific JSON object string to parse.</param>
+        /// <param name="options">Options to control the reader behavior during parsing.</param>
+        /// <returns>A JSON object instance.</returns>
+        /// <exception cref="JsonException">json does not represent a valid single JSON object.</exception>
+        /// <exception cref="ArgumentException">options contains unsupported options.</exception>
+        public static JsonArray Parse(ReadOnlyMemory<byte> json, JsonDocumentOptions options = default)
+        {
+            return JsonDocument.Parse(json, options);
+        }
+
+        /// <summary>
+        /// Parses JSON object.
+        /// </summary>
+        /// <param name="json">A specific JSON object string to parse.</param>
+        /// <param name="options">Options to control the reader behavior during parsing.</param>
+        /// <returns>A JSON object instance.</returns>
+        /// <exception cref="JsonException">json does not represent a valid single JSON object.</exception>
+        /// <exception cref="ArgumentException">options contains unsupported options.</exception>
+        public static JsonArray Parse(ReadOnlyMemory<char> json, JsonDocumentOptions options = default)
+        {
+            return JsonDocument.Parse(json, options);
+        }
+
+        /// <summary>
         /// Parses a stream as UTF-8-encoded data representing a JSON array.
         /// The stream is read to completio
         /// </summary>
@@ -3560,9 +3605,23 @@ namespace Trivial.Text
         /// <returns>A JSON object instance.</returns>
         /// <exception cref="JsonException">json does not represent a valid single JSON array.</exception>
         /// <exception cref="ArgumentException">readerOptions contains unsupported options.</exception>
-        public static async Task<JsonArray> ParseAsync(Stream utf8Json, JsonDocumentOptions options = default, CancellationToken cancellationToken = default)
+        public static async Task<JsonArray> ParseAsync(Stream utf8Json, JsonDocumentOptions options, CancellationToken cancellationToken = default)
         {
             return await JsonDocument.ParseAsync(utf8Json, options, cancellationToken);
+        }
+
+        /// <summary>
+        /// Parses a stream as UTF-8-encoded data representing a JSON array.
+        /// The stream is read to completion.
+        /// </summary>
+        /// <param name="utf8Json">The JSON data to parse.</param>
+        /// <param name="cancellationToken">The token to monitor for cancellation requests.</param>
+        /// <returns>A JSON object instance.</returns>
+        /// <exception cref="JsonException">json does not represent a valid single JSON array.</exception>
+        /// <exception cref="ArgumentException">readerOptions contains unsupported options.</exception>
+        public static async Task<JsonArray> ParseAsync(Stream utf8Json, CancellationToken cancellationToken = default)
+        {
+            return await JsonDocument.ParseAsync(utf8Json, default, cancellationToken);
         }
 
         /// <summary>

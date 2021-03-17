@@ -114,7 +114,7 @@ namespace Trivial.Data
         /// <summary>
         /// The locker for member initialzation.
         /// </summary>
-        private readonly object locker = new object();
+        private readonly object locker = new();
 
         /// <summary>
         /// The date and time excuted cleaning up.
@@ -124,7 +124,7 @@ namespace Trivial.Data
         /// <summary>
         /// The cache data list.
         /// </summary>
-        private readonly ConcurrentDictionary<string, ItemInfo> items = new ConcurrentDictionary<string, ItemInfo>();
+        private readonly ConcurrentDictionary<string, ItemInfo> items = new();
 
         /// <summary>
         /// The cache data list for prefix ones.
@@ -1016,13 +1016,13 @@ namespace Trivial.Data
             return GetEnumerator();
         }
 
-        private string GetIdWithPrefix(ItemInfo info)
+        private static string GetIdWithPrefix(ItemInfo info)
         {
             if (string.IsNullOrEmpty(info?.Prefix)) return null;
             return $"{info.Prefix}\t{info.Id}";
         }
 
-        private string GetIdWithPrefix(string prefix, string id)
+        private static string GetIdWithPrefix(string prefix, string id)
         {
             return $"{prefix}\t{id}";
         }
