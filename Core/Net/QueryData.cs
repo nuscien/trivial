@@ -10,6 +10,7 @@ using System.Web;
 
 using Trivial.Collection;
 using Trivial.Text;
+using Trivial.Web;
 
 namespace Trivial.Net
 {
@@ -18,6 +19,7 @@ namespace Trivial.Net
     /// </summary>
     public class QueryData : StringKeyValuePairs
     {
+#pragma warning disable IDE0056, IDE0057, CA1834
         private const string NumBoolChars = "-0123456789.tfnuTFNU";
         private const string NameChars = "_$-0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
@@ -255,14 +257,14 @@ namespace Trivial.Net
                 if (pos < 0)
                 {
                     if (item.Length == 0) continue;
-                    ListExtensions.Add(this, HttpUtility.UrlDecode(item, encoding), string.Empty);
+                    ListExtensions.Add(this, WebFormat.UrlDecode(item, encoding), string.Empty);
                 }
                 else
                 {
                     var key = item.Substring(0, pos);
                     var value = item.Substring(pos + 1);
                     if (key.Length == 0 && value.Length == 0) continue;
-                    ListExtensions.Add(this, HttpUtility.UrlDecode(key, encoding), HttpUtility.UrlDecode(value, encoding));
+                    ListExtensions.Add(this, WebFormat.UrlDecode(key, encoding), WebFormat.UrlDecode(value, encoding));
                 }
             }
 
@@ -289,7 +291,7 @@ namespace Trivial.Net
             var arr = new List<string>();
             foreach (var item in this)
             {
-                arr.Add(string.Format("{0}={1}", HttpUtility.UrlEncode(item.Key, encoding), HttpUtility.UrlEncode(item.Value, encoding)));
+                arr.Add(string.Format("{0}={1}", WebFormat.UrlEncode(item.Key, encoding), WebFormat.UrlEncode(item.Value, encoding)));
             }
 
             return string.Join("&", arr);
@@ -399,5 +401,6 @@ namespace Trivial.Net
             q.ParseSet(query, false, encoding);
             return q;
         }
+#pragma warning restore IDE0056, IDE0057, CA1834
     }
 }

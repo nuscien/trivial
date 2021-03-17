@@ -287,7 +287,7 @@ namespace Trivial.Collection
         /// <returns>The key encoded.</returns>
         protected virtual string EncodeKey(string key)
         {
-            return HttpUtility.UrlEncode(key);
+            return WebFormat.UrlEncode(key);
         }
 
         /// <summary>
@@ -297,7 +297,7 @@ namespace Trivial.Collection
         /// <returns>The value encoded.</returns>
         protected virtual string EncodeValue(string value)
         {
-            return HttpUtility.UrlEncode(value);
+            return WebFormat.UrlEncode(value);
         }
 
         /// <summary>

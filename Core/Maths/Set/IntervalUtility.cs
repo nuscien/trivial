@@ -782,7 +782,7 @@ namespace Trivial.Maths
 
                 if (s.Length < 1) throw new FormatException("Expect it is an interval format string but it only contains operator.");
 
-#if !NETSTANDARD2_0
+#if !NETOLDVER
                 if (digits.Contains(s[0]))
 #else
                 if (digits.Contains(s[0].ToString()))

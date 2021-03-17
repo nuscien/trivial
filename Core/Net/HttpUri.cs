@@ -13,6 +13,7 @@ namespace Trivial.Net
     /// </summary>
     public class HttpUri : IEquatable<HttpUri>, IEquatable<Uri>, IEquatable<string>
     {
+#pragma warning disable IDE0057
         private string host;
         private string path;
 
@@ -40,7 +41,9 @@ namespace Trivial.Net
                 }
 
                 value = value.Trim();
+                #pragma warning disable CA2249
                 if (value.IndexOf("://") >= 0 || value.IndexOf("//") >= 0) value = value.Substring(value.IndexOf("//") + 2);
+                #pragma warning restore CA2249
                 var i = value.Length;
                 var last = new[] { "/", "\\", ":", "?", "#" };
                 foreach (var item in last)
@@ -265,5 +268,6 @@ namespace Trivial.Net
         {
             return uri != null ? Parse(uri.ToString()) : null;
         }
+#pragma warning restore IDE0057
     }
 }

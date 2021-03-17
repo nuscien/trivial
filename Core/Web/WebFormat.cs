@@ -8,6 +8,7 @@ using System.Runtime.Serialization.Json;
 using System.Security;
 using System.Text;
 using System.Text.Json;
+using System.Web;
 
 using Trivial.Text;
 
@@ -151,7 +152,9 @@ namespace Trivial.Web
 
             var date = new DateTime(y, m, d, 0, 0, 0, DateTimeKind.Utc);
             if (pos >= s.Length) return date;
+            #pragma warning disable IDE0057
             s = s.Substring(pos);
+            #pragma warning restore IDE0057
             var arr = s.Split(':');
             if (arr.Length < 2) return date;
             if (!int.TryParse(arr[0], out var h)) return date;
@@ -413,6 +416,36 @@ namespace Trivial.Web
             }
 
             return null;
+        }
+
+        /// <summary>
+        /// Encodes a URL string using the specified encoding object.
+        /// </summary>
+        /// <param name="str">The text to encode.</param>
+        /// <param name="e">The encoding object that specifies the encoding scheme.</param>
+        /// <returns>An encoded string.</returns>
+        internal static string UrlEncode(string str, Encoding e = null)
+        {
+#if NETFRAMEWORK
+            return System.Net.WebUtility.UrlEncode(str);
+#else
+            return e == null ? HttpUtility.UrlEncode(str) : HttpUtility.UrlEncode(str, e);
+#endif
+        }
+
+        /// <summary>
+        /// Converts a URL-encoded string into a decoded string, using the specified encoding object.
+        /// </summary>
+        /// <param name="str">The string to decode.</param>
+        /// <param name="e">The encoding object that specifies the decoding scheme.</param>
+        /// <returns>A decoded string.</returns>
+        internal static string UrlDecode(string str, Encoding e = null)
+        {
+#if NETFRAMEWORK
+            return System.Net.WebUtility.UrlDecode(str);
+#else
+            return e == null ? HttpUtility.UrlDecode(str) : HttpUtility.UrlDecode(str, e);
+#endif
         }
 
         /// <summary>

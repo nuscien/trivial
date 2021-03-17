@@ -977,6 +977,7 @@ namespace Trivial.Console
             catch (ArgumentOutOfRangeException)
             {
                 if (System.Console.BufferHeight > top) throw;
+#pragma warning disable CA1416
                 try
                 {
                     System.Console.BufferHeight = top + 64;
@@ -994,6 +995,7 @@ namespace Trivial.Console
                 catch (SecurityException)
                 {
                 }
+#pragma warning restore CA1416
 
                 System.Console.SetCursorPosition(left, top);
             }
