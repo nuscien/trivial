@@ -141,9 +141,7 @@ namespace Trivial.Security
             /// </summary>
             [DataMember(Name = "uid", EmitDefaultValue = false)]
             [JsonPropertyName("uid")]
-#if !NETCOREAPP3_1
             [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
-#endif
             public string UserId { get; set; }
 
             /// <summary>
@@ -151,9 +149,7 @@ namespace Trivial.Security
             /// </summary>
             [DataMember(Name = "val", EmitDefaultValue = false)]
             [JsonPropertyName("val")]
-#if !NETCOREAPP3_1
             [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
-#endif
             public string Value { get; set; }
 
             /// <summary>
@@ -168,9 +164,7 @@ namespace Trivial.Security
             /// </summary>
             [DataMember(Name = "cei", EmitDefaultValue = false)]
             [JsonPropertyName("cei")]
-#if !NETCOREAPP3_1
             [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
-#endif
             public string CurrentEncryptId { get; set; }
 
             /// <summary>
@@ -178,9 +172,7 @@ namespace Trivial.Security
             /// </summary>
             [DataMember(Name = "eei", EmitDefaultValue = false)]
             [JsonPropertyName("eei")]
-#if !NETCOREAPP3_1
             [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
-#endif
             public string ExpectFutureEncryptId { get; set; }
 
             /// <summary>
@@ -188,9 +180,7 @@ namespace Trivial.Security
             /// </summary>
             [DataMember(Name = "jci", EmitDefaultValue = false)]
             [JsonPropertyName("jci")]
-#if !NETCOREAPP3_1
             [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
-#endif
             public string CreationId { get; set; } = Guid.NewGuid().ToString("n");
 
             /// <summary>

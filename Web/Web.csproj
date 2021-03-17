@@ -29,12 +29,12 @@
   
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <OutputPath>..\bin\Debug\</OutputPath>
-    <DocumentationFile>..\bin\Debug\$(TargetFramework)\Trivial.Web.xml</DocumentationFile>
+    <DocumentationFile>..\bin\$(Configuration)\$(TargetFramework)\Trivial.Web.xml</DocumentationFile>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <OutputPath>..\bin\Release\</OutputPath>
-    <DocumentationFile>..\bin\Release\$(TargetFramework)\Trivial.Web.xml</DocumentationFile>
+    <DocumentationFile>..\bin\$(Configuration)\$(TargetFramework)\Trivial.Web.xml</DocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>
