@@ -42,6 +42,7 @@ namespace Trivial.Tasks
             await Task.Delay(20);
             Assert.AreEqual(string.Empty, result);
             await Task.Delay(90);
+            if (string.IsNullOrEmpty(result)) await Task.Delay(20);
             Assert.AreEqual("lmn", result);
             Task.WaitAll(taskTokens.ToArray());
             taskTokens.Clear();

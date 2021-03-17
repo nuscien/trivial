@@ -19,6 +19,7 @@ namespace Trivial.Net
     /// </summary>
     public class QueryData : StringKeyValuePairs
     {
+#pragma warning disable IDE0056, IDE0057, CA1834
         private const string NumBoolChars = "-0123456789.tfnuTFNU";
         private const string NameChars = "_$-0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
@@ -400,5 +401,6 @@ namespace Trivial.Net
             q.ParseSet(query, false, encoding);
             return q;
         }
+#pragma warning restore IDE0056, IDE0057, CA1834
     }
 }

@@ -13,6 +13,7 @@ namespace Trivial.Net
     /// </summary>
     public class HttpUri : IEquatable<HttpUri>, IEquatable<Uri>, IEquatable<string>
     {
+#pragma warning disable IDE0057
         private string host;
         private string path;
 
@@ -40,7 +41,9 @@ namespace Trivial.Net
                 }
 
                 value = value.Trim();
+                #pragma warning disable CA2249
                 if (value.IndexOf("://") >= 0 || value.IndexOf("//") >= 0) value = value.Substring(value.IndexOf("//") + 2);
+                #pragma warning restore CA2249
                 var i = value.Length;
                 var last = new[] { "/", "\\", ":", "?", "#" };
                 foreach (var item in last)
@@ -137,6 +140,21 @@ namespace Trivial.Net
         public bool Equals(string other)
         {
             return other != null && other == ToString();
+        }
+
+        /// <summary>
+        /// Determines whether the specified object is equal to the current object.
+        /// </summary>
+        /// <param name="other">The instance to compare.</param>
+        /// <returns>true if they are equal; otherwise, false.</returns>
+        public override bool Equals(object other)
+        {
+            if (other is null) return false;
+            if (ReferenceEquals(this, other)) return true;
+            if (other is HttpUri h) return Equals(h);
+            if (other is Uri u) return Equals(u);
+            if (other is string s) return Equals(s);
+            return false;
         }
 
         /// <summary>
@@ -250,5 +268,6 @@ namespace Trivial.Net
         {
             return uri != null ? Parse(uri.ToString()) : null;
         }
+#pragma warning restore IDE0057
     }
 }
