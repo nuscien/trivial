@@ -84,7 +84,11 @@ namespace Trivial.Console
 
             ThrowIfCancellationRequested();
             using var p = new Process();
+#if NETFRAMEWORK
+            p.StartInfo.FileName = "cmd.exe";
+#else
             p.StartInfo.FileName = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "cmd.exe" : "bash";
+#endif
             p.StartInfo.UseShellExecute = false;
             p.StartInfo.RedirectStandardInput = true;
             p.StartInfo.RedirectStandardOutput = true;
@@ -156,7 +160,11 @@ namespace Trivial.Console
             var cancel = cancellationToken ?? CancellationToken.None;
 
             var p = new Process();
+#if NETFRAMEWORK
+            p.StartInfo.FileName = "cmd.exe";
+#else
             p.StartInfo.FileName = RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? "cmd.exe" : "bash";
+#endif
             p.StartInfo.UseShellExecute = false;
             p.StartInfo.RedirectStandardInput = true;
             p.StartInfo.RedirectStandardOutput = true;
@@ -209,6 +217,9 @@ namespace Trivial.Console
         /// <returns>true if a process resource is started; false if no new process resource is started.</returns>
         public static bool Directory(string dir)
         {
+#if NETFRAMEWORK
+            var appName = "explorer.exe";
+#else
             string appName = null;
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
@@ -218,6 +229,7 @@ namespace Trivial.Console
             {
                 appName = "Finder";
             }
+#endif
 
             if (appName == null) return false;
             try
@@ -257,7 +269,9 @@ namespace Trivial.Console
         /// <returns>true if a process resource is started; false if no new process resource is started.</returns>
         public static bool DirectorySelect(string path)
         {
+#if !NETFRAMEWORK
             if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows)) return false;
+#endif
             using var p = new Process();
             p.StartInfo.UseShellExecute = true;
             p.StartInfo.FileName = "explorer.exe";

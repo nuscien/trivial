@@ -259,7 +259,7 @@ namespace Trivial.Text
             }
         }
 
-#if !NETSTANDARD2_0
+#if !NETOLDVER
         /// <summary>
         /// Gets the System.Char object at a specified position in the source value.
         /// </summary>
@@ -1133,7 +1133,7 @@ namespace Trivial.Text
             return false;
         }
 
-#if !NETSTANDARD2_0
+#if !NETOLDVER
         /// <summary>
         /// Gets the value at the specific index.
         /// </summary>

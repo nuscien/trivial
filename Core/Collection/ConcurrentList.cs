@@ -123,7 +123,7 @@ namespace Trivial.Collection
             }
         }
 
-#if !NETSTANDARD2_0
+#if !NETOLDVER
         /// <summary>
         /// Gets or sets the element at the specified index.
         /// </summary>

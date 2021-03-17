@@ -538,7 +538,7 @@ namespace Trivial.Console
             return Items[index].Values;
         }
 
-#if !NETSTANDARD2_0
+#if !NETOLDVER
         /// <summary>
         /// Gets the string value of a specific parameter matched the key.
         /// </summary>
