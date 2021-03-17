@@ -448,7 +448,7 @@ namespace Trivial.Text
 
         internal static string SubRangeString(this string s, int start, int end, bool reverseEnd = false)
         {
-#if NETSTANDARD2_0
+#if NETOLDVER
             return s.Substring(start, reverseEnd ? (s.Length - end - start) : (end - start));
 #else
             return reverseEnd ? s[start..^end] : s[start..end];

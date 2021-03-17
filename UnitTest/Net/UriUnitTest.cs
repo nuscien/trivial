@@ -48,7 +48,12 @@ namespace Trivial.Net
             Assert.AreEqual(q[3].Value, q["p"]);
             Assert.AreEqual(string.Empty, q[4].Value);
             Assert.AreEqual(q[4].Value, q["q"]);
-            Assert.AreEqual(query.Replace("%20", "+").Replace("\\", "%5c"), q.ToString());
+#if NETFRAMEWORK
+            var backslash = "%5C";
+#else
+            var backslash = "%5c";
+#endif
+            Assert.AreEqual(query.Replace("%20", "+").Replace("\\", backslash), q.ToString());
         }
 
         /// <summary>

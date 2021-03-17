@@ -55,7 +55,11 @@ namespace Trivial.Net
         {
             if (httpContent == null) throw new ArgumentNullException(nameof(httpContent));
             if (destination == null) throw new ArgumentNullException(nameof(destination));
+#if NET5_0_OR_GREATER
+            using var downloadingStream = await httpContent.ReadAsStreamAsync(cancellationToken);
+#else
             using var downloadingStream = await httpContent.ReadAsStreamAsync();
+#endif
             await IO.StreamCopy.CopyToAsync(downloadingStream, destination, bufferSize, progress, cancellationToken);
         }
 
@@ -116,7 +120,11 @@ namespace Trivial.Net
         public static async Task<T> DeserializeJsonAsync<T>(this HttpContent httpContent, CancellationToken cancellationToken = default)
         {
             if (httpContent == null) throw new ArgumentNullException(nameof(httpContent), "httpContent should not be null.");
+#if NET5_0_OR_GREATER
+            using var stream = await httpContent.ReadAsStreamAsync(cancellationToken);
+#else
             using var stream = await httpContent.ReadAsStreamAsync();
+#endif
             var type = typeof(T);
             if (type == typeof(JsonObject)) return (T)(object)await JsonObject.ParseAsync(stream, default, cancellationToken);
             if (type == typeof(JsonDocument)) return (T)(object)await JsonDocument.ParseAsync(stream, default, cancellationToken);
@@ -136,7 +144,11 @@ namespace Trivial.Net
         public static async Task<T> DeserializeJsonAsync<T>(this HttpContent httpContent, JsonSerializerOptions options, CancellationToken cancellationToken = default)
         {
             if (httpContent == null) throw new ArgumentNullException(nameof(httpContent), "httpContent should not be null.");
+#if NET5_0_OR_GREATER
+            using var stream = await httpContent.ReadAsStreamAsync(cancellationToken);
+#else
             using var stream = await httpContent.ReadAsStreamAsync();
+#endif
             return await JsonSerializer.DeserializeAsync<T>(stream, options, cancellationToken);
         }
 

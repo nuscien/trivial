@@ -75,7 +75,7 @@ namespace Trivial.Text
         /// <exception cref="InvalidOperationException">The value kind is not the expected one.</exception>
         IJsonValue IReadOnlyList<IJsonValue>.this[int index] => GetValue(index);
 
-#if !NETSTANDARD2_0
+#if !NETOLDVER
         /// <summary>
         /// Gets the System.Char object at a specified position in the source value.
         /// </summary>
@@ -326,7 +326,7 @@ namespace Trivial.Text
             return data.ToString();
         }
 
-#if !NETSTANDARD2_0
+#if !NETOLDVER
         /// <summary>
         /// Gets the raw value of the specific value.
         /// </summary>
@@ -372,7 +372,7 @@ namespace Trivial.Text
             return JsonValueKind.Undefined;
         }
 
-#if !NETSTANDARD2_0
+#if !NETOLDVER
         /// <summary>
         /// Gets the value kind of the specific property.
         /// </summary>
@@ -625,7 +625,7 @@ namespace Trivial.Text
             return store[index] ?? JsonValues.Null;
         }
 
-#if !NETSTANDARD2_0
+#if !NETOLDVER
         /// <summary>
         /// Gets the value at the specific index.
         /// </summary>
@@ -1136,7 +1136,7 @@ namespace Trivial.Text
             return useUnixTimestampsFallback ? Web.WebFormat.ParseUnixTimestamp(num.Value) : Web.WebFormat.ParseDate(num.Value);
         }
 
-#if !NETSTANDARD2_0
+#if !NETOLDVER
         /// <summary>
         /// Tries to get the value of the specific property.
         /// </summary>
@@ -1395,7 +1395,7 @@ namespace Trivial.Text
             store.RemoveAt(index);
         }
 
-#if !NETSTANDARD2_0
+#if !NETOLDVER
         /// <summary>
         /// Tries to get the value at the specific index.
         /// </summary>
@@ -1729,7 +1729,7 @@ namespace Trivial.Text
         /// <exception cref="ArgumentNullException">The bytes should not be null.</exception>
         public void SetBase64(int index, Span<byte> bytes, Base64FormattingOptions options = Base64FormattingOptions.None)
         {
-#if NETSTANDARD2_0
+#if NETOLDVER
             if (bytes == null) throw new ArgumentNullException(nameof(bytes), "bytes should not be null.");
             store[index] = new JsonString(Convert.ToBase64String(bytes.ToArray(), options));
 #else
@@ -2097,7 +2097,7 @@ namespace Trivial.Text
         /// <exception cref="ArgumentNullException">The bytes should not be null.</exception>
         public void AddBase64(Span<byte> bytes, Base64FormattingOptions options = Base64FormattingOptions.None)
         {
-#if NETSTANDARD2_0
+#if NETOLDVER
             if (bytes == null) throw new ArgumentNullException(nameof(bytes), "bytes should not be null.");
             store.Add(new JsonString(Convert.ToBase64String(bytes.ToArray(), options)));
 #else
@@ -2413,7 +2413,7 @@ namespace Trivial.Text
         /// <exception cref="ArgumentNullException">The bytes should not be null.</exception>
         public void InsertBase64(int index, Span<byte> bytes, Base64FormattingOptions options = Base64FormattingOptions.None)
         {
-#if NETSTANDARD2_0
+#if NETOLDVER
             if (bytes == null) throw new ArgumentNullException(nameof(bytes), "bytes should not be null.");
             store.Insert(index, new JsonString(Convert.ToBase64String(bytes.ToArray(), options)));
 #else

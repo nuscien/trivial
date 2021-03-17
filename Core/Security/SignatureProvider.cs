@@ -467,6 +467,7 @@ namespace Trivial.Security
         }
     }
 
+#if !NET461
     /// <summary>
     /// The ECDSA hash signature for string.
     /// </summary>
@@ -647,6 +648,7 @@ namespace Trivial.Security
             if (needDispose && ecdsa != null) ecdsa.Dispose();
         }
     }
+#endif
 
     /// <summary>
     /// The customized keyed signature for string.

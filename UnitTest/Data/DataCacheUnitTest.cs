@@ -79,6 +79,7 @@ namespace Trivial.Data
                 tasks.Add(task());
             }
 
+            tasks.Add(Task.Delay(800));
             Task.WaitAll(tasks.ToArray());
             Assert.IsTrue(cache.Contains("xyz", "*#06#"));
             Assert.IsTrue(cache["xyz", "*#06#"] < 7);

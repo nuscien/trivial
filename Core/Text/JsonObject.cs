@@ -837,7 +837,7 @@ namespace Trivial.Text
         /// <exception cref="ArgumentOutOfRangeException">The property does not exist.</exception>
         public IJsonValueResolver GetValue(ReadOnlySpan<char> key)
         {
-            if (key == null) throw new ArgumentNullException("key", "key should not be null.");
+            if (key == null) throw new ArgumentNullException(nameof(key), "key should not be null.");
             return GetValue(key.ToString());
         }
 
@@ -861,7 +861,7 @@ namespace Trivial.Text
             return false;
         }
 
-#if !NETSTANDARD2_0
+#if !NETOLDVER
         /// <summary>
         /// Gets the value at the specific index.
         /// </summary>
@@ -1284,7 +1284,7 @@ namespace Trivial.Text
             return useUnixTimestampsFallback ? WebFormat.ParseUnixTimestamp(num.Value) : WebFormat.ParseDate(num.Value);
         }
 
-#if !NETSTANDARD2_0
+#if !NETOLDVER
         /// <summary>
         /// Tries to get the value of the specific property.
         /// </summary>
@@ -1959,7 +1959,7 @@ namespace Trivial.Text
         /// <exception cref="ArgumentNullException">The property key and bytes should not be null, empty, or consists only of white-space characters.</exception>
         public void SetBase64(string key, Span<byte> bytes, Base64FormattingOptions options = Base64FormattingOptions.None)
         {
-#if NETSTANDARD2_0
+#if NETOLDVER
             SetValue(key, Convert.ToBase64String(bytes.ToArray(), options));
 #else
             SetValue(key, Convert.ToBase64String(bytes, options));

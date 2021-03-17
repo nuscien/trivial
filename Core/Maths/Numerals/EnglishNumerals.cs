@@ -501,8 +501,8 @@ namespace Trivial.Maths
                     var numInt = (ulong)number;
                     if (numInt == number) return ToString(numInt);
                     if (number == 1.5) return "a half and one";
-                    if (number == 1.25) return "a half and a quarter";
-                    if (number == 1.2) return "a half and a fifth";
+                    if (number == 1.25) return "a quarter and one";
+                    if (number == 1.2) return "a fifth and one";
                 }
                 else if (double.IsPositiveInfinity(number))
                 {
