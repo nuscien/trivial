@@ -426,7 +426,7 @@ namespace Trivial.Web
         /// <returns>An encoded string.</returns>
         internal static string UrlEncode(string str, Encoding e = null)
         {
-#if NET461
+#if NETFRAMEWORK
             return System.Net.WebUtility.UrlEncode(str);
 #else
             return e == null ? HttpUtility.UrlEncode(str) : HttpUtility.UrlEncode(str, e);
@@ -441,7 +441,7 @@ namespace Trivial.Web
         /// <returns>A decoded string.</returns>
         internal static string UrlDecode(string str, Encoding e = null)
         {
-#if NET461
+#if NETFRAMEWORK
             return System.Net.WebUtility.UrlDecode(str);
 #else
             return e == null ? HttpUtility.UrlDecode(str) : HttpUtility.UrlDecode(str, e);

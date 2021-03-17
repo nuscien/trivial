@@ -9,9 +9,13 @@ Trivial libraries contain a lot of utilities, models and components, which are t
 ### Trivial
 
 [![NuGet package](https://img.shields.io/nuget/dt/Trivial?label=nuget+downloads)](https://www.nuget.org/packages/Trivial)
-![.NET 5.0](./assets/badge_NET_5_0.svg)
+
+![.NET 6](./assets/badge_NET_6.svg)
+![.NET 5](./assets/badge_NET_5.svg)
 ![.NET Core 3.1](./assets/badge_NET_Core_3_1.svg)
 ![.NET Standard 2.0](./assets/badge_NET_Standard_2_0.svg)
+![.NET Framework 4.8](./assets/badge_NET_Fx_4_8.svg)
+![.NET Framework 4.6.1](./assets/badge_NET_Fx_4_6_1.svg)
 
 This library includes utilities and services for tasks, security, JSON, etc.
 
@@ -32,9 +36,13 @@ PM > Install-Package Trivial
 ### Trivial.Console
 
 [![NuGet package](https://img.shields.io/nuget/dt/Trivial.Console?label=nuget+downloads)](https://www.nuget.org/packages/Trivial.Console)
-![.NET 5.0](./assets/badge_NET_5_0.svg)
+
+![.NET 6](./assets/badge_NET_6.svg)
+![.NET 5](./assets/badge_NET_5.svg)
 ![.NET Core 3.1](./assets/badge_NET_Core_3_1.svg)
 ![.NET Standard 2.0](./assets/badge_NET_Standard_2_0.svg)
+![.NET Framework 4.8](./assets/badge_NET_Fx_4_8.svg)
+![.NET Framework 4.6.1](./assets/badge_NET_Fx_4_6_1.svg)
 
 The useful utilities for console application including command dispatcher, arguments parser and some rich UX CLI controls.
 
