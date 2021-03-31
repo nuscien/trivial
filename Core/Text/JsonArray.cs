@@ -33,8 +33,10 @@ namespace Trivial.Text
         /// Initializes a new instance of the JsonArray class.
         /// </summary>
         /// <param name="copy">Properties to initialzie.</param>
-        private JsonArray(IList<IJsonValueResolver> copy)
+        /// <param name="threadSafe">true if enable thread-safe; otherwise, false.</param>
+        private JsonArray(IList<IJsonValueResolver> copy, bool threadSafe = false)
         {
+            if (threadSafe) store = new Collection.SynchronizedList<IJsonValueResolver>();
             if (copy == null) return;
             foreach (var ele in copy)
             {
@@ -3354,7 +3356,7 @@ namespace Trivial.Text
         /// <returns>A new object that is a copy of this instance.</returns>
         public JsonArray Clone()
         {
-            return new JsonArray(store);
+            return new JsonArray(store, store is Collection.SynchronizedList<IJsonValueResolver>);
         }
 
         /// <summary>

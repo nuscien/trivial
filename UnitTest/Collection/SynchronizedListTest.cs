@@ -36,12 +36,18 @@ namespace Trivial.Collection
             var list2 = ListExtensions.ToSynchronizedList(list, new object());
             Assert.AreEqual(300, list2.Count);
             list2.Add("abcdefg");
+            Assert.AreEqual("abcdefg", list2.Last());
+            Assert.IsTrue(list2.Contains("356"));
 
             list = new SynchronizedList<string>(list2);
+            list.Reverse();
             Assert.AreEqual(301, list.Count);
-            Assert.AreEqual("abcdefg", list.Last());
-            list.RemoveAt(300);
+            Assert.AreEqual("abcdefg", list.First());
+            list.RemoveAt(0);
             Assert.AreEqual(300, list.Count);
+            Assert.IsTrue(list2.Contains("17"));
+            list.Clear();
+            Assert.AreEqual(0, list.Count);
         }
     }
 }

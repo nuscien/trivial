@@ -33,8 +33,10 @@ namespace Trivial.Text
         /// Initializes a new instance of the JsonObject class.
         /// </summary>
         /// <param name="copy">Properties to initialzie.</param>
-        private JsonObject(IDictionary<string, IJsonValueResolver> copy)
+        /// <param name="threadSafe">true if enable thread-safe; otherwise, false.</param>
+        private JsonObject(IDictionary<string, IJsonValueResolver> copy, bool threadSafe = false)
         {
+            if (threadSafe) store = new ConcurrentDictionary<string, IJsonValueResolver>();
             if (copy == null) return;
             foreach (var ele in copy)
             {
@@ -3364,7 +3366,7 @@ namespace Trivial.Text
         /// <returns>A new object that is a copy of this instance.</returns>
         public JsonObject Clone()
         {
-            return new JsonObject(store);
+            return new JsonObject(store, store is ConcurrentDictionary<string, IJsonValueResolver>);
         }
 
         /// <summary>
@@ -3374,8 +3376,9 @@ namespace Trivial.Text
         /// <returns>A new object that is a copy of this instance.</returns>
         public JsonObject Clone(IEnumerable<string> keys)
         {
-            if (keys == null) return new JsonObject(store);
+            if (keys == null) return new JsonObject(store, store is ConcurrentDictionary<string, IJsonValueResolver>);
             var json = new JsonObject();
+            if (store is ConcurrentDictionary<string, IJsonValueResolver>) json.EnableThreadSafeMode();
             foreach (var key in keys)
             {
                 if (store.TryGetValue(key, out var v)) json.store.Add(key, v);
