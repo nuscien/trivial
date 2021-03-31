@@ -32,6 +32,16 @@ namespace Trivial.Collection
 
             list.RemoveAll(ele => ele.Length == 3 && ele.StartsWith("4"));
             Assert.AreEqual(300, list.Count);
+
+            var list2 = ListExtensions.ToSynchronizedList(list, new object());
+            Assert.AreEqual(300, list2.Count);
+            list2.Add("abcdefg");
+
+            list = new SynchronizedList<string>(list2);
+            Assert.AreEqual(301, list.Count);
+            Assert.AreEqual("abcdefg", list.Last());
+            list.RemoveAt(300);
+            Assert.AreEqual(300, list.Count);
         }
     }
 }

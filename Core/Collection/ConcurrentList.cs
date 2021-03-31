@@ -34,7 +34,7 @@ namespace Trivial.Collection
         public ConcurrentList(IEnumerable<T> collection)
         {
             locker = new object();
-            if (list is null)
+            if (collection is null)
             {
                 list = new List<T>();
                 return;
@@ -63,16 +63,24 @@ namespace Trivial.Collection
         public ConcurrentList(object syncRoot, IEnumerable<T> collection, bool useSource = false)
         {
             locker = syncRoot ?? new object();
-            if (list is null)
+            if (collection is null)
             {
                 list = new List<T>();
                 return;
             }
 
-            if (useSource && collection is List<T> l)
+            if (useSource)
             {
-                list = l;
-                return;
+                if (collection is List<T> l)
+                {
+                    list = l;
+                    return;
+                }
+                else if (collection is ConcurrentList<T> cl)
+                {
+                    list = cl.list;
+                    return;
+                }
             }
 
             try

@@ -34,7 +34,7 @@ namespace Trivial.Collection
         public SynchronizedList(IEnumerable<T> collection)
         {
             slim = new ReaderWriterLockSlim();
-            if (list is null)
+            if (collection is null)
             {
                 list = new List<T>();
                 return;
@@ -63,16 +63,24 @@ namespace Trivial.Collection
         internal SynchronizedList(LockRecursionPolicy recursionPolicy, IEnumerable<T> collection = null, bool useSource = false)
         {
             slim = new ReaderWriterLockSlim(recursionPolicy);
-            if (list is null)
+            if (collection is null)
             {
                 list = new List<T>();
                 return;
             }
 
-            if (useSource && collection is List<T> l)
+            if (useSource)
             {
-                list = l;
-                return;
+                if (collection is List<T> l)
+                {
+                    list = l;
+                    return;
+                }
+                else if (collection is SynchronizedList<T> sl)
+                {
+                    list = sl.list;
+                    return;
+                }
             }
 
             try
