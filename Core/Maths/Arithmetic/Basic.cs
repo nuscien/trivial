@@ -94,9 +94,9 @@ namespace Trivial.Maths
         /// Converts a number to a specific positional notation format string.
         /// </summary>
         /// <param name="value">The number to convert.</param>
-        /// <param name="radix">The positional notation.</param>
+        /// <param name="radix">The positional notation. Should be an integer in 2-36.</param>
         /// <returns>A string of the number in the specific positional notation.</returns>
-        /// <exception cref="ArgumentOutOfRangeException">type should be in 2-36.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">radix was less than 2 or greater than 36.</exception>
         public static string ToPositionalNotationString(int value, int radix)
         {
             return ToPositionalNotationString((long)value, radix);
@@ -106,9 +106,9 @@ namespace Trivial.Maths
         /// Converts a number to a specific positional notation format string.
         /// </summary>
         /// <param name="value">The number to convert.</param>
-        /// <param name="radix">The positional notation.</param>
+        /// <param name="radix">The positional notation. Should be an integer in 2-36.</param>
         /// <returns>A string of the number in the specific positional notation.</returns>
-        /// <exception cref="ArgumentOutOfRangeException">type should be in 2-36.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">radix was less than 2 or greater than 36.</exception>
         public static string ToPositionalNotationString(long value, int radix)
         {
             if (radix < 2 || radix > 36) throw new ArgumentOutOfRangeException(nameof(radix), "radix should be in 2-36.");
@@ -129,9 +129,9 @@ namespace Trivial.Maths
         /// Converts a number to a specific positional notation format string.
         /// </summary>
         /// <param name="value">The number to convert.</param>
-        /// <param name="radix">The positional notation.</param>
+        /// <param name="radix">The positional notation. Should be an integer in 2-36.</param>
         /// <returns>A string of the number in the specific positional notation.</returns>
-        /// <exception cref="ArgumentOutOfRangeException">type was less than 2 or greater than 36.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">radix was less than 2 or greater than 36.</exception>
         public static string ToPositionalNotationString(double value, int radix)
         {
             if (radix < 2 || radix > 36) throw new ArgumentOutOfRangeException(nameof(radix), "radix should be in 2-36.");
