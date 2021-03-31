@@ -94,31 +94,31 @@ namespace Trivial.Maths
         /// Converts a number to a specific positional notation format string.
         /// </summary>
         /// <param name="value">The number to convert.</param>
-        /// <param name="type">The positional notation.</param>
+        /// <param name="radix">The positional notation.</param>
         /// <returns>A string of the number in the specific positional notation.</returns>
         /// <exception cref="ArgumentOutOfRangeException">type should be in 2-36.</exception>
-        public static string ToPositionalNotationString(int value, int type)
+        public static string ToPositionalNotationString(int value, int radix)
         {
-            return ToPositionalNotationString((double)value, type);
+            return ToPositionalNotationString((long)value, radix);
         }
 
         /// <summary>
         /// Converts a number to a specific positional notation format string.
         /// </summary>
         /// <param name="value">The number to convert.</param>
-        /// <param name="type">The positional notation.</param>
+        /// <param name="radix">The positional notation.</param>
         /// <returns>A string of the number in the specific positional notation.</returns>
         /// <exception cref="ArgumentOutOfRangeException">type should be in 2-36.</exception>
-        public static string ToPositionalNotationString(long value, int type)
+        public static string ToPositionalNotationString(long value, int radix)
         {
-            if (type < 2 || type > 36) throw new ArgumentOutOfRangeException(nameof(type), "type should be in 2-36.");
+            if (radix < 2 || radix > 36) throw new ArgumentOutOfRangeException(nameof(radix), "radix should be in 2-36.");
             var integerStr = string.Empty;
             var integerPart = Math.Abs(value);
             if (integerPart == 0) return "0";
             while (integerPart != 0)
             {
-                integerStr = num36[(int)integerPart % type] + integerStr;
-                integerPart /= type;
+                integerStr = num36[(int)integerPart % radix] + integerStr;
+                integerPart /= radix;
             }
 
             if (value < 0) return "-" + integerStr;
@@ -129,12 +129,12 @@ namespace Trivial.Maths
         /// Converts a number to a specific positional notation format string.
         /// </summary>
         /// <param name="value">The number to convert.</param>
-        /// <param name="type">The positional notation.</param>
+        /// <param name="radix">The positional notation.</param>
         /// <returns>A string of the number in the specific positional notation.</returns>
         /// <exception cref="ArgumentOutOfRangeException">type was less than 2 or greater than 36.</exception>
-        public static string ToPositionalNotationString(double value, int type)
+        public static string ToPositionalNotationString(double value, int radix)
         {
-            if (type < 2 || type > 36) throw new ArgumentOutOfRangeException(nameof(type), "type should be in 2-36.");
+            if (radix < 2 || radix > 36) throw new ArgumentOutOfRangeException(nameof(radix), "radix should be in 2-36.");
             var integerStr = string.Empty;
             var fractionalStr = string.Empty;
             var integerPart = Math.Abs((long)value);
@@ -146,19 +146,26 @@ namespace Trivial.Maths
 
             while (integerPart != 0)
             {
-                integerStr = num36[(int)integerPart % type] + integerStr;
-                integerPart /= type;
+                integerStr = num36[(int)integerPart % radix] + integerStr;
+                integerPart /= radix;
             }
 
-            for (int i = 0; i < 7; i++)
+            for (int i = 0; i < 10; i++)
             {
                 if (fractionalPart == 0)
                 {
                     break;
                 }
 
-                fractionalStr += num36[(int)(fractionalPart * type)];
-                fractionalPart = fractionalPart * type - (int)(fractionalPart * type);
+                var pos = (int)(fractionalPart * radix);
+                if (pos < 35 && Math.Abs(pos + 1 - fractionalPart * radix) < 0.00000000001)
+                {
+                    fractionalStr += num36[pos + 1];
+                    break;
+                }
+
+                fractionalStr += num36[pos];
+                fractionalPart = fractionalPart * radix - pos;
             }
 
             while (fractionalStr.Length > 0 && fractionalStr.LastIndexOf('0') == (fractionalStr.Length - 1))

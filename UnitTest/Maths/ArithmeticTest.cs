@@ -36,6 +36,13 @@ namespace Trivial.Maths
 
             // Factorial.
             Assert.AreEqual(2432902008176640000, Arithmetic.Factorial(20));
+
+            // Positional notation.
+            Assert.AreEqual("120", Arithmetic.ToPositionalNotationString(168, 12));
+            Assert.AreEqual("8a", Arithmetic.ToPositionalNotationString(170.0, 20));
+            Assert.AreEqual("8a.2", Arithmetic.ToPositionalNotationString(170.1, 20));
+            Assert.AreEqual("3.47d01bpf", Arithmetic.ToPositionalNotationString(3.14159265, 30));
+            Assert.AreEqual("0.6204620462", Arithmetic.ToPositionalNotationString(0.9, 7));
         }
 
         /// <summary>
