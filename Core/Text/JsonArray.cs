@@ -229,7 +229,7 @@ namespace Trivial.Text
         /// <param name="skipIfEnabled">true if skip if this instance is in thread-safe (concurrent) mode; otherwise, false.</param>
         public void EnableThreadSafeMode(int depth, bool skipIfEnabled = false)
         {
-            if (store is Collection.ConcurrentList<IJsonValueResolver>)
+            if (store is Collection.SynchronizedList<IJsonValueResolver>)
             {
                 if (skipIfEnabled) return;
             }
@@ -241,7 +241,7 @@ namespace Trivial.Text
                 {
                     try
                     {
-                        store = new Collection.ConcurrentList<IJsonValueResolver>(store);
+                        store = new Collection.SynchronizedList<IJsonValueResolver>(store);
                         break;
                     }
                     catch (ArgumentException)

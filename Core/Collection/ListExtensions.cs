@@ -349,6 +349,54 @@ namespace Trivial.Collection
         }
 
         /// <summary>
+        /// Creates a synchronized list from the source collection.
+        /// </summary>
+        /// <typeparam name="T">The type of list item.</typeparam>
+        /// <param name="list">The source collection.</param>
+        /// <returns>A synchronized list.</returns>
+        public static SynchronizedList<T> ToSynchronizedList<T>(IEnumerable<T> list)
+        {
+            return new SynchronizedList<T>(list);
+        }
+
+        /// <summary>
+        /// Creates a synchronized list from the source collection.
+        /// </summary>
+        /// <typeparam name="T">The type of list item.</typeparam>
+        /// <param name="list">The source collection.</param>
+        /// <param name="useSource">true if set the collection as source directly instead of copying; otherwise, false.</param>
+        /// <returns>A synchronized list.</returns>
+        public static SynchronizedList<T> ToSynchronizedList<T>(List<T> list, bool useSource)
+        {
+            return new SynchronizedList<T>(list);
+        }
+
+        /// <summary>
+        /// Creates a synchronized list from the source collection.
+        /// </summary>
+        /// <typeparam name="T">The type of list item.</typeparam>
+        /// <param name="list">The source collection.</param>
+        /// <param name="syncRoot">The object used to synchronize access the thread-safe collection.</param>
+        /// <returns>A synchronized list.</returns>
+        public static IList<T> ToSynchronizedList<T>(IEnumerable<T> list, object syncRoot)
+        {
+            return new ConcurrentList<T>(syncRoot, list);
+        }
+
+        /// <summary>
+        /// Creates a synchronized list from the source collection.
+        /// </summary>
+        /// <typeparam name="T">The type of list item.</typeparam>
+        /// <param name="list">The source collection.</param>
+        /// <param name="syncRoot">The object used to synchronize access the thread-safe collection.</param>
+        /// <param name="useSource">true if set the collection as source directly instead of copying; otherwise, false.</param>
+        /// <returns>A synchronized list.</returns>
+        public static IList<T> ToSynchronizedList<T>(List<T> list, object syncRoot, bool useSource)
+        {
+            return new ConcurrentList<T>(syncRoot, list, useSource);
+        }
+
+        /// <summary>
         /// Tests if they are same.
         /// </summary>
         /// <param name="a">Collection a.</param>
