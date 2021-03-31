@@ -69,10 +69,18 @@ namespace Trivial.Collection
                 return;
             }
 
-            if (useSource && collection is List<T> l)
+            if (useSource)
             {
-                list = l;
-                return;
+                if (collection is List<T> l)
+                {
+                    list = l;
+                    return;
+                }
+                else if (collection is SynchronizedList<T> sl)
+                {
+                    list = sl.list;
+                    return;
+                }
             }
 
             try

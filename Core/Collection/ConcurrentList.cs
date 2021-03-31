@@ -34,7 +34,7 @@ namespace Trivial.Collection
         public ConcurrentList(IEnumerable<T> collection)
         {
             locker = new object();
-            if (list is null)
+            if (collection is null)
             {
                 list = new List<T>();
                 return;
@@ -60,19 +60,27 @@ namespace Trivial.Collection
         /// <param name="syncRoot">The object used to synchronize access the thread-safe collection.</param>
         /// <param name="collection">The collection of elements used to initialize the thread-safe collection.</param>
         /// <param name="useSource">true if set the collection as source directly instead of copying; otherwise, false.</param>
-        public ConcurrentList(object syncRoot, IEnumerable<T> collection, bool useSource)
+        public ConcurrentList(object syncRoot, IEnumerable<T> collection, bool useSource = false)
         {
             locker = syncRoot ?? new object();
-            if (list is null)
+            if (collection is null)
             {
                 list = new List<T>();
                 return;
             }
 
-            if (useSource && collection is List<T> l)
+            if (useSource)
             {
-                list = l;
-                return;
+                if (collection is List<T> l)
+                {
+                    list = l;
+                    return;
+                }
+                else if (collection is ConcurrentList<T> cl)
+                {
+                    list = cl.list;
+                    return;
+                }
             }
 
             try
@@ -170,6 +178,39 @@ namespace Trivial.Collection
 
         /// <inheritdoc />
         public bool IsReadOnly => false;
+
+        /// <summary>
+        /// Tries to get the element.
+        /// </summary>
+        /// <param name="index">The zero-based starting index of the range to reverse.</param>
+        /// <param name="result">The result output.</param>
+        /// <returns>true if contains; otherwise, false.</returns>
+        public bool TryGet(int index, out T result)
+        {
+            if (index >= 0)
+            {
+                try
+                {
+                    lock (locker)
+                    {
+                        if (index < list.Count)
+                        {
+                            result = list[index];
+                            return true;
+                        }
+                    }
+                }
+                catch (ArgumentException)
+                {
+                }
+                catch (InvalidOperationException)
+                {
+                }
+            }
+
+            result = default;
+            return false;
+        }
 
         /// <summary>
         /// Reverses the order of the elements in the specified range.
