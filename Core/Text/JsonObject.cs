@@ -146,7 +146,7 @@ namespace Trivial.Text
         {
             get
             {
-                if (index < 0) throw new ArgumentOutOfRangeException("index", "index should be a natural number.");
+                if (index < 0) throw new ArgumentOutOfRangeException(nameof(index), "index should be a natural number.");
                 var result = GetValue(key);
                 if (result is JsonArray arr) return arr[index];
                 else if (result is JsonObject json) return json[index.ToString("g")];
@@ -418,7 +418,7 @@ namespace Trivial.Text
         /// <exception cref="ArgumentOutOfRangeException">The property does not exist.</exception>
         public JsonValueKind GetValueKind(ReadOnlySpan<char> key, bool strictMode = false)
         {
-            if (key == null) throw new ArgumentNullException("key", "key should not be null.");
+            if (key == null) throw new ArgumentNullException(nameof(key), "key should not be null.");
             return GetValueKind(key.ToString(), strictMode);
         }
 

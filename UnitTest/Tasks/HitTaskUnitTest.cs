@@ -151,6 +151,7 @@ namespace Trivial.Tasks
             await Task.Delay(20);
             Assert.AreEqual(string.Empty, result);
             await Task.Delay(90);
+            if (string.IsNullOrEmpty(result)) await Task.Delay(20);
             Assert.AreEqual("rst", result);
             _ = ProcessHit(taskTokens, task, "uvw");
             await Task.Delay(20);

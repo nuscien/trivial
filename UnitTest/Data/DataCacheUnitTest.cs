@@ -30,7 +30,7 @@ namespace Trivial.Data
                 { "hijklmn", 17 },
                 { "opq", "hijklmn", 20 }
             };
-            cache.Expiration = TimeSpan.FromMilliseconds(900);
+            cache.Expiration = TimeSpan.FromMilliseconds(1600);
             Assert.AreEqual(4, cache.Count);
             Assert.AreEqual(12, cache["abcdefg"]);
             Assert.AreEqual(17, cache["opq", "abcdefg"]);
@@ -79,7 +79,7 @@ namespace Trivial.Data
                 tasks.Add(task());
             }
 
-            tasks.Add(Task.Delay(800));
+            tasks.Add(Task.Delay(200));
             Task.WaitAll(tasks.ToArray());
             Assert.IsTrue(cache.Contains("xyz", "*#06#"));
             Assert.IsTrue(cache["xyz", "*#06#"] < 7);

@@ -122,7 +122,7 @@ namespace Trivial.Text
         {
             get
             {
-                if (index < 0) throw new ArgumentOutOfRangeException("index", "index was less than zero.");
+                if (index < 0) throw new ArgumentOutOfRangeException(nameof(index), "index was less than zero.");
                 var result = store[index];
                 if (result is JsonObject json)
                 {
@@ -176,8 +176,8 @@ namespace Trivial.Text
         {
             get
             {
-                if (index < 0) throw new ArgumentOutOfRangeException("index", "index was less than zero.");
-                if (subIndex < 0) throw new ArgumentOutOfRangeException("subIndex", "subIndex was less than zero.");
+                if (index < 0) throw new ArgumentOutOfRangeException(nameof(index), "index was less than zero.");
+                if (subIndex < 0) throw new ArgumentOutOfRangeException(nameof(subIndex), "subIndex was less than zero.");
                 var result = store[index];
                 if (result is JsonObject json)
                 {
@@ -229,7 +229,7 @@ namespace Trivial.Text
         /// <param name="skipIfEnabled">true if skip if this instance is in thread-safe (concurrent) mode; otherwise, false.</param>
         public void EnableThreadSafeMode(int depth, bool skipIfEnabled = false)
         {
-            if (store is Collection.ConcurrentList<IJsonValueResolver>)
+            if (store is Collection.SynchronizedList<IJsonValueResolver>)
             {
                 if (skipIfEnabled) return;
             }
@@ -241,7 +241,7 @@ namespace Trivial.Text
                 {
                     try
                     {
-                        store = new Collection.ConcurrentList<IJsonValueResolver>(store);
+                        store = new Collection.SynchronizedList<IJsonValueResolver>(store);
                         break;
                     }
                     catch (ArgumentException)

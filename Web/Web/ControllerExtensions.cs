@@ -470,12 +470,12 @@ namespace Trivial.Web
             }
         }
 
-        internal static ActionResult EmptyEntity(this ControllerBase controller)
-        {
-            return controller.NotFound();
-        }
-
-        internal static ContentResult JsonStringResult(string json)
+        /// <summary>
+        /// Converts a JSON format string to a result.
+        /// </summary>
+        /// <param name="json">The JSON format string.</param>
+        /// <returns>The content result converted.</returns>
+        public static ContentResult JsonStringResult(string json)
         {
             return new ContentResult
             {
@@ -518,7 +518,7 @@ namespace Trivial.Web
                 || ex is ArgumentException
                 || ex is NullReferenceException
                 || ex is System.Data.Common.DbException
-                || ex is System.Text.Json.JsonException
+                || ex is JsonException
                 || ex is System.Runtime.Serialization.SerializationException
                 || ex is FailedHttpException
                 || ex is IOException
