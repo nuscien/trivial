@@ -65,21 +65,6 @@ namespace Trivial.Maths
             Assert.AreEqual(
                 "one point two three times ten of forty-five power",
                 EnglishNumerals.Default.ToString(1.23e45));
-
-            // Simplified Chinese.
-            Assert.AreEqual("98.8亿", ChineseNumerals.Simplified.ToApproximationString(9876543210));
-            Assert.AreEqual(
-                "负九十八亿七千六百五十四万三千两百一十",
-                ChineseNumerals.Simplified.ToString(-9876543210));
-            Assert.AreEqual(
-                "九八七六五四三二一零",
-                ChineseNumerals.Simplified.ToString(9876543210, true));
-            Assert.AreEqual(
-                "三点一四一五九二六五",
-                ChineseNumerals.Simplified.ToString(3.14159265));
-            Assert.AreEqual(
-                "一点二三乘以十的四十五次方",
-                ChineseNumerals.Simplified.ToString(1.23e45));
         }
     }
 }
