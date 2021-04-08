@@ -43,6 +43,11 @@ namespace Trivial.Maths
             Assert.AreEqual("8a.2", Arithmetic.ToPositionalNotationString(170.1, 20));
             Assert.AreEqual("3.47d01bpf", Arithmetic.ToPositionalNotationString(3.14159265, 30));
             Assert.AreEqual("0.6204620462", Arithmetic.ToPositionalNotationString(0.9, 7));
+            Assert.AreEqual(168, Arithmetic.ParseToInt32("120", 12));
+            Assert.AreEqual(-168L, Arithmetic.ParseToInt64("-120", 12));
+            Assert.AreEqual(170, Arithmetic.ParseToInt32("8a", 20));
+            Assert.IsFalse(Arithmetic.TryParseToInt32("8a", 9, out _));
+            Assert.IsFalse(Arithmetic.TryParseToInt32("8a", 8, out _));
         }
 
         /// <summary>
