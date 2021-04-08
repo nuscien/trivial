@@ -33,8 +33,10 @@ namespace Trivial.Text
         /// Initializes a new instance of the JsonObject class.
         /// </summary>
         /// <param name="copy">Properties to initialzie.</param>
-        private JsonObject(IDictionary<string, IJsonValueResolver> copy)
+        /// <param name="threadSafe">true if enable thread-safe; otherwise, false.</param>
+        private JsonObject(IDictionary<string, IJsonValueResolver> copy, bool threadSafe = false)
         {
+            if (threadSafe) store = new ConcurrentDictionary<string, IJsonValueResolver>();
             if (copy == null) return;
             foreach (var ele in copy)
             {
@@ -146,7 +148,7 @@ namespace Trivial.Text
         {
             get
             {
-                if (index < 0) throw new ArgumentOutOfRangeException("index", "index should be a natural number.");
+                if (index < 0) throw new ArgumentOutOfRangeException(nameof(index), "index should be a natural number.");
                 var result = GetValue(key);
                 if (result is JsonArray arr) return arr[index];
                 else if (result is JsonObject json) return json[index.ToString("g")];
@@ -418,7 +420,7 @@ namespace Trivial.Text
         /// <exception cref="ArgumentOutOfRangeException">The property does not exist.</exception>
         public JsonValueKind GetValueKind(ReadOnlySpan<char> key, bool strictMode = false)
         {
-            if (key == null) throw new ArgumentNullException("key", "key should not be null.");
+            if (key == null) throw new ArgumentNullException(nameof(key), "key should not be null.");
             return GetValueKind(key.ToString(), strictMode);
         }
 
@@ -3364,7 +3366,7 @@ namespace Trivial.Text
         /// <returns>A new object that is a copy of this instance.</returns>
         public JsonObject Clone()
         {
-            return new JsonObject(store);
+            return new JsonObject(store, store is ConcurrentDictionary<string, IJsonValueResolver>);
         }
 
         /// <summary>
@@ -3374,8 +3376,9 @@ namespace Trivial.Text
         /// <returns>A new object that is a copy of this instance.</returns>
         public JsonObject Clone(IEnumerable<string> keys)
         {
-            if (keys == null) return new JsonObject(store);
+            if (keys == null) return new JsonObject(store, store is ConcurrentDictionary<string, IJsonValueResolver>);
             var json = new JsonObject();
+            if (store is ConcurrentDictionary<string, IJsonValueResolver>) json.EnableThreadSafeMode();
             foreach (var key in keys)
             {
                 if (store.TryGetValue(key, out var v)) json.store.Add(key, v);

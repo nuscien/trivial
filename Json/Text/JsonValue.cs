@@ -523,7 +523,7 @@ namespace Trivial.Text
         /// <returns>true if the kind is the one expected; otherwise, false.</returns>
         bool IJsonValueResolver.TryGetDateTime(out DateTime result)
         {
-            result = WebFormat.ParseDate(0);
+            result = InternalHelper.ParseDate(0);
             return false;
         }
 
@@ -1125,7 +1125,7 @@ namespace Trivial.Text
         /// <returns>true if the kind is the one expected; otherwise, false.</returns>
         bool IJsonValueResolver.TryGetDateTime(out DateTime result)
         {
-            result = WebFormat.ParseDate(0);
+            result = InternalHelper.ParseDate(0);
             return false;
         }
 
@@ -1440,7 +1440,7 @@ namespace Trivial.Text
                     return true;
                 case JsonValueKind.Number:
                     if (!json.TryGetInt64(out long tick)) break;
-                    value = WebFormat.ParseDate(tick);
+                    value = InternalHelper.ParseDate(tick);
                     return true;
                 default:
                     throw new InvalidOperationException("The value kind should be string or number.");
@@ -1468,7 +1468,7 @@ namespace Trivial.Text
                     return true;
                 case JsonValueKind.Number:
                     if (!json.TryGetInt64(out long tick)) break;
-                    value = WebFormat.ParseUnixTimestamp(tick);
+                    value = InternalHelper.ParseUnixTimestamp(tick);
                     return true;
                 default:
                     throw new InvalidOperationException("The value kind should be string or number.");

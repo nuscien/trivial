@@ -92,7 +92,7 @@ namespace Trivial.Text
         /// Initializes a new instance of the JsonString class.
         /// </summary>
         /// <param name="value">The value.</param>
-        public JsonString(System.Security.SecureString value) : this(StringExtensions.ToUnsecureString(value))
+        public JsonString(System.Security.SecureString value) : this(InternalHelper.ToUnsecureString(value))
         {
         }
 
@@ -319,13 +319,13 @@ namespace Trivial.Text
             switch (ValueType)
             {
                 case 2:
-                    if (long.TryParse(s, out var l)) return WebFormat.ParseDate(l);
+                    if (long.TryParse(s, out var l)) return InternalHelper.ParseDate(l);
                     break;
                 default:
                     break;
             }
 
-            return WebFormat.ParseDate(s);
+            return InternalHelper.ParseDate(s);
         }
 
         /// <summary>
@@ -342,7 +342,7 @@ namespace Trivial.Text
                 return true;
             }
 
-            result = WebFormat.ParseDate(0);
+            result = InternalHelper.ParseDate(0);
             return false;
         }
 
@@ -374,7 +374,7 @@ namespace Trivial.Text
         public T ToEnum<T>() where T : struct, Enum
         {
             if (Value == null) throw new InvalidOperationException("Value is null.");
-            return StringExtensions.ParseEnum<T>(Value);
+            return InternalHelper.ParseEnum<T>(Value);
         }
 
         /// <summary>
@@ -386,7 +386,7 @@ namespace Trivial.Text
         public T ToEnum<T>(bool ignoreCase) where T : struct, Enum
         {
             if (Value == null) throw new InvalidOperationException("Value is null.");
-            return StringExtensions.ParseEnum<T>(Value, ignoreCase);
+            return InternalHelper.ParseEnum<T>(Value, ignoreCase);
         }
 
         /// <summary>
@@ -663,13 +663,13 @@ namespace Trivial.Text
             switch (ValueType)
             {
                 case 2:
-                    if (long.TryParse(s, out var l)) return WebFormat.ParseDate(l);
+                    if (long.TryParse(s, out var l)) return InternalHelper.ParseDate(l);
                     break;
                 default:
                     break;
             }
 
-            var date = WebFormat.ParseDate(s);
+            var date = InternalHelper.ParseDate(s);
             if (date.HasValue) return date.Value;
             throw new FormatException("The string is not JSON date format.");
         }
@@ -710,7 +710,7 @@ namespace Trivial.Text
             if (ValueType == 1)
             {
                 var date = TryGetDateTime();
-                if (date.HasValue) return WebFormat.ParseDate(date.Value);
+                if (date.HasValue) return InternalHelper.ParseDate(date.Value);
             }
 
             throw new InvalidOperationException("Expect a number but it is a string.");
@@ -764,7 +764,7 @@ namespace Trivial.Text
             if (ValueType == 1)
             {
                 var date = TryGetDateTime();
-                if (date.HasValue) return WebFormat.ParseDate(date.Value);
+                if (date.HasValue) return InternalHelper.ParseDate(date.Value);
             }
 
             throw new InvalidOperationException("Expect a number but it is a string.");

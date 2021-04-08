@@ -31,8 +31,10 @@ namespace Trivial.Text
         /// Initializes a new instance of the JsonArray class.
         /// </summary>
         /// <param name="copy">Properties to initialzie.</param>
-        private JsonArray(IList<IJsonValueResolver> copy)
+        /// <param name="threadSafe">true if enable thread-safe; otherwise, false.</param>
+        private JsonArray(IList<IJsonValueResolver> copy, bool threadSafe = false)
         {
+            if (threadSafe) store = new SynchronizedList<IJsonValueResolver>();
             if (copy == null) return;
             foreach (var ele in copy)
             {
@@ -120,7 +122,7 @@ namespace Trivial.Text
         {
             get
             {
-                if (index < 0) throw new ArgumentOutOfRangeException("index", "index was less than zero.");
+                if (index < 0) throw new ArgumentOutOfRangeException(nameof(index), "index was less than zero.");
                 var result = store[index];
                 if (result is JsonObject json)
                 {
@@ -174,8 +176,8 @@ namespace Trivial.Text
         {
             get
             {
-                if (index < 0) throw new ArgumentOutOfRangeException("index", "index was less than zero.");
-                if (subIndex < 0) throw new ArgumentOutOfRangeException("subIndex", "subIndex was less than zero.");
+                if (index < 0) throw new ArgumentOutOfRangeException(nameof(index), "index was less than zero.");
+                if (subIndex < 0) throw new ArgumentOutOfRangeException(nameof(subIndex), "subIndex was less than zero.");
                 var result = store[index];
                 if (result is JsonObject json)
                 {
@@ -227,7 +229,7 @@ namespace Trivial.Text
         /// <param name="skipIfEnabled">true if skip if this instance is in thread-safe (concurrent) mode; otherwise, false.</param>
         public void EnableThreadSafeMode(int depth, bool skipIfEnabled = false)
         {
-            if (store is Collection.ConcurrentList<IJsonValueResolver>)
+            if (store is SynchronizedList<IJsonValueResolver>)
             {
                 if (skipIfEnabled) return;
             }
@@ -239,7 +241,7 @@ namespace Trivial.Text
                 {
                     try
                     {
-                        store = new Collection.ConcurrentList<IJsonValueResolver>(store);
+                        store = new SynchronizedList<IJsonValueResolver>(store);
                         break;
                     }
                     catch (ArgumentException)
@@ -555,13 +557,13 @@ namespace Trivial.Text
         {
             if (TryGetJsonValue<JsonString>(index, out var s))
             {
-                var date = WebFormat.ParseDate(s.Value);
+                var date = InternalHelper.ParseDate(s.Value);
                 if (date.HasValue) return date.Value;
                 throw new FormatException("The value is not a date time.");
             }
 
             var num = GetJsonValue<JsonInteger>(index);
-            return useUnixTimestampsFallback ? WebFormat.ParseUnixTimestamp(num.Value) : WebFormat.ParseDate(num.Value);
+            return useUnixTimestampsFallback ? InternalHelper.ParseUnixTimestamp(num.Value) : InternalHelper.ParseDate(num.Value);
         }
 
         /// <summary>
@@ -592,7 +594,7 @@ namespace Trivial.Text
         {
             if (TryGetInt32Value(index, out var v)) return (T)(object)v;
             var str = GetStringValue(index);
-            return StringExtensions.ParseEnum<T>(str);
+            return InternalHelper.ParseEnum<T>(str);
         }
 
         /// <summary>
@@ -609,7 +611,7 @@ namespace Trivial.Text
         {
             if (TryGetInt32Value(index, out var v)) return (T)(object)v;
             var str = GetStringValue(index);
-            return StringExtensions.ParseEnum<T>(str, ignoreCase);
+            return InternalHelper.ParseEnum<T>(str, ignoreCase);
         }
 
         /// <summary>
@@ -1126,12 +1128,12 @@ namespace Trivial.Text
         {
             if (TryGetJsonValue<JsonString>(index, out var s))
             {
-                var date = WebFormat.ParseDate(s.Value);
+                var date = InternalHelper.ParseDate(s.Value);
                 return date;
             }
 
             if (!TryGetJsonValue<JsonInteger>(index, out var num)) return null;
-            return useUnixTimestampsFallback ? WebFormat.ParseUnixTimestamp(num.Value) : WebFormat.ParseDate(num.Value);
+            return useUnixTimestampsFallback ? InternalHelper.ParseUnixTimestamp(num.Value) : InternalHelper.ParseDate(num.Value);
         }
 
 #if !NETOLDVER
@@ -1876,7 +1878,7 @@ namespace Trivial.Text
         /// <exception cref="ArgumentOutOfRangeException">The index is out of range.</exception>
         public void SetJavaScriptDateTicksValue(int index, DateTime value)
         {
-            store[index] = new JsonInteger(WebFormat.ParseDate(value));
+            store[index] = new JsonInteger(InternalHelper.ParseDate(value));
         }
 
         /// <summary>
@@ -1887,7 +1889,7 @@ namespace Trivial.Text
         /// <exception cref="ArgumentOutOfRangeException">The index is out of range.</exception>
         public void SetUnixTimestampValue(int index, DateTime value)
         {
-            store[index] = new JsonInteger(WebFormat.ParseUnixTimestamp(value));
+            store[index] = new JsonInteger(InternalHelper.ParseUnixTimestamp(value));
         }
 
         /// <summary>
@@ -2118,7 +2120,7 @@ namespace Trivial.Text
         /// <param name="value">The value to set.</param>
         public void AddJavaScriptDateTicks(DateTime value)
         {
-            store.Add(new JsonInteger(WebFormat.ParseDate(value)));
+            store.Add(new JsonInteger(InternalHelper.ParseDate(value)));
         }
 
         /// <summary>
@@ -2127,7 +2129,7 @@ namespace Trivial.Text
         /// <param name="value">The value to set.</param>
         public void AddUnixTimestamp(DateTime value)
         {
-            store.Add(new JsonInteger(WebFormat.ParseUnixTimestamp(value)));
+            store.Add(new JsonInteger(InternalHelper.ParseUnixTimestamp(value)));
         }
 
         /// <summary>
@@ -2438,7 +2440,7 @@ namespace Trivial.Text
         /// <exception cref="ArgumentOutOfRangeException">The index is out of range.</exception>
         public void InsertJavaScriptDateTicks(int index, DateTime value)
         {
-            store.Insert(index, new JsonInteger(WebFormat.ParseDate(value)));
+            store.Insert(index, new JsonInteger(InternalHelper.ParseDate(value)));
         }
 
         /// <summary>
@@ -2449,7 +2451,7 @@ namespace Trivial.Text
         /// <exception cref="ArgumentOutOfRangeException">The index is out of range.</exception>
         public void InsertUnixTimestamp(int index, DateTime value)
         {
-            store.Insert(index, new JsonInteger(WebFormat.ParseUnixTimestamp(value)));
+            store.Insert(index, new JsonInteger(InternalHelper.ParseUnixTimestamp(value)));
         }
 
         /// <summary>
@@ -2900,7 +2902,7 @@ namespace Trivial.Text
         internal string ConvertToString(IndentStyles indentStyle, int indentLevel)
         {
             if (indentStyle == IndentStyles.Minified) return ToString();
-            var indentStr = StringExtensions.GetString(indentStyle);
+            var indentStr = InternalHelper.GetString(indentStyle);
             var indentPrefix = new StringBuilder();
             for (var i = 0; i < indentLevel; i++)
             {
@@ -2912,7 +2914,9 @@ namespace Trivial.Text
             indentStr = indentPrefix.ToString();
             var str = new StringBuilder();
             indentLevel++;
+            #pragma warning disable CA1834
             str.Append("[");
+            #pragma warning restore CA1834
             foreach (var prop in store)
             {
                 str.AppendLine();
@@ -3026,7 +3030,7 @@ namespace Trivial.Text
                             break;
                         }
 
-                        str.AppendLine(text.Length == 0 || text.Length > 100 || text.IndexOfAny(StringExtensions.YamlSpecialChars) >= 0
+                        str.AppendLine(text.Length == 0 || text.Length > 100 || text.IndexOfAny(InternalHelper.YamlSpecialChars) >= 0
                             ? JsonString.ToJson(text)
                             : text);
                         break;
@@ -3167,7 +3171,7 @@ namespace Trivial.Text
         /// <returns>true if the kind is the one expected; otherwise, false.</returns>
         bool IJsonValueResolver.TryGetDateTime(out DateTime result)
         {
-            result = WebFormat.ParseDate(0);
+            result = InternalHelper.ParseDate(0);
             return false;
         }
 
@@ -3352,7 +3356,7 @@ namespace Trivial.Text
         /// <returns>A new object that is a copy of this instance.</returns>
         public JsonArray Clone()
         {
-            return new JsonArray(store);
+            return new JsonArray(store, store is SynchronizedList<IJsonValueResolver>);
         }
 
         /// <summary>

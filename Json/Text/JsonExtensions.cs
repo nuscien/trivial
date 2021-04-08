@@ -127,7 +127,7 @@ namespace Trivial.Text
                     return true;
                 case JsonValueKind.Number:
                     if (!json.TryGetInt64(out long tick)) break;
-                    value = WebFormat.ParseDate(tick);
+                    value = InternalHelper.ParseDate(tick);
                     return true;
                 default:
                     throw new InvalidOperationException("The value kind should be string or number.");
@@ -155,7 +155,7 @@ namespace Trivial.Text
                     return true;
                 case JsonValueKind.Number:
                     if (!json.TryGetInt64(out long tick)) break;
-                    value = WebFormat.ParseUnixTimestamp(tick);
+                    value = InternalHelper.ParseUnixTimestamp(tick);
                     return true;
                 default:
                     throw new InvalidOperationException("The value kind should be string or number.");

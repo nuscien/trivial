@@ -142,7 +142,7 @@ namespace Trivial.Text
         /// <param name="isUnixTimestamp">true if uses Unix timestamp; otherwise, false, to use JavaScript ticks, by default.</param>
         public JsonInteger(DateTime value, bool isUnixTimestamp = false)
         {
-            Value = isUnixTimestamp ? WebFormat.ParseUnixTimestamp(value) : WebFormat.ParseDate(value);
+            Value = isUnixTimestamp ? InternalHelper.ParseUnixTimestamp(value) : InternalHelper.ParseDate(value);
             IsSafe = true;
         }
 
@@ -183,7 +183,7 @@ namespace Trivial.Text
         /// <returns>A date time.</returns>
         public DateTime ToDateTime(bool isUnixTimestamp = false)
         {
-            return isUnixTimestamp ? WebFormat.ParseUnixTimestamp(Value) : WebFormat.ParseDate(Value);
+            return isUnixTimestamp ? InternalHelper.ParseUnixTimestamp(Value) : InternalHelper.ParseDate(Value);
         }
 
         /// <summary>
@@ -556,7 +556,7 @@ namespace Trivial.Text
         /// <returns>The value of the element as a date time.</returns>
         public DateTime GetDateTime()
         {
-            return WebFormat.ParseDate(Value);
+            return InternalHelper.ParseDate(Value);
         }
 
         /// <summary>
@@ -566,7 +566,7 @@ namespace Trivial.Text
         /// <returns>The value of the element as a date time.</returns>
         public DateTime GetDateTime(bool useUnixTimestamps)
         {
-            return useUnixTimestamps ? WebFormat.ParseUnixTimestamp(Value) : WebFormat.ParseDate(Value);
+            return useUnixTimestamps ? InternalHelper.ParseUnixTimestamp(Value) : InternalHelper.ParseDate(Value);
         }
 
         /// <summary>
@@ -717,7 +717,7 @@ namespace Trivial.Text
         /// <returns>true if the kind is the one expected; otherwise, false.</returns>
         bool IJsonValueResolver.TryGetDateTime(out DateTime result)
         {
-            result = WebFormat.ParseDate(Value);
+            result = InternalHelper.ParseDate(Value);
             return true;
         }
 
@@ -2150,7 +2150,7 @@ namespace Trivial.Text
         /// <exception cref="InvalidCastException">The value is an Double but expect a Int64.</exception>
         DateTime IJsonValueResolver.GetDateTime()
         {
-            return WebFormat.ParseDate((long)Value);
+            return InternalHelper.ParseDate((long)Value);
         }
 
         /// <summary>
@@ -2315,11 +2315,11 @@ namespace Trivial.Text
             {
                 if (double.IsNaN(Value))
                 {
-                    result = WebFormat.ParseDate(0);
+                    result = InternalHelper.ParseDate(0);
                     return false;
                 }
 
-                result = WebFormat.ParseDate((long)Value);
+                result = InternalHelper.ParseDate((long)Value);
                 return true;
             }
             catch (OverflowException)
@@ -2329,7 +2329,7 @@ namespace Trivial.Text
             {
             }
 
-            result = WebFormat.ParseDate(0);
+            result = InternalHelper.ParseDate(0);
             return false;
         }
 

@@ -5,24 +5,23 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 
-namespace Trivial.Collection
+namespace Trivial.Text
 {
     /// <summary>
     /// Represents a thread-safe list of objects.
     /// </summary>
     /// <typeparam name="T">The type of the elements to be stored in the list.</typeparam>
-    internal class ConcurrentList<T> : IList<T>, ICloneable
+    internal class SynchronizedList<T> : IList<T>, ICloneable
     {
-
         private readonly List<T> list;
-        private readonly object locker;
+        private readonly ReaderWriterLockSlim slim;
 
         /// <summary>
         /// Initializes a new instance of the ConcurrentList class.
         /// </summary>
-        public ConcurrentList()
+        public SynchronizedList()
         {
-            locker = new object();
+            slim = new ReaderWriterLockSlim();
             list = new List<T>();
         }
 
@@ -30,10 +29,10 @@ namespace Trivial.Collection
         /// Initializes a new instance of the ConcurrentList class.
         /// </summary>
         /// <param name="collection">The collection of elements used to initialize the thread-safe collection.</param>
-        public ConcurrentList(IEnumerable<T> collection)
+        public SynchronizedList(IEnumerable<T> collection)
         {
-            locker = new object();
-            if (list is null)
+            slim = new ReaderWriterLockSlim();
+            if (collection is null)
             {
                 list = new List<T>();
                 return;
@@ -56,22 +55,30 @@ namespace Trivial.Collection
         /// <summary>
         /// Initializes a new instance of the ConcurrentList class.
         /// </summary>
-        /// <param name="syncRoot">The object used to synchronize access the thread-safe collection.</param>
+        /// <param name="recursionPolicy">One of the enumeration values that specifies the lock recursion policy.</param>
         /// <param name="collection">The collection of elements used to initialize the thread-safe collection.</param>
         /// <param name="useSource">true if set the collection as source directly instead of copying; otherwise, false.</param>
-        public ConcurrentList(object syncRoot, IEnumerable<T> collection, bool useSource)
+        internal SynchronizedList(LockRecursionPolicy recursionPolicy, IEnumerable<T> collection = null, bool useSource = false)
         {
-            locker = syncRoot ?? new object();
-            if (list is null)
+            slim = new ReaderWriterLockSlim(recursionPolicy);
+            if (collection is null)
             {
                 list = new List<T>();
                 return;
             }
 
-            if (useSource && collection is List<T> l)
+            if (useSource)
             {
-                list = l;
-                return;
+                if (collection is List<T> l)
+                {
+                    list = l;
+                    return;
+                }
+                else if (collection is SynchronizedList<T> sl)
+                {
+                    list = sl.list;
+                    return;
+                }
             }
 
             try
@@ -85,6 +92,45 @@ namespace Trivial.Collection
             catch (InvalidOperationException)
             {
                 list = new List<T>(collection);
+            }
+        }
+
+        /// <summary>
+        /// Deconstructor.
+        /// </summary>
+        ~SynchronizedList()
+        {
+            if (slim == null) return;
+            try
+            {
+                slim.Dispose();
+            }
+            catch (SynchronizationLockException)
+            {
+                var s = slim;
+                try
+                {
+                    if (s.IsWriteLockHeld) s.ExitWriteLock();
+                    if (s.IsUpgradeableReadLockHeld) s.ExitUpgradeableReadLock();
+                    if (s.IsReadLockHeld) s.ExitReadLock();
+                }
+                catch (SynchronizationLockException)
+                {
+                }
+                catch (InvalidOperationException)
+                {
+                }
+
+                try
+                {
+                    s.Dispose();
+                }
+                catch (InvalidOperationException)
+                {
+                }
+            }
+            catch (InvalidOperationException)
+            {
             }
         }
 
@@ -98,19 +144,29 @@ namespace Trivial.Collection
         {
             get
             {
-                lock (locker)
+                slim.EnterReadLock();
+                try
                 {
                     return list[index];
+                }
+                finally
+                {
+                    slim.ExitReadLock();
                 }
             }
 
             set
             {
                 T old;
-                lock (locker)
+                slim.EnterWriteLock();
+                try
                 {
                     old = index < list.Count ? list[index] : default;
                     list[index] = value;
+                }
+                finally
+                {
+                    slim.ExitWriteLock();
                 }
             }
         }
@@ -126,21 +182,30 @@ namespace Trivial.Collection
         {
             get
             {
-                lock (locker)
+                slim.EnterReadLock();
+                try
                 {
                     return list[index];
+                }
+                finally
+                {
+                    slim.ExitReadLock();
                 }
             }
 
             set
             {
                 T old;
-                int i;
-                lock (locker)
+                slim.EnterWriteLock();
+                try
                 {
-                    i = index.GetOffset(list.Count);
+                    var i = index.GetOffset(list.Count);
                     old = i < list.Count ? list[i] : default;
                     list[i] = value;
+                }
+                finally
+                {
+                    slim.ExitWriteLock();
                 }
             }
         }
@@ -151,15 +216,124 @@ namespace Trivial.Collection
         {
             get
             {
-                lock (locker)
+                slim.EnterReadLock();
+                try
                 {
                     return list.Count;
+                }
+                finally
+                {
+                    slim.ExitReadLock();
                 }
             }
         }
 
         /// <inheritdoc />
         public bool IsReadOnly => false;
+
+        /// <summary>
+        /// Gets the total number of threads that are waiting to enter the lock in read mode.
+        /// </summary>
+        public int WaitingReadCount => slim.WaitingReadCount;
+
+        /// <summary>
+        /// Gets a value that indicates whether the current thread has entered the lock in write mode.
+        /// </summary>
+        public bool IsWriteLockHeld => slim.IsWriteLockHeld;
+
+        /// <summary>
+        /// Gets a value that indicates whether the current thread has entered the lock in upgradeable mode.
+        /// </summary>
+        public bool IsUpgradeableReadLockHeld => slim.IsUpgradeableReadLockHeld;
+
+        /// <summary>
+        /// Gets a value that indicates whether the current thread has entered the lock in read mode.
+        /// </summary>
+        public bool IsReadLockHeld => slim.IsReadLockHeld;
+
+        /// <summary>
+        /// Gets the total number of unique threads that have entered the lock in read mode.
+        /// </summary>
+        public int CurrentReadCount => slim.CurrentReadCount;
+
+        /// <summary>
+        /// Gets the total number of threads that are waiting to enter the lock in upgradeable mode.
+        /// </summary>
+        public int WaitingUpgradeCount => slim.WaitingUpgradeCount;
+
+        /// <summary>
+        /// Gets the total number of threads that are waiting to enter the lock in write mode.
+        /// </summary>
+        public int WaitingWriteCount => slim.WaitingWriteCount;
+
+        /// <summary>
+        /// <para>
+        /// Gets the number of times the current thread has entered the lock in write mode, as an indication of recursion.
+        /// </para>
+        /// <para>
+        /// 0 if the current thread has not entered write mode,
+        /// 1 if the thread has entered write mode but has not entered it recursively,
+        /// or n if the thread has entered write mode recursively n - 1 times.
+        /// </para>
+        /// </summary>
+        internal int RecursiveWriteCount => slim.RecursiveWriteCount;
+
+        /// <summary>
+        /// <para>
+        /// Gets the number of times the current thread has entered the lock in upgradeable mode, as an indication of recursion.
+        /// </para>
+        /// <para>
+        /// 0 if the current thread has not entered upgradeable mode,
+        /// 1 if the thread has entered upgradeable mode but has not entered it recursively,
+        /// or n if the thread has entered upgradeable mode recursively n - 1 times.
+        /// </para>
+        /// </summary>
+        internal int RecursiveUpgradeCount => slim.RecursiveUpgradeCount;
+
+        /// <summary>
+        /// <para>
+        /// Gets the number of times the current thread has entered the lock in read mode, as an indication of recursion.
+        /// </para>
+        /// 0 if the current thread has not entered read mode,
+        /// 1 if the thread has entered read mode but has not entered it recursively,
+        /// or n if the thread has entered the lock recursively n - 1 times.
+        /// </summary>
+        internal int RecursiveReadCount => slim.RecursiveReadCount;
+
+        /// <summary>
+        /// Tries to get the element.
+        /// </summary>
+        /// <param name="index">The zero-based starting index of the range to reverse.</param>
+        /// <param name="result">The result output.</param>
+        /// <returns>true if contains; otherwise, false.</returns>
+        public bool TryGet(int index, out T result)
+        {
+            if (index >= 0)
+            {
+                slim.EnterReadLock();
+                try
+                {
+                    if (index < list.Count)
+                    {
+                        result = list[index];
+                        return true;
+                    }
+                }
+                catch (ArgumentException)
+                {
+                }
+                catch (InvalidOperationException)
+                {
+                }
+                finally
+                {
+                    slim.ExitReadLock();
+                }
+            }
+
+            result = default;
+            return false;
+        }
 
         /// <summary>
         /// Reverses the order of the elements in the specified range.
@@ -172,18 +346,28 @@ namespace Trivial.Collection
         {
             if (!count.HasValue)
             {
-                lock (locker)
+                slim.EnterWriteLock();
+                try
                 {
                     list.Reverse(index, list.Count - index);
+                }
+                finally
+                {
+                    slim.ExitWriteLock();
                 }
 
                 Sorted?.Invoke(this, new EventArgs());
                 return;
             }
 
-            lock (locker)
+            slim.EnterWriteLock();
+            try
             {
                 list.Reverse(index, count.Value);
+            }
+            finally
+            {
+                slim.ExitWriteLock();
             }
 
             Sorted?.Invoke(this, new EventArgs());
@@ -202,18 +386,28 @@ namespace Trivial.Collection
         {
             if (!count.HasValue)
             {
-                lock (locker)
+                slim.EnterWriteLock();
+                try
                 {
                     list.Sort(index, list.Count - index, comparer);
+                }
+                finally
+                {
+                    slim.ExitWriteLock();
                 }
 
                 Sorted?.Invoke(this, new EventArgs());
                 return;
             }
 
-            lock (locker)
+            slim.EnterWriteLock();
+            try
             {
                 list.Sort(index, count.Value, comparer);
+            }
+            finally
+            {
+                slim.ExitWriteLock();
             }
 
             Sorted?.Invoke(this, new EventArgs());
@@ -222,9 +416,14 @@ namespace Trivial.Collection
         /// <inheritdoc />
         public void Add(T item)
         {
-            lock (locker)
+            slim.EnterWriteLock();
+            try
             {
                 list.Add(item);
+            }
+            finally
+            {
+                slim.ExitWriteLock();
             }
         }
 
@@ -235,38 +434,56 @@ namespace Trivial.Collection
         public void AddRange(IEnumerable<T> collection)
         {
             if (collection is null) return;
-            lock (locker)
+            slim.EnterWriteLock();
+            try
             {
                 list.AddRange(collection);
             }
-
-            return;
+            finally
+            {
+                slim.ExitWriteLock();
+            }
         }
 
         /// <inheritdoc />
         public void Clear()
         {
-            lock (locker)
+            slim.EnterWriteLock();
+            try
             {
                 list.Clear();
+            }
+            finally
+            {
+                slim.ExitWriteLock();
             }
         }
 
         /// <inheritdoc />
         public bool Contains(T item)
         {
-            lock (locker)
+            slim.EnterReadLock();
+            try
             {
                 return list.Contains(item);
+            }
+            finally
+            {
+                slim.ExitReadLock();
             }
         }
 
         /// <inheritdoc />
         public void CopyTo(T[] array, int arrayIndex)
         {
-            lock (locker)
+            slim.EnterReadLock();
+            try
             {
                 list.CopyTo(array, arrayIndex);
+            }
+            finally
+            {
+                slim.ExitReadLock();
             }
         }
 
@@ -274,9 +491,14 @@ namespace Trivial.Collection
         public IEnumerator<T> GetEnumerator()
         {
             List<T> col;
-            lock (locker)
+            slim.EnterReadLock();
+            try
             {
                 col = new List<T>(list);
+            }
+            finally
+            {
+                slim.ExitReadLock();
             }
 
             return col.GetEnumerator();
@@ -285,9 +507,14 @@ namespace Trivial.Collection
         /// <inheritdoc />
         public int IndexOf(T item)
         {
-            lock (locker)
+            slim.EnterReadLock();
+            try
             {
                 return list.IndexOf(item);
+            }
+            finally
+            {
+                slim.ExitReadLock();
             }
         }
 
@@ -305,15 +532,25 @@ namespace Trivial.Collection
             {
                 if (!count.HasValue)
                 {
-                    lock (locker)
+                    slim.EnterReadLock();
+                    try
                     {
                         return list.IndexOf(item, index);
                     }
+                    finally
+                    {
+                        slim.ExitReadLock();
+                    }
                 }
 
-                lock (locker)
+                slim.EnterReadLock();
+                try
                 {
                     return list.IndexOf(item, index, count.Value);
+                }
+                finally
+                {
+                    slim.ExitReadLock();
                 }
             }
             catch (ArgumentException)
@@ -329,9 +566,14 @@ namespace Trivial.Collection
         /// <returns>The zero-based index of the last occurrence of item within the entire the list, if found; otherwise, -1..</returns>
         public int LastIndexOf(T item)
         {
-            lock (locker)
+            slim.EnterReadLock();
+            try
             {
                 return list.LastIndexOf(item);
+            }
+            finally
+            {
+                slim.ExitReadLock();
             }
         }
 
@@ -344,9 +586,14 @@ namespace Trivial.Collection
         /// <exception cref="ArgumentOutOfRangeException">index is outside the range of valid indexes for the list.</exception>
         public int LastIndexOf(T item, int index)
         {
-            lock (locker)
+            slim.EnterReadLock();
+            try
             {
                 return list.LastIndexOf(item, index);
+            }
+            finally
+            {
+                slim.ExitReadLock();
             }
         }
 
@@ -360,18 +607,28 @@ namespace Trivial.Collection
         /// <exception cref="ArgumentOutOfRangeException">index is outside the range of valid indexes for the list. -or- count is less than 0. -or- index and count do not specify a valid section in the list.</exception>
         public int LastIndexOf(T item, int index, int count)
         {
-            lock (locker)
+            slim.EnterReadLock();
+            try
             {
                 return list.LastIndexOf(item, index, count);
+            }
+            finally
+            {
+                slim.ExitReadLock();
             }
         }
 
         /// <inheritdoc />
         public void Insert(int index, T item)
         {
-            lock (locker)
+            slim.EnterWriteLock();
+            try
             {
                 list.Insert(index, item);
+            }
+            finally
+            {
+                slim.ExitWriteLock();
             }
         }
 
@@ -384,18 +641,28 @@ namespace Trivial.Collection
         public void InsertRange(int index, IEnumerable<T> collection)
         {
             if (collection is null) return;
-            lock (locker)
+            slim.EnterWriteLock();
+            try
             {
                 list.InsertRange(index, collection);
+            }
+            finally
+            {
+                slim.ExitWriteLock();
             }
         }
 
         /// <inheritdoc />
         public bool Remove(T item)
         {
-            lock (locker)
+            slim.EnterWriteLock();
+            try
             {
                 if (!list.Remove(item)) return false;
+            }
+            finally
+            {
+                slim.ExitWriteLock();
             }
 
             return true;
@@ -404,12 +671,15 @@ namespace Trivial.Collection
         /// <inheritdoc />
         public void RemoveAt(int index)
         {
-            lock (locker)
+            slim.EnterWriteLock();
+            try
             {
                 list.RemoveAt(index);
             }
-
-            return;
+            finally
+            {
+                slim.ExitWriteLock();
+            }
         }
 
         /// <summary>
@@ -421,9 +691,14 @@ namespace Trivial.Collection
         {
             if (match is null) return 0;
             var result = 0;
-            lock (locker)
+            slim.EnterWriteLock();
+            try
             {
                 result = list.RemoveAll(match);
+            }
+            finally
+            {
+                slim.ExitWriteLock();
             }
 
             return result;
@@ -438,9 +713,14 @@ namespace Trivial.Collection
         /// <exception cref="ArgumentException">index and count do not denote a valid range of elements in the list.</exception>
         public void RemoveRange(int index, int count)
         {
-            lock (locker)
+            slim.EnterWriteLock();
+            try
             {
                 list.RemoveRange(index, count);
+            }
+            finally
+            {
+                slim.ExitWriteLock();
             }
         }
 
@@ -454,11 +734,16 @@ namespace Trivial.Collection
         /// Creates a new concurrent list that is a copy of the current instance.
         /// </summary>
         /// <returns>A new concurrent list that is a copy of this instance.</returns>
-        public ConcurrentList<T> Clone()
+        public SynchronizedList<T> Clone()
         {
-            lock (locker)
+            slim.EnterReadLock();
+            try
             {
-                return new ConcurrentList<T>(list);
+                return new SynchronizedList<T>(list);
+            }
+            finally
+            {
+                slim.ExitReadLock();
             }
         }
 
@@ -470,13 +755,18 @@ namespace Trivial.Collection
         /// <returns>The sub list.</returns>
         /// <exception cref="ArgumentOutOfRangeException">index is less than 0. -or- count is less than 0.</exception>
         /// <exception cref="ArgumentException">index and count do not denote a valid range of elements in the list.</exception>
-        public ConcurrentList<T> Clone(int index, int? count = null)
+        public SynchronizedList<T> Clone(int index, int? count = null)
         {
-            lock (locker)
+            slim.EnterReadLock();
+            try
             {
                 var col = list.Skip(index);
                 if (count.HasValue) col = col.Take(count.Value);
-                return new ConcurrentList<T>(col);
+                return new SynchronizedList<T>(col);
+            }
+            finally
+            {
+                slim.ExitReadLock();
             }
         }
 
@@ -487,12 +777,17 @@ namespace Trivial.Collection
         /// <returns>The sub list.</returns>
         /// <exception cref="ArgumentOutOfRangeException">index is less than 0. -or- count is less than 0.</exception>
         /// <exception cref="ArgumentException">index and count do not denote a valid range of elements in the list.</exception>
-        public ConcurrentList<T> Clone(IEnumerable<int> indexes)
+        public SynchronizedList<T> Clone(IEnumerable<int> indexes)
         {
-            var col = new ConcurrentList<T>();
-            lock (locker)
+            var col = new SynchronizedList<T>();
+            slim.EnterReadLock();
+            try
             {
                 col.AddRange(indexes.Select(ele => list[ele]));
+            }
+            finally
+            {
+                slim.ExitReadLock();
             }
 
             return col;

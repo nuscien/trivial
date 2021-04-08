@@ -33,8 +33,10 @@ namespace Trivial.Text
         /// Initializes a new instance of the JsonArray class.
         /// </summary>
         /// <param name="copy">Properties to initialzie.</param>
-        private JsonArray(IList<IJsonValueResolver> copy)
+        /// <param name="threadSafe">true if enable thread-safe; otherwise, false.</param>
+        private JsonArray(IList<IJsonValueResolver> copy, bool threadSafe = false)
         {
+            if (threadSafe) store = new Collection.SynchronizedList<IJsonValueResolver>();
             if (copy == null) return;
             foreach (var ele in copy)
             {
@@ -122,7 +124,7 @@ namespace Trivial.Text
         {
             get
             {
-                if (index < 0) throw new ArgumentOutOfRangeException("index", "index was less than zero.");
+                if (index < 0) throw new ArgumentOutOfRangeException(nameof(index), "index was less than zero.");
                 var result = store[index];
                 if (result is JsonObject json)
                 {
@@ -176,8 +178,8 @@ namespace Trivial.Text
         {
             get
             {
-                if (index < 0) throw new ArgumentOutOfRangeException("index", "index was less than zero.");
-                if (subIndex < 0) throw new ArgumentOutOfRangeException("subIndex", "subIndex was less than zero.");
+                if (index < 0) throw new ArgumentOutOfRangeException(nameof(index), "index was less than zero.");
+                if (subIndex < 0) throw new ArgumentOutOfRangeException(nameof(subIndex), "subIndex was less than zero.");
                 var result = store[index];
                 if (result is JsonObject json)
                 {
@@ -2914,7 +2916,9 @@ namespace Trivial.Text
             indentStr = indentPrefix.ToString();
             var str = new StringBuilder();
             indentLevel++;
+            #pragma warning disable CA1834
             str.Append("[");
+            #pragma warning restore CA1834
             foreach (var prop in store)
             {
                 str.AppendLine();
@@ -3354,7 +3358,7 @@ namespace Trivial.Text
         /// <returns>A new object that is a copy of this instance.</returns>
         public JsonArray Clone()
         {
-            return new JsonArray(store);
+            return new JsonArray(store, store is Collection.SynchronizedList<IJsonValueResolver>);
         }
 
         /// <summary>

@@ -30,8 +30,10 @@ namespace Trivial.Text
         /// Initializes a new instance of the JsonObject class.
         /// </summary>
         /// <param name="copy">Properties to initialzie.</param>
-        private JsonObject(IDictionary<string, IJsonValueResolver> copy)
+        /// <param name="threadSafe">true if enable thread-safe; otherwise, false.</param>
+        private JsonObject(IDictionary<string, IJsonValueResolver> copy, bool threadSafe = false)
         {
+            if (threadSafe) store = new ConcurrentDictionary<string, IJsonValueResolver>();
             if (copy == null) return;
             foreach (var ele in copy)
             {
@@ -143,7 +145,7 @@ namespace Trivial.Text
         {
             get
             {
-                if (index < 0) throw new ArgumentOutOfRangeException("index", "index should be a natural number.");
+                if (index < 0) throw new ArgumentOutOfRangeException(nameof(index), "index should be a natural number.");
                 var result = GetValue(key);
                 if (result is JsonArray arr) return arr[index];
                 else if (result is JsonObject json) return json[index.ToString("g")];
@@ -167,7 +169,7 @@ namespace Trivial.Text
         {
             get
             {
-                if (subIndex < 0) throw new ArgumentOutOfRangeException("subIndex", "subIndex should be a natural number.");
+                if (subIndex < 0) throw new ArgumentOutOfRangeException(nameof(subIndex), "subIndex should be a natural number.");
                 var result = this[key, index];
                 try
                 {
@@ -177,7 +179,7 @@ namespace Trivial.Text
                 }
                 catch (ArgumentOutOfRangeException ex)
                 {
-                    throw new ArgumentOutOfRangeException("subIndex", ex.Message);
+                    throw new ArgumentOutOfRangeException(nameof(subIndex), ex.Message);
                 }
 
                 throw new InvalidOperationException($"The property of {key}.{index} should be an array, but its kind is {result?.ValueKind ?? JsonValueKind.Null}.");
@@ -350,7 +352,7 @@ namespace Trivial.Text
         /// <exception cref="ArgumentNullException">key was null, empty or consists only of white-space characters.</exception>
         public bool ContainsKey(ReadOnlySpan<char> key)
         {
-            if (key == null) throw new ArgumentNullException("key", "key should not be null.");
+            if (key == null) throw new ArgumentNullException(nameof(key), "key should not be null.");
             return ContainsKey(key.ToString());
         }
 
@@ -380,7 +382,7 @@ namespace Trivial.Text
         /// <exception cref="InvalidOperationException">The value kind is not the expected one.</exception>
         public string GetRawText(ReadOnlySpan<char> key)
         {
-            if (key == null) throw new ArgumentNullException("key", "key should not be null.");
+            if (key == null) throw new ArgumentNullException(nameof(key), "key should not be null.");
             return GetRawText(key.ToString());
         }
 
@@ -397,7 +399,7 @@ namespace Trivial.Text
             if (strictMode) AssertKey(key);
             if (string.IsNullOrWhiteSpace(key) || !store.TryGetValue(key, out var data))
             {
-                if (strictMode) throw new ArgumentOutOfRangeException("key does not exist.");
+                if (strictMode) throw new ArgumentOutOfRangeException(nameof(key), "key does not exist.");
                 return JsonValueKind.Undefined;
             }
 
@@ -415,7 +417,7 @@ namespace Trivial.Text
         /// <exception cref="ArgumentOutOfRangeException">The property does not exist.</exception>
         public JsonValueKind GetValueKind(ReadOnlySpan<char> key, bool strictMode = false)
         {
-            if (key == null) throw new ArgumentNullException("key", "key should not be null.");
+            if (key == null) throw new ArgumentNullException(nameof(key), "key should not be null.");
             return GetValueKind(key.ToString(), strictMode);
         }
 
@@ -656,13 +658,13 @@ namespace Trivial.Text
             AssertKey(key);
             if (TryGetJsonValue<JsonString>(key, out var s))
             {
-                var date = WebFormat.ParseDate(s.Value);
+                var date = InternalHelper.ParseDate(s.Value);
                 if (date.HasValue) return date.Value;
                 throw new InvalidOperationException("The value is not a date time.");
             }
 
             var num = GetJsonValue<JsonInteger>(key);
-            return useUnixTimestampsFallback ? WebFormat.ParseUnixTimestamp(num.Value) : WebFormat.ParseDate(num.Value);
+            return useUnixTimestampsFallback ? InternalHelper.ParseUnixTimestamp(num.Value) : InternalHelper.ParseDate(num.Value);
         }
 
         /// <summary>
@@ -695,7 +697,7 @@ namespace Trivial.Text
         {
             if (TryGetInt32Value(key, out var v)) return (T)(object)v;
             var str = GetStringValue(key);
-            return StringExtensions.ParseEnum<T>(str);
+            return InternalHelper.ParseEnum<T>(str);
         }
 
         /// <summary>
@@ -713,7 +715,7 @@ namespace Trivial.Text
         {
             if (TryGetInt32Value(key, out var v)) return (T)(object)v;
             var str = GetStringValue(key);
-            return StringExtensions.ParseEnum<T>(str, ignoreCase);
+            return InternalHelper.ParseEnum<T>(str, ignoreCase);
         }
 
         /// <summary>
@@ -834,7 +836,7 @@ namespace Trivial.Text
         /// <exception cref="ArgumentOutOfRangeException">The property does not exist.</exception>
         public IJsonValueResolver GetValue(ReadOnlySpan<char> key)
         {
-            if (key == null) throw new ArgumentNullException("key", "key should not be null.");
+            if (key == null) throw new ArgumentNullException(nameof(key), "key should not be null.");
             return GetValue(key.ToString());
         }
 
@@ -1273,12 +1275,12 @@ namespace Trivial.Text
             AssertKey(key);
             if (TryGetJsonValue<JsonString>(key, out var s))
             {
-                var date = WebFormat.ParseDate(s.Value);
+                var date = InternalHelper.ParseDate(s.Value);
                 return date;
             }
 
             if (!TryGetJsonValue<JsonInteger>(key, out var num)) return null;
-            return useUnixTimestampsFallback ? WebFormat.ParseUnixTimestamp(num.Value) : WebFormat.ParseDate(num.Value);
+            return useUnixTimestampsFallback ? InternalHelper.ParseUnixTimestamp(num.Value) : InternalHelper.ParseDate(num.Value);
         }
 
 #if !NETOLDVER
@@ -1611,7 +1613,7 @@ namespace Trivial.Text
             string quote = null;
             foreach (var ele in arr)
             {
-                var prop = StringExtensions.ReplaceBackSlash(ele ?? string.Empty);
+                var prop = InternalHelper.ReplaceBackSlash(ele ?? string.Empty);
                 if (quote != null)
                 {
                     var propTrim3 = prop.TrimEnd();
@@ -1984,7 +1986,7 @@ namespace Trivial.Text
         public void SetJavaScriptDateTicksValue(string key, DateTime value)
         {
             AssertKey(key);
-            store[key] = new JsonInteger(WebFormat.ParseDate(value));
+            store[key] = new JsonInteger(InternalHelper.ParseDate(value));
         }
 
         /// <summary>
@@ -1996,7 +1998,7 @@ namespace Trivial.Text
         public void SetUnixTimestampValue(string key, DateTime value)
         {
             AssertKey(key);
-            store[key] = new JsonInteger(WebFormat.ParseUnixTimestamp(value));
+            store[key] = new JsonInteger(InternalHelper.ParseUnixTimestamp(value));
         }
 
         /// <summary>
@@ -3009,7 +3011,7 @@ namespace Trivial.Text
         internal string ConvertToString(IndentStyles indentStyle, int indentLevel)
         {
             if (indentStyle == IndentStyles.Minified) return ToString();
-            var indentStr = StringExtensions.GetString(indentStyle);
+            var indentStr = InternalHelper.GetString(indentStyle);
             var indentPrefix = new StringBuilder();
             for (var i = 0; i < indentLevel; i++)
             {
@@ -3089,7 +3091,7 @@ namespace Trivial.Text
             foreach (var prop in store)
             {
                 str.Append(indentStr);
-                str.Append(prop.Key.IndexOfAny(StringExtensions.YamlSpecialChars) >= 0
+                str.Append(prop.Key.IndexOfAny(InternalHelper.YamlSpecialChars) >= 0
                     ? JsonString.ToJson(prop.Key)
                     : prop.Key);
                 str.Append(": ");
@@ -3148,7 +3150,7 @@ namespace Trivial.Text
                                 str.AppendLine(text);
                                 break;
                             default:
-                                str.AppendLine(text.Length == 0 || text.Length > 100 || text.IndexOfAny(StringExtensions.YamlSpecialChars) >= 0
+                                str.AppendLine(text.Length == 0 || text.Length > 100 || text.IndexOfAny(InternalHelper.YamlSpecialChars) >= 0
                                     ? JsonString.ToJson(text)
                                     : text);
                                 break;
@@ -3361,7 +3363,7 @@ namespace Trivial.Text
         /// <returns>A new object that is a copy of this instance.</returns>
         public JsonObject Clone()
         {
-            return new JsonObject(store);
+            return new JsonObject(store, store is ConcurrentDictionary<string, IJsonValueResolver>);
         }
 
         /// <summary>
@@ -3371,8 +3373,9 @@ namespace Trivial.Text
         /// <returns>A new object that is a copy of this instance.</returns>
         public JsonObject Clone(IEnumerable<string> keys)
         {
-            if (keys == null) return new JsonObject(store);
+            if (keys == null) return new JsonObject(store, store is ConcurrentDictionary<string, IJsonValueResolver>);
             var json = new JsonObject();
+            if (store is ConcurrentDictionary<string, IJsonValueResolver>) json.EnableThreadSafeMode();
             foreach (var key in keys)
             {
                 if (store.TryGetValue(key, out var v)) json.store.Add(key, v);
@@ -3519,7 +3522,7 @@ namespace Trivial.Text
         /// <returns>true if the kind is the one expected; otherwise, false.</returns>
         bool IJsonValueResolver.TryGetDateTime(out DateTime result)
         {
-            result = WebFormat.ParseDate(0);
+            result = InternalHelper.ParseDate(0);
             return false;
         }
 
@@ -3654,9 +3657,9 @@ namespace Trivial.Text
             return false;
         }
 
-        private void AssertKey(string key)
+        private static void AssertKey(string key)
         {
-            if (string.IsNullOrWhiteSpace(key)) throw new ArgumentNullException("key", "key should not be null, empty, or consists only of white-space characters.");
+            if (string.IsNullOrWhiteSpace(key)) throw new ArgumentNullException(nameof(key), "key should not be null, empty, or consists only of white-space characters.");
         }
 
         /// <summary>
