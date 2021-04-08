@@ -2916,7 +2916,9 @@ namespace Trivial.Text
             indentStr = indentPrefix.ToString();
             var str = new StringBuilder();
             indentLevel++;
+            #pragma warning disable CA1834
             str.Append("[");
+            #pragma warning restore CA1834
             foreach (var prop in store)
             {
                 str.AppendLine();
