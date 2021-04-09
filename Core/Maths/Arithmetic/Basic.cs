@@ -232,17 +232,8 @@ namespace Trivial.Maths
         public static short ParseToInt16(string s, int radix)
         {
             var result = ParseToInt32(s, radix);
-            try
-            {
+            if (result >= short.MinValue && result <= short.MaxValue)
                 return (short)result;
-            }
-            catch (InvalidCastException)
-            {
-            }
-            catch (OverflowException)
-            {
-            }
-
             throw new FormatException("s was too small or too large.", new OverflowException("s was too small or too large."));
         }
 
@@ -295,19 +286,10 @@ namespace Trivial.Maths
         /// <returns>true if parse succeeded; otherwise, false.</returns>
         public static bool TryParseToInt16(string s, int radix, out short result)
         {
-            if (TryParseToInt32(s, radix, out var i))
+            if (TryParseToInt32(s, radix, out var i) && i >= short.MinValue && i <= short.MaxValue)
             {
-                try
-                {
-                    result = (short)i;
-                    return true;
-                }
-                catch (InvalidCastException)
-                {
-                }
-                catch (OverflowException)
-                {
-                }
+                result = (short)i;
+                return true;
             }
 
             result = default;
