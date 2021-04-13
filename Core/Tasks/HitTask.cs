@@ -4,27 +4,27 @@ using System.Threading.Tasks;
 namespace Trivial.Tasks
 {
     /// <summary>
-    /// The way to pick in the concurrent tasks.
+    /// The way to pick in the concurrent tasks, e.g. the first one, the last one or for all.
     /// </summary>
     public enum ConcurrencyFilters
     {
         /// <summary>
-        /// Processes all tasks.
+        /// Invoke all tasks without any intercept.
         /// </summary>
         All = 0,
 
         /// <summary>
-        /// Only process the first one.
+        /// Only invoke for the first one which meet the condition.
         /// </summary>
         Mono = 1,
 
         /// <summary>
-        /// Only process the last one.
+        /// Only invoke for the last one which meet the condition.
         /// </summary>
         Debounce = 2,
 
         /// <summary>
-        /// Only process the first one after no more coming.
+        /// Only invoke the first one when no more coming.
         /// </summary>
         Lock = 3
     }
@@ -93,14 +93,14 @@ namespace Trivial.Tasks
     }
 
     /// <summary>
-    /// The hit task.
+    /// The hit task to determine whether the current invoking action can run right now, later or never..
     /// </summary>
     public class HitTask<T>
     {
         /// <summary>
         /// The locker.
         /// </summary>
-        private readonly object locker = new object();
+        private readonly object locker = new ();
 
         /// <summary>
         /// The count of latest request.
@@ -138,12 +138,13 @@ namespace Trivial.Tasks
         public TimeSpan? Timeout { get; set; }
 
         /// <summary>
-        /// Gets or sets the duration.
+        /// Gets or sets the counting duration. It is used to reset the processing count to zero after a specific time span.
         /// </summary>
         public TimeSpan? Duration { get; set; }
 
         /// <summary>
         /// Gets or sets the mode for multiple hitting.
+        /// It determine which one invokes during the counting limitation, e.g. the first one, the last one or all.
         /// </summary>
         public ConcurrencyFilters Mode { get; set; }
 
@@ -158,7 +159,7 @@ namespace Trivial.Tasks
         public bool IsPaused { get; set; }
 
         /// <summary>
-        /// Gets the first processing request date time at the latest duration.
+        /// Gets the first processing request date time at the latest counting duration.
         /// </summary>
         public DateTime? FirstDurationRequestDate { get; private set; }
 
@@ -173,7 +174,7 @@ namespace Trivial.Tasks
         public DateTime? LatestProcessDate { get; private set; }
 
         /// <summary>
-        /// Adds or removes the event to process when hit the hit condition.
+        /// Adds or removes the event to process if hit the condition.
         /// </summary>
         public event EventHandler<HitEventArgs<T>> Processed;
 
@@ -301,8 +302,7 @@ namespace Trivial.Tasks
         /// <returns>The hit task instance.</returns>
         /// <remarks>
         /// Maybe a handler will be asked to process several times in a short time
-        /// but you just want to process once at the last time
-        /// because the previous ones are obsolete.
+        /// but you just want to process once at the last time because the previous ones are obsolete.
         /// A sample scenario is real-time search.
         /// </remarks>
         public static HitTask Debounce(Action action, TimeSpan delay)
@@ -327,8 +327,7 @@ namespace Trivial.Tasks
         /// <returns>The hit task instance.</returns>
         /// <remarks>
         /// Maybe a handler will be asked to process several times in a short time
-        /// but you just want to process once at the last time
-        /// because the previous ones are obsolete.
+        /// but you just want to process once at the last time because the previous ones are obsolete.
         /// A sample scenario is real-time search.
         /// </remarks>
         public static HitTask Debounce(HitEventHandler action, TimeSpan delay)
@@ -354,8 +353,7 @@ namespace Trivial.Tasks
         /// <returns>The hit task instance.</returns>
         /// <remarks>
         /// Maybe a handler will be asked to process several times in a short time
-        /// but you just want to process once at the last time
-        /// because the previous ones are obsolete.
+        /// but you just want to process once at the last time because the previous ones are obsolete.
         /// A sample scenario is real-time search.
         /// </remarks>
         public static HitTask<T> Debounce<T>(Action<T> action, TimeSpan delay)
@@ -381,8 +379,7 @@ namespace Trivial.Tasks
         /// <returns>The hit task instance.</returns>
         /// <remarks>
         /// Maybe a handler will be asked to process several times in a short time
-        /// but you just want to process once at the last time
-        /// because the previous ones are obsolete.
+        /// but you just want to process once at the last time because the previous ones are obsolete.
         /// A sample scenario is real-time search.
         /// </remarks>
         public static HitTask<T> Debounce<T>(HitEventHandler<T> action, TimeSpan delay)
@@ -406,7 +403,10 @@ namespace Trivial.Tasks
         /// <param name="duration">The duration.</param>
         /// <returns>The hit task instance.</returns>
         /// <remarks>
-        /// A handler to be frozen for a while after it has processed.
+        /// You may want to request to call an action only once in a short time
+        /// even if you request to call several times.
+        /// The rest will be ignored.
+        /// So the handler will be frozen for a while after it has processed.
         /// </remarks>
         public static HitTask Throttle(Action action, TimeSpan duration)
         {
@@ -431,7 +431,10 @@ namespace Trivial.Tasks
         /// <param name="duration">The duration.</param>
         /// <returns>The hit task instance.</returns>
         /// <remarks>
-        /// A handler to be frozen for a while after it has processed.
+        /// You may want to request to call an action only once in a short time
+        /// even if you request to call several times.
+        /// The rest will be ignored.
+        /// So the handler will be frozen for a while after it has processed.
         /// </remarks>
         public static HitTask Throttle(HitEventHandler action, TimeSpan duration)
         {
@@ -457,7 +460,10 @@ namespace Trivial.Tasks
         /// <param name="duration">The duration.</param>
         /// <returns>The hit task instance.</returns>
         /// <remarks>
-        /// A handler to be frozen for a while after it has processed.
+        /// You may want to request to call an action only once in a short time
+        /// even if you request to call several times.
+        /// The rest will be ignored.
+        /// So the handler will be frozen for a while after it has processed.
         /// </remarks>
         public static HitTask<T> Throttle<T>(Action<T> action, TimeSpan duration)
         {
@@ -483,7 +489,10 @@ namespace Trivial.Tasks
         /// <param name="duration">The duration.</param>
         /// <returns>The hit task instance.</returns>
         /// <remarks>
-        /// A handler to be frozen for a while after it has processed.
+        /// You may want to request to call an action only once in a short time
+        /// even if you request to call several times.
+        /// The rest will be ignored.
+        /// So the handler will be frozen for a while after it has processed.
         /// </remarks>
         public static HitTask<T> Throttle<T>(HitEventHandler<T> action, TimeSpan duration)
         {
@@ -510,7 +519,10 @@ namespace Trivial.Tasks
         /// <param name="timeout">The time span between each hit.</param>
         /// <returns>The hit task instance.</returns>
         /// <remark>
-        /// A handler to process for the specific times and it will be reset after a while.
+        /// The handler to process for the specific times and it will be reset after a while.
+        /// You can define an action can be only processed only when request to call
+        /// in the specific times range and others will be ignored.
+        /// A sample scenario is double click.
         /// </remark>
         public static HitTask Mutliple(Action action, int min, int? max, TimeSpan timeout)
         {
@@ -536,7 +548,10 @@ namespace Trivial.Tasks
         /// <param name="timeout">The time span between each hit.</param>
         /// <returns>The hit task instance.</returns>
         /// <remark>
-        /// A handler to process for the specific times and it will be reset after a while.
+        /// The handler to process for the specific times and it will be reset after a while.
+        /// You can define an action can be only processed only when request to call
+        /// in the specific times range and others will be ignored.
+        /// A sample scenario is double click.
         /// </remark>
         public static HitTask Mutliple(HitEventHandler action, int min, int? max, TimeSpan timeout)
         {
@@ -563,7 +578,10 @@ namespace Trivial.Tasks
         /// <param name="timeout">The time span between each hit.</param>
         /// <returns>The hit task instance.</returns>
         /// <remark>
-        /// A handler to process for the specific times and it will be reset after a while.
+        /// The handler to process for the specific times and it will be reset after a while.
+        /// You can define an action can be only processed only when request to call
+        /// in the specific times range and others will be ignored.
+        /// A sample scenario is double click.
         /// </remark>
         public static HitTask<T> Mutliple<T>(Action<T> action, int min, int? max, TimeSpan timeout)
         {
@@ -590,7 +608,10 @@ namespace Trivial.Tasks
         /// <param name="timeout">The time span between each hit.</param>
         /// <returns>The hit task instance.</returns>
         /// <remark>
-        /// A handler to process for the specific times and it will be reset after a while.
+        /// The handler to process for the specific times and it will be reset after a while.
+        /// You can define an action can be only processed only when request to call
+        /// in the specific times range and others will be ignored.
+        /// A sample scenario is double click.
         /// </remark>
         public static HitTask<T> Mutliple<T>(HitEventHandler<T> action, int min, int? max, TimeSpan timeout)
         {
