@@ -24,7 +24,7 @@ namespace Trivial.Tasks
         Debounce = 2,
 
         /// <summary>
-        /// Only invoke the first one when no more coming.
+        /// Pend the first one to invoke at the end of the duration (when no more coming).
         /// </summary>
         Lock = 3
     }
@@ -520,9 +520,6 @@ namespace Trivial.Tasks
         /// <returns>The hit task instance.</returns>
         /// <remark>
         /// The handler to process for the specific times and it will be reset after a while.
-        /// You can define an action can be only processed only when request to call
-        /// in the specific times range and others will be ignored.
-        /// A sample scenario is double click.
         /// </remark>
         public static HitTask Mutliple(Action action, int min, int? max, TimeSpan timeout)
         {
@@ -549,9 +546,6 @@ namespace Trivial.Tasks
         /// <returns>The hit task instance.</returns>
         /// <remark>
         /// The handler to process for the specific times and it will be reset after a while.
-        /// You can define an action can be only processed only when request to call
-        /// in the specific times range and others will be ignored.
-        /// A sample scenario is double click.
         /// </remark>
         public static HitTask Mutliple(HitEventHandler action, int min, int? max, TimeSpan timeout)
         {
@@ -579,9 +573,6 @@ namespace Trivial.Tasks
         /// <returns>The hit task instance.</returns>
         /// <remark>
         /// The handler to process for the specific times and it will be reset after a while.
-        /// You can define an action can be only processed only when request to call
-        /// in the specific times range and others will be ignored.
-        /// A sample scenario is double click.
         /// </remark>
         public static HitTask<T> Mutliple<T>(Action<T> action, int min, int? max, TimeSpan timeout)
         {
@@ -609,9 +600,6 @@ namespace Trivial.Tasks
         /// <returns>The hit task instance.</returns>
         /// <remark>
         /// The handler to process for the specific times and it will be reset after a while.
-        /// You can define an action can be only processed only when request to call
-        /// in the specific times range and others will be ignored.
-        /// A sample scenario is double click.
         /// </remark>
         public static HitTask<T> Mutliple<T>(HitEventHandler<T> action, int min, int? max, TimeSpan timeout)
         {
@@ -637,7 +625,7 @@ namespace Trivial.Tasks
         /// <param name="timeout">The time span between each hit.</param>
         /// <returns>The hit task instance.</returns>
         /// <remarks>
-        /// A handler to process for the specific times only and it will be reset after a while.
+        /// A handler to process at last only when request to call in the specific times range.
         /// A sample scenario is double click.
         /// </remarks>
         public static HitTask Times(Action action, int min, int? max, TimeSpan timeout)
@@ -666,7 +654,7 @@ namespace Trivial.Tasks
         /// <param name="timeout">The time span between each hit.</param>
         /// <returns>The hit task instance.</returns>
         /// <remarks>
-        /// A handler to process for the specific times only and it will be reset after a while.
+        /// A handler to process at last only when request to call in the specific times range.
         /// A sample scenario is double click.
         /// </remarks>
         public static HitTask Times(HitEventHandler action, int min, int? max, TimeSpan timeout)
@@ -696,7 +684,7 @@ namespace Trivial.Tasks
         /// <param name="timeout">The time span between each hit.</param>
         /// <returns>The hit task instance.</returns>
         /// <remarks>
-        /// A handler to process for the specific times only and it will be reset after a while.
+        /// A handler to process at last only when request to call in the specific times range.
         /// A sample scenario is double click.
         /// </remarks>
         public static HitTask<T> Times<T>(Action<T> action, int min, int? max, TimeSpan timeout)
@@ -726,7 +714,7 @@ namespace Trivial.Tasks
         /// <param name="timeout">The time span between each hit.</param>
         /// <returns>The hit task instance.</returns>
         /// <remarks>
-        /// A handler to process for the specific times only and it will be reset after a while.
+        /// A handler to process at last only when request to call in the specific times range.
         /// A sample scenario is double click.
         /// </remarks>
         public static HitTask<T> Times<T>(HitEventHandler<T> action, int min, int? max, TimeSpan timeout)
@@ -754,7 +742,7 @@ namespace Trivial.Tasks
         /// <param name="timeout">The time span between each hit.</param>
         /// <returns>The hit task instance.</returns>
         /// <remarks>
-        /// A handler to process for the specific times only and it will be reset after a while.
+        /// A handler to process at last only when request to call in the specific times range.
         /// A sample scenario is double click.
         /// </remarks>
         public static HitTask Times(Action action, int count, TimeSpan timeout)
@@ -781,7 +769,7 @@ namespace Trivial.Tasks
         /// <param name="timeout">The time span between each hit.</param>
         /// <returns>The hit task instance.</returns>
         /// <remarks>
-        /// A handler to process for the specific times only and it will be reset after a while.
+        /// A handler to process at last only when request to call in the specific times range.
         /// A sample scenario is double click.
         /// </remarks>
         public static HitTask Times(HitEventHandler action, int count, TimeSpan timeout)
@@ -809,7 +797,7 @@ namespace Trivial.Tasks
         /// <param name="timeout">The time span between each hit.</param>
         /// <returns>The hit task instance.</returns>
         /// <remarks>
-        /// A handler to process for the specific times only and it will be reset after a while.
+        /// A handler to process at last only when request to call in the specific times range.
         /// A sample scenario is double click.
         /// </remarks>
         public static HitTask<T> Times<T>(Action<T> action, int count, TimeSpan timeout)
@@ -837,7 +825,7 @@ namespace Trivial.Tasks
         /// <param name="timeout">The time span between each hit.</param>
         /// <returns>The hit task instance.</returns>
         /// <remarks>
-        /// A handler to process for the specific times only and it will be reset after a while.
+        /// A handler to process at last only when request to call in the specific times range.
         /// A sample scenario is double click.
         /// </remarks>
         public static HitTask<T> Times<T>(HitEventHandler<T> action, int count, TimeSpan timeout)
