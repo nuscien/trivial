@@ -21,7 +21,7 @@ namespace Trivial.Console
         /// <summary>
         /// The parameters.
         /// </summary>
-        private readonly List<Parameter> parameters = new List<Parameter>();
+        private readonly List<Parameter> parameters = new ();
 
         /// <summary>
         /// Initializes a new instance of the Arguments class.
@@ -29,6 +29,12 @@ namespace Trivial.Console
         /// <param name="args">The original arguments.</param>
         public Arguments(IEnumerable<string> args)
         {
+            if (args == null)
+            {
+                this.args = new List<string>();
+                return;
+            }
+
             this.args = args.ToList();
             Init();
         }
@@ -39,11 +45,19 @@ namespace Trivial.Console
         /// <param name="args">The original arguments.</param>
         public Arguments(string args)
         {
+            if (args == null)
+            {
+                this.args = new List<string>();
+                return;
+            }
+
             var list = args.Split(new[] { ' ', '\t', '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
             this.args = new List<string>();
+            var ignoreKeys = new List<int>();
             var merge = false;
             foreach (var item in list)
             {
+                #pragma warning disable IDE0056, IDE0057
                 if (merge)
                 {
                     var str = " " + item;
@@ -53,25 +67,32 @@ namespace Trivial.Console
                         str = item.Substring(0, item.Length - 1);
                     }
 
-                    #pragma warning disable IDE0056
                     this.args[this.args.Count - 1] += str;
-                    #pragma warning restore IDE0056
                 }
                 else
                 {
-                    if (item.IndexOf("\"") == 0)
+                    if (item.StartsWith("\""))
                     {
-                        merge = true;
-                        this.args.Add(item.Substring(1));
+                        ignoreKeys.Add(this.args.Count);
+                        if (item.Length > 1 && item.EndsWith("\""))
+                        {
+                            this.args.Add(item.Substring(1, item.Length - 2));
+                        }
+                        else
+                        {
+                            merge = true;
+                            this.args.Add(item.Substring(1));
+                        }
                     }
                     else
                     {
                         this.args.Add(item);
                     }
                 }
+                #pragma warning restore IDE0056, IDE0057
             }
 
-            Init();
+            Init(ignoreKeys);
         }
 
         /// <summary>
@@ -120,13 +141,7 @@ namespace Trivial.Console
         /// <summary>
         /// Gets a value indicating whether has the verb.
         /// </summary>
-        public bool HasVerb
-        {
-            get
-            {
-                return Verb != null;
-            }
-        }
+        public bool HasVerb => Verb != null;
 
         /// <summary>
         /// Gets the specific parameters by key.
@@ -182,6 +197,75 @@ namespace Trivial.Console
             foreach (var p in parameters)
             {
                 if (keys.IndexOf(p.Key) >= 0) return p;
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// Get the merged value of the specific key.
+        /// </summary>
+        /// <param name="key">The parameter key.</param>
+        /// <returns>A string value.</returns>
+        public string GetMergedValue(string key) => Get(key)?.MergedValue;
+
+        /// <summary>
+        /// Get the next parameter of the specific key.
+        /// </summary>
+        /// <param name="key">The parameter key to get next.</param>
+        /// <returns>A parameter after the specific one.</returns>
+        public Parameter GetNext(string key)
+        {
+            if (string.IsNullOrWhiteSpace(key)) return parameters.FirstOrDefault();
+            key = Parameter.FormatKey(key, false);
+            var needReturn = false;
+            foreach (var p in parameters)
+            {
+                if (needReturn) return p;
+                if (p.Key == key) needReturn = true;
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// Get the a parameter of the specific key, or the next one if it is empty.
+        /// </summary>
+        /// <param name="key">The parameter key to get next.</param>
+        /// <param name="appendNextAsValue">true if append the next parameter as the value of the specific key; otherwise, false.</param>
+        /// <param name="nextPrefix">An optional prefix character used to test the next parameter.</param>
+        /// <returns>A parameter after the specific one.</returns>
+        public Parameter GetFirstOrNext(string key, bool appendNextAsValue = false, char? nextPrefix = null)
+        {
+            if (string.IsNullOrWhiteSpace(key)) return parameters.FirstOrDefault();
+            key = Parameter.FormatKey(key, false);
+            var needReturn = false;
+            foreach (var p in parameters)
+            {
+                if (needReturn)
+                {
+                    if (nextPrefix.HasValue)
+                    {
+                        if (string.IsNullOrEmpty(p.OriginalKey))
+                        {
+                            if (p.IsEmpty || p.Value.FirstOrDefault() != nextPrefix.Value) return null;
+                        }
+                        else
+                        {
+                            if (p.OriginalKey.First() != nextPrefix.Value) return null;
+                        }
+                    }
+
+                    if (!appendNextAsValue) return p;
+                    var list = new List<string>();
+                    if (!string.IsNullOrEmpty(p.OriginalKey)) list.Add(p.OriginalKey);
+                    if (!p.IsEmpty) list.AddRange(p.Values);
+                    return new Parameter(key, list);
+                }
+
+                if (p.Key != key) continue;
+                if (!p.IsEmpty) return p;
+                needReturn = true;
             }
 
             return null;
@@ -261,6 +345,15 @@ namespace Trivial.Console
         public bool Equals(string other)
         {
             return ToString() == other;
+        }
+
+        /// <inheritdoc/>>
+        public override bool Equals(object obj)
+        {
+            if (obj is null) return false;
+            if (obj is Arguments a) return Equals(a);
+            if (obj is string s) return Equals(s);
+            return false;
         }
 
         /// <summary>
@@ -379,14 +472,21 @@ namespace Trivial.Console
         /// <summary>
         /// Initializes this instance.
         /// </summary>
-        private void Init()
+        private void Init(List<int> ignoreKeys = null)
         {
             Count = args.Count;
             if (Count == 0) return;
             var list = new List<int>();
+            if (ignoreKeys == null) ignoreKeys = new List<int>();
             for (var i = 0; i < args.Count; i++)
             {
-                if (args[i].IndexOf('-') == 0 || args[i].IndexOf('/') == 0) list.Add(i);
+                if ((args[i].IndexOf('-') == 0 || args[i].IndexOf('/') == 0)
+                    && !ignoreKeys.Contains(i)
+                    && args[i].IndexOf(' ') < 0
+                    && args[i].IndexOf('\r') < 0
+                    && args[i].IndexOf('\n') < 0
+                    && args[i].IndexOf('\t') < 0
+                    && args[i].LastIndexOf('/') <= 0) list.Add(i);
             }
 
             if (args[0].IndexOf('-') != 0 && args[0].IndexOf('/') != 0)

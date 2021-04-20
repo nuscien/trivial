@@ -296,12 +296,43 @@ namespace Trivial.Maths
         }
 
         /// <summary>
+        /// Converts to an instance of JSON.
+        /// </summary>
+        /// <returns>A JSON object instance.</returns>
+        public Text.JsonObject ToJson()
+        {
+            return ToJson(new Text.JsonObject());
+        }
+
+        /// <summary>
+        /// Converts to an instance of JSON.
+        /// </summary>
+        /// <param name="obj">The optional JSON object instance to add properties.</param>
+        /// <returns>A JSON object instance.</returns>
+        public Text.JsonObject ToJson(Text.JsonObject obj)
+        {
+            if (obj is null) obj = new Text.JsonObject();
+            obj.SetValue("x", X);
+            obj.SetValue("y", Y);
+            return obj;
+        }
+
+        /// <summary>
         /// Creates a new object that is a copy of the current instance.
         /// </summary>
         /// <returns>A new object that is a copy of this instance.</returns>
         public override object Clone()
         {
             return new DoubleTwoDimensionalPoint(X, Y);
+        }
+
+        /// <summary>
+        /// Converts a vector to the point.
+        /// </summary>
+        /// <param name="value">The vector to convert.</param>
+        public static implicit operator DoubleTwoDimensionalPoint(System.Numerics.Vector2 value)
+        {
+            return new DoubleTwoDimensionalPoint(value.X, value.Y);
         }
 
         /// <summary>
@@ -434,6 +465,28 @@ namespace Trivial.Maths
         public Int32TwoDimensionalPoint Negate()
         {
             return new Int32TwoDimensionalPoint(-X, -Y);
+        }
+
+        /// <summary>
+        /// Converts to an instance of JSON.
+        /// </summary>
+        /// <returns>A JSON object instance.</returns>
+        public Text.JsonObject ToJson()
+        {
+            return ToJson(new Text.JsonObject());
+        }
+
+        /// <summary>
+        /// Converts to an instance of JSON.
+        /// </summary>
+        /// <param name="obj">The optional JSON object instance to add properties.</param>
+        /// <returns>A JSON object instance.</returns>
+        public Text.JsonObject ToJson(Text.JsonObject obj)
+        {
+            if (obj is null) obj = new Text.JsonObject();
+            obj.SetValue("x", X);
+            obj.SetValue("y", Y);
+            return obj;
         }
 
         /// <summary>

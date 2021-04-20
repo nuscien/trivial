@@ -316,7 +316,28 @@ namespace Trivial.Maths
             var num = 0;
             var pos = 0;
             var neg = false;
-            if (s[0] == '-')
+            if (radix == 16)
+            {
+                if (s.StartsWith("0x-") || s.StartsWith("-0x") || s.StartsWith("&h-") || s.StartsWith("-&h"))
+                {
+                    pos += 3;
+                    neg = true;
+                }
+                else if (s.StartsWith("0x") || s.StartsWith("&h"))
+                {
+                    pos += 2;
+                }
+                else if (s.StartsWith("x-") || s.StartsWith("-x"))
+                {
+                    pos += 2;
+                    neg = true;
+                }
+                else if (s.StartsWith("x"))
+                {
+                    pos++;
+                }
+            }
+            else if (s[0] == '-')
             {
                 neg = true;
                 pos++;
@@ -367,7 +388,28 @@ namespace Trivial.Maths
             var num = 0L;
             var pos = 0;
             var neg = false;
-            if (s[0] == '-')
+            if (radix == 16)
+            {
+                if (s.StartsWith("0x-") || s.StartsWith("-0x") || s.StartsWith("&h-") || s.StartsWith("-&h"))
+                {
+                    pos += 3;
+                    neg = true;
+                }
+                else if (s.StartsWith("0x") || s.StartsWith("&h"))
+                {
+                    pos += 2;
+                }
+                else if (s.StartsWith("x-") || s.StartsWith("-x"))
+                {
+                    pos += 2;
+                    neg = true;
+                }
+                else if (s.StartsWith("x"))
+                {
+                    pos++;
+                }
+            }
+            else if (s[0] == '-')
             {
                 neg = true;
                 pos++;
