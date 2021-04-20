@@ -16,7 +16,7 @@ namespace Trivial.Console
         /// <summary>
         /// The cancllation token source.
         /// </summary>
-        private readonly CancellationTokenSource cancel = new CancellationTokenSource();
+        private readonly CancellationTokenSource cancel = new ();
 
         /// <summary>
         /// Gets the descripiton of the verb handler.
@@ -80,7 +80,7 @@ namespace Trivial.Console
         /// <summary>
         /// Gets the default console line client.
         /// </summary>
-        public Line ConsoleLine { get; } = new Line();
+        public Line ConsoleLine { get; } = new ();
 
         /// <summary>
         /// Initializes this instance.
@@ -244,7 +244,7 @@ namespace Trivial.Console
             if (!hasArg) LineUtilities.WriteDoubleLines(FurtherDescription);
         }
 
-        private void WriteMessage(Func<Verb> verb, bool details)
+        private static void WriteMessage(Func<Verb> verb, bool details)
         {
             if (verb == null) return;
             var v = verb();

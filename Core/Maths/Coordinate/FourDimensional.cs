@@ -206,9 +206,9 @@ namespace Trivial.Maths
     }
 
     /// <summary>
-    /// The point of the 4D (time and space) mathematics coordinate and time span.
+    /// The point of the 4D (time and space) mathematics coordinate and date time.
     /// </summary>
-    public class SpacetimePoint : FourDimensionalPoint<double, TimeSpan>
+    public class SpacetimePoint : FourDimensionalPoint<double, DateTime>
     {
         /// <summary>
         /// Initializes a new instance of the SpaceTimePoint class.
@@ -226,7 +226,7 @@ namespace Trivial.Maths
         /// <param name="z">The value of Z.</param>
         /// <param name="t">The value of T.</param>
         /// <remarks>You can use this to initialize an instance for the class.</remarks>
-        public SpacetimePoint(double x, double y, double z, TimeSpan t) : base(x, y, z, t)
+        public SpacetimePoint(double x, double y, double z, DateTime t) : base(x, y, z, t)
         {
         }
 
@@ -250,19 +250,6 @@ namespace Trivial.Maths
         /// <param name="value">The value to be plused.</param>
         /// <returns>A result after leftValue plus rightValue.</returns>
         public SpacetimePoint Plus(FourDimensionalPoint<int, TimeSpan> value)
-        {
-            return value != null
-                ? new SpacetimePoint(X + value.X, Y + value.Y, Z + value.Z, T + value.T)
-                : new SpacetimePoint(X, Y, Z, T);
-        }
-
-        /// <summary>
-        /// Pluses another value to return. Current value will not be changed.
-        /// this + value
-        /// </summary>
-        /// <param name="value">The value to be plused.</param>
-        /// <returns>A result after leftValue plus rightValue.</returns>
-        public SpacetimePoint Plus(SpacetimePoint value)
         {
             return value != null
                 ? new SpacetimePoint(X + value.X, Y + value.Y, Z + value.Z, T + value.T)
@@ -296,26 +283,37 @@ namespace Trivial.Maths
         }
 
         /// <summary>
-        /// Minuses another value to return. Current value will not be changed.
-        /// this - value
-        /// </summary>
-        /// <param name="value">The value to be minuses.</param>
-        /// <returns>A result after leftValue minus rightValue.</returns>
-        public SpacetimePoint Minus(SpacetimePoint value)
-        {
-            return value != null
-                ? new SpacetimePoint(X - value.X, Y - value.Y, Z - value.Z, T - value.T)
-                : new SpacetimePoint(X, Y, Z, T);
-        }
-
-        /// <summary>
         /// Negates the current value to return. Current value will not be changed.
         /// -this
         /// </summary>
         /// <returns>A result after negation.</returns>
         public SpacetimePoint Negate()
         {
-            return new SpacetimePoint(-X, -Y, -Z, -T);
+            return new SpacetimePoint(-X, -Y, -Z, T);
+        }
+
+        /// <summary>
+        /// Converts to an instance of JSON.
+        /// </summary>
+        /// <returns>A JSON object instance.</returns>
+        public Text.JsonObject ToJson()
+        {
+            return ToJson(new Text.JsonObject());
+        }
+
+        /// <summary>
+        /// Converts to an instance of JSON.
+        /// </summary>
+        /// <param name="obj">The optional JSON object instance to add properties.</param>
+        /// <returns>A JSON object instance.</returns>
+        public Text.JsonObject ToJson(Text.JsonObject obj)
+        {
+            if (obj is null) obj = new Text.JsonObject();
+            obj.SetValue("x", X);
+            obj.SetValue("y", Y);
+            obj.SetValue("z", Z);
+            obj.SetValue("t", T);
+            return obj;
         }
 
         /// <summary>
@@ -326,16 +324,162 @@ namespace Trivial.Maths
         {
             return new SpacetimePoint(X, Y, Z, T);
         }
+    }
+
+    /// <summary>
+    /// The point of the 4D (time and space) mathematics coordinate and time span.
+    /// </summary>
+    public class RelativeSpacetimePoint : FourDimensionalPoint<double, TimeSpan>
+    {
+        /// <summary>
+        /// Initializes a new instance of the RelativeSpacetimePoint class.
+        /// </summary>
+        /// <remarks>You can use this to initialize an instance for the class.</remarks>
+        public RelativeSpacetimePoint()
+        {
+        }
 
         /// <summary>
-        /// Pluses two points in coordinate.
+        /// Initializes a new instance of the RelativeSpacetimePoint class.
         /// </summary>
-        /// <param name="leftValue">The left value for addition operator.</param>
-        /// <param name="rightValue">The right value for addition operator.</param>
-        /// <returns>A result after addition.</returns>
-        public static SpacetimePoint operator +(SpacetimePoint leftValue, SpacetimePoint rightValue)
+        /// <param name="x">The value of X.</param>
+        /// <param name="y">The value of Y.</param>
+        /// <param name="z">The value of Z.</param>
+        /// <param name="t">The value of T.</param>
+        /// <remarks>You can use this to initialize an instance for the class.</remarks>
+        public RelativeSpacetimePoint(double x, double y, double z, TimeSpan t) : base(x, y, z, t)
         {
-            return (leftValue ?? new SpacetimePoint()).Plus(rightValue);
+        }
+
+        /// <summary>
+        /// Pluses another value to return. Current value will not be changed.
+        /// this + value
+        /// </summary>
+        /// <param name="value">The value to be plused.</param>
+        /// <returns>A result after leftValue plus rightValue.</returns>
+        public RelativeSpacetimePoint Plus(FourDimensionalPoint<double, TimeSpan> value)
+        {
+            return value != null
+                ? new RelativeSpacetimePoint(X + value.X, Y + value.Y, Z + value.Z, T + value.T)
+                : new RelativeSpacetimePoint(X, Y, Z, T);
+        }
+
+        /// <summary>
+        /// Pluses another value to return. Current value will not be changed.
+        /// this + value
+        /// </summary>
+        /// <param name="value">The value to be plused.</param>
+        /// <returns>A result after leftValue plus rightValue.</returns>
+        public RelativeSpacetimePoint Plus(FourDimensionalPoint<int, TimeSpan> value)
+        {
+            return value != null
+                ? new RelativeSpacetimePoint(X + value.X, Y + value.Y, Z + value.Z, T + value.T)
+                : new RelativeSpacetimePoint(X, Y, Z, T);
+        }
+
+        /// <summary>
+        /// Pluses another value to return. Current value will not be changed.
+        /// this + value
+        /// </summary>
+        /// <param name="value">The value to be plused.</param>
+        /// <returns>A result after leftValue plus rightValue.</returns>
+        public RelativeSpacetimePoint Plus(RelativeSpacetimePoint value)
+        {
+            return value != null
+                ? new RelativeSpacetimePoint(X + value.X, Y + value.Y, Z + value.Z, T + value.T)
+                : new RelativeSpacetimePoint(X, Y, Z, T);
+        }
+
+        /// <summary>
+        /// Minuses another value to return. Current value will not be changed.
+        /// this - value
+        /// </summary>
+        /// <param name="value">The value to be minuses.</param>
+        /// <returns>A result after leftValue minus rightValue.</returns>
+        public RelativeSpacetimePoint Minus(FourDimensionalPoint<double, TimeSpan> value)
+        {
+            return value != null
+                ? new RelativeSpacetimePoint(X - value.X, Y - value.Y, Z - value.Z, T - value.T)
+                : new RelativeSpacetimePoint(X, Y, Z, T);
+        }
+
+        /// <summary>
+        /// Minuses another value to return. Current value will not be changed.
+        /// this - value
+        /// </summary>
+        /// <param name="value">The value to be minuses.</param>
+        /// <returns>A result after leftValue minus rightValue.</returns>
+        public RelativeSpacetimePoint Minus(FourDimensionalPoint<int, TimeSpan> value)
+        {
+            return value != null
+                ? new RelativeSpacetimePoint(X - value.X, Y - value.Y, Z - value.Z, T - value.T)
+                : new RelativeSpacetimePoint(X, Y, Z, T);
+        }
+
+        /// <summary>
+        /// Minuses another value to return. Current value will not be changed.
+        /// this - value
+        /// </summary>
+        /// <param name="value">The value to be minuses.</param>
+        /// <returns>A result after leftValue minus rightValue.</returns>
+        public RelativeSpacetimePoint Minus(RelativeSpacetimePoint value)
+        {
+            return value != null
+                ? new RelativeSpacetimePoint(X - value.X, Y - value.Y, Z - value.Z, T - value.T)
+                : new RelativeSpacetimePoint(X, Y, Z, T);
+        }
+
+        /// <summary>
+        /// Negates the current value to return. Current value will not be changed.
+        /// -this
+        /// </summary>
+        /// <returns>A result after negation.</returns>
+        public RelativeSpacetimePoint Negate()
+        {
+            return new RelativeSpacetimePoint(-X, -Y, -Z, -T);
+        }
+
+        /// <summary>
+        /// Converts to an instance of JSON.
+        /// </summary>
+        /// <returns>A JSON object instance.</returns>
+        public Text.JsonObject ToJson()
+        {
+            return ToJson(new Text.JsonObject());
+        }
+
+        /// <summary>
+        /// Converts to an instance of JSON.
+        /// </summary>
+        /// <param name="obj">The optional JSON object instance to add properties.</param>
+        /// <returns>A JSON object instance.</returns>
+        public Text.JsonObject ToJson(Text.JsonObject obj)
+        {
+            if (obj is null) obj = new Text.JsonObject();
+            obj.SetValue("x", X);
+            obj.SetValue("y", Y);
+            obj.SetValue("z", Z);
+            try
+            {
+                obj.SetValue("t", (long)T.TotalMilliseconds);
+            }
+            catch (OverflowException)
+            {
+            }
+            catch (InvalidCastException)
+            {
+            }
+
+            return obj;
+        }
+
+        /// <summary>
+        /// Creates a new object that is a copy of the current instance.
+        /// </summary>
+        /// <returns>A new object that is a copy of this instance.</returns>
+        public override object Clone()
+        {
+            return new RelativeSpacetimePoint(X, Y, Z, T);
         }
 
         /// <summary>
@@ -344,9 +488,20 @@ namespace Trivial.Maths
         /// <param name="leftValue">The left value for addition operator.</param>
         /// <param name="rightValue">The right value for addition operator.</param>
         /// <returns>A result after addition.</returns>
-        public static SpacetimePoint operator -(SpacetimePoint leftValue, SpacetimePoint rightValue)
+        public static RelativeSpacetimePoint operator +(RelativeSpacetimePoint leftValue, RelativeSpacetimePoint rightValue)
         {
-            return (leftValue ?? new SpacetimePoint()).Minus(rightValue);
+            return (leftValue ?? new RelativeSpacetimePoint()).Plus(rightValue);
+        }
+
+        /// <summary>
+        /// Pluses two points in coordinate.
+        /// </summary>
+        /// <param name="leftValue">The left value for addition operator.</param>
+        /// <param name="rightValue">The right value for addition operator.</param>
+        /// <returns>A result after addition.</returns>
+        public static RelativeSpacetimePoint operator -(RelativeSpacetimePoint leftValue, RelativeSpacetimePoint rightValue)
+        {
+            return (leftValue ?? new RelativeSpacetimePoint()).Minus(rightValue);
         }
     }
 }

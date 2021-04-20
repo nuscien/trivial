@@ -301,6 +301,49 @@ namespace Trivial.Maths
             }
 
             /// <summary>
+            /// Converts a number to angle model.
+            /// </summary>
+            /// <param name="value">The raw value.</param>
+            public static implicit operator Model(Text.JsonInteger value)
+            {
+                return new Model(value.Value);
+            }
+
+            /// <summary>
+            /// Converts a number to angle model.
+            /// </summary>
+            /// <param name="value">The raw value.</param>
+            public static implicit operator Model(Text.JsonDouble value)
+            {
+                return new Model(value.Value);
+            }
+
+            /// <summary>
+            /// Converts a string to angle model.
+            /// </summary>
+            /// <param name="value">The raw value.</param>
+            public static implicit operator Model(Text.JsonString value)
+            {
+                try
+                {
+                    if (value is null || value.IsNullOrEmpty()) return null;
+                    return Parse(value.Value);
+                }
+                catch (ArgumentException ex)
+                {
+                    throw new InvalidCastException("Cannot parse the string because it is invalid.", ex);
+                }
+                catch (OverflowException ex)
+                {
+                    throw new InvalidCastException("Cannot parse the string because it is invalid.", ex);
+                }
+                catch (FormatException ex)
+                {
+                    throw new InvalidCastException("Cannot parse the string because it is invalid.", ex);
+                }
+            }
+
+            /// <summary>
             /// Negates a specific angle.
             /// </summary>
             /// <param name="value">A value to create mirror.</param>
