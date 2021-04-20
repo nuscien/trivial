@@ -229,7 +229,7 @@ namespace Trivial.Console
         }
 
         /// <summary>
-        /// Get the next parameter of the specific key.
+        /// Get the a parameter of the specific key, or the next one if it is empty.
         /// </summary>
         /// <param name="key">The parameter key to get next.</param>
         /// <param name="appendNextAsValue">true if append the next parameter as the value of the specific key; otherwise, false.</param>
