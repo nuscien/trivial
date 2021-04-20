@@ -22,7 +22,7 @@ namespace Trivial.Console
         {
             var str = "something --path /usr/local -path2 \"/usr\" -d /usr -f C:\\Program Files\\Windows NT -url https://dot.net -a Abc -a Xyz";
             var args = new Arguments(str);
-            Assert.AreEqual("something", args.Verb.Value);
+            Assert.AreEqual("something", args.Verb.Key);
             var param = args.Get("path");
             Assert.AreEqual("/usr/local", param.FirstValue);
             Assert.AreEqual("/usr/local", args.GetFirst("path", "path2").Value);
