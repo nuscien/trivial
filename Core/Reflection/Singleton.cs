@@ -187,7 +187,7 @@ namespace Trivial.Reflection
         /// <summary>
         /// The singleton instance of singleton resolver.
         /// </summary>
-        private static readonly Lazy<SingletonResolver> instance = new Lazy<SingletonResolver>();
+        private static readonly Lazy<SingletonResolver> instance = new ();
 
         /// <summary>
         /// Gets the singleton instance of singleton resolver.
@@ -213,12 +213,12 @@ namespace Trivial.Reflection
         /// <summary>
         /// The locker.
         /// </summary>
-        private readonly object locker = new object();
+        private readonly object locker = new ();
 
         /// <summary>
         /// Cache.
         /// </summary>
-        private readonly Dictionary<Type, ConcurrentDictionary<string, IObjectRef>> cache = new Dictionary<Type, ConcurrentDictionary<string, IObjectRef>>();
+        private readonly Dictionary<Type, ConcurrentDictionary<string, IObjectRef>> cache = new ();
 
         /// <summary>
         /// Backup resolver.
@@ -649,7 +649,7 @@ namespace Trivial.Reflection
     /// <typeparam name="T">The type of the model.</typeparam>
     public class SingletonResolverItem<T>
     {
-        private readonly SemaphoreSlim locker = new SemaphoreSlim(1, 1);
+        private readonly SemaphoreSlim locker = new (1, 1);
         private Func<Task<T>> resolver;
         private readonly SingletonResolver instance;
 
@@ -793,10 +793,10 @@ namespace Trivial.Reflection
     /// <typeparam name="T">The type of value.</typeparam>
     public class SingletonKeeper<T>
     {
-        private readonly SemaphoreSlim semaphoreSlim = new SemaphoreSlim(1, 1);
+        private readonly SemaphoreSlim semaphoreSlim = new (1, 1);
         private readonly Func<Task<T>> renew;
-        private readonly List<Action<T>> callbacks = new List<Action<T>>();
-        private readonly object callbackLocker = new object();
+        private readonly List<Action<T>> callbacks = new ();
+        private readonly object callbackLocker = new ();
         private DateTime? disabled;
 
         /// <summary>
