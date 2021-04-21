@@ -210,6 +210,39 @@ namespace Trivial.Console
         public string GetMergedValue(string key) => Get(key)?.MergedValue;
 
         /// <summary>
+        /// Get the parameter before the specific key.
+        /// </summary>
+        /// <param name="key">The parameter key to get previous.</param>
+        /// <returns>A parameter before the specific one.</returns>
+        public Parameter GetPrevious(string key)
+        {
+            if (string.IsNullOrWhiteSpace(key)) return parameters.FirstOrDefault();
+            key = Parameter.FormatKey(key, false);
+            Parameter cur;
+            foreach (var p in parameters)
+            {
+                cur = p;
+                if (p.Key == key) return cur;
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// Gets the parameter before the specific one.
+        /// </summary>
+        /// <param name="parameter">The specific parameter to get its previous.</param>
+        /// <returns>A parameter before the specific one.</returns>
+        public Parameter GetPrevious(Parameter parameter)
+        {
+            if (parameter is null) return null;
+            var i = parameters.IndexOf(parameter);
+            if (i < 0) return null;
+            if (i == 0) return Verb;
+            return parameters[i - 1];
+        }
+
+        /// <summary>
         /// Get the next parameter of the specific key.
         /// </summary>
         /// <param name="key">The parameter key to get next.</param>
@@ -229,20 +262,33 @@ namespace Trivial.Console
         }
 
         /// <summary>
+        /// Gets the next parameter after the specific one.
+        /// </summary>
+        /// <param name="parameter">The specific parameter to get its next.</param>
+        /// <returns>A parameter after the specific one.</returns>
+        public Parameter GetNext(Parameter parameter)
+        {
+            if (parameter is null) return parameters.FirstOrDefault();
+            var i = parameters.IndexOf(parameter);
+            if (i < 0 || i >= (parameter.Count - 1)) return null;
+            return parameters[i + 1];
+        }
+
+        /// <summary>
         /// Get the a parameter of the specific key, or the next one if it is empty.
         /// </summary>
         /// <param name="key">The parameter key to get next.</param>
         /// <param name="appendNextAsValue">true if append the next parameter as the value of the specific key; otherwise, false.</param>
         /// <param name="nextPrefix">An optional prefix character used to test the next parameter.</param>
-        /// <returns>A parameter after the specific one.</returns>
+        /// <returns>The specific parameter; or the parameter after the specific one if the specific one is empty; or the specific parameter if the next is empty; or null if non-exist.</returns>
         public Parameter GetFirstOrNext(string key, bool appendNextAsValue = false, char? nextPrefix = null)
         {
             if (string.IsNullOrWhiteSpace(key)) return parameters.FirstOrDefault();
             key = Parameter.FormatKey(key, false);
-            var needReturn = false;
+            Parameter cur = null;
             foreach (var p in parameters)
             {
-                if (needReturn)
+                if (cur != null)
                 {
                     if (nextPrefix.HasValue)
                     {
@@ -256,7 +302,7 @@ namespace Trivial.Console
                         }
                     }
 
-                    if (!appendNextAsValue) return p;
+                    if (!appendNextAsValue) return p.IsEmpty ? cur : p;
                     var list = new List<string>();
                     if (!string.IsNullOrEmpty(p.OriginalKey)) list.Add(p.OriginalKey);
                     if (!p.IsEmpty) list.AddRange(p.Values);
@@ -265,7 +311,7 @@ namespace Trivial.Console
 
                 if (p.Key != key) continue;
                 if (!p.IsEmpty) return p;
-                needReturn = true;
+                cur = p;
             }
 
             return null;
