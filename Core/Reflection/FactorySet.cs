@@ -15,7 +15,7 @@ namespace Trivial.Reflection
         /// <summary>
         /// Reader writer lcok slim.
         /// </summary>
-        private readonly ReaderWriterLockSlim slim;
+        private readonly ReaderWriterLockSlim slim = new ();
 
         /// <summary>
         /// Cache.
@@ -195,7 +195,7 @@ namespace Trivial.Reflection
         /// <summary>
         /// Reader writer lcok slim.
         /// </summary>
-        private readonly ReaderWriterLockSlim slim;
+        private readonly ReaderWriterLockSlim slim = new ();
 
         /// <summary>
         /// Cache.
