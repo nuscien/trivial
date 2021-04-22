@@ -195,7 +195,7 @@ namespace Trivial.Reflection
     /// </summary>
     internal class FactoryObjectRef : IObjectRef
     {
-        private readonly object locker = new object();
+        private readonly object locker = new ();
         private readonly Func<object> f;
         private bool isInit;
         private object value;
@@ -230,7 +230,7 @@ namespace Trivial.Reflection
     /// <typeparam name="T">The type of the value.</typeparam>
     internal class FactoryObjectRef<T> : IObjectRef, IObjectRef<T>
     {
-        private readonly object locker = new object();
+        private readonly object locker = new ();
         private readonly Func<T> f;
         private bool isInit;
         private T value;
