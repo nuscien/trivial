@@ -35,14 +35,14 @@ namespace Trivial.Tasks
     /// <typeparam name="T">The type of argument.</typeparam>
     /// <param name="sender">The sender.</param>
     /// <param name="args">The arguments.</param>
-    public delegate void HitEventHandler<T>(HitTask<T> sender, HitEventArgs<T> args);
+    public delegate void HitEventHandler<T>(BaseHitTask<T> sender, HitEventArgs<T> args);
 
     /// <summary>
     /// The hit event handler.
     /// </summary>
     /// <param name="sender">The sender.</param>
     /// <param name="args">The arguments.</param>
-    public delegate void HitEventHandler(HitTask<object> sender, HitEventArgs<object> args);
+    public delegate void HitEventHandler(BaseHitTask<object> sender, HitEventArgs<object> args);
 
     /// <summary>
     /// The arguments of hit event.
@@ -95,7 +95,7 @@ namespace Trivial.Tasks
     /// <summary>
     /// The hit task to determine whether the current invoking action can run right now, later or never..
     /// </summary>
-    public class HitTask<T>
+    public abstract class BaseHitTask<T>
     {
         /// <summary>
         /// The locker.
@@ -290,10 +290,164 @@ namespace Trivial.Tasks
     }
 
     /// <summary>
+    /// The arguments of hit event.
+    /// </summary>
+    /// <typeparam name="T">The type of argument.</typeparam>
+    public class HitTask<T> : BaseHitTask<T>
+    {
+        /// <summary>
+        /// Sends request to process.
+        /// </summary>
+        /// <param name="arg">The argument.</param>
+        /// <returns>true if process succeeded; otherwise, false.</returns>
+        public void ProcessBegin(T arg) => _ = ProcessAsync(arg);
+
+        /// <summary>
+        /// Creates a debounce task.
+        /// </summary>
+        /// <param name="action">The action.</param>
+        /// <param name="delay">Delay time span.</param>
+        /// <returns>The hit task instance.</returns>
+        /// <remarks>
+        /// Maybe a handler will be asked to process several times in a short time
+        /// but you just want to process once at the last time because the previous ones are obsolete.
+        /// A sample scenario is real-time search.
+        /// </remarks>
+        public static HitTask<T> Debounce(Action<T> action, TimeSpan delay) => HitTask.Debounce(action, delay);
+
+        /// <summary>
+        /// Creates a debounce task.
+        /// </summary>
+        /// <param name="action">The action.</param>
+        /// <param name="delay">Delay time span.</param>
+        /// <returns>The hit task instance.</returns>
+        /// <remarks>
+        /// Maybe a handler will be asked to process several times in a short time
+        /// but you just want to process once at the last time because the previous ones are obsolete.
+        /// A sample scenario is real-time search.
+        /// </remarks>
+        public static HitTask<T> Debounce(HitEventHandler<T> action, TimeSpan delay) => HitTask.Debounce(action, delay);
+
+        /// <summary>
+        /// Creates a throttle task.
+        /// </summary>
+        /// <param name="action">The action.</param>
+        /// <param name="duration">The duration.</param>
+        /// <returns>The hit task instance.</returns>
+        /// <remarks>
+        /// You may want to request to call an action only once in a short time
+        /// even if you request to call several times.
+        /// The rest will be ignored.
+        /// So the handler will be frozen for a while after it has processed.
+        /// </remarks>
+        public static HitTask<T> Throttle(Action<T> action, TimeSpan duration) => HitTask.Throttle(action, duration);
+
+        /// <summary>
+        /// Creates a throttle task.
+        /// </summary>
+        /// <param name="action">The action.</param>
+        /// <param name="duration">The duration.</param>
+        /// <returns>The hit task instance.</returns>
+        /// <remarks>
+        /// You may want to request to call an action only once in a short time
+        /// even if you request to call several times.
+        /// The rest will be ignored.
+        /// So the handler will be frozen for a while after it has processed.
+        /// </remarks>
+        public static HitTask<T> Throttle(HitEventHandler<T> action, TimeSpan duration) => HitTask.Throttle(action, duration);
+
+        /// <summary>
+        /// Creates a multi-hit task.
+        /// </summary>
+        /// <param name="action">The action.</param>
+        /// <param name="min">The minmum hit count.</param>
+        /// <param name="max">The maxmum hit count.</param>
+        /// <param name="timeout">The time span between each hit.</param>
+        /// <returns>The hit task instance.</returns>
+        /// <remark>
+        /// The handler to process for the specific times and it will be reset after a while.
+        /// </remark>
+        public static HitTask<T> Mutliple(Action<T> action, int min, int? max, TimeSpan timeout) => HitTask.Mutliple(action, min, max, timeout);
+
+        /// <summary>
+        /// Creates a multi-hit task.
+        /// </summary>
+        /// <param name="action">The action.</param>
+        /// <param name="min">The minmum hit count.</param>
+        /// <param name="max">The maxmum hit count.</param>
+        /// <param name="timeout">The time span between each hit.</param>
+        /// <returns>The hit task instance.</returns>
+        /// <remark>
+        /// The handler to process for the specific times and it will be reset after a while.
+        /// </remark>
+        public static HitTask<T> Mutliple(HitEventHandler<T> action, int min, int? max, TimeSpan timeout) => HitTask.Mutliple(action, min, max, timeout);
+
+        /// <summary>
+        /// Creates a hit task responded at a specific times.
+        /// </summary>
+        /// <param name="action">The action.</param>
+        /// <param name="min">The minmum hit count.</param>
+        /// <param name="max">The maxmum hit count.</param>
+        /// <param name="timeout">The time span between each hit.</param>
+        /// <returns>The hit task instance.</returns>
+        /// <remarks>
+        /// A handler to process at last only when request to call in the specific times range.
+        /// A sample scenario is double click.
+        /// </remarks>
+        public static HitTask<T> Times(Action<T> action, int min, int? max, TimeSpan timeout) => HitTask.Times(action, min, max, timeout);
+
+        /// <summary>
+        /// Creates a hit task responded at a specific times.
+        /// </summary>
+        /// <param name="action">The action.</param>
+        /// <param name="min">The minmum hit count.</param>
+        /// <param name="max">The maxmum hit count.</param>
+        /// <param name="timeout">The time span between each hit.</param>
+        /// <returns>The hit task instance.</returns>
+        /// <remarks>
+        /// A handler to process at last only when request to call in the specific times range.
+        /// A sample scenario is double click.
+        /// </remarks>
+        public static HitTask<T> Times(HitEventHandler<T> action, int min, int? max, TimeSpan timeout) => HitTask.Times(action, min, max, timeout);
+
+        /// <summary>
+        /// Creates a hit task responded at a specific times.
+        /// </summary>
+        /// <param name="action">The action.</param>
+        /// <param name="count">The hit count.</param>
+        /// <param name="timeout">The time span between each hit.</param>
+        /// <returns>The hit task instance.</returns>
+        /// <remarks>
+        /// A handler to process at last only when request to call in the specific times range.
+        /// A sample scenario is double click.
+        /// </remarks>
+        public static HitTask<T> Times(Action<T> action, int count, TimeSpan timeout) => HitTask.Times(action, count, timeout);
+
+        /// <summary>
+        /// Creates a hit task responded at a specific times.
+        /// </summary>
+        /// <param name="action">The action.</param>
+        /// <param name="count">The hit count.</param>
+        /// <param name="timeout">The time span between each hit.</param>
+        /// <returns>The hit task instance.</returns>
+        /// <remarks>
+        /// A handler to process at last only when request to call in the specific times range.
+        /// A sample scenario is double click.
+        /// </remarks>
+        public static HitTask<T> Times(HitEventHandler<T> action, int count, TimeSpan timeout) => HitTask.Times(action, count, timeout);
+    }
+
+    /// <summary>
     /// The hit task.
     /// </summary>
-    public class HitTask : HitTask<object>
+    public class HitTask : BaseHitTask<object>
     {
+        /// <summary>
+        /// Sends request to process.
+        /// </summary>
+        /// <returns>true if process succeeded; otherwise, false.</returns>
+        public void ProcessBegin() => _ = ProcessAsync();
+
         /// <summary>
         /// Creates a debounce task.
         /// </summary>
@@ -385,6 +539,60 @@ namespace Trivial.Tasks
         public static HitTask<T> Debounce<T>(HitEventHandler<T> action, TimeSpan delay)
         {
             var task = new HitTask<T>
+            {
+                Mode = ConcurrencyFilters.Debounce,
+                Delay = delay
+            };
+            if (action != null) task.Processed += (sender, ev) =>
+            {
+                action(task, ev);
+            };
+            return task;
+        }
+
+        /// <summary>
+        /// Creates a debounce task.
+        /// </summary>
+        /// <typeparam name="T1">The type of argument 1.</typeparam>
+        /// <typeparam name="T2">The type of argument 2.</typeparam>
+        /// <param name="action">The action.</param>
+        /// <param name="delay">Delay time span.</param>
+        /// <returns>The hit task instance.</returns>
+        /// <remarks>
+        /// Maybe a handler will be asked to process several times in a short time
+        /// but you just want to process once at the last time because the previous ones are obsolete.
+        /// A sample scenario is real-time search.
+        /// </remarks>
+        public static HitTask<T1, T2> Debounce<T1, T2>(Action<T1, T2> action, TimeSpan delay)
+        {
+            var task = new HitTask<T1, T2>
+            {
+                Mode = ConcurrencyFilters.Debounce,
+                Delay = delay
+            };
+            if (action != null) task.Processed += (sender, ev) =>
+            {
+                action(ev.Argument.Item1, ev.Argument.Item2);
+            };
+            return task;
+        }
+
+        /// <summary>
+        /// Creates a debounce task.
+        /// </summary>
+        /// <typeparam name="T1">The type of argument 1.</typeparam>
+        /// <typeparam name="T2">The type of argument 2.</typeparam>
+        /// <param name="action">The action.</param>
+        /// <param name="delay">Delay time span.</param>
+        /// <returns>The hit task instance.</returns>
+        /// <remarks>
+        /// Maybe a handler will be asked to process several times in a short time
+        /// but you just want to process once at the last time because the previous ones are obsolete.
+        /// A sample scenario is real-time search.
+        /// </remarks>
+        public static HitTask<T1, T2> Debounce<T1, T2>(HitEventHandler<Tuple<T1, T2>> action, TimeSpan delay)
+        {
+            var task = new HitTask<T1, T2>
             {
                 Mode = ConcurrencyFilters.Debounce,
                 Delay = delay
@@ -511,6 +719,66 @@ namespace Trivial.Tasks
         }
 
         /// <summary>
+        /// Creates a throttle task.
+        /// </summary>
+        /// <typeparam name="T1">The type of argument 1.</typeparam>
+        /// <typeparam name="T2">The type of argument 2.</typeparam>
+        /// <param name="action">The action.</param>
+        /// <param name="duration">The duration.</param>
+        /// <returns>The hit task instance.</returns>
+        /// <remarks>
+        /// You may want to request to call an action only once in a short time
+        /// even if you request to call several times.
+        /// The rest will be ignored.
+        /// So the handler will be frozen for a while after it has processed.
+        /// </remarks>
+        public static HitTask<T1, T2> Throttle<T1, T2>(Action<T1, T2> action, TimeSpan duration)
+        {
+            var task = new HitTask<T1, T2>
+            {
+                Mode = ConcurrencyFilters.Mono,
+                Timeout = duration,
+                Duration = duration,
+                MaxCount = 1
+            };
+            if (action != null) task.Processed += (sender, ev) =>
+            {
+                action(ev.Argument.Item1, ev.Argument.Item2);
+            };
+            return task;
+        }
+
+        /// <summary>
+        /// Creates a throttle task.
+        /// </summary>
+        /// <typeparam name="T1">The type of argument 1.</typeparam>
+        /// <typeparam name="T2">The type of argument 2.</typeparam>
+        /// <param name="action">The action.</param>
+        /// <param name="duration">The duration.</param>
+        /// <returns>The hit task instance.</returns>
+        /// <remarks>
+        /// You may want to request to call an action only once in a short time
+        /// even if you request to call several times.
+        /// The rest will be ignored.
+        /// So the handler will be frozen for a while after it has processed.
+        /// </remarks>
+        public static HitTask<T1, T2> Throttle<T1, T2>(HitEventHandler<Tuple<T1, T2>> action, TimeSpan duration)
+        {
+            var task = new HitTask<T1, T2>
+            {
+                Mode = ConcurrencyFilters.Mono,
+                Timeout = duration,
+                Duration = duration,
+                MaxCount = 1
+            };
+            if (action != null) task.Processed += (sender, ev) =>
+            {
+                action(task, ev);
+            };
+            return task;
+        }
+
+        /// <summary>
         /// Creates a multi-hit task.
         /// </summary>
         /// <param name="action">The action.</param>
@@ -604,6 +872,62 @@ namespace Trivial.Tasks
         public static HitTask<T> Mutliple<T>(HitEventHandler<T> action, int min, int? max, TimeSpan timeout)
         {
             var task = new HitTask<T>
+            {
+                Timeout = timeout,
+                MinCount = min,
+                MaxCount = max
+            };
+            if (action != null) task.Processed += (sender, ev) =>
+            {
+                action(task, ev);
+            };
+            return task;
+        }
+
+        /// <summary>
+        /// Creates a multi-hit task.
+        /// </summary>
+        /// <typeparam name="T1">The type of argument 1.</typeparam>
+        /// <typeparam name="T2">The type of argument 2.</typeparam>
+        /// <param name="action">The action.</param>
+        /// <param name="min">The minmum hit count.</param>
+        /// <param name="max">The maxmum hit count.</param>
+        /// <param name="timeout">The time span between each hit.</param>
+        /// <returns>The hit task instance.</returns>
+        /// <remark>
+        /// The handler to process for the specific times and it will be reset after a while.
+        /// </remark>
+        public static HitTask<T1, T2> Mutliple<T1, T2>(Action<T1, T2> action, int min, int? max, TimeSpan timeout)
+        {
+            var task = new HitTask<T1, T2>
+            {
+                Timeout = timeout,
+                MinCount = min,
+                MaxCount = max
+            };
+            if (action != null) task.Processed += (sender, ev) =>
+            {
+                action(ev.Argument.Item1, ev.Argument.Item2);
+            };
+            return task;
+        }
+
+        /// <summary>
+        /// Creates a multi-hit task.
+        /// </summary>
+        /// <typeparam name="T1">The type of argument 1.</typeparam>
+        /// <typeparam name="T2">The type of argument 2.</typeparam>
+        /// <param name="action">The action.</param>
+        /// <param name="min">The minmum hit count.</param>
+        /// <param name="max">The maxmum hit count.</param>
+        /// <param name="timeout">The time span between each hit.</param>
+        /// <returns>The hit task instance.</returns>
+        /// <remark>
+        /// The handler to process for the specific times and it will be reset after a while.
+        /// </remark>
+        public static HitTask<T1, T2> Mutliple<T1, T2>(HitEventHandler<Tuple<T1, T2>> action, int min, int? max, TimeSpan timeout)
+        {
+            var task = new HitTask<T1, T2>
             {
                 Timeout = timeout,
                 MinCount = min,
@@ -737,6 +1061,68 @@ namespace Trivial.Tasks
         /// <summary>
         /// Creates a hit task responded at a specific times.
         /// </summary>
+        /// <typeparam name="T1">The type of argument 1.</typeparam>
+        /// <typeparam name="T2">The type of argument 2.</typeparam>
+        /// <param name="action">The action.</param>
+        /// <param name="min">The minmum hit count.</param>
+        /// <param name="max">The maxmum hit count.</param>
+        /// <param name="timeout">The time span between each hit.</param>
+        /// <returns>The hit task instance.</returns>
+        /// <remarks>
+        /// A handler to process at last only when request to call in the specific times range.
+        /// A sample scenario is double click.
+        /// </remarks>
+        public static HitTask<T1, T2> Times<T1, T2>(Action<T1, T2> action, int min, int? max, TimeSpan timeout)
+        {
+            var task = new HitTask<T1, T2>
+            {
+                Delay = timeout,
+                Timeout = timeout,
+                MinCount = min,
+                MaxCount = max,
+                Mode = ConcurrencyFilters.Debounce
+            };
+            if (action != null) task.Processed += (sender, ev) =>
+            {
+                action(ev.Argument.Item1, ev.Argument.Item2);
+            };
+            return task;
+        }
+
+        /// <summary>
+        /// Creates a hit task responded at a specific times.
+        /// </summary>
+        /// <typeparam name="T1">The type of argument 1.</typeparam>
+        /// <typeparam name="T2">The type of argument 2.</typeparam>
+        /// <param name="action">The action.</param>
+        /// <param name="min">The minmum hit count.</param>
+        /// <param name="max">The maxmum hit count.</param>
+        /// <param name="timeout">The time span between each hit.</param>
+        /// <returns>The hit task instance.</returns>
+        /// <remarks>
+        /// A handler to process at last only when request to call in the specific times range.
+        /// A sample scenario is double click.
+        /// </remarks>
+        public static HitTask<T1, T2> Times<T1, T2>(HitEventHandler<Tuple<T1, T2>> action, int min, int? max, TimeSpan timeout)
+        {
+            var task = new HitTask<T1, T2>
+            {
+                Delay = timeout,
+                Timeout = timeout,
+                MinCount = min,
+                MaxCount = max,
+                Mode = ConcurrencyFilters.Debounce
+            };
+            if (action != null) task.Processed += (sender, ev) =>
+            {
+                action(task, ev);
+            };
+            return task;
+        }
+
+        /// <summary>
+        /// Creates a hit task responded at a specific times.
+        /// </summary>
         /// <param name="action">The action.</param>
         /// <param name="count">The maxmum hit count.</param>
         /// <param name="timeout">The time span between each hit.</param>
@@ -843,5 +1229,388 @@ namespace Trivial.Tasks
             };
             return task;
         }
+
+        /// <summary>
+        /// Creates a hit task responded at a specific times.
+        /// </summary>
+        /// <typeparam name="T1">The type of argument 1.</typeparam>
+        /// <typeparam name="T2">The type of argument 2.</typeparam>
+        /// <param name="action">The action.</param>
+        /// <param name="count">The hit count.</param>
+        /// <param name="timeout">The time span between each hit.</param>
+        /// <returns>The hit task instance.</returns>
+        /// <remarks>
+        /// A handler to process at last only when request to call in the specific times range.
+        /// A sample scenario is double click.
+        /// </remarks>
+        public static HitTask<T1, T2> Times<T1, T2>(Action<T1, T2> action, int count, TimeSpan timeout)
+        {
+            var task = new HitTask<T1, T2>
+            {
+                Delay = timeout,
+                Timeout = timeout,
+                MinCount = count,
+                Mode = ConcurrencyFilters.Debounce
+            };
+            if (action != null) task.Processed += (sender, ev) =>
+            {
+                action(ev.Argument.Item1, ev.Argument.Item2);
+            };
+            return task;
+        }
+
+        /// <summary>
+        /// Creates a hit task responded at a specific times.
+        /// </summary>
+        /// <typeparam name="T1">The type of argument 1.</typeparam>
+        /// <typeparam name="T2">The type of argument 2.</typeparam>
+        /// <param name="action">The action.</param>
+        /// <param name="count">The hit count.</param>
+        /// <param name="timeout">The time span between each hit.</param>
+        /// <returns>The hit task instance.</returns>
+        /// <remarks>
+        /// A handler to process at last only when request to call in the specific times range.
+        /// A sample scenario is double click.
+        /// </remarks>
+        public static HitTask<T1, T2> Times<T1, T2>(HitEventHandler<Tuple<T1, T2>> action, int count, TimeSpan timeout)
+        {
+            var task = new HitTask<T1, T2>
+            {
+                Delay = timeout,
+                Timeout = timeout,
+                MinCount = count,
+                Mode = ConcurrencyFilters.Debounce
+            };
+            if (action != null) task.Processed += (sender, ev) =>
+            {
+                action(task, ev);
+            };
+            return task;
+        }
+    }
+
+    /// <summary>
+    /// The arguments of hit event.
+    /// </summary>
+    /// <typeparam name="T1">The type of argument 1.</typeparam>
+    /// <typeparam name="T2">The type of argument 2.</typeparam>
+    public class HitTask<T1, T2> : BaseHitTask<Tuple<T1, T2>>
+    {
+        /// <summary>
+        /// Sends request to process.
+        /// </summary>
+        /// <param name="arg1">The argument 1.</param>
+        /// <param name="arg2">The argument 2.</param>
+        /// <returns>true if process succeeded; otherwise, false.</returns>
+        public bool Process(T1 arg1, T2 arg2) => Process(new Tuple<T1, T2>(arg1, arg2));
+
+        /// <summary>
+        /// Sends request to process.
+        /// </summary>
+        /// <param name="arg1">The argument 1.</param>
+        /// <param name="arg2">The argument 2.</param>
+        /// <returns>true if process succeeded; otherwise, false.</returns>
+        public Task<bool> ProcessAsync(T1 arg1, T2 arg2) => ProcessAsync(new Tuple<T1, T2>(arg1, arg2));
+
+        /// <summary>
+        /// Sends request to process.
+        /// </summary>
+        /// <param name="arg1">The argument 1.</param>
+        /// <param name="arg2">The argument 2.</param>
+        /// <returns>true if process succeeded; otherwise, false.</returns>
+        public void ProcessBegin(T1 arg1, T2 arg2) => _ = ProcessAsync(new Tuple<T1, T2>(arg1, arg2));
+
+        /// <summary>
+        /// Creates a debounce task.
+        /// </summary>
+        /// <param name="action">The action.</param>
+        /// <param name="delay">Delay time span.</param>
+        /// <returns>The hit task instance.</returns>
+        /// <remarks>
+        /// Maybe a handler will be asked to process several times in a short time
+        /// but you just want to process once at the last time because the previous ones are obsolete.
+        /// A sample scenario is real-time search.
+        /// </remarks>
+        public static HitTask<T1, T2> Debounce(Action<T1, T2> action, TimeSpan delay) => HitTask.Debounce(action, delay);
+
+        /// <summary>
+        /// Creates a throttle task.
+        /// </summary>
+        /// <param name="action">The action.</param>
+        /// <param name="duration">The duration.</param>
+        /// <returns>The hit task instance.</returns>
+        /// <remarks>
+        /// You may want to request to call an action only once in a short time
+        /// even if you request to call several times.
+        /// The rest will be ignored.
+        /// So the handler will be frozen for a while after it has processed.
+        /// </remarks>
+        public static HitTask<T1, T2> Throttle(Action<T1, T2> action, TimeSpan duration) => HitTask.Throttle(action, duration);
+
+        /// <summary>
+        /// Creates a multi-hit task.
+        /// </summary>
+        /// <param name="action">The action.</param>
+        /// <param name="min">The minmum hit count.</param>
+        /// <param name="max">The maxmum hit count.</param>
+        /// <param name="timeout">The time span between each hit.</param>
+        /// <returns>The hit task instance.</returns>
+        /// <remark>
+        /// The handler to process for the specific times and it will be reset after a while.
+        /// </remark>
+        public static HitTask<T1, T2> Mutliple(Action<T1, T2> action, int min, int? max, TimeSpan timeout) => HitTask.Mutliple(action, min, max, timeout);
+
+        /// <summary>
+        /// Creates a hit task responded at a specific times.
+        /// </summary>
+        /// <param name="action">The action.</param>
+        /// <param name="min">The minmum hit count.</param>
+        /// <param name="max">The maxmum hit count.</param>
+        /// <param name="timeout">The time span between each hit.</param>
+        /// <returns>The hit task instance.</returns>
+        /// <remarks>
+        /// A handler to process at last only when request to call in the specific times range.
+        /// A sample scenario is double click.
+        /// </remarks>
+        public static HitTask<T1, T2> Times(Action<T1, T2> action, int min, int? max, TimeSpan timeout) => HitTask.Times(action, min, max, timeout);
+
+        /// <summary>
+        /// Creates a hit task responded at a specific times.
+        /// </summary>
+        /// <param name="action">The action.</param>
+        /// <param name="count">The hit count.</param>
+        /// <param name="timeout">The time span between each hit.</param>
+        /// <returns>The hit task instance.</returns>
+        /// <remarks>
+        /// A handler to process at last only when request to call in the specific times range.
+        /// A sample scenario is double click.
+        /// </remarks>
+        public static HitTask<T1, T2> Times(Action<T1, T2> action, int count, TimeSpan timeout) => HitTask.Times(action, count, timeout);
+    }
+
+    /// <summary>
+    /// The arguments of hit event.
+    /// </summary>
+    /// <typeparam name="T1">The type of argument 1.</typeparam>
+    /// <typeparam name="T2">The type of argument 2.</typeparam>
+    /// <typeparam name="T3">The type of argument 1.</typeparam>
+    public class HitTask<T1, T2, T3> : BaseHitTask<Tuple<T1, T2, T3>>
+    {
+        /// <summary>
+        /// Sends request to process.
+        /// </summary>
+        /// <param name="arg1">The argument 1.</param>
+        /// <param name="arg2">The argument 2.</param>
+        /// <param name="arg3">The argument 2.</param>
+        /// <returns>true if process succeeded; otherwise, false.</returns>
+        public bool Process(T1 arg1, T2 arg2, T3 arg3) => Process(new Tuple<T1, T2, T3>(arg1, arg2, arg3));
+
+        /// <summary>
+        /// Sends request to process.
+        /// </summary>
+        /// <param name="arg1">The argument 1.</param>
+        /// <param name="arg2">The argument 2.</param>
+        /// <param name="arg3">The argument 2.</param>
+        /// <returns>true if process succeeded; otherwise, false.</returns>
+        public Task<bool> ProcessAsync(T1 arg1, T2 arg2, T3 arg3) => ProcessAsync(new Tuple<T1, T2, T3>(arg1, arg2, arg3));
+
+        /// <summary>
+        /// Sends request to process.
+        /// </summary>
+        /// <param name="arg1">The argument 1.</param>
+        /// <param name="arg2">The argument 2.</param>
+        /// <param name="arg3">The argument 3.</param>
+        /// <returns>true if process succeeded; otherwise, false.</returns>
+        public void ProcessBegin(T1 arg1, T2 arg2, T3 arg3) => _ = ProcessAsync(new Tuple<T1, T2, T3>(arg1, arg2, arg3));
+    }
+
+    /// <summary>
+    /// The arguments of hit event.
+    /// </summary>
+    /// <typeparam name="T1">The type of argument 1.</typeparam>
+    /// <typeparam name="T2">The type of argument 2.</typeparam>
+    /// <typeparam name="T3">The type of argument 3.</typeparam>
+    /// <typeparam name="T4">The type of argument 4.</typeparam>
+    public class HitTask<T1, T2, T3, T4> : BaseHitTask<Tuple<T1, T2, T3, T4>>
+    {
+        /// <summary>
+        /// Sends request to process.
+        /// </summary>
+        /// <param name="arg1">The argument 1.</param>
+        /// <param name="arg2">The argument 2.</param>
+        /// <param name="arg3">The argument 3.</param>
+        /// <param name="arg4">The argument 4.</param>
+        /// <returns>true if process succeeded; otherwise, false.</returns>
+        public bool Process(T1 arg1, T2 arg2, T3 arg3, T4 arg4) => Process(new Tuple<T1, T2, T3, T4>(arg1, arg2, arg3, arg4));
+
+        /// <summary>
+        /// Sends request to process.
+        /// </summary>
+        /// <param name="arg1">The argument 1.</param>
+        /// <param name="arg2">The argument 2.</param>
+        /// <param name="arg3">The argument 3.</param>
+        /// <param name="arg4">The argument 4.</param>
+        /// <returns>true if process succeeded; otherwise, false.</returns>
+        public Task<bool> ProcessAsync(T1 arg1, T2 arg2, T3 arg3, T4 arg4) => ProcessAsync(new Tuple<T1, T2, T3, T4>(arg1, arg2, arg3, arg4));
+
+        /// <summary>
+        /// Sends request to process.
+        /// </summary>
+        /// <param name="arg1">The argument 1.</param>
+        /// <param name="arg2">The argument 2.</param>
+        /// <param name="arg3">The argument 3.</param>
+        /// <param name="arg4">The argument 4.</param>
+        /// <returns>true if process succeeded; otherwise, false.</returns>
+        public void ProcessBegin(T1 arg1, T2 arg2, T3 arg3, T4 arg4) => _ = ProcessAsync(new Tuple<T1, T2, T3, T4>(arg1, arg2, arg3, arg4));
+    }
+
+    /// <summary>
+    /// The arguments of hit event.
+    /// </summary>
+    /// <typeparam name="T1">The type of argument 1.</typeparam>
+    /// <typeparam name="T2">The type of argument 2.</typeparam>
+    /// <typeparam name="T3">The type of argument 3.</typeparam>
+    /// <typeparam name="T4">The type of argument 4.</typeparam>
+    /// <typeparam name="T5">The type of argument 5.</typeparam>
+    public class HitTask<T1, T2, T3, T4, T5> : BaseHitTask<Tuple<T1, T2, T3, T4, T5>>
+    {
+        /// <summary>
+        /// Sends request to process.
+        /// </summary>
+        /// <param name="arg1">The argument 1.</param>
+        /// <param name="arg2">The argument 2.</param>
+        /// <param name="arg3">The argument 3.</param>
+        /// <param name="arg4">The argument 4.</param>
+        /// <param name="arg5">The argument 5.</param>
+        /// <returns>true if process succeeded; otherwise, false.</returns>
+        public bool Process(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5) => Process(new Tuple<T1, T2, T3, T4, T5>(arg1, arg2, arg3, arg4, arg5));
+
+        /// <summary>
+        /// Sends request to process.
+        /// </summary>
+        /// <param name="arg1">The argument 1.</param>
+        /// <param name="arg2">The argument 2.</param>
+        /// <param name="arg3">The argument 3.</param>
+        /// <param name="arg4">The argument 4.</param>
+        /// <param name="arg5">The argument 5.</param>
+        /// <returns>true if process succeeded; otherwise, false.</returns>
+        public Task<bool> ProcessAsync(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5) => ProcessAsync(new Tuple<T1, T2, T3, T4, T5>(arg1, arg2, arg3, arg4, arg5));
+    }
+
+    /// <summary>
+    /// The arguments of hit event.
+    /// </summary>
+    /// <typeparam name="T1">The type of argument 1.</typeparam>
+    /// <typeparam name="T2">The type of argument 2.</typeparam>
+    /// <typeparam name="T3">The type of argument 3.</typeparam>
+    /// <typeparam name="T4">The type of argument 4.</typeparam>
+    /// <typeparam name="T5">The type of argument 5.</typeparam>
+    /// <typeparam name="T6">The type of argument 6.</typeparam>
+    public class HitTask<T1, T2, T3, T4, T5, T6> : BaseHitTask<Tuple<T1, T2, T3, T4, T5, T6>>
+    {
+        /// <summary>
+        /// Sends request to process.
+        /// </summary>
+        /// <param name="arg1">The argument 1.</param>
+        /// <param name="arg2">The argument 2.</param>
+        /// <param name="arg3">The argument 3.</param>
+        /// <param name="arg4">The argument 4.</param>
+        /// <param name="arg5">The argument 5.</param>
+        /// <param name="arg6">The argument 6.</param>
+        /// <returns>true if process succeeded; otherwise, false.</returns>
+        public bool Process(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6) => Process(new Tuple<T1, T2, T3, T4, T5, T6>(arg1, arg2, arg3, arg4, arg5, arg6));
+
+        /// <summary>
+        /// Sends request to process.
+        /// </summary>
+        /// <param name="arg1">The argument 1.</param>
+        /// <param name="arg2">The argument 2.</param>
+        /// <param name="arg3">The argument 3.</param>
+        /// <param name="arg4">The argument 4.</param>
+        /// <param name="arg5">The argument 5.</param>
+        /// <param name="arg6">The argument 6.</param>
+        /// <returns>true if process succeeded; otherwise, false.</returns>
+        public Task<bool> ProcessAsync(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6) => ProcessAsync(new Tuple<T1, T2, T3, T4, T5, T6>(arg1, arg2, arg3, arg4, arg5, arg6));
+    }
+
+    /// <summary>
+    /// The arguments of hit event.
+    /// </summary>
+    /// <typeparam name="T1">The type of argument 1.</typeparam>
+    /// <typeparam name="T2">The type of argument 2.</typeparam>
+    /// <typeparam name="T3">The type of argument 3.</typeparam>
+    /// <typeparam name="T4">The type of argument 4.</typeparam>
+    /// <typeparam name="T5">The type of argument 5.</typeparam>
+    /// <typeparam name="T6">The type of argument 6.</typeparam>
+    /// <typeparam name="T7">The type of argument 7.</typeparam>
+    public class HitTask<T1, T2, T3, T4, T5, T6, T7> : BaseHitTask<Tuple<T1, T2, T3, T4, T5, T6, T7>>
+    {
+        /// <summary>
+        /// Sends request to process.
+        /// </summary>
+        /// <param name="arg1">The argument 1.</param>
+        /// <param name="arg2">The argument 2.</param>
+        /// <param name="arg3">The argument 3.</param>
+        /// <param name="arg4">The argument 4.</param>
+        /// <param name="arg5">The argument 5.</param>
+        /// <param name="arg6">The argument 6.</param>
+        /// <param name="arg7">The argument 7.</param>
+        /// <returns>true if process succeeded; otherwise, false.</returns>
+        public bool Process(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7) => Process(new Tuple<T1, T2, T3, T4, T5, T6, T7>(arg1, arg2, arg3, arg4, arg5, arg6, arg7));
+
+        /// <summary>
+        /// Sends request to process.
+        /// </summary>
+        /// <param name="arg1">The argument 1.</param>
+        /// <param name="arg2">The argument 2.</param>
+        /// <param name="arg3">The argument 3.</param>
+        /// <param name="arg4">The argument 4.</param>
+        /// <param name="arg5">The argument 5.</param>
+        /// <param name="arg6">The argument 6.</param>
+        /// <param name="arg7">The argument 7.</param>
+        /// <returns>true if process succeeded; otherwise, false.</returns>
+        public Task<bool> ProcessAsync(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7) => ProcessAsync(new Tuple<T1, T2, T3, T4, T5, T6, T7>(arg1, arg2, arg3, arg4, arg5, arg6, arg7));
+    }
+
+    /// <summary>
+    /// The arguments of hit event.
+    /// </summary>
+    /// <typeparam name="T1">The type of argument 1.</typeparam>
+    /// <typeparam name="T2">The type of argument 2.</typeparam>
+    /// <typeparam name="T3">The type of argument 3.</typeparam>
+    /// <typeparam name="T4">The type of argument 4.</typeparam>
+    /// <typeparam name="T5">The type of argument 5.</typeparam>
+    /// <typeparam name="T6">The type of argument 6.</typeparam>
+    /// <typeparam name="T7">The type of argument 7.</typeparam>
+    /// <typeparam name="T8">The type of argument 8.</typeparam>
+    public class HitTask<T1, T2, T3, T4, T5, T6, T7, T8> : BaseHitTask<Tuple<T1, T2, T3, T4, T5, T6, T7, T8>>
+    {
+        /// <summary>
+        /// Sends request to process.
+        /// </summary>
+        /// <param name="arg1">The argument 1.</param>
+        /// <param name="arg2">The argument 2.</param>
+        /// <param name="arg3">The argument 3.</param>
+        /// <param name="arg4">The argument 4.</param>
+        /// <param name="arg5">The argument 5.</param>
+        /// <param name="arg6">The argument 6.</param>
+        /// <param name="arg7">The argument 7.</param>
+        /// <param name="arg8">The argument 8.</param>
+        /// <returns>true if process succeeded; otherwise, false.</returns>
+        public bool Process(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8) => Process(new Tuple<T1, T2, T3, T4, T5, T6, T7, T8>(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8));
+
+        /// <summary>
+        /// Sends request to process.
+        /// </summary>
+        /// <param name="arg1">The argument 1.</param>
+        /// <param name="arg2">The argument 2.</param>
+        /// <param name="arg3">The argument 3.</param>
+        /// <param name="arg4">The argument 4.</param>
+        /// <param name="arg5">The argument 5.</param>
+        /// <param name="arg6">The argument 6.</param>
+        /// <param name="arg7">The argument 7.</param>
+        /// <param name="arg8">The argument 8.</param>
+        /// <returns>true if process succeeded; otherwise, false.</returns>
+        public Task<bool> ProcessAsync(T1 arg1, T2 arg2, T3 arg3, T4 arg4, T5 arg5, T6 arg6, T7 arg7, T8 arg8) => ProcessAsync(new Tuple<T1, T2, T3, T4, T5, T6, T7, T8>(arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8));
     }
 }

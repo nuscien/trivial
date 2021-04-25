@@ -25,10 +25,11 @@ namespace Trivial.Tasks
         {
             var taskTokens = new List<Task>();
             var result = string.Empty;
-            var task = HitTask.Debounce((HitTask<string> sender, HitEventArgs<string> ev) =>
+            void h(BaseHitTask<string> sender, HitEventArgs<string> ev)
             {
                 result = ev.Argument;
-            }, TimeSpan.FromMilliseconds(100));
+            }
+            var task = HitTask.Debounce((HitEventHandler<string>)h, TimeSpan.FromMilliseconds(100));
             _ = ProcessHit(taskTokens, task, "abc");
             await Task.Delay(20);
             Assert.AreEqual(string.Empty, result);
@@ -57,7 +58,7 @@ namespace Trivial.Tasks
         {
             var taskTokens = new List<Task>();
             var result = string.Empty;
-            var task = HitTask.Throttle((HitTask<string> sender, HitEventArgs<string> ev) =>
+            var task = HitTask<string>.Throttle((sender, ev) =>
             {
                 result = ev.Argument;
             }, TimeSpan.FromMilliseconds(100));
@@ -85,7 +86,7 @@ namespace Trivial.Tasks
         {
             var taskTokens = new List<Task>();
             var result = string.Empty;
-            var task = HitTask.Mutliple((HitTask<string> sender, HitEventArgs<string> ev) =>
+            var task = HitTask.Mutliple<string>((sender, ev) =>
             {
                 result = ev.Argument;
             }, 2, 4, TimeSpan.FromMilliseconds(100));
@@ -126,7 +127,7 @@ namespace Trivial.Tasks
         {
             var taskTokens = new List<Task>();
             var result = string.Empty;
-            var task = HitTask.Times((HitTask<string> sender, HitEventArgs<string> ev) =>
+            var task = HitTask<string>.Times((sender, ev) =>
             {
                 result = ev.Argument;
             }, 2, 3, TimeSpan.FromMilliseconds(100));

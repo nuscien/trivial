@@ -7,6 +7,7 @@ using System.Text.Json;
 using System.Threading.Tasks;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Trivial.Text;
 
 namespace Trivial.Reflection
 {
@@ -56,6 +57,35 @@ namespace Trivial.Reflection
             Assert.AreEqual(1, i);
             obs.Value = "uvwxyz";
             Assert.AreEqual(2, i);
+        }
+        
+        /// <summary>
+        /// Tests factory.
+        /// </summary>
+        [TestMethod]
+        public void TestFactory()
+        {
+            var f = FactorySet.Instance();
+            var i = 0;
+            f.Register(() => i++);
+            f.Register(() => Guid.NewGuid());
+            f.Register<IJsonValue>(() => i % 2 == 0 ? new JsonObject() : new JsonArray());
+            Assert.AreEqual(0, f.Create<int>());
+            Assert.AreEqual(JsonValueKind.Array, f.Create<IJsonValue>().ValueKind);
+            Assert.AreEqual(1, f.Create<int>());
+            Assert.IsNotNull(f.Create<Guid>());
+            Assert.AreEqual(JsonValueKind.Object, f.Create<IJsonValue>().ValueKind);
+            Assert.IsNull(f.GetFactory<JsonObject>());
+            Assert.IsNull(f.GetFactory<JsonArray>());
+            Assert.IsNotNull(f.GetFactory<IJsonValue>());
+
+            var jsonFactory = new RoutedFactory<IJsonValue>();
+            jsonFactory.Register("obj", () => new JsonObject());
+            jsonFactory.Register("arr", () => new JsonArray());
+            var json = jsonFactory.Create("obj");
+            Assert.AreEqual(JsonValueKind.Object, json.ValueKind);
+            Assert.AreEqual(JsonValueKind.Array, jsonFactory.Create("arr").ValueKind);
+            Assert.AreNotEqual(json, jsonFactory.Create("obj").ValueKind);
         }
     }
 }
