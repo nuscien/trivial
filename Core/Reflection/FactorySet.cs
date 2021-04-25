@@ -283,10 +283,17 @@ namespace Trivial.Reflection
         }
 
         /// <summary>
+        /// Registers a factory.
+        /// </summary>
+        /// <param name="key">The key.</param>
+        /// <param name="factory">The factory to register.</param>
+        public void Register(string key, Func<string, T> factory) => Register(key, () => factory(key));
+
+        /// <summary>
         /// Removes the specific factory.
         /// </summary>
         /// <param name="key">The key.</param>
-        public void Remove(string key) => Register(key ?? string.Empty, null);
+        public void Remove(string key) => Register(key ?? string.Empty, null as Func<T>);
 
         /// <summary>
         /// Clears all the factories.

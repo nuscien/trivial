@@ -189,7 +189,7 @@ namespace Trivial.Tasks
             System.Console.WriteLine("Done!");
         }
 
-        private void ReadArgument(HitTask<string> sender, HitEventArgs<string> ev)
+        private void ReadArgument(BaseHitTask<string> sender, HitEventArgs<string> ev)
         {
             value = ev.Argument;
         }
