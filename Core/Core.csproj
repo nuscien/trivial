@@ -11,7 +11,7 @@
     <Version>4.0.0-preview1</Version>
     <AssemblyVersion>4.0.0.0</AssemblyVersion>
     <FileVersion>4.0.0.0</FileVersion>
-    <Description>A library providing lots of useful utilities, models and services, including hit task, retry policy, writable JSON DOM, PEM, JWT, stream combination, JSON HTTP web client, JSON converters, CSV parser, numerals, coordinates, angle, arithmetic, sets, etc.</Description>
+    <Description>A library providing lots of useful utilities, models and services, including interceptor, retry policy, writable JSON DOM, PEM, JWT, stream combination, JSON HTTP web client, JSON converters, CSV parser, numerals, coordinates, angle, arithmetic, sets, etc.</Description>
     <Copyright>Copyright (c) 2018 Kingcean Tuan.</Copyright>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/nuscien/trivial/wiki/core</PackageProjectUrl>
@@ -23,7 +23,7 @@
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <PackageIcon>logo.png</PackageIcon>
     <PackageIconUrl>https://github.com/nuscien/trivial/raw/master/Materials/logo.png</PackageIconUrl>
-    <PackageTags>tasks numerals json oauth2-client jwt-token csv-parser stream pem coordinates uri</PackageTags>
+    <PackageTags>tasks interceptor numerals json oauth2-client jwt-token csv-parser stream pem coordinates uri</PackageTags>
     <LangVersion>9.0</LangVersion>
   </PropertyGroup>
 

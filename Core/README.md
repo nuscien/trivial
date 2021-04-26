@@ -8,33 +8,33 @@ This library includes utilities and services for tasks, security, JSON, etc.
 using Trivial.Tasks;
 ```
 
-### Hit task
+### Interceptor
 
-You can create a task controller to manage when a handler should be raised.
+You can set an action with a specific interceptor to control its execution.
 
-- `HitTask.Debounce`:
-  You may request to call a specific action several times in a short time but only the last one should be processed and previous ones should be ignored.
+- `Interceptor.Debounce`:
+  You may request to invoke a specific action several times in a short time but only the last one should be executed and previous ones should be ignored.
   A sample is real-time search suggestion.
-- `HitTask.Throttle`:
-  You may want to request to call an action only once in a short time even if you request to call several times.
+- `Interceptor.Throttle`:
+  You may want to execute an action only once in a short time even if you invoke several times.
   A sample is the submit button in a form.
-- `HitTask.Times`:
-  You can define an action can be only processed only when request to call in the specific times range and others will be ignored.
+- `Interceptor.Times`:
+  You can define an action can be only executed only when invoke in the specific times range and others will be ignored.
   A sample is double click.
-- `HitTask.Multiple`:
-  A handler to process for the specific times and the state will be reset after a while.
+- `Interceptor.Multiple`:
+  A handler to execute for the specific times and the state will be reset after a while.
 
 Following is an example for debounce.
 
 ```csharp
-// Create a task.
-var task = HitTask.Debounce(() =>
+// Set an action with interceptor.
+var action = Interceptor.Debounce(() =>
 {
     // Do something...
 }, TimeSpan.FromMilliseconds(200));
 
-// Raise somewhere.
-task.ProcessAsync();
+// Invoke somewhere.
+action();
 ```
 
 ### Retry
