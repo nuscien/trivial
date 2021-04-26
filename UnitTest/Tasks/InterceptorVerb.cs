@@ -6,13 +6,13 @@ using System.Threading.Tasks;
 
 namespace Trivial.Tasks
 {
-    class HitTasksVerb : Console.AsyncVerb
+    class InterceptorVerb : Console.AsyncVerb
     {
         private int checkCount = 0;
 
         private string value = "a";
 
-        public override string Description => "Hit tasks";
+        public override string Description => "Interceptor";
 
         public override async Task ProcessAsync()
         {
@@ -23,93 +23,94 @@ namespace Trivial.Tasks
 
         private async Task TestKeyFeaturesAsync()
         {
-            System.Console.WriteLine("Hit task testing.");
-            var taskTokens = new List<Task>();
-            var action = (HitEventHandler<string>)ReadArgument;
+            System.Console.WriteLine("Interceptor testing.");
+
             System.Console.WriteLine("Debounce");
-            var task = HitTask.Debounce(action, TimeSpan.FromMilliseconds(200));
-            taskTokens.Add(task.ProcessAsync("b"));
+            var task = new Interceptor<string>(
+                v => value = v,
+                InterceptorPolicy.Debounce(TimeSpan.FromMilliseconds(200))
+                );
+            _ = task.InvokeAsync("b");
             await Task.Delay(100);
-            taskTokens.Add(task.ProcessAsync("c"));
+            _ = task.InvokeAsync("c");
             await Task.Delay(100);
-            taskTokens.Add(task.ProcessAsync("d"));
+            _ = task.InvokeAsync("d");
             await Task.Delay(100);
-            taskTokens.Add(task.ProcessAsync("e"));
+            _ = task.InvokeAsync("e");
             Check("a");
             await Task.Delay(300);
             Check("e");
-            Task.WaitAll(taskTokens.ToArray());
-            taskTokens.Clear();
+            await task.WaitAsync();
             Check("e");
 
             System.Console.WriteLine("Throttle");
-            task = HitTask.Throttle(action, TimeSpan.FromMilliseconds(800));
-            taskTokens.Add(task.ProcessAsync("f"));
+            task.ResetDuration();
+            task.Policy = InterceptorPolicy.Throttle(TimeSpan.FromMilliseconds(800));
+            _ = task.InvokeAsync("f");
             await Task.Delay(100);
-            taskTokens.Add(task.ProcessAsync("g"));
+            _ = task.InvokeAsync("g");
             await Task.Delay(100);
-            taskTokens.Add(task.ProcessAsync("h"));
+            _ = task.InvokeAsync("h");
             await Task.Delay(100);
-            taskTokens.Add(task.ProcessAsync("i"));
+            _ = task.InvokeAsync("i");
             await Task.Delay(100);
             Check("f");
-            Task.WaitAll(taskTokens.ToArray());
-            taskTokens.Clear();
+            await task.WaitAsync();
             Check("f");
 
             System.Console.WriteLine("Multiple");
-            task = HitTask.Mutliple(action, 2, 4, TimeSpan.FromMilliseconds(200));
-            taskTokens.Add(task.ProcessAsync("j"));
+            task.ResetDuration();
+            task.Policy = InterceptorPolicy.Mutliple(2, 4, TimeSpan.FromMilliseconds(200));
+            _ = task.InvokeAsync("j");
             Check("f");
             await Task.Delay(100);
-            taskTokens.Add(task.ProcessAsync("k"));
+            _ = task.InvokeAsync("k");
             Check("k");
             await Task.Delay(100);
-            taskTokens.Add(task.ProcessAsync("l"));
+            _ = task.InvokeAsync("l");
             await Task.Delay(100);
-            taskTokens.Add(task.ProcessAsync("m"));
-            await Task.Delay(100);
-            Check("m");
-            taskTokens.Add(task.ProcessAsync("n"));
+            _ = task.InvokeAsync("m");
             await Task.Delay(100);
             Check("m");
-            Task.WaitAll(taskTokens.ToArray());
-            taskTokens.Clear();
+            _ = task.InvokeAsync("n");
+            await Task.Delay(100);
+            Check("m");
+            await task.WaitAsync();
             Check("m");
 
             System.Console.WriteLine("Times 1");
-            task = HitTask.Times(action, 2, 3, TimeSpan.FromMilliseconds(200));
-            taskTokens.Add(task.ProcessAsync("o"));
+            task.ResetDuration();
+            task.Policy = InterceptorPolicy.Times(2, 3, TimeSpan.FromMilliseconds(200));
+            _ = task.InvokeAsync("o");
             Check("m");
             await Task.Delay(100);
-            taskTokens.Add(task.ProcessAsync("p"));
+            _ = task.InvokeAsync("p");
             Check("m");
             await Task.Delay(100);
-            taskTokens.Add(task.ProcessAsync("q"));
+            _ = task.InvokeAsync("q");
             await Task.Delay(100);
-            taskTokens.Add(task.ProcessAsync("r"));
-            await Task.Delay(100);
-            Check("m");
-            taskTokens.Add(task.ProcessAsync("s"));
+            _ = task.InvokeAsync("r");
             await Task.Delay(100);
             Check("m");
-            Task.WaitAll(taskTokens.ToArray());
-            taskTokens.Clear();
+            _ = task.InvokeAsync("s");
+            await Task.Delay(100);
+            Check("m");
+            await task.WaitAsync();
             Check("m");
 
             System.Console.WriteLine("Times 2");
-            task = HitTask.Times(action, 2, 3, TimeSpan.FromMilliseconds(200));
-            taskTokens.Add(task.ProcessAsync("t"));
+            task.ResetDuration();
+            task.Policy = InterceptorPolicy.Times(2, 3, TimeSpan.FromMilliseconds(200));
+            _ = task.InvokeAsync("t");
             Check("m");
             await Task.Delay(100);
-            taskTokens.Add(task.ProcessAsync("u"));
+            _ = task.InvokeAsync("u");
             Check("m");
             await Task.Delay(100);
-            taskTokens.Add(task.ProcessAsync("v"));
+            _ = task.InvokeAsync("v");
             await Task.Delay(100);
             Check("m");
-            Task.WaitAll(taskTokens.ToArray());
-            taskTokens.Clear();
+            await task.WaitAsync();
             Check("v");
         }
 
@@ -187,11 +188,6 @@ namespace Trivial.Tasks
             WriteLine(task3);
 
             System.Console.WriteLine("Done!");
-        }
-
-        private void ReadArgument(BaseHitTask<string> sender, HitEventArgs<string> ev)
-        {
-            value = ev.Argument;
         }
 
         private void Check(string expect, string message = null)

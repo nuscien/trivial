@@ -13,7 +13,7 @@ namespace Trivial.Console
             var dispatcher = new Dispatcher();
             dispatcher.Register<SelectionVerb>("selection");
             dispatcher.Register<ProgressVerb>("progress");
-            dispatcher.Register<Tasks.HitTasksVerb>("hittask");
+            dispatcher.Register<Tasks.InterceptorVerb>("interceptor");
             dispatcher.Register<Reflection.SingletonKeeperVerb>("singleton");
             dispatcher.Register<Maths.MathsVerb>("maths");
             dispatcher.Register<Security.TokenClientVerb>("token");

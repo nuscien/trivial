@@ -14,7 +14,7 @@ namespace Trivial.Tasks
     /// Hit task unit test.
     /// </summary>
     [TestClass]
-    public class HitTaskUnitTest
+    public class InterceptorUnitTest
     {
         /// <summary>
         /// Tests debounce hit task.
@@ -23,30 +23,30 @@ namespace Trivial.Tasks
         [TestMethod]
         public async Task TestDebounceAsync()
         {
-            var taskTokens = new List<Task>();
             var result = string.Empty;
-            void h(BaseHitTask<string> sender, HitEventArgs<string> ev)
-            {
-                result = ev.Argument;
-            }
-            var task = HitTask.Debounce((HitEventHandler<string>)h, TimeSpan.FromMilliseconds(100));
-            _ = ProcessHit(taskTokens, task, "abc");
+            var task = new Interceptor<string>(
+                v => result = v,
+                InterceptorPolicy.Debounce(TimeSpan.FromMilliseconds(100))
+                );
+            Assert.IsFalse(task.IsWorking);
+            _ = task.InvokeAsync("abc");
+            Assert.IsTrue(task.IsWorking);
             await Task.Delay(20);
             Assert.AreEqual(string.Empty, result);
-            _ = ProcessHit(taskTokens, task, "defg");
+            _ = task.InvokeAsync("defg");
             await Task.Delay(20);
             Assert.AreEqual(string.Empty, result);
-            _ = ProcessHit(taskTokens, task, "hijk");
+            _ = task.InvokeAsync("hijk");
             await Task.Delay(20);
             Assert.AreEqual(string.Empty, result);
-            _ = ProcessHit(taskTokens, task, "lmn");
+            _ = task.InvokeAsync("lmn");
             await Task.Delay(20);
             Assert.AreEqual(string.Empty, result);
             await Task.Delay(90);
             if (string.IsNullOrEmpty(result)) await Task.Delay(20);
             Assert.AreEqual("lmn", result);
-            Task.WaitAll(taskTokens.ToArray());
-            taskTokens.Clear();
+            await task.WaitAsync();
+            Assert.IsFalse(task.IsWorking);
         }
 
         /// <summary>
@@ -58,23 +58,24 @@ namespace Trivial.Tasks
         {
             var taskTokens = new List<Task>();
             var result = string.Empty;
-            var task = HitTask<string>.Throttle((sender, ev) =>
-            {
-                result = ev.Argument;
-            }, TimeSpan.FromMilliseconds(100));
-            _ = ProcessHit(taskTokens, task, "opq");
+            var task = new Interceptor<string>(
+                v => result = v,
+                InterceptorPolicy.Throttle(TimeSpan.FromMilliseconds(100))
+                );
+            Assert.IsFalse(task.IsWorking);
+            _ = task.InvokeAsync("opq");
             await Task.Delay(10);
             Assert.AreEqual("opq", result);
-            _ = ProcessHit(taskTokens, task, "rst");
+            _ = task.InvokeAsync("rst");
             await Task.Delay(10);
             Assert.AreEqual("opq", result);
-            _ = ProcessHit(taskTokens, task, "uvw");
+            _ = task.InvokeAsync("uvw");
             await Task.Delay(110);
             Assert.AreEqual("opq", result);
-            _ = ProcessHit(taskTokens, task, "xyz");
+            _ = task.InvokeAsync("xyz");
             Assert.AreEqual("xyz", result);
-            Task.WaitAll(taskTokens.ToArray());
-            taskTokens.Clear();
+            await task.WaitAsync();
+            Assert.IsFalse(task.IsWorking);
         }
 
         /// <summary>
@@ -86,36 +87,37 @@ namespace Trivial.Tasks
         {
             var taskTokens = new List<Task>();
             var result = string.Empty;
-            var task = HitTask.Mutliple<string>((sender, ev) =>
-            {
-                result = ev.Argument;
-            }, 2, 4, TimeSpan.FromMilliseconds(100));
-            _ = ProcessHit(taskTokens, task, "abc");
+            var task = new Interceptor<string>(
+                v => result = v,
+                InterceptorPolicy.Mutliple(2, 4, TimeSpan.FromMilliseconds(100))
+                );
+            Assert.IsFalse(task.IsWorking);
+            _ = task.InvokeAsync("abc");
             await Task.Delay(20);
             Assert.AreEqual(string.Empty, result);
-            _ = ProcessHit(taskTokens, task, "defg");
+            _ = task.InvokeAsync("defg");
             await Task.Delay(20);
             Assert.AreEqual("defg", result);
-            _ = ProcessHit(taskTokens, task, "hijk");
+            _ = task.InvokeAsync("hijk");
             await Task.Delay(20);
             Assert.AreEqual("hijk", result);
-            _ = ProcessHit(taskTokens, task, "lmn");
+            _ = task.InvokeAsync("lmn");
             await Task.Delay(20);
             Assert.AreEqual("lmn", result);
-            _ = ProcessHit(taskTokens, task, "opq");
+            _ = task.InvokeAsync("opq");
             await Task.Delay(110);
             Assert.AreEqual("lmn", result);
-            _ = ProcessHit(taskTokens, task, "rst");
+            _ = task.InvokeAsync("rst");
             await Task.Delay(20);
             Assert.AreEqual("lmn", result);
-            _ = ProcessHit(taskTokens, task, "uvw");
+            _ = task.InvokeAsync("uvw");
             await Task.Delay(20);
             Assert.AreEqual("uvw", result);
-            _ = ProcessHit(taskTokens, task, "xyz");
+            _ = task.InvokeAsync("xyz");
             await Task.Delay(20);
             Assert.AreEqual("xyz", result);
-            Task.WaitAll(taskTokens.ToArray());
-            taskTokens.Clear();
+            await task.WaitAsync();
+            Assert.IsFalse(task.IsWorking);
         }
 
         /// <summary>
@@ -127,49 +129,44 @@ namespace Trivial.Tasks
         {
             var taskTokens = new List<Task>();
             var result = string.Empty;
-            var task = HitTask<string>.Times((sender, ev) =>
-            {
-                result = ev.Argument;
-            }, 2, 3, TimeSpan.FromMilliseconds(100));
-            _ = ProcessHit(taskTokens, task, "abc");
+            var task = new Interceptor<string>(
+                v => result = v,
+                InterceptorPolicy.Times(2, 3, TimeSpan.FromMilliseconds(100))
+                );
+            Assert.IsFalse(task.IsWorking);
+            _ = task.InvokeAsync("abc");
             await Task.Delay(20);
             Assert.AreEqual(string.Empty, result);
-            _ = ProcessHit(taskTokens, task, "defg");
+            _ = task.InvokeAsync("defg");
+            Assert.IsTrue(task.IsWorking);
             await Task.Delay(20);
             Assert.AreEqual(string.Empty, result);
-            _ = ProcessHit(taskTokens, task, "hijk");
+            _ = task.InvokeAsync("hijk");
             await Task.Delay(20);
             Assert.AreEqual(string.Empty, result);
-            _ = ProcessHit(taskTokens, task, "lmn");
+            _ = task.InvokeAsync("lmn");
             await Task.Delay(20);
             Assert.AreEqual(string.Empty, result);
             await Task.Delay(90);
             Assert.AreEqual(string.Empty, result);
-            _ = ProcessHit(taskTokens, task, "opq");
+            _ = task.InvokeAsync("opq");
             await Task.Delay(20);
             Assert.AreEqual(string.Empty, result);
-            _ = ProcessHit(taskTokens, task, "rst");
+            _ = task.InvokeAsync("rst");
             await Task.Delay(20);
             Assert.AreEqual(string.Empty, result);
             await Task.Delay(90);
             if (string.IsNullOrEmpty(result)) await Task.Delay(20);
             Assert.AreEqual("rst", result);
-            _ = ProcessHit(taskTokens, task, "uvw");
+            _ = task.InvokeAsync("uvw");
             await Task.Delay(20);
             Assert.AreEqual("rst", result);
-            _ = ProcessHit(taskTokens, task, "xyz");
+            _ = task.InvokeAsync("xyz");
             await Task.Delay(140);
             if (result == "rst") await Task.Delay(20);
             Assert.AreEqual("xyz", result);
-            Task.WaitAll(taskTokens.ToArray());
-            taskTokens.Clear();
-        }
-
-        private Task<bool> ProcessHit<T>(IList<Task> taskTokens, HitTask<T> task, T value)
-        {
-            var t = task.ProcessAsync(value);
-            taskTokens.Add(t);
-            return t;
+            await task.WaitAsync();
+            Assert.IsFalse(task.IsWorking);
         }
     }
 }

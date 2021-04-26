@@ -2,6 +2,6 @@
 
 In `Trivial.Tasks` namespace of `Trivial.dll` [library](../).
 
-- [Hit task](./hittask)
+- [Interceptor](./interceptor)
 - [Equipartition task](./equipartition)
 - [Retry policy](./retry)
