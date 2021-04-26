@@ -134,31 +134,6 @@ namespace Trivial.Tasks
     }
 
     /// <summary>
-    /// Retry status.
-    /// </summary>
-    public class RetryStatus
-    {
-        /// <summary>
-        /// Initializes a new instance of the RetryStatus class.
-        /// </summary>
-        /// <param name="processTime">The processing date time list.</param>
-        public RetryStatus(IReadOnlyList<DateTime> processTime)
-        {
-            ProcessTime = processTime;
-        }
-
-        /// <summary>
-        /// Gets the processing date time list.
-        /// </summary>
-        public IReadOnlyList<DateTime> ProcessTime { get; }
-
-        /// <summary>
-        /// Gets or sets a value indicating whether enable the retry policy.
-        /// </summary>
-        public bool IsEnabled { get; set; } = true;
-    }
-
-    /// <summary>
     /// Retry event argument.
     /// </summary>
     public class RetryEventArgs : EventArgs
@@ -166,13 +141,13 @@ namespace Trivial.Tasks
         /// <summary>
         /// Initializes a new instance of the RetryEventArgs class.
         /// </summary>
-        /// <param name="status">The retry status.</param>
-        public RetryEventArgs(RetryStatus status) => Status = status;
+        /// <param name="processTime">The processing date time list.</param>
+        public RetryEventArgs(IReadOnlyList<DateTime> processTime) => ProcessTime = processTime;
 
         /// <summary>
-        /// Gets the retry status.
+        /// Gets the processing date time list.
         /// </summary>
-        public RetryStatus Status { get; }
+        public IReadOnlyList<DateTime> ProcessTime { get; }
     }
 
     /// <summary>
@@ -191,10 +166,10 @@ namespace Trivial.Tasks
         /// <param name="retryPolicy">The retry policy.</param>
         /// <param name="action">The action to process.</param>
         /// <param name="exceptionHandler">The exception handler.</param>
-        public RetryTask(T retryPolicy, Action<RetryStatus> action = null, Reflection.ExceptionHandler exceptionHandler = null)
+        public RetryTask(T retryPolicy, Action<RetryEventArgs> action = null, Reflection.ExceptionHandler exceptionHandler = null)
         {
             RetryPolicy = retryPolicy;
-            if (action != null) Processing += (sender, ev) => action(ev.Status);
+            if (action != null) Processing += (sender, ev) => action(ev);
             ExceptionHandler = exceptionHandler ?? new Reflection.ExceptionHandler();
         }
 
@@ -249,7 +224,7 @@ namespace Trivial.Tasks
                 try
                 {
                     await OnProcessAsync(cancellationToken);
-                    Processing?.Invoke(this, new RetryEventArgs(retry.Status));
+                    Processing?.Invoke(this, new RetryEventArgs(retry.ProcessTime));
                     State = TaskStates.Done;
                     result.Success();
                     return result;
@@ -638,30 +613,14 @@ namespace Trivial.Tasks
         private readonly List<DateTime> list = new List<DateTime>();
 
         /// <summary>
-        /// Gets the retry status.
-        /// </summary>
-        public RetryStatus Status => new RetryStatus(list.AsReadOnly());
-
-        /// <summary>
         /// Gets the processing date time list.
         /// </summary>
-        public IReadOnlyList<DateTime> ProcessTime => Status.ProcessTime;
+        public IReadOnlyList<DateTime> ProcessTime => list.AsReadOnly();
 
         /// <summary>
-        /// Gets or sets a value indicating whether enable the retry policy.
+        /// Gets or sets a value indicating whether disable the retry policy.
         /// </summary>
-        public bool IsEnabled
-        {
-            get
-            {
-                return Status.IsEnabled;
-            }
-
-            set
-            {
-                Status.IsEnabled = value;
-            }
-        }
+        public bool IsDisabled { get; set; }
 
         /// <summary>
         /// Tests whether need retry.
@@ -670,7 +629,7 @@ namespace Trivial.Tasks
         /// <remarks>Strongly suggest call Next() member method directly and test if the value returned has value.</remarks>
         public bool Need()
         {
-            if (!IsEnabled) return false;
+            if (IsDisabled) return false;
             try
             {
                 return GetNextSpan().HasValue;
@@ -697,7 +656,7 @@ namespace Trivial.Tasks
         /// <returns>A time span for next retry; or null, if no more retry.</returns>
         public TimeSpan? Next()
         {
-            if (!IsEnabled) return null;
+            if (IsDisabled) return null;
             try
             {
                 var span = GetNextSpan();
