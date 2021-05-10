@@ -30,15 +30,17 @@ namespace Trivial.CommandLine
         /// Processes.
         /// </summary>
         /// <param name="args">The command arguments.</param>
+        /// <param name="context">The conversation context during the command processing.</param>
         /// <param name="cancellationToken">An optional cancellation token.</param>
         /// <returns>true if process succeeded; otherwise, false.</returns>
-        Task ProcessAsync(CommandArguments args, CancellationToken cancellationToken = default);
+        Task ProcessAsync(CommandArguments args, CommandConversationContext context, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Gets help information.
         /// </summary>
         /// <param name="args">The arguments.</param>
-        void GetHelp(CommandArguments args);
+        /// <param name="context">The conversation context during the command processing.</param>
+        void GetHelp(CommandArguments args, CommandConversationContext context);
     }
 
     /// <summary>
@@ -73,13 +75,15 @@ namespace Trivial.CommandLine
         /// Occurs on processing.
         /// </summary>
         /// <param name="args">The arguments.</param>
-        protected abstract void OnProcess(CommandArguments args);
+        /// <param name="context">The conversation context during the command processing.</param>
+        protected abstract void OnProcess(CommandArguments args, CommandConversationContext context);
 
         /// <summary>
         /// Occurs on getting help of the handler.
         /// </summary>
         /// <param name="args">The arguments data.</param>
-        protected virtual void OnGetHelp(CommandArguments args)
+        /// <param name="context">The conversation context during the command processing.</param>
+        protected virtual void OnGetHelp(CommandArguments args, CommandConversationContext context)
         {
         }
 
@@ -87,15 +91,16 @@ namespace Trivial.CommandLine
         /// Processes.
         /// </summary>
         /// <param name="args">The command arguments.</param>
+        /// <param name="context">The conversation context during the command processing.</param>
         /// <param name="cancellationToken">An optional cancellation token.</param>
         /// <returns>true if process succeeded; otherwise, false.</returns>
-        async Task ICommandHandler.ProcessAsync(CommandArguments args, CancellationToken cancellationToken)
+        async Task ICommandHandler.ProcessAsync(CommandArguments args, CommandConversationContext context, CancellationToken cancellationToken)
         {
             if (IsDisabled) return;
             await Task.Run(() => { }, cancellationToken);
             try
             {
-                OnProcess(args);
+                OnProcess(args, context);
             }
             catch (Exception ex)
             {
@@ -110,7 +115,9 @@ namespace Trivial.CommandLine
         /// Gets help information.
         /// </summary>
         /// <param name="args">The arguments.</param>
-        void ICommandHandler.GetHelp(CommandArguments args) => OnGetHelp(args);
+        /// <param name="context">The conversation context during the command processing.</param>
+        void ICommandHandler.GetHelp(CommandArguments args, CommandConversationContext context)
+            => OnGetHelp(args, context);
     }
 
     /// <summary>
@@ -145,15 +152,17 @@ namespace Trivial.CommandLine
         /// Occurs on processing.
         /// </summary>
         /// <param name="args">The arguments.</param>
+        /// <param name="context">The conversation context during the command processing.</param>
         /// <param name="cancellationToken">An optional cancellation token.</param>
         /// <returns>A task that represents the completion of all of the invoking action tasks.</returns>
-        protected abstract Task OnProcessAsync(CommandArguments args, CancellationToken cancellationToken = default);
+        protected abstract Task OnProcessAsync(CommandArguments args, CommandConversationContext context, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Occurs on getting help of the handler.
         /// </summary>
         /// <param name="args">The arguments data.</param>
-        protected virtual void OnGetHelp(CommandArguments args)
+        /// <param name="context">The conversation context during the command processing.</param>
+        protected virtual void OnGetHelp(CommandArguments args, CommandConversationContext context)
         {
         }
 
@@ -161,14 +170,15 @@ namespace Trivial.CommandLine
         /// Processes.
         /// </summary>
         /// <param name="args">The command arguments.</param>
+        /// <param name="context">The conversation context during the command processing.</param>
         /// <param name="cancellationToken">An optional cancellation token.</param>
         /// <returns>true if process succeeded; otherwise, false.</returns>
-        async Task ICommandHandler.ProcessAsync(CommandArguments args, CancellationToken cancellationToken)
+        async Task ICommandHandler.ProcessAsync(CommandArguments args, CommandConversationContext context, CancellationToken cancellationToken)
         {
             if (IsDisabled) return;
             try
             {
-                await OnProcessAsync(args, cancellationToken);
+                await OnProcessAsync(args, context, cancellationToken);
             }
             catch (Exception ex)
             {
@@ -183,7 +193,9 @@ namespace Trivial.CommandLine
         /// Gets help information.
         /// </summary>
         /// <param name="args">The arguments.</param>
-        void ICommandHandler.GetHelp(CommandArguments args) => OnGetHelp(args);
+        /// <param name="context">The conversation context during the command processing.</param>
+        void ICommandHandler.GetHelp(CommandArguments args, CommandConversationContext context)
+            => OnGetHelp(args, context);
     }
 
     /// <summary>
@@ -195,6 +207,11 @@ namespace Trivial.CommandLine
         /// Gets the command arguments.
         /// </summary>
         protected CommandArguments Arguments { get; private set; }
+
+        /// <summary>
+        /// Gets the conversation context during the command processing.
+        /// </summary>
+        protected CommandConversationContext Context { get; private set; }
 
         /// <summary>
         /// Tests if the arguments are valid.
@@ -230,11 +247,13 @@ namespace Trivial.CommandLine
         /// Processes.
         /// </summary>
         /// <param name="args">The command arguments.</param>
+        /// <param name="context">The conversation context during the command processing.</param>
         /// <param name="cancellationToken">An optional cancellation token.</param>
         /// <returns>true if process succeeded; otherwise, false.</returns>
-        internal async Task ProcessAsync(CommandArguments args, CancellationToken cancellationToken = default)
+        internal async Task ProcessAsync(CommandArguments args, CommandConversationContext context, CancellationToken cancellationToken = default)
         {
             Arguments = args;
+            Context = context;
             if (!IsValid()) return;
             try
             {
@@ -251,9 +270,11 @@ namespace Trivial.CommandLine
         /// Gets help information.
         /// </summary>
         /// <param name="args">The arguments.</param>
-        internal void GetHelp(CommandArguments args)
+        /// <param name="context">The conversation context during the command processing.</param>
+        internal void GetHelp(CommandArguments args, CommandConversationContext context)
         {
             Arguments = new CommandArguments(args);
+            Context = context;
             OnGetHelp();
         }
     }
@@ -336,24 +357,26 @@ namespace Trivial.CommandLine
         /// Processes.
         /// </summary>
         /// <param name="args">The command arguments.</param>
+        /// <param name="context">The conversation context during the command processing.</param>
         /// <param name="cancellationToken">An optional cancellation token.</param>
         /// <returns>true if process succeeded; otherwise, false.</returns>
-        Task ICommandHandler.ProcessAsync(CommandArguments args, CancellationToken cancellationToken)
+        Task ICommandHandler.ProcessAsync(CommandArguments args, CommandConversationContext context, CancellationToken cancellationToken)
         {
             var instance = factory();
             if (instance is null) return Task.Run(() => { }, cancellationToken);
-            return instance.ProcessAsync(args, cancellationToken);
+            return instance.ProcessAsync(args, context, cancellationToken);
         }
 
         /// <summary>
         /// Gets help information.
         /// </summary>
         /// <param name="args">The arguments.</param>
-        void ICommandHandler.GetHelp(CommandArguments args)
+        /// <param name="context">The conversation context during the command processing.</param>
+        void ICommandHandler.GetHelp(CommandArguments args, CommandConversationContext context)
         {
             var instance = factory();
             if (instance is null) return;
-            instance.GetHelp(args);
+            instance.GetHelp(args, context);
         }
     }
 }

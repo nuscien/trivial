@@ -13,27 +13,6 @@ using Trivial.Reflection;
 namespace Trivial.CommandLine
 {
     /// <summary>
-    /// The conversation modes for command processing.
-    /// </summary>
-    public enum CommandConversationModes
-    {
-        /// <summary>
-        /// Turns on when no arguments input; otherwise, turns off.
-        /// </summary>
-        Auto = 0,
-
-        /// <summary>
-        /// Turns off the conversation mode.
-        /// </summary>
-        Off = 1,
-
-        /// <summary>
-        /// Keeps to turns on.
-        /// </summary>
-        On = 2
-    }
-
-    /// <summary>
     /// Verb dispatcher.
     /// </summary>
     public class CommandDispatcher : IEnumerable<CommandDispatcher.Route>
@@ -61,9 +40,10 @@ namespace Trivial.CommandLine
             public Route(string key, ICommandHandler handler)
             {
                 Handler = handler;
+                keys = new List<string>();
                 if (key == null) return;
                 key = key?.Trim();
-                keys = new List<string> { key?.Trim() };
+                if (!string.IsNullOrEmpty(key)) keys.Add(key);
             }
 
             /// <summary>
@@ -75,7 +55,9 @@ namespace Trivial.CommandLine
             {
                 Handler = handler;
                 if (keys == null) return;
-                this.keys = keys.Select(k => k?.Trim()).Where(k => !string.IsNullOrEmpty(k)).Distinct().ToList();
+                this.keys = keys == null
+                    ? new List<string>()
+                    : keys.Select(k => k?.Trim()).Where(k => !string.IsNullOrEmpty(k)).Distinct().ToList();
             }
 
             /// <summary>
@@ -85,6 +67,7 @@ namespace Trivial.CommandLine
             /// <param name="handler">The command handler to bind.</param>
             public Route(Func<string, bool> test, ICommandHandler handler)
             {
+                keys = new List<string>();
                 Handler = handler;
                 match = test;
             }
@@ -96,6 +79,7 @@ namespace Trivial.CommandLine
             /// <param name="handler">The command handler to bind.</param>
             public Route(Regex regular, ICommandHandler handler)
             {
+                keys = new List<string>();
                 Handler = handler;
                 if (regular == null) return;
                 match = regular.IsMatch;
@@ -104,7 +88,7 @@ namespace Trivial.CommandLine
             /// <summary>
             /// Gets a value indicating whether the route item is empty.
             /// </summary>
-            public bool IsEmpty => (keys == null || keys.Count < 1) && match is null;
+            public bool IsEmpty => keys.Count < 1 && match is null;
 
             /// <summary>
             /// Gets the command handler.
@@ -112,14 +96,14 @@ namespace Trivial.CommandLine
             public ICommandHandler Handler { get; }
 
             /// <summary>
-            /// Gets the count of static keys registered.
-            /// </summary>
-            internal int KeyCount => keys?.Count ?? 0;
-
-            /// <summary>
             /// Gets static keys.
             /// </summary>
-            internal IReadOnlyList<string> Keys => keys.AsReadOnly();
+            public IReadOnlyList<string> StaticKeys => keys.AsReadOnly();
+
+            /// <summary>
+            /// Gets the count of static keys registered.
+            /// </summary>
+            internal int KeyCount => keys.Count;
 
             /// <summary>
             /// Indicates whether the key matches the one registered.
@@ -128,7 +112,7 @@ namespace Trivial.CommandLine
             /// <returns>true if matches; otherwise, false.</returns>
             public bool IsMatch(string key)
             {
-                if (keys != null && keys.Any(k => k.Equals(key, StringComparison.OrdinalIgnoreCase)))
+                if (keys.Any(k => k.Equals(key, StringComparison.OrdinalIgnoreCase)))
                     return true;
                 return match?.Invoke(key) == true;
             }
@@ -140,7 +124,6 @@ namespace Trivial.CommandLine
             /// <returns>true if remove succeeded; otherwise, false. This method also returns false if not found.</returns>
             internal bool RemoveKey(string key)
             {
-                if (keys == null) return false;
                 return keys.RemoveAll(k => k.Equals(key, StringComparison.OrdinalIgnoreCase)) > 0;
             }
 
@@ -493,12 +476,16 @@ namespace Trivial.CommandLine
         public async Task ProcessAsync(CommandArguments args, CommandConversationModes? conversationMode, CancellationToken cancellationToken = default)
         {
             var verb = args?.Verb?.ToString()?.Trim();
-            await ProcessHandlerAsync(PreloadHandler, args, cancellationToken);
+            var context = new CommandConversationContext
+            {
+                ExitKeys = ExitKeys.AsReadOnly()
+            };
+            await ProcessHandlerAsync(PreloadHandler, args, context, conversationMode, cancellationToken);
             var loop = string.IsNullOrEmpty(verb);
             if (loop)
-                await ProcessHandlerAsync(DefaultHandler, args, cancellationToken);
+                await ProcessHandlerAsync(DefaultHandler, args, context, conversationMode, cancellationToken);
             else
-                await ProcessHandlerAsync(GetVerb(verb)?.Handler, args, cancellationToken);
+                await ProcessHandlerAsync(GetVerb(verb)?.Handler, args, context, conversationMode, cancellationToken);
 
             if (conversationMode == null)
             {
@@ -573,17 +560,17 @@ namespace Trivial.CommandLine
                 {
                     var unhandled = UnhandledHandler;
                     if (unhandled != null)
-                        await ProcessHandlerAsync(unhandled, args, cancellationToken);
+                        await ProcessHandlerAsync(unhandled, args, context, conversationMode, cancellationToken);
                 }
                 else
                 {
-                    await ProcessHandlerAsync(item.Handler, args, cancellationToken);
+                    await ProcessHandlerAsync(item.Handler, args, context, conversationMode, cancellationToken);
                 }
 
                 if (IsExitKey(verb)) break;
             }
 
-            await ProcessHandlerAsync(ExitHandler, args, cancellationToken);
+            await ProcessHandlerAsync(ExitHandler, args, context, conversationMode, cancellationToken);
             return;
         }
 
@@ -598,19 +585,47 @@ namespace Trivial.CommandLine
                     : ExitKeys.Any(k => verb.Equals(k, StringComparison.OrdinalIgnoreCase));
 
         /// <summary>
-        /// Gets static keys.
+        /// Gets some of verb key.
         /// </summary>
         public IEnumerable<string> GetStaticKeys() => list
-            .Where(ele => ele?.IsEmpty == false && !ele.Handler.IsDisabled && ele.KeyCount > 0)
-            .Select(ele => ele.Keys.FirstOrDefault()?.Trim())
+            .Where(ele => ele?.Handler?.IsDisabled == false && ele.KeyCount > 0)
+            .Select(ele => ele.StaticKeys.FirstOrDefault()?.Trim())
             .Where(ele => !string.IsNullOrEmpty(ele))
             .Distinct();
+
+        /// <summary>
+        /// Gets the description for some of command handler.
+        /// </summary>
+        /// <returns>The description dictionary.</returns>
+        public IDictionary<string, string> GetDescription()
+        {
+            var dict = new Dictionary<string, string>();
+            foreach (var item in list)
+            {
+                if (item?.Handler?.IsDisabled != false || item.KeyCount < 1) continue;
+                var key = item.StaticKeys.FirstOrDefault()?.Trim();
+                if (string.IsNullOrEmpty(key)) continue;
+                dict[key] = item.Handler.Description;
+            }
+
+            return dict;
+        }
 
         /// <summary>
         /// Gets help.
         /// </summary>
         /// <param name="args">The arguments.</param>
         public void GetHelp(string args)
+        {
+            GetHelp(args, null);
+        }
+
+        /// <summary>
+        /// Gets help.
+        /// </summary>
+        /// <param name="args">The arguments.</param>
+        /// <param name="context">The conversation context during the command processing.</param>
+        public void GetHelp(string args, CommandConversationContext context)
         {
             args = args.Trim();
             var firstKeyLen = args.IndexOf(" ");
@@ -633,6 +648,21 @@ namespace Trivial.CommandLine
         /// <param name="removeFirstKey">true if need remove the first key; otherwise, false.</param>
         public void GetHelp(string args, bool removeFirstKey)
         {
+            GetHelp(args, null, removeFirstKey);
+        }
+
+        /// <summary>
+        /// Gets help.
+        /// </summary>
+        /// <param name="args">The arguments.</param>
+        /// <param name="context">The conversation context during the command processing.</param>
+        /// <param name="removeFirstKey">true if need remove the first key; otherwise, false.</param>
+        public void GetHelp(string args, CommandConversationContext context, bool removeFirstKey)
+        {
+            if (context is null) context = new CommandConversationContext
+            {
+                ExitKeys = ExitKeys.AsReadOnly()
+            };
             args = args.Trim();
             if (removeFirstKey)
             {
@@ -643,14 +673,14 @@ namespace Trivial.CommandLine
             var a = new CommandArguments(args);
             if (!a.HasVerb)
             {
-                GetHelp(DefaultHandler ?? UnhandledHandler, a);
+                GetHelp(DefaultHandler ?? UnhandledHandler, a, context);
                 return;
             }
 
             var verb = GetVerb(a.Verb.ToString());
             if (verb is null)
                 verb = GetVerb(a.Verb.FirstOrDefault());
-            GetHelp(verb?.Handler ?? (IsExitKey(a.Verb.ToString()) ? ExitHandler : UnhandledHandler), a);
+            GetHelp(verb?.Handler ?? (IsExitKey(a.Verb.ToString()) ? ExitHandler : UnhandledHandler), a, context);
         }
 
         /// <summary>
@@ -671,14 +701,23 @@ namespace Trivial.CommandLine
             return list.GetEnumerator();
         }
 
-        private async Task ProcessHandlerAsync(ICommandHandler handler, CommandArguments args, CancellationToken cancellationToken)
+        private void Update(CommandConversationContext context, ICommandHandler handler, CommandConversationModes? mode)
+        {
+            context.Mode = mode ?? ConversationMode;
+            context.Description = GetDescription();
+            context.Handler = handler;
+            context.ProcessingTime = DateTime.Now;
+        }
+
+        private async Task ProcessHandlerAsync(ICommandHandler handler, CommandArguments args, CommandConversationContext context, CommandConversationModes? mode, CancellationToken cancellationToken)
         {
             if (handler is null) return;
+            Update(context, handler, mode);
             try
             {
                 cancellationToken.ThrowIfCancellationRequested();
                 Processing?.Invoke(this, new ProcessEventArgs(args, handler));
-                await handler.ProcessAsync(args, cancellationToken);
+                await handler.ProcessAsync(args, context, cancellationToken);
                 Processed?.Invoke(this, new ProcessEventArgs(args, handler));
             }
             catch (Exception ex)
@@ -698,13 +737,25 @@ namespace Trivial.CommandLine
                     ProcessFailed?.Invoke(this, new ProcessEventArgs(args, handler, ex));
                 throw;
             }
+            finally
+            {
+                context.Handler = null;
+            }
         }
 
-        private void GetHelp(ICommandHandler handler, CommandArguments args)
+        private void GetHelp(ICommandHandler handler, CommandArguments args, CommandConversationContext context)
         {
             if (handler is null) return;
-            handler.GetHelp(args);
-            GotHelp?.Invoke(this, new ProcessEventArgs(args, handler));
+            Update(context, handler, null);
+            try
+            {
+                handler.GetHelp(args, context);
+                GotHelp?.Invoke(this, new ProcessEventArgs(args, handler));
+            }
+            finally
+            {
+                context.Handler = null;
+            }
         }
 
         private Route GetVerb(string verb)

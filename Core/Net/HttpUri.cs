@@ -225,7 +225,8 @@ namespace Trivial.Net
             else
             {
                 hostPos += 3;
-                if (url.IndexOf("https") < 0) uri.IsSecure = false;
+                if (url.IndexOf("https") < 0 && url.IndexOf("ftps") < 0 && url.IndexOf("sftp") < 0)
+                    uri.IsSecure = false;
             }
 
             uri.Host = url;
