@@ -33,7 +33,7 @@ namespace Trivial.Net
         /// <param name="httpContent">The http response content.</param>
         /// <param name="destination">The destination stream to write.</param>
         /// <param name="progress">The progress to report. The value is the length of the stream.</param>
-        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <param name="cancellationToken">The optional cancellation token.</param>
         /// <returns>The task object representing the asynchronous operation.</returns>
         /// <exception cref="ArgumentNullException">The argument is null.</exception>
         public static Task CopyToAsync(this HttpContent httpContent, Stream destination, IProgress<long> progress, CancellationToken cancellationToken = default)
@@ -48,7 +48,7 @@ namespace Trivial.Net
         /// <param name="destination">The destination stream to write.</param>
         /// <param name="bufferSize">The size, in bytes, of the buffer. This value must be greater than zero.</param>
         /// <param name="progress">The progress to report. The value is the length of the stream.</param>
-        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <param name="cancellationToken">The optional cancellation token.</param>
         /// <returns>The task object representing the asynchronous operation.</returns>
         /// <exception cref="ArgumentNullException">The argument is null.</exception>
         public static async Task CopyToAsync(this HttpContent httpContent, Stream destination, int bufferSize, IProgress<long> progress, CancellationToken cancellationToken = default)
@@ -69,7 +69,7 @@ namespace Trivial.Net
         /// <param name="httpContent">The http response content.</param>
         /// <param name="fileName">The file name.</param>
         /// <param name="progress">The progress to report, from 0 to 1.</param>
-        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <param name="cancellationToken">The optional cancellation token.</param>
         /// <returns>The task object representing the asynchronous operation.</returns>
         /// <exception cref="ArgumentNullException">The argument is null.</exception>
         /// <exception cref="ArgumentException">The argument is invalid.</exception>
@@ -89,7 +89,7 @@ namespace Trivial.Net
         /// <param name="fileName">The file name.</param>
         /// <param name="bufferSize">The size, in bytes, of the buffer. This value must be greater than zero.</param>
         /// <param name="progress">The progress to report, from 0 to 1.</param>
-        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <param name="cancellationToken">The optional cancellation token.</param>
         /// <returns>The file info instance to write.</returns>
         /// <exception cref="ArgumentNullException">The argument is null.</exception>
         /// <exception cref="ArgumentException">The argument is invalid.</exception>

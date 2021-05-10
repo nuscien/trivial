@@ -14,22 +14,23 @@ namespace Trivial.Tasks
     public enum InterceptorModes
     {
         /// <summary>
-        /// Invoke all actions without any intercept.
+        /// Execute all actions without any intercept.
         /// </summary>
         Pass = 0,
 
         /// <summary>
-        /// Only invoke for the first one which meet the condition.
+        /// Only execute the first one which meets the policy condition.
         /// </summary>
         Mono = 1,
 
         /// <summary>
-        /// Only invoke for the last one which meet the condition.
+        /// For concurrent pending or invoking, only execute the last one which meets the condition.
+        /// And execute the ones which are none-concurrent.
         /// </summary>
         Debounce = 2,
 
         /// <summary>
-        /// Pend the first one to invoke at the end of the duration (when no more coming).
+        /// Pend the first one to execute until no more invoking concurrently.
         /// </summary>
         Lock = 3
     }
