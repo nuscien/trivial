@@ -739,7 +739,7 @@ namespace Trivial.CommandLine
             }
             finally
             {
-                context.Handler = null;
+                if (context.Handler == handler) context.Handler = null;
             }
         }
 
@@ -754,7 +754,7 @@ namespace Trivial.CommandLine
             }
             finally
             {
-                context.Handler = null;
+                if (context.Handler == handler) context.Handler = null;
             }
         }
 

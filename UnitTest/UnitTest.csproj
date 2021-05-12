@@ -44,6 +44,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Chemistry\Chemistry.csproj" />
     <ProjectReference Include="..\Console\Console.csproj" />
     <ProjectReference Include="..\Core\Core.csproj" />
   </ItemGroup>

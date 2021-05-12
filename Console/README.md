@@ -48,7 +48,6 @@ void Main(string[] args)
 abcdefg hijklmn
 ```
 
-
 ## Verb
 
 If your application contains a set of functionalities, you may need verbs to help you to build a more flexible console application.

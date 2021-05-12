@@ -1,0 +1,486 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="ChemicalElement" xml:space="preserve">
+    <value>Chemisches element</value>
+  </data>
+  <data name="Chemistry" xml:space="preserve">
+    <value>Chemie</value>
+  </data>
+  <data name="Element" xml:space="preserve">
+    <value>Elemente</value>
+  </data>
+  <data name="Element001" xml:space="preserve">
+    <value>Wasserstoff</value>
+  </data>
+  <data name="Element002" xml:space="preserve">
+    <value>Helium</value>
+  </data>
+  <data name="Element003" xml:space="preserve">
+    <value>Lithium</value>
+  </data>
+  <data name="Element004" xml:space="preserve">
+    <value>Beryllium</value>
+  </data>
+  <data name="Element005" xml:space="preserve">
+    <value>Bor</value>
+  </data>
+  <data name="Element006" xml:space="preserve">
+    <value>Kohlenstoff</value>
+  </data>
+  <data name="Element007" xml:space="preserve">
+    <value>Stickstoff</value>
+  </data>
+  <data name="Element008" xml:space="preserve">
+    <value>Sauerstoff</value>
+  </data>
+  <data name="Element009" xml:space="preserve">
+    <value>Fluor</value>
+  </data>
+  <data name="Element010" xml:space="preserve">
+    <value>Neon</value>
+  </data>
+  <data name="Element011" xml:space="preserve">
+    <value>Natrium</value>
+  </data>
+  <data name="Element012" xml:space="preserve">
+    <value>Magnesium</value>
+  </data>
+  <data name="Element013" xml:space="preserve">
+    <value>Aluminium</value>
+  </data>
+  <data name="Element014" xml:space="preserve">
+    <value>Silicium</value>
+  </data>
+  <data name="Element015" xml:space="preserve">
+    <value>Phosphor</value>
+  </data>
+  <data name="Element016" xml:space="preserve">
+    <value>Schwefel</value>
+  </data>
+  <data name="Element017" xml:space="preserve">
+    <value>Chlor</value>
+  </data>
+  <data name="Element018" xml:space="preserve">
+    <value>Argon</value>
+  </data>
+  <data name="Element019" xml:space="preserve">
+    <value>Kalium</value>
+  </data>
+  <data name="Element020" xml:space="preserve">
+    <value>Calcium</value>
+  </data>
+  <data name="Element021" xml:space="preserve">
+    <value>Scandium</value>
+  </data>
+  <data name="Element022" xml:space="preserve">
+    <value>Titan</value>
+  </data>
+  <data name="Element023" xml:space="preserve">
+    <value>Vanadium</value>
+  </data>
+  <data name="Element024" xml:space="preserve">
+    <value>Chrom</value>
+  </data>
+  <data name="Element025" xml:space="preserve">
+    <value>Mangan</value>
+  </data>
+  <data name="Element026" xml:space="preserve">
+    <value>Eisen</value>
+  </data>
+  <data name="Element027" xml:space="preserve">
+    <value>Cobalt</value>
+  </data>
+  <data name="Element028" xml:space="preserve">
+    <value>Nickel</value>
+  </data>
+  <data name="Element029" xml:space="preserve">
+    <value>Kupfer</value>
+  </data>
+  <data name="Element030" xml:space="preserve">
+    <value>Zink</value>
+  </data>
+  <data name="Element031" xml:space="preserve">
+    <value>Gallium</value>
+  </data>
+  <data name="Element032" xml:space="preserve">
+    <value>Germanium</value>
+  </data>
+  <data name="Element033" xml:space="preserve">
+    <value>Arsen</value>
+  </data>
+  <data name="Element034" xml:space="preserve">
+    <value>Selen</value>
+  </data>
+  <data name="Element035" xml:space="preserve">
+    <value>Brom</value>
+  </data>
+  <data name="Element036" xml:space="preserve">
+    <value>Krypton</value>
+  </data>
+  <data name="Element037" xml:space="preserve">
+    <value>Rubidium</value>
+  </data>
+  <data name="Element038" xml:space="preserve">
+    <value>Strontium</value>
+  </data>
+  <data name="Element039" xml:space="preserve">
+    <value>Yttrium</value>
+  </data>
+  <data name="Element040" xml:space="preserve">
+    <value>Zirconium</value>
+  </data>
+  <data name="Element041" xml:space="preserve">
+    <value>Niob</value>
+  </data>
+  <data name="Element042" xml:space="preserve">
+    <value>Molybdän</value>
+  </data>
+  <data name="Element043" xml:space="preserve">
+    <value>Technetium</value>
+  </data>
+  <data name="Element044" xml:space="preserve">
+    <value>Ruthenium</value>
+  </data>
+  <data name="Element045" xml:space="preserve">
+    <value>Rhodium</value>
+  </data>
+  <data name="Element046" xml:space="preserve">
+    <value>Palladium</value>
+  </data>
+  <data name="Element047" xml:space="preserve">
+    <value>Silber</value>
+  </data>
+  <data name="Element048" xml:space="preserve">
+    <value>Cadmium</value>
+  </data>
+  <data name="Element049" xml:space="preserve">
+    <value>Indium</value>
+  </data>
+  <data name="Element050" xml:space="preserve">
+    <value>Zinn</value>
+  </data>
+  <data name="Element051" xml:space="preserve">
+    <value>Antimon</value>
+  </data>
+  <data name="Element052" xml:space="preserve">
+    <value>Tellur</value>
+  </data>
+  <data name="Element053" xml:space="preserve">
+    <value>Iod</value>
+  </data>
+  <data name="Element054" xml:space="preserve">
+    <value>Xenon</value>
+  </data>
+  <data name="Element055" xml:space="preserve">
+    <value>Caesium</value>
+  </data>
+  <data name="Element056" xml:space="preserve">
+    <value>Barium</value>
+  </data>
+  <data name="Element057" xml:space="preserve">
+    <value>Lanthan</value>
+  </data>
+  <data name="Element058" xml:space="preserve">
+    <value>Cer</value>
+  </data>
+  <data name="Element059" xml:space="preserve">
+    <value>Praseodym</value>
+  </data>
+  <data name="Element060" xml:space="preserve">
+    <value>Neodym</value>
+  </data>
+  <data name="Element061" xml:space="preserve">
+    <value>Pro­methium</value>
+  </data>
+  <data name="Element062" xml:space="preserve">
+    <value>Samarium</value>
+  </data>
+  <data name="Element063" xml:space="preserve">
+    <value>Europium</value>
+  </data>
+  <data name="Element064" xml:space="preserve">
+    <value>Gadolinium</value>
+  </data>
+  <data name="Element065" xml:space="preserve">
+    <value>Terbium</value>
+  </data>
+  <data name="Element066" xml:space="preserve">
+    <value>Dysprosium</value>
+  </data>
+  <data name="Element067" xml:space="preserve">
+    <value>Holmium</value>
+  </data>
+  <data name="Element068" xml:space="preserve">
+    <value>Erbium</value>
+  </data>
+  <data name="Element069" xml:space="preserve">
+    <value>Thulium</value>
+  </data>
+  <data name="Element070" xml:space="preserve">
+    <value>Ytterbium</value>
+  </data>
+  <data name="Element071" xml:space="preserve">
+    <value>Lutetium</value>
+  </data>
+  <data name="Element072" xml:space="preserve">
+    <value>Hafnium</value>
+  </data>
+  <data name="Element073" xml:space="preserve">
+    <value>Tantal</value>
+  </data>
+  <data name="Element074" xml:space="preserve">
+    <value>Wolfram</value>
+  </data>
+  <data name="Element075" xml:space="preserve">
+    <value>Rhenium</value>
+  </data>
+  <data name="Element076" xml:space="preserve">
+    <value>Osmium</value>
+  </data>
+  <data name="Element077" xml:space="preserve">
+    <value>Iridium</value>
+  </data>
+  <data name="Element078" xml:space="preserve">
+    <value>Platin</value>
+  </data>
+  <data name="Element079" xml:space="preserve">
+    <value>Gold</value>
+  </data>
+  <data name="Element080" xml:space="preserve">
+    <value>Quecksilber</value>
+  </data>
+  <data name="Element081" xml:space="preserve">
+    <value>Thallium</value>
+  </data>
+  <data name="Element082" xml:space="preserve">
+    <value>Blei</value>
+  </data>
+  <data name="Element083" xml:space="preserve">
+    <value>Bismut</value>
+  </data>
+  <data name="Element084" xml:space="preserve">
+    <value>Polonium</value>
+  </data>
+  <data name="Element085" xml:space="preserve">
+    <value>Astat</value>
+  </data>
+  <data name="Element086" xml:space="preserve">
+    <value>Radon</value>
+  </data>
+  <data name="Element087" xml:space="preserve">
+    <value>Francium</value>
+  </data>
+  <data name="Element088" xml:space="preserve">
+    <value>Radium</value>
+  </data>
+  <data name="Element089" xml:space="preserve">
+    <value>Actinium</value>
+  </data>
+  <data name="Element090" xml:space="preserve">
+    <value>Thorium</value>
+  </data>
+  <data name="Element091" xml:space="preserve">
+    <value>Protac­tinium</value>
+  </data>
+  <data name="Element092" xml:space="preserve">
+    <value>Uran</value>
+  </data>
+  <data name="Element093" xml:space="preserve">
+    <value>Neptunium</value>
+  </data>
+  <data name="Element094" xml:space="preserve">
+    <value>Plutonium</value>
+  </data>
+  <data name="Element095" xml:space="preserve">
+    <value>Americium</value>
+  </data>
+  <data name="Element096" xml:space="preserve">
+    <value>Curium</value>
+  </data>
+  <data name="Element097" xml:space="preserve">
+    <value>Berkelium</value>
+  </data>
+  <data name="Element098" xml:space="preserve">
+    <value>Californium</value>
+  </data>
+  <data name="Element099" xml:space="preserve">
+    <value>Einsteinium</value>
+  </data>
+  <data name="Element100" xml:space="preserve">
+    <value>Fermium</value>
+  </data>
+  <data name="Element101" xml:space="preserve">
+    <value>Mende­levium</value>
+  </data>
+  <data name="Element102" xml:space="preserve">
+    <value>Nobelium</value>
+  </data>
+  <data name="Element103" xml:space="preserve">
+    <value>Lawren­cium</value>
+  </data>
+  <data name="Element104" xml:space="preserve">
+    <value>Ruther­fordium</value>
+  </data>
+  <data name="Element105" xml:space="preserve">
+    <value>Dubnium</value>
+  </data>
+  <data name="Element106" xml:space="preserve">
+    <value>Seaborgium</value>
+  </data>
+  <data name="Element107" xml:space="preserve">
+    <value>Bohrium</value>
+  </data>
+  <data name="Element108" xml:space="preserve">
+    <value>Hassium</value>
+  </data>
+  <data name="Element109" xml:space="preserve">
+    <value>Meitnerium</value>
+  </data>
+  <data name="Element110" xml:space="preserve">
+    <value>Darm­stadtium</value>
+  </data>
+  <data name="Element111" xml:space="preserve">
+    <value>Roent­genium</value>
+  </data>
+  <data name="Element112" xml:space="preserve">
+    <value>Coper­nicium</value>
+  </data>
+  <data name="Element113" xml:space="preserve">
+    <value>Nihonium</value>
+  </data>
+  <data name="Element114" xml:space="preserve">
+    <value>Flerovium</value>
+  </data>
+  <data name="Element115" xml:space="preserve">
+    <value>Moscovium</value>
+  </data>
+  <data name="Element116" xml:space="preserve">
+    <value>Liver­morium</value>
+  </data>
+  <data name="Element117" xml:space="preserve">
+    <value>Tenness</value>
+  </data>
+  <data name="Element118" xml:space="preserve">
+    <value>Oganesson</value>
+  </data>
+  <data name="ElementX" xml:space="preserve">
+    <value />
+  </data>
+</root>
