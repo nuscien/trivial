@@ -163,7 +163,7 @@ namespace Trivial.Chemistry
                         .Replace("{0}", AtomicNumber.ToString("g"))
                         .Replace("{number}", AtomicNumber.ToString("g"))
                         .Replace("{symbol}", Symbol);
-                return EnglishName ?? Symbol;
+                return EnglishName ?? Symbol ?? ChemistryResource.Element;
             }
         }
 
@@ -203,6 +203,12 @@ namespace Trivial.Chemistry
         /// Gets a value indicating whether has atomic weight information.
         /// </summary>
         public bool HasAtomicWeight { get; }
+
+        /// <summary>
+        /// Gets a value indicating whether this element is valid.
+        /// </summary>
+        public bool IsValid()
+            => Period > 0 || !string.IsNullOrEmpty(Symbol);
 
         /// <summary>
         /// Creates an isotope.
@@ -286,6 +292,7 @@ namespace Trivial.Chemistry
             {
                 sb.Append('#');
                 sb.Append(AtomicNumber);
+                sb.Append(' ');
             }
 
             if (!Name.Equals(Symbol, StringComparison.OrdinalIgnoreCase))
@@ -324,6 +331,46 @@ namespace Trivial.Chemistry
             if (!element.EnglishName.Equals(element.Name))
                 json.SetValue("name_en", element.EnglishName);
             return json;
+        }
+
+        /// <summary>
+        /// Pluses two chemical elements.
+        /// </summary>
+        /// <param name="leftValue">The left value for addition operator.</param>
+        /// <param name="rightValue">The right value for addition operator.</param>
+        /// <returns>A result after addition.</returns>
+        public static MolecularFormula operator +(ChemicalElement leftValue, ChemicalElement rightValue)
+        {
+            var isLeftEmpty = string.IsNullOrEmpty(leftValue?.Symbol);
+            var isRightEmpty = string.IsNullOrEmpty(rightValue?.Symbol);
+            if (isLeftEmpty && isRightEmpty) return null;
+            if (isLeftEmpty) return new MolecularFormula(rightValue);
+            if (isRightEmpty) return new MolecularFormula(leftValue);
+            return new MolecularFormula(leftValue, 1, rightValue, 1);
+        }
+
+        /// <summary>
+        /// Multiplies a chemical element and an integer number.
+        /// </summary>
+        /// <param name="leftValue">The left value for multiple operator.</param>
+        /// <param name="rightValue">The right value for multiple operator.</param>
+        /// <returns>A result after multiple.</returns>
+        public static MolecularFormula operator *(ChemicalElement leftValue, int rightValue)
+        {
+            if (string.IsNullOrEmpty(leftValue?.Symbol) || rightValue < 1) return null;
+            return new MolecularFormula(leftValue, rightValue);
+        }
+
+        /// <summary>
+        /// Multiplies a chemical element and an integer number.
+        /// </summary>
+        /// <param name="leftValue">The left value for multiple operator.</param>
+        /// <param name="rightValue">The right value for multiple operator.</param>
+        /// <returns>A result after multiple.</returns>
+        public static MolecularFormula operator *(int leftValue, ChemicalElement rightValue)
+        {
+            if (string.IsNullOrEmpty(rightValue?.Symbol) || leftValue < 1) return null;
+            return new MolecularFormula(rightValue, leftValue);
         }
 
         /// <summary>

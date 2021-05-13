@@ -21,7 +21,7 @@ namespace Trivial.Chemistry
             /// </summary>
             /// <param name="element">The chemical element.</param>
             /// <param name="count">The atom count.</param>
-            public Item(ChemicalElement element, int count = 0)
+            public Item(ChemicalElement element, int count = 1)
             {
                 Element = element;
                 Count = count;
@@ -32,7 +32,7 @@ namespace Trivial.Chemistry
             /// </summary>
             /// <param name="symbol">The symbol of the chemical element.</param>
             /// <param name="count">The atom count.</param>
-            public Item(string symbol, int count = 0)
+            public Item(string symbol, int count = 1)
                 : this(ChemicalElement.Get(symbol), count)
             {
             }
@@ -104,7 +104,7 @@ namespace Trivial.Chemistry
         /// <summary>
         /// The source cache.
         /// </summary>
-        private readonly List<Item> list = new();
+        private readonly List<Item> list;
 
         /// <summary>
         /// The string format cache.
@@ -132,6 +132,54 @@ namespace Trivial.Chemistry
         }
 
         /// <summary>
+        /// Initializes a new instance of the MolecularFormula class.
+        /// </summary>
+        /// <param name="element">The chemical element.</param>
+        /// <param name="count">The count of the specific chemical element.</param>
+        public MolecularFormula(ChemicalElement element, int count = 1)
+        {
+            list = string.IsNullOrEmpty(element?.Symbol) || count < 1
+                ? new List<Item>()
+                : new List<Item> { new Item(element, count) };
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the MolecularFormula class.
+        /// </summary>
+        /// <param name="elementA">The chemical element A.</param>
+        /// <param name="countA">The count of the specific chemical element A.</param>
+        /// <param name="elementB">The chemical element B.</param>
+        /// <param name="countB">The count of the specific chemical element B.</param>
+        /// <param name="elementC">The chemical element C.</param>
+        /// <param name="countC">The count of the specific chemical element C.</param>
+        /// <param name="elementD">The chemical element D.</param>
+        /// <param name="countD">The count of the specific chemical element D.</param>
+        /// <param name="elementE">The chemical element F.</param>
+        /// <param name="countE">The count of the specific chemical element E.</param>
+        /// <param name="elementF">The chemical element E.</param>
+        /// <param name="countF">The count of the specific chemical element F.</param>
+        /// <param name="elementG">The chemical element G.</param>
+        /// <param name="countG">The count of the specific chemical element G.</param>
+        public MolecularFormula(ChemicalElement elementA, int countA, ChemicalElement elementB, int countB, ChemicalElement elementC = null, int countC = 1, ChemicalElement elementD = null, int countD = 1, ChemicalElement elementE = null, int countE = 1, ChemicalElement elementF = null, int countF = 1, ChemicalElement elementG = null, int countG = 1)
+        {
+            list = new List<Item>();
+            if (!string.IsNullOrEmpty(elementA?.Symbol) && countA > 0)
+                list.Add(new Item(elementA, countA));
+            if (!string.IsNullOrEmpty(elementB?.Symbol) && countB > 0)
+                list.Add(new Item(elementB, countB));
+            if (!string.IsNullOrEmpty(elementC?.Symbol) && countC > 0)
+                list.Add(new Item(elementC, countC));
+            if (!string.IsNullOrEmpty(elementD?.Symbol) && countD > 0)
+                list.Add(new Item(elementD, countD));
+            if (!string.IsNullOrEmpty(elementE?.Symbol) && countE > 0)
+                list.Add(new Item(elementE, countE));
+            if (!string.IsNullOrEmpty(elementF?.Symbol) && countF > 0)
+                list.Add(new Item(elementF, countF));
+            if (!string.IsNullOrEmpty(elementG?.Symbol) && countG > 0)
+                list.Add(new Item(elementG, countG));
+        }
+
+        /// <summary>
         /// Gets the ionic charge number.
         /// </summary>
         public int ChargeNumber { get; }
@@ -151,45 +199,70 @@ namespace Trivial.Chemistry
         /// </summary>
         public int Count => list.Sum(ele => ele.Count);
 
-        ///// <summary>
-        ///// Reports the zero-based index of the first occurrence of the specified string in this instance.
-        ///// </summary>
-        ///// <param name="symbol">The string to seek.</param>
-        ///// <returns>The zero-based index position of value if that string is found, or -1 if it is not. If value is System.String.Empty, the return value is 0.</returns>
-        ///// <exception cref="ArgumentNullException">symbol should not be null.</exception>
-        //public int IndexOf(string symbol)
-        //    => ToString().IndexOf(symbol);
+        /// <summary>
+        /// Reports the zero-based index of the first occurrence of the specified string in this instance.
+        /// </summary>
+        /// <param name="symbol">The string to seek.</param>
+        /// <returns>The zero-based index position of value if that string is found, or -1 if it is not. If value is System.String.Empty, the return value is 0.</returns>
+        /// <exception cref="ArgumentNullException">symbol should not be null.</exception>
+        /// <exception cref="ArgumentException">symbol should not be empty.</exception>
+        public int IndexOf(string symbol)
+        {
+            if (symbol == null) throw new ArgumentNullException(nameof(symbol), "symbol was null");
+            symbol = symbol.Trim();
+            if (symbol.Length < 1) throw new ArgumentException("symbol was empty", nameof(symbol));
+            return list.FindIndex(ele => symbol.Equals(ele.Element?.Symbol, StringComparison.OrdinalIgnoreCase));
+        }
 
-        ///// <summary>
-        ///// Reports the zero-based index of the first occurrence of the specified string in this instance.
-        ///// </summary>
-        ///// <param name="symbol">The string to seek.</param>
-        ///// <param name="startIndex">The search starting position.</param>
-        ///// <param name="count">The optional number of character positions to examine.</param>
-        ///// <returns>The zero-based index position of value if that string is found, or -1 if it is not. If value is System.String.Empty, the return value is 0.</returns>
-        ///// <exception cref="ArgumentNullException">symbol should not be null.</exception>
-        //public int IndexOf(string symbol, int startIndex, int? count = null)
-        //    => count.HasValue ? ToString().IndexOf(symbol, startIndex, count.Value) : ToString().IndexOf(symbol, startIndex);
+        /// <summary>
+        /// Reports the zero-based index of the first occurrence of the specified string in this instance.
+        /// </summary>
+        /// <param name="symbol">The string to seek.</param>
+        /// <param name="startIndex">The search starting position.</param>
+        /// <param name="count">The optional number of character positions to examine.</param>
+        /// <returns>The zero-based index position of value if that string is found, or -1 if it is not. If value is System.String.Empty, the return value is 0.</returns>
+        /// <exception cref="ArgumentNullException">symbol should not be null.</exception>
+        public int IndexOf(string symbol, int startIndex, int? count = null)
+        {
+            if (symbol == null) throw new ArgumentNullException(nameof(symbol), "symbol was null");
+            symbol = symbol.Trim();
+            if (symbol.Length < 1) throw new ArgumentException("symbol was empty", nameof(symbol));
+            return count.HasValue
+                ? list.FindIndex(startIndex, count.Value, ele => symbol.Equals(ele.Element?.Symbol, StringComparison.OrdinalIgnoreCase))
+                : list.FindIndex(startIndex, ele => symbol.Equals(ele.Element?.Symbol, StringComparison.OrdinalIgnoreCase));
+        }
 
-        ///// <summary>
-        ///// Reports the zero-based index position of the last occurrence of a specified string within this instance.
-        ///// </summary>
-        ///// <param name="symbol">The string to seek.</param>
-        ///// <returns>The zero-based starting index position of value if that string is found, or -1 if it is not. If value is System.String.Empty, the return value is the last index position in this instance.</returns>
-        ///// <exception cref="ArgumentNullException">symbol should not be null.</exception>
-        //public int LastIndexOf(string symbol)
-        //    => ToString().LastIndexOf(symbol);
+        /// <summary>
+        /// Reports the zero-based index position of the last occurrence of a specified string within this instance.
+        /// </summary>
+        /// <param name="symbol">The string to seek.</param>
+        /// <returns>The zero-based starting index position of value if that string is found, or -1 if it is not. If value is System.String.Empty, the return value is the last index position in this instance.</returns>
+        /// <exception cref="ArgumentNullException">symbol should not be null.</exception>
+        public int LastIndexOf(string symbol)
+        {
+            if (symbol == null) throw new ArgumentNullException(nameof(symbol), "symbol was null");
+            symbol = symbol.Trim();
+            if (symbol.Length < 1) throw new ArgumentException("symbol was empty", nameof(symbol));
+            return list.FindLastIndex(ele => symbol.Equals(ele.Element?.Symbol, StringComparison.OrdinalIgnoreCase));
+        }
 
-        ///// <summary>
-        ///// Reports the zero-based index position of the last occurrence of a specified string within this instance.
-        ///// </summary>
-        ///// <param name="symbol">The string to seek.</param>
-        ///// <param name="startIndex">The search starting position. The search proceeds from startIndex toward the beginning of this instance.</param>
-        ///// <param name="count">The optional number of character positions to examine.</param>
-        ///// <returns>The zero-based starting index position of value if that string is found, or -1 if it is not. If value is System.String.Empty, the return value is the last index position in this instance.</returns>
-        ///// <exception cref="ArgumentNullException">symbol should not be null.</exception>
-        //public int LastIndexOf(string symbol, int startIndex, int? count = null)
-        //    => count.HasValue ? ToString().LastIndexOf(symbol, startIndex, count.Value) : ToString().LastIndexOf(symbol, startIndex);
+        /// <summary>
+        /// Reports the zero-based index position of the last occurrence of a specified string within this instance.
+        /// </summary>
+        /// <param name="symbol">The string to seek.</param>
+        /// <param name="startIndex">The search starting position. The search proceeds from startIndex toward the beginning of this instance.</param>
+        /// <param name="count">The optional number of character positions to examine.</param>
+        /// <returns>The zero-based starting index position of value if that string is found, or -1 if it is not. If value is System.String.Empty, the return value is the last index position in this instance.</returns>
+        /// <exception cref="ArgumentNullException">symbol should not be null.</exception>
+        public int LastIndexOf(string symbol, int startIndex, int? count = null)
+        {
+            if (symbol == null) throw new ArgumentNullException(nameof(symbol), "symbol was null");
+            symbol = symbol.Trim();
+            if (symbol.Length < 1) throw new ArgumentException("symbol was empty", nameof(symbol));
+            return count.HasValue
+                ? list.FindLastIndex(startIndex, count.Value, ele => symbol.Equals(ele.Element?.Symbol, StringComparison.OrdinalIgnoreCase))
+                : list.FindLastIndex(startIndex, ele => symbol.Equals(ele.Element?.Symbol, StringComparison.OrdinalIgnoreCase));
+        }
 
         /// <summary>
         /// Reports the zero-based index of the first occurrence of the specified string in this instance.
@@ -243,7 +316,7 @@ namespace Trivial.Chemistry
         public int GetCount(ChemicalElement element)
         {
             if (element is null) return 0;
-            return list.Where(ele => ele.Element == element).Sum(ele => ele.Count);
+            return list.Where(ele => ele.Element == element)?.Sum(ele => ele.Count) ?? 0;
         }
 
         /// <summary>
@@ -253,8 +326,9 @@ namespace Trivial.Chemistry
         /// <returns>The total.</returns>
         public int GetCount(string symbol)
         {
-            var element = ChemicalElement.Get(symbol);
-            return GetCount(element);
+            symbol = symbol?.Trim();
+            if (string.IsNullOrEmpty(symbol)) return 0;
+            return list.Where(ele => symbol.Equals(ele.Element?.Symbol, StringComparison.OrdinalIgnoreCase))?.Sum(ele => ele.Count) ?? 0;
         }
 
         /// <summary>
@@ -318,6 +392,55 @@ namespace Trivial.Chemistry
             if (other is MolecularFormula isotope) return Equals(isotope);
             if (other is IEnumerable<Item> col) return ChargeNumber == 0 && Collection.ListExtensions.Equals(list, col.ToList());
             return false;
+        }
+
+        /// <summary>
+        /// Pluses a molecular formula and a chemical element.
+        /// </summary>
+        /// <param name="leftValue">The left value for addition operator.</param>
+        /// <param name="rightValue">The right value for addition operator.</param>
+        /// <returns>A result after addition.</returns>
+        public static MolecularFormula operator +(MolecularFormula leftValue, ChemicalElement rightValue)
+        {
+            var isRightEmpty = string.IsNullOrEmpty(rightValue?.Symbol);
+            if (leftValue is null && isRightEmpty) return null;
+            if (leftValue is null) return new MolecularFormula(rightValue);
+            if (isRightEmpty) return leftValue;
+            var col = leftValue.list.ToList();
+            col.Add(new Item(rightValue, 1));
+            return new MolecularFormula(col);
+        }
+
+        /// <summary>
+        /// Pluses a molecular formula and a chemical element.
+        /// </summary>
+        /// <param name="rightValue">The left value for addition operator.</param>
+        /// <param name="leftValue">The right value for addition operator.</param>
+        /// <returns>A result after addition.</returns>
+        public static MolecularFormula operator +(ChemicalElement leftValue, MolecularFormula rightValue)
+        {
+            var isLeftEmpty = string.IsNullOrEmpty(leftValue?.Symbol);
+            if (rightValue is null && isLeftEmpty) return null;
+            if (rightValue is null) return new MolecularFormula(leftValue);
+            if (isLeftEmpty) return rightValue;
+            var col = rightValue.list.ToList();
+            col.Add(new Item(leftValue, 1));
+            return new MolecularFormula(col);
+        }
+
+        /// <summary>
+        /// Pluses two molecular formula instances.
+        /// </summary>
+        /// <param name="rightValue">The left value for addition operator.</param>
+        /// <param name="leftValue">The right value for addition operator.</param>
+        /// <returns>A result after addition.</returns>
+        public static MolecularFormula operator +(MolecularFormula leftValue, MolecularFormula rightValue)
+        {
+            if (leftValue is null || leftValue.Count == 0) return rightValue;
+            if (rightValue is null || rightValue.Count == 0) return leftValue;
+            var col = leftValue.list.ToList();
+            col.AddRange(rightValue.list);
+            return new MolecularFormula(col);
         }
 
         /// <summary>

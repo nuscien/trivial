@@ -26,8 +26,11 @@ namespace Trivial.Chemistry
             Assert.IsNull(ChemicalElement.Get(0));
             Assert.IsNull(ChemicalElement.Get(-1));
             Assert.IsNull(ChemicalElement.Get("Nothing"));
+            Assert.IsFalse(new ChemicalElement(-1, null, "Nothing", true).IsValid());
+            Assert.IsFalse(ChemicalElement.IsValid("Nothing"));
 
             var h = ChemicalElement.Get(1);
+            Assert.IsTrue(h.IsValid());
             Assert.AreEqual(1, h.AtomicNumber);
             Assert.AreEqual("H", h.Symbol);
             Assert.AreEqual("Hydrogen", h.EnglishName);
@@ -51,6 +54,7 @@ namespace Trivial.Chemistry
             Assert.AreEqual(d, new Isotope(h, 2));
 
             var c = ChemicalElement.Get(6);
+            Assert.IsTrue(c.IsValid());
             Assert.AreNotEqual(h, c);
             Assert.AreEqual(6, c.AtomicNumber);
             Assert.AreEqual("C", c.Symbol);
@@ -120,7 +124,10 @@ namespace Trivial.Chemistry
             s = m.ToString();
             Assert.IsTrue(s.Contains("CO"));
             Assert.AreEqual(6, m.Count);
-            Assert.AreEqual(0, m.IndexOf(ChemicalElement.H));
+            Assert.AreEqual(0, m.IndexOf("H"));
+            Assert.AreEqual(-1, m.IndexOf("H", 2));
+            Assert.AreEqual(1, m.IndexOf(ChemicalElement.C));
+            Assert.AreEqual(1, m.IndexOf(ChemicalElement.C, 1));
             Assert.AreEqual(1, m.GetCount("C"));
             Assert.AreEqual(3, m.GetCount(ChemicalElement.O));
             Assert.IsFalse(m.IsIon);
@@ -135,6 +142,19 @@ namespace Trivial.Chemistry
             Assert.AreEqual(s, m.ToString());
             Assert.IsTrue(m.IsIon);
             Assert.AreEqual(-2, m.ChargeNumber);
+
+            m = ChemicalElement.Fe * 2 + 3 * ChemicalElement.O;
+            Assert.AreEqual(2, m.GetCount("Fe"));
+            Assert.AreEqual(3, m.GetCount(ChemicalElement.O));
+            m = ChemicalElement.C + ChemicalElement.O;
+            Assert.AreEqual(1, m.GetCount("C"));
+            Assert.AreEqual(1, m.GetCount(ChemicalElement.O));
+            m = m + ChemicalElement.O;
+            Assert.AreEqual(1, m.GetCount("C"));
+            Assert.AreEqual(2, m.GetCount(ChemicalElement.O));
+            m = ChemicalElement.H + m;
+            Assert.AreEqual(1, m.GetCount("H"));
+            Assert.AreEqual(4, m.Count);
         }
     }
 }
