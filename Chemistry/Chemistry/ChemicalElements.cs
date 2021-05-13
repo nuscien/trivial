@@ -172,7 +172,7 @@ namespace Trivial.Chemistry
         /// <returns>The symbol.</returns>
         private static string GetSymbol(int number)
         {
-            if (number < 1) return string.Empty;
+            if (number < 1) return "?";
             var s = number.ToString("g");
             for (var i = 0; i < 10; i++)
             {

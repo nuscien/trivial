@@ -42,6 +42,28 @@ namespace Trivial.Chemistry
             EnglishName = string.IsNullOrEmpty(englishName) ? GetName(number) : englishName;
             AtomicWeight = atomicWeight;
             HasAtomicWeight = !double.IsNaN(atomicWeight);
+            Block = Group switch
+            {
+                1 or 2 => "s",
+                18 => AtomicNumber == 2 ? "s" : "p",
+                13 or 14 or 15 or 16 or 17 => "p",
+                3 or 4 or 5 or 6 or 7 or 8 or 9 or 10 => "d",
+                11 or 12 => "ds",
+                _ => string.Empty
+            };
+            if (Group != 3 || Period < 6) return;
+            var count = CountInPeriod(Period);
+            var countdown = count - IndexInPeriod;
+            if (countdown <= 16) return;
+            Block = "f";
+            if (Period < 8 || countdown <= 30) return;
+            Block = "g";
+            if (Period < 10 || countdown <= 48) return;
+            Block = "i";
+            if (Period < 12 || countdown <= 70) return;
+            Block = "j";
+            if (Period < 14 || countdown <= 96) return;
+            Block = string.Empty;
         }
 
         /// <summary>
@@ -205,10 +227,15 @@ namespace Trivial.Chemistry
         public bool HasAtomicWeight { get; }
 
         /// <summary>
+        /// Gets block which is a set of elements unified by the orbitals their valence electrons or vacancies lie in.
+        /// </summary>
+        public string Block { get; }
+
+        /// <summary>
         /// Gets a value indicating whether this element is valid.
         /// </summary>
         public bool IsValid()
-            => Period > 0 || !string.IsNullOrEmpty(Symbol);
+            => Period > 0 && !string.IsNullOrEmpty(Symbol);
 
         /// <summary>
         /// Creates an isotope.
@@ -292,11 +319,12 @@ namespace Trivial.Chemistry
             {
                 sb.Append('#');
                 sb.Append(AtomicNumber);
-                sb.Append(' ');
             }
 
-            if (!Name.Equals(Symbol, StringComparison.OrdinalIgnoreCase))
+            if (!Name.Equals(Symbol, StringComparison.OrdinalIgnoreCase)
+                && !"?".Equals(Symbol, StringComparison.OrdinalIgnoreCase))
             {
+                sb.Append(' ');
                 sb.Append(Symbol);
             }
 
@@ -331,6 +359,15 @@ namespace Trivial.Chemistry
             if (!element.EnglishName.Equals(element.Name))
                 json.SetValue("name_en", element.EnglishName);
             return json;
+        }
+
+        /// <summary>
+        /// Converts to a molecular formula instance.
+        /// </summary>
+        /// <param name="element">The chemical element to convert.</param>
+        public static explicit operator MolecularFormula(ChemicalElement element)
+        {
+            return new MolecularFormula(element);
         }
 
         /// <summary>
@@ -388,7 +425,7 @@ namespace Trivial.Chemistry
                 diff += 4;
                 count += diff;
                 i++;
-                if (i < period) break;
+                if (i >= period) break;
                 count += diff;
             }
 

@@ -195,9 +195,30 @@ namespace Trivial.Chemistry
         public IReadOnlyList<Item> Items => list.AsReadOnly();
 
         /// <summary>
+        /// Gets all elements.
+        /// </summary>
+        public IEnumerable<ChemicalElement> Elements
+            => list.Select(ele => ele.Element).Where(ele => !string.IsNullOrEmpty(ele?.Symbol)).Distinct();
+
+        /// <summary>
         /// Gets the atom count.
         /// </summary>
         public int Count => list.Sum(ele => ele.Count);
+
+        /// <summary>
+        /// Gets a collection of all elements and their numbers.
+        /// </summary>
+        /// <returns>A collection of all elements and their numbers.</returns>
+        public IEnumerable<Item> Zip()
+        {
+            var list = new List<Item>();
+            foreach (var item in this.list)
+            {
+                Zip(list, item);
+            }
+
+            return list;
+        }
 
         /// <summary>
         /// Reports the zero-based index of the first occurrence of the specified string in this instance.
@@ -664,6 +685,61 @@ namespace Trivial.Chemistry
 
             var result = new MolecularFormula(col, ion);
             return result.list.Count > 0 ? result : null;
+        }
+
+        /// <summary>
+        /// Gets a collection of all elements and their numbers.
+        /// </summary>
+        /// <param name="col">The collection.</param>
+        /// <returns>A collection of all elements and their numbers.</returns>
+        public static IEnumerable<Item> Zip(IEnumerable<MolecularFormula> col)
+        {
+            var list = new List<Item>();
+            if (col is null) return list;
+            foreach (var item in col.SelectMany(ele => ele.list))
+            {
+                Zip(list, item);
+            }
+
+            return list;
+        }
+
+        /// <summary>
+        /// Tests the elements in the two molecular formula instances are passed by the law of conservation of mass.
+        /// </summary>
+        /// <param name="a">The left collection.</param>
+        /// <param name="b">The right collection.</param>
+        /// <returns>true if conservation of mass; otherwise, false.</returns>
+        public static bool ConservationOfMass(IEnumerable<MolecularFormula> a, IEnumerable<MolecularFormula> b)
+        {
+            try
+            {
+                var dictA = Zip(a).ToList();
+                var dictB = Zip(b).ToList();
+                if (dictA.Count != dictB.Count) return false;
+                var chargeA = a.Sum(ele => ele.ChargeNumber);
+                var chargeB = b.Sum(ele => ele.ChargeNumber);
+                if (chargeA != chargeB) return false;
+                foreach (var item in dictA)
+                {
+                    if (item is null) continue;
+                    if (!dictB.Any(ele => item.Equals(ele))) return false;
+                }
+
+                return true;
+            }
+            catch (ArgumentException)
+            {
+                return false;
+            }
+        }
+
+        private static void Zip(List<Item> list, Item item)
+        {
+            if (item?.Element is null || item.Count < 1) return;
+            var count = list.Where(ele => ele.Element == item.Element).Sum(ele => ele.Count);
+            list.RemoveAll(ele => ele.Element == item.Element);
+            list.Add(new Item(item.Element, count + item.Count));
         }
     }
 }

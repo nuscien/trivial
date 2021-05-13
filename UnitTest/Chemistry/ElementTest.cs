@@ -37,6 +37,7 @@ namespace Trivial.Chemistry
             Assert.AreEqual(1, h.Period);
             Assert.AreEqual(1, h.Group);
             Assert.AreEqual(0, h.IndexInPeriod);
+            Assert.AreEqual("s", h.Block);
             Assert.AreEqual(h, ChemicalElement.Get("H"));
             Assert.AreEqual(h, ChemicalElement.H);
             Assert.AreEqual(h, new ChemicalElement(1, "H", "No.1", true));
@@ -62,6 +63,7 @@ namespace Trivial.Chemistry
             Assert.AreEqual(2, c.Period);
             Assert.AreEqual(14, c.Group);
             Assert.AreEqual(3, c.IndexInPeriod);
+            Assert.AreEqual("p", c.Block);
             Assert.AreEqual(c, ChemicalElement.Get("C"));
             Assert.AreEqual(c, ChemicalElement.C);
             Assert.AreEqual(c, new ChemicalElement(6, "C", "No.6", true));
@@ -103,10 +105,19 @@ namespace Trivial.Chemistry
             Assert.AreEqual(9, usn.Period);
             Assert.AreEqual(2, usn.Group);
             Assert.AreEqual(1, usn.IndexInPeriod);
+            Assert.AreEqual("s", usn.Block);
             Assert.AreEqual(usn, ChemicalElement.Get("Usn"));
             Assert.IsFalse(usn.HasAtomicWeight);
             Assert.IsTrue(double.IsNaN(usn.AtomicWeight));
             Assert.IsTrue(usn.ToString().Contains(usn.Symbol));
+
+            var bbb = ChemicalElement.Get(222);
+            Assert.AreEqual("Bbb", bbb.Symbol);
+            Assert.AreEqual("i", bbb.Block);
+
+            var one = new ChemicalElement(17, "Seventeen", "A new sample element", true);
+            Assert.IsTrue(one.IsValid());
+            Assert.AreNotEqual(ChemicalElement.Get(17), one);
         }
 
         /// <summary>
@@ -155,6 +166,40 @@ namespace Trivial.Chemistry
             m = ChemicalElement.H + m;
             Assert.AreEqual(1, m.GetCount("H"));
             Assert.AreEqual(4, m.Count);
+
+            Assert.IsTrue(MolecularFormula.ConservationOfMass(
+                new List<MolecularFormula>
+                {
+                    4 * ChemicalElement.H,
+                    ChemicalElement.O * 2
+                },
+                new List<MolecularFormula>
+                {
+                    ChemicalElement.H * 2 + ChemicalElement.O,
+                    ChemicalElement.H * 2 + ChemicalElement.O
+                }));
+            Assert.IsFalse(MolecularFormula.ConservationOfMass(
+                new List<MolecularFormula>
+                {
+                    ChemicalElement.C + ChemicalElement.O * 2
+                },
+                new List<MolecularFormula>
+                {
+                    (MolecularFormula)ChemicalElement.Na,
+                    (MolecularFormula)ChemicalElement.Cl
+                }));
+            Assert.IsFalse(MolecularFormula.ConservationOfMass(
+                new List<MolecularFormula>
+                {
+                    new MolecularFormula(new List<MolecularFormula.Item>
+                    {
+                        new MolecularFormula.Item(ChemicalElement.Cl)
+                    }, -1)
+                },
+                new List<MolecularFormula>
+                {
+                    new MolecularFormula(ChemicalElement.Cl)
+                }));
         }
     }
 }
