@@ -303,6 +303,90 @@ namespace Trivial.Chemistry
         }
 
         /// <summary>
+        /// Compares two chemical elements to indicate if they are same.
+        /// leftValue == rightValue
+        /// </summary>
+        /// <param name="leftValue">The left value to compare.</param>
+        /// <param name="rightValue">The right value to compare.</param>
+        /// <returns>true if they are same; otherwise, false.</returns>
+        public static bool operator ==(ChemicalElement leftValue, ChemicalElement rightValue)
+        {
+            if (ReferenceEquals(leftValue, rightValue)) return true;
+            if (leftValue is null || rightValue is null) return false;
+            return leftValue.Equals(rightValue);
+        }
+
+        /// <summary>
+        /// Compares two chemical elements to indicate if they are different.
+        /// leftValue != rightValue
+        /// </summary>
+        /// <param name="leftValue">The left value to compare.</param>
+        /// <param name="rightValue">The right value to compare.</param>
+        /// <returns>true if they are different; otherwise, false.</returns>
+        public static bool operator !=(ChemicalElement leftValue, ChemicalElement rightValue)
+        {
+            if (ReferenceEquals(leftValue, rightValue)) return false;
+            if (leftValue is null || rightValue is null) return true;
+            return !leftValue.Equals(rightValue);
+        }
+
+        /// <summary>
+        /// Compares a chemical elements is less than another one.
+        /// leftValue &lt; rightValue
+        /// </summary>
+        /// <param name="leftValue">The left value to compare.</param>
+        /// <param name="rightValue">The right value to compare.</param>
+        /// <returns>true if they are same; otherwise, false.</returns>
+        public static bool operator <(ChemicalElement leftValue, ChemicalElement rightValue)
+        {
+            if (ReferenceEquals(leftValue, rightValue) || rightValue is null) return false;
+            if (leftValue is null) return true;
+            return leftValue.AtomicNumber < rightValue.AtomicNumber;
+        }
+
+        /// <summary>
+        /// Compares a chemical elements is greater than another one.
+        /// leftValue &gt; rightValue
+        /// </summary>
+        /// <param name="leftValue">The left value to compare.</param>
+        /// <param name="rightValue">The right value to compare.</param>
+        /// <returns>true if they are same; otherwise, false.</returns>
+        public static bool operator >(ChemicalElement leftValue, ChemicalElement rightValue)
+        {
+            if (ReferenceEquals(leftValue, rightValue) || leftValue is null) return false;
+            if (rightValue is null) return true;
+            return leftValue.AtomicNumber > rightValue.AtomicNumber;
+        }
+
+        /// <summary>
+        /// Compares a chemical elements is less than or equals to another one.
+        /// leftValue &lt;= rightValue
+        /// </summary>
+        /// <param name="leftValue">The left value to compare.</param>
+        /// <param name="rightValue">The right value to compare.</param>
+        /// <returns>true if they are same; otherwise, false.</returns>
+        public static bool operator <=(ChemicalElement leftValue, ChemicalElement rightValue)
+        {
+            if (ReferenceEquals(leftValue, rightValue) || leftValue is null) return true;
+            if (rightValue is null) return false;
+            return leftValue.AtomicNumber <= rightValue.AtomicNumber;
+        }
+
+        /// <summary>
+        /// Compares a chemical elements is greater than or equals to another one.
+        /// leftValue &lt;= rightValue
+        /// </summary>
+        /// <param name="leftValue">The left value to compare.</param>
+        /// <param name="rightValue">The right value to compare.</param>
+        /// <returns>true if they are same; otherwise, false.</returns>
+        public static bool operator >=(ChemicalElement leftValue, ChemicalElement rightValue)
+        {
+            if (ReferenceEquals(leftValue, rightValue) || rightValue is null) return true;
+            if (leftValue is null) return false;
+            return leftValue.AtomicNumber >= rightValue.AtomicNumber;
+        }
+
+        /// <summary>
         /// Peturns a string that represents the current chemical element information.
         /// </summary>
         /// <returns>A string that represents the current chemical element information.</returns>

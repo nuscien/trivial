@@ -12,12 +12,15 @@ using Trivial.Chemistry;
 
 ## Element
 
-You can get the element from periodic table by its symbol or atomic number.
+You can get the element from periodic table by its symbol or atomic numbers.
 
 ```csharp
 var oxygen = ChemicalElement.Get(8);
 var gold = ChemicalElement.Get("Au");
+var carbon = ChemicalElement.C;
 ```
+
+## Isotope
 
 And you can create an isotope from an element.
 
@@ -31,5 +34,13 @@ var diplogen = hydrogen.Isotope(2);
 You can parse a molecular formula.
 
 ```csharp
-var m = MolecularFormula.Parse("H2CO3");
+var carbonicAcid = MolecularFormula.Parse("H2CO3");
+```
+
+Or create a molecular formula by merging elements and other molecular formulas.
+
+```csharp
+var sulfuricAcid = ChemicalElement.H * 2 + ChemicalElement.S + ChemicalElement.O * 4;
+var ethanol = MolecularFormula.Parse("CH3") + MolecularFormula.Parse("CH2") + MolecularFormula.Parse("OH");
+var iron = (MolecularFormula)ChemicalElement.Fe;
 ```

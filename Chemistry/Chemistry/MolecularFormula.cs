@@ -99,6 +99,34 @@ namespace Trivial.Chemistry
                 if (other is ChemicalElement element) return Count == 1 && element.Equals(Element);
                 return false;
             }
+
+            /// <summary>
+            /// Compares two molecular formula items to indicate if they are same.
+            /// leftValue == rightValue
+            /// </summary>
+            /// <param name="leftValue">The left value to compare.</param>
+            /// <param name="rightValue">The right value to compare.</param>
+            /// <returns>true if they are same; otherwise, false.</returns>
+            public static bool operator ==(Item leftValue, Item rightValue)
+            {
+                if (ReferenceEquals(leftValue, rightValue)) return true;
+                if (leftValue is null || rightValue is null) return false;
+                return leftValue.Equals(rightValue);
+            }
+
+            /// <summary>
+            /// Compares two molecular formula items to indicate if they are different.
+            /// leftValue != rightValue
+            /// </summary>
+            /// <param name="leftValue">The left value to compare.</param>
+            /// <param name="rightValue">The right value to compare.</param>
+            /// <returns>true if they are different; otherwise, false.</returns>
+            public static bool operator !=(Item leftValue, Item rightValue)
+            {
+                if (ReferenceEquals(leftValue, rightValue)) return false;
+                if (leftValue is null || rightValue is null) return true;
+                return !leftValue.Equals(rightValue);
+            }
         }
 
         /// <summary>
@@ -365,6 +393,7 @@ namespace Trivial.Chemistry
                 sb.Append(item.ToString());
             }
 
+            if (sb.Length == 0) sb.Append('e');
             if (ChargeNumber != 0)
             {
                 if (ChargeNumber > 1 || ChargeNumber < -1) sb.Append(Math.Abs(ChargeNumber)
@@ -413,6 +442,34 @@ namespace Trivial.Chemistry
             if (other is MolecularFormula isotope) return Equals(isotope);
             if (other is IEnumerable<Item> col) return ChargeNumber == 0 && Collection.ListExtensions.Equals(list, col.ToList());
             return false;
+        }
+
+        /// <summary>
+        /// Compares two molecular formula instances to indicate if they are same.
+        /// leftValue == rightValue
+        /// </summary>
+        /// <param name="leftValue">The left value to compare.</param>
+        /// <param name="rightValue">The right value to compare.</param>
+        /// <returns>true if they are same; otherwise, false.</returns>
+        public static bool operator ==(MolecularFormula leftValue, MolecularFormula rightValue)
+        {
+            if (ReferenceEquals(leftValue, rightValue)) return true;
+            if (leftValue is null || rightValue is null) return false;
+            return leftValue.Equals(rightValue);
+        }
+
+        /// <summary>
+        /// Compares two molecular formula instances to indicate if they are different.
+        /// leftValue != rightValue
+        /// </summary>
+        /// <param name="leftValue">The left value to compare.</param>
+        /// <param name="rightValue">The right value to compare.</param>
+        /// <returns>true if they are different; otherwise, false.</returns>
+        public static bool operator !=(MolecularFormula leftValue, MolecularFormula rightValue)
+        {
+            if (ReferenceEquals(leftValue, rightValue)) return false;
+            if (leftValue is null || rightValue is null) return true;
+            return !leftValue.Equals(rightValue);
         }
 
         /// <summary>
@@ -732,6 +789,29 @@ namespace Trivial.Chemistry
             {
                 return false;
             }
+        }
+
+        /// <summary>
+        /// Returns a string that represents the current object.
+        /// </summary>
+        /// <param name="formulas">The molecular fomula collection.</param>
+        /// <returns>A string that represents the current object.</returns>
+        public static string ToString(IEnumerable<MolecularFormula> formulas)
+        {
+            if (formulas is null) return string.Empty;
+            var dict = new Dictionary<MolecularFormula, int>();
+            foreach (var item in formulas)
+            {
+                if (item is null) continue;
+                var f = dict.Keys.FirstOrDefault(ele => ele == item);
+                if (f is null) dict[item] = 1;
+                else dict[f]++;
+            }
+
+            return string.Join(" + ", dict.Select(ele => {
+                if (ele.Value > 1) return ele.Value.ToString("g") + ele.Key.ToString();
+                return ele.Value.ToString();
+            }));
         }
 
         private static void Zip(List<Item> list, Item item)

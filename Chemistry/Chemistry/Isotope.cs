@@ -177,5 +177,33 @@ namespace Trivial.Chemistry
             if (other is ChemicalElement element) return element.Equals(Element);
             return false;
         }
+
+        /// <summary>
+        /// Compares two isotopes to indicate if they are same.
+        /// leftValue == rightValue
+        /// </summary>
+        /// <param name="leftValue">The left value to compare.</param>
+        /// <param name="rightValue">The right value to compare.</param>
+        /// <returns>true if they are same; otherwise, false.</returns>
+        public static bool operator ==(Isotope leftValue, Isotope rightValue)
+        {
+            if (ReferenceEquals(leftValue, rightValue)) return true;
+            if (leftValue is null || rightValue is null) return false;
+            return leftValue.Equals(rightValue);
+        }
+
+        /// <summary>
+        /// Compares two isotopes to indicate if they are different.
+        /// leftValue != rightValue
+        /// </summary>
+        /// <param name="leftValue">The left value to compare.</param>
+        /// <param name="rightValue">The right value to compare.</param>
+        /// <returns>true if they are different; otherwise, false.</returns>
+        public static bool operator !=(Isotope leftValue, Isotope rightValue)
+        {
+            if (ReferenceEquals(leftValue, rightValue)) return false;
+            if (leftValue is null || rightValue is null) return true;
+            return !leftValue.Equals(rightValue);
+        }
     }
 }

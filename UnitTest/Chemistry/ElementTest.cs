@@ -56,6 +56,12 @@ namespace Trivial.Chemistry
 
             var c = ChemicalElement.Get(6);
             Assert.IsTrue(c.IsValid());
+            Assert.IsFalse(c == h);
+            Assert.IsTrue(c != h);
+            Assert.IsTrue(c > h);
+            Assert.IsTrue(c >= h);
+            Assert.IsFalse(c < h);
+            Assert.IsFalse(c <= h);
             Assert.AreNotEqual(h, c);
             Assert.AreEqual(6, c.AtomicNumber);
             Assert.AreEqual("C", c.Symbol);
@@ -167,17 +173,22 @@ namespace Trivial.Chemistry
             Assert.AreEqual(1, m.GetCount("H"));
             Assert.AreEqual(4, m.Count);
 
+            m = ChemicalElement.H * 2 + ChemicalElement.O;
+            var col = new List<MolecularFormula>
+            {
+                { m, 2, (MolecularFormula)ChemicalElement.Na }
+            };
+            Assert.AreEqual(3, col.Count);
+            System.Console.WriteLine(MolecularFormula.ToString(col));
+            Assert.IsTrue(MolecularFormula.ToString(col).Length > 6);
+            col.RemoveAt(2);
             Assert.IsTrue(MolecularFormula.ConservationOfMass(
                 new List<MolecularFormula>
                 {
                     4 * ChemicalElement.H,
                     ChemicalElement.O * 2
                 },
-                new List<MolecularFormula>
-                {
-                    ChemicalElement.H * 2 + ChemicalElement.O,
-                    ChemicalElement.H * 2 + ChemicalElement.O
-                }));
+                col));
             Assert.IsFalse(MolecularFormula.ConservationOfMass(
                 new List<MolecularFormula>
                 {

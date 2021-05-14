@@ -4,7 +4,7 @@ The useful utilities for console application. You can use the library free for y
 
 ### Import
 
-This library targets .NET 6.0, .NET 5.0, .NET Core 3.1, .NET Standard 2.0, .NET Framework 4.6.1 and .NET Framework 4.8.
+This library targets .NET 6, .NET 5, .NET Core 3.1, .NET Standard 2.0, .NET Framework 4.6.1 and .NET Framework 4.8.
 
 You can install the package from [NuGet](https://www.nuget.org/packages/Trivial.Console) to your project by following way.
 
