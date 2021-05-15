@@ -166,6 +166,24 @@ namespace Trivial.Chemistry
         }
 
         /// <summary>
+        /// Filters the periodic table based on a predicate.
+        /// </summary>
+        /// <param name="predicate">A function to test each element for a condition.</param>
+        /// <returns>An enumerable instance that contains elements from the periodic table that satisfy the condition.</returns>
+        public static IEnumerable<ChemicalElement> Where(Func<ChemicalElement, bool> predicate)
+        {
+            foreach (var item in periodicTable.Where(predicate))
+            {
+                yield return item;
+            }
+
+            foreach (var item in others.Values.Where(predicate))
+            {
+                yield return item;
+            }
+        }
+
+        /// <summary>
         /// Gets the symbol of unidentified element.
         /// </summary>
         /// <param name="number">The atomic number.</param>
