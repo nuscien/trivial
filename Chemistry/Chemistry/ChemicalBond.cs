@@ -24,12 +24,7 @@ namespace Trivial.Chemistry
         /// <summary>
         /// Metallic bound.
         /// </summary>
-        Metallic = 2,
-
-        /// <summary>
-        /// Others or unknown.
-        /// </summary>
-        Other = 3
+        Metallic = 2
     }
     
     /// <summary>

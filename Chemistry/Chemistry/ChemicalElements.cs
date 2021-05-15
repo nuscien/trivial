@@ -40,7 +40,7 @@ namespace Trivial.Chemistry
         /// <summary>
         /// Other elements.
         /// </summary>
-        private static ConcurrentDictionary<int, ChemicalElement> others = new();
+        private readonly static ConcurrentDictionary<int, ChemicalElement> others = new();
 
         /// <summary>
         /// Gets a chemical element.

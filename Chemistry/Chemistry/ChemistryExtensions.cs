@@ -21,7 +21,7 @@ namespace Trivial.Chemistry
         /// <param name="countForAnother">The count of another.</param>
         /// <param name="other">The optional third molecular formula instance to add</param>
         /// <param name="countForLast">The count of the third molecular formula instance to add.</param>
-        public static void Add(this IList<MolecularFormula> formulas, MolecularFormula value, int count = 1, MolecularFormula another = null, int countForAnother = 1, MolecularFormula other = null, int countForLast = 1)
+        public static void Add(this ICollection<MolecularFormula> formulas, MolecularFormula value, int count = 1, MolecularFormula another = null, int countForAnother = 1, MolecularFormula other = null, int countForLast = 1)
         {
             if (formulas is null) return;
             if (value != null)

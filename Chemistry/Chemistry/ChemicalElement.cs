@@ -446,6 +446,16 @@ namespace Trivial.Chemistry
         }
 
         /// <summary>
+        /// Converts to a JSON object.
+        /// </summary>
+        /// <param name="element">The chemical element to convert.</param>
+        public static explicit operator JsonDocument(ChemicalElement element)
+        {
+            if (element is null || element.AtomicNumber < 1) return null;
+            return (JsonDocument)(JsonObject)element;
+        }
+
+        /// <summary>
         /// Converts to a molecular formula instance.
         /// </summary>
         /// <param name="element">The chemical element to convert.</param>
