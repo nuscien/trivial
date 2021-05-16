@@ -39,7 +39,7 @@ namespace Trivial.Chemistry
             var obj = new JsonObject();
             obj.SetRange(ref reader);
             var z = obj.TryGetInt32Value("number") ?? obj.TryGetInt32Value("z");
-            var s = obj.TryGetStringValue("s")?.Trim();
+            var s = obj.TryGetStringValue("symbol")?.Trim();
             var n = obj.TryGetStringValue("name_en")?.Trim() ?? obj.TryGetStringValue("name")?.Trim();
             var w = obj.TryGetDoubleValue("weight");
             ChemicalElement ele = null;

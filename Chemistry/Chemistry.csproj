@@ -21,7 +21,7 @@
     <RepositoryUrl>https://github.com/nuscien/trivial</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
-    <PackageIcon>logo.png</PackageIcon>
+    <PackageIcon>chemistry.png</PackageIcon>
     <PackageIconUrl>https://github.com/nuscien/trivial/raw/master/Materials/logo.png</PackageIconUrl>
     <PackageTags>chemistry chemical-element periodic-table molecular</PackageTags>
     <LangVersion>9.0</LangVersion>
@@ -47,7 +47,7 @@
 
   <ItemGroup>
     <None Include="..\LICENSE" Pack="true" PackagePath="LICENSE.md" />
-    <None Include="..\Materials\logo.png" Pack="true" PackagePath="logo.png" />
+    <None Include="..\Materials\chemistry.png" Pack="true" PackagePath="chemistry.png" />
   </ItemGroup>
 
   <ItemGroup>
