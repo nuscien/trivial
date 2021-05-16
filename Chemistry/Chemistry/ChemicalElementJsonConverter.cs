@@ -29,7 +29,7 @@ namespace Trivial.Chemistry
             }
             catch (FormatException ex)
             {
-                throw new JsonException("Expect the valid element symbol or atomic numbers.", ex);
+                throw new JsonException("Expect a valid element symbol or the atomic numbers.", ex);
             }
 
             if (reader.TokenType == JsonTokenType.String)

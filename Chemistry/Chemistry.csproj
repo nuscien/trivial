@@ -23,7 +23,7 @@
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <PackageIcon>logo.png</PackageIcon>
     <PackageIconUrl>https://github.com/nuscien/trivial/raw/master/Materials/logo.png</PackageIconUrl>
-    <PackageTags>chemistry</PackageTags>
+    <PackageTags>chemistry chemical-element periodic-table molecular</PackageTags>
     <LangVersion>9.0</LangVersion>
   </PropertyGroup>
 

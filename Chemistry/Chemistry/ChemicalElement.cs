@@ -25,13 +25,24 @@ namespace Trivial.Chemistry
         private readonly Func<string> name;
 
         /// <summary>
+        /// All mass information of its isotopes.
+        /// </summary>
+        private double[] mass;
+
+        /// <summary>
+        /// All isotopes.
+        /// </summary>
+        private List<Isotope> isotopes;
+
+        /// <summary>
         /// Initializes a new instance of the ChemicalElement class.
         /// </summary>
         /// <param name="number">The atomic number (or proton number, symbol Z) of the chemical element. The number is one-based.</param>
         /// <param name="symbol">The element identifier.</param>
         /// <param name="englishName">The English name.</param>
         /// <param name="atomicWeight">The atomic weight in dalton (unified atomic mass unit).</param>
-        internal ChemicalElement(int number, string symbol, string englishName, double atomicWeight)
+        /// <param name="isotopicMass">All mass information of its isotopes.</param>
+        internal ChemicalElement(int number, string symbol, string englishName, double atomicWeight, double[] isotopicMass = null)
         {
             symbol = symbol?.Trim();
             Symbol = string.IsNullOrEmpty(symbol) ? GetSymbol(number) : symbol;
@@ -42,6 +53,7 @@ namespace Trivial.Chemistry
             EnglishName = string.IsNullOrEmpty(englishName) ? GetName(number) : englishName;
             AtomicWeight = atomicWeight;
             HasAtomicWeight = !double.IsNaN(atomicWeight);
+            mass = isotopicMass;
             Block = Group switch
             {
                 1 or 2 => "s",
@@ -73,8 +85,9 @@ namespace Trivial.Chemistry
         /// <param name="symbol">The element symbol.</param>
         /// <param name="englishName">The English name.</param>
         /// <param name="atomicWeight">The atomic weight in dalton (unified atomic mass unit).</param>
-        internal ChemicalElement(int number, string symbol, string englishName, int atomicWeight)
-            : this(number, symbol, englishName, double.NaN)
+        /// <param name="isotopicMass">All mass information of its isotopes.</param>
+        internal ChemicalElement(int number, string symbol, string englishName, int atomicWeight, double[] isotopicMass = null)
+            : this(number, symbol, englishName, double.NaN, isotopicMass)
         {
             AtomicWeight = atomicWeight;
         }
@@ -87,11 +100,13 @@ namespace Trivial.Chemistry
         /// <param name="englishName">The English name.</param>
         /// <param name="name">The name resolver.</param>
         /// <param name="atomicWeight">The atomic weight in dalton (unified atomic mass unit).</param>
-        public ChemicalElement(int number, string symbol, string englishName, Func<string> name, double atomicWeight)
+        /// <param name="isotopes">The optional isotopes.</param>
+        public ChemicalElement(int number, string symbol, string englishName, Func<string> name, double atomicWeight, IEnumerable<Isotope> isotopes = null)
             : this(number, symbol, englishName, atomicWeight)
         {
             if (name is null) return;
             this.name = name;
+            this.isotopes = isotopes?.ToList();
         }
 
         /// <summary>
@@ -102,11 +117,13 @@ namespace Trivial.Chemistry
         /// <param name="englishName">The English name.</param>
         /// <param name="name">The name.</param>
         /// <param name="atomicWeight">The atomic weight in dalton (unified atomic mass unit).</param>
-        public ChemicalElement(int number, string symbol, string englishName, string name, double atomicWeight)
+        /// <param name="isotopes">The optional isotopes.</param>
+        public ChemicalElement(int number, string symbol, string englishName, string name, double atomicWeight, IEnumerable<Isotope> isotopes = null)
             : this(number, symbol, englishName, atomicWeight)
         {
             name = name?.Trim();
             if (!string.IsNullOrEmpty(name)) this.name = () => name;
+            this.isotopes = isotopes?.ToList();
         }
 
         /// <summary>
@@ -117,8 +134,9 @@ namespace Trivial.Chemistry
         /// <param name="name">The name.</param>
         /// <param name="isAlsoEnglishName">true if the parameter name is also an English name.</param>
         /// <param name="atomicWeight">The atomic weight in dalton (unified atomic mass unit).</param>
-        public ChemicalElement(int number, string symbol, string name, bool isAlsoEnglishName, double atomicWeight)
-            : this(number, symbol, isAlsoEnglishName ? name : null, name, atomicWeight)
+        /// <param name="isotopes">The optional isotopes.</param>
+        public ChemicalElement(int number, string symbol, string name, bool isAlsoEnglishName, double atomicWeight, IEnumerable<Isotope> isotopes = null)
+            : this(number, symbol, isAlsoEnglishName ? name : null, name, atomicWeight, isotopes)
         {
         }
 
@@ -238,21 +256,77 @@ namespace Trivial.Chemistry
             => Period > 0 && !string.IsNullOrEmpty(Symbol);
 
         /// <summary>
-        /// Creates an isotope.
+        /// Gets all isotopes registered.
+        /// </summary>
+        /// <returns>The isotope collection.</returns>
+        public IReadOnlyList<Isotope> Isotopes()
+        {
+            if (isotopes is null)
+            {
+                var col = mass?.Select(ele => new Isotope(this, (int)Math.Round(ele), ele))?.ToList()
+                    ?? new List<Isotope>();
+                if (isotopes is null) isotopes = col;
+                mass = null;
+            }
+
+            return isotopes.AsReadOnly();
+        }
+
+        /// <summary>
+        /// Gets an isotope.
         /// </summary>
         /// <param name="atomicMassNumber">The atomic mass number (total protons and neutrons).</param>
         /// <returns>An isotope of this element with the specific numbers of neutrons.</returns>
         public Isotope Isotope(int atomicMassNumber)
-            => new(this, atomicMassNumber, Math.Abs(atomicMassNumber - AtomicWeight) < 0.5 ? AtomicWeight : double.NaN);
+        {
+            var col = Isotopes();
+            return col?.FirstOrDefault(ele => ele.AtomicMassNumber == atomicMassNumber)
+                ?? new(this, atomicMassNumber, AtomicNumber < 160 && Math.Abs(atomicMassNumber - AtomicWeight) < 0.4 ? AtomicWeight : double.NaN);
+        }
 
         /// <summary>
-        /// Creates an isotope.
+        /// Gets an isotope.
         /// </summary>
         /// <param name="atomicMassNumber">The atomic mass number (total protons and neutrons).</param>
         /// <param name="atomicWeight">The atomic weight in dalton (unified atomic mass unit).</param>
         /// <returns>An isotope of this element with the specific numbers of neutrons.</returns>
         public Isotope Isotope(int atomicMassNumber, double atomicWeight)
-            => new(this, atomicMassNumber, atomicWeight);
+        {
+            var isotope = Isotopes()?.FirstOrDefault(ele => ele.AtomicMassNumber == atomicMassNumber);
+            if (isotope != null && Math.Abs(isotope.AtomicWeight - atomicWeight) > 0.000000001) isotope = null;
+            return isotope ?? new(this, atomicMassNumber, atomicWeight);
+        }
+
+        /// <summary>
+        /// Adds an isotope.
+        /// </summary>
+        /// <param name="atomicMassNumber">The atomic mass number (total protons and neutrons).</param>
+        /// <param name="atomicWeight">The atomic weight in dalton (unified atomic mass unit).</param>
+        /// <returns>An isotope of this element with the specific numbers of neutrons.</returns>
+        public Isotope AddIsotope(int atomicMassNumber, double atomicWeight)
+        {
+            var isotope = Isotopes()?.FirstOrDefault(ele => ele.AtomicMassNumber == atomicMassNumber);
+            if (isotope != null && Math.Abs(isotope.AtomicWeight - atomicWeight) > 0.000000001) isotope = null;
+            if (isotope is null)
+            {
+                isotope = new(this, atomicMassNumber, atomicWeight);
+                isotopes.Add(isotope);
+            }
+
+            return isotope;
+        }
+
+        /// <summary>
+        /// Removes an isotope.
+        /// </summary>
+        /// <param name="isotope">The isotope to remove.</param>
+        /// <returns>true if exists; otherwise, false.</returns>
+        public bool RemoveIsotope(Isotope isotope)
+        {
+            if (!isotopes.Remove(isotope)) return false;
+            if (isotopes.Remove(isotope)) isotopes.Remove(isotope);
+            return true;
+        }
 
         /// <summary>
         /// Writes this instance to the specified writer as a JSON value.

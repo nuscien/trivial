@@ -51,8 +51,9 @@ namespace Trivial.Chemistry
             Assert.AreEqual(1, d.AtomicNumber);
             Assert.AreEqual(2, d.AtomicMassNumber);
             Assert.AreEqual(1, d.Neutrons);
-            Assert.IsFalse(d.HasAtomicWeight);
+            Assert.IsTrue(d.HasAtomicWeight);
             Assert.AreEqual(d, new Isotope(h, 2));
+            Assert.IsFalse(h.Isotope(10).HasAtomicWeight);
 
             var c = ChemicalElement.Get(6);
             Assert.IsTrue(c.IsValid());
@@ -86,7 +87,7 @@ namespace Trivial.Chemistry
             Assert.AreEqual(12, c12.AtomicMassNumber);
             Assert.AreEqual(6, c12.Neutrons);
             Assert.IsTrue(c12.HasAtomicWeight);
-            Assert.AreEqual(c.AtomicWeight, c12.AtomicWeight);
+            Assert.AreEqual(12, c12.AtomicWeight);
             Assert.AreEqual(c12, new Isotope(6, 12));
 
             var count = 0;
