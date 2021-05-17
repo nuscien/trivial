@@ -54,7 +54,7 @@ namespace Trivial.Chemistry
             }
             else if (!string.IsNullOrEmpty(n))
             {
-                ele = ChemicalElement.Where(ele => s.Equals(ele.EnglishName, StringComparison.Ordinal)).FirstOrDefault();
+                ele = ChemicalElement.Where(ele => n.Equals(ele.EnglishName, StringComparison.Ordinal)).FirstOrDefault();
                 if (ele is null && n.Length < 4) ele = ChemicalElement.Get(n);
             }
             else
