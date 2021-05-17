@@ -17,7 +17,7 @@ namespace Trivial.Chemistry
         /// <summary>
         /// The maximum atomic number in each period.
         /// </summary>
-        private readonly static int[] periodNumbers = new []{ 2, 10, 18, 36, 54, 86, 118, 168, 218, 290, 362, 460, 558, 686, 814, 976, 1138, 1438, 1738 };
+        private readonly static int[] periodNumbers = new []{ 2, 10, 18, 36, 54, 86, 118, 168, 218, 290, 362, 460, 558, 686, 814, 976, 1138, 1338, 1538 };
 
         /// <summary>
         /// The element name.
@@ -594,7 +594,6 @@ namespace Trivial.Chemistry
                 count += diff;
                 i++;
                 if (i >= period) break;
-                count += diff;
             }
 
             return count > 0 ? count : -1;
@@ -635,13 +634,13 @@ namespace Trivial.Chemistry
             }
 
             var diff = 42;
-            var count = 342;
-            var max = 2080;
+            var count = 242;
+            var max = 1780;
             for (var i = 20; max > 0; i++)
             {
-                if (number <= max) return (i, max - count + number);
+                if (number <= max) return (i, number - max + count - 1);
                 max += count;
-                if (number <= max) return (i, max - count + number);
+                if (number <= max) return (i, number - max + count - 1);
                 count += diff;
                 max += count;
             }
