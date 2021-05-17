@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Trivial {
+namespace Trivial.Chemistry {
     using System;
     
     
@@ -39,7 +39,7 @@ namespace Trivial {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Trivial.ChemistryResource", typeof(ChemistryResource).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Trivial.Chemistry.ChemistryResource", typeof(ChemistryResource).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;

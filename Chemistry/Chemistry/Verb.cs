@@ -21,11 +21,78 @@ namespace Trivial.Chemistry
         protected override async Task OnProcessAsync(CancellationToken cancellationToken = default)
         {
             await RunAsync(null, cancellationToken);
-            var s = Arguments.Get("element", "number", "z", "e", "symbol")?.MergedValue?.Trim();
-            if (string.IsNullOrEmpty(s)) s = Arguments.Verb?.TryGet(0);
+            var s = Arguments.Verb?.TryGet(0);
+            if (s == "period")
+            {
+                s = Arguments.Verb?.TryGet(1);
+                if (string.IsNullOrEmpty(s))
+                {
+                    Console.WriteLine(GetPeriodicTable());
+                }
+                else if (int.TryParse(s, out var period) && period > 0 && period < 8)
+                {
+                    var elements = ChemicalElement.GetExisted();
+                    var has = false;
+                    foreach (var element in elements)
+                    {
+                        if (element is null) continue;
+                        if (element.Period != period)
+                        {
+                            if (has) break;
+                            continue;
+                        }
+
+                        WriteLine(element);
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("Not supported.");
+                }
+
+                return;
+            }
+
+            if (s == "periodic" || s == "table")
+            {
+                Console.WriteLine(GetPeriodicTable());
+                return;
+            }
+
+            s = Arguments.Get("element", "number", "z", "e", "symbol", "s")?.MergedValue?.Trim();
+            if (string.IsNullOrEmpty(s))
+                s = Arguments.Verb?.TryGet(0);
             if (string.IsNullOrEmpty(s))
             {
                 Console.WriteLine(ChemistryResource.ChemicalElement);
+                //try
+                //{
+                //    if (Console.WindowWidth > 74)
+                //    {
+                //        Console.WriteLine();
+                //        Console.WriteLine(GetPeriodicTable());
+                //        Console.WriteLine();
+                //    }
+                //}
+                //catch (System.IO.IOException)
+                //{
+                //}
+                //catch (InvalidOperationException)
+                //{
+                //}
+                //catch (System.Runtime.InteropServices.COMException)
+                //{
+                //}
+                //catch (NotSupportedException)
+                //{
+                //}
+                //catch (NotImplementedException)
+                //{
+                //}
+                //catch (ArgumentException)
+                //{
+                //}
+
                 var start = false;
                 foreach (var i in ChemicalElement.Where(null))
                 {
@@ -40,23 +107,58 @@ namespace Trivial.Chemistry
             }
 
             var eles = s.Split(new[] { " " }, StringSplitOptions.RemoveEmptyEntries).Distinct().Select(i => ChemicalElement.Get(i)).Where(i => i != null).Distinct().ToList();
-            if (eles.Count == 0)
+            if (eles.Count < 1)
             {
                 Console.WriteLine("Not found.");
                 return;
             }
 
-            if (eles.Count > 1)
+            if (eles.Count == 1)
             {
-                foreach (var i in eles)
+                WriteInfo(eles[0], true);
+                return;
+            }
+
+            if (eles.Count < 4)
+            {
+                WriteInfo(eles[0]);
+                Console.WriteLine();
+                WriteInfo(eles[1]);
+                if (eles.Count > 2)
                 {
-                    WriteLine(i);
+                    Console.WriteLine();
+                    WriteInfo(eles[2]);
                 }
 
                 return;
             }
 
-            var element = eles[0];
+            foreach (var i in eles)
+            {
+                WriteLine(i);
+            }
+        }
+
+        /// <summary>
+        /// Writes the specified string value, followed by the current line terminator, to the standard output stream.
+        /// </summary>
+        /// <param name="element">A chemicial element.</param>
+        public static void WriteLine(ChemicalElement element)
+        {
+            if (string.IsNullOrWhiteSpace(element.Symbol) || element.Period < 1) return;
+            var sb = new StringBuilder();
+            sb.AppendFormat("{0}\t{1}\t{2}", element.AtomicNumber, element.Symbol, element.Name);
+            if (element.HasAtomicWeight)
+            {
+                sb.AppendFormat(" \t");
+                sb.AppendFormat(element.AtomicWeight.ToString("#.######"));
+            }
+
+            Console.WriteLine(sb.ToString());
+        }
+
+        private static void WriteInfo(ChemicalElement element, bool full = false)
+        {
             Console.WriteLine("{0}\t{1}", element.AtomicNumber, element.Symbol);
             var name = element.Name;
             Console.WriteLine(" {0}", element.Name);
@@ -73,6 +175,7 @@ namespace Trivial.Chemistry
                 Console.WriteLine(sb.ToString());
             }
 
+            if (!full) return;
             var isotopes = element.Isotopes();
             if (isotopes.Count < 1) return;
             Console.WriteLine();
@@ -94,22 +197,169 @@ namespace Trivial.Chemistry
             else Console.Write(sb.ToString());
         }
 
-        /// <summary>
-        /// Writes the specified string value, followed by the current line terminator, to the standard output stream.
-        /// </summary>
-        /// <param name="element">A chemicial element.</param>
-        public static void WriteLine(ChemicalElement element)
+        private static string GetPeriodicTable()
         {
-            if (string.IsNullOrWhiteSpace(element.Symbol) || element.Period < 1) return;
             var sb = new StringBuilder();
-            sb.AppendFormat("{0}\t{1}\t{2}", element.AtomicNumber, element.Symbol, element.Name);
-            if (element.HasAtomicWeight)
+
+            sb.Append("1 ");
+            AppendSymbol(sb, ChemicalElement.H);
+            sb.Append(' ', 64);
+            AppendSymbol(sb, ChemicalElement.He);
+            sb.AppendLine();
+            sb.Append("  ");
+            AppendNumber(sb, 1);
+            sb.Append(' ', 64);
+            AppendNumber(sb, 2);
+            sb.AppendLine();
+            sb.AppendLine();
+
+            sb.Append("2 ");
+            AppendSymbol(sb, ChemicalElement.Li);
+            AppendSymbol(sb, ChemicalElement.Be);
+            sb.Append(' ', 40);
+            AppendSymbol(sb, ChemicalElement.B);
+            AppendSymbol(sb, ChemicalElement.C);
+            AppendSymbol(sb, ChemicalElement.N);
+            AppendSymbol(sb, ChemicalElement.O);
+            AppendSymbol(sb, ChemicalElement.F);
+            AppendSymbol(sb, ChemicalElement.Ne);
+            sb.AppendLine();
+            sb.Append("  ");
+            AppendNumber(sb, 3, 2);
+            sb.Append(' ', 40);
+            AppendNumber(sb, 5, 6);
+            sb.AppendLine();
+            sb.AppendLine();
+
+            sb.Append("3 ");
+            AppendSymbol(sb, ChemicalElement.Na);
+            AppendSymbol(sb, ChemicalElement.Mg);
+            sb.Append(' ', 40);
+            AppendSymbol(sb, ChemicalElement.Al);
+            AppendSymbol(sb, ChemicalElement.Si);
+            AppendSymbol(sb, ChemicalElement.P);
+            AppendSymbol(sb, ChemicalElement.S);
+            AppendSymbol(sb, ChemicalElement.Cl);
+            AppendSymbol(sb, ChemicalElement.Ar);
+            sb.AppendLine();
+            sb.Append("  ");
+            AppendNumber(sb, 11, 2);
+            sb.Append(' ', 40);
+            AppendNumber(sb, 13, 6);
+            sb.AppendLine();
+            sb.AppendLine();
+
+            sb.Append("4 ");
+            for (var i = 19; i <= 36; i++)
             {
-                sb.AppendFormat(" \t");
-                sb.AppendFormat(element.AtomicWeight.ToString("#.######"));
+                AppendSymbol(sb, ChemicalElement.Get(i));
             }
 
-            Console.WriteLine(sb.ToString());
+            sb.AppendLine();
+            sb.Append("  ");
+            AppendNumber(sb, 19, 18);
+            sb.AppendLine();
+            sb.AppendLine();
+
+            sb.Append("5 ");
+            for (var i = 37; i <= 54; i++)
+            {
+                AppendSymbol(sb, ChemicalElement.Get(i));
+            }
+
+            sb.AppendLine();
+            sb.Append("  ");
+            AppendNumber(sb, 37, 18);
+            sb.AppendLine();
+            sb.AppendLine();
+
+            sb.Append("6 ");
+            for (var i = 55; i < 58; i++)
+            {
+                AppendSymbol(sb, ChemicalElement.Get(i));
+            }
+
+            for (var i = 72; i <= 86; i++)
+            {
+                AppendSymbol(sb, ChemicalElement.Get(i));
+            }
+
+            sb.AppendLine();
+            sb.Append("  ");
+            AppendNumber(sb, 55, 2);
+            sb.Append("... ");
+            AppendNumber(sb, 72, 15);
+            sb.AppendLine();
+            sb.AppendLine();
+
+            sb.Append("7 ");
+            for (var i = 87; i < 90; i++)
+            {
+                AppendSymbol(sb, ChemicalElement.Get(i));
+            }
+
+            for (var i = 104; i <= 118; i++)
+            {
+                AppendSymbol(sb, ChemicalElement.Get(i));
+            }
+
+            sb.AppendLine();
+            sb.Append("  ");
+            AppendNumber(sb, 87, 2);
+            sb.Append("... ");
+            AppendNumber(sb, 104, 15);
+            sb.AppendLine();
+            sb.AppendLine();
+
+            sb.Append(ChemicalElement.La.Symbol);
+            sb.Append('-');
+            sb.Append(ChemicalElement.Lu.Symbol);
+            sb.Append("\t  ");
+            for (var i = 57; i <= 71; i++)
+            {
+                AppendSymbol(sb, ChemicalElement.Get(i));
+            }
+
+            sb.AppendLine();
+            sb.Append("\t  ");
+            AppendNumber(sb, 57, 15);
+            sb.AppendLine();
+            sb.AppendLine();
+
+            sb.Append(ChemicalElement.Ac.Symbol);
+            sb.Append('-');
+            sb.Append(ChemicalElement.Lr.Symbol);
+            sb.Append("\t  ");
+            for (var i = 89; i <= 103; i++)
+            {
+                AppendSymbol(sb, ChemicalElement.Get(i));
+            }
+
+            sb.AppendLine();
+            sb.Append("\t  ");
+            AppendNumber(sb, 89, 15);
+
+            return sb.ToString();
+        }
+
+        private static void AppendSymbol(StringBuilder sb, ChemicalElement element)
+        {
+            var s = element.Symbol?.Trim();
+            if (string.IsNullOrEmpty(s)) return;
+            if (s.Length > 4) s = s.Substring(0, 4);
+            sb.Append(s);
+            sb.Append(' ', 4 - s.Length);
+        }
+
+        private static void AppendNumber(StringBuilder sb, int i, int count = 1)
+        {
+            var k = i + count;
+            for (var j = i; j < k; j++)
+            {
+                var s = j.ToString("g");
+                sb.Append(s);
+                sb.Append(' ', 4 - s.Length);
+            }
         }
     }
 }

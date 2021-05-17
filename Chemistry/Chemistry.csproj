@@ -55,7 +55,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Update="ChemistryResource.Designer.cs">
+    <Compile Update="Chemistry\ChemistryResource.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
       <DependentUpon>ChemistryResource.resx</DependentUpon>
@@ -63,7 +63,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Update="ChemistryResource.resx">
+    <EmbeddedResource Update="Chemistry\ChemistryResource.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>ChemistryResource.Designer.cs</LastGenOutput>
     </EmbeddedResource>

@@ -66,7 +66,7 @@ namespace Trivial.Chemistry
         public static ChemicalElement Get(string symbol)
         {
             Init();
-            symbol = symbol.Trim();
+            symbol = symbol?.Trim();
             if (string.IsNullOrEmpty(symbol)) return null;
             if (symbols.TryGetValue(symbol, out var r)) return r;
             foreach (var item in others.Values)
@@ -183,6 +183,21 @@ namespace Trivial.Chemistry
             {
                 yield return item;
             }
+        }
+
+        internal static IEnumerable<ChemicalElement> GetExisted()
+        {
+            Init();
+            foreach (var item in periodicTable)
+            {
+                yield return item;
+            }
+        }
+
+        internal static IEnumerable<ChemicalElement> GetOthers()
+        {
+            Init();
+            return others.Values;
         }
 
         /// <summary>
