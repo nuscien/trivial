@@ -554,8 +554,9 @@ namespace Trivial.CommandLine
 
                 if (string.IsNullOrEmpty(str)) break;
                 args = new CommandArguments(str);
-                verb = args?.Verb?.ToString()?.Trim();
-                var item = GetVerb(verb);
+                verb = args.Verb?.ToString()?.Trim();
+                var verb2 = args.Verb?.Key?.Trim();
+                var item = GetVerb(verb) ?? GetVerb(verb2);
                 if (item?.Handler == null)
                 {
                     var unhandled = UnhandledHandler;
@@ -567,7 +568,7 @@ namespace Trivial.CommandLine
                     await ProcessHandlerAsync(item.Handler, args, context, conversationMode, cancellationToken);
                 }
 
-                if (IsExitKey(verb)) break;
+                if (IsExitKey(verb) || IsExitKey(verb2)) break;
             }
 
             await ProcessHandlerAsync(ExitHandler, args, context, conversationMode, cancellationToken);

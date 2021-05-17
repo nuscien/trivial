@@ -65,7 +65,7 @@ namespace Trivial.Chemistry
             if (ele != null
                 && (!z.HasValue || ele.AtomicNumber == z.Value)
                 && (string.IsNullOrEmpty(s) || s.Equals(ele.Symbol, StringComparison.OrdinalIgnoreCase))
-                && (!w.HasValue || (!ele.HasAtomicWeight && double.IsNaN(w.Value)) || (ele.HasAtomicWeight && !double.IsNaN(w.Value) && Math.Abs(ele.AtomicWeight - w.Value) < 0.0000001)))
+                && (!w.HasValue || (!ele.HasAtomicWeight && double.IsNaN(w.Value)) || (ele.HasAtomicWeight && !double.IsNaN(w.Value) && Math.Abs(ele.AtomicWeight - w.Value) < 0.000000001)))
                 return ele;
 
             if (!z.HasValue || z.Value < 1 || string.IsNullOrEmpty(s))

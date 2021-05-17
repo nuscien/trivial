@@ -83,12 +83,42 @@ namespace Trivial.CommandLine
         /// </summary>
         /// <param name="index">The index of the word.</param>
         /// <returns>A word in the value.</returns>
-        public string this[int index]
+        public string this[int index] => Values[index];
+
+        /// <summary>
+        /// Tries to get a value.
+        /// </summary>
+        /// <param name="index">The index of the word.</param>
+        /// <param name="result">A word in the value output.</param>
+        /// <returns>true if exists; otherwise, false.</returns>
+        public bool TryGet(int index, out string result)
         {
-            get
+            if (index < 0 || index >= Values.Count)
             {
-                return Values[index];
+                result = null;
+                return false;
             }
+
+            try
+            {
+                result = Values[index];
+                return true;
+            }
+            catch (ArgumentException)
+            {
+                result = null;
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Tries to get a value.
+        /// </summary>
+        /// <param name="index">The index of the word.</param>
+        /// <returns>A word in the value; or null; if not found.</returns>
+        public string TryGet(int index)
+        {
+            return TryGet(index, out var r) ? r : null;
         }
 
         /// <summary>

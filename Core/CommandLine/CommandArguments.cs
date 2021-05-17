@@ -50,7 +50,8 @@ namespace Trivial.CommandLine
         /// <param name="args">The original arguments.</param>
         public CommandArguments(string args)
         {
-            if (args == null)
+            args = args?.Trim();
+            if (string.IsNullOrEmpty(args))
             {
                 this.args = new List<string>();
                 return;

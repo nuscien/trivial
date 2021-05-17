@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Trivial.Console
+namespace Trivial.CommandLine
 {
     /// <summary>
     /// Unit test for argument.
@@ -21,7 +21,7 @@ namespace Trivial.Console
         public void TestArguments()
         {
             var str = "something --path /usr/local -path2 \"/usr\" -d /usr -f C:\\Program Files\\Windows NT -url https://dot.net -a Abc -a Xyz";
-            var args = new Arguments(str);
+            var args = new CommandArguments(str);
             Assert.AreEqual("something", args.Verb.Key);
             var param = args.Get("path");
             Assert.AreEqual("/usr/local", param.FirstValue);
@@ -36,11 +36,11 @@ namespace Trivial.Console
             Assert.AreEqual("Abc Xyz", param.MergedValue);
             Assert.AreEqual("Abc", args.GetFirstOrNext("a").Value);
 
-            args = new Arguments(string.Empty);
+            args = new CommandArguments(string.Empty);
             Assert.AreEqual(0, args.Count);
-            args = new Arguments(null as string);
+            args = new CommandArguments(null as string);
             Assert.AreEqual(0, args.Count);
-            args = new Arguments(new List<string>());
+            args = new CommandArguments(new List<string>());
             Assert.AreEqual(0, args.Count);
         }
     }

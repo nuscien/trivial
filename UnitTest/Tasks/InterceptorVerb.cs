@@ -2,30 +2,31 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Trivial.Tasks
 {
-    class InterceptorVerb : Console.AsyncVerb
+    class InterceptorVerb : CommandLine.BaseCommandVerb
     {
         private int checkCount = 0;
 
         private string value = "a";
 
-        public override string Description => "Interceptor";
+        public static string Description => "Interceptor";
 
-        public override async Task ProcessAsync()
+        protected override async Task OnProcessAsync(CancellationToken cancellationToken = default)
         {
             await TestKeyFeaturesAsync();
-            System.Console.WriteLine();
+            Console.WriteLine();
             TestEquipartitionTaskAsync();
         }
 
         private async Task TestKeyFeaturesAsync()
         {
-            System.Console.WriteLine("Interceptor testing.");
+            Console.WriteLine("Interceptor testing.");
 
-            System.Console.WriteLine("Debounce");
+            Console.WriteLine("Debounce");
             var task = new Interceptor<string>(
                 v => value = v,
                 InterceptorPolicy.Debounce(TimeSpan.FromMilliseconds(200))
@@ -43,7 +44,7 @@ namespace Trivial.Tasks
             await task.WaitAsync();
             Check("e");
 
-            System.Console.WriteLine("Throttle");
+            Console.WriteLine("Throttle");
             task.ResetDuration();
             task.Policy = InterceptorPolicy.Throttle(TimeSpan.FromMilliseconds(800));
             _ = task.InvokeAsync("f");
@@ -58,7 +59,7 @@ namespace Trivial.Tasks
             await task.WaitAsync();
             Check("f");
 
-            System.Console.WriteLine("Multiple");
+            Console.WriteLine("Multiple");
             task.ResetDuration();
             task.Policy = InterceptorPolicy.Mutliple(2, 4, TimeSpan.FromMilliseconds(200));
             _ = task.InvokeAsync("j");
@@ -78,7 +79,7 @@ namespace Trivial.Tasks
             await task.WaitAsync();
             Check("m");
 
-            System.Console.WriteLine("Times 1");
+            Console.WriteLine("Times 1");
             task.ResetDuration();
             task.Policy = InterceptorPolicy.Times(2, 3, TimeSpan.FromMilliseconds(200));
             _ = task.InvokeAsync("o");
@@ -98,7 +99,7 @@ namespace Trivial.Tasks
             await task.WaitAsync();
             Check("m");
 
-            System.Console.WriteLine("Times 2");
+            Console.WriteLine("Times 2");
             task.ResetDuration();
             task.Policy = InterceptorPolicy.Times(2, 3, TimeSpan.FromMilliseconds(200));
             _ = task.InvokeAsync("t");
@@ -116,17 +117,17 @@ namespace Trivial.Tasks
 
         private void TestEquipartitionTaskAsync()
         {
-            System.Console.WriteLine("Equipartition task testing.");
+            Console.WriteLine("Equipartition task testing.");
             var tasks = new EquipartitionTaskContainer();
             tasks.Created += (sender, ev) =>
             {
                 if (ev.NewValue == null)
                 {
-                    System.Console.WriteLine("N/A");
+                    Console.WriteLine("N/A");
                     return;
                 }
 
-                System.Console.WriteLine($"{ev.NewValue.Description ?? ev.NewValue.Id}\t{ev.Key}\tCreated");
+                Console.WriteLine($"{ev.NewValue.Description ?? ev.NewValue.Id}\t{ev.Key}\tCreated");
             };
             var task1 = tasks.Create("a", "o", 5, "task1");
             WriteLine(task1);
@@ -135,7 +136,7 @@ namespace Trivial.Tasks
             var task3 = tasks.Create("b", "q", 2, "task3");
             WriteLine(task3);
 
-            System.Console.WriteLine("Pick from " + (task1.Description ?? task1.Id));
+            Console.WriteLine("Pick from " + (task1.Description ?? task1.Id));
             var f = task1.Pick();
             f = task1.Pick();
             WriteLine(task1);
@@ -145,26 +146,26 @@ namespace Trivial.Tasks
             WriteLine(task1);
             task1.UpdateFragment(f, EquipartitionTask.FragmentStates.Failure);
             WriteLine(task1);
-            System.Console.WriteLine(f.State);
+            Console.WriteLine(f.State);
             f = task1.Pick();
-            System.Console.WriteLine(f.State);
+            Console.WriteLine(f.State);
             task1.UpdateFragment(f, EquipartitionTask.FragmentStates.Fatal);
-            System.Console.WriteLine(f.State);
+            Console.WriteLine(f.State);
             WriteLine(task1);
             WriteLine(task2);
             WriteLine(task3);
 
-            System.Console.WriteLine("Pick from " + (task3.Description ?? task3.Id));
+            Console.WriteLine("Pick from " + (task3.Description ?? task3.Id));
             f = task3.Pick();
             f = task3.Pick();
             WriteLine(task1);
             WriteLine(task2);
             WriteLine(task3);
             var fStr = f.ToJsonString();
-            System.Console.WriteLine(fStr);
+            Console.WriteLine(fStr);
             f = EquipartitionTask.Fragment.Parse(fStr);
             fStr = f.ToQueryData().ToString();
-            System.Console.WriteLine(fStr);
+            Console.WriteLine(fStr);
             f = EquipartitionTask.Fragment.Parse(fStr);
             task1.UpdateFragment(f, EquipartitionTask.FragmentStates.Success);
             WriteLine(task1);
@@ -175,10 +176,10 @@ namespace Trivial.Tasks
             WriteLine(task2);
             WriteLine(task3);
             f = task3.Pick();
-            System.Console.WriteLine("No more fragment in task3.");
+            Console.WriteLine("No more fragment in task3.");
             if (f != null)
             {
-                System.Console.WriteLine("Error!");
+                Console.WriteLine("Error!");
                 return;
             }
 
@@ -187,7 +188,7 @@ namespace Trivial.Tasks
             WriteLine(task2);
             WriteLine(task3);
 
-            System.Console.WriteLine("Done!");
+            Console.WriteLine("Done!");
         }
 
         private void Check(string expect, string message = null)
@@ -197,9 +198,9 @@ namespace Trivial.Tasks
             throw new InvalidOperationException("#" + checkCount + " (" + value + " != " + expect + ") " + (message ?? string.Empty));
         }
 
-        private void WriteLine(EquipartitionTask t)
+        private static void WriteLine(EquipartitionTask t)
         {
-            System.Console.WriteLine($"{t.Description ?? t.Id}\t{t.JobId}\t{t.GetProcessingFragments().Count()} + {t.GetDoneFragments().Count()} / {t.Count}");
+            Console.WriteLine($"{t.Description ?? t.Id}\t{t.JobId}\t{t.GetProcessingFragments().Count()} + {t.GetDoneFragments().Count()} / {t.Count}");
         }
     }
 }

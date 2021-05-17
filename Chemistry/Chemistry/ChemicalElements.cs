@@ -172,6 +172,8 @@ namespace Trivial.Chemistry
         /// <returns>An enumerable instance that contains elements from the periodic table that satisfy the condition.</returns>
         public static IEnumerable<ChemicalElement> Where(Func<ChemicalElement, bool> predicate)
         {
+            Init();
+            if (predicate is null) predicate = ele => true;
             foreach (var item in periodicTable.Where(predicate))
             {
                 yield return item;

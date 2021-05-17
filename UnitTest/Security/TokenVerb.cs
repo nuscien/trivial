@@ -1,18 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Net.Http;
-using System.Text;
-using System.Threading.Tasks;
 using System.Runtime.Serialization;
 using System.Security.Cryptography;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Trivial.Security
 {
-    class TokenClientVerb : Console.Verb
+    class TokenClientVerb : CommandLine.BaseCommandVerb
     {
-        public override string Description => "Access token";
+        public static string Description => "Access token";
 
-        public override void Process()
+        protected override async Task OnProcessAsync(CancellationToken cancellationToken = default)
         {
             var codeTokenReq = new CodeTokenRequest(new CodeTokenRequestBody
             {
@@ -21,14 +22,15 @@ namespace Trivial.Security
             {
                 ScopeString = "test plain"
             };
+            await Task.Run(() => { }, cancellationToken);
             var tokenUrl = codeTokenReq.ToJsonString();
             codeTokenReq = CodeTokenRequest.Parse(tokenUrl);
             tokenUrl = codeTokenReq.ToQueryData().ToString();
             codeTokenReq = CodeTokenRequest.Parse(tokenUrl);
             tokenUrl = codeTokenReq.ToJsonString();
             codeTokenReq = CodeTokenRequest.Parse(tokenUrl);
-            ConsoleLine.WriteLine(codeTokenReq.ToQueryData().ToString());
-            ConsoleLine.WriteLine();
+            Console.WriteLine(codeTokenReq.ToQueryData().ToString());
+            Console.WriteLine();
 
             // JWT HS512
             var hs = HashSignatureProvider.CreateHS512("a secret string");
@@ -40,21 +42,21 @@ namespace Trivial.Security
             var header = jwt.ToAuthenticationHeaderValue();
             jwt = JsonWebToken<Net.HttpClientVerb.NameAndDescription>.Parse(header.ToString(), hs);
             var jwtStr = jwt.ToEncodedString();
-            ConsoleLine.WriteLine(jwtStr != header.Parameter ? "Failed JWT HS512 testing." : jwtStr);
-            ConsoleLine.WriteLine();
+            Console.WriteLine(jwtStr != header.Parameter ? "Failed JWT HS512 testing." : jwtStr);
+            Console.WriteLine();
 
             // RSA.
             var rsa = RSA.Create();
             var privateKey = rsa.ExportParameters(true).ToPrivatePEMString(true);
-            ConsoleLine.WriteLine(privateKey);
+            Console.WriteLine(privateKey);
             var publicKey = rsa.ExportParameters(false).ToPublicPEMString();
-            ConsoleLine.WriteLine(publicKey);
+            Console.WriteLine(publicKey);
             var privateKeyP = RSAParametersConvert.Parse(privateKey).Value;
             var privateKeyS = privateKeyP.ToPrivatePEMString(true);
             var publicKeyP = RSAParametersConvert.Parse(publicKey).Value;
             var publicKeyS = publicKeyP.ToPublicPEMString();
-            ConsoleLine.WriteLine("They are {0}.", (privateKey == privateKeyS) && (publicKey == publicKeyS) ? "same" : "different");
-            ConsoleLine.WriteLine();
+            Console.WriteLine("They are {0}.", (privateKey == privateKeyS) && (publicKey == publicKeyS) ? "same" : "different");
+            Console.WriteLine();
 
             // JWT RS512
             using var rs = RSASignatureProvider.CreateRS512(rsa);
@@ -62,8 +64,8 @@ namespace Trivial.Security
             header = jwt.ToAuthenticationHeaderValue();
             jwt = JsonWebToken<Net.HttpClientVerb.NameAndDescription>.Parse(header.ToString(), rs);
             jwtStr = jwt.ToEncodedString();
-            ConsoleLine.WriteLine(jwtStr != header.Parameter ? "Failed JWT RS512 testing." : header.Parameter);
-            ConsoleLine.WriteLine();
+            Console.WriteLine(jwtStr != header.Parameter ? "Failed JWT RS512 testing." : header.Parameter);
+            Console.WriteLine();
         }
     }
 }

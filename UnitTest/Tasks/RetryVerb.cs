@@ -1,34 +1,35 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 using Trivial.Reflection;
 
 namespace Trivial.Tasks
 {
-    class RetryVerb : Console.AsyncVerb
+    class RetryVerb : CommandLine.BaseCommandVerb
     {
-        public override string Description => "Retry";
+        public static string Description => "Retry";
 
-        public override async Task ProcessAsync()
+        protected override async Task OnProcessAsync(CancellationToken cancellationToken = default)
         {
-            ConsoleLine.WriteLine("Retry 1");
-            ConsoleLine.WriteLine(DateTime.Now.ToString("HH:mm:ss.fff"));
+            Console.WriteLine("Retry 1");
+            Console.WriteLine(DateTime.Now.ToString("HH:mm:ss.fff"));
             var retry = new LinearRetryPolicy(3, TimeSpan.FromMilliseconds(200), TimeSpan.FromMilliseconds(100));
             await retry.ProcessAsync(() =>
             {
-                ConsoleLine.WriteLine(DateTime.Now.ToString("HH:mm:ss.fff"));
+                Console.WriteLine(DateTime.Now.ToString("HH:mm:ss.fff"));
                 throw new ApplicationException();
             }, typeof(ApplicationException));
 
-            ConsoleLine.WriteLine("Retry 2");
-            ConsoleLine.WriteLine(DateTime.Now.ToString("HH:mm:ss.fff"));
+            Console.WriteLine("Retry 2");
+            Console.WriteLine(DateTime.Now.ToString("HH:mm:ss.fff"));
             try
             {
                 await retry.ProcessAsync(() =>
                 {
-                    ConsoleLine.WriteLine(DateTime.Now.ToString("HH:mm:ss.fff"));
+                    Console.WriteLine(DateTime.Now.ToString("HH:mm:ss.fff"));
                     throw new InvalidOperationException();
                 }, typeof(ApplicationException));
             }
@@ -47,29 +48,29 @@ namespace Trivial.Tasks
                 return new ApplicationException();
             });
 
-            ConsoleLine.WriteLine("Retry 3");
-            ConsoleLine.WriteLine(DateTime.Now.ToString("HH:mm:ss.fff"));
+            Console.WriteLine("Retry 3");
+            Console.WriteLine(DateTime.Now.ToString("HH:mm:ss.fff"));
             await retry.ProcessAsync(() =>
             {
-                ConsoleLine.WriteLine(DateTime.Now.ToString("HH:mm:ss.fff"));
+                Console.WriteLine(DateTime.Now.ToString("HH:mm:ss.fff"));
                 throw new ApplicationException();
             }, h.GetException);
 
-            ConsoleLine.WriteLine("Retry 4");
-            ConsoleLine.WriteLine(DateTime.Now.ToString("HH:mm:ss.fff"));
+            Console.WriteLine("Retry 4");
+            Console.WriteLine(DateTime.Now.ToString("HH:mm:ss.fff"));
             await retry.ProcessAsync(() =>
             {
-                ConsoleLine.WriteLine(DateTime.Now.ToString("HH:mm:ss.fff"));
+                Console.WriteLine(DateTime.Now.ToString("HH:mm:ss.fff"));
                 throw new ArgumentException("name");
             }, h.GetException);
 
-            ConsoleLine.WriteLine("Retry 5");
-            ConsoleLine.WriteLine(DateTime.Now.ToString("HH:mm:ss.fff"));
+            Console.WriteLine("Retry 5");
+            Console.WriteLine(DateTime.Now.ToString("HH:mm:ss.fff"));
             try
             {
                 await retry.ProcessAsync(() =>
                 {
-                    ConsoleLine.WriteLine(DateTime.Now.ToString("HH:mm:ss.fff"));
+                    Console.WriteLine(DateTime.Now.ToString("HH:mm:ss.fff"));
                     throw new ArgumentException("other");
                 }, h.GetException);
             }

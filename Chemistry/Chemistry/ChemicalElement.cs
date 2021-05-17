@@ -179,7 +179,7 @@ namespace Trivial.Chemistry
                 var s = name?.Invoke();
                 if (!string.IsNullOrEmpty(s)) return s;
                 var table = periodicTable;
-                if (name is null && table != null && AtomicNumber < table.Length)
+                if (name is null && table != null && AtomicNumber <= table.Length)
                 {
                     try
                     {

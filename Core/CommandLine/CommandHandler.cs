@@ -244,6 +244,33 @@ namespace Trivial.CommandLine
         }
 
         /// <summary>
+        /// Queues the specified work to run on the thread pool.
+        /// </summary>
+        /// <param name="action">The work to execute asynchronously.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used to cancel the work if it has not yet started.</param>
+        /// <returns>A task that represents the work queued to execute in the thread pool.</returns>
+        protected static Task RunAsync(Action action, CancellationToken cancellationToken = default)
+            => Task.Run(action is null ? () => { } : action, cancellationToken);
+
+        /// <summary>
+        /// Creates a cancellable task that completes after a specified number of milliseconds.
+        /// </summary>
+        /// <param name="millisecondsDelay">The number of milliseconds to wait before completing the returned task, or -1 to wait indefinitely.</param>
+        /// <param name="cancellationToken">A cancellation token to observe while waiting for the task to complete.</param>
+        /// <returns>A task that represents the time delay.</returns>
+        protected static Task Delay(int millisecondsDelay, CancellationToken cancellationToken = default)
+            => Task.Delay(millisecondsDelay, cancellationToken);
+
+        /// <summary>
+        /// Creates a cancellable task that completes after a specified number of milliseconds.
+        /// </summary>
+        /// <param name="delay">The time span to wait before completing the returned task, or TimeSpan.FromMilliseconds(-1) to wait indefinitely.</param>
+        /// <param name="cancellationToken">A cancellation token to observe while waiting for the task to complete.</param>
+        /// <returns>A task that represents the time delay.</returns>
+        protected static Task Delay(TimeSpan delay, CancellationToken cancellationToken = default)
+            => Task.Delay(delay, cancellationToken);
+
+        /// <summary>
         /// Processes.
         /// </summary>
         /// <param name="args">The command arguments.</param>
@@ -364,7 +391,7 @@ namespace Trivial.CommandLine
         {
             var instance = factory();
             if (instance is null) return Task.Run(() => { }, cancellationToken);
-            return instance.ProcessAsync(args, context, cancellationToken);
+            return instance.ProcessAsync(args ?? new CommandArguments(string.Empty), context, cancellationToken);
         }
 
         /// <summary>
@@ -376,7 +403,7 @@ namespace Trivial.CommandLine
         {
             var instance = factory();
             if (instance is null) return;
-            instance.GetHelp(args, context);
+            instance.GetHelp(args ?? new CommandArguments(string.Empty), context);
         }
     }
 }
