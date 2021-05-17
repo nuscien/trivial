@@ -579,6 +579,54 @@ namespace Trivial.Chemistry
         }
 
         /// <summary>
+        /// Gets the atomic number of the first element in the specific period.
+        /// </summary>
+        /// <param name="period">The period.</param>
+        /// <returns>The atomic number of the first element in the specific period; or -1, if the period is invalid.</returns>
+        public static int FirstAtomicNumberInPeriod(int period)
+        {
+            if (period < 1) return -1;
+            var number = 1;
+            var count = 2;
+            var diff = 2;
+            for (var i = 1; i < period; i++)
+            {
+                number += count;
+                diff += 4;
+                count += diff;
+                i++;
+                if (i >= period) break;
+                number += count;
+            }
+
+            return number;
+        }
+
+        /// <summary>
+        /// Gets the atomic number of the first element in the specific period.
+        /// </summary>
+        /// <param name="period">The period.</param>
+        /// <returns>The atomic number of the first element in the specific period; or -1, if the period is invalid.</returns>
+        public static int LastAtomicNumberInPeriod(int period)
+        {
+            if (period < 1) return -1;
+            var number = 2;
+            var count = 2;
+            var diff = 2;
+            for (var i = 1; i < period; i++)
+            {
+                diff += 4;
+                count += diff;
+                i++;
+                number += count;
+                if (i >= period) break;
+                number += count;
+            }
+
+            return number;
+        }
+
+        /// <summary>
         /// Gets the element count in a specific period.
         /// </summary>
         /// <param name="period">The period which is a one-based index of horizontal row in the periodic table.</param>

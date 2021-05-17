@@ -27,10 +27,27 @@ namespace Trivial.Chemistry
                 s = Arguments.Verb?.TryGet(1);
                 if (string.IsNullOrEmpty(s))
                 {
-                    Console.WriteLine(GetPeriodicTable());
+                    WritePeriodicTable();
                 }
-                else if (int.TryParse(s, out var period) && period > 0 && period < 8)
+                else if (int.TryParse(s, out var period) && period > 0)
                 {
+                    if (period > 7)
+                    {
+                        var start = ChemicalElement.FirstAtomicNumberInPeriod(period);
+                        var end = ChemicalElement.LastAtomicNumberInPeriod(period);
+                        if (start <= 0 || end <= 0 || start >= end)
+                        {
+                            Console.WriteLine("The period was too large.");
+                        }
+                        else
+                        {
+                            Console.WriteLine(ChemistryResource.ChemicalElement);
+                            Console.WriteLine($"{start} - {end} (Total {end - start + 1})");
+                        }
+
+                        return;
+                    }
+
                     var elements = ChemicalElement.GetExisted();
                     var has = false;
                     foreach (var element in elements)
@@ -47,7 +64,7 @@ namespace Trivial.Chemistry
                 }
                 else
                 {
-                    Console.WriteLine("Not supported.");
+                    Console.WriteLine("The period should be a natural number.");
                 }
 
                 return;
@@ -55,7 +72,7 @@ namespace Trivial.Chemistry
 
             if (s == "periodic" || s == "table")
             {
-                Console.WriteLine(GetPeriodicTable());
+                WritePeriodicTable();
                 return;
             }
 
@@ -70,7 +87,7 @@ namespace Trivial.Chemistry
                 //    if (Console.WindowWidth > 74)
                 //    {
                 //        Console.WriteLine();
-                //        Console.WriteLine(GetPeriodicTable());
+                //        WritePeriodicTable();
                 //        Console.WriteLine();
                 //    }
                 //}
@@ -197,7 +214,7 @@ namespace Trivial.Chemistry
             else Console.Write(sb.ToString());
         }
 
-        private static string GetPeriodicTable()
+        private static string WritePeriodicTable()
         {
             var sb = new StringBuilder();
 
@@ -338,8 +355,15 @@ namespace Trivial.Chemistry
             sb.AppendLine();
             sb.Append("\t  ");
             AppendNumber(sb, 89, 15);
+            sb.AppendLine();
+            sb.AppendLine();
 
-            return sb.ToString();
+            sb.AppendLine("8 119-168");
+            sb.AppendLine("9 169-218");
+
+            var s = sb.ToString();
+            Console.Write(s);
+            return s;
         }
 
         private static void AppendSymbol(StringBuilder sb, ChemicalElement element)
