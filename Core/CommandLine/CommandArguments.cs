@@ -28,6 +28,14 @@ namespace Trivial.CommandLine
         /// </summary>
         private readonly List<CommandParameter> parameters = new();
 
+        private CommandArguments(IEnumerable<string> args, CommandParameter verb, IEnumerable<CommandParameter> parameters)
+        {
+            this.args = args.ToList();
+            Verb = verb;
+            this.parameters = parameters.ToList();
+            Count = this.args.Count;
+        }
+
         /// <summary>
         /// Initializes a new instance of the Arguments class.
         /// </summary>
@@ -358,7 +366,7 @@ namespace Trivial.CommandLine
         /// Determines whether a word is in the arguments.
         /// </summary>
         /// <param name="key"></param>
-        /// <returns></returns>
+        /// <returns>true if exists; otherwise, false.</returns>
         public bool Contains(string key)
         {
             return args.Contains(key);
@@ -546,6 +554,24 @@ namespace Trivial.CommandLine
             var obj = Activator.CreateInstance<T>();
             Deserialize(obj);
             return obj;
+        }
+
+        internal CommandArguments RemoveVerb(bool onlyFirstWord = false)
+        {
+            if (Verb is null) return this;
+            var args = this.args.ToList();
+            if (onlyFirstWord && Verb.Count > 0)
+            {
+                args.RemoveAt(0);
+                return new CommandArguments(args, new CommandParameter(Verb.TryGet(0), Verb.Skip(1)), parameters);
+            }
+
+            for (var i = 0; i < Verb.Count + 1; i++)
+            {
+                args.RemoveAt(0);
+            }
+
+            return new CommandArguments(args, null, parameters);
         }
 
         /// <summary>

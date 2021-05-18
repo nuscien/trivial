@@ -18,7 +18,7 @@ namespace Trivial.CommandLine
             dispatcher.Register<Net.HttpClientVerb>("http");
             dispatcher.Register<Tasks.RetryVerb>("retry");
             dispatcher.Register<Text.CsvVerb>("csv");
-            dispatcher.Register<Chemistry.ChemicalElementVerb>("chemistry");
+            dispatcher.Register<Chemistry.ChemistryVerb>("chemistry");
             return dispatcher.ProcessAsync(args);
         }
     }

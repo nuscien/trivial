@@ -234,6 +234,11 @@ namespace Trivial.Chemistry
         public int Count => list.Sum(ele => ele.Count);
 
         /// <summary>
+        /// Gets the proton numbers.
+        /// </summary>
+        public int ProtonNumber => list.Sum(ele => ele.Count * (ele.Element?.AtomicNumber ?? 0));
+
+        /// <summary>
         /// Gets a collection of all elements and their numbers.
         /// </summary>
         /// <returns>A collection of all elements and their numbers.</returns>

@@ -54,7 +54,12 @@ namespace Trivial.Chemistry
             if (number <= periodicTable.Length) return periodicTable[number - 1];
             if (others.TryGetValue(number, out var r)) return r;
             r = new ChemicalElement(number, null, null, double.NaN);
-            if (r.Period > 0) others.TryAdd(number, r);
+            if (r.Period > 0)
+            {
+                others.TryAdd(number, r);
+                if (others.TryGetValue(number, out var r2)) return r2;
+            }
+
             return r;
         }
 
@@ -181,6 +186,46 @@ namespace Trivial.Chemistry
 
             foreach (var item in others.Values.Where(predicate))
             {
+                yield return item;
+            }
+        }
+
+        /// <summary>
+        /// Gets a range.
+        /// </summary>
+        /// <param name="start">The start atomic numbers.</param>
+        /// <param name="count">The count to get.</param>
+        /// <returns>A specific range of chemical element.</returns>
+        public static IEnumerable<ChemicalElement> Range(int start, int count)
+        {
+            Init();
+            var end = start + count;
+            if (end < 1 || end < start) yield break;
+            if (start <= periodicTable.Length)
+            {
+                var col = start > 1 ? periodicTable.Skip(start - 1) : periodicTable;
+                if (end > periodicTable.Length)
+                {
+                    foreach (var item in col)
+                    {
+                        yield return item;
+                    }
+                }
+                else
+                {
+                    foreach (var item in col)
+                    {
+                        if (item.AtomicNumber > end) break;
+                        yield return item;
+                    }
+
+                    yield break;
+                }
+            }
+
+            foreach (var item in others.Values)
+            {
+                if (item.AtomicNumber > end) break;
                 yield return item;
             }
         }

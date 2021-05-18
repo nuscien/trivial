@@ -22,7 +22,7 @@ namespace Trivial.CommandLine
         {
             var str = "something --path /usr/local -path2 \"/usr\" -d /usr -f C:\\Program Files\\Windows NT -url https://dot.net -a Abc -a Xyz";
             var args = new CommandArguments(str);
-            Assert.AreEqual("something", args.Verb.Key);
+            Assert.AreEqual("something", args.Verb.ToString());
             var param = args.Get("path");
             Assert.AreEqual("/usr/local", param.FirstValue);
             Assert.AreEqual("/usr/local", args.GetFirst("path", "path2").Value);

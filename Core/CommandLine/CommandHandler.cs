@@ -85,6 +85,7 @@ namespace Trivial.CommandLine
         /// <param name="context">The conversation context during the command processing.</param>
         protected virtual void OnGetHelp(CommandArguments args, CommandConversationContext context)
         {
+            Console.WriteLine(Description);
         }
 
         /// <summary>
