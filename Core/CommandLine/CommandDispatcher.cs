@@ -776,7 +776,10 @@ namespace Trivial.CommandLine
                 {
                     foreach (var item in GetDescription())
                     {
-                        Console.WriteLine("{0} \t{1}", item.Key, item.Value);
+                        if (item.Key.Length < 8)
+                            Console.WriteLine("{0}\t \t{1}", item.Key, item.Value);
+                        else
+                            Console.WriteLine("{0} \t{1}", item.Key, item.Value);
                     }
                 }
 

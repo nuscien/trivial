@@ -171,6 +171,21 @@ namespace Trivial.Chemistry
         }
 
         /// <summary>
+        /// Registers all chemical elements 1 - number.
+        /// </summary>
+        /// <param name="number">The atomic number to register.</param>
+        public static void Register(int number)
+        {
+            Init();
+            Get(number);
+            if (number > 10000) number = 10000;
+            for (var i = periodicTable.Length + 1; i < number; i++)
+            {
+                Get(i);
+            }
+        }
+
+        /// <summary>
         /// Filters the periodic table based on a predicate.
         /// </summary>
         /// <param name="predicate">A function to test each element for a condition.</param>
@@ -228,6 +243,14 @@ namespace Trivial.Chemistry
                 if (item.AtomicNumber > end) break;
                 yield return item;
             }
+        }
+
+        internal static bool Has(int number)
+        {
+            if (number < 1) return false;
+            Init();
+            if (number <= periodicTable.Length) return true;
+            return others.ContainsKey(number);
         }
 
         internal static IEnumerable<ChemicalElement> GetExisted()

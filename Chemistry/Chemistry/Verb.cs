@@ -28,6 +28,26 @@ namespace Trivial.Chemistry
         public static string ExamplesTips { get; set; }
 
         /// <summary>
+        /// Gets or sets the tips header for isotopes.
+        /// </summary>
+        public static string IsotopesTips { get; set; }
+
+        /// <summary>
+        /// Gets or sets the tips for error.
+        /// </summary>
+        public static string ErrorTips { get; set; }
+
+        /// <summary>
+        /// Gets or sets the tips for empty.
+        /// </summary>
+        public static string EmptyTips { get; set; }
+
+        /// <summary>
+        /// Gets or sets the tips for not found.
+        /// </summary>
+        public static string NotFoundTips { get; set; }
+
+        /// <summary>
         /// Gets or sets the tips for getting chemical element.
         /// </summary>
         public static string ElementTips { get; set; }
@@ -77,7 +97,7 @@ namespace Trivial.Chemistry
                         var end = ChemicalElement.LastAtomicNumberInPeriod(period);
                         if (start <= 0 || end <= 0 || start >= end)
                         {
-                            Console.WriteLine("The period was too large.");
+                            Console.WriteLine((ErrorTips ?? "Error!") + "The period was too large.");
                         }
                         else
                         {
@@ -108,7 +128,7 @@ namespace Trivial.Chemistry
                 }
                 else
                 {
-                    Console.WriteLine("The period should be a natural number.");
+                    Console.WriteLine((ErrorTips ?? "Error!") + " The period should be a natural number.");
                 }
 
                 return;
@@ -169,7 +189,7 @@ namespace Trivial.Chemistry
                 if (s.StartsWith("formula ")) s = s.Substring(8)?.Trim();
                 if (s.Length < 1 || s == "molecular" || s == "formula")
                 {
-                    Console.WriteLine("Empty.");
+                    Console.WriteLine(EmptyTips ?? "Empty");
                     return;
                 }
 
@@ -179,15 +199,22 @@ namespace Trivial.Chemistry
                     if (s.Equals("help", StringComparison.OrdinalIgnoreCase) || s.Equals("?", StringComparison.Ordinal))
                         WriteHelp(Arguments.Verb?.Key, "molecular");
                     else
-                        Console.WriteLine("Invalid molecular formula.");
+                        Console.WriteLine((ErrorTips ?? "Error!") + " Invalid molecular formula.");
                     return;
                 }
 
                 Console.WriteLine(m.ToString());
+                var sb = new StringBuilder();
                 foreach (var ele in m.Zip())
                 {
                     if (ele.Element is null) continue;
-                    Console.WriteLine("{0} x\t {1} \t{2} \t{3}", ele.Count, ele.Element.AtomicNumber, ele.Element.Symbol, ele.Element.Name);
+                    sb.Clear();
+                    var name = Arguments.Has("en") ? ele.Element.EnglishName : ele.Element.Name;
+                    sb.AppendFormat("{0}\t{1}\t{2}", ele.Element.AtomicNumber, ele.Element.Symbol, name);
+                    if (name.Length < 8) sb.Append('\t');
+                    sb.Append(" \tx ");
+                    sb.Append(ele.Count);
+                    Console.WriteLine(sb.ToString());
                 }
 
                 Console.WriteLine("Proton numbers \t" + m.ProtonNumber);
@@ -243,7 +270,7 @@ namespace Trivial.Chemistry
                 Console.WriteLine(ChemistryResource.ChemicalElement);
                 var start = false;
                 var col = ChemicalElement.Where(GetFilter(q)).ToList();
-                if (col.Count <= 20)
+                if (col.Count <= 64)
                 {
                     foreach (var i in col)
                     {
@@ -268,7 +295,7 @@ namespace Trivial.Chemistry
             var eles = s.Split(new[] { " " }, StringSplitOptions.RemoveEmptyEntries).Distinct().Select(i => ChemicalElement.Get(i)).Where(i => i != null).Distinct().ToList();
             if (eles.Count < 1)
             {
-                Console.WriteLine("Not found.");
+                Console.WriteLine(NotFoundTips ?? "Not found.");
                 return;
             }
 
@@ -334,7 +361,23 @@ namespace Trivial.Chemistry
             if (isotopes.Count < 1) return;
             Console.WriteLine();
             sb.Clear();
-            sb.AppendFormat("Isotopes ({0})", isotopes.Count);
+            sb.AppendFormat("{0} ({1})", IsotopesTips ?? "Isotopes", isotopes.Count);
+            if (isotopes.Count > 64)
+            {
+                var i = 0;
+                foreach (var isotope in isotopes)
+                {
+                    if (i % 6 == 0)
+                        sb.AppendLine();
+                    sb.Append(isotope.AtomicMassNumber);
+                    sb.Append('\t');
+                    i++;
+                }
+
+                Console.WriteLine(sb.ToString());
+                return;
+            }
+
             sb.AppendLine();
             var isOdd = false;
             foreach (var isotope in isotopes)
@@ -394,9 +437,9 @@ namespace Trivial.Chemistry
             sb.AppendFormat("{0}\t{1}\t{2}", element.AtomicNumber, element.Symbol, name);
             if (!double.IsNaN(element.AtomicWeight))
             {
-                if (name.Length < 8) sb.AppendFormat("\t");
-                sb.AppendFormat(" \t");
-                sb.AppendFormat(element.AtomicWeight.ToString("#.######"));
+                if (name.Length < 8) sb.Append('\t');
+                sb.Append(" \t");
+                sb.Append(element.AtomicWeight.ToString("#.######"));
             }
 
             Console.WriteLine(sb.ToString());
@@ -419,7 +462,7 @@ namespace Trivial.Chemistry
                 case "z":
                 case "Z":
                 case "元素":
-                    WriteLine(verb, "element <symbol>", ElementTips, "Get details of the specific chemical element by symbol or atomic numbers.");
+                    WriteTips(verb, "element <symbol>", ElementTips, "Get details of the specific chemical element by symbol or atomic numbers.");
                     Console.WriteLine();
                     Console.WriteLine(ExamplesTips ?? "Examples");
                     Console.WriteLine();
@@ -430,12 +473,12 @@ namespace Trivial.Chemistry
                 case "table":
                 case "周期表":
                 case "元素周期表":
-                    WriteLine(verb, "table", PeriodicTableTips, "Output the periodic table.");
+                    WriteTips(verb, "table", PeriodicTableTips, "Output the periodic table.");
                     return;
                 case "period":
                 case "周期":
                 case "Period":
-                    WriteLine(verb, "period <period>", PeriodTips, "List chemical elements in the specific period.");
+                    WriteTips(verb, "period <period>", PeriodTips, "List chemical elements in the specific period.");
                     Console.WriteLine();
                     Console.WriteLine(ExamplesTips ?? "Examples");
                     Console.WriteLine();
@@ -444,13 +487,13 @@ namespace Trivial.Chemistry
                     return;
                 case "*":
                 case "all":
-                    WriteLine(verb, "all", AllElementsTips, "List all chemical elements.");
+                    WriteTips(verb, "all", AllElementsTips, "List all chemical elements.");
                     return;
                 case "ls":
                 case "list":
                 case "dir":
                 case "全部":
-                    WriteLine(verb, lsKey + " <start>-<end>", ElementListTips, "List a speicific range of chemical elements.");
+                    WriteTips(verb, lsKey + " <start>-<end>", ElementListTips, "List a speicific range of chemical elements.");
                     Console.WriteLine();
                     Console.WriteLine(ExamplesTips ?? "Examples");
                     Console.WriteLine();
@@ -461,12 +504,28 @@ namespace Trivial.Chemistry
                 case "molecular":
                 case "formula":
                 case "分子":
-                    WriteLine(verb, "molecular <formula>", ElementTips, "Get the information of the specific molecular formula.");
+                    WriteTips(verb, "molecular <formula>", ElementTips, "Get the information of the specific molecular formula.");
                     Console.WriteLine();
                     Console.WriteLine(ExamplesTips ?? "Examples");
                     Console.WriteLine();
                     Console.WriteLine(verb + " molecular Fe3O4");
                     Console.WriteLine(verb + " molecular R-COOH");
+                    return;
+                case "copyright":
+                    if (!ChemistryResource.Chemistry.Equals("Chemistry", StringComparison.Ordinal))
+                        Console.WriteLine(ChemistryResource.Chemistry);
+                    var ver = System.Reflection.Assembly.GetExecutingAssembly()?.GetName()?.Version;
+                    var sb = new StringBuilder();
+                    sb.AppendLine("Trivial.Chemistry");
+                    if (ver != null)
+                    {
+                        sb.AppendFormat("{0}.{1}.{2}", ver.Major, ver.Minor, ver.Build);
+                        sb.AppendLine();
+                    }
+
+                    sb.AppendLine("Copyright (c) 2021 Kingcean Tuan. All rights reserved.");
+                    sb.AppendLine("MIT licensed.");
+                    Console.Write(sb.ToString());
                     return;
                 default:
                     break;
@@ -474,20 +533,20 @@ namespace Trivial.Chemistry
 
             Console.WriteLine(UsagesTips ?? "Usages");
             Console.WriteLine();
-            WriteLine(verb, "element <symbol>", ElementTips, "Get details of the specific chemical element by symbol or atomic numbers.");
+            WriteTips(verb, "element <symbol>", ElementTips, "Get details of the specific chemical element by symbol or atomic numbers.");
             Console.WriteLine();
-            WriteLine(verb, "table", PeriodicTableTips, "Output the periodic table.");
+            WriteTips(verb, "table", PeriodicTableTips, "Output the periodic table.");
             Console.WriteLine();
-            WriteLine(verb, "period <period>", PeriodTips, "List chemical elements in the specific period.");
+            WriteTips(verb, "period <period>", PeriodTips, "List chemical elements in the specific period.");
             Console.WriteLine();
-            WriteLine(verb, "all", AllElementsTips, "List all chemical elements.");
+            WriteTips(verb, "all", AllElementsTips, "List all chemical elements.");
             Console.WriteLine();
-            WriteLine(verb, lsKey + " <start>-<end>", ElementListTips, "List a speicific range of chemical elements.");
+            WriteTips(verb, lsKey + " <start>-<end>", ElementListTips, "List a speicific range of chemical elements.");
             Console.WriteLine();
-            WriteLine(verb, "molecular <formula>", ElementTips, "Get the information of the specific molecular formula.");
+            WriteTips(verb, "molecular <formula>", ElementTips, "Get the information of the specific molecular formula.");
         }
 
-        private static void WriteLine(string verb, string cmd, string desc, string descBackup)
+        private static void WriteTips(string verb, string cmd, string desc, string descBackup)
         {
             Console.WriteLine("{0} {1}{2} {3}", verb, cmd, Environment.NewLine, desc ?? descBackup);
         }
@@ -636,7 +695,26 @@ namespace Trivial.Chemistry
             sb.AppendLine();
             sb.AppendLine();
 
-            sb.AppendLine("8 119-168");
+            if (ChemicalElement.Has(119) && ChemicalElement.Has(120))
+            {
+                sb.Append("8 119-168 ");
+                AppendSymbol(sb, ChemicalElement.Get(119));
+                AppendSymbol(sb, ChemicalElement.Get(120));
+                for (var i = 121; i < 131; i++)
+                {
+                    if (ChemicalElement.Has(i))
+                        AppendSymbol(sb, ChemicalElement.Get(i));
+                    else
+                        break;
+                }
+
+                sb.AppendLine("...");
+            }
+            else
+            {
+                sb.AppendLine("8 119-168");
+            }
+
             sb.AppendLine("9 169-218");
 
             var s = sb.ToString();
