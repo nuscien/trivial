@@ -362,7 +362,7 @@ namespace Trivial.Chemistry
             Console.WriteLine();
             sb.Clear();
             sb.AppendFormat("{0} ({1})", IsotopesTips ?? "Isotopes", isotopes.Count);
-            if (isotopes.Count > 64)
+            if (isotopes.Count > 100)
             {
                 var i = 0;
                 foreach (var isotope in isotopes)
