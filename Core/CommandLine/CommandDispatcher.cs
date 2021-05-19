@@ -672,7 +672,7 @@ namespace Trivial.CommandLine
 
             var verb = GetVerb(args.Verb?.ToString());
             if (verb is null)
-                verb = GetVerb(args.Verb?.FirstOrDefault());
+                verb = GetVerb(args.Verb?.Key);
             GetHelp(verb?.Handler ?? (IsExitKey(args.Verb.ToString()) ? ExitHandler : UnhandledHandler), args, context);
         }
 

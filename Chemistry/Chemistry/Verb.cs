@@ -17,6 +17,46 @@ namespace Trivial.Chemistry
         /// </summary>
         public static string Description => ChemistryResource.Chemistry;
 
+        /// <summary>
+        /// Gets or sets the tips header for usages.
+        /// </summary>
+        public static string UsagesTips { get; set; }
+
+        /// <summary>
+        /// Gets or sets the tips header for examples.
+        /// </summary>
+        public static string ExamplesTips { get; set; }
+
+        /// <summary>
+        /// Gets or sets the tips for getting chemical element.
+        /// </summary>
+        public static string ElementTips { get; set; }
+
+        /// <summary>
+        /// Gets or sets the tips for showing periodic table.
+        /// </summary>
+        public static string PeriodicTableTips { get; set; }
+
+        /// <summary>
+        /// Gets or sets the tips for chemical elements in a specific period.
+        /// </summary>
+        public static string PeriodTips { get; set; }
+
+        /// <summary>
+        /// Gets or sets the tips for all elements.
+        /// </summary>
+        public static string AllElementsTips { get; set; }
+
+        /// <summary>
+        /// Gets or sets the tips for elements.
+        /// </summary>
+        public static string ElementListTips { get; set; }
+
+        /// <summary>
+        /// Gets or sets the tips for molecular formula.
+        /// </summary>
+        public static string MolecularFormulaTips { get; set; }
+
         /// <inheritdoc />
         protected override async Task OnProcessAsync(CancellationToken cancellationToken = default)
         {
@@ -62,6 +102,10 @@ namespace Trivial.Chemistry
                         WriteLine(element);
                     }
                 }
+                else if (s.Equals("help", StringComparison.OrdinalIgnoreCase) || s.Equals("?", StringComparison.Ordinal))
+                {
+                    WriteHelp(Arguments.Verb?.Key, "period");
+                }
                 else
                 {
                     Console.WriteLine("The period should be a natural number.");
@@ -86,9 +130,29 @@ namespace Trivial.Chemistry
             if (s == "ls" || s == "list" || s == "dir" || s == "全部")
             {
                 var filter = Arguments.Verb.TryGet(1)?.Trim()?.Split('-');
-                var col = filter != null && filter.Length == 2 && int.TryParse(filter[0], out var begin) && int.TryParse(filter[1], out var end)
-                    ? ChemicalElement.Range(begin, end - begin).ToList()
-                    : (filter != null && filter.Length == 1 && int.TryParse(filter[0], out end) ? ChemicalElement.Range(0, end).ToList() : ChemicalElement.Where(null).ToList());
+                List<ChemicalElement> col = null;
+                if (filter is null || filter.Length < 1 || string.IsNullOrWhiteSpace(filter[0]))
+                {
+                }
+                else if (filter[0].Equals("help", StringComparison.OrdinalIgnoreCase) || filter[0].Equals("?", StringComparison.Ordinal))
+                {
+                    WriteHelp(Arguments.Verb?.Key, "ls");
+                    return;
+                }
+                else if (!int.TryParse(filter[0], out var begin))
+                {
+                }
+                else if (filter.Length == 1)
+                {
+                    col = ChemicalElement.Range(0, begin).ToList();
+                }
+                else if (filter.Length == 2 && int.TryParse(filter[1], out var end))
+                {
+                    col = ChemicalElement.Range(begin, end - begin).ToList();
+                }
+
+                if (col is null)
+                    col = ChemicalElement.Where(null).ToList();
                 var filter2 = GetFilter(q);
                 foreach (var i in filter2 is null ? col : col.Where(filter2))
                 {
@@ -98,7 +162,7 @@ namespace Trivial.Chemistry
                 return;
             }
 
-            if (s == "molecular" || s == "formula")
+            if (s == "molecular" || s == "formula" || s == "分子")
             {
                 s = Arguments.Verb.Value?.Trim() ?? string.Empty;
                 if (s.StartsWith("molecular ")) s = s.Substring(10)?.Trim();
@@ -112,7 +176,10 @@ namespace Trivial.Chemistry
                 var m = MolecularFormula.TryParse(s);
                 if (m is null)
                 {
-                    Console.WriteLine("Invalid molecular formula.");
+                    if (s.Equals("help", StringComparison.OrdinalIgnoreCase) || s.Equals("?", StringComparison.Ordinal))
+                        WriteHelp(Arguments.Verb?.Key, "molecular");
+                    else
+                        Console.WriteLine("Invalid molecular formula.");
                     return;
                 }
 
@@ -137,7 +204,7 @@ namespace Trivial.Chemistry
 
             if (s == "help" || s == "usages" || s == "?" || s == "帮助")
             {
-                WriteHelp(Arguments.Verb.Key);
+                WriteHelp(Arguments.Verb.Key, Arguments.Verb.TryGet(1));
                 return;
             }
 
@@ -150,6 +217,17 @@ namespace Trivial.Chemistry
             if (s == "element" || s == "z" || s == "元素" || (s == "Z" && Arguments.Verb.Count > 1))
             {
                 s = Arguments.Verb.TryGet(1);
+                if (s.Equals("help", StringComparison.Ordinal) || s.Equals("?", StringComparison.Ordinal))
+                {
+                    WriteHelp(Arguments.Verb?.Key, "element");
+                    return;
+                }
+
+                if (s.Equals("name", StringComparison.Ordinal))
+                {
+                    Console.WriteLine(ChemistryResource.ChemicalElement);
+                    return;
+                }
             }
             else
             {
@@ -224,7 +302,7 @@ namespace Trivial.Chemistry
         /// <inheritdoc />
         protected override void OnGetHelp()
         {
-            WriteHelp(Arguments.Verb?.Key);
+            WriteHelp(Arguments.Verb?.Key, Arguments.Verb?.TryGet(0));
         }
 
         /// <summary>
@@ -282,7 +360,7 @@ namespace Trivial.Chemistry
             WriteLine(element, false);
         }
 
-        private Func<ChemicalElement, bool> GetFilter(string q)
+        private static Func<ChemicalElement, bool> GetFilter(string q)
         {
             if (string.IsNullOrEmpty(q)) return null;
             return (ChemicalElement ele) =>
@@ -312,9 +390,11 @@ namespace Trivial.Chemistry
         {
             if (string.IsNullOrWhiteSpace(element.Symbol) || element.Period < 1) return;
             var sb = new StringBuilder();
-            sb.AppendFormat("{0}\t{1}\t{2}", element.AtomicNumber, element.Symbol, writeEnglishName ? element.EnglishName : element.Name);
+            var name = writeEnglishName ? element.EnglishName : element.Name;
+            sb.AppendFormat("{0}\t{1}\t{2}", element.AtomicNumber, element.Symbol, name);
             if (!double.IsNaN(element.AtomicWeight))
             {
+                if (name.Length < 8) sb.AppendFormat("\t");
                 sb.AppendFormat(" \t");
                 sb.AppendFormat(element.AtomicWeight.ToString("#.######"));
             }
@@ -322,29 +402,94 @@ namespace Trivial.Chemistry
             Console.WriteLine(sb.ToString());
         }
 
-        private static void WriteHelp(string verb)
+        private static void WriteHelp(string verb, string key = null)
         {
             verb = verb?.Trim();
             if (string.IsNullOrEmpty(verb)) verb = "~";
-            Console.WriteLine("Usages");
+#if NETFRAMEWORK
+            var lsKey = "dir";
+#else
+            var lsKey = System.Runtime.InteropServices.RuntimeInformation.IsOSPlatform(System.Runtime.InteropServices.OSPlatform.Windows) ? "dir" : "ls";
+#endif
+            switch (key?.Trim() ?? string.Empty)
+            {
+                case "":
+                    break;
+                case "element":
+                case "z":
+                case "Z":
+                case "元素":
+                    WriteLine(verb, "element <symbol>", ElementTips, "Get details of the specific chemical element by symbol or atomic numbers.");
+                    Console.WriteLine();
+                    Console.WriteLine(ExamplesTips ?? "Examples");
+                    Console.WriteLine();
+                    Console.WriteLine(verb + " element 6");
+                    Console.WriteLine("{0} element {1}", verb, ChemicalElement.Au?.Symbol ?? ChemicalElement.Pt?.Symbol ?? ChemicalElement.O?.Symbol ?? "1");
+                    return;
+                case "periodic":
+                case "table":
+                case "周期表":
+                case "元素周期表":
+                    WriteLine(verb, "table", PeriodicTableTips, "Output the periodic table.");
+                    return;
+                case "period":
+                case "周期":
+                case "Period":
+                    WriteLine(verb, "period <period>", PeriodTips, "List chemical elements in the specific period.");
+                    Console.WriteLine();
+                    Console.WriteLine(ExamplesTips ?? "Examples");
+                    Console.WriteLine();
+                    Console.WriteLine(verb + " period 2");
+                    Console.WriteLine(verb + " period 7");
+                    return;
+                case "*":
+                case "all":
+                    WriteLine(verb, "all", AllElementsTips, "List all chemical elements.");
+                    return;
+                case "ls":
+                case "list":
+                case "dir":
+                case "全部":
+                    WriteLine(verb, lsKey + " <start>-<end>", ElementListTips, "List a speicific range of chemical elements.");
+                    Console.WriteLine();
+                    Console.WriteLine(ExamplesTips ?? "Examples");
+                    Console.WriteLine();
+                    Console.WriteLine("{0} {1} 10-29", verb, lsKey);
+                    Console.WriteLine("{0} {1} 20", verb, lsKey);
+                    Console.WriteLine("{0} {1} 80 -q h", verb, lsKey);
+                    return;
+                case "molecular":
+                case "formula":
+                case "分子":
+                    WriteLine(verb, "molecular <formula>", ElementTips, "Get the information of the specific molecular formula.");
+                    Console.WriteLine();
+                    Console.WriteLine(ExamplesTips ?? "Examples");
+                    Console.WriteLine();
+                    Console.WriteLine(verb + " molecular Fe3O4");
+                    Console.WriteLine(verb + " molecular R-COOH");
+                    return;
+                default:
+                    break;
+            }
+
+            Console.WriteLine(UsagesTips ?? "Usages");
             Console.WriteLine();
-            Console.WriteLine(verb + " element <symbol>");
-            Console.WriteLine(" Get details of the specific chemical element by symbol or atomic numbers.");
+            WriteLine(verb, "element <symbol>", ElementTips, "Get details of the specific chemical element by symbol or atomic numbers.");
             Console.WriteLine();
-            Console.WriteLine(verb + " period <period>");
-            Console.WriteLine(" List chemical elements in the specific period.");
+            WriteLine(verb, "table", PeriodicTableTips, "Output the periodic table.");
             Console.WriteLine();
-            Console.WriteLine(verb + " table");
-            Console.WriteLine(" Output the periodic table.");
+            WriteLine(verb, "period <period>", PeriodTips, "List chemical elements in the specific period.");
             Console.WriteLine();
-            Console.WriteLine(verb + " all");
-            Console.WriteLine(" List all chemical elements.");
+            WriteLine(verb, "all", AllElementsTips, "List all chemical elements.");
             Console.WriteLine();
-            Console.WriteLine(verb + " ls <start>-<end>");
-            Console.WriteLine(" List a speicific range of chemical elements.");
+            WriteLine(verb, lsKey + " <start>-<end>", ElementListTips, "List a speicific range of chemical elements.");
             Console.WriteLine();
-            Console.WriteLine(verb + " molecular <formula>");
-            Console.WriteLine(" Get the information of the specific molecular formula.");
+            WriteLine(verb, "molecular <formula>", ElementTips, "Get the information of the specific molecular formula.");
+        }
+
+        private static void WriteLine(string verb, string cmd, string desc, string descBackup)
+        {
+            Console.WriteLine("{0} {1}{2} {3}", verb, cmd, Environment.NewLine, desc ?? descBackup);
         }
 
         private static string WritePeriodicTable()

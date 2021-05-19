@@ -161,6 +161,11 @@ namespace Trivial.Chemistry
             Assert.IsTrue(m.IsIon);
             Assert.AreEqual(-2, m.ChargeNumber);
 
+            m = MolecularFormula.Parse("R-COOH");
+            Assert.AreEqual(2, m.GetCount(ChemicalElement.C));
+            Assert.AreEqual(2, m.GetCount(ChemicalElement.O));
+            Assert.AreEqual(4, m.GetCount(ChemicalElement.H));
+
             m = ChemicalElement.Fe * 2 + 3 * ChemicalElement.O;
             Assert.AreEqual(2, m.GetCount("Fe"));
             Assert.AreEqual(3, m.GetCount(ChemicalElement.O));
@@ -180,7 +185,7 @@ namespace Trivial.Chemistry
                 { m, 2, (MolecularFormula)ChemicalElement.Na }
             };
             Assert.AreEqual(3, col.Count);
-            System.Console.WriteLine(MolecularFormula.ToString(col));
+            Console.WriteLine(MolecularFormula.ToString(col));
             Assert.IsTrue(MolecularFormula.ToString(col).Length > 6);
             col.RemoveAt(2);
             Assert.IsTrue(MolecularFormula.ConservationOfMass(

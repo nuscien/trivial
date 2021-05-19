@@ -571,9 +571,8 @@ namespace Trivial.Chemistry
                     sup = 0;
                     if (sb.Length > 0)
                     {
-                        var item = new Item(sb.ToString(), hasCount ? count : 1);
-                        if (item.Element is null) return null;
-                        col.Add(item);
+                        if (!Add(sb, col, hasCount ? count : 1))
+                            return null;
                     }
 
                     count = 0;
@@ -716,9 +715,8 @@ namespace Trivial.Chemistry
                 {
                     if (sb.Length > 0)
                     {
-                        var item = new Item(sb.ToString(), hasCount ? count : 1);
-                        if (item.Element is null) return null;
-                        col.Add(item);
+                        if (!Add(sb, col, hasCount ? count : 1))
+                            return null;
                         sb.Clear();
                     }
 
@@ -729,9 +727,8 @@ namespace Trivial.Chemistry
 
             if (sb.Length > 0)
             {
-                var item = new Item(sb.ToString(), hasCount ? count : 1);
-                if (item.Element is null) return null;
-                col.Add(item);
+                if (!Add(sb, col, hasCount ? count : 1))
+                    return null;
                 sb.Clear();
             }
 
@@ -817,6 +814,22 @@ namespace Trivial.Chemistry
                 if (ele.Value > 1) return ele.Value.ToString("g") + ele.Key.ToString();
                 return ele.Value.ToString();
             }));
+        }
+
+        private static bool Add(StringBuilder sb, List<Item> col, int count)
+        {
+            var symbol = sb.ToString();
+            var item = new Item(symbol, count);
+            if (item.Element is null)
+            {
+                if (!symbol.Equals("R", StringComparison.Ordinal))
+                    return false;
+                col.Add(new Item(ChemicalElement.C, count));
+                col.Add(new Item(ChemicalElement.H, count * 2 + 1));
+            }
+
+            col.Add(item);
+            return true;
         }
 
         private static void Zip(List<Item> list, Item item)
