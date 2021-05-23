@@ -2,7 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
+
+using Trivial.Text;
 
 namespace Trivial.Chemistry
 {
@@ -111,9 +114,19 @@ namespace Trivial.Chemistry
         }
 
         /// <summary>
-        /// Peturns a string that represents the current chemical element information.
+        /// Writes this instance to the specified writer as a JSON value.
         /// </summary>
-        /// <returns>A string that represents the current chemical element information.</returns>
+        /// <param name="writer">The writer to which to write this instance.</param>
+        public void WriteTo(Utf8JsonWriter writer)
+        {
+            var json = (JsonObject)this;
+            json.WriteTo(writer);
+        }
+
+        /// <summary>
+        /// Peturns a string that represents the current isotope information.
+        /// </summary>
+        /// <returns>A string that represents the current isotope information.</returns>
         public override string ToString()
         {
             if (Element is null) return "?";
@@ -204,6 +217,36 @@ namespace Trivial.Chemistry
             if (ReferenceEquals(leftValue, rightValue)) return false;
             if (leftValue is null || rightValue is null) return true;
             return !leftValue.Equals(rightValue);
+        }
+
+        /// <summary>
+        /// Converts to a JSON object.
+        /// </summary>
+        /// <param name="isotope">The isotope to convert.</param>
+        public static explicit operator JsonObject(Isotope isotope)
+        {
+            if (isotope is null || isotope.AtomicNumber < 1 || isotope.AtomicWeight < 1) return null;
+            var json = new JsonObject
+            {
+                { "symbol", isotope.ToString() },
+                { "number", isotope.AtomicNumber },
+                { "element", isotope.ElementSymbol },
+                { "neutrons", isotope.Neutrons },
+                { "mass", isotope.AtomicMassNumber }
+            };
+            if (!double.IsNaN(isotope.AtomicWeight))
+                json.SetValue("weight", isotope.AtomicWeight);
+            return json;
+        }
+
+        /// <summary>
+        /// Converts to a JSON object.
+        /// </summary>
+        /// <param name="isotope">The isotope to convert.</param>
+        public static explicit operator JsonDocument(Isotope isotope)
+        {
+            if (isotope is null || isotope.AtomicNumber < 1 || isotope.AtomicWeight < 1) return null;
+            return (JsonDocument)(JsonObject)isotope;
         }
     }
 }

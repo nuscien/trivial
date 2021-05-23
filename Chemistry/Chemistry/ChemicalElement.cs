@@ -329,6 +329,14 @@ namespace Trivial.Chemistry
         }
 
         /// <summary>
+        /// Removes all isotopes registered.
+        /// </summary>
+        public void ClearIsotopes()
+        {
+            isotopes.Clear();
+        }
+
+        /// <summary>
         /// Writes this instance to the specified writer as a JSON value.
         /// </summary>
         /// <param name="writer">The writer to which to write this instance.</param>
@@ -516,6 +524,24 @@ namespace Trivial.Chemistry
                 json["weight"] = element.HasAtomicWeight ? new JsonDouble(element.AtomicWeight) : new JsonInteger(element.AtomicWeight);
             if (!element.EnglishName.Equals(element.Name))
                 json.SetValue("name_en", element.EnglishName);
+            if (element.isotopes != null && element.isotopes.Count > 0)
+            {
+                var arr = new JsonArray();
+                foreach (var isotope in element.isotopes)
+                {
+                    var json2 = new JsonObject
+                    {
+                        { "symbol", isotope.ToString() },
+                        { "neutrons", isotope.Neutrons },
+                        { "mass", isotope.AtomicMassNumber }
+                    };
+                    if (!double.IsNaN(isotope.AtomicWeight)) json2.SetValue("weight", isotope.AtomicWeight);
+                    arr.Add(json2);
+                }
+
+                json.SetValue("isotopes", arr);
+            }
+
             return json;
         }
 

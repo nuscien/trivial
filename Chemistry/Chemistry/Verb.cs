@@ -340,11 +340,15 @@ namespace Trivial.Chemistry
         public static void WriteInfo(ChemicalElement element, bool containIsotopes = false)
         {
             if (element is null) return;
-            Console.WriteLine("{0}\t{1}", element.AtomicNumber, element.Symbol);
             var name = element.Name;
-            Console.WriteLine(" {0}", element.Name);
             if (!string.IsNullOrWhiteSpace(element.EnglishName) && !name.Equals(element.EnglishName))
-                Console.WriteLine(" {0}", element.EnglishName);
+                Console.WriteLine("{0}\t{1}\t{2}", element.AtomicNumber, element.Symbol, element.EnglishName);
+            else
+                Console.WriteLine("{0}\t{1}", element.AtomicNumber, element.Symbol);
+            if (name.Length == 1 && name[0] >= 0x2E00)
+                Console.WriteLine(" {0}\t(U+{1:X4})", name, (int)name[0]);
+            else
+                Console.WriteLine(" {0}", name);
             if (!double.IsNaN(element.AtomicWeight))
                 Console.WriteLine(" Weight = {0:#.########}", element.AtomicWeight);
             var sb = new StringBuilder();
