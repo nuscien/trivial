@@ -483,4 +483,10 @@
   <data name="ElementX" xml:space="preserve">
     <value>원소{0}</value>
   </data>
+  <data name="Isotope" xml:space="preserve">
+    <value>동위 원소</value>
+  </data>
+  <data name="Isotopes" xml:space="preserve">
+    <value>동위 원소</value>
+  </data>
 </root>

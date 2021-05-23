@@ -491,7 +491,7 @@ namespace Trivial.Chemistry
             if (isRightEmpty) return leftValue;
             var col = leftValue.list.ToList();
             col.Add(new Item(rightValue, 1));
-            return new MolecularFormula(col);
+            return new MolecularFormula(col, leftValue.ChargeNumber);
         }
 
         /// <summary>
@@ -508,7 +508,7 @@ namespace Trivial.Chemistry
             if (isLeftEmpty) return rightValue;
             var col = rightValue.list.ToList();
             col.Add(new Item(leftValue, 1));
-            return new MolecularFormula(col);
+            return new MolecularFormula(col, rightValue.ChargeNumber);
         }
 
         /// <summary>
@@ -523,7 +523,7 @@ namespace Trivial.Chemistry
             if (rightValue is null || rightValue.Count == 0) return leftValue;
             var col = leftValue.list.ToList();
             col.AddRange(rightValue.list);
-            return new MolecularFormula(col);
+            return new MolecularFormula(col, leftValue.ChargeNumber + rightValue.ChargeNumber);
         }
 
         /// <summary>
@@ -822,10 +822,25 @@ namespace Trivial.Chemistry
             var item = new Item(symbol, count);
             if (item.Element is null)
             {
-                if (!symbol.Equals("R", StringComparison.Ordinal))
-                    return false;
-                col.Add(new Item(ChemicalElement.C, count));
-                col.Add(new Item(ChemicalElement.H, count * 2 + 1));
+                switch (symbol)
+                {
+                    case "R":
+                        col.Add(new Item(ChemicalElement.C, count));
+                        col.Add(new Item(ChemicalElement.H, count * 2 + 1));
+                        break;
+                    case "Ph":
+                        col.Add(new Item(ChemicalElement.C, count * 6));
+                        col.Add(new Item(ChemicalElement.H, count * 5));
+                        break;
+                    case "Bn":
+                        col.Add(new Item(ChemicalElement.C, count * 6));
+                        col.Add(new Item(ChemicalElement.H, count * 5));
+                        col.Add(new Item(ChemicalElement.C, count));
+                        col.Add(new Item(ChemicalElement.H, count * 2));
+                        break;
+                    default:
+                        return false;
+                }
             }
 
             col.Add(item);

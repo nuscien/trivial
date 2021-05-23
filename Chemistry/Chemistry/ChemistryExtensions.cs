@@ -60,5 +60,16 @@ namespace Trivial.Chemistry
             if (formulas is null) return;
             if (value != null && count > 0) formulas.Add(new MolecularFormula(value, count));
         }
+
+        /// <summary>
+        /// Gets a value indicating whether an element is radioelement.
+        /// </summary>
+        /// <param name="element">The element to test</param>
+        /// <returns>true if it is a radioelement; otherwise, false.</returns>
+        public static bool IsRadioelement(this ChemicalElement element)
+        {
+            if (element is null) return false;
+            return element.AtomicNumber >= 84 || element.AtomicNumber == 61 || element.AtomicNumber == 43;
+        }
     }
 }

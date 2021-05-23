@@ -1157,5 +1157,23 @@ namespace Trivial.Chemistry {
                 return ResourceManager.GetString("ElementX", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   查找类似 Isotope 的本地化字符串。
+        /// </summary>
+        internal static string Isotope {
+            get {
+                return ResourceManager.GetString("Isotope", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Isotopes 的本地化字符串。
+        /// </summary>
+        internal static string Isotopes {
+            get {
+                return ResourceManager.GetString("Isotopes", resourceCulture);
+            }
+        }
     }
 }

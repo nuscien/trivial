@@ -250,6 +250,74 @@ namespace Trivial.Chemistry
         public string Block { get; }
 
         /// <summary>
+        /// Gets a value indicating whether it is alkali metal.
+        /// </summary>
+        public bool IsAlkaliMetal => Period > 1 && Group == 1;
+
+        /// <summary>
+        /// Gets a value indicating whether it is alkaline-earth metal.
+        /// </summary>
+        public bool IsAlkalineEarthMetal => Group == 2;
+
+        /// <summary>
+        /// Gets a value indicating whether it is in VIII group.
+        /// </summary>
+        public bool IsInVIII => Group > 7 && Group < 11;
+
+        /// <summary>
+        /// Gets a value indicating whether it is transition element.
+        /// </summary>
+        public bool IsTransition => Group > 2 && Group < 13;
+
+        /// <summary>
+        /// Gets a value indicating whether it is metallic element.
+        /// </summary>
+        public bool IsMetal
+        {
+            get
+            {
+                if (Period < 2 || Group > 16) return false;
+                if (Group < 13 || Period > 5) return true;
+                return Period + 10 >= Group;
+            }
+        }
+
+        /// <summary>
+        /// Gets a value indicating whether it is non-metallic element.
+        /// </summary>
+        public bool IsNonMetallic => !IsMetal;
+
+        /// <summary>
+        /// Gets a value indicating whether it is in boron group.
+        /// </summary>
+        public bool IsInBoronGroup => Group == 13;
+
+        /// <summary>
+        /// Gets a value indicating whether it is in carbon group.
+        /// </summary>
+        public bool IsInCarbonGroup => Group == 14;
+
+        /// <summary>
+        /// Gets a value indicating whether it is in nitrogen group.
+        /// </summary>
+        public bool IsInNitrogenGroup => Group == 15;
+
+        /// <summary>
+        /// Gets a value indicating whether it is chalcogen.
+        /// </summary>
+        public bool IsChalcogen => Group == 16;
+
+        /// <summary>
+        /// Gets a value indicating whether it is halogen.
+        /// </summary>
+        public bool IsHalogen => Group == 17;
+
+        /// <summary>
+        /// Gets a value indicating whether it is one of noble gases.
+        /// </summary>
+        public bool IsNoble => Group == 18;
+
+        /// <summary>
         /// Gets a value indicating whether this element is valid.
         /// </summary>
         public bool IsValid()

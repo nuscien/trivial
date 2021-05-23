@@ -28,11 +28,6 @@ namespace Trivial.Chemistry
         public static string ExamplesTips { get; set; }
 
         /// <summary>
-        /// Gets or sets the tips header for isotopes.
-        /// </summary>
-        public static string IsotopesTips { get; set; }
-
-        /// <summary>
         /// Gets or sets the tips for error.
         /// </summary>
         public static string ErrorTips { get; set; }
@@ -365,7 +360,7 @@ namespace Trivial.Chemistry
             if (isotopes.Count < 1) return;
             Console.WriteLine();
             sb.Clear();
-            sb.AppendFormat("{0} ({1})", IsotopesTips ?? "Isotopes", isotopes.Count);
+            sb.AppendFormat("{0} ({1})", isotopes.Count == 1 ? ChemistryResource.Isotope : ChemistryResource.Isotopes, isotopes.Count);
             if (isotopes.Count > 100)
             {
                 var i = 0;

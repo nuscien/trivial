@@ -483,4 +483,10 @@
   <data name="ElementX" xml:space="preserve">
     <value>番号{0}</value>
   </data>
+  <data name="Isotope" xml:space="preserve">
+    <value>同位体</value>
+  </data>
+  <data name="Isotopes" xml:space="preserve">
+    <value>同位体</value>
+  </data>
 </root>

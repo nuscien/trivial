@@ -483,4 +483,10 @@
   <data name="ElementX" xml:space="preserve">
     <value>Elemento {0}</value>
   </data>
+  <data name="Isotope" xml:space="preserve">
+    <value>Isótopo</value>
+  </data>
+  <data name="Isotopes" xml:space="preserve">
+    <value>Isótopos</value>
+  </data>
 </root>
