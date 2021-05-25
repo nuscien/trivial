@@ -114,7 +114,7 @@ namespace Trivial.Chemistry
                             continue;
                         }
 
-                        WriteLine(element);
+                        WriteLine(element, Arguments.Has("en"));
                     }
                 }
                 else if (s.Equals("help", StringComparison.OrdinalIgnoreCase) || s.Equals("?", StringComparison.Ordinal))
@@ -263,7 +263,6 @@ namespace Trivial.Chemistry
             if (string.IsNullOrEmpty(s))
             {
                 Console.WriteLine(ChemistryResource.ChemicalElement);
-                var start = false;
                 var col = ChemicalElement.Where(GetFilter(q)).ToList();
                 if (col.Count <= 64)
                 {
@@ -272,14 +271,40 @@ namespace Trivial.Chemistry
                         WriteLine(i, Arguments.Has("en"));
                     }
                 }
+                else if (Arguments.Has("en"))
+                {
+                    var i = 0;
+                    var sb = new StringBuilder();
+                    foreach (var element in col)
+                    {
+                        if (element is null || element.AtomicNumber < 0) continue;
+                        i++;
+                        if (element.AtomicNumber < 1000) AppendNumber(sb, element.AtomicNumber);
+                        else sb.Append(element.AtomicNumber.ToString("g") + " ");
+                        sb.Append(element.EnglishName ?? element.Symbol ?? string.Empty);
+                        if (i % 3 == 0)
+                        {
+                            Console.WriteLine(sb.ToString());
+                            sb.Clear();
+                            continue;
+                        }
+
+                        sb.Append(' ', 24 - sb.Length);
+                        Console.Write(sb.ToString());
+                        sb.Clear();
+                    }
+
+                    if (i % 3 > 0) Console.WriteLine();
+                }
                 else
                 {
-                    foreach (var i in col)
+                    var start = false;
+                    foreach (var element in col)
                     {
-                        if (i is null) continue;
+                        if (element is null) continue;
                         if (start) Console.Write(" \t");
                         else start = true;
-                        Console.Write(i.ToString());
+                        Console.Write(element.ToString());
                     }
 
                     Console.WriteLine();
@@ -361,12 +386,12 @@ namespace Trivial.Chemistry
             Console.WriteLine();
             sb.Clear();
             sb.AppendFormat("{0} ({1})", isotopes.Count == 1 ? ChemistryResource.Isotope : ChemistryResource.Isotopes, isotopes.Count);
-            if (isotopes.Count > 100)
+            var i = 0;
+            if (isotopes.Count > 150)
             {
-                var i = 0;
                 foreach (var isotope in isotopes)
                 {
-                    if (i % 6 == 0)
+                    if (i % 8 == 0)
                         sb.AppendLine();
                     sb.Append(isotope.AtomicMassNumber);
                     sb.Append('\t');
@@ -378,18 +403,18 @@ namespace Trivial.Chemistry
             }
 
             sb.AppendLine();
-            var isOdd = false;
             foreach (var isotope in isotopes)
             {
-                isOdd = !isOdd;
+                if (isotope is null) continue;
+                i++;
                 var weight = isotope.HasAtomicWeight ? isotope.AtomicWeight.ToString("#.########") : string.Empty;
                 sb.AppendFormat(" {0} \t{1}", isotope.AtomicMassNumber, weight);
                 if (weight.Length < 8) sb.Append('\t');
-                if (isOdd) sb.Append(" \t");
+                if (i % 3 > 0) sb.Append(" \t");
                 else sb.AppendLine();
             }
 
-            if (isOdd) Console.WriteLine(sb.ToString());
+            if (i % 3 > 0) Console.WriteLine(sb.ToString());
             else Console.Write(sb.ToString());
         }
 
