@@ -1891,6 +1891,18 @@ namespace Trivial.Text
         /// <summary>
         /// Sets the value of the specific property.
         /// </summary>
+        /// <param name="key">The property key.</param>
+        /// <param name="value">The value to set.</param>
+        /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+        public void SetValue(string key, System.Text.Json.Node.JsonNode value)
+        {
+            AssertKey(key);
+            store[key] = JsonValues.ToJsonValue(value);
+        }
+
+        /// <summary>
+        /// Sets the value of the specific property.
+        /// </summary>
         /// <param name="property">The property.</param>
         /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
         public void SetValue(JsonProperty property)
@@ -2083,6 +2095,46 @@ namespace Trivial.Text
         /// <returns>The count to set.</returns>
         /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
         public int SetRange(IEnumerable<KeyValuePair<string, JsonArray>> data)
+        {
+            var count = 0;
+            if (data == null) return count;
+            foreach (var props in data)
+            {
+                if (string.IsNullOrWhiteSpace(props.Key)) continue;
+                count++;
+                SetValue(props.Key, props.Value);
+            }
+
+            return count;
+        }
+
+        /// <summary>
+        /// Sets properties.
+        /// </summary>
+        /// <param name="data">Key value pairs to set.</param>
+        /// <returns>The count to set.</returns>
+        /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+        public int SetRange(IEnumerable<KeyValuePair<string, JsonElement>> data)
+        {
+            var count = 0;
+            if (data == null) return count;
+            foreach (var props in data)
+            {
+                if (string.IsNullOrWhiteSpace(props.Key)) continue;
+                count++;
+                SetValue(props.Key, props.Value);
+            }
+
+            return count;
+        }
+
+        /// <summary>
+        /// Sets properties.
+        /// </summary>
+        /// <param name="data">Key value pairs to set.</param>
+        /// <returns>The count to set.</returns>
+        /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+        public int SetRange(IEnumerable<KeyValuePair<string, System.Text.Json.Node.JsonNode>> data)
         {
             var count = 0;
             if (data == null) return count;
@@ -3682,11 +3734,39 @@ namespace Trivial.Text
         }
 
         /// <summary>
+        /// Converts to JSON node.
+        /// </summary>
+        /// <param name="json">The JSON value.</param>
+        /// <returns>An instance of the JsonObject class.</returns>
+        public static explicit operator System.Text.Json.Node.JsonObject(JsonObject json)
+        {
+            if (json == null) return null;
+            var node = new System.Text.Json.Node.JsonObject();
+            foreach (var prop in json.store)
+            {
+                var v = JsonValues.ToJsonNode(prop.Value);
+                node[prop.Key] = v;
+            }
+
+            return node;
+        }
+
+        /// <summary>
+        /// Converts to JSON node.
+        /// </summary>
+        /// <param name="json">The JSON value.</param>
+        /// <returns>An instance of the JsonNode class.</returns>
+        public static explicit operator System.Text.Json.Node.JsonNode(JsonObject json)
+        {
+            return (System.Text.Json.Node.JsonObject)json;
+        }
+
+        /// <summary>
         /// Converts from JSON document.
         /// </summary>
         /// <param name="json">The JSON value.</param>
-        /// <returns>An instance of the JsonDocument class.</returns>
-        /// <exception cref="JsonException">json does not represent a valid single JSON array.</exception>
+        /// <returns>An instance of the JsonObject class.</returns>
+        /// <exception cref="JsonException">json does not represent a valid JSON object.</exception>
         public static implicit operator JsonObject(JsonDocument json)
         {
             if (json is null) return null;
@@ -3697,7 +3777,8 @@ namespace Trivial.Text
         /// Converts from JSON element.
         /// </summary>
         /// <param name="json">The JSON value.</param>
-        /// <exception cref="JsonException">json does not represent a valid single JSON array.</exception>
+        /// <returns>An instance of the JsonObject class.</returns>
+        /// <exception cref="JsonException">json does not represent a valid JSON object.</exception>
         public static implicit operator JsonObject(JsonElement json)
         {
             if (json.ValueKind != JsonValueKind.Object)
@@ -3706,7 +3787,7 @@ namespace Trivial.Text
                 {
                     JsonValueKind.Null => null,
                     JsonValueKind.Undefined => null,
-                    _ => throw new JsonException("json is not a JSON array.")
+                    _ => throw new JsonException("json is not a JSON object.")
                 };
             }
 
@@ -3718,6 +3799,36 @@ namespace Trivial.Text
             }
 
             return result;
+        }
+
+        /// <summary>
+        /// Converts from JSON node.
+        /// </summary>
+        /// <param name="json">The JSON value.</param>
+        /// <returns>An instance of the JsonObject class.</returns>
+        /// <exception cref="JsonException">json does not represent a valid JSON object.</exception>
+        public static implicit operator JsonObject(System.Text.Json.Node.JsonObject json)
+        {
+            if (json is null) return null;
+            var result = new JsonObject();
+            foreach (var prop in json)
+            {
+                result.SetValue(prop.Key, prop.Value);
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Converts from JSON node.
+        /// </summary>
+        /// <param name="json">The JSON value.</param>
+        /// <returns>An instance of the JsonObject class.</returns>
+        /// <exception cref="JsonException">json does not represent a valid JSON object.</exception>
+        public static implicit operator JsonObject(System.Text.Json.Node.JsonNode json)
+        {
+            if (json is System.Text.Json.Node.JsonObject obj) return obj;
+            throw new JsonException("json is not a JSON object.");
         }
 
         /// <summary>

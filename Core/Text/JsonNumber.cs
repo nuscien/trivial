@@ -138,6 +138,16 @@ namespace Trivial.Text
         /// Initializes a new instance of the JsonInteger class.
         /// </summary>
         /// <param name="value">The value.</param>
+        public JsonInteger(short value)
+        {
+            Value = value;
+            IsSafe = true;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the JsonInteger class.
+        /// </summary>
+        /// <param name="value">The value.</param>
         public JsonInteger(double value)
         {
             Value = (long)Math.Round(value);
@@ -1010,6 +1020,40 @@ namespace Trivial.Text
         }
 
         /// <summary>
+        /// Converts to JSON value.
+        /// </summary>
+        /// <param name="value">The source value.</param>
+        /// <returns>A JSON value.</returns>
+        public static implicit operator JsonInteger(System.Text.Json.Node.JsonValue value)
+        {
+            if (value is null) return null;
+            if (value.TryGetValue(out int i))
+                return new JsonInteger(i);
+            if (value.TryGetValue(out uint ui))
+                return new JsonInteger(ui);
+            if (value.TryGetValue(out long l))
+                return new JsonInteger(l);
+            if (value.TryGetValue(out short sh))
+                return new JsonInteger(sh);
+            if (value.TryGetValue(out bool b))
+                return new JsonInteger(b ? 1 : 0);
+            if (value.TryGetValue(out string s) && long.TryParse(s, out var l2))
+                return new JsonInteger(l2);
+            throw new InvalidCastException("Expect an integer to convert.");
+        }
+
+        /// <summary>
+        /// Converts to JSON value.
+        /// </summary>
+        /// <param name="value">The source value.</param>
+        /// <returns>A JSON value.</returns>
+        public static implicit operator JsonInteger(System.Text.Json.Node.JsonNode value)
+        {
+            var v = value?.AsValue();
+            return v;
+        }
+
+        /// <summary>
         /// Converts the JSON raw back.
         /// </summary>
         /// <param name="json">The JSON value.</param>
@@ -1097,6 +1141,26 @@ namespace Trivial.Text
         public static explicit operator JsonDouble(JsonInteger json)
         {
             return new JsonDouble(json.Value);
+        }
+
+        /// <summary>
+        /// Converts to JSON node.
+        /// </summary>
+        /// <param name="json">The JSON value.</param>
+        /// <returns>An instance of the JsonNode class.</returns>
+        public static explicit operator System.Text.Json.Node.JsonNode(JsonInteger json)
+        {
+            return System.Text.Json.Node.JsonValue.Create(json.Value);
+        }
+
+        /// <summary>
+        /// Converts to JSON node.
+        /// </summary>
+        /// <param name="json">The JSON value.</param>
+        /// <returns>An instance of the JsonNode class.</returns>
+        public static explicit operator System.Text.Json.Node.JsonValue(JsonInteger json)
+        {
+            return System.Text.Json.Node.JsonValue.Create(json.Value);
         }
 
         /// <summary>
@@ -2588,6 +2652,45 @@ namespace Trivial.Text
         }
 
         /// <summary>
+        /// Converts to JSON value.
+        /// </summary>
+        /// <param name="value">The source value.</param>
+        /// <returns>A JSON value.</returns>
+        public static implicit operator JsonDouble(System.Text.Json.Node.JsonValue value)
+        {
+            if (value is null) return null;
+            if (value.TryGetValue(out double d))
+                return new JsonDouble(d);
+            if (value.TryGetValue(out float f))
+                return new JsonDouble(f);
+            if (value.TryGetValue(out decimal de))
+                return new JsonDouble(de);
+            if (value.TryGetValue(out int i))
+                return new JsonDouble(i);
+            if (value.TryGetValue(out uint ui))
+                return new JsonDouble(ui);
+            if (value.TryGetValue(out long l))
+                return new JsonDouble(l);
+            if (value.TryGetValue(out ulong ul))
+                return new JsonDouble(ul);
+            if (value.TryGetValue(out bool b))
+                return new JsonDouble(b ? 1 : 0);
+            if (value.TryGetValue(out string s) && double.TryParse(s, out var d2))
+                return new JsonDouble(d2);
+            throw new InvalidCastException("Expect an float number to convert.");
+        }
+
+        /// <summary>
+        /// Converts to JSON value.
+        /// </summary>
+        /// <param name="value">The source value.</param>
+        /// <returns>A JSON value.</returns>
+        public static implicit operator JsonDouble(System.Text.Json.Node.JsonNode value)
+        {
+            return value?.AsValue();
+        }
+
+        /// <summary>
         /// Converts the JSON raw back.
         /// </summary>
         /// <param name="json">The JSON value.</param>
@@ -2675,6 +2778,26 @@ namespace Trivial.Text
         public static explicit operator JsonInteger(JsonDouble json)
         {
             return new JsonInteger((long)json.Value);
+        }
+
+        /// <summary>
+        /// Converts to JSON node.
+        /// </summary>
+        /// <param name="json">The JSON value.</param>
+        /// <returns>An instance of the JsonNode class.</returns>
+        public static explicit operator System.Text.Json.Node.JsonNode(JsonDouble json)
+        {
+            return System.Text.Json.Node.JsonValue.Create(json.Value);
+        }
+
+        /// <summary>
+        /// Converts to JSON node.
+        /// </summary>
+        /// <param name="json">The JSON value.</param>
+        /// <returns>An instance of the JsonNode class.</returns>
+        public static explicit operator System.Text.Json.Node.JsonValue(JsonDouble json)
+        {
+            return System.Text.Json.Node.JsonValue.Create(json.Value);
         }
 
         /// <summary>

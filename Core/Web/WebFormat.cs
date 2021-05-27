@@ -260,7 +260,7 @@ namespace Trivial.Web
             if (t == typeof(string)) return Base64UrlEncode(obj.ToString(), Encoding.UTF8);
             return Base64UrlEncode(StringExtensions.ToJson(obj, options ?? new JsonSerializerOptions
             {
-                IgnoreNullValues = true
+                DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull
             }));
         }
 
@@ -326,7 +326,8 @@ namespace Trivial.Web
                     return (T)(object)JsonDocument.Parse(str);
                 };
             }
-            else if (t == typeof(JsonObject))
+
+            if (t == typeof(JsonObject))
             {
                 if (ignoreJsonDoc) return null;
                 return str =>
@@ -335,7 +336,8 @@ namespace Trivial.Web
                     return (T)(object)JsonObject.Parse(str);
                 };
             }
-            else if (t == typeof(JsonArray))
+
+            if (t == typeof(JsonArray))
             {
                 if (ignoreJsonDoc) return null;
                 return str =>
@@ -344,52 +346,20 @@ namespace Trivial.Web
                     return (T)(object)JsonArray.Parse(str);
                 };
             }
-            else if (t.FullName.StartsWith("System.Text.Json.Json", StringComparison.InvariantCulture) && t.IsClass)
+            
+            if (t == typeof(System.Text.Json.Node.JsonNode) || t.IsSubclassOf(typeof(System.Text.Json.Node.JsonNode)))
             {
-                try
+                if (ignoreJsonDoc) return null;
+                return str =>
                 {
-                    var n = t;
-                    if (t.Name.Equals("JsonNode", StringComparison.InvariantCulture))
-                    {
-                    }
-                    else if (t.Name.Equals("JsonObject", StringComparison.InvariantCulture) || t.Name.Equals("JsonArray", StringComparison.InvariantCulture))
-                    {
-                        n = t.Assembly.GetType("System.Text.Json.JsonNode", false);
-                        if (n == null) return null;
-                    }
-                    else
-                    {
-                        return null;
-                    }
-
-                    var parser = n.GetMethod("Parse", new[] { typeof(string) });
-                    if (parser != null && parser.IsStatic)
-                    {
-                        return str =>
-                        {
-                            if (string.IsNullOrWhiteSpace(str)) return default;
-                            return (T)parser.Invoke(null, new object[] { str });
-                        };
-                    }
-
-                    parser = n.GetMethod("Parse", new[] { typeof(string), typeof(JsonDocumentOptions) });
-                    if (parser != null && parser.IsStatic)
-                    {
-                        return str =>
-                        {
-                            if (string.IsNullOrWhiteSpace(str)) return default;
-                            return (T)parser.Invoke(null, new object[] { str, default(JsonDocumentOptions) });
-                        };
-                    }
-                }
-                catch (AmbiguousMatchException)
-                {
-                }
-                catch (ArgumentException)
-                {
-                }
+                    if (string.IsNullOrWhiteSpace(str)) return default;
+                    var value = System.Text.Json.Node.JsonNode.Parse(str);
+                    if (value is null) return default;
+                    return (T)(object)value;
+                };
             }
-            else if (t.FullName.StartsWith("Newtonsoft.Json.Linq.J", StringComparison.InvariantCulture))
+            
+            if (t.FullName.StartsWith("Newtonsoft.Json.Linq.J", StringComparison.InvariantCulture))
             {
                 try
                 {
@@ -410,7 +380,8 @@ namespace Trivial.Web
                 {
                 }
             }
-            else if (t == typeof(string))
+            
+            if (t == typeof(string))
             {
                 return str => (T)(object)str;
             }

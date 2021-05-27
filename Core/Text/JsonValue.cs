@@ -5,7 +5,13 @@ using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Text;
 using System.Text.Json;
+
 using Trivial.Web;
+
+using SystemJsonObject = System.Text.Json.Node.JsonObject;
+using SystemJsonArray = System.Text.Json.Node.JsonArray;
+using SystemJsonValue = System.Text.Json.Node.JsonValue;
+using SystemJsonNode = System.Text.Json.Node.JsonNode;
 
 namespace Trivial.Text
 {
@@ -349,13 +355,13 @@ namespace Trivial.Text
         /// Represents the Boolean value true of JSON as a string.
         /// This field is read-only.
         /// </summary>
-        public readonly static JsonBoolean True = new JsonBoolean(true);
+        public readonly static JsonBoolean True = new(true);
 
         /// <summary>
         /// Represents the Boolean value false of JSON as a string.
         /// This field is read-only.
         /// </summary>
-        public readonly static JsonBoolean False = new JsonBoolean(false);
+        public readonly static JsonBoolean False = new(false);
 
         /// <summary>
         /// Initializes a new instance of the JsonBoolean class.
@@ -716,6 +722,39 @@ namespace Trivial.Text
         }
 
         /// <summary>
+        /// Converts to JSON value.
+        /// </summary>
+        /// <param name="value">The source value.</param>
+        /// <returns>A JSON value.</returns>
+        public static implicit operator JsonBoolean(SystemJsonValue value)
+        {
+            if (value is null) return null;
+            if (value.TryGetValue(out bool b))
+                return b ? True : False;
+            if (value.TryGetValue(out int i))
+                return i > 0 ? True : False;
+            if (value.TryGetValue(out long l))
+                return l > 0 ? True : False;
+            if (value.TryGetValue(out string s))
+            {
+                var v = TryParse(s);
+                if (v != null) return v;
+            }
+
+            throw new InvalidCastException("Expect a boolean to convert.");
+        }
+
+        /// <summary>
+        /// Converts to JSON value.
+        /// </summary>
+        /// <param name="value">The source value.</param>
+        /// <returns>A JSON value.</returns>
+        public static implicit operator JsonBoolean(SystemJsonNode value)
+        {
+            return value?.AsValue();
+        }
+
+        /// <summary>
         /// Converts the JSON raw back.
         /// </summary>
         /// <param name="json">The JSON value.</param>
@@ -766,6 +805,26 @@ namespace Trivial.Text
         {
             if (json is null) return null;
             return json.Value ? TrueString : FalseString;
+        }
+
+        /// <summary>
+        /// Converts to JSON node.
+        /// </summary>
+        /// <param name="json">The JSON value.</param>
+        /// <returns>An instance of the JsonNode class.</returns>
+        public static explicit operator SystemJsonNode(JsonBoolean json)
+        {
+            return SystemJsonValue.Create(json.Value);
+        }
+
+        /// <summary>
+        /// Converts to JSON node.
+        /// </summary>
+        /// <param name="json">The JSON value.</param>
+        /// <returns>An instance of the JsonNode class.</returns>
+        public static explicit operator SystemJsonValue(JsonBoolean json)
+        {
+            return SystemJsonValue.Create(json.Value);
         }
 
         /// <summary>
@@ -1396,6 +1455,7 @@ namespace Trivial.Text
         /// Converts from JSON document.
         /// </summary>
         /// <param name="json">The JSON value.</param>
+        /// <returns>The JSON value.</returns>
         public static IJsonValueResolver ToJsonValue(JsonDocument json)
         {
             return ToJsonValue(json.RootElement);
@@ -1405,6 +1465,7 @@ namespace Trivial.Text
         /// Converts from JSON element.
         /// </summary>
         /// <param name="json">The JSON value.</param>
+        /// <returns>The JSON value.</returns>
         public static IJsonValueResolver ToJsonValue(JsonElement json)
         {
             return json.ValueKind switch
@@ -1415,12 +1476,50 @@ namespace Trivial.Text
                 JsonValueKind.Number => json.TryGetInt64(out var l)
                     ? new JsonInteger(l)
                     : (json.TryGetDouble(out var d) ? new JsonDouble(d) : Null),
-                JsonValueKind.True => new JsonBoolean(true),
-                JsonValueKind.False => new JsonBoolean(false),
+                JsonValueKind.True => JsonBoolean.True,
+                JsonValueKind.False => JsonBoolean.False,
                 JsonValueKind.Array => (JsonArray)json,
                 JsonValueKind.Object => (JsonObject)json,
                 _ => null
             };
+        }
+
+        /// <summary>
+        /// Converts from JSON element.
+        /// </summary>
+        /// <param name="json">The JSON value.</param>
+        /// <returns>The JSON value.</returns>
+        public static IJsonValueResolver ToJsonValue(System.Text.Json.Node.JsonNode json)
+        {
+            if (json is null)
+                return Null;
+            if (json is SystemJsonObject obj)
+                return (JsonObject)obj;
+            if (json is SystemJsonArray arr)
+                return (JsonArray)arr;
+            if (!(json is SystemJsonValue token))
+                return null;
+            if (token.TryGetValue(out bool b))
+                return b ? JsonBoolean.True : JsonBoolean.False;
+            if (token.TryGetValue(out long l))
+                return new JsonInteger(l);
+            if (token.TryGetValue(out int i))
+                return new JsonInteger(i);
+            if (token.TryGetValue(out uint ui))
+                return new JsonInteger(ui);
+            if (token.TryGetValue(out short sh))
+                return new JsonInteger(sh);
+            if (token.TryGetValue(out double d))
+                return new JsonDouble(d);
+            if (token.TryGetValue(out float f))
+                return new JsonDouble(f);
+            if (token.TryGetValue(out decimal de))
+                return new JsonDouble(de);
+            if (token.TryGetValue(out string s))
+                return new JsonString(s);
+            if (token.TryGetValue(out Guid g))
+                return new JsonString(g);
+            return null;
         }
 
         /// <summary>
@@ -1523,6 +1622,30 @@ namespace Trivial.Text
 
             if (rightValue is null || rightValue.ValueKind != leftValue.ValueKind) return false;
             return leftValue.Equals(rightValue);
+        }
+
+        /// <summary>
+        /// Converts to JSON node.
+        /// </summary>
+        /// <param name="json">The JSON value.</param>
+        /// <returns>The JSON node.</returns>
+        internal static SystemJsonNode ToJsonNode(IJsonValueResolver json)
+        {
+            if (json is null)
+                return null;
+            if (json is JsonObject obj)
+                return (SystemJsonObject)obj;
+            if (json is JsonArray arr)
+                return (SystemJsonArray)arr;
+            if (json is JsonString s)
+                return (SystemJsonValue)s;
+            if (json is JsonInteger i)
+                return (SystemJsonValue)i;
+            if (json is JsonDouble f)
+                return (SystemJsonValue)f;
+            if (json is JsonBoolean b)
+                return (SystemJsonValue)b;
+            return null;
         }
 
         internal static IJsonValueResolver ConvertValue(IJsonValue value, IJsonValue thisInstance = null)

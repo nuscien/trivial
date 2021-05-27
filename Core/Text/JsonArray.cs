@@ -1862,6 +1862,17 @@ namespace Trivial.Text
         }
 
         /// <summary>
+        /// Sets the value at the specific index.
+        /// </summary>
+        /// <param name="index">The zero-based index of the element to get.</param>
+        /// <param name="value">The value to set.</param>
+        /// <exception cref="ArgumentOutOfRangeException">The index is out of range.</exception>
+        public void SetValue(int index, System.Text.Json.Node.JsonNode value)
+        {
+            store[index] = JsonValues.ToJsonValue(value);
+        }
+
+        /// <summary>
         /// Sets the value of the specific property.
         /// </summary>
         /// <param name="index">The zero-based index of the element to get.</param>
@@ -2076,6 +2087,15 @@ namespace Trivial.Text
         /// </summary>
         /// <param name="value">The value to set.</param>
         public void Add(JsonElement value)
+        {
+            store.Add(JsonValues.ToJsonValue(value));
+        }
+
+        /// <summary>
+        /// Adds a value.
+        /// </summary>
+        /// <param name="value">The value to set.</param>
+        public void Add(System.Text.Json.Node.JsonNode value)
         {
             store.Add(JsonValues.ToJsonValue(value));
         }
@@ -2388,6 +2408,17 @@ namespace Trivial.Text
         /// <param name="value">The value to set.</param>
         /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
         public void Insert(int index, JsonElement value)
+        {
+            store.Insert(index, JsonValues.ToJsonValue(value));
+        }
+
+        /// <summary>
+        /// Inserts the value at the specific index.
+        /// </summary>
+        /// <param name="index">The zero-based index of the element to get.</param>
+        /// <param name="value">The value to set.</param>
+        /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+        public void Insert(int index, System.Text.Json.Node.JsonNode value)
         {
             store.Insert(index, JsonValues.ToJsonValue(value));
         }
@@ -3496,11 +3527,39 @@ namespace Trivial.Text
         }
 
         /// <summary>
+        /// Converts to JSON node.
+        /// </summary>
+        /// <param name="json">The JSON value.</param>
+        /// <returns>An instance of the JsonArray class.</returns>
+        public static explicit operator System.Text.Json.Node.JsonArray(JsonArray json)
+        {
+            if (json == null) return null;
+            var node = new System.Text.Json.Node.JsonArray();
+            foreach (var item in json.store)
+            {
+                var v = JsonValues.ToJsonNode(item);
+                node.Add(v);
+            }
+
+            return node;
+        }
+
+        /// <summary>
+        /// Converts to JSON node.
+        /// </summary>
+        /// <param name="json">The JSON value.</param>
+        /// <returns>An instance of the JsonArray class.</returns>
+        public static explicit operator System.Text.Json.Node.JsonNode(JsonArray json)
+        {
+            return (System.Text.Json.Node.JsonArray)json;
+        }
+
+        /// <summary>
         /// Converts from JSON document.
         /// </summary>
         /// <param name="json">The JSON value.</param>
         /// <returns>An instance of the JsonArray class.</returns>
-        /// <exception cref="JsonException">json does not represent a valid single JSON array.</exception>
+        /// <exception cref="JsonException">json does not represent a valid JSON array.</exception>
         public static implicit operator JsonArray(JsonDocument json)
         {
             return json.RootElement;
@@ -3511,7 +3570,7 @@ namespace Trivial.Text
         /// </summary>
         /// <param name="json">The JSON value.</param>
         /// <returns>An instance of the JsonArray class.</returns>
-        /// <exception cref="JsonException">json does not represent a valid single JSON array.</exception>
+        /// <exception cref="JsonException">json does not represent a valid JSON array.</exception>
         public static implicit operator JsonArray(JsonElement json)
         {
             if (json.ValueKind != JsonValueKind.Array)
@@ -3531,6 +3590,35 @@ namespace Trivial.Text
             }
 
             return result;
+        }
+        /// <summary>
+        /// Converts from JSON node.
+        /// </summary>
+        /// <param name="json">The JSON value.</param>
+        /// <returns>An instance of the JsonArray class.</returns>
+        /// <exception cref="JsonException">json does not represent a valid JSON array.</exception>
+        public static implicit operator JsonArray(System.Text.Json.Node.JsonArray json)
+        {
+            if (json is null) return null;
+            var result = new JsonArray();
+            foreach (var item in json)
+            {
+                result.Add(item);
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Converts from JSON node.
+        /// </summary>
+        /// <param name="json">The JSON value.</param>
+        /// <returns>An instance of the JsonArray class.</returns>
+        /// <exception cref="JsonException">json does not represent a valid JSON array.</exception>
+        public static implicit operator JsonArray(System.Text.Json.Node.JsonNode json)
+        {
+            if (json is System.Text.Json.Node.JsonArray obj) return obj;
+            throw new JsonException("json is not a JSON array.");
         }
 
         /// <summary>

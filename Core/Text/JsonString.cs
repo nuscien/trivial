@@ -1243,6 +1243,28 @@ namespace Trivial.Text
         }
 
         /// <summary>
+        /// Converts to JSON value.
+        /// </summary>
+        /// <param name="value">The source value.</param>
+        /// <returns>A JSON value.</returns>
+        public static implicit operator JsonString(System.Text.Json.Node.JsonValue value)
+        {
+            if (value is null) return null;
+            if (!value.TryGetValue(out string s)) s = value.ToString();
+            return new JsonString(s);
+        }
+
+        /// <summary>
+        /// Converts to JSON value.
+        /// </summary>
+        /// <param name="value">The source value.</param>
+        /// <returns>A JSON value.</returns>
+        public static implicit operator JsonString(System.Text.Json.Node.JsonNode value)
+        {
+            return value?.AsValue();
+        }
+
+        /// <summary>
         /// Converts the JSON raw back.
         /// </summary>
         /// <param name="json">The JSON value.</param>
@@ -1250,6 +1272,26 @@ namespace Trivial.Text
         public static explicit operator string(JsonString json)
         {
             return json?.Value;
+        }
+
+        /// <summary>
+        /// Converts to JSON node.
+        /// </summary>
+        /// <param name="json">The JSON value.</param>
+        /// <returns>An instance of the JsonNode class.</returns>
+        public static explicit operator System.Text.Json.Node.JsonNode(JsonString json)
+        {
+            return System.Text.Json.Node.JsonValue.Create(json.Value);
+        }
+
+        /// <summary>
+        /// Converts to JSON node.
+        /// </summary>
+        /// <param name="json">The JSON value.</param>
+        /// <returns>An instance of the JsonNode class.</returns>
+        public static explicit operator System.Text.Json.Node.JsonValue(JsonString json)
+        {
+            return System.Text.Json.Node.JsonValue.Create(json.Value);
         }
 
         /// <summary>

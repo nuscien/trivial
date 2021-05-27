@@ -208,7 +208,7 @@ namespace Trivial.Chemistry
         }
 
         /// <summary>
-        /// The element name in English accepted by IUPAC.
+        /// Gets the element name in English accepted by IUPAC.
         /// </summary>
         public string EnglishName { get; }
 

@@ -509,18 +509,16 @@ namespace Trivial.Text
                 return jsonEle.ToString();
             }
 
+            if (obj is System.Text.Json.Node.JsonNode jsonNode)
+            {
+                return jsonNode.ToJsonString();
+            }
+
             if (t.FullName.StartsWith("Newtonsoft.Json.Linq.J", StringComparison.InvariantCulture))
             {
                 if (t.FullName.Equals("Newtonsoft.Json.Linq.JObject", StringComparison.InvariantCulture)
                     || t.FullName.Equals("Newtonsoft.Json.Linq.JArray", StringComparison.InvariantCulture))
                     return obj.ToString();
-            }
-
-            if (t.FullName.StartsWith("System.Text.Json.Json", StringComparison.InvariantCulture) && t.IsClass)
-            {
-                var method = t.GetMethod("ToJsonString", Type.EmptyTypes);
-                if (method != null && !method.IsStatic)
-                    return method.Invoke(obj, null)?.ToString();
             }
 
             if (obj is Security.TokenRequest tokenReq)

@@ -148,7 +148,7 @@ namespace Trivial.Web
                 "dwg" => "image/vnd.dwg",
                 "dxf" => "image/vnd.dxf",
                 "gif" => "image/gif",
-                "heif" => "image/heif",
+                "heif" or "hif" => "image/heif",
                 "heic" => "image/heic",
                 "ico" or "cur" => "image/x-icon",
                 "jpe" or "jpeg" or "jpg" or "jfif" => "image/jpeg",
