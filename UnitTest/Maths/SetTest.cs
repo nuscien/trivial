@@ -65,7 +65,7 @@ namespace Trivial.Maths
             Assert.IsTrue(a.IsInInterval(100000));
             Assert.IsTrue(a.IsInInterval(int.MaxValue));
 
-            a = IntervalUtility.ParseForInt32($"(-Infinity, {NumberSymbols.InfiniteSymbol}]", NumberStyles.Any, CultureInfo.InvariantCulture);
+            a = IntervalUtility.ParseForInt32($"(-Infinity, {Numbers.InfiniteSymbol}]", NumberStyles.Any, CultureInfo.InvariantCulture);
             Assert.AreEqual(int.MinValue, a.MinValue);
             Assert.AreEqual(int.MaxValue, a.MaxValue);
             Assert.IsFalse(a.LeftOpen);
@@ -75,7 +75,7 @@ namespace Trivial.Maths
             Assert.IsTrue(a.IsInInterval(0));
             Assert.IsTrue(a.IsInInterval(int.MaxValue));
 
-            var b = IntervalUtility.ParseForDouble($"(null, {NumberSymbols.PositiveInfiniteSymbol}]", NumberStyles.Any, CultureInfo.InvariantCulture);
+            var b = IntervalUtility.ParseForDouble($"(null, {Numbers.PositiveInfiniteSymbol}]", NumberStyles.Any, CultureInfo.InvariantCulture);
             Assert.AreEqual(double.NegativeInfinity, b.MinValue);
             Assert.AreEqual(double.PositiveInfinity, b.MaxValue);
             Assert.IsTrue(b.LeftOpen);
@@ -97,7 +97,7 @@ namespace Trivial.Maths
             Assert.IsFalse(b.IsInInterval(1920));
             Assert.IsFalse(b.IsInInterval(int.MaxValue));
 
-            var c = IntervalUtility.ParseForNullableInt64($"(-1000, {NumberSymbols.PositiveInfiniteSymbol}]", NumberStyles.Any, CultureInfo.InvariantCulture);
+            var c = IntervalUtility.ParseForNullableInt64($"(-1000, {Numbers.PositiveInfiniteSymbol}]", NumberStyles.Any, CultureInfo.InvariantCulture);
             Assert.AreEqual(-1000, c.MinValue);
             Assert.IsNull(c.MaxValue);
             Assert.IsTrue(c.LeftOpen);

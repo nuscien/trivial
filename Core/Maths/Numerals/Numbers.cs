@@ -3,7 +3,7 @@
 //   Copyright (c) 2010 Nanchang Jinchen Software Co., Ltd. All rights reserved.
 // </copyright>
 // <summary>
-//   The number base models and interfaces.
+//   The number symbols and functions.
 // </summary>
 // <author>Kingcean Tuan</author>
 // --------------------------------------------------------------------------------------------------------------------
@@ -16,423 +16,12 @@ using System.Text;
 namespace Trivial.Maths
 {
     /// <summary>
-    /// The integer sample.
-    /// </summary>
-    public interface IIntegerSample
-    {
-        /// <summary>
-        /// Gets a value indicating whether it supports number 0.
-        /// </summary>
-        bool IsZeroSupported { get; }
-
-        /// <summary>
-        /// Number 0.
-        /// </summary>
-        string Zero { get; }
-
-        /// <summary>
-        /// Number 1.
-        /// </summary>
-        string One { get; }
-
-        /// <summary>
-        /// Number 2.
-        /// </summary>
-        string Two { get; }
-
-        /// <summary>
-        /// Number 3.
-        /// </summary>
-        string Three { get; }
-
-        /// <summary>
-        /// Number 4.
-        /// </summary>
-        string Four { get; }
-
-        /// <summary>
-        /// Number 5.
-        /// </summary>
-        string Five { get; }
-
-        /// <summary>
-        /// Number 6.
-        /// </summary>
-        string Six { get; }
-
-        /// <summary>
-        /// Number 7.
-        /// </summary>
-        string Seven { get; }
-
-        /// <summary>
-        /// Number 8.
-        /// </summary>
-        string Eight { get; }
-
-        /// <summary>
-        /// Number 9.
-        /// </summary>
-        string Nine { get; }
-
-        /// <summary>
-        /// Number 10.
-        /// </summary>
-        string Ten { get; }
-
-        /// <summary>
-        /// Number 11.
-        /// </summary>
-        string Eleven { get; }
-
-        /// <summary>
-        /// Number 12.
-        /// </summary>
-        string Twelve { get; }
-
-        /// <summary>
-        /// Number 13.
-        /// </summary>
-        string Thirteen { get; }
-
-        /// <summary>
-        /// Number 14.
-        /// </summary>
-        string Fourteen { get; }
-
-        /// <summary>
-        /// Number 15.
-        /// </summary>
-        string Fifteen { get; }
-
-        /// <summary>
-        /// Number 16.
-        /// </summary>
-        string Sixteen { get; }
-
-        /// <summary>
-        /// Number 17.
-        /// </summary>
-        string Seventeen { get; }
-
-        /// <summary>
-        /// Number 18.
-        /// </summary>
-        string Eighteen { get; }
-
-        /// <summary>
-        /// Number 19.
-        /// </summary>
-        string Nineteen { get; }
-
-        /// <summary>
-        /// Number 20.
-        /// </summary>
-        string Twenty { get; }
-
-        /// <summary>
-        /// Number 30.
-        /// </summary>
-        string Thirty { get; }
-
-        /// <summary>
-        /// Number 40.
-        /// </summary>
-        string Forty { get; }
-
-        /// <summary>
-        /// Number 50.
-        /// </summary>
-        string Fifty { get; }
-
-        /// <summary>
-        /// Number 60.
-        /// </summary>
-        string Sixty { get; }
-
-        /// <summary>
-        /// Number 70.
-        /// </summary>
-        string Seventy { get; }
-
-        /// <summary>
-        /// Number 80.
-        /// </summary>
-        string Eighty { get; }
-
-        /// <summary>
-        /// Number 90.
-        /// </summary>
-        string Ninety { get; }
-
-        /// <summary>
-        /// Number 100.
-        /// </summary>
-        string OneHundred { get; }
-
-        /// <summary>
-        /// Number 500.
-        /// </summary>
-        string FiveHundred { get; }
-
-        /// <summary>
-        /// Number 1000.
-        /// </summary>
-        string OneThousand { get; }
-    }
-
-    /// <summary>
-    /// The local string resolver for number.
-    /// </summary>
-    public interface IIntegerLocalization
-    {
-        /// <summary>
-        /// Gets the string of a specific number.
-        /// </summary>
-        /// <param name="number">The number.</param>
-        /// <param name="digitOnly">true if return the digit one by one directly; otherwise, false.</param>
-        /// <returns>A string for the number.</returns>
-        string ToString(long number, bool digitOnly = false);
-
-        /// <summary>
-        /// Gets the string of a specific number.
-        /// </summary>
-        /// <param name="number">The number.</param>
-        /// <param name="digitOnly">true if return the digit one by one directly; otherwise, false.</param>
-        /// <returns>A string for the number.</returns>
-        string ToString(ulong number, bool digitOnly = false);
-    }
-
-    /// <summary>
-    /// The local string resolver for number.
-    /// </summary>
-    public interface INumberLocalization : IIntegerLocalization
-    {
-        /// <summary>
-        /// Gets the string of a specific number.
-        /// </summary>
-        /// <param name="number">The number.</param>
-        /// <returns>A string for the number.</returns>
-        string ToString(double number);
-    }
-
-    /// <summary>
-    /// The base number digits.
-    /// </summary>
-    public abstract class LocalNumerals : IIntegerSample, IIntegerLocalization
-    {
-        /// <summary>
-        /// Gets a value indicating whether it supports number 0.
-        /// </summary>
-        public bool IsZeroSupported => true;
-
-        /// <summary>
-        /// Sign of negative.
-        /// </summary>
-        public abstract string PositiveSign { get; }
-
-        /// <summary>
-        /// Sign of negative.
-        /// </summary>
-        public abstract string NegativeSign { get; }
-
-        /// <summary>
-        /// Number 0.
-        /// </summary>
-        public virtual string Zero => ToString(0);
-
-        /// <summary>
-        /// Number 1.
-        /// </summary>
-        public virtual string One => ToString(1);
-
-        /// <summary>
-        /// Number 2.
-        /// </summary>
-        public virtual string Two => ToString(2);
-
-        /// <summary>
-        /// Number 3.
-        /// </summary>
-        public virtual string Three => ToString(3);
-
-        /// <summary>
-        /// Number 4.
-        /// </summary>
-        public virtual string Four => ToString(4);
-
-        /// <summary>
-        /// Number 5.
-        /// </summary>
-        public virtual string Five => ToString(5);
-
-        /// <summary>
-        /// Number 6.
-        /// </summary>
-        public virtual string Six => ToString(6);
-
-        /// <summary>
-        /// Number 7.
-        /// </summary>
-        public virtual string Seven => ToString(7);
-
-        /// <summary>
-        /// Number 8.
-        /// </summary>
-        public virtual string Eight => ToString(8);
-
-        /// <summary>
-        /// Number 9.
-        /// </summary>
-        public virtual string Nine => ToString(9);
-
-        /// <summary>
-        /// Number 10.
-        /// </summary>
-        public virtual string Ten => ToString(10);
-
-        /// <summary>
-        /// Number 11.
-        /// </summary>
-        public virtual string Eleven => ToString(11);
-
-        /// <summary>
-        /// Number 12.
-        /// </summary>
-        public virtual string Twelve => ToString(12);
-
-        /// <summary>
-        /// Number 13.
-        /// </summary>
-        public virtual string Thirteen => ToString(13);
-
-        /// <summary>
-        /// Number 14.
-        /// </summary>
-        public virtual string Fourteen => ToString(14);
-
-        /// <summary>
-        /// Number 15.
-        /// </summary>
-        public virtual string Fifteen => ToString(15);
-
-        /// <summary>
-        /// Number 16.
-        /// </summary>
-        public virtual string Sixteen => ToString(16);
-
-        /// <summary>
-        /// Number 17.
-        /// </summary>
-        public virtual string Seventeen => ToString(17);
-
-        /// <summary>
-        /// Number 18.
-        /// </summary>
-        public virtual string Eighteen => ToString(18);
-
-        /// <summary>
-        /// Number 19.
-        /// </summary>
-        public virtual string Nineteen => ToString(19);
-
-        /// <summary>
-        /// Number 20.
-        /// </summary>
-        public virtual string Twenty => ToString(20);
-
-        /// <summary>
-        /// Number 30.
-        /// </summary>
-        public virtual string Thirty => ToString(30);
-
-        /// <summary>
-        /// Number 40.
-        /// </summary>
-        public virtual string Forty => ToString(40);
-
-        /// <summary>
-        /// Number 50.
-        /// </summary>
-        public virtual string Fifty => ToString(50);
-
-        /// <summary>
-        /// Number 60.
-        /// </summary>
-        public virtual string Sixty => ToString(60);
-
-        /// <summary>
-        /// Number 70.
-        /// </summary>
-        public virtual string Seventy => ToString(70);
-
-        /// <summary>
-        /// Number 80.
-        /// </summary>
-        public virtual string Eighty => ToString(80);
-
-        /// <summary>
-        /// Number 90.
-        /// </summary>
-        public virtual string Ninety => ToString(90);
-
-        /// <summary>
-        /// Number 100.
-        /// </summary>
-        public virtual string OneHundred => ToString(100);
-
-        /// <summary>
-        /// Number 500.
-        /// </summary>
-        public virtual string FiveHundred => ToString(500);
-
-        /// <summary>
-        /// Number 1,000.
-        /// </summary>
-        public virtual string OneThousand => ToString(1000);
-
-        /// <summary>
-        /// Number 5,000.
-        /// </summary>
-        public virtual string FiveThousand => ToString(5000);
-
-        /// <summary>
-        /// Number 10,000.
-        /// </summary>
-        public virtual string TenThousand => ToString(10000);
-
-        /// <summary>
-        /// Number 100,000.
-        /// </summary>
-        public virtual string OneHundredThousand => ToString(100000);
-
-        /// <summary>
-        /// Number 1,000,000.
-        /// </summary>
-        public virtual string OneMillion => ToString(1000000);
-
-        /// <summary>
-        /// Gets the string of a specific number.
-        /// </summary>
-        /// <param name="number">The number.</param>
-        /// <param name="digitOnly">true if return the digit one by one directly; otherwise, false.</param>
-        /// <returns>A string for the number.</returns>
-        public abstract string ToString(long number, bool digitOnly = false);
-
-        /// <summary>
-        /// Gets the string of a specific number.
-        /// </summary>
-        /// <param name="number">The number.</param>
-        /// <param name="digitOnly">true if return the digit one by one directly; otherwise, false.</param>
-        /// <returns>A string for the number.</returns>
-        public abstract string ToString(ulong number, bool digitOnly = false);
-    }
-
-    /// <summary>
     /// The class for numbers.
     /// </summary>
-    public static class NumberSymbols
+    public static class Numbers
     {
+        private const string num36 = "0123456789abcdefghijklmnopqrstuvwxyz";
+
         /// <summary>
         /// Sign of plus minus.
         /// </summary>
@@ -607,6 +196,356 @@ namespace Trivial.Maths
         /// The sign of empty set of nothing.
         /// </summary>
         public const string EmptySetSymbol = "ø";
+
+        /// <summary>
+        /// Converts a number to a specific positional notation format string.
+        /// </summary>
+        /// <param name="value">The number to convert.</param>
+        /// <param name="radix">The positional notation. Should be an integer in 2-36.</param>
+        /// <returns>A string of the number in the specific positional notation.</returns>
+        /// <exception cref="ArgumentOutOfRangeException">radix was less than 2 or greater than 36.</exception>
+        public static string ToPositionalNotationString(short value, int radix)
+        {
+            return ToPositionalNotationString((long)value, radix);
+        }
+
+        /// <summary>
+        /// Converts a number to a specific positional notation format string.
+        /// </summary>
+        /// <param name="value">The number to convert.</param>
+        /// <param name="radix">The positional notation. Should be an integer in 2-36.</param>
+        /// <returns>A string of the number in the specific positional notation.</returns>
+        /// <exception cref="ArgumentOutOfRangeException">radix was less than 2 or greater than 36.</exception>
+        public static string ToPositionalNotationString(int value, int radix)
+        {
+            return ToPositionalNotationString((long)value, radix);
+        }
+
+        /// <summary>
+        /// Converts a number to a specific positional notation format string.
+        /// </summary>
+        /// <param name="value">The number to convert.</param>
+        /// <param name="radix">The positional notation. Should be an integer in 2-36.</param>
+        /// <returns>A string of the number in the specific positional notation.</returns>
+        /// <exception cref="ArgumentOutOfRangeException">radix was less than 2 or greater than 36.</exception>
+        public static string ToPositionalNotationString(uint value, int radix)
+        {
+            return ToPositionalNotationString((long)value, radix);
+        }
+
+        /// <summary>
+        /// Converts a number to a specific positional notation format string.
+        /// </summary>
+        /// <param name="value">The number to convert.</param>
+        /// <param name="radix">The positional notation. Should be an integer in 2-36.</param>
+        /// <returns>A string of the number in the specific positional notation.</returns>
+        /// <exception cref="ArgumentOutOfRangeException">radix was less than 2 or greater than 36.</exception>
+        public static string ToPositionalNotationString(long value, int radix)
+        {
+            if (radix < 2 || radix > 36) throw new ArgumentOutOfRangeException(nameof(radix), "radix should be in 2-36.");
+            var integerStr = string.Empty;
+            var integerPart = Math.Abs(value);
+            if (integerPart == 0) return "0";
+            while (integerPart != 0)
+            {
+                integerStr = num36[(int)(integerPart % radix)] + integerStr;
+                integerPart /= radix;
+            }
+
+            if (value < 0) return "-" + integerStr;
+            return integerStr;
+        }
+
+        /// <summary>
+        /// Converts a number to a specific positional notation format string.
+        /// </summary>
+        /// <param name="value">The number to convert.</param>
+        /// <param name="radix">The positional notation. Should be an integer in 2-36.</param>
+        /// <returns>A string of the number in the specific positional notation.</returns>
+        /// <exception cref="ArgumentOutOfRangeException">radix was less than 2 or greater than 36.</exception>
+        public static string ToPositionalNotationString(float value, int radix)
+        {
+            return ToPositionalNotationString((double)value, radix);
+        }
+
+        /// <summary>
+        /// Converts a number to a specific positional notation format string.
+        /// </summary>
+        /// <param name="value">The number to convert.</param>
+        /// <param name="radix">The positional notation. Should be an integer in 2-36.</param>
+        /// <returns>A string of the number in the specific positional notation.</returns>
+        /// <exception cref="ArgumentOutOfRangeException">radix was less than 2 or greater than 36.</exception>
+        public static string ToPositionalNotationString(double value, int radix)
+        {
+            if (radix < 2 || radix > 36) throw new ArgumentOutOfRangeException(nameof(radix), "radix should be in 2-36.");
+            var integerStr = string.Empty;
+            var fractionalStr = string.Empty;
+            var integerPart = Math.Abs((long)value);
+            var fractionalPart = Math.Abs(value) - integerPart;
+            if (integerPart == 0)
+            {
+                integerStr = "0";
+            }
+
+            while (integerPart != 0)
+            {
+                integerStr = num36[(int)(integerPart % radix)] + integerStr;
+                integerPart /= radix;
+            }
+
+            for (int i = 0; i < 10; i++)
+            {
+                if (fractionalPart == 0)
+                {
+                    break;
+                }
+
+                var pos = (int)(fractionalPart * radix);
+                if (pos < 35 && Math.Abs(pos + 1 - fractionalPart * radix) < 0.00000000001)
+                {
+                    fractionalStr += num36[pos + 1];
+                    break;
+                }
+
+                fractionalStr += num36[pos];
+                fractionalPart = fractionalPart * radix - pos;
+            }
+
+            while (fractionalStr.Length > 0 && fractionalStr.LastIndexOf('0') == (fractionalStr.Length - 1))
+                fractionalStr = fractionalStr.Remove(fractionalStr.Length - 1);
+
+            var str = new StringBuilder();
+            if (value < 0) str.Append('-');
+            str.Append(integerStr);
+            if (!string.IsNullOrEmpty(fractionalStr))
+            {
+                str.Append('.');
+                str.Append(fractionalStr);
+            }
+
+            return str.ToString();
+        }
+
+        /// <summary>
+        /// Parses a string to a number.
+        /// </summary>
+        /// <param name="s">The input string.</param>
+        /// <param name="radix">The positional notation. Should be an integer in 2-36.</param>
+        /// <exception cref="ArgumentNullException">s was null.</exception>
+        /// <exception cref="ArgumentException">s was empty or consists only of white-space characters..</exception>
+        /// <exception cref="ArgumentOutOfRangeException">radix was less than 2 or greater than 36.</exception>
+        /// <exception cref="FormatException">s was in an incorrect format.</exception>
+        /// <returns>A number parsed.</returns>
+        public static short ParseToInt16(string s, int radix)
+        {
+            var result = ParseToInt32(s, radix);
+            if (result >= short.MinValue && result <= short.MaxValue)
+                return (short)result;
+            throw new FormatException("s was too small or too large.", new OverflowException("s was too small or too large."));
+        }
+
+        /// <summary>
+        /// Parses a string to a number.
+        /// </summary>
+        /// <param name="s">The input string.</param>
+        /// <param name="radix">The positional notation. Should be an integer in 2-36.</param>
+        /// <exception cref="ArgumentNullException">s was null.</exception>
+        /// <exception cref="ArgumentException">s was empty or consists only of white-space characters..</exception>
+        /// <exception cref="ArgumentOutOfRangeException">radix was less than 2 or greater than 36.</exception>
+        /// <exception cref="FormatException">s was in an incorrect format.</exception>
+        /// <returns>A number parsed.</returns>
+        public static int ParseToInt32(string s, int radix)
+        {
+            if (s == null) throw new ArgumentNullException(nameof(s), "s should not be null.");
+            if (string.IsNullOrWhiteSpace(s)) throw new ArgumentException("s should not be empty or consists only of white-space characters.", nameof(s));
+            if (radix < 2 || radix > 36) throw new ArgumentOutOfRangeException(nameof(radix), "radix should be in 2-36.");
+            if (TryParseToInt32(s, radix, out var result)) return result;
+            var message = $"{nameof(s)} is incorrect. It should be in base {radix} number format.";
+            throw new FormatException(message, new ArgumentException(message, nameof(s)));
+        }
+
+        /// <summary>
+        /// Parses a string to a number.
+        /// </summary>
+        /// <param name="s">The input string.</param>
+        /// <param name="radix">The positional notation. Should be an integer in 2-36.</param>
+        /// <exception cref="ArgumentNullException">s was null.</exception>
+        /// <exception cref="ArgumentException">s was empty or consists only of white-space characters..</exception>
+        /// <exception cref="ArgumentOutOfRangeException">radix was less than 2 or greater than 36.</exception>
+        /// <exception cref="FormatException">s was in an incorrect format.</exception>
+        /// <returns>A number parsed.</returns>
+        public static long ParseToInt64(string s, int radix)
+        {
+            if (s == null) throw new ArgumentNullException(nameof(s), "s should not be null.");
+            if (string.IsNullOrWhiteSpace(s)) throw new ArgumentException("s should not be empty or consists only of white-space characters.", nameof(s));
+            if (radix < 2 || radix > 36) throw new ArgumentOutOfRangeException(nameof(radix), "radix should be in 2-36.");
+            if (TryParseToInt64(s, radix, out var result)) return result;
+            var message = $"{nameof(s)} is incorrect. It should be in base {radix} number format.";
+            throw new FormatException(message, new ArgumentException(message, nameof(s)));
+        }
+
+        /// <summary>
+        /// Tries to parse a string to a number.
+        /// </summary>
+        /// <param name="s">The input string.</param>
+        /// <param name="radix">The positional notation. Should be an integer in 2-36.</param>
+        /// <param name="result">The result.</param>
+        /// <returns>true if parse succeeded; otherwise, false.</returns>
+        public static bool TryParseToInt16(string s, int radix, out short result)
+        {
+            if (TryParseToInt32(s, radix, out var i) && i >= short.MinValue && i <= short.MaxValue)
+            {
+                result = (short)i;
+                return true;
+            }
+
+            result = default;
+            return false;
+        }
+
+        /// <summary>
+        /// Tries to parse a string to a number.
+        /// </summary>
+        /// <param name="s">The input string.</param>
+        /// <param name="radix">The positional notation. Should be an integer in 2-36.</param>
+        /// <param name="result">The result.</param>
+        /// <returns>true if parse succeeded; otherwise, false.</returns>
+        public static bool TryParseToInt32(string s, int radix, out int result)
+        {
+            s = s.Trim().ToLowerInvariant();
+            if (radix < 2 || radix > 36 || string.IsNullOrEmpty(s))
+            {
+                result = default;
+                return false;
+            }
+
+            if (radix == 10 && int.TryParse(s, out result)) return true;
+            var num = 0;
+            var pos = 0;
+            var neg = false;
+            if (radix == 16)
+            {
+                if (s.StartsWith("0x-") || s.StartsWith("-0x") || s.StartsWith("&h-") || s.StartsWith("-&h"))
+                {
+                    pos += 3;
+                    neg = true;
+                }
+                else if (s.StartsWith("0x") || s.StartsWith("&h"))
+                {
+                    pos += 2;
+                }
+                else if (s.StartsWith("x-") || s.StartsWith("-x"))
+                {
+                    pos += 2;
+                    neg = true;
+                }
+                else if (s.StartsWith("x"))
+                {
+                    pos++;
+                }
+            }
+            else if (s[0] == '-')
+            {
+                neg = true;
+                pos++;
+            }
+
+            for (; pos < s.Length; pos++)
+            {
+                var c = s[pos];
+                num *= radix;
+                var i = num36.IndexOf(c);
+                if (i < 0)
+                {
+                    if (c == ' ' || c == '_' || c == ',') continue;
+                    if (c == '.' || c == '\t' || c == '\r' || c == '\n' || c == '\0') break;
+                    result = default;
+                    return false;
+                }
+                else if (i >= radix || num < 0)
+                {
+                    result = default;
+                    return false;
+                }
+
+                num += i;
+            }
+
+            result = neg ? -num : num;
+            return true;
+        }
+
+        /// <summary>
+        /// Tries to parse a string to a number.
+        /// </summary>
+        /// <param name="s">The input string.</param>
+        /// <param name="radix">The positional notation. Should be an integer in 2-36.</param>
+        /// <param name="result">The result.</param>
+        /// <returns>true if parse succeeded; otherwise, false.</returns>
+        public static bool TryParseToInt64(string s, int radix, out long result)
+        {
+            s = s.Trim().ToLowerInvariant();
+            if (radix < 2 || radix > 36 || string.IsNullOrEmpty(s))
+            {
+                result = default;
+                return false;
+            }
+
+            if (radix == 10 && long.TryParse(s, out result)) return true;
+            var num = 0L;
+            var pos = 0;
+            var neg = false;
+            if (radix == 16)
+            {
+                if (s.StartsWith("0x-") || s.StartsWith("-0x") || s.StartsWith("&h-") || s.StartsWith("-&h"))
+                {
+                    pos += 3;
+                    neg = true;
+                }
+                else if (s.StartsWith("0x") || s.StartsWith("&h"))
+                {
+                    pos += 2;
+                }
+                else if (s.StartsWith("x-") || s.StartsWith("-x"))
+                {
+                    pos += 2;
+                    neg = true;
+                }
+                else if (s.StartsWith("x"))
+                {
+                    pos++;
+                }
+            }
+            else if (s[0] == '-')
+            {
+                neg = true;
+                pos++;
+            }
+
+            for (; pos < s.Length; pos++)
+            {
+                var c = s[pos];
+                num *= radix;
+                var i = num36.IndexOf(c);
+                if (i < 0)
+                {
+                    if (c == ' ' || c == '_' || c == ',') continue;
+                    if (c == '.' || c == '\t' || c == '\r' || c == '\n' || c == '\0') break;
+                    result = default;
+                    return false;
+                }
+                else if (i >= radix || num < 0)
+                {
+                    result = default;
+                    return false;
+                }
+
+                num += i;
+            }
+
+            result = neg ? -num : num;
+            return true;
+        }
 
         /// <summary>
         /// Gets the string of a specific number.

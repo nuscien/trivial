@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -218,5 +219,46 @@ namespace Trivial.Chemistry
                     new MolecularFormula(ChemicalElement.Cl)
                 }));
         }
+
+        /// <summary>
+        /// Tests molecular formula.
+        /// </summary>
+        [TestMethod]
+        public void TestSerialization()
+        {
+            var s = "{ \"e\": 6 }";
+            var m = JsonSerializer.Deserialize<Model>(s).Element;
+            Assert.AreEqual(ChemicalElement.C, m);
+
+            s = "{ \"e\": \"C\" }";
+            m = JsonSerializer.Deserialize<Model>(s).Element;
+            Assert.AreEqual(ChemicalElement.C, m);
+
+            s = "{ \"e\": { \"symbol\": \"C\" } }";
+            m = JsonSerializer.Deserialize<Model>(s).Element;
+            Assert.AreEqual(ChemicalElement.C, m);
+
+            s = "{ \"e\": { \"number\": 6 } }";
+            m = JsonSerializer.Deserialize<Model>(s).Element;
+            Assert.AreEqual(ChemicalElement.C, m);
+
+            s = "{ \"e\": { \"symbol\": \"C\", \"number\": 6 } }";
+            m = JsonSerializer.Deserialize<Model>(s).Element;
+            Assert.AreEqual(ChemicalElement.C, m);
+
+            s = "{ \"e\": { \"symbol\": \"H\", \"number\": 11 } }";
+            m = JsonSerializer.Deserialize<Model>(s).Element;
+            Assert.AreNotEqual(ChemicalElement.H, m);
+            Assert.AreNotEqual(ChemicalElement.Na, m);
+            Assert.AreEqual("H", m.Symbol);
+            Assert.AreEqual(11, m.AtomicNumber);
+        }
+    }
+
+    class Model
+    {
+        [JsonPropertyName("e")]
+        [JsonConverter(typeof(ChemicalElementJsonConverter))]
+        public ChemicalElement Element { get; set; }
     }
 }

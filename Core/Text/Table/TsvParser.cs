@@ -7,82 +7,87 @@ using System.Text;
 namespace Trivial.Text
 {
     /// <summary>
-    /// The text parser for comma-separated values (RFC-4180) file format.
+    /// The text parser for tab-separated values file format.
     /// </summary>
-    public class CsvParser : BaseLinesStringTableParser
+    public class TsvParser : BaseLinesStringTableParser
     {
         /// <summary>
         /// CSV MIME.
         /// </summary>
-        public const string MIME = "text/csv";  // RFC 7111.
+        public const string MIME = "text/tsv";
 
         /// <summary>
-        /// Initializes a new instance of the CsvParser class.
+        /// The seperator per feild.
+        /// </summary>
+        private const char fieldSeperator = '\t';
+
+        /// <summary>
+        /// Initializes a new instance of the TsvParser class.
         /// </summary>
         /// <param name="reader">The text reader.</param>
-        public CsvParser(TextReader reader) : base(reader)
+        public TsvParser(TextReader reader) : base(reader)
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the CsvParser class.
+        /// Initializes a new instance of the TsvParser class.
         /// </summary>
         /// <param name="lines">The lines.</param>
-        public CsvParser(string lines) : base(lines)
+        public TsvParser(string lines) : base(lines)
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the CsvParser class.
+        /// Initializes a new instance of the TsvParser class.
         /// </summary>
         /// <param name="lines">The lines.</param>
-        public CsvParser(IEnumerable<string> lines) : base(lines)
+        public TsvParser(IEnumerable<string> lines) : base(lines)
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the CsvParser class.
+        /// Initializes a new instance of the TsvParser class.
         /// </summary>
         /// <param name="lines">The lines.</param>
-        public CsvParser(IEnumerable<IReadOnlyList<string>> lines) : base(lines)
+        public TsvParser(IEnumerable<IReadOnlyList<string>> lines) : base(lines)
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the CsvParser class.
+        /// Initializes a new instance of the TsvParser class.
         /// </summary>
         /// <param name="stream">The stream to read.</param>
         /// <param name="detectEncodingFromByteOrderMarks">true if look for byte order marks at the beginning of the file; otherwise, false.</param>
         /// <param name="encoding">The optional character encoding to use.</param>
-        public CsvParser(Stream stream, bool detectEncodingFromByteOrderMarks, Encoding encoding = null) : base(stream, detectEncodingFromByteOrderMarks, encoding)
+        public TsvParser(Stream stream, bool detectEncodingFromByteOrderMarks, Encoding encoding = null) : base(stream, detectEncodingFromByteOrderMarks, encoding)
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the CsvParser class.
+        /// Initializes a new instance of the TsvParser class.
         /// </summary>
         /// <param name="stream">The stream to read.</param>
         /// <param name="encoding">The optional character encoding to use.</param>
-        public CsvParser(Stream stream, Encoding encoding = null) : base(stream, encoding)
+        public TsvParser(Stream stream, Encoding encoding = null) : base(stream, encoding)
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the CsvParser class.
+        /// Initializes a new instance of the TsvParser class.
         /// </summary>
         /// <param name="file">The file to read.</param>
         /// <param name="detectEncodingFromByteOrderMarks">true if look for byte order marks at the beginning of the file; otherwise, false.</param>
         /// <param name="encoding">The optional character encoding to use.</param>
-        public CsvParser(FileInfo file, bool detectEncodingFromByteOrderMarks, Encoding encoding = null) : base(file, detectEncodingFromByteOrderMarks, encoding)
+        public TsvParser(FileInfo file, bool detectEncodingFromByteOrderMarks, Encoding encoding = null) : base(file, detectEncodingFromByteOrderMarks, encoding)
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the CsvParser class.
+        /// Initializes a new instance of the TsvParser class.
         /// </summary>
         /// <param name="file">The file to read.</param>
         /// <param name="encoding">The optional character encoding to use.</param>
-        public CsvParser(FileInfo file, Encoding encoding = null) : base(file, encoding)
+        public TsvParser(FileInfo file, Encoding encoding = null) : base(file, encoding)
         {
         }
 
@@ -93,7 +98,7 @@ namespace Trivial.Text
         /// <returns>Values in this line.</returns>
         protected override List<string> ParseLine(string line)
         {
-            return ParseLineStatic(line);
+            return CsvParser.ParseLineStatic(line, fieldSeperator);
         }
 
         /// <summary>
@@ -103,27 +108,7 @@ namespace Trivial.Text
         /// <returns>A line string.</returns>
         protected override string ToLineString(IReadOnlyList<string> line)
         {
-            if (line == null || line.Count == 0) return null;
-            var str = new StringBuilder();
-            foreach (var field in line)
-            {
-                if (field.IndexOfAny(new[] { ',', '\"' }) >= 0)
-                {
-                    str.Append('\"');
-                    str.Append(field.Replace("\"", "\\\""));
-                    str.Append('\"');
-                }
-                else
-                {
-                    str.Append(field);
-                }
-
-                str.Append(',');
-            }
-
-            if (str.Length == 0) return null;
-            str.Remove(str.Length - 1, 1);
-            return str.ToString();
+            return CsvParser.ToLineString(line, fieldSeperator);
         }
 
         /// <summary>
@@ -135,7 +120,7 @@ namespace Trivial.Text
         {
             foreach (var line in csv)
             {
-                var item = ParseLineStatic(line);
+                var item = CsvParser.ParseLineStatic(line, fieldSeperator);
                 if (item == null) continue;
                 yield return item.AsReadOnly();
             }
@@ -198,60 +183,10 @@ namespace Trivial.Text
             {
                 var line = csv.ReadLine();
                 if (line == null) break;
-                var item = ParseLineStatic(line);
+                var item = CsvParser.ParseLineStatic(line, fieldSeperator);
                 if (item == null) continue;
                 yield return item.AsReadOnly();
             }
-        }
-
-        /// <summary>
-        /// Parses a line in CSV file.
-        /// </summary>
-        /// <param name="line">A line in CSV file.</param>
-        /// <returns>Values in this line.</returns>
-        private static List<string> ParseLineStatic(string line)
-        {
-            if (string.IsNullOrEmpty(line)) return null;
-            var arr = line.Split(',');
-            if (line.IndexOf("\"") < 0) return arr.ToList();
-            var list = new List<string>();
-            var inScope = false;
-            foreach (var item in arr)
-            {
-                if (!inScope)
-                {
-                    if (item.Length > 0 && item[0] == '"')
-                    {
-                        if (item.Length > 1 && item[item.Length - 1] == '"' && item[item.Length - 2] != '\\')
-                        {
-                            list.Add(StringExtensions.ReplaceBackSlash(item.SubRangeString(1, 1, true)));
-                        }
-                        else
-                        {
-                            list.Add(StringExtensions.ReplaceBackSlash(item.Substring(1)));
-                            inScope = true;
-                        }
-                    }
-                    else
-                    {
-                        list.Add(StringExtensions.ReplaceBackSlash(item));
-                    }
-
-                    continue;
-                }
-
-                if (item.Length > 0 && item[item.Length - 1] == '"' && (item.Length == 1 || item[item.Length - 2] != '\\'))
-                {
-                    list[list.Count - 1] += "," + StringExtensions.ReplaceBackSlash(item.SubRangeString(0, 1, true));
-                    inScope = false;
-                }
-                else
-                {
-                    list[list.Count - 1] += "," + StringExtensions.ReplaceBackSlash(item);
-                }
-            }
-
-            return list;
         }
     }
 }

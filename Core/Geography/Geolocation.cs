@@ -148,7 +148,7 @@ namespace Trivial.Geography
             /// <returns>A System.String containing this latitude.</returns>
             public override string ToString()
             {
-                if (IsZero) return NumberSymbols.NumberZero + Angle.Symbols.DegreeUnit;
+                if (IsZero) return Numbers.NumberZero + Angle.Symbols.DegreeUnit;
                 return this.ToAbsAngleString() + (Positive ? "N" : "S");
             }
 
@@ -382,7 +382,7 @@ namespace Trivial.Geography
         /// <returns>A System.String containing this latitude.</returns>
         public override string ToString()
         {
-            if (Value.IsZero) return NumberSymbols.NumberZero + Angle.Symbols.DegreeUnit;
+            if (Value.IsZero) return Numbers.NumberZero + Angle.Symbols.DegreeUnit;
             return Value.ToAbsAngleString() + (Value.Positive ? "N" : "S");
         }
 
@@ -632,7 +632,7 @@ namespace Trivial.Geography
             {
                 if (IsCelestial) return base.ToString();
                 var degrees = Degrees;
-                if (degrees == 0) return NumberSymbols.NumberZero + Angle.Symbols.DegreeUnit;
+                if (degrees == 0) return Numbers.NumberZero + Angle.Symbols.DegreeUnit;
                 if (degrees == 180 || degrees == -180) return "180" + Angle.Symbols.DegreeUnit;
                 return this.ToAbsAngleString() + (Positive ? "E" : "W");
             }
@@ -922,7 +922,7 @@ namespace Trivial.Geography
         {
             if (IsCelestial) return base.ToString();
             var degrees = Value.Degrees;
-            if (degrees == 0) return NumberSymbols.NumberZero + Angle.Symbols.DegreeUnit;
+            if (degrees == 0) return Numbers.NumberZero + Angle.Symbols.DegreeUnit;
             if (degrees == 180 || degrees == -180) return "180" + Angle.Symbols.DegreeUnit;
             return Value.ToAbsAngleString() + (Value.Positive ? "E" : "W");
         }

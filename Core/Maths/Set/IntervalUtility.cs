@@ -225,12 +225,12 @@ namespace Trivial.Maths
                 }
             }
 
-            if (ele == NumberSymbols.InfiniteSymbol || ele == NumberSymbols.PositiveInfiniteSymbol || ele == "Infinity" || ele == "NaN" || ele == "null")
+            if (ele == Numbers.InfiniteSymbol || ele == Numbers.PositiveInfiniteSymbol || ele == "Infinity" || ele == "NaN" || ele == "null")
             {
                 if (pos >= 0) return (int.MaxValue, false);
                 return (int.MaxValue, true);
             }
-            else if (ele == NumberSymbols.NegativeInfiniteSymbol || ele == "-Infinity" || ele == "NaN" || ele == "null")
+            else if (ele == Numbers.NegativeInfiniteSymbol || ele == "-Infinity" || ele == "NaN" || ele == "null")
             {
                 if (pos <= 0) return (int.MinValue, false);
                 return (int.MinValue, true);
@@ -295,12 +295,12 @@ namespace Trivial.Maths
                 }
             }
 
-            if (ele == NumberSymbols.InfiniteSymbol || ele == NumberSymbols.PositiveInfiniteSymbol || ele == "Infinity" || ele == "NaN" || ele == "null")
+            if (ele == Numbers.InfiniteSymbol || ele == Numbers.PositiveInfiniteSymbol || ele == "Infinity" || ele == "NaN" || ele == "null")
             {
                 if (pos >= 0) return (long.MaxValue, false);
                 return (long.MaxValue, true);
             }
-            else if (ele == NumberSymbols.NegativeInfiniteSymbol || ele == "-Infinity" || ele == "NaN" || ele == "null")
+            else if (ele == Numbers.NegativeInfiniteSymbol || ele == "-Infinity" || ele == "NaN" || ele == "null")
             {
                 if (pos <= 0) return (long.MinValue, false);
                 return (long.MinValue, true);
@@ -365,12 +365,12 @@ namespace Trivial.Maths
                 }
             }
 
-            if (ele == NumberSymbols.InfiniteSymbol || ele == NumberSymbols.PositiveInfiniteSymbol || ele == "Infinity" || ele == "NaN" || ele == "null")
+            if (ele == Numbers.InfiniteSymbol || ele == Numbers.PositiveInfiniteSymbol || ele == "Infinity" || ele == "NaN" || ele == "null")
             {
                 if (pos >= 0) return (null, true);
                 return (int.MaxValue, true);
             }
-            else if (ele == NumberSymbols.NegativeInfiniteSymbol || ele == "-Infinity" || ele == "NaN" || ele == "null")
+            else if (ele == Numbers.NegativeInfiniteSymbol || ele == "-Infinity" || ele == "NaN" || ele == "null")
             {
                 if (pos <= 0) return (null, true);
                 return (int.MinValue, true);
@@ -473,12 +473,12 @@ namespace Trivial.Maths
                 }
             }
 
-            if (ele == NumberSymbols.InfiniteSymbol || ele == NumberSymbols.PositiveInfiniteSymbol || ele == "Infinity" || ele == "NaN" || ele == "null")
+            if (ele == Numbers.InfiniteSymbol || ele == Numbers.PositiveInfiniteSymbol || ele == "Infinity" || ele == "NaN" || ele == "null")
             {
                 if (pos >= 0) return (null, true);
                 return (long.MaxValue, true);
             }
-            else if (ele == NumberSymbols.NegativeInfiniteSymbol || ele == "-Infinity" || ele == "NaN" || ele == "null")
+            else if (ele == Numbers.NegativeInfiniteSymbol || ele == "-Infinity" || ele == "NaN" || ele == "null")
             {
                 if (pos <= 0) return (null, true);
                 return (long.MinValue, true);
@@ -831,7 +831,7 @@ namespace Trivial.Maths
 
             if (arr.Length == 0) return (left, leftOpen, right, rightOpen);
             var ele = arr[0]?.Trim();
-            if (!string.IsNullOrEmpty(ele) && ele != NumberSymbols.NegativeInfiniteSymbol && ele != "-Infinity" && ele != "NaN" && ele != "null")
+            if (!string.IsNullOrEmpty(ele) && ele != Numbers.NegativeInfiniteSymbol && ele != "-Infinity" && ele != "NaN" && ele != "null")
             {
                 var resultTuple = convert(ele, arr.Length > 1 ? -2 : -1);
                 left = resultTuple.Item1;
@@ -841,7 +841,7 @@ namespace Trivial.Maths
             var rightPos = 2;
             if (arr.Length > 1) ele = arr[1]?.Trim();
             else rightPos = 1;
-            if (!string.IsNullOrEmpty(ele) && ele != NumberSymbols.InfiniteSymbol && ele != NumberSymbols.PositiveInfiniteSymbol && ele != "Infinity" && ele != "NaN" && ele != "null")
+            if (!string.IsNullOrEmpty(ele) && ele != Numbers.InfiniteSymbol && ele != Numbers.PositiveInfiniteSymbol && ele != "Infinity" && ele != "NaN" && ele != "null")
             {
                 var resultTuple = convert(ele, rightPos);
                 right = resultTuple.Item1;

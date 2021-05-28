@@ -780,7 +780,7 @@ namespace Trivial.Security
         {
             return StringExtensions.ToJson(this, new System.Text.Json.JsonSerializerOptions
             {
-                IgnoreNullValues = true
+                DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
             });
         }
 #pragma warning restore IDE0057

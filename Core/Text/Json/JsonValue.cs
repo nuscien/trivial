@@ -46,14 +46,14 @@ namespace Trivial.Text
         /// <summary>
         /// Gets the item value count; or 0, if the value kind is not expected.
         /// </summary>
-        public int Count { get; }
+        int Count { get; }
 
         /// <summary>
         /// Gets the value of the element as a boolean.
         /// </summary>
         /// <returns>The value of the element as a boolean.</returns>
         /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
-        public bool GetBoolean();
+        bool GetBoolean();
 
         /// <summary>
         /// Gets the value of the element as a byte array.
@@ -61,7 +61,7 @@ namespace Trivial.Text
         /// <returns>The value decoded as a byte array.</returns>
         /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
         /// <exception cref="FormatException">The value is not encoded as Base64 text and hence cannot be decoded to bytes.</exception>
-        public byte[] GetBytesFromBase64();
+        byte[] GetBytesFromBase64();
 
         /// <summary>
         /// Gets the value of the element as a date time.
@@ -69,7 +69,7 @@ namespace Trivial.Text
         /// <returns>The value of the element as a date time.</returns>
         /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
         /// <exception cref="FormatException">The value is not formatted for a date time.</exception>
-        public DateTime GetDateTime();
+        DateTime GetDateTime();
 
         /// <summary>
         /// Gets the value of the element as a number.
@@ -78,7 +78,7 @@ namespace Trivial.Text
         /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
         /// <exception cref="InvalidCastException">The bit of value is more than the one need to convert.</exception>
         /// <exception cref="OverflowException">The value is greater than the most maximum value or less than the most minimum value defined of the number type.</exception>
-        public decimal GetDecimal();
+        decimal GetDecimal();
 
         /// <summary>
         /// Gets the value of the element as a number.
@@ -87,23 +87,14 @@ namespace Trivial.Text
         /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
         /// <exception cref="InvalidCastException">The bit of value is more than the one need to convert.</exception>
         /// <exception cref="OverflowException">The value is greater than the most maximum value or less than the most minimum value defined of the number type.</exception>
-        public float GetSingle();
+        float GetSingle();
 
         /// <summary>
         /// Gets the value of the element as a number.
         /// </summary>
         /// <returns>The value of the element as a number.</returns>
         /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
-        public double GetDouble();
-
-        /// <summary>
-        /// Gets the value of the element as a number.
-        /// </summary>
-        /// <returns>The value of the element as a number.</returns>
-        /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
-        /// <exception cref="InvalidCastException">The bit of value is more than the one need to convert.</exception>
-        /// <exception cref="OverflowException">The value is greater than the most maximum value or less than the most minimum value defined of the number type.</exception>
-        public short GetInt16();
+        double GetDouble();
 
         /// <summary>
         /// Gets the value of the element as a number.
@@ -112,7 +103,7 @@ namespace Trivial.Text
         /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
         /// <exception cref="InvalidCastException">The bit of value is more than the one need to convert.</exception>
         /// <exception cref="OverflowException">The value is greater than the most maximum value or less than the most minimum value defined of the number type.</exception>
-        public uint GetUInt32();
+        short GetInt16();
 
         /// <summary>
         /// Gets the value of the element as a number.
@@ -121,7 +112,7 @@ namespace Trivial.Text
         /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
         /// <exception cref="InvalidCastException">The bit of value is more than the one need to convert.</exception>
         /// <exception cref="OverflowException">The value is greater than the most maximum value or less than the most minimum value defined of the number type.</exception>
-        public int GetInt32();
+        uint GetUInt32();
 
         /// <summary>
         /// Gets the value of the element as a number.
@@ -130,14 +121,23 @@ namespace Trivial.Text
         /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
         /// <exception cref="InvalidCastException">The bit of value is more than the one need to convert.</exception>
         /// <exception cref="OverflowException">The value is greater than the most maximum value or less than the most minimum value defined of the number type.</exception>
-        public long GetInt64();
+        int GetInt32();
+
+        /// <summary>
+        /// Gets the value of the element as a number.
+        /// </summary>
+        /// <returns>The value of the element as a number.</returns>
+        /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
+        /// <exception cref="InvalidCastException">The bit of value is more than the one need to convert.</exception>
+        /// <exception cref="OverflowException">The value is greater than the most maximum value or less than the most minimum value defined of the number type.</exception>
+        long GetInt64();
 
         /// <summary>
         /// Gets the value of the element as a string.
         /// </summary>
         /// <returns>The value of the element as a number.</returns>
         /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
-        public string GetString();
+        string GetString();
 
         /// <summary>
         /// Gets the value of the element as a GUID.
@@ -145,14 +145,14 @@ namespace Trivial.Text
         /// <returns>The value of the element as a GUID.</returns>
         /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
         /// <exception cref="FormatException">The value is not formatted for a GUID.</exception>
-        public Guid GetGuid();
+        Guid GetGuid();
 
         /// <summary>
         /// Tries to get the value of the element as a boolean.
         /// </summary>
         /// <param name="result">The result.</param>
         /// <returns>true if the kind is the one expected; otherwise, false.</returns>
-        public bool TryGetBoolean(out bool result);
+        bool TryGetBoolean(out bool result);
 
         /// <summary>
         /// Tries to get the value of the element as a date time.
@@ -166,56 +166,56 @@ namespace Trivial.Text
         /// </summary>
         /// <param name="result">The result.</param>
         /// <returns>true if the kind is the one expected; otherwise, false.</returns>
-        public bool TryGetDecimal(out decimal result);
+        bool TryGetDecimal(out decimal result);
 
         /// <summary>
         /// Tries to get the value of the element as a number.
         /// </summary>
         /// <param name="result">The result.</param>
         /// <returns>true if the kind is the one expected; otherwise, false.</returns>
-        public bool TryGetSingle(out float result);
+        bool TryGetSingle(out float result);
 
         /// <summary>
         /// Tries to get the value of the element as a number.
         /// </summary>
         /// <param name="result">The result.</param>
         /// <returns>true if the kind is the one expected; otherwise, false.</returns>
-        public bool TryGetDouble(out double result);
+        bool TryGetDouble(out double result);
 
         /// <summary>
         /// Tries to get the value of the element as a number.
         /// </summary>
         /// <param name="result">The result.</param>
         /// <returns>true if the kind is the one expected; otherwise, false.</returns>
-        public bool TryGetUInt32(out uint result);
+        bool TryGetUInt32(out uint result);
 
         /// <summary>
         /// Tries to get the value of the element as a number.
         /// </summary>
         /// <param name="result">The result.</param>
         /// <returns>true if the kind is the one expected; otherwise, false.</returns>
-        public bool TryGetInt32(out int result);
+        bool TryGetInt32(out int result);
 
         /// <summary>
         /// Tries to get the value of the element as a number.
         /// </summary>
         /// <param name="result">The result.</param>
         /// <returns>true if the kind is the one expected; otherwise, false.</returns>
-        public bool TryGetInt64(out long result);
+        bool TryGetInt64(out long result);
 
         /// <summary>
         /// Tries to get the value of the element as a string.
         /// </summary>
         /// <param name="result">The result.</param>
         /// <returns>true if the kind is the one expected; otherwise, false.</returns>
-        public bool TryGetString(out string result);
+        bool TryGetString(out string result);
 
         /// <summary>
         /// Tries to get the value of the element as a GUID.
         /// </summary>
         /// <param name="result">The result.</param>
         /// <returns>true if the kind is the one expected; otherwise, false.</returns>
-        public bool TryGetGuid(out Guid result);
+        bool TryGetGuid(out Guid result);
 
         /// <summary>
         /// Gets the value of the specific property.
@@ -225,7 +225,7 @@ namespace Trivial.Text
         /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
         /// <exception cref="ArgumentOutOfRangeException">The property does not exist.</exception>
         /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
-        public IJsonValueResolver GetValue(string key);
+        IJsonValueResolver GetValue(string key);
 
         /// <summary>
         /// Gets the value of the specific property.
@@ -235,7 +235,7 @@ namespace Trivial.Text
         /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
         /// <exception cref="ArgumentOutOfRangeException">The property does not exist.</exception>
         /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
-        public IJsonValueResolver GetValue(ReadOnlySpan<char> key);
+        IJsonValueResolver GetValue(ReadOnlySpan<char> key);
 
         /// <summary>
         /// Tries to get the value of the specific property.
@@ -751,7 +751,9 @@ namespace Trivial.Text
         /// <returns>A JSON value.</returns>
         public static implicit operator JsonBoolean(SystemJsonNode value)
         {
-            return value?.AsValue();
+            if (value is null) return null;
+            if (value is SystemJsonValue v) return v;
+            throw new InvalidCastException($"Only supports JsonValue but its type is {value.GetType().Name}.");
         }
 
         /// <summary>
@@ -957,6 +959,7 @@ namespace Trivial.Text
                 "y" => True,
                 "yes" => True,
                 "ok" => True,
+                "good" => True,
                 "s" => True,
                 "sel" => True,
                 "select" => True,
@@ -987,6 +990,7 @@ namespace Trivial.Text
                 "n" => False,
                 "no" => False,
                 "x" => False,
+                "bad" => False,
                 "u" => False,
                 "un" => False,
                 "unsel" => False,
@@ -1063,18 +1067,13 @@ namespace Trivial.Text
             if (other is null) return true;
             if (other is IJsonValue json)
             {
-                switch (ValueKind)
+                return ValueKind switch
                 {
-                    case JsonValueKind.Null:
-                    case JsonValueKind.Undefined:
-                        return json.ValueKind == JsonValueKind.Null || json.ValueKind == JsonValueKind.Undefined;
-                    case JsonValueKind.True:
-                        return json.ValueKind == JsonValueKind.True;
-                    case JsonValueKind.False:
-                        return json.ValueKind == JsonValueKind.False;
-                    default:
-                        return false;
-                }
+                    JsonValueKind.Null or JsonValueKind.Undefined => json.ValueKind == JsonValueKind.Null || json.ValueKind == JsonValueKind.Undefined,
+                    JsonValueKind.True => json.ValueKind == JsonValueKind.True,
+                    JsonValueKind.False => json.ValueKind == JsonValueKind.False,
+                    _ => false,
+                };
             }
 
             return false;
@@ -1489,7 +1488,7 @@ namespace Trivial.Text
         /// </summary>
         /// <param name="json">The JSON value.</param>
         /// <returns>The JSON value.</returns>
-        public static IJsonValueResolver ToJsonValue(System.Text.Json.Node.JsonNode json)
+        public static IJsonValueResolver ToJsonValue(SystemJsonNode json)
         {
             if (json is null)
                 return Null;
@@ -1499,6 +1498,8 @@ namespace Trivial.Text
                 return (JsonArray)arr;
             if (!(json is SystemJsonValue token))
                 return null;
+            if (token.TryGetValue(out string s))
+                return new JsonString(s);
             if (token.TryGetValue(out bool b))
                 return b ? JsonBoolean.True : JsonBoolean.False;
             if (token.TryGetValue(out long l))
@@ -1509,16 +1510,28 @@ namespace Trivial.Text
                 return new JsonInteger(ui);
             if (token.TryGetValue(out short sh))
                 return new JsonInteger(sh);
+            if (token.TryGetValue(out ushort ush))
+                return new JsonInteger(ush);
+            if (token.TryGetValue(out sbyte sb))
+                return new JsonInteger(sb);
+            if (token.TryGetValue(out byte by))
+                return new JsonInteger(by);
             if (token.TryGetValue(out double d))
                 return new JsonDouble(d);
             if (token.TryGetValue(out float f))
                 return new JsonDouble(f);
             if (token.TryGetValue(out decimal de))
                 return new JsonDouble(de);
-            if (token.TryGetValue(out string s))
-                return new JsonString(s);
             if (token.TryGetValue(out Guid g))
                 return new JsonString(g);
+            if (token.TryGetValue(out DateTime dt))
+                return new JsonString(dt);
+            if (token.TryGetValue(out DateTimeOffset dto))
+                return new JsonString(dto);
+            if (token.TryGetValue(out char c))
+                return new JsonString(c);
+            if (token.TryGetValue(out JsonElement e))
+                return ToJsonValue(e);
             return null;
         }
 
@@ -1540,7 +1553,7 @@ namespace Trivial.Text
                     return true;
                 case JsonValueKind.Number:
                     if (!json.TryGetInt64(out long tick)) break;
-                    value = Web.WebFormat.ParseDate(tick);
+                    value = WebFormat.ParseDate(tick);
                     return true;
                 default:
                     throw new InvalidOperationException("The value kind should be string or number.");

@@ -243,7 +243,7 @@ namespace Trivial.Text
         /// <exception cref="ArgumentOutOfRangeException">type should be in 2-36.</exception>
         public string ToPositionalNotationString(int type)
         {
-            return Maths.Arithmetic.ToPositionalNotationString(Value, type);
+            return Maths.Numbers.ToPositionalNotationString(Value, type);
         }
 
         /// <summary>
@@ -1049,8 +1049,9 @@ namespace Trivial.Text
         /// <returns>A JSON value.</returns>
         public static implicit operator JsonInteger(System.Text.Json.Node.JsonNode value)
         {
-            var v = value?.AsValue();
-            return v;
+            if (value is null) return null;
+            if (value is System.Text.Json.Node.JsonValue v) return v;
+            throw new InvalidCastException($"Only supports JsonValue but its type is {value.GetType().Name}.");
         }
 
         /// <summary>
@@ -1851,7 +1852,7 @@ namespace Trivial.Text
         /// <returns>A string of the number in the specific positional notation.</returns>
         public string ToPositionalNotationString(int type)
         {
-            return Maths.Arithmetic.ToPositionalNotationString(Value, type);
+            return Maths.Numbers.ToPositionalNotationString(Value, type);
         }
 
         /// <summary>
@@ -2687,7 +2688,9 @@ namespace Trivial.Text
         /// <returns>A JSON value.</returns>
         public static implicit operator JsonDouble(System.Text.Json.Node.JsonNode value)
         {
-            return value?.AsValue();
+            if (value is null) return null;
+            if (value is System.Text.Json.Node.JsonValue v) return v;
+            throw new InvalidCastException($"Only supports JsonValue but its type is {value.GetType().Name}.");
         }
 
         /// <summary>

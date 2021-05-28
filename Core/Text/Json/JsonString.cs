@@ -1261,7 +1261,9 @@ namespace Trivial.Text
         /// <returns>A JSON value.</returns>
         public static implicit operator JsonString(System.Text.Json.Node.JsonNode value)
         {
-            return value?.AsValue();
+            if (value is null) return null;
+            if (value is System.Text.Json.Node.JsonValue v) return v;
+            throw new InvalidCastException($"Only supports JsonValue but its type is {value.GetType().Name}.");
         }
 
         /// <summary>

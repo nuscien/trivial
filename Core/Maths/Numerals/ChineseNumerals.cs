@@ -355,7 +355,7 @@ namespace Trivial.Maths
         public string ToApproximationString(long number, int accuracy = 1)
         {
             var str = ToApproximationString((ulong)Math.Abs(number), accuracy);
-            if (number < 0) return NumberSymbols.NegativeSign + str;
+            if (number < 0) return Numbers.NegativeSign + str;
             return str;
         }
 
@@ -510,7 +510,7 @@ namespace Trivial.Maths
             }
 
             var str = new StringBuilder();
-            var (integerPart, fractionalPart, exponentialPart) = NumberSymbols.SplitNumber(number);
+            var (integerPart, fractionalPart, exponentialPart) = Numbers.SplitNumber(number);
             str.Append(ToString(integerPart, false));
             if (fractionalPart.Length > 0)
             {

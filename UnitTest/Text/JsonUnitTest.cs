@@ -189,6 +189,12 @@ namespace Trivial.Text
             json = JsonObject.Parse(stream);
             Assert.AreEqual(9, json.Keys.Count);
             Assert.AreEqual(jsonStr, json.ToString());
+            var jsonNode = (System.Text.Json.Node.JsonNode)json;
+            Assert.IsNotNull(jsonNode);
+            json = jsonNode;
+            Assert.IsNotNull(json);
+            Assert.AreEqual(9, json.Keys.Count);
+            Assert.AreEqual(jsonStr, json.ToString());
         }
 
         /// <summary>
@@ -274,7 +280,7 @@ namespace Trivial.Text
     ""J"": ""123456"",
     ""K"": ""[11.1, 76.9)"",
     ""L"": ""[, 999999999999)"",
-    ""M"": ""[3.1415926, " + NumberSymbols.InfiniteSymbol + @"]"",
+    ""M"": ""[3.1415926, " + Numbers.InfiniteSymbol + @"]"",
     ""N"": ""[3.6.0, 5.0.0)"",
     ""O"": 2,
     ""P"": ""unauthorized""

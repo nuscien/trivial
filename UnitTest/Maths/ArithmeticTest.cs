@@ -38,16 +38,16 @@ namespace Trivial.Maths
             Assert.AreEqual(2432902008176640000, Arithmetic.Factorial(20));
 
             // Positional notation.
-            Assert.AreEqual("120", Arithmetic.ToPositionalNotationString(168, 12));
-            Assert.AreEqual("8a", Arithmetic.ToPositionalNotationString(170.0, 20));
-            Assert.AreEqual("8a.2", Arithmetic.ToPositionalNotationString(170.1, 20));
-            Assert.AreEqual("3.47d01bpf", Arithmetic.ToPositionalNotationString(3.14159265, 30));
-            Assert.AreEqual("0.6204620462", Arithmetic.ToPositionalNotationString(0.9, 7));
-            Assert.AreEqual(168, Arithmetic.ParseToInt32("120", 12));
-            Assert.AreEqual(-168L, Arithmetic.ParseToInt64("-120", 12));
-            Assert.AreEqual(170, Arithmetic.ParseToInt32("8a", 20));
-            Assert.IsFalse(Arithmetic.TryParseToInt32("8a", 9, out _));
-            Assert.IsFalse(Arithmetic.TryParseToInt32("8a", 8, out _));
+            Assert.AreEqual("120", Numbers.ToPositionalNotationString(168, 12));
+            Assert.AreEqual("8a", Numbers.ToPositionalNotationString(170.0, 20));
+            Assert.AreEqual("8a.2", Numbers.ToPositionalNotationString(170.1, 20));
+            Assert.AreEqual("3.47d01bpf", Numbers.ToPositionalNotationString(3.14159265, 30));
+            Assert.AreEqual("0.6204620462", Numbers.ToPositionalNotationString(0.9, 7));
+            Assert.AreEqual(168, Numbers.ParseToInt32("120", 12));
+            Assert.AreEqual(-168L, Numbers.ParseToInt64("-120", 12));
+            Assert.AreEqual(170, Numbers.ParseToInt32("8a", 20));
+            Assert.IsFalse(Numbers.TryParseToInt32("8a", 9, out _));
+            Assert.IsFalse(Numbers.TryParseToInt32("8a", 8, out _));
         }
 
         /// <summary>

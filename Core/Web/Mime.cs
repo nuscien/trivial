@@ -212,6 +212,7 @@ namespace Trivial.Web
                 // Text
                 "txt" or "text" or "log" or "def" or "ini" or "gitignore" or "editorconfig" => Text.StringExtensions.PlainTextMIME,
                 "csv" => Text.CsvParser.MIME,
+                "tsv" => Text.TsvParser.MIME,
                 "md" => MarkdownMIME,
                 "mml" => "text/mathml",
                 "rtx" => Text.StringExtensions.RichTextMIME,
