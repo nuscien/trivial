@@ -43,11 +43,24 @@ namespace Trivial.Data
         }
 
         /// <summary>
-        /// Gets or sets the offset of the result.
+        /// Gets or sets the message.
         /// </summary>
         [DataMember(Name = "message")]
         [JsonPropertyName("message")]
+#if !NETCOREAPP3_1
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+#endif
         public string Message { get; set; }
+
+        /// <summary>
+        /// Gets or sets the tracking identifier.
+        /// </summary>
+        [DataMember(Name = "track")]
+        [JsonPropertyName("track")]
+#if !NETCOREAPP3_1
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+#endif
+        public string TrackingId { get; set; }
     }
 
     /// <summary>

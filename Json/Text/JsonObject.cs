@@ -3683,7 +3683,7 @@ namespace Trivial.Text
         /// </summary>
         /// <param name="json">The JSON value.</param>
         /// <returns>An instance of the JsonDocument class.</returns>
-        /// <exception cref="JsonException">json does not represent a valid single JSON array.</exception>
+        /// <exception cref="JsonException">json does not represent a valid JSON object.</exception>
         public static implicit operator JsonObject(JsonDocument json)
         {
             if (json is null) return null;
@@ -3694,7 +3694,7 @@ namespace Trivial.Text
         /// Converts from JSON element.
         /// </summary>
         /// <param name="json">The JSON value.</param>
-        /// <exception cref="JsonException">json does not represent a valid single JSON array.</exception>
+        /// <exception cref="JsonException">json does not represent a valid JSON object.</exception>
         public static implicit operator JsonObject(JsonElement json)
         {
             if (json.ValueKind != JsonValueKind.Object)
