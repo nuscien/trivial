@@ -138,6 +138,26 @@ namespace Trivial.Text
         /// Initializes a new instance of the JsonInteger class.
         /// </summary>
         /// <param name="value">The value.</param>
+        public JsonInteger(short value)
+        {
+            Value = value;
+            IsSafe = true;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the JsonInteger class.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        public JsonInteger(double value)
+        {
+            Value = (long)Math.Round(value);
+            IsSafe = value <= MaxSafeInteger && value >= MinSafeInteger;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the JsonInteger class.
+        /// </summary>
+        /// <param name="value">The value.</param>
         /// <param name="isUnixTimestamp">true if uses Unix timestamp; otherwise, false, to use JavaScript ticks, by default.</param>
         public JsonInteger(DateTime value, bool isUnixTimestamp = false)
         {
