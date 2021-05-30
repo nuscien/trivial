@@ -14,7 +14,7 @@ namespace Trivial.Reflection
     public static class ObjectConvert
     {
         /// <summary>
-        /// Converts the given object to a specific strtypeuct.
+        /// Converts the given object to a specific struct.
         /// </summary>
         /// <param name="type">The type of object to return.</param>
         /// <param name="value">The value to convert.</param>
@@ -31,10 +31,8 @@ namespace Trivial.Reflection
             {
                 if (value is Stream streamValue)
                 {
-                    using (var reader = new StreamReader(streamValue))
-                    {
-                        return reader.ReadToEnd();
-                    }
+                    using var reader = new StreamReader(streamValue);
+                    return reader.ReadToEnd();
                 }
 
                 return Convert.ToString(value);

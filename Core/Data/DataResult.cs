@@ -43,11 +43,21 @@ namespace Trivial.Data
         }
 
         /// <summary>
-        /// Gets or sets the offset of the result.
+        /// Gets or sets the message.
         /// </summary>
         [DataMember(Name = "message")]
         [JsonPropertyName("message")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public string Message { get; set; }
+
+
+        /// <summary>
+        /// Gets or sets the tracking identifier.
+        /// </summary>
+        [DataMember(Name = "track")]
+        [JsonPropertyName("track")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+        public string TrackingId { get; set; }
     }
 
     /// <summary>
@@ -193,6 +203,46 @@ namespace Trivial.Data
         /// </summary>
         [JsonIgnore]
         public bool IsNull => Data is null;
+
+        /// <summary>
+        /// Tries to get the value of the specific property.
+        /// </summary>
+        /// <param name="key">The property key.</param>
+        /// <returns>The value.</returns>
+        /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">The property does not exist.</exception>
+        public IJsonValueResolver TryGetValue(string key)
+            => Data?.TryGetValue(key);
+
+        /// <summary>
+        /// Tries to get the value of the specific property.
+        /// </summary>
+        /// <param name="keyPath">The property key path.</param>
+        /// <returns>The value.</returns>
+        /// <exception cref="InvalidOperationException">Cannot get the property value.</exception>
+        public IJsonValueResolver TryGetValue(IEnumerable<string> keyPath)
+            => Data?.TryGetValue(keyPath);
+
+        /// <summary>
+        /// Tries to get the value of the specific property.
+        /// </summary>
+        /// <param name="key">The property key.</param>
+        /// <param name="subKey">The sub-key of the previous property.</param>
+        /// <param name="keyPath">The additional property key path.</param>
+        /// <returns>The value.</returns>
+        /// <exception cref="InvalidOperationException">Cannot get the property value.</exception>
+        public IJsonValueResolver TryGetValue(string key, string subKey, params string[] keyPath)
+            => Data?.TryGetValue(key, subKey, keyPath);
+
+        /// <summary>
+        /// Tries to get the value of the specific property.
+        /// </summary>
+        /// <param name="key">The property key.</param>
+        /// <returns>The value.</returns>
+        /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">The property does not exist.</exception>
+        public IJsonValueResolver TryGetValue(ReadOnlySpan<char> key)
+            => Data?.TryGetValue(key);
     }
 
     /// <summary>
@@ -240,9 +290,7 @@ namespace Trivial.Data
         /// Gets or sets the offset of the result.
         /// </summary>
         [DataMember(Name = "offset")]
-#if !NETCOREAPP3_1
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
-#endif
         [JsonPropertyName("offset")]
         public int? Offset { get; set; }
 
@@ -250,9 +298,7 @@ namespace Trivial.Data
         /// Gets or sets the total count.
         /// </summary>
         [DataMember(Name = "count")]
-#if !NETCOREAPP3_1
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
-#endif
         [JsonPropertyName("count")]
         public int? TotalCount { get; set; }
 
@@ -475,9 +521,7 @@ namespace Trivial.Data
         /// </summary>
         [DataMember(Name = TokenInfo.ErrorCodeProperty)]
         [JsonPropertyName(TokenInfo.ErrorCodeProperty)]
-        #if !NETCOREAPP3_1
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-        #endif
         public string ErrorCode { get; set; }
 
         /// <summary>
@@ -485,9 +529,7 @@ namespace Trivial.Data
         /// </summary>
         [DataMember(Name = "details")]
         [JsonPropertyName("details")]
-        #if !NETCOREAPP3_1
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-        #endif
         public List<string> Details { get; set; }
     }
 }

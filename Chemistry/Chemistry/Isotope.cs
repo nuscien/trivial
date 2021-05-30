@@ -248,5 +248,15 @@ namespace Trivial.Chemistry
             if (isotope is null || isotope.AtomicNumber < 1 || isotope.AtomicWeight < 1) return null;
             return (JsonDocument)(JsonObject)isotope;
         }
+
+        /// <summary>
+        /// Converts to a JSON object.
+        /// </summary>
+        /// <param name="isotope">The isotope to convert.</param>
+        public static explicit operator System.Text.Json.Node.JsonObject(Isotope isotope)
+        {
+            if (isotope is null || isotope.AtomicNumber < 1 || isotope.AtomicWeight < 1) return null;
+            return (System.Text.Json.Node.JsonObject)(JsonObject)isotope;
+        }
     }
 }
