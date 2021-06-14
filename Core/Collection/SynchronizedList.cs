@@ -708,6 +708,79 @@ namespace Trivial.Collection
             }
         }
 
+        /// <summary>
+        /// Updates an element.
+        /// </summary>
+        /// <param name="index">The zero-based index at which the new elements should be updated.</param>
+        /// <param name="value">The new value of the element to update.</param>
+        /// <exception cref="ArgumentOutOfRangeException">index is less than 0. -or- index is greater than count of the list.</exception>
+        public void Update(int index, T value)
+        {
+            T old;
+            slim.EnterWriteLock();
+            try
+            {
+                old = index < list.Count ? list[index] : default;
+                list[index] = value;
+            }
+            finally
+            {
+                slim.ExitWriteLock();
+            }
+
+            Changed?.Invoke(this, new ChangeEventArgs<T>(old, value, ChangeMethods.Update, index));
+        }
+
+        /// <summary>
+        /// Updates an element.
+        /// </summary>
+        /// <param name="index">The zero-based index at which the new elements should be updated.</param>
+        /// <param name="action">An action to update the value of the specific element.</param>
+        /// <exception cref="ArgumentOutOfRangeException">index is less than 0. -or- index is greater than count of the list.</exception>
+        public void Update(int index, Func<T, T> action)
+        {
+            T old;
+            T value;
+            slim.EnterWriteLock();
+            try
+            {
+                old = index < list.Count ? list[index] : default;
+                value = action(old);
+                list[index] = value;
+            }
+            finally
+            {
+                slim.ExitWriteLock();
+            }
+
+            Changed?.Invoke(this, new ChangeEventArgs<T>(old, value, ChangeMethods.Update, index));
+        }
+
+        /// <summary>
+        /// Updates an element.
+        /// </summary>
+        /// <param name="index">The zero-based index at which the new elements should be updated.</param>
+        /// <param name="action">An action to update the value of the specific element.</param>
+        /// <exception cref="ArgumentOutOfRangeException">index is less than 0. -or- index is greater than count of the list.</exception>
+        public void Update(int index, Func<T, int, T> action)
+        {
+            T old;
+            T value;
+            slim.EnterWriteLock();
+            try
+            {
+                old = index < list.Count ? list[index] : default;
+                value = action(old, index);
+                list[index] = value;
+            }
+            finally
+            {
+                slim.ExitWriteLock();
+            }
+
+            Changed?.Invoke(this, new ChangeEventArgs<T>(old, value, ChangeMethods.Update, index));
+        }
+
         /// <inheritdoc />
         public bool Remove(T item)
         {
@@ -817,6 +890,44 @@ namespace Trivial.Collection
             for (var i = 0; i < copied.Count; i++)
             {
                 Changed?.Invoke(this, new ChangeEventArgs<T>(copied[i], default, ChangeMethods.Remove, i));
+            }
+        }
+
+        /// <summary>
+        /// Copies the elements of the list to a new array.
+        /// </summary>
+        /// <returns>An array containing copies of the elements of the list.</returns>
+        public T[] ToArray()
+        {
+            slim.EnterReadLock();
+            try
+            {
+                return list.ToArray();
+            }
+            finally
+            {
+                slim.ExitReadLock();
+            }
+        }
+
+        /// <summary>
+        /// Copies the elements of the list to a new array.
+        /// </summary>
+        /// <returns>An array containing copies of the elements of the list.</returns>
+        /// <exception cref="ArgumentOutOfRangeException">index is less than 0. -or- count is less than 0.</exception>
+        /// <exception cref="ArgumentException">index and count do not denote a valid range of elements in the list.</exception>
+        public T[] ToArray(int start, int? length = null)
+        {
+            slim.EnterReadLock();
+            try
+            {
+                var col = list.Skip(start);
+                if (length.HasValue) col = col.Take(length.Value);
+                return col.ToArray();
+            }
+            finally
+            {
+                slim.ExitReadLock();
             }
         }
 

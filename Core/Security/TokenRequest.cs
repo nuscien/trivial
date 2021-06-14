@@ -1100,7 +1100,7 @@ namespace Trivial.Security
         public const string PasswordProperty = "password";
 
         /// <summary>
-        /// The LDAP property name.
+        /// The LDAP (Lightweight Directory Access Protocol) property name.
         /// </summary>
         public const string LdapProperty = "ldap";
 
@@ -1190,7 +1190,7 @@ namespace Trivial.Security
         public SecureString Password { get; set; }
 
         /// <summary>
-        /// Gets or sets the LDAP.
+        /// Gets or sets the address of Lightweight Directory Access Protocol.
         /// </summary>
         [DataMember(Name = LdapProperty, EmitDefaultValue = false)]
         [JsonPropertyName(LdapProperty)]

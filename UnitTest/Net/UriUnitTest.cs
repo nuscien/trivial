@@ -67,12 +67,47 @@ namespace Trivial.Net
             Assert.AreEqual(true, uri.IsSecure);
             Assert.AreEqual("kingcean.net", uri.Host);
             Assert.AreEqual("/test/a", uri.Path);
+            Assert.AreEqual(2, uri.PathItems.Count);
             Assert.AreEqual(2, uri.Query.Count);
             Assert.AreEqual("cd", uri.Query["b"]);
             Assert.AreEqual("e", uri.Query[1].Key);
             Assert.AreEqual("fg", uri.Query[1].Value);
             Assert.AreEqual("#hijklmn", uri.Hash);
             Assert.AreEqual(url, uri.ToString());
+            uri = HttpUri.Parse(url);
+            Assert.AreEqual(url, uri.ToString());
+
+            url = "https://user:password@kingcean.net:12345/test/a?b=cd&e=fg#hijklmn";
+            uri = HttpUri.Parse(url);
+            Assert.AreEqual(true, uri.IsSecure);
+            Assert.AreEqual("kingcean.net", uri.Host);
+            Assert.AreEqual("user:password", uri.AccountInfo);
+            Assert.AreEqual(12345, uri.Port);
+            Assert.AreEqual("/test/a", uri.Path);
+            Assert.AreEqual(2, uri.PathItems.Count);
+            Assert.AreEqual(2, uri.Query.Count);
+            Assert.AreEqual("cd", uri.Query["b"]);
+            Assert.AreEqual("e", uri.Query[1].Key);
+            Assert.AreEqual("fg", uri.Query[1].Value);
+            Assert.AreEqual("#hijklmn", uri.Hash);
+            Assert.AreEqual(url, uri.ToString());
+            uri = HttpUri.Parse(url);
+            Assert.AreEqual(url, uri.ToString());
+
+            url = "trivial://kingcean.net/test/a?b=cd&e=fg#hijklmn";
+            var link = AppDeepLinkUri.Parse(url);
+            Assert.AreEqual("trivial", link.Protocal);
+            Assert.AreEqual("kingcean.net", link.Host);
+            Assert.AreEqual("/test/a", link.Path);
+            Assert.AreEqual(2, link.PathItems.Count);
+            Assert.AreEqual(2, link.Query.Count);
+            Assert.AreEqual("cd", link.Query["b"]);
+            Assert.AreEqual("e", link.Query[1].Key);
+            Assert.AreEqual("fg", link.Query[1].Value);
+            Assert.AreEqual("#hijklmn", link.Hash);
+            Assert.AreEqual(url, link.ToString());
+            link = AppDeepLinkUri.Parse(url);
+            Assert.AreEqual(url, link.ToString());
         }
     }
 }

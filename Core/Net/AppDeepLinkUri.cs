@@ -9,9 +9,9 @@ using System.Web;
 namespace Trivial.Net
 {
     /// <summary>
-    /// The HTTP URI struct.
+    /// The deep link URI struct for apps.
     /// </summary>
-    public class HttpUri : IEquatable<HttpUri>, IEquatable<AppDeepLinkUri>, IEquatable<Uri>, IEquatable<string>
+    public class AppDeepLinkUri : IEquatable<AppDeepLinkUri>, IEquatable<HttpUri>, IEquatable<Uri>, IEquatable<string>
     {
 #pragma warning disable IDE0057
         private string host;
@@ -19,14 +19,9 @@ namespace Trivial.Net
         private List<string> folders = new();
 
         /// <summary>
-        /// Gets or sets a value indicating whether it is on secure layer.
+        /// Gets or sets the protocal name.
         /// </summary>
-        public bool IsSecure { get; set; } = true;
-
-        /// <summary>
-        /// Gets or sets the account information.
-        /// </summary>
-        public string AccountInfo { get; set; }
+        public string Protocal { get; set; } = "https";
 
         /// <summary>
         /// Gets or sets the host.
@@ -51,10 +46,6 @@ namespace Trivial.Net
                 if (value.IndexOf("://") >= 0 || value.IndexOf("//") >= 0)
                     value = value.Substring(value.IndexOf("//") + 2);
                 #pragma warning restore CA2249
-                var atPos = value.IndexOf("@");
-                if (atPos > 0)
-                    AccountInfo = value.Substring(0, atPos);
-                value = value.Substring(atPos + 1);
                 var i = value.Length;
                 var last = new[] { "/", "\\", ":", "?", "#" };
                 foreach (var item in last)
@@ -63,14 +54,11 @@ namespace Trivial.Net
                     if (j >= 0 && j < i) i = j;
                 }
 
-                host = value.Substring(0, i);
+                var atPos = value.IndexOf("@") + 1;
+                if (atPos > i) atPos = 0;
+                host = value.Substring(atPos, i);
             }
         }
-
-        /// <summary>
-        /// Gets or sets the port.
-        /// </summary>
-        public int? Port { get; set; }
 
         /// <summary>
         /// Gets or sets the host.
@@ -133,7 +121,7 @@ namespace Trivial.Net
         /// </summary>
         /// <param name="other">The instance to compare.</param>
         /// <returns>true if they are equal; otherwise, false.</returns>
-        public bool Equals(HttpUri other)
+        public bool Equals(AppDeepLinkUri other)
         {
             return other != null && other.ToString() == ToString();
         }
@@ -143,7 +131,7 @@ namespace Trivial.Net
         /// </summary>
         /// <param name="other">The instance to compare.</param>
         /// <returns>true if they are equal; otherwise, false.</returns>
-        public bool Equals(AppDeepLinkUri other)
+        public bool Equals(HttpUri other)
         {
             return other != null && other.ToString() == ToString();
         }
@@ -177,8 +165,8 @@ namespace Trivial.Net
         {
             if (other is null) return false;
             if (ReferenceEquals(this, other)) return true;
-            if (other is HttpUri h) return Equals(h);
             if (other is AppDeepLinkUri d) return Equals(d);
+            if (other is HttpUri h) return Equals(h);
             if (other is Uri u) return Equals(u);
             if (other is string s) return Equals(s);
             return false;
@@ -191,16 +179,7 @@ namespace Trivial.Net
         public override string ToString()
         {
             var str = new StringBuilder();
-            str.Append(IsSecure ? "https" : "http");
-            str.Append("://");
-            if (!string.IsNullOrWhiteSpace(AccountInfo))
-            {
-                str.Append(AccountInfo);
-                str.Append('@');
-            }
-
-            str.Append(Host ?? "localhost");
-            if (Port.HasValue && Port != (IsSecure ? 443 : 80) && Port > 0) str.AppendFormat(":{0}", Port);
+            str.AppendFormat("{0}://{1}", Protocal, Host);
             if (!string.IsNullOrWhiteSpace(Path))
             {
                 if (Path[0] != '/') str.Append('/');
@@ -249,31 +228,22 @@ namespace Trivial.Net
         /// </summary>
         /// <param name="url">The URL.</param>
         /// <returns>An HTTP URI instance.</returns>
-        public static HttpUri Parse(string url)
+        public static AppDeepLinkUri Parse(string url)
         {
             var hostPos = url.IndexOf("://");
-            var uri = new HttpUri();
+            var uri = new AppDeepLinkUri();
             if (hostPos < 0)
             {
                 if (url.IndexOf("//") == 0) hostPos = 2;
             }
             else
             {
+                uri.Protocal = url.Substring(0, hostPos);
                 hostPos += 3;
-                if (url.IndexOf("https") < 0 && url.IndexOf("ftps") < 0 && url.IndexOf("sftp") < 0)
-                    uri.IsSecure = false;
             }
 
             uri.Host = url;
             var pathPos = url.IndexOf("/", hostPos > 0 ? hostPos : 0);
-            var portPos = url.LastIndexOf(":");
-            if (portPos > 0 && portPos > hostPos)
-            {
-                portPos++;
-                var portStr = url.Substring(portPos, (pathPos > 0 ? pathPos : url.Length) - portPos);
-                if (!string.IsNullOrWhiteSpace(portStr) && int.TryParse(portStr, out int port) && port >= 0) uri.Port = port;
-            }
-
             if (pathPos >= 0) uri.Path = url.Substring(pathPos);
             var queryPos = url.IndexOf("?");
             var hashPos = url.IndexOf("#");
@@ -291,7 +261,7 @@ namespace Trivial.Net
         /// Converts to a URI object.
         /// </summary>
         /// <param name="uri">The instance to convert.</param>
-        public static explicit operator Uri(HttpUri uri)
+        public static explicit operator Uri(AppDeepLinkUri uri)
         {
             return uri?.ToUri();
         }
@@ -300,7 +270,25 @@ namespace Trivial.Net
         /// Converts to a URI object.
         /// </summary>
         /// <param name="uri">The instance to convert.</param>
-        public static implicit operator HttpUri(Uri uri)
+        public static explicit operator HttpUri(AppDeepLinkUri uri)
+        {
+            return uri?.ToUri();
+        }
+
+        /// <summary>
+        /// Converts to a URI object.
+        /// </summary>
+        /// <param name="uri">The instance to convert.</param>
+        public static implicit operator AppDeepLinkUri(Uri uri)
+        {
+            return uri != null ? Parse(uri.ToString()) : null;
+        }
+
+        /// <summary>
+        /// Converts to a URI object.
+        /// </summary>
+        /// <param name="uri">The instance to convert.</param>
+        public static implicit operator AppDeepLinkUri(HttpUri uri)
         {
             return uri != null ? Parse(uri.ToString()) : null;
         }
