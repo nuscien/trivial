@@ -97,9 +97,8 @@ namespace Trivial.Net
             url = "trivial://kingcean.net/test/a?b=cd&e=fg#hijklmn";
             var link = AppDeepLinkUri.Parse(url);
             Assert.AreEqual("trivial", link.Protocal);
-            Assert.AreEqual("kingcean.net", link.Host);
-            Assert.AreEqual("/test/a", link.Path);
-            Assert.AreEqual(2, link.PathItems.Count);
+            Assert.AreEqual("kingcean.net/test/a", link.Path);
+            Assert.AreEqual(3, link.PathItems.Count);
             Assert.AreEqual(2, link.Query.Count);
             Assert.AreEqual("cd", link.Query["b"]);
             Assert.AreEqual("e", link.Query[1].Key);

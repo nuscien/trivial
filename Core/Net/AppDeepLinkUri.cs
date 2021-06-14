@@ -14,7 +14,6 @@ namespace Trivial.Net
     public class AppDeepLinkUri : IEquatable<AppDeepLinkUri>, IEquatable<HttpUri>, IEquatable<Uri>, IEquatable<string>
     {
 #pragma warning disable IDE0057
-        private string host;
         private string path;
         private List<string> folders = new();
 
@@ -22,43 +21,6 @@ namespace Trivial.Net
         /// Gets or sets the protocal name.
         /// </summary>
         public string Protocal { get; set; } = "https";
-
-        /// <summary>
-        /// Gets or sets the host.
-        /// </summary>
-        public string Host
-        {
-            get
-            {
-                return host;
-            }
-
-            set
-            {
-                if (string.IsNullOrWhiteSpace(value))
-                {
-                    host = null;
-                    return;
-                }
-
-                value = value.Trim();
-                #pragma warning disable CA2249
-                if (value.IndexOf("://") >= 0 || value.IndexOf("//") >= 0)
-                    value = value.Substring(value.IndexOf("//") + 2);
-                #pragma warning restore CA2249
-                var i = value.Length;
-                var last = new[] { "/", "\\", ":", "?", "#" };
-                foreach (var item in last)
-                {
-                    var j = value.IndexOf(item);
-                    if (j >= 0 && j < i) i = j;
-                }
-
-                var atPos = value.IndexOf("@") + 1;
-                if (atPos > i) atPos = 0;
-                host = value.Substring(atPos, i);
-            }
-        }
 
         /// <summary>
         /// Gets or sets the host.
@@ -179,17 +141,7 @@ namespace Trivial.Net
         public override string ToString()
         {
             var str = new StringBuilder();
-            str.AppendFormat("{0}://{1}", Protocal, Host);
-            if (!string.IsNullOrWhiteSpace(Path))
-            {
-                if (Path[0] != '/') str.Append('/');
-                str.Append(Path);
-            }
-            else
-            {
-                str.Append('/');
-            }
-
+            str.AppendFormat("{0}://{1}", Protocal, Path);
             if (Query.Count > 0)
             {
                 str.Append('?');
@@ -232,19 +184,21 @@ namespace Trivial.Net
         {
             var hostPos = url.IndexOf("://");
             var uri = new AppDeepLinkUri();
-            if (hostPos < 0)
+            if (hostPos >= 0)
             {
-                if (url.IndexOf("//") == 0) hostPos = 2;
+                if (hostPos > 0) uri.Protocal = url.Substring(0, hostPos);
+                url = url.Substring(hostPos + 3);
             }
-            else
+            else if (url.StartsWith("//"))
             {
-                uri.Protocal = url.Substring(0, hostPos);
-                hostPos += 3;
+                url = url.Substring(2);
+            }
+            else if (url.StartsWith("/"))
+            {
+                url = url.Substring(1);
             }
 
-            uri.Host = url;
-            var pathPos = url.IndexOf("/", hostPos > 0 ? hostPos : 0);
-            if (pathPos >= 0) uri.Path = url.Substring(pathPos);
+            uri.Path = url;
             var queryPos = url.IndexOf("?");
             var hashPos = url.IndexOf("#");
             if (hashPos >= 0)
