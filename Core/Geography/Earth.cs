@@ -103,4 +103,97 @@ namespace Trivial.Geography
         /// </summary>
         Arctic = 3
     }
+
+    /// <summary>
+    /// The solar climatic zone.
+    /// </summary>
+    public enum SolarClimaticZones
+    {
+        /// <summary>
+        /// Tropics.
+        /// </summary>
+        Tropics = 0,
+
+        /// <summary>
+        /// North temperate zone.
+        /// </summary>
+        NorthTemperateZone = 1,
+
+        /// <summary>
+        /// Sourth temperate zone.
+        /// </summary>
+        SouthTemperateZone = 2,
+
+        /// <summary>
+        /// The north frigid zone.
+        /// </summary>
+        NorthFrigidZone = 3,
+
+        /// <summary>
+        /// The south frigid zone.
+        /// </summary>
+        SouthFrigidZone = 4
+    }
+
+    /// <summary>
+    /// The climate zones.
+    /// </summary>
+    public enum BuildingsClimateZones
+    {
+        /// <summary>
+        /// The hot-humid climate.
+        /// A region that receives more than 50 cm of annual precipitation and where one or both:
+        /// A 19.5°C or higher wet bulb temperature for 3,000 or more hours during the warmest 6 consecutive months of the year; or
+        /// A 23°C or higher wet bulb temperature for 1,500 or more hours during the warmest 6 consecutive months of the year.
+        /// </summary>
+        HotHumid = 0,
+
+        /// <summary>
+        /// The mixed-humid climate.
+        /// A region that receives more than 50 cm of annual precipitation, has approximately 5,400 heating degree days or fewer,
+        /// and where the average monthly outdoor temperature drops below 7°C during the winter months.
+        /// </summary>
+        MixedHumid = 1,
+
+        /// <summary>
+        /// The hot-dry climate.
+        /// A region that receives less than 50 cm of annual precipitation and where the monthly average outdoor temperature remains above 7°C throughout the year.
+        /// </summary>
+        HotDry = 2,
+
+        /// <summary>
+        /// The mixed-dry climate.
+        /// A region that receives less than 50 cm of annual precipitation, has approximately 5,400 heating degree days or less,
+        /// and where the average monthly outdoor temperature drops below 7°C during the winter months.
+        /// </summary>
+        MixedDry = 3,
+
+        /// <summary>
+        /// The cold climate.
+        /// A region with approximately 5,400 heating degree days or more and fewer than approximately 9,000 heating degree days.
+        /// </summary>
+        Cold = 4,
+
+        /// <summary>
+        /// The very-cold climate.
+        /// A region with approximately 9,000 heating degree days or more and fewer than approximately 12,600 heating degree days.
+        /// </summary>
+        VeryCold = 5,
+
+        /// <summary>
+        /// The subarctic climate.
+        /// A region with approximately 12,600 heating degree days or more.
+        /// </summary>
+        Subarctic = 6,
+
+        /// <summary>
+        /// The marine climate.
+        /// A region that meets all of the following criteria:
+        /// A mean temperature of coldest month between -3°C and 18°C;
+        /// A warmest month mean of less than 22°C;
+        /// At least 4 months with mean temperatures more than 10°C; and
+        /// A dry season in summer.
+        /// </summary>
+        Marine = 7
+    }
 }

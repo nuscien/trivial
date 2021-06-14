@@ -2248,6 +2248,25 @@ namespace Trivial.Text
         }
 
         /// <summary>
+        /// Adds a set of value from a JSON object.
+        /// </summary>
+        /// <param name="array">A JSON array to copy its properties to add.</param>
+        /// <returns>The count of item added.</returns>
+        /// <exception cref="ArgumentException">readerOptions contains unsupported options.</exception>
+        public int AddRange(System.Text.Json.Node.JsonArray array)
+        {
+            var count = 0;
+            if (array is null) return count;
+            foreach (var item in array)
+            {
+                Add(item);
+                count++;
+            }
+
+            return count;
+        }
+
+        /// <summary>
         /// Inserts null at the specific index.
         /// </summary>
         /// <param name="index">The zero-based index of the element to get.</param>

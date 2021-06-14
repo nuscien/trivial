@@ -2072,17 +2072,29 @@ namespace Trivial.Text
         /// Sets properties.
         /// </summary>
         /// <param name="data">Key value pairs to set.</param>
+        /// <param name="skipDuplicate">true if skip the duplicate properties; otherwise, false.</param>
         /// <returns>The count to set.</returns>
-        /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
-        public int SetRange(IEnumerable<KeyValuePair<string, JsonObject>> data)
+        public int SetRange(IEnumerable<KeyValuePair<string, JsonObject>> data, bool skipDuplicate = false)
         {
             var count = 0;
             if (data == null) return count;
-            foreach (var props in data)
+            if (skipDuplicate)
             {
-                if (string.IsNullOrWhiteSpace(props.Key)) continue;
-                count++;
-                SetValue(props.Key, props.Value);
+                foreach (var props in data)
+                {
+                    if (string.IsNullOrWhiteSpace(props.Key) || store.ContainsKey(props.Key)) continue;
+                    count++;
+                    SetValue(props.Key, props.Value);
+                }
+            }
+            else
+            {
+                foreach (var props in data)
+                {
+                    if (string.IsNullOrWhiteSpace(props.Key)) continue;
+                    count++;
+                    SetValue(props.Key, props.Value);
+                }
             }
 
             return count;
@@ -2092,17 +2104,29 @@ namespace Trivial.Text
         /// Sets properties.
         /// </summary>
         /// <param name="data">Key value pairs to set.</param>
+        /// <param name="skipDuplicate">true if skip the duplicate properties; otherwise, false.</param>
         /// <returns>The count to set.</returns>
-        /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
-        public int SetRange(IEnumerable<KeyValuePair<string, JsonArray>> data)
+        public int SetRange(IEnumerable<KeyValuePair<string, JsonArray>> data, bool skipDuplicate = false)
         {
             var count = 0;
             if (data == null) return count;
-            foreach (var props in data)
+            if (skipDuplicate)
             {
-                if (string.IsNullOrWhiteSpace(props.Key)) continue;
-                count++;
-                SetValue(props.Key, props.Value);
+                foreach (var props in data)
+                {
+                    if (string.IsNullOrWhiteSpace(props.Key) || store.ContainsKey(props.Key)) continue;
+                    count++;
+                    SetValue(props.Key, props.Value);
+                }
+            }
+            else
+            {
+                foreach (var props in data)
+                {
+                    if (string.IsNullOrWhiteSpace(props.Key)) continue;
+                    count++;
+                    SetValue(props.Key, props.Value);
+                }
             }
 
             return count;
@@ -2112,17 +2136,29 @@ namespace Trivial.Text
         /// Sets properties.
         /// </summary>
         /// <param name="data">Key value pairs to set.</param>
+        /// <param name="skipDuplicate">true if skip the duplicate properties; otherwise, false.</param>
         /// <returns>The count to set.</returns>
-        /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
-        public int SetRange(IEnumerable<KeyValuePair<string, JsonElement>> data)
+        public int SetRange(IEnumerable<KeyValuePair<string, JsonElement>> data, bool skipDuplicate = false)
         {
             var count = 0;
             if (data == null) return count;
-            foreach (var props in data)
+            if (skipDuplicate)
             {
-                if (string.IsNullOrWhiteSpace(props.Key)) continue;
-                count++;
-                SetValue(props.Key, props.Value);
+                foreach (var props in data)
+                {
+                    if (string.IsNullOrWhiteSpace(props.Key) || store.ContainsKey(props.Key)) continue;
+                    count++;
+                    SetValue(props.Key, props.Value);
+                }
+            }
+            else
+            {
+                foreach (var props in data)
+                {
+                    if (string.IsNullOrWhiteSpace(props.Key)) continue;
+                    count++;
+                    SetValue(props.Key, props.Value);
+                }
             }
 
             return count;
@@ -2132,17 +2168,29 @@ namespace Trivial.Text
         /// Sets properties.
         /// </summary>
         /// <param name="data">Key value pairs to set.</param>
+        /// <param name="skipDuplicate">true if skip the duplicate properties; otherwise, false.</param>
         /// <returns>The count to set.</returns>
-        /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
-        public int SetRange(IEnumerable<KeyValuePair<string, System.Text.Json.Node.JsonNode>> data)
+        public int SetRange(IEnumerable<KeyValuePair<string, System.Text.Json.Node.JsonNode>> data, bool skipDuplicate = false)
         {
             var count = 0;
             if (data == null) return count;
-            foreach (var props in data)
+            if (skipDuplicate)
             {
-                if (string.IsNullOrWhiteSpace(props.Key)) continue;
-                count++;
-                SetValue(props.Key, props.Value);
+                foreach (var props in data)
+                {
+                    if (string.IsNullOrWhiteSpace(props.Key) || store.ContainsKey(props.Key)) continue;
+                    count++;
+                    SetValue(props.Key, props.Value);
+                }
+            }
+            else
+            {
+                foreach (var props in data)
+                {
+                    if (string.IsNullOrWhiteSpace(props.Key)) continue;
+                    count++;
+                    SetValue(props.Key, props.Value);
+                }
             }
 
             return count;
@@ -2154,7 +2202,6 @@ namespace Trivial.Text
         /// <param name="json">Another JSON object to add.</param>
         /// <param name="skipDuplicate">true if skip the duplicate properties; otherwise, false.</param>
         /// <returns>The count of property added.</returns>
-        /// <exception cref="ArgumentException">readerOptions contains unsupported options.</exception>
         public int SetRange(JsonObject json, bool skipDuplicate = false)
         {
             var count = 0;
@@ -2189,7 +2236,6 @@ namespace Trivial.Text
         /// <param name="propertyMapping">The mapping of index to property key; or null for convert index to string format.</param>
         /// <param name="skipDuplicate">true if skip the duplicate properties; otherwise, false.</param>
         /// <returns>The count of property added.</returns>
-        /// <exception cref="ArgumentException">readerOptions contains unsupported options.</exception>
         public int SetRange(JsonArray array, IEnumerable<string> propertyMapping = null, bool skipDuplicate = false)
         {
             if (array is null) return 0;
