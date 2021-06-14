@@ -2013,6 +2013,15 @@ namespace Trivial.Text
         /// Adds a value.
         /// </summary>
         /// <param name="value">The value to set.</param>
+        public void Add(short value)
+        {
+            store.Add(new JsonInteger(value));
+        }
+
+        /// <summary>
+        /// Adds a value.
+        /// </summary>
+        /// <param name="value">The value to set.</param>
         public void Add(uint value)
         {
             store.Add(new JsonInteger(value));
@@ -2080,6 +2089,15 @@ namespace Trivial.Text
         public void Add(JsonObject value)
         {
             store.Add(value);
+        }
+
+        /// <summary>
+        /// Adds a value.
+        /// </summary>
+        /// <param name="value">The value to set.</param>
+        public void Add(JsonDocument value)
+        {
+            store.Add(JsonValues.ToJsonValue(value) ?? JsonValues.Null);
         }
 
         /// <summary>

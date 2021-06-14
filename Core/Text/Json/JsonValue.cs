@@ -1457,6 +1457,7 @@ namespace Trivial.Text
         /// <returns>The JSON value.</returns>
         public static IJsonValueResolver ToJsonValue(JsonDocument json)
         {
+            if (json is null) return null;
             return ToJsonValue(json.RootElement);
         }
 
@@ -1684,6 +1685,7 @@ namespace Trivial.Text
                 if (value is IJsonValue<string> str) return new JsonString(str.Value);
                 if (value is IJsonValue<DateTime> date) return new JsonString(date.Value);
                 if (value is IJsonValue<Guid> guid) return new JsonString(guid.Value);
+                if (value is IJsonString js) return new JsonString(js.StringValue);
             }
 
             if (value.ValueKind == JsonValueKind.Number)

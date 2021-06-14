@@ -1882,6 +1882,18 @@ namespace Trivial.Text
         /// <param name="key">The property key.</param>
         /// <param name="value">The value to set.</param>
         /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+        public void SetValue(string key, JsonDocument value)
+        {
+            AssertKey(key);
+            store[key] = JsonValues.ToJsonValue(value) ?? JsonValues.Null;
+        }
+
+        /// <summary>
+        /// Sets the value of the specific property.
+        /// </summary>
+        /// <param name="key">The property key.</param>
+        /// <param name="value">The value to set.</param>
+        /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
         public void SetValue(string key, JsonElement value)
         {
             AssertKey(key);
@@ -2032,17 +2044,29 @@ namespace Trivial.Text
         /// Sets properties.
         /// </summary>
         /// <param name="data">Key value pairs to set.</param>
+        /// <param name="skipDuplicate">true if skip the duplicate properties; otherwise, false.</param>
         /// <returns>The count to set.</returns>
-        /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
-        public int SetRange(IEnumerable<KeyValuePair<string, string>> data)
+        public int SetRange(IEnumerable<KeyValuePair<string, string>> data, bool skipDuplicate = false)
         {
             var count = 0;
             if (data == null) return count;
-            foreach (var props in data)
+            if (skipDuplicate)
             {
-                if (string.IsNullOrWhiteSpace(props.Key)) continue;
-                count++;
-                SetValue(props.Key, props.Value);
+                foreach (var props in data)
+                {
+                    if (string.IsNullOrWhiteSpace(props.Key) || store.ContainsKey(props.Key)) continue;
+                    count++;
+                    SetValue(props.Key, props.Value);
+                }
+            }
+            else
+            {
+                foreach (var props in data)
+                {
+                    if (string.IsNullOrWhiteSpace(props.Key)) continue;
+                    count++;
+                    SetValue(props.Key, props.Value);
+                }
             }
 
             return count;
@@ -2052,17 +2076,29 @@ namespace Trivial.Text
         /// Sets properties.
         /// </summary>
         /// <param name="data">Key value pairs to set.</param>
+        /// <param name="skipDuplicate">true if skip the duplicate properties; otherwise, false.</param>
         /// <returns>The count to set.</returns>
-        /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
-        public int SetRange(IEnumerable<KeyValuePair<string, int>> data)
+        public int SetRange(IEnumerable<KeyValuePair<string, int>> data, bool skipDuplicate = false)
         {
             var count = 0;
             if (data == null) return count;
-            foreach (var props in data)
+            if (skipDuplicate)
             {
-                if (string.IsNullOrWhiteSpace(props.Key)) continue;
-                count++;
-                SetValue(props.Key, props.Value);
+                foreach (var props in data)
+                {
+                    if (string.IsNullOrWhiteSpace(props.Key) || store.ContainsKey(props.Key)) continue;
+                    count++;
+                    SetValue(props.Key, props.Value);
+                }
+            }
+            else
+            {
+                foreach (var props in data)
+                {
+                    if (string.IsNullOrWhiteSpace(props.Key)) continue;
+                    count++;
+                    SetValue(props.Key, props.Value);
+                }
             }
 
             return count;
@@ -2659,6 +2695,248 @@ namespace Trivial.Text
         /// <summary>
         /// Adds a property with the provided key and value to the JSON object.
         /// </summary>
+        /// <param name="item">The property to add to the JSON object.</param>
+        /// <exception cref="ArgumentNullException">key is null.</exception>
+        /// <exception cref="ArgumentException">An element with the same key already exists in the JSON object.</exception>
+        public void Add(KeyValuePair<string, IJsonString> item)
+        {
+            store.Add(item.Key, JsonValues.ConvertValue(item.Value, this));
+        }
+
+        /// <summary>
+        /// Adds a property with the provided key and value to the JSON object.
+        /// </summary>
+        /// <param name="item">The property to add to the JSON object.</param>
+        /// <exception cref="ArgumentNullException">key is null.</exception>
+        /// <exception cref="ArgumentException">An element with the same key already exists in the JSON object.</exception>
+        public void Add(KeyValuePair<string, JsonString> item)
+        {
+            store.Add(item.Key, item.Value);
+        }
+
+        /// <summary>
+        /// Adds a property with the provided key and value to the JSON object.
+        /// </summary>
+        /// <param name="item">The property to add to the JSON object.</param>
+        /// <exception cref="ArgumentNullException">key is null.</exception>
+        /// <exception cref="ArgumentException">An element with the same key already exists in the JSON object.</exception>
+        public void Add(KeyValuePair<string, JsonInteger> item)
+        {
+            store.Add(item.Key, item.Value);
+        }
+
+        /// <summary>
+        /// Adds a property with the provided key and value to the JSON object.
+        /// </summary>
+        /// <param name="item">The property to add to the JSON object.</param>
+        /// <exception cref="ArgumentNullException">key is null.</exception>
+        /// <exception cref="ArgumentException">An element with the same key already exists in the JSON object.</exception>
+        public void Add(KeyValuePair<string, JsonDouble> item)
+        {
+            store.Add(item.Key, item.Value);
+        }
+
+        /// <summary>
+        /// Adds a property with the provided key and value to the JSON object.
+        /// </summary>
+        /// <param name="item">The property to add to the JSON object.</param>
+        /// <exception cref="ArgumentNullException">key is null.</exception>
+        /// <exception cref="ArgumentException">An element with the same key already exists in the JSON object.</exception>
+        public void Add(KeyValuePair<string, JsonBoolean> item)
+        {
+            store.Add(item.Key, item.Value);
+        }
+
+        /// <summary>
+        /// Adds a property with the provided key and value to the JSON object.
+        /// </summary>
+        /// <param name="item">The property to add to the JSON object.</param>
+        /// <exception cref="ArgumentNullException">key is null.</exception>
+        /// <exception cref="ArgumentException">An element with the same key already exists in the JSON object.</exception>
+        public void Add(KeyValuePair<string, JsonArray> item)
+        {
+            store.Add(item.Key, JsonValues.ConvertValue(item.Value, this));
+        }
+
+        /// <summary>
+        /// Adds a property with the provided key and value to the JSON object.
+        /// </summary>
+        /// <param name="item">The property to add to the JSON object.</param>
+        /// <exception cref="ArgumentNullException">key is null.</exception>
+        /// <exception cref="ArgumentException">An element with the same key already exists in the JSON object.</exception>
+        public void Add(KeyValuePair<string, JsonObject> item)
+        {
+            store.Add(item.Key, JsonValues.ConvertValue(item.Value, this));
+        }
+
+        /// <summary>
+        /// Adds a property with the provided key and value to the JSON object.
+        /// </summary>
+        /// <param name="item">The property to add to the JSON object.</param>
+        /// <exception cref="ArgumentNullException">key is null.</exception>
+        /// <exception cref="ArgumentException">An element with the same key already exists in the JSON object.</exception>
+        public void Add(KeyValuePair<string, string> item)
+        {
+            Add(item.Key, item.Value);
+        }
+
+        /// <summary>
+        /// Adds a property with the provided key and value to the JSON object.
+        /// </summary>
+        /// <param name="item">The property to add to the JSON object.</param>
+        /// <exception cref="ArgumentNullException">key is null.</exception>
+        /// <exception cref="ArgumentException">An element with the same key already exists in the JSON object.</exception>
+        public void Add(KeyValuePair<string, StringBuilder> item)
+        {
+            Add(item.Key, item.Value);
+        }
+
+        /// <summary>
+        /// Adds a property with the provided key and value to the JSON object.
+        /// </summary>
+        /// <param name="item">The property to add to the JSON object.</param>
+        /// <exception cref="ArgumentNullException">key is null.</exception>
+        /// <exception cref="ArgumentException">An element with the same key already exists in the JSON object.</exception>
+        public void Add(KeyValuePair<string, SecureString> item)
+        {
+            Add(item.Key, item.Value);
+        }
+
+        /// <summary>
+        /// Adds a property with the provided key and value to the JSON object.
+        /// </summary>
+        /// <param name="item">The property to add to the JSON object.</param>
+        /// <exception cref="ArgumentNullException">key is null.</exception>
+        /// <exception cref="ArgumentException">An element with the same key already exists in the JSON object.</exception>
+        public void Add(KeyValuePair<string, Guid> item)
+        {
+            Add(item.Key, item.Value);
+        }
+
+        /// <summary>
+        /// Adds a property with the provided key and value to the JSON object.
+        /// </summary>
+        /// <param name="item">The property to add to the JSON object.</param>
+        /// <exception cref="ArgumentNullException">key is null.</exception>
+        /// <exception cref="ArgumentException">An element with the same key already exists in the JSON object.</exception>
+        public void Add(KeyValuePair<string, short> item)
+        {
+            Add(item.Key, item.Value);
+        }
+
+        /// <summary>
+        /// Adds a property with the provided key and value to the JSON object.
+        /// </summary>
+        /// <param name="item">The property to add to the JSON object.</param>
+        /// <exception cref="ArgumentNullException">key is null.</exception>
+        /// <exception cref="ArgumentException">An element with the same key already exists in the JSON object.</exception>
+        public void Add(KeyValuePair<string, int> item)
+        {
+            Add(item.Key, item.Value);
+        }
+
+        /// <summary>
+        /// Adds a property with the provided key and value to the JSON object.
+        /// </summary>
+        /// <param name="item">The property to add to the JSON object.</param>
+        /// <exception cref="ArgumentNullException">key is null.</exception>
+        /// <exception cref="ArgumentException">An element with the same key already exists in the JSON object.</exception>
+        public void Add(KeyValuePair<string, uint> item)
+        {
+            Add(item.Key, item.Value);
+        }
+
+        /// <summary>
+        /// Adds a property with the provided key and value to the JSON object.
+        /// </summary>
+        /// <param name="item">The property to add to the JSON object.</param>
+        /// <exception cref="ArgumentNullException">key is null.</exception>
+        /// <exception cref="ArgumentException">An element with the same key already exists in the JSON object.</exception>
+        public void Add(KeyValuePair<string, long> item)
+        {
+            Add(item.Key, item.Value);
+        }
+
+        /// <summary>
+        /// Adds a property with the provided key and value to the JSON object.
+        /// </summary>
+        /// <param name="item">The property to add to the JSON object.</param>
+        /// <exception cref="ArgumentNullException">key is null.</exception>
+        /// <exception cref="ArgumentException">An element with the same key already exists in the JSON object.</exception>
+        public void Add(KeyValuePair<string, float> item)
+        {
+            Add(item.Key, item.Value);
+        }
+
+        /// <summary>
+        /// Adds a property with the provided key and value to the JSON object.
+        /// </summary>
+        /// <param name="item">The property to add to the JSON object.</param>
+        /// <exception cref="ArgumentNullException">key is null.</exception>
+        /// <exception cref="ArgumentException">An element with the same key already exists in the JSON object.</exception>
+        public void Add(KeyValuePair<string, double> item)
+        {
+            Add(item.Key, item.Value);
+        }
+
+        /// <summary>
+        /// Adds a property with the provided key and value to the JSON object.
+        /// </summary>
+        /// <param name="item">The property to add to the JSON object.</param>
+        /// <exception cref="ArgumentNullException">key is null.</exception>
+        /// <exception cref="ArgumentException">An element with the same key already exists in the JSON object.</exception>
+        public void Add(KeyValuePair<string, bool> item)
+        {
+            Add(item.Key, item.Value);
+        }
+
+        /// <summary>
+        /// Adds a property with the provided key and value to the JSON object.
+        /// </summary>
+        /// <param name="item">The property to add to the JSON object.</param>
+        /// <exception cref="ArgumentNullException">key is null.</exception>
+        /// <exception cref="ArgumentException">An element with the same key already exists in the JSON object.</exception>
+        public void Add(KeyValuePair<string, JsonDocument> item)
+        {
+            store.Add(item.Key, JsonValues.ToJsonValue(item.Value) ?? JsonValues.Null);
+        }
+
+        /// <summary>
+        /// Adds a property with the provided key and value to the JSON object.
+        /// </summary>
+        /// <param name="item">The property to add to the JSON object.</param>
+        /// <exception cref="ArgumentNullException">key is null.</exception>
+        /// <exception cref="ArgumentException">An element with the same key already exists in the JSON object.</exception>
+        public void Add(KeyValuePair<string, JsonElement> item)
+        {
+            store.Add(item.Key, JsonValues.ToJsonValue(item.Value));
+        }
+
+        /// <summary>
+        /// Adds a property with the provided key and value to the JSON object.
+        /// </summary>
+        /// <param name="item">The property to add to the JSON object.</param>
+        /// <exception cref="ArgumentNullException">key is null.</exception>
+        /// <exception cref="ArgumentException">An element with the same key already exists in the JSON object.</exception>
+        public void Add(KeyValuePair<string, System.Text.Json.Node.JsonArray> item)
+        {
+            store.Add(item.Key, JsonValues.ToJsonValue(item.Value));
+        }
+
+        /// <summary>
+        /// Adds a property with the provided key and value to the JSON object.
+        /// </summary>
+        /// <param name="item">The property to add to the JSON object.</param>
+        /// <exception cref="ArgumentNullException">key is null.</exception>
+        /// <exception cref="ArgumentException">An element with the same key already exists in the JSON object.</exception>
+        public void Add(KeyValuePair<string, System.Text.Json.Node.JsonObject> item)
+        {
+            store.Add(item.Key, JsonValues.ToJsonValue(item.Value));
+        }
+
+        /// <summary>
+        /// Adds a property with the provided key and value to the JSON object.
+        /// </summary>
         /// <param name="key">The property key.</param>
         /// <param name="value">The value of the property.</param>
         /// <exception cref="ArgumentNullException">key is null.</exception>
@@ -2678,6 +2956,42 @@ namespace Trivial.Text
         public void Add(string key, IJsonValue value)
         {
             store.Add(key, JsonValues.ConvertValue(value, this));
+        }
+
+        /// <summary>
+        /// Adds a property with the provided key and value to the JSON object.
+        /// </summary>
+        /// <param name="key">The property key.</param>
+        /// <param name="value">The value of the property.</param>
+        /// <exception cref="ArgumentNullException">key is null.</exception>
+        /// <exception cref="ArgumentException">An element with the same key already exists in the JSON object.</exception>
+        public void Add(string key, JsonDocument value)
+        {
+            store.Add(key, JsonValues.ToJsonValue(value) ?? JsonValues.Null);
+        }
+
+        /// <summary>
+        /// Adds a property with the provided key and value to the JSON object.
+        /// </summary>
+        /// <param name="key">The property key.</param>
+        /// <param name="value">The value of the property.</param>
+        /// <exception cref="ArgumentNullException">key is null.</exception>
+        /// <exception cref="ArgumentException">An element with the same key already exists in the JSON object.</exception>
+        public void Add(string key, JsonElement value)
+        {
+            store.Add(key, JsonValues.ToJsonValue(value));
+        }
+
+        /// <summary>
+        /// Adds a property with the provided key and value to the JSON object.
+        /// </summary>
+        /// <param name="key">The property key.</param>
+        /// <param name="value">The value of the property.</param>
+        /// <exception cref="ArgumentNullException">key is null.</exception>
+        /// <exception cref="ArgumentException">An element with the same key already exists in the JSON object.</exception>
+        public void Add(string key, System.Text.Json.Node.JsonNode value)
+        {
+            store.Add(key, JsonValues.ToJsonValue(value));
         }
 
         /// <summary>
@@ -2714,6 +3028,30 @@ namespace Trivial.Text
         public void Add(string key, SecureString value)
         {
             store.Add(key, value != null ? new JsonString(value) : JsonValues.Null);
+        }
+
+        /// <summary>
+        /// Adds a property with the provided key and value to the JSON object.
+        /// </summary>
+        /// <param name="key">The property key.</param>
+        /// <param name="value">The value of the property.</param>
+        /// <exception cref="ArgumentNullException">key is null.</exception>
+        /// <exception cref="ArgumentException">An element with the same key already exists in the JSON object.</exception>
+        public void Add(string key, ReadOnlySpan<char> value)
+        {
+            store.Add(key, new JsonString(value.ToString()));
+        }
+
+        /// <summary>
+        /// Adds a property with the provided key and value to the JSON object.
+        /// </summary>
+        /// <param name="key">The property key.</param>
+        /// <param name="value">The value of the property.</param>
+        /// <exception cref="ArgumentNullException">key is null.</exception>
+        /// <exception cref="ArgumentException">An element with the same key already exists in the JSON object.</exception>
+        public void Add(string key, short value)
+        {
+            store.Add(key, new JsonInteger(value));
         }
 
         /// <summary>
