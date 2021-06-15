@@ -69,17 +69,6 @@ namespace Trivial.CommandLine
             this.args = new List<string>();
             var ignoreKeys = new List<int>();
             var merge = false;
-            if (list.Length == 1 && !list[0].StartsWith("-") && !list[0].StartsWith("/") && list[0].IndexOf("&") > 0 && list[0].IndexOf("=") > 0)
-            {
-                var q = QueryData.Parse(list[0]).ToGroups();
-                foreach (var p in q)
-                {
-                    parameters.Add(new CommandParameter(p.Key, p));
-                }
-
-                return;
-            }
-
             foreach (var item in list)
             {
                 #pragma warning disable IDE0056, IDE0057
@@ -159,6 +148,11 @@ namespace Trivial.CommandLine
         public int Count { get; private set; }
 
         /// <summary>
+        /// Gets a value indicating whether the value of the arguments is URL-like format.
+        /// </summary>
+        public bool IsUrlLike { get; private set; }
+
+        /// <summary>
         /// Gets the verb parameter.
         /// </summary>
         public CommandParameter Verb { get; private set; }
@@ -189,7 +183,7 @@ namespace Trivial.CommandLine
         {
             if (string.IsNullOrWhiteSpace(key)) return new CommandParameters(string.Empty, new List<CommandParameter>() {
                 Verb
-            });
+            }, null, IsUrlLike);
             key = key.ToLower();
             var rest = additionalKeys != null ? additionalKeys.Where(item =>
             {
@@ -201,7 +195,7 @@ namespace Trivial.CommandLine
             return new CommandParameters(key, parameters.Where(item =>
             {
                 return item.Key == key || rest.Contains(item.Key);
-            }), rest);
+            }), rest, IsUrlLike);
         }
 
         /// <summary>
@@ -329,9 +323,18 @@ namespace Trivial.CommandLine
 
                     if (!appendNextAsValue) return p.IsEmpty ? cur : p;
                     var list = new List<string>();
-                    if (!string.IsNullOrEmpty(p.OriginalKey)) list.Add(p.OriginalKey);
-                    if (!p.IsEmpty) list.AddRange(p.Values);
-                    return new CommandParameter(key, list);
+                    if (IsUrlLike)
+                    {
+                        var s = p.ToString();
+                        if (!string.IsNullOrWhiteSpace(s)) list.Add("&" + s);
+                        return new CommandParameter(key, list, 1);
+                    }
+                    else
+                    {
+                        if (!string.IsNullOrEmpty(p.OriginalKey)) list.Add(p.OriginalKey);
+                        if (!p.IsEmpty) list.AddRange(p.Values);
+                        return new CommandParameter(key, list, 0);
+                    }
                 }
 
                 if (p.Key != key) continue;
@@ -451,7 +454,7 @@ namespace Trivial.CommandLine
                 if (item.CanRead && !overrideProperty && item.GetValue(obj) != null) continue;
                 var atts = item.GetCustomAttributes(typeof(CommandArgumentAttribute), true);
                 if (atts == null || atts.Length == 0) continue;
-                if (!(atts[0] is CommandArgumentAttribute att) || string.IsNullOrWhiteSpace(att.Name)) continue;
+                if (atts[0] is not CommandArgumentAttribute att || string.IsNullOrWhiteSpace(att.Name)) continue;
                 var attName = CommandParameter.FormatKey(att.Name, false);
                 if (string.IsNullOrWhiteSpace(attName)) attName = item.Name.ToLower();
                 var restNames = new List<string>();
@@ -590,6 +593,53 @@ namespace Trivial.CommandLine
         {
             Count = args.Count;
             if (Count == 0) return;
+            if (Count == 1)
+            {
+                var q = args[0];
+                if (string.IsNullOrWhiteSpace(q))
+                    return;
+                if (!q.StartsWith("-") && q.IndexOf("=") > 0)
+                {
+                    var qIndex = q.IndexOf("?");
+                    #pragma warning disable IDE0057
+                    if (qIndex == 0)
+                    {
+                        q = q.Substring(1);
+                    }
+                    else if (qIndex > 0)
+                    {
+                        var path = q.Substring(0, qIndex).Split(new[] { '/', '\\' }, StringSplitOptions.RemoveEmptyEntries);
+                        if (path.Length > 0) Verb = new CommandParameter(path[0], path.Skip(1), 2);
+                        q = q.Substring(qIndex + 1);
+                    }
+                    #pragma warning restore IDE0057
+
+                    try
+                    {
+                        var query = QueryData.Parse(q);
+                        foreach (var prop in query)
+                        {
+                            parameters.Add(new CommandParameter(prop.Key, string.IsNullOrEmpty(prop.Value) ? null : prop.Value.Split(new[] { ',' }, StringSplitOptions.None), 1));
+                        }
+
+                        IsUrlLike = true;
+                        return;
+                    }
+                    catch (FormatException)
+                    {
+                    }
+                    catch (ArgumentException)
+                    {
+                    }
+                    catch (NullReferenceException)
+                    {
+                    }
+                    catch (InvalidOperationException)
+                    {
+                    }
+                }
+            }
+
             var list = new List<int>();
             if (ignoreKeys == null) ignoreKeys = new List<int>();
             for (var i = 0; i < args.Count; i++)

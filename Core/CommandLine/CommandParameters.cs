@@ -18,12 +18,29 @@ namespace Trivial.CommandLine
     public class CommandParameter: IEquatable<CommandParameter>, IEquatable<CommandParameters>, IEquatable<string>, IReadOnlyList<string>
     {
         /// <summary>
+        /// A code for format.
+        /// 0 for standard; 1 for query; 2 for path.
+        /// </summary>
+        private readonly int formatCode;
+
+        /// <summary>
         /// Initializes a new instance of the Parameter class.
         /// </summary>
         /// <param name="key">The parameter key.</param>
         /// <param name="values">The words of value.</param>
-        public CommandParameter(string key, IEnumerable<string> values)
+        public CommandParameter(string key, IEnumerable<string> values) : this(key, values, 0)
         {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the Parameter class.
+        /// </summary>
+        /// <param name="key">The parameter key.</param>
+        /// <param name="values">The words of value.</param>
+        /// <param name="urlLike">true if it is URL-like format; otherwise, false.</param>
+        internal CommandParameter(string key, IEnumerable<string> values, int urlLike)
+        {
+            formatCode = urlLike;
             OriginalKey = key;
             Key = FormatKey(key);
             Values = (values != null ? values.Where(item =>
@@ -39,9 +56,15 @@ namespace Trivial.CommandLine
             }
 
             var str = new StringBuilder(Values[0]);
+            var sep = urlLike switch
+            {
+                1 => ',',
+                2 => '/',
+                _ => ' '
+            };
             for (var i = 1; i < Values.Count; i++)
             {
-                str.Append(' ');
+                str.Append(sep);
                 str.Append(Values[i]);
             }
 
@@ -67,6 +90,16 @@ namespace Trivial.CommandLine
         /// Get a value indicating whether the value is empty.
         /// </summary>
         public bool IsEmpty { get; }
+
+        /// <summary>
+        /// Gets a value indicating whether the value of the arguments is URL-Query-like format.
+        /// </summary>
+        public bool IsUrlQueryLike => formatCode == 1;
+
+        /// <summary>
+        /// Gets a value indicating whether the value of the arguments is URL-Path-like format.
+        /// </summary>
+        public bool IsUrlPathLike => formatCode == 2;
 
         /// <summary>
         /// Gets the words of the value.
@@ -294,11 +327,42 @@ namespace Trivial.CommandLine
         /// <returns>A string whose value is the same as this instance.</returns>
         public override string ToString()
         {
-            var str = new StringBuilder(OriginalKey);
-            if (string.IsNullOrEmpty(Value)) return str.ToString();
-            if (str.Length > 0) str.Append(' ');
-            str.Append(Value);
-            return str.ToString();
+            var str = new StringBuilder();
+            switch (formatCode)
+            {
+                case 1:
+                    if (!string.IsNullOrEmpty(OriginalKey)) str.Append(Web.WebFormat.UrlEncode(OriginalKey));
+                    str.Append('=');
+                    if (Values.Count > 0)
+                    {
+#if NETFRAMEWORK
+                        str.Append(string.Join(",", Values.Select(ele => Web.WebFormat.UrlEncode(ele)).ToArray()));
+#else
+                        str.Append(string.Join(",", Values.Select(ele => Web.WebFormat.UrlEncode(ele))));
+#endif
+                    }
+
+                    return str.ToString();
+                case 2:
+                    str.Append(OriginalKey);
+                    if (Values.Count > 0)
+                    {
+                        str.Append('/');
+#if NETFRAMEWORK
+                        str.Append(string.Join("/", Values.Where(ele => !string.IsNullOrEmpty(ele)).ToArray()));
+#else
+                        str.Append(string.Join("/", Values.Where(ele => !string.IsNullOrEmpty(ele))));
+#endif
+                    }
+
+                    return str.ToString();
+                default:
+                    str.Append(OriginalKey);
+                    if (string.IsNullOrEmpty(Value)) return str.ToString();
+                    if (str.Length > 0) str.Append(' ');
+                    str.Append(Value);
+                    return str.ToString();
+            }
         }
 
         /// <summary>
@@ -386,9 +450,11 @@ namespace Trivial.CommandLine
             key = key.Trim();
             if (removePrefix)
             {
+#pragma warning disable IDE0057
                 if (key.IndexOf("--") == 0) return key.Substring(2).ToLower();
                 if (key.IndexOf('-') == 0) return key.Substring(1).ToLower();
                 if (key.IndexOf('/') == 0) return key.Substring(1).ToLower();
+#pragma warning restore IDE0057
             }
 
             return key.ToLower();
@@ -408,7 +474,20 @@ namespace Trivial.CommandLine
         /// <param name="value">The collection of parameter.</param>
         /// <param name="additionalKeys">The additional keys.</param>
         public CommandParameters(string key, IEnumerable<CommandParameter> value, IEnumerable<string> additionalKeys = null)
+            : this(key, value, additionalKeys, false)
         {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the Parameters instance.
+        /// </summary>
+        /// <param name="key">The parameter key.</param>
+        /// <param name="value">The collection of parameter.</param>
+        /// <param name="additionalKeys">The additional keys.</param>
+        /// <param name="urlLike">true if it is URL-like format; otherwise, false.</param>
+        public CommandParameters(string key, IEnumerable<CommandParameter> value, IEnumerable<string> additionalKeys, bool urlLike)
+        {
+            IsUrlQueryLike = urlLike;
             Key = key;
             Items = (value != null ? value.Where(item =>
             {
@@ -442,10 +521,11 @@ namespace Trivial.CommandLine
             LastValue = LastItem.Value;
             var mergedList = new List<string>();
             var mergedStr = new StringBuilder();
+            var sep = urlLike ? ',' : ' ';
             foreach (var item in Items)
             {
                 mergedList.AddRange(item.Values);
-                if (mergedStr.Length > 0) mergedStr.Append(' ');
+                if (mergedStr.Length > 0) mergedStr.Append(sep);
                 mergedStr.Append(item.Value);
             }
 
@@ -522,6 +602,11 @@ namespace Trivial.CommandLine
         /// Gets the words of the value merged by all the parameter matched the key.
         /// </summary>
         public IReadOnlyList<string> MergedValues { get; }
+
+        /// <summary>
+        /// Gets a value indicating whether the value of the arguments is URL-Query-like format.
+        /// </summary>
+        public bool IsUrlQueryLike { get; private set; }
 
         /// <summary>
         /// Gets the string value of a specific parameter matched the key.
@@ -835,9 +920,10 @@ namespace Trivial.CommandLine
         public override string ToString()
         {
             var str = new StringBuilder();
+            var sep = IsUrlQueryLike ? '&' : ' ';
             foreach (var item in Items)
             {
-                if (str.Length > 0) str.Append(' ');
+                if (str.Length > 0) str.Append(sep);
                 str.Append(item.ToString());
             }
 
