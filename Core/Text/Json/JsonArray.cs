@@ -1867,7 +1867,7 @@ namespace Trivial.Text
         /// <param name="index">The zero-based index of the element to get.</param>
         /// <param name="value">The value to set.</param>
         /// <exception cref="ArgumentOutOfRangeException">The index is out of range.</exception>
-        public void SetValue(int index, System.Text.Json.Node.JsonNode value)
+        public void SetValue(int index, System.Text.Json.Nodes.JsonNode value)
         {
             store[index] = JsonValues.ToJsonValue(value);
         }
@@ -2113,7 +2113,7 @@ namespace Trivial.Text
         /// Adds a value.
         /// </summary>
         /// <param name="value">The value to set.</param>
-        public void Add(System.Text.Json.Node.JsonNode value)
+        public void Add(System.Text.Json.Nodes.JsonNode value)
         {
             store.Add(JsonValues.ToJsonValue(value));
         }
@@ -2271,7 +2271,7 @@ namespace Trivial.Text
         /// <param name="array">A JSON array to copy its properties to add.</param>
         /// <returns>The count of item added.</returns>
         /// <exception cref="ArgumentException">readerOptions contains unsupported options.</exception>
-        public int AddRange(System.Text.Json.Node.JsonArray array)
+        public int AddRange(System.Text.Json.Nodes.JsonArray array)
         {
             var count = 0;
             if (array is null) return count;
@@ -2455,7 +2455,7 @@ namespace Trivial.Text
         /// <param name="index">The zero-based index of the element to get.</param>
         /// <param name="value">The value to set.</param>
         /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
-        public void Insert(int index, System.Text.Json.Node.JsonNode value)
+        public void Insert(int index, System.Text.Json.Nodes.JsonNode value)
         {
             store.Insert(index, JsonValues.ToJsonValue(value));
         }
@@ -3568,10 +3568,10 @@ namespace Trivial.Text
         /// </summary>
         /// <param name="json">The JSON value.</param>
         /// <returns>An instance of the JsonArray class.</returns>
-        public static explicit operator System.Text.Json.Node.JsonArray(JsonArray json)
+        public static explicit operator System.Text.Json.Nodes.JsonArray(JsonArray json)
         {
             if (json == null) return null;
-            var node = new System.Text.Json.Node.JsonArray();
+            var node = new System.Text.Json.Nodes.JsonArray();
             foreach (var item in json.store)
             {
                 var v = JsonValues.ToJsonNode(item);
@@ -3586,9 +3586,9 @@ namespace Trivial.Text
         /// </summary>
         /// <param name="json">The JSON value.</param>
         /// <returns>An instance of the JsonArray class.</returns>
-        public static explicit operator System.Text.Json.Node.JsonNode(JsonArray json)
+        public static explicit operator System.Text.Json.Nodes.JsonNode(JsonArray json)
         {
-            return (System.Text.Json.Node.JsonArray)json;
+            return (System.Text.Json.Nodes.JsonArray)json;
         }
 
         /// <summary>
@@ -3634,7 +3634,7 @@ namespace Trivial.Text
         /// <param name="json">The JSON value.</param>
         /// <returns>An instance of the JsonArray class.</returns>
         /// <exception cref="JsonException">json does not represent a valid JSON array.</exception>
-        public static implicit operator JsonArray(System.Text.Json.Node.JsonArray json)
+        public static implicit operator JsonArray(System.Text.Json.Nodes.JsonArray json)
         {
             if (json is null) return null;
             var result = new JsonArray();
@@ -3652,9 +3652,9 @@ namespace Trivial.Text
         /// <param name="json">The JSON value.</param>
         /// <returns>An instance of the JsonArray class.</returns>
         /// <exception cref="JsonException">json does not represent a valid JSON array.</exception>
-        public static implicit operator JsonArray(System.Text.Json.Node.JsonNode json)
+        public static implicit operator JsonArray(System.Text.Json.Nodes.JsonNode json)
         {
-            if (json is System.Text.Json.Node.JsonArray obj) return obj;
+            if (json is System.Text.Json.Nodes.JsonArray obj) return obj;
             throw new JsonException("json is not a JSON array.");
         }
 

@@ -627,10 +627,10 @@ namespace Trivial.Chemistry
         /// Converts to a JSON object.
         /// </summary>
         /// <param name="element">The chemical element to convert.</param>
-        public static explicit operator System.Text.Json.Node.JsonObject(ChemicalElement element)
+        public static explicit operator System.Text.Json.Nodes.JsonObject(ChemicalElement element)
         {
             if (element is null || element.AtomicNumber < 1) return null;
-            return (System.Text.Json.Node.JsonObject)(JsonObject)element;
+            return (System.Text.Json.Nodes.JsonObject)(JsonObject)element;
         }
 
         /// <summary>

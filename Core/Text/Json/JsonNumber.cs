@@ -1024,7 +1024,7 @@ namespace Trivial.Text
         /// </summary>
         /// <param name="value">The source value.</param>
         /// <returns>A JSON value.</returns>
-        public static implicit operator JsonInteger(System.Text.Json.Node.JsonValue value)
+        public static implicit operator JsonInteger(System.Text.Json.Nodes.JsonValue value)
         {
             if (value is null) return null;
             if (value.TryGetValue(out int i))
@@ -1047,10 +1047,10 @@ namespace Trivial.Text
         /// </summary>
         /// <param name="value">The source value.</param>
         /// <returns>A JSON value.</returns>
-        public static implicit operator JsonInteger(System.Text.Json.Node.JsonNode value)
+        public static implicit operator JsonInteger(System.Text.Json.Nodes.JsonNode value)
         {
             if (value is null) return null;
-            if (value is System.Text.Json.Node.JsonValue v) return v;
+            if (value is System.Text.Json.Nodes.JsonValue v) return v;
             throw new InvalidCastException($"Only supports JsonValue but its type is {value.GetType().Name}.");
         }
 
@@ -1149,9 +1149,9 @@ namespace Trivial.Text
         /// </summary>
         /// <param name="json">The JSON value.</param>
         /// <returns>An instance of the JsonNode class.</returns>
-        public static explicit operator System.Text.Json.Node.JsonNode(JsonInteger json)
+        public static explicit operator System.Text.Json.Nodes.JsonNode(JsonInteger json)
         {
-            return System.Text.Json.Node.JsonValue.Create(json.Value);
+            return System.Text.Json.Nodes.JsonValue.Create(json.Value);
         }
 
         /// <summary>
@@ -1159,9 +1159,9 @@ namespace Trivial.Text
         /// </summary>
         /// <param name="json">The JSON value.</param>
         /// <returns>An instance of the JsonNode class.</returns>
-        public static explicit operator System.Text.Json.Node.JsonValue(JsonInteger json)
+        public static explicit operator System.Text.Json.Nodes.JsonValue(JsonInteger json)
         {
-            return System.Text.Json.Node.JsonValue.Create(json.Value);
+            return System.Text.Json.Nodes.JsonValue.Create(json.Value);
         }
 
         /// <summary>
@@ -2657,7 +2657,7 @@ namespace Trivial.Text
         /// </summary>
         /// <param name="value">The source value.</param>
         /// <returns>A JSON value.</returns>
-        public static implicit operator JsonDouble(System.Text.Json.Node.JsonValue value)
+        public static implicit operator JsonDouble(System.Text.Json.Nodes.JsonValue value)
         {
             if (value is null) return null;
             if (value.TryGetValue(out double d))
@@ -2686,10 +2686,10 @@ namespace Trivial.Text
         /// </summary>
         /// <param name="value">The source value.</param>
         /// <returns>A JSON value.</returns>
-        public static implicit operator JsonDouble(System.Text.Json.Node.JsonNode value)
+        public static implicit operator JsonDouble(System.Text.Json.Nodes.JsonNode value)
         {
             if (value is null) return null;
-            if (value is System.Text.Json.Node.JsonValue v) return v;
+            if (value is System.Text.Json.Nodes.JsonValue v) return v;
             throw new InvalidCastException($"Only supports JsonValue but its type is {value.GetType().Name}.");
         }
 
@@ -2788,9 +2788,9 @@ namespace Trivial.Text
         /// </summary>
         /// <param name="json">The JSON value.</param>
         /// <returns>An instance of the JsonNode class.</returns>
-        public static explicit operator System.Text.Json.Node.JsonNode(JsonDouble json)
+        public static explicit operator System.Text.Json.Nodes.JsonNode(JsonDouble json)
         {
-            return System.Text.Json.Node.JsonValue.Create(json.Value);
+            return System.Text.Json.Nodes.JsonValue.Create(json.Value);
         }
 
         /// <summary>
@@ -2798,9 +2798,9 @@ namespace Trivial.Text
         /// </summary>
         /// <param name="json">The JSON value.</param>
         /// <returns>An instance of the JsonNode class.</returns>
-        public static explicit operator System.Text.Json.Node.JsonValue(JsonDouble json)
+        public static explicit operator System.Text.Json.Nodes.JsonValue(JsonDouble json)
         {
-            return System.Text.Json.Node.JsonValue.Create(json.Value);
+            return System.Text.Json.Nodes.JsonValue.Create(json.Value);
         }
 
         /// <summary>

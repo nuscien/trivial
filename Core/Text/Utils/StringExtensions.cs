@@ -509,7 +509,7 @@ namespace Trivial.Text
                 return jsonEle.ToString();
             }
 
-            if (obj is System.Text.Json.Node.JsonNode jsonNode)
+            if (obj is System.Text.Json.Nodes.JsonNode jsonNode)
             {
                 return jsonNode.ToJsonString();
             }

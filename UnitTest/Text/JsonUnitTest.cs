@@ -189,7 +189,7 @@ namespace Trivial.Text
             json = JsonObject.Parse(stream);
             Assert.AreEqual(9, json.Keys.Count);
             Assert.AreEqual(jsonStr, json.ToString());
-            var jsonNode = (System.Text.Json.Node.JsonNode)json;
+            var jsonNode = (System.Text.Json.Nodes.JsonNode)json;
             Assert.IsNotNull(jsonNode);
             json = jsonNode;
             Assert.IsNotNull(json);

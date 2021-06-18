@@ -347,13 +347,13 @@ namespace Trivial.Web
                 };
             }
             
-            if (t == typeof(System.Text.Json.Node.JsonNode) || t.IsSubclassOf(typeof(System.Text.Json.Node.JsonNode)))
+            if (t == typeof(System.Text.Json.Nodes.JsonNode) || t.IsSubclassOf(typeof(System.Text.Json.Nodes.JsonNode)))
             {
                 if (ignoreJsonDoc) return null;
                 return str =>
                 {
                     if (string.IsNullOrWhiteSpace(str)) return default;
-                    var value = System.Text.Json.Node.JsonNode.Parse(str);
+                    var value = System.Text.Json.Nodes.JsonNode.Parse(str);
                     if (value is null) return default;
                     return (T)(object)value;
                 };

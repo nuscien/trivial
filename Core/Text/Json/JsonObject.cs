@@ -1906,7 +1906,7 @@ namespace Trivial.Text
         /// <param name="key">The property key.</param>
         /// <param name="value">The value to set.</param>
         /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
-        public void SetValue(string key, System.Text.Json.Node.JsonNode value)
+        public void SetValue(string key, System.Text.Json.Nodes.JsonNode value)
         {
             AssertKey(key);
             store[key] = JsonValues.ToJsonValue(value);
@@ -2206,7 +2206,7 @@ namespace Trivial.Text
         /// <param name="data">Key value pairs to set.</param>
         /// <param name="skipDuplicate">true if skip the duplicate properties; otherwise, false.</param>
         /// <returns>The count to set.</returns>
-        public int SetRange(IEnumerable<KeyValuePair<string, System.Text.Json.Node.JsonNode>> data, bool skipDuplicate = false)
+        public int SetRange(IEnumerable<KeyValuePair<string, System.Text.Json.Nodes.JsonNode>> data, bool skipDuplicate = false)
         {
             var count = 0;
             if (data == null) return count;
@@ -2918,7 +2918,7 @@ namespace Trivial.Text
         /// <param name="item">The property to add to the JSON object.</param>
         /// <exception cref="ArgumentNullException">key is null.</exception>
         /// <exception cref="ArgumentException">An element with the same key already exists in the JSON object.</exception>
-        public void Add(KeyValuePair<string, System.Text.Json.Node.JsonArray> item)
+        public void Add(KeyValuePair<string, System.Text.Json.Nodes.JsonArray> item)
         {
             store.Add(item.Key, JsonValues.ToJsonValue(item.Value));
         }
@@ -2929,7 +2929,7 @@ namespace Trivial.Text
         /// <param name="item">The property to add to the JSON object.</param>
         /// <exception cref="ArgumentNullException">key is null.</exception>
         /// <exception cref="ArgumentException">An element with the same key already exists in the JSON object.</exception>
-        public void Add(KeyValuePair<string, System.Text.Json.Node.JsonObject> item)
+        public void Add(KeyValuePair<string, System.Text.Json.Nodes.JsonObject> item)
         {
             store.Add(item.Key, JsonValues.ToJsonValue(item.Value));
         }
@@ -2989,7 +2989,7 @@ namespace Trivial.Text
         /// <param name="value">The value of the property.</param>
         /// <exception cref="ArgumentNullException">key is null.</exception>
         /// <exception cref="ArgumentException">An element with the same key already exists in the JSON object.</exception>
-        public void Add(string key, System.Text.Json.Node.JsonNode value)
+        public void Add(string key, System.Text.Json.Nodes.JsonNode value)
         {
             store.Add(key, JsonValues.ToJsonValue(value));
         }
@@ -4122,10 +4122,10 @@ namespace Trivial.Text
         /// </summary>
         /// <param name="json">The JSON value.</param>
         /// <returns>An instance of the JsonObject class.</returns>
-        public static explicit operator System.Text.Json.Node.JsonObject(JsonObject json)
+        public static explicit operator System.Text.Json.Nodes.JsonObject(JsonObject json)
         {
             if (json == null) return null;
-            var node = new System.Text.Json.Node.JsonObject();
+            var node = new System.Text.Json.Nodes.JsonObject();
             foreach (var prop in json.store)
             {
                 var v = JsonValues.ToJsonNode(prop.Value);
@@ -4140,9 +4140,9 @@ namespace Trivial.Text
         /// </summary>
         /// <param name="json">The JSON value.</param>
         /// <returns>An instance of the JsonNode class.</returns>
-        public static explicit operator System.Text.Json.Node.JsonNode(JsonObject json)
+        public static explicit operator System.Text.Json.Nodes.JsonNode(JsonObject json)
         {
-            return (System.Text.Json.Node.JsonObject)json;
+            return (System.Text.Json.Nodes.JsonObject)json;
         }
 
         /// <summary>
@@ -4191,7 +4191,7 @@ namespace Trivial.Text
         /// <param name="json">The JSON value.</param>
         /// <returns>An instance of the JsonObject class.</returns>
         /// <exception cref="JsonException">json does not represent a valid JSON object.</exception>
-        public static implicit operator JsonObject(System.Text.Json.Node.JsonObject json)
+        public static implicit operator JsonObject(System.Text.Json.Nodes.JsonObject json)
         {
             if (json is null) return null;
             var result = new JsonObject();
@@ -4209,9 +4209,9 @@ namespace Trivial.Text
         /// <param name="json">The JSON value.</param>
         /// <returns>An instance of the JsonObject class.</returns>
         /// <exception cref="JsonException">json does not represent a valid JSON object.</exception>
-        public static implicit operator JsonObject(System.Text.Json.Node.JsonNode json)
+        public static implicit operator JsonObject(System.Text.Json.Nodes.JsonNode json)
         {
-            if (json is System.Text.Json.Node.JsonObject obj) return obj;
+            if (json is System.Text.Json.Nodes.JsonObject obj) return obj;
             throw new JsonException("json is not a JSON object.");
         }
 

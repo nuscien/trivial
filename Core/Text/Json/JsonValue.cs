@@ -8,10 +8,10 @@ using System.Text.Json;
 
 using Trivial.Web;
 
-using SystemJsonObject = System.Text.Json.Node.JsonObject;
-using SystemJsonArray = System.Text.Json.Node.JsonArray;
-using SystemJsonValue = System.Text.Json.Node.JsonValue;
-using SystemJsonNode = System.Text.Json.Node.JsonNode;
+using SystemJsonObject = System.Text.Json.Nodes.JsonObject;
+using SystemJsonArray = System.Text.Json.Nodes.JsonArray;
+using SystemJsonValue = System.Text.Json.Nodes.JsonValue;
+using SystemJsonNode = System.Text.Json.Nodes.JsonNode;
 
 namespace Trivial.Text
 {

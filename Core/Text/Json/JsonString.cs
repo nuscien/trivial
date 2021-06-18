@@ -1247,7 +1247,7 @@ namespace Trivial.Text
         /// </summary>
         /// <param name="value">The source value.</param>
         /// <returns>A JSON value.</returns>
-        public static implicit operator JsonString(System.Text.Json.Node.JsonValue value)
+        public static implicit operator JsonString(System.Text.Json.Nodes.JsonValue value)
         {
             if (value is null) return null;
             if (!value.TryGetValue(out string s)) s = value.ToString();
@@ -1259,10 +1259,10 @@ namespace Trivial.Text
         /// </summary>
         /// <param name="value">The source value.</param>
         /// <returns>A JSON value.</returns>
-        public static implicit operator JsonString(System.Text.Json.Node.JsonNode value)
+        public static implicit operator JsonString(System.Text.Json.Nodes.JsonNode value)
         {
             if (value is null) return null;
-            if (value is System.Text.Json.Node.JsonValue v) return v;
+            if (value is System.Text.Json.Nodes.JsonValue v) return v;
             throw new InvalidCastException($"Only supports JsonValue but its type is {value.GetType().Name}.");
         }
 
@@ -1281,9 +1281,9 @@ namespace Trivial.Text
         /// </summary>
         /// <param name="json">The JSON value.</param>
         /// <returns>An instance of the JsonNode class.</returns>
-        public static explicit operator System.Text.Json.Node.JsonNode(JsonString json)
+        public static explicit operator System.Text.Json.Nodes.JsonNode(JsonString json)
         {
-            return System.Text.Json.Node.JsonValue.Create(json.Value);
+            return System.Text.Json.Nodes.JsonValue.Create(json.Value);
         }
 
         /// <summary>
@@ -1291,9 +1291,9 @@ namespace Trivial.Text
         /// </summary>
         /// <param name="json">The JSON value.</param>
         /// <returns>An instance of the JsonNode class.</returns>
-        public static explicit operator System.Text.Json.Node.JsonValue(JsonString json)
+        public static explicit operator System.Text.Json.Nodes.JsonValue(JsonString json)
         {
-            return System.Text.Json.Node.JsonValue.Create(json.Value);
+            return System.Text.Json.Nodes.JsonValue.Create(json.Value);
         }
 
         /// <summary>
