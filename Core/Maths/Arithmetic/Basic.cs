@@ -87,5 +87,443 @@ namespace Trivial.Maths
         {
             return value * Math.Pow(1024, e);
         }
+
+        /// <summary>
+        /// Gets the greatest common divisor of the given integers.
+        /// </summary>
+        /// <param name="a">Number 1.</param>
+        /// <param name="b">Number 2.</param>
+        /// <returns>The greatest common divisor.</returns>
+        /// <example>
+        /// <code>
+        /// var gcdNum = Arithmetic.Gcd(192, 128); // => 64
+        /// </code>
+        /// </example>
+        public static int Gcd(int a, int b)
+        {
+            if (a == 0 || b == 0) return 1;
+            a = Math.Abs(a);
+            b = Math.Abs(b);
+            var big = Math.Max(a, b);
+            var small = Math.Min(a, b);
+            while (small > 0)
+            {
+                var remainder = big % small;
+                big = small;
+                small = remainder;
+            }
+
+            return big;
+        }
+
+        /// <summary>
+        /// Gets the greatest common divisor of the given integers.
+        /// </summary>
+        /// <param name="a">Number 1.</param>
+        /// <param name="b">Number 2.</param>
+        /// <returns>The greatest common divisor.</returns>
+        public static long Gcd(long a, long b)
+        {
+            if (a == 0 || b == 0) return 1;
+            a = Math.Abs(a);
+            b = Math.Abs(b);
+            var big = Math.Max(a, b);
+            var small = Math.Min(a, b);
+            while (small > 0)
+            {
+                var remainder = big % small;
+                big = small;
+                small = remainder;
+            }
+
+            return big;
+        }
+
+        /// <summary>
+        /// Gets the least common multiple of the given integers.
+        /// </summary>
+        /// <param name="a">Number 1.</param>
+        /// <param name="b">Number 2.</param>
+        /// <returns>The least common multiple.</returns>
+        /// <example>
+        /// <code>
+        /// var lcmNum = Arithmetic.Lcm(192, 128); // => 384
+        /// </code>
+        /// </example>
+        public static int Lcm(int a, int b)
+        {
+            return a / Gcd(a, b) * b;
+        }
+
+        /// <summary>
+        /// Gets the least common multiple of the given integers.
+        /// </summary>
+        /// <param name="a">Number 1.</param>
+        /// <param name="b">Number 2.</param>
+        /// <returns>The least common multiple.</returns>
+        public static long Lcm(long a, long b)
+        {
+            return a / Gcd(a, b) * b;
+        }
+
+        /// <summary>
+        /// Returns the smaller of the specific numbers.
+        /// </summary>
+        /// <param name="a">Number 1 to compare.</param>
+        /// <param name="b">Number 2 to compare.</param>
+        /// <param name="c">Optional number 3 to compare.</param>
+        /// <returns>One of the parameter, whichever is smaller.</returns>
+        public static int Min(int a, int b, int? c = null)
+        {
+            var m = Math.Min(a, b);
+            if (c.HasValue) m = Math.Min(m, c.Value);
+            return m;
+        }
+
+        /// <summary>
+        /// Returns the smaller of the specific numbers.
+        /// </summary>
+        /// <param name="a">Number 1 to compare.</param>
+        /// <param name="b">Number 2 to compare.</param>
+        /// <param name="c">Number 3 to compare.</param>
+        /// <param name="d">Number 4 to compare.</param>
+        /// <param name="e">Optional number 5 to compare.</param>
+        /// <param name="f">Optional number 6 to compare.</param>
+        /// <param name="g">Optional number 7 to compare.</param>
+        /// <param name="h">Optional number 8 to compare.</param>
+        /// <returns>One of the parameter, whichever is smaller.</returns>
+        public static int Min(int a, int b, int c, int d, int? e = null, int? f = null, int? g = null, int? h = null)
+        {
+            var m = Math.Min(Math.Min(Math.Min(a, b), c), d);
+            if (e.HasValue) m = Math.Min(m, e.Value);
+            if (f.HasValue) m = Math.Min(m, f.Value);
+            if (g.HasValue) m = Math.Min(m, g.Value);
+            if (h.HasValue) m = Math.Min(m, h.Value);
+            return m;
+        }
+
+        /// <summary>
+        /// Returns the smaller of the specific numbers.
+        /// </summary>
+        /// <param name="a">Number 1 to compare.</param>
+        /// <param name="b">Number 2 to compare.</param>
+        /// <param name="c">Optional number 3 to compare.</param>
+        /// <returns>One of the parameter, whichever is smaller.</returns>
+        public static long Min(long a, long b, long? c = null)
+        {
+            var m = Math.Min(a, b);
+            if (c.HasValue) m = Math.Min(m, c.Value);
+            return m;
+        }
+
+        /// <summary>
+        /// Returns the smaller of the specific numbers.
+        /// </summary>
+        /// <param name="a">Number 1 to compare.</param>
+        /// <param name="b">Number 2 to compare.</param>
+        /// <param name="c">Number 3 to compare.</param>
+        /// <param name="d">Number 4 to compare.</param>
+        /// <param name="e">Optional number 5 to compare.</param>
+        /// <param name="f">Optional number 6 to compare.</param>
+        /// <param name="g">Optional number 7 to compare.</param>
+        /// <param name="h">Optional number 8 to compare.</param>
+        /// <returns>One of the parameter, whichever is smaller.</returns>
+        public static long Min(long a, long b, long c, long d, long? e = null, long? f = null, long? g = null, long? h = null)
+        {
+            var m = Math.Min(Math.Min(Math.Min(a, b), c), d);
+            if (e.HasValue) m = Math.Min(m, e.Value);
+            if (f.HasValue) m = Math.Min(m, f.Value);
+            if (g.HasValue) m = Math.Min(m, g.Value);
+            if (h.HasValue) m = Math.Min(m, h.Value);
+            return m;
+        }
+
+        /// <summary>
+        /// Returns the smaller of the specific numbers.
+        /// </summary>
+        /// <param name="a">Number 1 to compare.</param>
+        /// <param name="b">Number 2 to compare.</param>
+        /// <param name="c">Optional number 3 to compare.</param>
+        /// <returns>One of the parameter, whichever is smaller.</returns>
+        public static float Min(float a, float b, float? c = null)
+        {
+            var m = Math.Min(a, b);
+            if (c.HasValue) m = Math.Min(m, c.Value);
+            return m;
+        }
+
+        /// <summary>
+        /// Returns the smaller of the specific numbers.
+        /// </summary>
+        /// <param name="a">Number 1 to compare.</param>
+        /// <param name="b">Number 2 to compare.</param>
+        /// <param name="c">Number 3 to compare.</param>
+        /// <param name="d">Number 4 to compare.</param>
+        /// <param name="e">Optional number 5 to compare.</param>
+        /// <param name="f">Optional number 6 to compare.</param>
+        /// <param name="g">Optional number 7 to compare.</param>
+        /// <param name="h">Optional number 8 to compare.</param>
+        /// <returns>One of the parameter, whichever is smaller.</returns>
+        public static float Min(float a, float b, float c, float d, float? e = null, float? f = null, float? g = null, float? h = null)
+        {
+            var m = Math.Min(Math.Min(Math.Min(a, b), c), d);
+            if (e.HasValue) m = Math.Min(m, e.Value);
+            if (f.HasValue) m = Math.Min(m, f.Value);
+            if (g.HasValue) m = Math.Min(m, g.Value);
+            if (h.HasValue) m = Math.Min(m, h.Value);
+            return m;
+        }
+
+        /// <summary>
+        /// Returns the smaller of the specific numbers.
+        /// </summary>
+        /// <param name="a">Number 1 to compare.</param>
+        /// <param name="b">Number 2 to compare.</param>
+        /// <param name="c">Optional number 3 to compare.</param>
+        /// <returns>One of the parameter, whichever is smaller.</returns>
+        public static decimal Min(decimal a, decimal b, decimal? c = null)
+        {
+            var m = Math.Min(a, b);
+            if (c.HasValue) m = Math.Min(m, c.Value);
+            return m;
+        }
+
+        /// <summary>
+        /// Returns the smaller of the specific numbers.
+        /// </summary>
+        /// <param name="a">Number 1 to compare.</param>
+        /// <param name="b">Number 2 to compare.</param>
+        /// <param name="c">Number 3 to compare.</param>
+        /// <param name="d">Number 4 to compare.</param>
+        /// <param name="e">Optional number 5 to compare.</param>
+        /// <param name="f">Optional number 6 to compare.</param>
+        /// <param name="g">Optional number 7 to compare.</param>
+        /// <param name="h">Optional number 8 to compare.</param>
+        /// <returns>One of the parameter, whichever is smaller.</returns>
+        public static decimal Min(decimal a, decimal b, decimal c, decimal d, decimal? e = null, decimal? f = null, decimal? g = null, decimal? h = null)
+        {
+            var m = Math.Min(Math.Min(Math.Min(a, b), c), d);
+            if (e.HasValue) m = Math.Min(m, e.Value);
+            if (f.HasValue) m = Math.Min(m, f.Value);
+            if (g.HasValue) m = Math.Min(m, g.Value);
+            if (h.HasValue) m = Math.Min(m, h.Value);
+            return m;
+        }
+
+        /// <summary>
+        /// Returns the smaller of the specific numbers.
+        /// </summary>
+        /// <param name="a">Number 1 to compare.</param>
+        /// <param name="b">Number 2 to compare.</param>
+        /// <param name="c">Optional number 3 to compare.</param>
+        /// <returns>One of the parameter, whichever is smaller.</returns>
+        public static double Min(double a, double b, double? c = null)
+        {
+            var m = Math.Min(a, b);
+            if (c.HasValue) m = Math.Min(m, c.Value);
+            return m;
+        }
+
+        /// <summary>
+        /// Returns the smaller of the specific numbers.
+        /// </summary>
+        /// <param name="a">Number 1 to compare.</param>
+        /// <param name="b">Number 2 to compare.</param>
+        /// <param name="c">Number 3 to compare.</param>
+        /// <param name="d">Number 4 to compare.</param>
+        /// <param name="e">Optional number 5 to compare.</param>
+        /// <param name="f">Optional number 6 to compare.</param>
+        /// <param name="g">Optional number 7 to compare.</param>
+        /// <param name="h">Optional number 8 to compare.</param>
+        /// <returns>One of the parameter, whichever is smaller.</returns>
+        public static double Min(double a, double b, double c, double d, double? e = null, double? f = null, double? g = null, double? h = null)
+        {
+            var m = Math.Min(Math.Min(Math.Min(a, b), c), d);
+            if (e.HasValue) m = Math.Min(m, e.Value);
+            if (f.HasValue) m = Math.Min(m, f.Value);
+            if (g.HasValue) m = Math.Min(m, g.Value);
+            if (h.HasValue) m = Math.Min(m, h.Value);
+            return m;
+        }
+
+        /// <summary>
+        /// Returns the larger of the specific numbers.
+        /// </summary>
+        /// <param name="a">Number 1 to compare.</param>
+        /// <param name="b">Number 2 to compare.</param>
+        /// <param name="c">Optional number 3 to compare.</param>
+        /// <returns>One of the parameter, whichever is larger.</returns>
+        public static int Max(int a, int b, int? c = null)
+        {
+            var m = Math.Max(a, b);
+            if (c.HasValue) m = Math.Max(m, c.Value);
+            return m;
+        }
+
+        /// <summary>
+        /// Returns the larger of the specific numbers.
+        /// </summary>
+        /// <param name="a">Number 1 to compare.</param>
+        /// <param name="b">Number 2 to compare.</param>
+        /// <param name="c">Number 3 to compare.</param>
+        /// <param name="d">Number 4 to compare.</param>
+        /// <param name="e">Optional number 5 to compare.</param>
+        /// <param name="f">Optional number 6 to compare.</param>
+        /// <param name="g">Optional number 7 to compare.</param>
+        /// <param name="h">Optional number 8 to compare.</param>
+        /// <returns>One of the parameter, whichever is larger.</returns>
+        public static int Max(int a, int b, int c, int d, int? e = null, int? f = null, int? g = null, int? h = null)
+        {
+            var m = Math.Max(Math.Max(Math.Max(a, b), c), d);
+            if (e.HasValue) m = Math.Max(m, e.Value);
+            if (f.HasValue) m = Math.Max(m, f.Value);
+            if (g.HasValue) m = Math.Max(m, g.Value);
+            if (h.HasValue) m = Math.Max(m, h.Value);
+            return m;
+        }
+
+        /// <summary>
+        /// Returns the larger of the specific numbers.
+        /// </summary>
+        /// <param name="a">Number 1 to compare.</param>
+        /// <param name="b">Number 2 to compare.</param>
+        /// <param name="c">Optional number 3 to compare.</param>
+        /// <returns>One of the parameter, whichever is larger.</returns>
+        public static long Max(long a, long b, long? c = null)
+        {
+            var m = Math.Max(a, b);
+            if (c.HasValue) m = Math.Max(m, c.Value);
+            return m;
+        }
+
+        /// <summary>
+        /// Returns the larger of the specific numbers.
+        /// </summary>
+        /// <param name="a">Number 1 to compare.</param>
+        /// <param name="b">Number 2 to compare.</param>
+        /// <param name="c">Number 3 to compare.</param>
+        /// <param name="d">Number 4 to compare.</param>
+        /// <param name="e">Optional number 5 to compare.</param>
+        /// <param name="f">Optional number 6 to compare.</param>
+        /// <param name="g">Optional number 7 to compare.</param>
+        /// <param name="h">Optional number 8 to compare.</param>
+        /// <returns>One of the parameter, whichever is larger.</returns>
+        public static long Max(long a, long b, long c, long d, long? e = null, long? f = null, long? g = null, long? h = null)
+        {
+            var m = Math.Max(Math.Max(Math.Max(a, b), c), d);
+            if (e.HasValue) m = Math.Max(m, e.Value);
+            if (f.HasValue) m = Math.Max(m, f.Value);
+            if (g.HasValue) m = Math.Max(m, g.Value);
+            if (h.HasValue) m = Math.Max(m, h.Value);
+            return m;
+        }
+
+        /// <summary>
+        /// Returns the larger of the specific numbers.
+        /// </summary>
+        /// <param name="a">Number 1 to compare.</param>
+        /// <param name="b">Number 2 to compare.</param>
+        /// <param name="c">Optional number 3 to compare.</param>
+        /// <returns>One of the parameter, whichever is larger.</returns>
+        public static float Max(float a, float b, float? c = null)
+        {
+            var m = Math.Max(a, b);
+            if (c.HasValue) m = Math.Max(m, c.Value);
+            return m;
+        }
+
+        /// <summary>
+        /// Returns the larger of the specific numbers.
+        /// </summary>
+        /// <param name="a">Number 1 to compare.</param>
+        /// <param name="b">Number 2 to compare.</param>
+        /// <param name="c">Number 3 to compare.</param>
+        /// <param name="d">Number 4 to compare.</param>
+        /// <param name="e">Optional number 5 to compare.</param>
+        /// <param name="f">Optional number 6 to compare.</param>
+        /// <param name="g">Optional number 7 to compare.</param>
+        /// <param name="h">Optional number 8 to compare.</param>
+        /// <returns>One of the parameter, whichever is larger.</returns>
+        public static float Max(float a, float b, float c, float d, float? e = null, float? f = null, float? g = null, float? h = null)
+        {
+            var m = Math.Max(Math.Max(Math.Max(a, b), c), d);
+            if (e.HasValue) m = Math.Max(m, e.Value);
+            if (f.HasValue) m = Math.Max(m, f.Value);
+            if (g.HasValue) m = Math.Max(m, g.Value);
+            if (h.HasValue) m = Math.Max(m, h.Value);
+            return m;
+        }
+
+        /// <summary>
+        /// Returns the larger of the specific numbers.
+        /// </summary>
+        /// <param name="a">Number 1 to compare.</param>
+        /// <param name="b">Number 2 to compare.</param>
+        /// <param name="c">Optional number 3 to compare.</param>
+        /// <returns>One of the parameter, whichever is larger.</returns>
+        public static decimal Max(decimal a, decimal b, decimal? c = null)
+        {
+            var m = Math.Max(a, b);
+            if (c.HasValue) m = Math.Max(m, c.Value);
+            return m;
+        }
+
+        /// <summary>
+        /// Returns the larger of the specific numbers.
+        /// </summary>
+        /// <param name="a">Number 1 to compare.</param>
+        /// <param name="b">Number 2 to compare.</param>
+        /// <param name="c">Number 3 to compare.</param>
+        /// <param name="d">Number 4 to compare.</param>
+        /// <param name="e">Optional number 5 to compare.</param>
+        /// <param name="f">Optional number 6 to compare.</param>
+        /// <param name="g">Optional number 7 to compare.</param>
+        /// <param name="h">Optional number 8 to compare.</param>
+        /// <returns>One of the parameter, whichever is larger.</returns>
+        public static decimal Max(decimal a, decimal b, decimal c, decimal d, decimal? e = null, decimal? f = null, decimal? g = null, decimal? h = null)
+        {
+            var m = Math.Max(Math.Max(Math.Max(a, b), c), d);
+            if (e.HasValue) m = Math.Max(m, e.Value);
+            if (f.HasValue) m = Math.Max(m, f.Value);
+            if (g.HasValue) m = Math.Max(m, g.Value);
+            if (h.HasValue) m = Math.Max(m, h.Value);
+            return m;
+        }
+
+        /// <summary>
+        /// Returns the larger of the specific numbers.
+        /// </summary>
+        /// <param name="a">Number 1 to compare.</param>
+        /// <param name="b">Number 2 to compare.</param>
+        /// <param name="c">Optional number 3 to compare.</param>
+        /// <returns>One of the parameter, whichever is larger.</returns>
+        public static double Max(double a, double b, double? c = null)
+        {
+            var m = Math.Max(a, b);
+            if (c.HasValue) m = Math.Max(m, c.Value);
+            return m;
+        }
+
+        /// <summary>
+        /// Returns the larger of the specific numbers.
+        /// </summary>
+        /// <param name="a">Number 1 to compare.</param>
+        /// <param name="b">Number 2 to compare.</param>
+        /// <param name="c">Number 3 to compare.</param>
+        /// <param name="d">Number 4 to compare.</param>
+        /// <param name="e">Optional number 5 to compare.</param>
+        /// <param name="f">Optional number 6 to compare.</param>
+        /// <param name="g">Optional number 7 to compare.</param>
+        /// <param name="h">Optional number 8 to compare.</param>
+        /// <returns>One of the parameter, whichever is larger.</returns>
+        public static double Max(double a, double b, double c, double d, double? e = null, double? f = null, double? g = null, double? h = null)
+        {
+            var m = Math.Max(Math.Max(Math.Max(a, b), c), d);
+            if (e.HasValue) m = Math.Max(m, e.Value);
+            if (f.HasValue) m = Math.Max(m, f.Value);
+            if (g.HasValue) m = Math.Max(m, g.Value);
+            if (h.HasValue) m = Math.Max(m, h.Value);
+            return m;
+        }
     }
 }
