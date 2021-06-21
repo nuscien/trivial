@@ -48,6 +48,17 @@ namespace Trivial.Text
             Assert.AreEqual("l", models[1].B);
             Assert.AreEqual("mn", models[1].C);
             Assert.AreEqual(43210, models[1].Num);
+
+            var jsons = parser.ConvertTo<JsonObject>(new[] { "A", "B", "C", "Num" }).ToList();
+            Assert.AreEqual(2, jsons.Count);
+            Assert.AreEqual("ab", jsons[0].TryGetStringValue("A"));
+            Assert.AreEqual("cd", jsons[0].TryGetStringValue("B"));
+            Assert.AreEqual("efg,\t", jsons[0].TryGetStringValue("C"));
+            Assert.AreEqual(56789, jsons[0].TryGetInt32Value("Num"));
+            Assert.AreEqual("hijk", jsons[1].TryGetStringValue("A"));
+            Assert.AreEqual("l", jsons[1].TryGetStringValue("B"));
+            Assert.AreEqual("mn", jsons[1].TryGetStringValue("C"));
+            Assert.AreEqual(43210, jsons[1].TryGetInt32Value("Num"));
         }
 
         /// <summary>
@@ -83,6 +94,17 @@ namespace Trivial.Text
             Assert.AreEqual("l", models[1].B);
             Assert.AreEqual("mn", models[1].C);
             Assert.AreEqual(43210, models[1].Num);
+
+            var jsons = parser.ConvertTo<JsonObject>(new[] { "A", "B", "C", "Num" }).ToList();
+            Assert.AreEqual(2, jsons.Count);
+            Assert.AreEqual("ab", jsons[0].TryGetStringValue("A"));
+            Assert.AreEqual("cd", jsons[0].TryGetStringValue("B"));
+            Assert.AreEqual("efg,\t", jsons[0].TryGetStringValue("C"));
+            Assert.AreEqual(56789, jsons[0].TryGetInt32Value("Num"));
+            Assert.AreEqual("hijk", jsons[1].TryGetStringValue("A"));
+            Assert.AreEqual("l", jsons[1].TryGetStringValue("B"));
+            Assert.AreEqual("mn", jsons[1].TryGetStringValue("C"));
+            Assert.AreEqual(43210, jsons[1].TryGetInt32Value("Num"));
         }
     }
 }

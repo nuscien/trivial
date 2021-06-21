@@ -157,7 +157,51 @@ namespace Trivial.Text
                 return null;
             })?.ToList();
             if (props != null && props.Count == 0) props = null;
-            if (creator == null && props == null) yield break;
+            if (creator == null)
+            {
+                if (props == null)
+                {
+                    if (type == typeof(JsonArray))
+                    {
+                        foreach (var item in this)
+                        {
+                            var instance = new JsonArray();
+                            instance.AddRange(item);
+                            yield return (T)(object)instance;
+                        }
+                    }
+                    else if (type == typeof(System.Text.Json.Nodes.JsonArray))
+                    {
+                        foreach (var item in this)
+                        {
+                            var instance = new System.Text.Json.Nodes.JsonArray();
+                            foreach (var ele in item)
+                            {
+                                instance.Add(ele);
+                            }
+
+                            yield return (T)(object)instance;
+                        }
+                    }
+
+                    yield break;
+                }
+                else
+                {
+                    if (type == typeof(JsonObject))
+                    {
+                        foreach (var item in this)
+                        {
+                            var instance = new JsonObject();
+                            instance.SetRange(item, propertyNames);
+                            yield return (T)(object)instance;
+                        }
+
+                        yield break;
+                    }
+                }
+            }
+
             foreach (var item in this)
             {
                 var instance = ObjectConvert.Invoke(item, creator, props);

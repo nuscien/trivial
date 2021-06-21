@@ -2327,6 +2327,42 @@ namespace Trivial.Text
         /// <summary>
         /// Sets properties.
         /// </summary>
+        /// <param name="col">A collection to add.</param>
+        /// <param name="propertyMapping">The mapping of index to property key; or null for convert index to string format.</param>
+        /// <param name="skipDuplicate">true if skip the duplicate properties; otherwise, false.</param>
+        /// <returns>The count of property added.</returns>
+        public int SetRange(IEnumerable<string> col, IEnumerable<string> propertyMapping, bool skipDuplicate = false)
+        {
+            if (col is null) return 0;
+            var array = col.ToList();
+            var keys = propertyMapping?.ToList() ?? Collection.ListExtensions.CreateNumberRange(0, array.Count).Select(ele => ele.ToString("g")).ToList();
+            var count = Math.Min(keys.Count, array.Count);
+            if (skipDuplicate)
+            {
+                var count2 = 0;
+                for (var i = 0; i < count; i++)
+                {
+                    var key = keys[i];
+                    if (string.IsNullOrEmpty(key) || store.ContainsKey(key)) continue;
+                    SetValue(key, array[i]);
+                }
+
+                return count2;
+            }
+
+            for (var i = 0; i < count; i++)
+            {
+                var key = keys[i];
+                if (string.IsNullOrEmpty(key)) continue;
+                SetValue(key, array[i]);
+            }
+
+            return count;
+        }
+
+        /// <summary>
+        /// Sets properties.
+        /// </summary>
         /// <param name="reader">The reader to read.</param>
         /// <param name="skipDuplicate">true if skip the duplicate properties; otherwise, false.</param>
         /// <returns>The count of property added.</returns>
