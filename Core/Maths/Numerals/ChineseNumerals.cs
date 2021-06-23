@@ -504,6 +504,10 @@ namespace Trivial.Maths
                 var numInt = (ulong)numAbs;
                 if (numInt == numAbs) return NegativeSign + ToString(numInt);
             }
+            else if (number == 0)
+            {
+                return Zero;
+            }
             else if (double.IsNegativeInfinity(number))
             {
                 return IsTraditional ? "負無窮" : "负无穷";
@@ -548,6 +552,24 @@ namespace Trivial.Maths
             }
 
             return str.ToString();
+        }
+
+        /// <summary>
+        /// Gets the string of a specific number.
+        /// </summary>
+        /// <param name="number">The number.</param>
+        /// <returns>A string for the number.</returns>
+        public string ToString(Fraction number)
+        {
+            if (number.IsNaN) return ToString(double.NaN);
+            if (number.IsPositiveInfinity) return ToString(double.PositiveInfinity);
+            if (number.IsNegativeInfinity) return ToString(double.NegativeInfinity);
+            var sb = new StringBuilder();
+            if (number.IsNegative) sb.Append(IsTraditional ? "負" : "负");
+            sb.Append(ToString(number.LongDenominator));
+            sb.Append("分之");
+            sb.Append(ToString(number.LongNumerator));
+            return sb.ToString();
         }
 
         /// <summary>

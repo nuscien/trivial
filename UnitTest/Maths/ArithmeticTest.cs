@@ -70,6 +70,74 @@ namespace Trivial.Maths
             Assert.AreEqual(
                 "one point two three times ten of forty-five power",
                 EnglishNumerals.Default.ToString(1.23e45));
+
+            // Fraction
+            var f1 = new Fraction(100, 200);
+            var f2 = new Fraction(2L, 4L);
+            Assert.AreEqual(1, f1.Numerator);
+            Assert.AreEqual(2, f1.Denominator);
+            Assert.AreEqual(0, f1.IntegerPart);
+            Assert.AreEqual(1, f1.NumeratorOfDecimalPart);
+            Assert.AreEqual(1L, f1.LongNumerator);
+            Assert.AreEqual(2L, f1.LongDenominator);
+            Assert.AreEqual(0L, f1.LongIntegerPart);
+            Assert.AreEqual(1L, f1.LongNumeratorOfDecimalPart);
+            Assert.IsTrue(f1.IsPositive);
+            Assert.IsFalse(f1.IsNegative);
+            Assert.IsFalse(f1.IsInteger);
+            Assert.IsFalse(f1.IsInfinity);
+            Assert.IsFalse(f1.IsNaN);
+            Assert.AreEqual(0.5, (double)f1);
+            Assert.AreEqual(f1, f2);
+            Assert.IsFalse(f1 > f2);
+            Assert.IsTrue(f1 >= f2);
+            f1 += f2;
+            Assert.AreEqual(1, f1.Numerator);
+            Assert.AreEqual(1, f1.Denominator);
+            Assert.IsTrue(f1.IsPositive);
+            Assert.IsFalse(f1.IsNegative);
+            Assert.IsTrue(f1.IsInteger);
+            Assert.IsFalse(f1.IsInfinity);
+            Assert.IsFalse(f1.IsNaN);
+            Assert.AreEqual(1, (int)f1);
+            Assert.AreNotEqual(f1, f2);
+            Assert.IsTrue(f1 > f2);
+            Assert.IsTrue(f1 >= f2);
+            f2 = new Fraction(1);
+            Assert.AreEqual(f1, f2);
+            Assert.AreEqual(1, (int)f2);
+            Assert.AreEqual(1L, (long)f2);
+            Assert.AreEqual(-1, (int)-f2);
+            f1 /= 3;
+            f1 += f2;
+            f1 += 1;
+            Assert.AreEqual(7, f1.Numerator);
+            Assert.AreEqual(3, f1.Denominator);
+            Assert.AreEqual(2, f1.IntegerPart);
+            Assert.AreEqual(1, f1.NumeratorOfDecimalPart);
+            Assert.IsTrue(f1.IsPositive);
+            Assert.IsFalse(f1.IsNegative);
+            Assert.IsFalse(f1.IsInteger);
+            Assert.IsFalse(f1.IsInfinity);
+            Assert.IsFalse(f1.IsNaN);
+            Assert.IsFalse(f1 < f2);
+            Assert.IsFalse(f1 <= f2);
+            f2 = new Fraction(100, 0);
+            Assert.IsTrue(f2.IsInfinity);
+            Assert.IsTrue(f2.IsPositive);
+            Assert.IsTrue(f2.IsPositiveInfinity);
+            Assert.IsFalse(f2.IsNegative);
+            Assert.IsFalse(f2.IsNegativeInfinity);
+            Assert.IsFalse(f2.IsNaN);
+            Assert.AreNotEqual(f1, f2);
+            f2 = new Fraction(0, 0);
+            Assert.IsFalse(f2.IsInfinity);
+            Assert.IsFalse(f2.IsPositive);
+            Assert.IsFalse(f2.IsPositiveInfinity);
+            Assert.IsFalse(f2.IsNegative);
+            Assert.IsFalse(f2.IsNegativeInfinity);
+            Assert.IsTrue(f2.IsNaN);
+            Assert.AreNotEqual(f1, f2);
         }
     }
 }

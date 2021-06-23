@@ -14,6 +14,34 @@ namespace Trivial.Maths
         /// <summary>
         /// Initializes a new instance of the Fraction class.
         /// </summary>
+        /// <param name="integer">The integer.</param>
+        public Fraction(int integer)
+        {
+            IsNegative = integer < 0;
+            IsPositive = integer > 0;
+            LongNumerator = integer;
+            LongDenominator = 1L;
+            LongIntegerPart = integer;
+            LongNumeratorOfDecimalPart = 0L;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the Fraction class.
+        /// </summary>
+        /// <param name="integer">The integer.</param>
+        public Fraction(long integer)
+        {
+            IsNegative = integer < 0;
+            IsPositive = integer > 0;
+            LongNumerator = integer;
+            LongDenominator = 1L;
+            LongIntegerPart = integer;
+            LongNumeratorOfDecimalPart = 0L;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the Fraction class.
+        /// </summary>
         /// <param name="numerator">The numerator.</param>
         /// <param name="denominator">The denominator.</param>
         public Fraction(int numerator, int denominator)
@@ -34,9 +62,17 @@ namespace Trivial.Maths
                 LongDenominator = b;
             }
 
-            var rem = Math.DivRem(LongNumerator, LongDenominator, out var i);
-            LongIntegerPart = IsNegative ? -i : i;
-            LongNumeratorOfDecimalPart = rem;
+            if (LongDenominator == 0)
+            {
+                LongIntegerPart = 0;
+                LongNumeratorOfDecimalPart = LongNumerator;
+            }
+            else
+            {
+                var i = Math.DivRem(LongNumerator, LongDenominator, out var rem);
+                LongIntegerPart = IsNegative ? -i : i;
+                LongNumeratorOfDecimalPart = rem;
+            }
         }
 
         /// <summary>
@@ -69,7 +105,7 @@ namespace Trivial.Maths
             }
             else
             {
-                var rem = Math.DivRem(LongNumerator, LongDenominator, out var i);
+                var i = Math.DivRem(LongNumerator, LongDenominator, out var rem);
                 LongIntegerPart = IsNegative ? -i : i;
                 LongNumeratorOfDecimalPart = rem;
             }
@@ -138,7 +174,7 @@ namespace Trivial.Maths
         /// <summary>
         /// Gets a value indicating whether the specified number evaluates to negative or positive infinity.
         /// </summary>
-        public bool IsInfinity => LongDenominator == 0;
+        public bool IsInfinity => LongDenominator == 0 && LongNumerator != 0;
 
         /// <summary>
         /// Gets a value indicating whether the specified number evaluates to negative infinity.
@@ -424,7 +460,7 @@ namespace Trivial.Maths
         /// <returns>A floating number.</returns>
         public static explicit operator double(Fraction value)
         {
-            return value.LongNumerator * 1.0 / value.LongDenominator;
+            return value.LongNumerator * (value.IsNegative ? - 1.0 : 1.0) / value.LongDenominator;
         }
 
         /// <summary>
@@ -434,7 +470,7 @@ namespace Trivial.Maths
         /// <returns>A floating number.</returns>
         public static explicit operator float(Fraction value)
         {
-            return value.LongNumerator * 1f / value.LongDenominator;
+            return value.LongNumerator * (value.IsNegative ? -1f : 1f) / value.LongDenominator;
         }
 
         /// <summary>
@@ -444,7 +480,37 @@ namespace Trivial.Maths
         /// <returns>A floating number.</returns>
         public static explicit operator decimal(Fraction value)
         {
-            return value.LongNumerator * 1m / value.LongDenominator;
+            return value.LongNumerator * (value.IsNegative ? -1m : 1m) / value.LongDenominator;
+        }
+
+        /// <summary>
+        /// Converts to an integer.
+        /// </summary>
+        /// <param name="value">The fraction value.</param>
+        /// <returns>A floating number.</returns>
+        public static explicit operator long(Fraction value)
+        {
+            return (long)(value.LongNumerator * (value.IsNegative ? -1.0 : 1.0) / value.LongDenominator);
+        }
+
+        /// <summary>
+        /// Converts to an integer.
+        /// </summary>
+        /// <param name="value">The fraction value.</param>
+        /// <returns>A floating number.</returns>
+        public static explicit operator int(Fraction value)
+        {
+            return (int)(value.LongNumerator * (value.IsNegative ? -1.0 : 1.0) / value.LongDenominator);
+        }
+
+        /// <summary>
+        /// Converts to an integer.
+        /// </summary>
+        /// <param name="value">The fraction value.</param>
+        /// <returns>A floating number.</returns>
+        public static explicit operator short(Fraction value)
+        {
+            return (short)(value.LongNumerator * (value.IsNegative ? -1.0 : 1.0) / value.LongDenominator);
         }
 
         /// <summary>
@@ -454,7 +520,7 @@ namespace Trivial.Maths
         /// <returns>A floating number.</returns>
         public static explicit operator Text.JsonDouble(Fraction value)
         {
-            return new(value.LongNumerator * 1.0 / value.LongDenominator);
+            return new(value.LongNumerator * (value.IsNegative ? -1.0 : 1.0) / value.LongDenominator);
         }
 
         /// <summary>
@@ -474,7 +540,17 @@ namespace Trivial.Maths
         /// <returns>A floating number.</returns>
         public static explicit operator System.Text.Json.Nodes.JsonValue(Fraction value)
         {
-            return System.Text.Json.Nodes.JsonValue.Create(value.LongNumerator * 1.0 / value.LongDenominator);
+            return System.Text.Json.Nodes.JsonValue.Create(value.LongNumerator * (value.IsNegative ? -1.0 : 1.0) / value.LongDenominator);
+        }
+
+        /// <summary>
+        /// Converts to a floating number.
+        /// </summary>
+        /// <param name="value">The fraction value.</param>
+        /// <returns>A floating number.</returns>
+        public static explicit operator System.Text.Json.Nodes.JsonNode(Fraction value)
+        {
+            return System.Text.Json.Nodes.JsonValue.Create(value.LongNumerator * (value.IsNegative ? -1.0 : 1.0) / value.LongDenominator);
         }
 
         /// <summary>
