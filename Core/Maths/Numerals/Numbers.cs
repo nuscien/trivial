@@ -412,6 +412,12 @@ namespace Trivial.Maths
         /// <returns>true if parse succeeded; otherwise, false.</returns>
         public static bool TryParseToInt32(string s, int radix, out int result)
         {
+            if (string.IsNullOrEmpty(s))
+            {
+                result = 0;
+                return false;
+            }
+
             s = s.Trim().ToLowerInvariant();
             if (radix < 2 || radix > 36 || string.IsNullOrEmpty(s))
             {
@@ -419,7 +425,17 @@ namespace Trivial.Maths
                 return false;
             }
 
-            if (radix == 10 && int.TryParse(s, out result)) return true;
+            if (radix == 10)
+            {
+                if (int.TryParse(s, out result)) return true;
+                var i = TryParseNumericWord(s);
+                if (i.HasValue)
+                {
+                    result = i.Value;
+                    return true;
+                }
+            }
+
             var num = 0;
             var pos = 0;
             var neg = false;
@@ -484,6 +500,12 @@ namespace Trivial.Maths
         /// <returns>true if parse succeeded; otherwise, false.</returns>
         public static bool TryParseToInt64(string s, int radix, out long result)
         {
+            if (string.IsNullOrEmpty(s))
+            {
+                result = 0;
+                return false;
+            }
+
             s = s.Trim().ToLowerInvariant();
             if (radix < 2 || radix > 36 || string.IsNullOrEmpty(s))
             {
@@ -491,7 +513,17 @@ namespace Trivial.Maths
                 return false;
             }
 
-            if (radix == 10 && long.TryParse(s, out result)) return true;
+            if (radix == 10)
+            {
+                if (long.TryParse(s, out result)) return true;
+                var i = TryParseNumericWord(s);
+                if (i.HasValue)
+                {
+                    result = i.Value;
+                    return true;
+                }
+            }
+
             var num = 0L;
             var pos = 0;
             var neg = false;
@@ -588,10 +620,10 @@ namespace Trivial.Maths
                 '8' => 8,
                 '9' => 9,
                 '零' or '〇' or '凌' or '空' or '无' or '無' or 'O' or '０' or 'ｏ' or 'ｏ' or '₀' or '⁰' or '○' or '蛋' or '圈' or '栋' or '영' or '공' => 0,
-                '一' or '壹' or '①' or 'I' or 'i' or 'Ⅰ' or 'ⅰ' or '⒈' or '１' or '㈠' or '⑴' or '¹' or '₁' or '单' or '幺' or '奇' or '独' or '甲' or '일' => 1,
-                '二' or '贰' or '②' or 'Ⅱ' or 'ⅱ' or '⒉' or '２' or '㈡' or '⑵' or '²' or '₂' or 'に' or '两' or '兩' or '俩' or '倆' or '双' or '乙' or '이' or '두' => 2,
-                '三' or '叄' or '③' or 'Ⅲ' or 'ⅲ' or '⒊' or '３' or '㈢' or '⑶' or '³' or '₃' or '仨' or '丙' or '삼' or '세' => 3,
-                '四' or '肆' or '④' or 'Ⅳ' or 'ⅳ' or 'Q' or '⒋' or '４' or '㈣' or '⑷' or '⁴' or '₄' or '亖' or '丁' or '罒' or 'し' or '사' or '네' => 4,
+                '一' or '壹' or '①' or 'I' or 'i' or 'Ⅰ' or 'ⅰ' or '⒈' or '１' or '㈠' or '⑴' or '¹' or '₁' or 'a' or '单' or '幺' or '奇' or '独' or '甲' or '일' => 1,
+                '二' or '贰' or '②' or 'Ⅱ' or 'ⅱ' or '⒉' or '２' or '㈡' or '⑵' or '²' or '₂' or 'に' or '两' or '兩' or '俩' or '倆' or '双' or '乙' or '이' or '둘' => 2,
+                '三' or '叄' or '③' or 'Ⅲ' or 'ⅲ' or '⒊' or '３' or '㈢' or '⑶' or '³' or '₃' or '仨' or '丙' or '삼' or '셋' => 3,
+                '四' or '肆' or '④' or 'Ⅳ' or 'ⅳ' or '⒋' or '４' or '㈣' or '⑷' or '⁴' or '₄' or '亖' or '丁' or '罒' or 'し' or '사' or '넷' => 4,
                 '五' or '伍' or '⑤' or 'V' or 'v' or 'Ⅴ' or 'ⅴ' or '⒌' or '５' or '㈤' or '⑸' or '⁵' or '₅' or '戊' or 'ご' or '오' => 5,
                 '六' or '陆' or '⑥' or 'Ⅵ' or 'ⅵ' or '⒍' or '６' or '㈥' or '⑹' or '⁶' or '₆' or '顺' or '己' or '육' => 6,
                 '七' or '柒' or '⑦' or 'Ⅶ' or 'ⅶ' or '⒎' or '７' or '㈦' or '⑺' or '⁷' or '₇' or '拐' or '庚' or '칠' => 7,
@@ -697,6 +729,46 @@ namespace Trivial.Maths
             fractionalPart = fractionalPart.Substring(0, ePos);
             if (exponentialPart.Length == 0) exponentialPart = zero;
             return (integerPartNum, fractionalPart, int.Parse(exponentialPart, CultureInfo.InvariantCulture));
+        }
+
+        private static int? TryParseNumericWord(string word)
+        {
+            if (word.Length == 1) return TryParseToInt32(word[0]);
+            return word.ToLowerInvariant() switch
+            {
+                "zero" or "nought" or "れい" => 0,
+                "one" or "いち" or "하나" => 1,
+                "two" => 2,
+                "three" or "さん" => 3,
+                "four" => 4,
+                "five" or "다섯" => 5,
+                "six" or "ろく" or "여섯" => 6,
+                "seven" or "しち" or "일곱" => 7,
+                "eight" or "はち" or "여덟" => 8,
+                "nine" or "きゅう" or "아홉" => 9,
+                "ten" or "じゅう" => 10,
+                "eleven" or "十一" => 11,
+                "twelve" or "十二" => 12,
+                "thirteen" or "十三" => 13,
+                "fourteen" or "十四" => 14,
+                "fifteen" or "十五" => 15,
+                "sixteen" or "十六" => 16,
+                "seventeen" or "十七" => 17,
+                "eighteen" or "十八" => 18,
+                "ninteen" or "十九" => 19,
+                "twenty" or "二十" => 20,
+                "thirty" or "三十" => 30,
+                "forty" or "四十" => 40,
+                "fifty" or "五十" => 50,
+                "sixty" or "六十" => 60,
+                "seventy" or "七十" => 70,
+                "eighty" or "八十" => 80,
+                "ninty" or "九十" => 90,
+                "一百" => 100,
+                "1k" or "一千" => 1000,
+                "一万" => 10000,
+                _ => null
+            };
         }
     }
 }
