@@ -3583,7 +3583,7 @@ namespace Trivial.Text
                         str.AppendLine("!!null null");
                         break;
                     case JsonValueKind.Array:
-                        if (!(prop.Value is JsonArray jArr))
+                        if (prop.Value is not JsonArray jArr)
                         {
                             str.AppendLine("[]");
                             break;
@@ -3593,7 +3593,7 @@ namespace Trivial.Text
                         str.Append(jArr.ConvertToYamlString(indentLevel));
                         break;
                     case JsonValueKind.Object:
-                        if (!(prop.Value is JsonObject jObj))
+                        if (prop.Value is not JsonObject jObj)
                         {
                             str.AppendLine("{}");
                             break;
@@ -3603,7 +3603,7 @@ namespace Trivial.Text
                         str.Append(jObj.ConvertToYamlString(nextIndentLevel));
                         break;
                     case JsonValueKind.String:
-                        if (!(prop.Value is JsonString jStr))
+                        if (prop.Value is not JsonString jStr)
                         {
                             str.AppendLine(prop.Value.ToString());
                             break;
@@ -4470,6 +4470,7 @@ namespace Trivial.Text
             if (obj is JsonDocument doc) return doc;
             if (obj is string str) return Parse(str);
             if (obj is StringBuilder sb) return Parse(sb.ToString());
+            if (obj is System.Text.Json.Nodes.JsonObject jo) return jo;
             if (obj is Stream stream) return Parse(stream);
             if (obj is IEnumerable<KeyValuePair<string, object>> dict)
             {

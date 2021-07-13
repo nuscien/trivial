@@ -548,6 +548,85 @@ namespace Trivial.Maths
         }
 
         /// <summary>
+        /// Parses a character to an integer.
+        /// </summary>
+        /// <param name="c">A character</param>
+        /// <returns>An integer parsed.</returns>
+        public static int ParseToInt32(char c)
+            => TryParseToInt32(c) ?? throw new InvalidOperationException("The character is not a number.");
+
+        /// <summary>
+        /// Parses a character to an integer.
+        /// </summary>
+        /// <param name="c">A character</param>
+        /// <param name="result">An integer parsed.</param>
+        /// <returns>true if parses succeeded; otherwise, false.</returns>
+        public static bool TryParseToInt32(char c, out int result)
+        {
+            var i = TryParseToInt32(c);
+            result = i ?? default;
+            return i.HasValue;
+        }
+
+        /// <summary>
+        /// Parses a character to an integer.
+        /// </summary>
+        /// <param name="c">A character</param>
+        /// <returns>An integer parsed.</returns>
+        public static int? TryParseToInt32(char c)
+        {
+            return c switch
+            {
+                '0' => 0,
+                '1' => 1,
+                '2' => 2,
+                '3' => 3,
+                '4' => 4,
+                '5' => 5,
+                '6' => 6,
+                '7' => 7,
+                '8' => 8,
+                '9' => 9,
+                '零' or '〇' or '凌' or '空' or '无' or '無' or 'O' or '０' or 'ｏ' or 'ｏ' or '₀' or '⁰' or '○' or '蛋' or '圈' or '栋' or '영' or '공' => 0,
+                '一' or '壹' or '①' or 'I' or 'i' or 'Ⅰ' or 'ⅰ' or '⒈' or '１' or '㈠' or '⑴' or '¹' or '₁' or '单' or '幺' or '奇' or '独' or '甲' or '일' => 1,
+                '二' or '贰' or '②' or 'Ⅱ' or 'ⅱ' or '⒉' or '２' or '㈡' or '⑵' or '²' or '₂' or 'に' or '两' or '兩' or '俩' or '倆' or '双' or '乙' or '이' or '두' => 2,
+                '三' or '叄' or '③' or 'Ⅲ' or 'ⅲ' or '⒊' or '３' or '㈢' or '⑶' or '³' or '₃' or '仨' or '丙' or '삼' or '세' => 3,
+                '四' or '肆' or '④' or 'Ⅳ' or 'ⅳ' or 'Q' or '⒋' or '４' or '㈣' or '⑷' or '⁴' or '₄' or '亖' or '丁' or '罒' or 'し' or '사' or '네' => 4,
+                '五' or '伍' or '⑤' or 'V' or 'v' or 'Ⅴ' or 'ⅴ' or '⒌' or '５' or '㈤' or '⑸' or '⁵' or '₅' or '戊' or 'ご' or '오' => 5,
+                '六' or '陆' or '⑥' or 'Ⅵ' or 'ⅵ' or '⒍' or '６' or '㈥' or '⑹' or '⁶' or '₆' or '顺' or '己' or '육' => 6,
+                '七' or '柒' or '⑦' or 'Ⅶ' or 'ⅶ' or '⒎' or '７' or '㈦' or '⑺' or '⁷' or '₇' or '拐' or '庚' or '칠' => 7,
+                '八' or '捌' or '⑧' or 'Ⅷ' or 'ⅷ' or '⒏' or '８' or '㈧' or '⑻' or '⁸' or '₈' or '发' or '發' or '辛' or '팔' => 8,
+                '九' or '玖' or '⑨' or 'Ⅸ' or 'ⅸ' or '⒐' or '９' or '㈨' or '⑼' or '⁹' or '₉' or '酒' or '壬' or '구' => 9,
+                '十' or '拾' or '⑩' or 'Ⅹ' or 'X' or 'ⅹ' or '⒑' or '㈩' or '⑽' or '癸' or '십' or '열' => 10,
+                'Ⅺ' or '⒒' or '⑾' => 11,
+                'Ⅻ' or '⒓' or '⑿' => 12,
+                '⒔' or '⒀' => 13,
+                '⒕' or '⒁' => 14,
+                '⒖' or '⒂' => 15,
+                '⒗' or '⒃' => 16,
+                '⒘' or '⒄' => 17,
+                '⒙' or '⒅' => 18,
+                '⒚' or '⒆' => 19,
+                '廿' or '⒛' or '⒇' => 20,
+                '卅' => 30,
+                '卌' => 40,
+                '圩' or 'L' => 50,
+                '圆' => 60,
+                '进' => 70,
+                '枯' => 80,
+                '枠' => 90,
+                '百' or '佰' or 'C' => 100,
+                '皕' => 200,
+                'D' => 500,
+                '千' or '仟' or 'K' => 1000,
+                '万' or '萬' => 10000,
+                '亿' or '億' => 100000000,
+                'G' => 1000000000,
+                _ => null
+            };
+        }
+
+        /// <summary>
         /// Gets the string of a specific number.
         /// </summary>
         /// <param name="numbers">The number localization instance.</param>

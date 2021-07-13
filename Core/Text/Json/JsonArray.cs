@@ -1437,7 +1437,7 @@ namespace Trivial.Text
         /// <returns>true if item was successfully removed from the array; otherwise, false. This method also returns false if item is not found in the array.</returns>
         public bool Remove(IJsonValue item)
         {
-            if (!(item is IJsonValueResolver ele)) return false;
+            if (item is not IJsonValueResolver ele) return false;
             return store.Remove(ele);
         }
 
@@ -3068,7 +3068,7 @@ namespace Trivial.Text
                         str.AppendLine("!!null null");
                         break;
                     case JsonValueKind.Array:
-                        if (!(item is JsonArray jArr))
+                        if (item is not JsonArray jArr)
                         {
                             str.AppendLine("[]");
                             break;
@@ -3077,7 +3077,7 @@ namespace Trivial.Text
                         str.AppendLine(jArr.ToString());
                         break;
                     case JsonValueKind.Object:
-                        if (!(item is JsonObject jObj))
+                        if (item is not JsonObject jObj)
                         {
                             str.AppendLine("{}");
                             break;
@@ -3087,7 +3087,7 @@ namespace Trivial.Text
                         str.Append(jObj.ConvertToYamlString(indentLevel));
                         break;
                     case JsonValueKind.String:
-                        if (!(item is IJsonString jStr))
+                        if (item is not IJsonString jStr)
                         {
                             str.AppendLine(item.ToString());
                             break;
@@ -3841,6 +3841,7 @@ namespace Trivial.Text
             if (obj is JsonDocument doc) return doc;
             if (obj is string str) return Parse(str);
             if (obj is StringBuilder sb) return Parse(sb.ToString());
+            if (obj is System.Text.Json.Nodes.JsonArray ja) return ja;
             if (obj is Stream stream) return Parse(stream);
             if (obj is IEnumerable<object> arr)
             {
