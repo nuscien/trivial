@@ -360,6 +360,8 @@ namespace Trivial.Maths
             if (string.IsNullOrWhiteSpace(s)) throw new ArgumentException("s should not be empty or consists only of white-space characters.", nameof(s));
             if (radix < 2 || radix > 36) throw new ArgumentOutOfRangeException(nameof(radix), "radix should be in 2-36.");
             if (TryParseToInt32(s, radix, out var result)) return result;
+            var i = TryParseNumericWord(s);
+            if (i.HasValue) return i.Value;
             var message = $"{nameof(s)} is incorrect. It should be in base {radix} number format.";
             throw new FormatException(message, new ArgumentException(message, nameof(s)));
         }
@@ -380,6 +382,8 @@ namespace Trivial.Maths
             if (string.IsNullOrWhiteSpace(s)) throw new ArgumentException("s should not be empty or consists only of white-space characters.", nameof(s));
             if (radix < 2 || radix > 36) throw new ArgumentOutOfRangeException(nameof(radix), "radix should be in 2-36.");
             if (TryParseToInt64(s, radix, out var result)) return result;
+            var i = TryParseNumericWord(s);
+            if (i.HasValue) return i.Value;
             var message = $"{nameof(s)} is incorrect. It should be in base {radix} number format.";
             throw new FormatException(message, new ArgumentException(message, nameof(s)));
         }
@@ -736,37 +740,43 @@ namespace Trivial.Maths
             if (word.Length == 1) return TryParseToInt32(word[0]);
             return word.ToLowerInvariant() switch
             {
-                "zero" or "nought" or "れい" => 0,
-                "one" or "いち" or "하나" => 1,
-                "two" => 2,
-                "three" or "さん" => 3,
-                "four" => 4,
-                "five" or "다섯" => 5,
-                "six" or "ろく" or "여섯" => 6,
-                "seven" or "しち" or "일곱" => 7,
-                "eight" or "はち" or "여덟" => 8,
-                "nine" or "きゅう" or "아홉" => 9,
-                "ten" or "じゅう" => 10,
-                "eleven" or "十一" => 11,
-                "twelve" or "十二" => 12,
-                "thirteen" or "十三" => 13,
-                "fourteen" or "十四" => 14,
-                "fifteen" or "十五" => 15,
-                "sixteen" or "十六" => 16,
-                "seventeen" or "十七" => 17,
-                "eighteen" or "十八" => 18,
-                "ninteen" or "十九" => 19,
-                "twenty" or "二十" => 20,
-                "thirty" or "三十" => 30,
-                "forty" or "四十" => 40,
-                "fifty" or "五十" => 50,
-                "sixty" or "六十" => 60,
-                "seventy" or "七十" => 70,
-                "eighty" or "八十" => 80,
-                "ninty" or "九十" => 90,
-                "一百" => 100,
-                "1k" or "一千" => 1000,
-                "一万" => 10000,
+                "zero" or "nought" or "nill" or "れい" or "zéro" => 0,
+                "one" or "first" or "いち" or "하나" or "un" or "une" => 1,
+                "two" or "second" or "ii" or "deux" => 2,
+                "three" or "third" or "iii" or "さん" or "trois" => 3,
+                "four" or "fourth" or "forth" or "iv" or "quatre" => 4,
+                "five" or "fifth" or "다섯" or "cinq" => 5,
+                "six" or "sixth" or "vi" or "half dozen" or "半打" or "ろく" or "여섯" => 6,
+                "seven" or "seventh" or "vii" or "しち" or "일곱" or "sept" => 7,
+                "eight" or "eighth" or "viii" or "はち" or "여덟" or "huit" => 8,
+                "nine" or "ninth" or "ix" or "きゅう" or "아홉" or "neuf" => 9,
+                "ten" or "tenth" or "一十" or "壹拾" or "壹拾整" or "一零" or "一〇" or "１０" or "じゅう" or "dix" => 10,
+                "eleven" or "eleventh" or "xi" or "一十一" or "十一" or "一一" or "１１" or "onze" => 11,
+                "twelve" or "twelfth" or "xii" or "dozen" or "a dozen" or "一十二" or "十二" or "一二" or "一打" or "１２" or "douze" => 12,
+                "thirteen" or "xiii" or "一十三" or "十三" or "一三" or "１３" or "treize" => 13,
+                "fourteen" or "xiv" or "一十四" or "十四" or "一四" or "１４" or "quatorze" => 14,
+                "fifteen" or "xv" or "一十五" or "十五" or "一五" or "１５" or "quinze" => 15,
+                "sixteen" or "xvi" or "一十六" or "十六" or "一六" or "１６" or "seize" => 16,
+                "seventeen" or "xvii" or "一十七" or "十七" or "一七" or "１７" or "dix-sept" => 17,
+                "eighteen" or "xviii" or "一十八" or "十八" or "一八" or "１８" or "dix-huit" => 18,
+                "ninteen" or "xix" or "一十九" or "十九" or "一九" or "１９" or "dix-neuf" => 19,
+                "twenty" or "xx" or "二十" or "贰拾" or "贰拾整" or "二零" or "二〇" or "２０" or "vingt" => 20,
+                "twenty-one" or "xxi" or "二十一" or "廿一" or "二一" or "２１" or "vingt et un" => 21,
+                "twenty-two" or "xxii" or "二十二" or "廿二" or "二二" or "２２" or "vingt-deux" => 22,
+                "twenty-three" or "xxiii" or "二十三" or "廿三" or "二三" or "２３" or "vingt-trois" => 23,
+                "twenty-four" or "xxiv" or "二十四" or "廿四" or "二四" or "２４" or "vingt-quatre" => 24,
+                "twenty-fiv" or "xxv" or "二十五" or "廿五" or "二五" or "２５" or "vingt-cinq" => 25,
+                "thirty" or "xxx" or "三十" or "叄拾" or "叄拾整" or "三零" or "三〇" or "３０" or "trente" => 30,
+                "forty" or "xl" or "四十" or "肆拾" or "肆拾整" or "四零" or "四〇" or "４０" or "quarante" => 40,
+                "fifty" or "五十" or "伍拾" or "伍拾整" or "五零" or "五〇" or "半百" or "５０" or "cinquante" => 50,
+                "sixty" or "六十" or "六零" or "六〇" or "６０" or "soixante" => 60,
+                "seventy" or "七十" or "七零" or "七〇" or "７０" or "soixante-dix" => 70,
+                "eighty" or "八十" or "八零" or "八〇" or "８０" or "quatre-vingts" => 80,
+                "ninty" or "九十" or "九零" or "九〇" or "９０" or "quatre-vingt-dix" => 90,
+                "一百" or "1百" or "壹佰" or "壹佰整" or "一零零" or "一〇〇" or "１００" or "hundred" or "a hundred" or "one hundred" or "ひゃく" or "いちひゃく" or "cent" => 100,
+                "两百" or "二百" or "贰佰" or "贰佰整" or "2百" or "二零零" or "二〇〇" or "２００" or "two hundred" or "deux cents" => 200,
+                "1k" or "kilo" or "a kilo" or "thousand" or "a thousand" or "one thousand" or "一千" or "壹仟" or "壹仟整" or "1千" or "１０００" or "せん" or "いちせん" or "mille" or "millennium" => 1000,
+                "一万" or "壹萬" or "壹万" or "壹萬整" or "壹万整" or "1万" or "10千" or "１００００" or "1w" or "10k" or "ten thousand" or "ten kilo" or "まん" or "いちまん" => 10000,
                 _ => null
             };
         }
