@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Security;
 using System.Text;
 using System.Threading;
@@ -316,7 +317,7 @@ namespace Trivial.IO
         /// <param name="folderName">The sub-folder name.</param>
         /// <param name="folderName2">The sub-sub-folder name.</param>
         /// <param name="folderName3">The sub-sub-sub-folder name.</param>
-        /// <returns>The file information instance; or null, if failed.</returns>
+        /// <returns>The file information instance; or null, if accesses failed.</returns>
         public static DirectoryInfo TryGetDirectoryInfo(string folder, string folderName = null, string folderName2 = null, string folderName3 = null)
         {
             var path = GetLocalPath(folder, folderName, folderName2, folderName3);
@@ -387,7 +388,7 @@ namespace Trivial.IO
         /// Tries to get a file information instance of the specific path.
         /// </summary>
         /// <param name="file">The file path.</param>
-        /// <returns>A file info instance; or null, if failed.</returns>
+        /// <returns>A file info instance; or null, if accesses failed.</returns>
         public static FileInfo TryGetFileInfo(string file)
         {
             file = GetLocalPath(file);
@@ -423,13 +424,66 @@ namespace Trivial.IO
         /// </summary>
         /// <param name="folder">The folder path.</param>
         /// <param name="fileName">The file name.</param>
-        /// <returns>The file information instance; or null, if failed.</returns>
+        /// <returns>The file information instance; or null, if accesses failed.</returns>
         public static FileInfo TryGetFileInfo(string folder, string fileName)
         {
             var path = GetLocalPath(folder);
             if (string.IsNullOrWhiteSpace(path) || string.IsNullOrWhiteSpace(fileName)) return null;
             path = Path.Combine(path, fileName);
             return TryGetFileInfo(path);
+        }
+
+
+        /// <summary>
+        /// Gets the directory information instance of the sub-folder.
+        /// </summary>
+        /// <param name="dir">The directory information.</param>
+        /// <param name="folderName">The folder name.</param>
+        /// <returns>The directory information instance; or null, if accesses failed.</returns>
+        public static DirectoryInfo TryGetSubDirectory(DirectoryInfo dir, string folderName)
+        {
+            if (string.IsNullOrEmpty(folderName)) return dir;
+            try
+            {
+                if (dir == null || !dir.Exists) return null;
+                return dir.EnumerateDirectories(folderName).FirstOrDefault(ele => folderName.Equals(ele.Name, StringComparison.OrdinalIgnoreCase));
+            }
+            catch (UnauthorizedAccessException)
+            {
+            }
+            catch (IOException)
+            {
+            }
+            catch (ArgumentException)
+            {
+            }
+            catch (NotSupportedException)
+            {
+            }
+            catch (SecurityException)
+            {
+            }
+            catch (InvalidOperationException)
+            {
+            }
+
+            return TryGetDirectoryInfo(dir.FullName, folderName);
+        }
+
+        /// <summary>
+        /// Gets the directory information instance of the sub-folder.
+        /// </summary>
+        /// <param name="dir">The directory information.</param>
+        /// <param name="folderName">The folder name.</param>
+        /// <param name="folderName2">The folder name 2.</param>
+        /// <param name="folderName3">The folder name 3.</param>
+        /// <returns>The directory information instance; or null, if accesses failed.</returns>
+        public static DirectoryInfo TryGetSubDirectory(DirectoryInfo dir, string folderName, string folderName2, string folderName3 = null)
+        {
+            var folder = TryGetSubDirectory(dir, folderName);
+            if (folder == null || !folder.Exists) return null;
+            folder = TryGetSubDirectory(folder, folderName2);
+            return string.IsNullOrEmpty(folderName3) ? folder : TryGetSubDirectory(folder, folderName3);
         }
     }
 }

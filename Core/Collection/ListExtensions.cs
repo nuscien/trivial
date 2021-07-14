@@ -152,6 +152,24 @@ namespace Trivial.Collection
         }
 
         /// <summary>
+        /// Creates a range of number.
+        /// </summary>
+        /// <param name="start">A number to start.</param>
+        /// <param name="count">The length.</param>
+        /// <param name="step">The optional step.</param>
+        /// <returns>A list.</returns>
+        public static List<int> CreateNumberRange(int start, int count, int step = 1)
+        {
+            var list = new List<int>();
+            for (var i = 0; i < count; i++)
+            {
+                list.Add(i * step + start);
+            }
+
+            return list;
+        }
+
+        /// <summary>
         /// Removes all the elements by the specific key.
         /// </summary>
         /// <param name="list">The key value pairs.</param>
