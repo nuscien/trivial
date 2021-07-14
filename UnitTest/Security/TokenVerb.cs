@@ -59,7 +59,7 @@ namespace Trivial.Security
             Console.WriteLine();
 
             // JWT RS512
-            using var rs = RSASignatureProvider.CreateRS512(rsa);
+            var rs = RSASignatureProvider.CreateRS512(rsa);
             jwt = new JsonWebToken<Net.HttpClientVerb.NameAndDescription>(jwt.Payload, rs);
             header = jwt.ToAuthenticationHeaderValue();
             jwt = JsonWebToken<Net.HttpClientVerb.NameAndDescription>.Parse(header.ToString(), rs);

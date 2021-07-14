@@ -45,12 +45,14 @@ namespace Trivial.Text
 
             Assert.AreEqual(9, json.Keys.Count());
             Assert.AreEqual("hijklmn", json.GetStringValue("str-a"));
+            Assert.AreEqual("hijklmn", json.GetValue<string>("str-a"));
             Assert.AreEqual("rst", json.GetStringValue("str-b"));
             Assert.AreEqual("uvw", json.GetStringValue("str-c"));
             Assert.AreEqual("0123456789", json.GetStringValue("str-d"));
             Assert.AreEqual(123, json.GetInt32Value("num"));
             Assert.AreEqual("123", json.GetStringValue("num"));
             Assert.AreEqual(now.Second, json.GetDateTimeValue("now").Second);
+            Assert.AreEqual(now.Second, json.GetValue<DateTime>("now").Second);
             Assert.AreEqual(now.Second, json.GetDateTimeValue("ticks").Second);
             Assert.AreEqual(JsonValueKind.String, json.GetValueKind("now"));
             Assert.AreEqual(JsonValueKind.Number, json.GetValueKind("ticks"));
@@ -69,6 +71,8 @@ namespace Trivial.Text
             p1.SetValue("p3", p1);
             props.SetValue("p1", p1);
             props.SetValue("p4", "p5");
+            Assert.AreEqual(props, json.GetValue<JsonObject>("props"));
+            Assert.AreEqual(props, json.GetValue<IJsonValue>("props"));
             Assert.AreNotEqual(json, p1);
             Assert.IsNotNull(json.GetObjectValue("props", "p1", "p3"));
             Assert.IsTrue(json.GetObjectValue("props", "p1", "p3").GetBooleanValue("p2"));
@@ -76,6 +80,7 @@ namespace Trivial.Text
             Assert.AreEqual(17, json.GetObjectValue("props", "p1").GetDateTimeValue("p9").Day);
             Assert.IsNull(json.TryGetObjectValue("props", "p1", "p3", "p6"));
             Assert.AreEqual(4567, p1.GetInt32Value("p7"));
+            Assert.AreEqual(4567, p1.GetValue<int>("p7"));
 
             json.EnableThreadSafeMode(3);
             Assert.IsTrue(json.GetObjectValue("props", "p1", "p3").GetBooleanValue("p2"));
@@ -83,6 +88,7 @@ namespace Trivial.Text
             Assert.IsTrue(json.TryGetValue("props.p1.p3.p2", true).GetBoolean());
             Assert.IsTrue(json.TryGetValue("props. 'p1'.'p3'.p2", true).GetBoolean());
             Assert.IsTrue(json.TryGetValue("[props]['p1'][p3][ 'p2' ]", true).GetBoolean());
+            Assert.IsTrue(json.GetValue<bool>("props", "p1", "p3", "p2"));
             try
             {
                 var testError = json["props", "p1", "q", "p3"];

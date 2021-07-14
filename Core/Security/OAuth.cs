@@ -23,13 +23,8 @@ namespace Trivial.Security
     /// <para>The OAuth HTTP web client (for RFC-6749).</para>
     /// <para>You can use this to login and then create the JSON HTTP web clients with the authentication information.</para>
     /// </summary>
-    public class OAuthClient : TokenContainer, IDisposable
+    public class OAuthClient : TokenContainer
     {
-        /// <summary>
-        /// A value indiciating whether need dispose the app accessing key automatically.
-        /// </summary>
-        private readonly bool needDisposeAppInfo;
-
         /// <summary>
         /// The app accessing key instance.
         /// </summary>
@@ -66,7 +61,6 @@ namespace Trivial.Security
         /// <param name="tokenCached">The token information instance cached.</param>
         public OAuthClient(string appId, string secretKey = null, TokenInfo tokenCached = null) : this(new AppAccessingKey(appId, secretKey), tokenCached)
         {
-            needDisposeAppInfo = true;
         }
 
         /// <summary>
@@ -77,7 +71,6 @@ namespace Trivial.Security
         /// <param name="tokenCached">The token information instance cached.</param>
         public OAuthClient(string appId, SecureString secretKey, TokenInfo tokenCached = null) : this(new AppAccessingKey(appId, secretKey), tokenCached)
         {
-            needDisposeAppInfo = true;
         }
 
         /// <summary>
@@ -130,6 +123,23 @@ namespace Trivial.Security
             foreach (var ele in scope)
             {
                 Scope.Add(ele);
+            }
+        }
+
+        /// <summary>
+        /// Deconstructor.
+        /// </summary>
+        ~OAuthClient()
+        {
+            try
+            {
+                if (slim != null) slim.Dispose();
+            }
+            catch (InvalidOperationException)
+            {
+            }
+            catch (NullReferenceException)
+            {
             }
         }
 
@@ -398,7 +408,7 @@ namespace Trivial.Security
                 }
             }
 
-            await locker.WaitAsync();
+            await locker.WaitAsync(cancellationToken);
             token = Token;
             if (token?.IsEmpty == false && oldTokenValidation(token)) return token;
             try
@@ -468,7 +478,7 @@ namespace Trivial.Security
                 }
             }
 
-            await locker.WaitAsync();
+            await locker.WaitAsync(cancellationToken);
             token = Token as T;
             if (token?.IsEmpty == false && oldTokenValidation(token)) return token;
             try
@@ -684,53 +694,12 @@ namespace Trivial.Security
 
             return client;
         }
-
-        /// <summary>
-        /// Releases all resources used by the current OAuth client object.
-        /// </summary>
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        /// <summary>
-        /// Releases the unmanaged resources used by this instance and optionally releases the managed resources.
-        /// </summary>
-        /// <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
-        protected virtual void Dispose(bool disposing)
-        {
-            if (!disposing) return;
-            try
-            {
-                if (needDisposeAppInfo && appInfo != null) appInfo.Dispose();
-            }
-            catch (InvalidOperationException)
-            {
-            }
-            catch (NullReferenceException)
-            {
-            }
-            finally
-            {
-                try
-                {
-                    if (slim != null) slim.Dispose();
-                }
-                catch (InvalidOperationException)
-                {
-                }
-                catch (NullReferenceException)
-                {
-                }
-            }
-        }
     }
 
     /// <summary>
     /// The OAuth based JSON HTTP web client.
     /// </summary>
-    public abstract class OAuthBasedClient : TokenContainer, IDisposable
+    public abstract class OAuthBasedClient : TokenContainer
     {
         /// <summary>
         /// The OAuth client.
@@ -989,25 +958,6 @@ namespace Trivial.Security
         public Task<T> SendAsync<T>(HttpRequestMessage request, Action<ReceivedEventArgs<T>> callback, CancellationToken cancellationToken = default)
         {
             return Create<T>().SendAsync(request, callback, cancellationToken);
-        }
-
-        /// <summary>
-        /// Releases all resources used by the current OAuth client object.
-        /// </summary>
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        /// <summary>
-        /// Releases the unmanaged resources used by this instance and optionally releases the managed resources.
-        /// </summary>
-        /// <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
-        protected virtual void Dispose(bool disposing)
-        {
-            if (!disposing) return;
-            if (oauth != null) oauth.Dispose();
         }
 
         /// <summary>

@@ -486,11 +486,11 @@ namespace Trivial.Maths
         /// <summary>
         /// Japanese number.
         /// </summary>
-        public static readonly JapaneseNumerals Default = new JapaneseNumerals();
+        public static readonly JapaneseNumerals Default = new();
 
         /// <summary>
         /// Japanese Kana number.
         /// </summary>
-        public static readonly JapaneseNumerals Kana = new JapaneseNumerals(true);
+        public static readonly JapaneseNumerals Kana = new(true);
     }
 }

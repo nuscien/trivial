@@ -1129,7 +1129,7 @@ namespace Trivial.Reflection
     /// Thread-safe singleton renew timer.
     /// </summary>
     /// <typeparam name="T">The type of singleton</typeparam>
-    public class SingletonRenewTimer<T> : IDisposable
+    public class SingletonRenewTimer<T>
     {
         /// <summary>
         /// The refresh timer instance.
@@ -1214,6 +1214,14 @@ namespace Trivial.Reflection
         public SingletonRenewTimer(Func<Task<T>> resolveHandler, TimeSpan interval, bool immediately, T cache, DateTime? refreshDate = null)
             : this(new SingletonKeeper<T>(resolveHandler, cache, refreshDate), interval, immediately)
         {
+        }
+
+        /// <summary>
+        /// Deconstructor.
+        /// </summary>
+        ~SingletonRenewTimer()
+        {
+            if (timer != null) timer.Dispose();
         }
 
         /// <summary>
@@ -1333,25 +1341,6 @@ namespace Trivial.Reflection
             var isSuc = timer.Change(dueTime, period);
             if (isSuc) interval = period;
             return isSuc;
-        }
-
-        /// <summary>
-        /// Releases all resources used by the current secret exchange object.
-        /// </summary>
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        /// <summary>
-        /// Releases the unmanaged resources used by this instance and optionally releases the managed resources.
-        /// </summary>
-        /// <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
-        protected virtual void Dispose(bool disposing)
-        {
-            if (!disposing) return;
-            timer.Dispose();
         }
     }
 

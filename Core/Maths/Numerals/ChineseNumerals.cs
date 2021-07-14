@@ -602,7 +602,7 @@ namespace Trivial.Maths
         /// var num3 = ChineseNumber.Simplified.ToApproximationString(1234567);
         /// </code>
         /// </example>
-        public static readonly ChineseNumerals Simplified = new ();
+        public static readonly ChineseNumerals Simplified = new();
 
         /// <summary>
         /// Simplified Chinese uppercase number.
@@ -614,16 +614,16 @@ namespace Trivial.Maths
         /// ChineseNumber.SimplifiedUppercase.ToString(12345);
         /// </code>
         /// </example>
-        public static readonly ChineseNumerals SimplifiedUppercase = new (false, true);
+        public static readonly ChineseNumerals SimplifiedUppercase = new(false, true);
 
         /// <summary>
         /// Traditional Chinese number.
         /// </summary>
-        public static readonly ChineseNumerals Traditional = new (true);
+        public static readonly ChineseNumerals Traditional = new(true);
 
         /// <summary>
         /// Traditional Chinese uppercase number.
         /// </summary>
-        public static readonly ChineseNumerals TraditionalUppercase = new (true, true);
+        public static readonly ChineseNumerals TraditionalUppercase = new(true, true);
     }
 }

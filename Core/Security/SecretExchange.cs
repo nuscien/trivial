@@ -128,7 +128,7 @@ namespace Trivial.Security
     ///     var jwt = exchange.ToJsonWebTokenAuthenticationHeaderValue(sign);
     ///   </code>
     /// </example>
-    public class RSASecretExchange : ICloneable, IDisposable
+    public class RSASecretExchange : ICloneable
     {
         /// <summary>
         /// The RSA exchange JWT payload model.
@@ -234,6 +234,17 @@ namespace Trivial.Security
         /// The RSA crypto service provider.
         /// </summary>
         private RSA crypto;
+
+        /// <summary>
+        /// Deconstructor.
+        /// </summary>
+        ~RSASecretExchange()
+        {
+            if (crypto != null && needDisposeCrypto) crypto.Dispose();
+            if (Secret != null) Secret.Dispose();
+            Secret = null;
+            crypto = null;
+        }
 
         /// <summary>
         /// Gets or sets the identifier for the secret exchange.
@@ -496,14 +507,12 @@ namespace Trivial.Security
             if (!key.HasValue) key = EncryptKey;
             if (Secret == null) return null;
             if (!key.HasValue) return SecretFormatBeforeEncrypt != null ? SecretFormatBeforeEncrypt(Secret.ToUnsecureString(), false) : Secret.ToUnsecureString();
-            using (var rsa = RSA.Create())
-            {
-                rsa.ImportParameters(key.Value);
-                var cypher = rsa.Encrypt(
-                    Encoding.UTF8.GetBytes(SecretFormatBeforeEncrypt != null ? SecretFormatBeforeEncrypt(Secret.ToUnsecureString(), true) : Secret.ToUnsecureString()),
-                    padding ?? RSAEncryptionPadding.Pkcs1);
-                return Convert.ToBase64String(cypher);
-            }
+            using var rsa = RSA.Create();
+            rsa.ImportParameters(key.Value);
+            var cypher = rsa.Encrypt(
+                Encoding.UTF8.GetBytes(SecretFormatBeforeEncrypt != null ? SecretFormatBeforeEncrypt(Secret.ToUnsecureString(), true) : Secret.ToUnsecureString()),
+                padding ?? RSAEncryptionPadding.Pkcs1);
+            return Convert.ToBase64String(cypher);
         }
 
         /// <summary>
@@ -538,14 +547,12 @@ namespace Trivial.Security
         {
             if (text == null) return null;
             if (EncryptKey == null) return (!ignoreFormatIfNoCrypto && SecretFormatBeforeEncrypt != null) ? SecretFormatBeforeEncrypt(text, false) : text;
-            using (var rsa = RSA.Create())
-            {
-                rsa.ImportParameters(EncryptKey.Value);
-                var cypher = rsa.Encrypt(
-                    Encoding.UTF8.GetBytes(SecretFormatBeforeEncrypt != null ? SecretFormatBeforeEncrypt(text, true) : text),
-                    padding ?? RSAEncryptionPadding.Pkcs1);
-                return Convert.ToBase64String(cypher);
-            }
+            using var rsa = RSA.Create();
+            rsa.ImportParameters(EncryptKey.Value);
+            var cypher = rsa.Encrypt(
+                Encoding.UTF8.GetBytes(SecretFormatBeforeEncrypt != null ? SecretFormatBeforeEncrypt(text, true) : text),
+                padding ?? RSAEncryptionPadding.Pkcs1);
+            return Convert.ToBase64String(cypher);
         }
 
         /// <summary>
@@ -690,27 +697,6 @@ namespace Trivial.Security
         }
 
         /// <summary>
-        /// Releases all resources used by the current secret exchange object.
-        /// </summary>
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        /// <summary>
-        /// Releases the unmanaged resources used by this instance and optionally releases the managed resources.
-        /// </summary>
-        /// <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
-        protected virtual void Dispose(bool disposing)
-        {
-            if (!disposing) return;
-            if (crypto != null && needDisposeCrypto) crypto.Dispose();
-            if (Secret != null) Secret.Dispose();
-            crypto = null;
-        }
-
-        /// <summary>
         /// Creates a new object that is a copy of the current instance.
         /// </summary>
         /// <returns>A new object that is a copy of this instance.</returns>
@@ -723,7 +709,7 @@ namespace Trivial.Security
                 EntityId = EntityId,
                 EncryptKey = EncryptKey,
                 EncryptKeyId = EncryptKeyId,
-                Secret = Secret.Copy(),
+                Secret = Secret?.Copy(),
                 SecretFormatBeforeDecrypt = SecretFormatBeforeDecrypt,
                 SecretFormatBeforeEncrypt = SecretFormatBeforeEncrypt,
                 PublicKey = PublicKey,

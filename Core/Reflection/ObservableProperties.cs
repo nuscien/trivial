@@ -39,7 +39,7 @@ namespace Trivial.Reflection
         /// <summary>
         /// Data cache.
         /// </summary>
-        private readonly Dictionary<string, object> cache = new Dictionary<string, object>();
+        private readonly Dictionary<string, object> cache = new();
 
         /// <summary>
         /// Gets an enumerable collection that contains the keys in this instance.
@@ -311,7 +311,7 @@ namespace Trivial.Reflection
         /// <param name="key">The key.</param>
         /// <param name="defaultValue">The default value.</param>
         /// <returns>A property value.</returns>
-        public new T GetProperty<T>(string key, T defaultValue = default) => base.GetProperty<T>(key, defaultValue);
+        public new T GetProperty<T>(string key, T defaultValue = default) => base.GetProperty(key, defaultValue);
 
         /// <summary>
         /// Sets a property.

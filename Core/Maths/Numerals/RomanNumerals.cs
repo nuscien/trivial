@@ -227,11 +227,128 @@ namespace Trivial.Maths
         /// <summary>
         /// Roman number digits.
         /// </summary>
-        public static readonly RomanNumerals Uppercase = new RomanNumerals();
+        public static readonly RomanNumerals Uppercase = new();
 
         /// <summary>
         /// Roman number digits.
         /// </summary>
-        public static readonly RomanNumerals Lowercase = new RomanNumerals(true);
+        public static readonly RomanNumerals Lowercase = new(true);
+
+        /// <summary>
+        /// Gets the string of a specific number.
+        /// </summary>
+        /// <param name="number">The number.</param>
+        /// <returns>A string for the number.</returns>
+        public string ToString(int number)
+        {
+            var sb = new StringBuilder(number < 0 ? "-" : string.Empty);
+            number = Math.Abs(number);
+            var s = number.ToString("g", System.Globalization.CultureInfo.InvariantCulture).Trim();
+            if (number < 11)
+            {
+                sb.Append(number switch
+                {
+                    0 => "0",
+                    1 => One,
+                    2 => Two,
+                    3 => Three,
+                    4 => Four,
+                    5 => Five,
+                    6 => Six,
+                    7 => Seven,
+                    8 => Eight,
+                    9 => Nine,
+                    10 => Ten,
+                    _ => string.Empty
+                });
+                return sb.ToString();
+            }
+            else if (!IsLowerCase && number < 13)
+            {
+                sb.Append(number == 11 ? Eleven : Twelve);
+                return sb.ToString();
+            }
+
+            if (number >= 4000)
+            {
+                sb.Append(s);
+                return sb.ToString();
+            }
+
+            var i = 0;
+            if (s.Length == 4)
+            {
+                var c = s[0] switch
+                {
+                    '0' or ',' => string.Empty,
+                    '1' => "M",
+                    '2' => "MM",
+                    '3' => "MMM",
+                    _ => s[0].ToString()
+                };
+                sb.Append(c);
+                i = 1;
+            }
+
+            if (s.Length > 2)
+            {
+                var c = s[i] switch
+                {
+                    '0' => string.Empty,
+                    '1' => "C",
+                    '2' => "CC",
+                    '3' => "CCC",
+                    '4' => "CD",
+                    '5' => "D",
+                    '6' => "DC",
+                    '7' => "DCC",
+                    '8' => "DCCC",
+                    '9' => "CM",
+                    _ => s[0].ToString()
+                };
+                sb.Append(c);
+                i++;
+            }
+
+            if (s.Length > 1)
+            {
+                var c = s[i] switch
+                {
+                    '0' => string.Empty,
+                    '1' => "X",
+                    '2' => "XX",
+                    '3' => "XXX",
+                    '4' => "XL",
+                    '5' => "L",
+                    '6' => "LX",
+                    '7' => "LXX",
+                    '8' => "LXXX",
+                    '9' => "XC",
+                    _ => s[0].ToString()
+                };
+                sb.Append(c);
+                i++;
+            }
+
+            {
+                var c = s[i] switch
+                {
+                    '0' => string.Empty,
+                    '1' => "I",
+                    '2' => "II",
+                    '3' => "III",
+                    '4' => "IV",
+                    '5' => "V",
+                    '6' => "VI",
+                    '7' => "VII",
+                    '8' => "VIII",
+                    '9' => "IX",
+                    _ => s[0].ToString()
+                };
+                sb.Append(c);
+            }
+
+            return IsLowerCase ? sb.ToString().ToLowerInvariant() : sb.ToString();
+        }
     }
 }

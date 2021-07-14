@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security;
 using System.Text;
+
 using Trivial.Data;
 
 namespace Trivial.Security
@@ -22,6 +23,54 @@ namespace Trivial.Security
     /// </summary>
     public class PasswordChanging
     {
+        /// <summary>
+        /// Initializes a new instance of the PasswordChaning class.
+        /// </summary>
+        public PasswordChanging()
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the PasswordChaning class.
+        /// </summary>
+        /// <param name="oldPassword">The old password.</param>
+        /// <param name="newPassword">The new password.</param>
+        public PasswordChanging(string oldPassword, string newPassword)
+        {
+            OldPassword = oldPassword?.ToSecure();
+            NewPassword = newPassword?.ToSecure();
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the PasswordChaning class.
+        /// </summary>
+        /// <param name="oldPassword">The old password.</param>
+        /// <param name="newPassword">The new password.</param>
+        public PasswordChanging(SecureString oldPassword, SecureString newPassword)
+        {
+            OldPassword = oldPassword;
+            NewPassword = newPassword;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the PasswordChaning class.
+        /// </summary>
+        /// <param name="oldPassword">The old password.</param>
+        /// <param name="newPassword">The new password.</param>
+        public PasswordChanging(string oldPassword, SecureString newPassword)
+        {
+            OldPassword = oldPassword?.ToSecure();
+            NewPassword = newPassword;
+        }
+
+        /// <summary>
+        /// Deconstructor.
+        /// </summary>
+        ~PasswordChanging()
+        {
+            NewPassword = OldPassword = null;
+        }
+
         /// <summary>
         /// Gets or sets the new password.
         /// </summary>

@@ -41,7 +41,7 @@ namespace Trivial.Security
     /// <summary>
     /// The hash signature for string.
     /// </summary>
-    public class HashSignatureProvider : ISignatureProvider, IDisposable
+    public class HashSignatureProvider : ISignatureProvider
     {
         private readonly bool needDispose;
         private readonly HashAlgorithm alg;
@@ -186,6 +186,15 @@ namespace Trivial.Security
         }
 
         /// <summary>
+        /// Deconstructor.
+        /// </summary>
+        ~HashSignatureProvider()
+        {
+            if (!needDispose || alg == null) return;
+            alg.Dispose();
+        }
+
+        /// <summary>
         /// Gets the signature name.
         /// </summary>
         public string Name { get; }
@@ -216,31 +225,12 @@ namespace Trivial.Security
         {
             return ListExtensions.Equals(Sign(data), signature);
         }
-
-        /// <summary>
-        /// Releases all resources used by the current signature provider object.
-        /// </summary>
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        /// <summary>
-        /// Releases the unmanaged resources used by this instance and optionally releases the managed resources.
-        /// </summary>
-        /// <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
-        protected virtual void Dispose(bool disposing)
-        {
-            if (!disposing) return;
-            if (needDispose && alg != null) alg.Dispose();
-        }
     }
 
     /// <summary>
     /// The RSA hash signature for string.
     /// </summary>
-    public class RSASignatureProvider : ISignatureProvider, IDisposable
+    public class RSASignatureProvider : ISignatureProvider
     {
         private readonly bool needDispose;
         private readonly RSA rsa;
@@ -330,7 +320,6 @@ namespace Trivial.Security
             return new RSASignatureProvider(secret, HashAlgorithmName.SHA256, "RS256");
         }
 
-
         /// <summary>
         /// Creates an RSA hash signature provider using SHA-256 hash algorithm of SHA-2 family.
         /// </summary>
@@ -416,6 +405,15 @@ namespace Trivial.Security
         }
 
         /// <summary>
+        /// Deconstructor.
+        /// </summary>
+        ~RSASignatureProvider()
+        {
+            if (!needDispose || rsa == null) return;
+            rsa.Dispose();
+        }
+
+        /// <summary>
         /// Gets the signature name.
         /// </summary>
         public string Name { get; }
@@ -446,32 +444,13 @@ namespace Trivial.Security
         {
             return rsa.VerifyData(data, signature, hashName, RSASignaturePadding.Pkcs1);
         }
-
-        /// <summary>
-        /// Releases all resources used by the current signature provider object.
-        /// </summary>
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        /// <summary>
-        /// Releases the unmanaged resources used by this instance and optionally releases the managed resources.
-        /// </summary>
-        /// <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
-        protected virtual void Dispose(bool disposing)
-        {
-            if (!disposing) return;
-            if (needDispose && rsa != null) rsa.Dispose();
-        }
     }
 
 #if !NETFRAMEWORK
     /// <summary>
     /// The ECDSA hash signature for string.
     /// </summary>
-    public class ECDsaSignatureProvider : ISignatureProvider, IDisposable
+    public class ECDsaSignatureProvider : ISignatureProvider
     {
         private readonly bool needDispose;
         private readonly ECDsa ecdsa;
@@ -598,6 +577,15 @@ namespace Trivial.Security
         }
 
         /// <summary>
+        /// Deconstructor.
+        /// </summary>
+        ~ECDsaSignatureProvider()
+        {
+            if (!needDispose || ecdsa == null) return;
+            ecdsa.Dispose();
+        }
+
+        /// <summary>
         /// Gets the signature name.
         /// </summary>
         public string Name { get; }
@@ -627,25 +615,6 @@ namespace Trivial.Security
         public bool Verify(byte[] data, byte[] signature)
         {
             return ecdsa.VerifyData(data, signature, hashName);
-        }
-
-        /// <summary>
-        /// Releases all resources used by the current signature provider object.
-        /// </summary>
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        /// <summary>
-        /// Releases the unmanaged resources used by this instance and optionally releases the managed resources.
-        /// </summary>
-        /// <param name="disposing">true to release both managed and unmanaged resources; false to release only unmanaged resources.</param>
-        protected virtual void Dispose(bool disposing)
-        {
-            if (!disposing) return;
-            if (needDispose && ecdsa != null) ecdsa.Dispose();
         }
     }
 #endif

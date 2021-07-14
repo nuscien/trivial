@@ -693,7 +693,7 @@ namespace Trivial.Maths
         /// var num3 = EnglishNumber.Default.ToApproximationString(1234567);
         /// </code>
         /// </example>
-        public static EnglishNumerals Default = new EnglishNumerals(false);
+        public static EnglishNumerals Default = new(false);
 
         /// <summary>
         /// English number in standard mode style.
@@ -713,6 +713,6 @@ namespace Trivial.Maths
         /// var num3 = EnglishNumber.Default.ToApproximationString(1234567);
         /// </code>
         /// </example>
-        public static EnglishNumerals Standard = new EnglishNumerals(true);
+        public static EnglishNumerals Standard = new(true);
     }
 }

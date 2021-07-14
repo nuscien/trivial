@@ -29,30 +29,28 @@ namespace Trivial.Reflection
                 await Task.Delay(50);
                 return count += 1;
             });
-            using (var refresher = new SingletonRenewTimer<int>(keeper, TimeSpan.FromMilliseconds(100)))
-            {
-                Console.WriteLine("Started scheduler.");
-                Console.WriteLine(count);
-                await Task.Delay(100);
-                Console.WriteLine(count);
-                await Task.Delay(100);
-                Console.WriteLine(count);
-                await Task.Delay(100);
-                Console.WriteLine(count);
-                Console.WriteLine("Force renew 3 times.");
-                Task.WaitAll(refresher.RenewAsync(), refresher.RenewAsync(), refresher.RenewAsync());
-                Console.WriteLine(count);
-                refresher.IsPaused = true;
-                Console.WriteLine("Paused.");
-                await Task.Delay(100);
-                Console.WriteLine(count);
-                await Task.Delay(200);
-                Console.WriteLine(count);
-                refresher.IsPaused = false;
-                Console.WriteLine("Resumed.");
-                await Task.Delay(200);
-                Console.WriteLine(count);
-            }
+            var refresher = new SingletonRenewTimer<int>(keeper, TimeSpan.FromMilliseconds(100));
+            Console.WriteLine("Started scheduler.");
+            Console.WriteLine(count);
+            await Task.Delay(100);
+            Console.WriteLine(count);
+            await Task.Delay(100);
+            Console.WriteLine(count);
+            await Task.Delay(100);
+            Console.WriteLine(count);
+            Console.WriteLine("Force renew 3 times.");
+            Task.WaitAll(refresher.RenewAsync(), refresher.RenewAsync(), refresher.RenewAsync());
+            Console.WriteLine(count);
+            refresher.IsPaused = true;
+            Console.WriteLine("Paused.");
+            await Task.Delay(100);
+            Console.WriteLine(count);
+            await Task.Delay(200);
+            Console.WriteLine(count);
+            refresher.IsPaused = false;
+            Console.WriteLine("Resumed.");
+            await Task.Delay(200);
+            Console.WriteLine(count);
 
             await Task.Delay(200);
             Console.WriteLine(count);

@@ -146,7 +146,7 @@ namespace Trivial.Tasks
         /// <summary>
         /// The locker.
         /// </summary>
-        private readonly object locker = new object();
+        private readonly object locker = new();
 
         /// <summary>
         /// The processing task instance.
