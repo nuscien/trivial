@@ -30,6 +30,21 @@ including hit task, retry policy, writable JSON DOM, PEM, JWT, stream combinatio
 - [Reflection](./docs/reflection)
 - [Geography](./docs/geo)
 
+## [Trivial.Chemistry](./docs/chemistry)
+
+Includeing the basic chemistry models.
+
+[![NuGet package](https://img.shields.io/nuget/dt/Trivial.Chemistry?label=nuget+downloads)](https://www.nuget.org/packages/Trivial.Chemistry)
+
+![.NET 6](./docs/assets/badge_NET_6.svg)
+![.NET 5](./docs/assets/badge_NET_5.svg)
+![.NET Core 3.1](./docs/assets/badge_NET_Core_3_1.svg)
+![.NET Standard 2.0](./docs/assets/badge_NET_Standard_2_0.svg)
+![.NET Framework 4.8](./docs/assets/badge_NET_Fx_4_8.svg)
+![.NET Framework 4.6.1](./docs/assets/badge_NET_Fx_4_6_1.svg)
+
+- [Chemistry](./docs/chemistry)
+
 ## [Trivial.Console](./docs/console)
 
 The useful utilities for console application including command dispatcher, arguments parser and some rich UX CLI controls.
@@ -44,19 +59,6 @@ The useful utilities for console application including command dispatcher, argum
 ![.NET Framework 4.6.1](./docs/assets/badge_NET_Fx_4_6_1.svg)
 
 - [Console utilities and components](./docs/console)
-
-## [Trivial.Chemistry](./docs/chemistry)
-
-Includeing the basic chemistry models.
-
-[![NuGet package](https://img.shields.io/nuget/dt/Trivial.Chemistry?label=nuget+downloads)](https://www.nuget.org/packages/Trivial.Chemistry)
-
-![.NET 6](./docs/assets/badge_NET_6.svg)
-![.NET 5](./docs/assets/badge_NET_5.svg)
-![.NET Core 3.1](./docs/assets/badge_NET_Core_3_1.svg)
-![.NET Standard 2.0](./docs/assets/badge_NET_Standard_2_0.svg)
-![.NET Framework 4.8](./docs/assets/badge_NET_Fx_4_8.svg)
-![.NET Framework 4.6.1](./docs/assets/badge_NET_Fx_4_6_1.svg)
 
 ## [Trivial.Web](./docs/web)
 

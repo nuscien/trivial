@@ -60,7 +60,7 @@ Test conservation of mass.
 
 ```csharp
 // 2 Na + 2 H₂O = 2 NaOH + H₂
-Console.WriteLine(MolecularFormula.ConservationOfMass(
+var mass = MolecularFormula.ConservationOfMass(
     new List<MolecularFormula>
     {
         { (MolecularFormula)ChemicalElement.Na, 2 },
@@ -71,5 +71,6 @@ Console.WriteLine(MolecularFormula.ConservationOfMass(
         { ChemicalElement.Na + ChemicalElement.H + ChemicalElement.O, 2 },
         ChemicalElement.H * 2
     }
-)); // -> True
+);
+Console.WriteLine(mass); // -> True
 ```
