@@ -173,7 +173,7 @@ namespace Trivial.Chemistry
             m = ChemicalElement.C + ChemicalElement.O;
             Assert.AreEqual(1, m.GetCount("C"));
             Assert.AreEqual(1, m.GetCount(ChemicalElement.O));
-            m = m + ChemicalElement.O;
+            m += ChemicalElement.O;
             Assert.AreEqual(1, m.GetCount("C"));
             Assert.AreEqual(2, m.GetCount(ChemicalElement.O));
             m = ChemicalElement.H + m;
@@ -183,7 +183,7 @@ namespace Trivial.Chemistry
             m = ChemicalElement.H * 2 + ChemicalElement.O;
             var col = new List<MolecularFormula>
             {
-                { m, 2, (MolecularFormula)ChemicalElement.Na }
+                { m, 2, ChemicalElement.Na }
             };
             Assert.AreEqual(3, col.Count);
             Console.WriteLine(MolecularFormula.ToString(col));
@@ -203,8 +203,8 @@ namespace Trivial.Chemistry
                 },
                 new List<MolecularFormula>
                 {
-                    (MolecularFormula)ChemicalElement.Na,
-                    (MolecularFormula)ChemicalElement.Cl
+                    ChemicalElement.Na,
+                    ChemicalElement.Cl
                 }));
             Assert.IsFalse(MolecularFormula.ConservationOfMass(
                 new List<MolecularFormula>

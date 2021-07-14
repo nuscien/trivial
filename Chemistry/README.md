@@ -53,7 +53,7 @@ Or create a molecular formula by merging elements and other molecular formulas.
 ```csharp
 var sulfuricAcid = ChemicalElement.H * 2 + ChemicalElement.S + ChemicalElement.O * 4;
 var ethanol = MolecularFormula.Parse("CH3") + MolecularFormula.Parse("CH2") + MolecularFormula.Parse("OH");
-var iron = (MolecularFormula)ChemicalElement.Fe;
+var iron = ChemicalElement.Fe;
 ```
 
 Test conservation of mass.
@@ -63,7 +63,7 @@ Test conservation of mass.
 var mass = MolecularFormula.ConservationOfMass(
     new List<MolecularFormula>
     {
-        { (MolecularFormula)ChemicalElement.Na, 2 },
+        { ChemicalElement.Na, 2 },
         { ChemicalElement.H * 2 + ChemicalElement.O, 2 }
     },
     new List<MolecularFormula>

@@ -64,5 +64,7 @@ The useful utilities for console application including command dispatcher, argum
 
 The useful utilities for ASP.NET application.
 
+[![NuGet package](https://img.shields.io/nuget/dt/Trivial.Web?label=nuget+downloads)](https://www.nuget.org/packages/Trivial.Web)
+
 ![.NET 6](./docs/assets/badge_NET_6.svg)
 ![.NET 5](./docs/assets/badge_NET_5.svg)

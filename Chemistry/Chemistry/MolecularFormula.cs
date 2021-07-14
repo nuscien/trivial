@@ -527,6 +527,15 @@ namespace Trivial.Chemistry
         }
 
         /// <summary>
+        /// Converts to a molecular formula instance.
+        /// </summary>
+        /// <param name="element">The chemical element to convert.</param>
+        public static implicit operator MolecularFormula(ChemicalElement element)
+        {
+            return new MolecularFormula(element);
+        }
+
+        /// <summary>
         /// Parses.
         /// </summary>
         /// <param name="s">The input.</param>
