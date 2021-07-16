@@ -344,7 +344,7 @@ namespace Trivial.Web
                     return (T)(object)JsonArray.Parse(str);
                 };
             }
-            else if (t.FullName.StartsWith("System.Text.Json.Json", StringComparison.InvariantCulture) && t.IsClass)
+            else if (t.FullName.StartsWith("System.Text.Json.Nodes.Json", StringComparison.InvariantCulture) && t.IsClass)
             {
                 try
                 {
@@ -354,7 +354,7 @@ namespace Trivial.Web
                     }
                     else if (t.Name.Equals("JsonObject", StringComparison.InvariantCulture) || t.Name.Equals("JsonArray", StringComparison.InvariantCulture))
                     {
-                        n = t.Assembly.GetType("System.Text.Json.JsonNode", false);
+                        n = t.Assembly.GetType("System.Text.Json.Nodes.JsonNode", false);
                         if (n == null) return null;
                     }
                     else

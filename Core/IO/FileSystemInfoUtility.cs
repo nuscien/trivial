@@ -433,7 +433,6 @@ namespace Trivial.IO
             return TryGetFileInfo(path);
         }
 
-
         /// <summary>
         /// Gets the directory information instance of the sub-folder.
         /// </summary>

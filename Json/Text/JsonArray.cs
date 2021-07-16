@@ -271,7 +271,6 @@ namespace Trivial.Text
             }
         }
 
-
         /// <summary>
         /// Determines the property value of the specific key is null.
         /// </summary>
@@ -545,7 +544,7 @@ namespace Trivial.Text
         }
 
         /// <summary>
-        /// Gets the value of the specific property.
+        /// Gets the value of the specific index.
         /// </summary>
         /// <param name="index">The zero-based index of the element to get.</param>
         /// <param name="useUnixTimestampsFallback">true if use Unix timestamp to convert if the value is a number; otherwise, false, to use JavaScript date ticks fallback.</param>
@@ -567,7 +566,7 @@ namespace Trivial.Text
         }
 
         /// <summary>
-        /// Gets the value of the specific property.
+        /// Gets the value of the specific index.
         /// </summary>
         /// <param name="index">The zero-based index of the element to get.</param>
         /// <returns>The value.</returns>
@@ -582,8 +581,9 @@ namespace Trivial.Text
         }
 
         /// <summary>
-        /// Gets the value of the specific property.
+        /// Gets the value of the specific index.
         /// </summary>
+        /// <typeparam name="T">An enumeration type.</typeparam>
         /// <param name="index">The zero-based index of the element to get.</param>
         /// <returns>The value.</returns>
         /// <exception cref="ArgumentOutOfRangeException">The index is out of range.</exception>
@@ -598,8 +598,9 @@ namespace Trivial.Text
         }
 
         /// <summary>
-        /// Gets the value of the specific property.
+        /// Gets the value of the specific index.
         /// </summary>
+        /// <typeparam name="T">An enumeration type.</typeparam>
         /// <param name="index">The zero-based index of the element to get.</param>
         /// <param name="ignoreCase">true if ignore case; otherwise, false.</param>
         /// <returns>The value.</returns>
@@ -612,6 +613,43 @@ namespace Trivial.Text
             if (TryGetInt32Value(index, out var v)) return (T)(object)v;
             var str = GetStringValue(index);
             return InternalHelper.ParseEnum<T>(str, ignoreCase);
+        }
+
+        /// <summary>
+        /// Gets the value of the specific index.
+        /// </summary>
+        /// <param name="type">An enumeration type.</param>
+        /// <param name="index">The zero-based index of the element to get.</param>
+        /// <returns>The value.</returns>
+        /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">The property does not exist.</exception>
+        /// <exception cref="ArgumentException">The type is not an System.Enum. -or- the value is either an empty string or only contains white space.  -or- value is a name, but not one of the named constants defined for the enumeration.</exception>
+        /// <exception cref="OverflowException">value is outside the range of the underlying type of enumType.</exception>
+        /// <exception cref="InvalidOperationException">The value kind is not the expected one.</exception>
+        public object GetEnumValue(Type type, int index)
+        {
+            if (TryGetInt32Value(index, out var v)) return Enum.ToObject(type, v);
+            var str = GetStringValue(index);
+            return Enum.Parse(type, str);
+        }
+
+        /// <summary>
+        /// Gets the value of the specific index.
+        /// </summary>
+        /// <param name="type">An enumeration type.</param>
+        /// <param name="index">The zero-based index of the element to get.</param>
+        /// <param name="ignoreCase">true if ignore case; otherwise, false.</param>
+        /// <returns>The value.</returns>
+        /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">The property does not exist.</exception>
+        /// <exception cref="ArgumentException">The type is not an System.Enum. -or- the value is either an empty string or only contains white space.  -or- value is a name, but not one of the named constants defined for the enumeration.</exception>
+        /// <exception cref="OverflowException">value is outside the range of the underlying type of enumType.</exception>
+        /// <exception cref="InvalidOperationException">The value kind is not the expected one.</exception>
+        public object GetEnumValue(Type type, int index, bool ignoreCase)
+        {
+            if (TryGetInt32Value(index, out var v)) return Enum.ToObject(type, v);
+            var str = GetStringValue(index);
+            return Enum.Parse(type, str, ignoreCase);
         }
 
         /// <summary>
@@ -637,6 +675,63 @@ namespace Trivial.Text
             return store[index.IsFromEnd ? store.Count - index.Value : index.Value] ?? JsonValues.Null;
         }
 #endif
+
+        /// <summary>
+        /// Gets the value at the specific index.
+        /// </summary>
+        /// <param name="type">The type of value.</param>
+        /// <param name="index">The zero-based index of the element to get.</param>
+        /// <returns>The value.</returns>
+        /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">The property does not exist.</exception>
+        /// <exception cref="NotSupportedException">The type is not supported to convert.</exception>
+        public object GetValue(Type type, int index)
+        {
+            if (type == null) return null;
+            if (type == typeof(string)) return GetStringValue(index);
+            if (type.IsEnum) return type == typeof(JsonValueKind) ? GetValueKind(index) : GetEnumValue(type, index, false);
+            if (type.IsValueType)
+            {
+                if (type == typeof(int)) return GetInt32Value(index);
+                if (type == typeof(long)) return GetInt64Value(index);
+                if (type == typeof(bool)) return GetBooleanValue(index);
+                if (type == typeof(double)) return GetDoubleValue(index);
+                if (type == typeof(float)) return GetSingleValue(index);
+                if (type == typeof(decimal)) return (decimal)GetDoubleValue(index);
+                if (type == typeof(uint)) return GetUInt32Value(index);
+                if (type == typeof(ulong)) return (ulong)GetInt64Value(index);
+                if (type == typeof(short)) return (short)GetInt32Value(index);
+                if (type == typeof(Guid)) return GetGuidValue(index);
+                if (type == typeof(DateTime)) return GetDateTimeValue(index);
+            }
+
+            if (type == typeof(JsonObject)) return GetObjectValue(index);
+            if (type == typeof(JsonArray)) return GetArrayValue(index);
+            if (type == typeof(JsonDocument)) return (JsonDocument)GetObjectValue(index);
+            if (type == typeof(Type)) return GetValue(index).GetType();
+            if (type == typeof(IJsonValueResolver) || type == typeof(IJsonValue) || type == typeof(JsonString) || type == typeof(IJsonString) || type == typeof(JsonInteger) || type == typeof(JsonDouble) || type == typeof(JsonBoolean) || type == typeof(IJsonNumber))
+                return GetValue(index);
+
+            if (type.IsClass)
+            {
+                var json = TryGetObjectValue(index);
+                if (json != null) return JsonSerializer.Deserialize(json.ToString(), type);
+            }
+
+            throw new NotSupportedException("The type is not supported to convert.", new InvalidCastException("Cannot cast."));
+        }
+
+        /// <summary>
+        /// Gets the value at the specific index.
+        /// </summary>
+        /// <typeparam name="T">The type of value.</typeparam>
+        /// <param name="index">The zero-based index of the element to get.</param>
+        /// <returns>The value.</returns>
+        /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">The property does not exist.</exception>
+        /// <exception cref="NotSupportedException">The type is not supported to convert.</exception>
+        public T GetValue<T>(int index)
+            => (T)GetValue(typeof(T), index);
 
         /// <summary>
         /// Gets the value of the specific property.
@@ -2000,6 +2095,15 @@ namespace Trivial.Text
         /// Adds a value.
         /// </summary>
         /// <param name="value">The value to set.</param>
+        public void Add(short value)
+        {
+            store.Add(new JsonInteger(value));
+        }
+
+        /// <summary>
+        /// Adds a value.
+        /// </summary>
+        /// <param name="value">The value to set.</param>
         public void Add(uint value)
         {
             store.Add(new JsonInteger(value));
@@ -2067,6 +2171,15 @@ namespace Trivial.Text
         public void Add(JsonObject value)
         {
             store.Add(value);
+        }
+
+        /// <summary>
+        /// Adds a value.
+        /// </summary>
+        /// <param name="value">The value to set.</param>
+        public void Add(JsonDocument value)
+        {
+            store.Add(JsonValues.ToJsonValue(value) ?? JsonValues.Null);
         }
 
         /// <summary>
@@ -3356,7 +3469,7 @@ namespace Trivial.Text
         /// <returns>A new object that is a copy of this instance.</returns>
         public JsonArray Clone()
         {
-            return new JsonArray(store, store is SynchronizedList<IJsonValueResolver>);
+            return new JsonArray(store, store is Collection.SynchronizedList<IJsonValueResolver>);
         }
 
         /// <summary>
@@ -3498,7 +3611,7 @@ namespace Trivial.Text
         /// </summary>
         /// <param name="json">The JSON value.</param>
         /// <returns>An instance of the JsonArray class.</returns>
-        /// <exception cref="JsonException">json does not represent a valid single JSON array.</exception>
+        /// <exception cref="JsonException">json does not represent a valid JSON array.</exception>
         public static implicit operator JsonArray(JsonDocument json)
         {
             return json.RootElement;
@@ -3509,7 +3622,7 @@ namespace Trivial.Text
         /// </summary>
         /// <param name="json">The JSON value.</param>
         /// <returns>An instance of the JsonArray class.</returns>
-        /// <exception cref="JsonException">json does not represent a valid single JSON array.</exception>
+        /// <exception cref="JsonException">json does not represent a valid JSON array.</exception>
         public static implicit operator JsonArray(JsonElement json)
         {
             if (json.ValueKind != JsonValueKind.Array)

@@ -2914,6 +2914,7 @@ namespace Trivial.Text
         {
             return leftValue.Value <= rightValue;
         }
+
         /// <summary>
         /// Compares two instances to indicate if they are same.
         /// leftValue == rightValue

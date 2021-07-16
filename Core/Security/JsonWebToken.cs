@@ -34,11 +34,8 @@ namespace Trivial.Security
                 if (s == null) return;
                 s = s.Trim();
                 var prefix = $"{TokenInfo.BearerTokenType} ";
-                if (s.IndexOf(prefix) == 0)
-                {
-                    s = s.Substring(prefix.Length);
-                }
-
+                if (s.IndexOf(prefix) == 0) s = s.Substring(prefix.Length);
+                if (s.IndexOf(prefix) == 0) s = s.Substring(prefix.Length);
                 var arr = s.Split('.');
                 if (arr.Length == 0) return;
                 if (arr.Length == 1)
