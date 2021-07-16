@@ -212,6 +212,38 @@ namespace Trivial.Text
         }
 
         /// <summary>
+        /// Initializes a new instance of the JsonString class.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        public JsonString(Net.QueryData value) : this(value?.ToString())
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the JsonString class.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        public JsonString(Net.HttpUri value) : this(value?.ToString())
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the JsonString class.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        public JsonString(Net.AppDeepLinkUri value) : this(value?.ToString())
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the JsonString class.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        public JsonString(Maths.Fraction value) : this(value.ToString())
+        {
+        }
+
+        /// <summary>
         /// Gets the value.
         /// </summary>
         public string Value { get; }

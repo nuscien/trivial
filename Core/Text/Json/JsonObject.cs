@@ -728,6 +728,24 @@ namespace Trivial.Text
         /// </summary>
         /// <param name="type">An enumeration type.</param>
         /// <param name="key">The property key.</param>
+        /// <returns>The value.</returns>
+        /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">The property does not exist.</exception>
+        /// <exception cref="ArgumentException">The type is not an System.Enum. -or- the value is either an empty string or only contains white space.  -or- value is a name, but not one of the named constants defined for the enumeration.</exception>
+        /// <exception cref="OverflowException">value is outside the range of the underlying type of enumType.</exception>
+        /// <exception cref="InvalidOperationException">The value kind is not the expected one.</exception>
+        public object GetEnumValue(Type type, string key)
+        {
+            if (TryGetInt32Value(key, out var v)) return Enum.ToObject(type, v);
+            var str = GetStringValue(key);
+            return Enum.Parse(type, str);
+        }
+
+        /// <summary>
+        /// Gets the value of the specific property.
+        /// </summary>
+        /// <param name="type">An enumeration type.</param>
+        /// <param name="key">The property key.</param>
         /// <param name="ignoreCase">true if ignore case; otherwise, false.</param>
         /// <returns>The value.</returns>
         /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
@@ -941,6 +959,7 @@ namespace Trivial.Text
         /// <summary>
         /// Gets the value of the specific property.
         /// </summary>
+        /// <typeparam name="T">The type of value.</typeparam>
         /// <param name="key">The property key.</param>
         /// <param name="subKey">The sub-key of the previous property.</param>
         /// <param name="keyPath">The additional property key path.</param>
@@ -962,6 +981,7 @@ namespace Trivial.Text
         /// <summary>
         /// Gets the value of the specific property.
         /// </summary>
+        /// <typeparam name="T">The type of value.</typeparam>
         /// <param name="keyPath">The property key path.</param>
         /// <returns>The value.</returns>
         /// <exception cref="ArgumentOutOfRangeException">The property does not exist.</exception>

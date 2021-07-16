@@ -343,12 +343,11 @@ namespace Trivial.Text
 #endif
 
         /// <summary>
-        /// Gets the value kind of the specific property.
+        /// Gets the value kind of the specific index.
         /// </summary>
         /// <param name="index">The zero-based index of the element to get.</param>
         /// <param name="strictMode">true if enable strict mode; otherwise, false, to return undefined for non-existing.</param>
         /// <returns>The value.</returns>
-        /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
         /// <exception cref="ArgumentOutOfRangeException">The property does not exist.</exception>
         public JsonValueKind GetValueKind(int index, bool strictMode = false)
         {
@@ -375,12 +374,11 @@ namespace Trivial.Text
 
 #if !NETOLDVER
         /// <summary>
-        /// Gets the value kind of the specific property.
+        /// Gets the value kind of the specific index.
         /// </summary>
         /// <param name="index">The zero-based index of the element to get.</param>
         /// <param name="strictMode">true if enable strict mode; otherwise, false, to return undefined for non-existing.</param>
         /// <returns>The value.</returns>
-        /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
         /// <exception cref="ArgumentOutOfRangeException">The property does not exist.</exception>
         public JsonValueKind GetValueKind(Index index, bool strictMode = false)
         {
@@ -546,7 +544,7 @@ namespace Trivial.Text
         }
 
         /// <summary>
-        /// Gets the value of the specific property.
+        /// Gets the value of the specific index.
         /// </summary>
         /// <param name="index">The zero-based index of the element to get.</param>
         /// <param name="useUnixTimestampsFallback">true if use Unix timestamp to convert if the value is a number; otherwise, false, to use JavaScript date ticks fallback.</param>
@@ -568,7 +566,7 @@ namespace Trivial.Text
         }
 
         /// <summary>
-        /// Gets the value of the specific property.
+        /// Gets the value of the specific index.
         /// </summary>
         /// <param name="index">The zero-based index of the element to get.</param>
         /// <returns>The value.</returns>
@@ -585,6 +583,7 @@ namespace Trivial.Text
         /// <summary>
         /// Gets the value of the specific index.
         /// </summary>
+        /// <typeparam name="T">An enumeration type.</typeparam>
         /// <param name="index">The zero-based index of the element to get.</param>
         /// <returns>The value.</returns>
         /// <exception cref="ArgumentOutOfRangeException">The index is out of range.</exception>
@@ -601,6 +600,7 @@ namespace Trivial.Text
         /// <summary>
         /// Gets the value of the specific index.
         /// </summary>
+        /// <typeparam name="T">An enumeration type.</typeparam>
         /// <param name="index">The zero-based index of the element to get.</param>
         /// <param name="ignoreCase">true if ignore case; otherwise, false.</param>
         /// <returns>The value.</returns>
@@ -613,6 +613,24 @@ namespace Trivial.Text
             if (TryGetInt32Value(index, out var v)) return (T)(object)v;
             var str = GetStringValue(index);
             return ObjectConvert.ParseEnum<T>(str, ignoreCase);
+        }
+
+        /// <summary>
+        /// Gets the value of the specific index.
+        /// </summary>
+        /// <param name="type">An enumeration type.</param>
+        /// <param name="index">The zero-based index of the element to get.</param>
+        /// <returns>The value.</returns>
+        /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">The property does not exist.</exception>
+        /// <exception cref="ArgumentException">The type is not an System.Enum. -or- the value is either an empty string or only contains white space.  -or- value is a name, but not one of the named constants defined for the enumeration.</exception>
+        /// <exception cref="OverflowException">value is outside the range of the underlying type of enumType.</exception>
+        /// <exception cref="InvalidOperationException">The value kind is not the expected one.</exception>
+        public object GetEnumValue(Type type, int index)
+        {
+            if (TryGetInt32Value(index, out var v)) return Enum.ToObject(type, v);
+            var str = GetStringValue(index);
+            return Enum.Parse(type, str);
         }
 
         /// <summary>

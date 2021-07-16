@@ -23,7 +23,7 @@ namespace Trivial.Text
         /// <summary>
         /// Gets the type of the current JSON value.
         /// </summary>
-        public JsonValueKind ValueKind { get; }
+        JsonValueKind ValueKind { get; }
     }
 
     /// <summary>
@@ -35,7 +35,7 @@ namespace Trivial.Text
         /// <summary>
         /// Gets the source value.
         /// </summary>
-        public T Value { get; }
+        T Value { get; }
     }
 
     /// <summary>
@@ -159,7 +159,7 @@ namespace Trivial.Text
         /// </summary>
         /// <param name="result">The result.</param>
         /// <returns>true if the kind is the one expected; otherwise, false.</returns>
-        public bool TryGetDateTime(out DateTime result);
+        bool TryGetDateTime(out DateTime result);
 
         /// <summary>
         /// Tries to get the value of the element as a number.
@@ -260,7 +260,7 @@ namespace Trivial.Text
         /// <returns>The value.</returns>
         /// <exception cref="ArgumentOutOfRangeException">The index is out of range.</exception>
         /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
-        public IJsonValueResolver GetValue(int index);
+        IJsonValueResolver GetValue(int index);
 
         /// <summary>
         /// Tries to get the value of the specific property.
@@ -268,7 +268,7 @@ namespace Trivial.Text
         /// <param name="index">The zero-based index of the element to get.</param>
         /// <param name="result">The result.</param>
         /// <returns>true if the kind is the one expected; otherwise, false.</returns>
-        public bool TryGetValue(int index, out IJsonValueResolver result);
+        bool TryGetValue(int index, out IJsonValueResolver result);
 
 #if !NETOLDVER
         /// <summary>
@@ -278,7 +278,7 @@ namespace Trivial.Text
         /// <returns>The value.</returns>
         /// <exception cref="ArgumentOutOfRangeException">The index is out of range.</exception>
         /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
-        public IJsonValueResolver GetValue(Index index);
+        IJsonValueResolver GetValue(Index index);
 
         /// <summary>
         /// Tries to get the value of the specific property.
@@ -286,7 +286,7 @@ namespace Trivial.Text
         /// <param name="index">The zero-based index of the element to get.</param>
         /// <param name="result">The result.</param>
         /// <returns>true if the kind is the one expected; otherwise, false.</returns>
-        public bool TryGetValue(Index index, out IJsonValueResolver result);
+        bool TryGetValue(Index index, out IJsonValueResolver result);
 #endif
 
         /// <summary>
@@ -294,7 +294,7 @@ namespace Trivial.Text
         /// </summary>
         /// <returns>The property keys.</returns>
         /// <exception cref="InvalidOperationException">The value kind is not an object.</exception>
-        public IEnumerable<string> GetKeys();
+        IEnumerable<string> GetKeys();
     }
 
     /// <summary>
@@ -305,7 +305,7 @@ namespace Trivial.Text
         /// <summary>
         /// Gets the number of elements contained in JSON container.
         /// </summary>
-        public int Count { get; }
+        int Count { get; }
 
         /// <summary>
         /// Deserializes.
@@ -313,25 +313,25 @@ namespace Trivial.Text
         /// <param name="options">Options to control the behavior during parsing.</param>
         /// <returns>A JSON object instance.</returns>
         /// <exception cref="ArgumentException">readerOptions contains unsupported options.</exception>
-        public T Deserialize<T>(JsonSerializerOptions options = default);
+        T Deserialize<T>(JsonSerializerOptions options = default);
 
         /// <summary>
         /// Writes this instance to the specified writer as a JSON value.
         /// </summary>
         /// <param name="writer">The writer to which to write this instance.</param>
-        public void WriteTo(Utf8JsonWriter writer);
+        void WriteTo(Utf8JsonWriter writer);
 
         /// <summary>
         /// Gets the JSON format string of the value.
         /// </summary>
         /// <param name="indentStyle">The indent style.</param>
         /// <returns>A JSON format string.</returns>
-        public string ToString(IndentStyles indentStyle);
+        string ToString(IndentStyles indentStyle);
 
         /// <summary>
         /// Removes all items from the array.
         /// </summary>
-        public void Clear();
+        void Clear();
     }
 
     /// <summary>
