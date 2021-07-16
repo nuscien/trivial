@@ -78,9 +78,19 @@ namespace Trivial.Text
             Assert.IsTrue(json.GetObjectValue("props", "p1", "p3").GetBooleanValue("p2"));
             Assert.IsFalse(json.TryGetObjectValue("props", "p1").ContainsKey("p8"));
             Assert.AreEqual(17, json.GetObjectValue("props", "p1").GetDateTimeValue("p9").Day);
+            Assert.AreEqual(2020, json.GetValue<DateTime>("props", "p1", "p9").Year);
+            Assert.AreEqual(0, json.GetValue<DateTime>("props", "p1", "p9").Second);
             Assert.IsNull(json.TryGetObjectValue("props", "p1", "p3", "p6"));
             Assert.AreEqual(4567, p1.GetInt32Value("p7"));
             Assert.AreEqual(4567, p1.GetValue<int>("p7"));
+            p1.SetValue("p9", "Wed, 21 Oct 2015 07:28:00 GMT");
+            Assert.AreEqual(28, json.GetObjectValue("props", "p1").GetDateTimeValue("p9").Minute);
+            Assert.AreEqual(10, json.GetValue<DateTime>("props", "p1", "p9").Month);
+            Assert.AreEqual(2015, json.GetValue<DateTime>("props", "p1", "p9").Year);
+            p1.SetValue("p9", "2022-01-03T04:56:00");
+            Assert.AreEqual(56, json.GetObjectValue("props", "p1").GetDateTimeValue("p9").Minute);
+            Assert.AreEqual(1, json.GetValue<DateTime>("props", "p1", "p9").Month);
+            Assert.AreEqual(2022, json.GetValue<DateTime>("props", "p1", "p9").Year);
 
             json.EnableThreadSafeMode(3);
             Assert.IsTrue(json.GetObjectValue("props", "p1", "p3").GetBooleanValue("p2"));

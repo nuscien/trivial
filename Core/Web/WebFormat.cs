@@ -116,6 +116,42 @@ namespace Trivial.Web
                 return new DateTime(y2, m2, d2, 0, 0, 0, DateTimeKind.Utc);
             }
             
+            if (s.Length > 28 && s[3] == ',' && s[4] == ' ')
+            {
+                var d2 = GetNaturalNumber(s, 5, 2);
+                var m2 = s.Substring(8, 3) switch
+                {
+                    "JAN" => 1,
+                    "FEB" => 2,
+                    "MAR" => 3,
+                    "APR" => 4,
+                    "MAY" => 5,
+                    "JUN" => 6,
+                    "JUL" => 7,
+                    "AUG" => 8,
+                    "SEP" => 9,
+                    "OCT" => 10,
+                    "NOV" => 11,
+                    "DEC" => 12,
+                    _ => -1
+                };
+                if (d2 > 0 && m2 > 0)
+                {
+                    var y2 = GetNaturalNumber(s, 12, 4);
+                    var h2 = GetNaturalNumber(s, 17, 2);
+                    var mm2 = GetNaturalNumber(s, 20, 2);
+                    var s2 = GetNaturalNumber(s, 23, 2);
+                    try
+                    {
+                        return new DateTime(y2, m2, d2, h2, mm2, s2, DateTimeKind.Utc);
+                    }
+                    catch (ArgumentException)
+                    {
+                        return null;
+                    }
+                }
+            }
+
             if (s.Length < 10 || s[4] != '-') return null;
             var y = GetNaturalNumber(s, 0, 4);
             if (y < 0) return null;
