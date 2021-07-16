@@ -926,6 +926,109 @@ namespace Trivial.Text
         }
 
         /// <summary>
+        /// Or operation.
+        /// </summary>
+        /// <param name="leftValue">The left value.</param>
+        /// <param name="rightValue">The right value.</param>
+        /// <returns>A number.</returns>
+        public static int operator |(JsonBoolean leftValue, int rightValue)
+        {
+            return leftValue?.Value == true ? (rightValue + 1) : rightValue;
+        }
+
+        /// <summary>
+        /// Or operation.
+        /// </summary>
+        /// <param name="leftValue">The left value.</param>
+        /// <param name="rightValue">The right value.</param>
+        /// <returns>A number.</returns>
+        public static long operator |(JsonBoolean leftValue, long rightValue)
+        {
+            return leftValue?.Value == true ? (rightValue + 1) : rightValue;
+        }
+
+        /// <summary>
+        /// Or operation.
+        /// </summary>
+        /// <param name="leftValue">The left value.</param>
+        /// <param name="rightValue">The right value.</param>
+        /// <returns>A number.</returns>
+        public static long operator |(JsonBoolean leftValue, float rightValue)
+        {
+            if (float.IsNaN(rightValue)) return leftValue?.Value == true ? 1L : 0L;
+            return leftValue?.Value == true ? ((long)Math.Floor(rightValue) + 1) : (long)Math.Floor(rightValue);
+        }
+
+        /// <summary>
+        /// Or operation.
+        /// </summary>
+        /// <param name="leftValue">The left value.</param>
+        /// <param name="rightValue">The right value.</param>
+        /// <returns>A number.</returns>
+        public static long operator |(JsonBoolean leftValue, double rightValue)
+        {
+            if (double.IsNaN(rightValue)) return leftValue?.Value == true ? 1L : 0L;
+            return leftValue?.Value == true ? ((long)Math.Floor(rightValue) + 1) : (long)Math.Floor(rightValue);
+        }
+
+        /// <summary>
+        /// Or operation.
+        /// </summary>
+        /// <param name="leftValue">The left value.</param>
+        /// <param name="rightValue">The right value.</param>
+        /// <returns>A number.</returns>
+        public static long operator |(JsonBoolean leftValue, decimal rightValue)
+        {
+            return leftValue?.Value == true ? ((long)Math.Floor(rightValue) + 1) : (long)Math.Floor(rightValue);
+        }
+
+        /// <summary>
+        /// Or operation.
+        /// </summary>
+        /// <param name="leftValue">The left value.</param>
+        /// <param name="rightValue">The right value.</param>
+        /// <returns>A number.</returns>
+        public static JsonInteger operator |(JsonBoolean leftValue, JsonInteger rightValue)
+        {
+            if (rightValue is null) return new JsonInteger(leftValue?.Value == true ? 1 : 0);
+            return leftValue?.Value == true ? new JsonInteger(rightValue.Value + 1) : rightValue;
+        }
+
+        /// <summary>
+        /// Or operation.
+        /// </summary>
+        /// <param name="leftValue">The left value.</param>
+        /// <param name="rightValue">The right value.</param>
+        /// <returns>A number.</returns>
+        public static JsonInteger operator |(JsonBoolean leftValue, JsonDouble rightValue)
+        {
+            if (rightValue is null) return new JsonInteger(leftValue?.Value == true ? 1 : 0);
+            return new JsonInteger(leftValue?.Value == true ? ((long)Math.Floor(rightValue.Value) + 1) : (long)Math.Floor(rightValue.Value));
+        }
+
+        /// <summary>
+        /// Or operation.
+        /// </summary>
+        /// <param name="leftValue">The left value.</param>
+        /// <param name="rightValue">The right value.</param>
+        /// <returns>A number.</returns>
+        public static JsonInteger operator |(JsonBoolean leftValue, string rightValue)
+        {
+            return leftValue?.Value == true ? 1 : 0;
+        }
+
+        /// <summary>
+        /// Or operation.
+        /// </summary>
+        /// <param name="leftValue">The left value.</param>
+        /// <param name="rightValue">The right value.</param>
+        /// <returns>A number.</returns>
+        public static JsonInteger operator |(JsonBoolean leftValue, JsonString rightValue)
+        {
+            return new JsonInteger(leftValue?.Value == true ? 1 : 0);
+        }
+
+        /// <summary>
         /// Parses a string to JSON boolean token.
         /// </summary>
         /// <param name="s">The specific string to parse.</param>

@@ -273,7 +273,6 @@ namespace Trivial.Text
             }
         }
 
-
         /// <summary>
         /// Determines the property value of the specific key is null.
         /// </summary>
@@ -2149,7 +2148,6 @@ namespace Trivial.Text
         {
             store.Add(value ? JsonBoolean.True : JsonBoolean.False);
         }
-
 
         /// <summary>
         /// Adds a value.
