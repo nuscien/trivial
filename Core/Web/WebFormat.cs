@@ -37,6 +37,9 @@ namespace Trivial.Web
         /// </summary>
         /// <param name="ticks">The JavaScript date ticks.</param>
         /// <returns>A date and time.</returns>
+        /// <example>
+        /// var t = ParseDate(1594958400000);
+        /// </example>
         public static DateTime? ParseDate(long? ticks)
         {
             if (!ticks.HasValue) return null;
@@ -90,6 +93,14 @@ namespace Trivial.Web
         /// </summary>
         /// <param name="s">The JSON token value of JavaScript date.</param>
         /// <returns>A date and time.</returns>
+        /// <example>
+        /// var d1 = ParseDate("2020W295");
+        /// var d2 = ParseDate("2020-7-17 12:00:00");
+        /// var d3 = ParseDate("2020-07-17T12:00:00Z");
+        /// var d4 = ParseDate("Fri, 17 Jul 2020 12:00:00 GMT");
+        /// var d5 = ParseDate("Fri, 17 Jul 2020 04:00:00 GMT-0800");
+        /// var d6 = ParseDate("2020年7月17日 12:00:00");
+        /// </example>
         public static DateTime? ParseDate(string s)
         {
             if (string.IsNullOrWhiteSpace(s)) return null;
@@ -118,41 +129,99 @@ namespace Trivial.Web
             
             if (s.Length > 28 && s[3] == ',' && s[4] == ' ')
             {
-                var d2 = GetNaturalNumber(s, 5, 2);
-                var m2 = s.Substring(8, 3) switch
+                if (s[3] == ',' && s[4] == ' ')
                 {
-                    "JAN" => 1,
-                    "FEB" => 2,
-                    "MAR" => 3,
-                    "APR" => 4,
-                    "MAY" => 5,
-                    "JUN" => 6,
-                    "JUL" => 7,
-                    "AUG" => 8,
-                    "SEP" => 9,
-                    "OCT" => 10,
-                    "NOV" => 11,
-                    "DEC" => 12,
-                    _ => -1
-                };
-                if (d2 > 0 && m2 > 0)
-                {
-                    var y2 = GetNaturalNumber(s, 12, 4);
-                    var h2 = GetNaturalNumber(s, 17, 2);
-                    var mm2 = GetNaturalNumber(s, 20, 2);
-                    var s2 = GetNaturalNumber(s, 23, 2);
-                    try
+                    var d2 = GetNaturalNumber(s, 5, 2);
+                    var m2 = GetMonth(s, 8);
+                    if (d2 > 0 && m2 > 0)
                     {
-                        return new DateTime(y2, m2, d2, h2, mm2, s2, DateTimeKind.Utc);
+                        var y2 = GetNaturalNumber(s, 12, 4);
+                        var h2 = GetNaturalNumber(s, 17, 2);
+                        var mm2 = GetNaturalNumber(s, 20, 2);
+                        var s2 = GetNaturalNumber(s, 23, 2);
+                        try
+                        {
+                            var time = new DateTime(y2, m2, d2, h2, mm2, s2, DateTimeKind.Utc);
+                            if (s.Length > 33 && (s[29] == '+' || s[29] == '-'))
+                            {
+                                var offsetH = GetNaturalNumber(s, 30, 2);
+                                if (offsetH < 0) offsetH = 0;
+                                if (s[29] == '+') offsetH = -offsetH;
+                                time = time.AddHours(offsetH);
+                                var offsetM = GetNaturalNumber(s, 32, 2);
+                                if (offsetM > 0) time = time.AddMinutes(-offsetM);
+                            }
+
+                            return time;
+                        }
+                        catch (ArgumentException)
+                        {
+                            return null;
+                        }
                     }
-                    catch (ArgumentException)
+                }
+                else if (s[3] == ' ' && s[7] == ' ')
+                {
+                    var m2 = GetMonth(s, 4);
+                    var d2 = GetNaturalNumber(s, 8);
+                    if (d2 > 0 && m2 > 0)
                     {
-                        return null;
+                        var y2 = GetNaturalNumber(s, 11, 4);
+                        var h2 = GetNaturalNumber(s, 16, 2);
+                        var mm2 = GetNaturalNumber(s, 19, 2);
+                        var s2 = GetNaturalNumber(s, 22, 2);
+                        try
+                        {
+                            var time = new DateTime(y2, m2, d2, h2, mm2, s2, DateTimeKind.Utc);
+                            if (s.Length > 32 && (s[28] == '+' || s[28] == '-'))
+                            {
+                                var offsetH = GetNaturalNumber(s, 29, 2);
+                                if (offsetH < 0) offsetH = 0;
+                                if (s[28] == '+') offsetH = -offsetH;
+                                time = time.AddHours(offsetH);
+                                var offsetM = GetNaturalNumber(s, 31, 2);
+                                if (offsetM > 0) time = time.AddMinutes(-offsetM);
+                            }
+
+                            return time;
+                        }
+                        catch (ArgumentException)
+                        {
+                            return null;
+                        }
                     }
                 }
             }
 
-            if (s.Length < 10 || s[4] != '-') return null;
+            if (s.Length < 10)
+            {
+                return s.ToLowerInvariant() switch
+                {
+                    "utc.now" or "now.utc" or "utc now" or "now utc" => DateTime.UtcNow,
+                    "now" or "现在" or "現在" or "今" or "지금" or "ahora" or "agora" or "сейчас" or "теперь" => DateTime.Now,
+                    "today" or "今日" or "今天" or "kyo" or "오늘" or "hoy" or "сегодня" => DateTime.Now.Date,
+                    "tomorrow" or "明日" or "明天" or "demain" or "내일" or "mañana" or "amanhã" or "завтра" => DateTime.Now.Date.AddDays(1),
+                    "yesterday" or "昨日" or "昨天" or "hier" or "어제" or "ayer" or "ontem" or "вчера" => DateTime.Now.Date.AddDays(-1),
+                    _ => null
+                };
+            }
+            else if (s.Length == 10 && s.Equals("maintenant", StringComparison.OrdinalIgnoreCase))
+            {
+                return DateTime.Now;
+            }
+            else if (s.Length == 11 && s.Equals("aujourd'hui", StringComparison.OrdinalIgnoreCase))
+            {
+                return DateTime.Now.Date;
+            }
+
+            if (s[4] != '-')
+            {
+                if (s[4] == '年')
+                    s = s.Replace('年', '-').Replace('月', '-').Replace("日", string.Empty).Replace("号", string.Empty).Replace("--", "-");
+                else
+                    return null;
+            }
+
             var y = GetNaturalNumber(s, 0, 4);
             if (y < 0) return null;
             if (s[5] == 'W')
@@ -476,6 +545,26 @@ namespace Trivial.Web
             }
 
             return (int)n;
+        }
+
+        private static int GetMonth(string s, int startIndex)
+        {
+            return s.Substring(startIndex, 3) switch
+            {
+                "JAN" => 1,
+                "FEB" => 2,
+                "MAR" => 3,
+                "APR" => 4,
+                "MAY" => 5,
+                "JUN" => 6,
+                "JUL" => 7,
+                "AUG" => 8,
+                "SEP" => 9,
+                "OCT" => 10,
+                "NOV" => 11,
+                "DEC" => 12,
+                _ => -1
+            };
         }
     }
 }
