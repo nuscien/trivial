@@ -120,14 +120,14 @@ namespace Trivial.Web
                     return r;
                 }
 
-                var m2 = GetNaturalNumber(s, 4, 2);
+                var m2 = s[4] == '-' ? GetNaturalNumber(s, 5, 1) : GetNaturalNumber(s, 4, 2);
                 if (m2 < 0) return null;
-                var d2 = GetNaturalNumber(s, 6);
+                var d2 = GetNaturalNumber(s, s[6] == '-' ? 7 : 6);
                 if (d2 < 0) return null;
                 return new DateTime(y2, m2, d2, 0, 0, 0, DateTimeKind.Utc);
             }
             
-            if (s.Length > 28 && s[3] == ',' && s[4] == ' ')
+            if (s.Length > 27)
             {
                 if (s[3] == ',' && s[4] == ' ')
                 {
@@ -195,31 +195,30 @@ namespace Trivial.Web
 
             if (s.Length < 10)
             {
-                return s.ToLowerInvariant() switch
-                {
-                    "utc.now" or "now.utc" or "utc now" or "now utc" => DateTime.UtcNow,
-                    "now" or "现在" or "現在" or "今" or "지금" or "ahora" or "agora" or "сейчас" or "теперь" => DateTime.Now,
-                    "today" or "今日" or "今天" or "kyo" or "오늘" or "hoy" or "сегодня" => DateTime.Now.Date,
-                    "tomorrow" or "明日" or "明天" or "demain" or "내일" or "mañana" or "amanhã" or "завтра" => DateTime.Now.Date.AddDays(1),
-                    "yesterday" or "昨日" or "昨天" or "hier" or "어제" or "ayer" or "ontem" or "вчера" => DateTime.Now.Date.AddDays(-1),
-                    _ => null
-                };
-            }
-            else if (s.Length == 10 && s.Equals("maintenant", StringComparison.OrdinalIgnoreCase))
-            {
-                return DateTime.Now;
-            }
-            else if (s.Length == 11 && s.Equals("aujourd'hui", StringComparison.OrdinalIgnoreCase))
-            {
-                return DateTime.Now.Date;
+                if (s.Length > 3 && (s[1] == '月' || (s[2] == '月' && (s[0] == '1' || s[0] == '0'))) && (s.IndexOf('日') > 2 || s.IndexOf('号') > 2) && s.IndexOf('年') < 0)
+                    s = $"{DateTime.Now.Year:g}-{s.Replace('月', '-').Replace("日", string.Empty).Replace("号", string.Empty)}";
+                else
+                    return s.ToLowerInvariant() switch
+                    {
+                        "now" or "现在" or "現在" or "今" or "지금" or "ahora" or "agora" or "сейчас" or "теперь" => DateTime.UtcNow,
+                        "today" or "今日" or "今天" or "当天" or "kyo" or "오늘" or "hoy" or "сегодня" => DateTime.UtcNow.Date,
+                        "tomorrow" or "明日" or "明天" or "次日" or "翌日" or "demain" or "내일" or "mañana" or "amanhã" or "завтра" => DateTime.UtcNow.AddDays(1),
+                        "yesterday" or "昨日" or "昨天" or "hier" or "어제" or "ayer" or "ontem" or "вчера" => DateTime.UtcNow.AddDays(-1),
+                        _ => null
+                    };
             }
 
             if (s[4] != '-')
             {
                 if (s[4] == '年')
-                    s = s.Replace('年', '-').Replace('月', '-').Replace("日", string.Empty).Replace("号", string.Empty).Replace("--", "-");
+                    s = s.Replace('年', '-').Replace('月', '-').Replace("日", string.Empty).Replace("号", string.Empty);
                 else
-                    return null;
+                    return s.ToLowerInvariant() switch
+                    {
+                        "maintenant" => DateTime.UtcNow,
+                        "aujourd'hui" => DateTime.UtcNow.Date,
+                        _ => null
+                    };
             }
 
             var y = GetNaturalNumber(s, 0, 4);

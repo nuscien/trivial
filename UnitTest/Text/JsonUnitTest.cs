@@ -91,6 +91,15 @@ namespace Trivial.Text
             Assert.AreEqual(56, json.GetObjectValue("props", "p1").GetDateTimeValue("p9").Minute);
             Assert.AreEqual(1, json.GetValue<DateTime>("props", "p1", "p9").Month);
             Assert.AreEqual(2022, json.GetValue<DateTime>("props", "p1", "p9").Year);
+            p1.SetValue("p9", "2010-1-2");
+            Assert.AreEqual(2010, json.GetValue<DateTime>("props", "p1", "p9").Year);
+            Assert.AreEqual(2, json.GetValue<DateTime>("props", "p1", "p9").Day);
+            p1.SetValue("p9", "7ÔÂ17ÈÕ");
+            Assert.AreEqual(DateTime.UtcNow.Year, json.GetValue<DateTime>("props", "p1", "p9").Year);
+            Assert.AreEqual(17, json.GetValue<DateTime>("props", "p1", "p9").Day);
+            p1.SetValue("p9", "2020W295");
+            Assert.AreEqual(7, json.GetValue<DateTime>("props", "p1", "p9").Month);
+            Assert.AreEqual("2020W295", json.GetValue<string>("props", "p1", "p9"));
 
             json.EnableThreadSafeMode(3);
             Assert.IsTrue(json.GetObjectValue("props", "p1", "p3").GetBooleanValue("p2"));
