@@ -798,14 +798,107 @@ namespace Trivial.Text
                     return r;
                 }
 
-                var m2 = GetNaturalNumber(s, 4, 2);
+                var m2 = s[4] == '-' ? GetNaturalNumber(s, 5, 1) : GetNaturalNumber(s, 4, 2);
                 if (m2 < 0) return null;
-                var d2 = GetNaturalNumber(s, 6);
+                var d2 = GetNaturalNumber(s, s[6] == '-' ? 7 : 6);
                 if (d2 < 0) return null;
                 return new DateTime(y2, m2, d2, 0, 0, 0, DateTimeKind.Utc);
             }
 
-            if (s.Length < 10 || s[4] != '-') return null;
+            if (s.Length > 27)
+            {
+                if (s[3] == ',' && s[4] == ' ')
+                {
+                    var d2 = GetNaturalNumber(s, 5, 2);
+                    var m2 = GetMonth(s, 8);
+                    if (d2 > 0 && m2 > 0)
+                    {
+                        var y2 = GetNaturalNumber(s, 12, 4);
+                        var h2 = GetNaturalNumber(s, 17, 2);
+                        var mm2 = GetNaturalNumber(s, 20, 2);
+                        var s2 = GetNaturalNumber(s, 23, 2);
+                        try
+                        {
+                            var time = new DateTime(y2, m2, d2, h2, mm2, s2, DateTimeKind.Utc);
+                            if (s.Length > 33 && (s[29] == '+' || s[29] == '-'))
+                            {
+                                var offsetH = GetNaturalNumber(s, 30, 2);
+                                if (offsetH < 0) offsetH = 0;
+                                if (s[29] == '+') offsetH = -offsetH;
+                                time = time.AddHours(offsetH);
+                                var offsetM = GetNaturalNumber(s, 32, 2);
+                                if (offsetM > 0) time = time.AddMinutes(-offsetM);
+                            }
+
+                            return time;
+                        }
+                        catch (ArgumentException)
+                        {
+                            return null;
+                        }
+                    }
+                }
+                else if (s[3] == ' ' && s[7] == ' ')
+                {
+                    var m2 = GetMonth(s, 4);
+                    var d2 = GetNaturalNumber(s, 8);
+                    if (d2 > 0 && m2 > 0)
+                    {
+                        var y2 = GetNaturalNumber(s, 11, 4);
+                        var h2 = GetNaturalNumber(s, 16, 2);
+                        var mm2 = GetNaturalNumber(s, 19, 2);
+                        var s2 = GetNaturalNumber(s, 22, 2);
+                        try
+                        {
+                            var time = new DateTime(y2, m2, d2, h2, mm2, s2, DateTimeKind.Utc);
+                            if (s.Length > 32 && (s[28] == '+' || s[28] == '-'))
+                            {
+                                var offsetH = GetNaturalNumber(s, 29, 2);
+                                if (offsetH < 0) offsetH = 0;
+                                if (s[28] == '+') offsetH = -offsetH;
+                                time = time.AddHours(offsetH);
+                                var offsetM = GetNaturalNumber(s, 31, 2);
+                                if (offsetM > 0) time = time.AddMinutes(-offsetM);
+                            }
+
+                            return time;
+                        }
+                        catch (ArgumentException)
+                        {
+                            return null;
+                        }
+                    }
+                }
+            }
+
+            if (s.Length < 10)
+            {
+                if (s.Length > 3 && (s[1] == '月' || (s[2] == '月' && (s[0] == '1' || s[0] == '0'))) && (s.IndexOf('日') > 2 || s.IndexOf('号') > 2) && s.IndexOf('年') < 0)
+                    s = $"{DateTime.Now.Year:g}-{s.Replace('月', '-').Replace("日", string.Empty).Replace("号", string.Empty)}";
+                else
+                    return s.ToLowerInvariant() switch
+                    {
+                        "now" or "现在" or "現在" or "今" or "지금" or "ahora" or "agora" or "сейчас" or "теперь" => DateTime.UtcNow,
+                        "today" or "今日" or "今天" or "当天" or "kyo" or "오늘" or "hoy" or "сегодня" => DateTime.UtcNow.Date,
+                        "tomorrow" or "明日" or "明天" or "次日" or "翌日" or "demain" or "내일" or "mañana" or "amanhã" or "завтра" => DateTime.UtcNow.AddDays(1),
+                        "yesterday" or "昨日" or "昨天" or "hier" or "어제" or "ayer" or "ontem" or "вчера" => DateTime.UtcNow.AddDays(-1),
+                        _ => null
+                    };
+            }
+
+            if (s[4] != '-')
+            {
+                if (s[4] == '年')
+                    s = s.Replace('年', '-').Replace('月', '-').Replace("日", string.Empty).Replace("号", string.Empty);
+                else
+                    return s.ToLowerInvariant() switch
+                    {
+                        "maintenant" => DateTime.UtcNow,
+                        "aujourd'hui" => DateTime.UtcNow.Date,
+                        _ => null
+                    };
+            }
+
             var y = GetNaturalNumber(s, 0, 4);
             if (y < 0) return null;
             if (s[5] == 'W')
@@ -841,7 +934,9 @@ namespace Trivial.Text
 
             var date = new DateTime(y, m, d, 0, 0, 0, DateTimeKind.Utc);
             if (pos >= s.Length) return date;
+            #pragma warning disable IDE0057
             s = s.Substring(pos);
+            #pragma warning restore IDE0057
             var arr = s.Split(':');
             if (arr.Length < 2) return date;
             if (!int.TryParse(arr[0], out var h)) return date;
@@ -1216,6 +1311,26 @@ namespace Trivial.Text
                 stream.Read(bytes, 0, (int)stream.Length);
                 return Encoding.UTF8.GetString(bytes);
             });
+        }
+
+        private static int GetMonth(string s, int startIndex)
+        {
+            return s.Substring(startIndex, 3) switch
+            {
+                "JAN" => 1,
+                "FEB" => 2,
+                "MAR" => 3,
+                "APR" => 4,
+                "MAY" => 5,
+                "JUN" => 6,
+                "JUL" => 7,
+                "AUG" => 8,
+                "SEP" => 9,
+                "OCT" => 10,
+                "NOV" => 11,
+                "DEC" => 12,
+                _ => -1
+            };
         }
 
         /// <summary>
