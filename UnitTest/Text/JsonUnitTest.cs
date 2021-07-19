@@ -94,7 +94,7 @@ namespace Trivial.Text
             p1.SetValue("p9", "2010-1-2");
             Assert.AreEqual(2010, json.GetValue<DateTime>("props", "p1", "p9").Year);
             Assert.AreEqual(2, json.GetValue<DateTime>("props", "p1", "p9").Day);
-            p1.SetValue("p9", "7ÔÂ17ÈÕ");
+            p1.SetValue("p9", "7æœˆ17æ—¥");
             Assert.AreEqual(DateTime.UtcNow.Year, json.GetValue<DateTime>("props", "p1", "p9").Year);
             Assert.AreEqual(17, json.GetValue<DateTime>("props", "p1", "p9").Day);
             p1.SetValue("p9", "2020W295");
