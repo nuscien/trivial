@@ -271,7 +271,14 @@ namespace Trivial.Text
 
         /// <summary>
         /// Gets or sets the internal type mark.
-        /// 0 - literal; 1 - date; 2 - integer; 3 - floating number; 4 - guid; 5 - boolean; total 6.
+        /// <list>
+        /// <item><term>0</term><description>Literal</description></item>
+        /// <item><term>1</term><description>Date</description></item>
+        /// <item><term>2</term><description>Integer</description></item>
+        /// <item><term>3</term><description>Floating number</description></item>
+        /// <item><term>4</term><description>Guid</description></item>
+        /// <item><term>5</term><description>Boolean</description></item>
+        /// </list>
         /// </summary>
         internal int ValueType { get; }
 

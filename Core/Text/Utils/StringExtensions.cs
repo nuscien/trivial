@@ -34,12 +34,12 @@ namespace Trivial.Text
         /// <summary>
         /// First letter uppercase and rest keeping original.
         /// </summary>
-        FirstLetterUpper = 3,
+        Capitalize = 3,
 
         /// <summary>
         /// First letter lowercase and rest keeping original.
         /// </summary>
-        FirstLetterLower = 4
+        Uncapitalize = 4
     }
 
     /// <summary>
@@ -81,12 +81,12 @@ namespace Trivial.Text
                     return ToUpper(source, culture);
                 case Cases.Lower:
                     return ToLower(source, culture);
-                case Cases.FirstLetterUpper:
+                case Cases.Capitalize:
                     {
                         var s = source.TrimStart();
                         return $"{source.Substring(0, source.Length - s.Length)}{ToUpper(s.Substring(0, 1), culture)}{s.Substring(1)}";
                     }
-                case Cases.FirstLetterLower:
+                case Cases.Uncapitalize:
                     {
                         var s = source.TrimStart();
                         return $"{source.Substring(0, source.Length - s.Length)}{ToLower(s.Substring(0, 1), culture)}{s.Substring(1)}";

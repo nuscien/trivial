@@ -282,7 +282,7 @@ namespace Trivial.Chemistry
                 s = s.Replace(i.ToString("g"), latinNumbers[i][0].ToString());
             }
 
-            return s.ToLowerInvariant().ToSpecificCaseInvariant(Cases.FirstLetterUpper);
+            return s.ToLowerInvariant().ToSpecificCaseInvariant(Cases.Capitalize);
         }
 
         /// <summary>
@@ -298,7 +298,7 @@ namespace Trivial.Chemistry
                 s = s.Replace(i.ToString("g"), latinNumbers[i]);
             }
 
-            return s.ToLowerInvariant().ToSpecificCaseInvariant(Cases.FirstLetterUpper) + (s.EndsWith("i") ? "um" : "ium");
+            return s.ToLowerInvariant().ToSpecificCaseInvariant(Cases.Capitalize) + (s.EndsWith("i") ? "um" : "ium");
         }
 
         /// <summary>
