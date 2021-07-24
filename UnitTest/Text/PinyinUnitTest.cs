@@ -21,9 +21,9 @@ namespace Trivial.Text
         [TestMethod]
         public void TestPinyin()
         {
-            var s = "Wo3men2 zuo2ri4 doU1zai去 yīqǐ kan4 wang1Waŋ1ㄨㄤ¯ ne, ni上ne轻?  Ẑesh4 miao1miAo¯Miao1r ma?";
+            var s = "a'a'a~ Wo3men2 zuo2ri4 doU1zai去 yīQǐ kan4 Wang1Waŋ1ㄨㄤ¯ nE, ni上ne轻?  Ẑesh4 Miao1miAo¯Miao1r ma?";
             s = PinyinMarks.Format(s);
-            Assert.AreEqual("Wǒmén zuórì dōuzài yīqǐ kàn wāngwāngwāng ne, nǐne? Zheshì miāomiāomiāor ma?", s);
+            Assert.AreEqual("A'a'a~ Wǒmén zuórì dōuzài yīqǐ kàn Wāngwāngwāng ne, nǐne? Zheshì Miāomiāomiāor ma?", s);
         }
     }
 }

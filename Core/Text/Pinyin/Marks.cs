@@ -16,6 +16,24 @@ namespace Trivial.Text
     /// </summary>
     public static partial class PinyinMarks
     {
+        // Hanyu Pinyin (汉语拼音)
+        // http://www.moe.gov.cn/jyb_sjzl/ziliao/A19/195802/t19580201_186000.html
+
+        /// <summary>
+        /// The Pinyin name.
+        /// </summary>
+        public const string Name = "Hànyŭ Pīnyīn";
+
+        /// <summary>
+        /// The Pinyin name in Chinese simplified.
+        /// </summary>
+        public const string ChineseName = "汉语拼音";
+
+        /// <summary>
+        /// The Pinyin name in English.
+        /// </summary>
+        public const string EnglishName = "Chinese Pinyin";
+
         /// <summary>
         /// The capital letter A (ㄚ a).
         /// </summary>
@@ -67,6 +85,11 @@ namespace Trivial.Text
         public const string CapitalO4 = "Ò";
 
         /// <summary>
+        /// The capital letter Oe.
+        /// </summary>
+        public const string CapitalOe = "Œ";
+
+        /// <summary>
         /// The capital letter E (ㄜ e).
         /// </summary>
         public const string CapitalE = "E";
@@ -100,6 +123,11 @@ namespace Trivial.Text
         /// The capital letter Er (ㄦ erh).
         /// </summary>
         public const string CapitalEr = "Er";
+
+        /// <summary>
+        /// The capital letter Eo.
+        /// </summary>
+        public const string CapitalEo = "Ɵ";
 
         /// <summary>
         /// The capital letter I (丨 yi).
@@ -227,6 +255,11 @@ namespace Trivial.Text
         public const string SmallO4 = "ò";
 
         /// <summary>
+        /// The small letter Oe.
+        /// </summary>
+        public const string SmallOe = "œ";
+
+        /// <summary>
         /// The small letter E (ㄜ e).
         /// </summary>
         public const string SmallE = "e";
@@ -265,6 +298,11 @@ namespace Trivial.Text
         /// The small letter Er short (ㄦ -l).
         /// </summary>
         public const string SmallErShort = "r";
+
+        /// <summary>
+        /// The small letter Eo.
+        /// </summary>
+        public const string SmallEo = "ɵ";
 
         /// <summary>
         /// The small letter I (丨 yi).
@@ -360,6 +398,31 @@ namespace Trivial.Text
         /// Checked tone merged.
         /// </summary>
         public const string CheckedToneMerged = "ʔ";
+
+        /// <summary>
+        /// The high and level tone.
+        /// </summary>
+        public const string Tone1 = "¯";
+
+        /// <summary>
+        /// The rising tone.
+        /// </summary>
+        public const string Tone2 = "ˊ";
+
+        /// <summary>
+        /// The falling-rising tone.
+        /// </summary>
+        public const string Tone3 = "ˇ";
+
+        /// <summary>
+        /// The falling tone.
+        /// </summary>
+        public const string Tone4 = "ˋ";
+
+        /// <summary>
+        /// The oblique tone.
+        /// </summary>
+        public const string Tone5 = "˙";
 
         /// <summary>
         /// The seperator before sub-sequent final-only character in a word.

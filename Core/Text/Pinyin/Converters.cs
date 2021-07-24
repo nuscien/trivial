@@ -308,7 +308,7 @@ namespace Trivial.Text
         public static PinyinFinals ParseFinal(string s)
         {
             if (s == null) throw new ArgumentNullException(nameof(s), "s should not be null.");
-            if (s.Length < 1) throw new ArgumentException(nameof(s), "s should not be  empty.");
+            if (s.Length < 1) throw new ArgumentException("s should not be empty.", nameof(s));
             var r = TryParseFinal(s);
             if (r.HasValue) return r.Value;
             throw new FormatException("s was not in correct format.", new ArgumentException("s should be a Pinyin final.", nameof(s)));
@@ -332,18 +332,45 @@ namespace Trivial.Text
                     "ㄚ" => PinyinFinals.A,
                     "ㄛ" => PinyinFinals.O,
                     "ㄜ" or "ㄝ" or "Ê" or "ê" => PinyinFinals.E,
-                    "丨" or "ㄧ" => PinyinFinals.I,
+                    "丨" or "ㄧ" or "一" => PinyinFinals.I,
                     "ㄨ" => PinyinFinals.U,
                     "ㄩ" or "Ü" or "ü" => PinyinFinals.V,
                     "ㄦ" or "儿" or "r" => PinyinFinals.Er,
-                    "ㄞ" => PinyinFinals.Ai,
-                    "ㄟ" => PinyinFinals.Ei,
-                    "ㄠ" => PinyinFinals.Ao,
-                    "ㄡ" => PinyinFinals.Ou,
-                    "ㄢ" => PinyinFinals.An,
-                    "ㄣ" => PinyinFinals.En,
-                    "ㄤ" => PinyinFinals.Ang,
-                    "ㄥ" => PinyinFinals.Eng,
+                    "ㄞ" or "哀" => PinyinFinals.Ai,
+                    "ㄟ" or "欸" => PinyinFinals.Ei,
+                    "ㄠ" or "熬" => PinyinFinals.Ao,
+                    "ㄡ" or "欧" => PinyinFinals.Ou,
+                    "ㄢ" or "安" => PinyinFinals.An,
+                    "ㄣ" or "恩" => PinyinFinals.En,
+                    "ㄤ" or "昂" => PinyinFinals.Ang,
+                    "ㄥ" or "鞥" or "亨" => PinyinFinals.Eng,
+                    "ā" or "á" or "ǎ" or "à" or "Ā" or "Á" or "Ǎ" or "À" or "啊" or "ɑ" => PinyinFinals.A,
+                    "ō" or "ó" or "ò" or "ò" or "Ō" or "Ó" or "Ò" or "Ò" or "喔" or "ɔ" => PinyinFinals.O,
+                    "ē" or "é" or "ě" or "è" or "Ē" or "É" or "Ě" or "È" or "鹅" or "ɜ" => PinyinFinals.E,
+                    "ī" or "í" or "ǐ" or "ì" or "Ī" or "Í" or "Ǐ" or "Ì" or "衣" or "ɪ" => PinyinFinals.I,
+                    "ū" or "ú" or "ǔ" or "ù" or "Ū" or "Ú" or "Ǔ" or "Ù" or "乌" or "ʊ" => PinyinFinals.U,
+                    "ǖ" or "ǘ" or "ǚ" or "ǜ" or "Ǖ" or "Ǘ" or "Ǚ" or "Ǜ" or "迂" => PinyinFinals.V,
+                    "呀" => PinyinFinals.Ia,
+                    "耶" => PinyinFinals.Ie,
+                    "蛙" => PinyinFinals.Ua,
+                    "窝" => PinyinFinals.Uo,
+                    "约" => PinyinFinals.Ve,
+                    "腰" => PinyinFinals.Iao,
+                    "忧" => PinyinFinals.Iou,
+                    "歪" => PinyinFinals.Uai,
+                    "威" => PinyinFinals.Uei,
+                    "烟" => PinyinFinals.Ian,
+                    "弯" => PinyinFinals.Uan,
+                    "冤" => PinyinFinals.Van,
+                    "因" => PinyinFinals.In,
+                    "温" => PinyinFinals.Uen,
+                    "晕" => PinyinFinals.Vn,
+                    "央" => PinyinFinals.Iang,
+                    "汪" => PinyinFinals.Uang,
+                    "翁" => PinyinFinals.Ueng,
+                    "英" => PinyinFinals.Ing,
+                    "轰" => PinyinFinals.Ong,
+                    "雍" => PinyinFinals.Iong,
                     _ => null
                 },
                 2 => s.ToLowerInvariant() switch
@@ -443,6 +470,7 @@ namespace Trivial.Text
             var lastKind = 0;
             var ignoreMove = false;
             var tone = 0;
+            var cap = char.IsUpper(s[0]);
             while (true)
             {
                 if (!ignoreMove)
@@ -476,7 +504,7 @@ namespace Trivial.Text
 
                 if (k == 7)
                 {
-                    Append(result, initial, final.ToString(), tone, i, c);
+                    Append(result, initial, final.ToString(), tone, i, c, cap);
                     final.Clear();
                     tone = 0;
                     if (lastKind == 7 && (c == ' ' || c == '　') && result.Length > 0)
@@ -490,8 +518,20 @@ namespace Trivial.Text
                         result.Append(c);
                     }
 
-                    lastKind = k;
                     initial = null;
+                    if (" 　\t\n\r\"“‘《<（(【[*！？!?·]】)）>》’”".Contains(c))
+                    {
+                        if (!e.MoveNext()) break;
+                        ignoreMove = true;
+                        var next = e.Current;
+                        if (GetKind(next) < 7) cap = char.IsUpper(next);
+                    }
+                    else if (lastKind != 7)
+                    {
+                        cap = false;
+                    }
+
+                    lastKind = k;
                     continue;
                 }
 
@@ -528,9 +568,10 @@ namespace Trivial.Text
                 {
                     if (lastKind == 4)
                         throw new FormatException($"s contains an initial following another at position {i} which is {c}.");
-                    Append(result, initial, final.ToString(), tone, i, c);
+                    Append(result, initial, final.ToString(), tone, i, c, cap);
                     final.Clear();
                     tone = 0;
+                    if (lastKind != 7 && lastKind != 0) cap = false;
                     lastKind = k;
                     if (c == 'z' || c == 'c' || c == 's' || c == 'Z' || c == 'C' || c == 'S')
                     {
@@ -638,10 +679,11 @@ namespace Trivial.Text
                     }
                     else
                     {
-                        Append(result, initial, final.ToString(), tone, i, c);
+                        Append(result, initial, final.ToString(), tone, i, c, cap);
                         final.Clear();
                         tone = 0;
                         initial = PinyinInitials.W;
+                        cap = false;
                         lastKind = 4;
                     }
 
@@ -650,9 +692,9 @@ namespace Trivial.Text
 
                 if (c == 'r' || c == 'R' || c == 'ㄖ')
                 {
-                    if (lastKind > 3)
+                    if (lastKind > 3 || lastKind == 0)
                     {
-                        Append(result, initial, final.ToString(), tone, i, c);
+                        Append(result, initial, final.ToString(), tone, i, c, cap);
                         tone = 0;
                         final.Clear();
                         initial = PinyinInitials.R;
@@ -667,7 +709,7 @@ namespace Trivial.Text
                         var nextKind = GetKind(next);
                         if (nextKind == 3)
                         {
-                            Append(result, initial, final.ToString(), "012345 ¯ˊˇˋ˙轻阴阳上去仄".IndexOf(next) % 6, i, c);
+                            Append(result, initial, final.ToString(), "012345 ¯ˊˇˋ˙轻阴阳上去仄".IndexOf(next) % 6, i, c, cap);
                             tone = 0;
                             final.Clear();
                             result.Append('r');
@@ -676,7 +718,7 @@ namespace Trivial.Text
                         }
                         else if (nextKind > 3)
                         {
-                            Append(result, initial, final.ToString(), tone, i, c);
+                            Append(result, initial, final.ToString(), tone, i, c, cap);
                             tone = 0;
                             final.Clear();
                             result.Append('r');
@@ -685,7 +727,7 @@ namespace Trivial.Text
                         }
                         else
                         {
-                            Append(result, initial, final.ToString(), tone, i, c);
+                            Append(result, initial, final.ToString(), tone, i, c, cap);
                             tone = 0;
                             final.Clear();
                             initial = PinyinInitials.R;
@@ -693,15 +735,17 @@ namespace Trivial.Text
                         }
                     }
 
+                    cap = false;
                     continue;
                 }
 
                 if (c == '声' || c == '平') continue;
                 if (lastKind == 3 || lastKind == 6)
                 {
-                    Append(result, initial, final.ToString(), tone, i, c);
+                    Append(result, initial, final.ToString(), tone, i, c, cap);
                     final.Clear();
                     tone = 0;
+                    cap = false;
                     var iniParsed = TryParseInitial(c.ToString());
                     if (!iniParsed.HasValue)
                         throw new FormatException($"s contains an invalid character at position {i} which is {c}.");
@@ -710,7 +754,7 @@ namespace Trivial.Text
                     continue;
                 }
 
-                if (lastKind == 7)
+                if (lastKind == 7 || lastKind == 0)
                 {
                     if (c == 'ŋ' || c == 'Ŋ')
                     {
@@ -746,10 +790,11 @@ namespace Trivial.Text
                         else
                         {
                             final.Append('n');
-                            Append(result, initial, final.ToString(), tone, i, c);
+                            Append(result, initial, final.ToString(), tone, i, c, cap);
                             tone = 0;
                             final.Clear();
                             initial = PinyinInitials.G;
+                            cap = false;
                             lastKind = 4;
                         }
                     }
@@ -763,10 +808,11 @@ namespace Trivial.Text
                         }
                         else
                         {
-                            Append(result, initial, final.ToString(), tone, i, c);
+                            Append(result, initial, final.ToString(), tone, i, c, cap);
                             tone = 0;
                             final.Clear();
                             initial = PinyinInitials.N;
+                            cap = false;
                             lastKind = 4;
                         }
                     }
@@ -783,10 +829,11 @@ namespace Trivial.Text
                     }
                     else
                     {
-                        Append(result, initial, final.ToString(), tone, i, c);
+                        Append(result, initial, final.ToString(), tone, i, c, cap);
                         tone = 0;
                         final.Clear();
                         initial = PinyinInitials.Y;
+                        cap = false;
                         lastKind = 4;
                     }
 
@@ -803,7 +850,7 @@ namespace Trivial.Text
                 }
             }
 
-            Append(result, initial, final.ToString(), tone, s.Length - 1, s[s.Length - 1]);
+            Append(result, initial, final.ToString(), tone, s.Length - 1, s[s.Length - 1], cap);
             if (result.Length > 0 && result.Length < 8 && s.Length > 0 && "abcdefghijklmnopqrstuvwxyzāáǎàōóòòēéěèêīíǐìūúǔùǖǘǚǜŋẑĉŝ".Contains(s[0]))
             {
                 i = "ABCDEFGHIJKLMNOPQRSTUVWXYZĀÁǍÀŌÓÒÒĒÉĚÈÊĪÍǏÌŪÚǓÙǕǗǙǛ".IndexOf(result[0]);
@@ -841,7 +888,7 @@ namespace Trivial.Text
             if ("bpmfdtlgkhjqxzcsẑĉŝwBPMFDTLGKHJQXZCSẐĈŜWㄅㄆㄇㄈㄉㄊㄌㄍㄎㄏㄐㄑㄒㄓㄔㄕㄖㄗㄘㄙ".Contains(c)) return 4;
             if ("兀广万".Contains(c)) return 5;
             if ("nrŋyNRŊY丨ㄧㄋㄖㄨ".Contains(c)) return 6;
-            if ("' 　\\\t\r\n\"`“‘’”-,.;?¿!&^(（【[{《<￥$%@/·|}>》]】）)_—=+，。゜、；？！~…".Contains(c)) return 7;
+            if ("' 　\\\t\r\n\"`“‘’”-,.;?¿!&^(（【[{《<￥$%@/·|}>》]】）)_—=+#*，。゜、；？！~…".Contains(c)) return 7;
             return 0;
         }
 
@@ -880,12 +927,16 @@ namespace Trivial.Text
         /// <param name="tone">Optional tone.</param>
         /// <param name="offset">The offset to read.</param>
         /// <param name="c">The character to read.</param>
+        /// <param name="cap">true if the first letter should be upper case; otherwise, false.</param>
         /// <returns>A string that represents the specific character in Pinyin.</returns>
-        private static void Append(StringBuilder sb, PinyinInitials? initial, string final, int tone, int offset, char c)
+        private static void Append(StringBuilder sb, PinyinInitials? initial, string final, int tone, int offset, char c, bool cap)
         {
             var f = TryParseFinal(final);
-            var caseOptions = Cases.Lower;
-            if (sb.Length > 1)
+            var caseOptions = cap ? Cases.Capitalize : Cases.Lower;
+            if (cap)
+            {
+            }
+            else if (sb.Length > 1)
             {
                 var last = sb[sb.Length - 1];
                 switch (last)
@@ -954,7 +1005,7 @@ namespace Trivial.Text
                     var s = initial.HasValue ? ToString(initial.Value, f.Value, 0) : ToString(f.Value, 0, caseOptions);
                     sb.Append(s);
                     final = final.Substring(i);
-                    Append(sb, null, final, tone, offset, c);
+                    Append(sb, null, final, tone, offset, c, false);
                     return;
                 }
             }
