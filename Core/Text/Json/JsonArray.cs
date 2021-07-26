@@ -64,7 +64,7 @@ namespace Trivial.Text
         /// </summary>
         /// <param name="index">The zero-based index of the element to get.</param>
         /// <returns>The element at the specified index in the array.</returns>
-        /// <exception cref="ArgumentOutOfRangeException">The property does not exist.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">The index does not exist.</exception>
         /// <exception cref="InvalidOperationException">The value kind is not the expected one.</exception>
         public IJsonValueResolver this[int index] => GetValue(index);
 
@@ -274,11 +274,11 @@ namespace Trivial.Text
         }
 
         /// <summary>
-        /// Determines the property value of the specific key is null.
+        /// Determines the item value of the specific index is null.
         /// </summary>
         /// <param name="index">The zero-based index of the element to get.</param>
-        /// <returns>true if there is no such key or the property value is null; otherwise, false.</returns>
-        /// <exception cref="ArgumentOutOfRangeException">The property does not exist.</exception>
+        /// <returns>true if there is the item value is null; otherwise, false.</returns>
+        /// <exception cref="ArgumentOutOfRangeException">The index does not exist.</exception>
         public bool IsNull(int index)
         {
             var value = store[index];
@@ -286,10 +286,10 @@ namespace Trivial.Text
         }
 
         /// <summary>
-        /// Determines the property value of the specific key is null, undefined or nonexisted.
+        /// Determines the item value of the specific index is null, undefined or nonexisted.
         /// </summary>
         /// <param name="index">The zero-based index of the element to get.</param>
-        /// <returns>true if there is no such key or the property value is null; otherwise, false.</returns>
+        /// <returns>true if there is no such index or the item value is null; otherwise, false.</returns>
         public bool IsNullOrUndefined(int index)
         {
             if (index < 0 && index >= store.Count) return true;
@@ -305,10 +305,10 @@ namespace Trivial.Text
         }
 
         /// <summary>
-        /// Determines whether it contains an property value with the specific key.
+        /// Determines whether it contains an item value with the specific index.
         /// </summary>
         /// <param name="index">The zero-based index of the element to get.</param>
-        /// <returns>true if there is no such key; otherwise, false.</returns>
+        /// <returns>true if there is no such index; otherwise, false.</returns>
         public bool Contains(int index)
         {
             return index >= 0 && index < store.Count;
@@ -348,7 +348,7 @@ namespace Trivial.Text
         /// <param name="index">The zero-based index of the element to get.</param>
         /// <param name="strictMode">true if enable strict mode; otherwise, false, to return undefined for non-existing.</param>
         /// <returns>The value.</returns>
-        /// <exception cref="ArgumentOutOfRangeException">The property does not exist.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">The index does not exist.</exception>
         public JsonValueKind GetValueKind(int index, bool strictMode = false)
         {
             if (strictMode)
@@ -379,7 +379,7 @@ namespace Trivial.Text
         /// <param name="index">The zero-based index of the element to get.</param>
         /// <param name="strictMode">true if enable strict mode; otherwise, false, to return undefined for non-existing.</param>
         /// <returns>The value.</returns>
-        /// <exception cref="ArgumentOutOfRangeException">The property does not exist.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">The index does not exist.</exception>
         public JsonValueKind GetValueKind(Index index, bool strictMode = false)
         {
             return GetValueKind(index.IsFromEnd ? store.Count - index.Value : index.Value, strictMode);
@@ -621,16 +621,15 @@ namespace Trivial.Text
         /// <param name="type">An enumeration type.</param>
         /// <param name="index">The zero-based index of the element to get.</param>
         /// <returns>The value.</returns>
-        /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
-        /// <exception cref="ArgumentOutOfRangeException">The property does not exist.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">The index does not exist.</exception>
         /// <exception cref="ArgumentException">The type is not an System.Enum. -or- the value is either an empty string or only contains white space.  -or- value is a name, but not one of the named constants defined for the enumeration.</exception>
         /// <exception cref="OverflowException">value is outside the range of the underlying type of enumType.</exception>
         /// <exception cref="InvalidOperationException">The value kind is not the expected one.</exception>
         public object GetEnumValue(Type type, int index)
         {
-            if (TryGetInt32Value(index, out var v)) return Enum.ToObject(type, v);
+            if (TryGetInt32Value(index, out var v)) return type is null ? v : Enum.ToObject(type, v);
             var str = GetStringValue(index);
-            return Enum.Parse(type, str);
+            return type is null ? str : Enum.Parse(type, str);
         }
 
         /// <summary>
@@ -640,16 +639,15 @@ namespace Trivial.Text
         /// <param name="index">The zero-based index of the element to get.</param>
         /// <param name="ignoreCase">true if ignore case; otherwise, false.</param>
         /// <returns>The value.</returns>
-        /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
-        /// <exception cref="ArgumentOutOfRangeException">The property does not exist.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">The index does not exist.</exception>
         /// <exception cref="ArgumentException">The type is not an System.Enum. -or- the value is either an empty string or only contains white space.  -or- value is a name, but not one of the named constants defined for the enumeration.</exception>
         /// <exception cref="OverflowException">value is outside the range of the underlying type of enumType.</exception>
         /// <exception cref="InvalidOperationException">The value kind is not the expected one.</exception>
         public object GetEnumValue(Type type, int index, bool ignoreCase)
         {
-            if (TryGetInt32Value(index, out var v)) return Enum.ToObject(type, v);
+            if (TryGetInt32Value(index, out var v)) return type is null ? v : Enum.ToObject(type, v);
             var str = GetStringValue(index);
-            return Enum.Parse(type, str, ignoreCase);
+            return type is null ? str : Enum.Parse(type, str, ignoreCase);
         }
 
         /// <summary>
@@ -682,8 +680,7 @@ namespace Trivial.Text
         /// <param name="type">The type of value.</param>
         /// <param name="index">The zero-based index of the element to get.</param>
         /// <returns>The value.</returns>
-        /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
-        /// <exception cref="ArgumentOutOfRangeException">The property does not exist.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">The index does not exist.</exception>
         /// <exception cref="NotSupportedException">The type is not supported to convert.</exception>
         public object GetValue(Type type, int index)
         {
@@ -729,14 +726,13 @@ namespace Trivial.Text
         /// <typeparam name="T">The type of value.</typeparam>
         /// <param name="index">The zero-based index of the element to get.</param>
         /// <returns>The value.</returns>
-        /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
-        /// <exception cref="ArgumentOutOfRangeException">The property does not exist.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">The index does not exist.</exception>
         /// <exception cref="NotSupportedException">The type is not supported to convert.</exception>
         public T GetValue<T>(int index)
             => (T)GetValue(typeof(T), index);
 
         /// <summary>
-        /// Gets the value of the specific property.
+        /// Gets the value of the specific index.
         /// </summary>
         /// <param name="key">The property key.</param>
         /// <returns>The value.</returns>
@@ -748,7 +744,7 @@ namespace Trivial.Text
         }
 
         /// <summary>
-        /// Gets the value of the specific property.
+        /// Gets the value of the specific index.
         /// </summary>
         /// <param name="key">The property key.</param>
         /// <returns>The value.</returns>
@@ -932,7 +928,7 @@ namespace Trivial.Text
         /// </summary>
         /// <param name="index">The zero-based index of the element to get.</param>
         /// <param name="result">The result.</param>
-        /// <returns>true if has the property and the type is the one expected; otherwise, false.</returns>
+        /// <returns>true if has the index and the type is the one expected; otherwise, false.</returns>
         public bool TryGetStringValue(int index, out string result)
         {
             if (index < 0 || index >= store.Count)
@@ -975,7 +971,7 @@ namespace Trivial.Text
         }
 
         /// <summary>
-        /// Tries to get the value of the specific property.
+        /// Tries to get the value of the specific index.
         /// </summary>
         /// <param name="index">The zero-based index of the element to get.</param>
         /// <returns>The value; or null if fail to resolve.</returns>
@@ -990,11 +986,11 @@ namespace Trivial.Text
         }
 
         /// <summary>
-        /// Tries to get the value of the specific property.
+        /// Tries to get the value of the specific index.
         /// </summary>
         /// <param name="index">The zero-based index of the element to get.</param>
         /// <param name="result">The result.</param>
-        /// <returns>true if has the property and the type is the one expected; otherwise, false.</returns>
+        /// <returns>true if has the index and the type is the one expected; otherwise, false.</returns>
         public bool TryGetGuidValue(int index, out Guid result)
         {
             if (!TryGetStringValue(index, out var str) || string.IsNullOrWhiteSpace(str) || !Guid.TryParse(str, out result))
@@ -1025,7 +1021,7 @@ namespace Trivial.Text
         /// </summary>
         /// <param name="index">The zero-based index of the element to get.</param>
         /// <param name="result">The result.</param>
-        /// <returns>true if has the property and the type is the one expected; otherwise, false.</returns>
+        /// <returns>true if has the index and the type is the one expected; otherwise, false.</returns>
         public bool TryGetUInt32Value(int index, out uint result)
         {
             var v = TryGetUInt32Value(index);
@@ -1052,7 +1048,7 @@ namespace Trivial.Text
         /// </summary>
         /// <param name="index">The zero-based index of the element to get.</param>
         /// <param name="result">The result.</param>
-        /// <returns>true if has the property and the type is the one expected; otherwise, false.</returns>
+        /// <returns>true if has the index and the type is the one expected; otherwise, false.</returns>
         public bool TryGetInt32Value(int index, out int result)
         {
             var v = TryGetInt32Value(index);
@@ -1079,7 +1075,7 @@ namespace Trivial.Text
         /// </summary>
         /// <param name="index">The zero-based index of the element to get.</param>
         /// <param name="result">The result.</param>
-        /// <returns>true if has the property and the type is the one expected; otherwise, false.</returns>
+        /// <returns>true if has the index and the type is the one expected; otherwise, false.</returns>
         public bool TryGetInt64Value(int index, out long result)
         {
             var v = TryGetInt64Value(index);
@@ -1106,7 +1102,7 @@ namespace Trivial.Text
         /// </summary>
         /// <param name="index">The zero-based index of the element to get.</param>
         /// <param name="result">The result.</param>
-        /// <returns>true if has the property and the type is the one expected; otherwise, false.</returns>
+        /// <returns>true if has the index and the type is the one expected; otherwise, false.</returns>
         public bool TryGetFloatValue(int index, out float result)
         {
             var v = TryGetFloatValue(index);
@@ -1133,7 +1129,7 @@ namespace Trivial.Text
         /// </summary>
         /// <param name="index">The zero-based index of the element to get.</param>
         /// <param name="result">The result.</param>
-        /// <returns>true if has the property and the type is the one expected; otherwise, false.</returns>
+        /// <returns>true if has the index and the type is the one expected; otherwise, false.</returns>
         public bool TryGetDoubleValue(int index, out double result)
         {
             var v = TryGetDoubleValue(index);
@@ -1159,7 +1155,7 @@ namespace Trivial.Text
         /// </summary>
         /// <param name="index">The zero-based index of the element to get.</param>
         /// <param name="result">The result.</param>
-        /// <returns>true if has the property and the type is the one expected; otherwise, false.</returns>
+        /// <returns>true if has the index and the type is the one expected; otherwise, false.</returns>
         public bool TryGetBooleanValue(int index, out bool result)
         {
             var v = TryGetBooleanValue(index);
@@ -1183,7 +1179,7 @@ namespace Trivial.Text
         /// </summary>
         /// <param name="index">The zero-based index of the element to get.</param>
         /// <param name="result">The result.</param>
-        /// <returns>true if has the property and the type is the one expected; otherwise, false.</returns>
+        /// <returns>true if has the index and the type is the one expected; otherwise, false.</returns>
         public bool TryGetObjectValue(int index, out JsonObject result)
         {
             var v = TryGetObjectValue(index);
@@ -1207,7 +1203,7 @@ namespace Trivial.Text
         /// </summary>
         /// <param name="index">The zero-based index of the element to get.</param>
         /// <param name="result">The result.</param>
-        /// <returns>true if has the property and the type is the one expected; otherwise, false.</returns>
+        /// <returns>true if has the index and the type is the one expected; otherwise, false.</returns>
         public bool TryGetArrayValue(int index, out JsonArray result)
         {
             var v = TryGetArrayValue(index);
@@ -1216,7 +1212,7 @@ namespace Trivial.Text
         }
 
         /// <summary>
-        /// Tries to get the value of the specific property.
+        /// Tries to get the value of the specific index.
         /// </summary>
         /// <param name="index">The zero-based index of the element to get.</param>
         /// <param name="useUnixTimestampsFallback">true if use Unix timestamp to convert if the value is a number; otherwise, false, to use JavaScript date ticks fallback.</param>
@@ -1235,12 +1231,12 @@ namespace Trivial.Text
 
 #if !NETOLDVER
         /// <summary>
-        /// Tries to get the value of the specific property.
+        /// Tries to get the value of the specific index.
         /// </summary>
         /// <param name="index">The zero-based index of the element to get.</param>
         /// <param name="bytes">The result.</param>
         /// <param name="bytesWritten">The count of bytes written.</param>
-        /// <returns>true if has the property and the type is the one expected; otherwise, false.</returns>
+        /// <returns>true if has the index and the type is the one expected; otherwise, false.</returns>
         public bool TryGetBytesFromBase64(int index, Span<byte> bytes, out int bytesWritten)
         {
             var str = GetStringValue(index);
@@ -1255,7 +1251,7 @@ namespace Trivial.Text
 #endif
 
         /// <summary>
-        /// Tries to get the value of the specific property.
+        /// Tries to get the value of the specific index.
         /// </summary>
         /// <param name="index">The zero-based index of the element to get.</param>
         /// <returns>The enum.</returns>
@@ -1266,7 +1262,7 @@ namespace Trivial.Text
         }
 
         /// <summary>
-        /// Tries to get the value of the specific property.
+        /// Tries to get the value of the specific index.
         /// </summary>
         /// <param name="index">The zero-based index of the element to get.</param>
         /// <param name="ignoreCase">true if ignore case; otherwise, false.</param>
@@ -1278,11 +1274,11 @@ namespace Trivial.Text
         }
 
         /// <summary>
-        /// Tries to get the value of the specific property.
+        /// Tries to get the value of the specific index.
         /// </summary>
         /// <param name="index">The zero-based index of the element to get.</param>
         /// <param name="result">The result.</param>
-        /// <returns>true if has the property and the type is the one expected; otherwise, false.</returns>
+        /// <returns>true if has the index and the type is the one expected; otherwise, false.</returns>
         public bool TryGetEnumValue<T>(int index, out T result) where T : struct, Enum
         {
             if (TryGetInt32Value(index, out var v))
@@ -1309,12 +1305,12 @@ namespace Trivial.Text
         }
 
         /// <summary>
-        /// Tries to get the value of the specific property.
+        /// Tries to get the value of the specific index.
         /// </summary>
         /// <param name="index">The zero-based index of the element to get.</param>
         /// <param name="ignoreCase">true if ignore case; otherwise, false.</param>
         /// <param name="result">The result.</param>
-        /// <returns>true if has the property and the type is the one expected; otherwise, false.</returns>
+        /// <returns>true if has the index and the type is the one expected; otherwise, false.</returns>
         public bool TryGetEnumValue<T>(int index, bool ignoreCase, out T result) where T : struct, Enum
         {
             if (TryGetInt32Value(index, out var v))
@@ -1334,6 +1330,97 @@ namespace Trivial.Text
             {
                 result = obj;
                 return true;
+            }
+
+            result = default;
+            return false;
+        }
+
+        /// <summary>
+        /// Tries to get the value of the specific index.
+        /// </summary>
+        /// <param name="type">An enumeration type.</param>
+        /// <param name="index">The zero-based index of the element to get.</param>
+        /// <param name="result">The result output.</param>
+        /// <returns>true if parse succeeded; otherwise, false.</returns>
+        public bool TryGetEnumValue(Type type, int index, out object result)
+        {
+            try
+            {
+                if (TryGetInt32Value(index, out var v))
+                {
+                    result = type is null ? v : Enum.ToObject(type, v);
+                    return true;
+                }
+
+                var str = GetStringValue(index);
+                if (type is null)
+                {
+                    result = str;
+                    return true;
+                }
+
+#if NETFRAMEWORK || NETSTANDARD2_0
+                result = Enum.Parse(type, str);
+                return true;
+#else
+                if (Enum.TryParse(type, str, out result))
+                {
+                    return true;
+                }
+#endif
+            }
+            catch (ArgumentException)
+            {
+            }
+            catch (OverflowException)
+            {
+            }
+
+            result = default;
+            return false;
+        }
+
+        /// <summary>
+        /// Tries to get the value of the specific index.
+        /// </summary>
+        /// <param name="type">An enumeration type.</param>
+        /// <param name="index">The zero-based index of the element to get.</param>
+        /// <param name="ignoreCase">true if ignore case; otherwise, false.</param>
+        /// <param name="result">The result output.</param>
+        /// <returns>true if parse succeeded; otherwise, false.</returns>
+        public bool TryGetEnumValue(Type type, int index, bool ignoreCase, out object result)
+        {
+            try
+            {
+                if (TryGetInt32Value(index, out var v))
+                {
+                    result = type is null ? v : Enum.ToObject(type, v);
+                    return true;
+                }
+
+                var str = GetStringValue(index);
+                if (type is null)
+                {
+                    result = str;
+                    return true;
+                }
+
+#if NETFRAMEWORK || NETSTANDARD2_0
+                result = Enum.Parse(type, str, ignoreCase);
+                return true;
+#else
+                if (Enum.TryParse(type, str, ignoreCase, out result))
+                {
+                    return true;
+                }
+#endif
+            }
+            catch (ArgumentException)
+            {
+            }
+            catch (OverflowException)
+            {
             }
 
             result = default;
@@ -1368,7 +1455,7 @@ namespace Trivial.Text
         /// </summary>
         /// <param name="index">The zero-based index of the element to get.</param>
         /// <param name="result">The result.</param>
-        /// <returns>true if has the property and the type is the one expected; otherwise, false.</returns>
+        /// <returns>true if has the index and the type is the one expected; otherwise, false.</returns>
         public bool TryGetValue(int index, out IJsonValueResolver result)
         {
             var v = TryGetValue(index);
@@ -1508,7 +1595,7 @@ namespace Trivial.Text
         /// </summary>
         /// <param name="index">The zero-based index of the element to get.</param>
         /// <param name="result">The result.</param>
-        /// <returns>true if has the property and the type is the one expected; otherwise, false.</returns>
+        /// <returns>true if has the index and the type is the one expected; otherwise, false.</returns>
         public bool TryGetValue(Index index, out IJsonValueResolver result)
         {
             return TryGetValue(index.IsFromEnd ? Count - index.Value : index.Value, out result);
@@ -1968,7 +2055,7 @@ namespace Trivial.Text
         }
 
         /// <summary>
-        /// Sets the value of the specific property.
+        /// Sets the value of the specific index.
         /// </summary>
         /// <param name="index">The zero-based index of the element to get.</param>
         /// <param name="value">The value to set.</param>
@@ -1979,7 +2066,7 @@ namespace Trivial.Text
         }
 
         /// <summary>
-        /// Sets the value of the specific property.
+        /// Sets the value of the specific index.
         /// </summary>
         /// <param name="index">The zero-based index of the element to get.</param>
         /// <param name="value">The value to set.</param>
@@ -1990,7 +2077,7 @@ namespace Trivial.Text
         }
 
         /// <summary>
-        /// Sets the value of the specific property.
+        /// Sets the value of the specific index.
         /// </summary>
         /// <param name="index">The zero-based index of the element to get.</param>
         /// <param name="value">The value to set.</param>
@@ -2001,7 +2088,7 @@ namespace Trivial.Text
         }
 
         /// <summary>
-        /// Sets the value of the specific property.
+        /// Sets the value of the specific index.
         /// </summary>
         /// <param name="index">The zero-based index of the element to get.</param>
         /// <param name="value">The value to set.</param>
@@ -2382,7 +2469,7 @@ namespace Trivial.Text
         /// Inserts null at the specific index.
         /// </summary>
         /// <param name="index">The zero-based index of the element to get.</param>
-        /// <exception cref="ArgumentOutOfRangeException">The index is out of range.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">The index was out of range.</exception>
         public void InsertNull(int index)
         {
             store.Insert(index, JsonValues.Null);
@@ -2393,7 +2480,7 @@ namespace Trivial.Text
         /// </summary>
         /// <param name="index">The zero-based index of the element to get.</param>
         /// <param name="value">The value to set.</param>
-        /// <exception cref="ArgumentOutOfRangeException">The index is out of range.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">The index was out of range.</exception>
         public void Insert(int index, string value)
         {
             store.Insert(index, new JsonString(value));
@@ -2404,7 +2491,7 @@ namespace Trivial.Text
         /// </summary>
         /// <param name="index">The zero-based index of the element to get.</param>
         /// <param name="value">The value to set.</param>
-        /// <exception cref="ArgumentOutOfRangeException">The index is out of range.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">The index was out of range.</exception>
         public void Insert(int index, SecureString value)
         {
             store.Insert(index, new JsonString(value));
@@ -2416,7 +2503,7 @@ namespace Trivial.Text
         /// <param name="index">The zero-based index of the element to get.</param>
         /// <param name="value">The value to set.</param>
         /// <param name="args">An object array that contains zero or more objects to format.</param>
-        /// <exception cref="ArgumentOutOfRangeException">The index is out of range.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">The index was out of range.</exception>
         public void InsertFormat(int index, string value, params object[] args)
         {
             store.Insert(index, new JsonString(string.Format(value, args)));
@@ -2438,7 +2525,7 @@ namespace Trivial.Text
         /// </summary>
         /// <param name="index">The zero-based index of the element to get.</param>
         /// <param name="value">The value to set.</param>
-        /// <exception cref="ArgumentOutOfRangeException">The index is out of range.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">The index was out of range.</exception>
         public void Insert(int index, DateTime value)
         {
             store.Insert(index, new JsonString(value));
@@ -2449,7 +2536,7 @@ namespace Trivial.Text
         /// </summary>
         /// <param name="index">The zero-based index of the element to get.</param>
         /// <param name="value">The value to set.</param>
-        /// <exception cref="ArgumentOutOfRangeException">The index is out of range.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">The index was out of range.</exception>
         public void Insert(int index, uint value)
         {
             store.Insert(index, new JsonInteger(value));
@@ -2460,7 +2547,7 @@ namespace Trivial.Text
         /// </summary>
         /// <param name="index">The zero-based index of the element to get.</param>
         /// <param name="value">The value to set.</param>
-        /// <exception cref="ArgumentOutOfRangeException">The index is out of range.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">The index was out of range.</exception>
         public void Insert(int index, int value)
         {
             store.Insert(index, new JsonInteger(value));
@@ -2471,7 +2558,7 @@ namespace Trivial.Text
         /// </summary>
         /// <param name="index">The zero-based index of the element to get.</param>
         /// <param name="value">The value to set.</param>
-        /// <exception cref="ArgumentOutOfRangeException">The index is out of range.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">The index was out of range.</exception>
         public void Insert(int index, long value)
         {
             store.Insert(index, new JsonInteger(value));
@@ -2482,7 +2569,7 @@ namespace Trivial.Text
         /// </summary>
         /// <param name="index">The zero-based index of the element to get.</param>
         /// <param name="value">The value to set.</param>
-        /// <exception cref="ArgumentOutOfRangeException">The index is out of range.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">The index was out of range.</exception>
         public void Insert(int index, float value)
         {
             store.Insert(index, new JsonDouble(value));
@@ -2493,7 +2580,7 @@ namespace Trivial.Text
         /// </summary>
         /// <param name="index">The zero-based index of the element to get.</param>
         /// <param name="value">The value to set.</param>
-        /// <exception cref="ArgumentOutOfRangeException">The index is out of range.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">The index was out of range.</exception>
         public void Insert(int index, double value)
         {
             store.Insert(index, new JsonDouble(value));
@@ -2504,7 +2591,7 @@ namespace Trivial.Text
         /// </summary>
         /// <param name="index">The zero-based index of the element to get.</param>
         /// <param name="value">The value to set.</param>
-        /// <exception cref="ArgumentOutOfRangeException">The index is out of range.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">The index was out of range.</exception>
         public void Insert(int index, bool value)
         {
             store.Insert(index, value ? JsonBoolean.True : JsonBoolean.False);
@@ -2515,7 +2602,7 @@ namespace Trivial.Text
         /// </summary>
         /// <param name="index">The zero-based index of the element to get.</param>
         /// <param name="value">The value to set.</param>
-        /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">The index was out of range.</exception>
         public void Insert(int index, JsonArray value)
         {
             store.Insert(index, value != this ? value : value.Clone());
@@ -2526,7 +2613,7 @@ namespace Trivial.Text
         /// </summary>
         /// <param name="index">The zero-based index of the element to get.</param>
         /// <param name="value">The value to set.</param>
-        /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">The index was out of range.</exception>
         public void Insert(int index, JsonObject value)
         {
             store.Insert(index, value);
@@ -2537,7 +2624,7 @@ namespace Trivial.Text
         /// </summary>
         /// <param name="index">The zero-based index of the element to get.</param>
         /// <param name="value">The value to set.</param>
-        /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">The index was out of range.</exception>
         public void Insert(int index, JsonElement value)
         {
             store.Insert(index, JsonValues.ToJsonValue(value));
@@ -2548,7 +2635,7 @@ namespace Trivial.Text
         /// </summary>
         /// <param name="index">The zero-based index of the element to get.</param>
         /// <param name="value">The value to set.</param>
-        /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">The index was out of range.</exception>
         public void Insert(int index, System.Text.Json.Nodes.JsonNode value)
         {
             store.Insert(index, JsonValues.ToJsonValue(value));
@@ -2560,7 +2647,7 @@ namespace Trivial.Text
         /// <param name="index">The zero-based index of the element to get.</param>
         /// <param name="inArray">An array of 8-bit unsigned integers.</param>
         /// <param name="options">A formatting options.</param>
-        /// <exception cref="ArgumentOutOfRangeException">The index is out of range.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">The index was out of range.</exception>
         /// <exception cref="ArgumentNullException">The bytes should not be null.</exception>
         public void InsertBase64(int index, byte[] inArray, Base64FormattingOptions options = Base64FormattingOptions.None)
         {
@@ -2573,7 +2660,7 @@ namespace Trivial.Text
         /// <param name="index">The zero-based index of the element to get.</param>
         /// <param name="bytes">The bytes to convert to base 64 string.</param>
         /// <param name="options">A formatting options.</param>
-        /// <exception cref="ArgumentOutOfRangeException">The index is out of range.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">The index was out of range.</exception>
         /// <exception cref="ArgumentNullException">The bytes should not be null.</exception>
         public void InsertBase64(int index, Span<byte> bytes, Base64FormattingOptions options = Base64FormattingOptions.None)
         {
@@ -2590,7 +2677,7 @@ namespace Trivial.Text
         /// </summary>
         /// <param name="index">The zero-based index of the element to get.</param>
         /// <param name="value">The value to set.</param>
-        /// <exception cref="ArgumentOutOfRangeException">The index is out of range.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">The index was out of range.</exception>
         public void InsertDateTimeString(int index, DateTime value)
         {
             store.Insert(index, new JsonString(value));
@@ -2601,7 +2688,7 @@ namespace Trivial.Text
         /// </summary>
         /// <param name="index">The zero-based index of the element to get.</param>
         /// <param name="value">The value to set.</param>
-        /// <exception cref="ArgumentOutOfRangeException">The index is out of range.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">The index was out of range.</exception>
         public void InsertJavaScriptDateTicks(int index, DateTime value)
         {
             store.Insert(index, new JsonInteger(Web.WebFormat.ParseDate(value)));
@@ -2612,7 +2699,7 @@ namespace Trivial.Text
         /// </summary>
         /// <param name="index">The zero-based index of the element to get.</param>
         /// <param name="value">The value to set.</param>
-        /// <exception cref="ArgumentOutOfRangeException">The index is out of range.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">The index was out of range.</exception>
         public void InsertUnixTimestamp(int index, DateTime value)
         {
             store.Insert(index, new JsonInteger(Web.WebFormat.ParseUnixTimestamp(value)));
@@ -2624,7 +2711,7 @@ namespace Trivial.Text
         /// <param name="index">The zero-based index of the element to get.</param>
         /// <param name="values">A string collection to add.</param>
         /// <returns>The count of item added.</returns>
-        /// <exception cref="ArgumentOutOfRangeException">The index is out of range.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">The index was out of range.</exception>
         public int InsertRange(int index, IEnumerable<string> values)
         {
             var count = 0;
@@ -2644,7 +2731,7 @@ namespace Trivial.Text
         /// <param name="index">The zero-based index of the element to get.</param>
         /// <param name="values">A string collection to add.</param>
         /// <returns>The count of item added.</returns>
-        /// <exception cref="ArgumentOutOfRangeException">The index is out of range.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">The index was out of range.</exception>
         public int InsertRange(int index, IEnumerable<int> values)
         {
             var count = 0;
@@ -2664,7 +2751,7 @@ namespace Trivial.Text
         /// <param name="index">The zero-based index of the element to get.</param>
         /// <param name="values">A string collection to add.</param>
         /// <returns>The count of item added.</returns>
-        /// <exception cref="ArgumentOutOfRangeException">The index is out of range.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">The index was out of range.</exception>
         public int InsertRange(int index, IEnumerable<JsonObject> values)
         {
             var count = 0;
@@ -2684,7 +2771,7 @@ namespace Trivial.Text
         /// <param name="index">The zero-based index of the element to get.</param>
         /// <param name="json">Another JSON array to add.</param>
         /// <returns>The count of item added.</returns>
-        /// <exception cref="ArgumentOutOfRangeException">The index is out of range.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">The index was out of range.</exception>
         public int InsertRange(int index, JsonArray json)
         {
             var count = 0;
@@ -2706,7 +2793,7 @@ namespace Trivial.Text
         /// <param name="json">A JSON object to copy its properties to add.</param>
         /// <param name="propertyKeys">A sort of property keys to copy.</param>
         /// <returns>The count of item added.</returns>
-        /// <exception cref="ArgumentOutOfRangeException">The index is out of range.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">The index was out of range.</exception>
         public int InsertRange(int index, JsonObject json, IEnumerable<string> propertyKeys)
         {
             var count = 0;
@@ -3428,7 +3515,7 @@ namespace Trivial.Text
         }
 
         /// <summary>
-        /// Tries to get the value of the specific property.
+        /// Tries to get the value of the specific index.
         /// </summary>
         /// <param name="key">The property key.</param>
         /// <param name="result">The result.</param>
@@ -3467,7 +3554,7 @@ namespace Trivial.Text
         }
 
         /// <summary>
-        /// Tries to get the value of the specific property.
+        /// Tries to get the value of the specific index.
         /// </summary>
         /// <param name="key">The property key.</param>
         /// <param name="result">The result.</param>
@@ -3480,7 +3567,7 @@ namespace Trivial.Text
         }
 
         /// <summary>
-        /// Tries to get the value of the specific property.
+        /// Tries to get the value of the specific index.
         /// </summary>
         /// <param name="key">The property key.</param>
         /// <returns>The element; or null, if get failed.</returns>

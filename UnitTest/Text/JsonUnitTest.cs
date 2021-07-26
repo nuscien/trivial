@@ -220,6 +220,15 @@ namespace Trivial.Text
             Assert.IsNotNull(json);
             Assert.AreEqual(9, json.Keys.Count);
             Assert.AreEqual(jsonStr, json.ToString());
+
+            var j1 = Serialize<System.Text.Json.Nodes.JsonObject>("{ \"a\": \"bcdefg\", \"h\": \"ijklmn\" }");
+            Assert.AreEqual(2, j1.Count);
+            var j2 = Serialize<System.Text.Json.Nodes.JsonArray>("[ 123, 456 ]");
+            Assert.AreEqual(2, j2.Count);
+            var j3 = Serialize<System.Text.Json.Nodes.JsonNode>("{ \"a\": \"bcdefg\", \"h\": \"ijklmn\" }");
+            Assert.AreEqual(2, j3.AsObject().Count);
+            j3 = Serialize<System.Text.Json.Nodes.JsonNode>("[ 123, 456 ]");
+            Assert.AreEqual(2, j3.AsArray().Count);
         }
 
         /// <summary>
@@ -359,6 +368,43 @@ namespace Trivial.Text
             Assert.AreEqual(Data.ChangeErrorKinds.None, model2.Q);
             str = JsonSerializer.Serialize(model2);
             Assert.IsNotNull(str);
+        }
+
+        private T Serialize<T>(string json) where T : System.Text.Json.Nodes.JsonNode
+        {
+            var t = typeof(T);
+            var n = t;
+            if (string.IsNullOrEmpty(json)) return null;
+            if (t.Name.Equals("JsonNode", StringComparison.InvariantCulture))
+            {
+            }
+            else if (t.Name.Equals("JsonObject", StringComparison.InvariantCulture) || t.Name.Equals("JsonArray", StringComparison.InvariantCulture))
+            {
+                n = t.Assembly.GetType("System.Text.Json.Nodes.JsonNode", false);
+                if (n == null) return null;
+            }
+            else
+            {
+                return null;
+            }
+
+            var parser = n.GetMethod("Parse", new[] { typeof(string) });
+            if (parser != null && parser.IsStatic)
+            {
+                return (T)parser.Invoke(null, new object[] { json });
+            }
+
+            var nullable = typeof(Nullable<>);
+            var optionsType = t.Assembly.GetType("System.Text.Json.Nodes.JsonNodeOptions", false);
+            if (optionsType == null) return null;
+            nullable = nullable.MakeGenericType(optionsType);
+            parser = n.GetMethod("Parse", new[] { typeof(string), nullable, typeof(JsonDocumentOptions) });
+            if (parser != null && parser.IsStatic)
+            {
+                return (T)parser.Invoke(null, new object[] { json, null, default(JsonDocumentOptions) });
+            }
+
+            return null;
         }
     }
 }
