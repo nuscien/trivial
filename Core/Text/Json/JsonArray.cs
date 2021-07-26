@@ -16,7 +16,7 @@ using Trivial.Reflection;
 namespace Trivial.Text
 {
     /// <summary>
-    /// Represents a specific JSON object.
+    /// Represents a specific JSON array.
     /// </summary>
     public class JsonArray : IJsonComplex, IJsonValueResolver, IReadOnlyList<IJsonValue>, IReadOnlyList<IJsonValueResolver>, IEquatable<JsonArray>, IEquatable<IJsonValue>
     {
@@ -277,7 +277,7 @@ namespace Trivial.Text
         /// Determines the item value of the specific index is null.
         /// </summary>
         /// <param name="index">The zero-based index of the element to get.</param>
-        /// <returns>true if there is the item value is null; otherwise, false.</returns>
+        /// <returns>true if the item value is null; otherwise, false.</returns>
         /// <exception cref="ArgumentOutOfRangeException">The index does not exist.</exception>
         public bool IsNull(int index)
         {
