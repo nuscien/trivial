@@ -272,10 +272,10 @@ namespace Trivial.Text
         }
 
         /// <summary>
-        /// Determines the property value of the specific key is null.
+        /// Determines the item value of the specific index is null.
         /// </summary>
         /// <param name="index">The zero-based index of the element to get.</param>
-        /// <returns>true if there is no such key or the property value is null; otherwise, false.</returns>
+        /// <returns>true if the item value is null; otherwise, false.</returns>
         /// <exception cref="ArgumentOutOfRangeException">The property does not exist.</exception>
         public bool IsNull(int index)
         {
@@ -284,10 +284,10 @@ namespace Trivial.Text
         }
 
         /// <summary>
-        /// Determines the property value of the specific key is null, undefined or nonexisted.
+        /// Determines the item value of the specific index is null, undefined or nonexisted.
         /// </summary>
         /// <param name="index">The zero-based index of the element to get.</param>
-        /// <returns>true if there is no such key or the property value is null; otherwise, false.</returns>
+        /// <returns>true the item value is null; otherwise, false.</returns>
         public bool IsNullOrUndefined(int index)
         {
             if (index < 0 && index >= store.Count) return true;
@@ -303,7 +303,7 @@ namespace Trivial.Text
         }
 
         /// <summary>
-        /// Determines whether it contains an property value with the specific key.
+        /// Determines whether it contains an item value with the specific index.
         /// </summary>
         /// <param name="index">The zero-based index of the element to get.</param>
         /// <returns>true if there is no such key; otherwise, false.</returns>
@@ -313,7 +313,7 @@ namespace Trivial.Text
         }
 
         /// <summary>
-        /// Gets the raw value of the specific value.
+        /// Gets the raw value of the specific index.
         /// </summary>
         /// <param name="index">The zero-based index of the element to get.</param>
         /// <returns>The value.</returns>
@@ -621,16 +621,15 @@ namespace Trivial.Text
         /// <param name="type">An enumeration type.</param>
         /// <param name="index">The zero-based index of the element to get.</param>
         /// <returns>The value.</returns>
-        /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
         /// <exception cref="ArgumentOutOfRangeException">The property does not exist.</exception>
         /// <exception cref="ArgumentException">The type is not an System.Enum. -or- the value is either an empty string or only contains white space.  -or- value is a name, but not one of the named constants defined for the enumeration.</exception>
         /// <exception cref="OverflowException">value is outside the range of the underlying type of enumType.</exception>
         /// <exception cref="InvalidOperationException">The value kind is not the expected one.</exception>
         public object GetEnumValue(Type type, int index)
         {
-            if (TryGetInt32Value(index, out var v)) return Enum.ToObject(type, v);
+            if (TryGetInt32Value(index, out var v)) type is null ? v : return Enum.ToObject(type, v);
             var str = GetStringValue(index);
-            return Enum.Parse(type, str);
+            return type is null ? str : Enum.Parse(type, str);
         }
 
         /// <summary>
@@ -640,16 +639,15 @@ namespace Trivial.Text
         /// <param name="index">The zero-based index of the element to get.</param>
         /// <param name="ignoreCase">true if ignore case; otherwise, false.</param>
         /// <returns>The value.</returns>
-        /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
         /// <exception cref="ArgumentOutOfRangeException">The property does not exist.</exception>
         /// <exception cref="ArgumentException">The type is not an System.Enum. -or- the value is either an empty string or only contains white space.  -or- value is a name, but not one of the named constants defined for the enumeration.</exception>
         /// <exception cref="OverflowException">value is outside the range of the underlying type of enumType.</exception>
         /// <exception cref="InvalidOperationException">The value kind is not the expected one.</exception>
         public object GetEnumValue(Type type, int index, bool ignoreCase)
         {
-            if (TryGetInt32Value(index, out var v)) return Enum.ToObject(type, v);
+            if (TryGetInt32Value(index, out var v)) type is null ? v : return Enum.ToObject(type, v);
             var str = GetStringValue(index);
-            return Enum.Parse(type, str, ignoreCase);
+            return type is null ? str : Enum.Parse(type, str, ignoreCase);
         }
 
         /// <summary>
@@ -1332,6 +1330,97 @@ namespace Trivial.Text
             {
                 result = obj;
                 return true;
+            }
+
+            result = default;
+            return false;
+        }
+
+        /// <summary>
+        /// Tries to get the value of the specific index.
+        /// </summary>
+        /// <param name="type">An enumeration type.</param>
+        /// <param name="index">The zero-based index of the element to get.</param>
+        /// <param name="result">The result output.</param>
+        /// <returns>true if parse succeeded; otherwise, false.</returns>
+        public bool TryGetEnumValue(Type type, int index, out object result)
+        {
+            try
+            {
+                if (TryGetInt32Value(index, out var v))
+                {
+                    result = type is null ? v : Enum.ToObject(type, v);
+                    return true;
+                }
+
+                var str = GetStringValue(index);
+                if (type is null)
+                {
+                    result = str;
+                    return true;
+                }
+
+#if NETFRAMEWORK || NETSTANDARD2_0
+                result = Enum.Parse(type, str);
+                return true;
+#else
+                if (Enum.TryParse(type, str, out result))
+                {
+                    return true;
+                }
+#endif
+            }
+            catch (ArgumentException)
+            {
+            }
+            catch (OverflowException)
+            {
+            }
+
+            result = default;
+            return false;
+        }
+
+        /// <summary>
+        /// Tries to get the value of the specific index.
+        /// </summary>
+        /// <param name="type">An enumeration type.</param>
+        /// <param name="index">The zero-based index of the element to get.</param>
+        /// <param name="ignoreCase">true if ignore case; otherwise, false.</param>
+        /// <param name="result">The result output.</param>
+        /// <returns>true if parse succeeded; otherwise, false.</returns>
+        public bool TryGetEnumValue(Type type, int index, bool ignoreCase, out object result)
+        {
+            try
+            {
+                if (TryGetInt32Value(index, out var v))
+                {
+                    result = type is null ? v : Enum.ToObject(type, v);
+                    return true;
+                }
+
+                var str = GetStringValue(index);
+                if (type is null)
+                {
+                    result = str;
+                    return true;
+                }
+
+#if NETFRAMEWORK || NETSTANDARD2_0
+                result = Enum.Parse(type, str, ignoreCase);
+                return true;
+#else
+                if (Enum.TryParse(type, str, ignoreCase, out result))
+                {
+                    return true;
+                }
+#endif
+            }
+            catch (ArgumentException)
+            {
+            }
+            catch (OverflowException)
+            {
             }
 
             result = default;

@@ -736,9 +736,9 @@ namespace Trivial.Text
         /// <exception cref="InvalidOperationException">The value kind is not the expected one.</exception>
         public object GetEnumValue(Type type, string key)
         {
-            if (TryGetInt32Value(key, out var v)) return Enum.ToObject(type, v);
+            if (TryGetInt32Value(key, out var v)) return type is null ? v : Enum.ToObject(type, v);
             var str = GetStringValue(key);
-            return Enum.Parse(type, str);
+            return type is null ? str : Enum.Parse(type, str);
         }
 
         /// <summary>
@@ -755,9 +755,9 @@ namespace Trivial.Text
         /// <exception cref="InvalidOperationException">The value kind is not the expected one.</exception>
         public object GetEnumValue(Type type, string key, bool ignoreCase)
         {
-            if (TryGetInt32Value(key, out var v)) return Enum.ToObject(type, v);
+            if (TryGetInt32Value(key, out var v)) return type is null ? v : Enum.ToObject(type, v);
             var str = GetStringValue(key);
-            return Enum.Parse(type, str, ignoreCase);
+            return type is null ? str : Enum.Parse(type, str, ignoreCase);
         }
 
         /// <summary>
@@ -1536,6 +1536,97 @@ namespace Trivial.Text
 
             result = r.Value;
             return true;
+        }
+
+        /// <summary>
+        /// Gets the value of the specific property.
+        /// </summary>
+        /// <param name="type">An enumeration type.</param>
+        /// <param name="key">The property key.</param>
+        /// <param name="result">The result output.</param>
+        /// <returns>true if parse succeeded; otherwise, false.</returns>
+        public bool TryGetEnumValue(Type type, string key, out object result)
+        {
+            try
+            {
+                if (TryGetInt32Value(key, out var v))
+                {
+                    result = type is null ? v : Enum.ToObject(type, v);
+                    return true;
+                }
+
+                var str = GetStringValue(key);
+                if (type is null)
+                {
+                    result = str;
+                    return true;
+                }
+
+#if NETFRAMEWORK || NETSTANDARD2_0
+                result = Enum.Parse(type, str);
+                return true;
+#else
+                if (Enum.TryParse(type, str, out result))
+                {
+                    return true;
+                }
+#endif
+            }
+            catch (ArgumentException)
+            {
+            }
+            catch (OverflowException)
+            {
+            }
+
+            result = default;
+            return false;
+        }
+
+        /// <summary>
+        /// Gets the value of the specific property.
+        /// </summary>
+        /// <param name="type">An enumeration type.</param>
+        /// <param name="key">The property key.</param>
+        /// <param name="ignoreCase">true if ignore case; otherwise, false.</param>
+        /// <param name="result">The result output.</param>
+        /// <returns>true if parse succeeded; otherwise, false.</returns>
+        public bool TryGetEnumValue(Type type, string key, bool ignoreCase, out object result)
+        {
+            try
+            {
+                if (TryGetInt32Value(key, out var v))
+                {
+                    result = type is null ? v : Enum.ToObject(type, v);
+                    return true;
+                }
+
+                var str = GetStringValue(key);
+                if (type is null)
+                {
+                    result = str;
+                    return true;
+                }
+
+#if NETFRAMEWORK || NETSTANDARD2_0
+                result = Enum.Parse(type, str, ignoreCase);
+                return true;
+#else
+                if (Enum.TryParse(type, str, ignoreCase, out result))
+                {
+                    return true;
+                }
+#endif
+            }
+            catch (ArgumentException)
+            {
+            }
+            catch (OverflowException)
+            {
+            }
+
+            result = default;
+            return false;
         }
 
         /// <summary>

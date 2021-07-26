@@ -1154,14 +1154,20 @@ namespace Trivial.Text
                         };
                     }
 
-                    parser = n.GetMethod("Parse", new[] { typeof(string), typeof(JsonDocumentOptions) });
-                    if (parser != null && parser.IsStatic)
+                    var nullable = typeof(Nullable<>);
+                    var optionsType = t.Assembly.GetType("System.Text.Json.Nodes.JsonNodeOptions", false);
+                    if (optionsType != null)
                     {
-                        return str =>
+                        nullable = nullable.MakeGenericType(optionsType);
+                        parser = n.GetMethod("Parse", new[] { typeof(string), nullable, typeof(JsonDocumentOptions) });
+                        if (parser != null && parser.IsStatic)
                         {
-                            if (string.IsNullOrWhiteSpace(str)) return default;
-                            return (T)parser.Invoke(null, new object[] { str, default(JsonDocumentOptions) });
-                        };
+                            return str =>
+                            {
+                                if (string.IsNullOrWhiteSpace(str)) return default;
+                                return (T)parser.Invoke(null, new object[] { str, null, default(JsonDocumentOptions) });
+                            };
+                        }
                     }
                 }
                 catch (AmbiguousMatchException)
