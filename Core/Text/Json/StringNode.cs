@@ -14,7 +14,7 @@ namespace Trivial.Text
     /// <summary>
     /// Represents a specific string JSON value with source.
     /// </summary>
-    public interface IJsonString : IJsonValue, IEquatable<IJsonValue<string>>, IEquatable<IJsonString>, IEquatable<string>
+    public interface IJsonStringNode : IJsonValueNode, IEquatable<IJsonValueNode<string>>, IEquatable<IJsonStringNode>, IEquatable<string>
     {
         /// <summary>
         /// Gets the source value.
@@ -36,13 +36,13 @@ namespace Trivial.Text
     /// <summary>
     /// Represents a specific JSON string value.
     /// </summary>
-    public class JsonString : IJsonString, IJsonValue<string>, IJsonValueResolver, IComparable<IJsonValue<string>>, IComparable<string>, IEquatable<IJsonValue<string>>, IEquatable<string>, IEquatable<StringBuilder>, IReadOnlyList<char>
+    public class JsonStringNode : IJsonStringNode, IJsonValueNode<string>, IJsonDataNode, IComparable<IJsonValueNode<string>>, IComparable<string>, IEquatable<IJsonValueNode<string>>, IEquatable<string>, IEquatable<StringBuilder>, IReadOnlyList<char>
     {
         /// <summary>
         /// Initializes a new instance of the JsonString class.
         /// </summary>
         /// <param name="value">The value.</param>
-        public JsonString(string value)
+        public JsonStringNode(string value)
         {
             Value = value;
             ValueKind = value != null ? JsonValueKind.String : JsonValueKind.Null;
@@ -52,7 +52,7 @@ namespace Trivial.Text
         /// Initializes a new instance of the JsonString class.
         /// </summary>
         /// <param name="value">The value.</param>
-        public JsonString(DateTime value)
+        public JsonStringNode(DateTime value)
         {
             Value = ToJson(value, true);
             ValueKind = JsonValueKind.String;
@@ -63,7 +63,7 @@ namespace Trivial.Text
         /// Initializes a new instance of the JsonString class.
         /// </summary>
         /// <param name="value">The value.</param>
-        public JsonString(DateTimeOffset value)
+        public JsonStringNode(DateTimeOffset value)
         {
             Value = value.ToString("yyyy-MM-ddTHH:mm:ss.fffzzz");
             ValueKind = JsonValueKind.String;
@@ -74,7 +74,7 @@ namespace Trivial.Text
         /// Initializes a new instance of the JsonString class.
         /// </summary>
         /// <param name="value">The value.</param>
-        public JsonString(Guid value)
+        public JsonStringNode(Guid value)
         {
             Value = value.ToString();
             ValueKind = JsonValueKind.String;
@@ -85,7 +85,7 @@ namespace Trivial.Text
         /// Initializes a new instance of the JsonString class.
         /// </summary>
         /// <param name="value">The value.</param>
-        public JsonString(Uri value)
+        public JsonStringNode(Uri value)
         {
             Value = value.OriginalString;
             ValueKind = JsonValueKind.String;
@@ -95,7 +95,7 @@ namespace Trivial.Text
         /// Initializes a new instance of the JsonString class.
         /// </summary>
         /// <param name="value">The value.</param>
-        public JsonString(System.Security.SecureString value) : this(Security.SecureStringExtensions.ToUnsecureString(value))
+        public JsonStringNode(System.Security.SecureString value) : this(Security.SecureStringExtensions.ToUnsecureString(value))
         {
         }
 
@@ -103,7 +103,7 @@ namespace Trivial.Text
         /// Initializes a new instance of the JsonString class.
         /// </summary>
         /// <param name="value">The value.</param>
-        public JsonString(StringBuilder value) : this(value?.ToString())
+        public JsonStringNode(StringBuilder value) : this(value?.ToString())
         {
         }
 
@@ -111,7 +111,7 @@ namespace Trivial.Text
         /// Initializes a new instance of the JsonString class.
         /// </summary>
         /// <param name="value">The value.</param>
-        public JsonString(char[] value) : this(value != null ? new string(value) : null)
+        public JsonStringNode(char[] value) : this(value != null ? new string(value) : null)
         {
         }
 
@@ -119,7 +119,7 @@ namespace Trivial.Text
         /// Initializes a new instance of the JsonString class.
         /// </summary>
         /// <param name="value">The value.</param>
-        public JsonString(ReadOnlySpan<char> value) : this(value != null ? value.ToString() : null)
+        public JsonStringNode(ReadOnlySpan<char> value) : this(value != null ? value.ToString() : null)
         {
         }
 
@@ -127,7 +127,7 @@ namespace Trivial.Text
         /// Initializes a new instance of the JsonString class.
         /// </summary>
         /// <param name="value">The value.</param>
-        public JsonString(TimeSpan value) : this(value.ToString("c"))
+        public JsonStringNode(TimeSpan value) : this(value.ToString("c"))
         {
         }
 
@@ -135,16 +135,7 @@ namespace Trivial.Text
         /// Initializes a new instance of the JsonString class.
         /// </summary>
         /// <param name="value">The value.</param>
-        public JsonString(int value) : this(value.ToString("g", CultureInfo.InvariantCulture))
-        {
-            ValueType = 2;
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the JsonString class.
-        /// </summary>
-        /// <param name="value">The value.</param>
-        public JsonString(long value) : this(value.ToString("g", CultureInfo.InvariantCulture))
+        public JsonStringNode(int value) : this(value.ToString("g", CultureInfo.InvariantCulture))
         {
             ValueType = 2;
         }
@@ -153,7 +144,7 @@ namespace Trivial.Text
         /// Initializes a new instance of the JsonString class.
         /// </summary>
         /// <param name="value">The value.</param>
-        public JsonString(uint value) : this(value.ToString("g", CultureInfo.InvariantCulture))
+        public JsonStringNode(long value) : this(value.ToString("g", CultureInfo.InvariantCulture))
         {
             ValueType = 2;
         }
@@ -162,7 +153,7 @@ namespace Trivial.Text
         /// Initializes a new instance of the JsonString class.
         /// </summary>
         /// <param name="value">The value.</param>
-        public JsonString(ulong value) : this(value.ToString("g", CultureInfo.InvariantCulture))
+        public JsonStringNode(uint value) : this(value.ToString("g", CultureInfo.InvariantCulture))
         {
             ValueType = 2;
         }
@@ -171,7 +162,16 @@ namespace Trivial.Text
         /// Initializes a new instance of the JsonString class.
         /// </summary>
         /// <param name="value">The value.</param>
-        public JsonString(double value) : this(value.ToString("g", CultureInfo.InvariantCulture))
+        public JsonStringNode(ulong value) : this(value.ToString("g", CultureInfo.InvariantCulture))
+        {
+            ValueType = 2;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the JsonString class.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        public JsonStringNode(double value) : this(value.ToString("g", CultureInfo.InvariantCulture))
         {
             ValueType = 3;
         }
@@ -180,7 +180,7 @@ namespace Trivial.Text
         /// Initializes a new instance of the JsonString class.
         /// </summary>
         /// <param name="value">The value.</param>
-        public JsonString(float value) : this(value.ToString("g", CultureInfo.InvariantCulture))
+        public JsonStringNode(float value) : this(value.ToString("g", CultureInfo.InvariantCulture))
         {
             ValueType = 3;
         }
@@ -189,7 +189,7 @@ namespace Trivial.Text
         /// Initializes a new instance of the JsonString class.
         /// </summary>
         /// <param name="value">The value.</param>
-        public JsonString(decimal value) : this(value.ToString("g", CultureInfo.InvariantCulture))
+        public JsonStringNode(decimal value) : this(value.ToString("g", CultureInfo.InvariantCulture))
         {
             ValueType = 3;
         }
@@ -198,7 +198,7 @@ namespace Trivial.Text
         /// Initializes a new instance of the JsonString class.
         /// </summary>
         /// <param name="value">The value.</param>
-        public JsonString(BigInteger value) : this(value.ToString("g", CultureInfo.InvariantCulture))
+        public JsonStringNode(BigInteger value) : this(value.ToString("g", CultureInfo.InvariantCulture))
         {
         }
 
@@ -206,7 +206,7 @@ namespace Trivial.Text
         /// Initializes a new instance of the JsonString class.
         /// </summary>
         /// <param name="value">The value.</param>
-        public JsonString(bool value) : this(value ? JsonBoolean.TrueString : JsonBoolean.FalseString)
+        public JsonStringNode(bool value) : this(value ? JsonBooleanNode.TrueString : JsonBooleanNode.FalseString)
         {
             ValueType = 5;
         }
@@ -215,7 +215,7 @@ namespace Trivial.Text
         /// Initializes a new instance of the JsonString class.
         /// </summary>
         /// <param name="value">The value.</param>
-        public JsonString(Net.QueryData value) : this(value?.ToString())
+        public JsonStringNode(Net.QueryData value) : this(value?.ToString())
         {
         }
 
@@ -223,7 +223,7 @@ namespace Trivial.Text
         /// Initializes a new instance of the JsonString class.
         /// </summary>
         /// <param name="value">The value.</param>
-        public JsonString(Net.HttpUri value) : this(value?.ToString())
+        public JsonStringNode(Net.HttpUri value) : this(value?.ToString())
         {
         }
 
@@ -231,7 +231,7 @@ namespace Trivial.Text
         /// Initializes a new instance of the JsonString class.
         /// </summary>
         /// <param name="value">The value.</param>
-        public JsonString(Net.AppDeepLinkUri value) : this(value?.ToString())
+        public JsonStringNode(Net.AppDeepLinkUri value) : this(value?.ToString())
         {
         }
 
@@ -239,7 +239,7 @@ namespace Trivial.Text
         /// Initializes a new instance of the JsonString class.
         /// </summary>
         /// <param name="value">The value.</param>
-        public JsonString(Maths.Fraction value) : this(value.ToString())
+        public JsonStringNode(Maths.Fraction value) : this(value.ToString())
         {
         }
 
@@ -497,12 +497,12 @@ namespace Trivial.Text
         /// <param name="startIndex">The zero-based starting character position of a substring in this instance.</param>
         /// <param name="length">The number of characters in the substring.</param>
         /// <returns>A JSON string that is equivalent to the substring of length length that begins at startIndex in this instance, or instance with empty string value if startIndex is equal to the length of this instance and length is zero.</returns>
-        public JsonString Substring(int startIndex, int? length = null)
+        public JsonStringNode Substring(int startIndex, int? length = null)
         {
             if (Value == null) return this;
             var str = length.HasValue ? Value.Substring(startIndex, length.Value) : Value.Substring(startIndex);
             if (str != null && str.Length == Length) return this;
-            return new JsonString(str);
+            return new JsonStringNode(str);
         }
 
         /// <summary>
@@ -510,7 +510,7 @@ namespace Trivial.Text
         /// </summary>
         /// <param name="other">The object to compare with the current instance.</param>
         /// <returns>true if obj and this instance represent the same value; otherwise, false.</returns>
-        public bool Equals(IJsonString other)
+        public bool Equals(IJsonStringNode other)
         {
             if (Value is null) return other is null || other.StringValue is null;
             return Value.Equals(other.StringValue);
@@ -521,7 +521,7 @@ namespace Trivial.Text
         /// </summary>
         /// <param name="other">The object to compare with the current instance.</param>
         /// <returns>true if obj and this instance represent the same value; otherwise, false.</returns>
-        public bool Equals(IJsonValue<string> other)
+        public bool Equals(IJsonValueNode<string> other)
         {
             if (Value is null) return other is null || other.Value is null;
             return Value.Equals(other.Value);
@@ -583,15 +583,15 @@ namespace Trivial.Text
             if (Value is null)
             {
                 if (other is null) return true;
-                if (other is IJsonValue<string> nJson) return nJson.Value is null;
-                if (other is IJsonValue gJson) return gJson.ValueKind == JsonValueKind.Null || gJson.ValueKind == JsonValueKind.Undefined;
+                if (other is IJsonValueNode<string> nJson) return nJson.Value is null;
+                if (other is IJsonValueNode gJson) return gJson.ValueKind == JsonValueKind.Null || gJson.ValueKind == JsonValueKind.Undefined;
                 return false;
             }
 
             if (other is null) return false;
-            if (other is IJsonValue<string> sJson) return Value.Equals(sJson.Value);
-            if (other is IJsonString strJson) return Value.Equals(strJson.StringValue);
-            if (other is IJsonValue vJson) return ToString().Equals(vJson.ToString(), StringComparison.InvariantCulture);
+            if (other is IJsonValueNode<string> sJson) return Value.Equals(sJson.Value);
+            if (other is IJsonStringNode strJson) return Value.Equals(strJson.StringValue);
+            if (other is IJsonValueNode vJson) return ToString().Equals(vJson.ToString(), StringComparison.InvariantCulture);
             if (other is StringBuilder sb) return Value.Equals(sb.ToString());
             return Value.Equals(other);
         }
@@ -617,7 +617,7 @@ namespace Trivial.Text
         /// <item>Greater than zero This instance is greater than value.</item>
         /// </list>
         /// </returns>
-        public int CompareTo(IJsonValue<string> other)
+        public int CompareTo(IJsonValueNode<string> other)
         {
             if (Value == null && other?.Value == null) return 0;
             return Value == null ? -other.Value.CompareTo(Value) : Value.CompareTo(other?.Value);
@@ -667,14 +667,14 @@ namespace Trivial.Text
         /// </summary>
         /// <returns>The value of the element as a boolean.</returns>
         /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
-        bool IJsonValueResolver.GetBoolean()
+        bool IJsonDataNode.GetBoolean()
         {
             if (string.IsNullOrEmpty(Value)) return false;
             var v = Value.ToLower();
             return v switch
             {
-                JsonBoolean.TrueString => true,
-                JsonBoolean.FalseString => false,
+                JsonBooleanNode.TrueString => true,
+                JsonBooleanNode.FalseString => false,
                 "0" => false,
                 "1" => true,
                 _ => throw new InvalidOperationException("Expect a boolean but it is a string.")
@@ -817,7 +817,7 @@ namespace Trivial.Text
         /// </summary>
         /// <returns>The value of the element as a number.</returns>
         /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
-        string IJsonValueResolver.GetString() => Value;
+        string IJsonDataNode.GetString() => Value;
 
         /// <summary>
         /// Gets the value of the element as a GUID.
@@ -844,7 +844,7 @@ namespace Trivial.Text
                 return true;
             }
 
-            var r = JsonBoolean.TryParse(Value);
+            var r = JsonBooleanNode.TryParse(Value);
             if (r == null)
             {
                 result = false;
@@ -972,7 +972,7 @@ namespace Trivial.Text
         /// </summary>
         /// <param name="result">The result.</param>
         /// <returns>true if the kind is the one expected; otherwise, false.</returns>
-        bool IJsonValueResolver.TryGetString(out string result)
+        bool IJsonDataNode.TryGetString(out string result)
         {
             result = Value;
             return true;
@@ -1000,7 +1000,7 @@ namespace Trivial.Text
         /// <param name="key">The property key.</param>
         /// <returns>The value.</returns>
         /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
-        IJsonValueResolver IJsonValueResolver.GetValue(string key) => throw new InvalidOperationException("Expect an object but it is a string.");
+        IJsonDataNode IJsonDataNode.GetValue(string key) => throw new InvalidOperationException("Expect an object but it is a string.");
 
         /// <summary>
         /// Gets the value of the specific property.
@@ -1008,7 +1008,7 @@ namespace Trivial.Text
         /// <param name="key">The property key.</param>
         /// <returns>The value.</returns>
         /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
-        IJsonValueResolver IJsonValueResolver.GetValue(ReadOnlySpan<char> key) => throw new InvalidOperationException("Expect an object but it is a string.");
+        IJsonDataNode IJsonDataNode.GetValue(ReadOnlySpan<char> key) => throw new InvalidOperationException("Expect an object but it is a string.");
 
         /// <summary>
         /// Tries to get the value of the specific property.
@@ -1016,7 +1016,7 @@ namespace Trivial.Text
         /// <param name="key">The property key.</param>
         /// <param name="result">The result.</param>
         /// <returns>true if the kind is the one expected; otherwise, false.</returns>
-        bool IJsonValueResolver.TryGetValue(string key, out IJsonValueResolver result)
+        bool IJsonDataNode.TryGetValue(string key, out IJsonDataNode result)
         {
             if (key == null)
             {
@@ -1033,7 +1033,7 @@ namespace Trivial.Text
 
             if (s.StartsWith("{") && s.EndsWith("}"))
             {
-                var json = JsonObject.TryParse(s);
+                var json = JsonObjectNode.TryParse(s);
                 if (json is null)
                 {
                     result = default;
@@ -1045,7 +1045,7 @@ namespace Trivial.Text
 
             if (s.StartsWith("[") && s.EndsWith("]"))
             {
-                var jArr = JsonArray.TryParse(s);
+                var jArr = JsonArrayNode.TryParse(s);
                 if (jArr is null)
                 {
                     result = default;
@@ -1059,7 +1059,7 @@ namespace Trivial.Text
             {
                 case "len":
                 case "length":
-                    result = new JsonInteger(Length);
+                    result = new JsonIntegerNode(Length);
                     return true;
                 case "*":
                 case "all":
@@ -1072,7 +1072,7 @@ namespace Trivial.Text
             {
                 try
                 {
-                    result = new JsonString(Value[i].ToString());
+                    result = new JsonStringNode(Value[i].ToString());
                     return true;
                 }
                 catch (ArgumentException)
@@ -1090,9 +1090,9 @@ namespace Trivial.Text
         /// <param name="key">The property key.</param>
         /// <param name="result">The result.</param>
         /// <returns>true if the kind is the one expected; otherwise, false.</returns>
-        bool IJsonValueResolver.TryGetValue(ReadOnlySpan<char> key, out IJsonValueResolver result)
+        bool IJsonDataNode.TryGetValue(ReadOnlySpan<char> key, out IJsonDataNode result)
         {
-            if (key != null) return (this as IJsonValueResolver).TryGetValue(key.ToString(), out result);
+            if (key != null) return (this as IJsonDataNode).TryGetValue(key.ToString(), out result);
             result = default;
             return false;
         }
@@ -1103,7 +1103,7 @@ namespace Trivial.Text
         /// <param name="index">The zero-based index of the element to get.</param>
         /// <returns>The value.</returns>
         /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
-        IJsonValueResolver IJsonValueResolver.GetValue(int index) => throw new InvalidOperationException("Expect an array but it is a string.");
+        IJsonDataNode IJsonDataNode.GetValue(int index) => throw new InvalidOperationException("Expect an array but it is a string.");
 
         /// <summary>
         /// Tries to get the value of the specific property.
@@ -1111,7 +1111,7 @@ namespace Trivial.Text
         /// <param name="index">The zero-based index of the element to get.</param>
         /// <param name="result">The result.</param>
         /// <returns>true if the kind is the one expected; otherwise, false.</returns>
-        bool IJsonValueResolver.TryGetValue(int index, out IJsonValueResolver result)
+        bool IJsonDataNode.TryGetValue(int index, out IJsonDataNode result)
         {
             if (index < 0)
             {
@@ -1130,7 +1130,7 @@ namespace Trivial.Text
             {
                 try
                 {
-                    var arr = JsonArray.Parse(Value);
+                    var arr = JsonArrayNode.Parse(Value);
                     return arr.TryGetValue(index, out result);
                 }
                 catch (ArgumentException)
@@ -1160,7 +1160,7 @@ namespace Trivial.Text
             {
                 try
                 {
-                    result = new JsonString(Value[index].ToString());
+                    result = new JsonStringNode(Value[index].ToString());
                     return true;
                 }
                 catch (ArgumentException)
@@ -1179,7 +1179,7 @@ namespace Trivial.Text
         /// <param name="index">The zero-based index of the element to get.</param>
         /// <returns>The value.</returns>
         /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
-        IJsonValueResolver IJsonValueResolver.GetValue(Index index) => throw new InvalidOperationException("Expect an array but it is a string.");
+        IJsonDataNode IJsonDataNode.GetValue(Index index) => throw new InvalidOperationException("Expect an array but it is a string.");
 
         /// <summary>
         /// Tries to get the value of the specific property.
@@ -1187,13 +1187,13 @@ namespace Trivial.Text
         /// <param name="index">The zero-based index of the element to get.</param>
         /// <param name="result">The result.</param>
         /// <returns>true if the kind is the one expected; otherwise, false.</returns>
-        bool IJsonValueResolver.TryGetValue(Index index, out IJsonValueResolver result)
+        bool IJsonDataNode.TryGetValue(Index index, out IJsonDataNode result)
         {
             if (!string.IsNullOrWhiteSpace(Value) && Value.StartsWith("[") && Value.EndsWith("]"))
             {
                 try
                 {
-                    var arr = JsonArray.Parse(Value);
+                    var arr = JsonArrayNode.Parse(Value);
                     return arr.TryGetValue(index, out result);
                 }
                 catch (ArgumentException)
@@ -1229,16 +1229,16 @@ namespace Trivial.Text
         /// </summary>
         /// <returns>The property keys.</returns>
         /// <exception cref="InvalidOperationException">The value kind is not an object.</exception>
-        IEnumerable<string> IJsonValueResolver.GetKeys() => throw new InvalidOperationException("Expect an object but it is a string.");
+        IEnumerable<string> IJsonDataNode.GetKeys() => throw new InvalidOperationException("Expect an object but it is a string.");
 
         /// <summary>
         /// Converts to JSON value.
         /// </summary>
         /// <param name="value">The source value.</param>
         /// <returns>A JSON value.</returns>
-        public static implicit operator JsonString(string value)
+        public static implicit operator JsonStringNode(string value)
         {
-            return new JsonString(value);
+            return new JsonStringNode(value);
         }
 
         /// <summary>
@@ -1246,9 +1246,9 @@ namespace Trivial.Text
         /// </summary>
         /// <param name="value">The source value.</param>
         /// <returns>A JSON value.</returns>
-        public static implicit operator JsonString(ReadOnlySpan<char> value)
+        public static implicit operator JsonStringNode(ReadOnlySpan<char> value)
         {
-            return new JsonString(value);
+            return new JsonStringNode(value);
         }
 
         /// <summary>
@@ -1256,9 +1256,9 @@ namespace Trivial.Text
         /// </summary>
         /// <param name="value">The source value.</param>
         /// <returns>A JSON value.</returns>
-        public static implicit operator JsonString(char[] value)
+        public static implicit operator JsonStringNode(char[] value)
         {
-            return new JsonString(value);
+            return new JsonStringNode(value);
         }
 
         /// <summary>
@@ -1266,9 +1266,9 @@ namespace Trivial.Text
         /// </summary>
         /// <param name="value">The source value.</param>
         /// <returns>A JSON value.</returns>
-        public static implicit operator JsonString(StringBuilder value)
+        public static implicit operator JsonStringNode(StringBuilder value)
         {
-            return new JsonString(value);
+            return new JsonStringNode(value);
         }
 
         /// <summary>
@@ -1276,9 +1276,9 @@ namespace Trivial.Text
         /// </summary>
         /// <param name="value">The source value.</param>
         /// <returns>A JSON value.</returns>
-        public static implicit operator JsonString(Guid value)
+        public static implicit operator JsonStringNode(Guid value)
         {
-            return new JsonString(value);
+            return new JsonStringNode(value);
         }
 
         /// <summary>
@@ -1286,11 +1286,11 @@ namespace Trivial.Text
         /// </summary>
         /// <param name="value">The source value.</param>
         /// <returns>A JSON value.</returns>
-        public static implicit operator JsonString(System.Text.Json.Nodes.JsonValue value)
+        public static implicit operator JsonStringNode(System.Text.Json.Nodes.JsonValue value)
         {
             if (value is null) return null;
             if (!value.TryGetValue(out string s)) s = value.ToString();
-            return new JsonString(s);
+            return new JsonStringNode(s);
         }
 
         /// <summary>
@@ -1298,7 +1298,7 @@ namespace Trivial.Text
         /// </summary>
         /// <param name="value">The source value.</param>
         /// <returns>A JSON value.</returns>
-        public static implicit operator JsonString(System.Text.Json.Nodes.JsonNode value)
+        public static implicit operator JsonStringNode(System.Text.Json.Nodes.JsonNode value)
         {
             if (value is null) return null;
             if (value is System.Text.Json.Nodes.JsonValue v) return v;
@@ -1310,7 +1310,7 @@ namespace Trivial.Text
         /// </summary>
         /// <param name="json">The JSON value.</param>
         /// <returns>A string.</returns>
-        public static explicit operator string(JsonString json)
+        public static explicit operator string(JsonStringNode json)
         {
             return json?.Value;
         }
@@ -1320,7 +1320,7 @@ namespace Trivial.Text
         /// </summary>
         /// <param name="json">The JSON value.</param>
         /// <returns>An instance of the JsonNode class.</returns>
-        public static explicit operator System.Text.Json.Nodes.JsonNode(JsonString json)
+        public static explicit operator System.Text.Json.Nodes.JsonNode(JsonStringNode json)
         {
             return System.Text.Json.Nodes.JsonValue.Create(json.Value);
         }
@@ -1330,7 +1330,7 @@ namespace Trivial.Text
         /// </summary>
         /// <param name="json">The JSON value.</param>
         /// <returns>An instance of the JsonNode class.</returns>
-        public static explicit operator System.Text.Json.Nodes.JsonValue(JsonString json)
+        public static explicit operator System.Text.Json.Nodes.JsonValue(JsonStringNode json)
         {
             return System.Text.Json.Nodes.JsonValue.Create(json.Value);
         }
@@ -1340,7 +1340,7 @@ namespace Trivial.Text
         /// </summary>
         /// <param name="value">A string JSON value to test</param>
         /// <returns>true if the source value is null or an empty string (""); otherwise, false.</returns>
-        public static bool IsNullOrEmpty(IJsonValue<string> value)
+        public static bool IsNullOrEmpty(IJsonValueNode<string> value)
         {
             return string.IsNullOrEmpty(value?.Value);
         }
@@ -1350,7 +1350,7 @@ namespace Trivial.Text
         /// </summary>
         /// <param name="value">A string JSON value to test</param>
         /// <returns>true if the source value is null or System.String.Empty, or if value consists exclusively of white-space characters; otherwise, false.</returns>
-        public static bool IsNullOrWhiteSpace(IJsonValue<string> value)
+        public static bool IsNullOrWhiteSpace(IJsonValueNode<string> value)
         {
             return string.IsNullOrWhiteSpace(value?.Value);
         }
@@ -1399,7 +1399,7 @@ namespace Trivial.Text
         /// <param name="leftValue">The left value to compare.</param>
         /// <param name="rightValue">The right value to compare.</param>
         /// <returns>true if they are same; otherwise, false.</returns>
-        public static bool operator ==(JsonString leftValue, IJsonValue<string> rightValue)
+        public static bool operator ==(JsonStringNode leftValue, IJsonValueNode<string> rightValue)
         {
             if (ReferenceEquals(leftValue, rightValue)) return true;
             if (rightValue is null || leftValue is null) return false;
@@ -1413,7 +1413,7 @@ namespace Trivial.Text
         /// <param name="leftValue">The left value to compare.</param>
         /// <param name="rightValue">The right value to compare.</param>
         /// <returns>true if they are different; otherwise, false.</returns>
-        public static bool operator !=(JsonString leftValue, IJsonValue<string> rightValue)
+        public static bool operator !=(JsonStringNode leftValue, IJsonValueNode<string> rightValue)
         {
             if (ReferenceEquals(leftValue, rightValue)) return false;
             if (rightValue is null || leftValue is null) return true;
@@ -1427,7 +1427,7 @@ namespace Trivial.Text
         /// <param name="leftValue">The left value to compare.</param>
         /// <param name="rightValue">The right value to compare.</param>
         /// <returns>true if they are same; otherwise, false.</returns>
-        public static bool operator ==(JsonString leftValue, string rightValue)
+        public static bool operator ==(JsonStringNode leftValue, string rightValue)
         {
             return !(leftValue is null) && leftValue.Value == rightValue;
         }
@@ -1439,7 +1439,7 @@ namespace Trivial.Text
         /// <param name="leftValue">The left value to compare.</param>
         /// <param name="rightValue">The right value to compare.</param>
         /// <returns>true if they are different; otherwise, false.</returns>
-        public static bool operator !=(JsonString leftValue, string rightValue)
+        public static bool operator !=(JsonStringNode leftValue, string rightValue)
         {
             return leftValue is null || leftValue.Value != rightValue;
         }

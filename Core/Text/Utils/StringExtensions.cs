@@ -531,7 +531,7 @@ namespace Trivial.Text
                 var str = new StringBuilder("{");
                 foreach (var kvp in col)
                 {
-                    str.AppendFormat("\"{0}\":\"{1}\",", JsonString.ToJson(kvp.Key), JsonString.ToJson(kvp.Value));
+                    str.AppendFormat("\"{0}\":\"{1}\",", JsonStringNode.ToJson(kvp.Key), JsonStringNode.ToJson(kvp.Value));
                 }
 
                 str.Remove(str.Length - 1, 1);
@@ -539,21 +539,21 @@ namespace Trivial.Text
                 return str.ToString();
             }
 
-            if (t == typeof(string)) return JsonString.ToJson(obj.ToString());
-            if (obj is Net.HttpUri uri2) return JsonString.ToJson(uri2.ToString());
+            if (t == typeof(string)) return JsonStringNode.ToJson(obj.ToString());
+            if (obj is Net.HttpUri uri2) return JsonStringNode.ToJson(uri2.ToString());
             if (obj is Uri uri)
             {
                 try
                 {
-                    return JsonString.ToJson(uri.OriginalString);
+                    return JsonStringNode.ToJson(uri.OriginalString);
                 }
                 catch (InvalidOperationException)
                 {
-                    return JsonString.ToJson(uri.ToString());
+                    return JsonStringNode.ToJson(uri.ToString());
                 }
             }
 
-            if (obj is IJsonValue)
+            if (obj is IJsonValueNode)
             {
                 return obj.ToString();
             }
@@ -573,9 +573,9 @@ namespace Trivial.Text
                 if (obj is uint i64u)
                     return i64u.ToString("g", CultureInfo.InvariantCulture);
                 if (obj is DateTime d)
-                    return JsonString.ToJson(d.ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ss.fffZ"));
+                    return JsonStringNode.ToJson(d.ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ss.fffZ"));
                 if (obj is DateTimeOffset dto)
-                    return JsonString.ToJson(dto.ToString("yyyy-MM-ddTHH:mm:ss.fffzzz"));
+                    return JsonStringNode.ToJson(dto.ToString("yyyy-MM-ddTHH:mm:ss.fffzzz"));
                 if (obj is double f2)
                     return f2.ToString("g", CultureInfo.InvariantCulture);
                 if (obj is TimeSpan ts)
@@ -583,7 +583,7 @@ namespace Trivial.Text
 
                 if (t == typeof(Guid)
                     || t == typeof(Maths.Angle))
-                    return JsonString.ToJson(obj.ToString());
+                    return JsonStringNode.ToJson(obj.ToString());
                 if (t == typeof(byte)
                     || t == typeof(short)
                     || t == typeof(ushort))

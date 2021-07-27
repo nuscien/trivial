@@ -23,7 +23,7 @@ namespace Trivial.Text
         public void TestJsonObject()
         {
             var now = DateTime.Now;
-            var json = new JsonObject();
+            var json = new JsonObjectNode();
             json.SetValue("now", now);
             json.SetValue("str-a", "abcdefg");
             json.SetValue("str-a", "hijklmn");
@@ -40,7 +40,7 @@ namespace Trivial.Text
             json.SetValue("num", 123);
             json.SetJavaScriptDateTicksValue("ticks", now);
             json.SetValue("props", json);
-            json.SetValue("arr", new JsonArray());
+            json.SetValue("arr", new JsonArrayNode());
             json.SetRange(json);
 
             Assert.AreEqual(9, json.Keys.Count());
@@ -61,7 +61,7 @@ namespace Trivial.Text
             Assert.AreEqual(json, json.Clone());
 
             var props = json.GetObjectValue("props");
-            var p1 = new JsonObject
+            var p1 = new JsonObjectNode
             {
                 { "p6", "()()" },
                 { "p7", 4567 },
@@ -71,8 +71,8 @@ namespace Trivial.Text
             p1.SetValue("p3", p1);
             props.SetValue("p1", p1);
             props.SetValue("p4", "p5");
-            Assert.AreEqual(props, json.GetValue<JsonObject>("props"));
-            Assert.AreEqual(props, json.GetValue<IJsonValue>("props"));
+            Assert.AreEqual(props, json.GetValue<JsonObjectNode>("props"));
+            Assert.AreEqual(props, json.GetValue<IJsonValueNode>("props"));
             Assert.AreNotEqual(json, p1);
             Assert.IsNotNull(json.GetObjectValue("props", "p1", "p3"));
             Assert.IsTrue(json.GetObjectValue("props", "p1", "p3").GetBooleanValue("p2"));
@@ -132,10 +132,10 @@ namespace Trivial.Text
             {
             }
 
-            json["dot.net"] = new JsonArray
+            json["dot.net"] = new JsonArrayNode
             {
                 "Text",
-                new JsonObject
+                new JsonObjectNode
                 {
                     { "name", "value" },
                     { ".[][][]....\"\'\\.", "test" }
@@ -192,7 +192,7 @@ namespace Trivial.Text
             Assert.AreEqual(9, list[7]);
             jsonArray.AddNull();
             Assert.AreEqual(JsonValues.Null, jsonArray[jsonArray.Count - 1]);
-            jsonArray.Add(new JsonArray
+            jsonArray.Add(new JsonArrayNode
             {
                 8, 9, 0
             });
@@ -211,7 +211,7 @@ namespace Trivial.Text
             writer.Flush();
             Assert.AreEqual(jsonStr, Encoding.UTF8.GetString(stream.ToArray()));
             stream.Position = 0;
-            json = JsonObject.Parse(stream);
+            json = JsonObjectNode.Parse(stream);
             Assert.AreEqual(9, json.Keys.Count);
             Assert.AreEqual(jsonStr, json.ToString());
             var jsonNode = (System.Text.Json.Nodes.JsonNode)json;
@@ -237,7 +237,7 @@ namespace Trivial.Text
         [TestMethod]
         public void TestJsonAttribute()
         {
-            var jArr = new JsonArray
+            var jArr = new JsonArrayNode
             {
                 "abc",
                 true,
@@ -245,13 +245,13 @@ namespace Trivial.Text
             };
             jArr.AddNull();
             jArr.Add(1234);
-            var jObj = new JsonObject();
+            var jObj = new JsonObjectNode();
             jObj.SetValue("hijk", jArr);
             jObj.SetValue("lmn", "opq");
             jObj.SetValue("rst", 56789);
             jObj.SetValue("uvw", false);
             jObj.SetNullValue("x");
-            jObj.SetValue("y", new JsonObject());
+            jObj.SetValue("y", new JsonObjectNode());
             jObj.SetValue("z", 0);
 
             var model = new JsonAttributeTestModel

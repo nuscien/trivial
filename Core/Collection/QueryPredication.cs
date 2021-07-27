@@ -357,7 +357,7 @@ namespace Trivial.Collection
         {
             if (filter == null || Data == null) return;
             var s = Q.GetValues(key).FirstOrDefault(ele => !string.IsNullOrWhiteSpace(ele));
-            var b = JsonBoolean.TryParse(s);
+            var b = JsonBooleanNode.TryParse(s);
             if (b == null) return;
             Data = filter(new FilterInfo<bool>(b.Value, Data, key, Q)) ?? Data;
         }
@@ -378,7 +378,7 @@ namespace Trivial.Collection
         {
             if (filter == null || Data == null) return;
             var s = Q.GetValues(key).FirstOrDefault(ele => !string.IsNullOrWhiteSpace(ele));
-            var b = JsonBoolean.TryParse(s);
+            var b = JsonBooleanNode.TryParse(s);
             Data = filter(new FilterInfo<bool?>(b?.Value, Data, key, Q)) ?? Data;
         }
 

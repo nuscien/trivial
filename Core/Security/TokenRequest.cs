@@ -209,9 +209,9 @@ namespace Trivial.Security
         /// Gets the JSON format string.
         /// </summary>
         /// <returns>A string in JSON format.</returns>
-        protected virtual JsonObject ToJsonObject()
+        protected virtual JsonObjectNode ToJsonObject()
         {
-            var json = Body?.ToJsonObject() ?? new JsonObject();
+            var json = Body?.ToJsonObject() ?? new JsonObjectNode();
             if (!string.IsNullOrWhiteSpace(ClientId))
                 json.SetValue(TokenRequestBody.ClientIdProperty, ClientId);
             if (ClientCredentials != null && ClientCredentials.Secret != null && ClientCredentials.Secret.Length > 0)
@@ -470,10 +470,10 @@ namespace Trivial.Security
         /// Gets the JSON object.
         /// </summary>
         /// <returns>A JSON object instance.</returns>
-        internal protected virtual JsonObject ToJsonObject()
+        internal protected virtual JsonObjectNode ToJsonObject()
         {
             var json = JsonSerializer.Serialize(this, GetType());
-            return JsonObject.Parse(json);
+            return JsonObjectNode.Parse(json);
         }
 
         private (string, bool) GetNumberValueString(object obj, Type type)
@@ -554,9 +554,9 @@ namespace Trivial.Security
         /// Gets the JSON format string.
         /// </summary>
         /// <returns>A string in JSON format.</returns>
-        internal protected override JsonObject ToJsonObject()
+        internal protected override JsonObjectNode ToJsonObject()
         {
-            var json = new JsonObject();
+            var json = new JsonObjectNode();
             json.SetRange(query);
             return json;
         }
@@ -1269,9 +1269,9 @@ namespace Trivial.Security
         /// Gets the JSON format string.
         /// </summary>
         /// <returns>A string in JSON format.</returns>
-        internal protected override JsonObject ToJsonObject()
+        internal protected override JsonObjectNode ToJsonObject()
         {
-            var json = base.ToJsonObject() ?? new JsonObject();
+            var json = base.ToJsonObject() ?? new JsonObjectNode();
             json.SetValue(PasswordProperty, Password.ToUnsecureString());
             return json;
         }

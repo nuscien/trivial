@@ -244,9 +244,9 @@ namespace Trivial.Maths
         /// Converts to an instance of JSON.
         /// </summary>
         /// <returns>A JSON object instance.</returns>
-        public Text.JsonObject ToJson()
+        public Text.JsonObjectNode ToJson()
         {
-            return ToJson(new Text.JsonObject());
+            return ToJson(new Text.JsonObjectNode());
         }
 
         /// <summary>
@@ -254,9 +254,9 @@ namespace Trivial.Maths
         /// </summary>
         /// <param name="obj">The optional JSON object instance to add properties.</param>
         /// <returns>A JSON object instance.</returns>
-        public Text.JsonObject ToJson(Text.JsonObject obj)
+        public Text.JsonObjectNode ToJson(Text.JsonObjectNode obj)
         {
-            if (obj is null) obj = new Text.JsonObject();
+            if (obj is null) obj = new Text.JsonObjectNode();
             obj.SetValue("x", X);
             obj.SetValue("y", Y);
             obj.SetValue("z", Z);
@@ -394,9 +394,9 @@ namespace Trivial.Maths
         /// Converts to an instance of JSON.
         /// </summary>
         /// <returns>A JSON object instance.</returns>
-        public Text.JsonObject ToJson()
+        public Text.JsonObjectNode ToJson()
         {
-            return ToJson(new Text.JsonObject());
+            return ToJson(new Text.JsonObjectNode());
         }
 
         /// <summary>
@@ -404,9 +404,9 @@ namespace Trivial.Maths
         /// </summary>
         /// <param name="obj">The optional JSON object instance to add properties.</param>
         /// <returns>A JSON object instance.</returns>
-        public Text.JsonObject ToJson(Text.JsonObject obj)
+        public Text.JsonObjectNode ToJson(Text.JsonObjectNode obj)
         {
-            if (obj is null) obj = new Text.JsonObject();
+            if (obj is null) obj = new Text.JsonObjectNode();
             obj.SetValue("x", X);
             obj.SetValue("y", Y);
             obj.SetValue("z", Z);

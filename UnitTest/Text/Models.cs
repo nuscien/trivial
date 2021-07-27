@@ -48,11 +48,11 @@ namespace Trivial.Text
         [JsonConverter(typeof(JsonUnixTimestampConverter))]
         public DateTime E { get; set; }
 
-        [JsonConverter(typeof(JsonObjectConverter))]
-        public JsonObject F { get; set; }
+        [JsonConverter(typeof(JsonObjectNodeConverter))]
+        public JsonObjectNode F { get; set; }
 
-        [JsonConverter(typeof(JsonObjectConverter))]
-        public JsonArray G { get; set; }
+        [JsonConverter(typeof(JsonObjectNodeConverter))]
+        public JsonArrayNode G { get; set; }
 
         [JsonConverter(typeof(JsonStringListConverter))]
         public IList<string> H { get; set; }
@@ -75,13 +75,13 @@ namespace Trivial.Text
         [JsonConverter(typeof(JsonNumberConverter))]
         public Maths.VersionSimpleInterval N { get; set; }
 
-        [JsonConverter(typeof(JsonIntegerEnumConverter))]
+        [JsonConverter(typeof(JsonIntegerEnumCompatibleConverter))]
         public Data.ChangeErrorKinds O { get; set; }
 
-        [JsonConverter(typeof(JsonIntegerEnumConverter))]
+        [JsonConverter(typeof(JsonIntegerEnumCompatibleConverter))]
         public Data.ChangeErrorKinds P { get; set; }
 
-        [JsonConverter(typeof(JsonIntegerEnumConverter))]
+        [JsonConverter(typeof(JsonIntegerEnumCompatibleConverter))]
         public Data.ChangeErrorKinds Q { get; set; }
     }
 }

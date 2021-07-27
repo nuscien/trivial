@@ -161,11 +161,11 @@ namespace Trivial.Text
             {
                 if (props == null)
                 {
-                    if (type == typeof(JsonArray))
+                    if (type == typeof(JsonArrayNode))
                     {
                         foreach (var item in this)
                         {
-                            var instance = new JsonArray();
+                            var instance = new JsonArrayNode();
                             instance.AddRange(item);
                             yield return (T)(object)instance;
                         }
@@ -188,11 +188,11 @@ namespace Trivial.Text
                 }
                 else
                 {
-                    if (type == typeof(JsonObject))
+                    if (type == typeof(JsonObjectNode))
                     {
                         foreach (var item in this)
                         {
-                            var instance = new JsonObject();
+                            var instance = new JsonObjectNode();
                             instance.SetRange(item, propertyNames);
                             yield return (T)(object)instance;
                         }

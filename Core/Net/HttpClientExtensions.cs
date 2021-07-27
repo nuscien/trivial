@@ -126,8 +126,8 @@ namespace Trivial.Net
             using var stream = await httpContent.ReadAsStreamAsync();
 #endif
             var type = typeof(T);
-            if (type == typeof(JsonObject)) return (T)(object)await JsonObject.ParseAsync(stream, default, cancellationToken);
-            if (type == typeof(JsonArray)) return (T)(object)await JsonArray.ParseAsync(stream, default, cancellationToken);
+            if (type == typeof(JsonObjectNode)) return (T)(object)await JsonObjectNode.ParseAsync(stream, default, cancellationToken);
+            if (type == typeof(JsonArrayNode)) return (T)(object)await JsonArrayNode.ParseAsync(stream, default, cancellationToken);
             if (type == typeof(JsonDocument)) return (T)(object)await JsonDocument.ParseAsync(stream, default, cancellationToken);
             if (type == typeof(System.Text.Json.Nodes.JsonNode) || type.IsSubclassOf(typeof(System.Text.Json.Nodes.JsonNode))) return (T)(object)System.Text.Json.Nodes.JsonNode.Parse(stream);
             return await JsonSerializer.DeserializeAsync<T>(stream, default(JsonSerializerOptions), cancellationToken);

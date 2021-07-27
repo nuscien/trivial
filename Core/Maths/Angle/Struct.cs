@@ -198,7 +198,7 @@ namespace Trivial.Maths
         /// Converts a number to angle.
         /// </summary>
         /// <param name="value">The raw value.</param>
-        public static implicit operator Angle(Text.JsonInteger value)
+        public static implicit operator Angle(Text.JsonIntegerNode value)
         {
             return new Angle(value.Value);
         }
@@ -207,7 +207,7 @@ namespace Trivial.Maths
         /// Converts a number to angle.
         /// </summary>
         /// <param name="value">The raw value.</param>
-        public static implicit operator Angle(Text.JsonDouble value)
+        public static implicit operator Angle(Text.JsonDoubleNode value)
         {
             return new Angle(value.Value);
         }
@@ -216,7 +216,7 @@ namespace Trivial.Maths
         /// Converts a string to angle.
         /// </summary>
         /// <param name="value">The raw value.</param>
-        public static implicit operator Angle(Text.JsonString value)
+        public static implicit operator Angle(Text.JsonStringNode value)
         {
             try
             {

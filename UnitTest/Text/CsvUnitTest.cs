@@ -49,7 +49,7 @@ namespace Trivial.Text
             Assert.AreEqual("mn", models[1].C);
             Assert.AreEqual(43210, models[1].Num);
 
-            var jsons = parser.ConvertTo<JsonObject>(new[] { "A", "B", "C", "Num" }).ToList();
+            var jsons = parser.ConvertTo<JsonObjectNode>(new[] { "A", "B", "C", "Num" }).ToList();
             Assert.AreEqual(2, jsons.Count);
             Assert.AreEqual("ab", jsons[0].TryGetStringValue("A"));
             Assert.AreEqual("cd", jsons[0].TryGetStringValue("B"));
@@ -95,7 +95,7 @@ namespace Trivial.Text
             Assert.AreEqual("mn", models[1].C);
             Assert.AreEqual(43210, models[1].Num);
 
-            var jsons = parser.ConvertTo<JsonObject>(new[] { "A", "B", "C", "Num" }).ToList();
+            var jsons = parser.ConvertTo<JsonObjectNode>(new[] { "A", "B", "C", "Num" }).ToList();
             Assert.AreEqual(2, jsons.Count);
             Assert.AreEqual("ab", jsons[0].TryGetStringValue("A"));
             Assert.AreEqual("cd", jsons[0].TryGetStringValue("B"));

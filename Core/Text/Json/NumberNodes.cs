@@ -4,6 +4,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Text;
 using System.Text.Json;
+
 using Trivial.Web;
 
 namespace Trivial.Text
@@ -11,7 +12,7 @@ namespace Trivial.Text
     /// <summary>
     /// Represents a specific string JSON value with source.
     /// </summary>
-    public interface IJsonNumber : IJsonValue, IEquatable<IJsonNumber>, IEquatable<long>, IEquatable<int>, IEquatable<double>, IEquatable<float>
+    public interface IJsonNumberNode : IJsonValueNode, IEquatable<IJsonNumberNode>, IEquatable<long>, IEquatable<int>, IEquatable<double>, IEquatable<float>
     {
         /// <summary>
         /// Gets a value indicating whether the number value is an whole number.
@@ -92,7 +93,7 @@ namespace Trivial.Text
     /// <summary>
     /// Represents a specific JSON integer number value.
     /// </summary>
-    public class JsonInteger : IJsonValue<long>, IJsonValueResolver, IJsonNumber, IComparable<JsonInteger>, IComparable<JsonDouble>, IComparable<uint>, IComparable<int>, IComparable<long>, IComparable<double>, IComparable<float>, IEquatable<IJsonValue<uint>>, IEquatable<IJsonValue<int>>, IEquatable<IJsonValue<float>>, IEquatable<IJsonValue<double>>, IEquatable<uint>, IEquatable<int>, IEquatable<float>, IEquatable<double>, IFormattable
+    public class JsonIntegerNode : IJsonValueNode<long>, IJsonDataNode, IJsonNumberNode, IComparable<JsonIntegerNode>, IComparable<JsonDoubleNode>, IComparable<uint>, IComparable<int>, IComparable<long>, IComparable<double>, IComparable<float>, IEquatable<IJsonValueNode<uint>>, IEquatable<IJsonValueNode<int>>, IEquatable<IJsonValueNode<float>>, IEquatable<IJsonValueNode<double>>, IEquatable<uint>, IEquatable<int>, IEquatable<float>, IEquatable<double>, IFormattable
     {
         /// <summary>
         /// Maximum safe integer in JavaScript and JSON.
@@ -105,71 +106,71 @@ namespace Trivial.Text
         public const long MinSafeInteger = -9007199254740991;
 
         /// <summary>
-        /// Initializes a new instance of the JsonInteger class.
+        /// Initializes a new instance of the JsonIntegerNode class.
         /// </summary>
         /// <param name="value">The value.</param>
-        public JsonInteger(int value)
+        public JsonIntegerNode(int value)
         {
             Value = value;
             IsSafe = true;
         }
 
         /// <summary>
-        /// Initializes a new instance of the JsonInteger class.
+        /// Initializes a new instance of the JsonIntegerNode class.
         /// </summary>
         /// <param name="value">The value.</param>
-        public JsonInteger(uint value)
+        public JsonIntegerNode(uint value)
         {
             Value = value;
             IsSafe = true;
         }
 
         /// <summary>
-        /// Initializes a new instance of the JsonInteger class.
+        /// Initializes a new instance of the JsonIntegerNode class.
         /// </summary>
         /// <param name="value">The value.</param>
-        public JsonInteger(long value)
+        public JsonIntegerNode(long value)
         {
             Value = value;
             IsSafe = value <= MaxSafeInteger && value >= MinSafeInteger;
         }
 
         /// <summary>
-        /// Initializes a new instance of the JsonInteger class.
+        /// Initializes a new instance of the JsonIntegerNode class.
         /// </summary>
         /// <param name="value">The value.</param>
-        public JsonInteger(short value)
+        public JsonIntegerNode(short value)
         {
             Value = value;
             IsSafe = true;
         }
 
         /// <summary>
-        /// Initializes a new instance of the JsonInteger class.
+        /// Initializes a new instance of the JsonIntegerNode class.
         /// </summary>
         /// <param name="value">The value.</param>
-        public JsonInteger(double value)
+        public JsonIntegerNode(double value)
         {
             Value = (long)Math.Round(value);
             IsSafe = value <= MaxSafeInteger && value >= MinSafeInteger;
         }
 
         /// <summary>
-        /// Initializes a new instance of the JsonInteger class.
+        /// Initializes a new instance of the JsonIntegerNode class.
         /// </summary>
         /// <param name="value">The value.</param>
         /// <param name="isUnixTimestamp">true if uses Unix timestamp; otherwise, false, to use JavaScript ticks, by default.</param>
-        public JsonInteger(DateTime value, bool isUnixTimestamp = false)
+        public JsonIntegerNode(DateTime value, bool isUnixTimestamp = false)
         {
             Value = isUnixTimestamp ? Web.WebFormat.ParseUnixTimestamp(value) : Web.WebFormat.ParseDate(value);
             IsSafe = true;
         }
 
         /// <summary>
-        /// Initializes a new instance of the JsonInteger class.
+        /// Initializes a new instance of the JsonIntegerNode class.
         /// </summary>
         /// <param name="value">The value.</param>
-        public JsonInteger(TimeSpan value)
+        public JsonIntegerNode(TimeSpan value)
         {
             Value = (long)value.TotalSeconds;
             IsSafe = true;
@@ -251,7 +252,7 @@ namespace Trivial.Text
         /// </summary>
         /// <param name="other">The object to compare with the current instance.</param>
         /// <returns>true if obj and this instance represent the same value; otherwise, false.</returns>
-        public bool Equals(IJsonValue<double> other)
+        public bool Equals(IJsonValueNode<double> other)
         {
             if (other is null) return false;
             return Value.Equals(other.Value);
@@ -262,7 +263,7 @@ namespace Trivial.Text
         /// </summary>
         /// <param name="other">The object to compare with the current instance.</param>
         /// <returns>true if obj and this instance represent the same value; otherwise, false.</returns>
-        public bool Equals(IJsonValue<float> other)
+        public bool Equals(IJsonValueNode<float> other)
         {
             if (other is null) return false;
             return Value.Equals(other.Value);
@@ -273,7 +274,7 @@ namespace Trivial.Text
         /// </summary>
         /// <param name="other">The object to compare with the current instance.</param>
         /// <returns>true if obj and this instance represent the same value; otherwise, false.</returns>
-        public bool Equals(IJsonValue<long> other)
+        public bool Equals(IJsonValueNode<long> other)
         {
             if (other is null) return false;
             return Value.Equals(other.Value);
@@ -284,7 +285,7 @@ namespace Trivial.Text
         /// </summary>
         /// <param name="other">The object to compare with the current instance.</param>
         /// <returns>true if obj and this instance represent the same value; otherwise, false.</returns>
-        public bool Equals(IJsonValue<int> other)
+        public bool Equals(IJsonValueNode<int> other)
         {
             if (other is null) return false;
             return Value.Equals(other.Value);
@@ -295,7 +296,7 @@ namespace Trivial.Text
         /// </summary>
         /// <param name="other">The object to compare with the current instance.</param>
         /// <returns>true if obj and this instance represent the same value; otherwise, false.</returns>
-        public bool Equals(IJsonValue<uint> other)
+        public bool Equals(IJsonValueNode<uint> other)
         {
             if (other is null) return false;
             return Value.Equals(other.Value);
@@ -306,7 +307,7 @@ namespace Trivial.Text
         /// </summary>
         /// <param name="other">The object to compare with the current instance.</param>
         /// <returns>true if obj and this instance represent the same value; otherwise, false.</returns>
-        public bool Equals(IJsonNumber other)
+        public bool Equals(IJsonNumberNode other)
         {
             if (other is null || !other.IsInteger) return false;
             return Value.Equals(other.GetInt64());
@@ -370,17 +371,17 @@ namespace Trivial.Text
         public override bool Equals(object other)
         {
             if (other is null) return false;
-            if (other is IJsonValue<double> dJson) return Value.Equals(dJson.Value);
-            if (other is IJsonValue<long> lJson) return Value.Equals(lJson.Value);
-            if (other is IJsonValue nJson && nJson.ValueKind == JsonValueKind.Number)
+            if (other is IJsonValueNode<double> dJson) return Value.Equals(dJson.Value);
+            if (other is IJsonValueNode<long> lJson) return Value.Equals(lJson.Value);
+            if (other is IJsonValueNode nJson && nJson.ValueKind == JsonValueKind.Number)
             {
-                if (other is IJsonValue<float> fJson) return Value.Equals(fJson.Value);
-                if (other is IJsonValue<int> iJson) return Value.Equals(iJson.Value);
-                if (other is IJsonValue<uint> uiJson) return Value.Equals(uiJson.Value);
-                if (other is IJsonValue<short> sJson) return Value.Equals(sJson.Value);
-                if (other is IJsonValue<ulong> ulJson) return Value.Equals(ulJson.Value);
-                if (other is IJsonValue<decimal> dcmJson) return Value.Equals(dcmJson.Value);
-                if (other is IJsonValue<ushort> usJson) return Value.Equals(usJson.Value);
+                if (other is IJsonValueNode<float> fJson) return Value.Equals(fJson.Value);
+                if (other is IJsonValueNode<int> iJson) return Value.Equals(iJson.Value);
+                if (other is IJsonValueNode<uint> uiJson) return Value.Equals(uiJson.Value);
+                if (other is IJsonValueNode<short> sJson) return Value.Equals(sJson.Value);
+                if (other is IJsonValueNode<ulong> ulJson) return Value.Equals(ulJson.Value);
+                if (other is IJsonValueNode<decimal> dcmJson) return Value.Equals(dcmJson.Value);
+                if (other is IJsonValueNode<ushort> usJson) return Value.Equals(usJson.Value);
                 return ToString().Equals(other.ToString(), StringComparison.InvariantCultureIgnoreCase);
             }
 
@@ -408,7 +409,7 @@ namespace Trivial.Text
         /// <item>Greater than zero This instance is greater than value.</item>
         /// </list>
         /// </returns>
-        public int CompareTo(JsonInteger other)
+        public int CompareTo(JsonIntegerNode other)
         {
             return Value.CompareTo(other.Value);
         }
@@ -428,7 +429,7 @@ namespace Trivial.Text
         /// <item>Greater than zero This instance is greater than value.</item>
         /// </list>
         /// </returns>
-        public int CompareTo(JsonDouble other)
+        public int CompareTo(JsonDoubleNode other)
         {
             return Value.CompareTo(other.Value);
         }
@@ -544,7 +545,7 @@ namespace Trivial.Text
         /// </summary>
         /// <returns>The value of the element as a boolean.</returns>
         /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
-        bool IJsonValueResolver.GetBoolean()
+        bool IJsonDataNode.GetBoolean()
         {
             if (Value == 0) return false;
             if (Value == 1) return true;
@@ -556,7 +557,7 @@ namespace Trivial.Text
         /// </summary>
         /// <returns>The value decoded as a byte array.</returns>
         /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
-        byte[] IJsonValueResolver.GetBytesFromBase64() => throw new InvalidOperationException("Expect a string but it is a number.");
+        byte[] IJsonDataNode.GetBytesFromBase64() => throw new InvalidOperationException("Expect a string but it is a number.");
 
         /// <summary>
         /// Gets the value of the element as a date time.
@@ -581,27 +582,19 @@ namespace Trivial.Text
         /// Gets the value of the element as a number.
         /// </summary>
         /// <returns>The value of the element as a number.</returns>
-        decimal IJsonValueResolver.GetDecimal() => Value;
+        decimal IJsonDataNode.GetDecimal() => Value;
 
         /// <summary>
         /// Gets the value of the element as a number.
         /// </summary>
         /// <returns>The value of the element as a number.</returns>
-        float IJsonValueResolver.GetSingle() => Value;
+        float IJsonDataNode.GetSingle() => Value;
 
         /// <summary>
         /// Gets the value of the element as a number.
         /// </summary>
         /// <returns>The value of the element as a number.</returns>
-        double IJsonValueResolver.GetDouble() => Value;
-
-        /// <summary>
-        /// Gets the value of the element as a number.
-        /// </summary>
-        /// <returns>The value of the element as a number.</returns>
-        /// <exception cref="InvalidCastException">The value is an Int64.</exception>
-        /// <exception cref="OverflowException">The value is greater than the most maximum value or less than the most minimum value defined of the number type.</exception>
-        short IJsonValueResolver.GetInt16() => (short)Value;
+        double IJsonDataNode.GetDouble() => Value;
 
         /// <summary>
         /// Gets the value of the element as a number.
@@ -609,7 +602,7 @@ namespace Trivial.Text
         /// <returns>The value of the element as a number.</returns>
         /// <exception cref="InvalidCastException">The value is an Int64.</exception>
         /// <exception cref="OverflowException">The value is greater than the most maximum value or less than the most minimum value defined of the number type.</exception>
-        uint IJsonValueResolver.GetUInt32() => (uint)Value;
+        short IJsonDataNode.GetInt16() => (short)Value;
 
         /// <summary>
         /// Gets the value of the element as a number.
@@ -617,31 +610,7 @@ namespace Trivial.Text
         /// <returns>The value of the element as a number.</returns>
         /// <exception cref="InvalidCastException">The value is an Int64.</exception>
         /// <exception cref="OverflowException">The value is greater than the most maximum value or less than the most minimum value defined of the number type.</exception>
-        int IJsonValueResolver.GetInt32() => (int)Value;
-
-        /// <summary>
-        /// Gets the value of the element as a number.
-        /// </summary>
-        /// <returns>The value of the element as a number.</returns>
-        long IJsonValueResolver.GetInt64() => Value;
-
-        /// <summary>
-        /// Gets the value of the element as a number.
-        /// </summary>
-        /// <returns>The value of the element as a number.</returns>
-        decimal IJsonNumber.GetDecimal() => Value;
-
-        /// <summary>
-        /// Gets the value of the element as a number.
-        /// </summary>
-        /// <returns>The value of the element as a number.</returns>
-        float IJsonNumber.GetSingle() => Value;
-
-        /// <summary>
-        /// Gets the value of the element as a number.
-        /// </summary>
-        /// <returns>The value of the element as a number.</returns>
-        double IJsonNumber.GetDouble() => Value;
+        uint IJsonDataNode.GetUInt32() => (uint)Value;
 
         /// <summary>
         /// Gets the value of the element as a number.
@@ -649,7 +618,31 @@ namespace Trivial.Text
         /// <returns>The value of the element as a number.</returns>
         /// <exception cref="InvalidCastException">The value is an Int64.</exception>
         /// <exception cref="OverflowException">The value is greater than the most maximum value or less than the most minimum value defined of the number type.</exception>
-        ushort IJsonNumber.GetUInt16() => (ushort)Value;
+        int IJsonDataNode.GetInt32() => (int)Value;
+
+        /// <summary>
+        /// Gets the value of the element as a number.
+        /// </summary>
+        /// <returns>The value of the element as a number.</returns>
+        long IJsonDataNode.GetInt64() => Value;
+
+        /// <summary>
+        /// Gets the value of the element as a number.
+        /// </summary>
+        /// <returns>The value of the element as a number.</returns>
+        decimal IJsonNumberNode.GetDecimal() => Value;
+
+        /// <summary>
+        /// Gets the value of the element as a number.
+        /// </summary>
+        /// <returns>The value of the element as a number.</returns>
+        float IJsonNumberNode.GetSingle() => Value;
+
+        /// <summary>
+        /// Gets the value of the element as a number.
+        /// </summary>
+        /// <returns>The value of the element as a number.</returns>
+        double IJsonNumberNode.GetDouble() => Value;
 
         /// <summary>
         /// Gets the value of the element as a number.
@@ -657,7 +650,7 @@ namespace Trivial.Text
         /// <returns>The value of the element as a number.</returns>
         /// <exception cref="InvalidCastException">The value is an Int64.</exception>
         /// <exception cref="OverflowException">The value is greater than the most maximum value or less than the most minimum value defined of the number type.</exception>
-        short IJsonNumber.GetInt16() => (short)Value;
+        ushort IJsonNumberNode.GetUInt16() => (ushort)Value;
 
         /// <summary>
         /// Gets the value of the element as a number.
@@ -665,7 +658,7 @@ namespace Trivial.Text
         /// <returns>The value of the element as a number.</returns>
         /// <exception cref="InvalidCastException">The value is an Int64.</exception>
         /// <exception cref="OverflowException">The value is greater than the most maximum value or less than the most minimum value defined of the number type.</exception>
-        uint IJsonNumber.GetUInt32() => (uint)Value;
+        short IJsonNumberNode.GetInt16() => (short)Value;
 
         /// <summary>
         /// Gets the value of the element as a number.
@@ -673,34 +666,42 @@ namespace Trivial.Text
         /// <returns>The value of the element as a number.</returns>
         /// <exception cref="InvalidCastException">The value is an Int64.</exception>
         /// <exception cref="OverflowException">The value is greater than the most maximum value or less than the most minimum value defined of the number type.</exception>
-        int IJsonNumber.GetInt32() => (int)Value;
+        uint IJsonNumberNode.GetUInt32() => (uint)Value;
 
         /// <summary>
         /// Gets the value of the element as a number.
         /// </summary>
         /// <returns>The value of the element as a number.</returns>
-        long IJsonNumber.GetInt64() => Value;
+        /// <exception cref="InvalidCastException">The value is an Int64.</exception>
+        /// <exception cref="OverflowException">The value is greater than the most maximum value or less than the most minimum value defined of the number type.</exception>
+        int IJsonNumberNode.GetInt32() => (int)Value;
+
+        /// <summary>
+        /// Gets the value of the element as a number.
+        /// </summary>
+        /// <returns>The value of the element as a number.</returns>
+        long IJsonNumberNode.GetInt64() => Value;
 
         /// <summary>
         /// Gets the value of the element as a number.
         /// </summary>
         /// <returns>The value of the element as a number.</returns>
         /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
-        string IJsonValueResolver.GetString() => ToString();
+        string IJsonDataNode.GetString() => ToString();
 
         /// <summary>
         /// Gets the value of the element as a GUID.
         /// </summary>
         /// <returns>The value of the element as a GUID.</returns>
         /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
-        Guid IJsonValueResolver.GetGuid() => throw new InvalidOperationException("Expect a string but it is a number.");
+        Guid IJsonDataNode.GetGuid() => throw new InvalidOperationException("Expect a string but it is a number.");
 
         /// <summary>
         /// Tries to get the value of the element as a boolean.
         /// </summary>
         /// <param name="result">The result.</param>
         /// <returns>true if the kind is the one expected; otherwise, false.</returns>
-        bool IJsonValueResolver.TryGetBoolean(out bool result)
+        bool IJsonDataNode.TryGetBoolean(out bool result)
         {
             if (Value == 0)
             {
@@ -723,7 +724,7 @@ namespace Trivial.Text
         /// </summary>
         /// <param name="result">The result.</param>
         /// <returns>true if the kind is the one expected; otherwise, false.</returns>
-        bool IJsonValueResolver.TryGetDateTime(out DateTime result)
+        bool IJsonDataNode.TryGetDateTime(out DateTime result)
         {
             result = WebFormat.ParseDate(Value);
             return true;
@@ -734,7 +735,7 @@ namespace Trivial.Text
         /// </summary>
         /// <param name="result">The result.</param>
         /// <returns>true if the kind is the one expected; otherwise, false.</returns>
-        bool IJsonValueResolver.TryGetDecimal(out decimal result)
+        bool IJsonDataNode.TryGetDecimal(out decimal result)
         {
             try
             {
@@ -757,7 +758,7 @@ namespace Trivial.Text
         /// </summary>
         /// <param name="result">The result.</param>
         /// <returns>true if the kind is the one expected; otherwise, false.</returns>
-        bool IJsonValueResolver.TryGetSingle(out float result)
+        bool IJsonDataNode.TryGetSingle(out float result)
         {
             try
             {
@@ -780,7 +781,7 @@ namespace Trivial.Text
         /// </summary>
         /// <param name="result">The result.</param>
         /// <returns>true if the kind is the one expected; otherwise, false.</returns>
-        bool IJsonValueResolver.TryGetDouble(out double result)
+        bool IJsonDataNode.TryGetDouble(out double result)
         {
             try
             {
@@ -872,7 +873,7 @@ namespace Trivial.Text
         /// </summary>
         /// <param name="result">The result.</param>
         /// <returns>true if the kind is the one expected; otherwise, false.</returns>
-        bool IJsonValueResolver.TryGetInt64(out long result)
+        bool IJsonDataNode.TryGetInt64(out long result)
         {
             result = Value;
             return true;
@@ -883,7 +884,7 @@ namespace Trivial.Text
         /// </summary>
         /// <param name="result">The result.</param>
         /// <returns>true if the kind is the one expected; otherwise, false.</returns>
-        bool IJsonValueResolver.TryGetString(out string result)
+        bool IJsonDataNode.TryGetString(out string result)
         {
             result = ToString();
             return true;
@@ -894,7 +895,7 @@ namespace Trivial.Text
         /// </summary>
         /// <param name="result">The result.</param>
         /// <returns>true if the kind is the one expected; otherwise, false.</returns>
-        bool IJsonValueResolver.TryGetGuid(out Guid result)
+        bool IJsonDataNode.TryGetGuid(out Guid result)
         {
             result = Guid.Empty;
             return false;
@@ -906,7 +907,7 @@ namespace Trivial.Text
         /// <param name="key">The property key.</param>
         /// <returns>The value.</returns>
         /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
-        IJsonValueResolver IJsonValueResolver.GetValue(string key) => throw new InvalidOperationException("Expect an object but it is a number.");
+        IJsonDataNode IJsonDataNode.GetValue(string key) => throw new InvalidOperationException("Expect an object but it is a number.");
 
         /// <summary>
         /// Gets the value of the specific property.
@@ -914,7 +915,7 @@ namespace Trivial.Text
         /// <param name="key">The property key.</param>
         /// <returns>The value.</returns>
         /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
-        IJsonValueResolver IJsonValueResolver.GetValue(ReadOnlySpan<char> key) => throw new InvalidOperationException("Expect an object but it is a number.");
+        IJsonDataNode IJsonDataNode.GetValue(ReadOnlySpan<char> key) => throw new InvalidOperationException("Expect an object but it is a number.");
 
         /// <summary>
         /// Tries to get the value of the specific property.
@@ -922,7 +923,7 @@ namespace Trivial.Text
         /// <param name="key">The property key.</param>
         /// <param name="result">The result.</param>
         /// <returns>true if the kind is the one expected; otherwise, false.</returns>
-        bool IJsonValueResolver.TryGetValue(string key, out IJsonValueResolver result)
+        bool IJsonDataNode.TryGetValue(string key, out IJsonDataNode result)
         {
             result = default;
             return false;
@@ -934,7 +935,7 @@ namespace Trivial.Text
         /// <param name="key">The property key.</param>
         /// <param name="result">The result.</param>
         /// <returns>true if the kind is the one expected; otherwise, false.</returns>
-        bool IJsonValueResolver.TryGetValue(ReadOnlySpan<char> key, out IJsonValueResolver result)
+        bool IJsonDataNode.TryGetValue(ReadOnlySpan<char> key, out IJsonDataNode result)
         {
             result = default;
             return false;
@@ -946,7 +947,7 @@ namespace Trivial.Text
         /// <param name="index">The zero-based index of the element to get.</param>
         /// <returns>The value.</returns>
         /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
-        IJsonValueResolver IJsonValueResolver.GetValue(int index) => throw new InvalidOperationException("Expect an array but it is a number.");
+        IJsonDataNode IJsonDataNode.GetValue(int index) => throw new InvalidOperationException("Expect an array but it is a number.");
 
         /// <summary>
         /// Tries to get the value of the specific property.
@@ -954,7 +955,7 @@ namespace Trivial.Text
         /// <param name="index">The zero-based index of the element to get.</param>
         /// <param name="result">The result.</param>
         /// <returns>true if the kind is the one expected; otherwise, false.</returns>
-        bool IJsonValueResolver.TryGetValue(int index, out IJsonValueResolver result)
+        bool IJsonDataNode.TryGetValue(int index, out IJsonDataNode result)
         {
             result = default;
             return false;
@@ -967,7 +968,7 @@ namespace Trivial.Text
         /// <param name="index">The zero-based index of the element to get.</param>
         /// <returns>The value.</returns>
         /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
-        IJsonValueResolver IJsonValueResolver.GetValue(Index index) => throw new InvalidOperationException("Expect an array but it is a number.");
+        IJsonDataNode IJsonDataNode.GetValue(Index index) => throw new InvalidOperationException("Expect an array but it is a number.");
 
         /// <summary>
         /// Tries to get the value of the specific property.
@@ -975,7 +976,7 @@ namespace Trivial.Text
         /// <param name="index">The zero-based index of the element to get.</param>
         /// <param name="result">The result.</param>
         /// <returns>true if the kind is the one expected; otherwise, false.</returns>
-        bool IJsonValueResolver.TryGetValue(Index index, out IJsonValueResolver result)
+        bool IJsonDataNode.TryGetValue(Index index, out IJsonDataNode result)
         {
             result = default;
             return false;
@@ -987,16 +988,16 @@ namespace Trivial.Text
         /// </summary>
         /// <returns>The property keys.</returns>
         /// <exception cref="InvalidOperationException">The value kind is not an object.</exception>
-        IEnumerable<string> IJsonValueResolver.GetKeys() => throw new InvalidOperationException("Expect an object but it is a number.");
+        IEnumerable<string> IJsonDataNode.GetKeys() => throw new InvalidOperationException("Expect an object but it is a number.");
 
         /// <summary>
         /// Converts to JSON value.
         /// </summary>
         /// <param name="value">The source value.</param>
         /// <returns>A JSON value.</returns>
-        public static implicit operator JsonInteger(uint value)
+        public static implicit operator JsonIntegerNode(uint value)
         {
-            return new JsonInteger(value);
+            return new JsonIntegerNode(value);
         }
 
         /// <summary>
@@ -1004,9 +1005,9 @@ namespace Trivial.Text
         /// </summary>
         /// <param name="value">The source value.</param>
         /// <returns>A JSON value.</returns>
-        public static implicit operator JsonInteger(int value)
+        public static implicit operator JsonIntegerNode(int value)
         {
-            return new JsonInteger(value);
+            return new JsonIntegerNode(value);
         }
 
         /// <summary>
@@ -1014,9 +1015,9 @@ namespace Trivial.Text
         /// </summary>
         /// <param name="value">The source value.</param>
         /// <returns>A JSON value.</returns>
-        public static implicit operator JsonInteger(long value)
+        public static implicit operator JsonIntegerNode(long value)
         {
-            return new JsonInteger(value);
+            return new JsonIntegerNode(value);
         }
 
         /// <summary>
@@ -1024,21 +1025,21 @@ namespace Trivial.Text
         /// </summary>
         /// <param name="value">The source value.</param>
         /// <returns>A JSON value.</returns>
-        public static implicit operator JsonInteger(System.Text.Json.Nodes.JsonValue value)
+        public static implicit operator JsonIntegerNode(System.Text.Json.Nodes.JsonValue value)
         {
             if (value is null) return null;
             if (value.TryGetValue(out int i))
-                return new JsonInteger(i);
+                return new JsonIntegerNode(i);
             if (value.TryGetValue(out uint ui))
-                return new JsonInteger(ui);
+                return new JsonIntegerNode(ui);
             if (value.TryGetValue(out long l))
-                return new JsonInteger(l);
+                return new JsonIntegerNode(l);
             if (value.TryGetValue(out short sh))
-                return new JsonInteger(sh);
+                return new JsonIntegerNode(sh);
             if (value.TryGetValue(out bool b))
-                return new JsonInteger(b ? 1 : 0);
+                return new JsonIntegerNode(b ? 1 : 0);
             if (value.TryGetValue(out string s) && long.TryParse(s, out var l2))
-                return new JsonInteger(l2);
+                return new JsonIntegerNode(l2);
             throw new InvalidCastException("Expect an integer to convert.");
         }
 
@@ -1047,7 +1048,7 @@ namespace Trivial.Text
         /// </summary>
         /// <param name="value">The source value.</param>
         /// <returns>A JSON value.</returns>
-        public static implicit operator JsonInteger(System.Text.Json.Nodes.JsonNode value)
+        public static implicit operator JsonIntegerNode(System.Text.Json.Nodes.JsonNode value)
         {
             if (value is null) return null;
             if (value is System.Text.Json.Nodes.JsonValue v) return v;
@@ -1059,7 +1060,7 @@ namespace Trivial.Text
         /// </summary>
         /// <param name="json">The JSON value.</param>
         /// <returns>A number.</returns>
-        public static explicit operator long(JsonInteger json)
+        public static explicit operator long(JsonIntegerNode json)
         {
             return json.Value;
         }
@@ -1069,7 +1070,7 @@ namespace Trivial.Text
         /// </summary>
         /// <param name="json">The JSON value.</param>
         /// <returns>A number.</returns>
-        public static explicit operator int(JsonInteger json)
+        public static explicit operator int(JsonIntegerNode json)
         {
             return (int)json.Value;
         }
@@ -1079,7 +1080,7 @@ namespace Trivial.Text
         /// </summary>
         /// <param name="json">The JSON value.</param>
         /// <returns>A number.</returns>
-        public static explicit operator uint(JsonInteger json)
+        public static explicit operator uint(JsonIntegerNode json)
         {
             return (uint)json.Value;
         }
@@ -1089,7 +1090,7 @@ namespace Trivial.Text
         /// </summary>
         /// <param name="json">The JSON value.</param>
         /// <returns>A number.</returns>
-        public static explicit operator float(JsonInteger json)
+        public static explicit operator float(JsonIntegerNode json)
         {
             return json.Value;
         }
@@ -1099,7 +1100,7 @@ namespace Trivial.Text
         /// </summary>
         /// <param name="json">The JSON value.</param>
         /// <returns>A number.</returns>
-        public static explicit operator double(JsonInteger json)
+        public static explicit operator double(JsonIntegerNode json)
         {
             return json.Value;
         }
@@ -1109,7 +1110,7 @@ namespace Trivial.Text
         /// </summary>
         /// <param name="json">The JSON value.</param>
         /// <returns>A number.</returns>
-        public static explicit operator System.Numerics.BigInteger(JsonInteger json)
+        public static explicit operator System.Numerics.BigInteger(JsonIntegerNode json)
         {
             return json.Value;
         }
@@ -1119,7 +1120,7 @@ namespace Trivial.Text
         /// </summary>
         /// <param name="json">The JSON value.</param>
         /// <returns>A string.</returns>
-        public static explicit operator string(JsonInteger json)
+        public static explicit operator string(JsonIntegerNode json)
         {
             return json.ToString();
         }
@@ -1129,9 +1130,9 @@ namespace Trivial.Text
         /// </summary>
         /// <param name="json">The JSON value.</param>
         /// <returns>A JSON string instance.</returns>
-        public static explicit operator JsonString(JsonInteger json)
+        public static explicit operator JsonStringNode(JsonIntegerNode json)
         {
-            return new JsonString(json.ToString());
+            return new JsonStringNode(json.ToString());
         }
 
         /// <summary>
@@ -1139,9 +1140,9 @@ namespace Trivial.Text
         /// </summary>
         /// <param name="json">The JSON value.</param>
         /// <returns>A JSON double instance.</returns>
-        public static explicit operator JsonDouble(JsonInteger json)
+        public static explicit operator JsonDoubleNode(JsonIntegerNode json)
         {
-            return new JsonDouble(json.Value);
+            return new JsonDoubleNode(json.Value);
         }
 
         /// <summary>
@@ -1149,7 +1150,7 @@ namespace Trivial.Text
         /// </summary>
         /// <param name="json">The JSON value.</param>
         /// <returns>An instance of the JsonNode class.</returns>
-        public static explicit operator System.Text.Json.Nodes.JsonNode(JsonInteger json)
+        public static explicit operator System.Text.Json.Nodes.JsonNode(JsonIntegerNode json)
         {
             return System.Text.Json.Nodes.JsonValue.Create(json.Value);
         }
@@ -1159,7 +1160,7 @@ namespace Trivial.Text
         /// </summary>
         /// <param name="json">The JSON value.</param>
         /// <returns>An instance of the JsonNode class.</returns>
-        public static explicit operator System.Text.Json.Nodes.JsonValue(JsonInteger json)
+        public static explicit operator System.Text.Json.Nodes.JsonValue(JsonIntegerNode json)
         {
             return System.Text.Json.Nodes.JsonValue.Create(json.Value);
         }
@@ -1171,7 +1172,7 @@ namespace Trivial.Text
         /// <param name="leftValue">The left value to compare.</param>
         /// <param name="rightValue">The right value to compare.</param>
         /// <returns>true if they are same; otherwise, false.</returns>
-        public static bool operator ==(JsonInteger leftValue, IJsonValue<long> rightValue)
+        public static bool operator ==(JsonIntegerNode leftValue, IJsonValueNode<long> rightValue)
         {
             if (ReferenceEquals(leftValue, rightValue)) return true;
             if (rightValue is null) return false;
@@ -1185,7 +1186,7 @@ namespace Trivial.Text
         /// <param name="leftValue">The left value to compare.</param>
         /// <param name="rightValue">The right value to compare.</param>
         /// <returns>true if they are different; otherwise, false.</returns>
-        public static bool operator !=(JsonInteger leftValue, IJsonValue<long> rightValue)
+        public static bool operator !=(JsonIntegerNode leftValue, IJsonValueNode<long> rightValue)
         {
             if (ReferenceEquals(leftValue, rightValue)) return false;
             if (rightValue is null) return true;
@@ -1198,7 +1199,7 @@ namespace Trivial.Text
         /// <param name="leftValue">The left value to compare.</param>
         /// <param name="rightValue">The right value to compare.</param>
         /// <returns>true if the left one is smaller than the right one; otherwise, false.</returns>
-        public static bool operator <(JsonInteger leftValue, IJsonValue<long> rightValue)
+        public static bool operator <(JsonIntegerNode leftValue, IJsonValueNode<long> rightValue)
         {
             if (ReferenceEquals(leftValue, rightValue)) return false;
             if (rightValue is null) return true;
@@ -1211,7 +1212,7 @@ namespace Trivial.Text
         /// <param name="leftValue">The left value to compare.</param>
         /// <param name="rightValue">The right value to compare.</param>
         /// <returns>true if the left one is greater than the right one; otherwise, false.</returns>
-        public static bool operator >(JsonInteger leftValue, IJsonValue<long> rightValue)
+        public static bool operator >(JsonIntegerNode leftValue, IJsonValueNode<long> rightValue)
         {
             if (ReferenceEquals(leftValue, rightValue)) return false;
             if (rightValue is null) return false;
@@ -1224,7 +1225,7 @@ namespace Trivial.Text
         /// <param name="leftValue">The left value to compare.</param>
         /// <param name="rightValue">The right value to compare.</param>
         /// <returns>true if the left one is smaller than or equals to the right one; otherwise, false.</returns>
-        public static bool operator <=(JsonInteger leftValue, IJsonValue<long> rightValue)
+        public static bool operator <=(JsonIntegerNode leftValue, IJsonValueNode<long> rightValue)
         {
             if (ReferenceEquals(leftValue, rightValue)) return true;
             if (rightValue is null) return true;
@@ -1237,7 +1238,7 @@ namespace Trivial.Text
         /// <param name="leftValue">The left value to compare.</param>
         /// <param name="rightValue">The right value to compare.</param>
         /// <returns>true if the left one is greater than or equals to the right one; otherwise, false.</returns>
-        public static bool operator >=(JsonInteger leftValue, IJsonValue<long> rightValue)
+        public static bool operator >=(JsonIntegerNode leftValue, IJsonValueNode<long> rightValue)
         {
             if (ReferenceEquals(leftValue, rightValue)) return true;
             if (rightValue is null) return false;
@@ -1251,7 +1252,7 @@ namespace Trivial.Text
         /// <param name="leftValue">The left value to compare.</param>
         /// <param name="rightValue">The right value to compare.</param>
         /// <returns>true if they are same; otherwise, false.</returns>
-        public static bool operator ==(JsonInteger leftValue, IJsonValue<double> rightValue)
+        public static bool operator ==(JsonIntegerNode leftValue, IJsonValueNode<double> rightValue)
         {
             if (ReferenceEquals(leftValue, rightValue)) return true;
             if (rightValue is null) return false;
@@ -1265,7 +1266,7 @@ namespace Trivial.Text
         /// <param name="leftValue">The left value to compare.</param>
         /// <param name="rightValue">The right value to compare.</param>
         /// <returns>true if they are different; otherwise, false.</returns>
-        public static bool operator !=(JsonInteger leftValue, IJsonValue<double> rightValue)
+        public static bool operator !=(JsonIntegerNode leftValue, IJsonValueNode<double> rightValue)
         {
             if (ReferenceEquals(leftValue, rightValue)) return false;
             if (rightValue is null) return true;
@@ -1278,7 +1279,7 @@ namespace Trivial.Text
         /// <param name="leftValue">The left value to compare.</param>
         /// <param name="rightValue">The right value to compare.</param>
         /// <returns>true if the left one is smaller than the right one; otherwise, false.</returns>
-        public static bool operator <(JsonInteger leftValue, IJsonValue<double> rightValue)
+        public static bool operator <(JsonIntegerNode leftValue, IJsonValueNode<double> rightValue)
         {
             if (ReferenceEquals(leftValue, rightValue)) return false;
             if (rightValue is null) return true;
@@ -1291,7 +1292,7 @@ namespace Trivial.Text
         /// <param name="leftValue">The left value to compare.</param>
         /// <param name="rightValue">The right value to compare.</param>
         /// <returns>true if the left one is greater than the right one; otherwise, false.</returns>
-        public static bool operator >(JsonInteger leftValue, IJsonValue<double> rightValue)
+        public static bool operator >(JsonIntegerNode leftValue, IJsonValueNode<double> rightValue)
         {
             if (ReferenceEquals(leftValue, rightValue)) return false;
             if (rightValue is null) return false;
@@ -1304,7 +1305,7 @@ namespace Trivial.Text
         /// <param name="leftValue">The left value to compare.</param>
         /// <param name="rightValue">The right value to compare.</param>
         /// <returns>true if the left one is smaller than or equals to the right one; otherwise, false.</returns>
-        public static bool operator <=(JsonInteger leftValue, IJsonValue<double> rightValue)
+        public static bool operator <=(JsonIntegerNode leftValue, IJsonValueNode<double> rightValue)
         {
             if (ReferenceEquals(leftValue, rightValue)) return true;
             if (rightValue is null) return true;
@@ -1317,7 +1318,7 @@ namespace Trivial.Text
         /// <param name="leftValue">The left value to compare.</param>
         /// <param name="rightValue">The right value to compare.</param>
         /// <returns>true if the left one is greater than or equals to the right one; otherwise, false.</returns>
-        public static bool operator >=(JsonInteger leftValue, IJsonValue<double> rightValue)
+        public static bool operator >=(JsonIntegerNode leftValue, IJsonValueNode<double> rightValue)
         {
             if (ReferenceEquals(leftValue, rightValue)) return true;
             if (rightValue is null) return false;
@@ -1331,7 +1332,7 @@ namespace Trivial.Text
         /// <param name="leftValue">The left value to compare.</param>
         /// <param name="rightValue">The right value to compare.</param>
         /// <returns>true if they are same; otherwise, false.</returns>
-        public static bool operator ==(JsonInteger leftValue, long rightValue)
+        public static bool operator ==(JsonIntegerNode leftValue, long rightValue)
         {
             return leftValue.Value == rightValue;
         }
@@ -1343,7 +1344,7 @@ namespace Trivial.Text
         /// <param name="leftValue">The left value to compare.</param>
         /// <param name="rightValue">The right value to compare.</param>
         /// <returns>true if they are different; otherwise, false.</returns>
-        public static bool operator !=(JsonInteger leftValue, long rightValue)
+        public static bool operator !=(JsonIntegerNode leftValue, long rightValue)
         {
             return leftValue.Value != rightValue;
         }
@@ -1354,7 +1355,7 @@ namespace Trivial.Text
         /// <param name="leftValue">The left value to compare.</param>
         /// <param name="rightValue">The right value to compare.</param>
         /// <returns>true if the left one is smaller than the right one; otherwise, false.</returns>
-        public static bool operator <(JsonInteger leftValue, long rightValue)
+        public static bool operator <(JsonIntegerNode leftValue, long rightValue)
         {
             return leftValue.Value < rightValue;
         }
@@ -1365,7 +1366,7 @@ namespace Trivial.Text
         /// <param name="leftValue">The left value to compare.</param>
         /// <param name="rightValue">The right value to compare.</param>
         /// <returns>true if the left one is greater than the right one; otherwise, false.</returns>
-        public static bool operator >(JsonInteger leftValue, long rightValue)
+        public static bool operator >(JsonIntegerNode leftValue, long rightValue)
         {
             return leftValue.Value < rightValue;
         }
@@ -1376,7 +1377,7 @@ namespace Trivial.Text
         /// <param name="leftValue">The left value to compare.</param>
         /// <param name="rightValue">The right value to compare.</param>
         /// <returns>true if the left one is smaller than or equals to the right one; otherwise, false.</returns>
-        public static bool operator <=(JsonInteger leftValue, long rightValue)
+        public static bool operator <=(JsonIntegerNode leftValue, long rightValue)
         {
             return leftValue.Value <= rightValue;
         }
@@ -1387,7 +1388,7 @@ namespace Trivial.Text
         /// <param name="leftValue">The left value to compare.</param>
         /// <param name="rightValue">The right value to compare.</param>
         /// <returns>true if the left one is greater than or equals to the right one; otherwise, false.</returns>
-        public static bool operator >=(JsonInteger leftValue, long rightValue)
+        public static bool operator >=(JsonIntegerNode leftValue, long rightValue)
         {
             return leftValue.Value <= rightValue;
         }
@@ -1399,7 +1400,7 @@ namespace Trivial.Text
         /// <param name="leftValue">The left value to compare.</param>
         /// <param name="rightValue">The right value to compare.</param>
         /// <returns>true if they are same; otherwise, false.</returns>
-        public static bool operator ==(JsonInteger leftValue, int rightValue)
+        public static bool operator ==(JsonIntegerNode leftValue, int rightValue)
         {
             return leftValue.Value == rightValue;
         }
@@ -1411,7 +1412,7 @@ namespace Trivial.Text
         /// <param name="leftValue">The left value to compare.</param>
         /// <param name="rightValue">The right value to compare.</param>
         /// <returns>true if they are different; otherwise, false.</returns>
-        public static bool operator !=(JsonInteger leftValue, int rightValue)
+        public static bool operator !=(JsonIntegerNode leftValue, int rightValue)
         {
             return leftValue.Value != rightValue;
         }
@@ -1422,7 +1423,7 @@ namespace Trivial.Text
         /// <param name="leftValue">The left value to compare.</param>
         /// <param name="rightValue">The right value to compare.</param>
         /// <returns>true if the left one is smaller than the right one; otherwise, false.</returns>
-        public static bool operator <(JsonInteger leftValue, int rightValue)
+        public static bool operator <(JsonIntegerNode leftValue, int rightValue)
         {
             return leftValue.Value < rightValue;
         }
@@ -1433,7 +1434,7 @@ namespace Trivial.Text
         /// <param name="leftValue">The left value to compare.</param>
         /// <param name="rightValue">The right value to compare.</param>
         /// <returns>true if the left one is greater than the right one; otherwise, false.</returns>
-        public static bool operator >(JsonInteger leftValue, int rightValue)
+        public static bool operator >(JsonIntegerNode leftValue, int rightValue)
         {
             return leftValue.Value < rightValue;
         }
@@ -1444,7 +1445,7 @@ namespace Trivial.Text
         /// <param name="leftValue">The left value to compare.</param>
         /// <param name="rightValue">The right value to compare.</param>
         /// <returns>true if the left one is smaller than or equals to the right one; otherwise, false.</returns>
-        public static bool operator <=(JsonInteger leftValue, int rightValue)
+        public static bool operator <=(JsonIntegerNode leftValue, int rightValue)
         {
             return leftValue.Value <= rightValue;
         }
@@ -1455,7 +1456,7 @@ namespace Trivial.Text
         /// <param name="leftValue">The left value to compare.</param>
         /// <param name="rightValue">The right value to compare.</param>
         /// <returns>true if the left one is greater than or equals to the right one; otherwise, false.</returns>
-        public static bool operator >=(JsonInteger leftValue, int rightValue)
+        public static bool operator >=(JsonIntegerNode leftValue, int rightValue)
         {
             return leftValue.Value <= rightValue;
         }
@@ -1467,7 +1468,7 @@ namespace Trivial.Text
         /// <param name="leftValue">The left value to compare.</param>
         /// <param name="rightValue">The right value to compare.</param>
         /// <returns>true if they are same; otherwise, false.</returns>
-        public static bool operator ==(JsonInteger leftValue, uint rightValue)
+        public static bool operator ==(JsonIntegerNode leftValue, uint rightValue)
         {
             return leftValue.Value == rightValue;
         }
@@ -1479,7 +1480,7 @@ namespace Trivial.Text
         /// <param name="leftValue">The left value to compare.</param>
         /// <param name="rightValue">The right value to compare.</param>
         /// <returns>true if they are different; otherwise, false.</returns>
-        public static bool operator !=(JsonInteger leftValue, uint rightValue)
+        public static bool operator !=(JsonIntegerNode leftValue, uint rightValue)
         {
             return leftValue.Value != rightValue;
         }
@@ -1490,7 +1491,7 @@ namespace Trivial.Text
         /// <param name="leftValue">The left value to compare.</param>
         /// <param name="rightValue">The right value to compare.</param>
         /// <returns>true if the left one is smaller than the right one; otherwise, false.</returns>
-        public static bool operator <(JsonInteger leftValue, uint rightValue)
+        public static bool operator <(JsonIntegerNode leftValue, uint rightValue)
         {
             return leftValue.Value < rightValue;
         }
@@ -1501,7 +1502,7 @@ namespace Trivial.Text
         /// <param name="leftValue">The left value to compare.</param>
         /// <param name="rightValue">The right value to compare.</param>
         /// <returns>true if the left one is greater than the right one; otherwise, false.</returns>
-        public static bool operator >(JsonInteger leftValue, uint rightValue)
+        public static bool operator >(JsonIntegerNode leftValue, uint rightValue)
         {
             return leftValue.Value < rightValue;
         }
@@ -1512,7 +1513,7 @@ namespace Trivial.Text
         /// <param name="leftValue">The left value to compare.</param>
         /// <param name="rightValue">The right value to compare.</param>
         /// <returns>true if the left one is smaller than or equals to the right one; otherwise, false.</returns>
-        public static bool operator <=(JsonInteger leftValue, uint rightValue)
+        public static bool operator <=(JsonIntegerNode leftValue, uint rightValue)
         {
             return leftValue.Value <= rightValue;
         }
@@ -1523,7 +1524,7 @@ namespace Trivial.Text
         /// <param name="leftValue">The left value to compare.</param>
         /// <param name="rightValue">The right value to compare.</param>
         /// <returns>true if the left one is greater than or equals to the right one; otherwise, false.</returns>
-        public static bool operator >=(JsonInteger leftValue, uint rightValue)
+        public static bool operator >=(JsonIntegerNode leftValue, uint rightValue)
         {
             return leftValue.Value <= rightValue;
         }
@@ -1535,7 +1536,7 @@ namespace Trivial.Text
         /// <param name="leftValue">The left value to compare.</param>
         /// <param name="rightValue">The right value to compare.</param>
         /// <returns>true if they are same; otherwise, false.</returns>
-        public static bool operator ==(JsonInteger leftValue, double rightValue)
+        public static bool operator ==(JsonIntegerNode leftValue, double rightValue)
         {
             return leftValue.Value == rightValue;
         }
@@ -1547,7 +1548,7 @@ namespace Trivial.Text
         /// <param name="leftValue">The left value to compare.</param>
         /// <param name="rightValue">The right value to compare.</param>
         /// <returns>true if they are different; otherwise, false.</returns>
-        public static bool operator !=(JsonInteger leftValue, double rightValue)
+        public static bool operator !=(JsonIntegerNode leftValue, double rightValue)
         {
             return leftValue.Value != rightValue;
         }
@@ -1558,7 +1559,7 @@ namespace Trivial.Text
         /// <param name="leftValue">The left value to compare.</param>
         /// <param name="rightValue">The right value to compare.</param>
         /// <returns>true if the left one is smaller than the right one; otherwise, false.</returns>
-        public static bool operator <(JsonInteger leftValue, double rightValue)
+        public static bool operator <(JsonIntegerNode leftValue, double rightValue)
         {
             return leftValue.Value < rightValue;
         }
@@ -1569,7 +1570,7 @@ namespace Trivial.Text
         /// <param name="leftValue">The left value to compare.</param>
         /// <param name="rightValue">The right value to compare.</param>
         /// <returns>true if the left one is greater than the right one; otherwise, false.</returns>
-        public static bool operator >(JsonInteger leftValue, double rightValue)
+        public static bool operator >(JsonIntegerNode leftValue, double rightValue)
         {
             return leftValue.Value < rightValue;
         }
@@ -1580,7 +1581,7 @@ namespace Trivial.Text
         /// <param name="leftValue">The left value to compare.</param>
         /// <param name="rightValue">The right value to compare.</param>
         /// <returns>true if the left one is smaller than or equals to the right one; otherwise, false.</returns>
-        public static bool operator <=(JsonInteger leftValue, double rightValue)
+        public static bool operator <=(JsonIntegerNode leftValue, double rightValue)
         {
             return leftValue.Value <= rightValue;
         }
@@ -1591,7 +1592,7 @@ namespace Trivial.Text
         /// <param name="leftValue">The left value to compare.</param>
         /// <param name="rightValue">The right value to compare.</param>
         /// <returns>true if the left one is greater than or equals to the right one; otherwise, false.</returns>
-        public static bool operator >=(JsonInteger leftValue, double rightValue)
+        public static bool operator >=(JsonIntegerNode leftValue, double rightValue)
         {
             return leftValue.Value <= rightValue;
         }
@@ -1603,7 +1604,7 @@ namespace Trivial.Text
         /// <param name="leftValue">The left value to compare.</param>
         /// <param name="rightValue">The right value to compare.</param>
         /// <returns>true if they are same; otherwise, false.</returns>
-        public static bool operator ==(JsonInteger leftValue, float rightValue)
+        public static bool operator ==(JsonIntegerNode leftValue, float rightValue)
         {
             return leftValue.Value == rightValue;
         }
@@ -1615,7 +1616,7 @@ namespace Trivial.Text
         /// <param name="leftValue">The left value to compare.</param>
         /// <param name="rightValue">The right value to compare.</param>
         /// <returns>true if they are different; otherwise, false.</returns>
-        public static bool operator !=(JsonInteger leftValue, float rightValue)
+        public static bool operator !=(JsonIntegerNode leftValue, float rightValue)
         {
             return leftValue.Value != rightValue;
         }
@@ -1626,7 +1627,7 @@ namespace Trivial.Text
         /// <param name="leftValue">The left value to compare.</param>
         /// <param name="rightValue">The right value to compare.</param>
         /// <returns>true if the left one is smaller than the right one; otherwise, false.</returns>
-        public static bool operator <(JsonInteger leftValue, float rightValue)
+        public static bool operator <(JsonIntegerNode leftValue, float rightValue)
         {
             return leftValue.Value < rightValue;
         }
@@ -1637,7 +1638,7 @@ namespace Trivial.Text
         /// <param name="leftValue">The left value to compare.</param>
         /// <param name="rightValue">The right value to compare.</param>
         /// <returns>true if the left one is greater than the right one; otherwise, false.</returns>
-        public static bool operator >(JsonInteger leftValue, float rightValue)
+        public static bool operator >(JsonIntegerNode leftValue, float rightValue)
         {
             return leftValue.Value < rightValue;
         }
@@ -1648,7 +1649,7 @@ namespace Trivial.Text
         /// <param name="leftValue">The left value to compare.</param>
         /// <param name="rightValue">The right value to compare.</param>
         /// <returns>true if the left one is smaller than or equals to the right one; otherwise, false.</returns>
-        public static bool operator <=(JsonInteger leftValue, float rightValue)
+        public static bool operator <=(JsonIntegerNode leftValue, float rightValue)
         {
             return leftValue.Value <= rightValue;
         }
@@ -1659,7 +1660,7 @@ namespace Trivial.Text
         /// <param name="leftValue">The left value to compare.</param>
         /// <param name="rightValue">The right value to compare.</param>
         /// <returns>true if the left one is greater than or equals to the right one; otherwise, false.</returns>
-        public static bool operator >=(JsonInteger leftValue, float rightValue)
+        public static bool operator >=(JsonIntegerNode leftValue, float rightValue)
         {
             return leftValue.Value <= rightValue;
         }
@@ -1668,13 +1669,13 @@ namespace Trivial.Text
     /// <summary>
     /// Represents a specific JSON double float number value.
     /// </summary>
-    public class JsonDouble : IJsonValue<double>, IJsonValueResolver, IJsonNumber, IComparable<JsonInteger>, IComparable<JsonDouble>, IComparable<uint>, IComparable<int>, IComparable<long>, IComparable<double>, IComparable<float>, IEquatable<IJsonValue<uint>>, IEquatable<IJsonValue<int>>, IEquatable<IJsonValue<long>>, IEquatable<IJsonValue<float>>, IEquatable<uint>, IEquatable<int>, IEquatable<long>, IEquatable<float>, IFormattable
+    public class JsonDoubleNode : IJsonValueNode<double>, IJsonDataNode, IJsonNumberNode, IComparable<JsonIntegerNode>, IComparable<JsonDoubleNode>, IComparable<uint>, IComparable<int>, IComparable<long>, IComparable<double>, IComparable<float>, IEquatable<IJsonValueNode<uint>>, IEquatable<IJsonValueNode<int>>, IEquatable<IJsonValueNode<long>>, IEquatable<IJsonValueNode<float>>, IEquatable<uint>, IEquatable<int>, IEquatable<long>, IEquatable<float>, IFormattable
     {
         /// <summary>
-        /// Initializes a new instance of the JsonDouble class.
+        /// Initializes a new instance of the JsonDoubleNode class.
         /// </summary>
         /// <param name="value">The value.</param>
-        public JsonDouble(int value)
+        public JsonDoubleNode(int value)
         {
             Value = value;
             ValueKind = JsonValueKind.Number;
@@ -1682,10 +1683,10 @@ namespace Trivial.Text
         }
 
         /// <summary>
-        /// Initializes a new instance of the JsonDouble class.
+        /// Initializes a new instance of the JsonDoubleNode class.
         /// </summary>
         /// <param name="value">The value.</param>
-        public JsonDouble(long value)
+        public JsonDoubleNode(long value)
         {
             Value = value;
             ValueKind = JsonValueKind.Number;
@@ -1693,10 +1694,10 @@ namespace Trivial.Text
         }
 
         /// <summary>
-        /// Initializes a new instance of the JsonDouble class.
+        /// Initializes a new instance of the JsonDoubleNode class.
         /// </summary>
         /// <param name="value">The value.</param>
-        public JsonDouble(uint value)
+        public JsonDoubleNode(uint value)
         {
             Value = value;
             ValueKind = JsonValueKind.Number;
@@ -1704,10 +1705,10 @@ namespace Trivial.Text
         }
 
         /// <summary>
-        /// Initializes a new instance of the JsonDouble class.
+        /// Initializes a new instance of the JsonDoubleNode class.
         /// </summary>
         /// <param name="value">The value.</param>
-        public JsonDouble(ulong value)
+        public JsonDoubleNode(ulong value)
         {
             Value = value;
             ValueKind = JsonValueKind.Number;
@@ -1718,7 +1719,7 @@ namespace Trivial.Text
         /// Initializes a new instance of the JsonDoubleValue class.
         /// </summary>
         /// <param name="value">The value.</param>
-        public JsonDouble(float value)
+        public JsonDoubleNode(float value)
         {
             Value = value;
             if (float.IsNaN(value) || float.IsInfinity(value))
@@ -1742,10 +1743,10 @@ namespace Trivial.Text
         }
 
         /// <summary>
-        /// Initializes a new instance of the JsonDouble class.
+        /// Initializes a new instance of the JsonDoubleNode class.
         /// </summary>
         /// <param name="value">The value.</param>
-        public JsonDouble(double value)
+        public JsonDoubleNode(double value)
         {
             Value = value;
             if (double.IsNaN(value) || double.IsInfinity(value))
@@ -1769,10 +1770,10 @@ namespace Trivial.Text
         }
 
         /// <summary>
-        /// Initializes a new instance of the JsonDouble class.
+        /// Initializes a new instance of the JsonDoubleNode class.
         /// </summary>
         /// <param name="value">The value.</param>
-        public JsonDouble(decimal value)
+        public JsonDoubleNode(decimal value)
         {
             Value = (double)value;
             ValueKind = JsonValueKind.Number;
@@ -1790,10 +1791,10 @@ namespace Trivial.Text
         }
 
         /// <summary>
-        /// Initializes a new instance of the JsonDouble class.
+        /// Initializes a new instance of the JsonDoubleNode class.
         /// </summary>
         /// <param name="value">The value.</param>
-        public JsonDouble(TimeSpan value)
+        public JsonDoubleNode(TimeSpan value)
         {
             Value = value.TotalSeconds;
             ValueKind = JsonValueKind.Number;
@@ -1860,7 +1861,7 @@ namespace Trivial.Text
         /// </summary>
         /// <param name="other">The object to compare with the current instance.</param>
         /// <returns>true if obj and this instance represent the same value; otherwise, false.</returns>
-        public bool Equals(IJsonValue<double> other)
+        public bool Equals(IJsonValueNode<double> other)
         {
             if (other is null) return false;
             return Value.Equals(other.Value);
@@ -1871,7 +1872,7 @@ namespace Trivial.Text
         /// </summary>
         /// <param name="other">The object to compare with the current instance.</param>
         /// <returns>true if obj and this instance represent the same value; otherwise, false.</returns>
-        public bool Equals(IJsonValue<float> other)
+        public bool Equals(IJsonValueNode<float> other)
         {
             if (other is null) return false;
             return Value.Equals(other.Value);
@@ -1882,7 +1883,7 @@ namespace Trivial.Text
         /// </summary>
         /// <param name="other">The object to compare with the current instance.</param>
         /// <returns>true if obj and this instance represent the same value; otherwise, false.</returns>
-        public bool Equals(IJsonValue<long> other)
+        public bool Equals(IJsonValueNode<long> other)
         {
             if (other is null) return false;
             return Value.Equals(other.Value);
@@ -1893,7 +1894,7 @@ namespace Trivial.Text
         /// </summary>
         /// <param name="other">The object to compare with the current instance.</param>
         /// <returns>true if obj and this instance represent the same value; otherwise, false.</returns>
-        public bool Equals(IJsonValue<int> other)
+        public bool Equals(IJsonValueNode<int> other)
         {
             if (other is null) return false;
             return Value.Equals(other.Value);
@@ -1904,7 +1905,7 @@ namespace Trivial.Text
         /// </summary>
         /// <param name="other">The object to compare with the current instance.</param>
         /// <returns>true if obj and this instance represent the same value; otherwise, false.</returns>
-        public bool Equals(IJsonValue<uint> other)
+        public bool Equals(IJsonValueNode<uint> other)
         {
             if (other is null) return false;
             return Value.Equals(other.Value);
@@ -1915,7 +1916,7 @@ namespace Trivial.Text
         /// </summary>
         /// <param name="other">The object to compare with the current instance.</param>
         /// <returns>true if obj and this instance represent the same value; otherwise, false.</returns>
-        public bool Equals(IJsonNumber other)
+        public bool Equals(IJsonNumberNode other)
         {
             if (other is null) return false;
             return Value.Equals(other.GetDouble());
@@ -1979,17 +1980,17 @@ namespace Trivial.Text
         public override bool Equals(object other)
         {
             if (other is null) return false;
-            if (other is IJsonValue<double> dJson) return Value.Equals(dJson.Value);
-            if (other is IJsonValue<long> lJson) return Value.Equals(lJson.Value);
-            if (other is IJsonValue nJson && nJson.ValueKind == JsonValueKind.Number)
+            if (other is IJsonValueNode<double> dJson) return Value.Equals(dJson.Value);
+            if (other is IJsonValueNode<long> lJson) return Value.Equals(lJson.Value);
+            if (other is IJsonValueNode nJson && nJson.ValueKind == JsonValueKind.Number)
             {
-                if (other is IJsonValue<float> fJson) return Value.Equals(fJson.Value);
-                if (other is IJsonValue<int> iJson) return Value.Equals(iJson.Value);
-                if (other is IJsonValue<uint> uiJson) return Value.Equals(uiJson.Value);
-                if (other is IJsonValue<short> sJson) return Value.Equals(sJson.Value);
-                if (other is IJsonValue<ulong> ulJson) return Value.Equals(ulJson.Value);
-                if (other is IJsonValue<decimal> dcmJson) return Value.Equals(dcmJson.Value);
-                if (other is IJsonValue<ushort> usJson) return Value.Equals(usJson.Value);
+                if (other is IJsonValueNode<float> fJson) return Value.Equals(fJson.Value);
+                if (other is IJsonValueNode<int> iJson) return Value.Equals(iJson.Value);
+                if (other is IJsonValueNode<uint> uiJson) return Value.Equals(uiJson.Value);
+                if (other is IJsonValueNode<short> sJson) return Value.Equals(sJson.Value);
+                if (other is IJsonValueNode<ulong> ulJson) return Value.Equals(ulJson.Value);
+                if (other is IJsonValueNode<decimal> dcmJson) return Value.Equals(dcmJson.Value);
+                if (other is IJsonValueNode<ushort> usJson) return Value.Equals(usJson.Value);
                 return ToString().Equals(other.ToString(), StringComparison.InvariantCultureIgnoreCase);
             }
 
@@ -2017,7 +2018,7 @@ namespace Trivial.Text
         /// <item>Greater than zero This instance is greater than value.</item>
         /// </list>
         /// </returns>
-        public int CompareTo(JsonInteger other)
+        public int CompareTo(JsonIntegerNode other)
         {
             return Value.CompareTo(other.Value);
         }
@@ -2037,7 +2038,7 @@ namespace Trivial.Text
         /// <item>Greater than zero This instance is greater than value.</item>
         /// </list>
         /// </returns>
-        public int CompareTo(JsonDouble other)
+        public int CompareTo(JsonDoubleNode other)
         {
             return Value.CompareTo(other.Value);
         }
@@ -2153,7 +2154,7 @@ namespace Trivial.Text
         /// </summary>
         /// <returns>The value of the element as a boolean.</returns>
         /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
-        bool IJsonValueResolver.GetBoolean()
+        bool IJsonDataNode.GetBoolean()
         {
             if (Value == 0) return false;
             if (Value == 1) return true;
@@ -2165,14 +2166,14 @@ namespace Trivial.Text
         /// </summary>
         /// <returns>The value decoded as a byte array.</returns>
         /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
-        byte[] IJsonValueResolver.GetBytesFromBase64() => throw new InvalidOperationException("Expect a string but it is a number.");
+        byte[] IJsonDataNode.GetBytesFromBase64() => throw new InvalidOperationException("Expect a string but it is a number.");
 
         /// <summary>
         /// Gets the value of the element as a date time.
         /// </summary>
         /// <returns>The value of the element as a date time.</returns>
         /// <exception cref="InvalidCastException">The value is an Double but expect a Int64.</exception>
-        DateTime IJsonValueResolver.GetDateTime()
+        DateTime IJsonDataNode.GetDateTime()
         {
             return Web.WebFormat.ParseDate((long)Value);
         }
@@ -2182,7 +2183,7 @@ namespace Trivial.Text
         /// </summary>
         /// <returns>The value of the element as a number.</returns>
         /// <exception cref="InvalidCastException">The value is an Double.</exception>
-        decimal IJsonValueResolver.GetDecimal() => (decimal)Value;
+        decimal IJsonDataNode.GetDecimal() => (decimal)Value;
 
         /// <summary>
         /// Gets the value of the element as a number.
@@ -2190,21 +2191,13 @@ namespace Trivial.Text
         /// <returns>The value of the element as a number.</returns>
         /// <exception cref="InvalidCastException">The value is an Double.</exception>
         /// <exception cref="OverflowException">The value is greater than the most maximum value or less than the most minimum value defined of the number type.</exception>
-        float IJsonValueResolver.GetSingle() => (float)Value;
+        float IJsonDataNode.GetSingle() => (float)Value;
 
         /// <summary>
         /// Gets the value of the element as a number.
         /// </summary>
         /// <returns>The value of the element as a number.</returns>
-        double IJsonValueResolver.GetDouble() => Value;
-
-        /// <summary>
-        /// Gets the value of the element as a number.
-        /// </summary>
-        /// <returns>The value of the element as a number.</returns>
-        /// <exception cref="InvalidCastException">The value is an Double.</exception>
-        /// <exception cref="OverflowException">The value is greater than the most maximum value or less than the most minimum value defined of the number type.</exception>
-        short IJsonValueResolver.GetInt16() => (short)Value;
+        double IJsonDataNode.GetDouble() => Value;
 
         /// <summary>
         /// Gets the value of the element as a number.
@@ -2212,7 +2205,7 @@ namespace Trivial.Text
         /// <returns>The value of the element as a number.</returns>
         /// <exception cref="InvalidCastException">The value is an Double.</exception>
         /// <exception cref="OverflowException">The value is greater than the most maximum value or less than the most minimum value defined of the number type.</exception>
-        uint IJsonValueResolver.GetUInt32() => (uint)Value;
+        short IJsonDataNode.GetInt16() => (short)Value;
 
         /// <summary>
         /// Gets the value of the element as a number.
@@ -2220,7 +2213,7 @@ namespace Trivial.Text
         /// <returns>The value of the element as a number.</returns>
         /// <exception cref="InvalidCastException">The value is an Double.</exception>
         /// <exception cref="OverflowException">The value is greater than the most maximum value or less than the most minimum value defined of the number type.</exception>
-        int IJsonValueResolver.GetInt32() => (int)Value;
+        uint IJsonDataNode.GetUInt32() => (uint)Value;
 
         /// <summary>
         /// Gets the value of the element as a number.
@@ -2228,7 +2221,7 @@ namespace Trivial.Text
         /// <returns>The value of the element as a number.</returns>
         /// <exception cref="InvalidCastException">The value is an Double.</exception>
         /// <exception cref="OverflowException">The value is greater than the most maximum value or less than the most minimum value defined of the number type.</exception>
-        long IJsonValueResolver.GetInt64() => (long)Value;
+        int IJsonDataNode.GetInt32() => (int)Value;
 
         /// <summary>
         /// Gets the value of the element as a number.
@@ -2236,7 +2229,7 @@ namespace Trivial.Text
         /// <returns>The value of the element as a number.</returns>
         /// <exception cref="InvalidCastException">The value is an Double.</exception>
         /// <exception cref="OverflowException">The value is greater than the most maximum value or less than the most minimum value defined of the number type.</exception>
-        decimal IJsonNumber.GetDecimal() => (decimal)Value;
+        long IJsonDataNode.GetInt64() => (long)Value;
 
         /// <summary>
         /// Gets the value of the element as a number.
@@ -2244,13 +2237,7 @@ namespace Trivial.Text
         /// <returns>The value of the element as a number.</returns>
         /// <exception cref="InvalidCastException">The value is an Double.</exception>
         /// <exception cref="OverflowException">The value is greater than the most maximum value or less than the most minimum value defined of the number type.</exception>
-        float IJsonNumber.GetSingle() => (float)Value;
-
-        /// <summary>
-        /// Gets the value of the element as a number.
-        /// </summary>
-        /// <returns>The value of the element as a number.</returns>
-        double IJsonNumber.GetDouble() => Value;
+        decimal IJsonNumberNode.GetDecimal() => (decimal)Value;
 
         /// <summary>
         /// Gets the value of the element as a number.
@@ -2258,7 +2245,13 @@ namespace Trivial.Text
         /// <returns>The value of the element as a number.</returns>
         /// <exception cref="InvalidCastException">The value is an Double.</exception>
         /// <exception cref="OverflowException">The value is greater than the most maximum value or less than the most minimum value defined of the number type.</exception>
-        ushort IJsonNumber.GetUInt16() => (ushort)Value;
+        float IJsonNumberNode.GetSingle() => (float)Value;
+
+        /// <summary>
+        /// Gets the value of the element as a number.
+        /// </summary>
+        /// <returns>The value of the element as a number.</returns>
+        double IJsonNumberNode.GetDouble() => Value;
 
         /// <summary>
         /// Gets the value of the element as a number.
@@ -2266,14 +2259,7 @@ namespace Trivial.Text
         /// <returns>The value of the element as a number.</returns>
         /// <exception cref="InvalidCastException">The value is an Double.</exception>
         /// <exception cref="OverflowException">The value is greater than the most maximum value or less than the most minimum value defined of the number type.</exception>
-        short IJsonNumber.GetInt16() => (short)Value;
-
-        /// <summary>
-        /// Gets the value of the element as a number.
-        /// </summary>
-        /// <returns>The value of the element as a number.</returns>
-        /// <exception cref="InvalidCastException">The value is an Double.</exception>
-        uint IJsonNumber.GetUInt32() => (uint)Value;
+        ushort IJsonNumberNode.GetUInt16() => (ushort)Value;
 
         /// <summary>
         /// Gets the value of the element as a number.
@@ -2281,7 +2267,14 @@ namespace Trivial.Text
         /// <returns>The value of the element as a number.</returns>
         /// <exception cref="InvalidCastException">The value is an Double.</exception>
         /// <exception cref="OverflowException">The value is greater than the most maximum value or less than the most minimum value defined of the number type.</exception>
-        int IJsonNumber.GetInt32() => (int)Value;
+        short IJsonNumberNode.GetInt16() => (short)Value;
+
+        /// <summary>
+        /// Gets the value of the element as a number.
+        /// </summary>
+        /// <returns>The value of the element as a number.</returns>
+        /// <exception cref="InvalidCastException">The value is an Double.</exception>
+        uint IJsonNumberNode.GetUInt32() => (uint)Value;
 
         /// <summary>
         /// Gets the value of the element as a number.
@@ -2289,21 +2282,29 @@ namespace Trivial.Text
         /// <returns>The value of the element as a number.</returns>
         /// <exception cref="InvalidCastException">The value is an Double.</exception>
         /// <exception cref="OverflowException">The value is greater than the most maximum value or less than the most minimum value defined of the number type.</exception>
-        long IJsonNumber.GetInt64() => (long)Value;
+        int IJsonNumberNode.GetInt32() => (int)Value;
+
+        /// <summary>
+        /// Gets the value of the element as a number.
+        /// </summary>
+        /// <returns>The value of the element as a number.</returns>
+        /// <exception cref="InvalidCastException">The value is an Double.</exception>
+        /// <exception cref="OverflowException">The value is greater than the most maximum value or less than the most minimum value defined of the number type.</exception>
+        long IJsonNumberNode.GetInt64() => (long)Value;
 
         /// <summary>
         /// Gets the value of the element as a number.
         /// </summary>
         /// <returns>The value of the element as a number.</returns>
         /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
-        string IJsonValueResolver.GetString() => ToString();
+        string IJsonDataNode.GetString() => ToString();
 
         /// <summary>
         /// Gets the value of the element as a GUID.
         /// </summary>
         /// <returns>The value of the element as a GUID.</returns>
         /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
-        Guid IJsonValueResolver.GetGuid() => throw new InvalidOperationException("Expect a string but it is a number.");
+        Guid IJsonDataNode.GetGuid() => throw new InvalidOperationException("Expect a string but it is a number.");
 
         /// <summary>
         /// Tries to get the value of the element as a boolean.
@@ -2411,7 +2412,7 @@ namespace Trivial.Text
         /// </summary>
         /// <param name="result">The result.</param>
         /// <returns>true if the kind is the one expected; otherwise, false.</returns>
-        bool IJsonValueResolver.TryGetDouble(out double result)
+        bool IJsonDataNode.TryGetDouble(out double result)
         {
             result = Value;
             return true;
@@ -2526,7 +2527,7 @@ namespace Trivial.Text
         /// </summary>
         /// <param name="result">The result.</param>
         /// <returns>true if the kind is the one expected; otherwise, false.</returns>
-        bool IJsonValueResolver.TryGetString(out string result)
+        bool IJsonDataNode.TryGetString(out string result)
         {
             result = ToString();
             return true;
@@ -2537,7 +2538,7 @@ namespace Trivial.Text
         /// </summary>
         /// <param name="result">The result.</param>
         /// <returns>true if the kind is the one expected; otherwise, false.</returns>
-        bool IJsonValueResolver.TryGetGuid(out Guid result)
+        bool IJsonDataNode.TryGetGuid(out Guid result)
         {
             result = Guid.Empty;
             return false;
@@ -2549,7 +2550,7 @@ namespace Trivial.Text
         /// <param name="key">The property key.</param>
         /// <returns>The value.</returns>
         /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
-        IJsonValueResolver IJsonValueResolver.GetValue(string key) => throw new InvalidOperationException("Expect an object but it is a number.");
+        IJsonDataNode IJsonDataNode.GetValue(string key) => throw new InvalidOperationException("Expect an object but it is a number.");
 
         /// <summary>
         /// Gets the value of the specific property.
@@ -2557,7 +2558,7 @@ namespace Trivial.Text
         /// <param name="key">The property key.</param>
         /// <returns>The value.</returns>
         /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
-        IJsonValueResolver IJsonValueResolver.GetValue(ReadOnlySpan<char> key) => throw new InvalidOperationException("Expect an object but it is a number.");
+        IJsonDataNode IJsonDataNode.GetValue(ReadOnlySpan<char> key) => throw new InvalidOperationException("Expect an object but it is a number.");
 
         /// <summary>
         /// Tries to get the value of the specific property.
@@ -2565,7 +2566,7 @@ namespace Trivial.Text
         /// <param name="key">The property key.</param>
         /// <param name="result">The result.</param>
         /// <returns>true if the kind is the one expected; otherwise, false.</returns>
-        bool IJsonValueResolver.TryGetValue(string key, out IJsonValueResolver result)
+        bool IJsonDataNode.TryGetValue(string key, out IJsonDataNode result)
         {
             result = default;
             return false;
@@ -2577,7 +2578,7 @@ namespace Trivial.Text
         /// <param name="key">The property key.</param>
         /// <param name="result">The result.</param>
         /// <returns>true if the kind is the one expected; otherwise, false.</returns>
-        bool IJsonValueResolver.TryGetValue(ReadOnlySpan<char> key, out IJsonValueResolver result)
+        bool IJsonDataNode.TryGetValue(ReadOnlySpan<char> key, out IJsonDataNode result)
         {
             result = default;
             return false;
@@ -2589,7 +2590,7 @@ namespace Trivial.Text
         /// <param name="index">The zero-based index of the element to get.</param>
         /// <returns>The value.</returns>
         /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
-        IJsonValueResolver IJsonValueResolver.GetValue(int index) => throw new InvalidOperationException("Expect an array but it is a number.");
+        IJsonDataNode IJsonDataNode.GetValue(int index) => throw new InvalidOperationException("Expect an array but it is a number.");
 
         /// <summary>
         /// Tries to get the value of the specific property.
@@ -2597,7 +2598,7 @@ namespace Trivial.Text
         /// <param name="index">The zero-based index of the element to get.</param>
         /// <param name="result">The result.</param>
         /// <returns>true if the kind is the one expected; otherwise, false.</returns>
-        bool IJsonValueResolver.TryGetValue(int index, out IJsonValueResolver result)
+        bool IJsonDataNode.TryGetValue(int index, out IJsonDataNode result)
         {
             result = default;
             return false;
@@ -2610,7 +2611,7 @@ namespace Trivial.Text
         /// <param name="index">The zero-based index of the element to get.</param>
         /// <returns>The value.</returns>
         /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
-        IJsonValueResolver IJsonValueResolver.GetValue(Index index) => throw new InvalidOperationException("Expect an array but it is a number.");
+        IJsonDataNode IJsonDataNode.GetValue(Index index) => throw new InvalidOperationException("Expect an array but it is a number.");
 
         /// <summary>
         /// Tries to get the value of the specific property.
@@ -2618,7 +2619,7 @@ namespace Trivial.Text
         /// <param name="index">The zero-based index of the element to get.</param>
         /// <param name="result">The result.</param>
         /// <returns>true if the kind is the one expected; otherwise, false.</returns>
-        bool IJsonValueResolver.TryGetValue(Index index, out IJsonValueResolver result)
+        bool IJsonDataNode.TryGetValue(Index index, out IJsonDataNode result)
         {
             result = default;
             return false;
@@ -2630,16 +2631,16 @@ namespace Trivial.Text
         /// </summary>
         /// <returns>The property keys.</returns>
         /// <exception cref="InvalidOperationException">The value kind is not an object.</exception>
-        IEnumerable<string> IJsonValueResolver.GetKeys() => throw new InvalidOperationException("Expect an object but it is a number.");
+        IEnumerable<string> IJsonDataNode.GetKeys() => throw new InvalidOperationException("Expect an object but it is a number.");
 
         /// <summary>
         /// Converts to JSON value.
         /// </summary>
         /// <param name="value">The source value.</param>
         /// <returns>A JSON value.</returns>
-        public static implicit operator JsonDouble(float value)
+        public static implicit operator JsonDoubleNode(float value)
         {
-            return new JsonDouble(value);
+            return new JsonDoubleNode(value);
         }
 
         /// <summary>
@@ -2647,9 +2648,9 @@ namespace Trivial.Text
         /// </summary>
         /// <param name="value">The source value.</param>
         /// <returns>A JSON value.</returns>
-        public static implicit operator JsonDouble(double value)
+        public static implicit operator JsonDoubleNode(double value)
         {
-            return new JsonDouble(value);
+            return new JsonDoubleNode(value);
         }
 
         /// <summary>
@@ -2657,27 +2658,27 @@ namespace Trivial.Text
         /// </summary>
         /// <param name="value">The source value.</param>
         /// <returns>A JSON value.</returns>
-        public static implicit operator JsonDouble(System.Text.Json.Nodes.JsonValue value)
+        public static implicit operator JsonDoubleNode(System.Text.Json.Nodes.JsonValue value)
         {
             if (value is null) return null;
             if (value.TryGetValue(out double d))
-                return new JsonDouble(d);
+                return new JsonDoubleNode(d);
             if (value.TryGetValue(out float f))
-                return new JsonDouble(f);
+                return new JsonDoubleNode(f);
             if (value.TryGetValue(out decimal de))
-                return new JsonDouble(de);
+                return new JsonDoubleNode(de);
             if (value.TryGetValue(out int i))
-                return new JsonDouble(i);
+                return new JsonDoubleNode(i);
             if (value.TryGetValue(out uint ui))
-                return new JsonDouble(ui);
+                return new JsonDoubleNode(ui);
             if (value.TryGetValue(out long l))
-                return new JsonDouble(l);
+                return new JsonDoubleNode(l);
             if (value.TryGetValue(out ulong ul))
-                return new JsonDouble(ul);
+                return new JsonDoubleNode(ul);
             if (value.TryGetValue(out bool b))
-                return new JsonDouble(b ? 1 : 0);
+                return new JsonDoubleNode(b ? 1 : 0);
             if (value.TryGetValue(out string s) && double.TryParse(s, out var d2))
-                return new JsonDouble(d2);
+                return new JsonDoubleNode(d2);
             throw new InvalidCastException("Expect an float number to convert.");
         }
 
@@ -2686,7 +2687,7 @@ namespace Trivial.Text
         /// </summary>
         /// <param name="value">The source value.</param>
         /// <returns>A JSON value.</returns>
-        public static implicit operator JsonDouble(System.Text.Json.Nodes.JsonNode value)
+        public static implicit operator JsonDoubleNode(System.Text.Json.Nodes.JsonNode value)
         {
             if (value is null) return null;
             if (value is System.Text.Json.Nodes.JsonValue v) return v;
@@ -2698,7 +2699,7 @@ namespace Trivial.Text
         /// </summary>
         /// <param name="json">The JSON value.</param>
         /// <returns>A number.</returns>
-        public static explicit operator double(JsonDouble json)
+        public static explicit operator double(JsonDoubleNode json)
         {
             return json.Value;
         }
@@ -2708,7 +2709,7 @@ namespace Trivial.Text
         /// </summary>
         /// <param name="json">The JSON value.</param>
         /// <returns>A number.</returns>
-        public static explicit operator float(JsonDouble json)
+        public static explicit operator float(JsonDoubleNode json)
         {
             return (float)json.Value;
         }
@@ -2718,7 +2719,7 @@ namespace Trivial.Text
         /// </summary>
         /// <param name="json">The JSON value.</param>
         /// <returns>A number.</returns>
-        public static explicit operator uint(JsonDouble json)
+        public static explicit operator uint(JsonDoubleNode json)
         {
             return (uint)json.Value;
         }
@@ -2728,7 +2729,7 @@ namespace Trivial.Text
         /// </summary>
         /// <param name="json">The JSON value.</param>
         /// <returns>A number.</returns>
-        public static explicit operator int(JsonDouble json)
+        public static explicit operator int(JsonDoubleNode json)
         {
             return (int)json.Value;
         }
@@ -2738,7 +2739,7 @@ namespace Trivial.Text
         /// </summary>
         /// <param name="json">The JSON value.</param>
         /// <returns>A number.</returns>
-        public static explicit operator ulong(JsonDouble json)
+        public static explicit operator ulong(JsonDoubleNode json)
         {
             return (ulong)json.Value;
         }
@@ -2748,7 +2749,7 @@ namespace Trivial.Text
         /// </summary>
         /// <param name="json">The JSON value.</param>
         /// <returns>A number.</returns>
-        public static explicit operator long(JsonDouble json)
+        public static explicit operator long(JsonDoubleNode json)
         {
             return (long)json.Value;
         }
@@ -2758,7 +2759,7 @@ namespace Trivial.Text
         /// </summary>
         /// <param name="json">The JSON value.</param>
         /// <returns>A string.</returns>
-        public static explicit operator string(JsonDouble json)
+        public static explicit operator string(JsonDoubleNode json)
         {
             return json.ToString();
         }
@@ -2768,9 +2769,9 @@ namespace Trivial.Text
         /// </summary>
         /// <param name="json">The JSON value.</param>
         /// <returns>A JSON string instance.</returns>
-        public static explicit operator JsonString(JsonDouble json)
+        public static explicit operator JsonStringNode(JsonDoubleNode json)
         {
-            return new JsonString(json.ToString());
+            return new JsonStringNode(json.ToString());
         }
 
         /// <summary>
@@ -2778,9 +2779,9 @@ namespace Trivial.Text
         /// </summary>
         /// <param name="json">The JSON value.</param>
         /// <returns>A JSON integer instance.</returns>
-        public static explicit operator JsonInteger(JsonDouble json)
+        public static explicit operator JsonIntegerNode(JsonDoubleNode json)
         {
-            return new JsonInteger((long)json.Value);
+            return new JsonIntegerNode((long)json.Value);
         }
 
         /// <summary>
@@ -2788,7 +2789,7 @@ namespace Trivial.Text
         /// </summary>
         /// <param name="json">The JSON value.</param>
         /// <returns>An instance of the JsonNode class.</returns>
-        public static explicit operator System.Text.Json.Nodes.JsonNode(JsonDouble json)
+        public static explicit operator System.Text.Json.Nodes.JsonNode(JsonDoubleNode json)
         {
             return System.Text.Json.Nodes.JsonValue.Create(json.Value);
         }
@@ -2798,7 +2799,7 @@ namespace Trivial.Text
         /// </summary>
         /// <param name="json">The JSON value.</param>
         /// <returns>An instance of the JsonNode class.</returns>
-        public static explicit operator System.Text.Json.Nodes.JsonValue(JsonDouble json)
+        public static explicit operator System.Text.Json.Nodes.JsonValue(JsonDoubleNode json)
         {
             return System.Text.Json.Nodes.JsonValue.Create(json.Value);
         }
@@ -2810,7 +2811,7 @@ namespace Trivial.Text
         /// <param name="leftValue">The left value to compare.</param>
         /// <param name="rightValue">The right value to compare.</param>
         /// <returns>true if they are same; otherwise, false.</returns>
-        public static bool operator ==(JsonDouble leftValue, IJsonValue<double> rightValue)
+        public static bool operator ==(JsonDoubleNode leftValue, IJsonValueNode<double> rightValue)
         {
             if (ReferenceEquals(leftValue, rightValue)) return true;
             if (rightValue is null) return false;
@@ -2824,7 +2825,7 @@ namespace Trivial.Text
         /// <param name="leftValue">The left value to compare.</param>
         /// <param name="rightValue">The right value to compare.</param>
         /// <returns>true if they are different; otherwise, false.</returns>
-        public static bool operator !=(JsonDouble leftValue, IJsonValue<double> rightValue)
+        public static bool operator !=(JsonDoubleNode leftValue, IJsonValueNode<double> rightValue)
         {
             if (ReferenceEquals(leftValue, rightValue)) return false;
             if (rightValue is null) return true;
@@ -2837,7 +2838,7 @@ namespace Trivial.Text
         /// <param name="leftValue">The left value to compare.</param>
         /// <param name="rightValue">The right value to compare.</param>
         /// <returns>true if the left one is smaller than the right one; otherwise, false.</returns>
-        public static bool operator <(JsonDouble leftValue, IJsonValue<double> rightValue)
+        public static bool operator <(JsonDoubleNode leftValue, IJsonValueNode<double> rightValue)
         {
             if (ReferenceEquals(leftValue, rightValue)) return false;
             if (rightValue is null) return true;
@@ -2850,7 +2851,7 @@ namespace Trivial.Text
         /// <param name="leftValue">The left value to compare.</param>
         /// <param name="rightValue">The right value to compare.</param>
         /// <returns>true if the left one is greater than the right one; otherwise, false.</returns>
-        public static bool operator >(JsonDouble leftValue, IJsonValue<double> rightValue)
+        public static bool operator >(JsonDoubleNode leftValue, IJsonValueNode<double> rightValue)
         {
             if (ReferenceEquals(leftValue, rightValue)) return false;
             if (rightValue is null) return false;
@@ -2863,7 +2864,7 @@ namespace Trivial.Text
         /// <param name="leftValue">The left value to compare.</param>
         /// <param name="rightValue">The right value to compare.</param>
         /// <returns>true if the left one is smaller than or equals to the right one; otherwise, false.</returns>
-        public static bool operator <=(JsonDouble leftValue, IJsonValue<double> rightValue)
+        public static bool operator <=(JsonDoubleNode leftValue, IJsonValueNode<double> rightValue)
         {
             if (ReferenceEquals(leftValue, rightValue)) return true;
             if (rightValue is null) return true;
@@ -2876,7 +2877,7 @@ namespace Trivial.Text
         /// <param name="leftValue">The left value to compare.</param>
         /// <param name="rightValue">The right value to compare.</param>
         /// <returns>true if the left one is greater than or equals to the right one; otherwise, false.</returns>
-        public static bool operator >=(JsonDouble leftValue, IJsonValue<double> rightValue)
+        public static bool operator >=(JsonDoubleNode leftValue, IJsonValueNode<double> rightValue)
         {
             if (ReferenceEquals(leftValue, rightValue)) return true;
             if (rightValue is null) return false;
@@ -2890,7 +2891,7 @@ namespace Trivial.Text
         /// <param name="leftValue">The left value to compare.</param>
         /// <param name="rightValue">The right value to compare.</param>
         /// <returns>true if they are same; otherwise, false.</returns>
-        public static bool operator ==(JsonDouble leftValue, IJsonValue<long> rightValue)
+        public static bool operator ==(JsonDoubleNode leftValue, IJsonValueNode<long> rightValue)
         {
             if (ReferenceEquals(leftValue, rightValue)) return true;
             if (rightValue is null) return false;
@@ -2904,7 +2905,7 @@ namespace Trivial.Text
         /// <param name="leftValue">The left value to compare.</param>
         /// <param name="rightValue">The right value to compare.</param>
         /// <returns>true if they are different; otherwise, false.</returns>
-        public static bool operator !=(JsonDouble leftValue, IJsonValue<long> rightValue)
+        public static bool operator !=(JsonDoubleNode leftValue, IJsonValueNode<long> rightValue)
         {
             if (ReferenceEquals(leftValue, rightValue)) return false;
             if (rightValue is null) return true;
@@ -2917,7 +2918,7 @@ namespace Trivial.Text
         /// <param name="leftValue">The left value to compare.</param>
         /// <param name="rightValue">The right value to compare.</param>
         /// <returns>true if the left one is smaller than the right one; otherwise, false.</returns>
-        public static bool operator <(JsonDouble leftValue, IJsonValue<long> rightValue)
+        public static bool operator <(JsonDoubleNode leftValue, IJsonValueNode<long> rightValue)
         {
             if (ReferenceEquals(leftValue, rightValue)) return false;
             if (rightValue is null) return true;
@@ -2930,7 +2931,7 @@ namespace Trivial.Text
         /// <param name="leftValue">The left value to compare.</param>
         /// <param name="rightValue">The right value to compare.</param>
         /// <returns>true if the left one is greater than the right one; otherwise, false.</returns>
-        public static bool operator >(JsonDouble leftValue, IJsonValue<long> rightValue)
+        public static bool operator >(JsonDoubleNode leftValue, IJsonValueNode<long> rightValue)
         {
             if (ReferenceEquals(leftValue, rightValue)) return false;
             if (rightValue is null) return false;
@@ -2943,7 +2944,7 @@ namespace Trivial.Text
         /// <param name="leftValue">The left value to compare.</param>
         /// <param name="rightValue">The right value to compare.</param>
         /// <returns>true if the left one is smaller than or equals to the right one; otherwise, false.</returns>
-        public static bool operator <=(JsonDouble leftValue, IJsonValue<long> rightValue)
+        public static bool operator <=(JsonDoubleNode leftValue, IJsonValueNode<long> rightValue)
         {
             if (ReferenceEquals(leftValue, rightValue)) return true;
             if (rightValue is null) return true;
@@ -2956,7 +2957,7 @@ namespace Trivial.Text
         /// <param name="leftValue">The left value to compare.</param>
         /// <param name="rightValue">The right value to compare.</param>
         /// <returns>true if the left one is greater than or equals to the right one; otherwise, false.</returns>
-        public static bool operator >=(JsonDouble leftValue, IJsonValue<long> rightValue)
+        public static bool operator >=(JsonDoubleNode leftValue, IJsonValueNode<long> rightValue)
         {
             if (ReferenceEquals(leftValue, rightValue)) return true;
             if (rightValue is null) return false;
@@ -2970,7 +2971,7 @@ namespace Trivial.Text
         /// <param name="leftValue">The left value to compare.</param>
         /// <param name="rightValue">The right value to compare.</param>
         /// <returns>true if they are same; otherwise, false.</returns>
-        public static bool operator ==(JsonDouble leftValue, double rightValue)
+        public static bool operator ==(JsonDoubleNode leftValue, double rightValue)
         {
             return leftValue.Value == rightValue;
         }
@@ -2982,7 +2983,7 @@ namespace Trivial.Text
         /// <param name="leftValue">The left value to compare.</param>
         /// <param name="rightValue">The right value to compare.</param>
         /// <returns>true if they are different; otherwise, false.</returns>
-        public static bool operator !=(JsonDouble leftValue, double rightValue)
+        public static bool operator !=(JsonDoubleNode leftValue, double rightValue)
         {
             return leftValue.Value != rightValue;
         }
@@ -2993,7 +2994,7 @@ namespace Trivial.Text
         /// <param name="leftValue">The left value to compare.</param>
         /// <param name="rightValue">The right value to compare.</param>
         /// <returns>true if the left one is smaller than the right one; otherwise, false.</returns>
-        public static bool operator <(JsonDouble leftValue, double rightValue)
+        public static bool operator <(JsonDoubleNode leftValue, double rightValue)
         {
             return leftValue.Value < rightValue;
         }
@@ -3004,7 +3005,7 @@ namespace Trivial.Text
         /// <param name="leftValue">The left value to compare.</param>
         /// <param name="rightValue">The right value to compare.</param>
         /// <returns>true if the left one is greater than the right one; otherwise, false.</returns>
-        public static bool operator >(JsonDouble leftValue, double rightValue)
+        public static bool operator >(JsonDoubleNode leftValue, double rightValue)
         {
             return leftValue.Value < rightValue;
         }
@@ -3015,7 +3016,7 @@ namespace Trivial.Text
         /// <param name="leftValue">The left value to compare.</param>
         /// <param name="rightValue">The right value to compare.</param>
         /// <returns>true if the left one is smaller than or equals to the right one; otherwise, false.</returns>
-        public static bool operator <=(JsonDouble leftValue, double rightValue)
+        public static bool operator <=(JsonDoubleNode leftValue, double rightValue)
         {
             return leftValue.Value <= rightValue;
         }
@@ -3026,7 +3027,7 @@ namespace Trivial.Text
         /// <param name="leftValue">The left value to compare.</param>
         /// <param name="rightValue">The right value to compare.</param>
         /// <returns>true if the left one is greater than or equals to the right one; otherwise, false.</returns>
-        public static bool operator >=(JsonDouble leftValue, double rightValue)
+        public static bool operator >=(JsonDoubleNode leftValue, double rightValue)
         {
             return leftValue.Value <= rightValue;
         }
@@ -3038,7 +3039,7 @@ namespace Trivial.Text
         /// <param name="leftValue">The left value to compare.</param>
         /// <param name="rightValue">The right value to compare.</param>
         /// <returns>true if they are same; otherwise, false.</returns>
-        public static bool operator ==(JsonDouble leftValue, float rightValue)
+        public static bool operator ==(JsonDoubleNode leftValue, float rightValue)
         {
             return leftValue.Value == rightValue;
         }
@@ -3050,7 +3051,7 @@ namespace Trivial.Text
         /// <param name="leftValue">The left value to compare.</param>
         /// <param name="rightValue">The right value to compare.</param>
         /// <returns>true if they are different; otherwise, false.</returns>
-        public static bool operator !=(JsonDouble leftValue, float rightValue)
+        public static bool operator !=(JsonDoubleNode leftValue, float rightValue)
         {
             return leftValue.Value != rightValue;
         }
@@ -3061,7 +3062,7 @@ namespace Trivial.Text
         /// <param name="leftValue">The left value to compare.</param>
         /// <param name="rightValue">The right value to compare.</param>
         /// <returns>true if the left one is smaller than the right one; otherwise, false.</returns>
-        public static bool operator <(JsonDouble leftValue, float rightValue)
+        public static bool operator <(JsonDoubleNode leftValue, float rightValue)
         {
             return leftValue.Value < rightValue;
         }
@@ -3072,7 +3073,7 @@ namespace Trivial.Text
         /// <param name="leftValue">The left value to compare.</param>
         /// <param name="rightValue">The right value to compare.</param>
         /// <returns>true if the left one is greater than the right one; otherwise, false.</returns>
-        public static bool operator >(JsonDouble leftValue, float rightValue)
+        public static bool operator >(JsonDoubleNode leftValue, float rightValue)
         {
             return leftValue.Value < rightValue;
         }
@@ -3083,7 +3084,7 @@ namespace Trivial.Text
         /// <param name="leftValue">The left value to compare.</param>
         /// <param name="rightValue">The right value to compare.</param>
         /// <returns>true if the left one is smaller than or equals to the right one; otherwise, false.</returns>
-        public static bool operator <=(JsonDouble leftValue, float rightValue)
+        public static bool operator <=(JsonDoubleNode leftValue, float rightValue)
         {
             return leftValue.Value <= rightValue;
         }
@@ -3094,7 +3095,7 @@ namespace Trivial.Text
         /// <param name="leftValue">The left value to compare.</param>
         /// <param name="rightValue">The right value to compare.</param>
         /// <returns>true if the left one is greater than or equals to the right one; otherwise, false.</returns>
-        public static bool operator >=(JsonDouble leftValue, float rightValue)
+        public static bool operator >=(JsonDoubleNode leftValue, float rightValue)
         {
             return leftValue.Value <= rightValue;
         }
@@ -3106,7 +3107,7 @@ namespace Trivial.Text
         /// <param name="leftValue">The left value to compare.</param>
         /// <param name="rightValue">The right value to compare.</param>
         /// <returns>true if they are same; otherwise, false.</returns>
-        public static bool operator ==(JsonDouble leftValue, long rightValue)
+        public static bool operator ==(JsonDoubleNode leftValue, long rightValue)
         {
             return leftValue.Value == rightValue;
         }
@@ -3118,7 +3119,7 @@ namespace Trivial.Text
         /// <param name="leftValue">The left value to compare.</param>
         /// <param name="rightValue">The right value to compare.</param>
         /// <returns>true if they are different; otherwise, false.</returns>
-        public static bool operator !=(JsonDouble leftValue, long rightValue)
+        public static bool operator !=(JsonDoubleNode leftValue, long rightValue)
         {
             return leftValue.Value != rightValue;
         }
@@ -3129,7 +3130,7 @@ namespace Trivial.Text
         /// <param name="leftValue">The left value to compare.</param>
         /// <param name="rightValue">The right value to compare.</param>
         /// <returns>true if the left one is smaller than the right one; otherwise, false.</returns>
-        public static bool operator <(JsonDouble leftValue, long rightValue)
+        public static bool operator <(JsonDoubleNode leftValue, long rightValue)
         {
             return leftValue.Value < rightValue;
         }
@@ -3140,7 +3141,7 @@ namespace Trivial.Text
         /// <param name="leftValue">The left value to compare.</param>
         /// <param name="rightValue">The right value to compare.</param>
         /// <returns>true if the left one is greater than the right one; otherwise, false.</returns>
-        public static bool operator >(JsonDouble leftValue, long rightValue)
+        public static bool operator >(JsonDoubleNode leftValue, long rightValue)
         {
             return leftValue.Value < rightValue;
         }
@@ -3151,7 +3152,7 @@ namespace Trivial.Text
         /// <param name="leftValue">The left value to compare.</param>
         /// <param name="rightValue">The right value to compare.</param>
         /// <returns>true if the left one is smaller than or equals to the right one; otherwise, false.</returns>
-        public static bool operator <=(JsonDouble leftValue, long rightValue)
+        public static bool operator <=(JsonDoubleNode leftValue, long rightValue)
         {
             return leftValue.Value <= rightValue;
         }
@@ -3162,7 +3163,7 @@ namespace Trivial.Text
         /// <param name="leftValue">The left value to compare.</param>
         /// <param name="rightValue">The right value to compare.</param>
         /// <returns>true if the left one is greater than or equals to the right one; otherwise, false.</returns>
-        public static bool operator >=(JsonDouble leftValue, long rightValue)
+        public static bool operator >=(JsonDoubleNode leftValue, long rightValue)
         {
             return leftValue.Value <= rightValue;
         }
@@ -3174,7 +3175,7 @@ namespace Trivial.Text
         /// <param name="leftValue">The left value to compare.</param>
         /// <param name="rightValue">The right value to compare.</param>
         /// <returns>true if they are same; otherwise, false.</returns>
-        public static bool operator ==(JsonDouble leftValue, int rightValue)
+        public static bool operator ==(JsonDoubleNode leftValue, int rightValue)
         {
             return leftValue.Value == rightValue;
         }
@@ -3186,7 +3187,7 @@ namespace Trivial.Text
         /// <param name="leftValue">The left value to compare.</param>
         /// <param name="rightValue">The right value to compare.</param>
         /// <returns>true if they are different; otherwise, false.</returns>
-        public static bool operator !=(JsonDouble leftValue, int rightValue)
+        public static bool operator !=(JsonDoubleNode leftValue, int rightValue)
         {
             return leftValue.Value != rightValue;
         }
@@ -3197,7 +3198,7 @@ namespace Trivial.Text
         /// <param name="leftValue">The left value to compare.</param>
         /// <param name="rightValue">The right value to compare.</param>
         /// <returns>true if the left one is smaller than the right one; otherwise, false.</returns>
-        public static bool operator <(JsonDouble leftValue, int rightValue)
+        public static bool operator <(JsonDoubleNode leftValue, int rightValue)
         {
             return leftValue.Value < rightValue;
         }
@@ -3208,7 +3209,7 @@ namespace Trivial.Text
         /// <param name="leftValue">The left value to compare.</param>
         /// <param name="rightValue">The right value to compare.</param>
         /// <returns>true if the left one is greater than the right one; otherwise, false.</returns>
-        public static bool operator >(JsonDouble leftValue, int rightValue)
+        public static bool operator >(JsonDoubleNode leftValue, int rightValue)
         {
             return leftValue.Value < rightValue;
         }
@@ -3219,7 +3220,7 @@ namespace Trivial.Text
         /// <param name="leftValue">The left value to compare.</param>
         /// <param name="rightValue">The right value to compare.</param>
         /// <returns>true if the left one is smaller than or equals to the right one; otherwise, false.</returns>
-        public static bool operator <=(JsonDouble leftValue, int rightValue)
+        public static bool operator <=(JsonDoubleNode leftValue, int rightValue)
         {
             return leftValue.Value <= rightValue;
         }
@@ -3230,7 +3231,7 @@ namespace Trivial.Text
         /// <param name="leftValue">The left value to compare.</param>
         /// <param name="rightValue">The right value to compare.</param>
         /// <returns>true if the left one is greater than or equals to the right one; otherwise, false.</returns>
-        public static bool operator >=(JsonDouble leftValue, int rightValue)
+        public static bool operator >=(JsonDoubleNode leftValue, int rightValue)
         {
             return leftValue.Value <= rightValue;
         }
@@ -3242,7 +3243,7 @@ namespace Trivial.Text
         /// <param name="leftValue">The left value to compare.</param>
         /// <param name="rightValue">The right value to compare.</param>
         /// <returns>true if they are same; otherwise, false.</returns>
-        public static bool operator ==(JsonDouble leftValue, uint rightValue)
+        public static bool operator ==(JsonDoubleNode leftValue, uint rightValue)
         {
             return leftValue.Value == rightValue;
         }
@@ -3254,7 +3255,7 @@ namespace Trivial.Text
         /// <param name="leftValue">The left value to compare.</param>
         /// <param name="rightValue">The right value to compare.</param>
         /// <returns>true if they are different; otherwise, false.</returns>
-        public static bool operator !=(JsonDouble leftValue, uint rightValue)
+        public static bool operator !=(JsonDoubleNode leftValue, uint rightValue)
         {
             return leftValue.Value != rightValue;
         }
@@ -3265,7 +3266,7 @@ namespace Trivial.Text
         /// <param name="leftValue">The left value to compare.</param>
         /// <param name="rightValue">The right value to compare.</param>
         /// <returns>true if the left one is smaller than the right one; otherwise, false.</returns>
-        public static bool operator <(JsonDouble leftValue, uint rightValue)
+        public static bool operator <(JsonDoubleNode leftValue, uint rightValue)
         {
             return leftValue.Value < rightValue;
         }
@@ -3276,7 +3277,7 @@ namespace Trivial.Text
         /// <param name="leftValue">The left value to compare.</param>
         /// <param name="rightValue">The right value to compare.</param>
         /// <returns>true if the left one is greater than the right one; otherwise, false.</returns>
-        public static bool operator >(JsonDouble leftValue, uint rightValue)
+        public static bool operator >(JsonDoubleNode leftValue, uint rightValue)
         {
             return leftValue.Value < rightValue;
         }
@@ -3287,7 +3288,7 @@ namespace Trivial.Text
         /// <param name="leftValue">The left value to compare.</param>
         /// <param name="rightValue">The right value to compare.</param>
         /// <returns>true if the left one is smaller than or equals to the right one; otherwise, false.</returns>
-        public static bool operator <=(JsonDouble leftValue, uint rightValue)
+        public static bool operator <=(JsonDoubleNode leftValue, uint rightValue)
         {
             return leftValue.Value <= rightValue;
         }
@@ -3298,7 +3299,7 @@ namespace Trivial.Text
         /// <param name="leftValue">The left value to compare.</param>
         /// <param name="rightValue">The right value to compare.</param>
         /// <returns>true if the left one is greater than or equals to the right one; otherwise, false.</returns>
-        public static bool operator >=(JsonDouble leftValue, uint rightValue)
+        public static bool operator >=(JsonDoubleNode leftValue, uint rightValue)
         {
             return leftValue.Value <= rightValue;
         }

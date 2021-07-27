@@ -9,9 +9,9 @@ using System.Threading.Tasks;
 namespace Trivial.Text
 {
     /// <summary>
-    /// The JSON converter for integer enum.
+    /// The JSON converter for enum. The output will be an integer value.
     /// </summary>
-    public class JsonIntegerEnumConverter : JsonConverterFactory
+    public class JsonIntegerEnumCompatibleConverter : JsonConverterFactory
     {
         /// <inheritdoc />
         public override bool CanConvert(Type typeToConvert)
@@ -22,7 +22,7 @@ namespace Trivial.Text
         /// <inheritdoc />
         public override JsonConverter CreateConverter(Type typeToConvert, JsonSerializerOptions options)
         {
-            return CreateConverter(typeof(JsonIntegerEnumConverter<>), typeToConvert, options);
+            return CreateConverter(typeof(JsonIntegerEnumCompatibleConverter<>), typeToConvert, options);
         }
 
         internal static JsonConverter CreateConverter(Type converterType, Type typeToConvert, JsonSerializerOptions options)
@@ -51,9 +51,9 @@ namespace Trivial.Text
     }
 
     /// <summary>
-    /// The JSON converter for integer enum.
+    /// The JSON converter for enum. The output will be an integer value.
     /// </summary>
-    public class JsonIntegerEnumConverter<T> : JsonConverter<T>
+    public class JsonIntegerEnumCompatibleConverter<T> : JsonConverter<T>
         where T : struct, Enum
     {
         /// <inheritdoc />
@@ -110,9 +110,9 @@ namespace Trivial.Text
     }
 
     /// <summary>
-    /// The JSON converter for integer enum. The output will be a string value.
+    /// The JSON converter for enum. The output will be a string value.
     /// </summary>
-    public class JsonStringIntegerEnumConverter : JsonConverterFactory
+    public class JsonStringEnumCompatibleConverter : JsonConverterFactory
     {
         /// <inheritdoc />
         public override bool CanConvert(Type typeToConvert)
@@ -123,20 +123,20 @@ namespace Trivial.Text
         /// <inheritdoc />
         public override JsonConverter CreateConverter(Type typeToConvert, JsonSerializerOptions options)
         {
-            return JsonIntegerEnumConverter.CreateConverter(typeof(JsonStringIntegerEnumConverter<>), typeToConvert, options);
+            return JsonIntegerEnumCompatibleConverter.CreateConverter(typeof(JsonStringEnumCompatibleConverter<>), typeToConvert, options);
         }
     }
 
     /// <summary>
-    /// The JSON converter for integer enum.
+    /// The JSON converter for enum. The output will be a string value.
     /// </summary>
-    public class JsonStringIntegerEnumConverter<T> : JsonConverter<T>
+    public class JsonStringEnumCompatibleConverter<T> : JsonConverter<T>
         where T : struct, Enum
     {
         /// <inheritdoc />
         public override T Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
-            return JsonIntegerEnumConverter<T>.Read(ref reader, typeToConvert);
+            return JsonIntegerEnumCompatibleConverter<T>.Read(ref reader, typeToConvert);
         }
 
         /// <inheritdoc />

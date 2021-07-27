@@ -181,10 +181,10 @@ namespace Trivial.Web
         /// <returns>A JSON object instance; or null, if no body.</returns>
         /// <exception cref="JsonException">json does not represent a valid single JSON object.</exception>
         /// <exception cref="ArgumentException">options contains unsupported options.</exception>
-        public static Task<JsonObject> ReadBodyAsJsonAsync(this HttpRequest request, CancellationToken cancellationToken)
+        public static Task<JsonObjectNode> ReadBodyAsJsonAsync(this HttpRequest request, CancellationToken cancellationToken)
         {
             if (request == null || request.Body == null) return null;
-            return JsonObject.ParseAsync(request.Body, default, cancellationToken);
+            return JsonObjectNode.ParseAsync(request.Body, default, cancellationToken);
         }
 
         /// <summary>
@@ -196,10 +196,10 @@ namespace Trivial.Web
         /// <returns>A JSON object instance; or null, if no body.</returns>
         /// <exception cref="JsonException">json does not represent a valid single JSON object.</exception>
         /// <exception cref="ArgumentException">options contains unsupported options.</exception>
-        public static Task<JsonObject> ReadBodyAsJsonAsync(this HttpRequest request, JsonDocumentOptions options, CancellationToken cancellationToken)
+        public static Task<JsonObjectNode> ReadBodyAsJsonAsync(this HttpRequest request, JsonDocumentOptions options, CancellationToken cancellationToken)
         {
             if (request == null || request.Body == null) return null;
-            return JsonObject.ParseAsync(request.Body, options, cancellationToken);
+            return JsonObjectNode.ParseAsync(request.Body, options, cancellationToken);
         }
 
         /// <summary>
@@ -210,10 +210,10 @@ namespace Trivial.Web
         /// <returns>A JSON array instance; or null, if no body.</returns>
         /// <exception cref="JsonException">json does not represent a valid single JSON object.</exception>
         /// <exception cref="ArgumentException">options contains unsupported options.</exception>
-        public static Task<JsonArray> ReadBodyAsJsonArrayAsync(this HttpRequest request, CancellationToken cancellationToken)
+        public static Task<JsonArrayNode> ReadBodyAsJsonArrayAsync(this HttpRequest request, CancellationToken cancellationToken)
         {
             if (request == null || request.Body == null) return null;
-            return JsonArray.ParseAsync(request.Body, default, cancellationToken);
+            return JsonArrayNode.ParseAsync(request.Body, default, cancellationToken);
         }
 
         /// <summary>
@@ -225,10 +225,10 @@ namespace Trivial.Web
         /// <returns>A JSON array instance; or null, if no body.</returns>
         /// <exception cref="JsonException">json does not represent a valid single JSON object.</exception>
         /// <exception cref="ArgumentException">options contains unsupported options.</exception>
-        public static Task<JsonArray> ReadBodyAsJsonArrayAsync(this HttpRequest request, JsonDocumentOptions options, CancellationToken cancellationToken)
+        public static Task<JsonArrayNode> ReadBodyAsJsonArrayAsync(this HttpRequest request, JsonDocumentOptions options, CancellationToken cancellationToken)
         {
             if (request == null || request.Body == null) return null;
-            return JsonArray.ParseAsync(request.Body, options, cancellationToken);
+            return JsonArrayNode.ParseAsync(request.Body, options, cancellationToken);
         }
 
         /// <summary>
@@ -285,7 +285,7 @@ namespace Trivial.Web
         /// </summary>
         /// <param name="value">The value.</param>
         /// <returns>The action result.</returns>
-        public static ContentResult ToActionResult(this JsonObject value)
+        public static ContentResult ToActionResult(this JsonObjectNode value)
         {
             return new ContentResult
             {
@@ -300,7 +300,7 @@ namespace Trivial.Web
         /// </summary>
         /// <param name="value">The value.</param>
         /// <returns>The action result.</returns>
-        public static ContentResult ToActionResult(this JsonArray value)
+        public static ContentResult ToActionResult(this JsonArrayNode value)
         {
             return new ContentResult
             {
@@ -392,7 +392,7 @@ namespace Trivial.Web
         public static bool? TryGetBoolean(this IQueryCollection request, string key)
         {
             var plain = request?.GetFirstStringValue(key, true)?.ToLowerInvariant();
-            var isPlain = JsonBoolean.TryParse(plain);
+            var isPlain = JsonBooleanNode.TryParse(plain);
             return isPlain?.Value;
         }
 
@@ -406,7 +406,7 @@ namespace Trivial.Web
         public static bool TryGetBoolean(this IQueryCollection request, string key, out bool result)
         {
             var plain = request?.GetFirstStringValue(key, true)?.ToLowerInvariant();
-            var isPlain = JsonBoolean.TryParse(plain);
+            var isPlain = JsonBooleanNode.TryParse(plain);
             if (isPlain == null)
             {
                 result = false;

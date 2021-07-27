@@ -119,7 +119,7 @@ namespace Trivial.Chemistry
         /// <param name="writer">The writer to which to write this instance.</param>
         public void WriteTo(Utf8JsonWriter writer)
         {
-            var json = (JsonObject)this;
+            var json = (JsonObjectNode)this;
             json.WriteTo(writer);
         }
 
@@ -223,10 +223,10 @@ namespace Trivial.Chemistry
         /// Converts to a JSON object.
         /// </summary>
         /// <param name="isotope">The isotope to convert.</param>
-        public static explicit operator JsonObject(Isotope isotope)
+        public static explicit operator JsonObjectNode(Isotope isotope)
         {
             if (isotope is null || isotope.AtomicNumber < 1 || isotope.AtomicWeight < 1) return null;
-            var json = new JsonObject
+            var json = new JsonObjectNode
             {
                 { "symbol", isotope.ToString() },
                 { "number", isotope.AtomicNumber },
@@ -246,7 +246,7 @@ namespace Trivial.Chemistry
         public static explicit operator JsonDocument(Isotope isotope)
         {
             if (isotope is null || isotope.AtomicNumber < 1 || isotope.AtomicWeight < 1) return null;
-            return (JsonDocument)(JsonObject)isotope;
+            return (JsonDocument)(JsonObjectNode)isotope;
         }
 
         /// <summary>
@@ -256,7 +256,7 @@ namespace Trivial.Chemistry
         public static explicit operator System.Text.Json.Nodes.JsonObject(Isotope isotope)
         {
             if (isotope is null || isotope.AtomicNumber < 1 || isotope.AtomicWeight < 1) return null;
-            return (System.Text.Json.Nodes.JsonObject)(JsonObject)isotope;
+            return (System.Text.Json.Nodes.JsonObject)(JsonObjectNode)isotope;
         }
     }
 }

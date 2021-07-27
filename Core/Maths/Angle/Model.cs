@@ -304,7 +304,7 @@ namespace Trivial.Maths
             /// Converts a number to angle model.
             /// </summary>
             /// <param name="value">The raw value.</param>
-            public static implicit operator Model(Text.JsonInteger value)
+            public static implicit operator Model(Text.JsonIntegerNode value)
             {
                 return new Model(value.Value);
             }
@@ -313,7 +313,7 @@ namespace Trivial.Maths
             /// Converts a number to angle model.
             /// </summary>
             /// <param name="value">The raw value.</param>
-            public static implicit operator Model(Text.JsonDouble value)
+            public static implicit operator Model(Text.JsonDoubleNode value)
             {
                 return new Model(value.Value);
             }
@@ -322,7 +322,7 @@ namespace Trivial.Maths
             /// Converts a string to angle model.
             /// </summary>
             /// <param name="value">The raw value.</param>
-            public static implicit operator Model(Text.JsonString value)
+            public static implicit operator Model(Text.JsonStringNode value)
             {
                 try
                 {

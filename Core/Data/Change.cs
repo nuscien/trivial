@@ -470,7 +470,7 @@ namespace Trivial.Data
         /// </summary>
         [DataMember(Name = "state")]
         [JsonPropertyName("state")]
-        [JsonConverter(typeof(Text.JsonIntegerEnumConverter<ChangeMethods>))]
+        [JsonConverter(typeof(Text.JsonIntegerEnumCompatibleConverter<ChangeMethods>))]
         public ChangeMethods State { get; set; }
 
         /// <summary>
@@ -478,7 +478,7 @@ namespace Trivial.Data
         /// </summary>
         [DataMember(Name = "code")]
         [JsonPropertyName("code")]
-        [JsonConverter(typeof(Text.JsonIntegerEnumConverter<ChangeErrorKinds>))]
+        [JsonConverter(typeof(Text.JsonIntegerEnumCompatibleConverter<ChangeErrorKinds>))]
         public ChangeErrorKinds ErrorCode { get; set; }
 
         /// <summary>

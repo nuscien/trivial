@@ -250,7 +250,7 @@ namespace Trivial.Reflection
         {
             var v = GetProperty<T>(key);
             if (v is null) return null;
-            if (v is string s) return JsonString.ToJson(s);
+            if (v is string s) return JsonStringNode.ToJson(s);
             return JsonSerializer.Serialize(v, options);
         }
 
@@ -258,7 +258,7 @@ namespace Trivial.Reflection
         /// Writes this instance to the specified writer as a JSON value.
         /// </summary>
         /// <param name="writer">The writer to which to write this instance.</param>
-        protected void WriteTo(Utf8JsonWriter writer) => JsonObject.ConvertFrom(this).WriteTo(writer);
+        protected void WriteTo(Utf8JsonWriter writer) => JsonObjectNode.ConvertFrom(this).WriteTo(writer);
 
         /// <summary>
         /// Returns an enumerator that iterates through the collection.
@@ -345,7 +345,7 @@ namespace Trivial.Reflection
         /// Writes this instance to the specified writer as a JSON value.
         /// </summary>
         /// <param name="writer">The writer to which to write this instance.</param>
-        public new void WriteTo(Utf8JsonWriter writer) => JsonObject.ConvertFrom(this).WriteTo(writer);
+        public new void WriteTo(Utf8JsonWriter writer) => JsonObjectNode.ConvertFrom(this).WriteTo(writer);
     }
 
     /// <summary>

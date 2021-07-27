@@ -410,7 +410,7 @@ namespace Trivial.Chemistry
         /// <param name="writer">The writer to which to write this instance.</param>
         public void WriteTo(Utf8JsonWriter writer)
         {
-            var json = (JsonObject)this;
+            var json = (JsonObjectNode)this;
             json.WriteTo(writer);
         }
 
@@ -432,7 +432,7 @@ namespace Trivial.Chemistry
         /// </summary>
         /// <param name="other">The object to compare with the current instance.</param>
         /// <returns>true if obj and this instance represent the same value; otherwise, false.</returns>
-        public bool Equals(JsonObject other)
+        public bool Equals(JsonObjectNode other)
         {
             if (other is null) return false;
             return AtomicNumber == other.TryGetInt32Value("number")
@@ -448,7 +448,7 @@ namespace Trivial.Chemistry
         {
             if (other is null) return false;
             if (other is ChemicalElement element) return Equals(element);
-            if (other is JsonObject json) return Equals(json);
+            if (other is JsonObjectNode json) return Equals(json);
             return false;
         }
 
@@ -576,10 +576,10 @@ namespace Trivial.Chemistry
         /// Converts to a JSON object.
         /// </summary>
         /// <param name="element">The chemical element to convert.</param>
-        public static explicit operator JsonObject(ChemicalElement element)
+        public static explicit operator JsonObjectNode(ChemicalElement element)
         {
             if (element is null || element.AtomicNumber < 1) return null;
-            var json = new JsonObject
+            var json = new JsonObjectNode
             {
                 { "number", element.AtomicNumber },
                 { "symbol", element.Symbol },
@@ -589,15 +589,15 @@ namespace Trivial.Chemistry
             if (element.Group > 0)
                 json.SetValue("group", element.Group);
             if (!double.IsNaN(element.AtomicWeight))
-                json["weight"] = element.HasAtomicWeight ? new JsonDouble(element.AtomicWeight) : new JsonInteger(element.AtomicWeight);
+                json["weight"] = element.HasAtomicWeight ? new JsonDoubleNode(element.AtomicWeight) : new JsonIntegerNode(element.AtomicWeight);
             if (!element.EnglishName.Equals(element.Name))
                 json.SetValue("name_en", element.EnglishName);
             if (element.isotopes != null && element.isotopes.Count > 0)
             {
-                var arr = new JsonArray();
+                var arr = new JsonArrayNode();
                 foreach (var isotope in element.isotopes)
                 {
-                    var json2 = new JsonObject
+                    var json2 = new JsonObjectNode
                     {
                         { "symbol", isotope.ToString() },
                         { "neutrons", isotope.Neutrons },
@@ -620,7 +620,7 @@ namespace Trivial.Chemistry
         public static explicit operator JsonDocument(ChemicalElement element)
         {
             if (element is null || element.AtomicNumber < 1) return null;
-            return (JsonDocument)(JsonObject)element;
+            return (JsonDocument)(JsonObjectNode)element;
         }
 
         /// <summary>
@@ -630,25 +630,25 @@ namespace Trivial.Chemistry
         public static explicit operator System.Text.Json.Nodes.JsonObject(ChemicalElement element)
         {
             if (element is null || element.AtomicNumber < 1) return null;
-            return (System.Text.Json.Nodes.JsonObject)(JsonObject)element;
+            return (System.Text.Json.Nodes.JsonObject)(JsonObjectNode)element;
         }
 
         /// <summary>
         /// Converts to a JSON object.
         /// </summary>
         /// <param name="element">The chemical element to convert.</param>
-        public static explicit operator JsonString(ChemicalElement element)
+        public static explicit operator JsonStringNode(ChemicalElement element)
         {
-            return element is null ? null : new JsonString(element.Symbol);
+            return element is null ? null : new JsonStringNode(element.Symbol);
         }
 
         /// <summary>
         /// Converts to a JSON object.
         /// </summary>
         /// <param name="element">The chemical element to convert.</param>
-        public static explicit operator JsonInteger(ChemicalElement element)
+        public static explicit operator JsonIntegerNode(ChemicalElement element)
         {
-            return element is null ? null : new JsonInteger(element.AtomicNumber);
+            return element is null ? null : new JsonIntegerNode(element.AtomicNumber);
         }
 
         /// <summary>

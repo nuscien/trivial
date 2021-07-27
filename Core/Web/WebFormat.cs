@@ -431,23 +431,23 @@ namespace Trivial.Web
                 };
             }
 
-            if (t == typeof(JsonObject))
+            if (t == typeof(JsonObjectNode))
             {
                 if (ignoreJsonDoc) return null;
                 return str =>
                 {
                     if (string.IsNullOrWhiteSpace(str)) return default;
-                    return (T)(object)JsonObject.Parse(str);
+                    return (T)(object)JsonObjectNode.Parse(str);
                 };
             }
 
-            if (t == typeof(JsonArray))
+            if (t == typeof(JsonArrayNode))
             {
                 if (ignoreJsonDoc) return null;
                 return str =>
                 {
                     if (string.IsNullOrWhiteSpace(str)) return default;
-                    return (T)(object)JsonArray.Parse(str);
+                    return (T)(object)JsonArrayNode.Parse(str);
                 };
             }
             

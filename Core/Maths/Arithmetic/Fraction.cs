@@ -518,7 +518,7 @@ namespace Trivial.Maths
         /// </summary>
         /// <param name="value">The fraction value.</param>
         /// <returns>A floating number.</returns>
-        public static explicit operator Text.JsonDouble(Fraction value)
+        public static explicit operator Text.JsonDoubleNode(Fraction value)
         {
             return new(value.LongNumerator * (value.IsNegative ? -1.0 : 1.0) / value.LongDenominator);
         }
@@ -528,7 +528,7 @@ namespace Trivial.Maths
         /// </summary>
         /// <param name="value">The fraction value.</param>
         /// <returns>A floating number.</returns>
-        public static explicit operator Text.JsonString(Fraction value)
+        public static explicit operator Text.JsonStringNode(Fraction value)
         {
             return new(value.ToString());
         }

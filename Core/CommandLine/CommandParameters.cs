@@ -812,11 +812,11 @@ namespace Trivial.CommandLine
         /// </summary>
         /// <param name="mode">The parameter resolving mode.</param>
         /// <returns>The result value converted.</returns>
-        public JsonObject ParseToJsonObject(CommandParameterModes mode = CommandParameterModes.First)
+        public JsonObjectNode ParseToJsonObject(CommandParameterModes mode = CommandParameterModes.First)
         {
             var v = Value(mode);
             if (string.IsNullOrWhiteSpace(v)) return null;
-            return JsonObject.Parse(v);
+            return JsonObjectNode.Parse(v);
         }
 
         /// <summary>
@@ -824,11 +824,11 @@ namespace Trivial.CommandLine
         /// </summary>
         /// <param name="mode">The parameter resolving mode.</param>
         /// <returns>The result value converted.</returns>
-        public JsonArray ParseToJsonArray(CommandParameterModes mode = CommandParameterModes.First)
+        public JsonArrayNode ParseToJsonArray(CommandParameterModes mode = CommandParameterModes.First)
         {
             var v = Value(mode);
             if (string.IsNullOrWhiteSpace(v)) return null;
-            return JsonArray.Parse(v);
+            return JsonArrayNode.Parse(v);
         }
 
         /// <summary>

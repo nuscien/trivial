@@ -519,12 +519,12 @@ namespace Trivial.CommandLine
                     var itemValue = p.ParseToQueryData(att.Mode);
                     item.SetValue(obj, itemValue);
                 }
-                else if (itemType == typeof(JsonObject))
+                else if (itemType == typeof(JsonObjectNode))
                 {
                     var itemValue = p.ParseToJsonObject(att.Mode);
                     item.SetValue(obj, itemValue);
                 }
-                else if (itemType == typeof(JsonArray))
+                else if (itemType == typeof(JsonArrayNode))
                 {
                     var itemValue = p.ParseToJsonArray(att.Mode);
                     item.SetValue(obj, itemValue);

@@ -47,19 +47,19 @@ namespace Trivial.Security
         [TestMethod]
         public void TestCustomizedJwt()
         {
-            var payload = new JsonObject();
+            var payload = new JsonObjectNode();
             payload.SetValue("abcdefg", "hijklmn");
             payload.SetValue("opqrst", "uvwxyz");
             var hash = HashSignatureProvider.CreateHS512("key");
-            var jwt = new JsonWebToken<JsonObject>(payload, hash);
+            var jwt = new JsonWebToken<JsonObjectNode>(payload, hash);
             Assert.AreEqual(true, jwt.CanSign);
             Assert.AreEqual(payload, jwt.Payload);
             Assert.AreEqual(hash.Name, jwt.AlgorithmName);
             var header = jwt.ToAuthenticationHeaderValue();
             Assert.IsTrue(header.Parameter.Length > 10);
-            var jwt2 = JsonWebToken<JsonObject>.Parse(header.Parameter, hash);
+            var jwt2 = JsonWebToken<JsonObjectNode>.Parse(header.Parameter, hash);
             Assert.AreEqual(header.Parameter, jwt2.ToEncodedString());
-            var parser = new JsonWebToken<JsonObject>.Parser(header.Parameter);
+            var parser = new JsonWebToken<JsonObjectNode>.Parser(header.Parameter);
             Assert.AreEqual(header.Parameter, parser.ToString());
         }
     }

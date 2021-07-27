@@ -663,8 +663,8 @@ namespace Trivial.Text
                     JsonTokenType.Null => null,
                     JsonTokenType.Number => reader.GetDouble().ToString("g", CultureInfo.InvariantCulture),
                     JsonTokenType.String => reader.GetString(),
-                    JsonTokenType.False => JsonBoolean.FalseString,
-                    JsonTokenType.True => JsonBoolean.TrueString,
+                    JsonTokenType.False => JsonBooleanNode.FalseString,
+                    JsonTokenType.True => JsonBooleanNode.TrueString,
                     _ => throw new JsonException($"The token type is {reader.TokenType} but expect number.")
                 };
             }
@@ -680,13 +680,13 @@ namespace Trivial.Text
                 }
 
                 var lower = value.ToLowerInvariant();
-                if (lower == JsonBoolean.TrueString)
+                if (lower == JsonBooleanNode.TrueString)
                 {
                     writer.WriteBooleanValue(true);
                     return;
                 }
 
-                if (lower == JsonBoolean.FalseString)
+                if (lower == JsonBooleanNode.FalseString)
                 {
                     writer.WriteBooleanValue(true);
                     return;
@@ -718,7 +718,7 @@ namespace Trivial.Text
         /// <summary>
         /// Json number converter with number string fallback.
         /// </summary>
-        sealed class JsonNumberInterfaceConverter : JsonConverter<IJsonNumber>
+        sealed class JsonNumberInterfaceConverter : JsonConverter<IJsonNumberNode>
         {
             /// <summary>
             /// Gets or sets a value indicating whether need also write to a string.
@@ -726,33 +726,33 @@ namespace Trivial.Text
             public bool NeedWriteAsString { get; set; }
 
             /// <inheritdoc />
-            public override IJsonNumber Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+            public override IJsonNumberNode Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
             {
                 switch (reader.TokenType)
                 {
                     case JsonTokenType.Null:
                         return null;
                     case JsonTokenType.Number:
-                        if (reader.TryGetInt64(out var l1)) return new JsonInteger(l1);
-                        return new JsonDouble(reader.GetDouble());
+                        if (reader.TryGetInt64(out var l1)) return new JsonIntegerNode(l1);
+                        return new JsonDoubleNode(reader.GetDouble());
                     case JsonTokenType.String:
                         var str = reader.GetString();
                         if (string.IsNullOrWhiteSpace(str)) return null;
                         str = str.Trim();
                         if (str == "null") return null;
-                        if (str.IndexOf('.') < 0 && long.TryParse(str, out var l2)) return new JsonInteger(l2);
-                        return new JsonDouble(double.Parse(str));
+                        if (str.IndexOf('.') < 0 && long.TryParse(str, out var l2)) return new JsonIntegerNode(l2);
+                        return new JsonDoubleNode(double.Parse(str));
                     case JsonTokenType.False:
-                        return new JsonInteger(0);
+                        return new JsonIntegerNode(0);
                     case JsonTokenType.True:
-                        return new JsonInteger(1);
+                        return new JsonIntegerNode(1);
                     default:
                         throw new JsonException($"The token type is {reader.TokenType} but expect number.");
                 }
             }
 
             /// <inheritdoc />
-            public override void Write(Utf8JsonWriter writer, IJsonNumber value, JsonSerializerOptions options)
+            public override void Write(Utf8JsonWriter writer, IJsonNumberNode value, JsonSerializerOptions options)
             {
                 if (value is null) writer.WriteNullValue();
                 else if (NeedWriteAsString) writer.WriteStringValue(value.ToString());
@@ -764,7 +764,7 @@ namespace Trivial.Text
         /// <summary>
         /// Json number converter with number string fallback.
         /// </summary>
-        sealed class JsonIntegerConverter : JsonConverter<JsonInteger>
+        sealed class JsonIntegerConverter : JsonConverter<JsonIntegerNode>
         {
             /// <summary>
             /// Gets or sets a value indicating whether need also write to a string.
@@ -772,7 +772,7 @@ namespace Trivial.Text
             public bool NeedWriteAsString { get; set; }
 
             /// <inheritdoc />
-            public override JsonInteger Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+            public override JsonIntegerNode Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
             {
                 var num = reader.TokenType switch
                 {
@@ -783,11 +783,11 @@ namespace Trivial.Text
                     JsonTokenType.True => 1,
                     _ => throw new JsonException($"The token type is {reader.TokenType} but expect number.")
                 };
-                return num.HasValue ? new JsonInteger(num.Value) : null;
+                return num.HasValue ? new JsonIntegerNode(num.Value) : null;
             }
 
             /// <inheritdoc />
-            public override void Write(Utf8JsonWriter writer, JsonInteger value, JsonSerializerOptions options)
+            public override void Write(Utf8JsonWriter writer, JsonIntegerNode value, JsonSerializerOptions options)
             {
                 if (value is null) writer.WriteNullValue();
                 else if (NeedWriteAsString) writer.WriteStringValue(value.ToString());
@@ -798,7 +798,7 @@ namespace Trivial.Text
         /// <summary>
         /// Json number converter with number string fallback.
         /// </summary>
-        sealed class JsonDoubleConverter : JsonConverter<JsonDouble>
+        sealed class JsonDoubleConverter : JsonConverter<JsonDoubleNode>
         {
             /// <summary>
             /// Gets or sets a value indicating whether need also write to a string.
@@ -806,7 +806,7 @@ namespace Trivial.Text
             public bool NeedWriteAsString { get; set; }
 
             /// <inheritdoc />
-            public override JsonDouble Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+            public override JsonDoubleNode Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
             {
                 var num = reader.TokenType switch
                 {
@@ -817,11 +817,11 @@ namespace Trivial.Text
                     JsonTokenType.True => 1,
                     _ => throw new JsonException($"The token type is {reader.TokenType} but expect number.")
                 };
-                return num.HasValue ? new JsonDouble(num.Value) : null;
+                return num.HasValue ? new JsonDoubleNode(num.Value) : null;
             }
 
             /// <inheritdoc />
-            public override void Write(Utf8JsonWriter writer, JsonDouble value, JsonSerializerOptions options)
+            public override void Write(Utf8JsonWriter writer, JsonDoubleNode value, JsonSerializerOptions options)
             {
                 if (value is null) writer.WriteNullValue();
                 else if (NeedWriteAsString) writer.WriteStringValue(value.ToString());
@@ -1244,9 +1244,9 @@ namespace Trivial.Text
                 if (typeToConvert == typeof(ushort?)) return new UInt16NullableConverter { NeedWriteAsString = true };
                 if (typeToConvert == typeof(DateTime?)) return new JsonJavaScriptTicksConverter.FallbackNullableConverter();
                 if (typeToConvert == typeof(TimeSpan?)) return new JsonTimeSpanSecondConverter.NullableConverter { NeedWriteAsString = true };
-                if (typeToConvert == typeof(JsonInteger)) return new JsonIntegerConverter { NeedWriteAsString = true };
-                if (typeToConvert == typeof(JsonDouble)) return new JsonDoubleConverter { NeedWriteAsString = true };
-                if (typeToConvert == typeof(IJsonNumber)) return new JsonNumberInterfaceConverter { NeedWriteAsString = true };
+                if (typeToConvert == typeof(JsonIntegerNode)) return new JsonIntegerConverter { NeedWriteAsString = true };
+                if (typeToConvert == typeof(JsonDoubleNode)) return new JsonDoubleConverter { NeedWriteAsString = true };
+                if (typeToConvert == typeof(IJsonNumberNode)) return new JsonNumberInterfaceConverter { NeedWriteAsString = true };
                 if (typeToConvert == typeof(string)) return new StringConverter { NeedWriteAsString = true };
                 if (typeToConvert == typeof(Maths.StructValueSimpleInterval<int>)) return new Int32IntervalConverter();
                 if (typeToConvert == typeof(Maths.NullableValueSimpleInterval<int>)) return new NullableInt32IntervalConverter();
@@ -1297,9 +1297,9 @@ namespace Trivial.Text
                 if (typeToConvert == typeof(ushort?)) return new UInt16NullableConverter();
                 if (typeToConvert == typeof(DateTime?)) return new JsonJavaScriptTicksConverter.NullableConverter();
                 if (typeToConvert == typeof(TimeSpan?)) return new JsonTimeSpanSecondConverter.NullableConverter();
-                if (typeToConvert == typeof(JsonInteger)) return new JsonIntegerConverter();
-                if (typeToConvert == typeof(JsonDouble)) return new JsonDoubleConverter();
-                if (typeToConvert == typeof(IJsonNumber)) return new JsonNumberInterfaceConverter();
+                if (typeToConvert == typeof(JsonIntegerNode)) return new JsonIntegerConverter();
+                if (typeToConvert == typeof(JsonDoubleNode)) return new JsonDoubleConverter();
+                if (typeToConvert == typeof(IJsonNumberNode)) return new JsonNumberInterfaceConverter();
                 if (typeToConvert == typeof(string)) return new StringConverter();
                 if (typeToConvert == typeof(Maths.StructValueSimpleInterval<int>)) return new Int32IntervalConverter();
                 if (typeToConvert == typeof(Maths.NullableValueSimpleInterval<int>)) return new NullableInt32IntervalConverter();
@@ -1345,9 +1345,9 @@ namespace Trivial.Text
             if (typeToConvert == typeof(ushort?)) return new UInt16NullableConverter();
             if (typeToConvert == typeof(DateTime?)) return new JsonJavaScriptTicksConverter.NullableConverter();
             if (typeToConvert == typeof(TimeSpan?)) return new JsonTimeSpanSecondConverter.NullableConverter();
-            if (typeToConvert == typeof(JsonInteger)) return new JsonIntegerConverter();
-            if (typeToConvert == typeof(JsonDouble)) return new JsonDoubleConverter();
-            if (typeToConvert == typeof(IJsonNumber)) return new JsonNumberInterfaceConverter();
+            if (typeToConvert == typeof(JsonIntegerNode)) return new JsonIntegerConverter();
+            if (typeToConvert == typeof(JsonDoubleNode)) return new JsonDoubleConverter();
+            if (typeToConvert == typeof(IJsonNumberNode)) return new JsonNumberInterfaceConverter();
             if (typeToConvert == typeof(string)) return new StringConverter();
             if (typeToConvert == typeof(Maths.StructValueSimpleInterval<int>)) return new Int32IntervalConverter();
             if (typeToConvert == typeof(Maths.NullableValueSimpleInterval<int>)) return new NullableInt32IntervalConverter();
@@ -1396,9 +1396,9 @@ namespace Trivial.Text
                 || typeToConvert == typeof(ushort?)
                 || typeToConvert == typeof(DateTime?)
                 || typeToConvert == typeof(TimeSpan?)
-                || typeToConvert == typeof(JsonInteger)
-                || typeToConvert == typeof(JsonDouble)
-                || typeToConvert == typeof(IJsonNumber)
+                || typeToConvert == typeof(JsonIntegerNode)
+                || typeToConvert == typeof(JsonDoubleNode)
+                || typeToConvert == typeof(IJsonNumberNode)
                 || typeToConvert == typeof(string)
                 || typeToConvert == typeof(Maths.StructValueSimpleInterval<int>)
                 || typeToConvert == typeof(Maths.NullableValueSimpleInterval<int>)

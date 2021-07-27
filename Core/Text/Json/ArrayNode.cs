@@ -18,25 +18,25 @@ namespace Trivial.Text
     /// <summary>
     /// Represents a specific JSON array.
     /// </summary>
-    public class JsonArray : IJsonComplex, IJsonValueResolver, IReadOnlyList<IJsonValue>, IReadOnlyList<IJsonValueResolver>, IEquatable<JsonArray>, IEquatable<IJsonValue>
+    public class JsonArrayNode : IJsonComplexNode, IJsonDataNode, IReadOnlyList<IJsonValueNode>, IReadOnlyList<IJsonDataNode>, IEquatable<JsonArrayNode>, IEquatable<IJsonValueNode>
     {
-        private IList<IJsonValueResolver> store = new List<IJsonValueResolver>();
+        private IList<IJsonDataNode> store = new List<IJsonDataNode>();
 
         /// <summary>
-        /// Initializes a new instance of the JsonArray class.
+        /// Initializes a new instance of the JsonArrayNode class.
         /// </summary>
-        public JsonArray()
+        public JsonArrayNode()
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the JsonArray class.
+        /// Initializes a new instance of the JsonArrayNode class.
         /// </summary>
         /// <param name="copy">Properties to initialzie.</param>
         /// <param name="threadSafe">true if enable thread-safe; otherwise, false.</param>
-        private JsonArray(IList<IJsonValueResolver> copy, bool threadSafe = false)
+        private JsonArrayNode(IList<IJsonDataNode> copy, bool threadSafe = false)
         {
-            if (threadSafe) store = new Collection.SynchronizedList<IJsonValueResolver>();
+            if (threadSafe) store = new Collection.SynchronizedList<IJsonDataNode>();
             if (copy == null) return;
             foreach (var ele in copy)
             {
@@ -66,7 +66,7 @@ namespace Trivial.Text
         /// <returns>The element at the specified index in the array.</returns>
         /// <exception cref="ArgumentOutOfRangeException">The index does not exist.</exception>
         /// <exception cref="InvalidOperationException">The value kind is not the expected one.</exception>
-        public IJsonValueResolver this[int index] => GetValue(index);
+        public IJsonDataNode this[int index] => GetValue(index);
 
         /// <summary>
         /// Gets the element at the specified index in the array.
@@ -75,7 +75,7 @@ namespace Trivial.Text
         /// <returns>The element at the specified index in the array.</returns>
         /// <exception cref="ArgumentOutOfRangeException">The index is out of range.</exception>
         /// <exception cref="InvalidOperationException">The value kind is not the expected one.</exception>
-        IJsonValue IReadOnlyList<IJsonValue>.this[int index] => GetValue(index);
+        IJsonValueNode IReadOnlyList<IJsonValueNode>.this[int index] => GetValue(index);
 
 #if !NETOLDVER
         /// <summary>
@@ -84,7 +84,7 @@ namespace Trivial.Text
         /// <param name="index">A position in the current string.</param>
         /// <returns>The character at position index.</returns>
         /// <exception cref="ArgumentOutOfRangeException">The index is out of range.</exception>
-        public IJsonValueResolver this[Index index] => GetValue(index.IsFromEnd ? Count - index.Value : index.Value);
+        public IJsonDataNode this[Index index] => GetValue(index.IsFromEnd ? Count - index.Value : index.Value);
 
         /// <summary>
         /// Gets the System.Char object at a specified position in the source value.
@@ -92,7 +92,7 @@ namespace Trivial.Text
         /// <param name="range">The range.</param>
         /// <returns>The character at position index.</returns>
         /// <exception cref="ArgumentOutOfRangeException">The range is out of range.</exception>
-        public JsonArray this[Range range]
+        public JsonArrayNode this[Range range]
         {
             get
             {
@@ -100,13 +100,13 @@ namespace Trivial.Text
                 var start = startIndex.IsFromEnd ? Count - startIndex.Value : startIndex.Value;
                 var endIndex = range.End;
                 var end = endIndex.IsFromEnd ? Count - endIndex.Value : endIndex.Value;
-                var arr = new List<IJsonValueResolver>();
+                var arr = new List<IJsonDataNode>();
                 for (var i = start; i <= end; i++)
                 {
                     arr.Add(GetValue(i));
                 }
 
-                return new JsonArray(arr);
+                return new JsonArrayNode(arr);
             }
         }
 #endif
@@ -120,13 +120,13 @@ namespace Trivial.Text
         /// <returns>The value.</returns>
         /// <exception cref="ArgumentOutOfRangeException">The index is out of range.</exception>
         /// <exception cref="InvalidOperationException">The value kind is not the expected one.</exception>
-        public IJsonValueResolver this[int index, string subKey, params string[] keyPath]
+        public IJsonDataNode this[int index, string subKey, params string[] keyPath]
         {
             get
             {
                 if (index < 0) throw new ArgumentOutOfRangeException(nameof(index), "index was less than zero.");
                 var result = store[index];
-                if (result is JsonObject json)
+                if (result is JsonObjectNode json)
                 {
                     var keyArr = new List<string> { subKey };
                     if (keyPath != null) keyArr.AddRange(keyPath);
@@ -134,15 +134,15 @@ namespace Trivial.Text
                 }
 
                 var keyPath2 = keyPath?.Where(ele => ele != null)?.ToList() ?? new List<string>();
-                if (result is JsonArray arr)
+                if (result is JsonArrayNode arr)
                 {
                     if (subKey != null)
                     {
                         result = arr.TryGetValue(subKey);
                         if (result is null) throw new InvalidOperationException($"The element at {index} should be a JSON object but it is a JSON array; or subKey should be a natural number.");
                         if (keyPath2.Count == 0) return result;
-                        if (result is JsonObject json2) return json2.GetValue(keyPath2);
-                        if (result is JsonArray arr2) arr = arr2;
+                        if (result is JsonObjectNode json2) return json2.GetValue(keyPath2);
+                        if (result is JsonArrayNode arr2) arr = arr2;
                         else throw new InvalidOperationException($"The element at {index}.{subKey} should be a JSON object or array, but its kind is {result?.ValueKind ?? JsonValueKind.Null}.");
                     }
 
@@ -174,14 +174,14 @@ namespace Trivial.Text
         /// <returns>The value.</returns>
         /// <exception cref="ArgumentOutOfRangeException">The indexor subIndex is out of range.</exception>
         /// <exception cref="InvalidOperationException">The value kind is not the expected one.</exception>
-        public IJsonValueResolver this[int index, int subIndex, params string[] keyPath]
+        public IJsonDataNode this[int index, int subIndex, params string[] keyPath]
         {
             get
             {
                 if (index < 0) throw new ArgumentOutOfRangeException(nameof(index), "index was less than zero.");
                 if (subIndex < 0) throw new ArgumentOutOfRangeException(nameof(subIndex), "subIndex was less than zero.");
                 var result = store[index];
-                if (result is JsonObject json)
+                if (result is JsonObjectNode json)
                 {
                     var keyArr = new List<string> { subIndex.ToString("g") };
                     if (keyPath != null) keyArr.AddRange(keyPath);
@@ -189,12 +189,12 @@ namespace Trivial.Text
                 }
 
                 var keyPath2 = keyPath?.Where(ele => ele != null)?.ToList() ?? new List<string>();
-                if (result is JsonArray arr)
+                if (result is JsonArrayNode arr)
                 {
                     result = arr[subIndex];
                     if (keyPath2.Count == 0) return result ?? JsonValues.Null;
-                    if (result is JsonObject json2) return json2.GetValue(keyPath2);
-                    if (result is JsonArray arr2) arr = arr2;
+                    if (result is JsonObjectNode json2) return json2.GetValue(keyPath2);
+                    if (result is JsonArrayNode arr2) arr = arr2;
                     else throw new InvalidOperationException($"The element at {index}.{subIndex} should be a JSON object, but its kind is {result?.ValueKind ?? JsonValueKind.Null}.");
 
                     if (int.TryParse(keyPath2[0] ?? string.Empty, out index))
@@ -231,7 +231,7 @@ namespace Trivial.Text
         /// <param name="skipIfEnabled">true if skip if this instance is in thread-safe (concurrent) mode; otherwise, false.</param>
         public void EnableThreadSafeMode(int depth, bool skipIfEnabled = false)
         {
-            if (store is Collection.SynchronizedList<IJsonValueResolver>)
+            if (store is Collection.SynchronizedList<IJsonDataNode>)
             {
                 if (skipIfEnabled) return;
             }
@@ -243,7 +243,7 @@ namespace Trivial.Text
                 {
                     try
                     {
-                        store = new Collection.SynchronizedList<IJsonValueResolver>(store);
+                        store = new Collection.SynchronizedList<IJsonDataNode>(store);
                         break;
                     }
                     catch (ArgumentException)
@@ -268,8 +268,8 @@ namespace Trivial.Text
             depth--;
             foreach (var ele in store)
             {
-                if (ele is JsonObject json) json.EnableThreadSafeMode(depth);
-                else if (ele is JsonArray arr) arr.EnableThreadSafeMode(depth);
+                if (ele is JsonObjectNode json) json.EnableThreadSafeMode(depth);
+                else if (ele is JsonArrayNode arr) arr.EnableThreadSafeMode(depth);
             }
         }
 
@@ -398,15 +398,15 @@ namespace Trivial.Text
         {
             var data = store[index];
             if (data is null) return null;
-            if (data is JsonString str)
+            if (data is JsonStringNode str)
             {
                 return str.Value;
             }
 
             if (convert) return data.ValueKind switch
             {
-                JsonValueKind.True => JsonBoolean.TrueString,
-                JsonValueKind.False => JsonBoolean.TrueString,
+                JsonValueKind.True => JsonBooleanNode.TrueString,
+                JsonValueKind.False => JsonBooleanNode.TrueString,
                 JsonValueKind.Number => data.ToString(),
                 _ => throw new InvalidOperationException($"The type of item {index} should be string but it is {data.ValueKind.ToString().ToLowerInvariant()}.")
             };
@@ -435,9 +435,9 @@ namespace Trivial.Text
         /// <exception cref="InvalidOperationException">The value kind is not the expected one.</exception>
         public uint GetUInt32Value(int index)
         {
-            if (TryGetJsonValue<JsonInteger>(index, out var v)) return (uint)v;
-            if (TryGetJsonValue<JsonDouble>(index, out var f)) return (uint)f;
-            var p = GetJsonValue<JsonString>(index, JsonValueKind.Number);
+            if (TryGetJsonValue<JsonIntegerNode>(index, out var v)) return (uint)v;
+            if (TryGetJsonValue<JsonDoubleNode>(index, out var f)) return (uint)f;
+            var p = GetJsonValue<JsonStringNode>(index, JsonValueKind.Number);
             return uint.Parse(p.Value);
         }
 
@@ -449,9 +449,9 @@ namespace Trivial.Text
         /// <exception cref="InvalidOperationException">The value kind is not the expected one.</exception>
         public int GetInt32Value(int index)
         {
-            if (TryGetJsonValue<JsonInteger>(index, out var v)) return (int)v;
-            if (TryGetJsonValue<JsonDouble>(index, out var f)) return (int)f;
-            var p = GetJsonValue<JsonString>(index, JsonValueKind.Number);
+            if (TryGetJsonValue<JsonIntegerNode>(index, out var v)) return (int)v;
+            if (TryGetJsonValue<JsonDoubleNode>(index, out var f)) return (int)f;
+            var p = GetJsonValue<JsonStringNode>(index, JsonValueKind.Number);
             return int.Parse(p.Value);
         }
 
@@ -464,9 +464,9 @@ namespace Trivial.Text
         /// <exception cref="InvalidOperationException">The value kind is not the expected one.</exception>
         public long GetInt64Value(int index)
         {
-            if (TryGetJsonValue<JsonInteger>(index, out var v)) return v.Value;
-            if (TryGetJsonValue<JsonDouble>(index, out var f)) return (long)f;
-            var p = GetJsonValue<JsonString>(index, JsonValueKind.Number);
+            if (TryGetJsonValue<JsonIntegerNode>(index, out var v)) return v.Value;
+            if (TryGetJsonValue<JsonDoubleNode>(index, out var f)) return (long)f;
+            var p = GetJsonValue<JsonStringNode>(index, JsonValueKind.Number);
             return long.Parse(p.Value);
         }
 
@@ -479,9 +479,9 @@ namespace Trivial.Text
         /// <exception cref="InvalidOperationException">The value kind is not the expected one.</exception>
         public float GetSingleValue(int index)
         {
-            if (TryGetJsonValue<JsonDouble>(index, out var v)) return (float)v;
-            if (TryGetJsonValue<JsonInteger>(index, out var f)) return (float)f;
-            var p = GetJsonValue<JsonString>(index, JsonValueKind.Number);
+            if (TryGetJsonValue<JsonDoubleNode>(index, out var v)) return (float)v;
+            if (TryGetJsonValue<JsonIntegerNode>(index, out var f)) return (float)f;
+            var p = GetJsonValue<JsonStringNode>(index, JsonValueKind.Number);
             return float.Parse(p.Value);
         }
 
@@ -494,9 +494,9 @@ namespace Trivial.Text
         /// <exception cref="InvalidOperationException">The value kind is not the expected one.</exception>
         public double GetDoubleValue(int index)
         {
-            if (TryGetJsonValue<JsonDouble>(index, out var v)) return v.Value;
-            if (TryGetJsonValue<JsonInteger>(index, out var f)) return (double)f;
-            var p = GetJsonValue<JsonString>(index, JsonValueKind.Number);
+            if (TryGetJsonValue<JsonDoubleNode>(index, out var v)) return v.Value;
+            if (TryGetJsonValue<JsonIntegerNode>(index, out var f)) return (double)f;
+            var p = GetJsonValue<JsonStringNode>(index, JsonValueKind.Number);
             return double.Parse(p.Value);
         }
 
@@ -509,12 +509,12 @@ namespace Trivial.Text
         /// <exception cref="InvalidOperationException">The value kind is not the expected one.</exception>
         public bool GetBooleanValue(int index)
         {
-            if (TryGetJsonValue<JsonBoolean>(index, out var v)) return v.Value;
-            var p = GetJsonValue<JsonString>(index);
+            if (TryGetJsonValue<JsonBooleanNode>(index, out var v)) return v.Value;
+            var p = GetJsonValue<JsonStringNode>(index);
             return p.Value?.ToLower() switch
             {
-                JsonBoolean.TrueString => true,
-                JsonBoolean.FalseString => false,
+                JsonBooleanNode.TrueString => true,
+                JsonBooleanNode.FalseString => false,
                 _ => throw new InvalidOperationException($"The type of item {index} should be boolean but it is string.")
             };
         }
@@ -526,9 +526,9 @@ namespace Trivial.Text
         /// <returns>The value.</returns>
         /// <exception cref="ArgumentOutOfRangeException">The index is out of range.</exception>
         /// <exception cref="InvalidOperationException">The value kind is not the expected one.</exception>
-        public JsonObject GetObjectValue(int index)
+        public JsonObjectNode GetObjectValue(int index)
         {
-            return GetJsonValue<JsonObject>(index, JsonValueKind.Object);
+            return GetJsonValue<JsonObjectNode>(index, JsonValueKind.Object);
         }
 
         /// <summary>
@@ -538,9 +538,9 @@ namespace Trivial.Text
         /// <returns>The value.</returns>
         /// <exception cref="ArgumentOutOfRangeException">The index is out of range.</exception>
         /// <exception cref="InvalidOperationException">The value kind is not the expected one.</exception>
-        public JsonArray GetArrayValue(int index)
+        public JsonArrayNode GetArrayValue(int index)
         {
-            return GetJsonValue<JsonArray>(index, JsonValueKind.Array);
+            return GetJsonValue<JsonArrayNode>(index, JsonValueKind.Array);
         }
 
         /// <summary>
@@ -554,14 +554,14 @@ namespace Trivial.Text
         /// <exception cref="InvalidOperationException">The value kind is not the expected one.</exception>
         public DateTime GetDateTimeValue(int index, bool useUnixTimestampsFallback = false)
         {
-            if (TryGetJsonValue<JsonString>(index, out var s))
+            if (TryGetJsonValue<JsonStringNode>(index, out var s))
             {
                 var date = Web.WebFormat.ParseDate(s.Value);
                 if (date.HasValue) return date.Value;
                 throw new FormatException("The value is not a date time.");
             }
 
-            var num = GetJsonValue<JsonInteger>(index);
+            var num = GetJsonValue<JsonIntegerNode>(index);
             return useUnixTimestampsFallback ? Web.WebFormat.ParseUnixTimestamp(num.Value) : Web.WebFormat.ParseDate(num.Value);
         }
 
@@ -656,7 +656,7 @@ namespace Trivial.Text
         /// <param name="index">The zero-based index of the element to get.</param>
         /// <returns>The value.</returns>
         /// <exception cref="ArgumentOutOfRangeException">The index is out of range.</exception>
-        public IJsonValueResolver GetValue(int index)
+        public IJsonDataNode GetValue(int index)
         {
             return store[index] ?? JsonValues.Null;
         }
@@ -668,7 +668,7 @@ namespace Trivial.Text
         /// <param name="index">The zero-based index of the element to get.</param>
         /// <returns>The value.</returns>
         /// <exception cref="ArgumentOutOfRangeException">The index is out of range.</exception>
-        public IJsonValueResolver GetValue(Index index)
+        public IJsonDataNode GetValue(Index index)
         {
             return store[index.IsFromEnd ? store.Count - index.Value : index.Value] ?? JsonValues.Null;
         }
@@ -702,13 +702,13 @@ namespace Trivial.Text
                 if (type == typeof(DateTime)) return GetDateTimeValue(index);
             }
 
-            if (type == typeof(JsonObject)) return GetObjectValue(index);
-            if (type == typeof(JsonArray)) return GetArrayValue(index);
+            if (type == typeof(JsonObjectNode)) return GetObjectValue(index);
+            if (type == typeof(JsonArrayNode)) return GetArrayValue(index);
             if (type == typeof(JsonDocument)) return (JsonDocument)GetObjectValue(index);
             if (type == typeof(System.Text.Json.Nodes.JsonObject)) return (System.Text.Json.Nodes.JsonObject)GetObjectValue(index);
             if (type == typeof(System.Text.Json.Nodes.JsonArray)) return (System.Text.Json.Nodes.JsonArray)GetArrayValue(index);
             if (type == typeof(Type)) return GetValue(index).GetType();
-            if (type == typeof(IJsonValueResolver) || type == typeof(IJsonValue) || type == typeof(JsonString) || type == typeof(IJsonString) || type == typeof(JsonInteger) || type == typeof(JsonDouble) || type == typeof(JsonBoolean) || type == typeof(IJsonNumber))
+            if (type == typeof(IJsonDataNode) || type == typeof(IJsonValueNode) || type == typeof(JsonStringNode) || type == typeof(IJsonStringNode) || type == typeof(JsonIntegerNode) || type == typeof(JsonDoubleNode) || type == typeof(JsonBooleanNode) || type == typeof(IJsonNumberNode))
                 return GetValue(index);
 
             if (type.IsClass)
@@ -737,7 +737,7 @@ namespace Trivial.Text
         /// <param name="key">The property key.</param>
         /// <returns>The value.</returns>
         /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
-        IJsonValueResolver IJsonValueResolver.GetValue(string key)
+        IJsonDataNode IJsonDataNode.GetValue(string key)
         {
             if (TryGetValue(key, out var result)) return result;
             throw new InvalidOperationException("key should be an integer.", new FormatException("key should be an integer."));
@@ -751,10 +751,10 @@ namespace Trivial.Text
         /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
         /// <exception cref="ArgumentOutOfRangeException">The property does not exist.</exception>
         /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
-        IJsonValueResolver IJsonValueResolver.GetValue(ReadOnlySpan<char> key)
+        IJsonDataNode IJsonDataNode.GetValue(ReadOnlySpan<char> key)
         {
             if (key == null) throw new ArgumentNullException(nameof(key), "key should not be null.");
-            return (this as IJsonValueResolver).GetValue(key.ToString());
+            return (this as IJsonDataNode).GetValue(key.ToString());
         }
 
         /// <summary>
@@ -767,7 +767,7 @@ namespace Trivial.Text
             foreach (var item in store)
             {
                 if (item is null) yield return null;
-                if (item is IJsonValueResolver ele) yield return ele.GetString();
+                if (item is IJsonDataNode ele) yield return ele.GetString();
             }
         }
 
@@ -777,7 +777,7 @@ namespace Trivial.Text
         /// <param name="predicate">A function to test each element for a condition.</param>
         /// <returns>The value. It will be null if the value is null.</returns>
         /// <exception cref="InvalidOperationException">The item value kind is not string.</exception>
-        public IEnumerable<string> GetStringCollection(Func<IJsonValueResolver, bool> predicate)
+        public IEnumerable<string> GetStringCollection(Func<IJsonDataNode, bool> predicate)
         {
             return store.Select(ele =>
             {
@@ -792,7 +792,7 @@ namespace Trivial.Text
         /// <param name="predicate">A function to test each element for a condition.</param>
         /// <returns>The value. It will be null if the value is null.</returns>
         /// <exception cref="InvalidOperationException">The item value kind is not string.</exception>
-        public IEnumerable<string> GetStringCollection(Func<IJsonValueResolver, int, bool> predicate)
+        public IEnumerable<string> GetStringCollection(Func<IJsonDataNode, int, bool> predicate)
         {
             return store.Select(ele =>
             {
@@ -828,9 +828,9 @@ namespace Trivial.Text
         /// </summary>
         /// <param name="nullForOtherKinds">true if set null in the result for other kinds; otherwise, false, to skip.</param>
         /// <returns>The JSON string value collection.</returns>
-        public IEnumerable<JsonString> GetStringValues(bool nullForOtherKinds = false)
+        public IEnumerable<JsonStringNode> GetStringValues(bool nullForOtherKinds = false)
         {
-            return GetSpecificKindValues<JsonString>(nullForOtherKinds);
+            return GetSpecificKindValues<JsonStringNode>(nullForOtherKinds);
         }
 
         /// <summary>
@@ -838,9 +838,9 @@ namespace Trivial.Text
         /// </summary>
         /// <param name="nullForOtherKinds">true if set null in the result for other kinds; otherwise, false, to skip.</param>
         /// <returns>The JSON integer value collection.</returns>
-        public IEnumerable<JsonInteger> GetIntegerValues(bool nullForOtherKinds = false)
+        public IEnumerable<JsonIntegerNode> GetIntegerValues(bool nullForOtherKinds = false)
         {
-            return GetSpecificKindValues<JsonInteger>(nullForOtherKinds);
+            return GetSpecificKindValues<JsonIntegerNode>(nullForOtherKinds);
         }
 
         /// <summary>
@@ -848,9 +848,9 @@ namespace Trivial.Text
         /// </summary>
         /// <param name="nullForOtherKinds">true if set null in the result for other kinds; otherwise, false, to skip.</param>
         /// <returns>The JSON double float number value collection.</returns>
-        public IEnumerable<JsonDouble> GetDoubleValues(bool nullForOtherKinds = false)
+        public IEnumerable<JsonDoubleNode> GetDoubleValues(bool nullForOtherKinds = false)
         {
-            return GetSpecificKindValues<JsonDouble>(nullForOtherKinds);
+            return GetSpecificKindValues<JsonDoubleNode>(nullForOtherKinds);
         }
 
         /// <summary>
@@ -858,9 +858,9 @@ namespace Trivial.Text
         /// </summary>
         /// <param name="nullForOtherKinds">true if set null in the result for other kinds; otherwise, false, to skip.</param>
         /// <returns>The JSON boolean value collection.</returns>
-        public IEnumerable<JsonBoolean> GetBooleanValues(bool nullForOtherKinds = false)
+        public IEnumerable<JsonBooleanNode> GetBooleanValues(bool nullForOtherKinds = false)
         {
-            return GetSpecificKindValues<JsonBoolean>(nullForOtherKinds);
+            return GetSpecificKindValues<JsonBooleanNode>(nullForOtherKinds);
         }
 
         /// <summary>
@@ -868,9 +868,9 @@ namespace Trivial.Text
         /// </summary>
         /// <param name="nullForOtherKinds">true if set null in the result for other kinds; otherwise, false, to skip.</param>
         /// <returns>The JSON object value collection.</returns>
-        public IEnumerable<JsonObject> GetObjectValues(bool nullForOtherKinds = false)
+        public IEnumerable<JsonObjectNode> GetObjectValues(bool nullForOtherKinds = false)
         {
-            return GetSpecificKindValues<JsonObject>(nullForOtherKinds);
+            return GetSpecificKindValues<JsonObjectNode>(nullForOtherKinds);
         }
 
         /// <summary>
@@ -878,9 +878,9 @@ namespace Trivial.Text
         /// </summary>
         /// <param name="nullForOtherKinds">true if set null in the result for other kinds; otherwise, false, to skip.</param>
         /// <returns>The JSON array value collection.</returns>
-        public IEnumerable<JsonArray> GetArrayValues(bool nullForOtherKinds = false)
+        public IEnumerable<JsonArrayNode> GetArrayValues(bool nullForOtherKinds = false)
         {
-            return GetSpecificKindValues<JsonArray>(nullForOtherKinds);
+            return GetSpecificKindValues<JsonArrayNode>(nullForOtherKinds);
         }
 
         /// <summary>
@@ -903,15 +903,15 @@ namespace Trivial.Text
                     return null;
                 }
 
-                if (data is JsonString str)
+                if (data is JsonStringNode str)
                 {
                     return str.Value;
                 }
 
                 return data.ValueKind switch
                 {
-                    JsonValueKind.True => JsonBoolean.TrueString,
-                    JsonValueKind.False => JsonBoolean.TrueString,
+                    JsonValueKind.True => JsonBooleanNode.TrueString,
+                    JsonValueKind.False => JsonBooleanNode.TrueString,
                     JsonValueKind.Number => data.ToString(),
                     _ => null
                 };
@@ -946,7 +946,7 @@ namespace Trivial.Text
                     return true;
                 }
 
-                if (data is JsonString str)
+                if (data is JsonStringNode str)
                 {
                     result = str.Value;
                     return true;
@@ -954,8 +954,8 @@ namespace Trivial.Text
 
                 result = data.ValueKind switch
                 {
-                    JsonValueKind.True => JsonBoolean.TrueString,
-                    JsonValueKind.False => JsonBoolean.TrueString,
+                    JsonValueKind.True => JsonBooleanNode.TrueString,
+                    JsonValueKind.False => JsonBooleanNode.TrueString,
                     JsonValueKind.Number => data.ToString(),
                     _ => null
                 };
@@ -1009,8 +1009,8 @@ namespace Trivial.Text
         /// <returns>The value; or null if fail to resolve.</returns>
         public uint? TryGetUInt32Value(int index)
         {
-            if (TryGetJsonValue<JsonInteger>(index, out var p1)) return (uint)p1;
-            if (TryGetJsonValue<JsonDouble>(index, out var p2)) return (uint)p2;
+            if (TryGetJsonValue<JsonIntegerNode>(index, out var p1)) return (uint)p1;
+            if (TryGetJsonValue<JsonDoubleNode>(index, out var p2)) return (uint)p2;
             var str = TryGetStringValue(index);
             if (string.IsNullOrWhiteSpace(str) || !uint.TryParse(str, out var p3)) return null;
             return p3;
@@ -1036,8 +1036,8 @@ namespace Trivial.Text
         /// <returns>The value; or null if fail to resolve.</returns>
         public int? TryGetInt32Value(int index)
         {
-            if (TryGetJsonValue<JsonInteger>(index, out var p1)) return (int)p1;
-            if (TryGetJsonValue<JsonDouble>(index, out var p2)) return (int)p2;
+            if (TryGetJsonValue<JsonIntegerNode>(index, out var p1)) return (int)p1;
+            if (TryGetJsonValue<JsonDoubleNode>(index, out var p2)) return (int)p2;
             var str = TryGetStringValue(index);
             if (string.IsNullOrWhiteSpace(str) || !int.TryParse(str, out var p3)) return null;
             return p3;
@@ -1063,8 +1063,8 @@ namespace Trivial.Text
         /// <returns>The value; or null if fail to resolve.</returns>
         public long? TryGetInt64Value(int index)
         {
-            if (TryGetJsonValue<JsonInteger>(index, out var p1)) return p1.Value;
-            if (TryGetJsonValue<JsonDouble>(index, out var p2)) return (long)p2;
+            if (TryGetJsonValue<JsonIntegerNode>(index, out var p1)) return p1.Value;
+            if (TryGetJsonValue<JsonDoubleNode>(index, out var p2)) return (long)p2;
             var str = TryGetStringValue(index);
             if (string.IsNullOrWhiteSpace(str) || !long.TryParse(str, out var p3)) return null;
             return p3;
@@ -1090,8 +1090,8 @@ namespace Trivial.Text
         /// <returns>The value; or null if fail to resolve.</returns>
         public float? TryGetFloatValue(int index)
         {
-            if (TryGetJsonValue<JsonDouble>(index, out var p1)) return (float)p1;
-            if (TryGetJsonValue<JsonInteger>(index, out var p2)) return (float)p2;
+            if (TryGetJsonValue<JsonDoubleNode>(index, out var p1)) return (float)p1;
+            if (TryGetJsonValue<JsonIntegerNode>(index, out var p2)) return (float)p2;
             var str = TryGetStringValue(index);
             if (string.IsNullOrWhiteSpace(str) || !float.TryParse(str, out var p3)) return null;
             return p3;
@@ -1117,8 +1117,8 @@ namespace Trivial.Text
         /// <returns>The value; or null if fail to resolve.</returns>
         public double? TryGetDoubleValue(int index)
         {
-            if (TryGetJsonValue<JsonDouble>(index, out var p1)) return p1.Value;
-            if (TryGetJsonValue<JsonInteger>(index, out var p2)) return (double)p2;
+            if (TryGetJsonValue<JsonDoubleNode>(index, out var p1)) return p1.Value;
+            if (TryGetJsonValue<JsonIntegerNode>(index, out var p2)) return (double)p2;
             var str = TryGetStringValue(index);
             if (string.IsNullOrWhiteSpace(str) || !double.TryParse(str, out var p3)) return null;
             return p3;
@@ -1144,7 +1144,7 @@ namespace Trivial.Text
         /// <returns>The value; or null if fail to resolve.</returns>
         public bool? TryGetBooleanValue(int index)
         {
-            if (TryGetJsonValue<JsonBoolean>(index, out var p)) return p.Value;
+            if (TryGetJsonValue<JsonBooleanNode>(index, out var p)) return p.Value;
             var str = TryGetStringValue(index);
             if (string.IsNullOrWhiteSpace(str) || !bool.TryParse(str, out var p3)) return null;
             return p3;
@@ -1168,9 +1168,9 @@ namespace Trivial.Text
         /// </summary>
         /// <param name="index">The zero-based index of the element to get.</param>
         /// <returns>The value.</returns>
-        public JsonObject TryGetObjectValue(int index)
+        public JsonObjectNode TryGetObjectValue(int index)
         {
-            if (TryGetJsonValue<JsonObject>(index, out var p)) return p;
+            if (TryGetJsonValue<JsonObjectNode>(index, out var p)) return p;
             return null;
         }
 
@@ -1180,7 +1180,7 @@ namespace Trivial.Text
         /// <param name="index">The zero-based index of the element to get.</param>
         /// <param name="result">The result.</param>
         /// <returns>true if has the index and the type is the one expected; otherwise, false.</returns>
-        public bool TryGetObjectValue(int index, out JsonObject result)
+        public bool TryGetObjectValue(int index, out JsonObjectNode result)
         {
             var v = TryGetObjectValue(index);
             result = v;
@@ -1192,9 +1192,9 @@ namespace Trivial.Text
         /// </summary>
         /// <param name="index">The zero-based index of the element to get.</param>
         /// <returns>The value.</returns>
-        public JsonArray TryGetArrayValue(int index)
+        public JsonArrayNode TryGetArrayValue(int index)
         {
-            if (TryGetJsonValue<JsonArray>(index, out var p)) return p;
+            if (TryGetJsonValue<JsonArrayNode>(index, out var p)) return p;
             return null;
         }
 
@@ -1204,7 +1204,7 @@ namespace Trivial.Text
         /// <param name="index">The zero-based index of the element to get.</param>
         /// <param name="result">The result.</param>
         /// <returns>true if has the index and the type is the one expected; otherwise, false.</returns>
-        public bool TryGetArrayValue(int index, out JsonArray result)
+        public bool TryGetArrayValue(int index, out JsonArrayNode result)
         {
             var v = TryGetArrayValue(index);
             result = v;
@@ -1219,13 +1219,13 @@ namespace Trivial.Text
         /// <returns>The value.</returns>
         public DateTime? TryGetDateTimeValue(int index, bool useUnixTimestampsFallback = false)
         {
-            if (TryGetJsonValue<JsonString>(index, out var s))
+            if (TryGetJsonValue<JsonStringNode>(index, out var s))
             {
                 var date = Web.WebFormat.ParseDate(s.Value);
                 return date;
             }
 
-            if (!TryGetJsonValue<JsonInteger>(index, out var num)) return null;
+            if (!TryGetJsonValue<JsonIntegerNode>(index, out var num)) return null;
             return useUnixTimestampsFallback ? Web.WebFormat.ParseUnixTimestamp(num.Value) : Web.WebFormat.ParseDate(num.Value);
         }
 
@@ -1432,7 +1432,7 @@ namespace Trivial.Text
         /// </summary>
         /// <param name="index">The zero-based index of the element to get.</param>
         /// <returns>The value.</returns>
-        public IJsonValueResolver TryGetValue(int index)
+        public IJsonDataNode TryGetValue(int index)
         {
             if (index < 0 || index >= store.Count)
             {
@@ -1456,7 +1456,7 @@ namespace Trivial.Text
         /// <param name="index">The zero-based index of the element to get.</param>
         /// <param name="result">The result.</param>
         /// <returns>true if has the index and the type is the one expected; otherwise, false.</returns>
-        public bool TryGetValue(int index, out IJsonValueResolver result)
+        public bool TryGetValue(int index, out IJsonDataNode result)
         {
             var v = TryGetValue(index);
             result = v;
@@ -1470,7 +1470,7 @@ namespace Trivial.Text
         /// <param name="subKey">The optional sub-property key of the value of the array.</param>
         /// <param name="keyPath">The additional property key path.</param>
         /// <returns>The value.</returns>
-        public IJsonValueResolver TryGetValue(int index, string subKey, params string[] keyPath)
+        public IJsonDataNode TryGetValue(int index, string subKey, params string[] keyPath)
         {
             if (index < 0 || index >= store.Count)
             {
@@ -1480,7 +1480,7 @@ namespace Trivial.Text
             try
             {
                 var result = store[index];
-                if (result is JsonObject json)
+                if (result is JsonObjectNode json)
                 {
                     var keyArr = new List<string> { subKey };
                     if (keyPath != null) keyArr.AddRange(keyPath);
@@ -1488,15 +1488,15 @@ namespace Trivial.Text
                 }
 
                 var keyPath2 = keyPath?.Where(ele => ele != null)?.ToList() ?? new List<string>();
-                if (result is JsonArray arr)
+                if (result is JsonArrayNode arr)
                 {
                     if (subKey != null)
                     {
                         if (!int.TryParse(subKey, out index)) return default;
                         result = arr[index];
                         if (keyPath2.Count == 0) return result ?? JsonValues.Null;
-                        if (result is JsonObject json2) return json2.TryGetValue(keyPath2);
-                        if (result is JsonArray arr2) arr = arr2;
+                        if (result is JsonObjectNode json2) return json2.TryGetValue(keyPath2);
+                        if (result is JsonArrayNode arr2) arr = arr2;
                         else return default;
                     }
 
@@ -1523,7 +1523,7 @@ namespace Trivial.Text
         /// <param name="subIndex">The optional sub-index of the value of the array.</param>
         /// <param name="keyPath">The additional property key path.</param>
         /// <returns>The value.</returns>
-        public IJsonValueResolver TryGetValue(int index, int subIndex, params string[] keyPath)
+        public IJsonDataNode TryGetValue(int index, int subIndex, params string[] keyPath)
         {
             if (index < 0 || index >= store.Count)
             {
@@ -1533,7 +1533,7 @@ namespace Trivial.Text
             try
             {
                 var result = store[index];
-                if (result is JsonObject json)
+                if (result is JsonObjectNode json)
                 {
                     var keyArr = new List<string> { subIndex.ToString("g") };
                     if (keyPath != null) keyArr.AddRange(keyPath);
@@ -1541,12 +1541,12 @@ namespace Trivial.Text
                 }
 
                 var keyPath2 = keyPath?.Where(ele => ele != null)?.ToList() ?? new List<string>();
-                if (result is JsonArray arr)
+                if (result is JsonArrayNode arr)
                 {
                     result = arr[subIndex];
                     if (keyPath2.Count == 0) return result ?? JsonValues.Null;
-                    if (result is JsonObject json2) return json2.TryGetValue(keyPath2);
-                    if (result is JsonArray arr2) arr = arr2;
+                    if (result is JsonObjectNode json2) return json2.TryGetValue(keyPath2);
+                    if (result is JsonArrayNode arr2) arr = arr2;
                     else return default;
 
                     if (int.TryParse(keyPath2[0], out index))
@@ -1558,7 +1558,7 @@ namespace Trivial.Text
 
                 if (keyPath2.Count == 0)
                 {
-                    if (result is IJsonString && result.TryGetValue(subIndex, out var subStr)) return subStr;
+                    if (result is IJsonStringNode && result.TryGetValue(subIndex, out var subStr)) return subStr;
                     if (subIndex == 0) return result ?? JsonValues.Null;
                 }
             }
@@ -1585,7 +1585,7 @@ namespace Trivial.Text
         /// </summary>
         /// <param name="index">The zero-based index of the element to get.</param>
         /// <returns>The value.</returns>
-        public IJsonValueResolver TryGetValue(Index index)
+        public IJsonDataNode TryGetValue(Index index)
         {
             return TryGetValue(index.IsFromEnd ? Count - index.Value : index.Value);
         }
@@ -1596,7 +1596,7 @@ namespace Trivial.Text
         /// <param name="index">The zero-based index of the element to get.</param>
         /// <param name="result">The result.</param>
         /// <returns>true if has the index and the type is the one expected; otherwise, false.</returns>
-        public bool TryGetValue(Index index, out IJsonValueResolver result)
+        public bool TryGetValue(Index index, out IJsonDataNode result)
         {
             return TryGetValue(index.IsFromEnd ? Count - index.Value : index.Value, out result);
         }
@@ -1617,9 +1617,9 @@ namespace Trivial.Text
         /// </summary>
         /// <param name="item">The item matched.</param>
         /// <returns>true if item was successfully removed from the array; otherwise, false. This method also returns false if item is not found in the array.</returns>
-        public bool Remove(IJsonValue item)
+        public bool Remove(IJsonValueNode item)
         {
-            if (item is not IJsonValueResolver ele) return false;
+            if (item is not IJsonDataNode ele) return false;
             return store.Remove(ele);
         }
 
@@ -1631,7 +1631,7 @@ namespace Trivial.Text
         {
             var count = 0;
             while (store.Remove(null)) count++;
-            var list = new List<IJsonValueResolver>();
+            var list = new List<IJsonDataNode>();
             foreach (var ele in store)
             {
                 if (ele is null || ele.ValueKind == JsonValueKind.Null || ele.ValueKind == JsonValueKind.Undefined) list.Add(ele);
@@ -1654,10 +1654,10 @@ namespace Trivial.Text
         {
             if (value == null) return RemoveNull();
             var count = 0;
-            var list = new List<IJsonValueResolver>();
+            var list = new List<IJsonDataNode>();
             foreach (var ele in store)
             {
-                if (ele is JsonString s && value == s.Value) list.Add(ele);
+                if (ele is JsonStringNode s && value == s.Value) list.Add(ele);
             }
 
             foreach (var ele in list)
@@ -1678,10 +1678,10 @@ namespace Trivial.Text
         {
             if (value == null) return RemoveNull();
             var count = 0;
-            var list = new List<IJsonValueResolver>();
+            var list = new List<IJsonDataNode>();
             foreach (var ele in store)
             {
-                if (ele is JsonString s && value.Equals(s.Value, comparisonType)) list.Add(ele);
+                if (ele is JsonStringNode s && value.Equals(s.Value, comparisonType)) list.Add(ele);
             }
 
             foreach (var ele in list)
@@ -1700,14 +1700,14 @@ namespace Trivial.Text
         public int RemoveValue(int value)
         {
             var count = 0;
-            var list = new List<IJsonValueResolver>();
+            var list = new List<IJsonDataNode>();
             foreach (var ele in store)
             {
-                if (ele is JsonInteger s)
+                if (ele is JsonIntegerNode s)
                 {
                     if (value == s.Value) list.Add(ele);
                 }
-                else if (ele is JsonDouble d)
+                else if (ele is JsonDoubleNode d)
                 {
                     if (value == d.Value) list.Add(ele);
                 }
@@ -1729,14 +1729,14 @@ namespace Trivial.Text
         public int RemoveValue(long value)
         {
             var count = 0;
-            var list = new List<IJsonValueResolver>();
+            var list = new List<IJsonDataNode>();
             foreach (var ele in store)
             {
-                if (ele is JsonInteger s)
+                if (ele is JsonIntegerNode s)
                 {
                     if (value == s.Value) list.Add(ele);
                 }
-                else if (ele is JsonDouble d)
+                else if (ele is JsonDoubleNode d)
                 {
                     if (value == d.Value) list.Add(ele);
                 }
@@ -1758,14 +1758,14 @@ namespace Trivial.Text
         public int RemoveValue(double value)
         {
             var count = 0;
-            var list = new List<IJsonValueResolver>();
+            var list = new List<IJsonDataNode>();
             foreach (var ele in store)
             {
-                if (ele is JsonDouble d)
+                if (ele is JsonDoubleNode d)
                 {
                     if (value == d.Value) list.Add(ele);
                 }
-                else if (ele is JsonInteger s)
+                else if (ele is JsonIntegerNode s)
                 {
                     if (value == s.Value) list.Add(ele);
                 }
@@ -1787,10 +1787,10 @@ namespace Trivial.Text
         public int RemoveValue(bool value)
         {
             var count = 0;
-            var list = new List<IJsonValueResolver>();
+            var list = new List<IJsonDataNode>();
             foreach (var ele in store)
             {
-                if (ele is JsonBoolean b && value == b.Value) list.Add(ele);
+                if (ele is JsonBooleanNode b && value == b.Value) list.Add(ele);
             }
 
             foreach (var ele in list)
@@ -1806,11 +1806,11 @@ namespace Trivial.Text
         /// </summary>
         /// <param name="value">The value to delete.</param>
         /// <returns>The count of item removed.</returns>
-        public int RemoveValue(JsonObject value)
+        public int RemoveValue(JsonObjectNode value)
         {
             if (value == null) return RemoveNull();
             var count = 0;
-            var list = new List<IJsonValueResolver>();
+            var list = new List<IJsonDataNode>();
             foreach (var ele in store)
             {
                 if (value == ele) list.Add(ele);
@@ -1829,11 +1829,11 @@ namespace Trivial.Text
         /// </summary>
         /// <param name="value">The value to delete.</param>
         /// <returns>The count of item removed.</returns>
-        public int RemoveValue(JsonArray value)
+        public int RemoveValue(JsonArrayNode value)
         {
             if (value == null) return RemoveNull();
             var count = 0;
-            var list = new List<IJsonValueResolver>();
+            var list = new List<IJsonDataNode>();
             foreach (var ele in store)
             {
                 if (value == ele) list.Add(ele);
@@ -1865,7 +1865,7 @@ namespace Trivial.Text
         /// <exception cref="ArgumentOutOfRangeException">The index is out of range.</exception>
         public void SetValue(int index, string value)
         {
-            store[index] = new JsonString(value);
+            store[index] = new JsonStringNode(value);
         }
 
         /// <summary>
@@ -1876,7 +1876,7 @@ namespace Trivial.Text
         /// <exception cref="ArgumentOutOfRangeException">The index is out of range.</exception>
         public void SetValue(int index, SecureString value)
         {
-            store[index] = new JsonString(value);
+            store[index] = new JsonStringNode(value);
         }
 
         /// <summary>
@@ -1888,7 +1888,7 @@ namespace Trivial.Text
         /// <exception cref="ArgumentOutOfRangeException">The index is out of range.</exception>
         public void SetValueFormat(int index, string value, params object[] args)
         {
-            store[index] = new JsonString(string.Format(value, args));
+            store[index] = new JsonStringNode(string.Format(value, args));
         }
 
         /// <summary>
@@ -1900,7 +1900,7 @@ namespace Trivial.Text
         /// <exception cref="ArgumentOutOfRangeException">The index is out of range.</exception>
         public void SetBase64(int index, byte[] inArray, Base64FormattingOptions options = Base64FormattingOptions.None)
         {
-            store[index] = new JsonString(Convert.ToBase64String(inArray, options));
+            store[index] = new JsonStringNode(Convert.ToBase64String(inArray, options));
         }
 
         /// <summary>
@@ -1915,9 +1915,9 @@ namespace Trivial.Text
         {
 #if NETOLDVER
             if (bytes == null) throw new ArgumentNullException(nameof(bytes), "bytes should not be null.");
-            store[index] = new JsonString(Convert.ToBase64String(bytes.ToArray(), options));
+            store[index] = new JsonStringNode(Convert.ToBase64String(bytes.ToArray(), options));
 #else
-            store[index] = new JsonString(Convert.ToBase64String(bytes, options));
+            store[index] = new JsonStringNode(Convert.ToBase64String(bytes, options));
 #endif
         }
 
@@ -1930,7 +1930,7 @@ namespace Trivial.Text
         /// <exception cref="ArgumentNullException">The bytes should not be null.</exception>
         public void SetValue(int index, Guid value)
         {
-            store[index] = new JsonString(value);
+            store[index] = new JsonStringNode(value);
         }
 
         /// <summary>
@@ -1941,7 +1941,7 @@ namespace Trivial.Text
         /// <exception cref="ArgumentOutOfRangeException">The index is out of range.</exception>
         public void SetValue(int index, DateTime value)
         {
-            store[index] = new JsonString(value);
+            store[index] = new JsonStringNode(value);
         }
 
         /// <summary>
@@ -1952,7 +1952,7 @@ namespace Trivial.Text
         /// <exception cref="ArgumentOutOfRangeException">The index is out of range.</exception>
         public void SetValue(int index, uint value)
         {
-            store[index] = new JsonInteger(value);
+            store[index] = new JsonIntegerNode(value);
         }
 
         /// <summary>
@@ -1963,7 +1963,7 @@ namespace Trivial.Text
         /// <exception cref="ArgumentOutOfRangeException">The index is out of range.</exception>
         public void SetValue(int index, int value)
         {
-            store[index] = new JsonInteger(value);
+            store[index] = new JsonIntegerNode(value);
         }
 
         /// <summary>
@@ -1974,7 +1974,7 @@ namespace Trivial.Text
         /// <exception cref="ArgumentOutOfRangeException">The index is out of range.</exception>
         public void SetValue(int index, long value)
         {
-            store[index] = new JsonInteger(value);
+            store[index] = new JsonIntegerNode(value);
         }
 
         /// <summary>
@@ -1985,7 +1985,7 @@ namespace Trivial.Text
         /// <exception cref="ArgumentOutOfRangeException">The index is out of range.</exception>
         public void SetValue(int index, float value)
         {
-            store[index] = new JsonDouble(value);
+            store[index] = new JsonDoubleNode(value);
         }
 
         /// <summary>
@@ -1996,7 +1996,7 @@ namespace Trivial.Text
         /// <exception cref="ArgumentOutOfRangeException">The index is out of range.</exception>
         public void SetValue(int index, double value)
         {
-            store[index] = new JsonDouble(value);
+            store[index] = new JsonDoubleNode(value);
         }
 
         /// <summary>
@@ -2007,7 +2007,7 @@ namespace Trivial.Text
         /// <exception cref="ArgumentOutOfRangeException">The index is out of range.</exception>
         public void SetValue(int index, bool value)
         {
-            store[index] = value ? JsonBoolean.True : JsonBoolean.False;
+            store[index] = value ? JsonBooleanNode.True : JsonBooleanNode.False;
         }
 
         /// <summary>
@@ -2016,7 +2016,7 @@ namespace Trivial.Text
         /// <param name="index">The zero-based index of the element to get.</param>
         /// <param name="value">The value to set.</param>
         /// <exception cref="ArgumentOutOfRangeException">The index is out of range.</exception>
-        public void SetValue(int index, JsonArray value)
+        public void SetValue(int index, JsonArrayNode value)
         {
             store[index] = value != this ? value : value.Clone();
         }
@@ -2027,7 +2027,7 @@ namespace Trivial.Text
         /// <param name="index">The zero-based index of the element to get.</param>
         /// <param name="value">The value to set.</param>
         /// <exception cref="ArgumentOutOfRangeException">The index is out of range.</exception>
-        public void SetValue(int index, JsonObject value)
+        public void SetValue(int index, JsonObjectNode value)
         {
             store[index] = value;
         }
@@ -2062,7 +2062,7 @@ namespace Trivial.Text
         /// <exception cref="ArgumentOutOfRangeException">The index is out of range.</exception>
         public void SetDateTimeStringValue(int index, DateTime value)
         {
-            store[index] = new JsonString(value);
+            store[index] = new JsonStringNode(value);
         }
 
         /// <summary>
@@ -2073,7 +2073,7 @@ namespace Trivial.Text
         /// <exception cref="ArgumentOutOfRangeException">The index is out of range.</exception>
         public void SetJavaScriptDateTicksValue(int index, DateTime value)
         {
-            store[index] = new JsonInteger(Web.WebFormat.ParseDate(value));
+            store[index] = new JsonIntegerNode(Web.WebFormat.ParseDate(value));
         }
 
         /// <summary>
@@ -2084,7 +2084,7 @@ namespace Trivial.Text
         /// <exception cref="ArgumentOutOfRangeException">The index is out of range.</exception>
         public void SetUnixTimestampValue(int index, DateTime value)
         {
-            store[index] = new JsonInteger(Web.WebFormat.ParseUnixTimestamp(value));
+            store[index] = new JsonIntegerNode(Web.WebFormat.ParseUnixTimestamp(value));
         }
 
         /// <summary>
@@ -2095,7 +2095,7 @@ namespace Trivial.Text
         /// <exception cref="ArgumentOutOfRangeException">The index is out of range.</exception>
         public void SetWindowsFileTimeUtcValue(int index, DateTime value)
         {
-            store[index] = new JsonInteger(value.ToFileTimeUtc());
+            store[index] = new JsonIntegerNode(value.ToFileTimeUtc());
         }
 
         /// <summary>
@@ -2104,7 +2104,7 @@ namespace Trivial.Text
         /// <typeparam name="T">The type of the value returned by selector.</typeparam>
         /// <param name="selector">A transform function to apply to each element.</param>
         /// <returns>A collection whose elements are the result of invoking the transform function on each element of source.</returns>
-        public IEnumerable<T> Select<T>(Func<IJsonValueResolver, T> selector)
+        public IEnumerable<T> Select<T>(Func<IJsonDataNode, T> selector)
         {
             return store.Select(ele => selector(ele ?? JsonValues.Null));
         }
@@ -2115,7 +2115,7 @@ namespace Trivial.Text
         /// <typeparam name="T">The type of the value returned by selector.</typeparam>
         /// <param name="selector">A transform function to apply to each element.</param>
         /// <returns>A collection whose elements are the result of invoking the transform function on each element of source.</returns>
-        public IEnumerable<T> Select<T>(Func<IJsonValueResolver, int, T> selector)
+        public IEnumerable<T> Select<T>(Func<IJsonDataNode, int, T> selector)
         {
             return store.Select((ele, i) => selector(ele ?? JsonValues.Null, i));
         }
@@ -2125,14 +2125,14 @@ namespace Trivial.Text
         /// </summary>
         /// <param name="key">The specific property key.</param>
         /// <returns>A collection whose elements are the result of invoking the transform function on each element of source.</returns>
-        public IEnumerable<IJsonValueResolver> SelectProperty(string key)
+        public IEnumerable<IJsonDataNode> SelectProperty(string key)
         {
             return Select(ele =>
             {
                 if (ele is null) return null;
-                if (ele is JsonObject json) return json.TryGetValue(key);
-                if (ele is JsonArray jArr) return jArr.TryGetValue(key);
-                if (ele is JsonString jStr && (jStr as IJsonValueResolver).TryGetValue(key, out var subStr)) return subStr;
+                if (ele is JsonObjectNode json) return json.TryGetValue(key);
+                if (ele is JsonArrayNode jArr) return jArr.TryGetValue(key);
+                if (ele is JsonStringNode jStr && (jStr as IJsonDataNode).TryGetValue(key, out var subStr)) return subStr;
                 return null;
             });
         }
@@ -2151,7 +2151,7 @@ namespace Trivial.Text
         /// <param name="value">The value to set.</param>
         public void Add(string value)
         {
-            store.Add(new JsonString(value));
+            store.Add(new JsonStringNode(value));
         }
 
         /// <summary>
@@ -2160,7 +2160,7 @@ namespace Trivial.Text
         /// <param name="value">The value to set.</param>
         public void Add(SecureString value)
         {
-            store.Add(new JsonString(value));
+            store.Add(new JsonStringNode(value));
         }
 
         /// <summary>
@@ -2170,7 +2170,7 @@ namespace Trivial.Text
         /// <param name="args">An object array that contains zero or more objects to format.</param>
         public void AddFormat(string value, params object[] args)
         {
-            store.Add(new JsonString(string.Format(value, args)));
+            store.Add(new JsonStringNode(string.Format(value, args)));
         }
 
         /// <summary>
@@ -2179,7 +2179,7 @@ namespace Trivial.Text
         /// <param name="value">The value to set.</param>
         public void Add(Guid value)
         {
-            store.Add(new JsonString(value));
+            store.Add(new JsonStringNode(value));
         }
 
         /// <summary>
@@ -2188,7 +2188,7 @@ namespace Trivial.Text
         /// <param name="value">The value to set.</param>
         public void Add(DateTime value)
         {
-            store.Add(new JsonString(value));
+            store.Add(new JsonStringNode(value));
         }
 
         /// <summary>
@@ -2197,7 +2197,7 @@ namespace Trivial.Text
         /// <param name="value">The value to set.</param>
         public void Add(short value)
         {
-            store.Add(new JsonInteger(value));
+            store.Add(new JsonIntegerNode(value));
         }
 
         /// <summary>
@@ -2206,7 +2206,7 @@ namespace Trivial.Text
         /// <param name="value">The value to set.</param>
         public void Add(uint value)
         {
-            store.Add(new JsonInteger(value));
+            store.Add(new JsonIntegerNode(value));
         }
 
         /// <summary>
@@ -2215,7 +2215,7 @@ namespace Trivial.Text
         /// <param name="value">The value to set.</param>
         public void Add(int value)
         {
-            store.Add(new JsonInteger(value));
+            store.Add(new JsonIntegerNode(value));
         }
 
         /// <summary>
@@ -2224,7 +2224,7 @@ namespace Trivial.Text
         /// <param name="value">The value to set.</param>
         public void Add(long value)
         {
-            store.Add(new JsonInteger(value));
+            store.Add(new JsonIntegerNode(value));
         }
 
         /// <summary>
@@ -2233,7 +2233,7 @@ namespace Trivial.Text
         /// <param name="value">The value to set.</param>
         public void Add(float value)
         {
-            store.Add(new JsonDouble(value));
+            store.Add(new JsonDoubleNode(value));
         }
 
         /// <summary>
@@ -2242,7 +2242,7 @@ namespace Trivial.Text
         /// <param name="value">The value to set.</param>
         public void Add(double value)
         {
-            store.Add(new JsonDouble(value));
+            store.Add(new JsonDoubleNode(value));
         }
 
         /// <summary>
@@ -2251,14 +2251,14 @@ namespace Trivial.Text
         /// <param name="value">The value to set.</param>
         public void Add(bool value)
         {
-            store.Add(value ? JsonBoolean.True : JsonBoolean.False);
+            store.Add(value ? JsonBooleanNode.True : JsonBooleanNode.False);
         }
 
         /// <summary>
         /// Adds a value.
         /// </summary>
         /// <param name="value">The value to set.</param>
-        public void Add(JsonArray value)
+        public void Add(JsonArrayNode value)
         {
             store.Add(value != this ? value : value.Clone());
         }
@@ -2267,7 +2267,7 @@ namespace Trivial.Text
         /// Adds a value.
         /// </summary>
         /// <param name="value">The value to set.</param>
-        public void Add(JsonObject value)
+        public void Add(JsonObjectNode value)
         {
             store.Add(value);
         }
@@ -2307,7 +2307,7 @@ namespace Trivial.Text
         /// <exception cref="ArgumentNullException">The bytes should not be null.</exception>
         public void AddBase64(byte[] inArray, Base64FormattingOptions options = Base64FormattingOptions.None)
         {
-            store.Add(new JsonString(Convert.ToBase64String(inArray, options)));
+            store.Add(new JsonStringNode(Convert.ToBase64String(inArray, options)));
         }
 
         /// <summary>
@@ -2320,9 +2320,9 @@ namespace Trivial.Text
         {
 #if NETOLDVER
             if (bytes == null) throw new ArgumentNullException(nameof(bytes), "bytes should not be null.");
-            store.Add(new JsonString(Convert.ToBase64String(bytes.ToArray(), options)));
+            store.Add(new JsonStringNode(Convert.ToBase64String(bytes.ToArray(), options)));
 #else
-            store.Add(new JsonString(Convert.ToBase64String(bytes, options)));
+            store.Add(new JsonStringNode(Convert.ToBase64String(bytes, options)));
 #endif
         }
 
@@ -2332,7 +2332,7 @@ namespace Trivial.Text
         /// <param name="value">The value to set.</param>
         public void AddDateTimeString(DateTime value)
         {
-            store.Add(new JsonString(value));
+            store.Add(new JsonStringNode(value));
         }
 
         /// <summary>
@@ -2341,7 +2341,7 @@ namespace Trivial.Text
         /// <param name="value">The value to set.</param>
         public void AddJavaScriptDateTicks(DateTime value)
         {
-            store.Add(new JsonInteger(Web.WebFormat.ParseDate(value)));
+            store.Add(new JsonIntegerNode(Web.WebFormat.ParseDate(value)));
         }
 
         /// <summary>
@@ -2350,7 +2350,7 @@ namespace Trivial.Text
         /// <param name="value">The value to set.</param>
         public void AddUnixTimestamp(DateTime value)
         {
-            store.Add(new JsonInteger(Web.WebFormat.ParseUnixTimestamp(value)));
+            store.Add(new JsonIntegerNode(Web.WebFormat.ParseUnixTimestamp(value)));
         }
 
         /// <summary>
@@ -2364,7 +2364,7 @@ namespace Trivial.Text
             if (values == null) return count;
             foreach (var item in values)
             {
-                store.Add(new JsonString(item));
+                store.Add(new JsonStringNode(item));
                 count++;
             }
 
@@ -2382,7 +2382,7 @@ namespace Trivial.Text
             if (values == null) return count;
             foreach (var item in values)
             {
-                store.Add(new JsonInteger(item));
+                store.Add(new JsonIntegerNode(item));
                 count++;
             }
 
@@ -2394,7 +2394,7 @@ namespace Trivial.Text
         /// </summary>
         /// <param name="values">A JSON object collection to add.</param>
         /// <returns>The count of item added.</returns>
-        public int AddRange(IEnumerable<JsonObject> values)
+        public int AddRange(IEnumerable<JsonObjectNode> values)
         {
             var count = 0;
             if (values == null) return count;
@@ -2412,7 +2412,7 @@ namespace Trivial.Text
         /// </summary>
         /// <param name="json">Another JSON array to add.</param>
         /// <returns>The count of item added.</returns>
-        public int AddRange(JsonArray json)
+        public int AddRange(JsonArrayNode json)
         {
             var count = 0;
             if (json is null) return count;
@@ -2433,7 +2433,7 @@ namespace Trivial.Text
         /// <param name="propertyKeys">A sort of property keys to copy.</param>
         /// <returns>The count of item added.</returns>
         /// <exception cref="ArgumentException">readerOptions contains unsupported options.</exception>
-        public int AddRange(JsonObject json, IEnumerable<string> propertyKeys)
+        public int AddRange(JsonObjectNode json, IEnumerable<string> propertyKeys)
         {
             var count = 0;
             if (json is null || propertyKeys == null) return count;
@@ -2483,7 +2483,7 @@ namespace Trivial.Text
         /// <exception cref="ArgumentOutOfRangeException">The index was out of range.</exception>
         public void Insert(int index, string value)
         {
-            store.Insert(index, new JsonString(value));
+            store.Insert(index, new JsonStringNode(value));
         }
 
         /// <summary>
@@ -2494,7 +2494,7 @@ namespace Trivial.Text
         /// <exception cref="ArgumentOutOfRangeException">The index was out of range.</exception>
         public void Insert(int index, SecureString value)
         {
-            store.Insert(index, new JsonString(value));
+            store.Insert(index, new JsonStringNode(value));
         }
 
         /// <summary>
@@ -2506,7 +2506,7 @@ namespace Trivial.Text
         /// <exception cref="ArgumentOutOfRangeException">The index was out of range.</exception>
         public void InsertFormat(int index, string value, params object[] args)
         {
-            store.Insert(index, new JsonString(string.Format(value, args)));
+            store.Insert(index, new JsonStringNode(string.Format(value, args)));
         }
 
         /// <summary>
@@ -2517,7 +2517,7 @@ namespace Trivial.Text
         /// <exception cref="ArgumentOutOfRangeException">The index is out of range.</exception>
         public void Insert(int index, Guid value)
         {
-            store.Insert(index, new JsonString(value));
+            store.Insert(index, new JsonStringNode(value));
         }
 
         /// <summary>
@@ -2528,7 +2528,7 @@ namespace Trivial.Text
         /// <exception cref="ArgumentOutOfRangeException">The index was out of range.</exception>
         public void Insert(int index, DateTime value)
         {
-            store.Insert(index, new JsonString(value));
+            store.Insert(index, new JsonStringNode(value));
         }
 
         /// <summary>
@@ -2539,7 +2539,7 @@ namespace Trivial.Text
         /// <exception cref="ArgumentOutOfRangeException">The index was out of range.</exception>
         public void Insert(int index, uint value)
         {
-            store.Insert(index, new JsonInteger(value));
+            store.Insert(index, new JsonIntegerNode(value));
         }
 
         /// <summary>
@@ -2550,7 +2550,7 @@ namespace Trivial.Text
         /// <exception cref="ArgumentOutOfRangeException">The index was out of range.</exception>
         public void Insert(int index, int value)
         {
-            store.Insert(index, new JsonInteger(value));
+            store.Insert(index, new JsonIntegerNode(value));
         }
 
         /// <summary>
@@ -2561,7 +2561,7 @@ namespace Trivial.Text
         /// <exception cref="ArgumentOutOfRangeException">The index was out of range.</exception>
         public void Insert(int index, long value)
         {
-            store.Insert(index, new JsonInteger(value));
+            store.Insert(index, new JsonIntegerNode(value));
         }
 
         /// <summary>
@@ -2572,7 +2572,7 @@ namespace Trivial.Text
         /// <exception cref="ArgumentOutOfRangeException">The index was out of range.</exception>
         public void Insert(int index, float value)
         {
-            store.Insert(index, new JsonDouble(value));
+            store.Insert(index, new JsonDoubleNode(value));
         }
 
         /// <summary>
@@ -2583,7 +2583,7 @@ namespace Trivial.Text
         /// <exception cref="ArgumentOutOfRangeException">The index was out of range.</exception>
         public void Insert(int index, double value)
         {
-            store.Insert(index, new JsonDouble(value));
+            store.Insert(index, new JsonDoubleNode(value));
         }
 
         /// <summary>
@@ -2594,7 +2594,7 @@ namespace Trivial.Text
         /// <exception cref="ArgumentOutOfRangeException">The index was out of range.</exception>
         public void Insert(int index, bool value)
         {
-            store.Insert(index, value ? JsonBoolean.True : JsonBoolean.False);
+            store.Insert(index, value ? JsonBooleanNode.True : JsonBooleanNode.False);
         }
 
         /// <summary>
@@ -2603,7 +2603,7 @@ namespace Trivial.Text
         /// <param name="index">The zero-based index of the element to get.</param>
         /// <param name="value">The value to set.</param>
         /// <exception cref="ArgumentOutOfRangeException">The index was out of range.</exception>
-        public void Insert(int index, JsonArray value)
+        public void Insert(int index, JsonArrayNode value)
         {
             store.Insert(index, value != this ? value : value.Clone());
         }
@@ -2614,7 +2614,7 @@ namespace Trivial.Text
         /// <param name="index">The zero-based index of the element to get.</param>
         /// <param name="value">The value to set.</param>
         /// <exception cref="ArgumentOutOfRangeException">The index was out of range.</exception>
-        public void Insert(int index, JsonObject value)
+        public void Insert(int index, JsonObjectNode value)
         {
             store.Insert(index, value);
         }
@@ -2651,7 +2651,7 @@ namespace Trivial.Text
         /// <exception cref="ArgumentNullException">The bytes should not be null.</exception>
         public void InsertBase64(int index, byte[] inArray, Base64FormattingOptions options = Base64FormattingOptions.None)
         {
-            store.Insert(index, new JsonString(Convert.ToBase64String(inArray, options)));
+            store.Insert(index, new JsonStringNode(Convert.ToBase64String(inArray, options)));
         }
 
         /// <summary>
@@ -2666,9 +2666,9 @@ namespace Trivial.Text
         {
 #if NETOLDVER
             if (bytes == null) throw new ArgumentNullException(nameof(bytes), "bytes should not be null.");
-            store.Insert(index, new JsonString(Convert.ToBase64String(bytes.ToArray(), options)));
+            store.Insert(index, new JsonStringNode(Convert.ToBase64String(bytes.ToArray(), options)));
 #else
-            store.Insert(index, new JsonString(Convert.ToBase64String(bytes, options)));
+            store.Insert(index, new JsonStringNode(Convert.ToBase64String(bytes, options)));
 #endif
         }
 
@@ -2680,7 +2680,7 @@ namespace Trivial.Text
         /// <exception cref="ArgumentOutOfRangeException">The index was out of range.</exception>
         public void InsertDateTimeString(int index, DateTime value)
         {
-            store.Insert(index, new JsonString(value));
+            store.Insert(index, new JsonStringNode(value));
         }
 
         /// <summary>
@@ -2691,7 +2691,7 @@ namespace Trivial.Text
         /// <exception cref="ArgumentOutOfRangeException">The index was out of range.</exception>
         public void InsertJavaScriptDateTicks(int index, DateTime value)
         {
-            store.Insert(index, new JsonInteger(Web.WebFormat.ParseDate(value)));
+            store.Insert(index, new JsonIntegerNode(Web.WebFormat.ParseDate(value)));
         }
 
         /// <summary>
@@ -2702,7 +2702,7 @@ namespace Trivial.Text
         /// <exception cref="ArgumentOutOfRangeException">The index was out of range.</exception>
         public void InsertUnixTimestamp(int index, DateTime value)
         {
-            store.Insert(index, new JsonInteger(Web.WebFormat.ParseUnixTimestamp(value)));
+            store.Insert(index, new JsonIntegerNode(Web.WebFormat.ParseUnixTimestamp(value)));
         }
 
         /// <summary>
@@ -2718,7 +2718,7 @@ namespace Trivial.Text
             if (values == null) return count;
             foreach (var item in values)
             {
-                store.Insert(index + count, new JsonString(item));
+                store.Insert(index + count, new JsonStringNode(item));
                 count++;
             }
 
@@ -2738,7 +2738,7 @@ namespace Trivial.Text
             if (values == null) return count;
             foreach (var item in values)
             {
-                store.Insert(index + count, new JsonInteger(item));
+                store.Insert(index + count, new JsonIntegerNode(item));
                 count++;
             }
 
@@ -2752,7 +2752,7 @@ namespace Trivial.Text
         /// <param name="values">A string collection to add.</param>
         /// <returns>The count of item added.</returns>
         /// <exception cref="ArgumentOutOfRangeException">The index was out of range.</exception>
-        public int InsertRange(int index, IEnumerable<JsonObject> values)
+        public int InsertRange(int index, IEnumerable<JsonObjectNode> values)
         {
             var count = 0;
             if (values == null) return count;
@@ -2772,7 +2772,7 @@ namespace Trivial.Text
         /// <param name="json">Another JSON array to add.</param>
         /// <returns>The count of item added.</returns>
         /// <exception cref="ArgumentOutOfRangeException">The index was out of range.</exception>
-        public int InsertRange(int index, JsonArray json)
+        public int InsertRange(int index, JsonArrayNode json)
         {
             var count = 0;
             if (json is null) return count;
@@ -2794,7 +2794,7 @@ namespace Trivial.Text
         /// <param name="propertyKeys">A sort of property keys to copy.</param>
         /// <returns>The count of item added.</returns>
         /// <exception cref="ArgumentOutOfRangeException">The index was out of range.</exception>
-        public int InsertRange(int index, JsonObject json, IEnumerable<string> propertyKeys)
+        public int InsertRange(int index, JsonObjectNode json, IEnumerable<string> propertyKeys)
         {
             var count = 0;
             if (json is null || propertyKeys == null) return count;
@@ -2838,11 +2838,11 @@ namespace Trivial.Text
                         writer.WriteNullValue();
                         break;
                     case JsonValueKind.String:
-                        if (prop is JsonString strJson) writer.WriteStringValue(strJson.Value);
+                        if (prop is JsonStringNode strJson) writer.WriteStringValue(strJson.Value);
                         break;
                     case JsonValueKind.Number:
-                        if (prop is JsonInteger intJson) writer.WriteNumberValue((long)intJson);
-                        else if (prop is JsonDouble floatJson) writer.WriteNumberValue((double)floatJson);
+                        if (prop is JsonIntegerNode intJson) writer.WriteNumberValue((long)intJson);
+                        else if (prop is JsonDoubleNode floatJson) writer.WriteNumberValue((double)floatJson);
                         break;
                     case JsonValueKind.True:
                         writer.WriteBooleanValue(true);
@@ -2851,10 +2851,10 @@ namespace Trivial.Text
                         writer.WriteBooleanValue(false);
                         break;
                     case JsonValueKind.Object:
-                        if (prop is JsonObject objJson) objJson.WriteTo(writer);
+                        if (prop is JsonObjectNode objJson) objJson.WriteTo(writer);
                         break;
                     case JsonValueKind.Array:
-                        if (prop is JsonArray objArr) objArr.WriteTo(writer);
+                        if (prop is JsonArrayNode objArr) objArr.WriteTo(writer);
                         break;
                 }
             }
@@ -2915,7 +2915,7 @@ namespace Trivial.Text
                 return default;
             }
 
-            if (parser != null && item is IJsonString s) return parser(s.StringValue);
+            if (parser != null && item is IJsonStringNode s) return parser(s.StringValue);
             return JsonSerializer.Deserialize<T>(item.ToString(), options);
         }
 
@@ -2953,7 +2953,7 @@ namespace Trivial.Text
         /// <param name="kind">The data type of JSON value to filter.</param>
         /// <param name="predicate">An optional function to test each source element for a condition; the second parameter of the function represents the index of the source element; the third is the index of the element after filter.</param>
         /// <returns>A collection of values of the specific JSON value kind.</returns>
-        public IEnumerable<IJsonValueResolver> Where(JsonValueKind kind, Func<IJsonValueResolver, int, int, bool> predicate = null)
+        public IEnumerable<IJsonDataNode> Where(JsonValueKind kind, Func<IJsonDataNode, int, int, bool> predicate = null)
         {
             if (predicate == null) predicate = PassTrue;
             var i = -1;
@@ -2996,7 +2996,7 @@ namespace Trivial.Text
         /// </summary>
         /// <param name="predicate">A function to test each source element for a condition.</param>
         /// <returns>A collection that contains elements from the input sequence that satisfy the condition.</returns>
-        public IEnumerable<IJsonValueResolver> Where(Func<IJsonValueResolver, bool> predicate)
+        public IEnumerable<IJsonDataNode> Where(Func<IJsonDataNode, bool> predicate)
         {
             if (predicate == null) return store.Select(ele => ele ?? JsonValues.Null);
             return store.Select(ele => ele ?? JsonValues.Null).Where(predicate);
@@ -3007,7 +3007,7 @@ namespace Trivial.Text
         /// </summary>
         /// <param name="predicate">A function to test each source element for a condition; the second parameter of the function represents the index of the source element.</param>
         /// <returns>A collection that contains elements from the input sequence that satisfy the condition.</returns>
-        public IEnumerable<IJsonValueResolver> Where(Func<IJsonValueResolver, int, bool> predicate)
+        public IEnumerable<IJsonDataNode> Where(Func<IJsonDataNode, int, bool> predicate)
         {
             if (predicate == null) return store.Select(ele => ele ?? JsonValues.Null);
             return store.Select(ele => ele ?? JsonValues.Null).Where(predicate);
@@ -3017,7 +3017,7 @@ namespace Trivial.Text
         /// Creates a list from this instance.
         /// </summary>
         /// <returns>A list that contains elements from this sequence.</returns>
-        public List<IJsonValueResolver> ToList()
+        public List<IJsonDataNode> ToList()
         {
             return store.Select(ele => ele ?? JsonValues.Null).ToList();
         }
@@ -3026,7 +3026,7 @@ namespace Trivial.Text
         /// Creates an array from this instance.
         /// </summary>
         /// <returns>An array that contains elements from this sequence.</returns>
-        public IJsonValueResolver[] ToArray()
+        public IJsonDataNode[] ToArray()
         {
             return store.Select(ele => ele ?? JsonValues.Null).ToArray();
         }
@@ -3035,9 +3035,9 @@ namespace Trivial.Text
         /// Creates a dictionary from this instance.
         /// </summary>
         /// <returns>A dictionary that contains elements from this sequence.</returns>
-        public Dictionary<int, IJsonValueResolver> ToDictionary()
+        public Dictionary<int, IJsonDataNode> ToDictionary()
         {
-            var d = new Dictionary<int, IJsonValueResolver>();
+            var d = new Dictionary<int, IJsonDataNode>();
             var i = 0;
             foreach (var item in store)
             {
@@ -3053,7 +3053,7 @@ namespace Trivial.Text
         /// </summary>
         /// <param name="other">The object to compare with the current instance.</param>
         /// <returns>true if obj and this instance represent the same value; otherwise, false.</returns>
-        public bool Equals(JsonArray other)
+        public bool Equals(JsonArrayNode other)
         {
             if (other is null) return false;
             if (base.Equals(other)) return true;
@@ -3075,10 +3075,10 @@ namespace Trivial.Text
         /// </summary>
         /// <param name="other">The object to compare with the current instance.</param>
         /// <returns>true if obj and this instance represent the same value; otherwise, false.</returns>
-        public bool Equals(IJsonValue other)
+        public bool Equals(IJsonValueNode other)
         {
             if (other is null) return false;
-            if (other is JsonArray json) return Equals(json);
+            if (other is JsonArrayNode json) return Equals(json);
             return false;
         }
 
@@ -3090,7 +3090,7 @@ namespace Trivial.Text
         public override bool Equals(object other)
         {
             if (other is null) return false;
-            if (other is JsonArray json) return Equals(json);
+            if (other is JsonArrayNode json) return Equals(json);
             return false;
         }
 
@@ -3185,10 +3185,10 @@ namespace Trivial.Text
                         str.Append("null");
                         break;
                     case JsonValueKind.Array:
-                        str.Append((prop is JsonArray jArr) ? jArr.ConvertToString(indentStyle, indentLevel) : "[]");
+                        str.Append((prop is JsonArrayNode jArr) ? jArr.ConvertToString(indentStyle, indentLevel) : "[]");
                         break;
                     case JsonValueKind.Object:
-                        str.Append((prop is JsonObject jObj) ? jObj.ConvertToString(indentStyle, indentLevel) : "{}");
+                        str.Append((prop is JsonObjectNode jObj) ? jObj.ConvertToString(indentStyle, indentLevel) : "{}");
                         break;
                     default:
                         str.Append(prop.ToString());
@@ -3249,7 +3249,7 @@ namespace Trivial.Text
                         str.AppendLine("!!null null");
                         break;
                     case JsonValueKind.Array:
-                        if (item is not JsonArray jArr)
+                        if (item is not JsonArrayNode jArr)
                         {
                             str.AppendLine("[]");
                             break;
@@ -3258,7 +3258,7 @@ namespace Trivial.Text
                         str.AppendLine(jArr.ToString());
                         break;
                     case JsonValueKind.Object:
-                        if (item is not JsonObject jObj)
+                        if (item is not JsonObjectNode jObj)
                         {
                             str.AppendLine("{}");
                             break;
@@ -3268,7 +3268,7 @@ namespace Trivial.Text
                         str.Append(jObj.ConvertToYamlString(indentLevel));
                         break;
                     case JsonValueKind.String:
-                        if (item is not IJsonString jStr)
+                        if (item is not IJsonStringNode jStr)
                         {
                             str.AppendLine(item.ToString());
                             break;
@@ -3282,7 +3282,7 @@ namespace Trivial.Text
                         }
 
                         str.AppendLine(text.Length == 0 || text.Length > 100 || text.IndexOfAny(StringExtensions.YamlSpecialChars) >= 0
-                            ? JsonString.ToJson(text)
+                            ? JsonStringNode.ToJson(text)
                             : text);
                         break;
                     default:
@@ -3298,7 +3298,7 @@ namespace Trivial.Text
         /// Returns an enumerator that iterates through the array.
         /// </summary>
         /// <returns>An enumerator that can be used to iterate through the array.</returns>
-        public IEnumerator<IJsonValueResolver> GetEnumerator()
+        public IEnumerator<IJsonDataNode> GetEnumerator()
         {
             return store.GetEnumerator();
         }
@@ -3307,7 +3307,7 @@ namespace Trivial.Text
         /// Returns an enumerator that iterates through the array.
         /// </summary>
         /// <returns>An enumerator that can be used to iterate through the array.</returns>
-        IEnumerator<IJsonValue> IEnumerable<IJsonValue>.GetEnumerator()
+        IEnumerator<IJsonValueNode> IEnumerable<IJsonValueNode>.GetEnumerator()
         {
             return store.GetEnumerator();
         }
@@ -3326,90 +3326,90 @@ namespace Trivial.Text
         /// </summary>
         /// <returns>The value of the element as a boolean.</returns>
         /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
-        bool IJsonValueResolver.GetBoolean() => throw new InvalidOperationException("Expect a boolean but it is an array.");
+        bool IJsonDataNode.GetBoolean() => throw new InvalidOperationException("Expect a boolean but it is an array.");
 
         /// <summary>
         /// Gets the value of the element as a byte array.
         /// </summary>
         /// <returns>The value decoded as a byte array.</returns>
         /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
-        byte[] IJsonValueResolver.GetBytesFromBase64() => throw new InvalidOperationException("Expect a string but it is an array.");
+        byte[] IJsonDataNode.GetBytesFromBase64() => throw new InvalidOperationException("Expect a string but it is an array.");
 
         /// <summary>
         /// Gets the value of the element as a date time.
         /// </summary>
         /// <returns>The value of the element as a date time.</returns>
         /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
-        DateTime IJsonValueResolver.GetDateTime() => throw new InvalidOperationException("Expect a date time but it is an array.");
+        DateTime IJsonDataNode.GetDateTime() => throw new InvalidOperationException("Expect a date time but it is an array.");
 
         /// <summary>
         /// Gets the value of the element as a number.
         /// </summary>
         /// <returns>The value of the element as a number.</returns>
         /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
-        decimal IJsonValueResolver.GetDecimal() => throw new InvalidOperationException("Expect a number but it is an array.");
+        decimal IJsonDataNode.GetDecimal() => throw new InvalidOperationException("Expect a number but it is an array.");
 
         /// <summary>
         /// Gets the value of the element as a number.
         /// </summary>
         /// <returns>The value of the element as a number.</returns>
         /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
-        float IJsonValueResolver.GetSingle() => throw new InvalidOperationException("Expect a number but it is an array.");
+        float IJsonDataNode.GetSingle() => throw new InvalidOperationException("Expect a number but it is an array.");
 
         /// <summary>
         /// Gets the value of the element as a number.
         /// </summary>
         /// <returns>The value of the element as a number.</returns>
         /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
-        double IJsonValueResolver.GetDouble() => throw new InvalidOperationException("Expect a number but it is an array.");
+        double IJsonDataNode.GetDouble() => throw new InvalidOperationException("Expect a number but it is an array.");
 
         /// <summary>
         /// Gets the value of the element as a number.
         /// </summary>
         /// <returns>The value of the element as a number.</returns>
         /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
-        short IJsonValueResolver.GetInt16() => throw new InvalidOperationException("Expect a number but it is an array.");
+        short IJsonDataNode.GetInt16() => throw new InvalidOperationException("Expect a number but it is an array.");
 
         /// <summary>
         /// Gets the value of the element as a number.
         /// </summary>
         /// <returns>The value of the element as a number.</returns>
         /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
-        uint IJsonValueResolver.GetUInt32() => throw new InvalidOperationException("Expect a number but it is an array.");
+        uint IJsonDataNode.GetUInt32() => throw new InvalidOperationException("Expect a number but it is an array.");
 
         /// <summary>
         /// Gets the value of the element as a number.
         /// </summary>
         /// <returns>The value of the element as a number.</returns>
         /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
-        int IJsonValueResolver.GetInt32() => throw new InvalidOperationException("Expect a number but it is an array.");
+        int IJsonDataNode.GetInt32() => throw new InvalidOperationException("Expect a number but it is an array.");
 
         /// <summary>
         /// Gets the value of the element as a number.
         /// </summary>
         /// <returns>The value of the element as a number.</returns>
         /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
-        long IJsonValueResolver.GetInt64() => throw new InvalidOperationException("Expect a number but it is an array.");
+        long IJsonDataNode.GetInt64() => throw new InvalidOperationException("Expect a number but it is an array.");
 
         /// <summary>
         /// Gets the value of the element as a number.
         /// </summary>
         /// <returns>The value of the element as a number.</returns>
         /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
-        string IJsonValueResolver.GetString() => throw new InvalidOperationException("Expect a string but it is an array.");
+        string IJsonDataNode.GetString() => throw new InvalidOperationException("Expect a string but it is an array.");
 
         /// <summary>
         /// Gets the value of the element as a GUID.
         /// </summary>
         /// <returns>The value of the element as a GUID.</returns>
         /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
-        Guid IJsonValueResolver.GetGuid() => throw new InvalidOperationException("Expect a string but it is an array.");
+        Guid IJsonDataNode.GetGuid() => throw new InvalidOperationException("Expect a string but it is an array.");
         /// <summary>
         /// Tries to get the value of the element as a boolean.
         /// </summary>
         /// <param name="result">The result.</param>
         /// <returns>true if the kind is the one expected; otherwise, false.</returns>
-        bool IJsonValueResolver.TryGetBoolean(out bool result)
+        bool IJsonDataNode.TryGetBoolean(out bool result)
         {
             result = false;
             return false;
@@ -3420,7 +3420,7 @@ namespace Trivial.Text
         /// </summary>
         /// <param name="result">The result.</param>
         /// <returns>true if the kind is the one expected; otherwise, false.</returns>
-        bool IJsonValueResolver.TryGetDateTime(out DateTime result)
+        bool IJsonDataNode.TryGetDateTime(out DateTime result)
         {
             result = Web.WebFormat.ParseDate(0);
             return false;
@@ -3431,7 +3431,7 @@ namespace Trivial.Text
         /// </summary>
         /// <param name="result">The result.</param>
         /// <returns>true if the kind is the one expected; otherwise, false.</returns>
-        bool IJsonValueResolver.TryGetDecimal(out decimal result)
+        bool IJsonDataNode.TryGetDecimal(out decimal result)
         {
             result = 0;
             return false;
@@ -3442,7 +3442,7 @@ namespace Trivial.Text
         /// </summary>
         /// <param name="result">The result.</param>
         /// <returns>true if the kind is the one expected; otherwise, false.</returns>
-        bool IJsonValueResolver.TryGetSingle(out float result)
+        bool IJsonDataNode.TryGetSingle(out float result)
         {
             result = 0;
             return false;
@@ -3453,7 +3453,7 @@ namespace Trivial.Text
         /// </summary>
         /// <param name="result">The result.</param>
         /// <returns>true if the kind is the one expected; otherwise, false.</returns>
-        bool IJsonValueResolver.TryGetDouble(out double result)
+        bool IJsonDataNode.TryGetDouble(out double result)
         {
             result = 0;
             return false;
@@ -3464,7 +3464,7 @@ namespace Trivial.Text
         /// </summary>
         /// <param name="result">The result.</param>
         /// <returns>true if the kind is the one expected; otherwise, false.</returns>
-        bool IJsonValueResolver.TryGetUInt32(out uint result)
+        bool IJsonDataNode.TryGetUInt32(out uint result)
         {
             result = 0;
             return false;
@@ -3475,7 +3475,7 @@ namespace Trivial.Text
         /// </summary>
         /// <param name="result">The result.</param>
         /// <returns>true if the kind is the one expected; otherwise, false.</returns>
-        bool IJsonValueResolver.TryGetInt32(out int result)
+        bool IJsonDataNode.TryGetInt32(out int result)
         {
             result = 0;
             return false;
@@ -3486,7 +3486,7 @@ namespace Trivial.Text
         /// </summary>
         /// <param name="result">The result.</param>
         /// <returns>true if the kind is the one expected; otherwise, false.</returns>
-        bool IJsonValueResolver.TryGetInt64(out long result)
+        bool IJsonDataNode.TryGetInt64(out long result)
         {
             result = 0;
             return false;
@@ -3497,7 +3497,7 @@ namespace Trivial.Text
         /// </summary>
         /// <param name="result">The result.</param>
         /// <returns>true if the kind is the one expected; otherwise, false.</returns>
-        bool IJsonValueResolver.TryGetString(out string result)
+        bool IJsonDataNode.TryGetString(out string result)
         {
             result = null;
             return false;
@@ -3508,7 +3508,7 @@ namespace Trivial.Text
         /// </summary>
         /// <param name="result">The result.</param>
         /// <returns>true if the kind is the one expected; otherwise, false.</returns>
-        bool IJsonValueResolver.TryGetGuid(out Guid result)
+        bool IJsonDataNode.TryGetGuid(out Guid result)
         {
             result = Guid.Empty;
             return false;
@@ -3520,7 +3520,7 @@ namespace Trivial.Text
         /// <param name="key">The property key.</param>
         /// <param name="result">The result.</param>
         /// <returns>true if the kind is the one expected; otherwise, false.</returns>
-        public bool TryGetValue(string key, out IJsonValueResolver result)
+        public bool TryGetValue(string key, out IJsonDataNode result)
         {
             if (key != null)
             {
@@ -3530,7 +3530,7 @@ namespace Trivial.Text
                     case "len":
                     case "length":
                     case "count":
-                        result = new JsonInteger(Count);
+                        result = new JsonIntegerNode(Count);
                         return true;
                     case "first":
                         if (Count == 0) break;
@@ -3559,7 +3559,7 @@ namespace Trivial.Text
         /// <param name="key">The property key.</param>
         /// <param name="result">The result.</param>
         /// <returns>true if the kind is the one expected; otherwise, false.</returns>
-        public bool TryGetValue(ReadOnlySpan<char> key, out IJsonValueResolver result)
+        public bool TryGetValue(ReadOnlySpan<char> key, out IJsonDataNode result)
         {
             if (key != null) return TryGetValue(key.ToString(), out result);
             result = default;
@@ -3571,7 +3571,7 @@ namespace Trivial.Text
         /// </summary>
         /// <param name="key">The property key.</param>
         /// <returns>The element; or null, if get failed.</returns>
-        public IJsonValueResolver TryGetValue(string key)
+        public IJsonDataNode TryGetValue(string key)
         {
             return TryGetValue(key, out var result) ? result : default;
         }
@@ -3581,7 +3581,7 @@ namespace Trivial.Text
         /// </summary>
         /// <returns>The property keys.</returns>
         /// <exception cref="InvalidOperationException">The value kind is not an object.</exception>
-        IEnumerable<string> IJsonValueResolver.GetKeys()
+        IEnumerable<string> IJsonDataNode.GetKeys()
         {
             var list = new List<string>();
             for (var i = 0; i < Count; i++)
@@ -3596,18 +3596,18 @@ namespace Trivial.Text
         /// Inverts the order of the elements in a sequence.
         /// </summary>
         /// <returns>A sequence whose elements correspond to those of the input sequence in reverse order.</returns>
-        public JsonArray Reverse()
+        public JsonArrayNode Reverse()
         {
-            return new JsonArray(store.Reverse().ToList());
+            return new JsonArrayNode(store.Reverse().ToList());
         }
 
         /// <summary>
         /// Creates a new object that is a copy of the current instance.
         /// </summary>
         /// <returns>A new object that is a copy of this instance.</returns>
-        public JsonArray Clone()
+        public JsonArrayNode Clone()
         {
-            return new JsonArray(store, store is Collection.SynchronizedList<IJsonValueResolver>);
+            return new JsonArrayNode(store, store is Collection.SynchronizedList<IJsonDataNode>);
         }
 
         /// <summary>
@@ -3626,7 +3626,7 @@ namespace Trivial.Text
         /// <param name="leftValue">The left value to compare.</param>
         /// <param name="rightValue">The right value to compare.</param>
         /// <returns>true if they are same; otherwise, false.</returns>
-        public static bool operator ==(JsonArray leftValue, IJsonValue rightValue)
+        public static bool operator ==(JsonArrayNode leftValue, IJsonValueNode rightValue)
         {
             if (ReferenceEquals(leftValue, rightValue)) return true;
             if (rightValue is null || leftValue is null) return false;
@@ -3640,7 +3640,7 @@ namespace Trivial.Text
         /// <param name="leftValue">The left value to compare.</param>
         /// <param name="rightValue">The right value to compare.</param>
         /// <returns>true if they are different; otherwise, false.</returns>
-        public static bool operator !=(JsonArray leftValue, IJsonValue rightValue)
+        public static bool operator !=(JsonArrayNode leftValue, IJsonValueNode rightValue)
         {
             if (ReferenceEquals(leftValue, rightValue)) return false;
             if (rightValue is null || leftValue is null) return true;
@@ -3652,7 +3652,7 @@ namespace Trivial.Text
         /// </summary>
         /// <param name="nullForOtherKinds">true if set null in the result for other kinds; otherwise, false, to skip.</param>
         /// <returns>The JSON value collection.</returns>
-        private IEnumerable<T> GetSpecificKindValues<T>(bool nullForOtherKinds) where T : IJsonValueResolver
+        private IEnumerable<T> GetSpecificKindValues<T>(bool nullForOtherKinds) where T : IJsonDataNode
         {
             if (nullForOtherKinds)
             {
@@ -3670,7 +3670,7 @@ namespace Trivial.Text
             }
         }
 
-        private T GetJsonValue<T>(int index, JsonValueKind? valueKind = null) where T : IJsonValue
+        private T GetJsonValue<T>(int index, JsonValueKind? valueKind = null) where T : IJsonValueNode
         {
             var data = store[index];
             if (data is null) throw new InvalidOperationException($"The item {index} is null.");
@@ -3684,7 +3684,7 @@ namespace Trivial.Text
                 : $"The kind of item {index} is {data.ValueKind.ToString().ToLowerInvariant()}, not expected.");
         }
 
-        private bool TryGetJsonValue<T>(int index, out T property) where T : IJsonValue
+        private bool TryGetJsonValue<T>(int index, out T property) where T : IJsonValueNode
         {
             if (index < 0 || index >= store.Count)
             {
@@ -3714,7 +3714,7 @@ namespace Trivial.Text
         /// </summary>
         /// <param name="json">The JSON value.</param>
         /// <returns>An instance of the JsonDocument class.</returns>
-        public static explicit operator JsonDocument(JsonArray json)
+        public static explicit operator JsonDocument(JsonArrayNode json)
         {
             if (json == null) return null;
             using var stream = new MemoryStream();
@@ -3729,12 +3729,12 @@ namespace Trivial.Text
         /// Converts to JSON object.
         /// </summary>
         /// <param name="json">The JSON value.</param>
-        /// <returns>An instance of the JsonObject class.</returns>
-        public static explicit operator JsonObject(JsonArray json)
+        /// <returns>An instance of the JsonObjectNode class.</returns>
+        public static explicit operator JsonObjectNode(JsonArrayNode json)
         {
             if (json == null) return null;
             var i = 0;
-            var obj = new JsonObject();
+            var obj = new JsonObjectNode();
             foreach (var item in json)
             {
                 obj[i.ToString("g")] = item;
@@ -3748,8 +3748,8 @@ namespace Trivial.Text
         /// Converts to JSON node.
         /// </summary>
         /// <param name="json">The JSON value.</param>
-        /// <returns>An instance of the JsonArray class.</returns>
-        public static explicit operator System.Text.Json.Nodes.JsonArray(JsonArray json)
+        /// <returns>An instance of the JsonArrayNode class.</returns>
+        public static explicit operator System.Text.Json.Nodes.JsonArray(JsonArrayNode json)
         {
             if (json == null) return null;
             var node = new System.Text.Json.Nodes.JsonArray();
@@ -3766,8 +3766,8 @@ namespace Trivial.Text
         /// Converts to JSON node.
         /// </summary>
         /// <param name="json">The JSON value.</param>
-        /// <returns>An instance of the JsonArray class.</returns>
-        public static explicit operator System.Text.Json.Nodes.JsonNode(JsonArray json)
+        /// <returns>An instance of the JsonArrayNode class.</returns>
+        public static explicit operator System.Text.Json.Nodes.JsonNode(JsonArrayNode json)
         {
             return (System.Text.Json.Nodes.JsonArray)json;
         }
@@ -3776,9 +3776,9 @@ namespace Trivial.Text
         /// Converts from JSON document.
         /// </summary>
         /// <param name="json">The JSON value.</param>
-        /// <returns>An instance of the JsonArray class.</returns>
+        /// <returns>An instance of the JsonArrayNode class.</returns>
         /// <exception cref="JsonException">json does not represent a valid JSON array.</exception>
-        public static implicit operator JsonArray(JsonDocument json)
+        public static implicit operator JsonArrayNode(JsonDocument json)
         {
             return json.RootElement;
         }
@@ -3787,9 +3787,9 @@ namespace Trivial.Text
         /// Converts from JSON element.
         /// </summary>
         /// <param name="json">The JSON value.</param>
-        /// <returns>An instance of the JsonArray class.</returns>
+        /// <returns>An instance of the JsonArrayNode class.</returns>
         /// <exception cref="JsonException">json does not represent a valid JSON array.</exception>
-        public static implicit operator JsonArray(JsonElement json)
+        public static implicit operator JsonArrayNode(JsonElement json)
         {
             if (json.ValueKind != JsonValueKind.Array)
             {
@@ -3801,7 +3801,7 @@ namespace Trivial.Text
                 };
             }
 
-            var result = new JsonArray();
+            var result = new JsonArrayNode();
             for (var i = 0; i < json.GetArrayLength(); i++)
             {
                 result.Add(json[i]);
@@ -3813,12 +3813,12 @@ namespace Trivial.Text
         /// Converts from JSON node.
         /// </summary>
         /// <param name="json">The JSON value.</param>
-        /// <returns>An instance of the JsonArray class.</returns>
+        /// <returns>An instance of the JsonArrayNode class.</returns>
         /// <exception cref="JsonException">json does not represent a valid JSON array.</exception>
-        public static implicit operator JsonArray(System.Text.Json.Nodes.JsonArray json)
+        public static implicit operator JsonArrayNode(System.Text.Json.Nodes.JsonArray json)
         {
             if (json is null) return null;
-            var result = new JsonArray();
+            var result = new JsonArrayNode();
             foreach (var item in json)
             {
                 result.Add(item);
@@ -3831,9 +3831,9 @@ namespace Trivial.Text
         /// Converts from JSON node.
         /// </summary>
         /// <param name="json">The JSON value.</param>
-        /// <returns>An instance of the JsonArray class.</returns>
+        /// <returns>An instance of the JsonArrayNode class.</returns>
         /// <exception cref="JsonException">json does not represent a valid JSON array.</exception>
-        public static implicit operator JsonArray(System.Text.Json.Nodes.JsonNode json)
+        public static implicit operator JsonArrayNode(System.Text.Json.Nodes.JsonNode json)
         {
             if (json is System.Text.Json.Nodes.JsonArray obj) return obj;
             throw new JsonException("json is not a JSON array.");
@@ -3847,7 +3847,7 @@ namespace Trivial.Text
         /// <returns>A JSON array instance.</returns>
         /// <exception cref="JsonException">json does not represent a valid single JSON array.</exception>
         /// <exception cref="ArgumentException">readerOptions contains unsupported options.</exception>
-        public static JsonArray Parse(string json, JsonDocumentOptions options = default)
+        public static JsonArrayNode Parse(string json, JsonDocumentOptions options = default)
         {
             return JsonDocument.Parse(json, options);
         }
@@ -3860,7 +3860,7 @@ namespace Trivial.Text
         /// <returns>A JSON object instance.</returns>
         /// <exception cref="JsonException">json does not represent a valid single JSON object.</exception>
         /// <exception cref="ArgumentException">options contains unsupported options.</exception>
-        public static JsonArray Parse(System.Buffers.ReadOnlySequence<byte> json, JsonDocumentOptions options = default)
+        public static JsonArrayNode Parse(System.Buffers.ReadOnlySequence<byte> json, JsonDocumentOptions options = default)
         {
             return JsonDocument.Parse(json, options);
         }
@@ -3873,7 +3873,7 @@ namespace Trivial.Text
         /// <returns>A JSON object instance.</returns>
         /// <exception cref="JsonException">json does not represent a valid single JSON object.</exception>
         /// <exception cref="ArgumentException">options contains unsupported options.</exception>
-        public static JsonArray Parse(ReadOnlyMemory<byte> json, JsonDocumentOptions options = default)
+        public static JsonArrayNode Parse(ReadOnlyMemory<byte> json, JsonDocumentOptions options = default)
         {
             return JsonDocument.Parse(json, options);
         }
@@ -3886,7 +3886,7 @@ namespace Trivial.Text
         /// <returns>A JSON object instance.</returns>
         /// <exception cref="JsonException">json does not represent a valid single JSON object.</exception>
         /// <exception cref="ArgumentException">options contains unsupported options.</exception>
-        public static JsonArray Parse(ReadOnlyMemory<char> json, JsonDocumentOptions options = default)
+        public static JsonArrayNode Parse(ReadOnlyMemory<char> json, JsonDocumentOptions options = default)
         {
             return JsonDocument.Parse(json, options);
         }
@@ -3900,7 +3900,7 @@ namespace Trivial.Text
         /// <returns>A JSON object instance.</returns>
         /// <exception cref="JsonException">json does not represent a valid single JSON array.</exception>
         /// <exception cref="ArgumentException">readerOptions contains unsupported options.</exception>
-        public static JsonArray Parse(Stream utf8Json, JsonDocumentOptions options = default)
+        public static JsonArrayNode Parse(Stream utf8Json, JsonDocumentOptions options = default)
         {
             return JsonDocument.Parse(utf8Json, options);
         }
@@ -3915,7 +3915,7 @@ namespace Trivial.Text
         /// <returns>A JSON object instance.</returns>
         /// <exception cref="JsonException">json does not represent a valid single JSON array.</exception>
         /// <exception cref="ArgumentException">readerOptions contains unsupported options.</exception>
-        public static async Task<JsonArray> ParseAsync(Stream utf8Json, JsonDocumentOptions options, CancellationToken cancellationToken = default)
+        public static async Task<JsonArrayNode> ParseAsync(Stream utf8Json, JsonDocumentOptions options, CancellationToken cancellationToken = default)
         {
             return await JsonDocument.ParseAsync(utf8Json, options, cancellationToken);
         }
@@ -3929,7 +3929,7 @@ namespace Trivial.Text
         /// <returns>A JSON object instance.</returns>
         /// <exception cref="JsonException">json does not represent a valid single JSON array.</exception>
         /// <exception cref="ArgumentException">readerOptions contains unsupported options.</exception>
-        public static async Task<JsonArray> ParseAsync(Stream utf8Json, CancellationToken cancellationToken = default)
+        public static async Task<JsonArrayNode> ParseAsync(Stream utf8Json, CancellationToken cancellationToken = default)
         {
             return await JsonDocument.ParseAsync(utf8Json, default, cancellationToken);
         }
@@ -3941,7 +3941,7 @@ namespace Trivial.Text
         /// <returns>A JSON object instance.</returns>
         /// <exception cref="JsonException">json does not represent a valid single JSON array.</exception>
         /// <exception cref="ArgumentException">readerOptions contains unsupported options.</exception>
-        public static JsonArray ParseValue(ref Utf8JsonReader reader)
+        public static JsonArrayNode ParseValue(ref Utf8JsonReader reader)
         {
             return JsonDocument.ParseValue(ref reader);
         }
@@ -3952,7 +3952,7 @@ namespace Trivial.Text
         /// <param name="json">A specific JSON array string to parse.</param>
         /// <param name="options">Options to control the reader behavior during parsing.</param>
         /// <returns>A JSON array instance; or null, if error format.</returns>
-        public static JsonArray TryParse(string json, JsonDocumentOptions options = default)
+        public static JsonArrayNode TryParse(string json, JsonDocumentOptions options = default)
         {
             try
             {
@@ -3990,20 +3990,20 @@ namespace Trivial.Text
         /// <param name="options">Options to control the reader behavior during parsing.</param>
         /// <returns>A JSON object instance.</returns>
         /// <exception cref="JsonException">json does not represent a valid single JSON object.</exception>
-        public static JsonArray ConvertFrom(object obj, JsonSerializerOptions options = default)
+        public static JsonArrayNode ConvertFrom(object obj, JsonSerializerOptions options = default)
         {
             if (obj is null) return null;
-            if (obj is IJsonValue)
+            if (obj is IJsonValueNode)
             {
-                if (obj is JsonArray jArr) return jArr;
-                if (obj is JsonObject jObj) return new JsonArray { jObj };
-                if (obj is IJsonString jStr) return new JsonArray { jStr.StringValue };
-                if (obj is IJsonValue<string> jStr2) return new JsonArray { jStr2.Value };
-                if (obj is IJsonValue<bool> jBool) return new JsonArray { jBool.Value };
-                if (obj is JsonInteger jInt) return new JsonArray { jInt.Value };
-                if (obj is JsonDouble jFloat) return new JsonArray { jFloat.Value };
-                if (obj is JsonNull) return null;
-                var jValue = obj as IJsonValue;
+                if (obj is JsonArrayNode jArr) return jArr;
+                if (obj is JsonObjectNode jObj) return new JsonArrayNode { jObj };
+                if (obj is IJsonStringNode jStr) return new JsonArrayNode { jStr.StringValue };
+                if (obj is IJsonValueNode<string> jStr2) return new JsonArrayNode { jStr2.Value };
+                if (obj is IJsonValueNode<bool> jBool) return new JsonArrayNode { jBool.Value };
+                if (obj is JsonIntegerNode jInt) return new JsonArrayNode { jInt.Value };
+                if (obj is JsonDoubleNode jFloat) return new JsonArrayNode { jFloat.Value };
+                if (obj is JsonNullNode) return null;
+                var jValue = obj as IJsonValueNode;
                 var valueKind = jValue.ValueKind;
                 switch (valueKind)
                 {
@@ -4011,11 +4011,11 @@ namespace Trivial.Text
                     case JsonValueKind.Undefined:
                         return null;
                     case JsonValueKind.False:
-                        return new JsonArray { false };
+                        return new JsonArrayNode { false };
                     case JsonValueKind.True:
-                        return new JsonArray { true };
+                        return new JsonArrayNode { true };
                     case JsonValueKind.Number:
-                        return new JsonArray { jValue.ToString() };
+                        return new JsonArrayNode { jValue.ToString() };
                 }
             }
 
@@ -4026,7 +4026,7 @@ namespace Trivial.Text
             if (obj is Stream stream) return Parse(stream);
             if (obj is IEnumerable<object> arr)
             {
-                var r = new JsonArray();
+                var r = new JsonArrayNode();
                 foreach (var item in arr)
                 {
                     r.Add(ConvertFrom(item));
@@ -4035,9 +4035,9 @@ namespace Trivial.Text
                 return r;
             }
 
-            if (obj is IEnumerable<JsonObject> arr2)
+            if (obj is IEnumerable<JsonObjectNode> arr2)
             {
-                var r = new JsonArray();
+                var r = new JsonArrayNode();
                 foreach (var item in arr2)
                 {
                     r.Add(item);
@@ -4050,7 +4050,7 @@ namespace Trivial.Text
             return Parse(s);
         }
 
-        private static bool PassTrue(IJsonValueResolver data, int index, int index2)
+        private static bool PassTrue(IJsonDataNode data, int index, int index2)
         {
             return true;
         }

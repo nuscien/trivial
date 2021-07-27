@@ -45,7 +45,7 @@ namespace Trivial.Chemistry
             Assert.IsTrue(h.HasAtomicWeight);
             Assert.IsTrue(h.AtomicWeight >= 1);
             Assert.IsTrue(h.ToString().Contains(h.Symbol));
-            Assert.AreEqual("H", ((JsonObject)h).TryGetStringValue("symbol"));
+            Assert.AreEqual("H", ((JsonObjectNode)h).TryGetStringValue("symbol"));
             var d = h.Isotope(2);
             Assert.AreEqual("D", d.ToString());
             Assert.AreEqual(h, d.Element);
@@ -78,7 +78,7 @@ namespace Trivial.Chemistry
             Assert.IsTrue(c.HasAtomicWeight);
             Assert.IsTrue(c.AtomicWeight >= 12);
             Assert.IsTrue(c.ToString().Contains(c.Symbol));
-            Assert.AreEqual(6, ((JsonObject)c).TryGetInt32Value("number"));
+            Assert.AreEqual(6, ((JsonObjectNode)c).TryGetInt32Value("number"));
             var c12 = c.Isotope(12);
             Assert.AreNotEqual(h, c12);
             Assert.AreEqual(3, c12.ToString().Length);

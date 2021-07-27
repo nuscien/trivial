@@ -140,7 +140,7 @@ namespace Trivial.Collection
         /// <param name="clearOthers">true if clear the others of the property before adding; otherwise, false.</param>
         public void Add(string key, bool value, bool clearOthers = false)
         {
-            Add(key, value ? JsonBoolean.TrueString : JsonBoolean.FalseString, clearOthers);
+            Add(key, value ? JsonBooleanNode.TrueString : JsonBooleanNode.FalseString, clearOthers);
         }
 
         /// <summary>
@@ -326,7 +326,7 @@ namespace Trivial.Collection
             {
                 if (prop.Key == null) continue;
                 str.Append(prop.Key.IndexOfAny(StringExtensions.YamlSpecialChars) >= 0
-                    ? JsonString.ToJson(prop.Key)
+                    ? JsonStringNode.ToJson(prop.Key)
                     : prop.Key);
                 str.Append(": ");
                 var values = prop.ToList();
@@ -346,7 +346,7 @@ namespace Trivial.Collection
                     }
 
                     str.AppendLine(item.Length == 0 || item.Length > 100 || item.IndexOfAny(StringExtensions.YamlSpecialChars) >= 0
-                        ? JsonString.ToJson(item)
+                        ? JsonStringNode.ToJson(item)
                         : item);
                     continue;
                 }
@@ -362,7 +362,7 @@ namespace Trivial.Collection
                     }
 
                     str.AppendLine(item.IndexOfAny(StringExtensions.YamlSpecialChars) >= 0
-                        ? JsonString.ToJson(item)
+                        ? JsonStringNode.ToJson(item)
                         : item);
                 }
             }

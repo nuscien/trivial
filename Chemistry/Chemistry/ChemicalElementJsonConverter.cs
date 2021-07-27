@@ -36,7 +36,7 @@ namespace Trivial.Chemistry
                 return ChemicalElement.Get(reader.GetString());
             if (reader.TokenType != JsonTokenType.StartObject) 
                 throw new JsonException("The format is not correct.", new FormatException("The value should be a date time JSON token format."));
-            var obj = new JsonObject();
+            var obj = new JsonObjectNode();
             obj.SetRange(ref reader);
             var z = obj.TryGetInt32Value("number") ?? obj.TryGetInt32Value("z");
             var s = obj.TryGetStringValue("symbol")?.Trim();

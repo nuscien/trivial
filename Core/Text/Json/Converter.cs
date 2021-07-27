@@ -267,107 +267,107 @@ namespace Trivial.Text
     }
 
     /// <summary>
-    /// JSON object and JSON array converter.
+    /// JSON object node and JSON array node converter.
     /// </summary>
-    public sealed class JsonObjectConverter : JsonConverter<IJsonValue>
+    public sealed class JsonObjectNodeConverter : JsonConverter<IJsonValueNode>
     {
         /// <inheritdoc />
         public override bool CanConvert(Type typeToConvert)
         {
-            return typeof(IJsonValue).IsAssignableFrom(typeToConvert);
+            return typeof(IJsonValueNode).IsAssignableFrom(typeToConvert);
         }
 
         /// <inheritdoc />
-        public override IJsonValue Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+        public override IJsonValueNode Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
             switch (reader.TokenType)
             {
                 case JsonTokenType.Null:
-                    if (typeToConvert == typeof(JsonObject) || typeToConvert == typeof(JsonArray)) return null;
-                    if (typeToConvert == typeof(JsonString)) return new JsonString(null as string);
-                    if (typeToConvert == typeof(IJsonValue)) return JsonValues.Null;
+                    if (typeToConvert == typeof(JsonObjectNode) || typeToConvert == typeof(JsonArrayNode)) return null;
+                    if (typeToConvert == typeof(JsonStringNode)) return new JsonStringNode(null as string);
+                    if (typeToConvert == typeof(IJsonValueNode)) return JsonValues.Null;
                     return null;
                 case JsonTokenType.StartObject:
-                    var obj = new JsonObject();
+                    var obj = new JsonObjectNode();
                     obj.SetRange(ref reader);
                     return obj;
                 case JsonTokenType.StartArray:
-                    var arr = JsonArray.ParseValue(ref reader);
+                    var arr = JsonArrayNode.ParseValue(ref reader);
                     if (arr is null) return null;
-                    if (typeToConvert == typeof(JsonArray)) return arr;
-                    if (typeToConvert == typeof(JsonObject)) return (JsonObject)arr;
-                    if (arr.Count <= 1 && (typeToConvert == typeof(JsonString)
-                        || typeToConvert == typeof(JsonInteger)
-                        || typeToConvert == typeof(JsonDouble)
-                        || typeToConvert == typeof(JsonBoolean))) return arr.Count == 1 ? arr[0] : default;
+                    if (typeToConvert == typeof(JsonArrayNode)) return arr;
+                    if (typeToConvert == typeof(JsonObjectNode)) return (JsonObjectNode)arr;
+                    if (arr.Count <= 1 && (typeToConvert == typeof(JsonStringNode)
+                        || typeToConvert == typeof(JsonIntegerNode)
+                        || typeToConvert == typeof(JsonDoubleNode)
+                        || typeToConvert == typeof(JsonBooleanNode))) return arr.Count == 1 ? arr[0] : default;
                     return arr;
                 case JsonTokenType.String:
                     var str = reader.GetString();
-                    if (typeToConvert == typeof(JsonString) || typeToConvert == typeof(IJsonString) || typeToConvert == typeof(IJsonValue<string>)) return new JsonString(str);
-                    if (typeToConvert == typeof(JsonInteger) || typeToConvert == typeof(IJsonValue<int>)) return new JsonInteger(long.Parse(str.Trim()));
-                    if (typeToConvert == typeof(JsonDouble) || typeToConvert == typeof(IJsonValue<double>)) return new JsonDouble(double.Parse(str.Trim()));
-                    if (typeToConvert == typeof(IJsonNumber))
+                    if (typeToConvert == typeof(JsonStringNode) || typeToConvert == typeof(IJsonStringNode) || typeToConvert == typeof(IJsonValueNode<string>)) return new JsonStringNode(str);
+                    if (typeToConvert == typeof(JsonIntegerNode) || typeToConvert == typeof(IJsonValueNode<int>)) return new JsonIntegerNode(long.Parse(str.Trim()));
+                    if (typeToConvert == typeof(JsonDoubleNode) || typeToConvert == typeof(IJsonValueNode<double>)) return new JsonDoubleNode(double.Parse(str.Trim()));
+                    if (typeToConvert == typeof(IJsonNumberNode))
                     {
                         str = str.Trim();
                         if (str == "null") return null;
                         if (str.IndexOf('.') < 0 && long.TryParse(str, out var l))
-                            return new JsonInteger(l);
-                        return new JsonDouble(double.Parse(str));
+                            return new JsonIntegerNode(l);
+                        return new JsonDoubleNode(double.Parse(str));
                     }
 
-                    if (typeToConvert == typeof(JsonBoolean) || typeToConvert == typeof(IJsonValue<bool>))
+                    if (typeToConvert == typeof(JsonBooleanNode) || typeToConvert == typeof(IJsonValueNode<bool>))
                     {
-                        return JsonBoolean.TryParse(str);
+                        return JsonBooleanNode.TryParse(str);
                     }
 
-                    return new JsonString(str);
+                    return new JsonStringNode(str);
                 case JsonTokenType.Number:
-                    if (typeToConvert == typeof(JsonString))
+                    if (typeToConvert == typeof(JsonStringNode))
                     {
-                        if (reader.TryGetInt64(out var l)) return new JsonString(l);
-                        return new JsonString(reader.GetDouble());
+                        if (reader.TryGetInt64(out var l)) return new JsonStringNode(l);
+                        return new JsonStringNode(reader.GetDouble());
                     }
 
-                    if (reader.TryGetInt64(out var int64v)) return new JsonInteger(int64v);
-                    return new JsonDouble(reader.GetDouble());
+                    if (reader.TryGetInt64(out var int64v)) return new JsonIntegerNode(int64v);
+                    return new JsonDoubleNode(reader.GetDouble());
                 case JsonTokenType.True:
-                    if (typeToConvert == typeof(JsonBoolean)) return JsonBoolean.True;
-                    if (typeToConvert == typeof(JsonString)) return new JsonString(JsonBoolean.TrueString);
-                    if (typeToConvert == typeof(JsonInteger)) return new JsonInteger(1);
-                    if (typeToConvert == typeof(IJsonNumber)) return new JsonInteger(1);
-                    return JsonBoolean.True;
+                    if (typeToConvert == typeof(JsonBooleanNode)) return JsonBooleanNode.True;
+                    if (typeToConvert == typeof(JsonStringNode)) return new JsonStringNode(JsonBooleanNode.TrueString);
+                    if (typeToConvert == typeof(JsonIntegerNode)) return new JsonIntegerNode(1);
+                    if (typeToConvert == typeof(IJsonNumberNode)) return new JsonIntegerNode(1);
+                    return JsonBooleanNode.True;
                 case JsonTokenType.False:
-                    if (typeToConvert == typeof(JsonBoolean)) return JsonBoolean.False;
-                    if (typeToConvert == typeof(JsonString)) return new JsonString(JsonBoolean.FalseString);
-                    if (typeToConvert == typeof(JsonInteger)) return new JsonInteger(0);
-                    if (typeToConvert == typeof(IJsonNumber)) return new JsonInteger(0);
-                    return JsonBoolean.False;
+                    if (typeToConvert == typeof(JsonBooleanNode)) return JsonBooleanNode.False;
+                    if (typeToConvert == typeof(JsonStringNode)) return new JsonStringNode(JsonBooleanNode.FalseString);
+                    if (typeToConvert == typeof(JsonIntegerNode)) return new JsonIntegerNode(0);
+                    if (typeToConvert == typeof(IJsonNumberNode)) return new JsonIntegerNode(0);
+                    return JsonBooleanNode.False;
                 default:
                     return null;
             }
         }
 
         /// <inheritdoc />
-        public override void Write(Utf8JsonWriter writer, IJsonValue value, JsonSerializerOptions options)
+        public override void Write(Utf8JsonWriter writer, IJsonValueNode value, JsonSerializerOptions options)
         {
             if (value is null) writer.WriteNullValue();
-            else if (value is JsonObject jObj) jObj.WriteTo(writer);
-            else if (value is JsonArray jArr) jArr.WriteTo(writer);
-            else if (value is IJsonValue<string> jStr)
+            else if (value is JsonObjectNode jObj) jObj.WriteTo(writer);
+            else if (value is JsonArrayNode jArr) jArr.WriteTo(writer);
+            else if (value is IJsonValueNode<string> jStr)
             {
                 if (jStr.Value == null) writer.WriteNullValue();
                 else writer.WriteStringValue(jStr.Value);
             }
-            else if (value is IJsonValue<long> jInt64) writer.WriteNumberValue(jInt64.Value);
-            else if (value is IJsonValue<double> jDouble) writer.WriteNumberValue(jDouble.Value);
-            else if (value is IJsonValue<bool> jB) writer.WriteBooleanValue(jB.Value);
-            else if (value is IJsonValue<int> jInt32) writer.WriteNumberValue(jInt32.Value);
-            else if (value is IJsonValue<uint> jUInt32) writer.WriteNumberValue(jUInt32.Value);
-            else if (value is IJsonValue<ulong> jUInt64) writer.WriteNumberValue(jUInt64.Value);
-            else if (value is IJsonValue<float> jFloat) writer.WriteNumberValue(jFloat.Value);
-            else if (value is IJsonValue<short> jInt16) writer.WriteNumberValue(jInt16.Value);
-            else if (value is IJsonValue<ushort> jUInt16) writer.WriteNumberValue(jUInt16.Value);
-            else if (value is IJsonValue<decimal> jDecimal) writer.WriteNumberValue(jDecimal.Value);
+            else if (value is IJsonValueNode<long> jInt64) writer.WriteNumberValue(jInt64.Value);
+            else if (value is IJsonValueNode<double> jDouble) writer.WriteNumberValue(jDouble.Value);
+            else if (value is IJsonValueNode<bool> jB) writer.WriteBooleanValue(jB.Value);
+            else if (value is IJsonValueNode<int> jInt32) writer.WriteNumberValue(jInt32.Value);
+            else if (value is IJsonValueNode<uint> jUInt32) writer.WriteNumberValue(jUInt32.Value);
+            else if (value is IJsonValueNode<ulong> jUInt64) writer.WriteNumberValue(jUInt64.Value);
+            else if (value is IJsonValueNode<float> jFloat) writer.WriteNumberValue(jFloat.Value);
+            else if (value is IJsonValueNode<short> jInt16) writer.WriteNumberValue(jInt16.Value);
+            else if (value is IJsonValueNode<ushort> jUInt16) writer.WriteNumberValue(jUInt16.Value);
+            else if (value is IJsonValueNode<decimal> jDecimal) writer.WriteNumberValue(jDecimal.Value);
             else writer.WriteNullValue();
         }
     }

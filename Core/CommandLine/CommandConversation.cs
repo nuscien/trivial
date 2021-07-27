@@ -47,7 +47,7 @@ namespace Trivial.CommandLine
         /// <summary>
         /// Gets the shared data.
         /// </summary>
-        public JsonObject Data { get; } = new JsonObject();
+        public JsonObjectNode Data { get; } = new JsonObjectNode();
 
         /// <summary>
         /// Gets some of verb description registered.

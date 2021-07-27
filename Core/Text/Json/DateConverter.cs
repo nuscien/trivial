@@ -65,7 +65,7 @@ namespace Trivial.Text
             /// <inheritdoc />
             public override void Write(Utf8JsonWriter writer, DateTime? value, JsonSerializerOptions options)
             {
-                if (value.HasValue) writer.WriteStringValue(JsonString.ToJson(value.Value, true));
+                if (value.HasValue) writer.WriteStringValue(JsonStringNode.ToJson(value.Value, true));
                 else writer.WriteNullValue();
             }
         }
@@ -91,7 +91,7 @@ namespace Trivial.Text
             /// <inheritdoc />
             public override void Write(Utf8JsonWriter writer, DateTime value, JsonSerializerOptions options)
             {
-                writer.WriteStringValue(JsonString.ToJson(value, true));
+                writer.WriteStringValue(JsonStringNode.ToJson(value, true));
             }
         }
 
@@ -160,7 +160,7 @@ namespace Trivial.Text
             /// <inheritdoc />
             public override void Write(Utf8JsonWriter writer, DateTime? value, JsonSerializerOptions options)
             {
-                if (value.HasValue) writer.WriteStringValue(JsonString.ToJson(value.Value, true));
+                if (value.HasValue) writer.WriteStringValue(JsonStringNode.ToJson(value.Value, true));
                 else writer.WriteNullValue();
             }
         }
@@ -186,7 +186,7 @@ namespace Trivial.Text
             /// <inheritdoc />
             public override void Write(Utf8JsonWriter writer, DateTime value, JsonSerializerOptions options)
             {
-                writer.WriteStringValue(JsonString.ToJson(value, true));
+                writer.WriteStringValue(JsonStringNode.ToJson(value, true));
             }
         }
 

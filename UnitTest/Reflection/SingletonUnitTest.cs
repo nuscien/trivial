@@ -69,19 +69,19 @@ namespace Trivial.Reflection
             var i = 0;
             f.Register(() => i++);
             f.Register(() => Guid.NewGuid());
-            f.Register<IJsonValue>(() => i % 2 == 0 ? new JsonObject() : new JsonArray());
+            f.Register<IJsonValueNode>(() => i % 2 == 0 ? new JsonObjectNode() : new JsonArrayNode());
             Assert.AreEqual(0, f.Create<int>());
-            Assert.AreEqual(JsonValueKind.Array, f.Create<IJsonValue>().ValueKind);
+            Assert.AreEqual(JsonValueKind.Array, f.Create<IJsonValueNode>().ValueKind);
             Assert.AreEqual(1, f.Create<int>());
             Assert.IsNotNull(f.Create<Guid>());
-            Assert.AreEqual(JsonValueKind.Object, f.Create<IJsonValue>().ValueKind);
-            Assert.IsNull(f.GetFactory<JsonObject>());
-            Assert.IsNull(f.GetFactory<JsonArray>());
-            Assert.IsNotNull(f.GetFactory<IJsonValue>());
+            Assert.AreEqual(JsonValueKind.Object, f.Create<IJsonValueNode>().ValueKind);
+            Assert.IsNull(f.GetFactory<JsonObjectNode>());
+            Assert.IsNull(f.GetFactory<JsonArrayNode>());
+            Assert.IsNotNull(f.GetFactory<IJsonValueNode>());
 
-            var jsonFactory = new RoutedFactory<IJsonValue>();
-            jsonFactory.Register("obj", () => new JsonObject());
-            jsonFactory.Register("arr", () => new JsonArray());
+            var jsonFactory = new RoutedFactory<IJsonValueNode>();
+            jsonFactory.Register("obj", () => new JsonObjectNode());
+            jsonFactory.Register("arr", () => new JsonArrayNode());
             var json = jsonFactory.Create("obj");
             Assert.AreEqual(JsonValueKind.Object, json.ValueKind);
             Assert.AreEqual(JsonValueKind.Array, jsonFactory.Create("arr").ValueKind);

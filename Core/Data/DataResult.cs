@@ -174,7 +174,7 @@ namespace Trivial.Data
         /// Initializes a new instance of the DataResult class.
         /// </summary>
         /// <param name="data">The data.</param>
-        public JsonDataResult(JsonObject data)
+        public JsonDataResult(JsonObjectNode data)
         {
             Data = data;
         }
@@ -184,7 +184,7 @@ namespace Trivial.Data
         /// </summary>
         /// <param name="data">The data.</param>
         /// <param name="message">The message.</param>
-        public JsonDataResult(JsonObject data, string message)
+        public JsonDataResult(JsonObjectNode data, string message)
             : base(message)
         {
             Data = data;
@@ -195,8 +195,8 @@ namespace Trivial.Data
         /// </summary>
         [DataMember(Name = "data")]
         [JsonPropertyName("data")]
-        [JsonConverter(typeof(JsonObjectConverter))]
-        public JsonObject Data { get; set; }
+        [JsonConverter(typeof(JsonObjectNodeConverter))]
+        public JsonObjectNode Data { get; set; }
 
         /// <summary>
         /// Gets a value indicating whether the data is null.
@@ -211,7 +211,7 @@ namespace Trivial.Data
         /// <returns>The value.</returns>
         /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
         /// <exception cref="ArgumentOutOfRangeException">The property does not exist.</exception>
-        public IJsonValueResolver TryGetValue(string key)
+        public IJsonDataNode TryGetValue(string key)
             => Data?.TryGetValue(key);
 
         /// <summary>
@@ -220,7 +220,7 @@ namespace Trivial.Data
         /// <param name="keyPath">The property key path.</param>
         /// <returns>The value.</returns>
         /// <exception cref="InvalidOperationException">Cannot get the property value.</exception>
-        public IJsonValueResolver TryGetValue(IEnumerable<string> keyPath)
+        public IJsonDataNode TryGetValue(IEnumerable<string> keyPath)
             => Data?.TryGetValue(keyPath);
 
         /// <summary>
@@ -231,7 +231,7 @@ namespace Trivial.Data
         /// <param name="keyPath">The additional property key path.</param>
         /// <returns>The value.</returns>
         /// <exception cref="InvalidOperationException">Cannot get the property value.</exception>
-        public IJsonValueResolver TryGetValue(string key, string subKey, params string[] keyPath)
+        public IJsonDataNode TryGetValue(string key, string subKey, params string[] keyPath)
             => Data?.TryGetValue(key, subKey, keyPath);
 
         /// <summary>
@@ -241,7 +241,7 @@ namespace Trivial.Data
         /// <returns>The value.</returns>
         /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
         /// <exception cref="ArgumentOutOfRangeException">The property does not exist.</exception>
-        public IJsonValueResolver TryGetValue(ReadOnlySpan<char> key)
+        public IJsonDataNode TryGetValue(ReadOnlySpan<char> key)
             => Data?.TryGetValue(key);
     }
 
