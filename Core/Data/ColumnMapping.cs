@@ -61,7 +61,7 @@ namespace Trivial.Data
             {
                 foreach (var attr in prop.GetCustomAttributes(typeof(ColumnMappingAttribute), true))
                 {
-                    if (!(attr is ColumnMappingAttribute info)) continue;
+                    if (attr is not ColumnMappingAttribute info) continue;
                     mapping.Add(info.Name, prop.Name);
                 }
             }
@@ -100,6 +100,7 @@ namespace Trivial.Data
     /// <summary>
     /// The column mapping attribute.
     /// </summary>
+    [AttributeUsage(AttributeTargets.Class | AttributeTargets.Property | AttributeTargets.Field, AllowMultiple = false)]
     public class ColumnMappingAttribute : Attribute
     {
         /// <summary>

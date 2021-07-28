@@ -20,6 +20,7 @@ namespace Trivial.Text
     /// <summary>
     /// Represents a specific JSON object.
     /// </summary>
+    [System.Text.Json.Serialization.JsonConverter(typeof(JsonObjectConverter))]
     public class JsonArray : IJsonComplex, IJsonValueResolver, IReadOnlyList<IJsonValue>, IReadOnlyList<IJsonValueResolver>, IEquatable<JsonArray>, IEquatable<IJsonValue>
     {
         private IList<IJsonValueResolver> store = new List<IJsonValueResolver>();
