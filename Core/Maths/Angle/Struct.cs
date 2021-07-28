@@ -16,6 +16,7 @@ namespace Trivial.Maths
     /// <summary>
     /// The struct of degree (angle).
     /// </summary>
+    [JsonConverter(typeof(Text.JsonNumberConverter))]
     public partial struct Angle : IAngle, IComparable, IComparable<IAngle>, IEquatable<IAngle>, IComparable<double>, IEquatable<double>, IComparable<int>, IEquatable<int>, IAdvancedAdditionCapable<Angle>
     {
         /// <summary>

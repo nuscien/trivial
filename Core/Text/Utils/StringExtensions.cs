@@ -469,6 +469,11 @@ namespace Trivial.Text
             });
         }
 
+#if NETOLDVER
+        internal static StringBuilder Append(this StringBuilder sb, char value)
+            => sb.Append(value, 1);
+#endif
+
         /// <summary>
         /// Serializes an object into JSON format.
         /// </summary>

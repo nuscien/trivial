@@ -949,6 +949,7 @@ namespace Trivial.Maths
     /// The semantic version interval with class value.
     /// </summary>
     [DataContract]
+    [JsonConverter(typeof(Text.JsonNumberConverter))]
     public class VersionSimpleInterval : RefValueSimpleInterval<string>
     {
         private Version minVer;

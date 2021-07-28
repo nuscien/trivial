@@ -4,6 +4,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Security;
 using System.Text;
 using System.Text.Json;
@@ -18,7 +19,9 @@ namespace Trivial.Text
     /// <summary>
     /// Represents a specific JSON object.
     /// </summary>
-    public class JsonObjectNode : IJsonComplexNode, IJsonDataNode, IDictionary<string, IJsonValueNode>, IDictionary<string, IJsonDataNode>, IReadOnlyDictionary<string, IJsonValueNode>, IReadOnlyDictionary<string, IJsonDataNode>, IEquatable<JsonObjectNode>, IEquatable<IJsonValueNode>
+    [Serializable]
+    [System.Text.Json.Serialization.JsonConverter(typeof(JsonObjectNodeConverter))]
+    public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<string, IJsonValueNode>, IDictionary<string, IJsonDataNode>, IReadOnlyDictionary<string, IJsonValueNode>, IReadOnlyDictionary<string, IJsonDataNode>, IEquatable<JsonObjectNode>, IEquatable<IJsonValueNode>, ISerializable
     {
         private IDictionary<string, IJsonDataNode> store = new Dictionary<string, IJsonDataNode>();
 
@@ -27,6 +30,64 @@ namespace Trivial.Text
         /// </summary>
         public JsonObjectNode()
         {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the JsonObjectNode class.
+        /// </summary>
+        /// <param name="info">The System.Runtime.Serialization.SerializationInfo that holds the serialized object data about the exception being thrown.</param>
+        /// <param name="context">The System.Runtime.Serialization.StreamingContext that contains contextual information about the source or destination.</param>
+        protected JsonObjectNode(SerializationInfo info, StreamingContext context)
+        {
+            if (info is null) return;
+            foreach (var prop in info)
+            {
+                if (prop.Value is null)
+                {
+                    SetNullValue(prop.Name);
+                }
+                else if (prop.ObjectType.IsValueType)
+                {
+                    if (prop.Value is long l)
+                        SetValue(prop.Name, l);
+                    else if (prop.Value is int i)
+                        SetValue(prop.Name, i);
+                    else if (prop.Value is uint ui)
+                        SetValue(prop.Name, ui);
+                    else if (prop.Value is double d)
+                        SetValue(prop.Name, d);
+                    else if (prop.Value is float f)
+                        SetValue(prop.Name, f);
+                    else if (prop.Value is decimal de)
+                        SetValue(prop.Name, de);
+                    else if (prop.Value is DateTime dt)
+                        SetValue(prop.Name, dt);
+                    else if (prop.Value is Guid g)
+                        SetValue(prop.Name, g);
+                    else if (prop.Value is JsonElement ele)
+                        SetValue(prop.Name, ele);
+                }
+                else if (prop.Value is string s)
+                {
+                    SetValue(prop.Name, s);
+                }
+                else if (prop.Value is JsonObjectNode json)
+                {
+                    SetValue(prop.Name, json);
+                }
+                else if (prop.Value is JsonArrayNode arr)
+                {
+                    SetValue(prop.Name, arr);
+                }
+                else if (prop.Value is System.Text.Json.Nodes.JsonObject json2)
+                {
+                    SetValue(prop.Name, json2);
+                }
+                else if (prop.Value is System.Text.Json.Nodes.JsonArray arr2)
+                {
+                    SetValue(prop.Name, arr2);
+                }
+            }
         }
 
         /// <summary>
@@ -307,6 +368,45 @@ namespace Trivial.Text
             {
                 if (ele.Value is JsonObjectNode json) json.EnableThreadSafeMode(depth, true);
                 else if (ele.Value is JsonArrayNode arr) arr.EnableThreadSafeMode(depth, true);
+            }
+        }
+
+        /// <summary>
+        /// Populates a SerializationInfo with the data needed to serialize the target object.
+        /// </summary>
+        /// <param name="info">The SerializationInfo to populate with data.</param>
+        /// <param name="context">The destination for this serialization.</param>
+        /// <exception cref="SecurityException">The caller does not have the required permission.</exception>
+        public void GetObjectData(SerializationInfo info, StreamingContext context)
+        {
+            foreach (var prop in store)
+            {
+                switch (prop.Value.ValueKind)
+                {
+                    case JsonValueKind.Undefined:
+                        break;
+                    case JsonValueKind.Null:
+                        break;
+                    case JsonValueKind.String:
+                        if (prop.Value is JsonStringNode strJson) info.AddValue(prop.Key, strJson.Value, typeof(string));
+                        break;
+                    case JsonValueKind.Number:
+                        if (prop.Value is JsonIntegerNode intJson) info.AddValue(prop.Key, intJson.Value);
+                        else if (prop.Value is JsonDoubleNode floatJson) info.AddValue(prop.Key, floatJson.Value);
+                        break;
+                    case JsonValueKind.True:
+                        info.AddValue(prop.Key, true);
+                        break;
+                    case JsonValueKind.False:
+                        info.AddValue(prop.Key, false);
+                        break;
+                    case JsonValueKind.Object:
+                        if (prop.Value is JsonObjectNode objJson) info.AddValue(prop.Key, objJson, typeof(JsonObjectNode));
+                        break;
+                    case JsonValueKind.Array:
+                        if (prop.Value is JsonArrayNode objArr) info.AddValue(prop.Key, objArr, typeof(JsonArrayNode));
+                        break;
+                }
             }
         }
 
@@ -796,7 +896,7 @@ namespace Trivial.Text
                         new ArgumentException(message, nameof(keyPath)));
                 }
 
-                path.Append(".");
+                path.Append('.');
                 path.Append(key);
                 if (json is JsonObjectNode jObj)
                 {
@@ -890,7 +990,7 @@ namespace Trivial.Text
         /// <returns>The value.</returns>
         /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
         /// <exception cref="ArgumentOutOfRangeException">The property does not exist.</exception>
-        /// <exception cref="NotSupportedException">The type is not supported to convert.</exception>
+        /// <exception cref="InvalidOperationException">The type is not supported to convert.</exception>
         public object GetValue(Type type, string key)
         {
             if (type == null) return null;
@@ -898,6 +998,13 @@ namespace Trivial.Text
             if (type.IsEnum) return type == typeof(JsonValueKind) ? GetValueKind(key) : GetEnumValue(type, key, false);
             if (type.IsValueType)
             {
+                var kind = GetValueKind(key);
+                if (kind == JsonValueKind.Null || kind == JsonValueKind.Undefined)
+                {
+                    if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>)) return null;
+                    throw new InvalidOperationException("The type is value type but the value is null or undefined.", new InvalidCastException("Cannot cast null to a struct."));
+                }
+
                 if (type == typeof(int)) return GetInt32Value(key);
                 if (type == typeof(long)) return GetInt64Value(key);
                 if (type == typeof(bool)) return GetBooleanValue(key);
@@ -926,7 +1033,7 @@ namespace Trivial.Text
                 if (json != null) return JsonSerializer.Deserialize(json.ToString(), type);
             }
 
-            throw new NotSupportedException("The type is not supported to convert.", new InvalidCastException("Cannot cast."));
+            throw new InvalidOperationException("The type is not supported to convert.", new InvalidCastException("Cannot cast."));
         }
 
         /// <summary>
@@ -937,7 +1044,7 @@ namespace Trivial.Text
         /// <returns>The value.</returns>
         /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
         /// <exception cref="ArgumentOutOfRangeException">The property does not exist.</exception>
-        /// <exception cref="NotSupportedException">The type is not supported to convert.</exception>
+        /// <exception cref="InvalidOperationException">The type is not supported to convert.</exception>
         public T GetValue<T>(string key)
             => (T)GetValue(typeof(T), key);
 
@@ -949,7 +1056,7 @@ namespace Trivial.Text
         /// <returns>The value.</returns>
         /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
         /// <exception cref="ArgumentOutOfRangeException">The property does not exist.</exception>
-        /// <exception cref="NotSupportedException">The type is not supported to convert.</exception>
+        /// <exception cref="InvalidOperationException">The type is not supported to convert.</exception>
         public T GetValue<T>(ReadOnlySpan<char> key)
         {
             if (key == null) throw new ArgumentNullException(nameof(key), "key should not be null.");
@@ -965,8 +1072,7 @@ namespace Trivial.Text
         /// <param name="keyPath">The additional property key path.</param>
         /// <returns>The value.</returns>
         /// <exception cref="ArgumentOutOfRangeException">The property does not exist.</exception>
-        /// <exception cref="InvalidOperationException">Cannot get the property value.</exception>
-        /// <exception cref="NotSupportedException">The type is not supported to convert.</exception>
+        /// <exception cref="InvalidOperationException">Cannot get the property value or the type is not supported to convert.</exception>
         public T GetValue<T>(string key, string subKey, params string[] keyPath)
         {
             var path = new List<string>
@@ -985,8 +1091,7 @@ namespace Trivial.Text
         /// <param name="keyPath">The property key path.</param>
         /// <returns>The value.</returns>
         /// <exception cref="ArgumentOutOfRangeException">The property does not exist.</exception>
-        /// <exception cref="InvalidOperationException">Cannot get the property value.</exception>
-        /// <exception cref="NotSupportedException">The type is not supported to convert.</exception>
+        /// <exception cref="InvalidOperationException">Cannot get the property value or the type is not supported to convert.</exception>
         public T GetValue<T>(IEnumerable<string> keyPath)
         {
             var path = keyPath?.Where(ele => !string.IsNullOrEmpty(ele))?.ToList();
@@ -1003,7 +1108,7 @@ namespace Trivial.Text
             var k = path.LastOrDefault();
             path = path.Take(path.Count - 1).ToList();
             var json = GetValue(path);
-            if (json == null) throw new InvalidOperationException($"Cannot get the leaf property {k} of null.");
+            if (json == null) throw new InvalidOperationException($"Cannot get the leaf property {k} of null.", new NullReferenceException("There is a node that is null or undefined in the property path."));
             if (json is JsonObjectNode j) return j.GetValue<T>(k);
             else if (json is JsonArrayNode a && int.TryParse(k, out var i)) return a.GetValue<T>(i);
             throw new InvalidOperationException($"The property {string.Join(".", path)} was {json.ValueKind} so cannot get its property.");
@@ -4373,6 +4478,12 @@ namespace Trivial.Text
         /// </summary>
         /// <returns>The property keys.</returns>
         IEnumerable<string> IJsonDataNode.GetKeys() => Keys;
+
+        /// <summary>
+        /// Gets all property keys.
+        /// </summary>
+        /// <returns>The property keys.</returns>
+        IEnumerable<string> IJsonContainerNode.GetKeys() => Keys;
 
         private T GetJsonValue<T>(string key, JsonValueKind? valueKind = null, bool ignoreNull = false) where T : IJsonValueNode
         {

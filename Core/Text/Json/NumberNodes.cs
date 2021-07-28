@@ -93,6 +93,7 @@ namespace Trivial.Text
     /// <summary>
     /// Represents a specific JSON integer number value.
     /// </summary>
+    [System.Text.Json.Serialization.JsonConverter(typeof(JsonObjectNodeConverter))]
     public class JsonIntegerNode : IJsonValueNode<long>, IJsonDataNode, IJsonNumberNode, IComparable<JsonIntegerNode>, IComparable<JsonDoubleNode>, IComparable<uint>, IComparable<int>, IComparable<long>, IComparable<double>, IComparable<float>, IEquatable<IJsonValueNode<uint>>, IEquatable<IJsonValueNode<int>>, IEquatable<IJsonValueNode<float>>, IEquatable<IJsonValueNode<double>>, IEquatable<uint>, IEquatable<int>, IEquatable<float>, IEquatable<double>, IFormattable
     {
         /// <summary>
@@ -1669,6 +1670,7 @@ namespace Trivial.Text
     /// <summary>
     /// Represents a specific JSON double float number value.
     /// </summary>
+    [System.Text.Json.Serialization.JsonConverter(typeof(JsonObjectNodeConverter))]
     public class JsonDoubleNode : IJsonValueNode<double>, IJsonDataNode, IJsonNumberNode, IComparable<JsonIntegerNode>, IComparable<JsonDoubleNode>, IComparable<uint>, IComparable<int>, IComparable<long>, IComparable<double>, IComparable<float>, IEquatable<IJsonValueNode<uint>>, IEquatable<IJsonValueNode<int>>, IEquatable<IJsonValueNode<long>>, IEquatable<IJsonValueNode<float>>, IEquatable<uint>, IEquatable<int>, IEquatable<long>, IEquatable<float>, IFormattable
     {
         /// <summary>

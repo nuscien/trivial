@@ -298,14 +298,62 @@ namespace Trivial.Text
     }
 
     /// <summary>
-    /// Represents a complex JSON value.
+    /// Represents a JSON container.
     /// </summary>
-    public interface IJsonComplexNode : IJsonValueNode, ICloneable, IEnumerable
+    public interface IJsonContainerNode : IJsonValueNode, ICloneable, IEnumerable
     {
         /// <summary>
         /// Gets the number of elements contained in JSON container.
         /// </summary>
         int Count { get; }
+
+        /// <summary>
+        /// Gets the value of the specific property.
+        /// </summary>
+        /// <param name="key">The property key.</param>
+        /// <returns>The value.</returns>
+        /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">The property does not exist.</exception>
+        /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
+        IJsonDataNode GetValue(string key);
+
+        /// <summary>
+        /// Gets the value of the specific property.
+        /// </summary>
+        /// <param name="key">The property key.</param>
+        /// <returns>The value.</returns>
+        /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">The property does not exist.</exception>
+        /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
+        IJsonDataNode GetValue(ReadOnlySpan<char> key);
+
+        /// <summary>
+        /// Tries to get the value of the specific property.
+        /// </summary>
+        /// <param name="key">The property key.</param>
+        /// <param name="result">The result.</param>
+        /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+        bool TryGetValue(string key, out IJsonDataNode result);
+
+        /// <summary>
+        /// Tries to get the value of the specific property.
+        /// </summary>
+        /// <param name="key">The property key.</param>
+        /// <param name="result">The result.</param>
+        /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+        bool TryGetValue(ReadOnlySpan<char> key, out IJsonDataNode result);
+
+        /// <summary>
+        /// Gets all property keys.
+        /// </summary>
+        /// <returns>The property keys.</returns>
+        /// <exception cref="InvalidOperationException">The value kind is not an object.</exception>
+        IEnumerable<string> GetKeys();
+
+        /// <summary>
+        /// Removes all items from the array.
+        /// </summary>
+        void Clear();
 
         /// <summary>
         /// Deserializes.
@@ -327,11 +375,6 @@ namespace Trivial.Text
         /// <param name="indentStyle">The indent style.</param>
         /// <returns>A JSON format string.</returns>
         string ToString(IndentStyles indentStyle);
-
-        /// <summary>
-        /// Removes all items from the array.
-        /// </summary>
-        void Clear();
     }
 
     /// <summary>

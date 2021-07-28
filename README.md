@@ -32,7 +32,7 @@ including hit task, retry policy, writable JSON DOM, PEM, JWT, stream combinatio
 
 ## [Trivial.Chemistry](./docs/chemistry)
 
-Includeing the basic chemistry models.
+Including the periodic table and basic chemistry models, e.g. chemical element, molecular formula and isotope.
 
 [![NuGet package](https://img.shields.io/nuget/dt/Trivial.Chemistry?label=nuget+downloads)](https://www.nuget.org/packages/Trivial.Chemistry)
 

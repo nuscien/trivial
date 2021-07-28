@@ -21,6 +21,7 @@ namespace Trivial.Maths
         /// <summary>
         /// The angle model.
         /// </summary>
+        [JsonConverter(typeof(Text.JsonNumberConverter))]
         public class Model : IAngle, ICloneable, IComparable, IComparable<IAngle>, IEquatable<IAngle>, IComparable<double>, IEquatable<double>, IComparable<int>, IEquatable<int>, IAdvancedAdditionCapable<Model>
         {
             /// <summary>

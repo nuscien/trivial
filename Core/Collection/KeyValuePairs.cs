@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Globalization;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Security;
 using System.Text;
 using System.Web;
@@ -15,7 +16,7 @@ namespace Trivial.Collection
     /// <summary>
     /// The key value pairs with string key and string value.
     /// </summary>
-    public class StringKeyValuePairs : List<KeyValuePair<string, string>>
+    public class StringKeyValuePairs : List<KeyValuePair<string, string>>, ISerializable
     {
         /// <summary>
         /// Initializes a new instance of the StringKeyValuePairs class.
@@ -30,6 +31,20 @@ namespace Trivial.Collection
         /// <param name="collection">The collection whose elements are copied to the new list.</param>
         public StringKeyValuePairs(IEnumerable<KeyValuePair<string, string>> collection) : base(collection)
         {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the StringKeyValuePairs class.
+        /// </summary>
+        /// <param name="info">The System.Runtime.Serialization.SerializationInfo that holds the serialized object data about the exception being thrown.</param>
+        /// <param name="context">The System.Runtime.Serialization.StreamingContext that contains contextual information about the source or destination.</param>
+        protected StringKeyValuePairs(SerializationInfo info, StreamingContext context)
+        {
+            foreach (var prop in info)
+            {
+                if (string.IsNullOrWhiteSpace(prop.Name) || !(prop.Value is string s)) continue;
+                this[prop.Name] = s;
+            }
         }
 
         /// <summary>
@@ -62,6 +77,20 @@ namespace Trivial.Collection
             set
             {
                 ListExtensions.Set(this, key, value);
+            }
+        }
+
+        /// <summary>
+        /// Populates a SerializationInfo with the data needed to serialize the target object.
+        /// </summary>
+        /// <param name="info">The SerializationInfo to populate with data.</param>
+        /// <param name="context">The destination for this serialization.</param>
+        /// <exception cref="SecurityException">The caller does not have the required permission.</exception>
+        public virtual void GetObjectData(SerializationInfo info, StreamingContext context)
+        {
+            foreach (var prop in this)
+            {
+                info.AddValue(prop.Key, prop.Value, typeof(string));
             }
         }
 

@@ -36,6 +36,7 @@ namespace Trivial.Text
     /// <summary>
     /// Represents a specific JSON string value.
     /// </summary>
+    [System.Text.Json.Serialization.JsonConverter(typeof(JsonObjectNodeConverter))]
     public class JsonStringNode : IJsonStringNode, IJsonValueNode<string>, IJsonDataNode, IComparable<IJsonValueNode<string>>, IComparable<string>, IEquatable<IJsonValueNode<string>>, IEquatable<string>, IEquatable<StringBuilder>, IReadOnlyList<char>
     {
         /// <summary>

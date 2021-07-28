@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web;
@@ -35,6 +36,15 @@ namespace Trivial.Net
         /// </summary>
         /// <param name="collection">The collection whose elements are copied to the new list.</param>
         public QueryData(IEnumerable<KeyValuePair<string, string>> collection) : base(collection)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the QueryData class.
+        /// </summary>
+        /// <param name="info">The System.Runtime.Serialization.SerializationInfo that holds the serialized object data about the exception being thrown.</param>
+        /// <param name="context">The System.Runtime.Serialization.StreamingContext that contains contextual information about the source or destination.</param>
+        protected QueryData(SerializationInfo info, StreamingContext context) : base(info, context)
         {
         }
 

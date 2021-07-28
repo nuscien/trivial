@@ -48,10 +48,8 @@ namespace Trivial.Text
         [JsonConverter(typeof(JsonUnixTimestampConverter))]
         public DateTime E { get; set; }
 
-        [JsonConverter(typeof(JsonObjectNodeConverter))]
         public JsonObjectNode F { get; set; }
 
-        [JsonConverter(typeof(JsonObjectNodeConverter))]
         public JsonArrayNode G { get; set; }
 
         [JsonConverter(typeof(JsonStringListConverter))]
@@ -72,7 +70,6 @@ namespace Trivial.Text
         [JsonConverter(typeof(JsonNumberConverter))]
         public Maths.StructValueSimpleInterval<double> M { get; set; }
 
-        [JsonConverter(typeof(JsonNumberConverter))]
         public Maths.VersionSimpleInterval N { get; set; }
 
         [JsonConverter(typeof(JsonIntegerEnumCompatibleConverter))]

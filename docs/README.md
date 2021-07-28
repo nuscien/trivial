@@ -33,6 +33,32 @@ PM > Install-Package Trivial
 - [Reflection](./reflection/)
 - [Geography](./geo/)
 
+### Trivial.Chemistry
+
+[![NuGet package](https://img.shields.io/nuget/dt/Trivial.Chemistry?label=nuget+downloads)](https://www.nuget.org/packages/Trivial.Chemistry)
+
+![.NET 6](./assets/badge_NET_6.svg)
+![.NET 5](./assets/badge_NET_5.svg)
+![.NET Core 3.1](./assets/badge_NET_Core_3_1.svg)
+![.NET Standard 2.0](./assets/badge_NET_Standard_2_0.svg)
+![.NET Framework 4.8](./assets/badge_NET_Fx_4_8.svg)
+![.NET Framework 4.6.1](./assets/badge_NET_Fx_4_6_1.svg)
+
+Including the periodic table and basic chemistry models, e.g. chemical element, molecular formula and isotope.
+
+- [Chemistry](./chemistry)
+
+### Trivial.Web
+
+[![NuGet package](https://img.shields.io/nuget/dt/Trivial.Web?label=nuget+downloads)](https://www.nuget.org/packages/Trivial.Web)
+
+![.NET 6](./assets/badge_NET_6.svg)
+![.NET 5](./assets/badge_NET_5.svg)
+
+The useful utilities for ASP.NET application.
+
+- [ASP.NET utilities](./docs/web)
+
 ### Trivial.Console
 
 [![NuGet package](https://img.shields.io/nuget/dt/Trivial.Console?label=nuget+downloads)](https://www.nuget.org/packages/Trivial.Console)
@@ -45,9 +71,5 @@ PM > Install-Package Trivial
 ![.NET Framework 4.6.1](./assets/badge_NET_Fx_4_6_1.svg)
 
 The useful utilities for console application including command dispatcher, arguments parser and some rich UX CLI controls.
-
-```sh
-PM > Install-Package Trivial.Console
-```
 
 - [Console utilities and components](./console/)

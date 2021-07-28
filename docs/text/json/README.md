@@ -2,19 +2,19 @@
 
 Includes writable JSON DOM and lots of commonly used JSON converters.
 
-In `Trivial.Text` [namespace](./text) of `Trivial.dll` [library](../../). For version 3.0 and above only.
+In `Trivial.Text` [namespace](./text) of `Trivial.dll` [library](../../).
 
 ## JSON DOM
 
-You can create a writable JSON DOM including JSON object `JsonObject` and JSON array `JsonArray`.
+You can create a writable JSON DOM including JSON object `JsonObjectNode` and JSON array `JsonArrayNode`.
 
 ```csharp
-var json = new JsonObject
+var json = new JsonObjectNode
 {
     { "prop-a", 1234 },
     { "prop-b", "opq" },
     { "prop-c", true },
-    { "prop-d", new JsonArray { 5678, "rst" } }
+    { "prop-d", new JsonArrayNode { 5678, "rst" } }
 };
 ```
 
@@ -76,7 +76,7 @@ Following are others.
 
 | Converter | .NET type | JSON value kind | Nullable |
 | ----------------- | ---------- | ---------- | --- |
-| `JsonObjectConverter` | `JsonObject` or `JsonArray` | `object` or `array` | √ |
+| `JsonObjectNodeConverter` | `JsonObjectNode` or `JsonArrayNode` | `object` or `array` | √ |
 
 For example.
 
@@ -90,7 +90,7 @@ public class Model
     [JsonConverter(typeof(JsonJavaScriptTicksConverter))
     public DateTime CreationTime { get; set; }
 
-    [JsonConverter(typeof(JsonObjectConverter)]
+    [JsonConverter(typeof(JsonObjectNodeConverter)]
     public JsonObject Properties { get; set; }
 }
 ```

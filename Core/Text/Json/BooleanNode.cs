@@ -18,6 +18,7 @@ namespace Trivial.Text
     /// <summary>
     /// Represents a specific JSON boolean value.
     /// </summary>
+    [System.Text.Json.Serialization.JsonConverter(typeof(JsonObjectNodeConverter))]
     public class JsonBooleanNode : IJsonValueNode<bool>, IJsonDataNode
     {
         /// <summary>
