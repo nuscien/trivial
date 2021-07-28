@@ -221,6 +221,48 @@ namespace Trivial.Text
             Assert.AreEqual(9, json.Keys.Count);
             Assert.AreEqual(jsonStr, json.ToString());
 
+            Assert.IsFalse(jsonArray.IsNull(0));
+            Assert.IsTrue(jsonArray.IsNullOrUndefined(100));
+            Assert.IsTrue(jsonArray.EnsureCount(20) > 0);
+            jsonArray.SetValue(20, "str");
+            Assert.AreEqual("str", jsonArray.GetStringValue(20));
+            jsonArray.SetValue(20, DateTime.Now);
+            jsonArray.SetValue(20, Guid.NewGuid());
+            jsonArray.SetValue(20, 1);
+            Assert.AreEqual(1, jsonArray.GetInt32Value(20));
+            jsonArray.SetValue(20, 1L);
+            Assert.AreEqual(1L, jsonArray.GetInt64Value(20));
+            jsonArray.SetValue(20, 1.0);
+            Assert.AreEqual(1.0, jsonArray.GetDoubleValue(20));
+            jsonArray.SetValue(20, 1.0F);
+            Assert.AreEqual(1.0F, jsonArray.GetSingleValue(20));
+            jsonArray.SetValue(20, true);
+            Assert.IsTrue(jsonArray.GetBooleanValue(20));
+            jsonArray.SetValue(20, false);
+            Assert.IsFalse(jsonArray.GetBooleanValue(20));
+            Assert.AreEqual(JsonValueKind.False, (jsonArray as IJsonContainerNode).GetValue("20").ValueKind);
+            jsonArray.Remove(20);
+
+            Assert.IsFalse(json.IsNull("props"));
+            Assert.IsTrue(json.IsNullOrUndefined("test"));
+            json.SetValue("test", "str");
+            Assert.AreEqual("str", json.GetStringValue("test"));
+            json.SetValue("test", DateTime.Now);
+            json.SetValue("test", Guid.NewGuid());
+            json.SetValue("test", 1);
+            Assert.AreEqual(1, json.GetInt32Value("test"));
+            json.SetValue("test", 1L);
+            Assert.AreEqual(1L, json.GetInt64Value("test"));
+            json.SetValue("test", 1.0);
+            Assert.AreEqual(1.0, json.GetDoubleValue("test"));
+            json.SetValue("test", 1.0F);
+            Assert.AreEqual(1.0F, json.GetSingleValue("test"));
+            json.SetValue("test", true);
+            Assert.IsTrue(json.GetBooleanValue("test"));
+            json.SetValue("test", false);
+            Assert.IsFalse(json.GetBooleanValue("test"));
+            json.Remove("test");
+
             var j1 = Serialize<System.Text.Json.Nodes.JsonObject>("{ \"a\": \"bcdefg\", \"h\": \"ijklmn\" }");
             Assert.AreEqual(2, j1.Count);
             var j2 = Serialize<System.Text.Json.Nodes.JsonArray>("[ 123, 456 ]");

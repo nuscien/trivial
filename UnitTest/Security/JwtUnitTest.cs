@@ -49,7 +49,7 @@ namespace Trivial.Security
         {
             var payload = new JsonObjectNode();
             payload.SetValue("abcdefg", "hijklmn");
-            payload.SetValue("opqrst", "uvwxyz");
+            payload.SetValue("opqrst", HashUtility.ComputeSHA3512String("uvwxyz"));
             var hash = HashSignatureProvider.CreateHS512("key");
             var jwt = new JsonWebToken<JsonObjectNode>(payload, hash);
             Assert.AreEqual(true, jwt.CanSign);
