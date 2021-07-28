@@ -308,6 +308,45 @@ namespace Trivial.Text
         }
 
         /// <summary>
+        /// Populates a SerializationInfo with the data needed to serialize the target object.
+        /// </summary>
+        /// <param name="info">The SerializationInfo to populate with data.</param>
+        /// <param name="context">The destination for this serialization.</param>
+        /// <exception cref="SecurityException">The caller does not have the required permission.</exception>
+        public void GetObjectData(SerializationInfo info, StreamingContext context)
+        {
+            foreach (var prop in store)
+            {
+                switch (prop.Value.ValueKind)
+                {
+                    case JsonValueKind.Undefined:
+                        break;
+                    case JsonValueKind.Null:
+                        break;
+                    case JsonValueKind.String:
+                        if (prop.Value is JsonString strJson) info.AddValue(prop.Key, strJson.Value, typeof(string));
+                        break;
+                    case JsonValueKind.Number:
+                        if (prop.Value is JsonInteger intJson) info.AddValue(prop.Key, intJson.Value);
+                        else if (prop.Value is JsonDouble floatJson) info.AddValue(prop.Key, floatJson.Value);
+                        break;
+                    case JsonValueKind.True:
+                        info.AddValue(prop.Key, true);
+                        break;
+                    case JsonValueKind.False:
+                        info.AddValue(prop.Key, false);
+                        break;
+                    case JsonValueKind.Object:
+                        if (prop.Value is JsonObject objJson) info.AddValue(prop.Key, objJson, typeof(JsonObject));
+                        break;
+                    case JsonValueKind.Array:
+                        if (prop.Value is JsonArray objArr) info.AddValue(prop.Key, objArr, typeof(JsonArray));
+                        break;
+                }
+            }
+        }
+
+        /// <summary>
         /// Determines the property value of the specific key is null.
         /// </summary>
         /// <param name="key">The property key.</param>
@@ -887,7 +926,7 @@ namespace Trivial.Text
         /// <returns>The value.</returns>
         /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
         /// <exception cref="ArgumentOutOfRangeException">The property does not exist.</exception>
-        /// <exception cref="NotSupportedException">The type is not supported to convert.</exception>
+        /// <exception cref="InvalidOperationException">The type is not supported to convert.</exception>
         public object GetValue(Type type, string key)
         {
             if (type == null) return null;
@@ -895,6 +934,12 @@ namespace Trivial.Text
             if (type.IsEnum) return type == typeof(JsonValueKind) ? GetValueKind(key) : GetEnumValue(type, key, false);
             if (type.IsValueType)
             {
+                if (kind == JsonValueKind.Null || kind == JsonValueKind.Undefined)
+                {
+                    if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>)) return null;
+                    throw new InvalidOperationException("The type is value type but the value is null or undefined.", new InvalidCastException("Cannot cast null to a struct."));
+                }
+
                 if (type == typeof(int)) return GetInt32Value(key);
                 if (type == typeof(long)) return GetInt64Value(key);
                 if (type == typeof(bool)) return GetBooleanValue(key);
@@ -921,7 +966,7 @@ namespace Trivial.Text
                 if (json != null) return JsonSerializer.Deserialize(json.ToString(), type);
             }
 
-            throw new NotSupportedException("The type is not supported to convert.", new InvalidCastException("Cannot cast."));
+            throw new InvalidOperationException("The type is not supported to convert.", new InvalidCastException("Cannot cast."));
         }
 
         /// <summary>
@@ -932,7 +977,7 @@ namespace Trivial.Text
         /// <returns>The value.</returns>
         /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
         /// <exception cref="ArgumentOutOfRangeException">The property does not exist.</exception>
-        /// <exception cref="NotSupportedException">The type is not supported to convert.</exception>
+        /// <exception cref="InvalidOperationException">The type is not supported to convert.</exception>
         public T GetValue<T>(string key)
             => (T)GetValue(typeof(T), key);
 
@@ -944,7 +989,7 @@ namespace Trivial.Text
         /// <returns>The value.</returns>
         /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
         /// <exception cref="ArgumentOutOfRangeException">The property does not exist.</exception>
-        /// <exception cref="NotSupportedException">The type is not supported to convert.</exception>
+        /// <exception cref="InvalidOperationException">The type is not supported to convert.</exception>
         public T GetValue<T>(ReadOnlySpan<char> key)
         {
             if (key == null) throw new ArgumentNullException(nameof(key), "key should not be null.");
@@ -960,8 +1005,7 @@ namespace Trivial.Text
         /// <param name="keyPath">The additional property key path.</param>
         /// <returns>The value.</returns>
         /// <exception cref="ArgumentOutOfRangeException">The property does not exist.</exception>
-        /// <exception cref="InvalidOperationException">Cannot get the property value.</exception>
-        /// <exception cref="NotSupportedException">The type is not supported to convert.</exception>
+        /// <exception cref="InvalidOperationException">Cannot get the property value or the type is not supported to convert.</exception>
         public T GetValue<T>(string key, string subKey, params string[] keyPath)
         {
             var path = new List<string>
@@ -980,8 +1024,7 @@ namespace Trivial.Text
         /// <param name="keyPath">The property key path.</param>
         /// <returns>The value.</returns>
         /// <exception cref="ArgumentOutOfRangeException">The property does not exist.</exception>
-        /// <exception cref="InvalidOperationException">Cannot get the property value.</exception>
-        /// <exception cref="NotSupportedException">The type is not supported to convert.</exception>
+        /// <exception cref="InvalidOperationException">Cannot get the property value or the type is not supported to convert.</exception>
         public T GetValue<T>(IEnumerable<string> keyPath)
         {
             var path = keyPath?.Where(ele => !string.IsNullOrEmpty(ele))?.ToList();
@@ -997,7 +1040,7 @@ namespace Trivial.Text
             var k = path.LastOrDefault();
             path = path.Take(path.Count - 1).ToList();
             var json = GetValue(path);
-            if (json == null) throw new InvalidOperationException($"Cannot get the leaf property {k} of null.");
+            if (json == null) throw new InvalidOperationException($"Cannot get the leaf property {k} of null.", new NullReferenceException("There is a node that is null or undefined in the property path."));
             if (json is JsonObject j) return j.GetValue<T>(k);
             else if (json is JsonArray a && int.TryParse(k, out var i)) return a.GetValue<T>(i);
             throw new InvalidOperationException($"The property {string.Join(".", path)} was {json.ValueKind} so cannot get its property.");

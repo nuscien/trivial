@@ -3,8 +3,10 @@ using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Security;
 using System.Text;
 using System.Text.Json;
@@ -270,6 +272,46 @@ namespace Trivial.Text
             {
                 if (ele is JsonObject json) json.EnableThreadSafeMode(depth);
                 else if (ele is JsonArray arr) arr.EnableThreadSafeMode(depth);
+            }
+        }
+
+        /// <summary>
+        /// Populates a SerializationInfo with the data needed to serialize the target object.
+        /// </summary>
+        /// <param name="info">The SerializationInfo to populate with data.</param>
+        /// <param name="context">The destination for this serialization.</param>
+        /// <exception cref="SecurityException">The caller does not have the required permission.</exception>
+        public void GetObjectData(SerializationInfo info, StreamingContext context)
+        {
+            var i = -1;
+            foreach (var prop in store)
+            {
+                i++;
+                switch (prop.ValueKind)
+                {
+                    case JsonValueKind.Undefined:
+                    case JsonValueKind.Null:
+                        break;
+                    case JsonValueKind.String:
+                        if (prop is JsonString strJson) info.AddValue(i.ToString("g", CultureInfo.InvariantCulture), strJson.Value, typeof(string));
+                        break;
+                    case JsonValueKind.Number:
+                        if (prop is JsonInteger intJson) info.AddValue(i.ToString("g", CultureInfo.InvariantCulture), intJson.Value);
+                        else if (prop is JsonDouble floatJson) info.AddValue(i.ToString("g", CultureInfo.InvariantCulture), floatJson.Value);
+                        break;
+                    case JsonValueKind.True:
+                        info.AddValue(i.ToString("g", CultureInfo.InvariantCulture), true);
+                        break;
+                    case JsonValueKind.False:
+                        info.AddValue(i.ToString("g", CultureInfo.InvariantCulture), false);
+                        break;
+                    case JsonValueKind.Object:
+                        if (prop is JsonObject objJson) info.AddValue(i.ToString("g", CultureInfo.InvariantCulture), objJson, typeof(JsonObject));
+                        break;
+                    case JsonValueKind.Array:
+                        if (prop is JsonArray objArr) info.AddValue(i.ToString("g", CultureInfo.InvariantCulture), objArr, typeof(JsonArray));
+                        break;
+                }
             }
         }
 
@@ -684,7 +726,7 @@ namespace Trivial.Text
         /// <returns>The value.</returns>
         /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
         /// <exception cref="ArgumentOutOfRangeException">The property does not exist.</exception>
-        /// <exception cref="NotSupportedException">The type is not supported to convert.</exception>
+        /// <exception cref="InvalidOperationException">The type is not supported to convert.</exception>
         public object GetValue(Type type, int index)
         {
             if (type == null) return null;
@@ -692,6 +734,13 @@ namespace Trivial.Text
             if (type.IsEnum) return type == typeof(JsonValueKind) ? GetValueKind(index) : GetEnumValue(type, index, false);
             if (type.IsValueType)
             {
+                var kind = GetValueKind(index);
+                if (kind == JsonValueKind.Null || kind == JsonValueKind.Undefined)
+                {
+                    if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>)) return null;
+                    throw new InvalidOperationException("The type is value type but the value is null or undefined.", new InvalidCastException("Cannot cast null to a struct."));
+                }
+
                 if (type == typeof(int)) return GetInt32Value(index);
                 if (type == typeof(long)) return GetInt64Value(index);
                 if (type == typeof(bool)) return GetBooleanValue(index);
@@ -718,7 +767,7 @@ namespace Trivial.Text
                 if (json != null) return JsonSerializer.Deserialize(json.ToString(), type);
             }
 
-            throw new NotSupportedException("The type is not supported to convert.", new InvalidCastException("Cannot cast."));
+            throw new InvalidOperationException("The type is not supported to convert.", new InvalidCastException("Cannot cast."));
         }
 
         /// <summary>
@@ -729,7 +778,7 @@ namespace Trivial.Text
         /// <returns>The value.</returns>
         /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
         /// <exception cref="ArgumentOutOfRangeException">The property does not exist.</exception>
-        /// <exception cref="NotSupportedException">The type is not supported to convert.</exception>
+        /// <exception cref="InvalidOperationException">The type is not supported to convert.</exception>
         public T GetValue<T>(int index)
             => (T)GetValue(typeof(T), index);
 
@@ -1856,6 +1905,7 @@ namespace Trivial.Text
         /// <exception cref="ArgumentOutOfRangeException">The index is out of range.</exception>
         public void SetNullValue(int index)
         {
+            if (store.Count == index) store.Add(JsonValues.Null);
             store[index] = JsonValues.Null;
         }
 
@@ -1867,6 +1917,7 @@ namespace Trivial.Text
         /// <exception cref="ArgumentOutOfRangeException">The index is out of range.</exception>
         public void SetValue(int index, string value)
         {
+            if (store.Count == index) store.Add(JsonValues.Null);
             store[index] = new JsonString(value);
         }
 
@@ -1878,6 +1929,7 @@ namespace Trivial.Text
         /// <exception cref="ArgumentOutOfRangeException">The index is out of range.</exception>
         public void SetValue(int index, SecureString value)
         {
+            if (store.Count == index) store.Add(JsonValues.Null);
             store[index] = new JsonString(value);
         }
 
@@ -1890,6 +1942,7 @@ namespace Trivial.Text
         /// <exception cref="ArgumentOutOfRangeException">The index is out of range.</exception>
         public void SetValueFormat(int index, string value, params object[] args)
         {
+            if (store.Count == index) store.Add(JsonValues.Null);
             store[index] = new JsonString(string.Format(value, args));
         }
 
@@ -1902,6 +1955,7 @@ namespace Trivial.Text
         /// <exception cref="ArgumentOutOfRangeException">The index is out of range.</exception>
         public void SetBase64(int index, byte[] inArray, Base64FormattingOptions options = Base64FormattingOptions.None)
         {
+            if (store.Count == index) store.Add(JsonValues.Null);
             store[index] = new JsonString(Convert.ToBase64String(inArray, options));
         }
 
@@ -1915,6 +1969,7 @@ namespace Trivial.Text
         /// <exception cref="ArgumentNullException">The bytes should not be null.</exception>
         public void SetBase64(int index, Span<byte> bytes, Base64FormattingOptions options = Base64FormattingOptions.None)
         {
+            if (store.Count == index) store.Add(JsonValues.Null);
 #if NETOLDVER
             if (bytes == null) throw new ArgumentNullException(nameof(bytes), "bytes should not be null.");
             store[index] = new JsonString(Convert.ToBase64String(bytes.ToArray(), options));
@@ -1932,6 +1987,7 @@ namespace Trivial.Text
         /// <exception cref="ArgumentNullException">The bytes should not be null.</exception>
         public void SetValue(int index, Guid value)
         {
+            if (store.Count == index) store.Add(JsonValues.Null);
             store[index] = new JsonString(value);
         }
 
@@ -1943,6 +1999,7 @@ namespace Trivial.Text
         /// <exception cref="ArgumentOutOfRangeException">The index is out of range.</exception>
         public void SetValue(int index, DateTime value)
         {
+            if (store.Count == index) store.Add(JsonValues.Null);
             store[index] = new JsonString(value);
         }
 
@@ -1954,6 +2011,7 @@ namespace Trivial.Text
         /// <exception cref="ArgumentOutOfRangeException">The index is out of range.</exception>
         public void SetValue(int index, uint value)
         {
+            if (store.Count == index) store.Add(JsonValues.Null);
             store[index] = new JsonInteger(value);
         }
 
@@ -1965,6 +2023,7 @@ namespace Trivial.Text
         /// <exception cref="ArgumentOutOfRangeException">The index is out of range.</exception>
         public void SetValue(int index, int value)
         {
+            if (store.Count == index) store.Add(JsonValues.Null);
             store[index] = new JsonInteger(value);
         }
 
@@ -1976,6 +2035,7 @@ namespace Trivial.Text
         /// <exception cref="ArgumentOutOfRangeException">The index is out of range.</exception>
         public void SetValue(int index, long value)
         {
+            if (store.Count == index) store.Add(JsonValues.Null);
             store[index] = new JsonInteger(value);
         }
 
@@ -1987,6 +2047,7 @@ namespace Trivial.Text
         /// <exception cref="ArgumentOutOfRangeException">The index is out of range.</exception>
         public void SetValue(int index, float value)
         {
+            if (store.Count == index) store.Add(JsonValues.Null);
             store[index] = new JsonDouble(value);
         }
 
@@ -1998,6 +2059,7 @@ namespace Trivial.Text
         /// <exception cref="ArgumentOutOfRangeException">The index is out of range.</exception>
         public void SetValue(int index, double value)
         {
+            if (store.Count == index) store.Add(JsonValues.Null);
             store[index] = new JsonDouble(value);
         }
 
@@ -2009,6 +2071,7 @@ namespace Trivial.Text
         /// <exception cref="ArgumentOutOfRangeException">The index is out of range.</exception>
         public void SetValue(int index, bool value)
         {
+            if (store.Count == index) store.Add(JsonValues.Null);
             store[index] = value ? JsonBoolean.True : JsonBoolean.False;
         }
 
@@ -2020,6 +2083,7 @@ namespace Trivial.Text
         /// <exception cref="ArgumentOutOfRangeException">The index is out of range.</exception>
         public void SetValue(int index, JsonArray value)
         {
+            if (store.Count == index) store.Add(JsonValues.Null);
             store[index] = value != this ? value : value.Clone();
         }
 
@@ -2031,6 +2095,7 @@ namespace Trivial.Text
         /// <exception cref="ArgumentOutOfRangeException">The index is out of range.</exception>
         public void SetValue(int index, JsonObject value)
         {
+            if (store.Count == index) store.Add(JsonValues.Null);
             store[index] = value;
         }
 
@@ -2042,6 +2107,7 @@ namespace Trivial.Text
         /// <exception cref="ArgumentOutOfRangeException">The index is out of range.</exception>
         public void SetValue(int index, JsonElement value)
         {
+            if (store.Count == index) store.Add(JsonValues.Null);
             store[index] = JsonValues.ToJsonValue(value);
         }
 
@@ -2053,6 +2119,7 @@ namespace Trivial.Text
         /// <exception cref="ArgumentOutOfRangeException">The index is out of range.</exception>
         public void SetDateTimeStringValue(int index, DateTime value)
         {
+            if (store.Count == index) store.Add(JsonValues.Null);
             store[index] = new JsonString(value);
         }
 
@@ -2064,6 +2131,7 @@ namespace Trivial.Text
         /// <exception cref="ArgumentOutOfRangeException">The index is out of range.</exception>
         public void SetJavaScriptDateTicksValue(int index, DateTime value)
         {
+            if (store.Count == index) store.Add(JsonValues.Null);
             store[index] = new JsonInteger(Web.WebFormat.ParseDate(value));
         }
 
@@ -2075,6 +2143,7 @@ namespace Trivial.Text
         /// <exception cref="ArgumentOutOfRangeException">The index is out of range.</exception>
         public void SetUnixTimestampValue(int index, DateTime value)
         {
+            if (store.Count == index) store.Add(JsonValues.Null);
             store[index] = new JsonInteger(Web.WebFormat.ParseUnixTimestamp(value));
         }
 
@@ -2086,6 +2155,7 @@ namespace Trivial.Text
         /// <exception cref="ArgumentOutOfRangeException">The index is out of range.</exception>
         public void SetWindowsFileTimeUtcValue(int index, DateTime value)
         {
+            if (store.Count == index) store.Add(JsonValues.Null);
             store[index] = new JsonInteger(value.ToFileTimeUtc());
         }
 
@@ -2126,6 +2196,23 @@ namespace Trivial.Text
                 if (ele is JsonString jStr && (jStr as IJsonValueResolver).TryGetValue(key, out var subStr)) return subStr;
                 return null;
             });
+        }
+
+        /// <summary>
+        /// Fills items by null until the count matches the specific minimum requirement.
+        /// </summary>
+        /// <param name="count">The minimum count required.</param>
+        /// <returns>The count to add.</returns>
+        public int EnsureCount(int count)
+        {
+            var rest = count - store.Count;
+            if (rest <= 0) return 0;
+            for (var i = 0; i < rest; i++)
+            {
+                store.Add(JsonValues.Null);
+            }
+
+            return rest;
         }
 
         /// <summary>

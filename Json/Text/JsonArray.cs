@@ -272,6 +272,46 @@ namespace Trivial.Text
         }
 
         /// <summary>
+        /// Populates a SerializationInfo with the data needed to serialize the target object.
+        /// </summary>
+        /// <param name="info">The SerializationInfo to populate with data.</param>
+        /// <param name="context">The destination for this serialization.</param>
+        /// <exception cref="SecurityException">The caller does not have the required permission.</exception>
+        public void GetObjectData(SerializationInfo info, StreamingContext context)
+        {
+            var i = -1;
+            foreach (var prop in store)
+            {
+                i++;
+                switch (prop.ValueKind)
+                {
+                    case JsonValueKind.Undefined:
+                    case JsonValueKind.Null:
+                        break;
+                    case JsonValueKind.String:
+                        if (prop is JsonString strJson) info.AddValue(i.ToString("g", CultureInfo.InvariantCulture), strJson.Value, typeof(string));
+                        break;
+                    case JsonValueKind.Number:
+                        if (prop is JsonInteger intJson) info.AddValue(i.ToString("g", CultureInfo.InvariantCulture), intJson.Value);
+                        else if (prop is JsonDouble floatJson) info.AddValue(i.ToString("g", CultureInfo.InvariantCulture), floatJson.Value);
+                        break;
+                    case JsonValueKind.True:
+                        info.AddValue(i.ToString("g", CultureInfo.InvariantCulture), true);
+                        break;
+                    case JsonValueKind.False:
+                        info.AddValue(i.ToString("g", CultureInfo.InvariantCulture), false);
+                        break;
+                    case JsonValueKind.Object:
+                        if (prop is JsonObject objJson) info.AddValue(i.ToString("g", CultureInfo.InvariantCulture), objJson, typeof(JsonObject));
+                        break;
+                    case JsonValueKind.Array:
+                        if (prop is JsonArray objArr) info.AddValue(i.ToString("g", CultureInfo.InvariantCulture), objArr, typeof(JsonArray));
+                        break;
+                }
+            }
+        }
+
+        /// <summary>
         /// Determines the item value of the specific index is null.
         /// </summary>
         /// <param name="index">The zero-based index of the element to get.</param>
@@ -682,7 +722,7 @@ namespace Trivial.Text
         /// <returns>The value.</returns>
         /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
         /// <exception cref="ArgumentOutOfRangeException">The property does not exist.</exception>
-        /// <exception cref="NotSupportedException">The type is not supported to convert.</exception>
+        /// <exception cref="InvalidOperationException">The type is not supported to convert.</exception>
         public object GetValue(Type type, int index)
         {
             if (type == null) return null;
@@ -690,6 +730,13 @@ namespace Trivial.Text
             if (type.IsEnum) return type == typeof(JsonValueKind) ? GetValueKind(index) : GetEnumValue(type, index, false);
             if (type.IsValueType)
             {
+                var kind = GetValueKind(index);
+                if (kind == JsonValueKind.Null || kind == JsonValueKind.Undefined)
+                {
+                    if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>)) return null;
+                    throw new InvalidOperationException("The type is value type but the value is null or undefined.", new InvalidCastException("Cannot cast null to a struct."));
+                }
+
                 if (type == typeof(int)) return GetInt32Value(index);
                 if (type == typeof(long)) return GetInt64Value(index);
                 if (type == typeof(bool)) return GetBooleanValue(index);
@@ -716,7 +763,7 @@ namespace Trivial.Text
                 if (json != null) return JsonSerializer.Deserialize(json.ToString(), type);
             }
 
-            throw new NotSupportedException("The type is not supported to convert.", new InvalidCastException("Cannot cast."));
+            throw new InvalidOperationException("The type is not supported to convert.", new InvalidCastException("Cannot cast."));
         }
 
         /// <summary>
@@ -727,7 +774,7 @@ namespace Trivial.Text
         /// <returns>The value.</returns>
         /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
         /// <exception cref="ArgumentOutOfRangeException">The property does not exist.</exception>
-        /// <exception cref="NotSupportedException">The type is not supported to convert.</exception>
+        /// <exception cref="InvalidOperationException">The type is not supported to convert.</exception>
         public T GetValue<T>(int index)
             => (T)GetValue(typeof(T), index);
 
@@ -2124,6 +2171,23 @@ namespace Trivial.Text
                 if (ele is JsonString jStr && (jStr as IJsonValueResolver).TryGetValue(key, out var subStr)) return subStr;
                 return null;
             });
+        }
+
+        /// <summary>
+        /// Fills items by null until the count matches the specific minimum requirement.
+        /// </summary>
+        /// <param name="count">The minimum count required.</param>
+        /// <returns>The count to add.</returns>
+        public int EnsureCount(int count)
+        {
+            var rest = count - store.Count;
+            if (rest <= 0) return 0;
+            for (var i = 0; i < rest; i++)
+            {
+                store.Add(JsonValues.Null);
+            }
+
+            return rest;
         }
 
         /// <summary>
