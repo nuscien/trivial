@@ -1,4 +1,4 @@
-# Trivial libraries
+# ![Trivial libraries](./docs/assets/wordmark.png)
 
 Trivial libraries contain a lot of utilities, models and components, which are trivial but useful, to help you to focus on the business logic of your projects.
 
@@ -8,7 +8,7 @@ Trivial libraries contain a lot of utilities, models and components, which are t
 ## [Trivial](./docs/core)
 
 A library providing lots of useful utilities, models and services,
-including hit task, retry policy, writable JSON DOM, PEM, JWT, stream combination, JSON HTTP web client, CSV parser, JSON converter, numerals, coordinates, angle, arithmetic, sets, etc.
+including interceptor, retry policy, writable JSON DOM, PEM, JWT, stream combination, JSON HTTP web client, CSV parser, JSON converters, numerals, coordinates, angle, arithmetic, sets, cmd verb dispatcher, etc.
 
 [![NuGet package](https://img.shields.io/nuget/dt/Trivial?label=nuget+downloads)](https://www.nuget.org/packages/Trivial)
 
