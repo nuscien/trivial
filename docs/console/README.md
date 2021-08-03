@@ -1,6 +1,6 @@
 # Trivial.Console
 
-The useful utilities for console application. You can use the library free for your console application to parse the arguments, dispatch verbs, etc. It also contains some rich user interface console controls, such as selection, for you use.
+The rich user interface console controls of `cmd`.
 
 ### Import
 
@@ -24,10 +24,13 @@ using Trivial.Console;
 
 ### Features
 
-- [Arguments](./arguments) An instance provided a way to access values from the arguments and dispatch the command verbs.
-- [Line](./line) You can write a temporary line to the standard output stream and update it later when need before the line terminator.
 - [Selection](./selection) You can write a selection to the standard output stream so that use can use arrow key and other keys to select the item.
 - [Progress](./progress) You can write a progress bar to the standard output stream to show a status value update.
+- [Line](./line) You can write a temporary line to the standard output stream and update it later when need before the line terminator.
+
+Following is other feature for v3 which has migrated to `Trivial.CommandLine` [namespace](../cmdline) since v4.
+
+- [Arguments](./arguments) An instance provided a way to access values from the arguments and dispatch the command verbs.
 
 ### 简体中文版
 

@@ -47,7 +47,7 @@ Including the periodic table and basic chemistry models, e.g. chemical element, 
 
 ## [Trivial.Console](./docs/console)
 
-The useful utilities for console application including command dispatcher, arguments parser and some rich UX CLI controls.
+The rich UX CLI controls and console utilities for `cmd`.
 
 [![NuGet package](https://img.shields.io/nuget/dt/Trivial.Console?label=nuget+downloads)](https://www.nuget.org/packages/Trivial.Console)
 

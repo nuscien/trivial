@@ -60,10 +60,14 @@ var num3 = ChineseNumerals.Simplified.ToApproximationString(1234567);
 
 ## Positional notation
 
-You can convert a number to a specific positional notation.
+You can convert a number to a specific radix. The radix should be one of 2-36.
 
 ```csharp
-var num = Arithmetic.ToPositionalNotationString(365, 24); // => f5
+var num = Numbers.ToPositionalNotationString(365, 24); // => f5
 ```
 
-The minimum type is 2 and maximum type is 36.
+And you can parse it back.
+
+```csharp
+var i = Numbers.ParseToInt32("f5", 24); // => 365
+```
