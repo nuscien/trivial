@@ -143,6 +143,7 @@ namespace Trivial.Text
             };
             Assert.AreEqual(4567, p1.GetInt32Value("p7"));
             Assert.IsTrue(json.ContainsKey("dot.net"));
+            Assert.AreEqual("Text", json["dot.net", 0].GetString());
             Assert.AreEqual(JsonValueKind.Array, json["dot.net"].ValueKind);
             Assert.AreEqual("e", json.TryGetValue("[dot.net][1]['.[][][]....\\\"\\\'\\\\.'][1]", true).GetString());
             Assert.AreEqual(4, json.TryGetValue("'dot.net'.1.\".[][][]....\\\"\\\'\\\\.\".length", true).GetInt32());
@@ -247,8 +248,11 @@ namespace Trivial.Text
             Assert.IsTrue(json.IsNullOrUndefined("test"));
             json.SetValue("test", "str");
             Assert.AreEqual("str", json.GetStringValue("test"));
-            json.SetValue("test", DateTime.Now);
             json.SetValue("test", Guid.NewGuid());
+            json.SetValue("test", DateTime.Now);
+            json.SetUnixTimestampValue("test", DateTime.Now);
+            json.SetJavaScriptDateTicksValue("test", DateTime.Now);
+            json.SetDateTimeStringValue("test", DateTime.Now);
             json.SetValue("test", 1);
             Assert.AreEqual(1, json.GetInt32Value("test"));
             json.SetValue("test", 1L);
@@ -263,6 +267,13 @@ namespace Trivial.Text
             Assert.IsFalse(json.GetBooleanValue("test"));
             json.Remove("test");
             Assert.IsTrue(json.IsNullOrUndefined("test"));
+            json.Add("1", 70);
+            json.Add("2", "Greetings!");
+            json.Add("3", true);
+            json.Add("4", 1.0);
+            json.Add("5", 600L);
+            json.Add("6", DateTime.Now);
+            Assert.IsTrue(json.Count > 6);
 
             json.Clear();
             Assert.AreEqual(0, json.Count);

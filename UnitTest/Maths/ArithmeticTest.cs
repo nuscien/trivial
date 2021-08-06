@@ -70,6 +70,18 @@ namespace Trivial.Maths
             Assert.AreEqual(
                 "one point two three times ten of forty-five power",
                 EnglishNumerals.Default.ToString(1.23e45));
+            Assert.AreEqual(
+                "负九十八亿七千六百五十四万三千两百一十",
+                ChineseNumerals.Simplified.ToString(-9876543210));
+            Assert.AreEqual(
+                "玖捌柒陆伍肆叄贰壹零",
+                ChineseNumerals.SimplifiedUppercase.ToString(9876543210, true));
+            Assert.AreEqual(
+                "三點一四一五九二六五",
+                ChineseNumerals.Traditional.ToString(3.14159265));
+            Assert.AreEqual(
+                "一点二三乘以十的四十五次方",
+                ChineseNumerals.Simplified.ToString(1.23e45));
 
             // Fraction
             var f1 = new Fraction(100, 200);
