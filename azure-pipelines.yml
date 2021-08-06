@@ -23,11 +23,6 @@ steps:
   inputs:
     version: 3.1.x
 
-- task: UseDotNet@2
-  displayName: 'Use .NET Core SDK 2.1'
-  inputs:
-    version: 2.1.x
-
 - script: dotnet build --configuration $(buildConfiguration)
   displayName: 'dotnet build $(buildConfiguration)'
 

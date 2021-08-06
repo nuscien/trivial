@@ -32,8 +32,8 @@ namespace Trivial.Net
         /// <summary>
         /// Initializes a new instance of the FailedHttpException class.
         /// </summary>
-        /// <param name="info">The System.Runtime.Serialization.SerializationInfo that holds the serialized object data about the exception being thrown.</param>
-        /// <param name="context">The System.Runtime.Serialization.StreamingContext that contains contextual information about the source or destination.</param>
+        /// <param name="info">The serialization information instance that holds the serialized object data about the exception being thrown.</param>
+        /// <param name="context">The serialization streaming context that contains contextual information about the source or destination.</param>
         protected FailedHttpException(SerializationInfo info, StreamingContext context) : base(info, context)
         {
             if (info == null) return;

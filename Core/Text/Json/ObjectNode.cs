@@ -2504,7 +2504,7 @@ namespace Trivial.Text
                 {
                     if (string.IsNullOrWhiteSpace(props.Key) || store.ContainsKey(props.Key)) continue;
                     count++;
-                    SetValue(props.Key, props.Value);
+                    SetValue(props.Key, ReferenceEquals(this, props.Value) ? props.Value.Clone() : props.Value);
                 }
             }
             else
@@ -2513,7 +2513,7 @@ namespace Trivial.Text
                 {
                     if (string.IsNullOrWhiteSpace(props.Key)) continue;
                     count++;
-                    SetValue(props.Key, props.Value);
+                    SetValue(props.Key, ReferenceEquals(this, props.Value) ? props.Value.Clone() : props.Value);
                 }
             }
 
@@ -2899,7 +2899,7 @@ namespace Trivial.Text
         /// <param name="value">The value to increase.</param>
         /// <exception cref="ArgumentNullException">key was null, empty, or consists only of white-space characters.</exception>
         /// <exception cref="InvalidOperationException">The property kind was not number.</exception>
-        public void IncreaseValue(string key, long value = 1)
+        public void IncreaseValue(string key, long value)
         {
             AssertKey(key);
             var v = TryGetValue(key);
@@ -2953,7 +2953,7 @@ namespace Trivial.Text
         /// <param name="value">The value to increase.</param>
         /// <exception cref="ArgumentNullException">key was null, empty, or consists only of white-space characters.</exception>
         /// <exception cref="InvalidOperationException">The property kind was not number.</exception>
-        public void IncreaseValue(string key, double value = 1)
+        public void IncreaseValue(string key, double value)
         {
             AssertKey(key);
             var v = TryGetValue(key);
@@ -3018,7 +3018,7 @@ namespace Trivial.Text
         /// <param name="value">The value to decrease.</param>
         /// <exception cref="ArgumentNullException">key was null, empty, or consists only of white-space characters.</exception>
         /// <exception cref="InvalidOperationException">The property kind was not number.</exception>
-        public void DecreaseValue(string key, long value = 1)
+        public void DecreaseValue(string key, long value)
         {
             IncreaseValue(key, -value);
         }
@@ -3030,7 +3030,7 @@ namespace Trivial.Text
         /// <param name="value">The value to decrease.</param>
         /// <exception cref="ArgumentNullException">key was null, empty, or consists only of white-space characters.</exception>
         /// <exception cref="InvalidOperationException">The property kind was not number.</exception>
-        public void DecreaseValue(string key, double value = 1)
+        public void DecreaseValue(string key, double value)
         {
             IncreaseValue(key, -value);
         }

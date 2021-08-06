@@ -123,7 +123,7 @@ namespace Trivial.Reflection
         private readonly List<Item> list = new();
 
         /// <summary>
-        /// Gets a value indicating whether need test all catch handler rather than try-catch logic.
+        /// Gets a value indicating whether need test all catch handler until an exception returned rather than try-catch logic.
         /// </summary>
         public bool TestAll { get; set; }
 
@@ -140,13 +140,15 @@ namespace Trivial.Reflection
         public Exception GetException(Exception ex)
         {
             if (ex == null) return null;
+            var has = false;
             foreach (var item in list)
             {
                 var result = item.Handler(ex, out bool handled);
+                if (handled) has = true;
                 if (handled && (!TestAll || result != null)) return result;
             }
 
-            return ex;
+            return has ? null : ex;
         }
 
         /// <summary>

@@ -2,7 +2,7 @@
 
 [![GitHub Repository](./assets/badge_GitHub-Repo.svg)](https://github.com/nuscien/trivial)
 [![MIT licensed](./assets/badge_lisence_MIT.svg)](https://github.com/nuscien/trivial/blob/master/LICENSE)
-[![Build Status](https://dev.azure.com/nuscien/trivial/_apis/build/status/nuscien.trivial?branchName=master)](https://dev.azure.com/nuscien/trivial/_build/latest?definitionId=1&branchName=master)
+[![Build Status](https://dev.azure.com/nuscien/trivial/_apis/build/status/nuscien.trivial?branchName=master)](https://dev.azure.com/nuscien/trivial/_build/latest?definitionId=1&branchName=main)
 
 Trivial libraries contain a lot of utilities, models and components, which are trivial but useful, to help you to focus on the business logic of your projects.
 
@@ -32,6 +32,7 @@ PM > Install-Package Trivial
 - [Maths and numerals](./maths/)
 - [Reflection](./reflection/)
 - [Geography](./geo/)
+- [Command line](./cmdline/)
 
 ### Trivial.Chemistry
 

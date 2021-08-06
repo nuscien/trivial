@@ -262,7 +262,7 @@ namespace Trivial.Tasks
             }
 
             if (canWork) task = ProcessImplAsync();
-            else if (task == null) await Task.Delay(100);
+            else if (task == null) await Task.Delay(10, cancellationToken);
             await Task.WhenAny(task, Task.FromCanceled(cancellationToken));
         }
 

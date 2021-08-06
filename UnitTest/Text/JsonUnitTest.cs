@@ -262,6 +262,45 @@ namespace Trivial.Text
             json.SetValue("test", false);
             Assert.IsFalse(json.GetBooleanValue("test"));
             json.Remove("test");
+            Assert.IsTrue(json.IsNullOrUndefined("test"));
+
+            json.Clear();
+            Assert.AreEqual(0, json.Count);
+            json.SetRange(new Dictionary<string, int>
+            {
+                { "number", 100 }
+            });
+            json.SetRange(new Dictionary<string, int>
+            {
+                { "number", 200 },
+                { "another", 300 }
+            }, true);
+            json.SetRange(new Dictionary<string, JsonObjectNode>
+            {
+                { "duplicate", json }
+            });
+            json.SetRange(new Dictionary<string, JsonObjectNode>
+            {
+                { "another", new JsonObjectNode() }
+            }, true);
+            json.SetRange(new Dictionary<string, JsonArrayNode>
+            {
+                { "arr", new JsonArrayNode() }
+            });
+            json.SetRange(new Dictionary<string, JsonArrayNode>
+            {
+                { "arr", null }
+            }, true);
+            Assert.AreEqual(4, json.Count);
+            json.IncreaseValue("number");
+            json.IncreaseValue("number", 7L);
+            Assert.AreEqual(108, json.GetValue<int>("number"));
+            json.DecreaseValue("number");
+            json.DecreaseValue("number", 7L);
+            Assert.AreEqual(100L, json.GetInt64Value("number"));
+            json.IncreaseValue("number", 1.2);
+            json.DecreaseValue("number", 0.3);
+            Assert.IsTrue(json.GetDoubleValue("number") > 100);
 
             var j1 = Serialize<System.Text.Json.Nodes.JsonObject>("{ \"a\": \"bcdefg\", \"h\": \"ijklmn\" }");
             Assert.AreEqual(2, j1.Count);
