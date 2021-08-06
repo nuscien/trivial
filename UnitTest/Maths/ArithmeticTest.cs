@@ -71,16 +71,16 @@ namespace Trivial.Maths
                 "one point two three times ten of forty-five power",
                 EnglishNumerals.Default.ToString(1.23e45));
             Assert.AreEqual(
-                "¸º¾ÅÊ®°ËÒÚÆßÇ§Áù°ÙÎåÊ®ËÄÍòÈıÇ§Á½°ÙÒ»Ê®",
+                "è´Ÿä¹åå…«äº¿ä¸ƒåƒå…­ç™¾äº”åå››ä¸‡ä¸‰åƒä¸¤ç™¾ä¸€å",
                 ChineseNumerals.Simplified.ToString(-9876543210));
             Assert.AreEqual(
-                "¾Á°ÆÆâÂ½ÎéËÁ…£·¡Ò¼Áã",
+                "ç–æŒæŸ’é™†ä¼è‚†å„è´°å£¹é›¶",
                 ChineseNumerals.SimplifiedUppercase.ToString(9876543210, true));
             Assert.AreEqual(
-                "ÈıücÒ»ËÄÒ»Îå¾Å¶şÁùÎå",
+                "ä¸‰é»ä¸€å››ä¸€äº”ä¹äºŒå…­äº”",
                 ChineseNumerals.Traditional.ToString(3.14159265));
             Assert.AreEqual(
-                "Ò»µã¶şÈı³ËÒÔÊ®µÄËÄÊ®Îå´Î·½",
+                "ä¸€ç‚¹äºŒä¸‰ä¹˜ä»¥åçš„å››åäº”æ¬¡æ–¹",
                 ChineseNumerals.Simplified.ToString(1.23e45));
 
             // Fraction

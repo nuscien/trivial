@@ -173,6 +173,8 @@ namespace Trivial.Text
             Assert.AreEqual(9, jsonArray.Count);
             Assert.AreEqual(7, jsonArray.GetInt32Value(0));
             Assert.AreNotEqual(jsonArray.GetInt32Value(0), jsonArray.GetInt32Value(1));
+            Assert.IsTrue(json.TryGetValue(new List<string> { "arr" }, out _));
+            Assert.IsFalse(json.TryGetValue(new List<string> { "arr", "some" }, out _));
             Assert.AreEqual(7, json.GetValue("arr", "0").GetInt32());
             Assert.AreEqual(7, json.GetValue("arr", null, null, "0", string.Empty).GetInt32());
             Assert.IsNull(json.TryGetValue(new[] { "arr", "0", "x" }));
