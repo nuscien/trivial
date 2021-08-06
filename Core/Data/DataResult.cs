@@ -205,6 +205,66 @@ namespace Trivial.Data
         public bool IsNull => Data is null;
 
         /// <summary>
+        /// Gets the value of the specific property.
+        /// </summary>
+        /// <typeparam name="T">The type of value.</typeparam>
+        /// <param name="key">The property key.</param>
+        /// <returns>The value.</returns>
+        /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">The property does not exist.</exception>
+        /// <exception cref="InvalidOperationException">The type is not supported to convert.</exception>
+        public T GetValue<T>(string key)
+        {
+            if (Data is null) throw new InvalidOperationException("Data is null.");
+            return Data.GetValue<T>(key);
+        }
+
+        /// <summary>
+        /// Gets the value of the specific property.
+        /// </summary>
+        /// <typeparam name="T">The type of value.</typeparam>
+        /// <param name="key">The property key.</param>
+        /// <returns>The value.</returns>
+        /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">The property does not exist.</exception>
+        /// <exception cref="InvalidOperationException">The type is not supported to convert.</exception>
+        public T GetValue<T>(ReadOnlySpan<char> key)
+        {
+            if (Data is null) throw new InvalidOperationException("Data is null.");
+            return Data.GetValue<T>(key);
+        }
+
+        /// <summary>
+        /// Gets the value of the specific property.
+        /// </summary>
+        /// <typeparam name="T">The type of value.</typeparam>
+        /// <param name="key">The property key.</param>
+        /// <param name="subKey">The sub-key of the previous property.</param>
+        /// <param name="keyPath">The additional property key path.</param>
+        /// <returns>The value.</returns>
+        /// <exception cref="ArgumentOutOfRangeException">The property does not exist.</exception>
+        /// <exception cref="InvalidOperationException">Cannot get the property value or the type is not supported to convert.</exception>
+        public T GetValue<T>(string key, string subKey, params string[] keyPath)
+        {
+            if (Data is null) throw new InvalidOperationException("Data is null.");
+            return Data.GetValue<T>(key, subKey, keyPath);
+        }
+
+        /// <summary>
+        /// Gets the value of the specific property.
+        /// </summary>
+        /// <typeparam name="T">The type of value.</typeparam>
+        /// <param name="keyPath">The property key path.</param>
+        /// <returns>The value.</returns>
+        /// <exception cref="ArgumentOutOfRangeException">The property does not exist.</exception>
+        /// <exception cref="InvalidOperationException">Cannot get the property value or the type is not supported to convert.</exception>
+        public T GetValue<T>(IEnumerable<string> keyPath)
+        {
+            if (Data is null) throw new InvalidOperationException("Data is null.");
+            return Data.GetValue<T>(keyPath);
+        }
+
+        /// <summary>
         /// Tries to get the value of the specific property.
         /// </summary>
         /// <param name="key">The property key.</param>
