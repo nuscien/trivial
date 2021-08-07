@@ -113,7 +113,27 @@ namespace Trivial.Collection
                 try
                 {
                     if (s.IsWriteLockHeld) s.ExitWriteLock();
+                }
+                catch (SynchronizationLockException)
+                {
+                }
+                catch (InvalidOperationException)
+                {
+                }
+
+                try
+                {
                     if (s.IsUpgradeableReadLockHeld) s.ExitUpgradeableReadLock();
+                }
+                catch (SynchronizationLockException)
+                {
+                }
+                catch (InvalidOperationException)
+                {
+                }
+
+                try
+                {
                     if (s.IsReadLockHeld) s.ExitReadLock();
                 }
                 catch (SynchronizationLockException)
@@ -126,6 +146,16 @@ namespace Trivial.Collection
                 try
                 {
                     s.Dispose();
+                }
+                catch (SynchronizationLockException)
+                {
+                    try
+                    {
+                        s.Dispose();
+                    }
+                    catch (InvalidOperationException)
+                    {
+                    }
                 }
                 catch (InvalidOperationException)
                 {

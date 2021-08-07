@@ -12,6 +12,12 @@ namespace Trivial.Chemistry
     public static class ChemistryExtensions
     {
         /// <summary>
+        /// Gets or sets the max atomic number of periodic table; or -1 for unlimited.
+        /// But this will not prevent creating a customized chemical element nor getting an existed from periodic table.
+        /// </summary>
+        public static int MaxAtomicNumber { get; set; } = -1;
+
+        /// <summary>
         /// Adds molecular formula into a list.
         /// </summary>
         /// <param name="formulas">The molecular fomula collection.</param>

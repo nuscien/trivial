@@ -160,6 +160,37 @@ namespace Trivial.Reflection
         }
 
         /// <summary>
+        /// Gets a property value.
+        /// </summary>
+        /// <typeparam name="T">The type of the property value.</typeparam>
+        /// <param name="key">The key.</param>
+        /// <param name="result">The property value.</param>
+        /// <returns>true if contains; otherwise, false.</returns>
+        protected bool GetProperty<T>(string key, out T result)
+        {
+            try
+            {
+                if (!string.IsNullOrWhiteSpace(key) && cache.TryGetValue(key, out var v))
+                {
+                    result = (T)v;
+                    return true;
+                }
+            }
+            catch (InvalidCastException)
+            {
+            }
+            catch (NullReferenceException)
+            {
+            }
+            catch (ArgumentException)
+            {
+            }
+
+            result = default;
+            return false;
+        }
+
+        /// <summary>
         /// Sets a property.
         /// </summary>
         /// <param name="key">The key.</param>
@@ -251,6 +282,24 @@ namespace Trivial.Reflection
             var v = GetProperty<T>(key);
             if (v is null) return null;
             if (v is string s) return JsonStringNode.ToJson(s);
+            if (v is JsonObjectNode json) return options?.WriteIndented == true ? json.ToString(IndentStyles.Compact) : json.ToString();
+            if (v is JsonArrayNode arr) return options?.WriteIndented == true ? arr.ToString(IndentStyles.Compact) : arr.ToString();
+            if (v is System.Text.Json.Nodes.JsonNode node) return node.ToJsonString(options);
+            if (v is Net.QueryData q) return q.ToString();
+            if (v is Uri u) return u.OriginalString;
+            if (v.GetType().IsValueType)
+            {
+                if (v is bool b) return b ? JsonBooleanNode.TrueString : JsonBooleanNode.FalseString;
+                if (v is int i) return i.ToString("g");
+                if (v is long l) return l.ToString("g");
+                if (v is float f) return f.ToString("g");
+                if (v is double d) return d.ToString("g");
+                if (v is decimal d2) return d2.ToString("g");
+                if (v is Guid g) return g.ToString();
+                if (v is DateTime dt) return JsonStringNode.ToJson(dt);
+                if (v is DateTimeOffset dto) return JsonStringNode.ToJson(dto.UtcDateTime);
+            }
+
             return JsonSerializer.Serialize(v, options);
         }
 
@@ -312,6 +361,15 @@ namespace Trivial.Reflection
         /// <param name="defaultValue">The default value.</param>
         /// <returns>A property value.</returns>
         public new T GetProperty<T>(string key, T defaultValue = default) => base.GetProperty(key, defaultValue);
+
+        /// <summary>
+        /// Gets a property value.
+        /// </summary>
+        /// <typeparam name="T">The type of the property value.</typeparam>
+        /// <param name="key">The key.</param>
+        /// <param name="result">The property value.</param>
+        /// <returns>true if contains; otherwise, false.</returns>
+        public new bool GetProperty<T>(string key, out T result) => base.GetProperty(key, out result);
 
         /// <summary>
         /// Sets a property.

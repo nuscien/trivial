@@ -31,6 +31,16 @@ namespace Trivial.Tasks
         }
 
         /// <summary>
+        /// Initializes a new instance of the TaskFlow class.
+        /// </summary>
+        /// <param name="task">The task to monitor.</param>
+        public TaskFlow(Func<Task<T>> task)
+        {
+            t2 = task();
+            t = OnInit();
+        }
+
+        /// <summary>
         /// The state of the task flow.
         /// </summary>
         public TaskFlowStates State { get; private set; }

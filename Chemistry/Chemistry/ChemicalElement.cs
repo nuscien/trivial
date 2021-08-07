@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 using Trivial.Text;
@@ -12,6 +13,7 @@ namespace Trivial.Chemistry
     /// <summary>
     /// The model of chemical element.
     /// </summary>
+    [JsonConverter(typeof(ChemicalElementJsonConverter))]
     public partial class ChemicalElement : IEquatable<ChemicalElement>
     {
         /// <summary>
@@ -213,7 +215,7 @@ namespace Trivial.Chemistry
         public string EnglishName { get; }
 
         /// <summary>
-        /// Gets the atomic number (or proton number, symbol Z) of the chemical element.
+        /// Gets the atomic number (or proton number, Atomzahl, symbol Z) of the chemical element.
         /// It is the one-based number of protons found in the nucleus of every atom of that element.
         /// </summary>
         public int AtomicNumber { get; }

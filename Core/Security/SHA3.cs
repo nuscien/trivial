@@ -115,11 +115,6 @@ namespace Trivial.Security
 
         public override int HashSize => HashSizeValue;
 
-        protected ulong ROL(ulong a, int offset)
-        {
-            return ((a) << (offset % KeccakLaneSizeInBits)) ^ ((a) >> (KeccakLaneSizeInBits - (offset % KeccakLaneSizeInBits)));
-        }
-
         protected void AddToBuffer(byte[] array, ref int offset, ref int count)
         {
             var amount = Math.Min(count, buffer.Length - buffLength);
@@ -132,23 +127,23 @@ namespace Trivial.Security
         public override void Initialize()
         {
             buffLength = 0;
-            state = new ulong[5 * 5]; // 1600 bits.
+            state = new ulong[25]; // 1600 bits.
             HashValue = null;
         }
 
         protected override void HashCore(byte[] array, int ibStart, int cbSize)
         {
-            if (array == null) throw new ArgumentNullException(nameof(array));
-            if (ibStart < 0) throw new ArgumentOutOfRangeException(nameof(ibStart));
-            if (cbSize > array.Length) throw new ArgumentOutOfRangeException(nameof(cbSize));
-            if (ibStart + cbSize > array.Length) throw new ArgumentOutOfRangeException("ibStart or cbSize");
+            if (array == null) throw new ArgumentNullException(nameof(array), "array is null.");
+            if (ibStart < 0) throw new ArgumentOutOfRangeException(nameof(ibStart), "ibStart is out of range.");
+            if (cbSize > array.Length) throw new ArgumentOutOfRangeException(nameof(cbSize), "cbSize is out of range.");
+            if (ibStart + cbSize > array.Length) throw new ArgumentOutOfRangeException(nameof(ibStart), "ibStart or cbSize is out of range.");
             if (cbSize == 0) return;
 
             var sizeInBytes = SizeInBytes;
             if (buffer == null) buffer = new byte[sizeInBytes];
             var stride = sizeInBytes >> 3;
             var utemps = new ulong[stride];
-            if (buffLength == sizeInBytes) throw new Exception("Unexpected error, the internal buffer is full");
+            if (buffLength == sizeInBytes) throw new InvalidOperationException("Unexpected error that the internal buffer is full.");
             AddToBuffer(array, ref ibStart, ref cbSize);
 
             if (buffLength == sizeInBytes)
@@ -224,22 +219,22 @@ namespace Trivial.Security
                 var BCo = Abo ^ Ago ^ Ako ^ Amo ^ Aso;
                 var BCu = Abu ^ Agu ^ Aku ^ Amu ^ Asu;
 
-                var Da = BCu ^ ROL(BCe, 1);
-                var De = BCa ^ ROL(BCi, 1);
-                var Di = BCe ^ ROL(BCo, 1);
-                var Do = BCi ^ ROL(BCu, 1);
-                var Du = BCo ^ ROL(BCa, 1);
+                var Da = BCu ^ Rol(BCe, 1);
+                var De = BCa ^ Rol(BCi, 1);
+                var Di = BCe ^ Rol(BCo, 1);
+                var Do = BCi ^ Rol(BCu, 1);
+                var Du = BCo ^ Rol(BCa, 1);
 
                 Aba ^= Da;
                 BCa = Aba;
                 Age ^= De;
-                BCe = ROL(Age, 44);
+                BCe = Rol(Age, 44);
                 Aki ^= Di;
-                BCi = ROL(Aki, 43);
+                BCi = Rol(Aki, 43);
                 Amo ^= Do;
-                BCo = ROL(Amo, 21);
+                BCo = Rol(Amo, 21);
                 Asu ^= Du;
-                BCu = ROL(Asu, 14);
+                BCu = Rol(Asu, 14);
 
                 var Eba = BCa ^ ((~BCe) & BCi);
                 Eba ^= RoundConstants[round];
@@ -249,15 +244,15 @@ namespace Trivial.Security
                 var Ebu = BCu ^ ((~BCa) & BCe);
 
                 Abo ^= Do;
-                BCa = ROL(Abo, 28);
+                BCa = Rol(Abo, 28);
                 Agu ^= Du;
-                BCe = ROL(Agu, 20);
+                BCe = Rol(Agu, 20);
                 Aka ^= Da;
-                BCi = ROL(Aka, 3);
+                BCi = Rol(Aka, 3);
                 Ame ^= De;
-                BCo = ROL(Ame, 45);
+                BCo = Rol(Ame, 45);
                 Asi ^= Di;
-                BCu = ROL(Asi, 61);
+                BCu = Rol(Asi, 61);
 
                 var Ega = BCa ^ ((~BCe) & BCi);
                 var Ege = BCe ^ ((~BCi) & BCo);
@@ -266,15 +261,15 @@ namespace Trivial.Security
                 var Egu = BCu ^ ((~BCa) & BCe);
 
                 Abe ^= De;
-                BCa = ROL(Abe, 1);
+                BCa = Rol(Abe, 1);
                 Agi ^= Di;
-                BCe = ROL(Agi, 6);
+                BCe = Rol(Agi, 6);
                 Ako ^= Do;
-                BCi = ROL(Ako, 25);
+                BCi = Rol(Ako, 25);
                 Amu ^= Du;
-                BCo = ROL(Amu, 8);
+                BCo = Rol(Amu, 8);
                 Asa ^= Da;
-                BCu = ROL(Asa, 18);
+                BCu = Rol(Asa, 18);
 
                 var Eka = BCa ^ ((~BCe) & BCi);
                 var Eke = BCe ^ ((~BCi) & BCo);
@@ -283,15 +278,15 @@ namespace Trivial.Security
                 var Eku = BCu ^ ((~BCa) & BCe);
 
                 Abu ^= Du;
-                BCa = ROL(Abu, 27);
+                BCa = Rol(Abu, 27);
                 Aga ^= Da;
-                BCe = ROL(Aga, 36);
+                BCe = Rol(Aga, 36);
                 Ake ^= De;
-                BCi = ROL(Ake, 10);
+                BCi = Rol(Ake, 10);
                 Ami ^= Di;
-                BCo = ROL(Ami, 15);
+                BCo = Rol(Ami, 15);
                 Aso ^= Do;
-                BCu = ROL(Aso, 56);
+                BCu = Rol(Aso, 56);
 
                 var Ema = BCa ^ ((~BCe) & BCi);
                 var Eme = BCe ^ ((~BCi) & BCo);
@@ -300,15 +295,15 @@ namespace Trivial.Security
                 var Emu = BCu ^ ((~BCa) & BCe);
 
                 Abi ^= Di;
-                BCa = ROL(Abi, 62);
+                BCa = Rol(Abi, 62);
                 Ago ^= Do;
-                BCe = ROL(Ago, 55);
+                BCe = Rol(Ago, 55);
                 Aku ^= Du;
-                BCi = ROL(Aku, 39);
+                BCi = Rol(Aku, 39);
                 Ama ^= Da;
-                BCo = ROL(Ama, 41);
+                BCo = Rol(Ama, 41);
                 Ase ^= De;
-                BCu = ROL(Ase, 2);
+                BCu = Rol(Ase, 2);
 
                 var Esa = BCa ^ ((~BCe) & BCi);
                 var Ese = BCe ^ ((~BCi) & BCo);
@@ -322,22 +317,22 @@ namespace Trivial.Security
                 BCo = Ebo ^ Ego ^ Eko ^ Emo ^ Eso;
                 BCu = Ebu ^ Egu ^ Eku ^ Emu ^ Esu;
 
-                Da = BCu ^ ROL(BCe, 1);
-                De = BCa ^ ROL(BCi, 1);
-                Di = BCe ^ ROL(BCo, 1);
-                Do = BCi ^ ROL(BCu, 1);
-                Du = BCo ^ ROL(BCa, 1);
+                Da = BCu ^ Rol(BCe, 1);
+                De = BCa ^ Rol(BCi, 1);
+                Di = BCe ^ Rol(BCo, 1);
+                Do = BCi ^ Rol(BCu, 1);
+                Du = BCo ^ Rol(BCa, 1);
 
                 Eba ^= Da;
                 BCa = Eba;
                 Ege ^= De;
-                BCe = ROL(Ege, 44);
+                BCe = Rol(Ege, 44);
                 Eki ^= Di;
-                BCi = ROL(Eki, 43);
+                BCi = Rol(Eki, 43);
                 Emo ^= Do;
-                BCo = ROL(Emo, 21);
+                BCo = Rol(Emo, 21);
                 Esu ^= Du;
-                BCu = ROL(Esu, 14);
+                BCu = Rol(Esu, 14);
                 Aba = BCa ^ ((~BCe) & BCi);
                 Aba ^= RoundConstants[round + 1];
                 Abe = BCe ^ ((~BCi) & BCo);
@@ -346,15 +341,15 @@ namespace Trivial.Security
                 Abu = BCu ^ ((~BCa) & BCe);
 
                 Ebo ^= Do;
-                BCa = ROL(Ebo, 28);
+                BCa = Rol(Ebo, 28);
                 Egu ^= Du;
-                BCe = ROL(Egu, 20);
+                BCe = Rol(Egu, 20);
                 Eka ^= Da;
-                BCi = ROL(Eka, 3);
+                BCi = Rol(Eka, 3);
                 Eme ^= De;
-                BCo = ROL(Eme, 45);
+                BCo = Rol(Eme, 45);
                 Esi ^= Di;
-                BCu = ROL(Esi, 61);
+                BCu = Rol(Esi, 61);
                 Aga = BCa ^ ((~BCe) & BCi);
                 Age = BCe ^ ((~BCi) & BCo);
                 Agi = BCi ^ ((~BCo) & BCu);
@@ -362,15 +357,15 @@ namespace Trivial.Security
                 Agu = BCu ^ ((~BCa) & BCe);
 
                 Ebe ^= De;
-                BCa = ROL(Ebe, 1);
+                BCa = Rol(Ebe, 1);
                 Egi ^= Di;
-                BCe = ROL(Egi, 6);
+                BCe = Rol(Egi, 6);
                 Eko ^= Do;
-                BCi = ROL(Eko, 25);
+                BCi = Rol(Eko, 25);
                 Emu ^= Du;
-                BCo = ROL(Emu, 8);
+                BCo = Rol(Emu, 8);
                 Esa ^= Da;
-                BCu = ROL(Esa, 18);
+                BCu = Rol(Esa, 18);
                 Aka = BCa ^ ((~BCe) & BCi);
                 Ake = BCe ^ ((~BCi) & BCo);
                 Aki = BCi ^ ((~BCo) & BCu);
@@ -378,15 +373,15 @@ namespace Trivial.Security
                 Aku = BCu ^ ((~BCa) & BCe);
 
                 Ebu ^= Du;
-                BCa = ROL(Ebu, 27);
+                BCa = Rol(Ebu, 27);
                 Ega ^= Da;
-                BCe = ROL(Ega, 36);
+                BCe = Rol(Ega, 36);
                 Eke ^= De;
-                BCi = ROL(Eke, 10);
+                BCi = Rol(Eke, 10);
                 Emi ^= Di;
-                BCo = ROL(Emi, 15);
+                BCo = Rol(Emi, 15);
                 Eso ^= Do;
-                BCu = ROL(Eso, 56);
+                BCu = Rol(Eso, 56);
                 Ama = BCa ^ ((~BCe) & BCi);
                 Ame = BCe ^ ((~BCi) & BCo);
                 Ami = BCi ^ ((~BCo) & BCu);
@@ -394,15 +389,15 @@ namespace Trivial.Security
                 Amu = BCu ^ ((~BCa) & BCe);
 
                 Ebi ^= Di;
-                BCa = ROL(Ebi, 62);
+                BCa = Rol(Ebi, 62);
                 Ego ^= Do;
-                BCe = ROL(Ego, 55);
+                BCe = Rol(Ego, 55);
                 Eku ^= Du;
-                BCi = ROL(Eku, 39);
+                BCi = Rol(Eku, 39);
                 Ema ^= Da;
-                BCo = ROL(Ema, 41);
+                BCo = Rol(Ema, 41);
                 Ese ^= De;
-                BCu = ROL(Ese, 2);
+                BCu = Rol(Ese, 2);
                 Asa = BCa ^ ((~BCe) & BCi);
                 Ase = BCe ^ ((~BCi) & BCo);
                 Asi = BCi ^ ((~BCo) & BCu);
@@ -435,6 +430,11 @@ namespace Trivial.Security
             state[22] = Asi;
             state[23] = Aso;
             state[24] = Asu;
+        }
+
+        private static ulong Rol(ulong a, int offset)
+        {
+            return ((a) << (offset % KeccakLaneSizeInBits)) ^ ((a) >> (KeccakLaneSizeInBits - (offset % KeccakLaneSizeInBits)));
         }
     }
 }

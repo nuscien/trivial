@@ -54,7 +54,8 @@ namespace Trivial.Chemistry
             if (number <= periodicTable.Length) return periodicTable[number - 1];
             if (others.TryGetValue(number, out var r)) return r;
             r = new ChemicalElement(number, null, null, double.NaN);
-            if (r.Period > 0)
+            var max = ChemistryExtensions.MaxAtomicNumber;
+            if (r.Period > 0 && (max < 0 || number <= max))
             {
                 others.TryAdd(number, r);
                 if (others.TryGetValue(number, out var r2)) return r2;
