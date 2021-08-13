@@ -12,7 +12,7 @@ namespace Trivial.Text
     public class TsvParser : BaseLinesStringTableParser
     {
         /// <summary>
-        /// CSV MIME.
+        /// TSV MIME.
         /// </summary>
         public const string MIME = "text/tsv";
 
@@ -92,9 +92,9 @@ namespace Trivial.Text
         }
 
         /// <summary>
-        /// Parses a line in CSV file.
+        /// Parses a line in TSV file.
         /// </summary>
-        /// <param name="line">A line in CSV file.</param>
+        /// <param name="line">A line in TSV file.</param>
         /// <returns>Values in this line.</returns>
         protected override List<string> ParseLine(string line)
         {
@@ -114,7 +114,7 @@ namespace Trivial.Text
         /// <summary>
         /// Parses CSV.
         /// </summary>
-        /// <param name="csv">The CSV text.</param>
+        /// <param name="csv">The TSV text.</param>
         /// <returns>Content of CSV.</returns>
         public static IEnumerable<IReadOnlyList<string>> Parse(IEnumerable<string> csv)
         {
@@ -129,7 +129,7 @@ namespace Trivial.Text
         /// <summary>
         /// Parses CSV.
         /// </summary>
-        /// <param name="csv">The CSV text.</param>
+        /// <param name="csv">The TSV text.</param>
         /// <returns>Content of CSV.</returns>
         public static IEnumerable<IReadOnlyList<string>> Parse(string csv)
         {
@@ -151,7 +151,7 @@ namespace Trivial.Text
         /// <summary>
         /// Parses CSV.
         /// </summary>
-        /// <param name="csv">The CSV file.</param>
+        /// <param name="csv">The TSV file.</param>
         /// <param name="encoding">The character encoding to use.</param>
         /// <returns>Content of CSV.</returns>
         public static IEnumerable<IReadOnlyList<string>> Parse(FileInfo csv, Encoding encoding = null)
@@ -163,7 +163,7 @@ namespace Trivial.Text
         /// <summary>
         /// Parses CSV.
         /// </summary>
-        /// <param name="csv">The CSV file.</param>
+        /// <param name="csv">The TSV file.</param>
         /// <param name="detectEncodingFromByteOrderMarks">true if look for byte order marks at the beginning of the file; otherwise, false.</param>
         /// <returns>Content of CSV.</returns>
         public static IEnumerable<IReadOnlyList<string>> Parse(FileInfo csv, bool detectEncodingFromByteOrderMarks)
@@ -175,7 +175,7 @@ namespace Trivial.Text
         /// <summary>
         /// Parses CSV.
         /// </summary>
-        /// <param name="csv">The CSV text reader.</param>
+        /// <param name="csv">The TSV text reader.</param>
         /// <returns>Content of CSV.</returns>
         public static IEnumerable<IReadOnlyList<string>> Parse(TextReader csv)
         {

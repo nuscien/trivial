@@ -7,87 +7,82 @@ using System.Text;
 namespace Trivial.Text
 {
     /// <summary>
-    /// The text parser for comma-separated values (RFC-4180) file format.
+    /// The text parser for log file (W3C WD-logfile-960323) format.
     /// </summary>
-    public class CsvParser : BaseLinesStringTableParser
+    public class ExtendedLogParser : BaseLinesStringTableParser
     {
-        /// <summary>
-        /// CSV MIME.
-        /// </summary>
-        public const string MIME = "text/csv";  // RFC 7111.
-
         /// <summary>
         /// The seperator per feild.
         /// </summary>
-        private const char fieldSeperator = ',';
+        private const char fieldSeperator = ' ';
 
         /// <summary>
-        /// Initializes a new instance of the CsvParser class.
+        /// Initializes a new instance of the ExtendedLogParser class.
         /// </summary>
         /// <param name="reader">The text reader.</param>
-        public CsvParser(TextReader reader) : base(reader)
+        public ExtendedLogParser(TextReader reader) : base(reader)
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the CsvParser class.
+        /// Initializes a new instance of the ExtendedLogParser class.
         /// </summary>
         /// <param name="lines">The lines.</param>
-        public CsvParser(string lines) : base(lines)
+        public ExtendedLogParser(string lines) : base(lines)
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the CsvParser class.
+        /// Initializes a new instance of the ExtendedLogParser class.
         /// </summary>
         /// <param name="lines">The lines.</param>
-        public CsvParser(IEnumerable<string> lines) : base(lines)
+        public ExtendedLogParser(IEnumerable<string> lines) : base(lines)
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the CsvParser class.
+        /// Initializes a new instance of the ExtendedLogParser class.
         /// </summary>
         /// <param name="lines">The lines.</param>
-        public CsvParser(IEnumerable<IReadOnlyList<string>> lines) : base(lines)
+        public ExtendedLogParser(IEnumerable<IReadOnlyList<string>> lines) : base(lines)
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the CsvParser class.
+        /// Initializes a new instance of the ExtendedLogParser class.
         /// </summary>
         /// <param name="stream">The stream to read.</param>
         /// <param name="detectEncodingFromByteOrderMarks">true if look for byte order marks at the beginning of the file; otherwise, false.</param>
         /// <param name="encoding">The optional character encoding to use.</param>
-        public CsvParser(Stream stream, bool detectEncodingFromByteOrderMarks, Encoding encoding = null) : base(stream, detectEncodingFromByteOrderMarks, encoding)
+        public ExtendedLogParser(Stream stream, bool detectEncodingFromByteOrderMarks, Encoding encoding = null) : base(stream, detectEncodingFromByteOrderMarks, encoding)
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the CsvParser class.
+        /// Initializes a new instance of the ExtendedLogParser class.
         /// </summary>
         /// <param name="stream">The stream to read.</param>
         /// <param name="encoding">The optional character encoding to use.</param>
-        public CsvParser(Stream stream, Encoding encoding = null) : base(stream, encoding)
+        public ExtendedLogParser(Stream stream, Encoding encoding = null) : base(stream, encoding)
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the CsvParser class.
+        /// Initializes a new instance of the ExtendedLogParser class.
         /// </summary>
         /// <param name="file">The file to read.</param>
         /// <param name="detectEncodingFromByteOrderMarks">true if look for byte order marks at the beginning of the file; otherwise, false.</param>
         /// <param name="encoding">The optional character encoding to use.</param>
-        public CsvParser(FileInfo file, bool detectEncodingFromByteOrderMarks, Encoding encoding = null) : base(file, detectEncodingFromByteOrderMarks, encoding)
+        public ExtendedLogParser(FileInfo file, bool detectEncodingFromByteOrderMarks, Encoding encoding = null) : base(file, detectEncodingFromByteOrderMarks, encoding)
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the CsvParser class.
+        /// Initializes a new instance of the ExtendedLogParser class.
         /// </summary>
         /// <param name="file">The file to read.</param>
         /// <param name="encoding">The optional character encoding to use.</param>
-        public CsvParser(FileInfo file, Encoding encoding = null) : base(file, encoding)
+        public ExtendedLogParser(FileInfo file, Encoding encoding = null) : base(file, encoding)
         {
         }
 
@@ -195,7 +190,7 @@ namespace Trivial.Text
         /// <param name="line">The fields.</param>
         /// <param name="seperator">The field seperator.</param>
         /// <returns>A line string.</returns>
-        internal static string ToLineString(IReadOnlyList<string> line, char seperator)
+        private static string ToLineString(IReadOnlyList<string> line, char seperator)
         {
             if (line == null || line.Count == 0) return null;
             var str = new StringBuilder();
@@ -204,7 +199,7 @@ namespace Trivial.Text
                 if (field.IndexOfAny(new[] { seperator, '\"' }) >= 0)
                 {
                     str.Append('\"');
-                    str.Append(field.Replace("\"", "\\\""));
+                    str.Append(field.Replace("\"", "\"\""));
                     str.Append('\"');
                 }
                 else
@@ -226,9 +221,9 @@ namespace Trivial.Text
         /// <param name="line">A line in CSV file.</param>
         /// <param name="seperator">The field seperator.</param>
         /// <returns>Values in this line.</returns>
-        internal static List<string> ParseLineStatic(string line, char seperator)
+        private static List<string> ParseLineStatic(string line, char seperator)
         {
-            if (string.IsNullOrEmpty(line)) return null;
+            if (string.IsNullOrEmpty(line) || line.StartsWith("#")) return null;
             var arr = line.Split(seperator);
             if (line.IndexOf("\"") < 0) return arr.ToList();
             var list = new List<string>();
@@ -239,7 +234,7 @@ namespace Trivial.Text
                 {
                     if (item.Length > 0 && item[0] == '"')
                     {
-                        if (StringExtensions.IsLast(item, '"', '\\', true))
+                        if (StringExtensions.IsLast(item, '"', '"', true))
                         {
                             list.Add(StringExtensions.ReplaceBackSlash(item.SubRangeString(1, 1, true)));
                         }
@@ -257,7 +252,7 @@ namespace Trivial.Text
                     continue;
                 }
 
-                if (StringExtensions.IsLast(item, '"', '\\', false))
+                if (StringExtensions.IsLast(item, '"', '"', false))
                 {
                     list[list.Count - 1] += seperator + StringExtensions.ReplaceBackSlash(item.SubRangeString(0, 1, true));
                     inScope = false;

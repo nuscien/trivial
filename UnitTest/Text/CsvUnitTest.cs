@@ -106,5 +106,21 @@ namespace Trivial.Text
             Assert.AreEqual("mn", jsons[1].TryGetStringValue("C"));
             Assert.AreEqual(43210, jsons[1].TryGetInt32Value("Num"));
         }
+
+        /// <summary>
+        /// Tests W3C Extended Log parser.
+        /// </summary>
+        [TestMethod]
+        public void TestExtendedLogParser()
+        {
+            var text = "#Version 1.0\n#Fields: time cs-method cs-uri\n00:34:23 GET /foo/bar.html\n12:21:16 GET /foo/bar.html\n12:45:52 GET \"/foo/bar.html\"\n12:57:34 GET /foo/bar.html";
+            var parser = new ExtendedLogParser(text);
+            var col = parser.Where(ele => ele != null).ToList();
+            Assert.AreEqual(4, col.Count);
+            Assert.AreEqual(3, col[0].Count);
+            Assert.AreEqual("12:21:16", col[1][0]);
+            Assert.AreEqual("/foo/bar.html", col[2][2]);
+            Assert.AreEqual("GET", col[3][1]);
+        }
     }
 }
