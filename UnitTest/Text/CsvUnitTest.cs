@@ -67,8 +67,8 @@ namespace Trivial.Text
         [TestMethod]
         public void TestTsvParser()
         {
-            var text = "ab,cd,\"efg,\t\",56789,!!!\nhijk,l,mn,43210";
-            var parser = new CsvParser(text);
+            var text = "ab\tcd\t\"efg,\t\"\t56789\t!!!\nhijk\tl\tmn\t43210";
+            var parser = new TsvParser(text);
             var col = parser.ToList();
 
             Assert.AreEqual(2, col.Count);
@@ -115,7 +115,9 @@ namespace Trivial.Text
         {
             var text = "#Version 1.0\n#Fields: time cs-method cs-uri\n00:34:23 GET /foo/bar.html\n12:21:16 GET /foo/bar.html\n12:45:52 GET \"/foo/bar.html\"\n12:57:34 GET /foo/bar.html";
             var parser = new ExtendedLogParser(text);
-            var col = parser.Where(ele => ele != null).ToList();
+            var col = parser.ToList();
+            Assert.AreEqual(3, parser.Headers.Count);
+            Assert.AreEqual("cs-method", parser.Headers[1]);
             Assert.AreEqual(4, col.Count);
             Assert.AreEqual(3, col[0].Count);
             Assert.AreEqual("12:21:16", col[1][0]);

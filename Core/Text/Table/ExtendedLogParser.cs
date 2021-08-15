@@ -87,13 +87,22 @@ namespace Trivial.Text
         }
 
         /// <summary>
+        /// Gets the fields names.
+        /// </summary>
+        public IReadOnlyList<string> Headers { get; private set; }
+
+        /// <summary>
         /// Parses a line in CSV file.
         /// </summary>
         /// <param name="line">A line in CSV file.</param>
         /// <returns>Values in this line.</returns>
         protected override List<string> ParseLine(string line)
         {
-            return ParseLineStatic(line, fieldSeperator);
+            var l = ParseLineStatic(line, fieldSeperator);
+            if (l != null || Headers != null || line?.StartsWith("#Fields:") != true) return l;
+            l = line.Substring(8).Trim().Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries).ToList();
+            if (l.Count > 0) Headers = l.AsReadOnly();
+            return null;
         }
 
         /// <summary>
