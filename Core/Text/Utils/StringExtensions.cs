@@ -509,7 +509,7 @@ namespace Trivial.Text
         /// <returns>A JSON string.</returns>
         private static string ToJson(object obj, Func<object, Type, string> converter)
         {
-            if (obj == null) return "null";
+            if (obj == null || obj is DBNull) return "null";
             var t = obj.GetType();
             if (obj is JsonDocument jsonDoc)
             {
@@ -553,6 +553,7 @@ namespace Trivial.Text
 
             if (t == typeof(string)) return JsonStringNode.ToJson(obj.ToString());
             if (obj is Net.HttpUri uri2) return JsonStringNode.ToJson(uri2.ToString());
+            if (obj is Net.AppDeepLinkUri uri3) return JsonStringNode.ToJson(uri3.ToString());
             if (obj is Uri uri)
             {
                 try
@@ -590,6 +591,8 @@ namespace Trivial.Text
                     return JsonStringNode.ToJson(dto.ToString("yyyy-MM-ddTHH:mm:ss.fffzzz"));
                 if (obj is double f2)
                     return f2.ToString("g", CultureInfo.InvariantCulture);
+                if (obj is decimal f3)
+                    return f3.ToString("g", CultureInfo.InvariantCulture);
                 if (obj is TimeSpan ts)
                     return ts.TotalSeconds.ToString("g", CultureInfo.InvariantCulture);
 

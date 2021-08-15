@@ -280,11 +280,12 @@ namespace Trivial.Reflection
         protected string GetPropertyJson<T>(string key, JsonSerializerOptions options = null)
         {
             var v = GetProperty<T>(key);
-            if (v is null) return null;
+            if (v is null || v is DBNull) return null;
             if (v is string s) return JsonStringNode.ToJson(s);
             if (v is JsonObjectNode json) return options?.WriteIndented == true ? json.ToString(IndentStyles.Compact) : json.ToString();
             if (v is JsonArrayNode arr) return options?.WriteIndented == true ? arr.ToString(IndentStyles.Compact) : arr.ToString();
             if (v is System.Text.Json.Nodes.JsonNode node) return node.ToJsonString(options);
+            if (v is JsonDocument jDoc) return jDoc.RootElement.ToString();
             if (v is Net.QueryData q) return q.ToString();
             if (v is Uri u) return u.OriginalString;
             if (v.GetType().IsValueType)
@@ -298,6 +299,9 @@ namespace Trivial.Reflection
                 if (v is Guid g) return g.ToString();
                 if (v is DateTime dt) return JsonStringNode.ToJson(dt);
                 if (v is DateTimeOffset dto) return JsonStringNode.ToJson(dto.UtcDateTime);
+                if (v is JsonElement jEle) return jEle.ToString();
+                if (v is uint ui) return ui.ToString("g");
+                if (v is ulong ul) return ul.ToString("g");
             }
 
             return JsonSerializer.Serialize(v, options);
