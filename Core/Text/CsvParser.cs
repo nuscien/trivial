@@ -17,6 +17,11 @@ namespace Trivial.Text
         public const string MIME = "text/csv";  // RFC 7111.
 
         /// <summary>
+        /// The seperator per feild.
+        /// </summary>
+        private const char fieldSeperator = ',';
+
+        /// <summary>
         /// Initializes a new instance of the CsvParser class.
         /// </summary>
         /// <param name="reader">The text reader.</param>
@@ -93,7 +98,7 @@ namespace Trivial.Text
         /// <returns>Values in this line.</returns>
         protected override List<string> ParseLine(string line)
         {
-            return ParseLineStatic(line);
+            return ParseLineStatic(line, fieldSeperator);
         }
 
         /// <summary>
@@ -103,27 +108,7 @@ namespace Trivial.Text
         /// <returns>A line string.</returns>
         protected override string ToLineString(IReadOnlyList<string> line)
         {
-            if (line == null || line.Count == 0) return null;
-            var str = new StringBuilder();
-            foreach (var field in line)
-            {
-                if (field.IndexOfAny(new[] { ',', '\"' }) >= 0)
-                {
-                    str.Append('\"');
-                    str.Append(field.Replace("\"", "\\\""));
-                    str.Append('\"');
-                }
-                else
-                {
-                    str.Append(field);
-                }
-
-                str.Append(',');
-            }
-
-            if (str.Length == 0) return null;
-            str.Remove(str.Length - 1, 1);
-            return str.ToString();
+            return ToLineString(line, fieldSeperator);
         }
 
         /// <summary>
@@ -135,7 +120,7 @@ namespace Trivial.Text
         {
             foreach (var line in csv)
             {
-                var item = ParseLineStatic(line);
+                var item = ParseLineStatic(line, fieldSeperator);
                 if (item == null) continue;
                 yield return item.AsReadOnly();
             }
@@ -198,21 +183,53 @@ namespace Trivial.Text
             {
                 var line = csv.ReadLine();
                 if (line == null) break;
-                var item = ParseLineStatic(line);
+                var item = ParseLineStatic(line, fieldSeperator);
                 if (item == null) continue;
                 yield return item.AsReadOnly();
             }
         }
 
         /// <summary>
+        /// Converts a line information to a string.
+        /// </summary>
+        /// <param name="line">The fields.</param>
+        /// <param name="seperator">The field seperator.</param>
+        /// <returns>A line string.</returns>
+        internal static string ToLineString(IReadOnlyList<string> line, char seperator)
+        {
+            if (line == null || line.Count == 0) return null;
+            var str = new StringBuilder();
+            foreach (var field in line)
+            {
+                if (field.IndexOfAny(new[] { seperator, '\"' }) >= 0)
+                {
+                    str.Append('\"');
+                    str.Append(field.Replace("\"", "\\\""));
+                    str.Append('\"');
+                }
+                else
+                {
+                    str.Append(field);
+                }
+
+                str.Append(fieldSeperator);
+            }
+
+            if (str.Length == 0) return null;
+            str.Remove(str.Length - 1, 1);
+            return str.ToString();
+        }
+
+        /// <summary>
         /// Parses a line in CSV file.
         /// </summary>
         /// <param name="line">A line in CSV file.</param>
+        /// <param name="seperator">The field seperator.</param>
         /// <returns>Values in this line.</returns>
-        private static List<string> ParseLineStatic(string line)
+        internal static List<string> ParseLineStatic(string line, char seperator)
         {
             if (string.IsNullOrEmpty(line)) return null;
-            var arr = line.Split(',');
+            var arr = line.Split(seperator);
             if (line.IndexOf("\"") < 0) return arr.ToList();
             var list = new List<string>();
             var inScope = false;
@@ -222,7 +239,7 @@ namespace Trivial.Text
                 {
                     if (item.Length > 0 && item[0] == '"')
                     {
-                        if (item.Length > 1 && item[item.Length - 1] == '"' && item[item.Length - 2] != '\\')
+                        if (StringExtensions.IsLast(item, '"', '\\', true))
                         {
                             list.Add(StringExtensions.ReplaceBackSlash(item.SubRangeString(1, 1, true)));
                         }
@@ -240,14 +257,14 @@ namespace Trivial.Text
                     continue;
                 }
 
-                if (item.Length > 0 && item[item.Length - 1] == '"' && (item.Length == 1 || item[item.Length - 2] != '\\'))
+                if (StringExtensions.IsLast(item, '"', '\\', false))
                 {
-                    list[list.Count - 1] += "," + StringExtensions.ReplaceBackSlash(item.SubRangeString(0, 1, true));
+                    list[list.Count - 1] += seperator + StringExtensions.ReplaceBackSlash(item.SubRangeString(0, 1, true));
                     inScope = false;
                 }
                 else
                 {
-                    list[list.Count - 1] += "," + StringExtensions.ReplaceBackSlash(item);
+                    list[list.Count - 1] += seperator + StringExtensions.ReplaceBackSlash(item);
                 }
             }
 

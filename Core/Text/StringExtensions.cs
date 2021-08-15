@@ -455,6 +455,13 @@ namespace Trivial.Text
 #endif
         }
 
+        internal static bool IsLast(string s, char last, char except, bool moreThanOne)
+        {
+            return moreThanOne
+                ? s.Length > 1 && s[s.Length - 1] == last && (s.Length - s.Substring(0, s.Length - 1).TrimEnd(except).Length) % 2 > 0
+                : s.Length > 0 && s[s.Length - 1] == last && (s.Length == 1 || (s.Length - s.Substring(0, s.Length - 1).TrimEnd(except).Length) % 2 > 0);
+        }
+
         /// <summary>
         /// Serializes an object into JSON format.
         /// </summary>
