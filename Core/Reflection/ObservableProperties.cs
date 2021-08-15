@@ -39,7 +39,7 @@ namespace Trivial.Reflection
         /// <summary>
         /// Data cache.
         /// </summary>
-        private readonly Dictionary<string, object> cache = new Dictionary<string, object>();
+        private readonly Dictionary<string, object> cache = new();
 
         /// <summary>
         /// Gets an enumerable collection that contains the keys in this instance.
@@ -160,6 +160,37 @@ namespace Trivial.Reflection
         }
 
         /// <summary>
+        /// Gets a property value.
+        /// </summary>
+        /// <typeparam name="T">The type of the property value.</typeparam>
+        /// <param name="key">The key.</param>
+        /// <param name="result">The property value.</param>
+        /// <returns>true if contains; otherwise, false.</returns>
+        protected bool GetProperty<T>(string key, out T result)
+        {
+            try
+            {
+                if (!string.IsNullOrWhiteSpace(key) && cache.TryGetValue(key, out var v))
+                {
+                    result = (T)v;
+                    return true;
+                }
+            }
+            catch (InvalidCastException)
+            {
+            }
+            catch (NullReferenceException)
+            {
+            }
+            catch (ArgumentException)
+            {
+            }
+
+            result = default;
+            return false;
+        }
+
+        /// <summary>
         /// Sets a property.
         /// </summary>
         /// <param name="key">The key.</param>
@@ -249,8 +280,30 @@ namespace Trivial.Reflection
         protected string GetPropertyJson<T>(string key, JsonSerializerOptions options = null)
         {
             var v = GetProperty<T>(key);
-            if (v is null) return null;
+            if (v is null || v is DBNull) return null;
             if (v is string s) return JsonString.ToJson(s);
+            if (v is JsonObject json) return options?.WriteIndented == true ? json.ToString(IndentStyles.Compact) : json.ToString();
+            if (v is JsonArray arr) return options?.WriteIndented == true ? arr.ToString(IndentStyles.Compact) : arr.ToString();
+            //if (v is System.Text.Json.Nodes.JsonNode node) return node.ToJsonString(options);
+            if (v is JsonDocument jDoc) return jDoc.RootElement.ToString();
+            if (v is Net.QueryData q) return q.ToString();
+            if (v is Uri u) return u.OriginalString;
+            if (v.GetType().IsValueType)
+            {
+                if (v is bool b) return b ? JsonBoolean.TrueString : JsonBoolean.FalseString;
+                if (v is int i) return i.ToString("g");
+                if (v is long l) return l.ToString("g");
+                if (v is float f) return f.ToString("g");
+                if (v is double d) return d.ToString("g");
+                if (v is decimal d2) return d2.ToString("g");
+                if (v is Guid g) return g.ToString();
+                if (v is DateTime dt) return JsonString.ToJson(dt);
+                if (v is DateTimeOffset dto) return JsonString.ToJson(dto.UtcDateTime);
+                if (v is JsonElement jEle) return jEle.ToString();
+                if (v is uint ui) return ui.ToString("g");
+                if (v is ulong ul) return ul.ToString("g");
+            }
+
             return JsonSerializer.Serialize(v, options);
         }
 
@@ -311,7 +364,16 @@ namespace Trivial.Reflection
         /// <param name="key">The key.</param>
         /// <param name="defaultValue">The default value.</param>
         /// <returns>A property value.</returns>
-        public new T GetProperty<T>(string key, T defaultValue = default) => base.GetProperty<T>(key, defaultValue);
+        public new T GetProperty<T>(string key, T defaultValue = default) => base.GetProperty(key, defaultValue);
+
+        /// <summary>
+        /// Gets a property value.
+        /// </summary>
+        /// <typeparam name="T">The type of the property value.</typeparam>
+        /// <param name="key">The key.</param>
+        /// <param name="result">The property value.</param>
+        /// <returns>true if contains; otherwise, false.</returns>
+        public new bool GetProperty<T>(string key, out T result) => base.GetProperty(key, out result);
 
         /// <summary>
         /// Sets a property.

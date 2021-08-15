@@ -550,6 +550,7 @@ namespace Trivial.Text
 
             if (t == typeof(string)) return JsonString.ToJson(obj.ToString());
             if (obj is Net.HttpUri uri2) return JsonString.ToJson(uri2.ToString());
+            if (obj is Net.AppDeepLinkUri uri3) return JsonString.ToJson(uri3.ToString());
             if (obj is Uri uri)
             {
                 try
@@ -587,6 +588,8 @@ namespace Trivial.Text
                     return JsonString.ToJson(dto.ToString("yyyy-MM-ddTHH:mm:ss.fffzzz"));
                 if (obj is double f2)
                     return f2.ToString("g", CultureInfo.InvariantCulture);
+                if (obj is decimal f3)
+                    return f3.ToString("g", CultureInfo.InvariantCulture);
                 if (obj is TimeSpan ts)
                     return ts.TotalSeconds.ToString("g", CultureInfo.InvariantCulture);
 
