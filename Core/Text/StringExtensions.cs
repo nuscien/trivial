@@ -572,7 +572,7 @@ namespace Trivial.Text
                     return f1.ToString("g", CultureInfo.InvariantCulture);
                 if (obj is uint i32u)
                     return i32u.ToString("g", CultureInfo.InvariantCulture);
-                if (obj is uint i64u)
+                if (obj is ulong i64u)
                     return i64u.ToString("g", CultureInfo.InvariantCulture);
                 if (obj is DateTime d)
                     return JsonString.ToJson(d.ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ss.fffZ"));
@@ -590,6 +590,11 @@ namespace Trivial.Text
                     || t == typeof(short)
                     || t == typeof(ushort))
                     return obj.ToString();
+
+#if NET5_0_OR_GREATER
+                if (obj is Half ha)
+                    return ha.ToString("g", CultureInfo.InvariantCulture);
+#endif
             }
 
             if (t == typeof(DBNull)) return "null";

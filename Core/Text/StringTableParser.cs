@@ -218,7 +218,7 @@ namespace Trivial.Text
         private IEnumerable<IReadOnlyList<string>> Parse(IEnumerable<string> lines)
         {
             if (lines == null) return new List<IReadOnlyList<string>>();
-            return lines.Select(ParseLine);
+            return lines.Select(ParseLine).Where(ele => ele != null);
         }
 
         /// <summary>
