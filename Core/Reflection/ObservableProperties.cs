@@ -280,7 +280,7 @@ namespace Trivial.Reflection
         protected string GetPropertyJson<T>(string key, JsonSerializerOptions options = null)
         {
             var v = GetProperty<T>(key);
-            if (v is null) return null;
+            if (v is null || v is DBNull) return null;
             if (v is string s) return JsonStringNode.ToJson(s);
             if (v is JsonObjectNode json) return options?.WriteIndented == true ? json.ToString(IndentStyles.Compact) : json.ToString();
             if (v is JsonArrayNode arr) return options?.WriteIndented == true ? arr.ToString(IndentStyles.Compact) : arr.ToString();

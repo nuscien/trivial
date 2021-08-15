@@ -509,7 +509,7 @@ namespace Trivial.Text
         /// <returns>A JSON string.</returns>
         private static string ToJson(object obj, Func<object, Type, string> converter)
         {
-            if (obj == null || obj is DBNull) return "null";
+            if (obj == null) return "null";
             var t = obj.GetType();
             if (obj is JsonDocument jsonDoc)
             {
