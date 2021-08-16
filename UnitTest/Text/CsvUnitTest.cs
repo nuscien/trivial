@@ -113,7 +113,7 @@ namespace Trivial.Text
         [TestMethod]
         public void TestExtendedLogParser()
         {
-            var text = "#Version 1.0\n#Fields: time cs-method cs-uri\n00:34:23 GET /foo/bar.html\n12:21:16 GET /foo/bar.html\n12:45:52 GET \"/foo/bar.html\"\n12:57:34 GET /foo/bar.html";
+            var text = "#Version: 1.0\n#Date: 12-Jan-1996 00:00:00\n#Fields: time cs-method cs-uri\n00:34:23 GET /foo/bar.html\n12:21:16 GET /foo/bar.html\n12:45:52 GET \"/foo/bar.html\"\n12:57:34 GET /foo/bar.html";
             var parser = new ExtendedLogParser(text);
             var col = parser.ToList();
             Assert.AreEqual(3, parser.Headers.Count);
@@ -123,6 +123,25 @@ namespace Trivial.Text
             Assert.AreEqual("12:21:16", col[1][0]);
             Assert.AreEqual("/foo/bar.html", col[2][2]);
             Assert.AreEqual("GET", col[3][1]);
+            Assert.AreEqual("1.0", parser.GetDirectiveValue("Version"));
+            parser.TryGetDirectiveValue("Date", out DateTime dt);
+            Assert.AreEqual(1996, dt.Year);
+            Assert.AreEqual(1, dt.Month);
+
+            Assert.AreEqual("2345", SubRangeString(2, 6));
+            Assert.AreEqual("012345", SubRangeString(0, 6));
+            Assert.AreEqual("234567", SubRangeString(2, 2, true));
+            Assert.AreEqual("012345678", SubRangeString(0, 1, true));
+        }
+
+        internal static string SubRangeString(int start, int end, bool reverseEnd = false)
+        {
+            var s = "0123456789";
+#if NETOLDVER
+            return s.Substring(start, reverseEnd ? (s.Length - end - start) : (end - start));
+#else
+            return reverseEnd ? s[start..^end] : s[start..end];
+#endif
         }
     }
 }

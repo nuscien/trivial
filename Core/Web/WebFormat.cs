@@ -208,20 +208,47 @@ namespace Trivial.Web
                     };
             }
 
+            var y = GetNaturalNumber(s, 0, 4);
             if (s[4] != '-')
             {
                 if (s[4] == '年')
+                {
                     s = s.Replace('年', '-').Replace('月', '-').Replace("日", string.Empty).Replace("号", string.Empty);
+                }
                 else
-                    return s.ToLowerInvariant() switch
+                {
+                    if (s.Length < 11 || (s[6] != ' ' && s[6] != '-'))
+                        return s.ToLowerInvariant() switch
+                        {
+                            "maintenant" => DateTime.UtcNow,
+                            "aujourd'hui" => DateTime.UtcNow.Date,
+                            _ => null
+                        };
+                    y = GetNaturalNumber(s, 7, 4);
+                    if (y < 0) return null;
+                    int m2;
+                    int d2;
+                    if (s[2] == ' ' || s[2] == '-')
                     {
-                        "maintenant" => DateTime.UtcNow,
-                        "aujourd'hui" => DateTime.UtcNow.Date,
-                        _ => null
-                    };
+                        d2 = GetNaturalNumber(s, 0, 2);
+                        m2 = GetMonth(s, 3);
+                    }
+                    else
+                    {
+                        d2 = GetNaturalNumber(s, 4, 2);
+                        m2 = GetMonth(s, 0);
+                    }
+
+                    if (d2 < 0 || m2 < 0) return null;
+                    if (s.Length < 16) return new DateTime(y, m2, d2, 0, 0, 0, DateTimeKind.Utc);
+                    var arr2 = s.Substring(12).Split(new[] { ':' }, StringSplitOptions.None);
+                    if (arr2.Length < 2 || string.IsNullOrEmpty(arr2[0]) || string.IsNullOrEmpty(arr2[1]) || !int.TryParse(arr2[0], out var h2) || !int.TryParse(arr2[1], out var min))
+                        return new DateTime(y, m2, d2, 0, 0, 0, DateTimeKind.Utc);
+                    if (arr2.Length == 2 || string.IsNullOrEmpty(arr2[2]) || !int.TryParse(arr2[2], out var s2)) s2 = 0;
+                    return new DateTime(y, m2, d2, h2, min, s2, DateTimeKind.Utc);
+                }
             }
 
-            var y = GetNaturalNumber(s, 0, 4);
             if (y < 0) return null;
             if (s[5] == 'W')
             {

@@ -17,6 +17,11 @@ namespace Trivial.Text
         private const char fieldSeperator = ' ';
 
         /// <summary>
+        /// THe cache of directive.
+        /// </summary>
+        private readonly Dictionary<string, string> directives = new();
+
+        /// <summary>
         /// Initializes a new instance of the ExtendedLogParser class.
         /// </summary>
         /// <param name="reader">The text reader.</param>
@@ -46,6 +51,16 @@ namespace Trivial.Text
         /// <param name="lines">The lines.</param>
         public ExtendedLogParser(IEnumerable<IReadOnlyList<string>> lines) : base(lines)
         {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the ExtendedLogParser class.
+        /// </summary>
+        /// <param name="lines">The lines.</param>
+        /// <param name="headers">The headers.</param>
+        public ExtendedLogParser(IEnumerable<IReadOnlyList<string>> lines, IEnumerable<string> headers) : base(lines)
+        {
+            Headers = headers?.ToList()?.AsReadOnly();
         }
 
         /// <summary>
@@ -92,17 +107,99 @@ namespace Trivial.Text
         public IReadOnlyList<string> Headers { get; private set; }
 
         /// <summary>
+        /// Gets the value of a specific directive.
+        /// </summary>
+        /// <param name="key">The directive key.</param>
+        /// <returns>The value of directive; or null, if not found.</returns>
+        public string GetDirectiveValue(string key)
+        {
+            if (directives.TryGetValue(key, out var value)) return value;
+            return null;
+        }
+
+        /// <summary>
+        /// Gets the value of a specific directive.
+        /// </summary>
+        /// <param name="key">The directive key.</param>
+        /// <param name="result">The result output.</param>
+        /// <returns>true if contains the directive; otherise, false.</returns>
+        public bool TryGetDirectiveValue(string key, out string result)
+        {
+            return directives.TryGetValue(key, out result);
+        }
+
+        /// <summary>
+        /// Gets the value of a specific directive.
+        /// </summary>
+        /// <param name="key">The directive key.</param>
+        /// <param name="result">The result output.</param>
+        /// <returns>true if contains the directive with a date time value; otherise, false.</returns>
+        public bool TryGetDirectiveValue(string key, out DateTime result)
+        {
+            if (directives.TryGetValue(key, out var value))
+            {
+                var dt = Web.WebFormat.ParseDate(value);
+                if (dt.HasValue)
+                {
+                    result = dt.Value;
+                    return true;
+                }
+            }
+
+            result = default;
+            return false;
+        }
+
+        /// <summary>
+        /// Gets the value of a specific directive.
+        /// </summary>
+        /// <param name="key">The directive key.</param>
+        /// <param name="result">The result output.</param>
+        /// <returns>true if contains the directive with an integer value; otherise, false.</returns>
+        public bool TryGetDirectiveValue(string key, out int result)
+        {
+            if (directives.TryGetValue(key, out var value) && !string.IsNullOrEmpty(value) && int.TryParse(value, out result))
+                return true;
+            result = default;
+            return false;
+        }
+
+        /// <summary>
+        /// Gets the value of a specific directive.
+        /// </summary>
+        /// <param name="key">The directive key.</param>
+        /// <param name="result">The result output.</param>
+        /// <returns>true if contains the directive with an integer value; otherise, false.</returns>
+        public bool TryGetDirectiveValue(string key, out long result)
+        {
+            if (directives.TryGetValue(key, out var value) && !string.IsNullOrEmpty(value) && long.TryParse(value, out result))
+                return true;
+            result = default;
+            return false;
+        }
+
+        /// <summary>
+        /// Gets the value of a specific directive.
+        /// </summary>
+        /// <param name="key">The directive key.</param>
+        /// <param name="result">The result output.</param>
+        /// <returns>true if contains the directive with an integer value; otherise, false.</returns>
+        public bool TryGetDirectiveValue(string key, out double result)
+        {
+            if (directives.TryGetValue(key, out var value) && !string.IsNullOrEmpty(value) && double.TryParse(value, out result))
+                return true;
+            result = default;
+            return false;
+        }
+
+        /// <summary>
         /// Parses a line in CSV file.
         /// </summary>
         /// <param name="line">A line in CSV file.</param>
         /// <returns>Values in this line.</returns>
         protected override List<string> ParseLine(string line)
         {
-            var l = ParseLineStatic(line, fieldSeperator);
-            if (l != null || Headers != null || line?.StartsWith("#Fields:") != true) return l;
-            l = line.Substring(8).Trim().Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries).ToList();
-            if (l.Count > 0) Headers = l.AsReadOnly();
-            return null;
+           return ParseLineStatic(line, fieldSeperator, HandleDirective);
         }
 
         /// <summary>
@@ -229,10 +326,21 @@ namespace Trivial.Text
         /// </summary>
         /// <param name="line">A line in CSV file.</param>
         /// <param name="seperator">The field seperator.</param>
+        /// <param name="directiveHandler">Additional handler for directive.</param>
         /// <returns>Values in this line.</returns>
-        private static List<string> ParseLineStatic(string line, char seperator)
+        private static List<string> ParseLineStatic(string line, char seperator, Action<string, string> directiveHandler = null)
         {
-            if (string.IsNullOrEmpty(line) || line.StartsWith("#")) return null;
+            if (string.IsNullOrEmpty(line)) return null;
+            if (line.StartsWith("#"))
+            {
+                var pos = line.IndexOf(':');
+                if (directiveHandler == null || pos < 1 || line.Length < 5 || line[1] == ' ' || line[1] == '#') return null;
+                var dir = line.SubRangeString(1, pos).Trim();
+                if (dir.Contains(" ")) return null;
+                directiveHandler(dir, line.Substring(pos + 1).Trim());
+                return null;
+            }
+
             var arr = line.Split(seperator);
             if (line.IndexOf("\"") < 0) return arr.ToList();
             var list = new List<string>();
@@ -273,6 +381,24 @@ namespace Trivial.Text
             }
 
             return list;
+        }
+
+        private void HandleDirective(string key, string value)
+        {
+            switch (key)
+            {
+                case "Fields":
+                    if (Headers == null)
+                    {
+                        var arr = value.Split(new[] { ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries);
+                        if (arr.Length > 0) Headers = arr.ToList().AsReadOnly();
+                    }
+
+                    break;
+                default:
+                    directives[key] = value;
+                    break;
+            }
         }
     }
 }
