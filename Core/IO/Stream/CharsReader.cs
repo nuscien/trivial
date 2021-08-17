@@ -354,24 +354,52 @@ namespace Trivial.IO
         /// <exception cref="ObjectDisposedException">The stream has disposed.</exception>
         public static IEnumerable<string> ReadLines(TextReader reader, bool removeEmptyLine = false)
         {
+            return ReadLines(reader, null, removeEmptyLine);
+        }
+
+        /// <summary>
+        /// Reads lines from a specific stream reader.
+        /// </summary>
+        /// <param name="reader">The stream reader.</param>
+        /// <param name="onReadToEnd">The handler occurred on reading to end.</param>
+        /// <param name="removeEmptyLine">true if need remove the empty line; otherwise, false.</param>
+        /// <returns>Lines from the specific stream reader.</returns>
+        /// <exception cref="NotSupportedException">The stream does not support reading.</exception>
+        /// <exception cref="IOException">An I/O error occurs.</exception>
+        /// <exception cref="ObjectDisposedException">The stream has disposed.</exception>
+        public static IEnumerable<string> ReadLines(TextReader reader, Action<bool> onReadToEnd, bool removeEmptyLine = false)
+        {
             if (reader == null) yield break;
-            if (removeEmptyLine)
+            var isSucc = false;
+            try
             {
-                while (true)
+                if (removeEmptyLine)
                 {
-                    var line = reader.ReadLine();
-                    if (line == null) break;
-                    if (string.IsNullOrEmpty(line)) continue;
-                    yield return line;
+                    while (true)
+                    {
+                        var line = reader.ReadLine();
+                        if (line == null) break;
+                        if (string.IsNullOrEmpty(line)) continue;
+                        yield return line;
+                    }
                 }
-            }
-            else
-            {
-                while (true)
+                else
                 {
-                    var line = reader.ReadLine();
-                    if (line == null) break;
-                    yield return line;
+                    while (true)
+                    {
+                        var line = reader.ReadLine();
+                        if (line == null) break;
+                        yield return line;
+                    }
+                }
+
+                isSucc = true;
+            }
+            finally
+            {
+                if (onReadToEnd is not null)
+                {
+                    onReadToEnd(isSucc);
                 }
             }
         }
@@ -389,8 +417,11 @@ namespace Trivial.IO
         public static IEnumerable<string> ReadLines(Stream stream, Encoding encoding, bool removeEmptyLine = false)
         {
             if (stream == null) throw new ArgumentNullException(nameof(stream), "stream should not be null.");
-            using var reader = new StreamReader(stream, encoding ?? Encoding.UTF8);
-            return ReadLines(reader, removeEmptyLine);
+            var reader = new StreamReader(stream, encoding ?? Encoding.UTF8);
+            return ReadLines(reader, isSucc =>
+            {
+                reader.Dispose();
+            }, removeEmptyLine);
         }
 
         /// <summary>
@@ -488,10 +519,11 @@ namespace Trivial.IO
         public static IEnumerable<string> ReadLines(FileInfo file, Encoding encoding, bool removeEmptyLine = false)
         {
             if (file == null) throw new ArgumentNullException(nameof(file), "file should not be null.");
-            using (var reader = new StreamReader(file.FullName, encoding))
+            var reader = new StreamReader(file.FullName, encoding);
+            return ReadLines(reader, isSucc =>
             {
-                return CharsReader.ReadLines(reader, removeEmptyLine);
-            }
+                reader.Dispose();
+            }, removeEmptyLine);
         }
 
         /// <summary>
@@ -508,10 +540,11 @@ namespace Trivial.IO
         public static IEnumerable<string> ReadLines(FileInfo file, bool detectEncodingFromByteOrderMarks, bool removeEmptyLine = false)
         {
             if (file == null) throw new ArgumentNullException(nameof(file), "file should not be null.");
-            using (var reader = new StreamReader(file.FullName, detectEncodingFromByteOrderMarks))
+            var reader = new StreamReader(file.FullName, detectEncodingFromByteOrderMarks);
+            return ReadLines(reader, isSucc =>
             {
-                return CharsReader.ReadLines(reader, removeEmptyLine);
-            }
+                reader.Dispose();
+            }, removeEmptyLine);
         }
 
         /// <summary>
@@ -633,6 +666,18 @@ namespace Trivial.IO
         public static IEnumerable<char> ReadChars(StreamPagingResolver streams, Encoding encoding = null, bool closeStream = false)
         {
             return ReadChars(StreamCopy.ToStreamCollection(streams), encoding, closeStream);
+        }
+
+        /// <summary>
+        /// Converts a string to a memory stream.
+        /// </summary>
+        /// <param name="s">The string to convert.</param>
+        /// <param name="encoding">The encoding to write text.</param>
+        /// <returns>A memeory stream with the specific string and encoding.</returns>
+        public static Stream ToStream(string s, Encoding encoding = null)
+        {
+            var bytes = (encoding ?? Encoding.UTF8).GetBytes(s);
+            return new MemoryStream(bytes);
         }
     }
 }

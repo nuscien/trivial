@@ -30,6 +30,11 @@ namespace Trivial.IO
             {
                 s.Dispose();
             }
+
+            str = "abcdefg\rhijklmn\nopq rst\r\nuvw xyz";
+            using var stream2 = CharsReader.ToStream(str);
+            var lines = CharsReader.ReadLines(stream2, Encoding.UTF8).ToList();
+            Assert.AreEqual(4, lines.Count);
         }
     }
 }
