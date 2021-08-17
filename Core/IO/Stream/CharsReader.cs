@@ -418,8 +418,11 @@ namespace Trivial.IO
         {
             if (stream == null) throw new ArgumentNullException(nameof(stream), "stream should not be null.");
             var reader = new StreamReader(stream, encoding ?? Encoding.UTF8);
+            var hasDisposed = false;
             return ReadLines(reader, isSucc =>
             {
+                if (hasDisposed) return;
+                hasDisposed = true;
                 reader.Dispose();
             }, removeEmptyLine);
         }
@@ -520,8 +523,11 @@ namespace Trivial.IO
         {
             if (file == null) throw new ArgumentNullException(nameof(file), "file should not be null.");
             var reader = new StreamReader(file.FullName, encoding);
+            var hasDisposed = false;
             return ReadLines(reader, isSucc =>
             {
+                if (hasDisposed) return;
+                hasDisposed = true;
                 reader.Dispose();
             }, removeEmptyLine);
         }
@@ -541,8 +547,11 @@ namespace Trivial.IO
         {
             if (file == null) throw new ArgumentNullException(nameof(file), "file should not be null.");
             var reader = new StreamReader(file.FullName, detectEncodingFromByteOrderMarks);
+            var hasDisposed = false;
             return ReadLines(reader, isSucc =>
             {
+                if (hasDisposed) return;
+                hasDisposed = true;
                 reader.Dispose();
             }, removeEmptyLine);
         }
