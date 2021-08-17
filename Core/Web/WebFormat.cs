@@ -86,10 +86,19 @@ namespace Trivial.Web
         }
 
         /// <summary>
-        /// Parses a ISO 8601 date string to date time.
+        /// Parses an ISO 8601 date string, or a date and time string of RFC 822 and RFC 7231, to date time.
         /// </summary>
         /// <param name="s">The JSON token value of JavaScript date.</param>
-        /// <returns>A date and time.</returns>
+        /// <returns>A date and time; or null, if the input is not a date and time string.</returns>
+        /// <example>
+        /// var d1 = ParseDate("2020W295");
+        /// var d2 = ParseDate("2020-7-17 12:00:00");
+        /// var d3 = ParseDate("2020-07-17T12:00:00Z");
+        /// var d4 = ParseDate("Fri, 17 Jul 2020 12:00:00 GMT");
+        /// var d5 = ParseDate("Fri, 17 Jul 2020 04:00:00 GMT-0800");
+        /// var d6 = ParseDate("Fri Jul 17 2020 12:00:00 GMT");
+        /// var d7 = ParseDate("2020年7月17日 12:00:00");
+        /// </example>
         public static DateTime? ParseDate(string s)
         {
             if (string.IsNullOrWhiteSpace(s)) return null;
@@ -98,7 +107,7 @@ namespace Trivial.Web
             {
                 var y2 = GetNaturalNumber(s, 0, 4);
                 if (y2 < 0) return null;
-                if (s[4] == 'W')
+                if (s[4] == 'W')    // [ISO 8601] 2020W295
                 {
                     var w3 = GetNaturalNumber(s, 5, 2);
                     if (w3 < 0) return null;
@@ -109,16 +118,17 @@ namespace Trivial.Web
                     return r;
                 }
 
+                // 20200717 || 2020-7-17
                 var m2 = s[4] == '-' ? GetNaturalNumber(s, 5, 1) : GetNaturalNumber(s, 4, 2);
                 if (m2 < 0) return null;
                 var d2 = GetNaturalNumber(s, s[6] == '-' ? 7 : 6);
                 if (d2 < 0) return null;
                 return new DateTime(y2, m2, d2, 0, 0, 0, DateTimeKind.Utc);
             }
-
+            
             if (s.Length > 27)
             {
-                if (s[3] == ',' && s[4] == ' ')
+                if (s[3] == ',' && s[4] == ' ') // [RFC 822 Date Time & RFC 7231 Date Time] Fri, 17 Jul 2020 12:00:00 GMT
                 {
                     var d2 = GetNaturalNumber(s, 5, 2);
                     var m2 = GetMonth(s, 8);
@@ -149,7 +159,7 @@ namespace Trivial.Web
                         }
                     }
                 }
-                else if (s[3] == ' ' && s[7] == ' ')
+                else if (s[3] == ' ' && s[7] == ' ')    // [JS Date] Fri Jul 17 2020 12:00:00 GMT
                 {
                     var m2 = GetMonth(s, 4);
                     var d2 = GetNaturalNumber(s, 8);
@@ -197,22 +207,53 @@ namespace Trivial.Web
                     };
             }
 
+            var y = GetNaturalNumber(s, 0, 4);
             if (s[4] != '-')
             {
-                if (s[4] == '年')
+                if (s[4] == '年')    // 2020年7月17日 12:00:00
+                {
                     s = s.Replace('年', '-').Replace('月', '-').Replace("日", string.Empty).Replace("号", string.Empty);
+                }
                 else
-                    return s.ToLowerInvariant() switch
+                {
+                    if (s.Length < 11 || (s[6] != ' ' && s[6] != '-'))
+                        return s.ToLowerInvariant() switch
+                        {
+                            "maintenant" => DateTime.UtcNow,
+                            "aujourd'hui" => DateTime.UtcNow.Date,
+                            _ => null
+                        };
+
+                    // 17-Jul-2020 12:00:00
+                    y = GetNaturalNumber(s, 7, 4);
+                    if (y < 0) return null;
+                    int m2;
+                    int d2;
+                    if (s[2] == ' ' || s[2] == '-')
                     {
-                        "maintenant" => DateTime.UtcNow,
-                        "aujourd'hui" => DateTime.UtcNow.Date,
-                        _ => null
-                    };
+                        d2 = GetNaturalNumber(s, 0, 2);
+                        m2 = GetMonth(s, 3);
+                    }
+                    else
+                    {
+                        d2 = GetNaturalNumber(s, 4, 2);
+                        m2 = GetMonth(s, 0);
+                    }
+
+                    if (d2 < 0 || m2 < 0) return null;
+                    if (s.Length < 16) return new DateTime(y, m2, d2, 0, 0, 0, DateTimeKind.Utc);
+                    #pragma warning disable IDE0057
+                    var arr2 = s.Substring(12).Split(new[] { ':' }, StringSplitOptions.None);
+                    #pragma warning restore IDE0057
+                    if (arr2.Length < 2 || string.IsNullOrEmpty(arr2[0]) || string.IsNullOrEmpty(arr2[1]) || !int.TryParse(arr2[0], out var h2) || !int.TryParse(arr2[1], out var min))
+                        return new DateTime(y, m2, d2, 0, 0, 0, DateTimeKind.Utc);
+                    if (arr2.Length == 2 || string.IsNullOrEmpty(arr2[2]) || !int.TryParse(arr2[2], out var s2)) s2 = 0;
+                    return new DateTime(y, m2, d2, h2, min, s2, DateTimeKind.Utc);
+                }
             }
 
-            var y = GetNaturalNumber(s, 0, 4);
             if (y < 0) return null;
-            if (s[5] == 'W')
+            if (s[5] == 'W')    // [ISO 8601] 2020-W29-5 || 2020-W295
             {
                 var w3 = GetNaturalNumber(s, 6, 2);
                 if (w3 < 0) return null;
@@ -223,6 +264,7 @@ namespace Trivial.Web
                 return r;
             }
 
+            // [ISO 8601] 2020-07-17T12:00:00Z
             var pos = s[7] == '-' ? 8 : 7;
             var m = GetNaturalNumber(s, 5, 2);
             if (m < 0)
