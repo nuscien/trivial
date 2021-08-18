@@ -353,8 +353,16 @@ namespace Trivial.Collection
         /// <returns>The groups.</returns>
         public static IEnumerable<IGrouping<TKey, TValue>> ToGroups<TKey, TValue>(this IEnumerable<KeyValuePair<TKey, TValue>> list)
         {
-            if (list == null) throw new ArgumentNullException(nameof(list), "list should not be null.");
-            return list.GroupBy(item => item.Key, item => item.Value);
+            return list?.GroupBy(item => item.Key, item => item.Value);
+        }
+
+        /// <summary>
+        /// Creates a dictionary from the key value pairs.
+        /// </summary>
+        /// <returns>A dictionary with key and the value collection.</returns>
+        public static Dictionary<TKey, IEnumerable<TValue>> ToDictionary<TKey, TValue>(this IEnumerable<IGrouping<TKey, TValue>> list)
+        {
+            return list?.ToDictionary(item => item.Key, item => item as IEnumerable<TValue>);
         }
 
         /// <summary>
@@ -363,7 +371,7 @@ namespace Trivial.Collection
         /// <returns>A dictionary with key and the value collection.</returns>
         public static Dictionary<TKey, IEnumerable<TValue>> ToDictionary<TKey, TValue>(this IEnumerable<KeyValuePair<TKey, TValue>> list)
         {
-            return ToGroups(list).ToDictionary(item => item.Key, item => item as IEnumerable<TValue>);
+            return ToGroups(list)?.ToDictionary(item => item.Key, item => item as IEnumerable<TValue>);
         }
 
         /// <summary>
