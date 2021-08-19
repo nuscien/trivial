@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace Trivial.Text
 {
     /// <summary>
-    /// The Greek Alphabet.
+    /// The Greek alphabet.
     /// </summary>
     public static class GreekAlphabet
     {
@@ -22,7 +22,12 @@ namespace Trivial.Text
         public const string EnglishName = "Greek Alphabet";
 
         /// <summary>
-        /// The capital letter of alpha (/'ælfə/).
+        /// The language code.
+        /// </summary>
+        public const string LanguageCode = "el";
+
+        /// <summary>
+        /// The capital letter alpha (/'ælfə/).
         ///</summary>
         public const string CapitalAlpha = "Α";
 
@@ -32,7 +37,7 @@ namespace Trivial.Text
         public const string SmallAlpha = "α";
 
         /// <summary>
-        /// The capital letter of beta (/'bi:tə/ 或 /'beɪtə/).
+        /// The capital letter beta (/'bi:tə/ 或 /'beɪtə/).
         ///</summary>
         public const string CapitalBeta = "Β";
 
@@ -42,7 +47,7 @@ namespace Trivial.Text
         public const string SmallBeta = "β";
 
         /// <summary>
-        /// The capital letter of gamma (/'gæmə/).
+        /// The capital letter gamma (/'gæmə/).
         ///</summary>
         public const string CapitalGamma = "Γ";
 
@@ -52,7 +57,7 @@ namespace Trivial.Text
         public const string SmallGamma = "γ";
 
         /// <summary>
-        /// The capital letter of delta (/'deltə/).
+        /// The capital letter delta (/'deltə/).
         ///</summary>
         public const string CapitalDelta = "Δ";
 
@@ -62,7 +67,7 @@ namespace Trivial.Text
         public const string SmallDelta = "δ";
 
         /// <summary>
-        /// The capital letter of epsilon (/'epsɪlɒn/).
+        /// The capital letter epsilon (/'epsɪlɒn/).
         ///</summary>
         public const string CapitalEpsilon = "Ε";
 
@@ -77,7 +82,7 @@ namespace Trivial.Text
         public const string SmallEpsilon2 = "ϵ";
 
         /// <summary>
-        /// The capital letter of dígamma (/'daɪˈɡæmə/).
+        /// The capital letter dígamma (/'daɪˈɡæmə/).
         ///</summary>
         public const string CapitalDígamma = "Ϝ";
 
@@ -87,7 +92,7 @@ namespace Trivial.Text
         public const string SmallDígamma = "ϝ";
 
         /// <summary>
-        /// The capital letter of zeta (/'zi:tə/).
+        /// The capital letter zeta (/'zi:tə/).
         ///</summary>
         public const string CapitalZeta = "Ζ";
 
@@ -97,7 +102,7 @@ namespace Trivial.Text
         public const string SmallZeta = "ζ";
 
         /// <summary>
-        /// The capital letter of eta (/'i:tə/).
+        /// The capital letter eta (/'i:tə/).
         ///</summary>
         public const string CapitalEta = "Η";
 
@@ -107,7 +112,7 @@ namespace Trivial.Text
         public const string SmallEta = "η";
 
         /// <summary>
-        /// The capital letter of theta (/'θi:tə/).
+        /// The capital letter theta (/'θi:tə/).
         ///</summary>
         public const string CapitalTheta = "Θ";
 
@@ -117,7 +122,7 @@ namespace Trivial.Text
         public const string SmallTheta = "θ";
 
         /// <summary>
-        /// The capital letter of iota (/aɪ'əʊtə/).
+        /// The capital letter iota (/aɪ'əʊtə/).
         ///</summary>
         public const string CapitalIota = "Ι";
 
@@ -127,7 +132,7 @@ namespace Trivial.Text
         public const string SmallIota = "ι";
 
         /// <summary>
-        /// The capital letter of kappa (/'kæpə/).
+        /// The capital letter kappa (/'kæpə/).
         ///</summary>
         public const string CapitalKappa = "Κ";
 
@@ -137,7 +142,7 @@ namespace Trivial.Text
         public const string SmallKappa = "κ";
 
         /// <summary>
-        /// The capital letter of lambda (/'læmdə/).
+        /// The capital letter lambda (/'læmdə/).
         ///</summary>
         public const string CapitalLambda = "Λ";
 
@@ -147,7 +152,7 @@ namespace Trivial.Text
         public const string SmallLambda = "λ";
 
         /// <summary>
-        /// The capital letter of mu (/mju:/).
+        /// The capital letter mu (/mju:/).
         ///</summary>
         public const string CapitalMu = "Μ";
 
@@ -157,7 +162,7 @@ namespace Trivial.Text
         public const string SmallMu = "μ";
 
         /// <summary>
-        /// The capital letter of nu (/nju:/).
+        /// The capital letter nu (/nju:/).
         ///</summary>
         public const string CapitalNu = "Ν";
 
@@ -167,7 +172,7 @@ namespace Trivial.Text
         public const string SmallNu = "ν";
 
         /// <summary>
-        /// The capital letter of xi (/ksi/).
+        /// The capital letter xi (/ksi/).
         ///</summary>
         public const string CapitalXi = "Ξ";
 
@@ -177,7 +182,7 @@ namespace Trivial.Text
         public const string SmallXi = "ξ";
 
         /// <summary>
-        /// The capital letter of omicron (/əuˈmaikrən/).
+        /// The capital letter omicron (/əuˈmaikrən/).
         ///</summary>
         public const string CapitalOmicron = "Ο";
 
@@ -187,7 +192,7 @@ namespace Trivial.Text
         public const string SmallOmicron = "ο";
 
         /// <summary>
-        /// The capital letter of pi (/paɪ/).
+        /// The capital letter pi (/paɪ/).
         ///</summary>
         public const string CapitalPi = "∏";
 
@@ -197,7 +202,7 @@ namespace Trivial.Text
         public const string SmallPi = "π";
 
         /// <summary>
-        /// The capital letter of rho (/rəʊ/).
+        /// The capital letter rho (/rəʊ/).
         ///</summary>
         public const string CapitalRho = "Ρ";
 
@@ -207,7 +212,7 @@ namespace Trivial.Text
         public const string SmallRho = "ρ";
 
         /// <summary>
-        /// The capital letter of sigma (/'sɪɡmə/).
+        /// The capital letter sigma (/'sɪɡmə/).
         ///</summary>
         public const string CapitalSigma = "∑";
 
@@ -222,7 +227,7 @@ namespace Trivial.Text
         public const string SmallSigma2 = "ς";
 
         /// <summary>
-        /// The capital letter of tau (/tɔ:/ or /taʊ/).
+        /// The capital letter tau (/tɔ:/ or /taʊ/).
         ///</summary>
         public const string CapitalTau = "Τ";
 
@@ -232,7 +237,7 @@ namespace Trivial.Text
         public const string SmallTau = "τ";
 
         /// <summary>
-        /// The capital letter of upsilon (/ˈipsɪlon/).
+        /// The capital letter upsilon (/ˈipsɪlon/).
         ///</summary>
         public const string CapitalUpsilon = "Υ";
 
@@ -242,7 +247,7 @@ namespace Trivial.Text
         public const string SmallUpsilon = "υ";
 
         /// <summary>
-        /// The capital letter of phi (/faɪ/).
+        /// The capital letter phi (/faɪ/).
         ///</summary>
         public const string CapitalPhi = "Φ";
 
@@ -257,7 +262,7 @@ namespace Trivial.Text
         public const string SmallPhi2 = "ϕ";
 
         /// <summary>
-        /// The capital letter of chi (/kaɪ/).
+        /// The capital letter chi (/kaɪ/).
         ///</summary>
         public const string CapitalChi = "Χ";
 
@@ -267,7 +272,7 @@ namespace Trivial.Text
         public const string SmallChi = "χ";
 
         /// <summary>
-        /// The capital letter of psi (/psaɪ/).
+        /// The capital letter psi (/psaɪ/).
         ///</summary>
         public const string CapitalPsi = "Ψ";
 
@@ -277,7 +282,7 @@ namespace Trivial.Text
         public const string SmallPsi = "ψ";
 
         /// <summary>
-        /// The capital letter of omega (/'əʊmɪɡə/).
+        /// The capital letter omega (/'əʊmɪɡə/).
         ///</summary>
         public const string CapitalOmega = "Ω";
 
