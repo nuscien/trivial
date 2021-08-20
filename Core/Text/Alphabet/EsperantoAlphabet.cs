@@ -12,9 +12,14 @@ namespace Trivial.Text
     public static class EsperantoAlphabet
     {
         /// <summary>
-        /// The name of greek alphabet in Greek.
+        /// The name of Esperanto alphabet in Esperanto.
         /// </summary>
-        public const string Name = "Esperanto";
+        public const string FullName = "Esperanto Alphabet";
+
+        /// <summary>
+        /// The name of Esperanto in Esperanto.
+        /// </summary>
+        public const string LanguageName = "Esperanto";
 
         /// <summary>
         /// The language code.
@@ -22,283 +27,415 @@ namespace Trivial.Text
         public const string LanguageCode = "epo";
 
         /// <summary>
-        /// The capital letter ami (/a/).
+        /// The count of the letter.
         /// </summary>
-        public const string CapitalAmi = "A";
+        public const int Count = 28;
 
         /// <summary>
-        /// The small letter ami (/a/).
+        /// The capital letter a (/a/).
         /// </summary>
-        public const string SmallAmi = "a";
+        public const string CapitalA = "A";
 
         /// <summary>
-        /// The capital letter bela (/b/).
+        /// The small letter a (/a/).
         /// </summary>
-        public const string CapitalBela = "B";
+        public const string SmallA = "a";
 
         /// <summary>
-        /// The small letter bela (/b/).
+        /// The capital letter b (/b/).
         /// </summary>
-        public const string SmallBela = "b";
+        public const string CapitalB = "B";
 
         /// <summary>
-        /// The capital letter celo (/ts/).
+        /// The small letter b (/b/).
         /// </summary>
-        public const string CapitalCelo = "C";
+        public const string SmallB = "b";
 
         /// <summary>
-        /// The small letter celo (/ts/).
+        /// The capital letter c (/ts/).
         /// </summary>
-        public const string SmallCelo = "c";
+        public const string CapitalC = "C";
 
         /// <summary>
-        /// The capital letter ĉokolado (/tʃ/).
+        /// The small letter c (/ts/).
         /// </summary>
-        public const string CapitalĈokolado = "Ĉ";
+        public const string SmallC = "c";
 
         /// <summary>
-        /// The small letter ĉokolado (/tʃ/).
+        /// The capital letter cx (/tʃ/).
         /// </summary>
-        public const string SmallĈokolado = "ĉ";
+        public const string CapitalCx = "Ĉ";
 
         /// <summary>
-        /// The capital letter doni (/d/).
+        /// The small letter cx (/tʃ/).
         /// </summary>
-        public const string CapitalDoni = "D";
+        public const string SmallCx = "ĉ";
 
         /// <summary>
-        /// The small letter doni (/d/).
+        /// The capital letter d (/d/).
         /// </summary>
-        public const string SmallDoni = "d";
+        public const string CapitalD = "D";
 
         /// <summary>
-        /// The capital letter egala (/e/).
+        /// The small letter d (/d/).
         /// </summary>
-        public const string CapitalEgala = "E";
+        public const string SmallD = "d";
 
         /// <summary>
-        /// The small letter egala (/e/).
+        /// The capital letter e (/e/).
         /// </summary>
-        public const string SmallEgala = "e";
+        public const string CapitalE = "E";
 
         /// <summary>
-        /// The capital letter facila (/f/).
+        /// The small letter e (/e/).
         /// </summary>
-        public const string CapitalFacila = "F";
+        public const string SmallE = "e";
 
         /// <summary>
-        /// The small letter facila (/f/).
+        /// The capital letter f (/f/).
         /// </summary>
-        public const string SmallFacila = "f";
+        public const string CapitalF = "F";
 
         /// <summary>
-        /// The capital letter granda (/g/).
+        /// The small letter f (/f/).
         /// </summary>
-        public const string CapitalGranda = "G";
+        public const string SmallF = "f";
 
         /// <summary>
-        /// The small letter granda (/g/).
+        /// The capital letter g (/g/).
         /// </summary>
-        public const string SmallGranda = "g";
+        public const string CapitalG = "G";
 
         /// <summary>
-        /// The capital letter ĝui (/dʒ/).
+        /// The small letter g (/g/).
         /// </summary>
-        public const string CapitalĜui = "Ĝ";
+        public const string SmallG = "g";
 
         /// <summary>
-        /// The small letter ĝui (/dʒ/).
+        /// The capital letter gx (/dʒ/).
         /// </summary>
-        public const string SmallĜui = "ĝ";
+        public const string CapitalGx = "Ĝ";
 
         /// <summary>
-        /// The capital letter horo (/h/).
+        /// The small letter gx (/dʒ/).
         /// </summary>
-        public const string CapitalHoro = "H";
+        public const string SmallGx = "ĝ";
 
         /// <summary>
-        /// The small letter horo (/h/).
+        /// The capital letter h (/h/).
         /// </summary>
-        public const string SmallHoro = "h";
+        public const string CapitalH = "H";
 
         /// <summary>
-        /// The capital letter ĥoro (/x/).
+        /// The small letter h (/h/).
         /// </summary>
-        public const string CapitalĤoro = "Ĥ";
+        public const string SmallH = "h";
 
         /// <summary>
-        /// The small letter ĥoro (/x/).
+        /// The capital letter hx (/x/).
         /// </summary>
-        public const string SmallĤoro = "ĥ";
+        public const string CapitalHx = "Ĥ";
 
         /// <summary>
-        /// The capital letter infano (/i/).
+        /// The small letter hx (/x/).
         /// </summary>
-        public const string CapitalInfano = "I";
+        public const string SmallHx = "ĥ";
 
         /// <summary>
-        /// The small letter infano (/i/).
+        /// The capital letter i (/i/).
         /// </summary>
-        public const string SmallInfano = "i";
+        public const string CapitalI = "I";
 
         /// <summary>
-        /// The capital letter juna (/j/).
+        /// The small letter i (/i/).
         /// </summary>
-        public const string CapitalJuna = "J";
+        public const string SmallI = "i";
 
         /// <summary>
-        /// The small letter juna (/j/).
+        /// The capital letter j (/j/).
         /// </summary>
-        public const string SmallJuna = "j";
+        public const string CapitalJ = "J";
 
         /// <summary>
-        /// The capital letter ĵurnalo (/ʒ/).
+        /// The small letter j (/j/).
         /// </summary>
-        public const string CapitalĴurnalo = "Ĵ";
+        public const string SmallJ = "j";
 
         /// <summary>
-        /// The small letter ĵurnalo (/ʒ/).
+        /// The capital letter jx (/ʒ/).
         /// </summary>
-        public const string SmallĴurnalo = "ĵ";
+        public const string CapitalJx = "Ĵ";
 
         /// <summary>
-        /// The capital letter kafo (/k/).
+        /// The small letter jx (/ʒ/).
         /// </summary>
-        public const string CapitalKafo = "K";
+        public const string SmallJx = "ĵ";
 
         /// <summary>
-        /// The small letter kafo (/k/).
+        /// The capital letter k (/k/).
         /// </summary>
-        public const string SmallKafo = "k";
+        public const string CapitalK = "K";
 
         /// <summary>
-        /// The capital letter lando (/l/).
+        /// The small letter k (/k/).
         /// </summary>
-        public const string CapitalLando = "L";
+        public const string SmallK = "k";
 
         /// <summary>
-        /// The small letter lando (/l/).
+        /// The capital letter l (/l/).
         /// </summary>
-        public const string SmallLando = "l";
+        public const string CapitalL = "L";
 
         /// <summary>
-        /// The capital letter maro (/m/).
+        /// The small letter l (/l/).
         /// </summary>
-        public const string CapitalMaro = "M";
+        public const string SmallL = "l";
 
         /// <summary>
-        /// The small letter maro (/m/).
+        /// The capital letter m (/m/).
         /// </summary>
-        public const string SmallMaro = "m";
+        public const string CapitalM = "M";
 
         /// <summary>
-        /// The capital letter nokto (/n/).
+        /// The small letter m (/m/).
         /// </summary>
-        public const string CapitalNokto = "N";
+        public const string SmallM = "m";
 
         /// <summary>
-        /// The small letter nokto (/n/).
+        /// The capital letter n (/n/).
         /// </summary>
-        public const string SmallNokto = "n";
+        public const string CapitalN = "N";
 
         /// <summary>
-        /// The capital letter oro (/o/).
+        /// The small letter n (/n/).
         /// </summary>
-        public const string CapitalOro = "O";
+        public const string SmallN = "n";
 
         /// <summary>
-        /// The small letter oro (/o/).
+        /// The capital letter o (/o/).
         /// </summary>
-        public const string SmallOro = "o";
+        public const string CapitalO = "O";
 
         /// <summary>
-        /// The capital letter paco (/p/).
+        /// The small letter o (/o/).
         /// </summary>
-        public const string CapitalPaco = "P";
+        public const string SmallO = "o";
 
         /// <summary>
-        /// The small letter paco (/p/).
+        /// The capital letter p (/p/).
         /// </summary>
-        public const string SmallPaco = "p";
+        public const string CapitalP = "P";
 
         /// <summary>
-        /// The capital letter rapida (/r/).
+        /// The small letter p (/p/).
         /// </summary>
-        public const string CapitalRapida = "R";
+        public const string SmallP = "p";
 
         /// <summary>
-        /// The small letter rapida (/r/).
+        /// The capital letter r (/r/).
         /// </summary>
-        public const string SmallRapida = "r";
+        public const string CapitalR = "R";
 
         /// <summary>
-        /// The capital letter salti (/s/).
+        /// The small letter r (/r/).
         /// </summary>
-        public const string CapitalSalti = "S";
+        public const string SmallR = "r";
 
         /// <summary>
-        /// The small letter salti (/s/).
+        /// The capital letter s (/s/).
         /// </summary>
-        public const string SmallSalti = "s";
+        public const string CapitalS = "S";
 
         /// <summary>
-        /// The capital letter ŝipo (/ʃ/).
+        /// The small letter s (/s/).
         /// </summary>
-        public const string CapitalŜipo = "Ŝ";
+        public const string SmallS = "s";
 
         /// <summary>
-        /// The small letter ŝipo (/ʃ/).
+        /// The capital letter sx (/ʃ/).
         /// </summary>
-        public const string SmallŜipo = "ŝ";
+        public const string CapitalSx = "Ŝ";
 
         /// <summary>
-        /// The capital letter tago (/t/).
+        /// The small letter sx (/ʃ/).
         /// </summary>
-        public const string CapitalTago = "T";
+        public const string SmallSx = "ŝ";
 
         /// <summary>
-        /// The small letter tago (/t/).
+        /// The capital letter t (/t/).
         /// </summary>
-        public const string SmallTago = "t";
+        public const string CapitalT = "T";
 
         /// <summary>
-        /// The capital letter urbo (/u/).
+        /// The small letter t (/t/).
         /// </summary>
-        public const string CapitalUrbo = "U";
+        public const string SmallT = "t";
 
         /// <summary>
-        /// The small letter urbo (/u/).
+        /// The capital letter u (/u/).
         /// </summary>
-        public const string SmallUrbo = "u";
+        public const string CapitalU = "U";
 
         /// <summary>
-        /// The capital letter aŭto (/w/).
+        /// The small letter u (/u/).
         /// </summary>
-        public const string CapitalAŭto = "Ŭ";
+        public const string SmallU = "u";
 
         /// <summary>
-        /// The small letter aŭto (/w/).
+        /// The capital letter ux (/w/).
         /// </summary>
-        public const string SmallAŭto = "ŭ";
+        public const string CapitalUx = "Ŭ";
 
         /// <summary>
-        /// The capital letter vivo (/v/).
+        /// The small letter ux (/w/).
         /// </summary>
-        public const string CapitalVivo = "V";
+        public const string SmallUx = "ŭ";
 
         /// <summary>
-        /// The small letter vivo (/v/).
+        /// The capital letter v (/v/).
         /// </summary>
-        public const string SmallVivo = "v";
+        public const string CapitalV = "V";
 
         /// <summary>
-        /// The capital letter zebro (/z/).
+        /// The small letter v (/v/).
         /// </summary>
-        public const string CapitalZebro = "Z";
+        public const string SmallV = "v";
 
         /// <summary>
-        /// The small letter zebro (/z/).
+        /// The capital letter z (/z/).
         /// </summary>
-        public const string SmallZebro = "z";
+        public const string CapitalZ = "Z";
+
+        /// <summary>
+        /// The small letter z (/z/).
+        /// </summary>
+        public const string SmallZ = "z";
+
+        /// <summary>
+        /// The number 0.
+        /// </summary>
+        public const string Zero = "nul";
+
+        /// <summary>
+        /// The number 1.
+        /// </summary>
+        public const string One = "unu";
+
+        /// <summary>
+        /// The number 2.
+        /// </summary>
+        public const string Two = "du";
+
+        /// <summary>
+        /// The number 3.
+        /// </summary>
+        public const string Three = "tri";
+
+        /// <summary>
+        /// The number 4.
+        /// </summary>
+        public const string Four = "kvar";
+
+        /// <summary>
+        /// The number 5.
+        /// </summary>
+        public const string Five = "kvin";
+
+        /// <summary>
+        /// The number 6.
+        /// </summary>
+        public const string Six = "ses";
+
+        /// <summary>
+        /// The number 7.
+        /// </summary>
+        public const string Seven = "sep";
+
+        /// <summary>
+        /// The number 8.
+        /// </summary>
+        public const string Eight = "ok";
+
+        /// <summary>
+        /// The number 9.
+        /// </summary>
+        public const string Nine = "naŭ";
+
+        /// <summary>
+        /// The number 10.
+        /// </summary>
+        public const string Ten = "dek";
+
+        /// <summary>
+        /// Lists the capital letters.
+        /// </summary>
+        /// <returns>All captial letters.</returns>
+        public static IEnumerable<string> CapitalLetters()
+        {
+            yield return CapitalA;
+            yield return CapitalB;
+            yield return CapitalC;
+            yield return CapitalCx;
+            yield return CapitalD;
+            yield return CapitalE;
+            yield return CapitalF;
+            yield return CapitalG;
+            yield return CapitalGx;
+            yield return CapitalH;
+            yield return CapitalHx;
+            yield return CapitalI;
+            yield return CapitalJ;
+            yield return CapitalJx;
+            yield return CapitalK;
+            yield return CapitalL;
+            yield return CapitalM;
+            yield return CapitalN;
+            yield return CapitalO;
+            yield return CapitalP;
+            yield return CapitalR;
+            yield return CapitalS;
+            yield return CapitalSx;
+            yield return CapitalT;
+            yield return CapitalU;
+            yield return CapitalUx;
+            yield return CapitalV;
+            yield return CapitalZ;
+        }
+
+        /// <summary>
+        /// Lists the small letters.
+        /// </summary>
+        /// <returns>All small letters.</returns>
+        public static IEnumerable<string> SmallLetters()
+        {
+            yield return SmallA;
+            yield return SmallB;
+            yield return SmallC;
+            yield return SmallCx;
+            yield return SmallD;
+            yield return SmallE;
+            yield return SmallF;
+            yield return SmallG;
+            yield return SmallGx;
+            yield return SmallH;
+            yield return SmallHx;
+            yield return SmallI;
+            yield return SmallJ;
+            yield return SmallJx;
+            yield return SmallK;
+            yield return SmallL;
+            yield return SmallM;
+            yield return SmallN;
+            yield return SmallO;
+            yield return SmallP;
+            yield return SmallR;
+            yield return SmallS;
+            yield return SmallSx;
+            yield return SmallT;
+            yield return SmallU;
+            yield return SmallUx;
+            yield return SmallV;
+            yield return SmallZ;
+        }
     }
 }

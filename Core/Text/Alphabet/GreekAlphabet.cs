@@ -12,9 +12,14 @@ namespace Trivial.Text
     public static class GreekAlphabet
     {
         /// <summary>
+        /// The name of alphabet in Greek.
+        /// </summary>
+        public const string Alphabet = "Αλφάβητο";
+
+        /// <summary>
         /// The name of greek alphabet in Greek.
         /// </summary>
-        public const string Name = "Ελληνικό Αλφάβητο";
+        public const string FullName = "Ελληνικό Αλφάβητο";
 
         /// <summary>
         /// The name of greek alphabet in English.
@@ -22,9 +27,19 @@ namespace Trivial.Text
         public const string EnglishName = "Greek Alphabet";
 
         /// <summary>
+        /// The name of greek in Greek.
+        /// </summary>
+        public const string LanguageName = "Ελληνικά";
+
+        /// <summary>
         /// The language code.
         /// </summary>
         public const string LanguageCode = "el";
+
+        /// <summary>
+        /// The count of the letter.
+        /// </summary>
+        public const int Count = 24;
 
         /// <summary>
         /// The capital letter alpha (/'ælfə/).
@@ -37,12 +52,12 @@ namespace Trivial.Text
         public const string SmallAlpha = "α";
 
         /// <summary>
-        /// The capital letter beta (/'bi:tə/ 或 /'beɪtə/).
+        /// The capital letter beta (/'bi:tə/ or /'beɪtə/).
         ///</summary>
         public const string CapitalBeta = "Β";
 
         /// <summary>
-        /// The small letter beta (/'bi:tə/ 或 /'beɪtə/).
+        /// The small letter beta (/'bi:tə/ or /'beɪtə/).
         ///</summary>
         public const string SmallBeta = "β";
 
@@ -290,5 +305,124 @@ namespace Trivial.Text
         /// The small letter omega (/'əʊmɪɡə/).
         ///</summary>
         public const string SmallOmega = "ω";
+
+        /// <summary>
+        /// The number 0.
+        /// </summary>
+        public const string Zero = "ουδεν";
+
+        /// <summary>
+        /// The number 1.
+        /// </summary>
+        public const string One = "ένα";
+
+        /// <summary>
+        /// The number 2.
+        /// </summary>
+        public const string Two = "δύο";
+
+        /// <summary>
+        /// The number 3.
+        /// </summary>
+        public const string Three = "τρία";
+
+        /// <summary>
+        /// The number 4.
+        /// </summary>
+        public const string Four = "τέσσερα";
+
+        /// <summary>
+        /// The number 5.
+        /// </summary>
+        public const string Five = "πέντε";
+
+        /// <summary>
+        /// The number 6.
+        /// </summary>
+        public const string Six = "έξι";
+
+        /// <summary>
+        /// The number 7.
+        /// </summary>
+        public const string Seven = "επτά";
+
+        /// <summary>
+        /// The number 8.
+        /// </summary>
+        public const string Eight = "οχτώ";
+
+        /// <summary>
+        /// The number 9.
+        /// </summary>
+        public const string Nine = "εννέα";
+
+        /// <summary>
+        /// The number 10.
+        /// </summary>
+        public const string Ten = "δέκα";
+
+        /// <summary>
+        /// Lists the capital letters.
+        /// </summary>
+        /// <returns>All captial letters.</returns>
+        public static IEnumerable<string> CapitalLetters()
+        {
+            yield return CapitalAlpha;
+            yield return CapitalBeta;
+            yield return CapitalGamma;
+            yield return CapitalDelta;
+            yield return CapitalEpsilon;
+            yield return CapitalZeta;
+            yield return CapitalEta;
+            yield return CapitalTheta;
+            yield return CapitalIota;
+            yield return CapitalKappa;
+            yield return CapitalLambda;
+            yield return CapitalMu;
+            yield return CapitalNu;
+            yield return CapitalXi;
+            yield return CapitalOmicron;
+            yield return CapitalPi;
+            yield return CapitalRho;
+            yield return CapitalSigma;
+            yield return CapitalTau;
+            yield return CapitalUpsilon;
+            yield return CapitalPhi;
+            yield return CapitalChi;
+            yield return CapitalPsi;
+            yield return CapitalOmega;
+        }
+
+        /// <summary>
+        /// Lists the small letters.
+        /// </summary>
+        /// <returns>All small letters.</returns>
+        public static IEnumerable<string> SmallLetters()
+        {
+            yield return SmallAlpha;
+            yield return SmallBeta;
+            yield return SmallGamma;
+            yield return SmallDelta;
+            yield return SmallEpsilon;
+            yield return SmallZeta;
+            yield return SmallEta;
+            yield return SmallTheta;
+            yield return SmallIota;
+            yield return SmallKappa;
+            yield return SmallLambda;
+            yield return SmallMu;
+            yield return SmallNu;
+            yield return SmallXi;
+            yield return SmallOmicron;
+            yield return SmallPi;
+            yield return SmallRho;
+            yield return SmallSigma;
+            yield return SmallTau;
+            yield return SmallUpsilon;
+            yield return SmallPhi;
+            yield return SmallChi;
+            yield return SmallPsi;
+            yield return SmallOmega;
+        }
     }
 }
