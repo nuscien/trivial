@@ -95,6 +95,18 @@ namespace Trivial.Maths
             }
 
             /// <summary>
+            /// Initializes a new instance of the Angle.Model class.
+            /// </summary>
+            /// <param name="degree">The degree part.</param>
+            /// <param name="minute">The minute part.</param>
+            /// <param name="second">The second part.</param>
+            public Model(int degree, int minute, int second)
+            {
+                float s = second;
+                AdaptValue(null, ref degree, ref minute, ref s);
+            }
+
+            /// <summary>
             /// Gets the boundary options.
             /// </summary>
             public BoundaryOptions Boundary { get; protected set; }

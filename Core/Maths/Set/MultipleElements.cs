@@ -12,6 +12,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text.Json.Serialization;
 
 namespace Trivial.Maths
@@ -21,17 +22,36 @@ namespace Trivial.Maths
     /// </summary>
     /// <typeparam name="T">The type of elements.</typeparam>
     public abstract class BaseMultipleElements<T> : IReadOnlyList<T>, IEquatable<BaseMultipleElements<T>>, IEquatable<IEnumerable<T>>, ICloneable
+#if NET471_OR_GREATER || NETCOREAPP || NET5_0_OR_GREATER
+        , ITuple
+#endif
     {
         /// <summary>
         /// Gets the number of elements in the collection.
         /// </summary>
         public virtual int Count => ToList().Count;
 
+#if NET471_OR_GREATER || NETCOREAPP || NET5_0_OR_GREATER
+        /// <summary>
+        /// Gets the number of elements in the collection.
+        /// </summary>
+        int ITuple.Length => ToList().Count;
+
         /// <summary>
         /// Gets the element at the specified index in the instance.
         /// </summary>
         /// <param name="index">The zero-based index of the element to get.</param>
         /// <returns>The element at the specified index in the instance.</returns>
+        /// <exception cref="ArgumentOutOfRangeException">index was out of range.</exception>
+        object ITuple.this[int index] => ToList()[index];
+#endif
+
+        /// <summary>
+        /// Gets the element at the specified index in the instance.
+        /// </summary>
+        /// <param name="index">The zero-based index of the element to get.</param>
+        /// <returns>The element at the specified index in the instance.</returns>
+        /// <exception cref="ArgumentOutOfRangeException">index was out of range.</exception>
         public T this[int index] => ToList()[index];
 
         /// <summary>

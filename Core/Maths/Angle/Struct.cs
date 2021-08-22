@@ -99,6 +99,16 @@ namespace Trivial.Maths
         }
 
         /// <summary>
+        /// Initializes a new instance of the Angle struct.
+        /// </summary>
+        /// <param name="degree">The degree part.</param>
+        /// <param name="minute">The minute part.</param>
+        /// <param name="second">The second part.</param>
+        public Angle(int degree, int minute, int second) : this(degree, minute, second, null)
+        {
+        }
+
+        /// <summary>
         /// Gets a value indicating whether it is positive.
         /// </summary>
         [JsonIgnore]
