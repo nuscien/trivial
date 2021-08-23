@@ -50,7 +50,6 @@ namespace Trivial.Web
         /// </summary>
         /// <param name="file">The file information.</param>
         /// <returns>A MIME value.</returns>
-        /// <remarks>This just contains the most useful MIMEs.</remarks>
         public static string FromFileExtension(FileInfo file)
             => FromFileExtension(file?.Extension, StreamMIME);
 
@@ -59,7 +58,6 @@ namespace Trivial.Web
         /// </summary>
         /// <param name="fileExtension">The file extension.</param>
         /// <returns>A MIME value.</returns>
-        /// <remarks>This just contains the most useful MIMEs.</remarks>
         public static string FromFileExtension(string fileExtension)
             => FromFileExtension(fileExtension, StreamMIME);
 
@@ -69,7 +67,6 @@ namespace Trivial.Web
         /// <param name="fileExtension">The file extension.</param>
         /// <param name="returnNullIfUnsupported">true if returns null if not supported; otherwise, false.</param>
         /// <returns>A MIME value.</returns>
-        /// <remarks>This just contains the most useful MIMEs.</remarks>
         public static string FromFileExtension(string fileExtension, bool returnNullIfUnsupported)
             => FromFileExtension(fileExtension, returnNullIfUnsupported ? null : StreamMIME);
 
@@ -79,7 +76,6 @@ namespace Trivial.Web
         /// <param name="fileExtension">The file extension.</param>
         /// <param name="defaultMime">The default MIME.</param>
         /// <returns>A MIME value.</returns>
-        /// <remarks>This just contains the most useful MIMEs.</remarks>
         public static string FromFileExtension(string fileExtension, string defaultMime)
         {
             if (string.IsNullOrWhiteSpace(fileExtension)) return null;
