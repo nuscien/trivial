@@ -2,7 +2,7 @@
 
 Provides some helper functions and extension functions for text.
 
-In `Trivial.Text` [namespace](./text) of `Trivial.dll` [library](../../).
+In `Trivial.Text` [namespace](../) of `Trivial.dll` [library](../../).
 
 ## String case
 
@@ -14,7 +14,7 @@ You can convert a string to a specific case.
 - Lowercase only for the first letter.
 
 ```csharp
-var a = " how are you?".ToSpecificCase(Cases.FirstLetterUpper);
+var a = " how are you?".ToSpecificCase(Cases.Capitalize);
 // a -> " How are you?"
 ```
 

@@ -5,6 +5,8 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 
+using Trivial.Collection;
+
 namespace Trivial.Web
 {
     /// <summary>
@@ -23,7 +25,7 @@ namespace Trivial.Web
         /// <summary>
         /// Gets the MIME mapping of file extension.
         /// </summary>
-        public static IDictionary<string, string> FileExtensionMapping
+        public static KeyedDataMapping<string> FileExtensionMapping
         {
             get
             {
@@ -33,17 +35,6 @@ namespace Trivial.Web
                 return fem;
             }
         }
-
-#if DEBUG
-        /// <summary>
-        /// Gets or sets the backup getter for file extension mapping.
-        /// </summary>
-        public static KeyedInstanceResolver<string> BackupFileExtensionMapping
-        {
-            get => WebFormat.MimeMapping.BackupGetter;
-            set => WebFormat.MimeMapping.BackupGetter = value;
-        }
-#endif
 
         /// <summary>
         /// Gets the MIME from file extension.
