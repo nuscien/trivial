@@ -17,7 +17,7 @@ namespace Trivial.Text
         public const string LanguageName = "Lingua Latīna";
 
         /// <summary>
-        /// The name of English in English.
+        /// The name of Latin in English.
         /// </summary>
         public const string EnglishLanguageName = "Latin";
 

@@ -50,6 +50,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Chemistry\Chemistry.csproj" />
     <ProjectReference Include="..\Core\Core.csproj" />
+    <ProjectReference Include="..\Mime\Mime.csproj" />
   </ItemGroup>
 
 </Project>

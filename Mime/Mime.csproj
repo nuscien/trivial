@@ -1,0 +1,61 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFrameworks>net5.0;netcoreapp3.1;netstandard2.0;net48;net461</TargetFrameworks>
+		<AssemblyName>Trivial.Mime</AssemblyName>
+		<RootNamespace>Trivial</RootNamespace>
+		<PackageId>Trivial.Mime</PackageId>
+		<Product>Trivial</Product>
+		<Authors>Kingcean Tuan</Authors>
+		<Company>Nanchang Jinchen Software Co., Ltd.</Company>
+		<Version>1.0.0</Version>
+		<AssemblyVersion>1.0.0.0</AssemblyVersion>
+		<FileVersion>1.0.0.0</FileVersion>
+		<Description>The MIME constants.</Description>
+		<Copyright>Copyright (c) 2018 Kingcean Tuan.</Copyright>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+		<PackageProjectUrl>https://github.com/nuscien/trivial/wiki/core</PackageProjectUrl>
+		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+		<IncludeSymbols>true</IncludeSymbols>
+		<SymbolPackageFormat>snupkg</SymbolPackageFormat>
+		<RepositoryUrl>https://github.com/nuscien/trivial</RepositoryUrl>
+		<RepositoryType>git</RepositoryType>
+		<PublishRepositoryUrl>true</PublishRepositoryUrl>
+		<PackageIcon>logo.png</PackageIcon>
+		<PackageIconUrl>https://github.com/nuscien/trivial/raw/master/Materials/logo.png</PackageIconUrl>
+		<PackageTags>tasks interceptor numerals json oauth2-client jwt-token csv-parser stream pem coordinates uri</PackageTags>
+		<LangVersion>9.0</LangVersion>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+		<OutputPath>..\bin\Debug\</OutputPath>
+		<DocumentationFile>..\bin\$(Configuration)\$(TargetFramework)\Trivial.Mime.xml</DocumentationFile>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+		<OutputPath>..\bin\Release\</OutputPath>
+		<DocumentationFile>..\bin\$(Configuration)\$(TargetFramework)\Trivial.Mime.xml</DocumentationFile>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(TargetFramework)' == 'netstandard2.0' OR '$(TargetFramework)' == 'net48' OR '$(TargetFramework)' == 'net461'">
+		<DefineConstants>NETOLDVER</DefineConstants>
+	</PropertyGroup>
+
+	<ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0' OR '$(TargetFramework)' == 'netcoreapp3.1' OR '$(TargetFramework)' == 'net48' OR '$(TargetFramework)' == 'net461' OR '$(TargetFramework)' == 'net5.0'">
+		<PackageReference Include="System.Text.Json" Version="6.0.0-preview.7.21377.19" />
+	</ItemGroup>
+
+	<ItemGroup Condition="'$(TargetFramework)' == 'net48' OR '$(TargetFramework)' == 'net461'">
+		<PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.2" PrivateAssets="All" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<None Include="..\LICENSE" Pack="true" PackagePath="LICENSE.md" />
+		<None Include="..\Materials\logo.png" Pack="true" PackagePath="logo.png" />
+	</ItemGroup>
+
+</Project>

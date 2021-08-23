@@ -34,7 +34,7 @@ namespace Trivial.Text
             /// <summary>
             /// The count of the letter.
             /// </summary>
-            public const int Count = 26;
+            public const int Count = 27;
 
             /// <summary>
             /// Lists the capital letters.

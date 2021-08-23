@@ -14,7 +14,7 @@ namespace Trivial.Text
         /// <summary>
         /// The Esperanto alphabet.
         /// </summary>
-        public static class EsperantoAlphabet
+        public static class Esperanto
         {
             /// <summary>
             /// The name of Esperanto alphabet in Esperanto.

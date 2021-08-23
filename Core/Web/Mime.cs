@@ -75,9 +75,9 @@ namespace Trivial.Web
         public const string StreamMIME = "application/octet-stream";
 
         /// <summary>
-        /// Gets or sets the MIME handler.
+        /// The MIME mapping.
         /// </summary>
-        internal static Func<FileInfo, string> GetMimeHandler { get; set; }
+        internal static Collection.KeyedDataMapping<string> MimeMapping { get; } = new();
 
         /// <summary>
         /// Gets the MIME.
@@ -86,17 +86,22 @@ namespace Trivial.Web
         /// <returns>A MIME value.</returns>
         /// <remarks>This just contains the most useful MIMEs.</remarks>
         internal static string GetMime(FileInfo file)
+            => GetMime(file?.Extension);
+
+        /// <summary>
+        /// Gets the MIME.
+        /// </summary>
+        /// <param name="fileExtension">The file extension.</param>
+        /// <returns>A MIME value.</returns>
+        /// <remarks>This just contains the most useful MIMEs.</remarks>
+        internal static string GetMime(string fileExtension)
         {
-            if (file == null || string.IsNullOrWhiteSpace(file.Extension)) return null;
-            var h = GetMimeHandler;
-            if (h != null)
-            {
-                var result = h(file);
-                if (!string.IsNullOrWhiteSpace(result)) return result;
-            }
+            if (string.IsNullOrWhiteSpace(fileExtension)) return null;
+            fileExtension = fileExtension.Trim().ToLowerInvariant();
+            if (MimeMapping.TryGetValue(fileExtension, out var s) && !string.IsNullOrEmpty(s)) return s;
 
             // http://www.iana.org/assignments/media-types/media-types.xhtml
-            return file.Extension.ToLowerInvariant().Remove(0, 1) switch
+            return fileExtension.Remove(0, 1) switch
             {
                 // Office document
                 "cat" => "application/vnd.ms-pki.seccat",
@@ -281,9 +286,9 @@ namespace Trivial.Web
                 "jar" => "application/java-archive",
                 "wasm" => WebAssemblyMIME,
                 "aspx" => "application/x-aspx",
-                "dll" or "exe" or "bat" or "msi" or "msu" or "com" => "application/x-msdownload",
+                "dll" or "pdb" or "exe" or "bat" or "msi" or "msu" or "com" => "application/x-msdownload",
                 "app" or "glif" or "resx" or "php" or "jsp" or "cshtml" or "vbhtml" or "razor" or "3mf" or "lib" or "bin" or "dat" or "data" or "db" or "dms" or "lrf" or "pkg" or "dump" or "deploy" or "vso" or "nupkg" or "xsn" or "sln" or "vsix" or "ts" or "tsx" or "usr" or "user" or "bson" => StreamMIME,
-                "pdb" or "pqa" or "oprc" => "application/vnd.palm",
+                "pqa" or "oprc" => "application/vnd.palm",
                 "appx" => "application/appx",
                 "appxbundle" => "application/appxbundle",
                 "appinstaller" => "application/appinstaller",
