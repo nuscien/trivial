@@ -343,7 +343,7 @@ namespace Trivial.CommandLine
             if (!string.IsNullOrEmpty(description)) return;
             try
             {
-                var desc = typeof(T).GetProperty(nameof(Description), BindingFlags.Static);
+                var desc = typeof(T).GetProperty(nameof(Description), BindingFlags.Static | BindingFlags.Public);
                 if (desc == null)
                 {
                     desc = typeof(T).GetProperty(nameof(Description));

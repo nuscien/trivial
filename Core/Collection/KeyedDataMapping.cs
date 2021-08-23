@@ -21,7 +21,7 @@ namespace Trivial.Collection
         /// <summary>
         /// Gets or sets the value associated with the specified key.
         /// </summary>
-        /// <param name="key"></param>
+        /// <param name="key">The case-insensitive key.</param>
         /// <returns>The value associated with the specified key.</returns>
         /// <exception cref="ArgumentNullException">key was null.</exception>
         /// <exception cref="ArgumentException">key was empty.</exception>
@@ -88,7 +88,7 @@ namespace Trivial.Collection
         public bool IsAutoCacheDisabled { get; set; }
 
         /// <summary>
-        /// Gets a collection containing the keys in the mapping.
+        /// Gets a collection containing the case-insensitive keys in the mapping.
         /// </summary>
         public ICollection<string> Keys => mapping.Keys;
 
@@ -110,7 +110,7 @@ namespace Trivial.Collection
         /// <summary>
         /// Adds the specified key and value to the dictionary.
         /// </summary>
-        /// <param name="key">The key of the element to add.</param>
+        /// <param name="key">The case-insensitive key of the element to add.</param>
         /// <param name="value">The value of the element to add.</param>
         /// <exception cref="ArgumentException">An element with the same key already exists in the mapping.</exception>
         public void Add(string key, T value)
@@ -165,7 +165,7 @@ namespace Trivial.Collection
         /// <summary>
         /// Determines whether the mapping contains the specified key.
         /// </summary>
-        /// <param name="key">The key to locate in the mapping.</param>
+        /// <param name="key">The case-insensitive key to locate in the mapping.</param>
         /// <returns>true if the mapping contains an element with the specified key; otherwise, false.</returns>
         public bool ContainsKey(string key)
         {
@@ -218,7 +218,7 @@ namespace Trivial.Collection
         /// <summary>
         /// Removes the value with the specified key from the mapping.
         /// </summary>
-        /// <param name="key">The key of the element to remove.</param>
+        /// <param name="key">The case-insensitive key of the element to remove.</param>
         /// <returns>true if the element is successfully found and removed; otherwise, false.</returns>
         public bool Remove(string key)
         {
@@ -241,7 +241,7 @@ namespace Trivial.Collection
         /// <summary>
         /// Removes the value with the specified key from the mapping and copies the element to the value parameter..
         /// </summary>
-        /// <param name="key">The key of the element to remove.</param>
+        /// <param name="key">The case-insensitive key of the element to remove.</param>
         /// <param name="value">The removed element.</param>
         /// <returns>true if the element is successfully found and removed; otherwise, false.</returns>
         public bool Remove(string key, out T value)
@@ -274,7 +274,7 @@ namespace Trivial.Collection
         /// <summary>
         /// Removes the value with the specified key from the mapping.
         /// </summary>
-        /// <param name="keys">All specific keys to remove.</param>
+        /// <param name="keys">All specific case-insensitive keys to remove.</param>
         /// <returns>The count of rows removed.</returns>
         public int Remove(IEnumerable<string> keys)
         {
@@ -300,11 +300,42 @@ namespace Trivial.Collection
         }
 
         /// <summary>
+        /// Sets a value.
+        /// </summary>
+        /// <param name="key">The case-insensitive key of the element to set.</param>
+        /// <param name="value">The element.</param>
+        /// <param name="overrideIfExist">true if override the existed one; otherwise, false.</param>
+        /// <returns>The count of rows added or changed.</returns>
+        public bool Set(string key, T value, bool overrideIfExist = false)
+        {
+            key = key?.Trim()?.ToLowerInvariant();
+            if (string.IsNullOrEmpty(key)) return false;
+            try
+            {
+                if (!overrideIfExist && mapping.ContainsKey(key)) return false;
+                if (value is null) mapping.Remove(key);
+                else mapping[key] = value;
+                return true;
+            }
+            catch (InvalidOperationException)
+            {
+            }
+            catch (NullReferenceException)
+            {
+            }
+
+            if (!overrideIfExist && mapping.ContainsKey(key)) return false;
+            if (value is null) mapping.Remove(key);
+            else mapping[key] = value;
+            return true;
+        }
+
+        /// <summary>
         /// Sets values batched.
         /// </summary>
         /// <param name="value">The values.</param>
         /// <param name="overrideIfExist">true if override the existed one; otherwise, false.</param>
-        /// <returns>The count of rows added.</returns>
+        /// <returns>The count of rows added or changed.</returns>
         public int Set(IDictionary<string, T> value, bool overrideIfExist = false)
         {
             var i = 0;
@@ -333,7 +364,7 @@ namespace Trivial.Collection
         /// <summary>
         /// Tries to get the value associated with the specified key.
         /// </summary>
-        /// <param name="key">The key whose value to get.</param>
+        /// <param name="key">The case-insensitive key whose value to get.</param>
         /// <param name="value">When this method returns, the value associated with the specified key, if the key is found; otherwise, the default value for the type of the value parameter. This parameter is passed uninitialized.</param>
         /// <returns>true if the object that implements mapping contains an element with the specified key; otherwise, false.</returns>
         public bool TryGetValue(string key, out T value)
