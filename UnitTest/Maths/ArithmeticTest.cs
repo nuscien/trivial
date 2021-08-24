@@ -25,8 +25,12 @@ namespace Trivial.Maths
             // Prime
             Assert.IsTrue(Arithmetic.IsPrime(524287));
             Assert.IsFalse(Arithmetic.IsPrime(968455));
-            Assert.IsTrue(await Arithmetic.IsPrimeAsync(2147483647));
+            Assert.IsFalse(Arithmetic.IsPrime(21474836477));
             Assert.IsFalse(await Arithmetic.IsPrimeAsync(21474836477));
+            Assert.IsTrue(await Arithmetic.IsPrimeAsync(2147483647));
+            Assert.AreEqual(17, await Arithmetic.PreviousPrimeAsync(19));
+            Assert.IsTrue(await Arithmetic.PreviousPrimeAsync(968455) < 968455);
+            Assert.IsTrue(await Arithmetic.NextPrimeAsync(968455) > 968455);
 
             // GCD & LCM
             Assert.AreEqual(64, Arithmetic.Gcd(192, 128));
@@ -48,6 +52,12 @@ namespace Trivial.Maths
             Assert.AreEqual(170, Numbers.ParseToInt32("8a", 20));
             Assert.IsFalse(Numbers.TryParseToInt32("8a", 9, out _));
             Assert.IsFalse(Numbers.TryParseToInt32("8a", 8, out _));
+
+            // Compare
+            Assert.AreEqual(1, Arithmetic.Min(1, 2, 3));
+            Assert.AreEqual(1, Arithmetic.Min(1, 2, 3, 4, 5));
+            Assert.AreEqual(9, Arithmetic.Max(7, 8, 9));
+            Assert.AreEqual(9, Arithmetic.Max(5, 6, 7, 8, 9));
         }
 
         /// <summary>

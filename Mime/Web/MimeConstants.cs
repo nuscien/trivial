@@ -19,7 +19,12 @@ namespace Trivial.Web
         private static KeyedDataMapping<string> fem;
 
         /// <summary>
-        /// Gets the MIME content type of octet stream.
+        /// The name of MIME.
+        /// </summary>
+        public const string Name = "Multipurpose Internet Mail Extensions";
+
+        /// <summary>
+        /// The MIME content type of octet stream.
         /// </summary>
         public const string StreamMIME = "application/octet-stream";
 
@@ -39,46 +44,46 @@ namespace Trivial.Web
         }
 
         /// <summary>
-        /// Gets the MIME content type from file extension part.
+        /// Gets the MIME content type by file extension part.
         /// </summary>
         /// <param name="file">The file information.</param>
         /// <returns>The MIME content type.</returns>
-        public static string FromFileExtension(FileInfo file)
-            => FromFileExtension(file?.Extension, StreamMIME);
+        public static string ByFileExtension(FileInfo file)
+            => ByFileExtension(file?.Extension, StreamMIME);
 
         /// <summary>
-        /// Gets the MIME content type from file extension part.
+        /// Gets the MIME content type by file extension part.
         /// </summary>
         /// <param name="file">The file information.</param>
         /// <param name="defaultMime">The default MIME content type.</param>
         /// <returns>The MIME content type.</returns>
-        public static string FromFileExtension(FileInfo file, string defaultMime)
-            => FromFileExtension(file?.Extension, defaultMime);
+        public static string ByFileExtension(FileInfo file, string defaultMime)
+            => ByFileExtension(file?.Extension, defaultMime);
 
         /// <summary>
-        /// Gets the MIME content type from file extension part.
+        /// Gets the MIME content type by file extension part.
         /// </summary>
         /// <param name="fileExtension">The file extension.</param>
         /// <returns>The MIME content type.</returns>
-        public static string FromFileExtension(string fileExtension)
-            => FromFileExtension(fileExtension, StreamMIME);
+        public static string ByFileExtension(string fileExtension)
+            => ByFileExtension(fileExtension, StreamMIME);
 
         /// <summary>
-        /// Gets the MIME content type from file extension part.
+        /// Gets the MIME content type by file extension part.
         /// </summary>
         /// <param name="fileExtension">The file extension.</param>
         /// <param name="returnNullIfUnsupported">true if returns null if not supported; otherwise, false.</param>
         /// <returns>The MIME content type.</returns>
-        public static string FromFileExtension(string fileExtension, bool returnNullIfUnsupported)
-            => FromFileExtension(fileExtension, returnNullIfUnsupported ? null : StreamMIME);
+        public static string ByFileExtension(string fileExtension, bool returnNullIfUnsupported)
+            => ByFileExtension(fileExtension, returnNullIfUnsupported ? null : StreamMIME);
 
         /// <summary>
-        /// Gets the MIME content type from file extension part.
+        /// Gets the MIME content type by file extension part.
         /// </summary>
         /// <param name="fileExtension">The file extension.</param>
         /// <param name="defaultMime">The default MIME content type.</param>
         /// <returns>The MIME content type.</returns>
-        public static string FromFileExtension(string fileExtension, string defaultMime)
+        public static string ByFileExtension(string fileExtension, string defaultMime)
         {
             if (string.IsNullOrWhiteSpace(fileExtension)) return null;
             if (method == null)

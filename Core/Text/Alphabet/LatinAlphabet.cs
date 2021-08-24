@@ -420,13 +420,13 @@ namespace Trivial.Text
 
         /// <summary>
         /// The capital letter y
-        /// (/yː/ in Latin, /waɪ/ in English, /igʁɛk/ in French, /ˈipsɪlɔn/ in German, /je/ or /'ipsilon/ or /i ˈɡɾjeɣa/ in Spanish, /ˈipsɨlɔn/ or /ˈipsilõ/ in Portuguese, /iɡˈɡrɛka/ or /ˈipsilon/ in Italian).
+        /// (/yː/ in Latin, /waɪ/ in English, /igʁɛk/ in French, /ˈipsɪlɔn/ in German, /je/ or /'ipsilon/ or /iˈɡɾjeɣa/ in Spanish, /ˈipsɨlɔn/ or /ˈipsilõ/ in Portuguese, /iɡˈɡrɛka/ or /ˈipsilon/ in Italian).
         /// </summary>
         public const string CapitalY = "Y";
 
         /// <summary>
         /// The small letter y
-        /// (/yː/ in Latin, /waɪ/ in English, /igʁɛk/ in French, /ˈipsɪlɔn/ in German, /je/ or /'ipsilon/ or /i ˈɡɾjeɣa/ in Spanish, /ˈipsɨlɔn/ or /ˈipsilõ/ in Portuguese, /iɡˈɡrɛka/ or /ˈipsilon/ in Italian).
+        /// (/yː/ in Latin, /waɪ/ in English, /igʁɛk/ in French, /ˈipsɪlɔn/ in German, /je/ or /'ipsilon/ or /iˈɡɾjeɣa/ in Spanish, /ˈipsɨlɔn/ or /ˈipsilõ/ in Portuguese, /iɡˈɡrɛka/ or /ˈipsilon/ in Italian).
         /// </summary>
         public const string SmallY = "y";
 
