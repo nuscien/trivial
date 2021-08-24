@@ -10,9 +10,9 @@ namespace Trivial.Data
 {
 #if NETFRAMEWORK
     /// <summary>
-    /// The registry utility for Windows.
+    /// The Windows Registry utility.
     /// </summary>
-    public static class Win32RegistryUtility
+    public static class RegistryUtility
     {
         /// <summary>
         /// Tries to get the sub registry key of another specific one.

@@ -51,16 +51,16 @@ namespace Trivial.Web
             Assert.AreEqual(MimeConstants.Packages.DownloadToRun, MimeConstants.GetByFileExtension(".pdb"));
 
 #if NETFRAMEWORK
-            if (!MimeConstants.Win32Registry.RegisterFileExtensionMapping(".wma")) return;
-            MimeConstants.Win32Registry.RegisterFileExtensionMapping(MimeConstants.Images.Jpeg);
+            if (!MimeConstants.Registry.RegisterFileExtensionMapping(".wma")) return;
+            MimeConstants.Registry.RegisterFileExtensionMapping(MimeConstants.Images.Jpeg);
             Assert.AreEqual(MimeConstants.Audio.Wma, MimeConstants.FileExtensionMapping[".wma"]);
-            Assert.IsFalse(MimeConstants.Win32Registry.RegisterFileExtensionMapping(".abcdefg"));
-            Assert.IsFalse(MimeConstants.Win32Registry.RegisterFileExtensionMapping("application/x-test-c"));
-            var association = MimeConstants.Win32Registry.GetFileAssociationInfo(".cs");
+            Assert.IsFalse(MimeConstants.Registry.RegisterFileExtensionMapping(".abcdefg"));
+            Assert.IsFalse(MimeConstants.Registry.RegisterFileExtensionMapping("application/x-test-c"));
+            var association = MimeConstants.Registry.GetFileAssociationInfo(".cs");
             Assert.AreEqual(".cs", association.FileExtension);
-            association = MimeConstants.Win32Registry.GetFileAssociationInfo(".wma");
+            association = MimeConstants.Registry.GetFileAssociationInfo(".wma");
             Assert.AreEqual(MimeConstants.Audio.Wma, association.ContentType);
-            association = MimeConstants.Win32Registry.GetFileAssociationInfo(MimeConstants.Audio.Wma);
+            association = MimeConstants.Registry.GetFileAssociationInfo(MimeConstants.Audio.Wma);
             Assert.AreEqual(MimeConstants.Audio.Wma, association.ContentType);
 #endif
         }

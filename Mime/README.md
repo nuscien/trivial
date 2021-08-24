@@ -25,6 +25,6 @@ using Trivial.Web;
 You can get MIME by a specific file extension name.
 
 ```csharp
-var av1 = MimeConstants.FromFileExtension(".av1");
-var pptx = MimeConstants.FromFileExtension(".pptx");
+var av1 = MimeConstants.GetByFileExtension(".av1");
+var pptx = MimeConstants.GetByFileExtension(".pptx");
 ```
