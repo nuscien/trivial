@@ -13,62 +13,62 @@ namespace Trivial.Web
         public static class Audio
         {
             /// <summary>
-            /// The MIME of basic audio and sound.
+            /// The MIME content type of basic audio and sound.
             /// </summary>
             public const string Au = "audio/basic";
 
             /// <summary>
-            /// The MIME of Musical Instrument Digital Interface.
+            /// The MIME content type of Musical Instrument Digital Interface.
             /// </summary>
             public const string Midi = "audio/midi";
 
             /// <summary>
-            /// The MIME of MPEG-4.
+            /// The MIME content type of MPEG-4.
             /// </summary>
             public const string Mp4 = "audio/mp4";
 
             /// <summary>
-            /// The MIME of MPEG-1 audio layer 3.
+            /// The MIME content type of MPEG-1 audio layer 3.
             /// </summary>
             public const string Mp3 = "audio/mpeg";
 
             /// <summary>
-            /// The MIME of OGG Vobis.
+            /// The MIME content type of OGG Vobis.
             /// </summary>
             public const string Ogg = "audio/ogg";
 
             /// <summary>
-            /// The MIME of WebA.
+            /// The MIME content type of WebA.
             /// </summary>
             public const string Weba = "audio/webm";
 
             /// <summary>
-            /// The MIME of Advanced Audio Coding.
+            /// The MIME content type of Advanced Audio Coding.
             /// </summary>
             public const string Aac = "audio/x-aac";
 
             /// <summary>
-            /// The MIME of Audio Interchange File Format.
+            /// The MIME content type of Audio Interchange File Format.
             /// </summary>
             public const string Aif = "audio/x-aiff";
 
             /// <summary>
-            /// The MIME of Free Lossless Audio Codec.
+            /// The MIME content type of Free Lossless Audio Codec.
             /// </summary>
             public const string Flac = "audio/x-flac";
 
             /// <summary>
-            /// The MIME of Matroska.
+            /// The MIME content type of Matroska.
             /// </summary>
             public const string Matroska = "audio/x-matroska";
 
             /// <summary>
-            /// The MIME of Windows Media Audio.
+            /// The MIME content type of Windows Media Audio.
             /// </summary>
             public const string Wma = "audio/x-ms-wma";
 
             /// <summary>
-            /// The MIME of wave audio.
+            /// The MIME content type of wave audio.
             /// </summary>
             public const string Wav = "audio/wav";
         }

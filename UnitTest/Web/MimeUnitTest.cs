@@ -38,17 +38,17 @@ namespace Trivial.Web
             MimeConstants.FileExtensionMapping.Remove(new string[] { null, ".a", ".b" });
             MimeConstants.FileExtensionMapping.Remove(".mp4");
             MimeConstants.FileExtensionMapping.BackupGetter = GetMime;
-            Assert.AreEqual(TestMimeValue, MimeConstants.ByFileExtension(".test"));
+            Assert.AreEqual(TestMimeValue, MimeConstants.GetByFileExtension(".test"));
             Assert.AreEqual(3, MimeConstants.FileExtensionMapping.Count);
-            Assert.AreEqual("application/vnd.palm", MimeConstants.ByFileExtension(".pdb"));
-            Assert.AreEqual("application/x-typescript", MimeConstants.ByFileExtension(".ts"));
-            Assert.AreEqual(MimeConstants.Videos.Mp4, MimeConstants.ByFileExtension(".mp4"));
-            Assert.AreEqual(MimeConstants.Documents.Docx, MimeConstants.ByFileExtension(".docx"));
-            Assert.AreEqual(MimeConstants.StreamMIME, MimeConstants.ByFileExtension(".abcdefg"));
-            Assert.IsNull(MimeConstants.ByFileExtension(".abcdefg", true));
+            Assert.AreEqual("application/vnd.palm", MimeConstants.GetByFileExtension(".pdb"));
+            Assert.AreEqual("application/x-typescript", MimeConstants.GetByFileExtension(".ts"));
+            Assert.AreEqual(MimeConstants.Videos.Mp4, MimeConstants.GetByFileExtension(".mp4"));
+            Assert.AreEqual(MimeConstants.Documents.Docx, MimeConstants.GetByFileExtension(".docx"));
+            Assert.AreEqual(MimeConstants.StreamMIME, MimeConstants.GetByFileExtension(".abcdefg"));
+            Assert.IsNull(MimeConstants.GetByFileExtension(".abcdefg", true));
             MimeConstants.FileExtensionMapping.Clear();
             Assert.AreEqual(0, MimeConstants.FileExtensionMapping.Values.Count);
-            Assert.AreEqual(MimeConstants.Packages.DownloadToRun, MimeConstants.ByFileExtension(".pdb"));
+            Assert.AreEqual(MimeConstants.Packages.DownloadToRun, MimeConstants.GetByFileExtension(".pdb"));
 
 #if NETFRAMEWORK
             if (!MimeConstants.Win32Registry.RegisterFileExtensionMapping(".wma")) return;

@@ -256,10 +256,11 @@ namespace Trivial.Web
                 "pcf" => "application/x-font-pcf",
                 "pfr" => "application/font-tdpfr",
                 "snf" => "application/x-font-snf",
-                "ttf" or "ttc" => "application/x-font-ttf",
-                "otf" => "application/x-font-otf",
+                "ttf" or "ttc" => "font/ttf",
+                "otf" => "font/otf",
                 "pfa" or "pfb" or "pfm" or "afm" => "application/x-font-type1",
-                "woff" => "application/font-woff",
+                "woff" => "font/woff",
+                "woff2" => "font/woff2",
 
                 // Programming
                 "c" or "cc" or "cpp" or "cxx" or "dic" => "text/x-c",

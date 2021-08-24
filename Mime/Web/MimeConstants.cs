@@ -48,8 +48,8 @@ namespace Trivial.Web
         /// </summary>
         /// <param name="file">The file information.</param>
         /// <returns>The MIME content type.</returns>
-        public static string ByFileExtension(FileInfo file)
-            => ByFileExtension(file?.Extension, StreamMIME);
+        public static string GetByFileExtension(FileInfo file)
+            => GetByFileExtension(file?.Extension, StreamMIME);
 
         /// <summary>
         /// Gets the MIME content type by file extension part.
@@ -57,16 +57,16 @@ namespace Trivial.Web
         /// <param name="file">The file information.</param>
         /// <param name="defaultMime">The default MIME content type.</param>
         /// <returns>The MIME content type.</returns>
-        public static string ByFileExtension(FileInfo file, string defaultMime)
-            => ByFileExtension(file?.Extension, defaultMime);
+        public static string GetByFileExtension(FileInfo file, string defaultMime)
+            => GetByFileExtension(file?.Extension, defaultMime);
 
         /// <summary>
         /// Gets the MIME content type by file extension part.
         /// </summary>
         /// <param name="fileExtension">The file extension.</param>
         /// <returns>The MIME content type.</returns>
-        public static string ByFileExtension(string fileExtension)
-            => ByFileExtension(fileExtension, StreamMIME);
+        public static string GetByFileExtension(string fileExtension)
+            => GetByFileExtension(fileExtension, StreamMIME);
 
         /// <summary>
         /// Gets the MIME content type by file extension part.
@@ -74,8 +74,8 @@ namespace Trivial.Web
         /// <param name="fileExtension">The file extension.</param>
         /// <param name="returnNullIfUnsupported">true if returns null if not supported; otherwise, false.</param>
         /// <returns>The MIME content type.</returns>
-        public static string ByFileExtension(string fileExtension, bool returnNullIfUnsupported)
-            => ByFileExtension(fileExtension, returnNullIfUnsupported ? null : StreamMIME);
+        public static string GetByFileExtension(string fileExtension, bool returnNullIfUnsupported)
+            => GetByFileExtension(fileExtension, returnNullIfUnsupported ? null : StreamMIME);
 
         /// <summary>
         /// Gets the MIME content type by file extension part.
@@ -83,7 +83,7 @@ namespace Trivial.Web
         /// <param name="fileExtension">The file extension.</param>
         /// <param name="defaultMime">The default MIME content type.</param>
         /// <returns>The MIME content type.</returns>
-        public static string ByFileExtension(string fileExtension, string defaultMime)
+        public static string GetByFileExtension(string fileExtension, string defaultMime)
         {
             if (string.IsNullOrWhiteSpace(fileExtension)) return null;
             if (method == null)
