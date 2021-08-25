@@ -14,10 +14,12 @@ namespace Trivial.Web
     /// <summary>
     /// The MIME constants.
     /// </summary>
-    public static partial class MimeConstants   // RFC 6838
+    public static partial class MimeConstants
     {
         private static MethodInfo method;
         private static KeyedDataMapping<string> fem;
+
+        // RFC 6838
 
         /// <summary>
         /// The name of MIME.
