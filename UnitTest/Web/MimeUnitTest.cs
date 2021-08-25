@@ -18,7 +18,7 @@ namespace Trivial.Web
         private const string TestMimeValue = "application/x-test";
 
         /// <summary>
-        /// Tests Pinyin.
+        /// Tests MIME mapping.
         /// </summary>
         [TestMethod]
         public void TestMime()
