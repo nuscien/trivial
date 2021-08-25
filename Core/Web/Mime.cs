@@ -15,62 +15,67 @@ namespace Trivial.Web
     public static partial class WebFormat
     {
         /// <summary>
-        /// Gets the MIME value of document type definition format text.
+        /// Gets the MIME content type of document type definition format text.
         /// </summary>
         public const string DocumentTypeDefinitionMIME = "application/xml-dtd";
 
         /// <summary>
-        /// Gets the MIME value of extensible markup language format text.
+        /// Gets the MIME content type of extensible markup language format text.
         /// </summary>
         public const string XmlMIME = "application/xml";
 
         /// <summary>
-        /// Gets the MIME value of JSON format text.
+        /// Gets the MIME content type of JSON format text.
         /// </summary>
         public const string JsonMIME = "application/json";
 
         /// <summary>
-        /// Gets the MIME value of JavaScript (ECMAScript) format text.
+        /// Gets the MIME content type of JavaScript (ECMAScript) format text.
         /// </summary>
         public const string JavaScriptMIME = "text/javascript";
 
         /// <summary>
-        /// Gets the MIME value of YAML format text.
+        /// Gets the MIME content type of YAML format text.
         /// </summary>
         public const string YamlMIME = "application/x-yaml";
 
         /// <summary>
-        /// Gets the MIME value of the URL encoded.
+        /// Gets the MIME content type of the URL encoded.
         /// </summary>
         public const string FormUrlMIME = "application/x-www-form-urlencoded";
 
         /// <summary>
-        /// Gets the MIME value of CSS format text.
+        /// Gets the MIME content type of multipart form data.
+        /// </summary>
+        public const string FormDataMIME = "multipart/form-data";
+
+        /// <summary>
+        /// Gets the MIME content type of CSS format text.
         /// </summary>
         public const string CssMIME = "text/css";
 
         /// <summary>
-        /// Gets the MIME value of HTML format text.
+        /// Gets the MIME content type of HTML format text.
         /// </summary>
         public const string HtmlMIME = "text/html";
 
         /// <summary>
-        /// Gets the MIME value of SVG format text.
+        /// Gets the MIME content type of SVG format text.
         /// </summary>
         public const string SvgMIME = "image/svg+xml";
 
         /// <summary>
-        /// Gets the MIME value of markdown format text.
+        /// Gets the MIME content type of markdown format text.
         /// </summary>
         public const string MarkdownMIME = "text/markdown";
 
         /// <summary>
-        /// Gets the MIME value of web assembly format text.
+        /// Gets the MIME content type of web assembly format text.
         /// </summary>
         public const string WebAssemblyMIME = "application/wasm";
 
         /// <summary>
-        /// Gets the MIME value of octet stream.
+        /// Gets the MIME content type of octet stream.
         /// </summary>
         public const string StreamMIME = "application/octet-stream";
 

@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text.Json;
+
 using Trivial.Collection;
 using Trivial.Text;
 
@@ -13,7 +14,7 @@ namespace Trivial.Web
     /// <summary>
     /// The MIME constants.
     /// </summary>
-    public static partial class MimeConstants
+    public static partial class MimeConstants   // RFC 6838
     {
         private static MethodInfo method;
         private static KeyedDataMapping<string> fem;
@@ -27,6 +28,21 @@ namespace Trivial.Web
         /// The MIME content type of octet stream.
         /// </summary>
         public const string StreamMIME = "application/octet-stream";
+
+        /// <summary>
+        /// The MIME content type of form data.
+        /// </summary>
+        public const string FormDataMIME = "multipart/form-data";
+
+        /// <summary>
+        /// The MIME content type of byte ranges.
+        /// </summary>
+        public const string ByteRanges = "multipart/byteranges";
+
+        /// <summary>
+        /// The MIME content type of URL encoded form.
+        /// </summary>
+        public const string FormUrlMIME = "application/x-www-form-urlencoded";
 
         /// <summary>
         /// Gets the MIME content type mapping of file extension.
@@ -50,6 +66,15 @@ namespace Trivial.Web
         /// <returns>The MIME content type.</returns>
         public static string GetByFileExtension(FileInfo file)
             => GetByFileExtension(file?.Extension, StreamMIME);
+
+        /// <summary>
+        /// Gets the MIME content type by file extension part.
+        /// </summary>
+        /// <param name="file">The file information.</param>
+        /// <param name="returnNullIfUnsupported">true if returns null if not supported; otherwise, false.</param>
+        /// <returns>The MIME content type.</returns>
+        public static string GetByFileExtension(FileInfo file, bool returnNullIfUnsupported)
+            => GetByFileExtension(file?.Extension, returnNullIfUnsupported ? null : StreamMIME);
 
         /// <summary>
         /// Gets the MIME content type by file extension part.
