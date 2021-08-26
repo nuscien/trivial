@@ -31,16 +31,20 @@ namespace Trivial.Data
                 { "opq", "hijklmn", 20 }
             };
             cache.Expiration = TimeSpan.FromMilliseconds(1600);
-            Assert.AreEqual(4, cache.Count);
+            Assert.AreEqual(4, cache.Count());
             Assert.AreEqual(12, cache["abcdefg"]);
             Assert.AreEqual(17, cache["opq", "abcdefg"]);
             Assert.AreEqual(17, cache["hijklmn"]);
             Assert.AreEqual(20, cache["opq", "hijklmn"]);
             Assert.IsFalse(cache.Contains("opq"));
+            Assert.IsTrue(cache.Any());
 
             cache.MaxCount = 3;
             cache.RemoveExpired();
-            Assert.AreEqual(3, cache.Count);
+            Assert.AreEqual(3, cache.Count(false));
+            Assert.AreEqual(1, cache.Count(true));
+            Assert.AreEqual(0, cache.Count("none"));
+            Assert.AreEqual(2, cache.Count("opq"));
             Assert.AreEqual(17, cache["opq", "abcdefg"]);
             Assert.AreEqual(20, cache["opq", "hijklmn"]);
 
@@ -83,16 +87,18 @@ namespace Trivial.Data
             Task.WaitAll(tasks.ToArray());
             Assert.IsTrue(cache.Contains("xyz", "*#06#"));
             Assert.IsTrue(cache["xyz", "*#06#"] < 7);
-            Assert.AreEqual(4, cache.Count);
+            Assert.AreEqual(4, cache.Count());
+            Assert.AreEqual(4, cache.CacheCount);
             Assert.AreEqual(99, cache["rst"]);
 
             cache.RemoveAll(ele => ele.Id == "1234567890");
             Assert.IsFalse(cache.Contains("xyz", "1234567890"));
             Assert.IsFalse(cache.Contains("*#06#"));
             Assert.IsTrue(cache.Contains("rst"));
-            Assert.AreEqual(3, cache.Count);
+            Assert.AreEqual(3, cache.Count());
             cache.Clear();
-            Assert.AreEqual(0, cache.Count);
+            Assert.IsFalse(cache.Any());
+            Assert.AreEqual(0, cache.Count());
 
             cache.Expiration = TimeSpan.FromMilliseconds(30);
             cache.Add("abcdefg", 17);
