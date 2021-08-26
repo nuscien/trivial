@@ -50,7 +50,7 @@ namespace Trivial.Data
             /// <summary>
             /// Initializes a new instance of the DataCacheCollection.ItemInfo class.
             /// </summary>
-            /// <param name="idPrefix">The prefix of the identifier for resource group.</param>
+            /// <param name="idPrefix">The prefix of the identifier for resource group; or null for no prefix ones.</param>
             /// <param name="id">The identifier in the resource group.</param>
             /// <param name="value">The value.</param>
             /// <param name="expiration">The optional expiration to override current policy.</param>
@@ -152,9 +152,19 @@ namespace Trivial.Data
         public TimeSpan? Expiration { get; set; }
 
         /// <summary>
-        /// Gets the number of elements contained in the collection.
+        /// Gets the count of elements contained in the collection.
         /// </summary>
-        public int Count => items.Count + (items2 != null ? items2.Count : 0);
+        int ICollection<ItemInfo>.Count => AsEnumerable().Count();
+
+        /// <summary>
+        /// Gets the count of elements contained in the collection.
+        /// </summary>
+        int IReadOnlyCollection<ItemInfo>.Count => AsEnumerable().Count();
+
+        /// <summary>
+        /// Gets the count of elements contained in the collection cache.
+        /// </summary>
+        public int CacheCount => items.Count + (items2 != null ? items2.Count : 0);
 
         /// <summary>
         /// Gets a value indicating whether the collection is readonly.
@@ -197,7 +207,7 @@ namespace Trivial.Data
         /// <summary>
         /// Gets or sets the specific element.
         /// </summary>
-        /// <param name="idPrefix">The prefix of the identifier for resource group.</param>
+        /// <param name="idPrefix">The prefix of the identifier for resource group; or null for no prefix ones.</param>
         /// <param name="id">The identifier in the resource group.</param>
         /// <returns>The value.</returns>
         /// <exception cref="ArgumentNullException">id was null, empty or consists only of white-space characters.</exception>
@@ -236,7 +246,7 @@ namespace Trivial.Data
         /// <summary>
         /// Gets the cache item info.
         /// </summary>
-        /// <param name="prefix">The prefix of the identifier for resource group.</param>
+        /// <param name="prefix">The prefix of the identifier for resource group; or null for no prefix ones.</param>
         /// <param name="id">The identifier in the resource group.</param>
         /// <param name="initialization">The value initialization. It will be called to generate a new value when no cache.</param>
         /// <param name="expiration">The expiration for initialization.</param>
@@ -316,7 +326,7 @@ namespace Trivial.Data
         /// <summary>
         /// Gets the cache item info.
         /// </summary>
-        /// <param name="prefix">The prefix of the identifier for resource group.</param>
+        /// <param name="prefix">The prefix of the identifier for resource group; or null for no prefix ones.</param>
         /// <param name="id">The identifier in the resource group.</param>
         /// <param name="initialization">The value initialization. It will be called to generate a new value when no cache.</param>
         /// <param name="expiration">The expiration for initialization.</param>
@@ -353,7 +363,7 @@ namespace Trivial.Data
         /// <summary>
         /// Gets the cache item info.
         /// </summary>
-        /// <param name="prefix">The prefix of the identifier for resource group.</param>
+        /// <param name="prefix">The prefix of the identifier for resource group; or null for no prefix ones.</param>
         /// <param name="id">The identifier.</param>
         /// <param name="initialization">The value initialization. It will be called to generate a new value when no cache.</param>
         /// <param name="expiration">The expiration for initialization.</param>
@@ -379,7 +389,7 @@ namespace Trivial.Data
         /// <summary>
         /// Tries to get the cache item info.
         /// </summary>
-        /// <param name="prefix">The prefix of the identifier for resource group.</param>
+        /// <param name="prefix">The prefix of the identifier for resource group; or null for no prefix ones.</param>
         /// <param name="id">The identifier in the resource group.</param>
         /// <param name="result">The output result.</param>
         /// <returns>true if has the info and it is not expired; otherwise, false.</returns>
@@ -403,7 +413,7 @@ namespace Trivial.Data
         /// <summary>
         /// Tries to get the cache item data.
         /// </summary>
-        /// <param name="prefix">The prefix of the identifier for resource group.</param>
+        /// <param name="prefix">The prefix of the identifier for resource group; or null for no prefix ones.</param>
         /// <param name="id">The identifier in the resource group.</param>
         /// <param name="data">The output data.</param>
         /// <returns>true if has the info and it is not expired; otherwise, false.</returns>
@@ -446,7 +456,7 @@ namespace Trivial.Data
         /// <summary>
         /// Adds an object to the end of the collection.
         /// </summary>
-        /// <param name="idPrefix">The prefix of the identifier for resource group.</param>
+        /// <param name="idPrefix">The prefix of the identifier for resource group; or null for no prefix ones.</param>
         /// <param name="id">The identifier in the resource group.</param>
         /// <param name="value">The value.</param>
         /// <param name="expiration">The optional expiration to override current policy.</param>
@@ -463,6 +473,29 @@ namespace Trivial.Data
             items.Clear();
             if (items2 != null) items2.Clear();
         }
+
+        /// <summary>
+        /// Gets the count of elements contained in the collection.
+        /// </summary>
+        /// <returns>The count of elements.</returns>
+        public int Count()
+            => AsEnumerable().Count();
+
+        /// <summary>
+        /// Gets the count of elements contained in the collection.
+        /// </summary>
+        /// <param name="onlyNoPrefix">true if clear the items with no prefix only; otherwise, false.</param>
+        /// <returns>The count of elements.</returns>
+        public int Count(bool onlyNoPrefix)
+            => AsEnumerable(onlyNoPrefix).Count();
+
+        /// <summary>
+        /// Gets the count of elements contained in the collection.
+        /// </summary>
+        /// <param name="prefix">The prefix.</param>
+        /// <returns>The count of elements.</returns>
+        public int Count(string prefix)
+            => AsEnumerable(prefix).Count();
 
         /// <summary>
         /// Removes all elements from the collection.
@@ -531,7 +564,7 @@ namespace Trivial.Data
         /// <summary>
         /// Determines whether an element is in the collection.
         /// </summary>
-        /// <param name="idPrefix">The prefix of the identifier for resource group.</param>
+        /// <param name="idPrefix">The prefix of the identifier for resource group; or null for no prefix ones.</param>
         /// <param name="item">The object to locate in the collection.</param>
         /// <returns>true if item is found in the collection; otherwise, false.</returns>
         public bool ContainsValue(string idPrefix, T item)
@@ -575,7 +608,7 @@ namespace Trivial.Data
         /// <summary>
         /// Determines whether an element is in the collection.
         /// </summary>
-        /// <param name="prefix">The prefix of the identifier for resource group.</param>
+        /// <param name="prefix">The prefix of the identifier for resource group; or null for no prefix ones.</param>
         /// <param name="id">The identifier in the resource group.</param>
         /// <returns>true if item is found in the collection; otherwise, false.</returns>
         public bool Contains(string prefix, string id)
@@ -603,7 +636,7 @@ namespace Trivial.Data
         /// <summary>
         /// Registers a value resolving factory.
         /// </summary>
-        /// <param name="prefix">The prefix of the identifier for resource group.</param>
+        /// <param name="prefix">The prefix of the identifier for resource group; or null for no prefix ones.</param>
         /// <param name="factory">The value resovling factory.</param>
         /// <param name="timeout">An optional time span that represents the number of milliseconds to wait</param>
         public void Register(string prefix, Func<string, Task<T>> factory, TimeSpan? timeout = null)
@@ -649,7 +682,7 @@ namespace Trivial.Data
         /// <summary>
         /// Copies the entire collection to a compatible one-dimensional array, starting at the specified index of the target array.
         /// </summary>
-        /// <param name="prefix">The prefix of the identifier for resource group.</param>
+        /// <param name="prefix">The prefix of the identifier for resource group; or null for no prefix ones.</param>
         /// <param name="array">The one-dimensional System.Array that is the destination of the elements copied from System.Collections.Generic.List`1. The System.Array must have zero-based indexing.</param>
         /// <param name="arrayIndex">The zero-based index in array at which copying begins.</param>
         /// <exception cref="ArgumentNullException">array was null.</exception>
@@ -663,7 +696,7 @@ namespace Trivial.Data
         /// <summary>
         /// Copies the entire collection to a compatible one-dimensional array, starting at the specified index of the target array.
         /// </summary>
-        /// <param name="prefix">The prefix of the identifier for resource group.</param>
+        /// <param name="prefix">The prefix of the identifier for resource group; or null for no prefix ones.</param>
         /// <param name="array">The one-dimensional System.Array that is the destination of the elements copied from System.Collections.Generic.List`1. The System.Array must have zero-based indexing.</param>
         /// <param name="arrayIndex">The zero-based index in array at which copying begins.</param>
         /// <exception cref="ArgumentNullException">array was null.</exception>
@@ -703,7 +736,7 @@ namespace Trivial.Data
         /// <summary>
         /// Removes the occurrence of a specific value from the collection.
         /// </summary>
-        /// <param name="prefix">The prefix of the identifier for resource group.</param>
+        /// <param name="prefix">The prefix of the identifier for resource group; or null for no prefix ones.</param>
         /// <param name="predicate">A function to test each element for a condition.</param>
         /// <returns>true if item is successfully removed; otherwise, false. This method also returns false if item was not found in the collection.</returns>
         public int RemoveAll(string prefix, Predicate<ItemInfo> predicate)
@@ -792,7 +825,7 @@ namespace Trivial.Data
         /// <summary>
         /// Removes the occurrence with the specific identifier from the collection.
         /// </summary>
-        /// <param name="prefix">The prefix of the identifier for resource group.</param>
+        /// <param name="prefix">The prefix of the identifier for resource group; or null for no prefix ones.</param>
         /// <param name="id">The identifier in the resource group.</param>
         /// <returns>true if item is successfully removed; otherwise, false. This method also returns false if item was not found in the collection.</returns>
         public bool Remove(string prefix, string id)
@@ -803,7 +836,7 @@ namespace Trivial.Data
         /// <summary>
         /// Removes the occurrence with the specific identifier from the collection.
         /// </summary>
-        /// <param name="prefix">The prefix of the identifier for resource group.</param>
+        /// <param name="prefix">The prefix of the identifier for resource group; or null for no prefix ones.</param>
         /// <param name="id">The identifier in the resource group.</param>
         /// <param name="result">The result deleted.</param>
         /// <returns>true if item is successfully removed; otherwise, false. This method also returns false if item was not found in the collection.</returns>
@@ -857,7 +890,7 @@ namespace Trivial.Data
             }
             else
             {
-                while (Count > maxCount) RemoveEarliest();
+                while (CacheCount > maxCount) RemoveEarliest();
             }
 
             cleanUpTime = DateTime.Now;
@@ -879,7 +912,7 @@ namespace Trivial.Data
             }
             else
             {
-                while (Count > maxCount) RemoveEarliest();
+                while (CacheCount > maxCount) RemoveEarliest();
             }
         }
 
@@ -948,6 +981,35 @@ namespace Trivial.Data
         }
 
         /// <summary>
+        /// Tests if there is any item.
+        /// </summary>
+        /// <returns>true if contains one or more items; otherwise, false.</returns>
+        public bool Any()
+        {
+            return AsEnumerable().Any();
+        }
+
+        /// <summary>
+        /// Tests if there is any item.
+        /// </summary>
+        /// <param name="onlyNoPrefix">true if clear the items with no prefix only; otherwise, false.</param>
+        /// <returns>true if contains one or more items; otherwise, false.</returns>
+        public bool Any(bool onlyNoPrefix)
+        {
+            return AsEnumerable(onlyNoPrefix).Any();
+        }
+
+        /// <summary>
+        /// Converts to a list.
+        /// </summary>
+        /// <param name="prefix">The prefix of the identifier for resource group; or null for no prefix ones.</param>
+        /// <returns>A list copied.</returns>
+        public bool Any(string prefix)
+        {
+            return AsEnumerable(prefix).Any();
+        }
+
+        /// <summary>
         /// Converts to a list.
         /// </summary>
         /// <returns>A list copied.</returns>
@@ -959,11 +1021,11 @@ namespace Trivial.Data
         /// <summary>
         /// Converts to a list.
         /// </summary>
-        /// <param name="prefix">The prefix of the identifier for resource group.</param>
+        /// <param name="prefix">The prefix of the identifier for resource group; or null for no prefix ones.</param>
         /// <returns>A list copied.</returns>
         public List<ItemInfo> ToList(string prefix)
         {
-            return (string.IsNullOrEmpty(prefix) ? items : GetItemsForPrefix().Where(ele => ele.Value?.Prefix == prefix && !ele.Value.IsExpired(Expiration))).Select(ele => ele.Value).ToList();
+            return AsEnumerable(prefix).ToList();
         }
 
         /// <summary>
@@ -973,9 +1035,17 @@ namespace Trivial.Data
         /// <returns>A list copied.</returns>
         public List<ItemInfo> ToList(bool onlyNoPrefix)
         {
-            var col = items.Select(ele => ele.Value).Where(ele => ele?.IsExpired(Expiration) == false);
-            if (!onlyNoPrefix && items2 != null) col = col.Union(items2.Select(ele => ele.Value).Where(ele => ele?.IsExpired(Expiration) == false));
-            return col.ToList();
+            return AsEnumerable(onlyNoPrefix).ToList();
+        }
+
+        /// <summary>
+        /// Creates a dictionary from the key value pairs.
+        /// </summary>
+        /// <param name="prefix">The prefix of the identifier for resource group; or null for no prefix ones.</param>
+        /// <returns>A dictionary with key and the value collection.</returns>
+        public Dictionary<string, T> ToDictionary(string prefix)
+        {
+            return AsEnumerable(prefix).ToDictionary(item => item.Id, item => item.Value);
         }
 
         /// <summary>
@@ -990,7 +1060,7 @@ namespace Trivial.Data
         /// <summary>
         /// Returns an enumerator that iterates through the collection.
         /// </summary>
-        /// <param name="prefix">The prefix of the identifier for resource group.</param>
+        /// <param name="prefix">The prefix of the identifier for resource group; or null for no prefix ones.</param>
         /// <returns>An enumerator that can be used to iterate through the collection.</returns>
         public IEnumerator<ItemInfo> GetEnumerator(string prefix)
         {
@@ -1014,6 +1084,29 @@ namespace Trivial.Data
         IEnumerator IEnumerable.GetEnumerator()
         {
             return GetEnumerator();
+        }
+
+        /// <summary>
+        /// Converts to a collection.
+        /// </summary>
+        /// <param name="onlyNoPrefix">true if clear the items with no prefix only; otherwise, false.</param>
+        /// <returns>A collection.</returns>
+        private IEnumerable<ItemInfo> AsEnumerable(bool onlyNoPrefix = false)
+        {
+            var col = items.Select(ele => ele.Value).Where(ele => ele?.IsExpired(Expiration) == false);
+            if (!onlyNoPrefix && items2 != null) col = col.Union(items2.Select(ele => ele.Value).Where(ele => ele?.IsExpired(Expiration) == false));
+            return col;
+        }
+
+        /// <summary>
+        /// Converts to a collection.
+        /// </summary>
+        /// <param name="prefix">The prefix of the identifier for resource group; or null for no prefix ones.</param>
+        /// <returns>A collection.</returns>
+        private IEnumerable<ItemInfo> AsEnumerable(string prefix)
+        {
+            if (string.IsNullOrEmpty(prefix)) return AsEnumerable(true);
+            return GetItemsForPrefix().Select(ele => ele.Value).Where(ele => ele?.Prefix == prefix && !ele.IsExpired(Expiration));
         }
 
         private static string GetIdWithPrefix(ItemInfo info)
@@ -1133,9 +1226,9 @@ namespace Trivial.Data
             {
             }
 
-            #pragma warning disable IDE0018
+#pragma warning disable IDE0018
             ItemInfo r;
-            #pragma warning restore IDE0018
+#pragma warning restore IDE0018
             if (string.IsNullOrEmpty(prefix) ? items.TryGetValue(id, out r) : items2.TryGetValue(GetIdWithPrefix(prefix, id), out r))
             {
                 try
@@ -1242,7 +1335,7 @@ namespace Trivial.Data
             var greater = false;
             try
             {
-                greater = Count > MaxCount.Value;
+                greater = CacheCount > MaxCount.Value;
             }
             catch (InvalidOperationException)
             {
