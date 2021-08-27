@@ -5,7 +5,7 @@ Trivial libraries contain a lot of utilities, models and components, which are t
 [![MIT licensed](./docs/assets/badge_lisence_MIT.svg)](https://github.com/nuscien/trivial/blob/master/LICENSE)
 [![Build Status](https://dev.azure.com/nuscien/trivial/_apis/build/status/nuscien.trivial?branchName=main)](https://dev.azure.com/nuscien/trivial/_build/latest?definitionId=1&branchName=main)
 
-## [Trivial](./docs/core)
+## [Trivial](./Core)
 
 A library providing lots of useful utilities, models and services,
 including interceptor, retry policy, writable JSON DOM, PEM, JWT, stream combination, JSON HTTP web client, CSV parser, JSON converters, numerals, coordinates, angle, arithmetic, sets, cmd verb dispatcher, etc.
@@ -30,7 +30,7 @@ including interceptor, retry policy, writable JSON DOM, PEM, JWT, stream combina
 - [Reflection](./docs/reflection)
 - [Geography](./docs/geo)
 
-## [Trivial.Chemistry](./docs/chemistry)
+## [Trivial.Chemistry](./Chemistry)
 
 Including the periodic table and basic chemistry models, e.g. chemical element, molecular formula and isotope.
 
@@ -45,16 +45,7 @@ Including the periodic table and basic chemistry models, e.g. chemical element, 
 
 - [Chemistry](./docs/chemistry)
 
-## [Trivial.Web](./docs/web)
-
-The useful utilities for ASP.NET application.
-
-[![NuGet package](https://img.shields.io/nuget/dt/Trivial.Web?label=nuget+downloads)](https://www.nuget.org/packages/Trivial.Web)
-
-![.NET 6](./docs/assets/badge_NET_6.svg)
-![.NET 5](./docs/assets/badge_NET_5.svg)
-
-## [Trivial.Mime](./docs/web/mime)
+## [Trivial.Mime](./Mime)
 
 The MIME constants and its mapping of file extension part.
 
@@ -69,7 +60,18 @@ The MIME constants and its mapping of file extension part.
 
 - [MIME constants](./docs/web/mime)
 
-## [Trivial.Console](./docs/console)
+## [Trivial.Web](./Web)
+
+The useful utilities for ASP.NET application.
+
+[![NuGet package](https://img.shields.io/nuget/dt/Trivial.Web?label=nuget+downloads)](https://www.nuget.org/packages/Trivial.Web)
+
+![.NET 6](./docs/assets/badge_NET_6.svg)
+![.NET 5](./docs/assets/badge_NET_5.svg)
+
+- [Controller extensions for ASP.NET Core](./docs/web/controller)
+
+## [Trivial.Console](./Console)
 
 The rich UX CLI controls for `cmd`.
 

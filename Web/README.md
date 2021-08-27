@@ -1,3 +1,19 @@
 ﻿# Trivial.Web
 
-ASP.NET extensions.
+ASP.NET Core extensions.
+
+## Import
+
+Just add following namespace to your code file to use.
+
+```csharp
+using Trivial.Web;
+```
+
+## Request
+
+Some extension methods to get the field from HTTP request.
+
+## Action result
+
+Some extension methods to convert some modes to `ActionResult`.

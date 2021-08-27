@@ -1,6 +1,6 @@
 ﻿# [Trivial.Mime](../docs/web/mime)
 
-Commonly used MIME content types and file extension mapping.
+Commonly used MIME content types and its file extension part mapping.
 
 ## Import
 
@@ -19,6 +19,7 @@ using Trivial.Web;
 - `MimeConstants.Web`
 - `MimeConstants.Text`
 - `MimeConstants.Packages`
+- `MimeConstants.Multipart`
 
 ## File extension mapping
 
