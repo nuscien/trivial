@@ -50,13 +50,13 @@ namespace Trivial.Data
             /// <summary>
             /// Initializes a new instance of the DataCacheCollection.ItemInfo class.
             /// </summary>
-            /// <param name="idPrefix">The prefix of the identifier for resource group; or null for no prefix ones.</param>
+            /// <param name="prefix">The prefix of the identifier for resource group; or null for no prefix ones.</param>
             /// <param name="id">The identifier in the resource group.</param>
             /// <param name="value">The value.</param>
             /// <param name="expiration">The optional expiration to override current policy.</param>
-            public ItemInfo(string idPrefix, string id, T value, TimeSpan? expiration = null) : this(id, value, expiration)
+            public ItemInfo(string prefix, string id, T value, TimeSpan? expiration = null) : this(id, value, expiration)
             {
-                Prefix = !string.IsNullOrWhiteSpace(idPrefix) ? idPrefix : null;
+                Prefix = !string.IsNullOrWhiteSpace(prefix) ? prefix : null;
             }
 
             /// <summary>
@@ -132,7 +132,7 @@ namespace Trivial.Data
         private ConcurrentDictionary<string, ItemInfo> items2;
 
         /// <summary>
-        /// The cache data list for prefix ones.
+        /// The cache data factories.
         /// </summary>
         private ConcurrentDictionary<string, FactoryInfo> items3;
 
@@ -207,17 +207,17 @@ namespace Trivial.Data
         /// <summary>
         /// Gets or sets the specific element.
         /// </summary>
-        /// <param name="idPrefix">The prefix of the identifier for resource group; or null for no prefix ones.</param>
+        /// <param name="prefix">The prefix of the identifier for resource group; or null for no prefix ones.</param>
         /// <param name="id">The identifier in the resource group.</param>
         /// <returns>The value.</returns>
         /// <exception cref="ArgumentNullException">id was null, empty or consists only of white-space characters.</exception>
         /// <exception cref="KeyNotFoundException">The identifier does not exist.</exception>
-        public T this[string idPrefix, string id]
+        public T this[string prefix, string id]
         {
             get
             {
                 if (string.IsNullOrWhiteSpace(id)) throw new ArgumentNullException(nameof(id), "id should not be null, empty or consists only of white-space characters.");
-                var info = GetInfo(idPrefix, id);
+                var info = GetInfo(prefix, id);
                 if (info == null) throw new KeyNotFoundException("The identifier does not exist.");
                 return info.Value;
             }
@@ -225,8 +225,8 @@ namespace Trivial.Data
             set
             {
                 if (string.IsNullOrWhiteSpace(id)) throw new ArgumentNullException(nameof(id), "id should not be null, empty or consists only of white-space characters.");
-                if (string.IsNullOrEmpty(idPrefix)) items[id] = new ItemInfo(id, value);
-                else GetItemsForPrefix()[GetIdWithPrefix(idPrefix, id)] = new ItemInfo(idPrefix, id, value);
+                if (string.IsNullOrEmpty(prefix)) items[id] = new ItemInfo(id, value);
+                else GetItemsForPrefix()[GetIdWithPrefix(prefix, id)] = new ItemInfo(prefix, id, value);
                 RemoveExpiredAuto();
             }
         }
@@ -269,13 +269,10 @@ namespace Trivial.Data
                 return Add(prefix, id, initialization, expiration);
             }
 
-            if (info.IsExpired(Expiration))
-            {
-                if (string.IsNullOrEmpty(prefix)) items.TryRemove(id, out _);
-                return Add(prefix, id, initialization, expiration);
-            }
-
-            return info;
+            if (!info.IsExpired(Expiration)) return info;
+            if (string.IsNullOrEmpty(prefix)) items.TryRemove(id, out _);
+            else if (items2 != null) items2.TryRemove(GetIdWithPrefix(prefix, id), out _);
+            return null;
         }
 
         /// <summary>
@@ -284,32 +281,9 @@ namespace Trivial.Data
         /// <param name="predicate">A function to test each element for a condition.</param>
         /// <returns>The cache item info.</returns>
         public ItemInfo GetInfo(Func<ItemInfo, bool> predicate)
-        {
-            if (predicate is null) predicate = ele => true;
-            try
-            {
-                return items.Select(ele => ele.Value).LastOrDefault(predicate);
-            }
-            catch (InvalidOperationException)
-            {
-            }
-            catch (NullReferenceException)
-            {
-            }
-
-            try
-            {
-                return items.Select(ele => ele.Value).LastOrDefault(predicate);
-            }
-            catch (InvalidOperationException)
-            {
-            }
-            catch (NullReferenceException)
-            {
-            }
-
-            return items.Select(ele => ele.Value).LastOrDefault(predicate);
-        }
+            => predicate is null
+                ? items.Select(ele => ele.Value).LastOrDefault()
+                : items.Select(ele => ele.Value).ToList().LastOrDefault(predicate);
 
         /// <summary>
         /// Gets the cache item info.
@@ -319,9 +293,7 @@ namespace Trivial.Data
         /// <param name="expiration">The expiration for initialization.</param>
         /// <returns>The cache item info.</returns>
         public Task<ItemInfo> GetInfoAsync(string id, Func<Task<T>> initialization = null, TimeSpan? expiration = null)
-        {
-            return GetInfoAsync(null, id, initialization, expiration);
-        }
+            => GetInfoAsync(null, id, initialization, expiration);
 
         /// <summary>
         /// Gets the cache item info.
@@ -382,9 +354,7 @@ namespace Trivial.Data
         /// <param name="result">The output result.</param>
         /// <returns>true if has the info and it is not expired; otherwise, false.</returns>
         public bool TryGetInfo(string id, out ItemInfo result)
-        {
-            return TryGetInfo(null, id, out result);
-        }
+            => TryGetInfo(null, id, out result);
 
         /// <summary>
         /// Tries to get the cache item info.
@@ -406,9 +376,7 @@ namespace Trivial.Data
         /// <param name="data">The output data.</param>
         /// <returns>true if has the info and it is not expired; otherwise, false.</returns>
         public bool TryGet(string id, out T data)
-        {
-            return TryGet(null, id, out data);
-        }
+            => TryGet(null, id, out data);
 
         /// <summary>
         /// Tries to get the cache item data.
@@ -449,21 +417,17 @@ namespace Trivial.Data
         /// <param name="value">The value.</param>
         /// <param name="expiration">The optional expiration to override current policy.</param>
         public void Add(string id, T value, TimeSpan? expiration = null)
-        {
-            Add(new ItemInfo(null, id, value, expiration));
-        }
+            => Add(new ItemInfo(null, id, value, expiration));
 
         /// <summary>
         /// Adds an object to the end of the collection.
         /// </summary>
-        /// <param name="idPrefix">The prefix of the identifier for resource group; or null for no prefix ones.</param>
+        /// <param name="prefix">The prefix of the identifier for resource group; or null for no prefix ones.</param>
         /// <param name="id">The identifier in the resource group.</param>
         /// <param name="value">The value.</param>
         /// <param name="expiration">The optional expiration to override current policy.</param>
-        public void Add(string idPrefix, string id, T value, TimeSpan? expiration = null)
-        {
-            Add(new ItemInfo(idPrefix, id, value, expiration));
-        }
+        public void Add(string prefix, string id, T value, TimeSpan? expiration = null)
+            => Add(new ItemInfo(prefix, id, value, expiration));
 
         /// <summary>
         /// Removes all elements from the collection.
@@ -478,16 +442,16 @@ namespace Trivial.Data
         /// Gets the count of elements contained in the collection.
         /// </summary>
         /// <returns>The count of elements.</returns>
-        public int Count()
+        public int Count() 
             => AsEnumerable().Count();
 
         /// <summary>
         /// Gets the count of elements contained in the collection.
         /// </summary>
-        /// <param name="onlyNoPrefix">true if clear the items with no prefix only; otherwise, false.</param>
+        /// <param name="onlyNoNamespace">true if clear the items with no prefix only; otherwise, false.</param>
         /// <returns>The count of elements.</returns>
-        public int Count(bool onlyNoPrefix)
-            => AsEnumerable(onlyNoPrefix).Count();
+        public int Count(bool onlyNoNamespace)
+            => AsEnumerable(onlyNoNamespace).Count();
 
         /// <summary>
         /// Gets the count of elements contained in the collection.
@@ -500,11 +464,11 @@ namespace Trivial.Data
         /// <summary>
         /// Removes all elements from the collection.
         /// </summary>
-        /// <param name="onlyNoPrefix">true if clear the items with no prefix only; otherwise, false.</param>
-        public void Clear(bool onlyNoPrefix)
+        /// <param name="onlyNoNamespace">true if clear the items with no prefix only; otherwise, false.</param>
+        public void Clear(bool onlyNoNamespace)
         {
             items.Clear();
-            if (!onlyNoPrefix && items2 != null) items2.Clear();
+            if (!onlyNoNamespace && items2 != null) items2.Clear();
         }
 
         /// <summary>
@@ -520,7 +484,7 @@ namespace Trivial.Data
             }
 
             if (items2 is null) return;
-            var col = RemoveAll(ele => ele.Prefix == prefix);
+            RemoveAll(ele => ele.Prefix == prefix);
         }
 
         /// <summary>
@@ -564,18 +528,18 @@ namespace Trivial.Data
         /// <summary>
         /// Determines whether an element is in the collection.
         /// </summary>
-        /// <param name="idPrefix">The prefix of the identifier for resource group; or null for no prefix ones.</param>
+        /// <param name="prefix">The prefix of the identifier for resource group; or null for no prefix ones.</param>
         /// <param name="item">The object to locate in the collection.</param>
         /// <returns>true if item is found in the collection; otherwise, false.</returns>
-        public bool ContainsValue(string idPrefix, T item)
+        public bool ContainsValue(string prefix, T item)
         {
-            if (string.IsNullOrEmpty(idPrefix)) return ContainsValue(item);
+            if (string.IsNullOrEmpty(prefix)) return ContainsValue(item);
             if (items2 == null) return false;
             if (item is null)
             {
                 foreach (var ele in items2)
                 {
-                    if (!ele.Key.StartsWith(idPrefix)) continue;
+                    if (!ele.Key.StartsWith(prefix)) continue;
                     if (ele.Value is null && !ele.Value.IsExpired(Expiration)) return true;
                 }
 
@@ -584,7 +548,7 @@ namespace Trivial.Data
 
             foreach (var ele in items2)
             {
-                if (!ele.Key.StartsWith(idPrefix)) continue;
+                if (!ele.Key.StartsWith(prefix)) continue;
                 if (item.Equals(ele.Value) && !ele.Value.IsExpired(Expiration)) return true;
             }
 
@@ -744,7 +708,7 @@ namespace Trivial.Data
             if (string.IsNullOrEmpty(prefix)) return RemoveAll(true, predicate);
             if (items2 is null) return 0;
             var i = 0;
-            var col = items2.Where(ele => predicate(ele.Value)).Select(ele => ele.Key).ToList();
+            var col = items2.ToList().Where(ele => predicate(ele.Value)).Select(ele => ele.Key);
             foreach (var item in col)
             {
                 if (items2.TryRemove(item, out _)) i++;
@@ -757,21 +721,21 @@ namespace Trivial.Data
         /// Removes the occurrence of a specific value from the collection.
         /// </summary>
         /// <param name="predicate">A function to test each element for a condition.</param>
-        /// <param name="onlyNoPrefix">true if clear the items with no prefix only; otherwise, false.</param>
+        /// <param name="onlyNoNamespace">true if clear the items with no prefix only; otherwise, false.</param>
         /// <returns>true if item is successfully removed; otherwise, false. This method also returns false if item was not found in the collection.</returns>
-        public int RemoveAll(bool onlyNoPrefix, Predicate<ItemInfo> predicate)
+        public int RemoveAll(bool onlyNoNamespace, Predicate<ItemInfo> predicate)
         {
             if (predicate == null) return 0;
             var i = 0;
-            var col = items.Where(ele => predicate(ele.Value)).Select(ele => ele.Key).ToList();
+            var col = items.ToList().Where(ele => predicate(ele.Value)).Select(ele => ele.Key);
             foreach (var item in col)
             {
                 if (items.TryRemove(item, out _)) i++;
             }
 
-            if (!onlyNoPrefix && items2 != null)
+            if (!onlyNoNamespace && items2 != null)
             {
-                col = items2.Where(ele => predicate(ele.Value)).Select(ele => ele.Key).ToList();
+                col = items2.ToList().Where(ele => predicate(ele.Value)).Select(ele => ele.Key);
                 foreach (var item in col)
                 {
                     if (items2.TryRemove(item, out _)) i++;
@@ -992,11 +956,11 @@ namespace Trivial.Data
         /// <summary>
         /// Tests if there is any item.
         /// </summary>
-        /// <param name="onlyNoPrefix">true if clear the items with no prefix only; otherwise, false.</param>
+        /// <param name="onlyNoNamespace">true if clear the items with no prefix only; otherwise, false.</param>
         /// <returns>true if contains one or more items; otherwise, false.</returns>
-        public bool Any(bool onlyNoPrefix)
+        public bool Any(bool onlyNoNamespace)
         {
-            return AsEnumerable(onlyNoPrefix).Any();
+            return AsEnumerable(onlyNoNamespace).Any();
         }
 
         /// <summary>
@@ -1031,11 +995,11 @@ namespace Trivial.Data
         /// <summary>
         /// Converts to a list.
         /// </summary>
-        /// <param name="onlyNoPrefix">true if clear the items with no prefix only; otherwise, false.</param>
+        /// <param name="onlyNoNamespace">true if clear the items with no prefix only; otherwise, false.</param>
         /// <returns>A list copied.</returns>
-        public List<ItemInfo> ToList(bool onlyNoPrefix)
+        public List<ItemInfo> ToList(bool onlyNoNamespace)
         {
-            return AsEnumerable(onlyNoPrefix).ToList();
+            return AsEnumerable(onlyNoNamespace).ToList();
         }
 
         /// <summary>
@@ -1070,11 +1034,11 @@ namespace Trivial.Data
         /// <summary>
         /// Returns an enumerator that iterates through the collection.
         /// </summary>
-        /// <param name="onlyNoPrefix">true if clear the items with no prefix only; otherwise, false.</param>
+        /// <param name="onlyNoNamespace">true if clear the items with no prefix only; otherwise, false.</param>
         /// <returns>An enumerator that can be used to iterate through the collection.</returns>
-        public IEnumerator<ItemInfo> GetEnumerator(bool onlyNoPrefix)
+        public IEnumerator<ItemInfo> GetEnumerator(bool onlyNoNamespace)
         {
-            return ToList(onlyNoPrefix).GetEnumerator();
+            return ToList(onlyNoNamespace).GetEnumerator();
         }
 
         /// <summary>
@@ -1089,12 +1053,12 @@ namespace Trivial.Data
         /// <summary>
         /// Converts to a collection.
         /// </summary>
-        /// <param name="onlyNoPrefix">true if clear the items with no prefix only; otherwise, false.</param>
+        /// <param name="onlyNoNamespace">true if clear the items with no prefix only; otherwise, false.</param>
         /// <returns>A collection.</returns>
-        private IEnumerable<ItemInfo> AsEnumerable(bool onlyNoPrefix = false)
+        private IEnumerable<ItemInfo> AsEnumerable(bool onlyNoNamespace = false)
         {
             var col = items.Select(ele => ele.Value).Where(ele => ele?.IsExpired(Expiration) == false);
-            if (!onlyNoPrefix && items2 != null) col = col.Union(items2.Select(ele => ele.Value).Where(ele => ele?.IsExpired(Expiration) == false));
+            if (!onlyNoNamespace && items2 != null) col = col.Union(items2.Select(ele => ele.Value).Where(ele => ele?.IsExpired(Expiration) == false));
             return col;
         }
 
@@ -1158,9 +1122,8 @@ namespace Trivial.Data
             var info = new ItemInfo(prefix, id, obj, expiration);
             if (info.IsExpired(Expiration))
             {
-                if (string.IsNullOrEmpty(prefix)) items.TryGetValue(id, out info);
-                else if (items2 != null) items2.TryGetValue(GetIdWithPrefix(prefix, id), out info);
-                if (info == null) return null;
+                if (string.IsNullOrEmpty(prefix)) items.TryGetValue(id, out _);
+                else if (items2 != null) items2.TryGetValue(GetIdWithPrefix(prefix, id), out _);
                 return null;
             }
 
@@ -1226,9 +1189,9 @@ namespace Trivial.Data
             {
             }
 
-#pragma warning disable IDE0018
+            #pragma warning disable IDE0018
             ItemInfo r;
-#pragma warning restore IDE0018
+            #pragma warning restore IDE0018
             if (string.IsNullOrEmpty(prefix) ? items.TryGetValue(id, out r) : items2.TryGetValue(GetIdWithPrefix(prefix, id), out r))
             {
                 try
