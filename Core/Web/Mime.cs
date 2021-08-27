@@ -32,8 +32,7 @@ namespace Trivial.Web
         /// <summary>
         /// Gets the MIME value of JavaScript (ECMAScript) format text.
         /// </summary>
-        public const string JavaScriptMIME = "text/javascript";
-
+        public const string JavaScriptMIME = "application/javascript";
         /// <summary>
         /// Gets the MIME value of YAML format text.
         /// </summary>
@@ -245,6 +244,7 @@ namespace Trivial.Web
                 "xml" or "xsl" or "config" => XmlMIME,
                 "vbs" => "text/vbscript",
                 "yaml" or "yml" => YamlMIME,
+                "dart" => "application/vnd.dart",
 
                 // Font
                 "eot" => "application/vnd.ms-fontobject",
@@ -293,6 +293,7 @@ namespace Trivial.Web
                 "apk" or "aab" => "application/vnd.android.package-archive",
                 "lnk" => "application/x-ms-shortcut",
                 "123" => "application/vnd.lotus-1-2-3",
+                "deb" => "application/vnd.debian.binary-package",
                 "o" => "application/x-object",
                 "obj" => "application/x-tgif",
                 "zip" => "application/zip",
