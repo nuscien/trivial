@@ -16,11 +16,12 @@ var cache = new DataCacheCollection<Model>
 };
 ```
 
-So that you can get the data from the cache if has and or add new one if necessary.
+So that you can get the data from the cache if has, and initialize one if necessary.
 
 ```csharp
 if (!cache.TryGet("abcd", out item))
 {
     item = new Model();
+    cache["abcd"] = item;
 }
 ```

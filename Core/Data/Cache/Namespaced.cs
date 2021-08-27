@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 namespace Trivial.Data
 {
     /// <summary>
-    /// The collection for data cache.
+    /// The thread-safe cache for keyed data with namespace.
     /// </summary>
     /// <typeparam name="T">The type of data model.</typeparam>
     public class NamespacedDataCacheCollection<T> : ICollection<DataCacheItemInfo<T>>, IReadOnlyList<DataCacheItemInfo<T>>
@@ -32,7 +32,7 @@ namespace Trivial.Data
         private readonly ConcurrentDictionary<string, DataCacheFactoryInfo<T>> factories = new ();
 
         /// <summary>
-        /// Gets the maxinum count of the elements contained in the cache item collection.
+        /// Gets the maxinum count of the elements contained in the cache item collection; or null, if no limitation.
         /// </summary>
         public int? MaxCount { get; set; }
 
