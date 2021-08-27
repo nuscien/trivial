@@ -38,7 +38,7 @@ namespace Trivial.Web
         /// <param name="ticks">The JavaScript date ticks.</param>
         /// <returns>A date and time.</returns>
         /// <example>
-        /// var t = ParseDate(1594958400000);
+        /// var t = WebFormat.ParseDate(1594958400000);
         /// </example>
         public static DateTime? ParseDate(long? ticks)
         {
@@ -94,13 +94,13 @@ namespace Trivial.Web
         /// <param name="s">The JSON token value of JavaScript date.</param>
         /// <returns>A date and time; or null, if the input is not a date and time string.</returns>
         /// <example>
-        /// var d1 = ParseDate("2020W295");
-        /// var d2 = ParseDate("2020-7-17 12:00:00");
-        /// var d3 = ParseDate("2020-07-17T12:00:00Z");
-        /// var d4 = ParseDate("Fri, 17 Jul 2020 12:00:00 GMT");
-        /// var d5 = ParseDate("Fri, 17 Jul 2020 04:00:00 GMT-0800");
-        /// var d6 = ParseDate("Fri Jul 17 2020 12:00:00 GMT");
-        /// var d7 = ParseDate("2020年7月17日 12:00:00");
+        /// var d1 = WebFormat.ParseDate("2020W295");
+        /// var d2 = WebFormat.ParseDate("2020-7-17 12:00:00");
+        /// var d3 = WebFormat.ParseDate("2020-07-17T12:00:00Z");
+        /// var d4 = WebFormat.ParseDate("Fri, 17 Jul 2020 12:00:00 GMT");
+        /// var d5 = WebFormat.ParseDate("Fri, 17 Jul 2020 04:00:00 GMT-0800");
+        /// var d6 = WebFormat.ParseDate("Fri Jul 17 2020 12:00:00 GMT");
+        /// var d7 = WebFormat.ParseDate("2020年7月17日 12:00:00");
         /// </example>
         public static DateTime? ParseDate(string s)
         {

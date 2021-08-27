@@ -45,9 +45,33 @@ Including the periodic table and basic chemistry models, e.g. chemical element, 
 
 - [Chemistry](./docs/chemistry)
 
+## [Trivial.Web](./docs/web)
+
+The useful utilities for ASP.NET application.
+
+[![NuGet package](https://img.shields.io/nuget/dt/Trivial.Web?label=nuget+downloads)](https://www.nuget.org/packages/Trivial.Web)
+
+![.NET 6](./docs/assets/badge_NET_6.svg)
+![.NET 5](./docs/assets/badge_NET_5.svg)
+
+## [Trivial.Mime](./docs/web/mime)
+
+The MIME constants and its mapping of file extension part.
+
+[![NuGet package](https://img.shields.io/nuget/dt/Trivial.Mime?label=nuget+downloads)](https://www.nuget.org/packages/Trivial.Mime)
+
+![.NET 6](./docs/assets/badge_NET_6.svg)
+![.NET 5](./docs/assets/badge_NET_5.svg)
+![.NET Core 3.1](./docs/assets/badge_NET_Core_3_1.svg)
+![.NET Standard 2.0](./docs/assets/badge_NET_Standard_2_0.svg)
+![.NET Framework 4.8](./docs/assets/badge_NET_Fx_4_8.svg)
+![.NET Framework 4.6.1](./docs/assets/badge_NET_Fx_4_6_1.svg)
+
+- [MIME constants](./docs/web/mime)
+
 ## [Trivial.Console](./docs/console)
 
-The rich UX CLI controls and console utilities for `cmd`.
+The rich UX CLI controls for `cmd`.
 
 [![NuGet package](https://img.shields.io/nuget/dt/Trivial.Console?label=nuget+downloads)](https://www.nuget.org/packages/Trivial.Console)
 
@@ -59,12 +83,3 @@ The rich UX CLI controls and console utilities for `cmd`.
 ![.NET Framework 4.6.1](./docs/assets/badge_NET_Fx_4_6_1.svg)
 
 - [Console utilities and components](./docs/console)
-
-## [Trivial.Web](./docs/web)
-
-The useful utilities for ASP.NET application.
-
-[![NuGet package](https://img.shields.io/nuget/dt/Trivial.Web?label=nuget+downloads)](https://www.nuget.org/packages/Trivial.Web)
-
-![.NET 6](./docs/assets/badge_NET_6.svg)
-![.NET 5](./docs/assets/badge_NET_5.svg)
