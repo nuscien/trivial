@@ -18,6 +18,11 @@ namespace Trivial.Web
             public const string Au = "audio/basic";
 
             /// <summary>
+            /// The MIME content type of apt-X (Audio Processing Technology).
+            /// </summary>
+            public const string Aptx = "audio/aptx";
+
+            /// <summary>
             /// The MIME content type of Musical Instrument Digital Interface.
             /// </summary>
             public const string Midi = "audio/midi";

@@ -32,16 +32,6 @@ namespace Trivial.Web
         public const string StreamMIME = "application/octet-stream";
 
         /// <summary>
-        /// The MIME content type of form data.
-        /// </summary>
-        public const string FormDataMIME = "multipart/form-data";
-
-        /// <summary>
-        /// The MIME content type of byte ranges.
-        /// </summary>
-        public const string ByteRanges = "multipart/byteranges";
-
-        /// <summary>
         /// The MIME content type of URL encoded form.
         /// </summary>
         public const string FormUrlMIME = "application/x-www-form-urlencoded";

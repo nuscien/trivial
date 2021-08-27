@@ -45,12 +45,17 @@ namespace Trivial.Web
             /// <summary>
             /// The MIME content type of JavaScript.
             /// </summary>
-            public const string Js = "text/javascript";
+            public const string Js = "application/javascript";
 
             /// <summary>
             /// The MIME content type of VB Script.
             /// </summary>
             public const string Vbs = "text/vbscript";
+
+            /// <summary>
+            /// The MIME content type of VB Script.
+            /// </summary>
+            public const string Dart = "application/vnd.dart";
 
             /// <summary>
             /// The MIME content type of web assembly.
