@@ -31,6 +31,7 @@ steps:
     command: test
     projects: 'UnitTest/UnitTest.csproj'
     arguments: '--configuration $(buildConfiguration) /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura /p:CoverletOutput=$(System.DefaultWorkingDirectory)/TestResults/Coverage'
+    publishTestResults: true
 
 - task: PublishCodeCoverageResults@1
   displayName: 'publish test coverage result'
