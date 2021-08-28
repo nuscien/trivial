@@ -33,6 +33,12 @@ steps:
     arguments: '--configuration $(buildConfiguration) /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura /p:CoverletOutput=$(System.DefaultWorkingDirectory)/TestResults/Coverage'
     publishTestResults: true
 
+- script: dotnet tool install -g dotnet-reportgenerator-globaltool
+  displayName: 'Install report generator'
+
+- script: reportgenerator -reports:$(Build.SourcesDirectory)/**/coverage.cobertura.xml -targetdir:$(Build.SourcesDirectory)/coverlet/reports -reporttypes:"Cobertura"
+  displayName: 'Create Code coverage report'
+
 - task: PublishCodeCoverageResults@1
   displayName: 'publish test coverage result'
   inputs:
