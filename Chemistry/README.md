@@ -4,7 +4,7 @@ This library includes the basic chemistry models.
 
 ## Import
 
-Just add following namespace to your code file to use.
+Add following namespace to your code file to use.
 
 ```csharp
 using Trivial.Chemistry;

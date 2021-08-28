@@ -1,4 +1,4 @@
-# Trivial libraries
+# ![Trivial libraries](./assets/wordmark.png)
 
 [![GitHub Repository](./assets/badge_GitHub-Repo.svg)](https://github.com/nuscien/trivial)
 [![MIT licensed](./assets/badge_lisence_MIT.svg)](https://github.com/nuscien/trivial/blob/master/LICENSE)
@@ -18,10 +18,6 @@ Trivial libraries contain a lot of utilities, models and components, which are t
 ![.NET Framework 4.6.1](./assets/badge_NET_Fx_4_6_1.svg)
 
 This library includes utilities and services for tasks, security, JSON, etc.
-
-```sh
-PM > Install-Package Trivial
-```
 
 - [Task and retry policy](./tasks/)
 - [Text (also including JSON and CSV)](./text/)
@@ -86,6 +82,6 @@ The useful utilities for ASP.NET application.
 ![.NET Framework 4.8](./assets/badge_NET_Fx_4_8.svg)
 ![.NET Framework 4.6.1](./assets/badge_NET_Fx_4_6_1.svg)
 
-The useful utilities for console application including command dispatcher, arguments parser and some rich UX CLI controls.
+The rich user interface console controls of `cmd`.
 
 - [Console utilities and components](./console/)

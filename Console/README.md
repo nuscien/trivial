@@ -7,7 +7,7 @@ This library includes these useful tools and controls about console app.
 
 ## Import
 
-Just add following namespace to your code file to use.
+Add following namespace to your code file to use.
 
 ```csharp
 using Trivial.CommandLine;

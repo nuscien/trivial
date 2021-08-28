@@ -7,6 +7,7 @@ using System.Text.Json;
 
 using Trivial.Maths;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Threading.Tasks;
 
 namespace Trivial.Text
 {

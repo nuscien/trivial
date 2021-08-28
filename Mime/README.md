@@ -4,7 +4,7 @@ Commonly used MIME content types and its file extension part mapping.
 
 ## Import
 
-Just add following namespace to your code file to use.
+Add following namespace to your code file to use.
 
 ```csharp
 using Trivial.Web;
@@ -23,7 +23,7 @@ using Trivial.Web;
 
 ## File extension mapping
 
-You can get MIME by a specific file extension name.
+Get MIME by a specific file extension name.
 
 ```csharp
 var av1 = MimeConstants.GetByFileExtension(".av1");
