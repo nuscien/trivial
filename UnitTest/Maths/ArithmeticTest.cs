@@ -50,6 +50,13 @@ namespace Trivial.Maths
             Assert.AreEqual(168, Numbers.ParseToInt32("120", 12));
             Assert.AreEqual(-168L, Numbers.ParseToInt64("-120", 12));
             Assert.AreEqual(170, Numbers.ParseToInt32("8a", 20));
+            Assert.AreEqual(17, Numbers.ParseToInt32("17", 10));
+            Assert.AreEqual(17000, Numbers.ParseToInt32("17K", 10));
+            Assert.AreEqual(170000, Numbers.ParseToInt32("17万", 10));
+            Assert.AreEqual(17000000, Numbers.ParseToInt32("17百w", 10));
+            Assert.AreEqual(-1000000000, Numbers.ParseToInt32("-1G", 10));
+            Assert.AreEqual(1000000, Numbers.ParseToInt32("百万", 10));
+            Assert.AreEqual(17, Numbers.ParseToInt32("seventeen", 10));
             Assert.IsFalse(Numbers.TryParseToInt32("8a", 9, out _));
             Assert.IsFalse(Numbers.TryParseToInt32("8a", 8, out _));
 

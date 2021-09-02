@@ -200,12 +200,12 @@ namespace Trivial.Web
                 if (s.Length > 3 && (s[1] == '月' || (s[2] == '月' && (s[0] == '1' || s[0] == '0'))) && (s.IndexOf('日') > 2 || s.IndexOf('号') > 2) && s.IndexOf('年') < 0)
                     s = $"{DateTime.Now.Year:g}-{s.Replace('月', '-').Replace("日", string.Empty).Replace("号", string.Empty)}";
                 else
-                    return s.ToLowerInvariant() switch
+                    return s switch
                     {
-                        "now" or "现在" or "現在" or "今" or "지금" or "ahora" or "agora" or "сейчас" or "теперь" => DateTime.UtcNow,
-                        "today" or "今日" or "今天" or "当天" or "kyo" or "오늘" or "hoy" or "сегодня" => DateTime.UtcNow.Date,
-                        "tomorrow" or "明日" or "明天" or "次日" or "翌日" or "demain" or "내일" or "mañana" or "amanhã" or "завтра" => DateTime.UtcNow.AddDays(1),
-                        "yesterday" or "昨日" or "昨天" or "hier" or "어제" or "ayer" or "ontem" or "вчера" => DateTime.UtcNow.AddDays(-1),
+                        "NOW" or "现在" or "現在" or "今" or "지금" or "AHORA" or "AGORA" or "СЕЙЧАС" or "ТЕПЕРЬ" => DateTime.UtcNow,
+                        "TODAY" or "今日" or "今天" or "当天" or "KYO" or "오늘" or "HOY" or "СЕГОДНЯ" => DateTime.UtcNow.Date,
+                        "TOMORROW" or "明日" or "明天" or "次日" or "翌日" or "DEMAIN" or "내일" or "MAÑANA" or "AMANHÃ" or "ЗАВТРА" => DateTime.UtcNow.AddDays(1),
+                        "YESTERDAY" or "昨日" or "昨天" or "HIER" or "어제" or "AYER" or "ONTEM" or "ВЧЕРА" => DateTime.UtcNow.AddDays(-1),
                         _ => null
                     };
             }
@@ -220,10 +220,10 @@ namespace Trivial.Web
                 else
                 {
                     if (s.Length < 11 || (s[6] != ' ' && s[6] != '-'))
-                        return s.ToLowerInvariant() switch
+                        return s switch
                         {
-                            "maintenant" => DateTime.UtcNow,
-                            "aujourd'hui" => DateTime.UtcNow.Date,
+                            "MAINTENANT" => DateTime.UtcNow,
+                            "AUJOURD'HUI" => DateTime.UtcNow.Date,
                             _ => null
                         };
 

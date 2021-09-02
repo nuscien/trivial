@@ -98,6 +98,15 @@ namespace Trivial.Text
             p1.SetValue("p9", "7月17日");
             Assert.AreEqual(DateTime.UtcNow.Year, json.GetValue<DateTime>("props", "p1", "p9").Year);
             Assert.AreEqual(17, json.GetValue<DateTime>("props", "p1", "p9").Day);
+            p1.SetValue("p9", "сегодня");
+            Assert.AreEqual(DateTime.UtcNow.Day, json.GetValue<DateTime>("props", "p1", "p9").Day);
+            Assert.AreEqual(0, json.GetValue<DateTime>("props", "p1", "p9").Minute);
+            p1.SetValue("p9", "сейчас");
+            Assert.AreEqual(DateTime.UtcNow.Day, json.GetValue<DateTime>("props", "p1", "p9").Day);
+            p1.SetValue("p9", "어제");
+            Assert.AreEqual((DateTime.UtcNow - TimeSpan.FromDays(1)).Day, json.GetValue<DateTime>("props", "p1", "p9").Day);
+            p1.SetValue("p9", "mañana");
+            Assert.AreEqual((DateTime.UtcNow + TimeSpan.FromDays(1)).Day, json.GetValue<DateTime>("props", "p1", "p9").Day);
             p1.SetValue("p9", "2020W295");
             Assert.AreEqual(7, json.GetValue<DateTime>("props", "p1", "p9").Month);
             Assert.AreEqual("2020W295", json.GetValue<string>("props", "p1", "p9"));
