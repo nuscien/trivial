@@ -24,11 +24,18 @@ steps:
     version: 3.1.x
 
 - script: dotnet build --configuration $(buildConfiguration)
-  displayName: 'dotnet build $(buildConfiguration)'
+  displayName: 'Build $(buildConfiguration)'
 
 - task: DotNetCoreCLI@2
+  displayName: 'Unit Test'
   inputs:
     command: test
     projects: 'UnitTest/UnitTest.csproj'
     arguments: '--configuration $(buildConfiguration) /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura'
     publishTestResults: true
+
+- task: PublishCodeCoverageResults@1
+  displayName: 'Publish Code Coverage Result'
+  inputs:
+    codeCoverageTool: 'Cobertura'
+    summaryFileLocation: '$(Build.SourcesDirectory)/**/coverage.cobertura.xml'
