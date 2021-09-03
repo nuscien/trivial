@@ -66,7 +66,8 @@ namespace Trivial.Text
         public BaseStringTableParser(Stream stream, bool detectEncodingFromByteOrderMarks, Encoding encoding = null)
         {
             if (stream == null) return;
-            text = Parse(stream, detectEncodingFromByteOrderMarks, encoding);
+            var reader = encoding == null ? new StreamReader(stream, detectEncodingFromByteOrderMarks) : new StreamReader(stream, encoding, detectEncodingFromByteOrderMarks);
+            text = Parse(reader, true);
         }
 
         /// <summary>
@@ -77,7 +78,8 @@ namespace Trivial.Text
         public BaseStringTableParser(Stream stream, Encoding encoding = null)
         {
             if (stream == null) return;
-            text = Parse(stream, encoding);
+            var reader = new StreamReader(stream, encoding ?? Encoding.Default ?? Encoding.UTF8);
+            text = Parse(reader, true);
         }
 
         /// <summary>
@@ -88,8 +90,9 @@ namespace Trivial.Text
         /// <param name="encoding">The optional character encoding to use.</param>
         public BaseStringTableParser(FileInfo file, bool detectEncodingFromByteOrderMarks, Encoding encoding = null)
         {
-            if (file == null) return;
-            text = Parse(file, detectEncodingFromByteOrderMarks, encoding);
+            if (file == null || !file.Exists) return;
+            var reader = encoding == null ? new StreamReader(file.FullName, detectEncodingFromByteOrderMarks) : new StreamReader(file.FullName, encoding, detectEncodingFromByteOrderMarks);
+            text = Parse(reader, true);
         }
 
         /// <summary>
@@ -99,8 +102,9 @@ namespace Trivial.Text
         /// <param name="encoding">The optional character encoding to use.</param>
         public BaseStringTableParser(FileInfo file, Encoding encoding = null)
         {
-            if (file == null) return;
-            text = Parse(file, encoding);
+            if (file == null || !file.Exists) return;
+            var reader = new StreamReader(file.FullName, encoding ?? Encoding.UTF8);
+            text = Parse(reader, true);
         }
 
         /// <summary>
@@ -120,9 +124,7 @@ namespace Trivial.Text
         /// <param name="propertyNames">The optional property names to map.</param>
         /// <returns>An enumerator that can be used to iterate through the collection.</returns>
         public IEnumerator<T> GetEnumerator<T>(Func<IReadOnlyList<string>, T> creator, IEnumerable<string> propertyNames = null)
-        {
-            return ConvertTo(creator, propertyNames).GetEnumerator();
-        }
+            => ConvertTo(creator, propertyNames).GetEnumerator();
 
         /// <summary>
         /// Returns an enumerator that iterates through the collection.
@@ -130,9 +132,7 @@ namespace Trivial.Text
         /// <param name="propertyNames">The optional property names to map.</param>
         /// <returns>An enumerator that can be used to iterate through the collection.</returns>
         public IEnumerator<T> GetEnumerator<T>(IEnumerable<string> propertyNames)
-        {
-            return ConvertTo<T>(propertyNames).GetEnumerator();
-        }
+            => ConvertTo<T>(propertyNames).GetEnumerator();
 
         /// <summary>
         /// Returns the typed collection.
@@ -173,9 +173,7 @@ namespace Trivial.Text
         /// <param name="propertyNames">The property names to map.</param>
         /// <returns>A typed collection based on the data parsed.</returns>
         public IEnumerable<T> ConvertTo<T>(IEnumerable<string> propertyNames)
-        {
-            return ConvertTo<T>(null, propertyNames);
-        }
+            => ConvertTo<T>(null, propertyNames);
 
         /// <summary>
         /// Reads lines from a given text.
@@ -183,23 +181,31 @@ namespace Trivial.Text
         /// <param name="text">The text includes multiple lines.</param>
         /// <returns>Lines.</returns>
         protected virtual IEnumerable<string> ReadLines(string text)
-        {
-            return StringExtensions.YieldSplit(text, '\r', '\n', StringSplitOptions.RemoveEmptyEntries);
-        }
+            => StringExtensions.YieldSplit(text, '\r', '\n', StringSplitOptions.RemoveEmptyEntries);
 
         /// <summary>
         /// Reads lines from a given text reader.
         /// </summary>
         /// <param name="reader">A text reader.</param>
+        /// <param name="disposeOnComplete">true if need dispose on complete.</param>
         /// <returns>Lines.</returns>
-        protected virtual IEnumerable<string> ReadLines(TextReader reader)
+        /// <exception cref="ArgumentNullException">reader was null.</exception>
+        /// <exception cref="ObjectDisposedException">reader has disposed.</exception>
+        protected virtual IEnumerable<string> ReadLines(TextReader reader, bool disposeOnComplete = false)
         {
             if (reader == null) throw new ArgumentNullException(nameof(reader), "reader could not be null.");
-            while (true)
+            try
             {
-                var line = reader.ReadLine();
-                if (line == null) break;
-                yield return line;
+                while (true)
+                {
+                    var line = reader.ReadLine();
+                    if (line == null) break;
+                    yield return line;
+                }
+            }
+            finally
+            {
+                if (disposeOnComplete) reader.Dispose();
             }
         }
 
@@ -228,78 +234,20 @@ namespace Trivial.Text
         /// <returns>Content with table.</returns>
         /// <exception cref="ArgumentNullException">reader was null.</exception>
         private IEnumerable<IReadOnlyList<string>> Parse(string text)
-        {
-            return Parse(ReadLines(text));
-        }
+            => Parse(ReadLines(text));
 
         /// <summary>
         /// Parses from a text reader.
         /// </summary>
         /// <param name="reader">The text reader.</param>
+        /// <param name="disposeOnComplete">true if need dispose on complete; otherwise, false.</param>
         /// <returns>Content with table.</returns>
         /// <exception cref="ArgumentNullException">reader was null.</exception>
-        private IEnumerable<IReadOnlyList<string>> Parse(TextReader reader)
+        /// <exception cref="ObjectDisposedException">reader has disposed.</exception>
+        private IEnumerable<IReadOnlyList<string>> Parse(TextReader reader, bool disposeOnComplete = false)
         {
             if (reader == null) throw new ArgumentNullException(nameof(reader), "reader could not be null.");
-            return Parse(ReadLines(reader));
-        }
-
-        /// <summary>
-        /// Parses from a text stream.
-        /// </summary>
-        /// <param name="stream">The stream to read.</param>
-        /// <param name="encoding">The character encoding to use.</param>
-        /// <returns>Content with table.</returns>
-        /// <exception cref="ArgumentNullException">stream was null.</exception>
-        private IEnumerable<IReadOnlyList<string>> Parse(Stream stream, Encoding encoding = null)
-        {
-            if (stream == null) throw new ArgumentNullException(nameof(stream), "stream could not be null.");
-            using var reader = new StreamReader(stream, encoding);
-            return Parse(reader);
-        }
-
-        /// <summary>
-        /// Parses from a text stream.
-        /// </summary>
-        /// <param name="stream">The stream to read.</param>
-        /// <param name="detectEncodingFromByteOrderMarks">true if look for byte order marks at the beginning of the file; otherwise, false.</param>
-        /// <param name="encoding">The optional character encoding to use.</param>
-        /// <returns>Content with table.</returns>
-        /// <exception cref="ArgumentNullException">stream was null.</exception>
-        private IEnumerable<IReadOnlyList<string>> Parse(Stream stream, bool detectEncodingFromByteOrderMarks, Encoding encoding = null)
-        {
-            if (stream == null) throw new ArgumentNullException(nameof(stream), "stream could not be null.");
-            using var reader = encoding != null ? new StreamReader(stream, detectEncodingFromByteOrderMarks) : new StreamReader(stream, encoding, detectEncodingFromByteOrderMarks);
-            return Parse(reader);
-        }
-
-        /// <summary>
-        /// Parses from a text stream.
-        /// </summary>
-        /// <param name="file">The file to read.</param>
-        /// <param name="encoding">The character encoding to use.</param>
-        /// <returns>Content with table.</returns>
-        /// <exception cref="ArgumentNullException">file was null.</exception>
-        private IEnumerable<IReadOnlyList<string>> Parse(FileInfo file, Encoding encoding)
-        {
-            if (file == null) throw new ArgumentNullException(nameof(file), "file could not be null.");
-            using var reader = encoding != null ? new StreamReader(file.FullName, encoding) : new StreamReader(file.FullName);
-            return Parse(reader);
-        }
-
-        /// <summary>
-        /// Parses from a text stream.
-        /// </summary>
-        /// <param name="file">The file to read.</param>
-        /// <param name="detectEncodingFromByteOrderMarks">true if look for byte order marks at the beginning of the file; otherwise, false.</param>
-        /// <param name="encoding">The optional character encoding to use.</param>
-        /// <returns>Content with table.</returns>
-        /// <exception cref="ArgumentNullException">file was null.</exception>
-        private IEnumerable<IReadOnlyList<string>> Parse(FileInfo file, bool detectEncodingFromByteOrderMarks, Encoding encoding = null)
-        {
-            if (file == null) throw new ArgumentNullException(nameof(file), "file could not be null.");
-            using var reader = encoding != null ? new StreamReader(file.FullName, detectEncodingFromByteOrderMarks) : new StreamReader(file.FullName, encoding, detectEncodingFromByteOrderMarks);
-            return Parse(reader);
+            return Parse(ReadLines(reader, true));
         }
 
         /// <summary>
