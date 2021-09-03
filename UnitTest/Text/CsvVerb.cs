@@ -17,7 +17,7 @@ namespace Trivial.Text
         {
             var text = "ab,cd,\"efg\",56789,!!!\nhijk,l,mn,43210";
             var parser = new CsvParser(text);
-            await Task.Run(() => { }, cancellationToken);
+            await RunAsync(null, cancellationToken);
             foreach (var line in parser)
             {
                 Console.Write(line.Count.ToString());

@@ -383,7 +383,7 @@ namespace Trivial.Maths
             if (string.IsNullOrWhiteSpace(s)) throw new ArgumentException("s should not be empty or consists only of white-space characters.", nameof(s));
             if (radix < 2 || radix > 36) throw new ArgumentOutOfRangeException(nameof(radix), "radix should be in 2-36.");
             if (TryParseToInt64(s, radix, out var result)) return result;
-            var i = TryParseNumericWord(s);
+            var i = TryParseNumericWord64(s);
             if (i.HasValue) return i.Value;
             var message = $"{nameof(s)} is incorrect. It should be in base {radix} number format.";
             throw new FormatException(message, new ArgumentException(message, nameof(s)));
@@ -521,7 +521,7 @@ namespace Trivial.Maths
             if (radix == 10)
             {
                 if (long.TryParse(s, out result)) return true;
-                var i = TryParseNumericWord(s);
+                var i = TryParseNumericWord64(s);
                 if (i.HasValue)
                 {
                     result = i.Value;
@@ -746,8 +746,8 @@ namespace Trivial.Maths
                 'k' or 'K' or '千' or '仟' => 1000,
                 '万' or '萬' or 'w' => 10000,
                 'M' => 1_000_000,
-                '亿' => 100_000_000,
-                'G' or 'B' => 1_000_000_000,
+                '亿' or '億' => 100_000_000,
+                'G' or 'B' or '吉' => 1_000_000_000,
                 '百' or '佰' => 100,
                 '十' or '拾' => 10,
                 _ => 1
@@ -770,6 +770,56 @@ namespace Trivial.Maths
                 }
             }
 
+            return TryParseNumericWordInternal(word);
+        }
+
+        private static long? TryParseNumericWord64(string word)
+        {
+            if (word.Length == 1) return TryParseToInt32(word[0]);
+            var magnitude = word[word.Length - 1];
+            if (magnitude == '整') word = word.Substring(0, word.Length - 1);
+            var level = magnitude switch
+            {
+                'k' or 'K' or '千' or '仟' => 1000L,
+                '万' or '萬' or 'w' => 10000L,
+                'M' => 1_000_000L,
+                '亿' or '億' => 100_000_000L,
+                'G' or 'B' or '吉' => 1_000_000_000L,
+                'T' or '太' => 1_000_000_000_000L,
+                'P' => 1_000_000_000_000_000L,
+                '百' or '佰' => 100L,
+                '十' or '拾' => 10L,
+                _ => 1L
+            };
+            if (level > 1)
+            {
+                var s = word.Substring(0, word.Length - 1);
+                if (level == 10_000L && s.Length > 0 && (s[s.Length - 1] == '百' || s[s.Length - 1] == '佰'))
+                {
+                    level = 1_000_000L;
+                    s = s.Substring(0, s.Length - 1);
+                    if (s.Length < 1) return level;
+                }
+                else if (level == 100_000_000L && s.Length > 0 && (s[s.Length - 1] == '十' || s[s.Length - 1] == '拾'))
+                {
+                    level = 1_000_000_000L;
+                    s = s.Substring(0, s.Length - 1);
+                    if (s.Length < 1) return level;
+                }
+
+                if (long.TryParse(s, out var i))
+                {
+                    var j = i * level;
+                    if (j % level > 0) return null;
+                    return j;
+                }
+            }
+
+            return TryParseNumericWordInternal(word);
+        }
+
+        private static int? TryParseNumericWordInternal(string word)
+        {
             return word.ToLowerInvariant() switch
             {
                 "zero" or "nought" or "nill" or "れい" or "zéro" or "nul" => 0,
@@ -818,8 +868,9 @@ namespace Trivial.Maths
                 "七百" or "柒佰" or "七零零" or "七〇〇" or "７００" or "seven hundred" or "sept cents" => 700,
                 "八百" or "捌佰" or "八零零" or "八〇〇" or "８００" or "eight hundred" or "huit cents" => 800,
                 "九百" or "玖佰" or "九零零" or "九〇〇" or "９００" or "nine hundred" or "neuf cents" => 900,
-                "kilo" or "a kilo" or "thousand" or "a thousand" or "one thousand" or "一千" or "壹仟" or "１０００" or "せん" or "いちせん" or "mille" or "millennium" => 1000,
-                "一万" or "壹萬" or "壹万" or "１００００" or "ten thousand" or "ten kilo" or "まん" or "いちまん" => 10000,
+                "kilo" or "a kilo" or "thousand" or "a thousand" or "one thousand" or "一千" or "壹仟" or "１０００" or "せん" or "いちせん" or "mille" or "millennium" or "1e3" => 1000,
+                "一万" or "壹萬" or "壹万" or "１００００" or "ten thousand" or "ten kilo" or "まん" or "いちまん" or "1e4" => 10000,
+                "a million" or "one million" or "million" or "mega" or "1 mega" or "一百万" or "壹佰萬" or "壹佰万" or "１００００００" or "1e6" => 1000000,
                 _ => null
             };
         }

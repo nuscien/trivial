@@ -59,6 +59,23 @@ namespace Trivial.Text
             Assert.AreEqual("l", jsons[1].TryGetStringValue("B"));
             Assert.AreEqual("mn", jsons[1].TryGetStringValue("C"));
             Assert.AreEqual(43210, jsons[1].TryGetInt32Value("Num"));
+
+            using var stream = StringExtensions.ToMemoryStream(text, Encoding.UTF8);
+            parser = new CsvParser(stream);
+            col = parser.ToList();
+
+            Assert.AreEqual(2, col.Count);
+            Assert.AreEqual(5, col[0].Count);
+            Assert.AreEqual("ab", col[0][0]);
+            Assert.AreEqual("cd", col[0][1]);
+            Assert.AreEqual("efg,\t", col[0][2]);
+            Assert.AreEqual("56789", col[0][3]);
+            Assert.AreEqual("!!!", col[0][4]);
+            Assert.AreEqual(4, col[1].Count);
+            Assert.AreEqual("hijk", col[1][0]);
+            Assert.AreEqual("l", col[1][1]);
+            Assert.AreEqual("mn", col[1][2]);
+            Assert.AreEqual("43210", col[1][3]);
         }
 
         /// <summary>
@@ -105,6 +122,23 @@ namespace Trivial.Text
             Assert.AreEqual("l", jsons[1].TryGetStringValue("B"));
             Assert.AreEqual("mn", jsons[1].TryGetStringValue("C"));
             Assert.AreEqual(43210, jsons[1].TryGetInt32Value("Num"));
+
+            using var stream = StringExtensions.ToMemoryStream(text, Encoding.UTF8);
+            parser = new TsvParser(stream);
+            col = parser.ToList();
+
+            Assert.AreEqual(2, col.Count);
+            Assert.AreEqual(5, col[0].Count);
+            Assert.AreEqual("ab", col[0][0]);
+            Assert.AreEqual("cd", col[0][1]);
+            Assert.AreEqual("efg,\t", col[0][2]);
+            Assert.AreEqual("56789", col[0][3]);
+            Assert.AreEqual("!!!", col[0][4]);
+            Assert.AreEqual(4, col[1].Count);
+            Assert.AreEqual("hijk", col[1][0]);
+            Assert.AreEqual("l", col[1][1]);
+            Assert.AreEqual("mn", col[1][2]);
+            Assert.AreEqual("43210", col[1][3]);
         }
 
         /// <summary>
@@ -125,6 +159,21 @@ namespace Trivial.Text
             Assert.AreEqual("GET", col[3][1]);
             Assert.AreEqual("1.0", parser.GetDirectiveValue("Version"));
             parser.TryGetDirectiveValue("Date", out DateTime dt);
+            Assert.AreEqual(1996, dt.Year);
+            Assert.AreEqual(1, dt.Month);
+
+            using var stream = StringExtensions.ToMemoryStream(text, Encoding.UTF8);
+            parser = new ExtendedLogParser(stream);
+            col = parser.ToList();
+            Assert.AreEqual(3, parser.Headers.Count);
+            Assert.AreEqual("cs-method", parser.Headers[1]);
+            Assert.AreEqual(4, col.Count);
+            Assert.AreEqual(3, col[0].Count);
+            Assert.AreEqual("12:21:16", col[1][0]);
+            Assert.AreEqual("/foo/bar.html", col[2][2]);
+            Assert.AreEqual("GET", col[3][1]);
+            Assert.AreEqual("1.0", parser.GetDirectiveValue("Version"));
+            parser.TryGetDirectiveValue("Date", out dt);
             Assert.AreEqual(1996, dt.Year);
             Assert.AreEqual(1, dt.Month);
 

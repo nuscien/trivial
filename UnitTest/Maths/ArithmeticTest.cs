@@ -59,6 +59,13 @@ namespace Trivial.Maths
             Assert.AreEqual(17, Numbers.ParseToInt32("seventeen", 10));
             Assert.IsFalse(Numbers.TryParseToInt32("8a", 9, out _));
             Assert.IsFalse(Numbers.TryParseToInt32("8a", 8, out _));
+            Assert.AreEqual(17_000L, Numbers.ParseToInt64("17K", 10));
+            Assert.AreEqual(170_000L, Numbers.ParseToInt64("17万", 10));
+            Assert.AreEqual(17_000_000L, Numbers.ParseToInt64("17百w", 10));
+            Assert.AreEqual(17_000_000_000L, Numbers.ParseToInt64("17十亿", 10));
+            Assert.AreEqual(-200_000_000_000_000, Numbers.ParseToInt64("-200T", 10));
+            Assert.AreEqual(1_000_000L, Numbers.ParseToInt64("百万", 10));
+            Assert.AreEqual(1_000_000L, Numbers.ParseToInt64("mega", 10));
 
             // Compare
             Assert.AreEqual(1, Arithmetic.Min(1, 2, 3));

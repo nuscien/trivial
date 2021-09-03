@@ -59,7 +59,7 @@ namespace Trivial.Text
         /// <param name="stream">The stream to read.</param>
         /// <param name="detectEncodingFromByteOrderMarks">true if look for byte order marks at the beginning of the file; otherwise, false.</param>
         /// <param name="encoding">The optional character encoding to use.</param>
-        public CsvParser(Stream stream, bool detectEncodingFromByteOrderMarks, Encoding encoding = null) : base(stream, detectEncodingFromByteOrderMarks, encoding)
+        public CsvParser(Stream stream, bool detectEncodingFromByteOrderMarks, Encoding encoding = null) : base(stream, detectEncodingFromByteOrderMarks, encoding ?? Encoding.UTF8)
         {
         }
 
@@ -68,7 +68,7 @@ namespace Trivial.Text
         /// </summary>
         /// <param name="stream">The stream to read.</param>
         /// <param name="encoding">The optional character encoding to use.</param>
-        public CsvParser(Stream stream, Encoding encoding = null) : base(stream, encoding)
+        public CsvParser(Stream stream, Encoding encoding = null) : base(stream, encoding ?? Encoding.UTF8)
         {
         }
 
@@ -78,7 +78,7 @@ namespace Trivial.Text
         /// <param name="file">The file to read.</param>
         /// <param name="detectEncodingFromByteOrderMarks">true if look for byte order marks at the beginning of the file; otherwise, false.</param>
         /// <param name="encoding">The optional character encoding to use.</param>
-        public CsvParser(FileInfo file, bool detectEncodingFromByteOrderMarks, Encoding encoding = null) : base(file, detectEncodingFromByteOrderMarks, encoding)
+        public CsvParser(FileInfo file, bool detectEncodingFromByteOrderMarks, Encoding encoding = null) : base(file, detectEncodingFromByteOrderMarks, encoding ?? Encoding.UTF8)
         {
         }
 
@@ -87,7 +87,7 @@ namespace Trivial.Text
         /// </summary>
         /// <param name="file">The file to read.</param>
         /// <param name="encoding">The optional character encoding to use.</param>
-        public CsvParser(FileInfo file, Encoding encoding = null) : base(file, encoding)
+        public CsvParser(FileInfo file, Encoding encoding = null) : base(file, encoding ?? Encoding.UTF8)
         {
         }
 
@@ -97,9 +97,7 @@ namespace Trivial.Text
         /// <param name="line">A line in CSV file.</param>
         /// <returns>Values in this line.</returns>
         protected override List<string> ParseLine(string line)
-        {
-            return ParseLineStatic(line, fieldSeperator);
-        }
+            => ParseLineStatic(line, fieldSeperator);
 
         /// <summary>
         /// Converts a line information to a string.
@@ -107,9 +105,7 @@ namespace Trivial.Text
         /// <param name="line">The fields.</param>
         /// <returns>A line string.</returns>
         protected override string ToLineString(IReadOnlyList<string> line)
-        {
-            return ToLineString(line, fieldSeperator);
-        }
+            => ToLineString(line, fieldSeperator);
 
         /// <summary>
         /// Parses CSV.
@@ -132,9 +128,7 @@ namespace Trivial.Text
         /// <param name="csv">The CSV text.</param>
         /// <returns>Content of CSV.</returns>
         public static IEnumerable<IReadOnlyList<string>> Parse(string csv)
-        {
-            return Parse(StringExtensions.YieldSplit(csv, '\r', '\n', StringSplitOptions.RemoveEmptyEntries));
-        }
+            => Parse(StringExtensions.YieldSplit(csv, '\r', '\n', StringSplitOptions.RemoveEmptyEntries));
 
         /// <summary>
         /// Parses CSV.
@@ -142,10 +136,12 @@ namespace Trivial.Text
         /// <param name="csv">The stream contains CSV.</param>
         /// <param name="encoding">The character encoding to use.</param>
         /// <returns>Content of CSV.</returns>
+        /// <exception cref="ArgumentNullException">The stream was null.</exception>
+        /// <exception cref="ObjectDisposedException">The stream has disposed.</exception>
         public static IEnumerable<IReadOnlyList<string>> Parse(Stream csv, Encoding encoding = null)
         {
-            using var reader = new StreamReader(csv, encoding ?? Encoding.UTF8);
-            return Parse(reader);
+            var reader = new StreamReader(csv, encoding ?? Encoding.UTF8);
+            return Parse(reader, true);
         }
 
         /// <summary>
@@ -154,10 +150,11 @@ namespace Trivial.Text
         /// <param name="csv">The CSV file.</param>
         /// <param name="encoding">The character encoding to use.</param>
         /// <returns>Content of CSV.</returns>
+        /// <exception cref="ArgumentNullException">The file was null.</exception>
         public static IEnumerable<IReadOnlyList<string>> Parse(FileInfo csv, Encoding encoding = null)
         {
-            using var reader = new StreamReader(csv.FullName, encoding ?? Encoding.UTF8);
-            return Parse(reader);
+            var reader = new StreamReader(csv.FullName, encoding ?? Encoding.UTF8);
+            return Parse(reader, true);
         }
 
         /// <summary>
@@ -166,10 +163,11 @@ namespace Trivial.Text
         /// <param name="csv">The CSV file.</param>
         /// <param name="detectEncodingFromByteOrderMarks">true if look for byte order marks at the beginning of the file; otherwise, false.</param>
         /// <returns>Content of CSV.</returns>
+        /// <exception cref="ArgumentNullException">The file was null.</exception>
         public static IEnumerable<IReadOnlyList<string>> Parse(FileInfo csv, bool detectEncodingFromByteOrderMarks)
         {
-            using var reader = new StreamReader(csv.FullName, detectEncodingFromByteOrderMarks);
-            return Parse(reader);
+            var reader = new StreamReader(csv.FullName, detectEncodingFromByteOrderMarks);
+            return Parse(reader, true);
         }
 
         /// <summary>
@@ -177,15 +175,71 @@ namespace Trivial.Text
         /// </summary>
         /// <param name="csv">The CSV text reader.</param>
         /// <returns>Content of CSV.</returns>
+        /// <exception cref="ArgumentNullException">The reader was null.</exception>
+        /// <exception cref="ObjectDisposedException">The reader has disposed.</exception>
+        /// <exception cref="OutOfMemoryException">There is insufficient memory to allocate a buffer for the returned string.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">The number of characters in the next line is larger than max value of integer 32-bit value type.</exception>
+        /// <exception cref="IOException">An I/O error occurs.</exception>
         public static IEnumerable<IReadOnlyList<string>> Parse(TextReader csv)
+            => Parse(csv, null);
+
+        /// <summary>
+        /// Parses CSV.
+        /// </summary>
+        /// <param name="csv">The CSV text reader.</param>
+        /// <param name="onComplete">The callback occurred on complete.</param>
+        /// <returns>Content of CSV.</returns>
+        /// <exception cref="ArgumentNullException">The reader was null.</exception>
+        /// <exception cref="ObjectDisposedException">The reader has disposed.</exception>
+        /// <exception cref="OutOfMemoryException">There is insufficient memory to allocate a buffer for the returned string.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">The number of characters in the next line is larger than max value of integer 32-bit value type.</exception>
+        /// <exception cref="IOException">An I/O error occurs.</exception>
+        public static IEnumerable<IReadOnlyList<string>> Parse(TextReader csv, Action onComplete)
         {
-            while (true)
+            try
             {
-                var line = csv.ReadLine();
-                if (line == null) break;
-                var item = ParseLineStatic(line, fieldSeperator);
-                if (item == null) continue;
-                yield return item.AsReadOnly();
+                while (true)
+                {
+                    var line = csv.ReadLine();
+                    if (line == null) break;
+                    var item = ParseLineStatic(line, fieldSeperator);
+                    if (item == null) continue;
+                    yield return item.AsReadOnly();
+                }
+            }
+            finally
+            {
+                onComplete?.Invoke();
+            }
+        }
+
+        /// <summary>
+        /// Parses CSV.
+        /// </summary>
+        /// <param name="csv">The CSV text reader.</param>
+        /// <param name="disposeOnComplete">true if need dispose on complete; otherwise, false.</param>
+        /// <returns>Content of CSV.</returns>
+        /// <exception cref="ArgumentNullException">The reader was null.</exception>
+        /// <exception cref="ObjectDisposedException">The reader has disposed.</exception>
+        /// <exception cref="OutOfMemoryException">There is insufficient memory to allocate a buffer for the returned string.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">The number of characters in the next line is larger than max value of integer 32-bit value type.</exception>
+        /// <exception cref="IOException">An I/O error occurs.</exception>
+        internal static IEnumerable<IReadOnlyList<string>> Parse(TextReader csv, bool disposeOnComplete)
+        {
+            try
+            {
+                while (true)
+                {
+                    var line = csv.ReadLine();
+                    if (line == null) break;
+                    var item = ParseLineStatic(line, fieldSeperator);
+                    if (item == null) continue;
+                    yield return item.AsReadOnly();
+                }
+            }
+            finally
+            {
+                if (disposeOnComplete) csv.Dispose();
             }
         }
 

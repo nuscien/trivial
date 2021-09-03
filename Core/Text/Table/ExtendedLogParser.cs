@@ -69,7 +69,7 @@ namespace Trivial.Text
         /// <param name="stream">The stream to read.</param>
         /// <param name="detectEncodingFromByteOrderMarks">true if look for byte order marks at the beginning of the file; otherwise, false.</param>
         /// <param name="encoding">The optional character encoding to use.</param>
-        public ExtendedLogParser(Stream stream, bool detectEncodingFromByteOrderMarks, Encoding encoding = null) : base(stream, detectEncodingFromByteOrderMarks, encoding)
+        public ExtendedLogParser(Stream stream, bool detectEncodingFromByteOrderMarks, Encoding encoding = null) : base(stream, detectEncodingFromByteOrderMarks, encoding ?? Encoding.UTF8)
         {
         }
 
@@ -78,7 +78,7 @@ namespace Trivial.Text
         /// </summary>
         /// <param name="stream">The stream to read.</param>
         /// <param name="encoding">The optional character encoding to use.</param>
-        public ExtendedLogParser(Stream stream, Encoding encoding = null) : base(stream, encoding)
+        public ExtendedLogParser(Stream stream, Encoding encoding = null) : base(stream, encoding ?? Encoding.UTF8)
         {
         }
 
@@ -88,7 +88,7 @@ namespace Trivial.Text
         /// <param name="file">The file to read.</param>
         /// <param name="detectEncodingFromByteOrderMarks">true if look for byte order marks at the beginning of the file; otherwise, false.</param>
         /// <param name="encoding">The optional character encoding to use.</param>
-        public ExtendedLogParser(FileInfo file, bool detectEncodingFromByteOrderMarks, Encoding encoding = null) : base(file, detectEncodingFromByteOrderMarks, encoding)
+        public ExtendedLogParser(FileInfo file, bool detectEncodingFromByteOrderMarks, Encoding encoding = null) : base(file, detectEncodingFromByteOrderMarks, encoding ?? Encoding.UTF8)
         {
         }
 
@@ -97,7 +97,7 @@ namespace Trivial.Text
         /// </summary>
         /// <param name="file">The file to read.</param>
         /// <param name="encoding">The optional character encoding to use.</param>
-        public ExtendedLogParser(FileInfo file, Encoding encoding = null) : base(file, encoding)
+        public ExtendedLogParser(FileInfo file, Encoding encoding = null) : base(file, encoding ?? Encoding.UTF8)
         {
         }
 
@@ -193,14 +193,12 @@ namespace Trivial.Text
         }
 
         /// <summary>
-        /// Parses a line in CSV file.
+        /// Parses a line in extended log file.
         /// </summary>
-        /// <param name="line">A line in CSV file.</param>
+        /// <param name="line">A line in extended log file.</param>
         /// <returns>Values in this line.</returns>
         protected override List<string> ParseLine(string line)
-        {
-           return ParseLineStatic(line, fieldSeperator, HandleDirective);
-        }
+           => ParseLineStatic(line, fieldSeperator, HandleDirective);
 
         /// <summary>
         /// Converts a line information to a string.
@@ -208,18 +206,16 @@ namespace Trivial.Text
         /// <param name="line">The fields.</param>
         /// <returns>A line string.</returns>
         protected override string ToLineString(IReadOnlyList<string> line)
-        {
-            return ToLineString(line, fieldSeperator);
-        }
+            => ToLineString(line, fieldSeperator);
 
         /// <summary>
-        /// Parses CSV.
+        /// Parses extended log.
         /// </summary>
-        /// <param name="csv">The CSV text.</param>
-        /// <returns>Content of CSV.</returns>
-        public static IEnumerable<IReadOnlyList<string>> Parse(IEnumerable<string> csv)
+        /// <param name="log">The extended log.</param>
+        /// <returns>Content of extended log.</returns>
+        public static IEnumerable<IReadOnlyList<string>> Parse(IEnumerable<string> log)
         {
-            foreach (var line in csv)
+            foreach (var line in log)
             {
                 var item = ParseLineStatic(line, fieldSeperator);
                 if (item == null) continue;
@@ -228,65 +224,123 @@ namespace Trivial.Text
         }
 
         /// <summary>
-        /// Parses CSV.
+        /// Parses extended log.
         /// </summary>
-        /// <param name="csv">The CSV text.</param>
-        /// <returns>Content of CSV.</returns>
-        public static IEnumerable<IReadOnlyList<string>> Parse(string csv)
-        {
-            return Parse(StringExtensions.YieldSplit(csv, '\r', '\n', StringSplitOptions.RemoveEmptyEntries));
-        }
+        /// <param name="log">The extended log.</param>
+        /// <returns>Content of extended log.</returns>
+        public static IEnumerable<IReadOnlyList<string>> Parse(string log)
+            => Parse(StringExtensions.YieldSplit(log, '\r', '\n', StringSplitOptions.RemoveEmptyEntries));
 
         /// <summary>
-        /// Parses CSV.
+        /// Parses extended log.
         /// </summary>
-        /// <param name="csv">The stream contains CSV.</param>
+        /// <param name="log">The stream contains extended log.</param>
         /// <param name="encoding">The character encoding to use.</param>
-        /// <returns>Content of CSV.</returns>
-        public static IEnumerable<IReadOnlyList<string>> Parse(Stream csv, Encoding encoding = null)
+        /// <returns>Content of extended log.</returns>
+        /// <exception cref="ArgumentNullException">The stream was null.</exception>
+        /// <exception cref="ObjectDisposedException">The stream has disposed.</exception>
+        public static IEnumerable<IReadOnlyList<string>> Parse(Stream log, Encoding encoding = null)
         {
-            using var reader = new StreamReader(csv, encoding ?? Encoding.UTF8);
-            return Parse(reader);
+            var reader = new StreamReader(log, encoding ?? Encoding.UTF8);
+            return Parse(reader, true);
         }
 
         /// <summary>
-        /// Parses CSV.
+        /// Parses extended log.
         /// </summary>
-        /// <param name="csv">The CSV file.</param>
+        /// <param name="log">The extended log file.</param>
         /// <param name="encoding">The character encoding to use.</param>
-        /// <returns>Content of CSV.</returns>
-        public static IEnumerable<IReadOnlyList<string>> Parse(FileInfo csv, Encoding encoding = null)
+        /// <returns>Content of extended log.</returns>
+        /// <exception cref="ArgumentNullException">The file was null.</exception>
+        public static IEnumerable<IReadOnlyList<string>> Parse(FileInfo log, Encoding encoding = null)
         {
-            using var reader = new StreamReader(csv.FullName, encoding ?? Encoding.UTF8);
-            return Parse(reader);
+            var reader = new StreamReader(log.FullName, encoding ?? Encoding.UTF8);
+            return Parse(reader, true);
         }
 
         /// <summary>
-        /// Parses CSV.
+        /// Parses extended log.
         /// </summary>
-        /// <param name="csv">The CSV file.</param>
+        /// <param name="log">The extended log file.</param>
         /// <param name="detectEncodingFromByteOrderMarks">true if look for byte order marks at the beginning of the file; otherwise, false.</param>
-        /// <returns>Content of CSV.</returns>
-        public static IEnumerable<IReadOnlyList<string>> Parse(FileInfo csv, bool detectEncodingFromByteOrderMarks)
+        /// <returns>Content of extended log.</returns>
+        /// <exception cref="ArgumentNullException">The file was null.</exception>
+        public static IEnumerable<IReadOnlyList<string>> Parse(FileInfo log, bool detectEncodingFromByteOrderMarks)
         {
-            using var reader = new StreamReader(csv.FullName, detectEncodingFromByteOrderMarks);
-            return Parse(reader);
+            var reader = new StreamReader(log.FullName, detectEncodingFromByteOrderMarks);
+            return Parse(reader, true);
         }
 
         /// <summary>
-        /// Parses CSV.
+        /// Parses extended log.
         /// </summary>
-        /// <param name="csv">The CSV text reader.</param>
-        /// <returns>Content of CSV.</returns>
-        public static IEnumerable<IReadOnlyList<string>> Parse(TextReader csv)
+        /// <param name="log">The extended log reader.</param>
+        /// <returns>Content of extended log.</returns>
+        /// <exception cref="ArgumentNullException">The reader was null.</exception>
+        /// <exception cref="ObjectDisposedException">The reader has disposed.</exception>
+        /// <exception cref="OutOfMemoryException">There is insufficient memory to allocate a buffer for the returned string.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">The number of characters in the next line is larger than max value of integer 32-bit value type.</exception>
+        /// <exception cref="IOException">An I/O error occurs.</exception>
+        public static IEnumerable<IReadOnlyList<string>> Parse(TextReader log)
+            => Parse(log, null);
+
+        /// <summary>
+        /// Parses extended log.
+        /// </summary>
+        /// <param name="log">The extended log reader.</param>
+        /// <param name="onComplete">The callback occurred on complete.</param>
+        /// <returns>Content of extended log.</returns>
+        /// <exception cref="ArgumentNullException">The reader was null.</exception>
+        /// <exception cref="ObjectDisposedException">The reader has disposed.</exception>
+        /// <exception cref="OutOfMemoryException">There is insufficient memory to allocate a buffer for the returned string.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">The number of characters in the next line is larger than max value of integer 32-bit value type.</exception>
+        /// <exception cref="IOException">An I/O error occurs.</exception>
+        public static IEnumerable<IReadOnlyList<string>> Parse(TextReader log, Action onComplete)
         {
-            while (true)
+            try
             {
-                var line = csv.ReadLine();
-                if (line == null) break;
-                var item = ParseLineStatic(line, fieldSeperator);
-                if (item == null) continue;
-                yield return item.AsReadOnly();
+                while (true)
+                {
+                    var line = log.ReadLine();
+                    if (line == null) break;
+                    var item = ParseLineStatic(line, fieldSeperator);
+                    if (item == null) continue;
+                    yield return item.AsReadOnly();
+                }
+            }
+            finally
+            {
+                onComplete?.Invoke();
+            }
+        }
+
+        /// <summary>
+        /// Parses extended log.
+        /// </summary>
+        /// <param name="log">The extended log reader.</param>
+        /// <param name="disposeOnComplete">true if need dispose on complete; otherwise, false.</param>
+        /// <returns>Content of extended log.</returns>
+        /// <exception cref="ArgumentNullException">The reader was null.</exception>
+        /// <exception cref="ObjectDisposedException">The reader has disposed.</exception>
+        /// <exception cref="OutOfMemoryException">There is insufficient memory to allocate a buffer for the returned string.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">The number of characters in the next line is larger than max value of integer 32-bit value type.</exception>
+        /// <exception cref="IOException">An I/O error occurs.</exception>
+        internal static IEnumerable<IReadOnlyList<string>> Parse(TextReader log, bool disposeOnComplete)
+        {
+            try
+            {
+                while (true)
+                {
+                    var line = log.ReadLine();
+                    if (line == null) break;
+                    var item = ParseLineStatic(line, fieldSeperator);
+                    if (item == null) continue;
+                    yield return item.AsReadOnly();
+                }
+            }
+            finally
+            {
+                if (disposeOnComplete) log.Dispose();
             }
         }
 
@@ -322,9 +376,9 @@ namespace Trivial.Text
         }
 
         /// <summary>
-        /// Parses a line in CSV file.
+        /// Parses a line in extended log file.
         /// </summary>
-        /// <param name="line">A line in CSV file.</param>
+        /// <param name="line">A line in extended log file.</param>
         /// <param name="seperator">The field seperator.</param>
         /// <param name="directiveHandler">Additional handler for directive.</param>
         /// <returns>Values in this line.</returns>

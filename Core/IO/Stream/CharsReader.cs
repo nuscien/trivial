@@ -567,7 +567,7 @@ namespace Trivial.IO
         public static IEnumerable<char> ReadChars(Stream stream, Encoding encoding = null)
         {
             if (stream == null) yield break;
-            var decoder = (encoding ?? Encoding.Default).GetDecoder();
+            var decoder = (encoding ?? Encoding.Default ?? Encoding.UTF8).GetDecoder();
             var buffer = new byte[12];
             while (true)
             {
@@ -592,7 +592,7 @@ namespace Trivial.IO
         public static IEnumerable<char> ReadChars(IEnumerable<byte> bytes, Encoding encoding = null)
         {
             if (bytes == null) yield break;
-            var decoder = (encoding ?? Encoding.Default).GetDecoder();
+            var decoder = (encoding ?? Encoding.Default ?? Encoding.UTF8).GetDecoder();
             var pos = -1;
             var count = 12;
             var buffer = new byte[count];
@@ -636,7 +636,7 @@ namespace Trivial.IO
         public static IEnumerable<char> ReadChars(IEnumerable<Stream> streams, Encoding encoding = null, bool closeStream = false)
         {
             if (streams == null) yield break;
-            var decoder = (encoding ?? Encoding.Default).GetDecoder();
+            var decoder = (encoding ?? Encoding.Default ?? Encoding.UTF8).GetDecoder();
             var buffer = new byte[12];
             foreach (var stream in streams)
             {

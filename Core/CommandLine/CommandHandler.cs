@@ -240,9 +240,7 @@ namespace Trivial.CommandLine
         /// <param name="ex">The exception.</param>
         /// <returns>true if need; otherwise, false.</returns>
         protected virtual bool NeedThrowException(Exception ex)
-        {
-            return true;
-        }
+            => true;
 
         /// <summary>
         /// Queues the specified work to run on the thread pool.
@@ -250,8 +248,17 @@ namespace Trivial.CommandLine
         /// <param name="action">The work to execute asynchronously.</param>
         /// <param name="cancellationToken">A cancellation token that can be used to cancel the work if it has not yet started.</param>
         /// <returns>A task that represents the work queued to execute in the thread pool.</returns>
-        protected static Task RunAsync(Action action, CancellationToken cancellationToken = default)
-            => Task.Run(action is null ? () => { } : action, cancellationToken);
+        protected static Task RunAsync(Action action = null, CancellationToken cancellationToken = default)
+            => Task.Run(action is null ? RunEmpty : action, cancellationToken);
+
+        /// <summary>
+        /// Queues the specified work to run on the thread pool.
+        /// </summary>
+        /// <param name="action">The work to execute asynchronously.</param>
+        /// <param name="cancellationToken">A cancellation token that can be used to cancel the work if it has not yet started.</param>
+        /// <returns>A task that represents the work queued to execute in the thread pool.</returns>
+        protected static Task<T> RunAsync<T>(Func<T> action, CancellationToken cancellationToken = default)
+            => Task.Run(action, cancellationToken);
 
         /// <summary>
         /// Creates a cancellable task that completes after a specified number of milliseconds.
@@ -304,6 +311,10 @@ namespace Trivial.CommandLine
             Arguments = new CommandArguments(args);
             Context = context;
             OnGetHelp();
+        }
+
+        private static void RunEmpty()
+        {
         }
     }
 
