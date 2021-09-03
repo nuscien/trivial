@@ -31,11 +31,11 @@ steps:
   inputs:
     command: test
     projects: 'UnitTest/UnitTest.csproj'
-    arguments: '--configuration $(buildConfiguration) /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura'
+    arguments: '--configuration $(buildConfiguration) /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura /p:CoverletOutput=./TestResults/'
     publishTestResults: true
 
 - task: PublishCodeCoverageResults@1
   displayName: 'Publish Code Coverage Result'
   inputs:
     codeCoverageTool: 'Cobertura'
-    summaryFileLocation: '$(Build.SourcesDirectory)/**/coverage.cobertura.xml'
+    summaryFileLocation: '$(Build.SourcesDirectory)/**/TestResults/coverage.cobertura.xml'
