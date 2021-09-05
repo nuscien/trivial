@@ -4137,7 +4137,7 @@ namespace Trivial.Text
             return await JsonDocument.ParseAsync(utf8Json, default, cancellationToken);
         }
 
-#if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET5_0_OR_GREATER
+#if !NETFRAMEWORK
         /// <summary>
         /// Parses a stream as UTF-8-encoded data representing a JSON array.
         /// The stream is read to completion.

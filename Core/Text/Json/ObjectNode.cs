@@ -4760,7 +4760,7 @@ namespace Trivial.Text
         public static async Task<JsonObjectNode> ParseAsync(Stream utf8Json, CancellationToken cancellationToken = default)
             => await JsonDocument.ParseAsync(utf8Json, default, cancellationToken);
 
-#if NETSTANDARD2_0_OR_GREATER || NETCOREAPP || NET5_0_OR_GREATER
+#if !NETFRAMEWORK
         /// <summary>
         /// Parses a stream as UTF-8-encoded data representing a JSON object.
         /// The stream is read to completion.

@@ -114,7 +114,7 @@ namespace Trivial.Web
                 "docm" => "application/vnd.ms-word.document.macroenabled.12",
                 "docx" => "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
                 "dotx" => "application/vnd.openxmlformats-officedocument.wordprocessingml.template",
-                "mda" or "mdb" or "mde" or "accdb" => "application/x-msaccess",
+                "mda" or "mdb" or "mde" or "accdb" or "accde" or "accdt" => "application/x-msaccess",
                 "mpp" or "mpt" => "application/vnd.ms-project",
                 "msg" => "application/vnd.ms-outlook",
                 "ppt" => "application/vnd.ms-powerpoint",
@@ -123,7 +123,7 @@ namespace Trivial.Web
                 "ppsx" => "application/vnd.openxmlformats-officedocument.presentationml.slideshow",
                 "sldx" => "application/vnd.openxmlformats-officedocument.presentationml.slide",
                 "potx" => "application/vnd.openxmlformats-officedocument.presentationml.template",
-                "xls" => "application/vnd.ms-excel",
+                "xls" or "xla" => "application/vnd.ms-excel",
                 "xlsm" => "application/vnd.ms-excel.sheet.macroEnabled.12",
                 "xlsx" => "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
                 "xltx" => "application/vnd.openxmlformats-officedocument.spreadsheetml.template",
@@ -131,6 +131,9 @@ namespace Trivial.Web
                 "xps" => "application/vnd.ms-xpsdocument",
                 "oxps" => "application/oxps",
                 "vsd" or "vst" or "vss" or "vsw" => "application/vnd.visio",
+                "vsto" => "application/x-ms-vsto",
+                "pub" => "application/x-mspublisher",
+                "wcm" or "wdb" or "wks" => "application/vnd.ms-works",
 
                 // Open Document
                 "odc" => "application/vnd.oasis.opendocument.chart",
@@ -170,6 +173,8 @@ namespace Trivial.Web
                 "webp" => "image/webp",
                 "3ds" => "image/x-3ds",
                 "wmf" or "emf" or "emz" => "application/x-msmetafile",
+                "xbm" => "image/x-xbitmap",
+                "ief" => "image/ief",
 
                 // Audio
                 "au" or "snd" => "audio/basic",
@@ -206,7 +211,8 @@ namespace Trivial.Web
                 "mp4" or "mp4v" or "mpg4" => "video/mp4",
                 "mpeg" or "mpg" or "mpe" or "m1v" or "m2v" => "video/mpeg",
                 "ogv" => "video/ogg",
-                "mov" => "video/quicktime",
+                "mov" or "qt" => "video/quicktime",
+                "movie" => "video/x-sgi-movie",
                 "dvd" => "video/vnd.dvb.file",
                 "mxu" or "m4u" => "video/vnd.mpegurl",
                 "pyv" => "video/vnd.ms-playready.media.pyv",
@@ -220,7 +226,7 @@ namespace Trivial.Web
                 "wmx" => "video/x-ms-wmx",
 
                 // Text
-                "txt" or "text" or "log" or "def" or "ini" or "gitignore" or "editorconfig" => Text.StringExtensions.PlainTextMIME,
+                "txt" or "text" or "log" or "def" or "ini" or "gitignore" or "editorconfig" or "bas" or "cnf" or "xdr" or "asm" => Text.StringExtensions.PlainTextMIME,
                 "csv" => Text.CsvParser.MIME,
                 "tsv" => Text.TsvParser.MIME,
                 "md" => MarkdownMIME,
@@ -230,6 +236,8 @@ namespace Trivial.Web
                 "vcf" => "text/x-vcard",
                 "vtt" => "text/vtt",
                 "diff" or "patch" => "text/x-diff",
+                "323" => "text/h323",
+                "dlm" => "text/dlm",
 
                 // Web
                 "ac" => "application/pkix-attr-cert",
@@ -242,7 +250,8 @@ namespace Trivial.Web
                 "dtd" => DocumentTypeDefinitionMIME,
                 "ecma" => "application/ecmascript",
                 "epub" => "application/epub+zip",
-                "htm" or "html" or "shtml" or "hta" => HtmlMIME,
+                "htm" or "html" or "shtml" or "hta" or "hxt" => HtmlMIME,
+                "htt" => "text/webviewhtml",
                 "ink" or "inkml" => "application/inkml+xml",
                 "js" or "jsx" or "esm" => JavaScriptMIME,
                 "json" or "map" => JsonMIME,
@@ -252,11 +261,14 @@ namespace Trivial.Web
                 "pkipath" => "application/pkix-pkipath",
                 "uri" or "uris" or "urls" => "text/uri-list",
                 "xaml" => "application/xaml+xml",
-                "xml" or "xsl" or "config" => XmlMIME,
+                "xml" or "xsl" or "xsf" or "xsd" or "config" or "xslt" => XmlMIME,
                 "vbs" => "text/vbscript",
                 "yaml" or "yml" => YamlMIME,
                 "dart" => "application/vnd.dart",
                 "chm" => "application/vnd.ms-htmlhelp",
+                "acx" => "application/internet-property-stream",
+                "osdx" => "application/opensearchdescription+xml",
+                "atom" => "application/atom+xml",
 
                 // Font
                 "eot" => "application/vnd.ms-fontobject",
@@ -283,6 +295,9 @@ namespace Trivial.Web
                 "settings" => XmlMIME,
                 "sql" => "application/x-sql",
                 "ps1" => Text.StringExtensions.PlainTextMIME,
+                "class" => "application/x-java-applet",
+                "x" => "application/directx",
+                "sh" => "application/x-sh",
 
                 // Others
                 "application" => "application/x-ms-application",
@@ -295,7 +310,7 @@ namespace Trivial.Web
                 "wasm" => WebAssemblyMIME,
                 "aspx" => "application/x-aspx",
                 "dll" or "pdb" or "exe" or "bat" or "msi" or "msu" or "com" => "application/x-msdownload",
-                "app" or "obj" or "so" or "a" or "rpm" or "glif" or "resx" or "php" or "jsp" or "cshtml" or "vbhtml" or "razor" or "3mf" or "lib" or "bin" or "dat" or "data" or "db" or "dms" or "lrf" or "pkg" or "dump" or "deploy" or "vso" or "nupkg" or "xsn" or "sln" or "vsix" or "ts" or "tsx" or "usr" or "user" or "bson" => StreamMIME,
+                "app" or "obj" or "so" or "a" or "rpm" or "glif" or "resx" or "php" or "jsp" or "cshtml" or "vbhtml" or "razor" or "3mf" or "lib" or "bin" or "dat" or "data" or "db" or "dms" or "lrf" or "pkg" or "dump" or "deploy" or "vso" or "nupkg" or "xsn" or "sln" or "vsix" or "ts" or "tsx" or "usr" or "user" or "bson" or "aaf" or "aca" or "afm" or "deploy" or "dsp" or "mdp" or "xtp" or "xsn" => StreamMIME,
                 "pqa" or "oprc" => "application/vnd.palm",
                 "appx" => "application/appx",
                 "appxbundle" => "application/appxbundle",
@@ -303,6 +318,7 @@ namespace Trivial.Web
                 "msix" => "application/msix",
                 "msixbundle" => "application/msixbundle",
                 "apk" or "aab" => "application/vnd.android.package-archive",
+                "cdf" => "application/x-cdf",
                 "lnk" => "application/x-ms-shortcut",
                 "123" => "application/vnd.lotus-1-2-3",
                 "deb" => "application/vnd.debian.binary-package",

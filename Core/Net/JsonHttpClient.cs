@@ -667,6 +667,18 @@ namespace Trivial.Net
         }
 
         /// <summary>
+        /// Sends an Internet Control Message Protocol (ICMP) echo message with the specified data buffer to the specified computer, and receive a corresponding ICMP echo reply message from that computer as an asynchronous operation.
+        /// </summary>
+        /// <param name="hostNameOrAddress">The computer that is the destination for the ICMP echo message. The value specified for this parameter can be a host name or a string representation of an IP address.</param>
+        /// <param name="timeout">The maximum time span to wait for the ICMP echo reply message.</param>
+        /// <returns>The ping reply instance.</returns>
+        public async Task<System.Net.NetworkInformation.PingReply> SendPingAsync(string hostNameOrAddress, TimeSpan timeout)
+        {
+            using var ping = new System.Net.NetworkInformation.Ping();
+            return await ping.SendPingAsync(hostNameOrAddress, (int)timeout.TotalMilliseconds);
+        }
+
+        /// <summary>
         /// Sends a GET request and gets the result serialized by JSON.
         /// </summary>
         /// <param name="requestUri">The Uri the request is sent to.</param>
