@@ -4433,6 +4433,48 @@ namespace Trivial.Text
             return await JsonDocument.ParseAsync(utf8Json, default, cancellationToken);
         }
 
+#if !NETFRAMEWORK
+        /// <summary>
+        /// Parses a stream as UTF-8-encoded data representing a JSON object.
+        /// The stream is read to completion.
+        /// </summary>
+        /// <param name="zip">The zip file.</param>
+        /// <param name="entryName">A path, relative to the root of the archive, that identifies the entry to retrieve.</param>
+        /// <param name="options">Options to control the reader behavior during parsing.</param>
+        /// <param name="cancellationToken">The token to monitor for cancellation requests.</param>
+        /// <returns>A JSON object instance.</returns>
+        /// <exception cref="JsonException">json does not represent a valid single JSON object.</exception>
+        /// <exception cref="ArgumentException">options contains unsupported options.</exception>
+        /// <exception cref="IOException">The entry is already currently open for writing, or the entry has been deleted from the archive.</exception>
+        /// <exception cref="ObjectDisposedException">The zip archive has been disposed.</exception>
+        /// <exception cref="NotSupportedException">The zip archive does not support reading.</exception>
+        /// <exception cref="InvalidDataException">The zip archive is corrupt, and the entry cannot be retrieved.</exception>
+        public static Task<JsonObject> ParseAsync(System.IO.Compression.ZipArchive zip, string entryName, JsonDocumentOptions options, CancellationToken cancellationToken = default)
+        {
+            var entry = zip?.GetEntry(entryName);
+            if (entry == null) return Task.FromResult<JsonObject>(null);
+            using var stream = entry.Open();
+            return ParseAsync(stream, options, cancellationToken);
+        }
+
+        /// <summary>
+        /// Parses a stream as UTF-8-encoded data representing a JSON object.
+        /// The stream is read to completion.
+        /// </summary>
+        /// <param name="zip">The zip file.</param>
+        /// <param name="entryName">A path, relative to the root of the archive, that identifies the entry to retrieve.</param>
+        /// <param name="cancellationToken">The token to monitor for cancellation requests.</param>
+        /// <returns>A JSON object instance.</returns>
+        /// <exception cref="JsonException">json does not represent a valid single JSON object.</exception>
+        /// <exception cref="ArgumentException">options contains unsupported options.</exception>
+        /// <exception cref="IOException">The entry is already currently open for writing, or the entry has been deleted from the archive.</exception>
+        /// <exception cref="ObjectDisposedException">The zip archive has been disposed.</exception>
+        /// <exception cref="NotSupportedException">The zip archive does not support reading.</exception>
+        /// <exception cref="InvalidDataException">The zip archive is corrupt, and the entry cannot be retrieved.</exception>
+        public static Task<JsonObject> ParseAsync(System.IO.Compression.ZipArchive zip, string entryName, CancellationToken cancellationToken = default)
+            => ParseAsync(zip, entryName, default, cancellationToken);
+#endif
+
         /// <summary>
         /// Parses JSON object.
         /// </summary>
