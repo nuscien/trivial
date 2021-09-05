@@ -188,6 +188,32 @@ namespace Trivial.IO
             return CharsReader.ReadLines(file, detectEncodingFromByteOrderMarks, removeEmptyLine);
         }
 
+#if !NETFRAMEWORK
+        /// <summary>
+        /// Reads lines from a specific stream.
+        /// </summary>
+        /// <param name="zip">The zip file.</param>
+        /// <param name="entryName">A path, relative to the root of the archive, that identifies the entry to retrieve.</param>
+        /// <param name="encoding">The character encoding to use.</param>
+        /// <param name="removeEmptyLine">true if need remove the empty line; otherwise, false.</param>
+        /// <returns>Lines from the specific stream reader.</returns>
+        /// <exception cref="ArgumentNullException">file was null.</exception>
+        /// <exception cref="FileNotFoundException">file was not found.</exception>
+        /// <exception cref="DirectoryNotFoundException">The directory of the file was not found.</exception>
+        /// <exception cref="NotSupportedException">Cannot read the file.</exception>
+        /// <exception cref="IOException">An I/O error occurs.</exception>
+        /// <exception cref="ObjectDisposedException">The zip archive has been disposed.</exception>
+        /// <exception cref="NotSupportedException">The zip archive does not support reading.</exception>
+        /// <exception cref="InvalidDataException">The zip archive is corrupt, and the entry cannot be retrieved.</exception>
+        public static IEnumerable<string> ReadLines(this System.IO.Compression.ZipArchive zip, string entryName, Encoding encoding, bool removeEmptyLine = false)
+        {
+            var entry = zip?.GetEntry(entryName);
+            if (entry == null) throw new FileNotFoundException("file is not found.");
+            using var stream = entry.Open();
+            return CharsReader.ReadLines(stream, encoding, removeEmptyLine);
+        }
+#endif
+
         /// <summary>
         /// Gets the string of the file size.
         /// </summary>
