@@ -108,19 +108,6 @@ namespace Trivial.Text
         }
 
         /// <summary>
-        /// Converts a string into memory stream by specific encoding.
-        /// </summary>
-        /// <param name="s">The string to convert.</param>
-        /// <param name="encoding">The encoding.</param>
-        /// <returns>A memory stream with the string.</returns>
-        public static MemoryStream ToMemoryStream(string s, Encoding encoding)
-        {
-            if (s == null) return null;
-            var bytes = (encoding ?? Encoding.Default ?? Encoding.UTF8).GetBytes(s);
-            return new MemoryStream(bytes);
-        }
-
-        /// <summary>
         /// Breaks lines.
         /// </summary>
         /// <param name="text">The original string.</param>

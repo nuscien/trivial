@@ -60,7 +60,7 @@ namespace Trivial.Text
             Assert.AreEqual("mn", jsons[1].TryGetStringValue("C"));
             Assert.AreEqual(43210, jsons[1].TryGetInt32Value("Num"));
 
-            using var stream = StringExtensions.ToMemoryStream(text, Encoding.UTF8);
+            using var stream = IO.CharsReader.ToStream(text, Encoding.UTF8);
             parser = new CsvParser(stream);
             col = parser.ToList();
 
@@ -123,7 +123,7 @@ namespace Trivial.Text
             Assert.AreEqual("mn", jsons[1].TryGetStringValue("C"));
             Assert.AreEqual(43210, jsons[1].TryGetInt32Value("Num"));
 
-            using var stream = StringExtensions.ToMemoryStream(text, Encoding.UTF8);
+            using var stream = IO.CharsReader.ToStream(text, Encoding.UTF8);
             parser = new TsvParser(stream);
             col = parser.ToList();
 
@@ -162,7 +162,7 @@ namespace Trivial.Text
             Assert.AreEqual(1996, dt.Year);
             Assert.AreEqual(1, dt.Month);
 
-            using var stream = StringExtensions.ToMemoryStream(text, Encoding.UTF8);
+            using var stream = IO.CharsReader.ToStream(text, Encoding.UTF8);
             parser = new ExtendedLogParser(stream);
             col = parser.ToList();
             Assert.AreEqual(3, parser.Headers.Count);

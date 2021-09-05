@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Trivial.IO
@@ -168,12 +169,10 @@ namespace Trivial.IO
         /// <exception cref="ObjectDisposedException">The current reader is closed.</exception>
         /// <exception cref="InvalidOperationException">The reader is currently in use by a previous read operation.</exception>
         public override Task<int> ReadAsync(char[] buffer, int index, int count)
-        {
-            return Task.Run(() =>
+            => Task.Run(() =>
             {
                 return Read(buffer, index, count);
             });
-        }
 
         /// <summary>
         /// Reads a specified maximum number of characters from the current text reader
@@ -194,9 +193,7 @@ namespace Trivial.IO
         /// depending on whether all input characters have been read.
         /// </returns>
         public override int ReadBlock(char[] buffer, int index, int count)
-        {
-            return Read(buffer, index, count);
-        }
+            => Read(buffer, index, count);
 
         /// <summary>
         /// Reads a specified maximum number of characters from the current string asynchronously
@@ -224,12 +221,10 @@ namespace Trivial.IO
         /// <exception cref="ObjectDisposedException">The current reader is closed.</exception>
         /// <exception cref="InvalidOperationException">The reader is currently in use by a previous read operation.</exception>
         public override Task<int> ReadBlockAsync(char[] buffer, int index, int count)
-        {
-            return Task.Run(() =>
+            => Task.Run(() =>
             {
                 return ReadBlock(buffer, index, count);
             });
-        }
 
         /// <summary>
         /// Reads a line of characters from the current string and returns the data as a string.
@@ -275,12 +270,10 @@ namespace Trivial.IO
         /// <exception cref="ObjectDisposedException">The current reader is closed.</exception>
         /// <exception cref="OutOfMemoryException">There is insufficient memory to allocate a buffer for the returned string.</exception>
         public override Task<string> ReadLineAsync()
-        {
-            return Task.Run(() =>
+            => Task.Run(() =>
             {
                 return ReadLineAsync();
             });
-        }
 
         /// <summary>
         /// Reads all characters from the current position to the end of the string and returns them as a single string.
@@ -316,12 +309,10 @@ namespace Trivial.IO
         /// <exception cref="ObjectDisposedException">The current reader is closed.</exception>
         /// <exception cref="InvalidOperationException">The reader is currently in use by a previous read operation.</exception>
         public override Task<string> ReadToEndAsync()
-        {
-            return Task.Run(() =>
+            => Task.Run(() =>
             {
                 return ReadLineAsync();
             });
-        }
 
         /// <summary>
         /// Resets the position read.
@@ -353,9 +344,7 @@ namespace Trivial.IO
         /// <exception cref="IOException">An I/O error occurs.</exception>
         /// <exception cref="ObjectDisposedException">The stream has disposed.</exception>
         public static IEnumerable<string> ReadLines(TextReader reader, bool removeEmptyLine = false)
-        {
-            return ReadLines(reader, null, removeEmptyLine);
-        }
+            => ReadLines(reader, null, removeEmptyLine);
 
         /// <summary>
         /// Reads lines from a specific stream reader.
@@ -438,9 +427,7 @@ namespace Trivial.IO
         /// <exception cref="NotSupportedException">The stream does not support reading.</exception>
         /// <exception cref="ObjectDisposedException">The stream has disposed.</exception>
         public static IEnumerable<string> ReadLines(IEnumerable<byte> bytes, Encoding encoding, bool removeEmptyLine = false)
-        {
-            return ReadLines(ReadChars(bytes, encoding), removeEmptyLine);
-        }
+            => ReadLines(ReadChars(bytes, encoding), removeEmptyLine);
 
         /// <summary>
         /// Reads lines from a specific stream collection.
@@ -453,9 +440,7 @@ namespace Trivial.IO
         /// <exception cref="NotSupportedException">The stream does not support reading.</exception>
         /// <exception cref="ObjectDisposedException">The stream has disposed.</exception>
         public static IEnumerable<string> ReadLines(IEnumerable<Stream> streams, Encoding encoding, bool removeEmptyLine = false, bool closeStream = false)
-        {
-            return ReadLines(ReadChars(streams, encoding, closeStream), removeEmptyLine);
-        }
+            => ReadLines(ReadChars(streams, encoding, closeStream), removeEmptyLine);
 
         /// <summary>
         /// Reads lines from a specific stream collection.
@@ -468,9 +453,7 @@ namespace Trivial.IO
         /// <exception cref="NotSupportedException">The stream does not support reading.</exception>
         /// <exception cref="ObjectDisposedException">The stream has disposed.</exception>
         public static IEnumerable<string> ReadLines(StreamPagingResolver streams, Encoding encoding, bool removeEmptyLine = false, bool closeStream = false)
-        {
-            return ReadLines(ReadChars(streams, encoding, closeStream), removeEmptyLine);
-        }
+            => ReadLines(ReadChars(streams, encoding, closeStream), removeEmptyLine);
 
         /// <summary>
         /// Reads lines from a specific charactor collection.
@@ -555,6 +538,32 @@ namespace Trivial.IO
                 reader.Dispose();
             }, removeEmptyLine);
         }
+
+#if !NETFRAMEWORK
+        /// <summary>
+        /// Reads lines from a specific stream.
+        /// </summary>
+        /// <param name="zip">The zip file.</param>
+        /// <param name="entryName">A path, relative to the root of the archive, that identifies the entry to retrieve.</param>
+        /// <param name="encoding">The character encoding to use.</param>
+        /// <param name="removeEmptyLine">true if need remove the empty line; otherwise, false.</param>
+        /// <returns>Lines from the specific stream reader.</returns>
+        /// <exception cref="ArgumentNullException">file was null.</exception>
+        /// <exception cref="FileNotFoundException">file was not found.</exception>
+        /// <exception cref="DirectoryNotFoundException">The directory of the file was not found.</exception>
+        /// <exception cref="NotSupportedException">Cannot read the file.</exception>
+        /// <exception cref="IOException">An I/O error occurs.</exception>
+        /// <exception cref="ObjectDisposedException">The zip archive has been disposed.</exception>
+        /// <exception cref="NotSupportedException">The zip archive does not support reading.</exception>
+        /// <exception cref="InvalidDataException">The zip archive is corrupt, and the entry cannot be retrieved.</exception>
+        public static IEnumerable<string> ReadLines(System.IO.Compression.ZipArchive zip, string entryName, Encoding encoding, bool removeEmptyLine = false)
+        {
+            var entry = zip?.GetEntry(entryName);
+            if (entry == null) throw new FileNotFoundException("file is not found.");
+            using var stream = entry.Open();
+            return ReadLines(stream, encoding, removeEmptyLine);
+        }
+#endif
 
         /// <summary>
         /// Reads characters from the stream and advances the position within each stream to the end.
@@ -673,9 +682,7 @@ namespace Trivial.IO
         /// <exception cref="NotSupportedException">The stream does not support reading.</exception>
         /// <exception cref="ObjectDisposedException">The stream has disposed.</exception>
         public static IEnumerable<char> ReadChars(StreamPagingResolver streams, Encoding encoding = null, bool closeStream = false)
-        {
-            return ReadChars(StreamCopy.ToStreamCollection(streams), encoding, closeStream);
-        }
+            => ReadChars(StreamCopy.ToStreamCollection(streams), encoding, closeStream);
 
         /// <summary>
         /// Converts a string to a memory stream.
@@ -685,6 +692,7 @@ namespace Trivial.IO
         /// <returns>A memeory stream with the specific string and encoding.</returns>
         public static Stream ToStream(string s, Encoding encoding = null)
         {
+            if (s == null) return null;
             var bytes = (encoding ?? Encoding.UTF8).GetBytes(s);
             return new MemoryStream(bytes);
         }

@@ -104,13 +104,7 @@ namespace Trivial.Data
         /// <summary>
         /// Gets a value indicating the depth of nesting for the current row.
         /// </summary>
-        public override int Depth
-        {
-            get
-            {
-                return 0;
-            }
-        }
+        public override int Depth => 0;
 
         /// <summary>
         /// Gets the number of columns in the current row.
@@ -143,9 +137,7 @@ namespace Trivial.Data
         /// <param name="ordinal">The zero-based column ordinal.</param>
         /// <returns>The value of the specified column.</returns>
         public override bool GetBoolean(int ordinal)
-        {
-            return GetFieldValue<bool>(ordinal);
-        }
+            => GetFieldValue<bool>(ordinal);
 
         /// <summary>
         /// Gets the value of the specified column as a byte.
@@ -153,9 +145,7 @@ namespace Trivial.Data
         /// <param name="ordinal">The zero-based column ordinal.</param>
         /// <returns>The value of the specified column.</returns>
         public override byte GetByte(int ordinal)
-        {
-            return GetFieldValue<byte>(ordinal);
-        }
+            => GetFieldValue<byte>(ordinal);
 
         /// <summary>
         /// Gets the current record instance.
@@ -213,9 +203,7 @@ namespace Trivial.Data
         /// <param name="ordinal">The zero-based column ordinal.</param>
         /// <returns>The value of the specified column.</returns>
         public override char GetChar(int ordinal)
-        {
-            return GetFieldValue<char>(ordinal);
-        }
+            => GetFieldValue<char>(ordinal);
 
         /// <summary>
         /// Reads a stream of characters from the specified column, starting at location indicated by dataOffset, into the buffer, starting at the location indicated by bufferOffset.
@@ -240,9 +228,7 @@ namespace Trivial.Data
         /// <param name="ordinal">The zero-based column ordinal.</param>
         /// <returns>A string representing the name of the data type.</returns>
         public override string GetDataTypeName(int ordinal)
-        {
-            return GetFieldType(ordinal).Name;
-        }
+            => GetFieldType(ordinal).Name;
 
         /// <summary>
         /// Gets the value of the specified column as a DateTime.
@@ -250,9 +236,7 @@ namespace Trivial.Data
         /// <param name="ordinal">The zero-based column ordinal.</param>
         /// <returns>The value of the specified column.</returns>
         public override DateTime GetDateTime(int ordinal)
-        {
-            return GetFieldValue<DateTime>(ordinal);
-        }
+            => GetFieldValue<DateTime>(ordinal);
 
         /// <summary>
         /// Gets the value of the specified column as a Decimal.
@@ -260,9 +244,7 @@ namespace Trivial.Data
         /// <param name="ordinal">The zero-based column ordinal.</param>
         /// <returns>The value of the specified column.</returns>
         public override decimal GetDecimal(int ordinal)
-        {
-            return GetFieldValue<decimal>(ordinal);
-        }
+            => GetFieldValue<decimal>(ordinal);
 
         /// <summary>
         /// Gets the value of the specified column as a Double.
@@ -270,18 +252,14 @@ namespace Trivial.Data
         /// <param name="ordinal">The zero-based column ordinal.</param>
         /// <returns>The value of the specified column.</returns>
         public override double GetDouble(int ordinal)
-        {
-            return GetFieldValue<double>(ordinal);
-        }
+            => GetFieldValue<double>(ordinal);
 
         /// <summary>
         /// Returns an System.Collections.IEnumerator that can be used to iterate through the rows in the data reader.
         /// </summary>
         /// <returns>An System.Collections.IEnumerator that can be used to iterate through the rows in the data reader.</returns>
         public override IEnumerator GetEnumerator()
-        {
-            return enumerator;
-        }
+            => enumerator;
 
         /// <summary>
         /// Gets the data type of the specified column.
@@ -289,9 +267,7 @@ namespace Trivial.Data
         /// <param name="ordinal">The zero-based column ordinal.</param>
         /// <returns>The data type of the specified column.</returns>
         public override Type GetFieldType(int ordinal)
-        {
-            return this[ordinal].GetType();
-        }
+            => this[ordinal].GetType();
 
         /// <summary>
         /// Synchronously gets the value of the specified column as a type.
@@ -300,9 +276,7 @@ namespace Trivial.Data
         /// <param name="ordinal">The zero-based column ordinal.</param>
         /// <returns>The value of the specified column.</returns>
         public override TValue GetFieldValue<TValue>(int ordinal)
-        {
-            return ObjectConvert.Invoke<TValue>(this[ordinal]);
-        }
+            => ObjectConvert.Invoke<TValue>(this[ordinal]);
 
         /// <summary>
         /// Gets the value of the specified column as a Float.
@@ -310,9 +284,7 @@ namespace Trivial.Data
         /// <param name="ordinal">The zero-based column ordinal.</param>
         /// <returns>The value of the specified column.</returns>
         public override float GetFloat(int ordinal)
-        {
-            return GetFieldValue<float>(ordinal);
-        }
+            => GetFieldValue<float>(ordinal);
 
         /// <summary>
         /// Gets the value of the specified column as a Guid.
@@ -320,9 +292,7 @@ namespace Trivial.Data
         /// <param name="ordinal">The zero-based column ordinal.</param>
         /// <returns>The value of the specified column.</returns>
         public override Guid GetGuid(int ordinal)
-        {
-            return GetFieldValue<Guid>(ordinal);
-        }
+            => GetFieldValue<Guid>(ordinal);
 
         /// <summary>
         /// Gets the value of the specified column as a 16-bit signed integer.
@@ -330,9 +300,7 @@ namespace Trivial.Data
         /// <param name="ordinal">The zero-based column ordinal.</param>
         /// <returns>The value of the specified column.</returns>
         public override short GetInt16(int ordinal)
-        {
-            return GetFieldValue<short>(ordinal);
-        }
+            => GetFieldValue<short>(ordinal);
 
         /// <summary>
         /// Gets the value of the specified column as a 32-bit signed integer.
@@ -340,9 +308,7 @@ namespace Trivial.Data
         /// <param name="ordinal">The zero-based column ordinal.</param>
         /// <returns>The value of the specified column.</returns>
         public override int GetInt32(int ordinal)
-        {
-            return GetFieldValue<int>(ordinal);
-        }
+            => GetFieldValue<int>(ordinal);
 
         /// <summary>
         /// Gets the value of the specified column as a 64-bit signed integer.
@@ -350,16 +316,15 @@ namespace Trivial.Data
         /// <param name="ordinal">The zero-based column ordinal.</param>
         /// <returns>The value of the specified column.</returns>
         public override long GetInt64(int ordinal)
-        {
-            return GetFieldValue<long>(ordinal);
-        }
+            => GetFieldValue<long>(ordinal);
 
         /// <summary>
         /// Gets the name of the column, given the zero-based column ordinal.
         /// </summary>
         /// <param name="ordinal">The zero-based column ordinal.</param>
         /// <returns>The name of the specified column.</returns>
-        public override string GetName(int ordinal) => ColumnsInfoWithoutNull[ordinal]?.Name;
+        public override string GetName(int ordinal)
+            => ColumnsInfoWithoutNull[ordinal]?.Name;
 
         /// <summary>
         /// Gets the column ordinal given the name of the column.
@@ -402,9 +367,7 @@ namespace Trivial.Data
         /// <param name="ordinal">The zero-based column ordinal.</param>
         /// <returns>The value of the specified column.</returns>
         public override string GetString(int ordinal)
-        {
-            return GetFieldValue<string>(ordinal);
-        }
+            => GetFieldValue<string>(ordinal);
 
         /// <summary>
         /// Populates an array of objects with the column values of the current row.
@@ -430,9 +393,7 @@ namespace Trivial.Data
         /// <param name="ordinal">The zero-based column ordinal.</param>
         /// <returns>The value of the specified column.</returns>
         public override object GetValue(int ordinal)
-        {
-            return this[ordinal];
-        }
+            => this[ordinal];
 
         /// <summary>
         /// Gets a value that indicates whether the column contains nonexistent or missing values.
@@ -440,18 +401,14 @@ namespace Trivial.Data
         /// <param name="ordinal">The zero-based column ordinal.</param>
         /// <returns>true if the specified column is equivalent to System.DBNull; otherwise false.</returns>
         public override bool IsDBNull(int ordinal)
-        {
-            return this[ordinal] == null;
-        }
+            => this[ordinal] == null;
 
         /// <summary>
         /// Advances the reader to the next result when reading the results of a batch of statements.
         /// </summary>
         /// <returns>true if there are more result sets; otherwise false.</returns>
         public override bool NextResult()
-        {
-            return false;
-        }
+            => false;
 
         /// <summary>
         /// Gets ready to read.

@@ -51,9 +51,7 @@ namespace Trivial.IO
         /// <exception cref="DirectoryNotFoundException">The specified path is invalid, such as being on an unmapped drive.</exception>
         /// <exception cref="NotSupportedException">The path of the file refers to a non-file device, such as "con:", "com1:", "lpt1:".</exception>
         public static DirectoryInfo CopyTo(this DirectoryInfo source, string destPath)
-        {
-            return CopyTo(source, destPath, CancellationToken.None);
-        }
+            => CopyTo(source, destPath, CancellationToken.None);
 
         /// <summary>
         /// Copies a directory.
@@ -69,12 +67,10 @@ namespace Trivial.IO
         /// <exception cref="DirectoryNotFoundException">The specified path is invalid, such as being on an unmapped drive.</exception>
         /// <exception cref="NotSupportedException">The path of the file refers to a non-file device, such as "con:", "com1:", "lpt1:".</exception>
         public static Task<DirectoryInfo> CopyToAsync(this DirectoryInfo source, string destPath, CancellationToken cancellationToken = default)
-        {
-            return Task.Run(() =>
+            => Task.Run(() =>
             {
                 return CopyTo(source, destPath, cancellationToken);
             });
-        }
 
         /// <summary>
         /// Copies a directory.
@@ -136,9 +132,7 @@ namespace Trivial.IO
         /// <param name="destPath">The destinate directory path.</param>
         /// <returns>true if copy succeeded; otherwise, false.</returns>
         public static bool TryCopyTo(this DirectoryInfo source, string destPath)
-        {
-            return TryCopyTo(source, destPath, CancellationToken.None);
-        }
+            => TryCopyTo(source, destPath, CancellationToken.None);
 
         /// <summary>
         /// Copies a directory.
@@ -148,12 +142,10 @@ namespace Trivial.IO
         /// <param name="cancellationToken">The optional cancellation token.</param>
         /// <returns>true if copy succeeded; otherwise, false.</returns>
         public static Task<bool> TryCopyToAsync(this DirectoryInfo source, string destPath, CancellationToken cancellationToken = default)
-        {
-            return Task.Run(() =>
+            => Task.Run(() =>
             {
                 return TryCopyTo(source, destPath, cancellationToken);
             });
-        }
 
         /// <summary>
         /// Reads lines from a specific stream.
@@ -168,9 +160,7 @@ namespace Trivial.IO
         /// <exception cref="NotSupportedException">Cannot read the file.</exception>
         /// <exception cref="IOException">An I/O error occurs.</exception>
         public static IEnumerable<string> ReadLines(this FileInfo file, Encoding encoding, bool removeEmptyLine = false)
-        {
-            return CharsReader.ReadLines(file, encoding, removeEmptyLine);
-        }
+            => CharsReader.ReadLines(file, encoding, removeEmptyLine);
 
         /// <summary>
         /// Reads lines from a specific stream.
@@ -184,35 +174,7 @@ namespace Trivial.IO
         /// <exception cref="DirectoryNotFoundException">The directory of the file was not found.</exception>
         /// <exception cref="NotSupportedException">Cannot read the file.</exception>
         public static IEnumerable<string> ReadLines(this FileInfo file, bool detectEncodingFromByteOrderMarks, bool removeEmptyLine = false)
-        {
-            return CharsReader.ReadLines(file, detectEncodingFromByteOrderMarks, removeEmptyLine);
-        }
-
-#if !NETFRAMEWORK
-        /// <summary>
-        /// Reads lines from a specific stream.
-        /// </summary>
-        /// <param name="zip">The zip file.</param>
-        /// <param name="entryName">A path, relative to the root of the archive, that identifies the entry to retrieve.</param>
-        /// <param name="encoding">The character encoding to use.</param>
-        /// <param name="removeEmptyLine">true if need remove the empty line; otherwise, false.</param>
-        /// <returns>Lines from the specific stream reader.</returns>
-        /// <exception cref="ArgumentNullException">file was null.</exception>
-        /// <exception cref="FileNotFoundException">file was not found.</exception>
-        /// <exception cref="DirectoryNotFoundException">The directory of the file was not found.</exception>
-        /// <exception cref="NotSupportedException">Cannot read the file.</exception>
-        /// <exception cref="IOException">An I/O error occurs.</exception>
-        /// <exception cref="ObjectDisposedException">The zip archive has been disposed.</exception>
-        /// <exception cref="NotSupportedException">The zip archive does not support reading.</exception>
-        /// <exception cref="InvalidDataException">The zip archive is corrupt, and the entry cannot be retrieved.</exception>
-        public static IEnumerable<string> ReadLines(this System.IO.Compression.ZipArchive zip, string entryName, Encoding encoding, bool removeEmptyLine = false)
-        {
-            var entry = zip?.GetEntry(entryName);
-            if (entry == null) throw new FileNotFoundException("file is not found.");
-            using var stream = entry.Open();
-            return CharsReader.ReadLines(stream, encoding, removeEmptyLine);
-        }
-#endif
+            => CharsReader.ReadLines(file, detectEncodingFromByteOrderMarks, removeEmptyLine);
 
         /// <summary>
         /// Gets the string of the file size.
@@ -221,9 +183,7 @@ namespace Trivial.IO
         /// <param name="unit">The unit.</param>
         /// <returns>A string.</returns>
         public static string ToFileSizeString(this FileInfo file, string unit = "B")
-        {
-            return ToFileSizeString(file.Length, unit);
-        }
+            => ToFileSizeString(file.Length, unit);
 
         /// <summary>
         /// Gets the string of the file size.
@@ -232,9 +192,7 @@ namespace Trivial.IO
         /// <param name="unit">The unit.</param>
         /// <returns>A string.</returns>
         public static string ToFileSizeString(int size, string unit = "B")
-        {
-            return ToFileSizeString((long)size, unit);
-        }
+            => ToFileSizeString((long)size, unit);
 
         /// <summary>
         /// Gets the approximation string of the file size.
@@ -262,6 +220,51 @@ namespace Trivial.IO
         /// <returns>A string.</returns>
         public static string ToFileSizeString(ulong size, string unit = "B")
         {
+            if (unit == null) unit = string.Empty;
+            switch (unit.Trim())
+            {
+                case "":
+                case "B":
+                case "Byte":
+                case "Bytes":
+                case "BYTE":
+                case "BYTES":
+                case "Octet":
+                case "Octets":
+                case "OCTET":
+                case "OCTETS":
+                case "字节":
+                case "位元組":
+                    break;
+                case "k":
+                case "K":
+                case "KB":
+                case "千":
+                case "千字节":
+                    return (size / 1024.0).ToString("F1") + unit;
+                case "M":
+                case "MB":
+                case "兆":
+                case "兆字节":
+                    return (size / 1048576.0).ToString("F1") + unit;
+                case "G":
+                case "GB":
+                case "吉":
+                case "吉字节":
+                    return (size / 1073741824.0).ToString("F1") + unit;
+                case "T":
+                case "TB":
+                case "太":
+                case "太字节":
+                    return (size / 1099511627776.0).ToString("F1") + unit;
+                case "P":
+                case "PB":
+                    return (size / 1125899906842624.0).ToString("F1") + unit;
+                case "E":
+                case "EB":
+                    return (size / 1152921504606846976.0).ToString("F1") + unit;
+            }
+
             if (size > 1125336956000000000) return (size / 1152921504606846976.0).ToString("F1") + "E" + unit;
             if (size > 1098961000000000) return (size / 1125899906842624.0).ToString("F1") + "P" + unit;
             if (size > 1073204000000) return (size / 1099511627776.0).ToString("F1") + "T" + unit;

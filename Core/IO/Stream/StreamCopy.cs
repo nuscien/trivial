@@ -36,9 +36,7 @@ namespace Trivial.IO
         /// <exception cref="NotSupportedException">The source stream was not readable; or the destination stream was not writable.</exception>
         /// <exception cref="ObjectDisposedException">The stream has disposed.</exception>
         public static Task CopyToAsync(this Stream source, Stream destination, IProgress<long> progress, CancellationToken cancellationToken = default)
-        {
-            return CopyToAsync(source, destination, DefaultBufferSize, progress, cancellationToken);
-        }
+            => CopyToAsync(source, destination, DefaultBufferSize, progress, cancellationToken);
 
         /// <summary>
         /// Asynchronously reads the bytes from the current stream and writes them to another stream, using a specified buffer size.
@@ -59,17 +57,26 @@ namespace Trivial.IO
             if (!source.CanRead) throw new NotSupportedException("The source stream should be readable.");
             if (destination == null) throw new ArgumentNullException(nameof(destination));
             if (!destination.CanWrite) throw new NotSupportedException("The destination stream should be writable.");
-            if (bufferSize < 0) throw new ArgumentOutOfRangeException("The buffer size should not be negative", nameof(bufferSize));
+            if (bufferSize < 0) throw new ArgumentOutOfRangeException(nameof(bufferSize), "The buffer size should not be negative");
 
             var buffer = new byte[bufferSize];
             long totalBytesRead = 0;
             int bytesRead;
+#if NETCOREAPP || NET5_0_OR_GREATER
+            while ((bytesRead = await source.ReadAsync(buffer.AsMemory(0, buffer.Length), cancellationToken).ConfigureAwait(false)) != 0)
+            {
+                await destination.WriteAsync(buffer.AsMemory(0, bytesRead), cancellationToken).ConfigureAwait(false);
+                totalBytesRead += bytesRead;
+                progress?.Report(totalBytesRead);
+            }
+#else
             while ((bytesRead = await source.ReadAsync(buffer, 0, buffer.Length, cancellationToken).ConfigureAwait(false)) != 0)
             {
                 await destination.WriteAsync(buffer, 0, bytesRead, cancellationToken).ConfigureAwait(false);
                 totalBytesRead += bytesRead;
                 progress?.Report(totalBytesRead);
             }
+#endif
         }
 
         /// <summary>
@@ -104,7 +111,6 @@ namespace Trivial.IO
             destination.Position = 0;
             yield return destination;
         }
-
 
         /// <summary>
         /// Reads bytes from the stream and advances the position within the stream to the end.
@@ -163,9 +169,7 @@ namespace Trivial.IO
         /// <exception cref="NotSupportedException">The stream does not support reading.</exception>
         /// <exception cref="ObjectDisposedException">The stream has disposed.</exception>
         public static IEnumerable<byte> ReadBytes(StreamPagingResolver streams, bool closeStream = false)
-        {
-            return ReadBytes(ToStreamCollection(streams), closeStream);
-        }
+            => ReadBytes(ToStreamCollection(streams), closeStream);
 
         /// <summary>
         /// Reads lines from a specific stream reader.
@@ -177,9 +181,7 @@ namespace Trivial.IO
         /// <exception cref="IOException">An I/O error occurs.</exception>
         /// <exception cref="ObjectDisposedException">The stream has disposed.</exception>
         public static IEnumerable<string> ReadLines(this TextReader reader, bool removeEmptyLine = false)
-        {
-            return CharsReader.ReadLines(reader, removeEmptyLine);
-        }
+            => CharsReader.ReadLines(reader, removeEmptyLine);
 
         /// <summary>
         /// Converts a stream paging resolver to a stream collection.

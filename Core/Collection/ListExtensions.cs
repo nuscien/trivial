@@ -352,27 +352,21 @@ namespace Trivial.Collection
         /// <param name="list">The key value pairs.</param>
         /// <returns>The groups.</returns>
         public static IEnumerable<IGrouping<TKey, TValue>> ToGroups<TKey, TValue>(this IEnumerable<KeyValuePair<TKey, TValue>> list)
-        {
-            return list?.GroupBy(item => item.Key, item => item.Value);
-        }
+            => list?.GroupBy(item => item.Key, item => item.Value);
 
         /// <summary>
         /// Creates a dictionary from the key value pairs.
         /// </summary>
         /// <returns>A dictionary with key and the value collection.</returns>
         public static Dictionary<TKey, IEnumerable<TValue>> ToDictionary<TKey, TValue>(this IEnumerable<IGrouping<TKey, TValue>> list)
-        {
-            return list?.ToDictionary(item => item.Key, item => item as IEnumerable<TValue>);
-        }
+            => list?.ToDictionary(item => item.Key, item => item as IEnumerable<TValue>);
 
         /// <summary>
         /// Creates a dictionary from the key value pairs.
         /// </summary>
         /// <returns>A dictionary with key and the value collection.</returns>
         public static Dictionary<TKey, IEnumerable<TValue>> ToDictionary<TKey, TValue>(this IEnumerable<KeyValuePair<TKey, TValue>> list)
-        {
-            return ToGroups(list)?.ToDictionary(item => item.Key, item => item as IEnumerable<TValue>);
-        }
+            => ToGroups(list)?.ToDictionary(item => item.Key, item => item as IEnumerable<TValue>);
 
         /// <summary>
         /// Creates a synchronized list from the source collection.
@@ -381,9 +375,7 @@ namespace Trivial.Collection
         /// <param name="list">The source collection.</param>
         /// <returns>A synchronized list.</returns>
         public static SynchronizedList<T> ToSynchronizedList<T>(IEnumerable<T> list)
-        {
-            return new SynchronizedList<T>(list);
-        }
+            => new(list);
 
         /// <summary>
         /// Creates a synchronized list from the source collection.
@@ -393,9 +385,7 @@ namespace Trivial.Collection
         /// <param name="useSource">true if set the collection as source directly instead of copying; otherwise, false.</param>
         /// <returns>A synchronized list.</returns>
         public static SynchronizedList<T> ToSynchronizedList<T>(List<T> list, bool useSource)
-        {
-            return new SynchronizedList<T>(list);
-        }
+            => new(System.Threading.LockRecursionPolicy.NoRecursion, list, useSource);
 
         /// <summary>
         /// Creates a synchronized list from the source collection.
@@ -405,9 +395,7 @@ namespace Trivial.Collection
         /// <param name="syncRoot">The object used to synchronize access the thread-safe collection.</param>
         /// <returns>A synchronized list.</returns>
         public static IList<T> ToSynchronizedList<T>(IEnumerable<T> list, object syncRoot)
-        {
-            return new ConcurrentList<T>(syncRoot, list);
-        }
+            => new ConcurrentList<T>(syncRoot, list);
 
         /// <summary>
         /// Creates a synchronized list from the source collection.
@@ -418,9 +406,7 @@ namespace Trivial.Collection
         /// <param name="useSource">true if set the collection as source directly instead of copying; otherwise, false.</param>
         /// <returns>A synchronized list.</returns>
         public static IList<T> ToSynchronizedList<T>(List<T> list, object syncRoot, bool useSource)
-        {
-            return new ConcurrentList<T>(syncRoot, list, useSource);
-        }
+            => new ConcurrentList<T>(syncRoot, list, useSource);
 
         /// <summary>
         /// Tests if they are same.
