@@ -56,9 +56,9 @@ namespace Trivial.Net
             if (httpContent == null) throw new ArgumentNullException(nameof(httpContent));
             if (destination == null) throw new ArgumentNullException(nameof(destination));
 #if NET5_0_OR_GREATER
-            using var downloadingStream = await httpContent.ReadAsStreamAsync(cancellationToken);
+            var downloadingStream = await httpContent.ReadAsStreamAsync(cancellationToken);
 #else
-            using var downloadingStream = await httpContent.ReadAsStreamAsync();
+            var downloadingStream = await httpContent.ReadAsStreamAsync();
 #endif
             await IO.StreamCopy.CopyToAsync(downloadingStream, destination, bufferSize, progress, cancellationToken);
         }
@@ -121,9 +121,9 @@ namespace Trivial.Net
         {
             if (httpContent == null) throw new ArgumentNullException(nameof(httpContent), "httpContent should not be null.");
 #if NET5_0_OR_GREATER
-            using var stream = await httpContent.ReadAsStreamAsync(cancellationToken);
+            var stream = await httpContent.ReadAsStreamAsync(cancellationToken);
 #else
-            using var stream = await httpContent.ReadAsStreamAsync();
+            var stream = await httpContent.ReadAsStreamAsync();
 #endif
             var type = typeof(T);
             if (type == typeof(JsonObject)) return (T)(object)await JsonObject.ParseAsync(stream, default, cancellationToken);
@@ -145,9 +145,9 @@ namespace Trivial.Net
         {
             if (httpContent == null) throw new ArgumentNullException(nameof(httpContent), "httpContent should not be null.");
 #if NET5_0_OR_GREATER
-            using var stream = await httpContent.ReadAsStreamAsync(cancellationToken);
+            var stream = await httpContent.ReadAsStreamAsync(cancellationToken);
 #else
-            using var stream = await httpContent.ReadAsStreamAsync();
+            var stream = await httpContent.ReadAsStreamAsync();
 #endif
             return await JsonSerializer.DeserializeAsync<T>(stream, options, cancellationToken);
         }
@@ -163,7 +163,7 @@ namespace Trivial.Net
         public static async Task<T> DeserializeJsonAsync<T>(this HttpContent httpContent, DataContractJsonSerializerSettings options)
         {
             if (httpContent == null) throw new ArgumentNullException(nameof(httpContent), "httpContent should not be null.");
-            using var stream = await httpContent.ReadAsStreamAsync();
+            var stream = await httpContent.ReadAsStreamAsync();
             var serializer = options != null ? new DataContractJsonSerializer(typeof(T), options) : new DataContractJsonSerializer(typeof(T));
             return (T)serializer.ReadObject(stream);
         }
@@ -179,7 +179,7 @@ namespace Trivial.Net
         public static async Task<T> DeserializeXmlAsync<T>(this HttpContent httpContent, DataContractSerializerSettings options = null)
         {
             if (httpContent == null) throw new ArgumentNullException(nameof(httpContent), "httpContent should not be null.");
-            using var stream = await httpContent.ReadAsStreamAsync();
+            var stream = await httpContent.ReadAsStreamAsync();
             var serializer = options != null ? new DataContractSerializer(typeof(T), options) : new DataContractSerializer(typeof(T));
             return (T)serializer.ReadObject(stream);
         }
@@ -195,7 +195,7 @@ namespace Trivial.Net
         {
             if (httpContent == null) throw new ArgumentNullException(nameof(httpContent), "httpContent should not be null.");
             if (deserializer == null) throw new ArgumentNullException(nameof(deserializer), "serializer should not be null.");
-            using var stream = await httpContent.ReadAsStreamAsync();
+            var stream = await httpContent.ReadAsStreamAsync();
             return deserializer.ReadObject(stream);
         }
 
@@ -243,7 +243,7 @@ namespace Trivial.Net
         public static async Task<T> DeserializeJsonAsync<T>(this HttpContent httpContent, DataContractJsonSerializerSettings options, CancellationToken cancellationToken)
         {
             if (httpContent == null) throw new ArgumentNullException(nameof(httpContent), "httpContent should not be null.");
-            using var stream = await httpContent.ReadAsStreamAsync(cancellationToken);
+            var stream = await httpContent.ReadAsStreamAsync(cancellationToken);
             var serializer = options != null ? new DataContractJsonSerializer(typeof(T), options) : new DataContractJsonSerializer(typeof(T));
             return (T)serializer.ReadObject(stream);
         }
@@ -260,7 +260,7 @@ namespace Trivial.Net
         public static async Task<T> DeserializeXmlAsync<T>(this HttpContent httpContent, DataContractSerializerSettings options, CancellationToken cancellationToken)
         {
             if (httpContent == null) throw new ArgumentNullException(nameof(httpContent), "httpContent should not be null.");
-            using var stream = await httpContent.ReadAsStreamAsync(cancellationToken);
+            var stream = await httpContent.ReadAsStreamAsync(cancellationToken);
             var serializer = options != null ? new DataContractSerializer(typeof(T), options) : new DataContractSerializer(typeof(T));
             return (T)serializer.ReadObject(stream);
         }
@@ -277,7 +277,7 @@ namespace Trivial.Net
         {
             if (httpContent == null) throw new ArgumentNullException(nameof(httpContent), "httpContent should not be null.");
             if (deserializer == null) throw new ArgumentNullException(nameof(deserializer), "serializer should not be null.");
-            using var stream = await httpContent.ReadAsStreamAsync(cancellationToken);
+            var stream = await httpContent.ReadAsStreamAsync(cancellationToken);
             return deserializer.ReadObject(stream);
         }
 
