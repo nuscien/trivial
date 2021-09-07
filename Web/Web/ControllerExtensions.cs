@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Security;
 using System.Security.Claims;
 using System.Text;
@@ -12,6 +13,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Microsoft.Net.Http.Headers;
 using Trivial.Collection;
 using Trivial.Data;
 using Trivial.Net;
@@ -25,6 +27,8 @@ namespace Trivial.Web
     /// </summary>
     public static class ControllerExtensions
     {
+        private static MethodInfo method;
+
         /// <summary>
         /// Gets the first string value.
         /// </summary>
@@ -486,6 +490,119 @@ namespace Trivial.Web
         }
 
         /// <summary>
+        /// Creates a file result.
+        /// </summary>
+        /// <param name="source">The source.</param>
+        /// <param name="entityTag">The entity tag associated with the file.</param>
+        /// <param name="mime">The optional MIME content type.</param>
+        /// <returns>A file result.</returns>
+        public static FileStreamResult FileResult(FileInfo source, EntityTagHeaderValue entityTag = null, string mime = null)
+        {
+            if (source == null || !source.Exists) return null;
+            if (mime == null)
+                mime = GetByFileExtension(source.Extension, WebFormat.StreamMIME);
+            var result = new FileStreamResult(source.OpenRead(), mime)
+            {
+                LastModified = source.LastWriteTime,
+                FileDownloadName = source.Name,
+                EntityTag = entityTag
+            };
+            return result;
+        }
+
+        /// <summary>
+        /// Creates a file result.
+        /// </summary>
+        /// <param name="source">The source.</param>
+        /// <param name="downloadName">The file name used for downloading.</param>
+        /// <param name="lastModified">The last modified information associated with the file.</param>
+        /// <param name="mime">The optional MIME content type.</param>
+        /// <returns>A file result.</returns>
+        public static FileStreamResult FileResult(Stream source, string downloadName, DateTimeOffset? lastModified = null, string mime = null)
+            => FileResult(source, downloadName, null, lastModified, mime);
+
+        /// <summary>
+        /// Creates a file result.
+        /// </summary>
+        /// <param name="source">The source.</param>
+        /// <param name="downloadName">The file name used for downloading.</param>
+        /// <param name="entityTag">The entity tag associated with the file.</param>
+        /// <param name="lastModified">The last modified information associated with the file.</param>
+        /// <param name="mime">The optional MIME content type.</param>
+        /// <returns>A file result.</returns>
+        public static FileStreamResult FileResult(Stream source, string downloadName, EntityTagHeaderValue entityTag, DateTimeOffset? lastModified = null, string mime = null)
+        {
+            if (source == null) return null;
+            if (mime == null)
+            {
+                var ext = downloadName?.Trim()?.Split('.')?.LastOrDefault();
+                if (!string.IsNullOrEmpty(ext))
+                    mime = GetByFileExtension("." + ext, WebFormat.StreamMIME);
+            }
+
+            var result = new FileStreamResult(source, mime)
+            {
+                LastModified = lastModified,
+                EntityTag = entityTag
+            };
+            if (!string.IsNullOrWhiteSpace(downloadName))
+                result.FileDownloadName = downloadName;
+            return result;
+        }
+
+        /// <summary>
+        /// Creates a file result.
+        /// </summary>
+        /// <param name="source">The source.</param>
+        /// <param name="downloadName">The file name used for downloading.</param>
+        /// <param name="enableRangeProcessing">true if enables range requests processing; otherwise, false.</param>
+        /// <param name="entityTag">The entity tag associated with the file.</param>
+        /// <param name="lastModified">The last modified information associated with the file.</param>
+        /// <param name="mime">The optional MIME content type.</param>
+        /// <returns>A file result.</returns>
+        public static FileStreamResult FileResult(Stream source, string downloadName, EntityTagHeaderValue entityTag, bool enableRangeProcessing, DateTimeOffset? lastModified = null, string mime = null)
+        {
+            var result = FileResult(source, downloadName, entityTag, lastModified, mime);
+            if (result == null) return null;
+            result.EnableRangeProcessing = enableRangeProcessing;
+            return result;
+        }
+
+        /// <summary>
+        /// Creates a file result.
+        /// </summary>
+        /// <param name="assembly">The assembly with the embedded file.</param>
+        /// <param name="subPath">The sub path of the embedded file.</param>
+        /// <param name="downloadName">The file name used for downloading.</param>
+        /// <param name="entityTag">The entity tag associated with the file.</param>
+        /// <param name="mime">The optional MIME content type.</param>
+        /// <returns>A file result.</returns>
+        public static FileStreamResult FileResult(Assembly assembly, string subPath, string downloadName, EntityTagHeaderValue entityTag, string mime = null)
+        {
+            if (string.IsNullOrWhiteSpace(subPath)) return null;
+            if (assembly == null)
+                assembly = Assembly.GetExecutingAssembly();
+            var stream = assembly.GetManifestResourceStream(subPath);
+            if (stream == null) return null;
+            var file = IO.FileSystemInfoUtility.TryGetFileInfo(assembly.Location);
+            var lastModified = file?.LastWriteTime;
+            if (string.IsNullOrWhiteSpace(downloadName))
+                downloadName = subPath.Split('\\').LastOrDefault();
+            return FileResult(stream, downloadName, entityTag, lastModified, mime);
+        }
+
+        /// <summary>
+        /// Creates a file result.
+        /// </summary>
+        /// <param name="assembly">The assembly with the embedded file.</param>
+        /// <param name="subPath">The sub path of the embedded file.</param>
+        /// <param name="entityTag">The entity tag associated with the file.</param>
+        /// <param name="mime">The optional MIME content type.</param>
+        /// <returns>A file result.</returns>
+        public static FileStreamResult FileResult(Assembly assembly, string subPath, EntityTagHeaderValue entityTag, string mime = null)
+            => FileResult(assembly, subPath, null, entityTag, mime);
+
+        /// <summary>
         /// Gets the status code.
         /// </summary>
         /// <param name="ex">The exception.</param>
@@ -527,6 +644,37 @@ namespace Trivial.Web
                 || ex is FormatException
                 || ex is InvalidDataException)) return null;
             return 500;
+        }
+
+        /// <summary>
+        /// Gets the MIME content type by file extension part.
+        /// </summary>
+        /// <param name="fileExtension">The file extension.</param>
+        /// <param name="defaultMime">The default MIME content type.</param>
+        /// <returns>The MIME content type.</returns>
+        private static string GetByFileExtension(string fileExtension, string defaultMime)
+        {
+            if (string.IsNullOrWhiteSpace(fileExtension)) return null;
+            if (method == null)
+            {
+                method = typeof(WebFormat).GetMethod("GetMime", BindingFlags.Static | BindingFlags.NonPublic, null, new Type[] { typeof(string) }, null);
+                if (method == null)
+                    method = typeof(WebFormat).GetMethod("GetMime", BindingFlags.Static | BindingFlags.Public, null, new Type[] { typeof(string) }, null);
+                if (method == null)
+                    return defaultMime;
+            }
+
+            var r = method.Invoke(null, new object[] { fileExtension });
+            if (r == null) return defaultMime;
+            try
+            {
+                return (string)r;
+            }
+            catch (InvalidCastException)
+            {
+            }
+
+            return defaultMime;
         }
     }
 }

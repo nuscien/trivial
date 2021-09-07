@@ -477,7 +477,7 @@ namespace Trivial.Text
             Assert.IsNotNull(str);
         }
 
-        private T Serialize<T>(string json) where T : System.Text.Json.Nodes.JsonNode
+        private static T Serialize<T>(string json) where T : System.Text.Json.Nodes.JsonNode
         {
             var t = typeof(T);
             var n = t;
