@@ -220,5 +220,47 @@ namespace Trivial.IO
                 yield return stream;
             }
         }
+
+        internal static bool TrySeek(this Stream stream, SeekOrigin origin)
+        {
+            try
+            {
+                if (stream == null) return false;
+                switch (origin)
+                {
+                    case SeekOrigin.Current:
+                        return true;
+                    case SeekOrigin.Begin:
+                        if (stream.Position == 0) return true;
+                        if (!stream.CanSeek) return false;
+                        stream.Position = 0;
+                        break;
+                    case SeekOrigin.End:
+                        var end = stream.Length - 1;
+                        if (stream.Position >= end) return true;
+                        if (!stream.CanSeek) return false;
+                        stream.Position = end;
+                        break;
+                    default:
+                        return false;
+                }
+
+                return true;
+            }
+            catch (IOException)
+            {
+            }
+            catch (NotSupportedException)
+            {
+            }
+            catch (ObjectDisposedException)
+            {
+            }
+            catch (InvalidOperationException)
+            {
+            }
+
+            return false;
+        }
     }
 }

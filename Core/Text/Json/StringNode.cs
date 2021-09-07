@@ -6,6 +6,7 @@ using System.Numerics;
 using System.Text;
 using System.Text.Json;
 
+using Trivial.Maths;
 using Trivial.Reflection;
 using Trivial.Web;
 
@@ -767,7 +768,7 @@ namespace Trivial.Text
         public short GetInt16()
         {
             if (string.IsNullOrEmpty(Value)) return 0;
-            if (short.TryParse(Value, out var num)) return num;
+            if (Numbers.TryParseToInt16(Value, 10, out var num)) return num;
             throw new InvalidOperationException("Expect a number but it is a string.");
         }
 
@@ -779,7 +780,7 @@ namespace Trivial.Text
         public uint GetUInt32()
         {
             if (string.IsNullOrEmpty(Value)) return 0;
-            if (uint.TryParse(Value, out var num)) return num;
+            if (Numbers.TryParseToUInt32(Value, 10, out var num)) return num;
             throw new InvalidOperationException("Expect a number but it is a string.");
         }
 
@@ -791,7 +792,7 @@ namespace Trivial.Text
         public int GetInt32()
         {
             if (string.IsNullOrEmpty(Value)) return 0;
-            if (int.TryParse(Value, out var num)) return num;
+            if (Numbers.TryParseToInt32(Value, 10, out var num)) return num;
             throw new InvalidOperationException("Expect a number but it is a string.");
         }
 
@@ -803,7 +804,7 @@ namespace Trivial.Text
         public long GetInt64()
         {
             if (string.IsNullOrEmpty(Value)) return 0;
-            if (long.TryParse(Value, out var num)) return num;
+            if (Numbers.TryParseToInt64(Value, 10, out var num)) return num;
             if (ValueType == 1)
             {
                 var date = TryGetDateTime();
@@ -917,7 +918,7 @@ namespace Trivial.Text
                 return true;
             }
 
-            return ushort.TryParse(Value, out result);
+            return Numbers.TryParseToUInt16(Value, 10, out result);
         }
 
         /// <summary>
@@ -933,7 +934,7 @@ namespace Trivial.Text
                 return true;
             }
 
-            return uint.TryParse(Value, out result);
+            return Numbers.TryParseToUInt32(Value, 10, out result);
         }
 
         /// <summary>
@@ -949,7 +950,7 @@ namespace Trivial.Text
                 return true;
             }
 
-            return int.TryParse(Value, out result);
+            return Numbers.TryParseToInt32(Value, 10, out result);
         }
 
         /// <summary>
@@ -965,7 +966,7 @@ namespace Trivial.Text
                 return true;
             }
 
-            return long.TryParse(Value, out result);
+            return Numbers.TryParseToInt64(Value, 10, out result);
         }
 
         /// <summary>

@@ -11,6 +11,7 @@ using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 
+using Trivial.Maths;
 using Trivial.Reflection;
 using Trivial.Web;
 
@@ -1261,12 +1262,39 @@ namespace Trivial.Text
         /// </summary>
         /// <param name="key">The property key.</param>
         /// <returns>The value; or null if fail to resolve.</returns>
+        public ushort? TryGetUInt16Value(string key)
+        {
+            if (TryGetJsonValue<JsonIntegerNode>(key, out var p1)) return (ushort)p1;
+            if (TryGetJsonValue<JsonDoubleNode>(key, out var p2)) return (ushort)p2;
+            var str = TryGetStringValue(key);
+            if (string.IsNullOrWhiteSpace(str) || !Numbers.TryParseToUInt16(str, 10, out var p3)) return null;
+            return p3;
+        }
+
+        /// <summary>
+        /// Tries to get the value of the specific property.
+        /// </summary>
+        /// <param name="key">The property key.</param>
+        /// <param name="result">The result.</param>
+        /// <returns>true if has the property and the type is the one expected; otherwise, false.</returns>
+        public bool TryGetUInt16Value(string key, out ushort result)
+        {
+            var v = TryGetUInt16Value(key);
+            result = v ?? default;
+            return v.HasValue;
+        }
+
+        /// <summary>
+        /// Tries to get the value of the specific property.
+        /// </summary>
+        /// <param name="key">The property key.</param>
+        /// <returns>The value; or null if fail to resolve.</returns>
         public uint? TryGetUInt32Value(string key)
         {
             if (TryGetJsonValue<JsonIntegerNode>(key, out var p1)) return (uint)p1;
             if (TryGetJsonValue<JsonDoubleNode>(key, out var p2)) return (uint)p2;
             var str = TryGetStringValue(key);
-            if (string.IsNullOrWhiteSpace(str) || !uint.TryParse(str, out var p3)) return null;
+            if (string.IsNullOrWhiteSpace(str) || !Numbers.TryParseToUInt32(str, 10, out var p3)) return null;
             return p3;
         }
 
@@ -1288,12 +1316,39 @@ namespace Trivial.Text
         /// </summary>
         /// <param name="key">The property key.</param>
         /// <returns>The value; or null if fail to resolve.</returns>
+        public short? TryGetInt16Value(string key)
+        {
+            if (TryGetJsonValue<JsonIntegerNode>(key, out var p1)) return (short)p1;
+            if (TryGetJsonValue<JsonDoubleNode>(key, out var p2)) return (short)p2;
+            var str = TryGetStringValue(key);
+            if (string.IsNullOrWhiteSpace(str) || !Numbers.TryParseToInt16(str, 10, out var p3)) return null;
+            return p3;
+        }
+
+        /// <summary>
+        /// Tries to get the value of the specific property.
+        /// </summary>
+        /// <param name="key">The property key.</param>
+        /// <param name="result">The result.</param>
+        /// <returns>true if has the property and the type is the one expected; otherwise, false.</returns>
+        public bool TryGetInt16Value(string key, out short result)
+        {
+            var v = TryGetInt16Value(key);
+            result = v ?? default;
+            return v.HasValue;
+        }
+
+        /// <summary>
+        /// Tries to get the value of the specific property.
+        /// </summary>
+        /// <param name="key">The property key.</param>
+        /// <returns>The value; or null if fail to resolve.</returns>
         public int? TryGetInt32Value(string key)
         {
             if (TryGetJsonValue<JsonIntegerNode>(key, out var p1)) return (int)p1;
             if (TryGetJsonValue<JsonDoubleNode>(key, out var p2)) return (int)p2;
             var str = TryGetStringValue(key);
-            if (string.IsNullOrWhiteSpace(str) || !int.TryParse(str, out var p3)) return null;
+            if (string.IsNullOrWhiteSpace(str) || !Numbers.TryParseToInt32(str, 10, out var p3)) return null;
             return p3;
         }
 
@@ -1320,7 +1375,7 @@ namespace Trivial.Text
             if (TryGetJsonValue<JsonIntegerNode>(key, out var p1)) return p1.Value;
             if (TryGetJsonValue<JsonDoubleNode>(key, out var p2)) return (long)p2;
             var str = TryGetStringValue(key);
-            if (string.IsNullOrWhiteSpace(str) || !long.TryParse(str, out var p3)) return null;
+            if (string.IsNullOrWhiteSpace(str) || !Numbers.TryParseToInt64(str, 10, out var p3)) return null;
             return p3;
         }
 

@@ -47,6 +47,7 @@ namespace Trivial.Text
     /// </summary>
     public static class StringExtensions
     {
+#pragma warning disable IDE0056, IDE0057
         /// <summary>
         /// Special characters of YAML.
         /// </summary>
@@ -736,5 +737,6 @@ namespace Trivial.Text
         {
             return culture == null ? source.ToLower() : source.ToLower(culture);
         }
+#pragma warning restore IDE0056, IDE0057
     }
 }

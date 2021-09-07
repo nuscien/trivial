@@ -997,9 +997,7 @@ namespace Trivial.Text
         /// <param name="value">The source value.</param>
         /// <returns>A JSON value.</returns>
         public static implicit operator JsonIntegerNode(uint value)
-        {
-            return new JsonIntegerNode(value);
-        }
+            => new JsonIntegerNode(value);
 
         /// <summary>
         /// Converts to JSON value.
@@ -1007,9 +1005,7 @@ namespace Trivial.Text
         /// <param name="value">The source value.</param>
         /// <returns>A JSON value.</returns>
         public static implicit operator JsonIntegerNode(int value)
-        {
-            return new JsonIntegerNode(value);
-        }
+            => new JsonIntegerNode(value);
 
         /// <summary>
         /// Converts to JSON value.
@@ -1017,9 +1013,7 @@ namespace Trivial.Text
         /// <param name="value">The source value.</param>
         /// <returns>A JSON value.</returns>
         public static implicit operator JsonIntegerNode(long value)
-        {
-            return new JsonIntegerNode(value);
-        }
+            => new JsonIntegerNode(value);
 
         /// <summary>
         /// Converts to JSON value.
@@ -1062,9 +1056,7 @@ namespace Trivial.Text
         /// <param name="json">The JSON value.</param>
         /// <returns>A number.</returns>
         public static explicit operator long(JsonIntegerNode json)
-        {
-            return json.Value;
-        }
+            => json.Value;
 
         /// <summary>
         /// Converts the JSON raw back.
@@ -1072,9 +1064,23 @@ namespace Trivial.Text
         /// <param name="json">The JSON value.</param>
         /// <returns>A number.</returns>
         public static explicit operator int(JsonIntegerNode json)
-        {
-            return (int)json.Value;
-        }
+            => (int)json.Value;
+
+        /// <summary>
+        /// Converts the JSON raw back.
+        /// </summary>
+        /// <param name="json">The JSON value.</param>
+        /// <returns>A number.</returns>
+        public static explicit operator ushort(JsonIntegerNode json)
+            => (ushort)json.Value;
+
+        /// <summary>
+        /// Converts the JSON raw back.
+        /// </summary>
+        /// <param name="json">The JSON value.</param>
+        /// <returns>A number.</returns>
+        public static explicit operator short(JsonIntegerNode json)
+            => (short)json.Value;
 
         /// <summary>
         /// Converts the JSON raw back.
@@ -1082,9 +1088,7 @@ namespace Trivial.Text
         /// <param name="json">The JSON value.</param>
         /// <returns>A number.</returns>
         public static explicit operator uint(JsonIntegerNode json)
-        {
-            return (uint)json.Value;
-        }
+            => (uint)json.Value;
 
         /// <summary>
         /// Converts the JSON raw back.
@@ -1092,9 +1096,7 @@ namespace Trivial.Text
         /// <param name="json">The JSON value.</param>
         /// <returns>A number.</returns>
         public static explicit operator float(JsonIntegerNode json)
-        {
-            return json.Value;
-        }
+            => json.Value;
 
         /// <summary>
         /// Converts the JSON raw back.
@@ -1102,9 +1104,7 @@ namespace Trivial.Text
         /// <param name="json">The JSON value.</param>
         /// <returns>A number.</returns>
         public static explicit operator double(JsonIntegerNode json)
-        {
-            return json.Value;
-        }
+            => json.Value;
 
         /// <summary>
         /// Converts the JSON raw back.
@@ -1112,9 +1112,7 @@ namespace Trivial.Text
         /// <param name="json">The JSON value.</param>
         /// <returns>A number.</returns>
         public static explicit operator System.Numerics.BigInteger(JsonIntegerNode json)
-        {
-            return json.Value;
-        }
+            => json.Value;
 
         /// <summary>
         /// Converts the JSON raw back.
@@ -1122,9 +1120,7 @@ namespace Trivial.Text
         /// <param name="json">The JSON value.</param>
         /// <returns>A string.</returns>
         public static explicit operator string(JsonIntegerNode json)
-        {
-            return json.ToString();
-        }
+            => json.ToString();
 
         /// <summary>
         /// Converts to a JSON string.
@@ -1132,9 +1128,7 @@ namespace Trivial.Text
         /// <param name="json">The JSON value.</param>
         /// <returns>A JSON string instance.</returns>
         public static explicit operator JsonStringNode(JsonIntegerNode json)
-        {
-            return new JsonStringNode(json.ToString());
-        }
+            => new JsonStringNode(json.ToString());
 
         /// <summary>
         /// Converts to a JSON double object.
@@ -1142,9 +1136,7 @@ namespace Trivial.Text
         /// <param name="json">The JSON value.</param>
         /// <returns>A JSON double instance.</returns>
         public static explicit operator JsonDoubleNode(JsonIntegerNode json)
-        {
-            return new JsonDoubleNode(json.Value);
-        }
+            => new JsonDoubleNode(json.Value);
 
         /// <summary>
         /// Converts to JSON node.
@@ -1152,9 +1144,7 @@ namespace Trivial.Text
         /// <param name="json">The JSON value.</param>
         /// <returns>An instance of the JsonNode class.</returns>
         public static explicit operator System.Text.Json.Nodes.JsonNode(JsonIntegerNode json)
-        {
-            return System.Text.Json.Nodes.JsonValue.Create(json.Value);
-        }
+            => System.Text.Json.Nodes.JsonValue.Create(json.Value);
 
         /// <summary>
         /// Converts to JSON node.
@@ -1162,9 +1152,7 @@ namespace Trivial.Text
         /// <param name="json">The JSON value.</param>
         /// <returns>An instance of the JsonNode class.</returns>
         public static explicit operator System.Text.Json.Nodes.JsonValue(JsonIntegerNode json)
-        {
-            return System.Text.Json.Nodes.JsonValue.Create(json.Value);
-        }
+            => System.Text.Json.Nodes.JsonValue.Create(json.Value);
 
         /// <summary>
         /// Compares two instances to indicate if they are same.
@@ -2641,9 +2629,7 @@ namespace Trivial.Text
         /// <param name="value">The source value.</param>
         /// <returns>A JSON value.</returns>
         public static implicit operator JsonDoubleNode(float value)
-        {
-            return new JsonDoubleNode(value);
-        }
+            => new(value);
 
         /// <summary>
         /// Converts to JSON value.
@@ -2651,9 +2637,7 @@ namespace Trivial.Text
         /// <param name="value">The source value.</param>
         /// <returns>A JSON value.</returns>
         public static implicit operator JsonDoubleNode(double value)
-        {
-            return new JsonDoubleNode(value);
-        }
+            => new(value);
 
         /// <summary>
         /// Converts to JSON value.
@@ -2702,9 +2686,7 @@ namespace Trivial.Text
         /// <param name="json">The JSON value.</param>
         /// <returns>A number.</returns>
         public static explicit operator double(JsonDoubleNode json)
-        {
-            return json.Value;
-        }
+            => json.Value;
 
         /// <summary>
         /// Converts the JSON raw back.
@@ -2712,9 +2694,23 @@ namespace Trivial.Text
         /// <param name="json">The JSON value.</param>
         /// <returns>A number.</returns>
         public static explicit operator float(JsonDoubleNode json)
-        {
-            return (float)json.Value;
-        }
+            => (float)json.Value;
+
+        /// <summary>
+        /// Converts the JSON raw back.
+        /// </summary>
+        /// <param name="json">The JSON value.</param>
+        /// <returns>A number.</returns>
+        public static explicit operator ushort(JsonDoubleNode json)
+            => (ushort)json.Value;
+
+        /// <summary>
+        /// Converts the JSON raw back.
+        /// </summary>
+        /// <param name="json">The JSON value.</param>
+        /// <returns>A number.</returns>
+        public static explicit operator short(JsonDoubleNode json)
+            => (short)json.Value;
 
         /// <summary>
         /// Converts the JSON raw back.
@@ -2722,9 +2718,7 @@ namespace Trivial.Text
         /// <param name="json">The JSON value.</param>
         /// <returns>A number.</returns>
         public static explicit operator uint(JsonDoubleNode json)
-        {
-            return (uint)json.Value;
-        }
+            => (uint)json.Value;
 
         /// <summary>
         /// Converts the JSON raw back.
@@ -2732,9 +2726,7 @@ namespace Trivial.Text
         /// <param name="json">The JSON value.</param>
         /// <returns>A number.</returns>
         public static explicit operator int(JsonDoubleNode json)
-        {
-            return (int)json.Value;
-        }
+            => (int)json.Value;
 
         /// <summary>
         /// Converts the JSON raw back.
@@ -2742,9 +2734,7 @@ namespace Trivial.Text
         /// <param name="json">The JSON value.</param>
         /// <returns>A number.</returns>
         public static explicit operator ulong(JsonDoubleNode json)
-        {
-            return (ulong)json.Value;
-        }
+            => (ulong)json.Value;
 
         /// <summary>
         /// Converts the JSON raw back.
@@ -2752,9 +2742,7 @@ namespace Trivial.Text
         /// <param name="json">The JSON value.</param>
         /// <returns>A number.</returns>
         public static explicit operator long(JsonDoubleNode json)
-        {
-            return (long)json.Value;
-        }
+            => (long)json.Value;
 
         /// <summary>
         /// Converts the JSON raw back.
@@ -2762,9 +2750,7 @@ namespace Trivial.Text
         /// <param name="json">The JSON value.</param>
         /// <returns>A string.</returns>
         public static explicit operator string(JsonDoubleNode json)
-        {
-            return json.ToString();
-        }
+            => json.ToString();
 
         /// <summary>
         /// Converts to a JSON string.
@@ -2772,9 +2758,7 @@ namespace Trivial.Text
         /// <param name="json">The JSON value.</param>
         /// <returns>A JSON string instance.</returns>
         public static explicit operator JsonStringNode(JsonDoubleNode json)
-        {
-            return new JsonStringNode(json.ToString());
-        }
+            => new(json.ToString());
 
         /// <summary>
         /// Converts to a JSON integer object.
@@ -2782,9 +2766,7 @@ namespace Trivial.Text
         /// <param name="json">The JSON value.</param>
         /// <returns>A JSON integer instance.</returns>
         public static explicit operator JsonIntegerNode(JsonDoubleNode json)
-        {
-            return new JsonIntegerNode((long)json.Value);
-        }
+            => new((long)json.Value);
 
         /// <summary>
         /// Converts to JSON node.
@@ -2792,9 +2774,7 @@ namespace Trivial.Text
         /// <param name="json">The JSON value.</param>
         /// <returns>An instance of the JsonNode class.</returns>
         public static explicit operator System.Text.Json.Nodes.JsonNode(JsonDoubleNode json)
-        {
-            return System.Text.Json.Nodes.JsonValue.Create(json.Value);
-        }
+            => System.Text.Json.Nodes.JsonValue.Create(json.Value);
 
         /// <summary>
         /// Converts to JSON node.
@@ -2802,9 +2782,7 @@ namespace Trivial.Text
         /// <param name="json">The JSON value.</param>
         /// <returns>An instance of the JsonNode class.</returns>
         public static explicit operator System.Text.Json.Nodes.JsonValue(JsonDoubleNode json)
-        {
-            return System.Text.Json.Nodes.JsonValue.Create(json.Value);
-        }
+            => System.Text.Json.Nodes.JsonValue.Create(json.Value);
 
         /// <summary>
         /// Compares two instances to indicate if they are same.

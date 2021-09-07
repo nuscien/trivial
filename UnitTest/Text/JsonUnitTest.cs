@@ -352,6 +352,9 @@ namespace Trivial.Text
             var jObj = new JsonObjectNode();
             jObj.SetValue("hijk", jArr);
             jObj.SetValue("lmn", "opq");
+            jObj.SetValue("rst", "56789K");
+            Assert.AreEqual(56789000, jObj.TryGetInt32Value("rst"));
+            Assert.AreEqual(56789000, jObj["rst"].GetInt64());
             jObj.SetValue("rst", 56789);
             jObj.SetValue("uvw", false);
             jObj.SetNullValue("x");

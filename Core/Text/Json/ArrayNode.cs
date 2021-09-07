@@ -13,6 +13,7 @@ using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 
+using Trivial.Maths;
 using Trivial.Reflection;
 
 namespace Trivial.Text
@@ -1155,12 +1156,39 @@ namespace Trivial.Text
         /// </summary>
         /// <param name="index">The zero-based index of the element to get.</param>
         /// <returns>The value; or null if fail to resolve.</returns>
+        public ushort? TryGetUInt16Value(int index)
+        {
+            if (TryGetJsonValue<JsonIntegerNode>(index, out var p1)) return (ushort)p1;
+            if (TryGetJsonValue<JsonDoubleNode>(index, out var p2)) return (ushort)p2;
+            var str = TryGetStringValue(index);
+            if (string.IsNullOrWhiteSpace(str) || !Numbers.TryParseToUInt16(str, 10, out var p3)) return null;
+            return p3;
+        }
+
+        /// <summary>
+        /// Tries to get the value at the specific index.
+        /// </summary>
+        /// <param name="index">The zero-based index of the element to get.</param>
+        /// <param name="result">The result.</param>
+        /// <returns>true if has the index and the type is the one expected; otherwise, false.</returns>
+        public bool TryGetUInt16Value(int index, out ushort result)
+        {
+            var v = TryGetUInt16Value(index);
+            result = v ?? default;
+            return v.HasValue;
+        }
+
+        /// <summary>
+        /// Tries to get the value at the specific index.
+        /// </summary>
+        /// <param name="index">The zero-based index of the element to get.</param>
+        /// <returns>The value; or null if fail to resolve.</returns>
         public uint? TryGetUInt32Value(int index)
         {
             if (TryGetJsonValue<JsonIntegerNode>(index, out var p1)) return (uint)p1;
             if (TryGetJsonValue<JsonDoubleNode>(index, out var p2)) return (uint)p2;
             var str = TryGetStringValue(index);
-            if (string.IsNullOrWhiteSpace(str) || !uint.TryParse(str, out var p3)) return null;
+            if (string.IsNullOrWhiteSpace(str) || !Numbers.TryParseToUInt32(str, 10, out var p3)) return null;
             return p3;
         }
 
@@ -1182,12 +1210,39 @@ namespace Trivial.Text
         /// </summary>
         /// <param name="index">The zero-based index of the element to get.</param>
         /// <returns>The value; or null if fail to resolve.</returns>
+        public short? TryGetInt16Value(int index)
+        {
+            if (TryGetJsonValue<JsonIntegerNode>(index, out var p1)) return (short)p1;
+            if (TryGetJsonValue<JsonDoubleNode>(index, out var p2)) return (short)p2;
+            var str = TryGetStringValue(index);
+            if (string.IsNullOrWhiteSpace(str) || !Numbers.TryParseToInt16(str, 10, out var p3)) return null;
+            return p3;
+        }
+
+        /// <summary>
+        /// Tries to get the value at the specific index.
+        /// </summary>
+        /// <param name="index">The zero-based index of the element to get.</param>
+        /// <param name="result">The result.</param>
+        /// <returns>true if has the index and the type is the one expected; otherwise, false.</returns>
+        public bool TryGetInt16Value(int index, out short result)
+        {
+            var v = TryGetInt16Value(index);
+            result = v ?? default;
+            return v.HasValue;
+        }
+
+        /// <summary>
+        /// Tries to get the value at the specific index.
+        /// </summary>
+        /// <param name="index">The zero-based index of the element to get.</param>
+        /// <returns>The value; or null if fail to resolve.</returns>
         public int? TryGetInt32Value(int index)
         {
             if (TryGetJsonValue<JsonIntegerNode>(index, out var p1)) return (int)p1;
             if (TryGetJsonValue<JsonDoubleNode>(index, out var p2)) return (int)p2;
             var str = TryGetStringValue(index);
-            if (string.IsNullOrWhiteSpace(str) || !int.TryParse(str, out var p3)) return null;
+            if (string.IsNullOrWhiteSpace(str) || !Numbers.TryParseToInt32(str, 10, out var p3)) return null;
             return p3;
         }
 
@@ -1214,7 +1269,7 @@ namespace Trivial.Text
             if (TryGetJsonValue<JsonIntegerNode>(index, out var p1)) return p1.Value;
             if (TryGetJsonValue<JsonDoubleNode>(index, out var p2)) return (long)p2;
             var str = TryGetStringValue(index);
-            if (string.IsNullOrWhiteSpace(str) || !long.TryParse(str, out var p3)) return null;
+            if (string.IsNullOrWhiteSpace(str) || !Numbers.TryParseToInt64(str, 10, out var p3)) return null;
             return p3;
         }
 

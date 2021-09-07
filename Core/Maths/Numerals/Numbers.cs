@@ -424,12 +424,6 @@ namespace Trivial.Maths
             }
 
             s = s.Trim().ToLowerInvariant();
-            if (radix < 2 || radix > 36 || string.IsNullOrEmpty(s))
-            {
-                result = default;
-                return false;
-            }
-
             if (radix == 10)
             {
                 if (int.TryParse(s, out result)) return true;
@@ -439,6 +433,12 @@ namespace Trivial.Maths
                     result = i.Value;
                     return true;
                 }
+            }
+
+            if (radix < 2 || radix > 36 || string.IsNullOrEmpty(s))
+            {
+                result = default;
+                return false;
             }
 
             var num = 0;
@@ -512,12 +512,6 @@ namespace Trivial.Maths
             }
 
             s = s.Trim().ToLowerInvariant();
-            if (radix < 2 || radix > 36 || string.IsNullOrEmpty(s))
-            {
-                result = default;
-                return false;
-            }
-
             if (radix == 10)
             {
                 if (long.TryParse(s, out result)) return true;
@@ -527,6 +521,12 @@ namespace Trivial.Maths
                     result = i.Value;
                     return true;
                 }
+            }
+
+            if (radix < 2 || radix > 36 || string.IsNullOrEmpty(s))
+            {
+                result = default;
+                return false;
             }
 
             var num = 0L;
@@ -582,6 +582,44 @@ namespace Trivial.Maths
 
             result = neg ? -num : num;
             return true;
+        }
+
+        /// <summary>
+        /// Tries to parse a string to a number.
+        /// </summary>
+        /// <param name="s">The input string.</param>
+        /// <param name="radix">The positional notation. Should be an integer in 2-36.</param>
+        /// <param name="result">The result.</param>
+        /// <returns>true if parse succeeded; otherwise, false.</returns>
+        public static bool TryParseToUInt16(string s, int radix, out ushort result)
+        {
+            if (TryParseToInt32(s, radix, out var i) && i >= 0 && i <= ushort.MaxValue)
+            {
+                result = (ushort)i;
+                return true;
+            }
+
+            result = default;
+            return false;
+        }
+
+        /// <summary>
+        /// Tries to parse a string to a number.
+        /// </summary>
+        /// <param name="s">The input string.</param>
+        /// <param name="radix">The positional notation. Should be an integer in 2-36.</param>
+        /// <param name="result">The result.</param>
+        /// <returns>true if parse succeeded; otherwise, false.</returns>
+        public static bool TryParseToUInt32(string s, int radix, out uint result)
+        {
+            if (TryParseToInt64(s, radix, out var i) && i >= 0 && i <= uint.MaxValue)
+            {
+                result = (uint)i;
+                return true;
+            }
+
+            result = default;
+            return false;
         }
 
         /// <summary>
