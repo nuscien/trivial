@@ -42,9 +42,9 @@ namespace Trivial.Net
             // JSON HTTP web client.
             url = "https://github.com/compositejs/datasense/raw/main/package.json";
             var webClient = new JsonHttpClient<NameAndDescription>();
-            var resp = await webClient.SendAsync(HttpMethod.Get, url);
+            var resp = await webClient.SendAsync(HttpMethod.Get, url, cancellationToken);
             Console.WriteLine(resp.Name);
-            resp = await webClient.SendAsync(HttpMethod.Get, url);
+            resp = await webClient.SendAsync(HttpMethod.Get, url, cancellationToken);
             Console.WriteLine(resp.Name);
 
             //"{ \"access_token\": \"abc\", \"token_type\": \"Bearer\" }"

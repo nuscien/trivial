@@ -386,10 +386,7 @@ namespace Trivial.IO
             }
             finally
             {
-                if (onReadToEnd is not null)
-                {
-                    onReadToEnd(isSucc);
-                }
+                onReadToEnd?.Invoke(isSucc);
             }
         }
 
@@ -643,6 +640,19 @@ namespace Trivial.IO
         /// <exception cref="NotSupportedException">The stream does not support reading.</exception>
         /// <exception cref="ObjectDisposedException">The stream has disposed.</exception>
         public static IEnumerable<char> ReadChars(IEnumerable<Stream> streams, Encoding encoding = null, bool closeStream = false)
+            => ReadChars(streams, null, encoding, closeStream);
+
+        /// <summary>
+        /// Reads characters from the streams and advances the position within each stream to the end.
+        /// </summary>
+        /// <param name="streams">The stream collection to read.</param>
+        /// <param name="onStreamReadToEnd">A callback occurred on read to end per stream.</param>
+        /// <param name="encoding">The encoding to read text.</param>
+        /// <param name="closeStream">true if need close stream automatically after read; otherwise, false.</param>
+        /// <returns>Bytes from the stream collection.</returns>
+        /// <exception cref="NotSupportedException">The stream does not support reading.</exception>
+        /// <exception cref="ObjectDisposedException">The stream has disposed.</exception>
+        public static IEnumerable<char> ReadChars(IEnumerable<Stream> streams, Action<Stream> onStreamReadToEnd, Encoding encoding = null, bool closeStream = false)
         {
             if (streams == null) yield break;
             var decoder = (encoding ?? Encoding.Default ?? Encoding.UTF8).GetDecoder();
@@ -667,6 +677,7 @@ namespace Trivial.IO
                 }
                 finally
                 {
+                    onStreamReadToEnd?.Invoke(stream);
                     if (closeStream) stream.Close();
                 }
             }

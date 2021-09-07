@@ -139,6 +139,18 @@ namespace Trivial.IO
         /// <exception cref="NotSupportedException">The stream does not support reading.</exception>
         /// <exception cref="ObjectDisposedException">The stream has disposed.</exception>
         public static IEnumerable<byte> ReadBytes(IEnumerable<Stream> streams, bool closeStream = false)
+            => ReadBytes(streams, null, closeStream);
+
+        /// <summary>
+        /// Reads bytes from the streams and advances the position within each stream to the end.
+        /// </summary>
+        /// <param name="streams">The stream collection to read.</param>
+        /// <param name="onStreamReadToEnd">A callback occurred on read to end per stream.</param>
+        /// <param name="closeStream">true if need close stream automatically after read; otherwise, false.</param>
+        /// <returns>Bytes from the stream collection.</returns>
+        /// <exception cref="NotSupportedException">The stream does not support reading.</exception>
+        /// <exception cref="ObjectDisposedException">The stream has disposed.</exception>
+        public static IEnumerable<byte> ReadBytes(IEnumerable<Stream> streams, Action<Stream> onStreamReadToEnd, bool closeStream = false)
         {
             if (streams == null) yield break;
             foreach (var stream in streams)
@@ -155,6 +167,7 @@ namespace Trivial.IO
                 }
                 finally
                 {
+                    onStreamReadToEnd?.Invoke(stream);
                     if (closeStream) stream.Close();
                 }
             }

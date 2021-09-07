@@ -12,7 +12,7 @@ namespace Trivial.Reflection
     /// </summary>
     public class Initialization
     {
-        private SemaphoreSlim semaphoreSlim = new SemaphoreSlim(1, 1);
+        private SemaphoreSlim semaphoreSlim = new(1, 1);
         private readonly Func<Task> init;
 
         /// <summary>
