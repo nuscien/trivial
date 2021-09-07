@@ -269,9 +269,7 @@ namespace Trivial.Web
         /// <param name="value">The value.</param>
         /// <returns>The action result.</returns>
         public static ActionResult ToActionResult(this ChangeMethods value)
-        {
-            return ToActionResult(new ChangingResultInfo(value));
-        }
+            => ToActionResult(new ChangingResultInfo(value));
 
         /// <summary>
         /// Convert to an action result.
@@ -280,9 +278,7 @@ namespace Trivial.Web
         /// <param name="message">The error message.</param>
         /// <returns>The action result.</returns>
         public static ActionResult ToActionResult(this ChangeErrorKinds value, string message)
-        {
-            return ToActionResult(new ChangingResultInfo(value, message));
-        }
+            => ToActionResult(new ChangingResultInfo(value, message));
 
         /// <summary>
         /// Convert to an action result.
@@ -290,14 +286,12 @@ namespace Trivial.Web
         /// <param name="value">The value.</param>
         /// <returns>The action result.</returns>
         public static ContentResult ToActionResult(this JsonObjectNode value)
-        {
-            return new ContentResult
+            => new()
             {
                 ContentType = WebFormat.JsonMIME,
                 StatusCode = 200,
                 Content = value.ToString()
             };
-        }
 
         /// <summary>
         /// Convert to an action result.
@@ -305,14 +299,12 @@ namespace Trivial.Web
         /// <param name="value">The value.</param>
         /// <returns>The action result.</returns>
         public static ContentResult ToActionResult(this JsonArrayNode value)
-        {
-            return new ContentResult
+            => new()
             {
                 ContentType = WebFormat.JsonMIME,
                 StatusCode = 200,
                 Content = value.ToString()
             };
-        }
 
         /// <summary>
         /// Converts an exception to action result with exception message.
@@ -480,14 +472,12 @@ namespace Trivial.Web
         /// <param name="json">The JSON format string.</param>
         /// <returns>The content result converted.</returns>
         public static ContentResult JsonStringResult(string json)
-        {
-            return new ContentResult
+            => new()
             {
                 StatusCode = 200,
                 ContentType = WebFormat.JsonMIME,
                 Content = json
             };
-        }
 
         /// <summary>
         /// Creates a file result.
@@ -533,10 +523,12 @@ namespace Trivial.Web
         public static FileStreamResult FileResult(Stream source, string downloadName, EntityTagHeaderValue entityTag, DateTimeOffset? lastModified = null, string mime = null)
         {
             if (source == null) return null;
-            if (mime == null)
+            if (string.IsNullOrEmpty(mime) && downloadName?.Contains('.') == true)
             {
-                var ext = downloadName?.Trim()?.Split('.')?.LastOrDefault();
-                if (!string.IsNullOrEmpty(ext))
+                var ext = downloadName.Trim().Split('.').LastOrDefault();
+                if (string.IsNullOrEmpty(ext))
+                    mime = WebFormat.StreamMIME;
+                else
                     mime = GetByFileExtension("." + ext, WebFormat.StreamMIME);
             }
 
@@ -587,7 +579,7 @@ namespace Trivial.Web
             var file = IO.FileSystemInfoUtility.TryGetFileInfo(assembly.Location);
             var lastModified = file?.LastWriteTime;
             if (string.IsNullOrWhiteSpace(downloadName))
-                downloadName = subPath.Split('\\').LastOrDefault();
+                downloadName = subPath.Split(new[] { '\\', '/' }).LastOrDefault();
             return FileResult(stream, downloadName, entityTag, lastModified, mime);
         }
 

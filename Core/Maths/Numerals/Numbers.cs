@@ -206,9 +206,7 @@ namespace Trivial.Maths
         /// <returns>A string of the number in the specific positional notation.</returns>
         /// <exception cref="ArgumentOutOfRangeException">radix was less than 2 or greater than 36.</exception>
         public static string ToPositionalNotationString(short value, int radix)
-        {
-            return ToPositionalNotationString((long)value, radix);
-        }
+            => ToPositionalNotationString((long)value, radix);
 
         /// <summary>
         /// Converts a number to a specific positional notation format string.
@@ -218,9 +216,7 @@ namespace Trivial.Maths
         /// <returns>A string of the number in the specific positional notation.</returns>
         /// <exception cref="ArgumentOutOfRangeException">radix was less than 2 or greater than 36.</exception>
         public static string ToPositionalNotationString(int value, int radix)
-        {
-            return ToPositionalNotationString((long)value, radix);
-        }
+            => ToPositionalNotationString((long)value, radix);
 
         /// <summary>
         /// Converts a number to a specific positional notation format string.
@@ -230,9 +226,7 @@ namespace Trivial.Maths
         /// <returns>A string of the number in the specific positional notation.</returns>
         /// <exception cref="ArgumentOutOfRangeException">radix was less than 2 or greater than 36.</exception>
         public static string ToPositionalNotationString(uint value, int radix)
-        {
-            return ToPositionalNotationString((long)value, radix);
-        }
+            => ToPositionalNotationString((long)value, radix);
 
         /// <summary>
         /// Converts a number to a specific positional notation format string.
@@ -265,9 +259,7 @@ namespace Trivial.Maths
         /// <returns>A string of the number in the specific positional notation.</returns>
         /// <exception cref="ArgumentOutOfRangeException">radix was less than 2 or greater than 36.</exception>
         public static string ToPositionalNotationString(float value, int radix)
-        {
-            return ToPositionalNotationString((double)value, radix);
-        }
+            => ToPositionalNotationString((double)value, radix);
 
         /// <summary>
         /// Converts a number to a specific positional notation format string.
@@ -649,8 +641,7 @@ namespace Trivial.Maths
         /// <param name="c">A character</param>
         /// <returns>An integer parsed.</returns>
         public static int? TryParseToInt32(char c)
-        {
-            return c switch
+            => c switch
             {
                 '0' => 0,
                 '1' => 1,
@@ -699,7 +690,6 @@ namespace Trivial.Maths
                 'G' => 1000000000,
                 _ => null
             };
-        }
 
         /// <summary>
         /// Gets the string of a specific number.
@@ -709,10 +699,7 @@ namespace Trivial.Maths
         /// <param name="digitOnly">true if return the digit one by one directly; otherwise, false.</param>
         /// <returns>A string for the number.</returns>
         public static string ToString(this IIntegerLocalization numbers, int number, bool digitOnly = false)
-        {
-            if (numbers == null) return number.ToString();
-            return numbers.ToString((long)number, digitOnly);
-        }
+            => numbers == null ? number.ToString() : numbers.ToString(number, digitOnly);
 
         /// <summary>
         /// Gets the string of a specific number.
@@ -722,10 +709,7 @@ namespace Trivial.Maths
         /// <param name="digitOnly">true if return the digit one by one directly; otherwise, false.</param>
         /// <returns>A string for the number.</returns>
         public static string ToString(this IIntegerLocalization numbers, uint number, bool digitOnly = false)
-        {
-            if (numbers == null) return number.ToString();
-            return numbers.ToString((ulong)number, digitOnly);
-        }
+            => numbers == null ? number.ToString() : numbers.ToString((ulong)number, digitOnly);
 
         /// <summary>
         /// Gets the exponent string.
@@ -733,8 +717,7 @@ namespace Trivial.Maths
         /// <param name="value">The exponent number.</param>
         /// <returns>A string about the exponent.</returns>
         internal static string ToExponentString(int value)
-        {
-            return value
+            => value
                 .ToString(CultureInfo.InvariantCulture)
                 .Replace("1", "¹")
                 .Replace("2", "²")
@@ -746,7 +729,6 @@ namespace Trivial.Maths
                 .Replace("8", "⁸")
                 .Replace("9", "⁹")
                 .Replace("0", "⁰");
-        }
 
         internal static (long, string, int) SplitNumber(double value)
         {
@@ -857,8 +839,7 @@ namespace Trivial.Maths
         }
 
         private static int? TryParseNumericWordInternal(string word)
-        {
-            return word.ToLowerInvariant() switch
+            => word.ToLowerInvariant() switch
             {
                 "zero" or "nought" or "nill" or "れい" or "zéro" or "nul" => 0,
                 "one" or "first" or "いち" or "하나" or "un" or "une" or "unu" => 1,
@@ -911,7 +892,6 @@ namespace Trivial.Maths
                 "a million" or "one million" or "million" or "mega" or "1 mega" or "一百万" or "壹佰萬" or "壹佰万" or "１００００００" or "1e6" => 1000000,
                 _ => null
             };
-        }
 #pragma warning restore IDE0056, IDE0057
     }
 }
