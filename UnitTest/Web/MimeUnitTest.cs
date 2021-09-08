@@ -49,6 +49,7 @@ namespace Trivial.Web
             MimeConstants.FileExtensionMapping.Clear();
             Assert.AreEqual(0, MimeConstants.FileExtensionMapping.Values.Count);
             Assert.AreEqual(MimeConstants.Packages.DownloadToRun, MimeConstants.GetByFileExtension(".pdb"));
+            Assert.AreEqual(MimeConstants.StreamMIME, MimeConstants.GetByFileExtension(".inf"));
 
 #if NETFRAMEWORK
             if (!MimeConstants.Registry.RegisterFileExtensionMapping(".wma")) return;

@@ -156,7 +156,7 @@ namespace Trivial.Web
         public static int? TryGetInt32Value(this IQueryCollection request, string key)
         {
             var s = request[key].Select(ele => ele?.Trim()).FirstOrDefault(ele => !string.IsNullOrEmpty(ele));
-            if (int.TryParse(s, out var r)) return r;
+            if (Maths.Numbers.TryParseToInt32(s, 10, out var r)) return r;
             return null;
         }
 
@@ -484,8 +484,8 @@ namespace Trivial.Web
         /// </summary>
         /// <param name="source">The source.</param>
         /// <param name="entityTag">The entity tag associated with the file.</param>
-        /// <param name="mime">The optional MIME content type.</param>
-        /// <returns>A file result.</returns>
+        /// <param name="mime">The optional MIME content type; or null, if detects automatically.</param>
+        /// <returns>A file result; or null, if non-exists.</returns>
         public static FileStreamResult FileResult(FileInfo source, EntityTagHeaderValue entityTag = null, string mime = null)
         {
             if (source == null || !source.Exists) return null;
@@ -506,8 +506,8 @@ namespace Trivial.Web
         /// <param name="source">The source.</param>
         /// <param name="downloadName">The file name used for downloading.</param>
         /// <param name="lastModified">The last modified information associated with the file.</param>
-        /// <param name="mime">The optional MIME content type.</param>
-        /// <returns>A file result.</returns>
+        /// <param name="mime">The optional MIME content type; or null, if detects automatically.</param>
+        /// <returns>A file result; or null, if non-exists.</returns>
         public static FileStreamResult FileResult(Stream source, string downloadName, DateTimeOffset? lastModified = null, string mime = null)
             => FileResult(source, downloadName, null, lastModified, mime);
 
@@ -518,8 +518,8 @@ namespace Trivial.Web
         /// <param name="downloadName">The file name used for downloading.</param>
         /// <param name="entityTag">The entity tag associated with the file.</param>
         /// <param name="lastModified">The last modified information associated with the file.</param>
-        /// <param name="mime">The optional MIME content type.</param>
-        /// <returns>A file result.</returns>
+        /// <param name="mime">The optional MIME content type; or null, if detects automatically.</param>
+        /// <returns>A file result; or null, if stream source is null.</returns>
         public static FileStreamResult FileResult(Stream source, string downloadName, EntityTagHeaderValue entityTag, DateTimeOffset? lastModified = null, string mime = null)
         {
             if (source == null) return null;
@@ -550,8 +550,8 @@ namespace Trivial.Web
         /// <param name="enableRangeProcessing">true if enables range requests processing; otherwise, false.</param>
         /// <param name="entityTag">The entity tag associated with the file.</param>
         /// <param name="lastModified">The last modified information associated with the file.</param>
-        /// <param name="mime">The optional MIME content type.</param>
-        /// <returns>A file result.</returns>
+        /// <param name="mime">The optional MIME content type; or null, if detects automatically.</param>
+        /// <returns>A file result; or null, if stream source is null.</returns>
         public static FileStreamResult FileResult(Stream source, string downloadName, EntityTagHeaderValue entityTag, bool enableRangeProcessing, DateTimeOffset? lastModified = null, string mime = null)
         {
             var result = FileResult(source, downloadName, entityTag, lastModified, mime);
@@ -567,8 +567,8 @@ namespace Trivial.Web
         /// <param name="subPath">The sub path of the embedded file.</param>
         /// <param name="downloadName">The file name used for downloading.</param>
         /// <param name="entityTag">The entity tag associated with the file.</param>
-        /// <param name="mime">The optional MIME content type.</param>
-        /// <returns>A file result.</returns>
+        /// <param name="mime">The optional MIME content type; or null, if detects automatically.</param>
+        /// <returns>A file result; or null, if non-exists.</returns>
         public static FileStreamResult FileResult(Assembly assembly, string subPath, string downloadName, EntityTagHeaderValue entityTag, string mime = null)
         {
             if (string.IsNullOrWhiteSpace(subPath)) return null;
@@ -589,8 +589,8 @@ namespace Trivial.Web
         /// <param name="assembly">The assembly with the embedded file.</param>
         /// <param name="subPath">The sub path of the embedded file.</param>
         /// <param name="entityTag">The entity tag associated with the file.</param>
-        /// <param name="mime">The optional MIME content type.</param>
-        /// <returns>A file result.</returns>
+        /// <param name="mime">The optional MIME content type; or null, if detects automatically.</param>
+        /// <returns>A file result; or null, if non-exists.</returns>
         public static FileStreamResult FileResult(Assembly assembly, string subPath, EntityTagHeaderValue entityTag, string mime = null)
             => FileResult(assembly, subPath, null, entityTag, mime);
 

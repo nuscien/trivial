@@ -233,7 +233,7 @@ namespace Trivial.Collection
         public int? TryGetInt32Value(string key)
         {
             var v = GetFirstValue(key, true);
-            if (v != null && int.TryParse(v, out var result)) return result;
+            if (v != null && Maths.Numbers.TryParseToInt32(v, 10, out var result)) return result;
             return null;
         }
 
@@ -245,7 +245,7 @@ namespace Trivial.Collection
         public long? TryGetInt64Value(string key)
         {
             var v = GetFirstValue(key, true);
-            if (v != null && long.TryParse(v, out var result)) return result;
+            if (v != null && Maths.Numbers.TryParseToInt64(v, 10, out var result)) return result;
             return null;
         }
 

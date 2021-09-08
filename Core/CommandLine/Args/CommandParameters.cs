@@ -150,9 +150,7 @@ namespace Trivial.CommandLine
         /// <param name="index">The index of the word.</param>
         /// <returns>A word in the value; or null; if not found.</returns>
         public string TryGet(int index)
-        {
-            return TryGet(index, out var r) ? r : null;
-        }
+            => TryGet(index, out var r) ? r : null;
 
         /// <summary>
         /// Converts the value to its boolean equivalent.
@@ -172,9 +170,7 @@ namespace Trivial.CommandLine
         /// <param name="result">The result value converted when this method returns.</param>
         /// <returns>true if the value was converted successfully; otherwise, false.</returns>
         public bool TryParse(out int result)
-        {
-            return int.TryParse(Value, out result);
-        }
+            => Maths.Numbers.TryParseToInt32(Value, 10, out result);
 
         /// <summary>
         /// Converts the value to its 64-bit signed integer equivalent.
@@ -182,9 +178,7 @@ namespace Trivial.CommandLine
         /// <param name="result">The result value converted when this method returns.</param>
         /// <returns>true if the value was converted successfully; otherwise, false.</returns>
         public bool TryParse(out long result)
-        {
-            return long.TryParse(Value, out result);
-        }
+            => Maths.Numbers.TryParseToInt64(Value, 10, out result);
 
         /// <summary>
         /// Converts the value to its single-precision floating-point number equivalent.
@@ -192,9 +186,7 @@ namespace Trivial.CommandLine
         /// <param name="result">The result value converted when this method returns.</param>
         /// <returns>true if the value was converted successfully; otherwise, false.</returns>
         public bool TryParse(out float result)
-        {
-            return float.TryParse(Value, out result);
-        }
+            => float.TryParse(Value, out result);
 
         /// <summary>
         /// Converts the value to its double-precision floating-point number equivalent.
@@ -202,9 +194,7 @@ namespace Trivial.CommandLine
         /// <param name="result">The result value converted when this method returns.</param>
         /// <returns>true if the value was converted successfully; otherwise, false.</returns>
         public bool TryParse(out double result)
-        {
-            return double.TryParse(Value, out result);
-        }
+            => double.TryParse(Value, out result);
 
         /// <summary>
         /// Converts the value to its GUID equivalent.
@@ -212,9 +202,7 @@ namespace Trivial.CommandLine
         /// <param name="result">The result value converted when this method returns.</param>
         /// <returns>true if the value was converted successfully; otherwise, false.</returns>
         public bool TryParse(out Guid result)
-        {
-            return Guid.TryParse(Value, out result);
-        }
+            => Guid.TryParse(Value, out result);
 
         /// <summary>
         /// Converts the value to its date and time equivalent.
@@ -222,9 +210,7 @@ namespace Trivial.CommandLine
         /// <param name="result">The result value converted when this method returns.</param>
         /// <returns>true if the value was converted successfully; otherwise, false.</returns>
         public bool TryParse(out DateTime result)
-        {
-            return DateTime.TryParse(Value, out result);
-        }
+            => DateTime.TryParse(Value, out result);
 
         /// <summary>
         /// Converts the value to its date and time with offset relative to UTC equivalent.
@@ -232,9 +218,7 @@ namespace Trivial.CommandLine
         /// <param name="result">The result value converted when this method returns.</param>
         /// <returns>true if the value was converted successfully; otherwise, false.</returns>
         public bool TryParse(out DateTimeOffset result)
-        {
-            return DateTimeOffset.TryParse(Value, out result);
-        }
+            => DateTimeOffset.TryParse(Value, out result);
 
         /// <summary>
         /// Converts the value to its time span equivalent.
@@ -242,18 +226,14 @@ namespace Trivial.CommandLine
         /// <param name="result">The result value converted when this method returns.</param>
         /// <returns>true if the value was converted successfully; otherwise, false.</returns>
         public bool TryParse(out TimeSpan result)
-        {
-            return TimeSpan.TryParse(Value, out result);
-        }
+            => TimeSpan.TryParse(Value, out result);
 
         /// <summary>
         /// Converts the value to its URI equivalent.
         /// </summary>
         /// <returns>The result value converted.</returns>
         public Uri ParseToUri()
-        {
-            return !string.IsNullOrWhiteSpace(Value) ? new Uri(Value) : null;
-        }
+            => !string.IsNullOrWhiteSpace(Value) ? new Uri(Value) : null;
 
         /// <summary>
         /// Converts the value to its file information object equivalent.
@@ -702,7 +682,7 @@ namespace Trivial.CommandLine
         /// <returns>true if the value was converted successfully; otherwise, false.</returns>
         public bool TryToParse(out int result, CommandParameterModes mode = CommandParameterModes.First)
         {
-            return int.TryParse(Value(mode), out result);
+            return Maths.Numbers.TryParseToInt32(Value(mode), 10, out result);
         }
 
         /// <summary>
@@ -713,7 +693,7 @@ namespace Trivial.CommandLine
         /// <returns>true if the value was converted successfully; otherwise, false.</returns>
         public bool TryToParse(out long result, CommandParameterModes mode = CommandParameterModes.First)
         {
-            return long.TryParse(Value(mode), out result);
+            return Maths.Numbers.TryParseToInt64(Value(mode), 10, out result);
         }
 
         /// <summary>
