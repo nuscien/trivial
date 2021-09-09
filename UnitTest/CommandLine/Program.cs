@@ -10,6 +10,27 @@ namespace Trivial.CommandLine
             Console.WriteLine("Trivial Sample");
             Console.WriteLine();
 
+            //DefaultConsoleInterface.Flush();
+            //var mode = ConsoleInterface.Default.Mode;
+            //ConsoleInterface.Default.Mode = ConsoleInterface.Modes.Ansi;
+            //DefaultConsoleInterface.Write("ANSI " + new ConsoleTextStyle
+            //{
+            //    ForegroundConsoleColor = ConsoleColor.Blue,
+            //    Italic = true
+            //});
+            //DefaultConsoleInterface.ReadPassword('*');
+            //DefaultConsoleInterface.WriteLine();
+            //ConsoleInterface.Default.Mode = ConsoleInterface.Modes.Cmd;
+            //DefaultConsoleInterface.Write(ConsoleColor.Blue, "CMD ");
+            //DefaultConsoleInterface.ReadPassword('*');
+            //DefaultConsoleInterface.WriteLine();
+            //ConsoleInterface.Default.Mode = ConsoleInterface.Modes.Text;
+            //DefaultConsoleInterface.Write(ConsoleColor.Blue, "TEXT ");
+            //DefaultConsoleInterface.ReadPassword('*');
+            //DefaultConsoleInterface.WriteLine();
+            //ConsoleInterface.Default.Mode = mode;
+            //DefaultConsoleInterface.WriteLine(mode.ToString());
+
             var dispatcher = new CommandDispatcher();
             dispatcher.Register<Tasks.InterceptorVerb>("interceptor");
             dispatcher.Register<Reflection.SingletonKeeperVerb>("singleton");

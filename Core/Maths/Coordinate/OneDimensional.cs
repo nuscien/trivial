@@ -41,14 +41,8 @@ namespace Trivial.Maths
         /// </summary>
         public TUnit X
         {
-            get => base.ItemA;
-            set => base.ItemA = value;
-        }
-
-        private new TUnit ItemA
-        {
-            get => base.ItemA;
-            set => base.ItemA = value;
+            get => ItemA;
+            set => ItemA = value;
         }
 
         /// <summary>

@@ -298,7 +298,7 @@ namespace Trivial.Maths
         /// </summary>
         /// <param name="leftValue">The left value.</param>
         /// <param name="rightValue">The right value.</param>
-        /// <returns>A result after addition.</returns>
+        /// <returns>A result after multiply.</returns>
         public static Angle operator *(Angle leftValue, int rightValue)
         {
             return new Angle(leftValue.Degrees * rightValue);
@@ -310,7 +310,7 @@ namespace Trivial.Maths
         /// </summary>
         /// <param name="leftValue">The left value.</param>
         /// <param name="rightValue">The right value.</param>
-        /// <returns>A result after addition.</returns>
+        /// <returns>A result after multiply.</returns>
         public static Angle operator *(Angle leftValue, long rightValue)
         {
             return new Angle(leftValue.Degrees * rightValue);
@@ -322,7 +322,7 @@ namespace Trivial.Maths
         /// </summary>
         /// <param name="leftValue">The left value.</param>
         /// <param name="rightValue">The right value.</param>
-        /// <returns>A result after addition.</returns>
+        /// <returns>A result after multiply.</returns>
         public static Angle operator *(Angle leftValue, double rightValue)
         {
             return new Angle(leftValue.Degrees * rightValue);
@@ -334,7 +334,7 @@ namespace Trivial.Maths
         /// </summary>
         /// <param name="leftValue">The left value.</param>
         /// <param name="rightValue">The right value.</param>
-        /// <returns>A result after addition.</returns>
+        /// <returns>A result after dividing.</returns>
         public static Angle operator /(Angle leftValue, int rightValue)
         {
             return new Angle(leftValue.Degrees / rightValue);
@@ -346,7 +346,7 @@ namespace Trivial.Maths
         /// </summary>
         /// <param name="leftValue">The left value.</param>
         /// <param name="rightValue">The right value.</param>
-        /// <returns>A result after addition.</returns>
+        /// <returns>A result after dividing.</returns>
         public static Angle operator /(Angle leftValue, long rightValue)
         {
             return new Angle(leftValue.Degrees / rightValue);
@@ -358,7 +358,7 @@ namespace Trivial.Maths
         /// </summary>
         /// <param name="leftValue">The left value.</param>
         /// <param name="rightValue">The right value.</param>
-        /// <returns>A result after addition.</returns>
+        /// <returns>A result after dividing.</returns>
         public static Angle operator /(Angle leftValue, double rightValue)
         {
             return new Angle(leftValue.Degrees / rightValue);

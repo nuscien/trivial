@@ -4622,9 +4622,7 @@ namespace Trivial.Text
         /// <param name="json">The JSON value.</param>
         /// <returns>An instance of the JsonNode class.</returns>
         public static explicit operator System.Text.Json.Nodes.JsonNode(JsonObjectNode json)
-        {
-            return (System.Text.Json.Nodes.JsonObject)json;
-        }
+            => (System.Text.Json.Nodes.JsonObject)json;
 
         /// <summary>
         /// Converts from JSON document.

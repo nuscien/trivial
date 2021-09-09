@@ -447,6 +447,26 @@ namespace Trivial.Text
             return sb.ToString();
         }
 
+        internal static StringBuilder Append(StringBuilder sb, StringBuilder value)
+        {
+            if (value != null)
+#if NETFRAMEWORK || NETSTANDARD2_0_OR_GREATER
+                sb.Append(value.ToString());
+#else
+                sb.Append(value);
+#endif
+            return sb;
+        }
+
+        internal static string ToString(char[] value, int start = 0, int? count = null)
+        {
+            if (start == 0 && count == null)
+                return new string(value);
+            var list = value.Skip(start);
+            if (count.HasValue) list = list.Take(count.Value);
+            return new string(list.ToArray());
+        }
+
         internal static string SubRangeString(this string s, int start, int end, bool reverseEnd = false)
         {
 #if NETOLDVER

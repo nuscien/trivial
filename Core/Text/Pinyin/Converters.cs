@@ -180,7 +180,7 @@ namespace Trivial.Text
                 PinyinFinals.Van => forFinalOnly ? ToFinalString('v', tone, caseOptions, "an") : ToFinalString("Y", 'u', tone, caseOptions, "an"),
                 PinyinFinals.Ve => forFinalOnly ? ToFinalString('u', tone, caseOptions, "e") : ToFinalString("Y", 'u', tone, caseOptions, "e"),
                 PinyinFinals.Vn => forFinalOnly ? ToFinalString('u', tone, caseOptions, "n") : ToFinalString("Y", 'u', tone, caseOptions, "n"),
-                _ => (int)final == 6
+                _ => (int)final == 7
                 ? (tone == 0 ? (caseOptions == Cases.Upper || caseOptions == Cases.Capitalize ? CapitalEh : SmallEh) : ToFinalString('e', tone, caseOptions, "i"))
                 : string.Empty
             };

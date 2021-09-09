@@ -401,7 +401,7 @@ namespace Trivial.Maths
             /// </summary>
             /// <param name="leftValue">The left value.</param>
             /// <param name="rightValue">The right value.</param>
-            /// <returns>A result after addition.</returns>
+            /// <returns>A result after multiply.</returns>
             public static Model operator *(Model leftValue, int rightValue)
             {
                 if (leftValue is null) return null;
@@ -414,7 +414,7 @@ namespace Trivial.Maths
             /// </summary>
             /// <param name="leftValue">The left value.</param>
             /// <param name="rightValue">The right value.</param>
-            /// <returns>A result after addition.</returns>
+            /// <returns>A result after multiply.</returns>
             public static Model operator *(Model leftValue, long rightValue)
             {
                 if (leftValue is null) return null;
@@ -427,7 +427,7 @@ namespace Trivial.Maths
             /// </summary>
             /// <param name="leftValue">The left value.</param>
             /// <param name="rightValue">The right value.</param>
-            /// <returns>A result after addition.</returns>
+            /// <returns>A result after multiply.</returns>
             public static Model operator *(Model leftValue, double rightValue)
             {
                 if (leftValue is null) return null;
@@ -440,7 +440,7 @@ namespace Trivial.Maths
             /// </summary>
             /// <param name="leftValue">The left value.</param>
             /// <param name="rightValue">The right value.</param>
-            /// <returns>A result after addition.</returns>
+            /// <returns>A result after dividing.</returns>
             public static Model operator /(Model leftValue, int rightValue)
             {
                 if (leftValue is null) return null;
@@ -453,7 +453,7 @@ namespace Trivial.Maths
             /// </summary>
             /// <param name="leftValue">The left value.</param>
             /// <param name="rightValue">The right value.</param>
-            /// <returns>A result after addition.</returns>
+            /// <returns>A result after dividing.</returns>
             public static Model operator /(Model leftValue, long rightValue)
             {
                 if (leftValue is null) return null;
@@ -466,7 +466,7 @@ namespace Trivial.Maths
             /// </summary>
             /// <param name="leftValue">The left value.</param>
             /// <param name="rightValue">The right value.</param>
-            /// <returns>A result after addition.</returns>
+            /// <returns>A result after dividing.</returns>
             public static Model operator /(Model leftValue, double rightValue)
             {
                 if (leftValue is null) return null;

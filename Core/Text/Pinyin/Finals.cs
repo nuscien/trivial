@@ -19,183 +19,183 @@ namespace Trivial.Text
         /// <summary>
         /// Final A (ㄚ).
         /// </summary>
-        A = 0,
+        A = 1,
 
         /// <summary>
         /// Final O (ㄛ).
         /// </summary>
-        O = 1,
+        O = 2,
 
         /// <summary>
         /// Final E (ㄜ).
         /// </summary>
-        E = 2,
+        E = 3,
 
         /// <summary>
         /// Final I (丨).
         /// </summary>
-        I = 3,
+        I = 4,
 
         /// <summary>
         /// Final U (ㄨ).
         /// </summary>
-        U = 4,
+        U = 5,
 
         /// <summary>
         /// Final V (Yu) (ㄩ).
         /// </summary>
-        V = 5,
+        V = 6,
 
-        // Eh = 6, // Reserved (ㄝ).
+        // Eh = 7, // Reserved (ㄝ).
 
         /// <summary>
         /// Final Er (ㄦ).
         /// </summary>
-        Er = 7,
+        Er = 8,
 
         /// <summary>
         /// Final Ai (ㄞ).
         /// </summary>
-        Ai = 8,
+        Ai = 9,
 
         /// <summary>
         /// Final Ei (ㄟ).
         /// </summary>
-        Ei = 9,
+        Ei = 10,
 
         /// <summary>
         /// Final Ao (ㄠ).
         /// </summary>
-        Ao = 10,
+        Ao = 11,
 
         /// <summary>
         /// Final Ou (ㄡ).
         /// </summary>
-        Ou = 11,
+        Ou = 12,
 
         /// <summary>
         /// Final Ia (丨ㄚ).
         /// </summary>
-        Ia = 12,
+        Ia = 13,
 
         /// <summary>
         /// Final Ie (丨ㄝ).
         /// </summary>
-        Ie = 13,
+        Ie = 14,
 
         /// <summary>
         /// Final Ua (ㄨㄚ).
         /// </summary>
-        Ua = 14,
+        Ua = 15,
 
         /// <summary>
         /// Final Uo (ㄨㄛ).
         /// </summary>
-        Uo = 15,
+        Uo = 16,
 
         /// <summary>
         /// Final Ve (Yue) (ㄩㄝ).
         /// </summary>
-        Ve = 16,
+        Ve = 17,
 
         /// <summary>
         /// Final Iao (丨ㄠ).
         /// </summary>
-        Iao = 17,
+        Iao = 18,
 
         /// <summary>
         /// Final Iou (丨ㄡ).
         /// </summary>
-        Iou = 18,
+        Iou = 19,
 
         /// <summary>
         /// Final Uai (ㄨㄞ).
         /// </summary>
-        Uai = 19,
+        Uai = 20,
 
         /// <summary>
         /// Final Uei (ㄨㄟ).
         /// </summary>
-        Uei = 20,
+        Uei = 21,
 
         /// <summary>
         /// Final An (ㄢ).
         /// </summary>
-        An = 21,
+        An = 22,
 
         /// <summary>
         /// Final Ian (丨ㄢ).
         /// </summary>
-        Ian = 22,
+        Ian = 23,
 
         /// <summary>
         /// Final Uan (ㄨㄢ).
         /// </summary>
-        Uan = 23,
+        Uan = 24,
 
         /// <summary>
         /// Final Van (Yuan) (ㄩㄢ).
         /// </summary>
-        Van = 24,
+        Van = 25,
 
         /// <summary>
         /// Final En (ㄣ).
         /// </summary>
-        En = 25,
+        En = 26,
 
         /// <summary>
         /// Final In (丨ㄣ).
         /// </summary>
-        In = 26,
+        In = 27,
 
         /// <summary>
         /// Final Uen (ㄨㄣ).
         /// </summary>
-        Uen = 27,
+        Uen = 28,
 
         /// <summary>
         /// Final Vn (Yun) (ㄩㄣ).
         /// </summary>
-        Vn = 28,
+        Vn = 29,
 
         /// <summary>
         /// Final Ang (ㄤ).
         /// </summary>
-        Ang = 29,
+        Ang = 30,
 
         /// <summary>
         /// Final Iang (丨ㄤ).
         /// </summary>
-        Iang = 30,
+        Iang = 31,
 
         /// <summary>
         /// Final Uang (ㄨㄤ).
         /// </summary>
-        Uang = 31,
+        Uang = 32,
 
         /// <summary>
         /// Final Eng (ㄥ).
         /// </summary>
-        Eng = 32,
+        Eng = 33,
 
         /// <summary>
         /// Final Ing (丨ㄥ).
         /// </summary>
-        Ing = 33,
+        Ing = 34,
 
         /// <summary>
         /// Final Ueng (ㄨㄥ).
         /// </summary>
-        Ueng = 34,
+        Ueng = 35,
 
         /// <summary>
         /// Final Ong (ㄨㄥ).
         /// </summary>
-        Ong = 35,
+        Ong = 36,
 
         /// <summary>
         /// Final Iong (ㄩㄥ).
         /// </summary>
-        Iong = 36
+        Iong = 37
     }
 }

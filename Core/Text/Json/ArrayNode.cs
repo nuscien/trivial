@@ -4026,9 +4026,7 @@ namespace Trivial.Text
         /// <param name="json">The JSON value.</param>
         /// <returns>An instance of the JsonArrayNode class.</returns>
         public static explicit operator System.Text.Json.Nodes.JsonNode(JsonArrayNode json)
-        {
-            return (System.Text.Json.Nodes.JsonArray)json;
-        }
+            => (System.Text.Json.Nodes.JsonArray)json;
 
         /// <summary>
         /// Converts from JSON document.
@@ -4037,9 +4035,7 @@ namespace Trivial.Text
         /// <returns>An instance of the JsonArrayNode class.</returns>
         /// <exception cref="JsonException">json does not represent a valid JSON array.</exception>
         public static implicit operator JsonArrayNode(JsonDocument json)
-        {
-            return json.RootElement;
-        }
+            => json.RootElement;
 
         /// <summary>
         /// Converts from JSON element.

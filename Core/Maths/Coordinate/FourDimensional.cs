@@ -47,8 +47,8 @@ namespace Trivial.Maths
         /// </summary>
         public TUnit X
         {
-            get => base.ItemA;
-            set => base.ItemA = value;
+            get => ItemA;
+            set => ItemA = value;
         }
 
         /// <summary>
@@ -56,8 +56,8 @@ namespace Trivial.Maths
         /// </summary>
         public TUnit Y
         {
-            get => base.ItemB;
-            set => base.ItemB = value;
+            get => ItemB;
+            set => ItemB = value;
         }
 
         /// <summary>
@@ -65,8 +65,8 @@ namespace Trivial.Maths
         /// </summary>
         public TUnit Z
         {
-            get => base.ItemC;
-            set => base.ItemC = value;
+            get => ItemC;
+            set => ItemC = value;
         }
 
         /// <summary>
@@ -74,32 +74,8 @@ namespace Trivial.Maths
         /// </summary>
         public TUnit T
         {
-            get => base.ItemD;
-            set => base.ItemD = value;
-        }
-
-        private new TUnit ItemA
-        {
-            get => base.ItemA;
-            set => base.ItemA = value;
-        }
-
-        private new TUnit ItemB
-        {
-            get => base.ItemB;
-            set => base.ItemB = value;
-        }
-
-        private new TUnit ItemC
-        {
-            get => base.ItemC;
-            set => base.ItemC = value;
-        }
-
-        private new TUnit ItemD
-        {
-            get => base.ItemD;
-            set => base.ItemD = value;
+            get => ItemD;
+            set => ItemD = value;
         }
  
         /// <summary>
