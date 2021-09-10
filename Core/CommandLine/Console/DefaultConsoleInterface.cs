@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Security;
 using System.Text;
@@ -421,6 +422,26 @@ namespace Trivial.CommandLine
             => ConsoleInterface.Default.Backspace(count, doNotRemoveOutput);
 
         /// <summary>
+        /// Reads the next line of characters from the standard input stream.
+        /// </summary>
+        /// <returns>The next line of characters from the input stream, or null if no more lines are available.</returns>
+        /// <exception cref="IOException">An I/O error occurred.</exception>
+        /// <exception cref="OutOfMemoryException">There is insufficient memory to allocate a buffer for the returned string.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">The number of characters in the next line of characters is greater than max value of 32-bit integer.</exception>
+        public static string ReadLine()
+            => ConsoleInterface.Default.ReadLine();
+
+        /// <summary>
+        /// Obtains the next character or function key pressed by the user. The pressed key is optionally displayed in the console window.
+        /// </summary>
+        /// <param name="intercept">Determines whether to display the pressed key in the console window. true to not display the pressed key; otherwise, false.</param>
+        /// <returns>The next line of characters from the input stream, or null if no more lines are available.</returns>
+        /// <exception cref="IOException">An I/O error occurred.</exception>
+        /// <exception cref="InvalidOperationException">The input stream is redirected from the one other than the console.</exception>
+        public static ConsoleKeyInfo ReadKey(bool intercept = false)
+            => ConsoleInterface.Default.ReadKey(intercept);
+
+        /// <summary>
         /// Obtains the password pressed by the user.
         /// </summary>
         /// <returns>
@@ -433,23 +454,63 @@ namespace Trivial.CommandLine
         /// Obtains the password pressed by the user.
         /// </summary>
         /// <param name="replaceChar">The optional charactor to output to replace the original one, such as *.</param>
-        /// <param name="writeNewLine">true if writes a followed line terminator; otherwise, false.</param>
+        /// <param name="inline">true if do not follow the line terminator after typing the password; otherwise, false.</param>
         /// <returns>
         /// The password.
         /// </returns>
-        public static SecureString ReadPassword(char replaceChar, bool writeNewLine = false)
-            => ConsoleInterface.Default.ReadPassword(null, replaceChar, writeNewLine);
+        public static SecureString ReadPassword(char replaceChar, bool inline = false)
+            => ConsoleInterface.Default.ReadPassword(null, replaceChar, inline);
 
         /// <summary>
         /// Obtains the password pressed by the user.
         /// </summary>
+        /// <param name="foreground">The replace charactor color.</param>
         /// <param name="replaceChar">The optional charactor to output to replace the original one, such as *.</param>
-        /// <param name="foregroundColor">The replace charactor color.</param>
-        /// <param name="writeNewLine">true if writes a followed line terminator; otherwise, false.</param>
+        /// <param name="inline">true if do not follow the line terminator after typing the password; otherwise, false.</param>
         /// <returns>
         /// The password.
         /// </returns>
-        public static SecureString ReadPassword(char? replaceChar, ConsoleColor? foregroundColor, bool writeNewLine = false)
-            => ConsoleInterface.Default.ReadPassword(foregroundColor, replaceChar, writeNewLine);
+        public static SecureString ReadPassword(ConsoleColor? foreground, char? replaceChar, bool inline = false)
+            => ConsoleInterface.Default.ReadPassword(foreground, replaceChar, inline);
+
+        /// <summary>
+        /// Moves cursor by a specific relative position.
+        /// </summary>
+        /// <param name="origin">The relative origin.</param>
+        /// <param name="x">The horizontal translation size.</param>
+        /// <param name="y">The vertical translation size.</param>
+        public static void MoveCursor(ConsoleInterface.Origins origin, int x, int y)
+            => ConsoleInterface.Default.MoveCursor(origin, x, y);
+
+        /// <summary>
+        /// Moves cursor by a specific relative position.
+        /// </summary>
+        /// <param name="x">The horizontal translation size.</param>
+        /// <param name="y">The vertical translation size.</param>
+        public static void MoveCursorBy(int x, int y = 0)
+            => ConsoleInterface.Default.MoveCursorBy(x, y);
+
+        /// <summary>
+        /// Moves cursor at a specific position in viewport.
+        /// </summary>
+        /// <param name="x">Row, the top from the edge of viewport.</param>
+        /// <param name="y">Column, the left from the edge of viewport.</param>
+        public static void MoveCursorAt(int x, int y)
+            => ConsoleInterface.Default.MoveCursorAt(x, y);
+
+        /// <summary>
+        /// Moves cursor at a specific position in buffer.
+        /// </summary>
+        /// <param name="x">Row, the top from the edge of buffer.</param>
+        /// <param name="y">Column, the left from the edge of buffer.</param>
+        public static void MoveCursorTo(int x, int y)
+            => ConsoleInterface.Default.MoveCursorTo(x, y);
+
+        /// <summary>
+        /// Removes the specific area.
+        /// </summary>
+        /// <param name="area">The area to remove.</param>
+        public static void Clear(ConsoleInterface.RelativeAreas area)
+            => ConsoleInterface.Default.Clear(area); 
     }
 }

@@ -16,34 +16,8 @@ namespace Trivial.CommandLine
     /// <summary>
     /// The command line interface.
     /// </summary>
-    public sealed class ConsoleInterface
+    public sealed partial class ConsoleInterface
     {
-        /// <summary>
-        /// The terminal mode.
-        /// </summary>
-        public enum Modes
-        {
-            /// <summary>
-            /// ANSI escape sequences.
-            /// </summary>
-            Ansi = 1,
-
-            /// <summary>
-            /// Command prompt.
-            /// </summary>
-            Cmd = 2,
-
-            /// <summary>
-            /// Plain text.
-            /// </summary>
-            Text = 3
-        }
-
-        /// <summary>
-        /// Gets the singleton of console text content.
-        /// </summary>
-        public static ConsoleInterface Default { get; } = new();
-
         /// <summary>
         /// The lock.
         /// </summary>
@@ -53,6 +27,16 @@ namespace Trivial.CommandLine
         /// The cache.
         /// </summary>
         private readonly List<ConsoleText> col = new();
+
+        /// <summary>
+        /// The additional context.
+        /// </summary>
+        private object context;
+
+        /// <summary>
+        /// The command line handler.
+        /// </summary>
+        private IHandler handlerCache;
 
         /// <summary>
         /// Adds or removes the handler occurred after flushing.
@@ -72,7 +56,24 @@ namespace Trivial.CommandLine
         /// <summary>
         /// Gets or sets the handler to flush cache.
         /// </summary>
-        public Action<IReadOnlyList<ConsoleText>> FlushHandler { get; set; }
+        public IHandler Handler
+        {
+            get
+            {
+                return handlerCache;
+            }
+
+            set
+            {
+                lock (locker)
+                {
+                    if (handlerCache == value) return;
+                    handlerCache = value;
+                    if (handlerCache == null) return;
+                    context = handlerCache.CreateContext();
+                }
+            }
+        }
 
         /// <summary>
         /// Writes the specified string value to the standard output stream.
@@ -778,10 +779,10 @@ namespace Trivial.CommandLine
                 col.Clear();
             }
 
-            var h = FlushHandler;
+            var h = Handler;
             if (h != null)
             {
-                h(list);
+                h.Write(list, context);
                 return;
             }
 
@@ -919,7 +920,7 @@ namespace Trivial.CommandLine
             }
 
             if (count < 1) return;
-            if (Mode == Modes.Text)
+            if (Mode == Modes.Text && Handler != null)
             {
                 col.Add(new ConsoleText(" \b "));
                 return;
@@ -938,6 +939,33 @@ namespace Trivial.CommandLine
         }
 
         /// <summary>
+        /// Reads the next line of characters from the standard input stream.
+        /// </summary>
+        /// <returns>The next line of characters from the input stream, or null if no more lines are available.</returns>
+        /// <exception cref="IOException">An I/O error occurred.</exception>
+        /// <exception cref="OutOfMemoryException">There is insufficient memory to allocate a buffer for the returned string.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">The number of characters in the next line of characters is greater than max value of 32-bit integer.</exception>
+        public string ReadLine()
+        {
+            Flush();
+            var h = Handler;
+            return h == null ? Console.ReadLine() : h.ReadLine(context);
+        }
+
+        /// <summary>
+        /// Obtains the next character or function key pressed by the user. The pressed key is optionally displayed in the console window.
+        /// </summary>
+        /// <param name="intercept">Determines whether to display the pressed key in the console window. true to not display the pressed key; otherwise, false.</param>
+        /// <returns>The next line of characters from the input stream, or null if no more lines are available.</returns>
+        /// <exception cref="IOException">An I/O error occurred.</exception>
+        /// <exception cref="InvalidOperationException">The input stream is redirected from the one other than the console.</exception>
+        public ConsoleKeyInfo ReadKey(bool intercept = false)
+        {
+            var h = Handler;
+            return h == null ? Console.ReadKey(intercept) : h.ReadKey(intercept, context);
+        }
+
+        /// <summary>
         /// Obtains the password pressed by the user.
         /// </summary>
         /// <returns>
@@ -950,23 +978,23 @@ namespace Trivial.CommandLine
         /// Obtains the password pressed by the user.
         /// </summary>
         /// <param name="replaceChar">The optional charactor to output to replace the original one, such as *.</param>
-        /// <param name="writeNewLine">true if writes a followed line terminator; otherwise, false.</param>
+        /// <param name="inline">true if do not follow the line terminator after typing the password; otherwise, false.</param>
         /// <returns>
         /// The password.
         /// </returns>
-        public SecureString ReadPassword(char replaceChar, bool writeNewLine = false)
-            => ReadPassword(null, replaceChar, writeNewLine);
+        public SecureString ReadPassword(char replaceChar, bool inline = false)
+            => ReadPassword(null, replaceChar, inline);
 
         /// <summary>
         /// Obtains the password pressed by the user.
         /// </summary>
+        /// <param name="foreground">The replace charactor color.</param>
         /// <param name="replaceChar">The optional charactor to output to replace the original one, such as *.</param>
-        /// <param name="foregroundColor">The replace charactor color.</param>
-        /// <param name="writeNewLine">true if writes a followed line terminator; otherwise, false.</param>
+        /// <param name="inline">true if do not follow the line terminator after typing the password; otherwise, false.</param>
         /// <returns>
         /// The password.
         /// </returns>
-        public SecureString ReadPassword(ConsoleColor? foregroundColor, char? replaceChar, bool writeNewLine = false)
+        public SecureString ReadPassword(ConsoleColor? foreground, char? replaceChar, bool inline = false)
         {
             Flush();
             var str = new SecureString();
@@ -976,14 +1004,21 @@ namespace Trivial.CommandLine
                 ConsoleKeyInfo key;
                 try
                 {
-                    key = Console.ReadKey(true);
+                    key = ReadKey(true);
                 }
                 catch (InvalidOperationException)
                 {
-                    var s = Console.ReadLine();
+                    var s = ReadLine();
                     foreach (var c in s)
                     {
                         str.AppendChar(c);
+                    }
+
+                    MoveCursorBy(0, -1);
+                    Clear(RelativeAreas.Line);
+                    if (inline && replaceChar.HasValue)
+                    {
+                        col.Add(new ConsoleText(replaceChar.Value, 6, foreground));
                     }
 
                     return str;
@@ -996,14 +1031,14 @@ namespace Trivial.CommandLine
                         if (replaceChar.HasValue)
                         {
                             if (!normalMode)
-                                Write(foregroundColor, replaceChar.Value, 6);
+                                col.Add(new ConsoleText(replaceChar.Value, 6, foreground));
                             else if (len < 6)
-                                Write(foregroundColor, replaceChar.Value, 6 - len);
+                                col.Add(new ConsoleText(replaceChar.Value, 6 - len, foreground));
                             else if (len > 6)
                                 Backspace(len - 6);
                         }
 
-                        if (writeNewLine) Write(Environment.NewLine);
+                        if (!inline) col.Add(new ConsoleText(Environment.NewLine));
                         Flush();
                         return str;
                     case ConsoleKey.Escape:
@@ -1037,7 +1072,7 @@ namespace Trivial.CommandLine
                         if (hasKey) str.AppendChar(key.KeyChar);
                         if (hasKey && replaceChar.HasValue && normalMode)
                         {
-                            Write(foregroundColor, replaceChar.Value);
+                            Write(foreground, replaceChar.Value);
                             Flush();
                         }
 
@@ -1049,45 +1084,108 @@ namespace Trivial.CommandLine
         /// <summary>
         /// Moves cursor by a specific relative position.
         /// </summary>
+        /// <param name="origin">The relative origin.</param>
         /// <param name="x">The horizontal translation size.</param>
         /// <param name="y">The vertical translation size.</param>
-        public void MoveCursorBy(int x, int y = 0)
+        public void MoveCursor(Origins origin, int x, int y)
         {
-            TestMode();
-            switch (Mode)
+            switch (origin)
             {
-                case Modes.Cmd:
-                    if (x != 0)
-                        Console.CursorLeft += x;
-                    if (y != 0)
-                        Console.CursorTop += y;
+                case Origins.Current:
+                    MoveCursorBy(x, y);
                     break;
-                case Modes.Text:
+                case Origins.ViewPort:
+                    MoveCursorAt(x, y);
                     break;
-                default:
-                    WriteImmediately(AnsiCodeGenerator.MoveCursorBy(x, y));
+                case Origins.Buffer:
+                    MoveCursorTo(x, y);
                     break;
             }
         }
 
         /// <summary>
-        /// Moves cursor at a specific position in buffer.
+        /// Moves cursor by a specific relative position.
         /// </summary>
-        /// <param name="x">Row, the top from the edge of buffer.</param>
-        /// <param name="y">Column, the left from the edge of buffer.</param>
-        public void MoveCursorTo(int x, int y)
+        /// <param name="x">The horizontal translation size.</param>
+        /// <param name="y">The vertical translation size.</param>
+        public void MoveCursorBy(int x, int y = 0)
         {
+            var h = Handler;
+            if (h != null)
+            {
+                h.MoveCursor(Origins.Current, x, y, context);
+                return;
+            }
+
             TestMode();
             switch (Mode)
             {
                 case Modes.Cmd:
-                    Console.CursorLeft = x;
-                    Console.CursorTop = y;
+                    if (y != 0)
+                    {
+                        try
+                        {
+                            Console.CursorTop += y;
+                        }
+                        catch (InvalidOperationException)
+                        {
+                        }
+                        catch (IOException)
+                        {
+                        }
+                        catch (SecurityException)
+                        {
+                        }
+                        catch (ArgumentOutOfRangeException)
+                        {
+                            if (y > 0)
+                            {
+                                Console.CursorTop = Math.Min(Console.CursorTop + y, Console.BufferHeight - 1);
+                                WriteImmediately(Environment.NewLine);
+                            }
+                            else
+                            {
+                                Console.CursorTop = Math.Max(Console.CursorTop + y, 0);
+                            }
+                        }
+                        catch (NotSupportedException)
+                        {
+                        }
+                    }
+
+                    if (x != 0)
+                    {
+                        try
+                        {
+                            Console.CursorLeft += x;
+                        }
+                        catch (InvalidOperationException)
+                        {
+                        }
+                        catch (IOException)
+                        {
+                        }
+                        catch (SecurityException)
+                        {
+                        }
+                        catch (ArgumentOutOfRangeException)
+                        {
+                            Console.CursorLeft = x > 0
+                                ? Math.Min(Console.CursorLeft + x, Console.BufferWidth - 1)
+                                : Math.Max(Console.CursorLeft + x, 0);
+                        }
+                        catch (NotSupportedException)
+                        {
+                        }
+                    }
+
                     break;
                 case Modes.Text:
+                    if (y > 0 && col.LastOrDefault()?.Content?.ToString() != Environment.NewLine)
+                        col.Add(new ConsoleText(Environment.NewLine));
                     break;
                 default:
-                    WriteImmediately(AnsiCodeGenerator.MoveCursorTo(x, y));
+                    WriteImmediately(AnsiCodeGenerator.MoveCursorBy(x, y));
                     break;
             }
         }
@@ -1099,11 +1197,38 @@ namespace Trivial.CommandLine
         /// <param name="y">Column, the left from the edge of viewport.</param>
         public void MoveCursorAt(int x, int y)
         {
+            var h = Handler;
+            if (h != null)
+            {
+                h.MoveCursor(Origins.ViewPort, x, y, context);
+                return;
+            }
+
             TestMode();
             switch (Mode)
             {
                 case Modes.Cmd:
-                    Console.CursorLeft = x;
+                    try
+                    {
+                        Console.CursorLeft = x;
+                    }
+                    catch (InvalidOperationException)
+                    {
+                    }
+                    catch (IOException)
+                    {
+                    }
+                    catch (SecurityException)
+                    {
+                    }
+                    catch (ArgumentOutOfRangeException)
+                    {
+                        Console.CursorLeft = Math.Min(x, Console.BufferWidth - 1);
+                    }
+                    catch (NotSupportedException)
+                    {
+                    }
+
                     break;
                 case Modes.Text:
                     break;
@@ -1113,14 +1238,252 @@ namespace Trivial.CommandLine
             }
         }
 
+        /// <summary>
+        /// Moves cursor at a specific position in buffer.
+        /// </summary>
+        /// <param name="x">Row, the top from the edge of buffer.</param>
+        /// <param name="y">Column, the left from the edge of buffer.</param>
+        public void MoveCursorTo(int x, int y)
+        {
+            var h = Handler;
+            if (h != null)
+            {
+                h.MoveCursor(Origins.Buffer, x, y, context);
+                return;
+            }
+
+            TestMode();
+            switch (Mode)
+            {
+                case Modes.Cmd:
+                    try
+                    {
+                        Console.CursorTop = y;
+                    }
+                    catch (InvalidOperationException)
+                    {
+                    }
+                    catch (IOException)
+                    {
+                    }
+                    catch (SecurityException)
+                    {
+                    }
+                    catch (ArgumentOutOfRangeException)
+                    {
+                        Console.CursorTop = Math.Min(y, Console.BufferHeight - 1);
+                        WriteImmediately(Environment.NewLine);
+                    }
+                    catch (NotSupportedException)
+                    {
+                    }
+
+                    try
+                    {
+                        Console.CursorLeft = x;
+                    }
+                    catch (InvalidOperationException)
+                    {
+                    }
+                    catch (IOException)
+                    {
+                    }
+                    catch (SecurityException)
+                    {
+                    }
+                    catch (ArgumentOutOfRangeException)
+                    {
+                        Console.CursorLeft = Math.Min(x, Console.BufferWidth - 1);
+                    }
+                    catch (NotSupportedException)
+                    {
+                    }
+
+                    break;
+                case Modes.Text:
+                    break;
+                default:
+                    WriteImmediately(AnsiCodeGenerator.MoveCursorTo(x, y));
+                    break;
+            }
+        }
+
+        /// <summary>
+        /// Removes the specific area.
+        /// </summary>
+        /// <param name="area">The area to remove.</param>
+        public void Clear(RelativeAreas area)
+        {
+            var h = Handler;
+            if (h != null)
+            {
+                h.Remove(area, context);
+                return;
+            }
+
+            Flush();
+            switch (Mode)
+            {
+                case Modes.Cmd:
+                    try
+                    {
+                        ClearInCmd(area);
+                        break;
+                    }
+                    catch (IOException)
+                    {
+                    }
+                    catch (InvalidOperationException)
+                    {
+                    }
+                    catch (NotSupportedException)
+                    {
+                    }
+
+                    WriteImmediately(AnsiCodeGenerator.Clear(area));
+                    break;
+                case Modes.Text:
+                    switch (area)
+                    {
+                        case RelativeAreas.ToEndOfScreen:
+                        case RelativeAreas.ToEndOfLine:
+                            col.Add(new ConsoleText(" \b"));
+                            break;
+                        default:
+                            Write("\b \b");
+                            break;
+                    }
+
+                    break;
+                default:
+                    WriteImmediately(AnsiCodeGenerator.Clear(area));
+                    break;
+            }
+        }
+
+        private void ClearInCmd(RelativeAreas area)
+        {
+            switch (area)
+            {
+                case RelativeAreas.ToBeginningOfLine:
+                    try
+                    {
+                        Backspace(Console.CursorLeft);
+                    }
+                    catch (SecurityException)
+                    {
+                        Backspace(200);
+                    }
+
+                    break;
+                case RelativeAreas.ToEndOfLine:
+                    {
+                        var w = Console.BufferWidth - Console.CursorLeft - 1;
+                        Console.CursorLeft = Console.BufferWidth - 1;
+                        Backspace(w);
+                        break;
+                    }
+                case RelativeAreas.EntireScreen:
+                case (RelativeAreas)7:
+                    for (var i = 0; i < 10; i++)
+                    {
+                        try
+                        {
+                            Console.CursorTop++;
+                            Console.CursorLeft = Console.BufferWidth - 1;
+                        }
+                        catch (ArgumentException)
+                        {
+                        }
+                        catch (SecurityException)
+                        {
+                            Backspace(200);
+                        }
+                    }
+
+                    for (var i = 0; i < 40; i++)
+                    {
+                        try
+                        {
+                            if (Console.CursorTop < 1) continue;
+                            Console.CursorTop--;
+                            Console.CursorLeft = Console.BufferWidth - 1;
+                            Backspace(Console.BufferWidth);
+                        }
+                        catch (ArgumentException)
+                        {
+                        }
+                    }
+
+                    break;
+                case RelativeAreas.ToBeginningOfScreen:
+                    Backspace(Console.CursorLeft);
+                    for (var i = 0; i < 30; i++)
+                    {
+                        try
+                        {
+                            if (Console.CursorTop < 1) continue;
+                            Console.CursorTop--;
+                            Console.CursorLeft = Console.BufferWidth - 1;
+                            Backspace(Console.BufferWidth);
+                        }
+                        catch (ArgumentException)
+                        {
+                        }
+                        catch (SecurityException)
+                        {
+                            Backspace(200);
+                        }
+                    }
+
+                    break;
+                case RelativeAreas.ToEndOfScreen:
+                    {
+                        var l = Console.CursorLeft;
+                        var w = Console.BufferWidth - Console.CursorLeft - 1;
+                        Console.CursorLeft = Console.BufferWidth - 1;
+                        Backspace(w);
+                        var j = 0;
+                        for (var i = 0; i < 5; i++)
+                        {
+                            try
+                            {
+                                Console.CursorTop++;
+                                j++;
+                                Console.CursorLeft = Console.BufferWidth - 1;
+                                Backspace(Console.BufferWidth);
+                            }
+                            catch (ArgumentException)
+                            {
+                            }
+                        }
+
+                        Console.SetCursorPosition(l, Math.Max(0, Console.CursorTop - j));
+                        break;
+                    }
+                default:
+                    try
+                    {
+                        Console.CursorLeft = Console.BufferWidth - 1;
+                        Backspace(Console.BufferWidth);
+                    }
+                    catch (SecurityException)
+                    {
+                        Backspace(200);
+                    }
+
+                    break;
+            }
+        }
+
         private void TestMode()
         {
-            if (Mode != 0 || FlushHandler is not null)
+            if (Mode != 0 || Handler is not null)
                 return;
 #if NET5_0_OR_GREATER
-                if (!OperatingSystem.IsWindows())
+            if (!OperatingSystem.IsWindows())
             {
-                Mode = Modes.Ansi;
+                Mode = OperatingSystem.IsBrowser() ? Modes.Text : Modes.Ansi;
                 return;
             }
 #elif NETCOREAPP || NETSTANDARD

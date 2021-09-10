@@ -182,6 +182,20 @@ namespace Trivial.CommandLine
         /// <summary>
         /// Initializes a new instance of the ConsoleText class.
         /// </summary>
+        /// <param name="c">The character.</param>
+        /// <param name="repeatCount">The number of times to append value.</param>
+        /// <param name="foreground">The foreground color.</param>
+        /// <param name="background">The background color.</param>
+        public ConsoleText(char c, int repeatCount, ConsoleColor? foreground, ConsoleColor? background = null)
+        {
+            Content.Append(c, repeatCount);
+            Style.ForegroundConsoleColor = foreground;
+            Style.BackgroundConsoleColor = background;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the ConsoleText class.
+        /// </summary>
         /// <param name="s">The text content.</param>
         /// <param name="foreground">The foreground color.</param>
         /// <param name="background">The background color.</param>

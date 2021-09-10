@@ -14,19 +14,6 @@ namespace Trivial.CommandLine
         // https://docs.microsoft.com/en-us/windows/console/console-virtual-terminal-sequences
 
         /// <summary>
-        /// Code to clear lines.
-        /// </summary>
-        public static class Clear
-        {
-            public static string EntireScreen => $"{Esc}[2J";
-            public static string Line => $"{Esc}[2K";
-            public static string ToBeginningOfLine => $"{Esc}[1K";
-            public static string ToBeginningOfScreen => $"{Esc}[1J";
-            public static string ToEndOfLine => $"{Esc}[K";
-            public static string ToEndOfScreen => $"{Esc}[J";
-        }
-
-        /// <summary>
         /// The sign of escape.
         /// </summary>
         public const string Esc = "\u001b";
@@ -140,7 +127,7 @@ namespace Trivial.CommandLine
         public static string AttributesOff() => $"{Esc}[0m";
         public static string Blink(bool enable) => enable ? $"{Esc}[5m" : $"{Esc}[25m";
         public static string Bold(bool enable) => enable ? $"{Esc}[1m" : $"{Esc}[22m";
-        public static string HiddenOn() => $"{Esc}[8m";
+        public static string TextHidden() => $"{Esc}[8m";
         public static string Reverse(bool enable) => enable ? $"{Esc}[7m" : $"{Esc}[27m";
         public static string Italic(bool enable) => enable ? $"{Esc}[3m" : $"{Esc}[23m";
         public static string Underline(bool enable) => enable ? $"{Esc}[4m" : $"{Esc}[24m";
@@ -149,13 +136,13 @@ namespace Trivial.CommandLine
         public static string MoveCursorX(int columns)
         {
             if (columns == 0) return string.Empty;
-            return columns > 0 ? $"{Esc}[{columns}C" : $"{Esc}[{columns}D";
+            return columns > 0 ? $"{Esc}[{columns}C" : $"{Esc}[{-columns}D";
         }
 
         public static string MoveCursorY(int lines)
         {
             if (lines == 0) return string.Empty;
-            return lines > 0 ? $"{Esc}[{lines}B" : $"{Esc}[{lines}A";
+            return lines > 0 ? $"{Esc}[{lines}B" : $"{Esc}[{-lines}A";
         }
 
         public static string MoveCursorBy(int x, int y)
@@ -186,6 +173,23 @@ namespace Trivial.CommandLine
             return s.ToString();
         }
 
+
+        /// <summary>
+        /// Code to clear lines.
+        /// </summary>
+        public static string Clear(ConsoleInterface.RelativeAreas area)
+            => area switch
+            {
+                ConsoleInterface.RelativeAreas.Line => $"{Esc}[2K",
+                ConsoleInterface.RelativeAreas.ToBeginningOfLine => $"{Esc}[1K",
+                ConsoleInterface.RelativeAreas.ToEndOfLine => $"{Esc}[K",
+                ConsoleInterface.RelativeAreas.EntireScreen => $"{Esc}[2J",
+                ConsoleInterface.RelativeAreas.ToBeginningOfScreen => $"{Esc}[1J",
+                ConsoleInterface.RelativeAreas.ToEndOfScreen => $"{Esc}[J",
+                (ConsoleInterface.RelativeAreas)7 => $"{Esc}[3J",
+                _ => string.Empty
+            };
+
         public static string SaveCursorPosition() => $"{Esc}7";
 
         public static string RestoreCursorPosition() => $"{Esc}8";
@@ -193,7 +197,7 @@ namespace Trivial.CommandLine
         public static string Remove(int count = 1)
         {
             if (count == 0) return string.Empty;
-            return count > 0 ? $"{Esc}[{count}X" : $"{Esc}[{count}P";
+            return count > 0 ? $"{Esc}[{count}X" : $"{Esc}[{-count}P";
         }
     }
 }
