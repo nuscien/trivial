@@ -173,7 +173,6 @@ namespace Trivial.CommandLine
             return s.ToString();
         }
 
-
         /// <summary>
         /// Code to clear lines.
         /// </summary>
@@ -186,7 +185,7 @@ namespace Trivial.CommandLine
                 ConsoleInterface.RelativeAreas.EntireScreen => $"{Esc}[2J",
                 ConsoleInterface.RelativeAreas.ToBeginningOfScreen => $"{Esc}[1J",
                 ConsoleInterface.RelativeAreas.ToEndOfScreen => $"{Esc}[J",
-                (ConsoleInterface.RelativeAreas)7 => $"{Esc}[3J",
+                ConsoleInterface.RelativeAreas.EntireBuffer => $"{Esc}[3J",
                 _ => string.Empty
             };
 
@@ -199,5 +198,37 @@ namespace Trivial.CommandLine
             if (count == 0) return string.Empty;
             return count > 0 ? $"{Esc}[{count}X" : $"{Esc}[{-count}P";
         }
+
+        //public static ConsoleColor ToConsoleColor(System.Drawing.Color color)
+        //{
+        //    return ToConsoleColor(color.R, color.G, color.B);
+        //}
+
+        //public static ConsoleColor ToConsoleColor(byte r, byte g, byte b)
+        //{
+
+        //    if (r >= 220 && g >= 220 && b >= 220)
+        //        return ConsoleColor.White;
+        //    if (r <= 48 && g <= 48 && b <= 48)
+        //        return ConsoleColor.Black;
+
+        //    if (r >= 192 || g >= 192 || b >= 192)
+        //    {
+
+        //    }
+
+        //    var rank = new Maths.RankResult3<int>(r, g, b);
+
+        //    if (r <= 220 && g <= 220 && b <= 220 && r >= 160 && g >= 160 && b >= 160)
+        //        return ConsoleColor.Gray;
+        //    if (r <= 160 && g <= 160 && b <= 160 && r >= 48 && g >= 48 && b >= 48)
+        //        return ConsoleColor.DarkGray;
+        //    if (r >= 192)
+        //        return g >= 192 ? ConsoleColor.Yellow : ConsoleColor.Red;
+        //    if (g >= 192)
+        //        return b >= 192 ? ConsoleColor.Cyan : ConsoleColor.Green;
+        //    if (b >= 192)
+        //        return r >= 192 ? ConsoleColor.Magenta : ConsoleColor.Blue;
+        //}
     }
 }

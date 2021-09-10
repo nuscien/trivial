@@ -44,6 +44,16 @@ namespace Trivial.CommandLine
         public event DataEventHandler<IReadOnlyList<ConsoleText>> Flushed;
 
         /// <summary>
+        /// Adds or removes the handler occurred after flushing.
+        /// </summary>
+        public event EventHandler<RelativePositionEventArgs> CursorMoved;
+
+        /// <summary>
+        /// Adds or removes the handler occurred after output area clearing.
+        /// </summary>
+        public event DataEventHandler<RelativeAreas> Cleared;
+
+        /// <summary>
         /// Gets or sets the terminal mode.
         /// </summary>
         public Modes Mode { get; set; }
@@ -832,29 +842,7 @@ namespace Trivial.CommandLine
                 foreach (var item in list)
                 {
                     if (item?.Content == null) continue;
-                    var foreground = item.Style.ForegroundRgbColor.HasValue
-                        ? AnsiCodeGenerator.Foreground(item.Style.ForegroundRgbColor.Value)
-                        : AnsiCodeGenerator.Foreground(item.Style.ForegroundConsoleColor);
-                    var background = item.Style.BackgroundRgbColor.HasValue
-                        ? AnsiCodeGenerator.Background(item.Style.BackgroundRgbColor.Value)
-                        : AnsiCodeGenerator.Background(item.Style.BackgroundConsoleColor);
-                    var b = item.Style.Bold;
-                    var i = item.Style.Italic;
-                    var u = item.Style.Underline;
-                    var s = item.Style.Strikeout;
-                    sb.Append(foreground);
-                    sb.Append(background);
-                    if (b) sb.Append(AnsiCodeGenerator.Bold(true));
-                    if (i) sb.Append(AnsiCodeGenerator.Italic(true));
-                    if (u) sb.Append(AnsiCodeGenerator.Underline(true));
-                    if (s) sb.Append(AnsiCodeGenerator.Strikeout(true));
-                    StringExtensions.Append(sb, item?.Content);
-                    if (s) sb.Append(AnsiCodeGenerator.Strikeout(false));
-                    if (u) sb.Append(AnsiCodeGenerator.Underline(false));
-                    if (i) sb.Append(AnsiCodeGenerator.Italic(false));
-                    if (b) sb.Append(AnsiCodeGenerator.Bold(false));
-                    if (background.Length > 1) sb.Append(AnsiCodeGenerator.Background(true));
-                    if (foreground.Length > 1) sb.Append(AnsiCodeGenerator.Foreground(true));
+                    item.AppendTo(sb);
                 }
 
                 Console.Write(sb.ToString());
@@ -919,23 +907,7 @@ namespace Trivial.CommandLine
                 }
             }
 
-            if (count < 1) return;
-            if (Mode == Modes.Text && Handler != null)
-            {
-                col.Add(new ConsoleText(" \b "));
-                return;
-            }
-
-            var str = new StringBuilder();
-            str.Append('\b', count);
-            if (!doNotRemoveOutput)
-            {
-                str.Append(' ', count);
-                str.Append('\b', count);
-            }
-
-            col.Add(new ConsoleText(str));
-            Flush();
+            BackspaceInternal(count, doNotRemoveOutput ? 2 : 0);
         }
 
         /// <summary>
@@ -1114,6 +1086,7 @@ namespace Trivial.CommandLine
             if (h != null)
             {
                 h.MoveCursor(Origins.Current, x, y, context);
+                CursorMoved?.Invoke(this, new RelativePositionEventArgs(Origins.Current, x, y));
                 return;
             }
 
@@ -1188,6 +1161,8 @@ namespace Trivial.CommandLine
                     WriteImmediately(AnsiCodeGenerator.MoveCursorBy(x, y));
                     break;
             }
+
+            CursorMoved?.Invoke(this, new RelativePositionEventArgs(Origins.Current, x, y));
         }
 
         /// <summary>
@@ -1201,6 +1176,7 @@ namespace Trivial.CommandLine
             if (h != null)
             {
                 h.MoveCursor(Origins.ViewPort, x, y, context);
+                CursorMoved?.Invoke(this, new RelativePositionEventArgs(Origins.ViewPort, x, y));
                 return;
             }
 
@@ -1236,6 +1212,8 @@ namespace Trivial.CommandLine
                     WriteImmediately(AnsiCodeGenerator.MoveCursorAt(x, y));
                     break;
             }
+
+            CursorMoved?.Invoke(this, new RelativePositionEventArgs(Origins.ViewPort, x, y));
         }
 
         /// <summary>
@@ -1249,6 +1227,7 @@ namespace Trivial.CommandLine
             if (h != null)
             {
                 h.MoveCursor(Origins.Buffer, x, y, context);
+                CursorMoved?.Invoke(this, new RelativePositionEventArgs(Origins.Buffer, x, y));
                 return;
             }
 
@@ -1306,6 +1285,8 @@ namespace Trivial.CommandLine
                     WriteImmediately(AnsiCodeGenerator.MoveCursorTo(x, y));
                     break;
             }
+
+            CursorMoved?.Invoke(this, new RelativePositionEventArgs(Origins.Buffer, x, y));
         }
 
         /// <summary>
@@ -1314,14 +1295,15 @@ namespace Trivial.CommandLine
         /// <param name="area">The area to remove.</param>
         public void Clear(RelativeAreas area)
         {
+            Flush();
             var h = Handler;
             if (h != null)
             {
                 h.Remove(area, context);
+                Cleared?.Invoke(this, new DataEventArgs<RelativeAreas>(area));
                 return;
             }
 
-            Flush();
             switch (Mode)
             {
                 case Modes.Cmd:
@@ -1349,6 +1331,8 @@ namespace Trivial.CommandLine
                         case RelativeAreas.ToEndOfLine:
                             col.Add(new ConsoleText(" \b"));
                             break;
+                        case RelativeAreas.None:
+                            break;
                         default:
                             Write("\b \b");
                             break;
@@ -1359,20 +1343,68 @@ namespace Trivial.CommandLine
                     WriteImmediately(AnsiCodeGenerator.Clear(area));
                     break;
             }
+
+            Cleared?.Invoke(this, new DataEventArgs<RelativeAreas>(area));
+        }
+
+        /// <summary>
+        /// Enters a backspace to console to remove the last charactor.
+        /// </summary>
+        /// <param name="count">The count of the charactor to remove from end.</param>
+        /// <param name="keepLevel">0 to remove; 1 to remove but keep cursor position; 2 to only move cursor.</param>
+        private void BackspaceInternal(int count = 1, int keepLevel = 0)
+        {
+            if (count < 1) return;
+            if (Mode == Modes.Text && Handler != null)
+            {
+                col.Add(new ConsoleText(" \b "));
+                return;
+            }
+
+            var str = new StringBuilder();
+            str.Append('\b', count);
+            switch (keepLevel)
+            {
+                case 0:
+                    str.Append(' ', count);
+                    str.Append('\b', count);
+                    break;
+                case 1:
+                    str.Append(' ', count);
+                    break;
+            }
+
+            col.Add(new ConsoleText(str));
+            Flush();
         }
 
         private void ClearInCmd(RelativeAreas area)
         {
             switch (area)
             {
-                case RelativeAreas.ToBeginningOfLine:
+                case RelativeAreas.Line:
                     try
                     {
-                        Backspace(Console.CursorLeft);
+                        var l = Console.CursorLeft;
+                        BackspaceInternal(l, 1);
+                        Console.CursorLeft = Console.BufferWidth - 1;
+                        BackspaceInternal(Console.BufferWidth, 1);
+                        Console.SetCursorPosition(l, Console.CursorTop - 1);
                     }
                     catch (SecurityException)
                     {
-                        Backspace(200);
+                        BackspaceInternal(200, 1);
+                    }
+
+                    break;
+                case RelativeAreas.ToBeginningOfLine:
+                    try
+                    {
+                        BackspaceInternal(Console.CursorLeft, 1);
+                    }
+                    catch (SecurityException)
+                    {
+                        BackspaceInternal(200, 1);
                     }
 
                     break;
@@ -1380,60 +1412,60 @@ namespace Trivial.CommandLine
                     {
                         var w = Console.BufferWidth - Console.CursorLeft - 1;
                         Console.CursorLeft = Console.BufferWidth - 1;
-                        Backspace(w);
+                        BackspaceInternal(w);
                         break;
                     }
                 case RelativeAreas.EntireScreen:
-                case (RelativeAreas)7:
-                    for (var i = 0; i < 10; i++)
+                    try
                     {
-                        try
+                        var l = Console.CursorLeft;
+                        var t = Console.CursorTop;
+                        Console.SetCursorPosition(Console.BufferWidth - 1, Math.Max(0, Console.CursorTop - 30));
+                        for (; Console.CursorTop <= t;)
                         {
-                            Console.CursorTop++;
                             Console.CursorLeft = Console.BufferWidth - 1;
+                            BackspaceInternal(Console.BufferWidth, 1);
                         }
-                        catch (ArgumentException)
-                        {
-                        }
-                        catch (SecurityException)
-                        {
-                            Backspace(200);
-                        }
-                    }
 
-                    for (var i = 0; i < 40; i++)
-                    {
-                        try
+                        var i = 0;
+                        for (; i < 12; i++)
                         {
-                            if (Console.CursorTop < 1) continue;
-                            Console.CursorTop--;
                             Console.CursorLeft = Console.BufferWidth - 1;
-                            Backspace(Console.BufferWidth);
+                            BackspaceInternal(Console.BufferWidth, 1);
                         }
-                        catch (ArgumentException)
-                        {
-                        }
+
+                        Console.SetCursorPosition(l, Math.Max(0, Console.CursorTop - i - 1));
+                    }
+                    catch (ArgumentException)
+                    {
+                    }
+                    catch (SecurityException)
+                    {
+                        BackspaceInternal(200, 1);
                     }
 
                     break;
                 case RelativeAreas.ToBeginningOfScreen:
-                    Backspace(Console.CursorLeft);
-                    for (var i = 0; i < 30; i++)
+                    try
                     {
-                        try
+                        var l = Console.CursorLeft;
+                        var t = Console.CursorTop;
+                        Console.SetCursorPosition(Console.BufferWidth - 1, Math.Max(0, Console.CursorTop - 30));
+                        for (; Console.CursorTop < t;)
                         {
-                            if (Console.CursorTop < 1) continue;
-                            Console.CursorTop--;
                             Console.CursorLeft = Console.BufferWidth - 1;
-                            Backspace(Console.BufferWidth);
+                            BackspaceInternal(Console.BufferWidth, 1);
                         }
-                        catch (ArgumentException)
-                        {
-                        }
-                        catch (SecurityException)
-                        {
-                            Backspace(200);
-                        }
+
+                        Console.CursorLeft = l;
+                        BackspaceInternal(Console.CursorLeft, 1);
+                    }
+                    catch (ArgumentException)
+                    {
+                    }
+                    catch (SecurityException)
+                    {
+                        BackspaceInternal(200, 1);
                     }
 
                     break;
@@ -1442,36 +1474,20 @@ namespace Trivial.CommandLine
                         var l = Console.CursorLeft;
                         var w = Console.BufferWidth - Console.CursorLeft - 1;
                         Console.CursorLeft = Console.BufferWidth - 1;
-                        Backspace(w);
-                        var j = 0;
-                        for (var i = 0; i < 5; i++)
+                        BackspaceInternal(w, 1);
+                        Console.CursorTop++;
+                        var i = 0;
+                        for (; i < 12; i++)
                         {
-                            try
-                            {
-                                Console.CursorTop++;
-                                j++;
-                                Console.CursorLeft = Console.BufferWidth - 1;
-                                Backspace(Console.BufferWidth);
-                            }
-                            catch (ArgumentException)
-                            {
-                            }
+                            Console.CursorLeft = Console.BufferWidth - 1;
+                            BackspaceInternal(Console.BufferWidth, 1);
                         }
 
-                        Console.SetCursorPosition(l, Math.Max(0, Console.CursorTop - j));
+                        Console.SetCursorPosition(l, Math.Max(0, Console.CursorTop - i - 1));
                         break;
                     }
-                default:
-                    try
-                    {
-                        Console.CursorLeft = Console.BufferWidth - 1;
-                        Backspace(Console.BufferWidth);
-                    }
-                    catch (SecurityException)
-                    {
-                        Backspace(200);
-                    }
-
+                case RelativeAreas.EntireBuffer:
+                    Console.Clear();
                     break;
             }
         }

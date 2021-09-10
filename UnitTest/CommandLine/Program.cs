@@ -9,8 +9,9 @@ namespace Trivial.CommandLine
         {
             DefaultConsoleInterface.WriteLine("Trivial Sample");
             DefaultConsoleInterface.WriteLine();
-
-            // TestConsoleInterface()；
+#if DEBUG
+            TestConsoleInterface();
+#endif
             var dispatcher = new CommandDispatcher();
             dispatcher.Register<Tasks.InterceptorVerb>("interceptor");
             dispatcher.Register<Reflection.SingletonKeeperVerb>("singleton");
@@ -23,10 +24,20 @@ namespace Trivial.CommandLine
             return dispatcher.ProcessAsync(args);
         }
 
-        private void TestConsoleInterface()
+        private static void TestConsoleInterface()
         {
             DefaultConsoleInterface.Flush();
             var mode = ConsoleInterface.Default.Mode;
+            DefaultConsoleInterface.Write(ConsoleColor.Yellow, $"Pass ({mode}) ");
+            using var secret = DefaultConsoleInterface.ReadPassword('*', true);
+            if (secret.Length < 1)
+            {
+                ConsoleInterface.Default.Mode = mode;
+                DefaultConsoleInterface.Backspace(24);
+                return;
+            }
+
+            DefaultConsoleInterface.WriteLine();
             ConsoleInterface.Default.Mode = ConsoleInterface.Modes.Ansi;
             DefaultConsoleInterface.Write("ANSI " + new ConsoleTextStyle
             {
@@ -41,46 +52,45 @@ namespace Trivial.CommandLine
             DefaultConsoleInterface.Write(ConsoleColor.Blue, "TEXT ");
             DefaultConsoleInterface.ReadPassword('*');
             ConsoleInterface.Default.Mode = mode;
-            DefaultConsoleInterface.WriteLine(mode.ToString());
+            DefaultConsoleInterface.WriteLine("abc\b\b\b\b\b\b\b\b~       " + mode.ToString());
 
-            Console.WriteLine("Test");
-            Console.WriteLine("abc\b\b\b\b\b\b\b\b        x");
-            Console.WriteLine("abcdefg hijklmn");
-            Console.WriteLine("abcdefg hijklmn");
-            Console.WriteLine("abcdefg hijklmn");
-            Console.Write("abcdefg hijklmn");
-            ConsoleInterface.Default.MoveCursorBy(-6, -2);
-            ConsoleInterface.Default.Clear(ConsoleInterface.RelativeAreas.ToBeginningOfLine);
+            Console.WriteLine("1 abcdefg hijklmn");
+            Console.WriteLine("1 abcdefg hijklmn");
+            Console.WriteLine("1 abcdefg hijklmn");
+            Console.Write("1 abcdefg hijklmn");
+            DefaultConsoleInterface.MoveCursorBy(-6, -2);
+            DefaultConsoleInterface.Clear(ConsoleInterface.RelativeAreas.ToBeginningOfLine);
             Console.WriteLine("x");
             Console.ReadLine();
 
-            Console.WriteLine("abcdefg hijklmn");
-            Console.WriteLine("abcdefg hijklmn");
-            Console.WriteLine("abcdefg hijklmn");
-            Console.Write("abcdefg hijklmn");
-            ConsoleInterface.Default.MoveCursorBy(-6, -2);
-            ConsoleInterface.Default.Clear(ConsoleInterface.RelativeAreas.ToEndOfLine);
+            Console.WriteLine("2 abcdefg hijklmn");
+            Console.WriteLine("2 abcdefg hijklmn");
+            Console.WriteLine("2 abcdefg hijklmn");
+            Console.Write("2 abcdefg hijklmn");
+            DefaultConsoleInterface.MoveCursorBy(-6, -2);
+            DefaultConsoleInterface.Clear(ConsoleInterface.RelativeAreas.ToEndOfLine);
             Console.WriteLine("x");
             Console.ReadLine();
 
-            Console.WriteLine("abcdefg hijklmn");
-            Console.WriteLine("abcdefg hijklmn");
-            Console.WriteLine("abcdefg hijklmn");
-            Console.Write("abcdefg hijklmn");
-            ConsoleInterface.Default.MoveCursorBy(-6, -2);
-            ConsoleInterface.Default.Clear(ConsoleInterface.RelativeAreas.ToEndOfScreen);
+            Console.WriteLine("3 abcdefg hijklmn");
+            Console.WriteLine("3 abcdefg hijklmn");
+            Console.WriteLine("3 abcdefg hijklmn");
+            Console.Write("3 abcdefg hijklmn");
+            DefaultConsoleInterface.MoveCursorBy(-6, -2);
+            DefaultConsoleInterface.Clear(ConsoleInterface.RelativeAreas.ToEndOfScreen);
             Console.WriteLine("x");
             Console.ReadLine();
 
-            Console.WriteLine("abcdefg hijklmn");
-            Console.WriteLine("abcdefg hijklmn");
-            Console.WriteLine("abcdefg hijklmn");
-            Console.Write("abcdefg hijklmn");
-            ConsoleInterface.Default.MoveCursorBy(-6, -2);
-            ConsoleInterface.Default.Clear(ConsoleInterface.RelativeAreas.ToBeginningOfScreen);
+            Console.WriteLine("4 abcdefg hijklmn");
+            Console.WriteLine("4 abcdefg hijklmn");
+            Console.WriteLine("4 abcdefg hijklmn");
+            Console.Write("4 abcdefg hijklmn");
+            DefaultConsoleInterface.MoveCursorBy(-6, -2);
+            DefaultConsoleInterface.Clear(ConsoleInterface.RelativeAreas.ToBeginningOfScreen);
             Console.WriteLine("x");
             Console.ReadLine();
-            ConsoleInterface.Default.Clear(ConsoleInterface.RelativeAreas.Line);
+
+            DefaultConsoleInterface.Clear(ConsoleInterface.RelativeAreas.Line);
         }
     }
 }

@@ -42,6 +42,11 @@ namespace Trivial.CommandLine
         }
 
         /// <summary>
+        /// Gets or sets a value indicating whether the text is blink.
+        /// </summary>
+        public bool Blink { get; set; }
+
+        /// <summary>
         /// Gets or sets a value indicating whether the text is bold.
         /// </summary>
         public bool Bold { get; set; }
@@ -175,7 +180,7 @@ namespace Trivial.CommandLine
         /// <param name="style">The style.</param>
         public ConsoleText(StringBuilder s, ConsoleTextStyle style = null)
         {
-            Content = s;
+            if (s != null) Content = s;
             if (style != null) Style = style;
         }
 
@@ -214,7 +219,7 @@ namespace Trivial.CommandLine
         /// <param name="background">The background color.</param>
         public ConsoleText(StringBuilder s, ConsoleColor? foreground, ConsoleColor? background = null)
         {
-            Content = s;
+            if (s != null) Content = s;
             Style.ForegroundConsoleColor = foreground;
             Style.BackgroundConsoleColor = background;
         }
@@ -257,6 +262,47 @@ namespace Trivial.CommandLine
         /// Gets the length of the text content.
         /// </summary>
         public int Length => Content.Length;
+
+        /// <summary>
+        /// Returns a string with ANSI escape sequences that represents the content.
+        /// </summary>
+        /// <returns>A string that represents the content.</returns>
+        public override string ToString()
+        {
+            var sb = new StringBuilder();
+            AppendTo(sb);
+            return sb.ToString();
+        }
+
+        internal void AppendTo(StringBuilder sb)
+        {
+            var foreground = Style.ForegroundRgbColor.HasValue
+                ? AnsiCodeGenerator.Foreground(Style.ForegroundRgbColor.Value)
+                : AnsiCodeGenerator.Foreground(Style.ForegroundConsoleColor);
+            var background = Style.BackgroundRgbColor.HasValue
+                ? AnsiCodeGenerator.Background(Style.BackgroundRgbColor.Value)
+                : AnsiCodeGenerator.Background(Style.BackgroundConsoleColor);
+            var b = Style.Bold;
+            var i = Style.Italic;
+            var u = Style.Underline;
+            var s = Style.Strikeout;
+            var blink = Style.Blink;
+            sb.Append(foreground);
+            sb.Append(background);
+            if (b) sb.Append(AnsiCodeGenerator.Bold(true));
+            if (i) sb.Append(AnsiCodeGenerator.Italic(true));
+            if (u) sb.Append(AnsiCodeGenerator.Underline(true));
+            if (s) sb.Append(AnsiCodeGenerator.Strikeout(true));
+            if (blink) sb.Append(AnsiCodeGenerator.Blink(true));
+            Text.StringExtensions.Append(sb, Content);
+            if (blink) sb.Append(AnsiCodeGenerator.Blink(false));
+            if (s) sb.Append(AnsiCodeGenerator.Strikeout(false));
+            if (u) sb.Append(AnsiCodeGenerator.Underline(false));
+            if (i) sb.Append(AnsiCodeGenerator.Italic(false));
+            if (b) sb.Append(AnsiCodeGenerator.Bold(false));
+            if (background.Length > 1) sb.Append(AnsiCodeGenerator.Background(true));
+            if (foreground.Length > 1) sb.Append(AnsiCodeGenerator.Foreground(true));
+        }
 
         /// <summary>
         /// Adds.
