@@ -148,10 +148,23 @@ namespace Trivial.CommandLine
         /// Writes the specified string value to the standard output stream.
         /// Note it may not flush immediately.
         /// </summary>
+        /// <param name="style">The content style.</param>
+        /// <param name="s">A composite format string to output.</param>
+        /// <param name="args">An object array that contains zero or more objects to format.</param>
+        public void Write(ConsoleTextStyle style, string s, params object[] args)
+        {
+            col.Add(new ConsoleText(args.Length == 0 ? s : string.Format(s, args), style));
+            OnAppend();
+        }
+
+        /// <summary>
+        /// Writes the specified string value to the standard output stream.
+        /// Note it may not flush immediately.
+        /// </summary>
         /// <param name="foreground">The foreground color.</param>
         /// <param name="s">A composite format string to output.</param>
         /// <param name="args">An object array that contains zero or more objects to format.</param>
-        public void Write(ConsoleColor? foreground, string s, params object[] args)
+        public void Write(ConsoleColor foreground, string s, params object[] args)
         {
             col.Add(new ConsoleText(args.Length == 0 ? s : string.Format(s, args), foreground));
             OnAppend();
@@ -165,7 +178,7 @@ namespace Trivial.CommandLine
         /// <param name="background">The background color.</param>
         /// <param name="s">A composite format string to output.</param>
         /// <param name="args">An object array that contains zero or more objects to format.</param>
-        public void Write(ConsoleColor? foreground, ConsoleColor? background, string s, params object[] args)
+        public void Write(ConsoleColor? foreground, ConsoleColor background, string s, params object[] args)
         {
             col.Add(new ConsoleText(args.Length == 0 ? s : string.Format(s, args), foreground, background));
             OnAppend();
@@ -213,9 +226,21 @@ namespace Trivial.CommandLine
         /// Writes the specified number to the standard output stream.
         /// Note it may not flush immediately.
         /// </summary>
+        /// <param name="style">The content style.</param>
+        /// <param name="number">A number to output.</param>
+        public void Write(ConsoleTextStyle style, int number)
+        {
+            col.Add(new ConsoleText(number.ToString("g"), style));
+            OnAppend();
+        }
+
+        /// <summary>
+        /// Writes the specified number to the standard output stream.
+        /// Note it may not flush immediately.
+        /// </summary>
         /// <param name="foreground">The foreground color.</param>
         /// <param name="number">A number to output.</param>
-        public void Write(ConsoleColor? foreground, int number)
+        public void Write(ConsoleColor foreground, int number)
         {
             col.Add(new ConsoleText(number.ToString("g"), foreground));
             OnAppend();
@@ -228,7 +253,7 @@ namespace Trivial.CommandLine
         /// <param name="foreground">The foreground color.</param>
         /// <param name="background">The background color.</param>
         /// <param name="number">A number to output.</param>
-        public void Write(ConsoleColor? foreground, ConsoleColor? background, int number)
+        public void Write(ConsoleColor? foreground, ConsoleColor background, int number)
         {
             col.Add(new ConsoleText(number.ToString("g"), foreground, background));
             OnAppend();
@@ -249,9 +274,21 @@ namespace Trivial.CommandLine
         /// Writes the specified number to the standard output stream.
         /// Note it may not flush immediately.
         /// </summary>
+        /// <param name="style">The content style.</param>
+        /// <param name="number">A number to output.</param>
+        public void Write(ConsoleTextStyle style, long number)
+        {
+            col.Add(new ConsoleText(number.ToString("g"), style));
+            OnAppend();
+        }
+
+        /// <summary>
+        /// Writes the specified number to the standard output stream.
+        /// Note it may not flush immediately.
+        /// </summary>
         /// <param name="foreground">The foreground color.</param>
         /// <param name="number">A number to output.</param>
-        public void Write(ConsoleColor? foreground, long number)
+        public void Write(ConsoleColor foreground, long number)
         {
             col.Add(new ConsoleText(number.ToString("g"), foreground));
             OnAppend();
@@ -264,7 +301,7 @@ namespace Trivial.CommandLine
         /// <param name="foreground">The foreground color.</param>
         /// <param name="background">The background color.</param>
         /// <param name="number">A number to output.</param>
-        public void Write(ConsoleColor? foreground, ConsoleColor? background, long number)
+        public void Write(ConsoleColor? foreground, ConsoleColor background, long number)
         {
             col.Add(new ConsoleText(number.ToString("g"), foreground, background));
             OnAppend();
@@ -285,9 +322,21 @@ namespace Trivial.CommandLine
         /// Writes the specified number to the standard output stream.
         /// Note it may not flush immediately.
         /// </summary>
+        /// <param name="style">The content style.</param>
+        /// <param name="number">A number to output.</param>
+        public void Write(ConsoleTextStyle style, double number)
+        {
+            col.Add(new ConsoleText(number.ToString("g"), style));
+            OnAppend();
+        }
+
+        /// <summary>
+        /// Writes the specified number to the standard output stream.
+        /// Note it may not flush immediately.
+        /// </summary>
         /// <param name="foreground">The foreground color.</param>
         /// <param name="number">A number to output.</param>
-        public void Write(ConsoleColor? foreground, double number)
+        public void Write(ConsoleColor foreground, double number)
         {
             col.Add(new ConsoleText(number.ToString("g"), foreground));
             OnAppend();
@@ -300,7 +349,7 @@ namespace Trivial.CommandLine
         /// <param name="foreground">The foreground color.</param>
         /// <param name="background">The background color.</param>
         /// <param name="number">A number to output.</param>
-        public void Write(ConsoleColor? foreground, ConsoleColor? background, double number)
+        public void Write(ConsoleColor? foreground, ConsoleColor background, double number)
         {
             col.Add(new ConsoleText(number.ToString("g"), foreground, background));
             OnAppend();
@@ -323,11 +372,25 @@ namespace Trivial.CommandLine
         /// Writes the specified characters to the standard output stream.
         /// Note it may not flush immediately.
         /// </summary>
+        /// <param name="style">The content style.</param>
+        /// <param name="value">The value to write.</param>
+        /// <param name="start">The starting position in value.</param>
+        /// <param name="count">The number of characters to write.</param>
+        public void Write(ConsoleTextStyle style, char[] value, int start = 0, int? count = null)
+        {
+            col.Add(new ConsoleText(StringExtensions.ToString(value, start, count), style));
+            OnAppend();
+        }
+
+        /// <summary>
+        /// Writes the specified characters to the standard output stream.
+        /// Note it may not flush immediately.
+        /// </summary>
         /// <param name="foreground">The foreground color.</param>
         /// <param name="value">The value to write.</param>
         /// <param name="start">The starting position in value.</param>
         /// <param name="count">The number of characters to write.</param>
-        public void Write(ConsoleColor? foreground, char[] value, int start = 0, int? count = null)
+        public void Write(ConsoleColor foreground, char[] value, int start = 0, int? count = null)
         {
             col.Add(new ConsoleText(StringExtensions.ToString(value, start, count), foreground));
             OnAppend();
@@ -342,7 +405,7 @@ namespace Trivial.CommandLine
         /// <param name="value">The value to write.</param>
         /// <param name="start">The starting position in value.</param>
         /// <param name="count">The number of characters to write.</param>
-        public void Write(ConsoleColor? foreground, ConsoleColor? background, char[] value, int start = 0, int? count = null)
+        public void Write(ConsoleColor? foreground, ConsoleColor background, char[] value, int start = 0, int? count = null)
         {
             col.Add(new ConsoleText(StringExtensions.ToString(value, start, count), foreground, background));
             OnAppend();
@@ -364,10 +427,23 @@ namespace Trivial.CommandLine
         /// Writes the specified characters to the standard output stream.
         /// Note it may not flush immediately.
         /// </summary>
+        /// <param name="style">The content style.</param>
+        /// <param name="value">The value to write.</param>
+        /// <param name="repeatCount">The number of times to append value.</param>
+        public void Write(ConsoleTextStyle style, char value, int repeatCount = 1)
+        {
+            col.Add(new ConsoleText(value, repeatCount, style));
+            OnAppend();
+        }
+
+        /// <summary>
+        /// Writes the specified characters to the standard output stream.
+        /// Note it may not flush immediately.
+        /// </summary>
         /// <param name="foreground">The foreground color.</param>
         /// <param name="value">The value to write.</param>
         /// <param name="repeatCount">The number of times to append value.</param>
-        public void Write(ConsoleColor? foreground, char value, int repeatCount = 1)
+        public void Write(ConsoleColor foreground, char value, int repeatCount = 1)
         {
             col.Add(new ConsoleText(value, repeatCount, new ConsoleTextStyle(foreground)));
             OnAppend();
@@ -381,7 +457,7 @@ namespace Trivial.CommandLine
         /// <param name="background">The background color.</param>
         /// <param name="value">The value to write.</param>
         /// <param name="repeatCount">The number of times to append value.</param>
-        public void Write(ConsoleColor? foreground, ConsoleColor? background, char value, int repeatCount = 1)
+        public void Write(ConsoleColor? foreground, ConsoleColor background, char value, int repeatCount = 1)
         {
             col.Add(new ConsoleText(value, repeatCount, new ConsoleTextStyle(foreground, background)));
             OnAppend();
@@ -415,10 +491,23 @@ namespace Trivial.CommandLine
         /// Writes the specified string value to the standard output stream.
         /// It will flush immediately.
         /// </summary>
+        /// <param name="style">The content style.</param>
+        /// <param name="s">A composite format string to output.</param>
+        /// <param name="args">An object array that contains zero or more objects to format.</param>
+        public void WriteImmediately(ConsoleTextStyle style, string s, params object[] args)
+        {
+            col.Add(new ConsoleText(args.Length == 0 ? s : string.Format(s, args), style));
+            Flush();
+        }
+
+        /// <summary>
+        /// Writes the specified string value to the standard output stream.
+        /// It will flush immediately.
+        /// </summary>
         /// <param name="foreground">The foreground color.</param>
         /// <param name="s">A composite format string to output.</param>
         /// <param name="args">An object array that contains zero or more objects to format.</param>
-        public void WriteImmediately(ConsoleColor? foreground, string s, params object[] args)
+        public void WriteImmediately(ConsoleColor foreground, string s, params object[] args)
         {
             col.Add(new ConsoleText(args.Length == 0 ? s : string.Format(s, args), foreground));
             Flush();
@@ -432,7 +521,7 @@ namespace Trivial.CommandLine
         /// <param name="background">The background color.</param>
         /// <param name="s">A composite format string to output.</param>
         /// <param name="args">An object array that contains zero or more objects to format.</param>
-        public void WriteImmediately(ConsoleColor? foreground, ConsoleColor? background, string s, params object[] args)
+        public void WriteImmediately(ConsoleColor? foreground, ConsoleColor background, string s, params object[] args)
         {
             col.Add(new ConsoleText(args.Length == 0 ? s : string.Format(s, args), foreground, background));
             Flush();
@@ -499,10 +588,23 @@ namespace Trivial.CommandLine
         /// <summary>
         /// Writes the specified string value, followed by the current line terminator, to the standard output stream.
         /// </summary>
+        /// <param name="style">The content style.</param>
+        /// <param name="s">A composite format string to output.</param>
+        /// <param name="args">An object array that contains zero or more objects to format.</param>
+        public void WriteLine(ConsoleTextStyle style, string s, params object[] args)
+        {
+            col.Add(new ConsoleText(args.Length == 0 ? s : string.Format(s, args), style));
+            col.Add(new ConsoleText(Environment.NewLine));
+            Flush();
+        }
+
+        /// <summary>
+        /// Writes the specified string value, followed by the current line terminator, to the standard output stream.
+        /// </summary>
         /// <param name="foreground">The foreground color.</param>
         /// <param name="s">A composite format string to output.</param>
         /// <param name="args">An object array that contains zero or more objects to format.</param>
-        public void WriteLine(ConsoleColor? foreground, string s, params object[] args)
+        public void WriteLine(ConsoleColor foreground, string s, params object[] args)
         {
             col.Add(new ConsoleText(args.Length == 0 ? s : string.Format(s, args), foreground));
             col.Add(new ConsoleText(Environment.NewLine));
@@ -516,7 +618,7 @@ namespace Trivial.CommandLine
         /// <param name="background">The background color.</param>
         /// <param name="s">A composite format string to output.</param>
         /// <param name="args">An object array that contains zero or more objects to format.</param>
-        public void WriteLine(ConsoleColor? foreground, ConsoleColor? background, string s, params object[] args)
+        public void WriteLine(ConsoleColor? foreground, ConsoleColor background, string s, params object[] args)
         {
             col.Add(new ConsoleText(args.Length == 0 ? s : string.Format(s, args), foreground, background));
             col.Add(new ConsoleText(Environment.NewLine));
@@ -566,9 +668,22 @@ namespace Trivial.CommandLine
         /// Writes the specified number, followed by the current line terminator, to the standard output stream.
         /// Note it may not flush immediately.
         /// </summary>
+        /// <param name="style">The content style.</param>
+        /// <param name="number">A number to output.</param>
+        public void WriteLine(ConsoleTextStyle style, int number)
+        {
+            col.Add(new ConsoleText(number.ToString("g"), style));
+            col.Add(new ConsoleText(Environment.NewLine));
+            Flush();
+        }
+
+        /// <summary>
+        /// Writes the specified number, followed by the current line terminator, to the standard output stream.
+        /// Note it may not flush immediately.
+        /// </summary>
         /// <param name="foreground">The foreground color.</param>
         /// <param name="number">A number to output.</param>
-        public void WriteLine(ConsoleColor? foreground, int number)
+        public void WriteLine(ConsoleColor foreground, int number)
         {
             col.Add(new ConsoleText(number.ToString("g"), foreground));
             col.Add(new ConsoleText(Environment.NewLine));
@@ -582,7 +697,7 @@ namespace Trivial.CommandLine
         /// <param name="foreground">The foreground color.</param>
         /// <param name="background">The background color.</param>
         /// <param name="number">A number to output.</param>
-        public void WriteLine(ConsoleColor? foreground, ConsoleColor? background, int number)
+        public void WriteLine(ConsoleColor? foreground, ConsoleColor background, int number)
         {
             col.Add(new ConsoleText(number.ToString("g"), foreground, background));
             col.Add(new ConsoleText(Environment.NewLine));
@@ -605,9 +720,22 @@ namespace Trivial.CommandLine
         /// Writes the specified number, followed by the current line terminator, to the standard output stream.
         /// Note it may not flush immediately.
         /// </summary>
+        /// <param name="style">The content style.</param>
+        /// <param name="number">A number to output.</param>
+        public void WriteLine(ConsoleTextStyle style, long number)
+        {
+            col.Add(new ConsoleText(number.ToString("g"), style));
+            col.Add(new ConsoleText(Environment.NewLine));
+            Flush();
+        }
+
+        /// <summary>
+        /// Writes the specified number, followed by the current line terminator, to the standard output stream.
+        /// Note it may not flush immediately.
+        /// </summary>
         /// <param name="foreground">The foreground color.</param>
         /// <param name="number">A number to output.</param>
-        public void WriteLine(ConsoleColor? foreground, long number)
+        public void WriteLine(ConsoleColor foreground, long number)
         {
             col.Add(new ConsoleText(number.ToString("g"), foreground));
             col.Add(new ConsoleText(Environment.NewLine));
@@ -621,7 +749,7 @@ namespace Trivial.CommandLine
         /// <param name="foreground">The foreground color.</param>
         /// <param name="background">The background color.</param>
         /// <param name="number">A number to output.</param>
-        public void WriteLine(ConsoleColor? foreground, ConsoleColor? background, long number)
+        public void WriteLine(ConsoleColor? foreground, ConsoleColor background, long number)
         {
             col.Add(new ConsoleText(number.ToString("g"), foreground, background));
             col.Add(new ConsoleText(Environment.NewLine));
@@ -644,9 +772,22 @@ namespace Trivial.CommandLine
         /// Writes the specified number, followed by the current line terminator, to the standard output stream.
         /// Note it may not flush immediately.
         /// </summary>
+        /// <param name="style">The content style.</param>
+        /// <param name="number">A number to output.</param>
+        public void WriteLine(ConsoleTextStyle style, double number)
+        {
+            col.Add(new ConsoleText(number.ToString("g"), style));
+            col.Add(new ConsoleText(Environment.NewLine));
+            Flush();
+        }
+
+        /// <summary>
+        /// Writes the specified number, followed by the current line terminator, to the standard output stream.
+        /// Note it may not flush immediately.
+        /// </summary>
         /// <param name="foreground">The foreground color.</param>
         /// <param name="number">A number to output.</param>
-        public void WriteLine(ConsoleColor? foreground, double number)
+        public void WriteLine(ConsoleColor foreground, double number)
         {
             col.Add(new ConsoleText(number.ToString("g"), foreground));
             col.Add(new ConsoleText(Environment.NewLine));
@@ -660,7 +801,7 @@ namespace Trivial.CommandLine
         /// <param name="foreground">The foreground color.</param>
         /// <param name="background">The background color.</param>
         /// <param name="number">A number to output.</param>
-        public void WriteLine(ConsoleColor? foreground, ConsoleColor? background, double number)
+        public void WriteLine(ConsoleColor? foreground, ConsoleColor background, double number)
         {
             col.Add(new ConsoleText(number.ToString("g"), foreground, background));
             col.Add(new ConsoleText(Environment.NewLine));
@@ -683,11 +824,25 @@ namespace Trivial.CommandLine
         /// <summary>
         /// Writes the specified characters, followed by the current line terminator, to the standard output stream.
         /// </summary>
+        /// <param name="style">The content style.</param>
+        /// <param name="value">The value to write.</param>
+        /// <param name="start">The starting position in value.</param>
+        /// <param name="count">The number of characters to write.</param>
+        public void WriteLine(ConsoleTextStyle style, char[] value, int start = 0, int? count = null)
+        {
+            col.Add(new ConsoleText(StringExtensions.ToString(value, start, count), style));
+            col.Add(new ConsoleText(Environment.NewLine));
+            Flush();
+        }
+
+        /// <summary>
+        /// Writes the specified characters, followed by the current line terminator, to the standard output stream.
+        /// </summary>
         /// <param name="foreground">The foreground color.</param>
         /// <param name="value">The value to write.</param>
         /// <param name="start">The starting position in value.</param>
         /// <param name="count">The number of characters to write.</param>
-        public void WriteLine(ConsoleColor? foreground, char[] value, int start = 0, int? count = null)
+        public void WriteLine(ConsoleColor foreground, char[] value, int start = 0, int? count = null)
         {
             col.Add(new ConsoleText(StringExtensions.ToString(value, start, count), foreground));
             col.Add(new ConsoleText(Environment.NewLine));
@@ -702,7 +857,7 @@ namespace Trivial.CommandLine
         /// <param name="value">The value to write.</param>
         /// <param name="start">The starting position in value.</param>
         /// <param name="count">The number of characters to write.</param>
-        public void WriteLine(ConsoleColor? foreground, ConsoleColor? background, char[] value, int start = 0, int? count = null)
+        public void WriteLine(ConsoleColor? foreground, ConsoleColor background, char[] value, int start = 0, int? count = null)
         {
             col.Add(new ConsoleText(StringExtensions.ToString(value, start, count), foreground, background));
             col.Add(new ConsoleText(Environment.NewLine));
@@ -724,10 +879,23 @@ namespace Trivial.CommandLine
         /// <summary>
         /// Writes the specified characters, followed by the current line terminator, to the standard output stream.
         /// </summary>
+        /// <param name="style">The content style.</param>
+        /// <param name="value">The value to write.</param>
+        /// <param name="repeatCount">The number of times to append value.</param>
+        public void WriteLine(ConsoleTextStyle style, char value, int repeatCount = 1)
+        {
+            col.Add(new ConsoleText(value, repeatCount, style));
+            col.Add(new ConsoleText(Environment.NewLine));
+            Flush();
+        }
+
+        /// <summary>
+        /// Writes the specified characters, followed by the current line terminator, to the standard output stream.
+        /// </summary>
         /// <param name="foreground">The foreground color.</param>
         /// <param name="value">The value to write.</param>
         /// <param name="repeatCount">The number of times to append value.</param>
-        public void WriteLine(ConsoleColor? foreground, char value, int repeatCount = 1)
+        public void WriteLine(ConsoleColor foreground, char value, int repeatCount = 1)
         {
             col.Add(new ConsoleText(value, repeatCount, new ConsoleTextStyle(foreground)));
             col.Add(new ConsoleText(Environment.NewLine));
@@ -741,7 +909,7 @@ namespace Trivial.CommandLine
         /// <param name="background">The background color.</param>
         /// <param name="value">The value to write.</param>
         /// <param name="repeatCount">The number of times to append value.</param>
-        public void WriteLine(ConsoleColor? foreground, ConsoleColor? background, char value, int repeatCount = 1)
+        public void WriteLine(ConsoleColor? foreground, ConsoleColor background, char value, int repeatCount = 1)
         {
             col.Add(new ConsoleText(value, repeatCount, new ConsoleTextStyle(foreground, background)));
             col.Add(new ConsoleText(Environment.NewLine));
@@ -1044,7 +1212,10 @@ namespace Trivial.CommandLine
                         if (hasKey) str.AppendChar(key.KeyChar);
                         if (hasKey && replaceChar.HasValue && normalMode)
                         {
-                            Write(foreground, replaceChar.Value);
+                            if (foreground.HasValue)
+                                Write(foreground.Value, replaceChar.Value);
+                            else
+                                Write(replaceChar.Value);
                             Flush();
                         }
 

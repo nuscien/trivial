@@ -21,49 +21,52 @@ namespace Trivial.Maths
     /// <typeparam name="T">The type of item.</typeparam>
     public class RankResult3<T> where T : IComparable
     {
+        private Func<T, T, int> compareHandler;
+
         /// <summary>
         /// Initializes a new instance of the RankResult3 class.
         /// </summary>
         /// <param name="item1">Item 1.</param>
         /// <param name="item2">Item 2.</param>
         /// <param name="item3">Item 3.</param>
-        public RankResult3(T item1, T item2, T item3)
+        /// <param name="compare">An optional compare function.</param>
+        public RankResult3(T item1, T item2, T item3, Func<T, T, int> compare = null)
         {
             Item1 = item1;
             Item2 = item2;
             Item3 = item3;
-
-            if (item1.CompareTo(item2) > 0)
+            compareHandler = compare;
+            if (Compare(item1, item2) > 0)
             {
-                if (item2.CompareTo(item3) > 0)
+                if (Compare(item2, item3) > 0)
                     SetRank(1, 2, 3, 1, 2, 3);
-                else if (item2.CompareTo(item3) == 0)
+                else if (Compare(item2, item3) == 0)
                     SetRank(1, 2, 2, 1, 2, 3);
-                else if (item1.CompareTo(item3) > 0)
+                else if (Compare(item1, item3) > 0)
                     SetRank(1, 3, 2, 1, 3, 2);
-                else if (item1.CompareTo(item3) < 0)
+                else if (Compare(item1, item3) < 0)
                     SetRank(2, 3, 1, 3, 1, 2);
                 else
                     SetRank(1, 2, 1, 1, 3, 2);
             }
-            else if (item1.CompareTo(item2) < 0)
+            else if (Compare(item1, item2) < 0)
             {
-                if (item1.CompareTo(item3) > 0)
+                if (Compare(item1, item3) > 0)
                     SetRank(2, 1, 3, 2, 1, 3);
-                else if (item1.CompareTo(item3) == 0)
+                else if (Compare(item1, item3) == 0)
                     SetRank(2, 1, 2, 2, 1, 3);
-                else if (item2.CompareTo(item3) > 0)
+                else if (Compare(item2, item3) > 0)
                     SetRank(3, 1, 2, 2, 3, 1);
-                else if (item2.CompareTo(item3) < 0)
+                else if (Compare(item2, item3) < 0)
                     SetRank(3, 2, 1, 3, 2, 1);
                 else
                     SetRank(2, 1, 1, 2, 3, 1);
             }
             else
             {
-                if (item1.CompareTo(item3) > 0)
+                if (Compare(item1, item3) > 0)
                     SetRank(1, 1, 2, 1, 2, 3);
-                else if (item1.CompareTo(item3) < 0)
+                else if (Compare(item1, item3) < 0)
                     SetRank(2, 2, 1, 3, 1, 2);
                 else
                     SetRank(1, 1, 1, 1, 2, 3);
@@ -159,5 +162,8 @@ namespace Trivial.Maths
             Number2 = this[2];
             Number3 = this[3];
         }
+
+        private int Compare(T a, T b)
+            => compareHandler == null ? a.CompareTo(b) : compareHandler(a, b);
     }
 }

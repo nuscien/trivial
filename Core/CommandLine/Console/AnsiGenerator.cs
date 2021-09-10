@@ -199,36 +199,64 @@ namespace Trivial.CommandLine
             return count > 0 ? $"{Esc}[{count}X" : $"{Esc}[{-count}P";
         }
 
-        //public static ConsoleColor ToConsoleColor(System.Drawing.Color color)
-        //{
-        //    return ToConsoleColor(color.R, color.G, color.B);
-        //}
+        public static ConsoleColor ToConsoleColor(System.Drawing.Color color)
+        {
+            return ToConsoleColor(color.R, color.G, color.B);
+        }
 
-        //public static ConsoleColor ToConsoleColor(byte r, byte g, byte b)
-        //{
+        public static ConsoleColor ToConsoleColor(byte r, byte g, byte b)
+        {
 
-        //    if (r >= 220 && g >= 220 && b >= 220)
-        //        return ConsoleColor.White;
-        //    if (r <= 48 && g <= 48 && b <= 48)
-        //        return ConsoleColor.Black;
+            if (r >= 220 && g >= 220 && b >= 220)
+                return ConsoleColor.White;
+            if (r <= 48 && g <= 48 && b <= 48)
+                return ConsoleColor.Black;
+            var isLight = r >= 192 || g >= 192 || b >= 192;
+            var rank = new Maths.RankResult3<int>(r, g, b, CompareColorChannel);
+            var s = $"{rank.RankFor1}{rank.RankFor2}{rank.RankFor3}";
+            if (s.Contains('3'))
+            {
+                var single = rank.Number1 - rank.Number2 >= rank.Number2 - rank.Number3;
+                switch (s)
+                {
+                    case "123":
+                        s = single ? "122" : "112";
+                        break;
+                    case "132":
+                        s = single ? "122" : "121";
+                        break;
+                    case "312":
+                        s = single ? "212" : "211";
+                        break;
+                    case "213":
+                        s = single ? "212" : "112";
+                        break;
+                    case "321":
+                        s = single ? "221" : "211";
+                        break;
+                    case "231":
+                        s = single ? "221" : "121";
+                        break;
+                }
+            }
 
-        //    if (r >= 192 || g >= 192 || b >= 192)
-        //    {
+            return $"{rank.RankFor1}{rank.RankFor2}{rank.RankFor3}" switch
+            {
+                "122" => isLight ? ConsoleColor.Red : ConsoleColor.DarkRed,
+                "212" => isLight ? ConsoleColor.Green : ConsoleColor.DarkBlue,
+                "221" => isLight ? ConsoleColor.Blue : ConsoleColor.DarkBlue,
+                "112" => isLight ? ConsoleColor.Yellow : ConsoleColor.DarkYellow,
+                "121" => isLight ? ConsoleColor.Magenta : ConsoleColor.DarkMagenta,
+                "211" => isLight ? ConsoleColor.Cyan : ConsoleColor.DarkCyan,
+                _ => isLight ? ConsoleColor.Gray : ConsoleColor.DarkGray
+            };
+        }
 
-        //    }
-
-        //    var rank = new Maths.RankResult3<int>(r, g, b);
-
-        //    if (r <= 220 && g <= 220 && b <= 220 && r >= 160 && g >= 160 && b >= 160)
-        //        return ConsoleColor.Gray;
-        //    if (r <= 160 && g <= 160 && b <= 160 && r >= 48 && g >= 48 && b >= 48)
-        //        return ConsoleColor.DarkGray;
-        //    if (r >= 192)
-        //        return g >= 192 ? ConsoleColor.Yellow : ConsoleColor.Red;
-        //    if (g >= 192)
-        //        return b >= 192 ? ConsoleColor.Cyan : ConsoleColor.Green;
-        //    if (b >= 192)
-        //        return r >= 192 ? ConsoleColor.Magenta : ConsoleColor.Blue;
-        //}
+        private static int CompareColorChannel(int a, int b)
+        {
+            var diff = a - b;
+            if (diff > 48 && diff < 48) return 0;
+            return diff;
+        }
     }
 }

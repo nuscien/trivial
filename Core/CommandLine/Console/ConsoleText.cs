@@ -233,6 +233,7 @@ namespace Trivial.CommandLine
         {
             Content = new StringBuilder(s);
             Style.ForegroundRgbColor = foreground;
+            Style.ForegroundConsoleColor = AnsiCodeGenerator.ToConsoleColor(foreground);
         }
 
         /// <summary>
@@ -246,6 +247,8 @@ namespace Trivial.CommandLine
             Content = new StringBuilder(s);
             Style.ForegroundRgbColor = foreground;
             Style.BackgroundRgbColor = background;
+            Style.ForegroundConsoleColor = AnsiCodeGenerator.ToConsoleColor(foreground);
+            Style.BackgroundConsoleColor = AnsiCodeGenerator.ToConsoleColor(background);
         }
 
         /// <summary>

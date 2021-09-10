@@ -57,7 +57,7 @@ namespace Trivial.CommandLine
         /// <param name="foreground">The foreground color.</param>
         /// <param name="s">A composite format string to output.</param>
         /// <param name="args">An object array that contains zero or more objects to format.</param>
-        public static void Write(ConsoleColor? foreground, string s, params object[] args)
+        public static void Write(ConsoleColor foreground, string s, params object[] args)
             => ConsoleInterface.Default.Write(foreground, s, args);
 
         /// <summary>
@@ -68,7 +68,7 @@ namespace Trivial.CommandLine
         /// <param name="background">The background color.</param>
         /// <param name="s">A composite format string to output.</param>
         /// <param name="args">An object array that contains zero or more objects to format.</param>
-        public static void Write(ConsoleColor? foreground, ConsoleColor? background, string s, params object[] args)
+        public static void Write(ConsoleColor? foreground, ConsoleColor background, string s, params object[] args)
             => ConsoleInterface.Default.Write(foreground, background, s, args);
 
         /// <summary>
@@ -106,7 +106,7 @@ namespace Trivial.CommandLine
         /// </summary>
         /// <param name="foreground">The foreground color.</param>
         /// <param name="number">A number to output.</param>
-        public static void Write(ConsoleColor? foreground, int number)
+        public static void Write(ConsoleColor foreground, int number)
             => ConsoleInterface.Default.Write(foreground, number);
 
         /// <summary>
@@ -116,7 +116,7 @@ namespace Trivial.CommandLine
         /// <param name="foreground">The foreground color.</param>
         /// <param name="background">The background color.</param>
         /// <param name="number">A number to output.</param>
-        public static void Write(ConsoleColor? foreground, ConsoleColor? background, int number)
+        public static void Write(ConsoleColor? foreground, ConsoleColor background, int number)
             => ConsoleInterface.Default.Write(foreground, background, number);
 
         /// <summary>
@@ -133,7 +133,7 @@ namespace Trivial.CommandLine
         /// </summary>
         /// <param name="foreground">The foreground color.</param>
         /// <param name="number">A number to output.</param>
-        public static void Write(ConsoleColor? foreground, long number)
+        public static void Write(ConsoleColor foreground, long number)
             => ConsoleInterface.Default.Write(foreground, number);
 
         /// <summary>
@@ -143,7 +143,7 @@ namespace Trivial.CommandLine
         /// <param name="foreground">The foreground color.</param>
         /// <param name="background">The background color.</param>
         /// <param name="number">A number to output.</param>
-        public static void Write(ConsoleColor? foreground, ConsoleColor? background, long number)
+        public static void Write(ConsoleColor? foreground, ConsoleColor background, long number)
             => ConsoleInterface.Default.Write(foreground, background, number);
 
         /// <summary>
@@ -160,7 +160,7 @@ namespace Trivial.CommandLine
         /// </summary>
         /// <param name="foreground">The foreground color.</param>
         /// <param name="number">A number to output.</param>
-        public static void Write(ConsoleColor? foreground, double number)
+        public static void Write(ConsoleColor foreground, double number)
             => ConsoleInterface.Default.Write(foreground, number);
 
         /// <summary>
@@ -170,7 +170,7 @@ namespace Trivial.CommandLine
         /// <param name="foreground">The foreground color.</param>
         /// <param name="background">The background color.</param>
         /// <param name="number">A number to output.</param>
-        public static void Write(ConsoleColor? foreground, ConsoleColor? background, double number)
+        public static void Write(ConsoleColor? foreground, ConsoleColor background, double number)
             => ConsoleInterface.Default.Write(foreground, background, number);
 
         /// <summary>
@@ -191,7 +191,7 @@ namespace Trivial.CommandLine
         /// <param name="value">The value to write.</param>
         /// <param name="start">The starting position in value.</param>
         /// <param name="count">The number of characters to write.</param>
-        public static void Write(ConsoleColor? foreground, char[] value, int start = 0, int? count = null)
+        public static void Write(ConsoleColor foreground, char[] value, int start = 0, int? count = null)
             => ConsoleInterface.Default.Write(foreground, value, start, count);
 
         /// <summary>
@@ -203,7 +203,7 @@ namespace Trivial.CommandLine
         /// <param name="value">The value to write.</param>
         /// <param name="start">The starting position in value.</param>
         /// <param name="count">The number of characters to write.</param>
-        public static void Write(ConsoleColor? foreground, ConsoleColor? background, char[] value, int start = 0, int? count = null)
+        public static void Write(ConsoleColor? foreground, ConsoleColor background, char[] value, int start = 0, int? count = null)
             => ConsoleInterface.Default.Write(foreground, background, value, start, count);
 
         /// <summary>
@@ -243,7 +243,7 @@ namespace Trivial.CommandLine
         /// <param name="foreground">The foreground color.</param>
         /// <param name="s">A composite format string to output.</param>
         /// <param name="args">An object array that contains zero or more objects to format.</param>
-        public static void WriteLine(ConsoleColor? foreground, string s, params object[] args)
+        public static void WriteLine(ConsoleColor foreground, string s, params object[] args)
             => ConsoleInterface.Default.WriteLine(foreground, s, args);
 
         /// <summary>
@@ -253,7 +253,7 @@ namespace Trivial.CommandLine
         /// <param name="background">The background color.</param>
         /// <param name="s">A composite format string to output.</param>
         /// <param name="args">An object array that contains zero or more objects to format.</param>
-        public static void WriteLine(ConsoleColor? foreground, ConsoleColor? background, string s, params object[] args)
+        public static void WriteLine(ConsoleColor? foreground, ConsoleColor background, string s, params object[] args)
             => ConsoleInterface.Default.WriteLine(foreground, background, s, args);
 
         /// <summary>
@@ -289,7 +289,7 @@ namespace Trivial.CommandLine
         /// </summary>
         /// <param name="foreground">The foreground color.</param>
         /// <param name="number">A number to output.</param>
-        public static void WriteLine(ConsoleColor? foreground, int number)
+        public static void WriteLine(ConsoleColor foreground, int number)
             => ConsoleInterface.Default.WriteLine(foreground, number);
 
         /// <summary>
@@ -299,7 +299,7 @@ namespace Trivial.CommandLine
         /// <param name="foreground">The foreground color.</param>
         /// <param name="background">The background color.</param>
         /// <param name="number">A number to output.</param>
-        public static void WriteLine(ConsoleColor? foreground, ConsoleColor? background, int number)
+        public static void WriteLine(ConsoleColor? foreground, ConsoleColor background, int number)
             => ConsoleInterface.Default.WriteLine(foreground, background, number);
 
         /// <summary>
@@ -316,7 +316,7 @@ namespace Trivial.CommandLine
         /// </summary>
         /// <param name="foreground">The foreground color.</param>
         /// <param name="number">A number to output.</param>
-        public static void WriteLine(ConsoleColor? foreground, long number)
+        public static void WriteLine(ConsoleColor foreground, long number)
             => ConsoleInterface.Default.WriteLine(foreground, number);
 
         /// <summary>
@@ -326,7 +326,7 @@ namespace Trivial.CommandLine
         /// <param name="foreground">The foreground color.</param>
         /// <param name="background">The background color.</param>
         /// <param name="number">A number to output.</param>
-        public static void WriteLine(ConsoleColor? foreground, ConsoleColor? background, long number)
+        public static void WriteLine(ConsoleColor? foreground, ConsoleColor background, long number)
             => ConsoleInterface.Default.WriteLine(foreground, background, number);
 
         /// <summary>
@@ -343,7 +343,7 @@ namespace Trivial.CommandLine
         /// </summary>
         /// <param name="foreground">The foreground color.</param>
         /// <param name="number">A number to output.</param>
-        public static void WriteLine(ConsoleColor? foreground, double number)
+        public static void WriteLine(ConsoleColor foreground, double number)
             => ConsoleInterface.Default.WriteLine(foreground, number);
 
         /// <summary>
@@ -353,7 +353,7 @@ namespace Trivial.CommandLine
         /// <param name="foreground">The foreground color.</param>
         /// <param name="background">The background color.</param>
         /// <param name="number">A number to output.</param>
-        public static void WriteLine(ConsoleColor? foreground, ConsoleColor? background, double number)
+        public static void WriteLine(ConsoleColor? foreground, ConsoleColor background, double number)
             => ConsoleInterface.Default.WriteLine(foreground, background, number);
 
         /// <summary>
@@ -372,7 +372,7 @@ namespace Trivial.CommandLine
         /// <param name="value">The value to write.</param>
         /// <param name="start">The starting position in value.</param>
         /// <param name="count">The number of characters to write.</param>
-        public static void WriteLine(ConsoleColor? foreground, char[] value, int start = 0, int? count = null)
+        public static void WriteLine(ConsoleColor foreground, char[] value, int start = 0, int? count = null)
             => ConsoleInterface.Default.WriteLine(foreground, value, start, count);
 
         /// <summary>
@@ -383,7 +383,7 @@ namespace Trivial.CommandLine
         /// <param name="value">The value to write.</param>
         /// <param name="start">The starting position in value.</param>
         /// <param name="count">The number of characters to write.</param>
-        public static void WriteLine(ConsoleColor? foreground, ConsoleColor? background, char[] value, int start = 0, int? count = null)
+        public static void WriteLine(ConsoleColor? foreground, ConsoleColor background, char[] value, int start = 0, int? count = null)
             => ConsoleInterface.Default.WriteLine(foreground, background, value, start, count);
 
         /// <summary>
