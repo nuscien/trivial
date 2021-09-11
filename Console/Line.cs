@@ -223,6 +223,7 @@ namespace Trivial.Console
             if (start == 0 && count == null)
             {
                 Write(null, null, new string(value));
+                return;
             }
 
             var list = value.Skip(start);
@@ -243,6 +244,7 @@ namespace Trivial.Console
             if (start == 0 && count == null)
             {
                 Write(foregroundColor, null, new string(value));
+                return;
             }
 
             var list = value.Skip(start);
@@ -264,6 +266,7 @@ namespace Trivial.Console
             if (start == 0 && count == null)
             {
                 Write(foregroundColor, backgroundColor, new string(value));
+                return;
             }
 
             var list = value.Skip(start);
@@ -328,6 +331,66 @@ namespace Trivial.Console
         /// <param name="backgroundColor">The background color of the console.</param>
         /// <param name="value">The value to write.</param>
         public void Write(ConsoleColor? foregroundColor, ConsoleColor? backgroundColor, long value)
+        {
+            Write(foregroundColor, backgroundColor, value.ToString());
+        }
+
+        /// <summary>
+        /// Writes the specified number to the standard output stream.
+        /// </summary>
+        /// <param name="value">The value to write.</param>
+        public void Write(ulong value)
+        {
+            Write(null, null, value);
+        }
+
+        /// <summary>
+        /// Writes the specified number to the standard output stream.
+        /// </summary>
+        /// <param name="value">The value to write.</param>
+        /// <param name="foregroundColor">The foreground color of the console.</param>
+        /// <param name="backgroundColor">The background color of the console.</param>
+        public void Write(ConsoleColor? foregroundColor, ConsoleColor? backgroundColor, ulong value)
+        {
+            Write(foregroundColor, backgroundColor, value.ToString());
+        }
+
+        /// <summary>
+        /// Writes the specified number to the standard output stream.
+        /// </summary>
+        /// <param name="value">The value to write.</param>
+        public void Write(float value)
+        {
+            Write(null, null, value);
+        }
+
+        /// <summary>
+        /// Writes the specified number to the standard output stream.
+        /// </summary>
+        /// <param name="value">The value to write.</param>
+        /// <param name="foregroundColor">The foreground color of the console.</param>
+        /// <param name="backgroundColor">The background color of the console.</param>
+        public void Write(ConsoleColor? foregroundColor, ConsoleColor? backgroundColor, float value)
+        {
+            Write(foregroundColor, backgroundColor, value.ToString());
+        }
+
+        /// <summary>
+        /// Writes the specified number to the standard output stream.
+        /// </summary>
+        /// <param name="value">The value to write.</param>
+        public void Write(decimal value)
+        {
+            Write(null, null, value);
+        }
+
+        /// <summary>
+        /// Writes the specified number to the standard output stream.
+        /// </summary>
+        /// <param name="value">The value to write.</param>
+        /// <param name="foregroundColor">The foreground color of the console.</param>
+        /// <param name="backgroundColor">The background color of the console.</param>
+        public void Write(ConsoleColor? foregroundColor, ConsoleColor? backgroundColor, decimal value)
         {
             Write(foregroundColor, backgroundColor, value.ToString());
         }
@@ -613,6 +676,7 @@ namespace Trivial.Console
             if (start == 0 && count == null)
             {
                 WriteLine(null, null, new string(value));
+                return;
             }
 
             var list = value.Skip(start);
@@ -633,6 +697,7 @@ namespace Trivial.Console
             if (start == 0 && count == null)
             {
                 WriteLine(foregroundColor, null, new string(value));
+                return;
             }
 
             var list = value.Skip(start);
@@ -667,6 +732,36 @@ namespace Trivial.Console
         /// </summary>
         /// <param name="value">The value to write.</param>
         public void WriteLine(long value)
+        {
+            Write(value);
+            End();
+        }
+
+        /// <summary>
+        /// Writes the specified number, followed by the current line terminator, to the standard output stream.
+        /// </summary>
+        /// <param name="value">The value to write.</param>
+        public void WriteLine(ulong value)
+        {
+            Write(value);
+            End();
+        }
+
+        /// <summary>
+        /// Writes the specified number, followed by the current line terminator, to the standard output stream.
+        /// </summary>
+        /// <param name="value">The value to write.</param>
+        public void WriteLine(float value)
+        {
+            Write(value);
+            End();
+        }
+
+        /// <summary>
+        /// Writes the specified number, followed by the current line terminator, to the standard output stream.
+        /// </summary>
+        /// <param name="value">The value to write.</param>
+        public void WriteLine(decimal value)
         {
             Write(value);
             End();
