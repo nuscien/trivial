@@ -54,6 +54,16 @@ namespace Trivial.CommandLine
         /// Writes the specified string value to the standard output stream.
         /// Note it may not flush immediately.
         /// </summary>
+        /// <param name="style">The content style.</param>
+        /// <param name="s">A composite format string to output.</param>
+        /// <param name="args">An object array that contains zero or more objects to format.</param>
+        public static void Write(ConsoleTextStyle style, string s, params object[] args)
+            => ConsoleInterface.Default.Write(style, s, args);
+
+        /// <summary>
+        /// Writes the specified string value to the standard output stream.
+        /// Note it may not flush immediately.
+        /// </summary>
         /// <param name="foreground">The foreground color.</param>
         /// <param name="s">A composite format string to output.</param>
         /// <param name="args">An object array that contains zero or more objects to format.</param>
@@ -104,6 +114,15 @@ namespace Trivial.CommandLine
         /// Writes the specified number to the standard output stream.
         /// Note it may not flush immediately.
         /// </summary>
+        /// <param name="style">The content style.</param>
+        /// <param name="number">A number to output.</param>
+        public static void Write(ConsoleTextStyle style, int number)
+            => ConsoleInterface.Default.Write(style, number);
+
+        /// <summary>
+        /// Writes the specified number to the standard output stream.
+        /// Note it may not flush immediately.
+        /// </summary>
         /// <param name="foreground">The foreground color.</param>
         /// <param name="number">A number to output.</param>
         public static void Write(ConsoleColor foreground, int number)
@@ -131,6 +150,15 @@ namespace Trivial.CommandLine
         /// Writes the specified number to the standard output stream.
         /// Note it may not flush immediately.
         /// </summary>
+        /// <param name="style">The content style.</param>
+        /// <param name="number">A number to output.</param>
+        public static void Write(ConsoleTextStyle style, long number)
+            => ConsoleInterface.Default.Write(style, number);
+
+        /// <summary>
+        /// Writes the specified number to the standard output stream.
+        /// Note it may not flush immediately.
+        /// </summary>
         /// <param name="foreground">The foreground color.</param>
         /// <param name="number">A number to output.</param>
         public static void Write(ConsoleColor foreground, long number)
@@ -151,8 +179,125 @@ namespace Trivial.CommandLine
         /// Note it may not flush immediately.
         /// </summary>
         /// <param name="number">A number to output.</param>
+        public static void Write(ulong number)
+            => ConsoleInterface.Default.Write(number);
+
+        /// <summary>
+        /// Writes the specified number to the standard output stream.
+        /// Note it may not flush immediately.
+        /// </summary>
+        /// <param name="style">The content style.</param>
+        /// <param name="number">A number to output.</param>
+        public static void Write(ConsoleTextStyle style, ulong number)
+            => ConsoleInterface.Default.Write(style, number);
+
+        /// <summary>
+        /// Writes the specified number to the standard output stream.
+        /// Note it may not flush immediately.
+        /// </summary>
+        /// <param name="foreground">The foreground color.</param>
+        /// <param name="number">A number to output.</param>
+        public static void Write(ConsoleColor foreground, ulong number)
+            => ConsoleInterface.Default.Write(foreground, number);
+
+        /// <summary>
+        /// Writes the specified number to the standard output stream.
+        /// Note it may not flush immediately.
+        /// </summary>
+        /// <param name="foreground">The foreground color.</param>
+        /// <param name="background">The background color.</param>
+        /// <param name="number">A number to output.</param>
+        public static void Write(ConsoleColor? foreground, ConsoleColor background, ulong number)
+            => ConsoleInterface.Default.Write(foreground, background, number);
+
+        /// <summary>
+        /// Writes the specified number to the standard output stream.
+        /// Note it may not flush immediately.
+        /// </summary>
+        /// <param name="number">A number to output.</param>
+        public static void Write(float number)
+            => ConsoleInterface.Default.Write(number);
+
+        /// <summary>
+        /// Writes the specified number to the standard output stream.
+        /// Note it may not flush immediately.
+        /// </summary>
+        /// <param name="style">The content style.</param>
+        /// <param name="number">A number to output.</param>
+        public static void Write(ConsoleTextStyle style, float number)
+            => ConsoleInterface.Default.Write(style, number);
+
+        /// <summary>
+        /// Writes the specified number to the standard output stream.
+        /// Note it may not flush immediately.
+        /// </summary>
+        /// <param name="foreground">The foreground color.</param>
+        /// <param name="number">A number to output.</param>
+        public static void Write(ConsoleColor foreground, float number)
+            => ConsoleInterface.Default.Write(foreground, number);
+
+        /// <summary>
+        /// Writes the specified number to the standard output stream.
+        /// Note it may not flush immediately.
+        /// </summary>
+        /// <param name="foreground">The foreground color.</param>
+        /// <param name="background">The background color.</param>
+        /// <param name="number">A number to output.</param>
+        public static void Write(ConsoleColor? foreground, ConsoleColor background, float number)
+            => ConsoleInterface.Default.Write(foreground, background, number);
+
+        /// <summary>
+        /// Writes the specified number to the standard output stream.
+        /// Note it may not flush immediately.
+        /// </summary>
+        /// <param name="number">A number to output.</param>
+        public static void Write(decimal number)
+            => ConsoleInterface.Default.Write(number);
+
+        /// <summary>
+        /// Writes the specified number to the standard output stream.
+        /// Note it may not flush immediately.
+        /// </summary>
+        /// <param name="style">The content style.</param>
+        /// <param name="number">A number to output.</param>
+        public static void Write(ConsoleTextStyle style, decimal number)
+            => ConsoleInterface.Default.Write(style, number);
+
+        /// <summary>
+        /// Writes the specified number to the standard output stream.
+        /// Note it may not flush immediately.
+        /// </summary>
+        /// <param name="foreground">The foreground color.</param>
+        /// <param name="number">A number to output.</param>
+        public static void Write(ConsoleColor foreground, decimal number)
+            => ConsoleInterface.Default.Write(foreground, number);
+
+        /// <summary>
+        /// Writes the specified number to the standard output stream.
+        /// Note it may not flush immediately.
+        /// </summary>
+        /// <param name="foreground">The foreground color.</param>
+        /// <param name="background">The background color.</param>
+        /// <param name="number">A number to output.</param>
+        public static void Write(ConsoleColor? foreground, ConsoleColor background, decimal number)
+            => ConsoleInterface.Default.Write(foreground, background, number);
+
+        /// <summary>
+        /// Writes the specified number to the standard output stream.
+        /// Note it may not flush immediately.
+        /// </summary>
+        /// <param name="number">A number to output.</param>
         public static void Write(double number)
             => ConsoleInterface.Default.Write(number);
+
+        /// <summary>
+        /// Writes the specified number to the standard output stream.
+        /// Note it may not flush immediately.
+        /// </summary>
+        /// <param name="style">The content style.</param>
+        /// <param name="number">A number to output.</param>
+        public static void Write(ConsoleTextStyle style, double number)
+            => ConsoleInterface.Default.Write(style, number);
 
         /// <summary>
         /// Writes the specified number to the standard output stream.
@@ -187,6 +332,17 @@ namespace Trivial.CommandLine
         /// Writes the specified characters to the standard output stream.
         /// Note it may not flush immediately.
         /// </summary>
+        /// <param name="style">The content style.</param>
+        /// <param name="value">The value to write.</param>
+        /// <param name="start">The starting position in value.</param>
+        /// <param name="count">The number of characters to write.</param>
+        public static void Write(ConsoleTextStyle style, char[] value, int start = 0, int? count = null)
+            => ConsoleInterface.Default.Write(style, value, start, count);
+
+        /// <summary>
+        /// Writes the specified characters to the standard output stream.
+        /// Note it may not flush immediately.
+        /// </summary>
         /// <param name="foreground">The foreground color.</param>
         /// <param name="value">The value to write.</param>
         /// <param name="start">The starting position in value.</param>
@@ -205,6 +361,46 @@ namespace Trivial.CommandLine
         /// <param name="count">The number of characters to write.</param>
         public static void Write(ConsoleColor? foreground, ConsoleColor background, char[] value, int start = 0, int? count = null)
             => ConsoleInterface.Default.Write(foreground, background, value, start, count);
+
+        /// <summary>
+        /// Writes the specified characters to the standard output stream.
+        /// Note it may not flush immediately.
+        /// </summary>
+        /// <param name="value">The value to write.</param>
+        /// <param name="repeatCount">The number of times to append value.</param>
+        public static void Write(char value, int repeatCount = 1)
+            => ConsoleInterface.Default.Write(value, repeatCount);
+
+        /// <summary>
+        /// Writes the specified characters to the standard output stream.
+        /// Note it may not flush immediately.
+        /// </summary>
+        /// <param name="style">The content style.</param>
+        /// <param name="value">The value to write.</param>
+        /// <param name="repeatCount">The number of times to append value.</param>
+        public static void Write(ConsoleTextStyle style, char value, int repeatCount = 1)
+            => ConsoleInterface.Default.Write(style, value, repeatCount);
+
+        /// <summary>
+        /// Writes the specified characters to the standard output stream.
+        /// Note it may not flush immediately.
+        /// </summary>
+        /// <param name="foreground">The foreground color.</param>
+        /// <param name="value">The value to write.</param>
+        /// <param name="repeatCount">The number of times to append value.</param>
+        public static void Write(ConsoleColor foreground, char value, int repeatCount = 1)
+            => ConsoleInterface.Default.Write(foreground, value, repeatCount);
+
+        /// <summary>
+        /// Writes the specified characters to the standard output stream.
+        /// Note it may not flush immediately.
+        /// </summary>
+        /// <param name="foreground">The foreground color.</param>
+        /// <param name="background">The background color.</param>
+        /// <param name="value">The value to write.</param>
+        /// <param name="repeatCount">The number of times to append value.</param>
+        public static void Write(ConsoleColor? foreground, ConsoleColor background, char value, int repeatCount = 1)
+            => ConsoleInterface.Default.Write(foreground, background, value, repeatCount);
 
         /// <summary>
         /// Writes the specified string value, followed by the current line terminator, to the standard output stream.
@@ -236,6 +432,15 @@ namespace Trivial.CommandLine
         /// <param name="args">An object array that contains zero or more objects to format.</param>
         public static void WriteLine(string s, params object[] args)
             => ConsoleInterface.Default.WriteLine(s, args);
+
+        /// <summary>
+        /// Writes the specified string value, followed by the current line terminator, to the standard output stream.
+        /// </summary>
+        /// <param name="style">The content style.</param>
+        /// <param name="s">A composite format string to output.</param>
+        /// <param name="args">An object array that contains zero or more objects to format.</param>
+        public static void WriteLine(ConsoleTextStyle style, string s, params object[] args)
+            => ConsoleInterface.Default.WriteLine(style, s, args);
 
         /// <summary>
         /// Writes the specified string value, followed by the current line terminator, to the standard output stream.
@@ -287,6 +492,15 @@ namespace Trivial.CommandLine
         /// Writes the specified number, followed by the current line terminator, to the standard output stream.
         /// Note it may not flush immediately.
         /// </summary>
+        /// <param name="style">The content style.</param>
+        /// <param name="number">A number to output.</param>
+        public static void WriteLine(ConsoleTextStyle style, int number)
+            => ConsoleInterface.Default.WriteLine(style, number);
+
+        /// <summary>
+        /// Writes the specified number, followed by the current line terminator, to the standard output stream.
+        /// Note it may not flush immediately.
+        /// </summary>
         /// <param name="foreground">The foreground color.</param>
         /// <param name="number">A number to output.</param>
         public static void WriteLine(ConsoleColor foreground, int number)
@@ -314,6 +528,15 @@ namespace Trivial.CommandLine
         /// Writes the specified number, followed by the current line terminator, to the standard output stream.
         /// Note it may not flush immediately.
         /// </summary>
+        /// <param name="style">The content style.</param>
+        /// <param name="number">A number to output.</param>
+        public static void WriteLine(ConsoleTextStyle style, long number)
+            => ConsoleInterface.Default.WriteLine(style, number);
+
+        /// <summary>
+        /// Writes the specified number, followed by the current line terminator, to the standard output stream.
+        /// Note it may not flush immediately.
+        /// </summary>
         /// <param name="foreground">The foreground color.</param>
         /// <param name="number">A number to output.</param>
         public static void WriteLine(ConsoleColor foreground, long number)
@@ -334,8 +557,125 @@ namespace Trivial.CommandLine
         /// Note it may not flush immediately.
         /// </summary>
         /// <param name="number">A number to output.</param>
+        public static void WriteLine(ulong number)
+            => ConsoleInterface.Default.WriteLine(number);
+
+        /// <summary>
+        /// Writes the specified number, followed by the current line terminator, to the standard output stream.
+        /// Note it may not flush immediately.
+        /// </summary>
+        /// <param name="style">The content style.</param>
+        /// <param name="number">A number to output.</param>
+        public static void WriteLine(ConsoleTextStyle style, ulong number)
+            => ConsoleInterface.Default.WriteLine(style, number);
+
+        /// <summary>
+        /// Writes the specified number, followed by the current line terminator, to the standard output stream.
+        /// Note it may not flush immediately.
+        /// </summary>
+        /// <param name="foreground">The foreground color.</param>
+        /// <param name="number">A number to output.</param>
+        public static void WriteLine(ConsoleColor foreground, ulong number)
+            => ConsoleInterface.Default.WriteLine(foreground, number);
+
+        /// <summary>
+        /// Writes the specified number, followed by the current line terminator, to the standard output stream.
+        /// Note it may not flush immediately.
+        /// </summary>
+        /// <param name="foreground">The foreground color.</param>
+        /// <param name="background">The background color.</param>
+        /// <param name="number">A number to output.</param>
+        public static void WriteLine(ConsoleColor? foreground, ConsoleColor background, ulong number)
+            => ConsoleInterface.Default.WriteLine(foreground, background, number);
+
+        /// <summary>
+        /// Writes the specified number, followed by the current line terminator, to the standard output stream.
+        /// Note it may not flush immediately.
+        /// </summary>
+        /// <param name="number">A number to output.</param>
+        public static void WriteLine(float number)
+            => ConsoleInterface.Default.WriteLine(number);
+
+        /// <summary>
+        /// Writes the specified number, followed by the current line terminator, to the standard output stream.
+        /// Note it may not flush immediately.
+        /// </summary>
+        /// <param name="style">The content style.</param>
+        /// <param name="number">A number to output.</param>
+        public static void WriteLine(ConsoleTextStyle style, float number)
+            => ConsoleInterface.Default.WriteLine(style, number);
+
+        /// <summary>
+        /// Writes the specified number, followed by the current line terminator, to the standard output stream.
+        /// Note it may not flush immediately.
+        /// </summary>
+        /// <param name="foreground">The foreground color.</param>
+        /// <param name="number">A number to output.</param>
+        public static void WriteLine(ConsoleColor foreground, float number)
+            => ConsoleInterface.Default.WriteLine(foreground, number);
+
+        /// <summary>
+        /// Writes the specified number, followed by the current line terminator, to the standard output stream.
+        /// Note it may not flush immediately.
+        /// </summary>
+        /// <param name="foreground">The foreground color.</param>
+        /// <param name="background">The background color.</param>
+        /// <param name="number">A number to output.</param>
+        public static void WriteLine(ConsoleColor? foreground, ConsoleColor background, float number)
+            => ConsoleInterface.Default.WriteLine(foreground, background, number);
+
+        /// <summary>
+        /// Writes the specified number, followed by the current line terminator, to the standard output stream.
+        /// Note it may not flush immediately.
+        /// </summary>
+        /// <param name="number">A number to output.</param>
+        public static void WriteLine(decimal number)
+            => ConsoleInterface.Default.WriteLine(number);
+
+        /// <summary>
+        /// Writes the specified number, followed by the current line terminator, to the standard output stream.
+        /// Note it may not flush immediately.
+        /// </summary>
+        /// <param name="style">The content style.</param>
+        /// <param name="number">A number to output.</param>
+        public static void WriteLine(ConsoleTextStyle style, decimal number)
+            => ConsoleInterface.Default.WriteLine(style, number);
+
+        /// <summary>
+        /// Writes the specified number, followed by the current line terminator, to the standard output stream.
+        /// Note it may not flush immediately.
+        /// </summary>
+        /// <param name="foreground">The foreground color.</param>
+        /// <param name="number">A number to output.</param>
+        public static void WriteLine(ConsoleColor foreground, decimal number)
+            => ConsoleInterface.Default.WriteLine(foreground, number);
+
+        /// <summary>
+        /// Writes the specified number, followed by the current line terminator, to the standard output stream.
+        /// Note it may not flush immediately.
+        /// </summary>
+        /// <param name="foreground">The foreground color.</param>
+        /// <param name="background">The background color.</param>
+        /// <param name="number">A number to output.</param>
+        public static void WriteLine(ConsoleColor? foreground, ConsoleColor background, decimal number)
+            => ConsoleInterface.Default.WriteLine(foreground, background, number);
+
+        /// <summary>
+        /// Writes the specified number, followed by the current line terminator, to the standard output stream.
+        /// Note it may not flush immediately.
+        /// </summary>
+        /// <param name="number">A number to output.</param>
         public static void WriteLine(double number)
             => ConsoleInterface.Default.WriteLine(number);
+
+        /// <summary>
+        /// Writes the specified number, followed by the current line terminator, to the standard output stream.
+        /// Note it may not flush immediately.
+        /// </summary>
+        /// <param name="style">The content style.</param>
+        /// <param name="number">A number to output.</param>
+        public static void WriteLine(ConsoleTextStyle style, double number)
+            => ConsoleInterface.Default.WriteLine(style, number);
 
         /// <summary>
         /// Writes the specified number, followed by the current line terminator, to the standard output stream.
@@ -368,6 +708,16 @@ namespace Trivial.CommandLine
         /// <summary>
         /// Writes the specified characters, followed by the current line terminator, to the standard output stream.
         /// </summary>
+        /// <param name="style">The content style.</param>
+        /// <param name="value">The value to write.</param>
+        /// <param name="start">The starting position in value.</param>
+        /// <param name="count">The number of characters to write.</param>
+        public static void WriteLine(ConsoleTextStyle style, char[] value, int start = 0, int? count = null)
+            => ConsoleInterface.Default.WriteLine(style, value, start, count);
+
+        /// <summary>
+        /// Writes the specified characters, followed by the current line terminator, to the standard output stream.
+        /// </summary>
         /// <param name="foreground">The foreground color.</param>
         /// <param name="value">The value to write.</param>
         /// <param name="start">The starting position in value.</param>
@@ -385,6 +735,43 @@ namespace Trivial.CommandLine
         /// <param name="count">The number of characters to write.</param>
         public static void WriteLine(ConsoleColor? foreground, ConsoleColor background, char[] value, int start = 0, int? count = null)
             => ConsoleInterface.Default.WriteLine(foreground, background, value, start, count);
+
+
+        /// <summary>
+        /// Writes the specified characters, followed by the current line terminator, to the standard output stream.
+        /// </summary>
+        /// <param name="value">The value to write.</param>
+        /// <param name="repeatCount">The number of times to append value.</param>
+        public static void WriteLine(char value, int repeatCount = 1)
+            => ConsoleInterface.Default.WriteLine(value, repeatCount);
+
+        /// <summary>
+        /// Writes the specified characters, followed by the current line terminator, to the standard output stream.
+        /// </summary>
+        /// <param name="style">The content style.</param>
+        /// <param name="value">The value to write.</param>
+        /// <param name="repeatCount">The number of times to append value.</param>
+        public static void WriteLine(ConsoleTextStyle style, char value, int repeatCount = 1)
+            => ConsoleInterface.Default.WriteLine(style, value, repeatCount);
+
+        /// <summary>
+        /// Writes the specified characters, followed by the current line terminator, to the standard output stream.
+        /// </summary>
+        /// <param name="foreground">The foreground color.</param>
+        /// <param name="value">The value to write.</param>
+        /// <param name="repeatCount">The number of times to append value.</param>
+        public static void WriteLine(ConsoleColor foreground, char value, int repeatCount = 1)
+            => ConsoleInterface.Default.WriteLine(foreground, value, repeatCount);
+
+        /// <summary>
+        /// Writes the specified characters, followed by the current line terminator, to the standard output stream.
+        /// </summary>
+        /// <param name="foreground">The foreground color.</param>
+        /// <param name="background">The background color.</param>
+        /// <param name="value">The value to write.</param>
+        /// <param name="repeatCount">The number of times to append value.</param>
+        public static void WriteLine(ConsoleColor? foreground, ConsoleColor background, char value, int repeatCount = 1)
+            => ConsoleInterface.Default.WriteLine(foreground, background, value, repeatCount);
 
         /// <summary>
         /// Writes the current line terminator for each item, to the standard output stream.
