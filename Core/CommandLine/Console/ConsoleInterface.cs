@@ -19,16 +19,6 @@ namespace Trivial.CommandLine
     public sealed partial class ConsoleInterface
     {
         /// <summary>
-        /// The lock.
-        /// </summary>
-        private readonly object locker = new();
-
-        /// <summary>
-        /// The cache.
-        /// </summary>
-        private readonly List<ConsoleText> col = new();
-
-        /// <summary>
         /// The additional context.
         /// </summary>
         private object context;
@@ -59,11 +49,6 @@ namespace Trivial.CommandLine
         public Modes Mode { get; set; }
 
         /// <summary>
-        /// Gets or sets a value indicating whether need disable auto flush.
-        /// </summary>
-        public bool IsAutoFlushDisabled { get; set; }
-
-        /// <summary>
         /// Gets or sets the handler to flush cache.
         /// </summary>
         public IHandler Handler
@@ -86,93 +71,6 @@ namespace Trivial.CommandLine
         }
 
         /// <summary>
-        /// Flushes all data.
-        /// </summary>
-        public void Flush()
-        {
-            TestMode();
-            if (col.Count == 0) return;
-            IReadOnlyList<ConsoleText> list;
-            lock (locker)
-            {
-                list = col.ToList().AsReadOnly();
-                col.Clear();
-            }
-
-            var h = Handler;
-            if (h != null)
-            {
-                h.Write(list, context);
-                return;
-            }
-
-            if (Mode == Modes.Cmd)
-            {
-                foreach (var item in list)
-                {
-                    var s = item?.Content?.ToString();
-                    if (string.IsNullOrEmpty(s)) continue;
-                    var hasSetColor = false;
-                    if (item.Style.ForegroundConsoleColor.HasValue)
-                    {
-                        Console.ForegroundColor = item.Style.ForegroundConsoleColor.Value;
-                        hasSetColor = true;
-                    }
-                    else if (item.Style.ForegroundRgbColor.HasValue)
-                    {
-                    }
-
-                    if (item.Style.BackgroundConsoleColor.HasValue)
-                    {
-                        Console.BackgroundColor = item.Style.BackgroundConsoleColor.Value;
-                        hasSetColor = true;
-                    }
-                    else if (item.Style.BackgroundRgbColor.HasValue)
-                    {
-                    }
-
-                    Console.Write(s);
-                    if (hasSetColor) Console.ResetColor();
-                }
-            }
-            else if (Mode == Modes.Text)
-            {
-                var sb = new StringBuilder();
-                foreach (var item in list)
-                {
-                    if (item?.Content != null)
-                        StringExtensions.Append(sb, item?.Content);
-                }
-
-                Console.Write(sb.ToString());
-            }
-            else
-            {
-                var sb = new StringBuilder();
-                foreach (var item in list)
-                {
-                    if (item?.Content == null) continue;
-                    item.AppendTo(sb);
-                }
-
-                Console.Write(sb.ToString());
-            }
-
-            Flushed?.Invoke(this, new DataEventArgs<IReadOnlyList<ConsoleText>>(list));
-        }
-
-        /// <summary>
-        /// Clears output cache.
-        /// </summary>
-        public void ClearOutputCache()
-        {
-            lock (locker)
-            {
-                col.Clear();
-            }
-        }
-
-        /// <summary>
         /// Enters a backspace to console to remove the last charactor.
         /// </summary>
         /// <param name="count">The count of the charactor to remove from end.</param>
@@ -180,43 +78,7 @@ namespace Trivial.CommandLine
         public void Backspace(int count = 1, bool doNotRemoveOutput = false)
         {
             if (count < 1) return;
-            lock (locker)
-            {
-                var item = col.LastOrDefault();
-                while (item != null && count > 0)
-                {
-                    var len = item.Length;
-                    if (len > count)
-                    {
-                        try
-                        {
-                            item.Content.Remove(item.Content.Length - count, count);
-                            return;
-                        }
-                        catch (NullReferenceException)
-                        {
-                        }
-                        catch (ArgumentException)
-                        {
-                        }
-                    }
-
-                    try
-                    {
-                        col.RemoveAt(col.Count - 1);
-                        count -= len;
-                    }
-                    catch (NullReferenceException)
-                    {
-                    }
-                    catch (ArgumentException)
-                    {
-                    }
-
-                    item = col.LastOrDefault();
-                }
-            }
-
+            count = BackspaceOutputCache(count);
             BackspaceInternal(count, doNotRemoveOutput ? 2 : 0);
         }
 
@@ -706,7 +568,8 @@ namespace Trivial.CommandLine
                     }
                     catch (SecurityException)
                     {
-                        BackspaceInternal(200, 1);
+                        BackspaceInternal(2, 1);
+                        throw;
                     }
 
                     break;
@@ -717,7 +580,8 @@ namespace Trivial.CommandLine
                     }
                     catch (SecurityException)
                     {
-                        BackspaceInternal(200, 1);
+                        BackspaceInternal(2, 1);
+                        throw;
                     }
 
                     break;
@@ -754,7 +618,8 @@ namespace Trivial.CommandLine
                     }
                     catch (SecurityException)
                     {
-                        BackspaceInternal(200, 1);
+                        BackspaceInternal(2, 1);
+                        throw;
                     }
 
                     break;
@@ -778,7 +643,8 @@ namespace Trivial.CommandLine
                     }
                     catch (SecurityException)
                     {
-                        BackspaceInternal(200, 1);
+                        BackspaceInternal(2, 1);
+                        throw;
                     }
 
                     break;
@@ -906,11 +772,6 @@ namespace Trivial.CommandLine
 
             Console.WriteLine();
             Mode = Modes.Text;
-        }
-
-        private void OnAppend()
-        {
-            if (!IsAutoFlushDisabled) Flush();
         }
     }
 }
