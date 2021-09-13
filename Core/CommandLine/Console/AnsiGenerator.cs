@@ -176,16 +176,16 @@ namespace Trivial.CommandLine
         /// <summary>
         /// Code to clear lines.
         /// </summary>
-        public static string Clear(ConsoleInterface.RelativeAreas area)
+        public static string Clear(StyleConsole.RelativeAreas area)
             => area switch
             {
-                ConsoleInterface.RelativeAreas.Line => $"{Esc}[2K",
-                ConsoleInterface.RelativeAreas.ToBeginningOfLine => $"{Esc}[1K",
-                ConsoleInterface.RelativeAreas.ToEndOfLine => $"{Esc}[K",
-                ConsoleInterface.RelativeAreas.EntireScreen => $"{Esc}[2J",
-                ConsoleInterface.RelativeAreas.ToBeginningOfScreen => $"{Esc}[1J",
-                ConsoleInterface.RelativeAreas.ToEndOfScreen => $"{Esc}[J",
-                ConsoleInterface.RelativeAreas.EntireBuffer => $"{Esc}[3J",
+                StyleConsole.RelativeAreas.Line => $"{Esc}[2K",
+                StyleConsole.RelativeAreas.ToBeginningOfLine => $"{Esc}[1K",
+                StyleConsole.RelativeAreas.ToEndOfLine => $"{Esc}[K",
+                StyleConsole.RelativeAreas.EntireScreen => $"{Esc}[2J",
+                StyleConsole.RelativeAreas.ToBeginningOfScreen => $"{Esc}[1J",
+                StyleConsole.RelativeAreas.ToEndOfScreen => $"{Esc}[J",
+                StyleConsole.RelativeAreas.EntireBuffer => $"{Esc}[3J",
                 _ => string.Empty
             };
 

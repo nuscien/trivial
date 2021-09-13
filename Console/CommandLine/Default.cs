@@ -8,12 +8,15 @@ using System.Security;
 using System.Text;
 using System.Threading.Tasks;
 
+using Trivial.Collection;
+using Trivial.Text;
+
 namespace Trivial.CommandLine
 {
     /// <summary>
     /// The command line interface.
     /// </summary>
-    public static class DefaultConsoleInterface
+    public static class DefaultConsole
     {
         /// <summary>
         /// Writes the specified string value to the standard output stream.
@@ -774,6 +777,58 @@ namespace Trivial.CommandLine
             => StyleConsole.Default.WriteLine(foreground, background, value, repeatCount);
 
         /// <summary>
+        /// Writes an exception, followed by the current line terminator, to the standard output stream.
+        /// Note it may not flush immediately.
+        /// </summary>
+        /// <param name="ex">The exception.</param>
+        /// <param name="stackTrace">true if output stack trace; otherwise, false.</param>
+        public static void WriteLine(Exception ex, bool stackTrace = false)
+            => StyleConsole.Default.WriteLine(null, null, ex, stackTrace);
+
+        /// <summary>
+        /// Writes an exception, followed by the current line terminator, to the standard output stream.
+        /// Note it may not flush immediately.
+        /// </summary>
+        /// <param name="ex">The exception.</param>
+        /// <param name="captionStyle">The style of header.</param>
+        /// <param name="messageStyle">The style of details.</param>
+        /// <param name="stackTrace">true if output stack trace; otherwise, false.</param>
+        public static void WriteLine(ConsoleTextStyle captionStyle, ConsoleTextStyle messageStyle, Exception ex, bool stackTrace = false)
+            => StyleConsole.Default.WriteLine(captionStyle, messageStyle, ex, stackTrace);
+
+        /// <summary>
+        /// Writes a JSON object, followed by the current line terminator, to the standard output stream.
+        /// Note it may not flush immediately.
+        /// </summary>
+        /// <param name="json">The JSON instance.</param>
+        public static void WriteLine(IJsonDataNode json)
+            => StyleConsole.Default.WriteLine(new JsonConsoleStyle().CreateTextCollection(json, 0));
+
+        /// <summary>
+        /// Writes a JSON object, followed by the current line terminator, to the standard output stream.
+        /// Note it may not flush immediately.
+        /// </summary>
+        /// <param name="style">The style.</param>
+        /// <param name="json">The JSON instance.</param>
+        public static void WriteLine(JsonConsoleStyle style, IJsonDataNode json)
+            => StyleConsole.Default.WriteLine((style ?? new JsonConsoleStyle()).CreateTextCollection(json, 0));
+
+        /// <summary>
+        /// Writes the specific lines to the standard output stream.
+        /// </summary>
+        /// <param name="count">The count of line.</param>
+        public static void WriteLines(int count)
+            => StyleConsole.Default.WriteLines(count);
+
+        /// <summary>
+        /// Writes the current line terminator for each item, to the standard output stream.
+        /// </summary>
+        /// <param name="content">The text content.</param>
+        /// <param name="additionalContext">The additional text content collection.</param>
+        public static void WriteLines(ConsoleText content, params ConsoleText[] additionalContext)
+            => WriteLines(content, additionalContext);
+
+        /// <summary>
         /// Writes the current line terminator for each item, to the standard output stream.
         /// </summary>
         /// <param name="col">The string collection to write. Each one in a line.</param>
@@ -787,6 +842,69 @@ namespace Trivial.CommandLine
         /// <param name="col">The string collection to write. Each one in a line.</param>
         public static void WriteLines(ConsoleColor foreground, IEnumerable<string> col)
             => StyleConsole.Default.WriteLines(foreground, col);
+
+        /// <summary>
+        /// Writes a collection of item for selecting.
+        /// </summary>
+        /// <param name="collection">The collection data.</param>
+        /// <param name="options">The selection display options.</param>
+        /// <returns>The result of selection.</returns>
+        public static SelectionResult<object> Select(SelectionData collection, SelectionConsoleOptions options = null)
+            => StyleConsole.Default.Select(collection, options);
+
+        /// <summary>
+        /// Writes a collection of item for selecting.
+        /// </summary>
+        /// <param name="collection">The collection data.</param>
+        /// <param name="convert">The converter.</param>
+        /// <param name="options">The selection display options.</param>
+        /// <returns>The result of selection.</returns>
+        public static SelectionResult<T> Select<T>(IEnumerable<T> collection, Func<T, SelectionItem<T>> convert, SelectionConsoleOptions options = null)
+            => StyleConsole.Default.Select(collection, convert, options);
+
+        /// <summary>
+        /// Writes a collection of item for selecting.
+        /// </summary>
+        /// <param name="collection">The collection data.</param>
+        /// <param name="options">The selection display options.</param>
+        /// <returns>The result of selection.</returns>
+        public static SelectionResult<T> Select<T>(IEnumerable<SelectionItem<T>> collection, SelectionConsoleOptions options = null)
+            => StyleConsole.Default.Select(collection, options);
+
+        /// <summary>
+        /// Writes a collection of item for selecting.
+        /// </summary>
+        /// <param name="path">The parent foler path.</param>
+        /// <param name="options">The selection display options.</param>
+        /// <param name="searchPattern">The search string to match against the names of directories and files. This parameter can contain a combination of valid literal path and wildcard (* and ?) characters, but it doesn't support regular expressions.</param>
+        /// <returns>The result of selection.</returns>
+        /// <exception cref="ArgumentException">searchPattern contains one or more invalid characters defined by the System.IO.Path.GetInvalidPathChars method.</exception>
+        /// <exception cref="DirectoryNotFoundException">The specified path is invalid (for example, it is on an unmapped drive).</exception>
+        /// <exception cref="SecurityException">The caller does not have the required permission.</exception>
+        public static SelectionResult<FileSystemInfo> Select(DirectoryInfo path, SelectionConsoleOptions options = null, string searchPattern = null)
+            => StyleConsole.Default.Select(path, options, searchPattern);
+
+        /// <summary>
+        /// Writes a collection of item for selecting.
+        /// </summary>
+        /// <param name="path">The parent foler path.</param>
+        /// <param name="predicate">A function to test each element for a condition.</param>
+        /// <param name="options">The selection display options.</param>
+        /// <returns>The result of selection.</returns>
+        /// <exception cref="DirectoryNotFoundException">The specified path is invalid (for example, it is on an unmapped drive).</exception>
+        /// <exception cref="SecurityException">The caller does not have the required permission.</exception>
+        public static SelectionResult<FileSystemInfo> Select(DirectoryInfo path, Func<FileSystemInfo, bool> predicate, SelectionConsoleOptions options = null)
+            => StyleConsole.Default.Select(path, predicate, options);
+
+        /// <summary>
+        /// Writes a collection of item for selecting.
+        /// </summary>
+        /// <typeparam name="T">The type of data.</typeparam>
+        /// <param name="collection">The collection data.</param>
+        /// <param name="options">The selection display options.</param>
+        /// <returns>The result of selection.</returns>
+        public static SelectionResult<T> Select<T>(SelectionData<T> collection, SelectionConsoleOptions options = null)
+            => StyleConsole.Default.Select(collection, options);
 
         /// <summary>
         /// Flushes all data.
@@ -886,16 +1004,16 @@ namespace Trivial.CommandLine
         /// <summary>
         /// Moves cursor at a specific position in viewport.
         /// </summary>
-        /// <param name="x">Row, the top from the edge of viewport.</param>
-        /// <param name="y">Column, the left from the edge of viewport.</param>
+        /// <param name="x">Column, the left from the edge of viewport.</param>
+        /// <param name="y">Row, the top from the edge of viewport.</param>
         public static void MoveCursorAt(int x, int y)
             => StyleConsole.Default.MoveCursorAt(x, y);
 
         /// <summary>
         /// Moves cursor at a specific position in buffer.
         /// </summary>
-        /// <param name="x">Row, the top from the edge of buffer.</param>
-        /// <param name="y">Column, the left from the edge of buffer.</param>
+        /// <param name="x">Column, the left from the edge of buffer.</param>
+        /// <param name="y">Row, the top from the edge of buffer.</param>
         public static void MoveCursorTo(int x, int y)
             => StyleConsole.Default.MoveCursorTo(x, y);
 

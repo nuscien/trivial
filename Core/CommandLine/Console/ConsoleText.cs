@@ -242,13 +242,45 @@ namespace Trivial.CommandLine
         /// <param name="s">The text content.</param>
         /// <param name="foreground">The foreground color.</param>
         /// <param name="background">The background color.</param>
-        public ConsoleText(string s, Color foreground, Color background)
+        public ConsoleText(string s, Color foreground, Color? background = null)
         {
             Content = new StringBuilder(s);
             Style.ForegroundRgbColor = foreground;
             Style.BackgroundRgbColor = background;
             Style.ForegroundConsoleColor = AnsiCodeGenerator.ToConsoleColor(foreground);
-            Style.BackgroundConsoleColor = AnsiCodeGenerator.ToConsoleColor(background);
+            if (background.HasValue) Style.BackgroundConsoleColor = AnsiCodeGenerator.ToConsoleColor(background.Value);
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the ConsoleText class.
+        /// </summary>
+        /// <param name="s">The text content.</param>
+        /// <param name="foreground">The foreground color.</param>
+        /// <param name="background">The background color.</param>
+        public ConsoleText(StringBuilder s, Color foreground, Color? background = null)
+        {
+            if (s != null) Content = s;
+            Style.ForegroundRgbColor = foreground;
+            Style.BackgroundRgbColor = background;
+            Style.ForegroundConsoleColor = AnsiCodeGenerator.ToConsoleColor(foreground);
+            if (background.HasValue) Style.BackgroundConsoleColor = AnsiCodeGenerator.ToConsoleColor(background.Value);
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the ConsoleText class.
+        /// </summary>
+        /// <param name="s">The text content.</param>
+        /// <param name="foreground">The foreground color.</param>
+        /// <param name="foreground2">The backup foreground color.</param>
+        /// <param name="background">The background color.</param>
+        /// <param name="background2">The backup background color.</param>
+        public ConsoleText(string s, Color? foreground, ConsoleColor? foreground2, Color? background, ConsoleColor? background2)
+        {
+            Content = new StringBuilder(s);
+            Style.ForegroundRgbColor = foreground;
+            Style.BackgroundRgbColor = background;
+            Style.ForegroundConsoleColor = foreground2;
+            Style.BackgroundConsoleColor = background2;
         }
 
         /// <summary>

@@ -16,7 +16,7 @@ namespace Trivial.CommandLine
     /// <summary>
     /// The command line interface.
     /// </summary>
-    public sealed partial class ConsoleInterface
+    public sealed partial class StyleConsole
     {
         /// <summary>
         /// The terminal mode.
@@ -112,6 +112,34 @@ namespace Trivial.CommandLine
         public interface IHandler
         {
             /// <summary>
+            /// Gets the column position of the cursor within the buffer area.
+            /// </summary>
+            /// <exception cref="IOException">An I/O error occurred.</exception>
+            /// <exception cref="InvalidOperationException">The input stream does not provide such information.</exception>
+            int CursorLeft { get; }
+
+            /// <summary>
+            /// Gets the row position of the cursor within the buffer area.
+            /// </summary>
+            /// <exception cref="IOException">An I/O error occurred.</exception>
+            /// <exception cref="InvalidOperationException">The input stream does not provide such information.</exception>
+            int CursorTop { get; }
+
+            /// <summary>
+            /// Gets the height of the buffer area.
+            /// </summary>
+            /// <exception cref="IOException">An I/O error occurred.</exception>
+            /// <exception cref="InvalidOperationException">The input stream does not provide such information.</exception>
+            int BufferWidth { get; }
+
+            /// <summary>
+            /// Gets the height of the buffer area.
+            /// </summary>
+            /// <exception cref="IOException">An I/O error occurred.</exception>
+            /// <exception cref="InvalidOperationException">The input stream does not provide such information.</exception>
+            int BufferHeight { get; }
+
+            /// <summary>
             /// Creates a context.
             /// </summary>
             /// <returns>A context.</returns>
@@ -197,6 +225,6 @@ namespace Trivial.CommandLine
         /// <summary>
         /// Gets the singleton of console text content.
         /// </summary>
-        public static ConsoleInterface Default { get; } = new();
+        public static StyleConsole Default { get; } = new();
     }
 }

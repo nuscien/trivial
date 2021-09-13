@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Trivial.Console {
+namespace Trivial.CommandLine {
     using System;
     
     
@@ -39,7 +39,7 @@ namespace Trivial.Console {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Trivial.Console.Resource", typeof(Resource).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Trivial.CommandLine.Resource", typeof(Resource).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -47,8 +47,8 @@ namespace Trivial.Console {
         }
         
         /// <summary>
-        ///   重写当前线程的 CurrentUICulture 属性
-        ///   重写当前线程的 CurrentUICulture 属性。
+        ///   重写当前线程的 CurrentUICulture 属性，对
+        ///   使用此强类型资源类的所有资源查找执行重写。
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
         internal static global::System.Globalization.CultureInfo Culture {
@@ -61,7 +61,7 @@ namespace Trivial.Console {
         }
         
         /// <summary>
-        ///   查找类似 End the current conversation. 的本地化字符串。
+        ///   查找类似 End the current conversation.  的本地化字符串。
         /// </summary>
         internal static string EndConversation {
             get {
@@ -70,7 +70,16 @@ namespace Trivial.Console {
         }
         
         /// <summary>
-        ///   查找类似 Get help. 的本地化字符串。
+        ///   查找类似 Error!  的本地化字符串。
+        /// </summary>
+        internal static string Error {
+            get {
+                return ResourceManager.GetString("Error", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Get help.  的本地化字符串。
         /// </summary>
         internal static string GetHelp {
             get {
@@ -79,16 +88,25 @@ namespace Trivial.Console {
         }
         
         /// <summary>
-        ///   查找类似 ← [PgUp] | {from} - {end} / {total} | [PgDn] → 的本地化字符串。
+        ///   查找类似 Loading...  的本地化字符串。
         /// </summary>
-        internal static string PagingTips {
+        internal static string Loading {
             get {
-                return ResourceManager.GetString("PagingTips", resourceCulture);
+                return ResourceManager.GetString("Loading", resourceCulture);
             }
         }
         
         /// <summary>
-        ///   查找类似 Tips: [↑][↓][←][→] Select; [ENTER] OK. 的本地化字符串。
+        ///   查找类似 Press any key to continue...  的本地化字符串。
+        /// </summary>
+        internal static string PressAnyKeyToCont {
+            get {
+                return ResourceManager.GetString("PressAnyKeyToCont", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Tips: [↑][↓][←][→] Select; [ENTER] OK.  的本地化字符串。
         /// </summary>
         internal static string SelectionTips {
             get {

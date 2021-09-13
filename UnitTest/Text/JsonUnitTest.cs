@@ -24,25 +24,7 @@ namespace Trivial.Text
         public void TestJsonObject()
         {
             var now = DateTime.Now;
-            var json = new JsonObjectNode();
-            json.SetValue("now", now);
-            json.SetValue("str-a", "abcdefg");
-            json.SetValue("str-a", "hijklmn");
-            json.SetValue("str-b", "opq");
-            json.SetRange(new Dictionary<string, string>
-            {
-                { "str-b", "rst" },
-                { "str-c", "uvw" },
-                { "str-d", "xyz" },
-                { "str-e", "$$$" }
-            });
-            json.Remove("str-e");
-            json.SetValue("str-d", "0123456789");
-            json.SetValue("num", 123);
-            json.SetJavaScriptDateTicksValue("ticks", now);
-            json.SetValue("props", json);
-            json.SetValue("arr", new JsonArrayNode());
-            json.SetRange(json);
+            var json = CreateModel(now);
 
             Assert.AreEqual(9, json.Keys.Count());
             Assert.AreEqual("hijklmn", json.GetStringValue("str-a"));
@@ -512,6 +494,30 @@ namespace Trivial.Text
             }
 
             return null;
+        }
+
+        internal static JsonObjectNode CreateModel(DateTime now)
+        {
+            var json = new JsonObjectNode();
+            json.SetValue("now", now);
+            json.SetValue("str-a", "abcdefg");
+            json.SetValue("str-a", "hijklmn");
+            json.SetValue("str-b", "opq");
+            json.SetRange(new Dictionary<string, string>
+            {
+                { "str-b", "rst" },
+                { "str-c", "uvw" },
+                { "str-d", "xyz" },
+                { "str-e", "$$$" }
+            });
+            json.Remove("str-e");
+            json.SetValue("str-d", "0123456789");
+            json.SetValue("num", 123);
+            json.SetJavaScriptDateTicksValue("ticks", now);
+            json.SetValue("props", json);
+            json.SetValue("arr", new JsonArrayNode());
+            json.SetRange(json);
+            return json;
         }
     }
 }

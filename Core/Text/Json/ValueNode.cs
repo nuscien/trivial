@@ -442,9 +442,7 @@ namespace Trivial.Text
         /// </summary>
         /// <returns>The string null.</returns>
         public override string ToString()
-        {
-            return "null";
-        }
+            => "null";
 
         /// <summary>
         /// Indicates whether this instance and a specified object are equal.
@@ -452,9 +450,7 @@ namespace Trivial.Text
         /// <param name="other">The object to compare with the current instance.</param>
         /// <returns>true if obj and this instance represent the same value; otherwise, false.</returns>
         public bool Equals(JsonNullNode other)
-        {
-            return true;
-        }
+            => true;
 
         /// <summary>
         /// Indicates whether this instance and a specified object are equal.

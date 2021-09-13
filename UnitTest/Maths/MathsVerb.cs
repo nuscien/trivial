@@ -56,8 +56,10 @@ namespace Trivial.Maths
 
         private async Task Test()
         {
+            var cli = CommandLine.StyleConsole.Default;
+
             // Prime.
-            Console.WriteLine("Arithmetic");
+            cli.WriteLine("Arithmetic");
             await WriteIsPrimeAsync(524287);
             await WriteIsPrimeAsync(968455);
             await WriteIsPrimeAsync(2147483647, CancellationToken.None);
@@ -71,23 +73,23 @@ namespace Trivial.Maths
             }
             catch (OperationCanceledException)
             {
-                Console.WriteLine("Operation is canceled succeeded.");
+                cli.WriteLine("Operation is canceled succeeded.");
             }
 
             // GCD and LCM.
-            Console.WriteLine("gcd({0}, {1}) = {2}.", 192, 128, Arithmetic.Gcd(192, 128));
-            Console.WriteLine("gcd({0}, {1}) = {2}.", 67, 31, Arithmetic.Gcd(67, 31));
-            Console.WriteLine("lcm({0}, {1}) = {2}.", 192, 128, Arithmetic.Lcm(192, 128));
-            Console.WriteLine("lcm({0}, {1}) = {2}.", 67, 31, Arithmetic.Lcm(67, 31));
+            cli.WriteLine("gcd({0}, {1}) = {2}.", 192, 128, Arithmetic.Gcd(192, 128));
+            cli.WriteLine("gcd({0}, {1}) = {2}.", 67, 31, Arithmetic.Gcd(67, 31));
+            cli.WriteLine("lcm({0}, {1}) = {2}.", 192, 128, Arithmetic.Lcm(192, 128));
+            cli.WriteLine("lcm({0}, {1}) = {2}.", 67, 31, Arithmetic.Lcm(67, 31));
 
             // Factorial.
-            Console.WriteLine("20! = {0}.", Arithmetic.Factorial(20));
-            Console.WriteLine("100! {1} {0}.", Arithmetic.FactorialApproximate(100), BooleanSymbols.SimilarSign);
-            Console.WriteLine();
+            cli.WriteLine("20! = {0}.", Arithmetic.Factorial(20));
+            cli.WriteLine("100! {1} {0}.", Arithmetic.FactorialApproximate(100), BooleanSymbols.SimilarSign);
+            cli.WriteLine();
 
             // English numbers.
-            Console.WriteLine("English numbers");
-            Console.WriteLine(EnglishNumerals.Default.ToApproximationString(9876543210));
+            cli.WriteLine("English numbers");
+            cli.WriteLine(EnglishNumerals.Default.ToApproximationString(9876543210));
             WriteNumber(9876543210, EnglishNumerals.Default);
             WriteNumber(2305843009213693951, EnglishNumerals.Default);
             WriteNumber(1000000001, EnglishNumerals.Default);
@@ -110,11 +112,11 @@ namespace Trivial.Maths
             WriteNumber(1.23e45, EnglishNumerals.Default);
             WriteNumber(-10001.4567, EnglishNumerals.Default);
             WriteNumber(-6.7800e90, EnglishNumerals.Default);
-            Console.WriteLine();
+            cli.WriteLine();
 
             // Simplified Chinese numbers.
-            Console.WriteLine("Simplified Chinese number");
-            Console.WriteLine(ChineseNumerals.Simplified.ToApproximationString(9876543210));
+            cli.WriteLine("Simplified Chinese number");
+            cli.WriteLine(ChineseNumerals.Simplified.ToApproximationString(9876543210));
             WriteNumber(9876543210, ChineseNumerals.Simplified);
             WriteNumber(2305843009213693951, ChineseNumerals.Simplified);
             WriteNumber(1000000001, ChineseNumerals.Simplified);
@@ -138,10 +140,10 @@ namespace Trivial.Maths
             WriteNumber(1.23e45, ChineseNumerals.Simplified);
             WriteNumber(-10001.4567, ChineseNumerals.Simplified);
             WriteNumber(-6.7800e90, ChineseNumerals.Simplified);
-            Console.WriteLine();
+            cli.WriteLine();
 
             // Simplified Chinese uppercase numbers.
-            Console.WriteLine("Simplified Chinese uppercase number");
+            cli.WriteLine("Simplified Chinese uppercase number");
             WriteNumber(9876543210, ChineseNumerals.SimplifiedUppercase);
             WriteNumber(2305843009213693951, ChineseNumerals.SimplifiedUppercase);
             WriteNumber(100000000000001, ChineseNumerals.SimplifiedUppercase);
@@ -150,10 +152,10 @@ namespace Trivial.Maths
             WriteNumber(1.23e45, ChineseNumerals.SimplifiedUppercase);
             WriteNumber(-10001.4567, ChineseNumerals.SimplifiedUppercase);
             WriteNumber(-6.7800e90, ChineseNumerals.SimplifiedUppercase);
-            Console.WriteLine();
+            cli.WriteLine();
 
             // Traditional Chinese numbers.
-            Console.WriteLine("Traditional Chinese number");
+            cli.WriteLine("Traditional Chinese number");
             WriteNumber(9876543210, ChineseNumerals.Traditional);
             WriteNumber(2305843009213693951, ChineseNumerals.Traditional);
             WriteNumber(100000000000001, ChineseNumerals.Traditional);
@@ -162,10 +164,10 @@ namespace Trivial.Maths
             WriteNumber(1.23e45, ChineseNumerals.Traditional);
             WriteNumber(-10001.4567, ChineseNumerals.Traditional);
             WriteNumber(-6.7800e90, ChineseNumerals.Traditional);
-            Console.WriteLine();
+            cli.WriteLine();
 
             // Traditional Chinese uppercase numbers.
-            Console.WriteLine("Traditional Chinese uppercase number");
+            cli.WriteLine("Traditional Chinese uppercase number");
             WriteNumber(9876543210, ChineseNumerals.TraditionalUppercase);
             WriteNumber(2305843009213693951, ChineseNumerals.TraditionalUppercase);
             WriteNumber(100000000000001, ChineseNumerals.TraditionalUppercase);
@@ -174,11 +176,11 @@ namespace Trivial.Maths
             WriteNumber(1.23e45, ChineseNumerals.TraditionalUppercase);
             WriteNumber(-10001.4567, ChineseNumerals.TraditionalUppercase);
             WriteNumber(-6.7800e90, ChineseNumerals.TraditionalUppercase);
-            Console.WriteLine();
+            cli.WriteLine();
 
             // Japanese numbers.
-            Console.WriteLine("Japanese number");
-            Console.WriteLine(JapaneseNumerals.Default.ToApproximationString(9876543210));
+            cli.WriteLine("Japanese number");
+            cli.WriteLine(JapaneseNumerals.Default.ToApproximationString(9876543210));
             WriteNumber(9876543210, JapaneseNumerals.Default);
             WriteNumber(2305843009213693951, JapaneseNumerals.Default);
             WriteNumber(1000000001, JapaneseNumerals.Default);
@@ -202,11 +204,11 @@ namespace Trivial.Maths
             WriteNumber(1.23e45, JapaneseNumerals.Default);
             WriteNumber(-10001.4567, JapaneseNumerals.Default);
             WriteNumber(-6.7800e90, JapaneseNumerals.Default);
-            Console.WriteLine();
+            cli.WriteLine();
 
             // Japanese Kana numbers.
-            Console.WriteLine("Japanese Kana number");
-            Console.WriteLine(JapaneseNumerals.Kana.ToApproximationString(9876543210));
+            cli.WriteLine("Japanese Kana number");
+            cli.WriteLine(JapaneseNumerals.Kana.ToApproximationString(9876543210));
             WriteNumber(9876543210, JapaneseNumerals.Kana);
             WriteNumber(2305843009213693951, JapaneseNumerals.Kana);
             WriteNumber(1000000001, JapaneseNumerals.Kana);
@@ -230,55 +232,48 @@ namespace Trivial.Maths
             WriteNumber(1.23e45, JapaneseNumerals.Kana);
             WriteNumber(-10001.4567, JapaneseNumerals.Kana);
             WriteNumber(-6.7800e90, JapaneseNumerals.Kana);
-            Console.WriteLine();
+            cli.WriteLine();
 
             // Location
             var location = new Geography.Geolocation(new Geography.Latitude(148, 100, 17), new Geography.Longitude(120.5), 10);
-            Console.WriteLine("{0} {1} {2}", location.Latitude.Type, location.Longitude.Type, location.Latitude.Value);
-            Console.WriteLine(location.ToString());
+            cli.WriteLine("{0} {1} {2}", location.Latitude.Type, location.Longitude.Type, location.Latitude.Value);
+            cli.WriteLine(location.ToString());
         }
 
-        private async Task WriteIsPrimeAsync(int value)
-        {
-            Console.WriteLine(
+        private static async Task WriteIsPrimeAsync(int value)
+            => CommandLine.StyleConsole.Default.WriteLine(
                 "{0} is {1}a prime number. Prev {2}, next {3}.",
                 value,
                 Arithmetic.IsPrime(value) ? string.Empty : "NOT ",
                 await Arithmetic.PreviousPrimeAsync(value),
                 await Arithmetic.NextPrimeAsync(value)
                 );
-        }
 
-        private async Task WriteIsPrimeAsync(long value, CancellationToken cancellationToken)
-        {
-            Console.WriteLine("{0} is {1}a prime number.", value, await Arithmetic.IsPrimeAsync(value, cancellationToken) ? string.Empty : "NOT ");
-        }
+        private static async Task WriteIsPrimeAsync(long value, CancellationToken cancellationToken)
+            => CommandLine.StyleConsole.Default.WriteLine("{0} is {1}a prime number.", value, await Arithmetic.IsPrimeAsync(value, cancellationToken) ? string.Empty : "NOT ");
 
-        private void WriteNumber(long value, INumberLocalization localInt)
-        {
-            Console.WriteLine("{0}: {1}; {2}.", value, localInt.ToString(value, false), localInt.ToString(value, true));
-        }
+        private static void WriteNumber(long value, INumberLocalization localInt)
+            => CommandLine.StyleConsole.Default.WriteLine("{0}: {1}; {2}.", value, localInt.ToString(value, false), localInt.ToString(value, true));
 
-        private void WriteNumber(double value, INumberLocalization localInt)
-        {
-            Console.WriteLine("{0}: {1}.", value, localInt.ToString(value));
-        }
+        private static void WriteNumber(double value, INumberLocalization localInt)
+            => CommandLine.StyleConsole.Default.WriteLine("{0}: {1}.", value, localInt.ToString(value));
 
-        private void WriteNumber(string str, INumberLocalization localInt)
+        private static void WriteNumber(string str, INumberLocalization localInt)
         {
+            var cli = CommandLine.StyleConsole.Default;
             if (!long.TryParse(str, out long value))
             {
                 if (!double.TryParse(str, out double dV))
                 {
-                    Console.WriteLine("Expect a number.");
+                    cli.WriteLine("Expect a number.");
                     return;
                 }
 
-                Console.WriteLine("{0}: {1}.", dV, localInt.ToString(dV));
+                cli.WriteLine("{0}: {1}.", dV, localInt.ToString(dV));
                 return;
             }
 
-            Console.WriteLine("{0}: {1}; {2}.", value, localInt.ToString(value, false), localInt.ToString(value, true));
+            cli.WriteLine("{0}: {1}; {2}.", value, localInt.ToString(value, false), localInt.ToString(value, true));
         }
     }
 }

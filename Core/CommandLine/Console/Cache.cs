@@ -16,7 +16,7 @@ namespace Trivial.CommandLine
     /// <summary>
     /// The command line interface.
     /// </summary>
-    public sealed partial class ConsoleInterface
+    public sealed partial class StyleConsole
     {
         /// <summary>
         /// The lock.
@@ -123,21 +123,42 @@ namespace Trivial.CommandLine
                     var s = item?.Content?.ToString();
                     if (string.IsNullOrEmpty(s)) continue;
                     var hasSetColor = false;
-                    if (item.Style.ForegroundConsoleColor.HasValue)
+                    try
                     {
-                        Console.ForegroundColor = item.Style.ForegroundConsoleColor.Value;
-                        hasSetColor = true;
-                    }
-                    else if (item.Style.ForegroundRgbColor.HasValue)
-                    {
-                    }
+                        if (item.Style.ForegroundConsoleColor.HasValue)
+                        {
+                            Console.ForegroundColor = item.Style.ForegroundConsoleColor.Value;
+                            hasSetColor = true;
+                        }
+                        else if (item.Style.ForegroundRgbColor.HasValue)
+                        {
+                        }
 
-                    if (item.Style.BackgroundConsoleColor.HasValue)
-                    {
-                        Console.BackgroundColor = item.Style.BackgroundConsoleColor.Value;
-                        hasSetColor = true;
+                        if (item.Style.BackgroundConsoleColor.HasValue)
+                        {
+                            Console.BackgroundColor = item.Style.BackgroundConsoleColor.Value;
+                            hasSetColor = true;
+                        }
+                        else if (item.Style.BackgroundRgbColor.HasValue)
+                        {
+                        }
                     }
-                    else if (item.Style.BackgroundRgbColor.HasValue)
+                    catch (InvalidOperationException)
+                    {
+                    }
+                    catch (IOException)
+                    {
+                    }
+                    catch (NotSupportedException)
+                    {
+                    }
+                    catch (ArgumentException)
+                    {
+                    }
+                    catch (SecurityException)
+                    {
+                    }
+                    catch (System.Runtime.InteropServices.ExternalException)
                     {
                     }
 

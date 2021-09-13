@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Trivial.Console
+namespace Trivial.CommandLine
 {
     /// <summary>
     /// The event arguments for writing a line to the standard output stream.
@@ -51,7 +51,7 @@ namespace Trivial.Console
         /// <summary>
         /// Adds or removes the handler to catch the line output.
         /// </summary>
-        public event EventHandler<LineWritenEventArgs> WrotenLine;
+        public event EventHandler<LineWritenEventArgs> WritenLine;
 
         /// <summary>
         /// Gets the command to process.
@@ -115,7 +115,7 @@ namespace Trivial.Console
                 ThrowIfCancellationRequested(p.Close);
                 var line = await p.StandardOutput.ReadLineAsync();
                 if (AutoFlush) System.Console.WriteLine(line);
-                WrotenLine?.Invoke(this, new LineWritenEventArgs(line));
+                WritenLine?.Invoke(this, new LineWritenEventArgs(line));
             }
         }
 

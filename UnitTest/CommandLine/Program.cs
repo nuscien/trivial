@@ -21,76 +21,78 @@ namespace Trivial.CommandLine
             dispatcher.Register<Tasks.RetryVerb>("retry");
             dispatcher.Register<Text.CsvVerb>("csv");
             dispatcher.Register<Chemistry.ChemistryVerb>("chemistry");
+            dispatcher.Register<SelectionVerb>("select");
             return dispatcher.ProcessAsync(args);
         }
 
         private static void TestConsoleInterface()
         {
-            DefaultConsoleInterface.Flush();
-            var mode = ConsoleInterface.Default.Mode;
-            DefaultConsoleInterface.Write(ConsoleColor.Yellow, $"Pass ({mode}) ");
-            using var secret = DefaultConsoleInterface.ReadPassword('*', true);
-            if (secret.Length < 1)
+            var cli = StyleConsole.Default;
+            cli.Flush();
+            var mode = StyleConsole.Default.Mode;
+            cli.Write(ConsoleColor.Yellow, $"Pass ({mode}) ");
+            using var secret = cli.ReadPassword('*', true);
+            if (secret == null || secret.Length < 1)
             {
-                ConsoleInterface.Default.Mode = mode;
-                DefaultConsoleInterface.Backspace(24);
+                StyleConsole.Default.Mode = mode;
+                cli.Backspace(24);
                 return;
             }
 
-            DefaultConsoleInterface.WriteLine();
-            ConsoleInterface.Default.Mode = ConsoleInterface.Modes.Ansi;
-            DefaultConsoleInterface.Write("ANSI " + new ConsoleTextStyle
+            cli.WriteLine();
+            StyleConsole.Default.Mode = StyleConsole.Modes.Ansi;
+            cli.Write("ANSI " + new ConsoleTextStyle
             {
                 ForegroundConsoleColor = ConsoleColor.Blue,
                 Italic = true
             });
-            DefaultConsoleInterface.ReadPassword('*');
-            ConsoleInterface.Default.Mode = ConsoleInterface.Modes.Cmd;
-            DefaultConsoleInterface.Write(ConsoleColor.Blue, "CMD ");
-            DefaultConsoleInterface.ReadPassword('*');
-            ConsoleInterface.Default.Mode = ConsoleInterface.Modes.Text;
-            DefaultConsoleInterface.Write(ConsoleColor.Blue, "TEXT ");
-            DefaultConsoleInterface.ReadPassword('*');
-            ConsoleInterface.Default.Mode = mode;
-            DefaultConsoleInterface.WriteLine("abc\b\b\b\b\b\b\b\b~       " + mode.ToString());
+            cli.ReadPassword('*');
+            StyleConsole.Default.Mode = StyleConsole.Modes.Cmd;
+            cli.Write(ConsoleColor.Blue, "CMD ");
+            cli.ReadPassword('*');
+            StyleConsole.Default.Mode = StyleConsole.Modes.Text;
+            cli.Write(ConsoleColor.Blue, "TEXT ");
+            cli.ReadPassword('*');
+            StyleConsole.Default.Mode = mode;
+            cli.WriteLine("abc\b\b\b\b\b\b\b\b~       " + mode.ToString());
 
-            Console.WriteLine("1 abcdefg hijklmn");
-            Console.WriteLine("1 abcdefg hijklmn");
-            Console.WriteLine("1 abcdefg hijklmn");
-            Console.Write("1 abcdefg hijklmn");
-            DefaultConsoleInterface.MoveCursorBy(-6, -2);
-            DefaultConsoleInterface.Clear(ConsoleInterface.RelativeAreas.ToBeginningOfLine);
-            Console.WriteLine("x");
-            Console.ReadLine();
+            cli.WriteLine("1 abcdefg hijklmn");
+            cli.WriteLine("1 abcdefg hijklmn");
+            cli.WriteLine("1 abcdefg hijklmn");
+            cli.Write("1 abcdefg hijklmn");
+            cli.MoveCursorBy(-6, -2);
+            cli.Clear(StyleConsole.RelativeAreas.ToBeginningOfLine);
+            cli.WriteLine("x");
+            cli.ReadLine();
 
-            Console.WriteLine("2 abcdefg hijklmn");
-            Console.WriteLine("2 abcdefg hijklmn");
-            Console.WriteLine("2 abcdefg hijklmn");
-            Console.Write("2 abcdefg hijklmn");
-            DefaultConsoleInterface.MoveCursorBy(-6, -2);
-            DefaultConsoleInterface.Clear(ConsoleInterface.RelativeAreas.ToEndOfLine);
-            Console.WriteLine("x");
-            Console.ReadLine();
+            cli.WriteLine("2 abcdefg hijklmn");
+            cli.WriteLine("2 abcdefg hijklmn");
+            cli.WriteLine("2 abcdefg hijklmn");
+            cli.Write("2 abcdefg hijklmn");
+            cli.MoveCursorBy(-6, -2);
+            cli.Clear(StyleConsole.RelativeAreas.ToEndOfLine);
+            cli.WriteLine("x");
+            cli.ReadLine();
 
-            Console.WriteLine("3 abcdefg hijklmn");
-            Console.WriteLine("3 abcdefg hijklmn");
-            Console.WriteLine("3 abcdefg hijklmn");
-            Console.Write("3 abcdefg hijklmn");
-            DefaultConsoleInterface.MoveCursorBy(-6, -2);
-            DefaultConsoleInterface.Clear(ConsoleInterface.RelativeAreas.ToEndOfScreen);
-            Console.WriteLine("x");
-            Console.ReadLine();
+            cli.WriteLine("3 abcdefg hijklmn");
+            cli.WriteLine("3 abcdefg hijklmn");
+            cli.WriteLine("3 abcdefg hijklmn");
+            cli.Write("3 abcdefg hijklmn");
+            cli.MoveCursorBy(-6, -2);
+            cli.Clear(StyleConsole.RelativeAreas.ToEndOfScreen);
+            cli.WriteLine("x");
+            cli.ReadLine();
 
-            Console.WriteLine("4 abcdefg hijklmn");
-            Console.WriteLine("4 abcdefg hijklmn");
-            Console.WriteLine("4 abcdefg hijklmn");
-            Console.Write("4 abcdefg hijklmn");
-            DefaultConsoleInterface.MoveCursorBy(-6, -2);
-            DefaultConsoleInterface.Clear(ConsoleInterface.RelativeAreas.ToBeginningOfScreen);
-            Console.WriteLine("x");
-            Console.ReadLine();
+            cli.WriteLine("4 abcdefg hijklmn");
+            cli.WriteLine("4 abcdefg hijklmn");
+            cli.WriteLine("4 abcdefg hijklmn");
+            cli.Write("4 abcdefg hijklmn");
+            cli.MoveCursorBy(-6, -2);
+            cli.Clear(StyleConsole.RelativeAreas.ToBeginningOfScreen);
+            cli.WriteLine("x");
+            cli.ReadLine();
 
-            DefaultConsoleInterface.Clear(ConsoleInterface.RelativeAreas.Line);
+            cli.Clear(StyleConsole.RelativeAreas.Line);
         }
     }
 }

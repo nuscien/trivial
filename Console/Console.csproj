@@ -3,12 +3,12 @@
   <PropertyGroup>
     <TargetFrameworks>net5.0;netcoreapp3.1;netstandard2.0;net48;net461</TargetFrameworks>
     <AssemblyName>Trivial.Console</AssemblyName>
-    <RootNamespace>Trivial.Console</RootNamespace>
+    <RootNamespace>Trivial</RootNamespace>
     <PackageId>Trivial.Console</PackageId>
     <Product>Trivial</Product>
     <Authors>Kingcean Tuan</Authors>
     <Company>Nanchang Jinchen Software Co., Ltd.</Company>
-    <Version>4.0.0-preview2</Version>
+    <Version>4.0.0-preview3</Version>
     <AssemblyVersion>4.0.0.0</AssemblyVersion>
     <FileVersion>4.0.0.0</FileVersion>
     <Description>The useful utilities for console application including command dispatcher, arguments parser and some rich user interface console controls.</Description>
@@ -62,8 +62,12 @@
     <ProjectReference Include="..\Core\Core.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Compile Update="Resource.Designer.cs">
+    <ItemGroup>
+        <Compile Include="..\Core\CommandLine\Console\AnsiGenerator.cs" Link="CommandLine\AnsiGenerator.cs" />
+    </ItemGroup>
+
+    <ItemGroup>
+    <Compile Update="CommandLine\Resource.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
       <DependentUpon>Resource.resx</DependentUpon>
@@ -71,7 +75,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <EmbeddedResource Update="Resource.resx">
+    <EmbeddedResource Update="CommandLine\Resource.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resource.Designer.cs</LastGenOutput>
     </EmbeddedResource>
