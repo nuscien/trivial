@@ -85,6 +85,20 @@ namespace Trivial.CommandLine
         /// </summary>
         public ConsoleColor? BackgroundConsoleColor { get; set; }
 
+#if NETFRAMEWORK
+        /// <summary>
+        /// Sets the font style.
+        /// </summary>
+        /// <param name="style">The font style to set.</param>
+        public void Set(FontStyle style)
+        {
+            Bold = style.HasFlag(FontStyle.Bold);
+            Italic = style.HasFlag(FontStyle.Italic);
+            Underline = style.HasFlag(FontStyle.Underline);
+            Strikeout = style.HasFlag(FontStyle.Strikeout);
+        }
+#endif
+
         /// <summary>
         /// Adds.
         /// leftValue + rightValue

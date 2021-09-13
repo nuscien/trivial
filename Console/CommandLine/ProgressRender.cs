@@ -101,14 +101,15 @@ namespace Trivial.CommandLine
             {
                 var top2 = TryGetCursorTop(cli) ?? -1;
                 var left2 = TryGetCursorLeft(cli) ?? 0;
-                if (top > 0 && top2 > top)
+                if (cli.Mode == StyleConsole.Modes.Cmd && top >= 0 && top2 > top)
                 {
                     cli.Flush();
                     cli.MoveCursorTo(0, top);
                 }
 
+                cli.MoveCursorBy(0, -1);
                 RenderData(cli, style, caption, progress);
-                if (top > 0 && top2 > top)
+                if (cli.Mode == StyleConsole.Modes.Cmd && top >= 0 && top2 > top)
                     cli.MoveCursorTo(left2, top2);
             };
             return progress;
@@ -201,7 +202,6 @@ namespace Trivial.CommandLine
             }
 
             cli.Flush();
-            cli.MoveCursorBy(0, -1);
             cli.Clear(StyleConsole.RelativeAreas.Line);
             cli.BackspaceToBeginning();
             cli.WriteLine(col);

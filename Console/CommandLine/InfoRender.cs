@@ -99,6 +99,44 @@ namespace Trivial.CommandLine
             => (cli ?? StyleConsole.Default).WriteLine((style ?? new JsonConsoleStyle()).CreateTextCollection(json, 0));
 
         /// <summary>
+        /// Writes a JSON object, followed by the current line terminator, to the standard output stream.
+        /// Note it may not flush immediately.
+        /// </summary>
+        /// <param name="cli">The command line interface proxy.</param>
+        /// <param name="json">The JSON instance.</param>
+        public static void WriteLine(this StyleConsole cli, System.Text.Json.Nodes.JsonObject json)
+            => (cli ?? StyleConsole.Default).WriteLine(new JsonConsoleStyle().CreateTextCollection(json == null ? null : (JsonObjectNode)json, 0));
+
+        /// <summary>
+        /// Writes a JSON object, followed by the current line terminator, to the standard output stream.
+        /// Note it may not flush immediately.
+        /// </summary>
+        /// <param name="cli">The command line interface proxy.</param>
+        /// <param name="style">The style.</param>
+        /// <param name="json">The JSON instance.</param>
+        public static void WriteLine(this StyleConsole cli, JsonConsoleStyle style, System.Text.Json.Nodes.JsonObject json)
+            => (cli ?? StyleConsole.Default).WriteLine((style ?? new JsonConsoleStyle()).CreateTextCollection(json == null ? null : (JsonObjectNode)json, 0));
+
+        /// <summary>
+        /// Writes a JSON object, followed by the current line terminator, to the standard output stream.
+        /// Note it may not flush immediately.
+        /// </summary>
+        /// <param name="cli">The command line interface proxy.</param>
+        /// <param name="json">The JSON instance.</param>
+        public static void WriteLine(this StyleConsole cli, System.Text.Json.Nodes.JsonArray json)
+            => (cli ?? StyleConsole.Default).WriteLine(new JsonConsoleStyle().CreateTextCollection(json == null ? null : (JsonArrayNode)json, 0));
+
+        /// <summary>
+        /// Writes a JSON object, followed by the current line terminator, to the standard output stream.
+        /// Note it may not flush immediately.
+        /// </summary>
+        /// <param name="cli">The command line interface proxy.</param>
+        /// <param name="style">The style.</param>
+        /// <param name="json">The JSON instance.</param>
+        public static void WriteLine(this StyleConsole cli, JsonConsoleStyle style, System.Text.Json.Nodes.JsonArray json)
+            => (cli ?? StyleConsole.Default).WriteLine((style ?? new JsonConsoleStyle()).CreateTextCollection(json == null ? null : (JsonArrayNode)json, 0));
+
+        /// <summary>
         /// Tries to gets the row position of the cursor within the buffer area.
         /// </summary>
         /// <param name="cli">The command line interface.</param>

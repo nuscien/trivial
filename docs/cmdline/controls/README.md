@@ -1,14 +1,8 @@
-﻿# [Trivial.Console](../docs/console)
+# Console Controls
 
-This library includes a lot of useful rich command line controls.
+A lot of useful rich command line controls.
 
-## Import
-
-Add following namespace to your code file to use.
-
-```csharp
-using Trivial.CommandLine;
-```
+In `Trivial.CommandLine` [namespace](../) of `Trivial.Console.dll` [library](../../).
 
 ## Select
 

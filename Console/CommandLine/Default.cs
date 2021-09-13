@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 using Trivial.Collection;
+using Trivial.Tasks;
 using Trivial.Text;
 
 namespace Trivial.CommandLine
@@ -812,6 +813,76 @@ namespace Trivial.CommandLine
         /// <param name="json">The JSON instance.</param>
         public static void WriteLine(JsonConsoleStyle style, IJsonDataNode json)
             => StyleConsole.Default.WriteLine((style ?? new JsonConsoleStyle()).CreateTextCollection(json, 0));
+
+        /// <summary>
+        /// Writes a JSON object, followed by the current line terminator, to the standard output stream.
+        /// Note it may not flush immediately.
+        /// </summary>
+        /// <param name="json">The JSON instance.</param>
+        public static void WriteLine(System.Text.Json.Nodes.JsonObject json)
+            => StyleConsole.Default.WriteLine(new JsonConsoleStyle().CreateTextCollection(json == null ? null : (JsonObjectNode)json, 0));
+
+        /// <summary>
+        /// Writes a JSON object, followed by the current line terminator, to the standard output stream.
+        /// Note it may not flush immediately.
+        /// </summary>
+        /// <param name="style">The style.</param>
+        /// <param name="json">The JSON instance.</param>
+        public static void WriteLine(JsonConsoleStyle style, System.Text.Json.Nodes.JsonObject json)
+            => StyleConsole.Default.WriteLine((style ?? new JsonConsoleStyle()).CreateTextCollection(json == null ? null : (JsonObjectNode)json, 0));
+
+        /// <summary>
+        /// Writes a JSON object, followed by the current line terminator, to the standard output stream.
+        /// Note it may not flush immediately.
+        /// </summary>
+        /// <param name="json">The JSON instance.</param>
+        public static void WriteLine(System.Text.Json.Nodes.JsonArray json)
+            => StyleConsole.Default.WriteLine(new JsonConsoleStyle().CreateTextCollection(json == null ? null : (JsonArrayNode)json, 0));
+
+        /// <summary>
+        /// Writes a JSON object, followed by the current line terminator, to the standard output stream.
+        /// Note it may not flush immediately.
+        /// </summary>
+        /// <param name="style">The style.</param>
+        /// <param name="json">The JSON instance.</param>
+        public static void WriteLine(JsonConsoleStyle style, System.Text.Json.Nodes.JsonArray json)
+            => StyleConsole.Default.WriteLine((style ?? new JsonConsoleStyle()).CreateTextCollection(json == null ? null : (JsonArrayNode)json, 0));
+
+        /// <summary>
+        /// Writes a progress component, followed by the current line terminator, to the standard output stream.
+        /// </summary>
+        /// <param name="style">The options.</param>
+        /// <returns>The progress result.</returns>
+        public static OneProgress WriteLine(ConsoleProgressStyle style)
+            => StyleConsole.Default.WriteLine(style, null);
+
+        /// <summary>
+        /// Writes a progress component, followed by the current line terminator, to the standard output stream.
+        /// </summary>
+        /// <param name="caption">The caption; or null if no caption. It will be better if it is less than 20 characters.</param>
+        /// <param name="progressSize">The progress size.</param>
+        /// <param name="kind">The progress kind.</param>
+        /// <returns>The progress result.</returns>
+        public static OneProgress WriteLine(ConsoleProgressStyle.Sizes progressSize, string caption, ConsoleProgressStyle.Kinds kind = ConsoleProgressStyle.Kinds.Full)
+            => StyleConsole.Default.WriteLine(progressSize, caption, kind);
+
+        /// <summary>
+        /// Writes a progress component, followed by the current line terminator, to the standard output stream.
+        /// </summary>
+        /// <param name="progressSize">The progress size.</param>
+        /// <param name="kind">The progress kind.</param>
+        /// <returns>The progress result.</returns>
+        public static OneProgress WriteLine(ConsoleProgressStyle.Sizes progressSize, ConsoleProgressStyle.Kinds kind = ConsoleProgressStyle.Kinds.Full)
+            => StyleConsole.Default.WriteLine(progressSize, kind);
+
+        /// <summary>
+        /// Writes a progress component, followed by the current line terminator, to the standard output stream.
+        /// </summary>
+        /// <param name="caption">The caption; or null if no caption. It will be better if it is less than 20 characters.</param>
+        /// <param name="style">The style.</param>
+        /// <returns>The progress result.</returns>
+        public static OneProgress WriteLine(ConsoleProgressStyle style, string caption)
+            => StyleConsole.Default.WriteLine(style, caption);
 
         /// <summary>
         /// Writes the specific lines to the standard output stream.

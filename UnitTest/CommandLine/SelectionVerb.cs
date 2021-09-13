@@ -92,23 +92,23 @@ namespace Trivial.CommandLine
                 BarColor = ConsoleColor.White,
                 BackgroundColor = ConsoleColor.DarkBlue
             }, "Running 1:");
-            //cli.WriteLine("And another one...");
-            //var progress2 = cli.WriteLine(new ConsoleProgressStyle(), "Running 2: ");
+            Tasks.OneProgress progress2 = null;
+            cli.WriteLine("And another one...");
+            progress2 = cli.WriteLine(new ConsoleProgressStyle(), "Running 2:");
             for (var i = 0; i <= 50; i++)
             {
                 await Task.Delay(10);
                 progress.Report(0.02 * i);
-                //progress2.Report(0.03 * i);
-                //cli.BackspaceToBeginning();
-                //cli.WriteImmediately("Update to {0} (total 50).", i);
+                progress2.Report(0.03 * i);
+                if (cli.Mode == StyleConsole.Modes.Text) continue;
+                cli.BackspaceToBeginning();
+                cli.WriteImmediately("Update to {0} (total 50).", i);
             }
 
             cli.WriteLine(" And following is failed.");
             progress = cli.WriteLine(new ConsoleProgressStyle(), "Running 3:");
             await progress.IncreaseAsync(null, 0.02, 0.6, 10);
             progress.Fail();
-            cli.WriteLine();
         }
-
     }
 }
