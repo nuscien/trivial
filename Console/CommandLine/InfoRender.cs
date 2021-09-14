@@ -140,10 +140,11 @@ namespace Trivial.CommandLine
         /// Writes a sentense to allow pressing a key to continue.
         /// </summary>
         /// <param name="cli">The command line interface proxy.</param>
-        public static void PressAnyKeyToContinue(StyleConsole cli)
+        /// <param name="style">The style.</param>
+        public static void PressAnyKeyToContinue(StyleConsole cli, ConsoleTextStyle style = null)
         {
             if (cli == null) cli = StyleConsole.Default;
-            cli.Write(Resource.PressAnyKeyToCont);
+            cli.WriteLine(style, Resource.PressAnyKeyToCont);
             try
             {
                 cli.ReadKey(true);

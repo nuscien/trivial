@@ -233,6 +233,7 @@ namespace Trivial.CommandLine
                         RenderSelectResult(cli, null, options);
                         cli.WriteLine();
                         return new SelectionResult<T>(string.Empty, SelectionResultTypes.Canceled);
+                    case ConsoleKey.Help:
                     case ConsoleKey.F1:
                         {
                             cli.BackspaceToBeginning();
