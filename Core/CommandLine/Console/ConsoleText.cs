@@ -224,7 +224,7 @@ namespace Trivial.CommandLine
         /// <param name="style">The style.</param>
         public ConsoleText(char c, int repeatCount = 1, ConsoleTextStyle style = null)
         {
-            Content.Append(c, repeatCount);
+            if (repeatCount >= 0) Content.Append(c, repeatCount);
             if (style != null) Style = style;
         }
 
@@ -259,7 +259,7 @@ namespace Trivial.CommandLine
         /// <param name="background">The background color.</param>
         public ConsoleText(char c, int repeatCount, ConsoleColor? foreground, ConsoleColor? background = null)
         {
-            Content.Append(c, repeatCount);
+            if (repeatCount >= 0) Content.Append(c, repeatCount);
             Style.ForegroundConsoleColor = foreground;
             Style.BackgroundConsoleColor = background;
         }

@@ -99,10 +99,24 @@ for (var i = 0; i <= 50; i++)
 
 ## JSON
 
-Following is a sample to format JSON into command line app.
+Following is a sample to format JSON into terminal.
 
 ```csharp
 var json = new Trivial.Text.JsonObjectNode();
 // and then add some properties to json.
 DefaultConsole.WriteLine(json);
+```
+
+## Linear gradient
+
+Output a string with linear gradient.
+
+```csharp
+DefaultConsole.WriteLine(new LinearGradientConsoleStyle(
+    ConsoleColor.Gray,  // Fallback color.
+    Color.FromArgb(15, 250, 250),   // From color.
+    Color.FromArgb(85, 168, 255))   // To color
+    {
+        Bold = true     // Additional font style
+    },"Trivial Sample");
 ```

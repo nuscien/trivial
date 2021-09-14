@@ -73,7 +73,7 @@ namespace Trivial.CommandLine
         /// <param name="args">An object array that contains zero or more objects to format.</param>
         public void Write(string s, params object[] args)
         {
-            col.Add(new ConsoleText(args.Length == 0 ? s : string.Format(s, args)));
+            col.Add(new ConsoleText(args == null || args.Length == 0 ? s : string.Format(s, args)));
             OnAppend();
         }
 
@@ -86,7 +86,7 @@ namespace Trivial.CommandLine
         /// <param name="args">An object array that contains zero or more objects to format.</param>
         public void Write(ConsoleTextStyle style, string s, params object[] args)
         {
-            col.Add(new ConsoleText(args.Length == 0 ? s : string.Format(s, args), style));
+            col.Add(new ConsoleText(args == null || args.Length == 0 ? s : string.Format(s, args), style));
             OnAppend();
         }
 
@@ -99,7 +99,7 @@ namespace Trivial.CommandLine
         /// <param name="args">An object array that contains zero or more objects to format.</param>
         public void Write(ConsoleColor foreground, string s, params object[] args)
         {
-            col.Add(new ConsoleText(args.Length == 0 ? s : string.Format(s, args), foreground));
+            col.Add(new ConsoleText(args == null || args.Length == 0 ? s : string.Format(s, args), foreground));
             OnAppend();
         }
 
@@ -113,7 +113,7 @@ namespace Trivial.CommandLine
         /// <param name="args">An object array that contains zero or more objects to format.</param>
         public void Write(ConsoleColor? foreground, ConsoleColor? background, string s, params object[] args)
         {
-            col.Add(new ConsoleText(args.Length == 0 ? s : string.Format(s, args), foreground, background));
+            col.Add(new ConsoleText(args == null || args.Length == 0 ? s : string.Format(s, args), foreground, background));
             OnAppend();
         }
 
@@ -126,7 +126,7 @@ namespace Trivial.CommandLine
         /// <param name="args">An object array that contains zero or more objects to format.</param>
         public void Write(Color foreground, string s, params object[] args)
         {
-            col.Add(new ConsoleText(args.Length == 0 ? s : string.Format(s, args), foreground));
+            col.Add(new ConsoleText(args == null || args.Length == 0 ? s : string.Format(s, args), foreground));
             OnAppend();
         }
 
@@ -140,7 +140,7 @@ namespace Trivial.CommandLine
         /// <param name="args">An object array that contains zero or more objects to format.</param>
         public void Write(Color foreground, Color background, string s, params object[] args)
         {
-            col.Add(new ConsoleText(args.Length == 0 ? s : string.Format(s, args), foreground, background));
+            col.Add(new ConsoleText(args == null || args.Length == 0 ? s : string.Format(s, args), foreground, background));
             OnAppend();
         }
 
@@ -667,7 +667,7 @@ namespace Trivial.CommandLine
         /// <param name="args">An object array that contains zero or more objects to format.</param>
         public void WriteImmediately(string s, params object[] args)
         {
-            col.Add(new ConsoleText(args.Length == 0 ? s : string.Format(s, args)));
+            col.Add(new ConsoleText(args == null || args.Length == 0 ? s : string.Format(s, args)));
             Flush();
         }
 
@@ -680,7 +680,7 @@ namespace Trivial.CommandLine
         /// <param name="args">An object array that contains zero or more objects to format.</param>
         public void WriteImmediately(ConsoleTextStyle style, string s, params object[] args)
         {
-            col.Add(new ConsoleText(args.Length == 0 ? s : string.Format(s, args), style));
+            col.Add(new ConsoleText(args == null || args.Length == 0 ? s : string.Format(s, args), style));
             Flush();
         }
 
@@ -693,7 +693,7 @@ namespace Trivial.CommandLine
         /// <param name="args">An object array that contains zero or more objects to format.</param>
         public void WriteImmediately(ConsoleColor foreground, string s, params object[] args)
         {
-            col.Add(new ConsoleText(args.Length == 0 ? s : string.Format(s, args), foreground));
+            col.Add(new ConsoleText(args == null || args.Length == 0 ? s : string.Format(s, args), foreground));
             Flush();
         }
 
@@ -707,7 +707,7 @@ namespace Trivial.CommandLine
         /// <param name="args">An object array that contains zero or more objects to format.</param>
         public void WriteImmediately(ConsoleColor? foreground, ConsoleColor? background, string s, params object[] args)
         {
-            col.Add(new ConsoleText(args.Length == 0 ? s : string.Format(s, args), foreground, background));
+            col.Add(new ConsoleText(args == null || args.Length == 0 ? s : string.Format(s, args), foreground, background));
             Flush();
         }
 
@@ -1157,6 +1157,7 @@ namespace Trivial.CommandLine
 
         /// <summary>
         /// Writes the specified string value, followed by the current line terminator, to the standard output stream.
+        /// It will flush immediately.
         /// </summary>
         /// <param name="content">The text content.</param>
         public void WriteLine(ConsoleText content = null)
@@ -1168,6 +1169,7 @@ namespace Trivial.CommandLine
 
         /// <summary>
         /// Writes the specified string value, followed by the current line terminator, to the standard output stream.
+        /// It will flush immediately.
         /// </summary>
         /// <param name="content1">The text content 1.</param>
         /// <param name="content2">The text content 2.</param>
@@ -1187,6 +1189,7 @@ namespace Trivial.CommandLine
 
         /// <summary>
         /// Writes the specified string value, followed by the current line terminator, to the standard output stream.
+        /// It will flush immediately.
         /// </summary>
         /// <param name="content">The text content collection.</param>
         public void WriteLine(IEnumerable<ConsoleText> content)
@@ -1208,39 +1211,42 @@ namespace Trivial.CommandLine
         /// <param name="args">An object array that contains zero or more objects to format.</param>
         public void WriteLine(string s, params object[] args)
         {
-            col.Add(new ConsoleText(args.Length == 0 ? s : string.Format(s, args)));
+            col.Add(new ConsoleText(args == null || args.Length == 0 ? s : string.Format(s, args)));
             col.Add(new ConsoleText(Environment.NewLine));
             Flush();
         }
 
         /// <summary>
         /// Writes the specified string value, followed by the current line terminator, to the standard output stream.
+        /// It will flush immediately.
         /// </summary>
         /// <param name="style">The content style.</param>
         /// <param name="s">A composite format string to output.</param>
         /// <param name="args">An object array that contains zero or more objects to format.</param>
         public void WriteLine(ConsoleTextStyle style, string s, params object[] args)
         {
-            col.Add(new ConsoleText(args.Length == 0 ? s : string.Format(s, args), style));
+            col.Add(new ConsoleText(args == null || args.Length == 0 ? s : string.Format(s, args), style));
             col.Add(new ConsoleText(Environment.NewLine));
             Flush();
         }
 
         /// <summary>
         /// Writes the specified string value, followed by the current line terminator, to the standard output stream.
+        /// It will flush immediately.
         /// </summary>
         /// <param name="foreground">The foreground color.</param>
         /// <param name="s">A composite format string to output.</param>
         /// <param name="args">An object array that contains zero or more objects to format.</param>
         public void WriteLine(ConsoleColor foreground, string s, params object[] args)
         {
-            col.Add(new ConsoleText(args.Length == 0 ? s : string.Format(s, args), foreground));
+            col.Add(new ConsoleText(args == null || args.Length == 0 ? s : string.Format(s, args), foreground));
             col.Add(new ConsoleText(Environment.NewLine));
             Flush();
         }
 
         /// <summary>
         /// Writes the specified string value, followed by the current line terminator, to the standard output stream.
+        /// It will flush immediately.
         /// </summary>
         /// <param name="foreground">The foreground color.</param>
         /// <param name="background">The background color.</param>
@@ -1248,26 +1254,28 @@ namespace Trivial.CommandLine
         /// <param name="args">An object array that contains zero or more objects to format.</param>
         public void WriteLine(ConsoleColor? foreground, ConsoleColor? background, string s, params object[] args)
         {
-            col.Add(new ConsoleText(args.Length == 0 ? s : string.Format(s, args), foreground, background));
+            col.Add(new ConsoleText(args == null || args.Length == 0 ? s : string.Format(s, args), foreground, background));
             col.Add(new ConsoleText(Environment.NewLine));
             Flush();
         }
 
         /// <summary>
         /// Writes the specified string value, followed by the current line terminator, to the standard output stream.
+        /// It will flush immediately.
         /// </summary>
         /// <param name="foreground">The foreground color.</param>
         /// <param name="s">A composite format string to output.</param>
         /// <param name="args">An object array that contains zero or more objects to format.</param>
         public void WriteLine(Color foreground, string s, params object[] args)
         {
-            col.Add(new ConsoleText(args.Length == 0 ? s : string.Format(s, args), foreground));
+            col.Add(new ConsoleText(args == null || args.Length == 0 ? s : string.Format(s, args), foreground));
             col.Add(new ConsoleText(Environment.NewLine));
             Flush();
         }
 
         /// <summary>
         /// Writes the specified string value, followed by the current line terminator, to the standard output stream.
+        /// It will flush immediately.
         /// </summary>
         /// <param name="foreground">The foreground color.</param>
         /// <param name="background">The background color.</param>
@@ -1275,14 +1283,14 @@ namespace Trivial.CommandLine
         /// <param name="args">An object array that contains zero or more objects to format.</param>
         public void WriteLine(Color foreground, Color background, string s, params object[] args)
         {
-            col.Add(new ConsoleText(args.Length == 0 ? s : string.Format(s, args), foreground, background));
+            col.Add(new ConsoleText(args == null || args.Length == 0 ? s : string.Format(s, args), foreground, background));
             col.Add(new ConsoleText(Environment.NewLine));
             Flush();
         }
 
         /// <summary>
         /// Writes the specified number, followed by the current line terminator, to the standard output stream.
-        /// Note it may not flush immediately.
+        /// It will flush immediately.
         /// </summary>
         /// <param name="number">A number to output.</param>
         public void WriteLine(int number)
@@ -1294,7 +1302,7 @@ namespace Trivial.CommandLine
 
         /// <summary>
         /// Writes the specified number, followed by the current line terminator, to the standard output stream.
-        /// Note it may not flush immediately.
+        /// It will flush immediately.
         /// </summary>
         /// <param name="style">The content style.</param>
         /// <param name="number">A number to output.</param>
@@ -1307,7 +1315,7 @@ namespace Trivial.CommandLine
 
         /// <summary>
         /// Writes the specified number, followed by the current line terminator, to the standard output stream.
-        /// Note it may not flush immediately.
+        /// It will flush immediately.
         /// </summary>
         /// <param name="foreground">The foreground color.</param>
         /// <param name="number">A number to output.</param>
@@ -1320,7 +1328,7 @@ namespace Trivial.CommandLine
 
         /// <summary>
         /// Writes the specified number, followed by the current line terminator, to the standard output stream.
-        /// Note it may not flush immediately.
+        /// It will flush immediately.
         /// </summary>
         /// <param name="foreground">The foreground color.</param>
         /// <param name="background">The background color.</param>
@@ -1334,7 +1342,7 @@ namespace Trivial.CommandLine
 
         /// <summary>
         /// Writes the specified number, followed by the current line terminator, to the standard output stream.
-        /// Note it may not flush immediately.
+        /// It will flush immediately.
         /// </summary>
         /// <param name="number">A number to output.</param>
         public void WriteLine(long number)
@@ -1346,7 +1354,7 @@ namespace Trivial.CommandLine
 
         /// <summary>
         /// Writes the specified number, followed by the current line terminator, to the standard output stream.
-        /// Note it may not flush immediately.
+        /// It will flush immediately.
         /// </summary>
         /// <param name="style">The content style.</param>
         /// <param name="number">A number to output.</param>
@@ -1359,7 +1367,7 @@ namespace Trivial.CommandLine
 
         /// <summary>
         /// Writes the specified number, followed by the current line terminator, to the standard output stream.
-        /// Note it may not flush immediately.
+        /// It will flush immediately.
         /// </summary>
         /// <param name="foreground">The foreground color.</param>
         /// <param name="number">A number to output.</param>
@@ -1372,7 +1380,7 @@ namespace Trivial.CommandLine
 
         /// <summary>
         /// Writes the specified number, followed by the current line terminator, to the standard output stream.
-        /// Note it may not flush immediately.
+        /// It will flush immediately.
         /// </summary>
         /// <param name="foreground">The foreground color.</param>
         /// <param name="background">The background color.</param>
@@ -1386,7 +1394,7 @@ namespace Trivial.CommandLine
 
         /// <summary>
         /// Writes the specified number, followed by the current line terminator, to the standard output stream.
-        /// Note it may not flush immediately.
+        /// It will flush immediately.
         /// </summary>
         /// <param name="number">A number to output.</param>
         public void WriteLine(ulong number)
@@ -1398,7 +1406,7 @@ namespace Trivial.CommandLine
 
         /// <summary>
         /// Writes the specified number, followed by the current line terminator, to the standard output stream.
-        /// Note it may not flush immediately.
+        /// It will flush immediately.
         /// </summary>
         /// <param name="style">The content style.</param>
         /// <param name="number">A number to output.</param>
@@ -1411,7 +1419,7 @@ namespace Trivial.CommandLine
 
         /// <summary>
         /// Writes the specified number, followed by the current line terminator, to the standard output stream.
-        /// Note it may not flush immediately.
+        /// It will flush immediately.
         /// </summary>
         /// <param name="foreground">The foreground color.</param>
         /// <param name="number">A number to output.</param>
@@ -1424,7 +1432,7 @@ namespace Trivial.CommandLine
 
         /// <summary>
         /// Writes the specified number, followed by the current line terminator, to the standard output stream.
-        /// Note it may not flush immediately.
+        /// It will flush immediately.
         /// </summary>
         /// <param name="foreground">The foreground color.</param>
         /// <param name="background">The background color.</param>
@@ -1438,7 +1446,7 @@ namespace Trivial.CommandLine
 
         /// <summary>
         /// Writes the specified number, followed by the current line terminator, to the standard output stream.
-        /// Note it may not flush immediately.
+        /// It will flush immediately.
         /// </summary>
         /// <param name="number">A number to output.</param>
         public void WriteLine(float number)
@@ -1450,7 +1458,7 @@ namespace Trivial.CommandLine
 
         /// <summary>
         /// Writes the specified number, followed by the current line terminator, to the standard output stream.
-        /// Note it may not flush immediately.
+        /// It will flush immediately.
         /// </summary>
         /// <param name="style">The content style.</param>
         /// <param name="number">A number to output.</param>
@@ -1463,7 +1471,7 @@ namespace Trivial.CommandLine
 
         /// <summary>
         /// Writes the specified number, followed by the current line terminator, to the standard output stream.
-        /// Note it may not flush immediately.
+        /// It will flush immediately.
         /// </summary>
         /// <param name="foreground">The foreground color.</param>
         /// <param name="number">A number to output.</param>
@@ -1476,7 +1484,7 @@ namespace Trivial.CommandLine
 
         /// <summary>
         /// Writes the specified number, followed by the current line terminator, to the standard output stream.
-        /// Note it may not flush immediately.
+        /// It will flush immediately.
         /// </summary>
         /// <param name="foreground">The foreground color.</param>
         /// <param name="background">The background color.</param>
@@ -1490,7 +1498,7 @@ namespace Trivial.CommandLine
 
         /// <summary>
         /// Writes the specified number, followed by the current line terminator, to the standard output stream.
-        /// Note it may not flush immediately.
+        /// It will flush immediately.
         /// </summary>
         /// <param name="number">A number to output.</param>
         public void WriteLine(decimal number)
@@ -1502,7 +1510,7 @@ namespace Trivial.CommandLine
 
         /// <summary>
         /// Writes the specified number, followed by the current line terminator, to the standard output stream.
-        /// Note it may not flush immediately.
+        /// It will flush immediately.
         /// </summary>
         /// <param name="style">The content style.</param>
         /// <param name="number">A number to output.</param>
@@ -1515,7 +1523,7 @@ namespace Trivial.CommandLine
 
         /// <summary>
         /// Writes the specified number, followed by the current line terminator, to the standard output stream.
-        /// Note it may not flush immediately.
+        /// It will flush immediately.
         /// </summary>
         /// <param name="foreground">The foreground color.</param>
         /// <param name="number">A number to output.</param>
@@ -1528,7 +1536,7 @@ namespace Trivial.CommandLine
 
         /// <summary>
         /// Writes the specified number, followed by the current line terminator, to the standard output stream.
-        /// Note it may not flush immediately.
+        /// It will flush immediately.
         /// </summary>
         /// <param name="foreground">The foreground color.</param>
         /// <param name="background">The background color.</param>
@@ -1542,7 +1550,7 @@ namespace Trivial.CommandLine
 
         /// <summary>
         /// Writes the specified number, followed by the current line terminator, to the standard output stream.
-        /// Note it may not flush immediately.
+        /// It will flush immediately.
         /// </summary>
         /// <param name="number">A number to output.</param>
         public void WriteLine(double number)
@@ -1554,7 +1562,7 @@ namespace Trivial.CommandLine
 
         /// <summary>
         /// Writes the specified number, followed by the current line terminator, to the standard output stream.
-        /// Note it may not flush immediately.
+        /// It will flush immediately.
         /// </summary>
         /// <param name="style">The content style.</param>
         /// <param name="number">A number to output.</param>
@@ -1567,7 +1575,7 @@ namespace Trivial.CommandLine
 
         /// <summary>
         /// Writes the specified number, followed by the current line terminator, to the standard output stream.
-        /// Note it may not flush immediately.
+        /// It will flush immediately.
         /// </summary>
         /// <param name="foreground">The foreground color.</param>
         /// <param name="number">A number to output.</param>
@@ -1580,7 +1588,7 @@ namespace Trivial.CommandLine
 
         /// <summary>
         /// Writes the specified number, followed by the current line terminator, to the standard output stream.
-        /// Note it may not flush immediately.
+        /// It will flush immediately.
         /// </summary>
         /// <param name="foreground">The foreground color.</param>
         /// <param name="background">The background color.</param>
@@ -1594,6 +1602,7 @@ namespace Trivial.CommandLine
 
         /// <summary>
         /// Writes the specified characters, followed by the current line terminator, to the standard output stream.
+        /// It will flush immediately.
         /// </summary>
         /// <param name="value">The value to write.</param>
         /// <param name="start">The starting position in value.</param>
@@ -1607,6 +1616,7 @@ namespace Trivial.CommandLine
 
         /// <summary>
         /// Writes the specified characters, followed by the current line terminator, to the standard output stream.
+        /// It will flush immediately.
         /// </summary>
         /// <param name="style">The content style.</param>
         /// <param name="value">The value to write.</param>
@@ -1621,6 +1631,7 @@ namespace Trivial.CommandLine
 
         /// <summary>
         /// Writes the specified characters, followed by the current line terminator, to the standard output stream.
+        /// It will flush immediately.
         /// </summary>
         /// <param name="foreground">The foreground color.</param>
         /// <param name="value">The value to write.</param>
@@ -1635,6 +1646,7 @@ namespace Trivial.CommandLine
 
         /// <summary>
         /// Writes the specified characters, followed by the current line terminator, to the standard output stream.
+        /// It will flush immediately.
         /// </summary>
         /// <param name="foreground">The foreground color.</param>
         /// <param name="background">The background color.</param>
@@ -1662,6 +1674,7 @@ namespace Trivial.CommandLine
 
         /// <summary>
         /// Writes the specified characters, followed by the current line terminator, to the standard output stream.
+        /// It will flush immediately.
         /// </summary>
         /// <param name="style">The content style.</param>
         /// <param name="value">The value to write.</param>
@@ -1675,6 +1688,7 @@ namespace Trivial.CommandLine
 
         /// <summary>
         /// Writes the specified characters, followed by the current line terminator, to the standard output stream.
+        /// It will flush immediately.
         /// </summary>
         /// <param name="foreground">The foreground color.</param>
         /// <param name="value">The value to write.</param>
@@ -1688,6 +1702,7 @@ namespace Trivial.CommandLine
 
         /// <summary>
         /// Writes the specified characters, followed by the current line terminator, to the standard output stream.
+        /// It will flush immediately.
         /// </summary>
         /// <param name="foreground">The foreground color.</param>
         /// <param name="background">The background color.</param>

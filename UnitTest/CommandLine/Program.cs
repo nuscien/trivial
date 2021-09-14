@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Drawing;
 using System.Threading.Tasks;
 
 namespace Trivial.CommandLine
@@ -7,7 +8,10 @@ namespace Trivial.CommandLine
     {
         static Task Main(string[] args)
         {
-            DefaultConsole.WriteLine("Trivial Sample");
+            DefaultConsole.WriteLine(new LinearGradientConsoleStyle(null, Color.FromArgb(15, 250, 250), Color.FromArgb(85, 168, 255))
+            {
+                Bold = true
+            }, "Trivial Sample");
             DefaultConsole.WriteLine();
 #if DEBUG
             TestConsoleInterface();
