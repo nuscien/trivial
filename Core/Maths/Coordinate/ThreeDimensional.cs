@@ -19,6 +19,40 @@ namespace Trivial.Maths
     public class ThreeDimensionalPoint<TUnit> : ThreeElements<TUnit>, IEquatable<ThreeElements<TUnit>> where TUnit : struct, IComparable<TUnit>, IEquatable<TUnit>
     {
         /// <summary>
+        /// The event arguments with the position.
+        /// </summary>
+        public class DataEventArgs : EventArgs
+        {
+            /// <summary>
+            /// Initializes a new instance of the DataEventArgs class.
+            /// </summary>
+            /// <param name="x">The value of X.</param>
+            /// <param name="y">The value of Y.</param>
+            /// <param name="z">The value of Z.</param>
+            public DataEventArgs(TUnit x, TUnit y, TUnit z)
+            {
+                X = x;
+                Y = y;
+                Z = z;
+            }
+
+            /// <summary>
+            /// Gets the value of X.
+            /// </summary>
+            public TUnit X { get; }
+
+            /// <summary>
+            /// Gets the value of Y.
+            /// </summary>
+            public TUnit Y { get; }
+
+            /// <summary>
+            /// Gets the value of Y.
+            /// </summary>
+            public TUnit Z { get; }
+        }
+
+        /// <summary>
         /// Initializes a new instance of the ThreeDimensionalPoint class.
         /// </summary>
         /// <remarks>You can use this to initialize an instance for the class.</remarks>

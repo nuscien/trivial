@@ -35,10 +35,29 @@ namespace Trivial.CommandLine
         /// </summary>
         /// <param name="foreground">The foreground color.</param>
         /// <param name="background">The background color.</param>
-        public ConsoleTextStyle(Color? foreground, Color? background = null)
+        /// <param name="nullConsoleColors">true if set console colors as null; otherwise, false.</param>
+        public ConsoleTextStyle(Color? foreground, Color? background = null, bool nullConsoleColors = false)
         {
             ForegroundRgbColor = foreground;
             BackgroundRgbColor = background;
+            if (nullConsoleColors) return;
+            if (foreground.HasValue) ForegroundConsoleColor = AnsiCodeGenerator.ToConsoleColor(foreground.Value);
+            if (background.HasValue) BackgroundConsoleColor = AnsiCodeGenerator.ToConsoleColor(background.Value);
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the ConsoleTextStyle class.
+        /// </summary>
+        /// <param name="foreground">The foreground color.</param>
+        /// <param name="foreground2">The backup foreground color.</param>
+        /// <param name="background">The background color.</param>
+        /// <param name="background2">The backup background color.</param>
+        public ConsoleTextStyle(Color? foreground, ConsoleColor? foreground2, Color? background, ConsoleColor? background2)
+        {
+            ForegroundRgbColor = foreground;
+            BackgroundRgbColor = background;
+            ForegroundConsoleColor = foreground2;
+            BackgroundConsoleColor = background2;
         }
 
         /// <summary>
@@ -60,6 +79,7 @@ namespace Trivial.CommandLine
         /// Gets or sets a value indicating whether the text is underlined.
         /// </summary>
         public bool Underline { get; set; }
+
         /// <summary>
         /// Gets or sets a value indicating whether the text is strikeout.
         /// </summary>
@@ -98,6 +118,24 @@ namespace Trivial.CommandLine
             Strikeout = style.HasFlag(FontStyle.Strikeout);
         }
 #endif
+
+        /// <summary>
+        /// Sets foreground console color from RGB.
+        /// </summary>
+        public void SyncForegroundRgbToConsoleColor()
+        {
+            var color = ForegroundRgbColor;
+            if (color.HasValue) ForegroundConsoleColor = AnsiCodeGenerator.ToConsoleColor(color.Value);
+        }
+
+        /// <summary>
+        /// Sets background console color from RGB.
+        /// </summary>
+        public void SyncBackgroundRgbToConsoleColor()
+        {
+            var color = BackgroundRgbColor;
+            if (color.HasValue) BackgroundConsoleColor = AnsiCodeGenerator.ToConsoleColor(color.Value);
+        }
 
         /// <summary>
         /// Adds.
@@ -256,11 +294,13 @@ namespace Trivial.CommandLine
         /// <param name="s">The text content.</param>
         /// <param name="foreground">The foreground color.</param>
         /// <param name="background">The background color.</param>
-        public ConsoleText(string s, Color foreground, Color? background = null)
+        /// <param name="nullConsoleColors">true if set console colors as null; otherwise, false.</param>
+        public ConsoleText(string s, Color foreground, Color? background = null, bool nullConsoleColors = false)
         {
             Content = new StringBuilder(s);
             Style.ForegroundRgbColor = foreground;
             Style.BackgroundRgbColor = background;
+            if (nullConsoleColors) return;
             Style.ForegroundConsoleColor = AnsiCodeGenerator.ToConsoleColor(foreground);
             if (background.HasValue) Style.BackgroundConsoleColor = AnsiCodeGenerator.ToConsoleColor(background.Value);
         }
@@ -271,11 +311,13 @@ namespace Trivial.CommandLine
         /// <param name="s">The text content.</param>
         /// <param name="foreground">The foreground color.</param>
         /// <param name="background">The background color.</param>
-        public ConsoleText(StringBuilder s, Color foreground, Color? background = null)
+        /// <param name="nullConsoleColors">true if set console colors as null; otherwise, false.</param>
+        public ConsoleText(StringBuilder s, Color foreground, Color? background = null, bool nullConsoleColors = false)
         {
             if (s != null) Content = s;
             Style.ForegroundRgbColor = foreground;
             Style.BackgroundRgbColor = background;
+            if (nullConsoleColors) return;
             Style.ForegroundConsoleColor = AnsiCodeGenerator.ToConsoleColor(foreground);
             if (background.HasValue) Style.BackgroundConsoleColor = AnsiCodeGenerator.ToConsoleColor(background.Value);
         }

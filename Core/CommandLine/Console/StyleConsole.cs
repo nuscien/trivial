@@ -34,9 +34,14 @@ namespace Trivial.CommandLine
         public event DataEventHandler<IReadOnlyList<ConsoleText>> Flushed;
 
         /// <summary>
-        /// Adds or removes the handler occurred after flushing.
+        /// Adds or removes the handler occurred after cursor moving by.
         /// </summary>
-        public event EventHandler<RelativePositionEventArgs> CursorMoved;
+        public event EventHandler<Maths.Int32TwoDimensionalPoint.DataEventArgs> CursorMovedBy;
+
+        /// <summary>
+        /// Adds or removes the handler occurred after cursor moving To.
+        /// </summary>
+        public event EventHandler<Maths.Int32TwoDimensionalPoint.DataEventArgs> CursorMovedTo;
 
         /// <summary>
         /// Adds or removes the handler occurred after output area clearing.
@@ -333,28 +338,6 @@ namespace Trivial.CommandLine
         /// <summary>
         /// Moves cursor by a specific relative position.
         /// </summary>
-        /// <param name="origin">The relative origin.</param>
-        /// <param name="x">The horizontal translation size.</param>
-        /// <param name="y">The vertical translation size.</param>
-        public void MoveCursor(Origins origin, int x, int y)
-        {
-            switch (origin)
-            {
-                case Origins.Current:
-                    MoveCursorBy(x, y);
-                    break;
-                case Origins.ViewPort:
-                    MoveCursorAt(x, y);
-                    break;
-                case Origins.Buffer:
-                    MoveCursorTo(x, y);
-                    break;
-            }
-        }
-
-        /// <summary>
-        /// Moves cursor by a specific relative position.
-        /// </summary>
         /// <param name="x">The horizontal translation size.</param>
         /// <param name="y">The vertical translation size.</param>
         public void MoveCursorBy(int x, int y = 0)
@@ -362,8 +345,8 @@ namespace Trivial.CommandLine
             var h = Handler;
             if (h != null)
             {
-                h.MoveCursor(Origins.Current, x, y, context);
-                CursorMoved?.Invoke(this, new RelativePositionEventArgs(Origins.Current, x, y));
+                h.MoveCursorBy(x, y, context);
+                CursorMovedBy?.Invoke(this, new Maths.Int32TwoDimensionalPoint.DataEventArgs(x, y));
                 return;
             }
 
@@ -446,82 +429,21 @@ namespace Trivial.CommandLine
                     break;
             }
 
-            CursorMoved?.Invoke(this, new RelativePositionEventArgs(Origins.Current, x, y));
-        }
-
-        /// <summary>
-        /// Moves cursor at a specific position in viewport.
-        /// </summary>
-        /// <param name="x">Column, the left from the edge of viewport.</param>
-        /// <param name="y">Row, the top from the edge of viewport.</param>
-        public void MoveCursorAt(int x, int y)
-        {
-            var h = Handler;
-            if (h != null)
-            {
-                h.MoveCursor(Origins.ViewPort, x, y, context);
-                CursorMoved?.Invoke(this, new RelativePositionEventArgs(Origins.ViewPort, x, y));
-                return;
-            }
-
-            TestMode();
-            switch (Mode)
-            {
-                case Modes.Cmd:
-                    try
-                    {
-                        Console.CursorLeft = x;
-                    }
-                    catch (InvalidOperationException)
-                    {
-                    }
-                    catch (IOException)
-                    {
-                    }
-                    catch (SecurityException)
-                    {
-                    }
-                    catch (ArgumentOutOfRangeException)
-                    {
-                        if (BufferWidth < 8) throw;
-                        if (x < 0)
-                        {
-                            x = BufferWidth + x;
-                            if (x < 0) x = 0;
-                        }
-
-                        Console.CursorLeft = Math.Min(x, BufferWidth - 1);
-                    }
-                    catch (ArgumentException)
-                    {
-                    }
-                    catch (NotSupportedException)
-                    {
-                    }
-
-                    break;
-                case Modes.Text:
-                    break;
-                default:
-                    WriteImmediately(AnsiCodeGenerator.MoveCursorAt(x, y));
-                    break;
-            }
-
-            CursorMoved?.Invoke(this, new RelativePositionEventArgs(Origins.ViewPort, x, y));
+            CursorMovedBy?.Invoke(this, new Maths.Int32TwoDimensionalPoint.DataEventArgs(x, y));
         }
 
         /// <summary>
         /// Moves cursor at a specific position in buffer.
         /// </summary>
-        /// <param name="x">Column, the left from the edge of buffer.</param>
-        /// <param name="y">Row, the top from the edge of buffer.</param>
+        /// <param name="x">Column (zero-based), the left from the edge of buffer.</param>
+        /// <param name="y">Row (zero-based) the top from the edge of buffer; or -1 if do not move.</param>
         public void MoveCursorTo(int x, int y)
         {
             var h = Handler;
             if (h != null)
             {
-                h.MoveCursor(Origins.Buffer, x, y, context);
-                CursorMoved?.Invoke(this, new RelativePositionEventArgs(Origins.Buffer, x, y));
+                h.MoveCursorTo(x, y, context);
+                CursorMovedTo?.Invoke(this, new Maths.Int32TwoDimensionalPoint.DataEventArgs(x, y));
                 return;
             }
 
@@ -531,7 +453,7 @@ namespace Trivial.CommandLine
                 case Modes.Cmd:
                     try
                     {
-                        Console.CursorTop = y;
+                        if (y >= 0) Console.CursorTop = y;
                     }
                     catch (InvalidOperationException)
                     {
@@ -556,6 +478,12 @@ namespace Trivial.CommandLine
 
                     try
                     {
+                        if (x < 0)
+                        {
+                            x = BufferWidth + x;
+                            if (x < 0) x = 0;
+                        }
+
                         Console.CursorLeft = x;
                     }
                     catch (InvalidOperationException)
@@ -570,12 +498,6 @@ namespace Trivial.CommandLine
                     catch (ArgumentOutOfRangeException)
                     {
                         if (BufferWidth < 8) throw;
-                        if (x < 0)
-                        {
-                            x = BufferWidth + x;
-                            if (x < 0) x = 0;
-                        }
-
                         Console.CursorLeft = Math.Min(x, BufferWidth - 1);
                     }
                     catch (ArgumentException)
@@ -593,7 +515,7 @@ namespace Trivial.CommandLine
                     break;
             }
 
-            CursorMoved?.Invoke(this, new RelativePositionEventArgs(Origins.Buffer, x, y));
+            CursorMovedTo?.Invoke(this, new Maths.Int32TwoDimensionalPoint.DataEventArgs(x, y));
         }
 
         /// <summary>

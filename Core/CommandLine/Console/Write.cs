@@ -712,6 +712,54 @@ namespace Trivial.CommandLine
         }
 
         /// <summary>
+        /// Writes the specified string value to the standard output stream.
+        /// It will flush immediately.
+        /// </summary>
+        /// <param name="s">A composite format string to output.</param>
+        public void WriteImmediately(StringBuilder s)
+        {
+            col.Add(new ConsoleText(s));
+            Flush();
+        }
+
+        /// <summary>
+        /// Writes the specified string value to the standard output stream.
+        /// It will flush immediately.
+        /// </summary>
+        /// <param name="style">The content style.</param>
+        /// <param name="s">A composite format string to output.</param>
+        public void WriteImmediately(ConsoleTextStyle style, StringBuilder s)
+        {
+            col.Add(new ConsoleText(s, style));
+            Flush();
+        }
+
+        /// <summary>
+        /// Writes the specified string value to the standard output stream.
+        /// It will flush immediately.
+        /// </summary>
+        /// <param name="foreground">The foreground color.</param>
+        /// <param name="s">A composite format string to output.</param>
+        public void WriteImmediately(ConsoleColor foreground, StringBuilder s)
+        {
+            col.Add(new ConsoleText(s, foreground));
+            Flush();
+        }
+
+        /// <summary>
+        /// Writes the specified string value to the standard output stream.
+        /// It will flush immediately.
+        /// </summary>
+        /// <param name="foreground">The foreground color.</param>
+        /// <param name="background">The background color.</param>
+        /// <param name="s">A composite format string to output.</param>
+        public void WriteImmediately(ConsoleColor? foreground, ConsoleColor? background, StringBuilder s)
+        {
+            col.Add(new ConsoleText(s, foreground, background));
+            Flush();
+        }
+
+        /// <summary>
         /// Writes the specified number, followed by the current line terminator, to the standard output stream.
         /// It will flush immediately.
         /// </summary>

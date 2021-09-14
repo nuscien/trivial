@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Security;
 
+using Trivial.Collection;
 using Trivial.Tasks;
 
 namespace Trivial.CommandLine
@@ -15,7 +16,6 @@ namespace Trivial.CommandLine
     /// </summary>
     public static partial class ConsoleRenderExtensions
     {
-#pragma warning disable IDE0056
         /// <summary>
         /// Writes a progress component, followed by the current line terminator, to the standard output stream.
         /// </summary>
@@ -101,13 +101,11 @@ namespace Trivial.CommandLine
             {
                 var top2 = TryGetCursorTop(cli) ?? -1;
                 var left2 = TryGetCursorLeft(cli) ?? 0;
+                cli.Flush();
                 if (cli.Mode == StyleConsole.Modes.Cmd && top >= 0 && top2 > top)
-                {
-                    cli.Flush();
-                    cli.MoveCursorTo(0, top);
-                }
-
-                cli.MoveCursorBy(0, -1);
+                    cli.MoveCursorBy(0, top - top2 - 1);
+                else
+                    cli.MoveCursorBy(0, -1);
                 RenderData(cli, style, caption, progress);
                 if (cli.Mode == StyleConsole.Modes.Cmd && top >= 0 && top2 > top)
                     cli.MoveCursorTo(left2, top2);
@@ -126,7 +124,6 @@ namespace Trivial.CommandLine
                 ConsoleProgressStyle.Sizes.Full => maxWidth - 5,
                 _ => maxWidth > 70 ? (maxWidth > 88 ? 40 : 30) : 20
             };
-
             var barChar = style.Kind switch
             {
                 ConsoleProgressStyle.Kinds.AngleBracket => '>',
@@ -173,7 +170,7 @@ namespace Trivial.CommandLine
                 }
 
                 if (!style.IgnoreCaptionSeparator) sb.Append(' ');
-                col.Add(new ConsoleText(sb, style.CaptionColor, style.BackgroundColor));
+                col.Add(sb, new ConsoleTextStyle(style.CaptionRgbColor, style.CaptionConsoleColor, style.BackgroundRgbColor, style.BackgroundConsoleColor));
                 if (style.Size == ConsoleProgressStyle.Sizes.Full)
                     width -= j;
             }
@@ -183,22 +180,23 @@ namespace Trivial.CommandLine
             if (double.IsNaN(v)) return;
             var w = (int)Math.Round(width * v);
             if (w < 0) w = 0;
+            var isError = value?.IsFailed == true || value?.IsNotSupported == true;
             if (barChar == ' ')
             {
-                col.Add(new ConsoleText(barChar, w, null, (value?.IsFailed == true || value?.IsNotSupported == true) ? style.ErrorColor : style.BarColor));
-                col.Add(new ConsoleText(pendingChar, width - w, null, style.PendingColor));
+                col.Add(barChar, w, new ConsoleTextStyle(null, null, isError ? style.ErrorRgbColor : style.BarRgbColor, isError ? style.ErrorConsoleColor : style.BarConsoleColor));
+                col.Add(pendingChar, width - w, new ConsoleTextStyle(null, null, style.PendingRgbColor, style.PendingConsoleColor));
             }
             else
             {
-                col.Add(new ConsoleText(barChar, w, (value?.IsFailed == true || value?.IsNotSupported == true) ? style.ErrorColor : style.BarColor, style.BackgroundColor));
-                col.Add(new ConsoleText(pendingChar, width - w, style.PendingColor, style.BackgroundColor));
+                col.Add(barChar, w, new ConsoleTextStyle(isError ? style.ErrorRgbColor : style.BarRgbColor, isError ? style.ErrorConsoleColor : style.BarConsoleColor, style.BackgroundRgbColor, style.BackgroundConsoleColor));
+                col.Add(pendingChar, width - w, new ConsoleTextStyle(style.PendingRgbColor, style.PendingConsoleColor, style.BackgroundRgbColor, style.BackgroundConsoleColor));
             }
 
             if (v >= 0)
             {
                 var s = v.ToString("#0%");
                 if (s.Length > 3) s = value?.IsSuccessful == true ? " √" : "99%";
-                col.Add(new ConsoleText(" " + s, style.ValueColor, style.BackgroundColor));
+                col.Add(" " + s, new ConsoleTextStyle(style.ValueRgbColor, style.ValueConsoleColor, style.BackgroundRgbColor, style.BackgroundConsoleColor));
             }
 
             cli.Flush();
@@ -206,6 +204,5 @@ namespace Trivial.CommandLine
             cli.BackspaceToBeginning();
             cli.WriteLine(col);
         }
-#pragma warning restore IDE0056
     }
 }

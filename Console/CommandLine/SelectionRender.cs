@@ -138,7 +138,7 @@ namespace Trivial.CommandLine
                 var list = collection.ToList();
                 void resetSelect()
                 {
-                    if (oldSelect < 0 || oldSelect >= list.Count || oldSelect == select) return;
+                    if (oldSelect < 0 || oldSelect >= list.Count) return;
                     var h = temp.Item3 + (temp.Item5 ? 2 : 1) + (temp.Item6 ? 1 : 0);
                     var oldItem = list[oldSelect];
                     var y2 = Math.DivRem(oldSelect % temp.Item7, temp.Item4, out var x2) - h;
@@ -152,7 +152,7 @@ namespace Trivial.CommandLine
                 {
                     cli.BackspaceToBeginning();
                     var h = temp.Item3 + (temp.Item5 ? 2 : 1) + (temp.Item6 ? 1 : 0);
-                    resetSelect();
+                    if (oldSelect != select) resetSelect();
                     if (select < 0 || select >= list.Count) select = 0;
                     var item = list[select];
                     var y = Math.DivRem(select % temp.Item7, temp.Item4, out var x) - h;
@@ -221,11 +221,23 @@ namespace Trivial.CommandLine
                     case ConsoleKey.Backspace:
                     case ConsoleKey.Delete:
                     case ConsoleKey.Clear:
-                    case ConsoleKey.F4:
                         cli.Write(' ');
                         cli.BackspaceToBeginning();
                         resetSelect();
                         return SelectByManualTyping(cli, collection, options);
+                    case ConsoleKey.F4:
+                        if (temp.Item3 > 0)
+                        {
+                            cli.BackspaceToBeginning();
+                            var h = temp.Item3 + (temp.Item5 ? 2 : 1) + (temp.Item6 ? 1 : 0);
+                            for (var i = 0; i < h; i++)
+                            {
+                                cli.MoveCursorBy(0, -1);
+                                cli.Clear(StyleConsole.RelativeAreas.Line);
+                            }
+                        }
+
+                        return SelectByManualTyping(cli, collection, options, true);
                     case ConsoleKey.Escape:
                     case ConsoleKey.Pause:
                         cli.Write(' ');
@@ -332,51 +344,6 @@ namespace Trivial.CommandLine
                         }
                 }
             }
-        }
-
-        private static SelectionResult<T> SelectByManualTyping<T>(StyleConsole cli, SelectionData<T> collection, SelectionConsoleOptions options)
-        {
-            cli.BackspaceToBeginning();
-            cli.WriteImmediately(
-                options.QuestionForegroundColor ?? options.ForegroundColor,
-                options.QuestionBackgroundColor ?? options.BackgroundColor,
-                options.ManualQuestion ?? options.Question);
-            string s;
-            try
-            {
-                s = cli.ReadLine();
-            }
-            catch (IOException)
-            {
-                return new SelectionResult<T>(string.Empty, SelectionResultTypes.NotSupported);
-            }
-            catch (InvalidOperationException)
-            {
-                return new SelectionResult<T>(string.Empty, SelectionResultTypes.NotSupported);
-            }
-            catch (ArgumentException)
-            {
-                return new SelectionResult<T>(string.Empty, SelectionResultTypes.NotSupported);
-            }
-            catch (NotSupportedException)
-            {
-                return new SelectionResult<T>(string.Empty, SelectionResultTypes.NotSupported);
-            }
-
-            var i = -1;
-            SelectionItem<T> item = null;
-            foreach (var ele in collection.ToList())
-            {
-                i++;
-                if (ele.Title != s)
-                    continue;
-                item = ele;
-                break;
-            }
-
-            return item == null
-                ? new SelectionResult<T>(s, SelectionResultTypes.Typed)
-                : new SelectionResult<T>(s, i, item.Data, item.Title, SelectionResultTypes.Typed);
         }
 
         /// <summary>
@@ -503,24 +470,7 @@ namespace Trivial.CommandLine
             var sb = new StringBuilder();
             var j = 0;
             var maxLen = len - 1;
-            var curLeft = -1;
-            try
-            {
-                curLeft = cli.CursorLeft;
-            }
-            catch (InvalidOperationException)
-            {
-            }
-            catch (IOException)
-            {
-            }
-            catch (SecurityException)
-            {
-            }
-            catch (NotSupportedException)
-            {
-            }
-
+            var curLeft = TryGetCursorLeft(cli) ?? -1;
             foreach (var c in (isSelect ? options.SelectedPrefix : options.Prefix) ?? string.Empty)
             {
                 var c2 = c;
@@ -567,15 +517,39 @@ namespace Trivial.CommandLine
                 sb.Append(c2);
             }
 
-            sb.Append(' ', len - j);
-            cli.Write(foreground, background, sb);
+            if (curLeft >= 0)
+            {
+                cli.WriteImmediately(foreground, background, sb);
+                var rest = curLeft + len - cli.CursorLeft;
+                if (rest > 0)
+                    cli.WriteImmediately(foreground, background, ' ', rest);
+                else if (rest < 0)
+                    cli.WriteImmediately(
+                        options.DefaultValueForegroundColor ?? options.ForegroundColor,
+                        options.DefaultValueBackgroundColor ?? options.BackgroundColor,
+                        " \b");
+            }
+            else
+            {
+                sb.Append(' ', len - j);
+                cli.WriteImmediately(foreground, background, sb);
+            }
+
             try
             {
                 if (curLeft >= 0)
                 {
                     curLeft += len;
-                    if (cli.CursorLeft != len)
-                        curLeft = cli.CursorLeft;
+                    var rest = curLeft - cli.CursorLeft;
+                    if (rest < 0)
+                    {
+                        cli.MoveCursorBy(rest, 0);
+                        cli.WriteImmediately(foreground, background, " \b");
+                    }
+                    else if (rest > 0)
+                    {
+                        cli.MoveCursorBy(rest, 0);
+                    }
                 }
             }
             catch (InvalidOperationException)
@@ -598,6 +572,99 @@ namespace Trivial.CommandLine
             return c < 0xA500 || (c >= 0xF900 && c < 0xFB00) || (c >= 0xFE30 && c < 0xFE70)
                 ? 2
                 : 1;
+        }
+
+        /// <summary>
+        /// Asks to type the item keyword.
+        /// </summary>
+        /// <typeparam name="T">The type of data.</typeparam>
+        /// <param name="cli">The command line interface proxy.</param>
+        /// <param name="collection">The collection data.</param>
+        /// <param name="options">The selection display options.</param>
+        /// <param name="listAllData">true if list all data before typing; otherwise, false.</param>
+        /// <returns>The result of selection.</returns>
+        private static SelectionResult<T> SelectByManualTyping<T>(StyleConsole cli, SelectionData<T> collection, SelectionConsoleOptions options, bool listAllData = false)
+        {
+            cli.BackspaceToBeginning();
+            int i;
+            if (listAllData)
+            {
+                var maxWidth = GetBufferWidth();
+                var itemLen = options.Column.HasValue ? (int)Math.Floor(maxWidth * 1.0 / options.Column.Value) : maxWidth;
+                if (options.MaxLength.HasValue) itemLen = Math.Min(options.MaxLength.Value, itemLen);
+                if (options.MinLength.HasValue) itemLen = Math.Max(options.MinLength.Value, itemLen);
+                if (itemLen > maxWidth) itemLen = maxWidth;
+                var columns = (int)Math.Floor(maxWidth * 1.0 / itemLen);
+                if (options.Column.HasValue && columns > options.Column.Value) columns = options.Column.Value;
+                var list = collection.ToList();
+                i = 0;
+                var lastColIndex = columns - 1;
+                var rows = -1;
+                foreach (var ele in list)
+                {
+                    if (string.IsNullOrEmpty(ele.Title)) continue;
+                    RenderData(cli, ele, options, false, itemLen);
+                    var indexInRow = i % columns;
+                    if (indexInRow == lastColIndex)
+                        cli.Write(Environment.NewLine);
+                    else if (indexInRow == 0)
+                        rows++;
+                    i++;
+                }
+
+                if (list.Count % columns > 0) cli.Write(Environment.NewLine);
+                return SelectByManualTyping(cli, collection, options);
+            }
+
+            cli.WriteImmediately(
+                options.QuestionForegroundColor ?? options.ForegroundColor,
+                options.QuestionBackgroundColor ?? options.BackgroundColor,
+                options.ManualQuestion ?? options.Question);
+            string s;
+            try
+            {
+                s = cli.ReadLine();
+            }
+            catch (IOException)
+            {
+                return new SelectionResult<T>(string.Empty, SelectionResultTypes.NotSupported);
+            }
+            catch (InvalidOperationException)
+            {
+                return new SelectionResult<T>(string.Empty, SelectionResultTypes.NotSupported);
+            }
+            catch (ArgumentException)
+            {
+                return new SelectionResult<T>(string.Empty, SelectionResultTypes.NotSupported);
+            }
+            catch (NotSupportedException)
+            {
+                return new SelectionResult<T>(string.Empty, SelectionResultTypes.NotSupported);
+            }
+
+            if (string.IsNullOrEmpty(s))
+                return new SelectionResult<T>(s, SelectionResultTypes.Canceled);
+            SelectionItem<T> item = null;
+            if (s.Trim().Length == 1)
+            {
+                item = collection.Get(s[0], out i);
+                if (item != null)
+                    return new SelectionResult<T>(s, i, item.Data, item.Title);
+            }
+
+            i = -1;
+            foreach (var ele in collection.ToList())
+            {
+                i++;
+                if (ele.Title != s)
+                    continue;
+                item = ele;
+                break;
+            }
+
+            return item == null
+                ? new SelectionResult<T>(s, SelectionResultTypes.Typed)
+                : new SelectionResult<T>(s, i, item.Data, item.Title, SelectionResultTypes.Typed);
         }
 
         /// <summary>
@@ -658,11 +725,13 @@ namespace Trivial.CommandLine
                     return new SelectionResult<T>(text, i, item.Data, item.Title);
             }
 
+#pragma warning disable IDE0057
             if (text.StartsWith("#") && int.TryParse(text.Substring(1).Trim(), out i) && i > 0 && i <= list.Count)
             {
                 item = list[i];
                 return new SelectionResult<T>(text, i, item.Data, item.Title);
             }
+#pragma warning restore IDE0057
 
             i = -1;
             foreach (var ele in list)

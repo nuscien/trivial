@@ -40,27 +40,6 @@ namespace Trivial.CommandLine
         }
 
         /// <summary>
-        /// The terminal origin.
-        /// </summary>
-        public enum Origins
-        {
-            /// <summary>
-            /// Current cursof position.
-            /// </summary>
-            Current = 0,
-
-            /// <summary>
-            /// View port (at the top-left corner).
-            /// </summary>
-            ViewPort = 1,
-
-            /// <summary>
-            /// Buffer (at the top-left corner).
-            /// </summary>
-            Buffer = 2
-        }
-
-        /// <summary>
         /// The areas related current cusor to remove.
         /// </summary>
         public enum RelativeAreas
@@ -155,11 +134,18 @@ namespace Trivial.CommandLine
             /// <summary>
             /// Moves cursor by a specific relative position.
             /// </summary>
-            /// <param name="origin">The relative origin.</param>
             /// <param name="x">The horizontal translation size.</param>
             /// <param name="y">The vertical translation size.</param>
             /// <param name="context">The context.</param>
-            void MoveCursor(Origins origin, int x, int y, object context);
+            void MoveCursorBy(int x, int y, object context);
+
+            /// <summary>
+            /// Moves cursor to a specific position in buffer.
+            /// </summary>
+            /// <param name="x">The zero-based X value to move.</param>
+            /// <param name="y">The zero-based Y value to move; or -1 if do not move when origin is not related by current cursor.</param>
+            /// <param name="context">The context.</param>
+            void MoveCursorTo(int x, int y, object context);
 
             /// <summary>
             /// Removes the specific area.
@@ -186,40 +172,6 @@ namespace Trivial.CommandLine
             /// <returns>The next line of characters from the input stream, or null if no more lines are available.</returns>
             /// <exception cref="InvalidOperationException">The input stream is redirected from the one other than the console.</exception>
             ConsoleKeyInfo ReadKey(bool intercept, object context);
-        }
-
-        /// <summary>
-        /// The event arguments with relative position.
-        /// </summary>
-        public class RelativePositionEventArgs : EventArgs
-        {
-            /// <summary>
-            /// Initializes a new instance of the RelativePositionEventArgs class.
-            /// </summary>
-            /// <param name="origin">The origin.</param>
-            /// <param name="x">The horizontal distance..</param>
-            /// <param name="y">The vertical distance.</param>
-            public RelativePositionEventArgs(Origins origin, int x, int y)
-            {
-                Origin = origin;
-                X = x;
-                Y = y;
-            }
-
-            /// <summary>
-            /// Gets the origin.
-            /// </summary>
-            public Origins Origin { get; }
-
-            /// <summary>
-            /// Gets the horizontal distance.
-            /// </summary>
-            public int X { get; }
-
-            /// <summary>
-            /// Gets the vertical distance.
-            /// </summary>
-            public int Y { get; }
         }
 
         /// <summary>

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Web;
 
+using Trivial.CommandLine;
 using Trivial.Data;
 
 namespace Trivial.Collection
@@ -25,6 +26,43 @@ namespace Trivial.Collection
             if (list == null) throw new ArgumentNullException(nameof(list), "list should not be null.");
             if (clearOthers) list.Remove(key);
             list.Add(new KeyValuePair<TKey, TValue>(key, value));
+        }
+
+        /// <summary>
+        /// Adds a console text.
+        /// </summary>
+        /// <param name="list">The key value pairs.</param>
+        /// <param name="s">The string value.</param>
+        /// <param name="style">The style.</param>
+        public static void Add(this IList<ConsoleText> list, string s, ConsoleTextStyle style = null)
+        {
+            if (list == null) throw new ArgumentNullException(nameof(list), "list should not be null.");
+            list.Add(new ConsoleText(s, style));
+        }
+
+        /// <summary>
+        /// Adds a console text.
+        /// </summary>
+        /// <param name="list">The key value pairs.</param>
+        /// <param name="s">The string value.</param>
+        /// <param name="style">The style.</param>
+        public static void Add(this IList<ConsoleText> list, StringBuilder s, ConsoleTextStyle style = null)
+        {
+            if (list == null) throw new ArgumentNullException(nameof(list), "list should not be null.");
+            list.Add(new ConsoleText(s, style));
+        }
+
+        /// <summary>
+        /// Adds a console text.
+        /// </summary>
+        /// <param name="list">The key value pairs.</param>
+        /// <param name="c">The character.</param>
+        /// <param name="repeatCount">The number of times to append value.</param>
+        /// <param name="style">The style.</param>
+        public static void Add(this IList<ConsoleText> list, char c, int repeatCount = 1, ConsoleTextStyle style = null)
+        {
+            if (list == null) throw new ArgumentNullException(nameof(list), "list should not be null.");
+            list.Add(new ConsoleText(c, repeatCount, style));
         }
 
         /// <summary>

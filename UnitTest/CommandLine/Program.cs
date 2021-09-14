@@ -7,8 +7,8 @@ namespace Trivial.CommandLine
     {
         static Task Main(string[] args)
         {
-            DefaultConsoleInterface.WriteLine("Trivial Sample");
-            DefaultConsoleInterface.WriteLine();
+            DefaultConsole.WriteLine("Trivial Sample");
+            DefaultConsole.WriteLine();
 #if DEBUG
             TestConsoleInterface();
 #endif

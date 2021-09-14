@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Drawing;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -81,32 +82,61 @@ namespace Trivial.CommandLine
         /// <summary>
         /// Gets or sets the background color of the component.
         /// </summary>
-        public ConsoleColor? BackgroundColor { get; set; }
+        public ConsoleColor? BackgroundConsoleColor { get; set; }
+
+        /// <summary>
+        /// Gets or sets the background color of the component.
+        /// </summary>
+        public Color? BackgroundRgbColor { get; set; }
 
         /// <summary>
         /// Gets or sets the progress background color.
         /// </summary>
-        public ConsoleColor PendingColor { get; set; } = ConsoleColor.DarkGray;
+        public ConsoleColor PendingConsoleColor { get; set; } = ConsoleColor.DarkGray;
+
+        /// <summary>
+        /// Gets or sets the progress background color.
+        /// </summary>
+        public Color? PendingRgbColor { get; set; }
 
         /// <summary>
         /// Gets or sets the progress bar color.
         /// </summary>
-        public ConsoleColor BarColor { get; set; } = ConsoleColor.Green;
+        public ConsoleColor BarConsoleColor { get; set; } = ConsoleColor.Green;
+        /// <summary>
+        /// Gets or sets the progress bar color.
+        /// </summary>
+        public Color? BarRgbColor { get; set; }
 
         /// <summary>
         /// Gets or sets the error color.
         /// </summary>
-        public ConsoleColor ErrorColor { get; set; } = ConsoleColor.Red;
+        public ConsoleColor ErrorConsoleColor { get; set; } = ConsoleColor.Red;
+
+        /// <summary>
+        /// Gets or sets the error color.
+        /// </summary>
+        public Color? ErrorRgbColor { get; set; }
 
         /// <summary>
         /// Gets or sets the foreground color of caption.
         /// </summary>
-        public ConsoleColor? CaptionColor { get; set; }
+        public ConsoleColor? CaptionConsoleColor { get; set; }
+
+        /// <summary>
+        /// Gets or sets the foreground color of caption.
+        /// </summary>
+        public Color? CaptionRgbColor { get; set; }
 
         /// <summary>
         /// Gets or sets the foreground color of value.
         /// </summary>
-        public ConsoleColor? ValueColor { get; set; } = ConsoleColor.Gray;
+        public ConsoleColor? ValueConsoleColor { get; set; } = ConsoleColor.Gray;
+
+        /// <summary>
+        /// Gets or sets the foreground color of value.
+        /// </summary>
+        public Color? ValueRgbColor { get; set; }
 
         /// <summary>
         /// Gets or sets the progress size (width).

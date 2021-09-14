@@ -70,6 +70,33 @@ namespace Trivial.Maths
     public class TwoDimensionalPoint<TUnit> : TwoElements<TUnit>, IEquatable<TwoElements<TUnit>> where TUnit : struct, IComparable<TUnit>, IEquatable<TUnit>
     {
         /// <summary>
+        /// The event arguments with the position.
+        /// </summary>
+        public class DataEventArgs : EventArgs
+        {
+            /// <summary>
+            /// Initializes a new instance of the DataEventArgs class.
+            /// </summary>
+            /// <param name="x">The value of X.</param>
+            /// <param name="y">The value of Y.</param>
+            public DataEventArgs(TUnit x, TUnit y)
+            {
+                X = x;
+                Y = y;
+            }
+
+            /// <summary>
+            /// Gets the value of X.
+            /// </summary>
+            public TUnit X { get; }
+
+            /// <summary>
+            /// Gets the value of Y.
+            /// </summary>
+            public TUnit Y { get; }
+        }
+
+        /// <summary>
         /// Initializes a new instance of the TwoDimensionalPoint class.
         /// </summary>
         /// <remarks>You can use this to initialize an instance for the class.</remarks>

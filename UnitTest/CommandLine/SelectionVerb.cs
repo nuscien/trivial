@@ -21,7 +21,7 @@ namespace Trivial.CommandLine
             var cli = StyleConsole.Default;
             var col = new SelectionData();
             col.Add('a', "aaa", null);
-            col.Add('b', "bbb");
+            col.Add('b', "bbb 二号");
             col.Add('p', "password");
             col.Add('l', "progress");
             col.Add('j', "json");
@@ -37,7 +37,7 @@ namespace Trivial.CommandLine
                 SelectedBackgroundColor = ConsoleColor.Cyan,
                 SelectedForegroundColor = ConsoleColor.Black,
                 TipsForegroundColor = ConsoleColor.Yellow,
-                SelectedPrefix = "> ",
+                SelectedPrefix = "→ ",
                 Column = 5,
                 MaxRow = 10,
                 ManualQuestion = "Type: "
@@ -54,7 +54,7 @@ namespace Trivial.CommandLine
                 return;
             }
 
-            cli.WriteLine("-> {0}", result.Value);
+            cli.WriteLine("-> {0}\t{1}", result.Value, result.InputType);
             switch (result.Title ?? result.Value)
             {
                 case "aaa":
@@ -77,6 +77,7 @@ namespace Trivial.CommandLine
                 case "error":
                     cli.WriteLine(new InvalidOperationException("Test", new NotSupportedException()));
                     break;
+                case "help":
                 case "?":
                     cli.WriteLine("This is a sample.");
                     return;
@@ -89,8 +90,8 @@ namespace Trivial.CommandLine
             var progress = cli.WriteLine(new ConsoleProgressStyle
             {
                 Kind = ConsoleProgressStyle.Kinds.AngleBracket,
-                BarColor = ConsoleColor.White,
-                BackgroundColor = ConsoleColor.DarkBlue
+                BarConsoleColor = ConsoleColor.White,
+                BackgroundConsoleColor = ConsoleColor.DarkBlue
             }, "Running 1:");
             Tasks.OneProgress progress2 = null;
             cli.WriteLine("And another one...");

@@ -148,12 +148,13 @@ namespace Trivial.CommandLine
         public static string MoveCursorBy(int x, int y)
             => $"{MoveCursorX(x)}{MoveCursorY(y)}";
 
-        public static string MoveCursorNextLine(int line = 1) => $"{Esc}[{line}E";
+        public static string MoveCursorNextLine(int line = 1)
+            => $"{Esc}[{line}E";
 
-        public static string MoveCursorTo(int? left = null, int? top = null) => $"{Esc}[{top ?? 1};{left ?? 1}H";
-
-        public static string MoveCursorAt(int left = 0, int top = 0)
-            => $"{Esc}[{top};{left}H";
+        public static string MoveCursorTo(int left, int top = -1)
+            => top >= 0
+            ? $"{Esc}[{top + 1};{(left >= 0 ? (left + 1).ToString("g") : string.Empty)}H"
+            : $"{Esc}[{(left >= 0 ? (left + 1).ToString("g") : string.Empty)}G";
 
         public static string CursorVisibility(bool show)
             => show ? $"{Esc}[?25h" : $"{Esc}[?25l";
@@ -200,13 +201,10 @@ namespace Trivial.CommandLine
         }
 
         public static ConsoleColor ToConsoleColor(System.Drawing.Color color)
-        {
-            return ToConsoleColor(color.R, color.G, color.B);
-        }
+            => ToConsoleColor(color.R, color.G, color.B);
 
         public static ConsoleColor ToConsoleColor(byte r, byte g, byte b)
         {
-
             if (r >= 220 && g >= 220 && b >= 220)
                 return ConsoleColor.White;
             if (r <= 48 && g <= 48 && b <= 48)
@@ -240,7 +238,7 @@ namespace Trivial.CommandLine
                 }
             }
 
-            return $"{rank.RankFor1}{rank.RankFor2}{rank.RankFor3}" switch
+            return s switch
             {
                 "122" => isLight ? ConsoleColor.Red : ConsoleColor.DarkRed,
                 "212" => isLight ? ConsoleColor.Green : ConsoleColor.DarkBlue,
@@ -255,7 +253,7 @@ namespace Trivial.CommandLine
         private static int CompareColorChannel(int a, int b)
         {
             var diff = a - b;
-            if (diff > 48 && diff < 48) return 0;
+            if (diff > -48 && diff < 48) return 0;
             return diff;
         }
     }

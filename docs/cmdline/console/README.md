@@ -54,6 +54,6 @@ cli.WriteLine();
 
 // Write a secure string to the standard output stream.
 cli.Write("Your password is ");
-cli.Write(ConsoleColor.Magenta, password);
+cli.Write(ConsoleColor.Magenta, password.ToUnsecureString());
 cli.WriteLine('.');
 ```

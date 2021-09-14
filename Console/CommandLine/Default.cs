@@ -1058,27 +1058,10 @@ namespace Trivial.CommandLine
         /// <summary>
         /// Moves cursor by a specific relative position.
         /// </summary>
-        /// <param name="origin">The relative origin.</param>
-        /// <param name="x">The horizontal translation size.</param>
-        /// <param name="y">The vertical translation size.</param>
-        public static void MoveCursor(StyleConsole.Origins origin, int x, int y)
-            => StyleConsole.Default.MoveCursor(origin, x, y);
-
-        /// <summary>
-        /// Moves cursor by a specific relative position.
-        /// </summary>
         /// <param name="x">The horizontal translation size.</param>
         /// <param name="y">The vertical translation size.</param>
         public static void MoveCursorBy(int x, int y = 0)
             => StyleConsole.Default.MoveCursorBy(x, y);
-
-        /// <summary>
-        /// Moves cursor at a specific position in viewport.
-        /// </summary>
-        /// <param name="x">Column, the left from the edge of viewport.</param>
-        /// <param name="y">Row, the top from the edge of viewport.</param>
-        public static void MoveCursorAt(int x, int y)
-            => StyleConsole.Default.MoveCursorAt(x, y);
 
         /// <summary>
         /// Moves cursor at a specific position in buffer.
