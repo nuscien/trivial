@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -76,52 +77,101 @@ namespace Trivial.CommandLine
         /// <summary>
         /// Gets or sets the foreground color for item selected.
         /// </summary>
-        public ConsoleColor? SelectedForegroundColor { get; set; } = ConsoleColor.Black;
+        public ConsoleColor? SelectedForegroundConsoleColor { get; set; } = ConsoleColor.Black;
 
         /// <summary>
         /// Gets or sets the foreground color for item selected.
         /// </summary>
-        public ConsoleColor? SelectedBackgroundColor { get; set; } = ConsoleColor.Cyan;
+        public Color? SelectedForegroundRgbColor { get; set; }
+
+        /// <summary>
+        /// Gets or sets the foreground color for item selected.
+        /// </summary>
+        public ConsoleColor? SelectedBackgroundConsoleColor { get; set; } = ConsoleColor.Cyan;
+
+        /// <summary>
+        /// Gets or sets the foreground color for item selected.
+        /// </summary>
+        public Color? SelectedBackgroundRgbColor { get; set; }
 
         /// <summary>
         /// Gets or sets the foreground color for question.
         /// </summary>
-        public ConsoleColor? QuestionForegroundColor { get; set; }
+        public ConsoleColor? QuestionForegroundConsoleColor { get; set; }
+
+        /// <summary>
+        /// Gets or sets the foreground color for question.
+        /// </summary>
+        public Color? QuestionForegroundRgbColor { get; set; }
 
         /// <summary>
         /// Gets or sets the background color for question.
         /// </summary>
-        public ConsoleColor? QuestionBackgroundColor { get; set; }
+        public ConsoleColor? QuestionBackgroundConsoleColor { get; set; }
+
+        /// <summary>
+        /// Gets or sets the background color for question.
+        /// </summary>
+        public Color? QuestionBackgroundRgbColor { get; set; }
 
         /// <summary>
         /// Gets or sets the foreground color for tips.
         /// </summary>
-        public ConsoleColor? TipsForegroundColor { get; set; } = ConsoleColor.Yellow;
+        public ConsoleColor? TipsForegroundConsoleColor { get; set; } = ConsoleColor.Yellow;
+
+        /// <summary>
+        /// Gets or sets the foreground color for tips.
+        /// </summary>
+        public Color? TipsForegroundRgbColor { get; set; }
 
         /// <summary>
         /// Gets or sets the background color for tips.
         /// </summary>
-        public ConsoleColor? TipsBackgroundColor { get; set; }
+        public ConsoleColor? TipsBackgroundConsoleColor { get; set; }
+
+        /// <summary>
+        /// Gets or sets the background color for tips.
+        /// </summary>
+        public Color? TipsBackgroundRgbColor { get; set; }
 
         /// <summary>
         /// Gets or sets the foreground color for paing tips.
         /// </summary>
-        public ConsoleColor? PagingForegroundColor { get; set; }
+        public ConsoleColor? PagingForegroundConsoleColor { get; set; }
+
+        /// <summary>
+        /// Gets or sets the foreground color for paing tips.
+        /// </summary>
+        public Color? PagingForegroundRgbColor { get; set; }
 
         /// <summary>
         /// Gets or sets the background color for paging tips.
         /// </summary>
-        public ConsoleColor? PagingBackgroundColor { get; set; }
+        public ConsoleColor? PagingBackgroundConsoleColor { get; set; }
+
+        /// <summary>
+        /// Gets or sets the background color for paging tips.
+        /// </summary>
+        public Color? PagingBackgroundRgbColor { get; set; }
 
         /// <summary>
         /// Gets or sets the foreground color for default value.
         /// </summary>
-        public ConsoleColor? DefaultValueForegroundColor { get; set; }
+        public ConsoleColor? ItemForegroundConsoleColor { get; set; }
+
+        /// <summary>
+        /// Gets or sets the foreground color for default value.
+        /// </summary>
+        public Color? ItemForegroundRgbColor { get; set; }
 
         /// <summary>
         /// Gets or sets the background color for default value.
         /// </summary>
-        public ConsoleColor? DefaultValueBackgroundColor { get; set; }
+        public ConsoleColor? ItemBackgroundConsoleColor { get; set; }
+        /// <summary>
+        /// Gets or sets the background color for default value.
+        /// </summary>
+        public Color? ItemBackgroundRgbColor { get; set; }
 
         /// <summary>
         /// Gets or sets the prefix for the item.

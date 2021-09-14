@@ -225,19 +225,6 @@ namespace Trivial.CommandLine
                         cli.BackspaceToBeginning();
                         resetSelect();
                         return SelectByManualTyping(cli, collection, options);
-                    case ConsoleKey.F4:
-                        if (temp.Item3 > 0)
-                        {
-                            cli.BackspaceToBeginning();
-                            var h = temp.Item3 + (temp.Item5 ? 2 : 1) + (temp.Item6 ? 1 : 0);
-                            for (var i = 0; i < h; i++)
-                            {
-                                cli.MoveCursorBy(0, -1);
-                                cli.Clear(StyleConsole.RelativeAreas.Line);
-                            }
-                        }
-
-                        return SelectByManualTyping(cli, collection, options, true);
                     case ConsoleKey.Escape:
                     case ConsoleKey.Pause:
                         cli.Write(' ');
@@ -257,6 +244,32 @@ namespace Trivial.CommandLine
                                 ? new SelectionResult<T>("?", SelectionResultTypes.Selected)
                                 : new SelectionResult<T>("?", select, item.Data, item.Title);
                         }
+                    case ConsoleKey.F4:
+                        if (temp.Item3 > 0)
+                        {
+                            cli.BackspaceToBeginning();
+                            var h = temp.Item3 + (temp.Item5 ? 2 : 1) + (temp.Item6 ? 1 : 0);
+                            for (var i = 0; i < h; i++)
+                            {
+                                cli.MoveCursorBy(0, -1);
+                                cli.Clear(StyleConsole.RelativeAreas.Line);
+                            }
+                        }
+
+                        return SelectByManualTyping(cli, collection, options, true);
+                    case ConsoleKey.F5:
+                        if (key.Modifiers.HasFlag(ConsoleModifiers.Control))
+                            select = 0;
+                        break;
+                    case ConsoleKey.F6:
+                        cli.BackspaceToBeginning();
+                        resetSelect();
+                        RenderSelectResult(cli, null, options);
+                        cli.WriteLine();
+                        if (key.Modifiers.HasFlag(ConsoleModifiers.Control))
+                            select = 0;
+                        temp = RenderData(cli, list, options, select);
+                        break;
                     case ConsoleKey.F12:
                         {
                             cli.BackspaceToBeginning();
@@ -268,10 +281,6 @@ namespace Trivial.CommandLine
                                 ? new SelectionResult<T>("?", SelectionResultTypes.Canceled)
                                 : new SelectionResult<T>("?", select, item.Data, item.Title);
                         }
-                    case ConsoleKey.F5:
-                        if (key.Modifiers.HasFlag(ConsoleModifiers.Control))
-                            select = 0;
-                        break;
                     case ConsoleKey.PageUp:
                         if (key.Modifiers.HasFlag(ConsoleModifiers.Control))
                             select = 0;
@@ -424,8 +433,11 @@ namespace Trivial.CommandLine
             if (needPaging && !string.IsNullOrEmpty(tipsP))
             {
                 cli.Write(
-                    options.PagingForegroundColor ?? options.ForegroundColor,
-                    options.PagingBackgroundColor ?? options.BackgroundColor,
+                    new ConsoleTextStyle(
+                        options.PagingForegroundRgbColor,
+                        options.PagingForegroundConsoleColor ?? options.ForegroundColor,
+                        options.PagingBackgroundRgbColor,
+                        options.PagingBackgroundConsoleColor ?? options.BackgroundColor),
                     tipsP
                         .Replace("{from}", (offset + 1).ToString())
                         .Replace("{end}", (offset + list.Count).ToString())
@@ -440,8 +452,11 @@ namespace Trivial.CommandLine
             if (!string.IsNullOrEmpty(options.Tips))
             {
                 cli.Write(
-                    options.TipsForegroundColor ?? options.ForegroundColor,
-                    options.TipsBackgroundColor ?? options.BackgroundColor,
+                    new ConsoleTextStyle(
+                        options.PagingForegroundRgbColor,
+                        options.TipsForegroundConsoleColor ?? options.ForegroundColor,
+                        options.TipsBackgroundRgbColor,
+                        options.TipsBackgroundConsoleColor ?? options.BackgroundColor),
                     options.Tips);
                 cli.Write(Environment.NewLine);
                 hasTips = true;
@@ -454,8 +469,11 @@ namespace Trivial.CommandLine
         private static void RenderSelectResult(StyleConsole cli, string value, SelectionConsoleOptions options)
         {
             cli.Write(
-                options.QuestionForegroundColor ?? options.ForegroundColor,
-                options.QuestionBackgroundColor ?? options.BackgroundColor,
+                new ConsoleTextStyle(
+                    options.QuestionForegroundRgbColor,
+                    options.QuestionForegroundConsoleColor ?? options.ForegroundColor,
+                    options.QuestionBackgroundRgbColor,
+                    options.QuestionBackgroundConsoleColor ?? options.BackgroundColor),
                 options.Question);
             if (!string.IsNullOrWhiteSpace(value))
                 cli.WriteImmediately(options.ForegroundColor, options.BackgroundColor, value);
@@ -465,8 +483,15 @@ namespace Trivial.CommandLine
 
         private static void RenderData<T>(StyleConsole cli, SelectionItem<T> item, SelectionConsoleOptions options, bool isSelect, int len)
         {
-            var foreground = (isSelect ? options.SelectedForegroundColor : options.DefaultValueForegroundColor) ?? options.ForegroundColor;
-            var background = (isSelect ? options.SelectedBackgroundColor : options.DefaultValueBackgroundColor) ?? options.BackgroundColor;
+            var style = isSelect ? new ConsoleTextStyle(
+                options.SelectedForegroundRgbColor,
+                options.SelectedForegroundConsoleColor ?? options.ForegroundColor,
+                options.SelectedBackgroundRgbColor,
+                options.SelectedBackgroundConsoleColor ?? options.BackgroundColor) : new ConsoleTextStyle(
+                options.ItemForegroundRgbColor,
+                options.ItemForegroundConsoleColor ?? options.ForegroundColor,
+                options.ItemBackgroundRgbColor,
+                options.ItemBackgroundConsoleColor ?? options.BackgroundColor);
             var sb = new StringBuilder();
             var j = 0;
             var maxLen = len - 1;
@@ -519,20 +544,23 @@ namespace Trivial.CommandLine
 
             if (curLeft >= 0)
             {
-                cli.WriteImmediately(foreground, background, sb);
+                cli.WriteImmediately(style, sb);
                 var rest = curLeft + len - cli.CursorLeft;
                 if (rest > 0)
-                    cli.WriteImmediately(foreground, background, ' ', rest);
+                    cli.WriteImmediately(style, ' ', rest);
                 else if (rest < 0)
                     cli.WriteImmediately(
-                        options.DefaultValueForegroundColor ?? options.ForegroundColor,
-                        options.DefaultValueBackgroundColor ?? options.BackgroundColor,
+                        new ConsoleTextStyle(
+                            options.ItemForegroundRgbColor,
+                            options.ItemForegroundConsoleColor ?? options.ForegroundColor,
+                            options.ItemBackgroundRgbColor,
+                            options.ItemBackgroundConsoleColor ?? options.BackgroundColor),
                         " \b");
             }
             else
             {
                 sb.Append(' ', len - j);
-                cli.WriteImmediately(foreground, background, sb);
+                cli.WriteImmediately(style, sb);
             }
 
             try
@@ -544,7 +572,7 @@ namespace Trivial.CommandLine
                     if (rest < 0)
                     {
                         cli.MoveCursorBy(rest, 0);
-                        cli.WriteImmediately(foreground, background, " \b");
+                        cli.WriteImmediately(style, " \b");
                     }
                     else if (rest > 0)
                     {
@@ -617,8 +645,11 @@ namespace Trivial.CommandLine
             }
 
             cli.WriteImmediately(
-                options.QuestionForegroundColor ?? options.ForegroundColor,
-                options.QuestionBackgroundColor ?? options.BackgroundColor,
+                new ConsoleTextStyle(
+                    options.QuestionForegroundRgbColor,
+                    options.QuestionForegroundConsoleColor ?? options.ForegroundColor,
+                    options.QuestionBackgroundRgbColor,
+                    options.QuestionBackgroundConsoleColor ?? options.BackgroundColor),
                 options.ManualQuestion ?? options.Question);
             string s;
             try
@@ -679,10 +710,12 @@ namespace Trivial.CommandLine
         {
             var list = collection.ToList();
             cli.WriteLines(list.Select((ele, i) => $"#{i + 1}\t{ele.Title}"));
-            cli.Write(
-                options.QuestionForegroundColor ?? options.ForegroundColor,
-                options.QuestionBackgroundColor ?? options.BackgroundColor,
-                options.QuestionWhenNotSupported ?? options.ManualQuestion ?? options.Question);
+            var style = new ConsoleTextStyle(
+                options.QuestionForegroundRgbColor,
+                options.QuestionForegroundConsoleColor ?? options.ForegroundColor,
+                options.QuestionBackgroundRgbColor,
+                options.QuestionBackgroundConsoleColor ?? options.BackgroundColor);
+            cli.Write(style, options.QuestionWhenNotSupported ?? options.ManualQuestion ?? options.Question);
             string text;
             try
             {
@@ -707,10 +740,7 @@ namespace Trivial.CommandLine
 
             if (string.IsNullOrEmpty(text))
             {
-                cli.Write(
-                    options.QuestionForegroundColor ?? options.ForegroundColor,
-                    options.QuestionBackgroundColor ?? options.BackgroundColor,
-                    options.QuestionWhenNotSupported ?? options.ManualQuestion ?? options.Question);
+                cli.Write(style, options.QuestionWhenNotSupported ?? options.ManualQuestion ?? options.Question);
                 text = cli.ReadLine();
                 if (string.IsNullOrEmpty(text))
                     return new SelectionResult<T>(text, SelectionResultTypes.Canceled);

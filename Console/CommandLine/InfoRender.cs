@@ -137,6 +137,48 @@ namespace Trivial.CommandLine
             => (cli ?? StyleConsole.Default).WriteLine((style ?? new JsonConsoleStyle()).CreateTextCollection(json == null ? null : (JsonArrayNode)json, 0));
 
         /// <summary>
+        /// Writes a sentense to allow pressing a key to continue.
+        /// </summary>
+        /// <param name="cli">The command line interface proxy.</param>
+        public static void PressAnyKeyToContinue(StyleConsole cli)
+        {
+            if (cli == null) cli = StyleConsole.Default;
+            cli.Write(Resource.PressAnyKeyToCont);
+            try
+            {
+                cli.ReadKey(true);
+            }
+            catch (InvalidOperationException)
+            {
+            }
+            catch (IOException)
+            {
+            }
+            catch (NotSupportedException)
+            {
+            }
+
+            try
+            {
+                cli.ReadLine();
+            }
+            catch (InvalidOperationException)
+            {
+            }
+            catch (IOException)
+            {
+            }
+            catch (NotSupportedException)
+            {
+            }
+            catch (ArgumentException)
+            {
+            }
+
+            return;
+        }
+
+        /// <summary>
         /// Tries to gets the row position of the cursor within the buffer area.
         /// </summary>
         /// <param name="cli">The command line interface.</param>

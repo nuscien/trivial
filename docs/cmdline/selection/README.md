@@ -1,19 +1,15 @@
-ï»¿# [Trivial.Console](../docs/console)
-
-This library includes a lot of useful rich command line controls.
-
-## Import
-
-Add following namespace to your code file to use.
-
-```csharp
-using Trivial.CommandLine;
-```
-
-## Select
+# Selection
 
 A beautiful list or table with customized style to the standard output stream 
 so that user just need press the arrow buttons and `ENTER` in keyboard to select.
+
+In `Trivial.CommandLine` [namespace](../) of `Trivial.Console.dll` [library](../../).
+
+## Control
+
+When you have lots of item need user to select one to continue coming logic,
+you need prepare this data into a model.
+Each item includes a display name and raw data.
 
 ```csharp
 // Create an instance for adding items and setting options.
@@ -26,7 +22,11 @@ for (var i = 0; i < 120; i++)
 {
     col.Add("num " + i, i.ToString());
 }
+```
 
+Then you can custom the style of the selection control which we will output later.
+
+```csharp
 // Create an options for display.
 var options = new SelectionOptions
 {
@@ -65,7 +65,11 @@ var options = new SelectionOptions
     // so that user can type the words directly.
     ManualQuestion = "Type: "
 };
+```
 
+Now output it and get the result.
+
+```csharp
 // Write it to the standard output stream and wait for user selection.
 var result = DefaultConsole.Select(col, options);
 
@@ -73,36 +77,26 @@ var result = DefaultConsole.Select(col, options);
 DefaultConsole.WriteLine("The result is {0}.", result.Value);
 ```
 
-## Progress
+## Shortcut Keys
 
-A progress bar in terminal that can present the latest state during the specific task running.
+User can press following keys to interact with the control and select one.
 
-```csharp
-// Define an options that you can custom the style.
-var progressStyle = new ConsoleProgressStyle
-{
-    ValueConsoleColor = ConsoleColor.White
-};
-
-// Ouput the component in console and get the progress instance to update.
-var progress = DefaultConsole.WriteLine(progressStyle, "Processing");
-
-// A time-consuming work here.
-for (var i = 0; i <= 50; i++)
-{
-    await Task.Delay(10);
-
-    // And report the progress updated.
-    progress.Report(0.02 * i);
-}
-```
-
-## JSON
-
-Following is a sample to format JSON into command line app.
-
-```csharp
-var json = new Trivial.Text.JsonObjectNode();
-// and then add some properties to json.
-DefaultConsole.WriteLine(json);
-```
+| Key | Description |
+| -------- | ----------------------------------- |
+| `¡û` | Move cursor to previous item (left column) |
+| `¡ú` | Move cursor to next item (right column) |
+| `¡ü` | Move cursor to previous row |
+| `¡ý` | Move cursor to next row |
+| `Home` | Move cursor to the first item in the page |
+| `End` | Move cursor to the last item in the page |
+| `PgUp` | Turn to previous page |
+| `PgDn` | Turn to next page |
+| `Enter` | OK (select the current one) |
+| `Spacebar` | OK (select the current one) |
+| `Esc` | Abort |
+| `Backspace` | Switch to manual typing mode |
+| `F1` | Get help |
+| `F4` | List all data and switch to maunal typing mode |
+| `F5` | Refresh (and back to the 1st if also press `Ctrl`) |
+| `F6` | Re-output (and back to the 1st if also press `Ctrl`) |
+| Hotkey | Select the item registered with the hotkey |

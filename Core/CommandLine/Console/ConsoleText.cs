@@ -10,7 +10,7 @@ namespace Trivial.CommandLine
     /// <summary>
     /// The options for segment.
     /// </summary>
-    public class ConsoleTextStyle
+    public class ConsoleTextStyle : ICloneable
     {
         /// <summary>
         /// Initializes a new instance of the ConsoleTextStyle class.
@@ -136,6 +136,20 @@ namespace Trivial.CommandLine
             var color = BackgroundRgbColor;
             if (color.HasValue) BackgroundConsoleColor = AnsiCodeGenerator.ToConsoleColor(color.Value);
         }
+
+        /// <summary>
+        /// Clones an object.
+        /// </summary>
+        /// <returns>The object copied from this instance.</returns>
+        public virtual ConsoleTextStyle Clone()
+            => MemberwiseClone() as ConsoleTextStyle;
+
+        /// <summary>
+        /// Clones an object.
+        /// </summary>
+        /// <returns>The object copied from this instance.</returns>
+        object ICloneable.Clone()
+            => MemberwiseClone();
 
         /// <summary>
         /// Adds.

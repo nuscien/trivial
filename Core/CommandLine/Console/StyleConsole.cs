@@ -242,36 +242,17 @@ namespace Trivial.CommandLine
                 }
                 catch (InvalidOperationException)
                 {
-                    var s = ReadLine();
-                    foreach (var c in s)
-                    {
-                        str.AppendChar(c);
-                    }
-
-                    MoveCursorBy(0, -1);
-                    Clear(RelativeAreas.Line);
-                    if (inline && replaceChar.HasValue)
-                    {
-                        col.Add(new ConsoleText(replaceChar.Value, 6, foreground));
-                    }
-
+                    ReadLine(foreground, str, replaceChar, inline);
                     return str;
                 }
                 catch (IOException)
                 {
-                    var s = ReadLine();
-                    foreach (var c in s)
-                    {
-                        str.AppendChar(c);
-                    }
-
-                    MoveCursorBy(0, -1);
-                    Clear(RelativeAreas.Line);
-                    if (inline && replaceChar.HasValue)
-                    {
-                        col.Add(new ConsoleText(replaceChar.Value, 6, foreground));
-                    }
-
+                    ReadLine(foreground, str, replaceChar, inline);
+                    return str;
+                }
+                catch (NotSupportedException)
+                {
+                    ReadLine(foreground, str, replaceChar, inline);
                     return str;
                 }
 
@@ -574,6 +555,20 @@ namespace Trivial.CommandLine
             }
 
             Cleared?.Invoke(this, new DataEventArgs<RelativeAreas>(area));
+        }
+
+        private void ReadLine(ConsoleColor? foreground, SecureString str, char? replaceChar, bool inline = false)
+        {
+            var s = ReadLine();
+            foreach (var c in s)
+            {
+                str.AppendChar(c);
+            }
+
+            MoveCursorBy(0, -1);
+            Clear(RelativeAreas.Line);
+            if (inline && replaceChar.HasValue)
+                col.Add(new ConsoleText(replaceChar.Value, 6, foreground));
         }
 
         /// <summary>

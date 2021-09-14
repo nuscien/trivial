@@ -13,7 +13,7 @@ namespace Trivial.CommandLine
     /// <summary>
     /// The style for JSON output.
     /// </summary>
-    public class JsonConsoleStyle
+    public class JsonConsoleStyle : ICloneable
     {
         /// <summary>
         /// Gets or sets the foreground color of string.
@@ -100,6 +100,20 @@ namespace Trivial.CommandLine
                 BackgroundRgbColor,
                 BackgroundConsoleColor);
         }
+
+        /// <summary>
+        /// Clones an object.
+        /// </summary>
+        /// <returns>The object copied from this instance.</returns>
+        public virtual JsonConsoleStyle Clone()
+            => MemberwiseClone() as JsonConsoleStyle;
+
+        /// <summary>
+        /// Clones an object.
+        /// </summary>
+        /// <returns>The object copied from this instance.</returns>
+        object ICloneable.Clone()
+            => MemberwiseClone();
 
         /// <summary>
         /// Creates a console text by this style.

@@ -34,9 +34,9 @@ namespace Trivial.CommandLine
 
             var result = cli.Select(col, new SelectionConsoleOptions
             {
-                SelectedBackgroundColor = ConsoleColor.Cyan,
-                SelectedForegroundColor = ConsoleColor.Black,
-                TipsForegroundColor = ConsoleColor.Yellow,
+                SelectedBackgroundConsoleColor = ConsoleColor.Cyan,
+                SelectedForegroundConsoleColor = ConsoleColor.Black,
+                TipsForegroundConsoleColor = ConsoleColor.Yellow,
                 SelectedPrefix = "→ ",
                 Column = 5,
                 MaxRow = 10,
