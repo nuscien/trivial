@@ -69,7 +69,7 @@ The MIME constants and its mapping of file extension part.
 
 The useful utilities for ASP.NET application.
 
-- [ASP.NET utilities](./docs/web)
+- [ASP.NET utilities](./web/controller)
 
 ### Trivial.Console
 
