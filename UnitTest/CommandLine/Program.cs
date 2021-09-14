@@ -22,7 +22,7 @@ namespace Trivial.CommandLine
             dispatcher.Register<Text.CsvVerb>("csv");
             dispatcher.Register<Chemistry.ChemistryVerb>("chemistry");
             dispatcher.Register<SelectionVerb>("select");
-            return dispatcher.ProcessAsync(args);
+            return dispatcher.ProcessAsync();
         }
 
         private static void TestConsoleInterface()

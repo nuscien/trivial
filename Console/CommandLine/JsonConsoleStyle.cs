@@ -63,7 +63,7 @@ namespace Trivial.CommandLine
         /// <summary>
         /// Gets or sets the background color.
         /// </summary>
-        public ConsoleColor? BackgroundConsoleColor { get; set; } = ConsoleColor.Black;
+        public ConsoleColor? BackgroundConsoleColor { get; set; }
 
         /// <summary>
         /// Creates a console text by this style.

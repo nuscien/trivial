@@ -92,7 +92,7 @@ namespace Trivial.CommandLine
         /// <summary>
         /// Gets or sets the foreground color for item selected.
         /// </summary>
-        public Color? SelectedBackgroundRgbColor { get; set; }
+        public Color? SelectedBackgroundRgbColor { get; set; } = Color.FromArgb(0x55, 0xCC, 0xEE);
 
         /// <summary>
         /// Gets or sets the foreground color for question.
@@ -122,7 +122,7 @@ namespace Trivial.CommandLine
         /// <summary>
         /// Gets or sets the foreground color for tips.
         /// </summary>
-        public Color? TipsForegroundRgbColor { get; set; }
+        public Color? TipsForegroundRgbColor { get; set; } = Color.FromArgb(0xF9, 0xEE, 0x88);
 
         /// <summary>
         /// Gets or sets the background color for tips.

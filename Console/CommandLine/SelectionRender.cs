@@ -297,7 +297,8 @@ namespace Trivial.CommandLine
                     case ConsoleKey.UpArrow:
                         if (select < temp.Item4)
                         {
-                            select += list.Count - (list.Count % temp.Item4) - temp.Item4;
+                            select += list.Count - (list.Count % temp.Item4);
+                            if (select >= list.Count) select -= temp.Item4;
                             if (select >= list.Count) select = list.Count - 1;
                             else if (select < 0) select = 0;
                         }

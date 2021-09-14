@@ -83,10 +83,10 @@ User can press following keys to interact with the control and select one.
 
 | Key | Description |
 | -------- | ----------------------------------- |
-| `¡û` | Move cursor to previous item (left column) |
-| `¡ú` | Move cursor to next item (right column) |
-| `¡ü` | Move cursor to previous row |
-| `¡ı` | Move cursor to next row |
+| `â†` | Move cursor to previous item (left column) |
+| `â†’` | Move cursor to next item (right column) |
+| `â†‘` | Move cursor to previous row |
+| `â†“` | Move cursor to next row |
 | `Home` | Move cursor to the first item in the page |
 | `End` | Move cursor to the last item in the page |
 | `PgUp` | Turn to previous page |

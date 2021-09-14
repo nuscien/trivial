@@ -230,7 +230,7 @@ namespace Trivial.CommandLine
         public ICommandHandler DefaultHandler { get; set; }
 
         /// <summary>
-        /// Gets or sets the default command handler.
+        /// Gets or sets the unhandled command handler.
         /// </summary>
         public ICommandHandler UnhandledHandler { get; set; }
 
@@ -442,6 +442,35 @@ namespace Trivial.CommandLine
         /// <summary>
         /// Processes.
         /// </summary>
+        /// <param name="cancellationToken">An optional cancellation token.</param>
+        /// <returns>true if process succeeded; otherwise, false.</returns>
+        public Task ProcessAsync(CancellationToken cancellationToken = default)
+        {
+            CommandArguments a = null;
+            try
+            {
+                var args = Environment.GetCommandLineArgs();
+                if (args == null || args.Length == 0)
+                    return ProcessAsync(new CommandArguments(args), null, cancellationToken);
+                var cmd = Environment.CommandLine;
+                a = cmd != null && cmd.StartsWith(args[0] ?? string.Empty)
+                    ? new CommandArguments(cmd.Substring(args[0]?.Length ?? 0).Trim())
+                    : new CommandArguments(args.Skip(1));
+            }
+            catch (InvalidOperationException)
+            {
+            }
+            catch (NotSupportedException)
+            {
+            }
+
+            if (a == null) a = new(null as string);
+            return ProcessAsync(a, null, cancellationToken);
+        }
+
+        /// <summary>
+        /// Processes.
+        /// </summary>
         /// <param name="args">The command arguments.</param>
         /// <param name="cancellationToken">An optional cancellation token.</param>
         /// <returns>true if process succeeded; otherwise, false.</returns>
@@ -481,9 +510,6 @@ namespace Trivial.CommandLine
             var loop = string.IsNullOrEmpty(verb);
             if (loop)
                 await ProcessHandlerAsync(DefaultHandler, args, context, conversationMode, cancellationToken);
-            else
-                await ProcessHandlerAsync(GetVerb(verb)?.Handler, args, context, conversationMode, cancellationToken);
-
             if (conversationMode == null)
             {
                 if (ConversationMode == CommandConversationModes.Off)
