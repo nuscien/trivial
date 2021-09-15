@@ -29,6 +29,7 @@ including interceptor, retry policy, writable JSON DOM, PEM, JWT, stream combina
 - [Collection](./docs/collection)
 - [Reflection](./docs/reflection)
 - [Geography](./docs/geo)
+- [Command line](./docs/cmdline/)
 
 ## [Trivial.Chemistry](./Chemistry)
 

@@ -66,6 +66,7 @@ The MIME constants and its mapping of file extension part.
 
 ![.NET 6](./assets/badge_NET_6.svg)
 ![.NET 5](./assets/badge_NET_5.svg)
+![.NET Core 3.1](./assets/badge_NET_Core_3_1.svg)
 
 The useful utilities for ASP.NET application.
 

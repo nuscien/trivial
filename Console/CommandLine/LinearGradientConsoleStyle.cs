@@ -127,8 +127,14 @@ namespace Trivial.CommandLine
             var last = s.Length - 1;
             for (var i = 1; i < last; i++)
             {
-                if (fore.HasValue) fore = Color.FromArgb((int)Math.Round(fore.Value.R + foreDelta.Item1), (int)Math.Round(fore.Value.G + foreDelta.Item2), (int)Math.Round(fore.Value.B + foreDelta.Item3));
-                if (back.HasValue) back = Color.FromArgb((int)Math.Round(back.Value.R + backDelta.Item1), (int)Math.Round(back.Value.G + backDelta.Item2), (int)Math.Round(back.Value.B + backDelta.Item3));
+                if (fore.HasValue) fore = Color.FromArgb(
+                    PlusChannel(fore.Value.R, foreDelta.Item1),
+                    PlusChannel(fore.Value.G, foreDelta.Item2),
+                    PlusChannel(fore.Value.B, foreDelta.Item3));
+                if (back.HasValue) back = Color.FromArgb(
+                    PlusChannel(back.Value.R, backDelta.Item1),
+                    PlusChannel(back.Value.G, backDelta.Item2),
+                    PlusChannel(back.Value.B, backDelta.Item3));
                 col.Add(s[i], 1, new ConsoleTextStyle(fore, FallbackForegroundColor, back, FallbackBackgroundColor)
                 {
                     Blink = Blink,
@@ -148,6 +154,14 @@ namespace Trivial.CommandLine
                 Strikeout = Strikeout
             });
             return col;
+        }
+
+        private int PlusChannel(int c, double delta)
+        {
+            c = (int)Math.Round(c + delta);
+            if (c < 0) return 0;
+            else if (c > 255) return 255;
+            return c;
         }
     }
 }

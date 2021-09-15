@@ -8,7 +8,7 @@ namespace Trivial.Web
     public static partial class MimeConstants
     {
         /// <summary>
-        /// The popular MIME constants of package.
+        /// The popular MIME constants of package and compressed file.
         /// </summary>
         public static class Packages
         {

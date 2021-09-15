@@ -120,6 +120,28 @@ namespace Trivial.CommandLine
 #endif
 
         /// <summary>
+        /// Sets the foreground.
+        /// </summary>
+        /// <param name="r">The red component value. Valid values are 0 through 255.</param>
+        /// <param name="g">The green component value. Valid values are 0 through 255.</param>
+        /// <param name="b">The blue component value. Valid values are 0 through 255.</param>
+        public void SetForeground(byte r, byte g, byte b)
+        {
+            ForegroundRgbColor = Color.FromArgb(r, g, b);
+        }
+
+        /// <summary>
+        /// Sets the background.
+        /// </summary>
+        /// <param name="r">The red component value. Valid values are 0 through 255.</param>
+        /// <param name="g">The green component value. Valid values are 0 through 255.</param>
+        /// <param name="b">The blue component value. Valid values are 0 through 255.</param>
+        public void SetBackground(byte r, byte g, byte b)
+        {
+            BackgroundRgbColor = Color.FromArgb(r, g, b);
+        }
+
+        /// <summary>
         /// Sets foreground console color from RGB.
         /// </summary>
         public void SyncForegroundRgbToConsoleColor()

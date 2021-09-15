@@ -455,7 +455,7 @@ namespace Trivial.CommandLine
             {
                 cli.Write(
                     new ConsoleTextStyle(
-                        options.PagingForegroundRgbColor,
+                        options.TipsForegroundRgbColor,
                         options.TipsForegroundConsoleColor ?? options.ForegroundColor,
                         options.TipsBackgroundRgbColor,
                         options.TipsBackgroundConsoleColor ?? options.BackgroundColor),
@@ -574,7 +574,13 @@ namespace Trivial.CommandLine
                     if (rest < 0)
                     {
                         cli.MoveCursorBy(rest, 0);
-                        cli.WriteImmediately(style, " \b");
+                        cli.WriteImmediately(
+                            new ConsoleTextStyle(
+                            options.ItemForegroundRgbColor,
+                            options.ItemForegroundConsoleColor ?? options.ForegroundColor,
+                            options.ItemBackgroundRgbColor,
+                            options.ItemBackgroundConsoleColor ?? options.BackgroundColor),
+                            " \b");
                     }
                     else if (rest > 0)
                     {

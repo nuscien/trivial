@@ -1,4 +1,4 @@
-# Progress Bar
+# Progress bar
 
 A progress bar in terminal that can present the latest state during the specific task running.
 
@@ -27,3 +27,5 @@ for (var i = 0; i <= 50; i++)
     progress.Report(0.02 * i);
 }
 ```
+
+![Screenshot](./loading.jpg)
