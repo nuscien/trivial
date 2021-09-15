@@ -148,6 +148,27 @@ namespace Trivial.CommandLine
         /// Writes the specified string value to the standard output stream.
         /// Note it may not flush immediately.
         /// </summary>
+        /// <param name="style">The style.</param>
+        /// <param name="s">A composite format string to output.</param>
+        /// <param name="args">An object array that contains zero or more objects to format.</param>
+        public void Write(IConsoleTextPrettier style, string s, params object[] args)
+        {
+            if (style == null)
+            {
+                Write(s, args);
+                return;
+            }
+
+            var list = style.CreateTextCollection(args == null || args.Length == 0 ? s : string.Format(s, args));
+            if (list == null) return;
+            col.AddRange(list);
+            OnAppend();
+        }
+
+        /// <summary>
+        /// Writes the specified string value to the standard output stream.
+        /// Note it may not flush immediately.
+        /// </summary>
         /// <param name="s">A composite format string to output.</param>
         public void Write(StringBuilder s)
         {
@@ -562,6 +583,28 @@ namespace Trivial.CommandLine
         }
 
         /// <summary>
+        /// Writes the specified string value to the standard output stream.
+        /// Note it may not flush immediately.
+        /// </summary>
+        /// <param name="style">The style.</param>
+        /// <param name="value">The value to write.</param>
+        /// <param name="start">The starting position in value.</param>
+        /// <param name="count">The number of characters to write.</param>
+        public void Write(IConsoleTextPrettier style, char[] value, int start = 0, int? count = null)
+        {
+            if (style == null)
+            {
+                Write(value, start, count);
+                return;
+            }
+
+            var list = style.CreateTextCollection(StringExtensions.ToString(value, start, count));
+            if (list == null) return;
+            col.AddRange(list);
+            OnAppend();
+        }
+
+        /// <summary>
         /// Writes the specified characters to the standard output stream.
         /// Note it may not flush immediately.
         /// </summary>
@@ -596,6 +639,27 @@ namespace Trivial.CommandLine
         public void Write(ConsoleColor foreground, char value, int repeatCount = 1)
         {
             col.Add(new ConsoleText(value, repeatCount, new ConsoleTextStyle(foreground)));
+            OnAppend();
+        }
+
+        /// <summary>
+        /// Writes the specified string value to the standard output stream.
+        /// Note it may not flush immediately.
+        /// </summary>
+        /// <param name="style">The style.</param>
+        /// <param name="value">The value to write.</param>
+        /// <param name="repeatCount">The number of times to append value.</param>
+        public void Write(IConsoleTextPrettier style, char value, int repeatCount = 1)
+        {
+            if (style == null || repeatCount < 1)
+            {
+                Write(value, repeatCount);
+                return;
+            }
+
+            var list = style.CreateTextCollection(new string(value, repeatCount));
+            if (list == null) return;
+            col.AddRange(list);
             OnAppend();
         }
 
@@ -708,6 +772,27 @@ namespace Trivial.CommandLine
         public void WriteImmediately(ConsoleColor? foreground, ConsoleColor? background, string s, params object[] args)
         {
             col.Add(new ConsoleText(args == null || args.Length == 0 ? s : string.Format(s, args), foreground, background));
+            Flush();
+        }
+
+        /// <summary>
+        /// Writes the specified string value to the standard output stream.
+        /// It will flush immediately.
+        /// </summary>
+        /// <param name="style">The style.</param>
+        /// <param name="s">A composite format string to output.</param>
+        /// <param name="args">An object array that contains zero or more objects to format.</param>
+        public void WriteImmediately(IConsoleTextPrettier style, string s, params object[] args)
+        {
+            if (style == null)
+            {
+                WriteImmediately(s, args);
+                return;
+            }
+
+            var list = style.CreateTextCollection(args == null || args.Length == 0 ? s : string.Format(s, args));
+            if (list == null) return;
+            col.AddRange(list);
             Flush();
         }
 
@@ -1289,6 +1374,28 @@ namespace Trivial.CommandLine
         }
 
         /// <summary>
+        /// Writes a JSON object, followed by the current line terminator, to the standard output stream.
+        /// It will flush immediately.
+        /// </summary>
+        /// <param name="style">The style.</param>
+        /// <param name="s">A composite format string to output.</param>
+        /// <param name="args">An object array that contains zero or more objects to format.</param>
+        public void WriteLine(IConsoleTextPrettier style, string s, params object[] args)
+        {
+            if (style == null)
+            {
+                WriteLine(s, args);
+                return;
+            }
+
+            var list = style.CreateTextCollection(args == null || args.Length == 0 ? s : string.Format(s, args));
+            if (list == null) return;
+            col.AddRange(list);
+            col.Add(new ConsoleText(Environment.NewLine));
+            Flush();
+        }
+
+        /// <summary>
         /// Writes the specified number, followed by the current line terminator, to the standard output stream.
         /// It will flush immediately.
         /// </summary>
@@ -1661,6 +1768,29 @@ namespace Trivial.CommandLine
         }
 
         /// <summary>
+        /// Writes a JSON object, followed by the current line terminator, to the standard output stream.
+        /// It will flush immediately.
+        /// </summary>
+        /// <param name="style">The style.</param>
+        /// <param name="value">The value to write.</param>
+        /// <param name="start">The starting position in value.</param>
+        /// <param name="count">The number of characters to write.</param>
+        public void WriteLine(IConsoleTextPrettier style, char[] value, int start = 0, int? count = null)
+        {
+            if (style == null)
+            {
+                WriteLine(value, start, count);
+                return;
+            }
+
+            var list = style.CreateTextCollection(StringExtensions.ToString(value, start, count));
+            if (list == null) return;
+            col.AddRange(list);
+            col.Add(new ConsoleText(Environment.NewLine));
+            Flush();
+        }
+
+        /// <summary>
         /// Writes the specified characters, followed by the current line terminator, to the standard output stream.
         /// </summary>
         /// <param name="value">The value to write.</param>
@@ -1711,6 +1841,28 @@ namespace Trivial.CommandLine
         public void WriteLine(ConsoleColor? foreground, ConsoleColor? background, char value, int repeatCount = 1)
         {
             col.Add(new ConsoleText(value, repeatCount, new ConsoleTextStyle(foreground, background)));
+            col.Add(new ConsoleText(Environment.NewLine));
+            Flush();
+        }
+
+        /// <summary>
+        /// Writes a JSON object, followed by the current line terminator, to the standard output stream.
+        /// It will flush immediately.
+        /// </summary>
+        /// <param name="style">The style.</param>
+        /// <param name="value">The value to write.</param>
+        /// <param name="repeatCount">The number of times to append value.</param>
+        public void WriteLine(IConsoleTextPrettier style, char value, int repeatCount = 1)
+        {
+            if (style == null || repeatCount < 1)
+            {
+                WriteLine(value, repeatCount);
+                return;
+            }
+
+            var list = style.CreateTextCollection(new string(value, repeatCount));
+            if (list == null) return;
+            col.AddRange(list);
             col.Add(new ConsoleText(Environment.NewLine));
             Flush();
         }

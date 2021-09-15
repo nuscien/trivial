@@ -107,6 +107,16 @@ namespace Trivial.CommandLine
             => StyleConsole.Default.Write(foreground, background, s, args);
 
         /// <summary>
+        /// Writes the specified string value to the standard output stream.
+        /// Note it may not flush immediately.
+        /// </summary>
+        /// <param name="style">The style.</param>
+        /// <param name="s">A composite format string to output.</param>
+        /// <param name="args">An object array that contains zero or more objects to format.</param>
+        public static void Write(IConsoleTextPrettier style, string s, params object[] args)
+            => StyleConsole.Default.Write(style, s, args);
+
+        /// <summary>
         /// Writes the specified number to the standard output stream.
         /// Note it may not flush immediately.
         /// </summary>
@@ -370,6 +380,17 @@ namespace Trivial.CommandLine
         /// Writes the specified characters to the standard output stream.
         /// Note it may not flush immediately.
         /// </summary>
+        /// <param name="style">The content style.</param>
+        /// <param name="value">The value to write.</param>
+        /// <param name="start">The starting position in value.</param>
+        /// <param name="count">The number of characters to write.</param>
+        public static void Write(IConsoleTextPrettier style, char[] value, int start = 0, int? count = null)
+            => StyleConsole.Default.Write(style, value, start, count);
+
+        /// <summary>
+        /// Writes the specified characters to the standard output stream.
+        /// Note it may not flush immediately.
+        /// </summary>
         /// <param name="value">The value to write.</param>
         /// <param name="repeatCount">The number of times to append value.</param>
         public static void Write(char value, int repeatCount = 1)
@@ -396,6 +417,16 @@ namespace Trivial.CommandLine
             => StyleConsole.Default.Write(foreground, value, repeatCount);
 
         /// <summary>
+        /// Writes the specified string value to the standard output stream.
+        /// Note it may not flush immediately.
+        /// </summary>
+        /// <param name="style">The style.</param>
+        /// <param name="value">The value to write.</param>
+        /// <param name="repeatCount">The number of times to append value.</param>
+        public static void Write(IConsoleTextPrettier style, char value, int repeatCount = 1)
+            => StyleConsole.Default.Write(style, value, repeatCount);
+
+        /// <summary>
         /// Writes the specified characters to the standard output stream.
         /// Note it may not flush immediately.
         /// </summary>
@@ -405,26 +436,6 @@ namespace Trivial.CommandLine
         /// <param name="repeatCount">The number of times to append value.</param>
         public static void Write(ConsoleColor? foreground, ConsoleColor? background, char value, int repeatCount = 1)
             => StyleConsole.Default.Write(foreground, background, value, repeatCount);
-
-        /// <summary>
-        /// Writes the specified string value to the standard output stream.
-        /// Note it may not flush immediately.
-        /// </summary>
-        /// <param name="style">The style.</param>
-        /// <param name="s">A composite format string to output.</param>
-        /// <param name="args">An object array that contains zero or more objects to format.</param>
-        public static void Write(LinearGradientConsoleStyle style, string s, params object[] args)
-            => StyleConsole.Default.Write(style, s, args);
-
-        /// <summary>
-        /// Writes the specified string value to the standard output stream.
-        /// Note it may not flush immediately.
-        /// </summary>
-        /// <param name="style">The style.</param>
-        /// <param name="value">The value to write.</param>
-        /// <param name="repeatCount">The number of times to append value.</param>
-        public static void Write(LinearGradientConsoleStyle style, char value, int repeatCount = 1)
-            => StyleConsole.Default.Write(style, value, repeatCount);
 
         /// <summary>
         /// Writes the specified string value, followed by the current line terminator, to the standard output stream.
@@ -511,6 +522,16 @@ namespace Trivial.CommandLine
         /// <param name="args">An object array that contains zero or more objects to format.</param>
         public static void WriteLine(Color foreground, Color background, string s, params object[] args)
             => StyleConsole.Default.WriteLine(foreground, background, s, args);
+
+        /// <summary>
+        /// Writes a JSON object, followed by the current line terminator, to the standard output stream.
+        /// It will flush immediately.
+        /// </summary>
+        /// <param name="style">The style.</param>
+        /// <param name="s">A composite format string to output.</param>
+        /// <param name="args">An object array that contains zero or more objects to format.</param>
+        public static void WriteLine(IConsoleTextPrettier style, string s, params object[] args)
+            => StyleConsole.Default.WriteLine(style, s, args);
 
         /// <summary>
         /// Writes the specified number, followed by the current line terminator, to the standard output stream.
@@ -772,6 +793,16 @@ namespace Trivial.CommandLine
         public static void WriteLine(ConsoleColor? foreground, ConsoleColor? background, char[] value, int start = 0, int? count = null)
             => StyleConsole.Default.WriteLine(foreground, background, value, start, count);
 
+        /// <summary>
+        /// Writes the specified characters, followed by the current line terminator, to the standard output stream.
+        /// It will flush immediately.
+        /// </summary>
+        /// <param name="style">The content style.</param>
+        /// <param name="value">The value to write.</param>
+        /// <param name="start">The starting position in value.</param>
+        /// <param name="count">The number of characters to write.</param>
+        public static void WriteLine(IConsoleTextPrettier style, char[] value, int start = 0, int? count = null)
+            => StyleConsole.Default.WriteLine(style, value, start, count);
 
         /// <summary>
         /// Writes the specified characters, followed by the current line terminator, to the standard output stream.
@@ -803,6 +834,16 @@ namespace Trivial.CommandLine
             => StyleConsole.Default.WriteLine(foreground, value, repeatCount);
 
         /// <summary>
+        /// Writes a JSON object, followed by the current line terminator, to the standard output stream.
+        /// It will flush immediately.
+        /// </summary>
+        /// <param name="style">The style.</param>
+        /// <param name="value">The value to write.</param>
+        /// <param name="repeatCount">The number of times to append value.</param>
+        public static void WriteLine(IConsoleTextPrettier style, char value, int repeatCount = 1)
+            => StyleConsole.Default.WriteLine(style, value, repeatCount);
+
+        /// <summary>
         /// Writes the specified characters, followed by the current line terminator, to the standard output stream.
         /// It will flush immediately.
         /// </summary>
@@ -820,7 +861,7 @@ namespace Trivial.CommandLine
         /// <param name="ex">The exception.</param>
         /// <param name="stackTrace">true if output stack trace; otherwise, false.</param>
         public static void WriteLine(Exception ex, bool stackTrace = false)
-            => StyleConsole.Default.WriteLine(null, null, ex, stackTrace);
+            => StyleConsole.Default.WriteLine(null as ConsoleTextStyle, null as ConsoleTextStyle, ex, stackTrace);
 
         /// <summary>
         /// Writes an exception, followed by the current line terminator, to the standard output stream.
@@ -883,26 +924,6 @@ namespace Trivial.CommandLine
         /// <param name="json">The JSON instance.</param>
         public static void WriteLine(JsonConsoleStyle style, System.Text.Json.Nodes.JsonArray json)
             => StyleConsole.Default.WriteLine((style ?? new JsonConsoleStyle()).CreateTextCollection(json == null ? null : (JsonArrayNode)json, 0));
-
-        /// <summary>
-        /// Writes a JSON object, followed by the current line terminator, to the standard output stream.
-        /// It will flush immediately.
-        /// </summary>
-        /// <param name="style">The style.</param>
-        /// <param name="s">A composite format string to output.</param>
-        /// <param name="args">An object array that contains zero or more objects to format.</param>
-        public static void WriteLine(LinearGradientConsoleStyle style, string s, params object[] args)
-            => StyleConsole.Default.WriteLine(style, s, args);
-
-        /// <summary>
-        /// Writes a JSON object, followed by the current line terminator, to the standard output stream.
-        /// It will flush immediately.
-        /// </summary>
-        /// <param name="style">The style.</param>
-        /// <param name="value">The value to write.</param>
-        /// <param name="repeatCount">The number of times to append value.</param>
-        public static void WriteLine(LinearGradientConsoleStyle style, char value, int repeatCount = 1)
-            => StyleConsole.Default.WriteLine(style, value, repeatCount);
 
         /// <summary>
         /// Writes a progress component, followed by the current line terminator, to the standard output stream.

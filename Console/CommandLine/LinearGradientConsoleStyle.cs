@@ -13,7 +13,7 @@ namespace Trivial.CommandLine
     /// <summary>
     /// The linear gradient console text style.
     /// </summary>
-    public class LinearGradientConsoleStyle
+    public class LinearGradientConsoleStyle : IConsoleTextPrettier
     {
         private readonly Color? fromFore;
         private readonly Color? toFore;
@@ -90,7 +90,7 @@ namespace Trivial.CommandLine
         /// </summary>
         /// <param name="s">The text.</param>
         /// <returns>A collection of console text.</returns>
-        internal List<ConsoleText> CreateTextCollection(string s)
+        IEnumerable<ConsoleText> IConsoleTextPrettier.CreateTextCollection(string s)
         {
             var col = new List<ConsoleText>();
             if (string.IsNullOrEmpty(s)) return col;
@@ -119,16 +119,16 @@ namespace Trivial.CommandLine
             var fore = fromFore ?? toFore;
             var back = fromBack ?? toBack;
             var foreDelta = fromFore.HasValue && toFore.HasValue
-                ? ((toFore.Value.R - fromFore.Value.R) / step, (toFore.Value.G - fromFore.Value.B) / step, (toFore.Value.B - fromFore.Value.B) / step)
-                : (0, 0, 0);
+                ? ((toFore.Value.R - fromFore.Value.R) * 1.0 / step, (toFore.Value.G - fromFore.Value.B) * 1.0 / step, (toFore.Value.B - fromFore.Value.B) * 1.0 / step)
+                : (0.0, 0.0, 0.0);
             var backDelta = fromBack.HasValue && toBack.HasValue
-                ? ((toBack.Value.R - fromBack.Value.R) / step, (toBack.Value.G - fromBack.Value.B) / step, (toBack.Value.B - fromBack.Value.B) / step)
-                : (0, 0, 0);
+                ? ((toBack.Value.R - fromBack.Value.R) * 1.0 / step, (toBack.Value.G - fromBack.Value.B) * 1.0 / step, (toBack.Value.B - fromBack.Value.B) * 1.0 / step)
+                : (0.0, 0.0, 0.0);
             var last = s.Length - 1;
             for (var i = 1; i < last; i++)
             {
-                if (fore.HasValue) fore = Color.FromArgb(fore.Value.R + foreDelta.Item1, fore.Value.G + foreDelta.Item2, fore.Value.B + foreDelta.Item3);
-                if (back.HasValue) back = Color.FromArgb(back.Value.R + backDelta.Item1, back.Value.G + backDelta.Item2, back.Value.B + backDelta.Item3);
+                if (fore.HasValue) fore = Color.FromArgb((int)Math.Round(fore.Value.R + foreDelta.Item1), (int)Math.Round(fore.Value.G + foreDelta.Item2), (int)Math.Round(fore.Value.B + foreDelta.Item3));
+                if (back.HasValue) back = Color.FromArgb((int)Math.Round(back.Value.R + backDelta.Item1), (int)Math.Round(back.Value.G + backDelta.Item2), (int)Math.Round(back.Value.B + backDelta.Item3));
                 col.Add(s[i], 1, new ConsoleTextStyle(fore, FallbackForegroundColor, back, FallbackBackgroundColor)
                 {
                     Blink = Blink,
