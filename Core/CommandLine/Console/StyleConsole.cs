@@ -144,7 +144,7 @@ namespace Trivial.CommandLine
         {
             if (Mode == Modes.Text && Handler == null)
             {
-                col.Add(new ConsoleText(" \b "));
+                col.Add(new ConsoleText("\b \b"));
                 return;
             }
 

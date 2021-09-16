@@ -127,361 +127,361 @@
     <value>Elemento</value>
   </data>
   <data name="Element001" xml:space="preserve">
-    <value>Hydrogène</value>
+    <value>Idrogeno</value>
   </data>
   <data name="Element002" xml:space="preserve">
-    <value>Hélium</value>
+    <value>Elio</value>
   </data>
   <data name="Element003" xml:space="preserve">
-    <value>Lithium</value>
+    <value>Litio</value>
   </data>
   <data name="Element004" xml:space="preserve">
-    <value>Béryllium</value>
+    <value>Berillio</value>
   </data>
   <data name="Element005" xml:space="preserve">
-    <value>Bore</value>
+    <value>Boro</value>
   </data>
   <data name="Element006" xml:space="preserve">
-    <value>Carbone</value>
+    <value>Carbonio</value>
   </data>
   <data name="Element007" xml:space="preserve">
-    <value>Azote</value>
+    <value>Azoto</value>
   </data>
   <data name="Element008" xml:space="preserve">
-    <value>Oxygène</value>
+    <value>Ossigeno</value>
   </data>
   <data name="Element009" xml:space="preserve">
-    <value>Fluor</value>
+    <value>Fluoro</value>
   </data>
   <data name="Element010" xml:space="preserve">
-    <value>Néon</value>
+    <value>Neon</value>
   </data>
   <data name="Element011" xml:space="preserve">
-    <value>Sodium</value>
+    <value>Sodio</value>
   </data>
   <data name="Element012" xml:space="preserve">
-    <value>Magnésium</value>
+    <value>Magnesio</value>
   </data>
   <data name="Element013" xml:space="preserve">
-    <value>Aluminium</value>
+    <value>Alluminio</value>
   </data>
   <data name="Element014" xml:space="preserve">
-    <value>Silicium</value>
+    <value>Silicio</value>
   </data>
   <data name="Element015" xml:space="preserve">
-    <value>Phosphore</value>
+    <value>Fosforo</value>
   </data>
   <data name="Element016" xml:space="preserve">
-    <value>Soufre</value>
+    <value>Zolfo</value>
   </data>
   <data name="Element017" xml:space="preserve">
-    <value>Chlore</value>
+    <value>Cloro</value>
   </data>
   <data name="Element018" xml:space="preserve">
     <value>Argon</value>
   </data>
   <data name="Element019" xml:space="preserve">
-    <value>Potassium</value>
+    <value>Potassio</value>
   </data>
   <data name="Element020" xml:space="preserve">
-    <value>Calcium</value>
+    <value>Calcio</value>
   </data>
   <data name="Element021" xml:space="preserve">
-    <value>Scandium</value>
+    <value>Scandio</value>
   </data>
   <data name="Element022" xml:space="preserve">
-    <value>Titane</value>
+    <value>Titanio</value>
   </data>
   <data name="Element023" xml:space="preserve">
-    <value>Vanadium</value>
+    <value>Vanadio</value>
   </data>
   <data name="Element024" xml:space="preserve">
-    <value>Chrome</value>
+    <value>Cromo</value>
   </data>
   <data name="Element025" xml:space="preserve">
-    <value>Manganèse</value>
+    <value>Manganese</value>
   </data>
   <data name="Element026" xml:space="preserve">
-    <value>Fer</value>
+    <value>Ferro</value>
   </data>
   <data name="Element027" xml:space="preserve">
-    <value>Cobalt</value>
+    <value>Cobalto</value>
   </data>
   <data name="Element028" xml:space="preserve">
-    <value>Nickel</value>
+    <value>Nichel</value>
   </data>
   <data name="Element029" xml:space="preserve">
-    <value>Cuivre</value>
+    <value>Rame</value>
   </data>
   <data name="Element030" xml:space="preserve">
-    <value>Zinc</value>
+    <value>Zinco</value>
   </data>
   <data name="Element031" xml:space="preserve">
-    <value>Gallium</value>
+    <value>Gallio</value>
   </data>
   <data name="Element032" xml:space="preserve">
-    <value>Germanium</value>
+    <value>Germanio</value>
   </data>
   <data name="Element033" xml:space="preserve">
-    <value>Arsenic</value>
+    <value>Arsenico</value>
   </data>
   <data name="Element034" xml:space="preserve">
-    <value>Sélénium</value>
+    <value>Selenio</value>
   </data>
   <data name="Element035" xml:space="preserve">
-    <value>Brome</value>
+    <value>Bromo</value>
   </data>
   <data name="Element036" xml:space="preserve">
-    <value>Krypton</value>
+    <value>Kripton</value>
   </data>
   <data name="Element037" xml:space="preserve">
-    <value>Rubidium</value>
+    <value>Rubidio</value>
   </data>
   <data name="Element038" xml:space="preserve">
-    <value>Strontium</value>
+    <value>Stronzio</value>
   </data>
   <data name="Element039" xml:space="preserve">
-    <value>Yttrium</value>
+    <value>Ittrio</value>
   </data>
   <data name="Element040" xml:space="preserve">
-    <value>Zirconium</value>
+    <value>Zirconio</value>
   </data>
   <data name="Element041" xml:space="preserve">
-    <value>Niobium</value>
+    <value>Niobio</value>
   </data>
   <data name="Element042" xml:space="preserve">
-    <value>Molybdène</value>
+    <value>Molibdeno</value>
   </data>
   <data name="Element043" xml:space="preserve">
-    <value>Technétium</value>
+    <value>Tecnezio</value>
   </data>
   <data name="Element044" xml:space="preserve">
-    <value>Ruthénium</value>
+    <value>Rutenio</value>
   </data>
   <data name="Element045" xml:space="preserve">
-    <value>Rhodium</value>
+    <value>Rodio</value>
   </data>
   <data name="Element046" xml:space="preserve">
-    <value>Palladium</value>
+    <value>Palladio</value>
   </data>
   <data name="Element047" xml:space="preserve">
-    <value>Argent</value>
+    <value>Argento</value>
   </data>
   <data name="Element048" xml:space="preserve">
-    <value>Cadmium</value>
+    <value>Cadmio</value>
   </data>
   <data name="Element049" xml:space="preserve">
-    <value>Indium</value>
+    <value>Indio</value>
   </data>
   <data name="Element050" xml:space="preserve">
-    <value>Étain</value>
+    <value>Stagno</value>
   </data>
   <data name="Element051" xml:space="preserve">
-    <value>Antimoine</value>
+    <value>Antimonio</value>
   </data>
   <data name="Element052" xml:space="preserve">
-    <value>Tellure</value>
+    <value>Tellurio</value>
   </data>
   <data name="Element053" xml:space="preserve">
-    <value>Iode</value>
+    <value>Iodio</value>
   </data>
   <data name="Element054" xml:space="preserve">
-    <value>Xénon</value>
+    <value>Xenon</value>
   </data>
   <data name="Element055" xml:space="preserve">
-    <value>Césium</value>
+    <value>Cesio</value>
   </data>
   <data name="Element056" xml:space="preserve">
-    <value>Baryum</value>
+    <value>Bario</value>
   </data>
   <data name="Element057" xml:space="preserve">
-    <value>Lanthane</value>
+    <value>Lantanio</value>
   </data>
   <data name="Element058" xml:space="preserve">
-    <value>Cérium</value>
+    <value>Cerio</value>
   </data>
   <data name="Element059" xml:space="preserve">
-    <value>Praséodyme</value>
+    <value>Praseodimio</value>
   </data>
   <data name="Element060" xml:space="preserve">
-    <value>Néodyme</value>
+    <value>Neodimio</value>
   </data>
   <data name="Element061" xml:space="preserve">
-    <value>Prométhium</value>
+    <value>Promezio</value>
   </data>
   <data name="Element062" xml:space="preserve">
-    <value>Samarium</value>
+    <value>Samario</value>
   </data>
   <data name="Element063" xml:space="preserve">
-    <value>Europium</value>
+    <value>Europio</value>
   </data>
   <data name="Element064" xml:space="preserve">
-    <value>Gadolinium</value>
+    <value>Gadolinio</value>
   </data>
   <data name="Element065" xml:space="preserve">
-    <value>Terbium</value>
+    <value>Terbio</value>
   </data>
   <data name="Element066" xml:space="preserve">
-    <value>Dysprosium</value>
+    <value>Disprosio</value>
   </data>
   <data name="Element067" xml:space="preserve">
-    <value>Holmium</value>
+    <value>Olmio</value>
   </data>
   <data name="Element068" xml:space="preserve">
-    <value>Erbium</value>
+    <value>Erbio</value>
   </data>
   <data name="Element069" xml:space="preserve">
-    <value>Thulium</value>
+    <value>Tulio</value>
   </data>
   <data name="Element070" xml:space="preserve">
-    <value>Ytterbium</value>
+    <value>Itterbio</value>
   </data>
   <data name="Element071" xml:space="preserve">
-    <value>Lutécium</value>
+    <value>Lutezio</value>
   </data>
   <data name="Element072" xml:space="preserve">
-    <value>Hafnium</value>
+    <value>Afnio</value>
   </data>
   <data name="Element073" xml:space="preserve">
-    <value>Tantale</value>
+    <value>Tantalio</value>
   </data>
   <data name="Element074" xml:space="preserve">
-    <value>Tungstène</value>
+    <value>Tungsteno</value>
   </data>
   <data name="Element075" xml:space="preserve">
-    <value>Rhénium</value>
+    <value>Renio</value>
   </data>
   <data name="Element076" xml:space="preserve">
-    <value>Osmium</value>
+    <value>Osmio</value>
   </data>
   <data name="Element077" xml:space="preserve">
-    <value>Iridium</value>
+    <value>Iridio</value>
   </data>
   <data name="Element078" xml:space="preserve">
-    <value>Platine</value>
+    <value>Platino</value>
   </data>
   <data name="Element079" xml:space="preserve">
-    <value>Or</value>
+    <value>Oro</value>
   </data>
   <data name="Element080" xml:space="preserve">
-    <value>Mercure</value>
+    <value>Mercurio</value>
   </data>
   <data name="Element081" xml:space="preserve">
-    <value>Thallium</value>
+    <value>Tallio</value>
   </data>
   <data name="Element082" xml:space="preserve">
-    <value>Plomb</value>
+    <value>Piombo</value>
   </data>
   <data name="Element083" xml:space="preserve">
-    <value>Bismuth</value>
+    <value>Bismuto</value>
   </data>
   <data name="Element084" xml:space="preserve">
-    <value>Polonium</value>
+    <value>Polonio</value>
   </data>
   <data name="Element085" xml:space="preserve">
-    <value>Astate</value>
+    <value>Astato</value>
   </data>
   <data name="Element086" xml:space="preserve">
     <value>Radon</value>
   </data>
   <data name="Element087" xml:space="preserve">
-    <value>Francium</value>
+    <value>Francio</value>
   </data>
   <data name="Element088" xml:space="preserve">
-    <value>Radium</value>
+    <value>Radio</value>
   </data>
   <data name="Element089" xml:space="preserve">
-    <value>Actinium</value>
+    <value>Attinio</value>
   </data>
   <data name="Element090" xml:space="preserve">
-    <value>Thorium</value>
+    <value>Torio</value>
   </data>
   <data name="Element091" xml:space="preserve">
-    <value>Protactinium</value>
+    <value>Protoattinio</value>
   </data>
   <data name="Element092" xml:space="preserve">
-    <value>Uranium</value>
+    <value>Uranio</value>
   </data>
   <data name="Element093" xml:space="preserve">
-    <value>Neptunium</value>
+    <value>Nettunio</value>
   </data>
   <data name="Element094" xml:space="preserve">
-    <value>Plutonium</value>
+    <value>Plutonio</value>
   </data>
   <data name="Element095" xml:space="preserve">
-    <value>Américium</value>
+    <value>Americio</value>
   </data>
   <data name="Element096" xml:space="preserve">
-    <value>Curium</value>
+    <value>Curio</value>
   </data>
   <data name="Element097" xml:space="preserve">
-    <value>Berkélium</value>
+    <value>Berkelio</value>
   </data>
   <data name="Element098" xml:space="preserve">
-    <value>Californium</value>
+    <value>Californio</value>
   </data>
   <data name="Element099" xml:space="preserve">
-    <value>Einsteinium</value>
+    <value>Einsteinio</value>
   </data>
   <data name="Element100" xml:space="preserve">
-    <value>Fermium</value>
+    <value>Fermio</value>
   </data>
   <data name="Element101" xml:space="preserve">
-    <value>Mendélévium</value>
+    <value>Mendelevio</value>
   </data>
   <data name="Element102" xml:space="preserve">
-    <value>Nobélium</value>
+    <value>Nobelio</value>
   </data>
   <data name="Element103" xml:space="preserve">
-    <value>Lawrencium</value>
+    <value>Laurenzio</value>
   </data>
   <data name="Element104" xml:space="preserve">
-    <value>Rutherfordium</value>
+    <value>Rutherfordio</value>
   </data>
   <data name="Element105" xml:space="preserve">
-    <value>Dubnium</value>
+    <value>Dubnio</value>
   </data>
   <data name="Element106" xml:space="preserve">
-    <value>Seaborgium</value>
+    <value>Seaborgio</value>
   </data>
   <data name="Element107" xml:space="preserve">
-    <value>Bohrium</value>
+    <value>Bohrio</value>
   </data>
   <data name="Element108" xml:space="preserve">
-    <value>Hassium</value>
+    <value>Hassio</value>
   </data>
   <data name="Element109" xml:space="preserve">
-    <value>Meitnérium</value>
+    <value>Meitnerio</value>
   </data>
   <data name="Element110" xml:space="preserve">
-    <value>Darmstadtium</value>
+    <value>Darmstadtio</value>
   </data>
   <data name="Element111" xml:space="preserve">
-    <value>Roentgenium</value>
+    <value>Roentgenio</value>
   </data>
   <data name="Element112" xml:space="preserve">
-    <value>Copernicium</value>
+    <value>Copernicio</value>
   </data>
   <data name="Element113" xml:space="preserve">
-    <value>Nihonium</value>
+    <value>Nihonio</value>
   </data>
   <data name="Element114" xml:space="preserve">
-    <value>Flérovium</value>
+    <value>Flerovio</value>
   </data>
   <data name="Element115" xml:space="preserve">
-    <value>Moscovium</value>
+    <value>Moscovio</value>
   </data>
   <data name="Element116" xml:space="preserve">
-    <value>Livermorium</value>
+    <value>Livermorio</value>
   </data>
   <data name="Element117" xml:space="preserve">
-    <value>Tennesse</value>
+    <value>Tennesso</value>
   </data>
   <data name="Element118" xml:space="preserve">
     <value>Oganesson</value>
   </data>
   <data name="ElementX" xml:space="preserve">
-    <value />
+    <value>Elemento {0}</value>
   </data>
   <data name="Isotope" xml:space="preserve">
     <value>Isotopo</value>

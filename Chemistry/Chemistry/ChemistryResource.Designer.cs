@@ -88,7 +88,7 @@ namespace Trivial.Chemistry {
         }
         
         /// <summary>
-        ///   查找类似  Hydrogen 的本地化字符串。
+        ///   查找类似 Hydrogen 的本地化字符串。
         /// </summary>
         internal static string Element001 {
             get {
@@ -97,7 +97,7 @@ namespace Trivial.Chemistry {
         }
         
         /// <summary>
-        ///   查找类似  Helium 的本地化字符串。
+        ///   查找类似 Helium 的本地化字符串。
         /// </summary>
         internal static string Element002 {
             get {
@@ -106,7 +106,7 @@ namespace Trivial.Chemistry {
         }
         
         /// <summary>
-        ///   查找类似  Lithium 的本地化字符串。
+        ///   查找类似 Lithium 的本地化字符串。
         /// </summary>
         internal static string Element003 {
             get {
@@ -115,7 +115,7 @@ namespace Trivial.Chemistry {
         }
         
         /// <summary>
-        ///   查找类似  Beryllium 的本地化字符串。
+        ///   查找类似 Beryllium 的本地化字符串。
         /// </summary>
         internal static string Element004 {
             get {
@@ -124,7 +124,7 @@ namespace Trivial.Chemistry {
         }
         
         /// <summary>
-        ///   查找类似  Boron 的本地化字符串。
+        ///   查找类似 Boron 的本地化字符串。
         /// </summary>
         internal static string Element005 {
             get {
@@ -133,7 +133,7 @@ namespace Trivial.Chemistry {
         }
         
         /// <summary>
-        ///   查找类似  Carbon 的本地化字符串。
+        ///   查找类似 Carbon 的本地化字符串。
         /// </summary>
         internal static string Element006 {
             get {
@@ -142,7 +142,7 @@ namespace Trivial.Chemistry {
         }
         
         /// <summary>
-        ///   查找类似  Nitrogen 的本地化字符串。
+        ///   查找类似 Nitrogen 的本地化字符串。
         /// </summary>
         internal static string Element007 {
             get {
@@ -151,7 +151,7 @@ namespace Trivial.Chemistry {
         }
         
         /// <summary>
-        ///   查找类似  Oxygen 的本地化字符串。
+        ///   查找类似 Oxygen 的本地化字符串。
         /// </summary>
         internal static string Element008 {
             get {
@@ -160,7 +160,7 @@ namespace Trivial.Chemistry {
         }
         
         /// <summary>
-        ///   查找类似  Fluorine 的本地化字符串。
+        ///   查找类似 Fluorine 的本地化字符串。
         /// </summary>
         internal static string Element009 {
             get {
@@ -169,7 +169,7 @@ namespace Trivial.Chemistry {
         }
         
         /// <summary>
-        ///   查找类似  Neon 的本地化字符串。
+        ///   查找类似 Neon 的本地化字符串。
         /// </summary>
         internal static string Element010 {
             get {
@@ -178,7 +178,7 @@ namespace Trivial.Chemistry {
         }
         
         /// <summary>
-        ///   查找类似  Sodium 的本地化字符串。
+        ///   查找类似 Sodium 的本地化字符串。
         /// </summary>
         internal static string Element011 {
             get {
@@ -187,7 +187,7 @@ namespace Trivial.Chemistry {
         }
         
         /// <summary>
-        ///   查找类似  Magnesium 的本地化字符串。
+        ///   查找类似 Magnesium 的本地化字符串。
         /// </summary>
         internal static string Element012 {
             get {
@@ -196,7 +196,7 @@ namespace Trivial.Chemistry {
         }
         
         /// <summary>
-        ///   查找类似  Aluminium 的本地化字符串。
+        ///   查找类似 Aluminium 的本地化字符串。
         /// </summary>
         internal static string Element013 {
             get {
@@ -205,7 +205,7 @@ namespace Trivial.Chemistry {
         }
         
         /// <summary>
-        ///   查找类似  Silicon 的本地化字符串。
+        ///   查找类似 Silicon 的本地化字符串。
         /// </summary>
         internal static string Element014 {
             get {
@@ -214,7 +214,7 @@ namespace Trivial.Chemistry {
         }
         
         /// <summary>
-        ///   查找类似  Phosphorus 的本地化字符串。
+        ///   查找类似 Phosphorus 的本地化字符串。
         /// </summary>
         internal static string Element015 {
             get {
@@ -223,7 +223,7 @@ namespace Trivial.Chemistry {
         }
         
         /// <summary>
-        ///   查找类似  Sulfur 的本地化字符串。
+        ///   查找类似 Sulfur 的本地化字符串。
         /// </summary>
         internal static string Element016 {
             get {
@@ -232,7 +232,7 @@ namespace Trivial.Chemistry {
         }
         
         /// <summary>
-        ///   查找类似  Chlorine 的本地化字符串。
+        ///   查找类似 Chlorine 的本地化字符串。
         /// </summary>
         internal static string Element017 {
             get {
@@ -241,7 +241,7 @@ namespace Trivial.Chemistry {
         }
         
         /// <summary>
-        ///   查找类似  Argon 的本地化字符串。
+        ///   查找类似 Argon 的本地化字符串。
         /// </summary>
         internal static string Element018 {
             get {
@@ -250,7 +250,7 @@ namespace Trivial.Chemistry {
         }
         
         /// <summary>
-        ///   查找类似  Potassium 的本地化字符串。
+        ///   查找类似 Potassium 的本地化字符串。
         /// </summary>
         internal static string Element019 {
             get {
@@ -259,7 +259,7 @@ namespace Trivial.Chemistry {
         }
         
         /// <summary>
-        ///   查找类似  Calcium 的本地化字符串。
+        ///   查找类似 Calcium 的本地化字符串。
         /// </summary>
         internal static string Element020 {
             get {
@@ -268,7 +268,7 @@ namespace Trivial.Chemistry {
         }
         
         /// <summary>
-        ///   查找类似  Scandium 的本地化字符串。
+        ///   查找类似 Scandium 的本地化字符串。
         /// </summary>
         internal static string Element021 {
             get {
@@ -277,7 +277,7 @@ namespace Trivial.Chemistry {
         }
         
         /// <summary>
-        ///   查找类似  Titanium 的本地化字符串。
+        ///   查找类似 Titanium 的本地化字符串。
         /// </summary>
         internal static string Element022 {
             get {
@@ -286,7 +286,7 @@ namespace Trivial.Chemistry {
         }
         
         /// <summary>
-        ///   查找类似  Vanadium 的本地化字符串。
+        ///   查找类似 Vanadium 的本地化字符串。
         /// </summary>
         internal static string Element023 {
             get {
@@ -295,7 +295,7 @@ namespace Trivial.Chemistry {
         }
         
         /// <summary>
-        ///   查找类似  Chromium 的本地化字符串。
+        ///   查找类似 Chromium 的本地化字符串。
         /// </summary>
         internal static string Element024 {
             get {
@@ -304,7 +304,7 @@ namespace Trivial.Chemistry {
         }
         
         /// <summary>
-        ///   查找类似  Manganese 的本地化字符串。
+        ///   查找类似 Manganese 的本地化字符串。
         /// </summary>
         internal static string Element025 {
             get {
@@ -313,7 +313,7 @@ namespace Trivial.Chemistry {
         }
         
         /// <summary>
-        ///   查找类似  Iron 的本地化字符串。
+        ///   查找类似 Iron 的本地化字符串。
         /// </summary>
         internal static string Element026 {
             get {
@@ -322,7 +322,7 @@ namespace Trivial.Chemistry {
         }
         
         /// <summary>
-        ///   查找类似  Cobalt 的本地化字符串。
+        ///   查找类似 Cobalt 的本地化字符串。
         /// </summary>
         internal static string Element027 {
             get {
@@ -331,7 +331,7 @@ namespace Trivial.Chemistry {
         }
         
         /// <summary>
-        ///   查找类似  Nickel 的本地化字符串。
+        ///   查找类似 Nickel 的本地化字符串。
         /// </summary>
         internal static string Element028 {
             get {
@@ -340,7 +340,7 @@ namespace Trivial.Chemistry {
         }
         
         /// <summary>
-        ///   查找类似  Copper 的本地化字符串。
+        ///   查找类似 Copper 的本地化字符串。
         /// </summary>
         internal static string Element029 {
             get {
@@ -349,7 +349,7 @@ namespace Trivial.Chemistry {
         }
         
         /// <summary>
-        ///   查找类似  Zinc 的本地化字符串。
+        ///   查找类似 Zinc 的本地化字符串。
         /// </summary>
         internal static string Element030 {
             get {
@@ -358,7 +358,7 @@ namespace Trivial.Chemistry {
         }
         
         /// <summary>
-        ///   查找类似  Gallium 的本地化字符串。
+        ///   查找类似 Gallium 的本地化字符串。
         /// </summary>
         internal static string Element031 {
             get {
@@ -367,7 +367,7 @@ namespace Trivial.Chemistry {
         }
         
         /// <summary>
-        ///   查找类似  Germanium 的本地化字符串。
+        ///   查找类似 Germanium 的本地化字符串。
         /// </summary>
         internal static string Element032 {
             get {
@@ -376,7 +376,7 @@ namespace Trivial.Chemistry {
         }
         
         /// <summary>
-        ///   查找类似  Arsenic 的本地化字符串。
+        ///   查找类似 Arsenic 的本地化字符串。
         /// </summary>
         internal static string Element033 {
             get {
@@ -385,7 +385,7 @@ namespace Trivial.Chemistry {
         }
         
         /// <summary>
-        ///   查找类似  Selenium 的本地化字符串。
+        ///   查找类似 Selenium 的本地化字符串。
         /// </summary>
         internal static string Element034 {
             get {
@@ -394,7 +394,7 @@ namespace Trivial.Chemistry {
         }
         
         /// <summary>
-        ///   查找类似  Bromine 的本地化字符串。
+        ///   查找类似 Bromine 的本地化字符串。
         /// </summary>
         internal static string Element035 {
             get {
@@ -403,7 +403,7 @@ namespace Trivial.Chemistry {
         }
         
         /// <summary>
-        ///   查找类似  Krypton 的本地化字符串。
+        ///   查找类似 Krypton 的本地化字符串。
         /// </summary>
         internal static string Element036 {
             get {
@@ -412,7 +412,7 @@ namespace Trivial.Chemistry {
         }
         
         /// <summary>
-        ///   查找类似  Rubidium 的本地化字符串。
+        ///   查找类似 Rubidium 的本地化字符串。
         /// </summary>
         internal static string Element037 {
             get {
@@ -421,7 +421,7 @@ namespace Trivial.Chemistry {
         }
         
         /// <summary>
-        ///   查找类似  Strontium 的本地化字符串。
+        ///   查找类似 Strontium 的本地化字符串。
         /// </summary>
         internal static string Element038 {
             get {
@@ -430,7 +430,7 @@ namespace Trivial.Chemistry {
         }
         
         /// <summary>
-        ///   查找类似  Yttrium 的本地化字符串。
+        ///   查找类似 Yttrium 的本地化字符串。
         /// </summary>
         internal static string Element039 {
             get {
@@ -439,7 +439,7 @@ namespace Trivial.Chemistry {
         }
         
         /// <summary>
-        ///   查找类似  Zirconium 的本地化字符串。
+        ///   查找类似 Zirconium 的本地化字符串。
         /// </summary>
         internal static string Element040 {
             get {
@@ -448,7 +448,7 @@ namespace Trivial.Chemistry {
         }
         
         /// <summary>
-        ///   查找类似  Niobium 的本地化字符串。
+        ///   查找类似 Niobium 的本地化字符串。
         /// </summary>
         internal static string Element041 {
             get {
@@ -457,7 +457,7 @@ namespace Trivial.Chemistry {
         }
         
         /// <summary>
-        ///   查找类似  Molybdenum 的本地化字符串。
+        ///   查找类似 Molybdenum 的本地化字符串。
         /// </summary>
         internal static string Element042 {
             get {
@@ -466,7 +466,7 @@ namespace Trivial.Chemistry {
         }
         
         /// <summary>
-        ///   查找类似  Technetium 的本地化字符串。
+        ///   查找类似 Technetium 的本地化字符串。
         /// </summary>
         internal static string Element043 {
             get {
@@ -475,7 +475,7 @@ namespace Trivial.Chemistry {
         }
         
         /// <summary>
-        ///   查找类似  Ruthenium 的本地化字符串。
+        ///   查找类似 Ruthenium 的本地化字符串。
         /// </summary>
         internal static string Element044 {
             get {
@@ -484,7 +484,7 @@ namespace Trivial.Chemistry {
         }
         
         /// <summary>
-        ///   查找类似  Rhodium 的本地化字符串。
+        ///   查找类似 Rhodium 的本地化字符串。
         /// </summary>
         internal static string Element045 {
             get {
@@ -493,7 +493,7 @@ namespace Trivial.Chemistry {
         }
         
         /// <summary>
-        ///   查找类似  Palladium 的本地化字符串。
+        ///   查找类似 Palladium 的本地化字符串。
         /// </summary>
         internal static string Element046 {
             get {
@@ -502,7 +502,7 @@ namespace Trivial.Chemistry {
         }
         
         /// <summary>
-        ///   查找类似  Silver 的本地化字符串。
+        ///   查找类似 Silver 的本地化字符串。
         /// </summary>
         internal static string Element047 {
             get {
@@ -511,7 +511,7 @@ namespace Trivial.Chemistry {
         }
         
         /// <summary>
-        ///   查找类似  Cadmium 的本地化字符串。
+        ///   查找类似 Cadmium 的本地化字符串。
         /// </summary>
         internal static string Element048 {
             get {
@@ -520,7 +520,7 @@ namespace Trivial.Chemistry {
         }
         
         /// <summary>
-        ///   查找类似  Indium 的本地化字符串。
+        ///   查找类似 Indium 的本地化字符串。
         /// </summary>
         internal static string Element049 {
             get {
@@ -529,7 +529,7 @@ namespace Trivial.Chemistry {
         }
         
         /// <summary>
-        ///   查找类似  Tin 的本地化字符串。
+        ///   查找类似 Tin 的本地化字符串。
         /// </summary>
         internal static string Element050 {
             get {
@@ -538,7 +538,7 @@ namespace Trivial.Chemistry {
         }
         
         /// <summary>
-        ///   查找类似  Antimony 的本地化字符串。
+        ///   查找类似 Antimony 的本地化字符串。
         /// </summary>
         internal static string Element051 {
             get {
@@ -547,7 +547,7 @@ namespace Trivial.Chemistry {
         }
         
         /// <summary>
-        ///   查找类似  Tellurium 的本地化字符串。
+        ///   查找类似 Tellurium 的本地化字符串。
         /// </summary>
         internal static string Element052 {
             get {
@@ -556,7 +556,7 @@ namespace Trivial.Chemistry {
         }
         
         /// <summary>
-        ///   查找类似  Iodine 的本地化字符串。
+        ///   查找类似 Iodine 的本地化字符串。
         /// </summary>
         internal static string Element053 {
             get {
@@ -565,7 +565,7 @@ namespace Trivial.Chemistry {
         }
         
         /// <summary>
-        ///   查找类似  Xenon 的本地化字符串。
+        ///   查找类似 Xenon 的本地化字符串。
         /// </summary>
         internal static string Element054 {
             get {
@@ -574,7 +574,7 @@ namespace Trivial.Chemistry {
         }
         
         /// <summary>
-        ///   查找类似  Caesium 的本地化字符串。
+        ///   查找类似 Caesium 的本地化字符串。
         /// </summary>
         internal static string Element055 {
             get {
@@ -583,7 +583,7 @@ namespace Trivial.Chemistry {
         }
         
         /// <summary>
-        ///   查找类似  Barium 的本地化字符串。
+        ///   查找类似 Barium 的本地化字符串。
         /// </summary>
         internal static string Element056 {
             get {
@@ -592,7 +592,7 @@ namespace Trivial.Chemistry {
         }
         
         /// <summary>
-        ///   查找类似  Lanthanum 的本地化字符串。
+        ///   查找类似 Lanthanum 的本地化字符串。
         /// </summary>
         internal static string Element057 {
             get {
@@ -601,7 +601,7 @@ namespace Trivial.Chemistry {
         }
         
         /// <summary>
-        ///   查找类似  Cerium 的本地化字符串。
+        ///   查找类似 Cerium 的本地化字符串。
         /// </summary>
         internal static string Element058 {
             get {
@@ -610,7 +610,7 @@ namespace Trivial.Chemistry {
         }
         
         /// <summary>
-        ///   查找类似  Praseodymium 的本地化字符串。
+        ///   查找类似 Praseodymium 的本地化字符串。
         /// </summary>
         internal static string Element059 {
             get {
@@ -619,7 +619,7 @@ namespace Trivial.Chemistry {
         }
         
         /// <summary>
-        ///   查找类似  Neodymium 的本地化字符串。
+        ///   查找类似 Neodymium 的本地化字符串。
         /// </summary>
         internal static string Element060 {
             get {
@@ -628,7 +628,7 @@ namespace Trivial.Chemistry {
         }
         
         /// <summary>
-        ///   查找类似  Promethium 的本地化字符串。
+        ///   查找类似 Promethium 的本地化字符串。
         /// </summary>
         internal static string Element061 {
             get {
@@ -637,7 +637,7 @@ namespace Trivial.Chemistry {
         }
         
         /// <summary>
-        ///   查找类似  Samarium 的本地化字符串。
+        ///   查找类似 Samarium 的本地化字符串。
         /// </summary>
         internal static string Element062 {
             get {
@@ -646,7 +646,7 @@ namespace Trivial.Chemistry {
         }
         
         /// <summary>
-        ///   查找类似  Europium 的本地化字符串。
+        ///   查找类似 Europium 的本地化字符串。
         /// </summary>
         internal static string Element063 {
             get {
@@ -655,7 +655,7 @@ namespace Trivial.Chemistry {
         }
         
         /// <summary>
-        ///   查找类似  Gadolinium 的本地化字符串。
+        ///   查找类似 Gadolinium 的本地化字符串。
         /// </summary>
         internal static string Element064 {
             get {
@@ -664,7 +664,7 @@ namespace Trivial.Chemistry {
         }
         
         /// <summary>
-        ///   查找类似  Terbium 的本地化字符串。
+        ///   查找类似 Terbium 的本地化字符串。
         /// </summary>
         internal static string Element065 {
             get {
@@ -673,7 +673,7 @@ namespace Trivial.Chemistry {
         }
         
         /// <summary>
-        ///   查找类似  Dysprosium 的本地化字符串。
+        ///   查找类似 Dysprosium 的本地化字符串。
         /// </summary>
         internal static string Element066 {
             get {
@@ -682,7 +682,7 @@ namespace Trivial.Chemistry {
         }
         
         /// <summary>
-        ///   查找类似  Holmium 的本地化字符串。
+        ///   查找类似 Holmium 的本地化字符串。
         /// </summary>
         internal static string Element067 {
             get {
@@ -691,7 +691,7 @@ namespace Trivial.Chemistry {
         }
         
         /// <summary>
-        ///   查找类似  Erbium 的本地化字符串。
+        ///   查找类似 Erbium 的本地化字符串。
         /// </summary>
         internal static string Element068 {
             get {
@@ -700,7 +700,7 @@ namespace Trivial.Chemistry {
         }
         
         /// <summary>
-        ///   查找类似  Thulium 的本地化字符串。
+        ///   查找类似 Thulium 的本地化字符串。
         /// </summary>
         internal static string Element069 {
             get {
@@ -709,7 +709,7 @@ namespace Trivial.Chemistry {
         }
         
         /// <summary>
-        ///   查找类似  Ytterbium 的本地化字符串。
+        ///   查找类似 Ytterbium 的本地化字符串。
         /// </summary>
         internal static string Element070 {
             get {
@@ -718,7 +718,7 @@ namespace Trivial.Chemistry {
         }
         
         /// <summary>
-        ///   查找类似  Lutetium 的本地化字符串。
+        ///   查找类似 Lutetium 的本地化字符串。
         /// </summary>
         internal static string Element071 {
             get {
@@ -727,7 +727,7 @@ namespace Trivial.Chemistry {
         }
         
         /// <summary>
-        ///   查找类似  Hafnium 的本地化字符串。
+        ///   查找类似 Hafnium 的本地化字符串。
         /// </summary>
         internal static string Element072 {
             get {
@@ -736,7 +736,7 @@ namespace Trivial.Chemistry {
         }
         
         /// <summary>
-        ///   查找类似  Tantalum 的本地化字符串。
+        ///   查找类似 Tantalum 的本地化字符串。
         /// </summary>
         internal static string Element073 {
             get {
@@ -745,7 +745,7 @@ namespace Trivial.Chemistry {
         }
         
         /// <summary>
-        ///   查找类似  Tungsten 的本地化字符串。
+        ///   查找类似 Tungsten 的本地化字符串。
         /// </summary>
         internal static string Element074 {
             get {
@@ -754,7 +754,7 @@ namespace Trivial.Chemistry {
         }
         
         /// <summary>
-        ///   查找类似  Rhenium 的本地化字符串。
+        ///   查找类似 Rhenium 的本地化字符串。
         /// </summary>
         internal static string Element075 {
             get {
@@ -763,7 +763,7 @@ namespace Trivial.Chemistry {
         }
         
         /// <summary>
-        ///   查找类似  Osmium 的本地化字符串。
+        ///   查找类似 Osmium 的本地化字符串。
         /// </summary>
         internal static string Element076 {
             get {
@@ -772,7 +772,7 @@ namespace Trivial.Chemistry {
         }
         
         /// <summary>
-        ///   查找类似  Iridium 的本地化字符串。
+        ///   查找类似 Iridium 的本地化字符串。
         /// </summary>
         internal static string Element077 {
             get {
@@ -781,7 +781,7 @@ namespace Trivial.Chemistry {
         }
         
         /// <summary>
-        ///   查找类似  Platinum 的本地化字符串。
+        ///   查找类似 Platinum 的本地化字符串。
         /// </summary>
         internal static string Element078 {
             get {
@@ -790,7 +790,7 @@ namespace Trivial.Chemistry {
         }
         
         /// <summary>
-        ///   查找类似  Gold 的本地化字符串。
+        ///   查找类似 Gold 的本地化字符串。
         /// </summary>
         internal static string Element079 {
             get {
@@ -799,7 +799,7 @@ namespace Trivial.Chemistry {
         }
         
         /// <summary>
-        ///   查找类似  Mercury 的本地化字符串。
+        ///   查找类似 Mercury 的本地化字符串。
         /// </summary>
         internal static string Element080 {
             get {
@@ -808,7 +808,7 @@ namespace Trivial.Chemistry {
         }
         
         /// <summary>
-        ///   查找类似  Thallium 的本地化字符串。
+        ///   查找类似 Thallium 的本地化字符串。
         /// </summary>
         internal static string Element081 {
             get {
@@ -817,7 +817,7 @@ namespace Trivial.Chemistry {
         }
         
         /// <summary>
-        ///   查找类似  Lead 的本地化字符串。
+        ///   查找类似 Lead 的本地化字符串。
         /// </summary>
         internal static string Element082 {
             get {
@@ -826,7 +826,7 @@ namespace Trivial.Chemistry {
         }
         
         /// <summary>
-        ///   查找类似  Bismuth 的本地化字符串。
+        ///   查找类似 Bismuth 的本地化字符串。
         /// </summary>
         internal static string Element083 {
             get {
@@ -835,7 +835,7 @@ namespace Trivial.Chemistry {
         }
         
         /// <summary>
-        ///   查找类似  Polonium 的本地化字符串。
+        ///   查找类似 Polonium 的本地化字符串。
         /// </summary>
         internal static string Element084 {
             get {
@@ -844,7 +844,7 @@ namespace Trivial.Chemistry {
         }
         
         /// <summary>
-        ///   查找类似  Astatine 的本地化字符串。
+        ///   查找类似 Astatine 的本地化字符串。
         /// </summary>
         internal static string Element085 {
             get {
@@ -853,7 +853,7 @@ namespace Trivial.Chemistry {
         }
         
         /// <summary>
-        ///   查找类似  Radon 的本地化字符串。
+        ///   查找类似 Radon 的本地化字符串。
         /// </summary>
         internal static string Element086 {
             get {
@@ -862,7 +862,7 @@ namespace Trivial.Chemistry {
         }
         
         /// <summary>
-        ///   查找类似  Francium 的本地化字符串。
+        ///   查找类似 Francium 的本地化字符串。
         /// </summary>
         internal static string Element087 {
             get {
@@ -871,7 +871,7 @@ namespace Trivial.Chemistry {
         }
         
         /// <summary>
-        ///   查找类似  Radium 的本地化字符串。
+        ///   查找类似 Radium 的本地化字符串。
         /// </summary>
         internal static string Element088 {
             get {
@@ -880,7 +880,7 @@ namespace Trivial.Chemistry {
         }
         
         /// <summary>
-        ///   查找类似  Actinium 的本地化字符串。
+        ///   查找类似 Actinium 的本地化字符串。
         /// </summary>
         internal static string Element089 {
             get {
@@ -889,7 +889,7 @@ namespace Trivial.Chemistry {
         }
         
         /// <summary>
-        ///   查找类似  Thorium 的本地化字符串。
+        ///   查找类似 Thorium 的本地化字符串。
         /// </summary>
         internal static string Element090 {
             get {
@@ -898,7 +898,7 @@ namespace Trivial.Chemistry {
         }
         
         /// <summary>
-        ///   查找类似  Protactinium 的本地化字符串。
+        ///   查找类似 Protactinium 的本地化字符串。
         /// </summary>
         internal static string Element091 {
             get {
@@ -907,7 +907,7 @@ namespace Trivial.Chemistry {
         }
         
         /// <summary>
-        ///   查找类似  Uranium 的本地化字符串。
+        ///   查找类似 Uranium 的本地化字符串。
         /// </summary>
         internal static string Element092 {
             get {
@@ -916,7 +916,7 @@ namespace Trivial.Chemistry {
         }
         
         /// <summary>
-        ///   查找类似  Neptunium 的本地化字符串。
+        ///   查找类似 Neptunium 的本地化字符串。
         /// </summary>
         internal static string Element093 {
             get {
@@ -925,7 +925,7 @@ namespace Trivial.Chemistry {
         }
         
         /// <summary>
-        ///   查找类似  Plutonium 的本地化字符串。
+        ///   查找类似 Plutonium 的本地化字符串。
         /// </summary>
         internal static string Element094 {
             get {
@@ -934,7 +934,7 @@ namespace Trivial.Chemistry {
         }
         
         /// <summary>
-        ///   查找类似  Americium 的本地化字符串。
+        ///   查找类似 Americium 的本地化字符串。
         /// </summary>
         internal static string Element095 {
             get {
@@ -943,7 +943,7 @@ namespace Trivial.Chemistry {
         }
         
         /// <summary>
-        ///   查找类似  Curium 的本地化字符串。
+        ///   查找类似 Curium 的本地化字符串。
         /// </summary>
         internal static string Element096 {
             get {
@@ -952,7 +952,7 @@ namespace Trivial.Chemistry {
         }
         
         /// <summary>
-        ///   查找类似  Berkelium 的本地化字符串。
+        ///   查找类似 Berkelium 的本地化字符串。
         /// </summary>
         internal static string Element097 {
             get {
@@ -961,7 +961,7 @@ namespace Trivial.Chemistry {
         }
         
         /// <summary>
-        ///   查找类似  Californium 的本地化字符串。
+        ///   查找类似 Californium 的本地化字符串。
         /// </summary>
         internal static string Element098 {
             get {
@@ -970,7 +970,7 @@ namespace Trivial.Chemistry {
         }
         
         /// <summary>
-        ///   查找类似  Einsteinium 的本地化字符串。
+        ///   查找类似 Einsteinium 的本地化字符串。
         /// </summary>
         internal static string Element099 {
             get {
@@ -979,7 +979,7 @@ namespace Trivial.Chemistry {
         }
         
         /// <summary>
-        ///   查找类似  Fermium 的本地化字符串。
+        ///   查找类似 Fermium 的本地化字符串。
         /// </summary>
         internal static string Element100 {
             get {
@@ -988,7 +988,7 @@ namespace Trivial.Chemistry {
         }
         
         /// <summary>
-        ///   查找类似  Mendelevium 的本地化字符串。
+        ///   查找类似 Mendelevium 的本地化字符串。
         /// </summary>
         internal static string Element101 {
             get {
@@ -997,7 +997,7 @@ namespace Trivial.Chemistry {
         }
         
         /// <summary>
-        ///   查找类似  Nobelium 的本地化字符串。
+        ///   查找类似 Nobelium 的本地化字符串。
         /// </summary>
         internal static string Element102 {
             get {
@@ -1006,7 +1006,7 @@ namespace Trivial.Chemistry {
         }
         
         /// <summary>
-        ///   查找类似  Lawrencium 的本地化字符串。
+        ///   查找类似 Lawrencium 的本地化字符串。
         /// </summary>
         internal static string Element103 {
             get {
@@ -1015,7 +1015,7 @@ namespace Trivial.Chemistry {
         }
         
         /// <summary>
-        ///   查找类似  Rutherfordium 的本地化字符串。
+        ///   查找类似 Rutherfordium 的本地化字符串。
         /// </summary>
         internal static string Element104 {
             get {
@@ -1024,7 +1024,7 @@ namespace Trivial.Chemistry {
         }
         
         /// <summary>
-        ///   查找类似  Dubnium 的本地化字符串。
+        ///   查找类似 Dubnium 的本地化字符串。
         /// </summary>
         internal static string Element105 {
             get {
@@ -1033,7 +1033,7 @@ namespace Trivial.Chemistry {
         }
         
         /// <summary>
-        ///   查找类似  Seaborgium 的本地化字符串。
+        ///   查找类似 Seaborgium 的本地化字符串。
         /// </summary>
         internal static string Element106 {
             get {
@@ -1042,7 +1042,7 @@ namespace Trivial.Chemistry {
         }
         
         /// <summary>
-        ///   查找类似  Bohrium 的本地化字符串。
+        ///   查找类似 Bohrium 的本地化字符串。
         /// </summary>
         internal static string Element107 {
             get {
@@ -1051,7 +1051,7 @@ namespace Trivial.Chemistry {
         }
         
         /// <summary>
-        ///   查找类似  Hassium 的本地化字符串。
+        ///   查找类似 Hassium 的本地化字符串。
         /// </summary>
         internal static string Element108 {
             get {
@@ -1060,7 +1060,7 @@ namespace Trivial.Chemistry {
         }
         
         /// <summary>
-        ///   查找类似  Meitnerium 的本地化字符串。
+        ///   查找类似 Meitnerium 的本地化字符串。
         /// </summary>
         internal static string Element109 {
             get {
@@ -1069,7 +1069,7 @@ namespace Trivial.Chemistry {
         }
         
         /// <summary>
-        ///   查找类似  Darmstadtium 的本地化字符串。
+        ///   查找类似 Darmstadtium 的本地化字符串。
         /// </summary>
         internal static string Element110 {
             get {
@@ -1078,7 +1078,7 @@ namespace Trivial.Chemistry {
         }
         
         /// <summary>
-        ///   查找类似  Roentgenium 的本地化字符串。
+        ///   查找类似 Roentgenium 的本地化字符串。
         /// </summary>
         internal static string Element111 {
             get {
@@ -1087,7 +1087,7 @@ namespace Trivial.Chemistry {
         }
         
         /// <summary>
-        ///   查找类似  Copernicium 的本地化字符串。
+        ///   查找类似 Copernicium 的本地化字符串。
         /// </summary>
         internal static string Element112 {
             get {
@@ -1096,7 +1096,7 @@ namespace Trivial.Chemistry {
         }
         
         /// <summary>
-        ///   查找类似  Nihonium 的本地化字符串。
+        ///   查找类似 Nihonium 的本地化字符串。
         /// </summary>
         internal static string Element113 {
             get {
@@ -1105,7 +1105,7 @@ namespace Trivial.Chemistry {
         }
         
         /// <summary>
-        ///   查找类似  Flerovium 的本地化字符串。
+        ///   查找类似 Flerovium 的本地化字符串。
         /// </summary>
         internal static string Element114 {
             get {
@@ -1114,7 +1114,7 @@ namespace Trivial.Chemistry {
         }
         
         /// <summary>
-        ///   查找类似  Moscovium 的本地化字符串。
+        ///   查找类似 Moscovium 的本地化字符串。
         /// </summary>
         internal static string Element115 {
             get {
@@ -1123,7 +1123,7 @@ namespace Trivial.Chemistry {
         }
         
         /// <summary>
-        ///   查找类似  Livermorium 的本地化字符串。
+        ///   查找类似 Livermorium 的本地化字符串。
         /// </summary>
         internal static string Element116 {
             get {
@@ -1132,7 +1132,7 @@ namespace Trivial.Chemistry {
         }
         
         /// <summary>
-        ///   查找类似  Tennessine 的本地化字符串。
+        ///   查找类似 Tennessine 的本地化字符串。
         /// </summary>
         internal static string Element117 {
             get {
@@ -1141,7 +1141,7 @@ namespace Trivial.Chemistry {
         }
         
         /// <summary>
-        ///   查找类似  Oganesson 的本地化字符串。
+        ///   查找类似 Oganesson 的本地化字符串。
         /// </summary>
         internal static string Element118 {
             get {

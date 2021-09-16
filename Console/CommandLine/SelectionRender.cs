@@ -221,13 +221,13 @@ namespace Trivial.CommandLine
                     case ConsoleKey.Backspace:
                     case ConsoleKey.Delete:
                     case ConsoleKey.Clear:
-                        cli.Write(' ');
+                        cli.WriteImmediately(' ');
                         cli.BackspaceToBeginning();
                         resetSelect();
                         return SelectByManualTyping(cli, collection, options);
                     case ConsoleKey.Escape:
                     case ConsoleKey.Pause:
-                        cli.Write(' ');
+                        cli.WriteImmediately(' ');
                         cli.BackspaceToBeginning();
                         resetSelect();
                         RenderSelectResult(cli, null, options);
@@ -346,7 +346,7 @@ namespace Trivial.CommandLine
                                 continue;
                             }
 
-                            cli.Write(' ');
+                            cli.WriteImmediately(' ');
                             cli.BackspaceToBeginning();
                             resetSelect();
                             RenderSelectResult(cli, item.Title, options);
