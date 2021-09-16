@@ -56,3 +56,29 @@ DefaultConsole.WriteLine(new RepeatedColorConsoleStyle(
     Italic = true
 }, "Colorful string.");
 ```
+
+## Customize
+
+To customize a prettier, you can implement the interface `IConsoleTextPrettier`.
+Following is an example to make text italic and set a specific foreground color.
+
+```csharp
+public class DemoPrettier : IConsoleTextPrettier
+{
+    public ConsoleColor Color { get; set; }
+
+    public IEnumerable<ConsoleText> CreateTextCollection(string s)
+    {
+        List<ConsoleText> col = new();
+        col.Add(s, new ConsoleTextStyle(Color) { Italic = true });
+        return col;
+    }
+}
+```
+
+Now we can use this to output as we expect.
+
+```csharp
+var style = new DemoPrettier { ConsoleColor.Red };
+DefaultConsole.WriteLine(style, "Red italic text.");
+```

@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 using Trivial.Collection;
+using Trivial.Security;
 using Trivial.Tasks;
 using Trivial.Text;
 
@@ -51,6 +52,7 @@ namespace Trivial.CommandLine
         /// </summary>
         /// <param name="s">A composite format string to output.</param>
         /// <param name="args">An object array that contains zero or more objects to format.</param>
+        /// <exception cref="FormatException">format is invalid. -or- The index of a format item is less than zero, or greater than or equal to the length of the args array.</exception>
         public static void Write(string s, params object[] args)
             => StyleConsole.Default.Write(s, args);
 
@@ -61,6 +63,7 @@ namespace Trivial.CommandLine
         /// <param name="style">The content style.</param>
         /// <param name="s">A composite format string to output.</param>
         /// <param name="args">An object array that contains zero or more objects to format.</param>
+        /// <exception cref="FormatException">format is invalid. -or- The index of a format item is less than zero, or greater than or equal to the length of the args array.</exception>
         public static void Write(ConsoleTextStyle style, string s, params object[] args)
             => StyleConsole.Default.Write(style, s, args);
 
@@ -71,6 +74,7 @@ namespace Trivial.CommandLine
         /// <param name="foreground">The foreground color.</param>
         /// <param name="s">A composite format string to output.</param>
         /// <param name="args">An object array that contains zero or more objects to format.</param>
+        /// <exception cref="FormatException">format is invalid. -or- The index of a format item is less than zero, or greater than or equal to the length of the args array.</exception>
         public static void Write(ConsoleColor foreground, string s, params object[] args)
             => StyleConsole.Default.Write(foreground, s, args);
 
@@ -82,6 +86,7 @@ namespace Trivial.CommandLine
         /// <param name="background">The background color.</param>
         /// <param name="s">A composite format string to output.</param>
         /// <param name="args">An object array that contains zero or more objects to format.</param>
+        /// <exception cref="FormatException">format is invalid. -or- The index of a format item is less than zero, or greater than or equal to the length of the args array.</exception>
         public static void Write(ConsoleColor? foreground, ConsoleColor? background, string s, params object[] args)
             => StyleConsole.Default.Write(foreground, background, s, args);
 
@@ -92,6 +97,7 @@ namespace Trivial.CommandLine
         /// <param name="foreground">The foreground color.</param>
         /// <param name="s">A composite format string to output.</param>
         /// <param name="args">An object array that contains zero or more objects to format.</param>
+        /// <exception cref="FormatException">format is invalid. -or- The index of a format item is less than zero, or greater than or equal to the length of the args array.</exception>
         public static void Write(Color foreground, string s, params object[] args)
             => StyleConsole.Default.Write(foreground, s, args);
 
@@ -103,6 +109,7 @@ namespace Trivial.CommandLine
         /// <param name="background">The background color.</param>
         /// <param name="s">A composite format string to output.</param>
         /// <param name="args">An object array that contains zero or more objects to format.</param>
+        /// <exception cref="FormatException">format is invalid. -or- The index of a format item is less than zero, or greater than or equal to the length of the args array.</exception>
         public static void Write(Color foreground, Color background, string s, params object[] args)
             => StyleConsole.Default.Write(foreground, background, s, args);
 
@@ -113,6 +120,7 @@ namespace Trivial.CommandLine
         /// <param name="style">The style.</param>
         /// <param name="s">A composite format string to output.</param>
         /// <param name="args">An object array that contains zero or more objects to format.</param>
+        /// <exception cref="FormatException">format is invalid. -or- The index of a format item is less than zero, or greater than or equal to the length of the args array.</exception>
         public static void Write(IConsoleTextPrettier style, string s, params object[] args)
             => StyleConsole.Default.Write(style, s, args);
 
@@ -179,6 +187,42 @@ namespace Trivial.CommandLine
         /// <param name="s">A composite format string to output.</param>
         public static void Write(IConsoleTextPrettier style, StringBuilder s)
             => StyleConsole.Default.Write(style, s);
+
+        /// <summary>
+        /// Writes the specified string value to the standard output stream.
+        /// Note it may not flush immediately.
+        /// </summary>
+        /// <param name="s">A composite format string to output.</param>
+        public static void Write(SecureString s)
+            => StyleConsole.Default.Write(s.ToUnsecureString());
+
+        /// <summary>
+        /// Writes the specified string value to the standard output stream.
+        /// Note it may not flush immediately.
+        /// </summary>
+        /// <param name="style">The content style.</param>
+        /// <param name="s">A composite format string to output.</param>
+        public static void Write(ConsoleTextStyle style, SecureString s)
+            => StyleConsole.Default.Write(style, s.ToUnsecureString());
+
+        /// <summary>
+        /// Writes the specified string value to the standard output stream.
+        /// Note it may not flush immediately.
+        /// </summary>
+        /// <param name="foreground">The foreground color.</param>
+        /// <param name="s">A composite format string to output.</param>
+        public static void Write(ConsoleColor foreground, SecureString s)
+            => StyleConsole.Default.Write(foreground, s.ToUnsecureString());
+
+        /// <summary>
+        /// Writes the specified string value to the standard output stream.
+        /// Note it may not flush immediately.
+        /// </summary>
+        /// <param name="foreground">The foreground color.</param>
+        /// <param name="background">The background color.</param>
+        /// <param name="s">A composite format string to output.</param>
+        public static void Write(ConsoleColor? foreground, ConsoleColor? background, SecureString s)
+            => StyleConsole.Default.Write(foreground, background, s.ToUnsecureString());
 
         /// <summary>
         /// Writes the specified number to the standard output stream.
@@ -543,6 +587,7 @@ namespace Trivial.CommandLine
         /// </summary>
         /// <param name="s">A composite format string to output.</param>
         /// <param name="args">An object array that contains zero or more objects to format.</param>
+        /// <exception cref="FormatException">format is invalid. -or- The index of a format item is less than zero, or greater than or equal to the length of the args array.</exception>
         public static void WriteLine(string s, params object[] args)
             => StyleConsole.Default.WriteLine(s, args);
 
@@ -552,6 +597,7 @@ namespace Trivial.CommandLine
         /// <param name="style">The content style.</param>
         /// <param name="s">A composite format string to output.</param>
         /// <param name="args">An object array that contains zero or more objects to format.</param>
+        /// <exception cref="FormatException">format is invalid. -or- The index of a format item is less than zero, or greater than or equal to the length of the args array.</exception>
         public static void WriteLine(ConsoleTextStyle style, string s, params object[] args)
             => StyleConsole.Default.WriteLine(style, s, args);
 
@@ -562,6 +608,7 @@ namespace Trivial.CommandLine
         /// <param name="foreground">The foreground color.</param>
         /// <param name="s">A composite format string to output.</param>
         /// <param name="args">An object array that contains zero or more objects to format.</param>
+        /// <exception cref="FormatException">format is invalid. -or- The index of a format item is less than zero, or greater than or equal to the length of the args array.</exception>
         public static void WriteLine(ConsoleColor foreground, string s, params object[] args)
             => StyleConsole.Default.WriteLine(foreground, s, args);
 
@@ -573,6 +620,7 @@ namespace Trivial.CommandLine
         /// <param name="background">The background color.</param>
         /// <param name="s">A composite format string to output.</param>
         /// <param name="args">An object array that contains zero or more objects to format.</param>
+        /// <exception cref="FormatException">format is invalid. -or- The index of a format item is less than zero, or greater than or equal to the length of the args array.</exception>
         public static void WriteLine(ConsoleColor? foreground, ConsoleColor? background, string s, params object[] args)
             => StyleConsole.Default.WriteLine(foreground, background, s, args);
 
@@ -583,6 +631,7 @@ namespace Trivial.CommandLine
         /// <param name="foreground">The foreground color.</param>
         /// <param name="s">A composite format string to output.</param>
         /// <param name="args">An object array that contains zero or more objects to format.</param>
+        /// <exception cref="FormatException">format is invalid. -or- The index of a format item is less than zero, or greater than or equal to the length of the args array.</exception>
         public static void WriteLine(Color foreground, string s, params object[] args)
             => StyleConsole.Default.WriteLine(foreground, s, args);
 
@@ -594,6 +643,7 @@ namespace Trivial.CommandLine
         /// <param name="background">The background color.</param>
         /// <param name="s">A composite format string to output.</param>
         /// <param name="args">An object array that contains zero or more objects to format.</param>
+        /// <exception cref="FormatException">format is invalid. -or- The index of a format item is less than zero, or greater than or equal to the length of the args array.</exception>
         public static void WriteLine(Color foreground, Color background, string s, params object[] args)
             => StyleConsole.Default.WriteLine(foreground, background, s, args);
 
@@ -604,8 +654,107 @@ namespace Trivial.CommandLine
         /// <param name="style">The style.</param>
         /// <param name="s">A composite format string to output.</param>
         /// <param name="args">An object array that contains zero or more objects to format.</param>
+        /// <exception cref="FormatException">format is invalid. -or- The index of a format item is less than zero, or greater than or equal to the length of the args array.</exception>
         public static void WriteLine(IConsoleTextPrettier style, string s, params object[] args)
             => StyleConsole.Default.WriteLine(style, s, args);
+
+        /// <summary>
+        /// Writes the specified string value, followed by the current line terminator, to the standard output stream.
+        /// It will flush immediately.
+        /// </summary>
+        /// <param name="s">A composite format string to output.</param>
+        public static void WriteLine(StringBuilder s)
+            => StyleConsole.Default.WriteLine(s);
+
+        /// <summary>
+        /// Writes the specified string value, followed by the current line terminator, to the standard output stream.
+        /// </summary>
+        /// <param name="style">The content style.</param>
+        /// <param name="s">A composite format string to output.</param>
+        public static void WriteLine(ConsoleTextStyle style, StringBuilder s)
+            => StyleConsole.Default.WriteLine(style, s);
+
+        /// <summary>
+        /// Writes the specified string value, followed by the current line terminator, to the standard output stream.
+        /// It will flush immediately.
+        /// </summary>
+        /// <param name="foreground">The foreground color.</param>
+        /// <param name="s">A composite format string to output.</param>
+        public static void WriteLine(ConsoleColor foreground, StringBuilder s)
+            => StyleConsole.Default.WriteLine(foreground, s);
+
+        /// <summary>
+        /// Writes the specified string value, followed by the current line terminator, to the standard output stream.
+        /// It will flush immediately.
+        /// </summary>
+        /// <param name="foreground">The foreground color.</param>
+        /// <param name="background">The background color.</param>
+        /// <param name="s">A composite format string to output.</param>
+        public static void WriteLine(ConsoleColor? foreground, ConsoleColor? background, StringBuilder s)
+            => StyleConsole.Default.WriteLine(foreground, background, s);
+
+        /// <summary>
+        /// Writes the specified string value, followed by the current line terminator, to the standard output stream.
+        /// It will flush immediately.
+        /// </summary>
+        /// <param name="foreground">The foreground color.</param>
+        /// <param name="s">A composite format string to output.</param>
+        public static void WriteLine(Color foreground, StringBuilder s)
+            => StyleConsole.Default.WriteLine(foreground, s);
+
+        /// <summary>
+        /// Writes the specified string value, followed by the current line terminator, to the standard output stream.
+        /// It will flush immediately.
+        /// </summary>
+        /// <param name="foreground">The foreground color.</param>
+        /// <param name="background">The background color.</param>
+        /// <param name="s">A composite format string to output.</param>
+        public static void WriteLine(Color foreground, Color background, StringBuilder s)
+            => StyleConsole.Default.WriteLine(foreground, background, s);
+
+        /// <summary>
+        /// Writes a JSON object, followed by the current line terminator, to the standard output stream.
+        /// It will flush immediately.
+        /// </summary>
+        /// <param name="style">The style.</param>
+        /// <param name="s">A composite format string to output.</param>
+        public static void WriteLine(IConsoleTextPrettier style, StringBuilder s)
+            => StyleConsole.Default.WriteLine(style, s?.ToString());
+
+        /// <summary>
+        /// Writes the specified string value, followed by the current line terminator, to the standard output stream.
+        /// It will flush immediately.
+        /// </summary>
+        /// <param name="s">A composite format string to output.</param>
+        public static void WriteLine(SecureString s)
+            => StyleConsole.Default.WriteLine(s.ToUnsecureString());
+
+        /// <summary>
+        /// Writes the specified string value, followed by the current line terminator, to the standard output stream.
+        /// </summary>
+        /// <param name="style">The content style.</param>
+        /// <param name="s">A composite format string to output.</param>
+        public static void WriteLine(ConsoleTextStyle style, SecureString s)
+            => StyleConsole.Default.WriteLine(style, s.ToUnsecureString());
+
+        /// <summary>
+        /// Writes the specified string value, followed by the current line terminator, to the standard output stream.
+        /// It will flush immediately.
+        /// </summary>
+        /// <param name="foreground">The foreground color.</param>
+        /// <param name="s">A composite format string to output.</param>
+        public static void WriteLine(ConsoleColor foreground, SecureString s)
+            => StyleConsole.Default.WriteLine(foreground, s.ToUnsecureString());
+
+        /// <summary>
+        /// Writes the specified string value, followed by the current line terminator, to the standard output stream.
+        /// It will flush immediately.
+        /// </summary>
+        /// <param name="foreground">The foreground color.</param>
+        /// <param name="background">The background color.</param>
+        /// <param name="s">A composite format string to output.</param>
+        public static void WriteLine(ConsoleColor? foreground, ConsoleColor? background, SecureString s)
+            => StyleConsole.Default.WriteLine(foreground, background, s.ToUnsecureString());
 
         /// <summary>
         /// Writes the specified number, followed by the current line terminator, to the standard output stream.

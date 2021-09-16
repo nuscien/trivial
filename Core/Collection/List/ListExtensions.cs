@@ -31,7 +31,7 @@ namespace Trivial.Collection
         /// <summary>
         /// Adds a console text.
         /// </summary>
-        /// <param name="list">The key value pairs.</param>
+        /// <param name="list">The console text collection.</param>
         /// <param name="s">The string value.</param>
         /// <param name="style">The style.</param>
         public static void Add(this IList<ConsoleText> list, string s, ConsoleTextStyle style = null)
@@ -43,7 +43,7 @@ namespace Trivial.Collection
         /// <summary>
         /// Adds a console text.
         /// </summary>
-        /// <param name="list">The key value pairs.</param>
+        /// <param name="list">The console text collection.</param>
         /// <param name="s">The string value.</param>
         /// <param name="style">The style.</param>
         public static void Add(this IList<ConsoleText> list, StringBuilder s, ConsoleTextStyle style = null)
@@ -55,7 +55,7 @@ namespace Trivial.Collection
         /// <summary>
         /// Adds a console text.
         /// </summary>
-        /// <param name="list">The key value pairs.</param>
+        /// <param name="list">The console text collection.</param>
         /// <param name="c">The character.</param>
         /// <param name="repeatCount">The number of times to append value.</param>
         /// <param name="style">The style.</param>

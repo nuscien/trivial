@@ -117,7 +117,7 @@ namespace Trivial.CommandLine
             if (count < 1)
             {
                 if (count == -1 && !doNotRemoveOutput)
-                    WriteImmediately(" \b");
+                    WriteImmediately(" \b ");
                 return;
             }
 
@@ -148,10 +148,10 @@ namespace Trivial.CommandLine
                 return;
             }
 
+            var curLeft = 300;
             try
             {
-                Backspace(CursorLeft);
-                return;
+                if (CursorLeft >= 0) curLeft = CursorLeft;
             }
             catch (InvalidOperationException)
             {
@@ -169,7 +169,16 @@ namespace Trivial.CommandLine
             {
             }
 
-            Backspace(300);
+            Flush();
+            if (Mode == Modes.Ansi || Handler != null)
+            {
+                Clear(RelativeAreas.ToBeginningOfLine);
+                Backspace(curLeft, true);
+            }
+            else
+            {
+                Backspace(curLeft);
+            }
         }
 
         /// <summary>

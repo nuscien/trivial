@@ -71,6 +71,7 @@ namespace Trivial.CommandLine
         /// </summary>
         /// <param name="s">A composite format string to output.</param>
         /// <param name="args">An object array that contains zero or more objects to format.</param>
+        /// <exception cref="FormatException">format is invalid. -or- The index of a format item is less than zero, or greater than or equal to the length of the args array.</exception>
         public void Write(string s, params object[] args)
         {
             if (s == null) return;
@@ -85,6 +86,7 @@ namespace Trivial.CommandLine
         /// <param name="style">The content style.</param>
         /// <param name="s">A composite format string to output.</param>
         /// <param name="args">An object array that contains zero or more objects to format.</param>
+        /// <exception cref="FormatException">format is invalid. -or- The index of a format item is less than zero, or greater than or equal to the length of the args array.</exception>
         public void Write(ConsoleTextStyle style, string s, params object[] args)
         {
             if (s == null) return;
@@ -99,6 +101,7 @@ namespace Trivial.CommandLine
         /// <param name="foreground">The foreground color.</param>
         /// <param name="s">A composite format string to output.</param>
         /// <param name="args">An object array that contains zero or more objects to format.</param>
+        /// <exception cref="FormatException">format is invalid. -or- The index of a format item is less than zero, or greater than or equal to the length of the args array.</exception>
         public void Write(ConsoleColor foreground, string s, params object[] args)
         {
             if (s == null) return;
@@ -114,6 +117,7 @@ namespace Trivial.CommandLine
         /// <param name="background">The background color.</param>
         /// <param name="s">A composite format string to output.</param>
         /// <param name="args">An object array that contains zero or more objects to format.</param>
+        /// <exception cref="FormatException">format is invalid. -or- The index of a format item is less than zero, or greater than or equal to the length of the args array.</exception>
         public void Write(ConsoleColor? foreground, ConsoleColor? background, string s, params object[] args)
         {
             if (s == null) return;
@@ -128,6 +132,7 @@ namespace Trivial.CommandLine
         /// <param name="foreground">The foreground color.</param>
         /// <param name="s">A composite format string to output.</param>
         /// <param name="args">An object array that contains zero or more objects to format.</param>
+        /// <exception cref="FormatException">format is invalid. -or- The index of a format item is less than zero, or greater than or equal to the length of the args array.</exception>
         public void Write(Color foreground, string s, params object[] args)
         {
             if (s == null) return;
@@ -143,6 +148,7 @@ namespace Trivial.CommandLine
         /// <param name="background">The background color.</param>
         /// <param name="s">A composite format string to output.</param>
         /// <param name="args">An object array that contains zero or more objects to format.</param>
+        /// <exception cref="FormatException">format is invalid. -or- The index of a format item is less than zero, or greater than or equal to the length of the args array.</exception>
         public void Write(Color foreground, Color background, string s, params object[] args)
         {
             if (s == null) return;
@@ -157,6 +163,7 @@ namespace Trivial.CommandLine
         /// <param name="style">The style.</param>
         /// <param name="s">A composite format string to output.</param>
         /// <param name="args">An object array that contains zero or more objects to format.</param>
+        /// <exception cref="FormatException">format is invalid. -or- The index of a format item is less than zero, or greater than or equal to the length of the args array.</exception>
         public void Write(IConsoleTextPrettier style, string s, params object[] args)
         {
             if (s == null) return;
@@ -179,6 +186,7 @@ namespace Trivial.CommandLine
         /// <param name="s">A composite format string to output.</param>
         public void Write(StringBuilder s)
         {
+            if (s == null) return;
             col.Add(new ConsoleText(s));
             OnAppend();
         }
@@ -191,6 +199,7 @@ namespace Trivial.CommandLine
         /// <param name="s">A composite format string to output.</param>
         public void Write(ConsoleTextStyle style, StringBuilder s)
         {
+            if (s == null) return;
             col.Add(new ConsoleText(s, style));
             OnAppend();
         }
@@ -203,6 +212,7 @@ namespace Trivial.CommandLine
         /// <param name="s">A composite format string to output.</param>
         public void Write(ConsoleColor foreground, StringBuilder s)
         {
+            if (s == null) return;
             col.Add(new ConsoleText(s, foreground));
             OnAppend();
         }
@@ -216,6 +226,7 @@ namespace Trivial.CommandLine
         /// <param name="s">A composite format string to output.</param>
         public void Write(ConsoleColor? foreground, ConsoleColor? background, StringBuilder s)
         {
+            if (s == null) return;
             col.Add(new ConsoleText(s, foreground, background));
             OnAppend();
         }
@@ -228,6 +239,7 @@ namespace Trivial.CommandLine
         /// <param name="s">A composite format string to output.</param>
         public void Write(Color foreground, StringBuilder s)
         {
+            if (s == null) return;
             col.Add(new ConsoleText(s, foreground));
             OnAppend();
         }
@@ -241,6 +253,7 @@ namespace Trivial.CommandLine
         /// <param name="s">A composite format string to output.</param>
         public void Write(Color foreground, Color background, StringBuilder s)
         {
+            if (s == null) return;
             col.Add(new ConsoleText(s, foreground, background));
             OnAppend();
         }
@@ -773,6 +786,7 @@ namespace Trivial.CommandLine
         /// </summary>
         /// <param name="s">A composite format string to output.</param>
         /// <param name="args">An object array that contains zero or more objects to format.</param>
+        /// <exception cref="FormatException">format is invalid. -or- The index of a format item is less than zero, or greater than or equal to the length of the args array.</exception>
         public void WriteImmediately(string s, params object[] args)
         {
             if (s == null) return;
@@ -787,6 +801,7 @@ namespace Trivial.CommandLine
         /// <param name="style">The content style.</param>
         /// <param name="s">A composite format string to output.</param>
         /// <param name="args">An object array that contains zero or more objects to format.</param>
+        /// <exception cref="FormatException">format is invalid. -or- The index of a format item is less than zero, or greater than or equal to the length of the args array.</exception>
         public void WriteImmediately(ConsoleTextStyle style, string s, params object[] args)
         {
             if (s == null) return;
@@ -801,6 +816,7 @@ namespace Trivial.CommandLine
         /// <param name="foreground">The foreground color.</param>
         /// <param name="s">A composite format string to output.</param>
         /// <param name="args">An object array that contains zero or more objects to format.</param>
+        /// <exception cref="FormatException">format is invalid. -or- The index of a format item is less than zero, or greater than or equal to the length of the args array.</exception>
         public void WriteImmediately(ConsoleColor foreground, string s, params object[] args)
         {
             if (s == null) return;
@@ -816,6 +832,7 @@ namespace Trivial.CommandLine
         /// <param name="background">The background color.</param>
         /// <param name="s">A composite format string to output.</param>
         /// <param name="args">An object array that contains zero or more objects to format.</param>
+        /// <exception cref="FormatException">format is invalid. -or- The index of a format item is less than zero, or greater than or equal to the length of the args array.</exception>
         public void WriteImmediately(ConsoleColor? foreground, ConsoleColor? background, string s, params object[] args)
         {
             if (s == null) return;
@@ -830,6 +847,7 @@ namespace Trivial.CommandLine
         /// <param name="style">The style.</param>
         /// <param name="s">A composite format string to output.</param>
         /// <param name="args">An object array that contains zero or more objects to format.</param>
+        /// <exception cref="FormatException">format is invalid. -or- The index of a format item is less than zero, or greater than or equal to the length of the args array.</exception>
         public void WriteImmediately(IConsoleTextPrettier style, string s, params object[] args)
         {
             if (s == null) return;
@@ -1384,6 +1402,7 @@ namespace Trivial.CommandLine
         /// </summary>
         /// <param name="s">A composite format string to output.</param>
         /// <param name="args">An object array that contains zero or more objects to format.</param>
+        /// <exception cref="FormatException">format is invalid. -or- The index of a format item is less than zero, or greater than or equal to the length of the args array.</exception>
         public void WriteLine(string s, params object[] args)
         {
             col.Add(new ConsoleText(args == null || args.Length == 0 ? s : string.Format(s, args)));
@@ -1398,6 +1417,7 @@ namespace Trivial.CommandLine
         /// <param name="style">The content style.</param>
         /// <param name="s">A composite format string to output.</param>
         /// <param name="args">An object array that contains zero or more objects to format.</param>
+        /// <exception cref="FormatException">format is invalid. -or- The index of a format item is less than zero, or greater than or equal to the length of the args array.</exception>
         public void WriteLine(ConsoleTextStyle style, string s, params object[] args)
         {
             col.Add(new ConsoleText(args == null || args.Length == 0 ? s : string.Format(s, args), style));
@@ -1412,6 +1432,7 @@ namespace Trivial.CommandLine
         /// <param name="foreground">The foreground color.</param>
         /// <param name="s">A composite format string to output.</param>
         /// <param name="args">An object array that contains zero or more objects to format.</param>
+        /// <exception cref="FormatException">format is invalid. -or- The index of a format item is less than zero, or greater than or equal to the length of the args array.</exception>
         public void WriteLine(ConsoleColor foreground, string s, params object[] args)
         {
             col.Add(new ConsoleText(args == null || args.Length == 0 ? s : string.Format(s, args), foreground));
@@ -1427,6 +1448,7 @@ namespace Trivial.CommandLine
         /// <param name="background">The background color.</param>
         /// <param name="s">A composite format string to output.</param>
         /// <param name="args">An object array that contains zero or more objects to format.</param>
+        /// <exception cref="FormatException">format is invalid. -or- The index of a format item is less than zero, or greater than or equal to the length of the args array.</exception>
         public void WriteLine(ConsoleColor? foreground, ConsoleColor? background, string s, params object[] args)
         {
             col.Add(new ConsoleText(args == null || args.Length == 0 ? s : string.Format(s, args), foreground, background));
@@ -1441,6 +1463,7 @@ namespace Trivial.CommandLine
         /// <param name="foreground">The foreground color.</param>
         /// <param name="s">A composite format string to output.</param>
         /// <param name="args">An object array that contains zero or more objects to format.</param>
+        /// <exception cref="FormatException">format is invalid. -or- The index of a format item is less than zero, or greater than or equal to the length of the args array.</exception>
         public void WriteLine(Color foreground, string s, params object[] args)
         {
             col.Add(new ConsoleText(args == null || args.Length == 0 ? s : string.Format(s, args), foreground));
@@ -1456,6 +1479,7 @@ namespace Trivial.CommandLine
         /// <param name="background">The background color.</param>
         /// <param name="s">A composite format string to output.</param>
         /// <param name="args">An object array that contains zero or more objects to format.</param>
+        /// <exception cref="FormatException">format is invalid. -or- The index of a format item is less than zero, or greater than or equal to the length of the args array.</exception>
         public void WriteLine(Color foreground, Color background, string s, params object[] args)
         {
             col.Add(new ConsoleText(args == null || args.Length == 0 ? s : string.Format(s, args), foreground, background));
@@ -1470,8 +1494,10 @@ namespace Trivial.CommandLine
         /// <param name="style">The style.</param>
         /// <param name="s">A composite format string to output.</param>
         /// <param name="args">An object array that contains zero or more objects to format.</param>
+        /// <exception cref="FormatException">format is invalid. -or- The index of a format item is less than zero, or greater than or equal to the length of the args array.</exception>
         public void WriteLine(IConsoleTextPrettier style, string s, params object[] args)
         {
+            if (s == null) return;
             if (style == null)
             {
                 WriteLine(s, args);
@@ -1479,6 +1505,106 @@ namespace Trivial.CommandLine
             }
 
             var list = style.CreateTextCollection(args == null || args.Length == 0 ? s : string.Format(s, args));
+            if (list == null) return;
+            col.AddRange(list);
+            col.Add(new ConsoleText(Environment.NewLine));
+            Flush();
+        }
+
+        /// <summary>
+        /// Writes the specified string value, followed by the current line terminator, to the standard output stream.
+        /// </summary>
+        /// <param name="s">A composite format string to output.</param>
+        public void WriteLine(StringBuilder s)
+        {
+            if (s != null) col.Add(new ConsoleText(s));
+            col.Add(new ConsoleText(Environment.NewLine));
+            Flush();
+        }
+
+        /// <summary>
+        /// Writes the specified string value, followed by the current line terminator, to the standard output stream.
+        /// It will flush immediately.
+        /// </summary>
+        /// <param name="style">The content style.</param>
+        /// <param name="s">A composite format string to output.</param>
+        public void WriteLine(ConsoleTextStyle style, StringBuilder s)
+        {
+            if (s != null) col.Add(new ConsoleText(s, style));
+            col.Add(new ConsoleText(Environment.NewLine));
+            Flush();
+        }
+
+        /// <summary>
+        /// Writes the specified string value, followed by the current line terminator, to the standard output stream.
+        /// It will flush immediately.
+        /// </summary>
+        /// <param name="foreground">The foreground color.</param>
+        /// <param name="s">A composite format string to output.</param>
+        public void WriteLine(ConsoleColor foreground, StringBuilder s)
+        {
+            if (s != null) col.Add(new ConsoleText(s, foreground));
+            col.Add(new ConsoleText(Environment.NewLine));
+            Flush();
+        }
+
+        /// <summary>
+        /// Writes the specified string value, followed by the current line terminator, to the standard output stream.
+        /// It will flush immediately.
+        /// </summary>
+        /// <param name="foreground">The foreground color.</param>
+        /// <param name="background">The background color.</param>
+        /// <param name="s">A composite format string to output.</param>
+        public void WriteLine(ConsoleColor? foreground, ConsoleColor? background, StringBuilder s)
+        {
+            if (s != null) col.Add(new ConsoleText(s, foreground, background));
+            col.Add(new ConsoleText(Environment.NewLine));
+            Flush();
+        }
+
+        /// <summary>
+        /// Writes the specified string value, followed by the current line terminator, to the standard output stream.
+        /// It will flush immediately.
+        /// </summary>
+        /// <param name="foreground">The foreground color.</param>
+        /// <param name="s">A composite format string to output.</param>
+        public void WriteLine(Color foreground, StringBuilder s)
+        {
+            if (s != null) col.Add(new ConsoleText(s, foreground));
+            col.Add(new ConsoleText(Environment.NewLine));
+            Flush();
+        }
+
+        /// <summary>
+        /// Writes the specified string value, followed by the current line terminator, to the standard output stream.
+        /// It will flush immediately.
+        /// </summary>
+        /// <param name="foreground">The foreground color.</param>
+        /// <param name="background">The background color.</param>
+        /// <param name="s">A composite format string to output.</param>
+        public void WriteLine(Color foreground, Color background, StringBuilder s)
+        {
+            if (s != null) col.Add(new ConsoleText(s, foreground, background));
+            col.Add(new ConsoleText(Environment.NewLine));
+            Flush();
+        }
+
+        /// <summary>
+        /// Writes a JSON object, followed by the current line terminator, to the standard output stream.
+        /// It will flush immediately.
+        /// </summary>
+        /// <param name="style">The style.</param>
+        /// <param name="s">A composite format string to output.</param>
+        public void WriteLine(IConsoleTextPrettier style, StringBuilder s)
+        {
+            if (s == null) return;
+            if (style == null)
+            {
+                WriteLine(s);
+                return;
+            }
+
+            var list = style.CreateTextCollection(s.ToString());
             if (list == null) return;
             col.AddRange(list);
             col.Add(new ConsoleText(Environment.NewLine));
