@@ -9,6 +9,8 @@ Some useful utilities for console application.
 In `Trivial.CommandLine` namespace of `Trivial.Console.dll` library.
 A lot of useful rich command line controls.
 
+![Sample screenshot](./controls/sample.jpg)
+
 - [Selection](./selection) A visual console control that allow user select item by pressing keyboard.
 - [Progress bar](./progress) A visual console control that update the state of a task.
 - [Prettier](./prettier) The text prettier.

@@ -233,7 +233,7 @@ namespace Trivial.CommandLine
             return null;
         }
 
-        private static int GetBufferWidth()
+        private static int GetBufferSafeWidth()
         {
             try
             {

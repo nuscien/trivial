@@ -5,6 +5,8 @@ so that user just need press the arrow buttons and `ENTER` in keyboard to select
 
 In `Trivial.CommandLine` [namespace](../) of `Trivial.Console.dll` [library](../../).
 
+![Screenshot](./init.jpg)
+
 ## Control
 
 When you have lots of item need user to select one to continue coming logic,
@@ -80,8 +82,6 @@ var result = DefaultConsole.Select(col, options);
 // You can get the result.
 DefaultConsole.WriteLine("The result is {0}.", result.Value);
 ```
-
-![Screenshot](./init.jpg)
 
 ## Shortcut Keys
 

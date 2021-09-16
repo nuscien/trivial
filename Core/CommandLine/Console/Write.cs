@@ -73,6 +73,7 @@ namespace Trivial.CommandLine
         /// <param name="args">An object array that contains zero or more objects to format.</param>
         public void Write(string s, params object[] args)
         {
+            if (s == null) return;
             col.Add(new ConsoleText(args == null || args.Length == 0 ? s : string.Format(s, args)));
             OnAppend();
         }
@@ -86,6 +87,7 @@ namespace Trivial.CommandLine
         /// <param name="args">An object array that contains zero or more objects to format.</param>
         public void Write(ConsoleTextStyle style, string s, params object[] args)
         {
+            if (s == null) return;
             col.Add(new ConsoleText(args == null || args.Length == 0 ? s : string.Format(s, args), style));
             OnAppend();
         }
@@ -99,6 +101,7 @@ namespace Trivial.CommandLine
         /// <param name="args">An object array that contains zero or more objects to format.</param>
         public void Write(ConsoleColor foreground, string s, params object[] args)
         {
+            if (s == null) return;
             col.Add(new ConsoleText(args == null || args.Length == 0 ? s : string.Format(s, args), foreground));
             OnAppend();
         }
@@ -113,6 +116,7 @@ namespace Trivial.CommandLine
         /// <param name="args">An object array that contains zero or more objects to format.</param>
         public void Write(ConsoleColor? foreground, ConsoleColor? background, string s, params object[] args)
         {
+            if (s == null) return;
             col.Add(new ConsoleText(args == null || args.Length == 0 ? s : string.Format(s, args), foreground, background));
             OnAppend();
         }
@@ -126,6 +130,7 @@ namespace Trivial.CommandLine
         /// <param name="args">An object array that contains zero or more objects to format.</param>
         public void Write(Color foreground, string s, params object[] args)
         {
+            if (s == null) return;
             col.Add(new ConsoleText(args == null || args.Length == 0 ? s : string.Format(s, args), foreground));
             OnAppend();
         }
@@ -140,6 +145,7 @@ namespace Trivial.CommandLine
         /// <param name="args">An object array that contains zero or more objects to format.</param>
         public void Write(Color foreground, Color background, string s, params object[] args)
         {
+            if (s == null) return;
             col.Add(new ConsoleText(args == null || args.Length == 0 ? s : string.Format(s, args), foreground, background));
             OnAppend();
         }
@@ -153,6 +159,7 @@ namespace Trivial.CommandLine
         /// <param name="args">An object array that contains zero or more objects to format.</param>
         public void Write(IConsoleTextPrettier style, string s, params object[] args)
         {
+            if (s == null) return;
             if (style == null)
             {
                 Write(s, args);
@@ -235,6 +242,27 @@ namespace Trivial.CommandLine
         public void Write(Color foreground, Color background, StringBuilder s)
         {
             col.Add(new ConsoleText(s, foreground, background));
+            OnAppend();
+        }
+
+        /// <summary>
+        /// Writes the specified string value to the standard output stream.
+        /// Note it may not flush immediately.
+        /// </summary>
+        /// <param name="style">The style.</param>
+        /// <param name="s">A composite format string to output.</param>
+        public void Write(IConsoleTextPrettier style, StringBuilder s)
+        {
+            if (s == null) return;
+            if (style == null)
+            {
+                Write(s);
+                return;
+            }
+
+            var list = style.CreateTextCollection(s.ToString());
+            if (list == null) return;
+            col.AddRange(list);
             OnAppend();
         }
 
@@ -678,6 +706,22 @@ namespace Trivial.CommandLine
         }
 
         /// <summary>
+        /// Writes the specified data value to the standard output stream.
+        /// Note it may not flush immediately.
+        /// </summary>
+        /// <typeparam name="T">The type of data model.</typeparam>
+        /// <param name="style">The style.</param>
+        /// <param name="data">A data model.</param>
+        public void Write<T>(IConsoleTextCreator<T> style, T data)
+        {
+            if (style == null) return;
+            var list = style.CreateTextCollection(data);
+            if (list == null) return;
+            col.AddRange(list);
+            OnAppend();
+        }
+
+        /// <summary>
         /// Writes the specified string value to the standard output stream.
         /// It will flush immediately.
         /// </summary>
@@ -731,6 +775,7 @@ namespace Trivial.CommandLine
         /// <param name="args">An object array that contains zero or more objects to format.</param>
         public void WriteImmediately(string s, params object[] args)
         {
+            if (s == null) return;
             col.Add(new ConsoleText(args == null || args.Length == 0 ? s : string.Format(s, args)));
             Flush();
         }
@@ -744,6 +789,7 @@ namespace Trivial.CommandLine
         /// <param name="args">An object array that contains zero or more objects to format.</param>
         public void WriteImmediately(ConsoleTextStyle style, string s, params object[] args)
         {
+            if (s == null) return;
             col.Add(new ConsoleText(args == null || args.Length == 0 ? s : string.Format(s, args), style));
             Flush();
         }
@@ -757,6 +803,7 @@ namespace Trivial.CommandLine
         /// <param name="args">An object array that contains zero or more objects to format.</param>
         public void WriteImmediately(ConsoleColor foreground, string s, params object[] args)
         {
+            if (s == null) return;
             col.Add(new ConsoleText(args == null || args.Length == 0 ? s : string.Format(s, args), foreground));
             Flush();
         }
@@ -771,6 +818,7 @@ namespace Trivial.CommandLine
         /// <param name="args">An object array that contains zero or more objects to format.</param>
         public void WriteImmediately(ConsoleColor? foreground, ConsoleColor? background, string s, params object[] args)
         {
+            if (s == null) return;
             col.Add(new ConsoleText(args == null || args.Length == 0 ? s : string.Format(s, args), foreground, background));
             Flush();
         }
@@ -784,6 +832,7 @@ namespace Trivial.CommandLine
         /// <param name="args">An object array that contains zero or more objects to format.</param>
         public void WriteImmediately(IConsoleTextPrettier style, string s, params object[] args)
         {
+            if (s == null) return;
             if (style == null)
             {
                 WriteImmediately(s, args);
@@ -803,6 +852,7 @@ namespace Trivial.CommandLine
         /// <param name="s">A composite format string to output.</param>
         public void WriteImmediately(StringBuilder s)
         {
+            if (s == null) return;
             col.Add(new ConsoleText(s));
             Flush();
         }
@@ -815,6 +865,7 @@ namespace Trivial.CommandLine
         /// <param name="s">A composite format string to output.</param>
         public void WriteImmediately(ConsoleTextStyle style, StringBuilder s)
         {
+            if (s == null) return;
             col.Add(new ConsoleText(s, style));
             Flush();
         }
@@ -827,6 +878,7 @@ namespace Trivial.CommandLine
         /// <param name="s">A composite format string to output.</param>
         public void WriteImmediately(ConsoleColor foreground, StringBuilder s)
         {
+            if (s == null) return;
             col.Add(new ConsoleText(s, foreground));
             Flush();
         }
@@ -840,7 +892,29 @@ namespace Trivial.CommandLine
         /// <param name="s">A composite format string to output.</param>
         public void WriteImmediately(ConsoleColor? foreground, ConsoleColor? background, StringBuilder s)
         {
+            if (s == null) return;
             col.Add(new ConsoleText(s, foreground, background));
+            Flush();
+        }
+
+        /// <summary>
+        /// Writes the specified string value to the standard output stream.
+        /// It will flush immediately.
+        /// </summary>
+        /// <param name="style">The style.</param>
+        /// <param name="s">A composite format string to output.</param>
+        public void WriteImmediately(IConsoleTextPrettier style, StringBuilder s)
+        {
+            if (s == null) return;
+            if (style == null)
+            {
+                WriteImmediately(s);
+                return;
+            }
+
+            var list = style.CreateTextCollection(s.ToString());
+            if (list == null) return;
+            col.AddRange(list);
             Flush();
         }
 
@@ -1237,6 +1311,22 @@ namespace Trivial.CommandLine
         public void WriteImmediately(ConsoleColor? foreground, ConsoleColor? background, char value, int repeatCount = 1)
         {
             col.Add(new ConsoleText(value, repeatCount, new ConsoleTextStyle(foreground, background)));
+            Flush();
+        }
+
+        /// <summary>
+        /// Writes the specified data to the standard output stream.
+        /// It will flush immediately.
+        /// </summary>
+        /// <typeparam name="T">The type of data model.</typeparam>
+        /// <param name="style">The style.</param>
+        /// <param name="data">A data model.</param>
+        public void WriteImmediately<T>(IConsoleTextCreator<T> style, T data)
+        {
+            if (style == null) return;
+            var list = style.CreateTextCollection(data);
+            if (list == null) return;
+            col.AddRange(list);
             Flush();
         }
 
@@ -1861,6 +1951,23 @@ namespace Trivial.CommandLine
             }
 
             var list = style.CreateTextCollection(new string(value, repeatCount));
+            if (list == null) return;
+            col.AddRange(list);
+            col.Add(new ConsoleText(Environment.NewLine));
+            Flush();
+        }
+
+        /// <summary>
+        /// Writes the specified data, followed by the current line terminator, to the standard output stream.
+        /// It will flush immediately.
+        /// </summary>
+        /// <typeparam name="T">The type of data model.</typeparam>
+        /// <param name="style">The style.</param>
+        /// <param name="data">A data model.</param>
+        public void WriteLine<T>(IConsoleTextCreator<T> style, T data)
+        {
+            if (style == null) return;
+            var list = style.CreateTextCollection(data);
             if (list == null) return;
             col.AddRange(list);
             col.Add(new ConsoleText(Environment.NewLine));

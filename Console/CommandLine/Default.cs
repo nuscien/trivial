@@ -117,6 +117,70 @@ namespace Trivial.CommandLine
             => StyleConsole.Default.Write(style, s, args);
 
         /// <summary>
+        /// Writes the specified string value to the standard output stream.
+        /// Note it may not flush immediately.
+        /// </summary>
+        /// <param name="s">A composite format string to output.</param>
+        public static void Write(StringBuilder s)
+            => StyleConsole.Default.Write(s);
+
+        /// <summary>
+        /// Writes the specified string value to the standard output stream.
+        /// Note it may not flush immediately.
+        /// </summary>
+        /// <param name="style">The content style.</param>
+        /// <param name="s">A composite format string to output.</param>
+        public static void Write(ConsoleTextStyle style, StringBuilder s)
+            => StyleConsole.Default.Write(style, s);
+
+        /// <summary>
+        /// Writes the specified string value to the standard output stream.
+        /// Note it may not flush immediately.
+        /// </summary>
+        /// <param name="foreground">The foreground color.</param>
+        /// <param name="s">A composite format string to output.</param>
+        public static void Write(ConsoleColor foreground, StringBuilder s)
+            => StyleConsole.Default.Write(foreground, s);
+
+        /// <summary>
+        /// Writes the specified string value to the standard output stream.
+        /// Note it may not flush immediately.
+        /// </summary>
+        /// <param name="foreground">The foreground color.</param>
+        /// <param name="background">The background color.</param>
+        /// <param name="s">A composite format string to output.</param>
+        public static void Write(ConsoleColor? foreground, ConsoleColor? background, StringBuilder s)
+            => StyleConsole.Default.Write(foreground, background, s);
+
+        /// <summary>
+        /// Writes the specified string value to the standard output stream.
+        /// Note it may not flush immediately.
+        /// </summary>
+        /// <param name="foreground">The foreground color.</param>
+        /// <param name="s">A composite format string to output.</param>
+        public static void Write(Color foreground, StringBuilder s)
+            => StyleConsole.Default.Write(foreground, s);
+
+        /// <summary>
+        /// Writes the specified string value to the standard output stream.
+        /// Note it may not flush immediately.
+        /// </summary>
+        /// <param name="foreground">The foreground color.</param>
+        /// <param name="background">The background color.</param>
+        /// <param name="s">A composite format string to output.</param>
+        public static void Write(Color foreground, Color background, StringBuilder s)
+            => StyleConsole.Default.Write(foreground, background, s);
+
+        /// <summary>
+        /// Writes the specified string value to the standard output stream.
+        /// Note it may not flush immediately.
+        /// </summary>
+        /// <param name="style">The style.</param>
+        /// <param name="s">A composite format string to output.</param>
+        public static void Write(IConsoleTextPrettier style, StringBuilder s)
+            => StyleConsole.Default.Write(style, s);
+
+        /// <summary>
         /// Writes the specified number to the standard output stream.
         /// Note it may not flush immediately.
         /// </summary>
@@ -425,6 +489,16 @@ namespace Trivial.CommandLine
         /// <param name="repeatCount">The number of times to append value.</param>
         public static void Write(IConsoleTextPrettier style, char value, int repeatCount = 1)
             => StyleConsole.Default.Write(style, value, repeatCount);
+
+        /// <summary>
+        /// Writes the specified data to the standard output stream.
+        /// Note it may not flush immediately.
+        /// </summary>
+        /// <typeparam name="T">The type of data model.</typeparam>
+        /// <param name="style">The style.</param>
+        /// <param name="data">A data model.</param>
+        public static void Write<T>(IConsoleTextCreator<T> style, T data)
+            => StyleConsole.Default.Write(style, data);
 
         /// <summary>
         /// Writes the specified characters to the standard output stream.
@@ -924,6 +998,16 @@ namespace Trivial.CommandLine
         /// <param name="json">The JSON instance.</param>
         public static void WriteLine(JsonConsoleStyle style, System.Text.Json.Nodes.JsonArray json)
             => StyleConsole.Default.WriteLine((style ?? new JsonConsoleStyle()).CreateTextCollection(json == null ? null : (JsonArrayNode)json, 0));
+
+        /// <summary>
+        /// Writes the specified data, followed by the current line terminator, to the standard output stream.
+        /// It will flush immediately.
+        /// </summary>
+        /// <typeparam name="T">The type of data model.</typeparam>
+        /// <param name="style">The style.</param>
+        /// <param name="data">A data model.</param>
+        public static void WriteLine<T>(IConsoleTextCreator<T> style, T data)
+            => StyleConsole.Default.WriteLine(style, data);
 
         /// <summary>
         /// Writes a progress component, followed by the current line terminator, to the standard output stream.

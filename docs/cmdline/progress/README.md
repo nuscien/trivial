@@ -1,8 +1,10 @@
 # Progress bar
 
-A progress bar in terminal that can present the latest state during the specific task running.
+It can present the latest state during the specific task running.
 
 In `Trivial.CommandLine` [namespace](../) of `Trivial.Console.dll` [library](../../).
+
+![Screenshot](./loading.jpg)
 
 ## Control
 
@@ -12,7 +14,7 @@ You can output a progress bar to update during a task running.
 // Define an options that you can custom the style.
 var progressStyle = new ConsoleProgressStyle
 {
-    ValueConsoleColor = ConsoleColor.White
+    ValueConsoleColor = ConsoleColor.Gray
 };
 
 // Ouput the component in console and get the progress instance to update.
@@ -27,5 +29,3 @@ for (var i = 0; i <= 50; i++)
     progress.Report(0.02 * i);
 }
 ```
-
-![Screenshot](./loading.jpg)

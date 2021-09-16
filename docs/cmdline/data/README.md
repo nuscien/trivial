@@ -6,6 +6,8 @@ In `Trivial.CommandLine` [namespace](../) of `Trivial.Console.dll` [library](../
 
 ## JSON
 
+![Screenshot](./json.jpg)
+
 Following is a sample to format JSON into command line app.
 
 ```csharp

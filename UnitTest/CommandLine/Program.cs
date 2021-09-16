@@ -13,9 +13,6 @@ namespace Trivial.CommandLine
                 Bold = true
             }, "Trivial Sample");
             DefaultConsole.WriteLine();
-#if DEBUG
-            TestConsoleInterface();
-#endif
             var dispatcher = new CommandDispatcher();
             dispatcher.Register<Tasks.InterceptorVerb>("interceptor");
             dispatcher.Register<Reflection.SingletonKeeperVerb>("singleton");
@@ -29,7 +26,7 @@ namespace Trivial.CommandLine
             return dispatcher.ProcessAsync();
         }
 
-        private static void TestConsoleInterface()
+        public static void TestConsoleInterface()
         {
             var cli = StyleConsole.Default;
             cli.Flush();

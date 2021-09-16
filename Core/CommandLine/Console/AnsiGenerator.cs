@@ -27,7 +27,7 @@ namespace Trivial.CommandLine
             => color.HasValue ? color.Value switch
             {
                 ConsoleColor.Black => $"{Esc}[30m",
-                ConsoleColor.White => $"{Esc}[37m",
+                ConsoleColor.White => $"{Esc}[97m",
                 ConsoleColor.DarkRed => $"{Esc}[31m",
                 ConsoleColor.DarkGreen => $"{Esc}[32m",
                 ConsoleColor.DarkYellow => $"{Esc}[33m",
@@ -41,7 +41,7 @@ namespace Trivial.CommandLine
                 ConsoleColor.Blue => $"{Esc}[94m",
                 ConsoleColor.Magenta => $"{Esc}[95m",
                 ConsoleColor.Cyan => $"{Esc}[96m",
-                ConsoleColor.Gray => $"{Esc}[97m",
+                ConsoleColor.Gray => $"{Esc}[37m",
                 _ => string.Empty
             } : string.Empty;
 
@@ -80,7 +80,7 @@ namespace Trivial.CommandLine
             => color.HasValue ? color.Value switch
             {
                 ConsoleColor.Black => $"{Esc}[40m",
-                ConsoleColor.White => $"{Esc}[47m",
+                ConsoleColor.White => $"{Esc}[107m",
                 ConsoleColor.DarkRed => $"{Esc}[41m",
                 ConsoleColor.DarkGreen => $"{Esc}[42m",
                 ConsoleColor.DarkYellow => $"{Esc}[43m",
@@ -94,7 +94,7 @@ namespace Trivial.CommandLine
                 ConsoleColor.Blue => $"{Esc}[104m",
                 ConsoleColor.Magenta => $"{Esc}[105m",
                 ConsoleColor.Cyan => $"{Esc}[106m",
-                ConsoleColor.Gray => $"{Esc}[107m",
+                ConsoleColor.Gray => $"{Esc}[47m",
                 _ => string.Empty
             } : string.Empty;
 

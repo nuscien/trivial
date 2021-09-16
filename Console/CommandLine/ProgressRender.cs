@@ -115,7 +115,7 @@ namespace Trivial.CommandLine
 
         private static void RenderData(StyleConsole cli, ConsoleProgressStyle style, string caption, OneProgress value)
         {
-            var maxWidth = GetBufferWidth();
+            var maxWidth = GetBufferSafeWidth();
             var width = style.Size switch
             {
                 ConsoleProgressStyle.Sizes.None => 0,

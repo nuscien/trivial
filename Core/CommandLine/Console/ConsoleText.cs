@@ -125,9 +125,36 @@ namespace Trivial.CommandLine
         /// <param name="r">The red component value. Valid values are 0 through 255.</param>
         /// <param name="g">The green component value. Valid values are 0 through 255.</param>
         /// <param name="b">The blue component value. Valid values are 0 through 255.</param>
-        public void SetForeground(byte r, byte g, byte b)
+        /// <param name="fallback">The fallback color.</param>
+        public void SetForeground(byte r, byte g, byte b, ConsoleColor fallback)
         {
             ForegroundRgbColor = Color.FromArgb(r, g, b);
+            ForegroundConsoleColor = fallback;
+        }
+
+        /// <summary>
+        /// Sets the foreground.
+        /// </summary>
+        /// <param name="r">The red component value. Valid values are 0 through 255.</param>
+        /// <param name="g">The green component value. Valid values are 0 through 255.</param>
+        /// <param name="b">The blue component value. Valid values are 0 through 255.</param>
+        /// <param name="convertToFallback">true if also convert to fallback console color.</param>
+        public void SetForeground(byte r, byte g, byte b, bool convertToFallback = false)
+        {
+            var color = Color.FromArgb(r, g, b);
+            ForegroundRgbColor = color;
+            if (convertToFallback) ForegroundConsoleColor = AnsiCodeGenerator.ToConsoleColor(color);
+        }
+
+        /// <summary>
+        /// Sets the foreground.
+        /// </summary>
+        /// <param name="rgbColor">The RGB color.</param>
+        /// <param name="consoleColor">The fallback console color.</param>
+        public void SetForeground(Color? rgbColor, ConsoleColor? consoleColor)
+        {
+            ForegroundRgbColor = rgbColor;
+            ForegroundConsoleColor = consoleColor;
         }
 
         /// <summary>
@@ -136,27 +163,36 @@ namespace Trivial.CommandLine
         /// <param name="r">The red component value. Valid values are 0 through 255.</param>
         /// <param name="g">The green component value. Valid values are 0 through 255.</param>
         /// <param name="b">The blue component value. Valid values are 0 through 255.</param>
-        public void SetBackground(byte r, byte g, byte b)
+        /// <param name="fallback">The fallback color.</param>
+        public void SetBackground(byte r, byte g, byte b, ConsoleColor fallback)
         {
             BackgroundRgbColor = Color.FromArgb(r, g, b);
+            BackgroundConsoleColor = fallback;
         }
 
         /// <summary>
-        /// Sets foreground console color from RGB.
+        /// Sets the background.
         /// </summary>
-        public void SyncForegroundRgbToConsoleColor()
+        /// <param name="r">The red component value. Valid values are 0 through 255.</param>
+        /// <param name="g">The green component value. Valid values are 0 through 255.</param>
+        /// <param name="b">The blue component value. Valid values are 0 through 255.</param>
+        /// <param name="convertToFallback">true if also convert to fallback console color.</param>
+        public void SetBackground(byte r, byte g, byte b, bool convertToFallback = false)
         {
-            var color = ForegroundRgbColor;
-            if (color.HasValue) ForegroundConsoleColor = AnsiCodeGenerator.ToConsoleColor(color.Value);
+            var color = Color.FromArgb(r, g, b);
+            BackgroundRgbColor = color;
+            if (convertToFallback) BackgroundConsoleColor = AnsiCodeGenerator.ToConsoleColor(color);
         }
 
         /// <summary>
-        /// Sets background console color from RGB.
+        /// Sets the background.
         /// </summary>
-        public void SyncBackgroundRgbToConsoleColor()
+        /// <param name="rgbColor">The RGB color.</param>
+        /// <param name="consoleColor">The fallback console color.</param>
+        public void SetBackground(Color? rgbColor, ConsoleColor? consoleColor)
         {
-            var color = BackgroundRgbColor;
-            if (color.HasValue) BackgroundConsoleColor = AnsiCodeGenerator.ToConsoleColor(color.Value);
+            BackgroundRgbColor = rgbColor;
+            BackgroundConsoleColor = consoleColor;
         }
 
         /// <summary>
