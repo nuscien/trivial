@@ -94,7 +94,7 @@ namespace Trivial.CommandLine
             }
 
             if (style == null) style = new ConsoleProgressStyle();
-            RenderData(cli, style, caption, null);
+            var status = RenderData(cli, style, caption, null, null);
             var progress = new OneProgress();
             var top = TryGetCursorTop(cli) ?? -1;
             progress.ProgressChanged += (sender, ev) =>
@@ -106,14 +106,14 @@ namespace Trivial.CommandLine
                     cli.MoveCursorBy(0, top - top2 - 1);
                 else
                     cli.MoveCursorBy(0, -1);
-                RenderData(cli, style, caption, progress);
+                status = RenderData(cli, style, caption, progress, status);
                 if (cli.Mode == StyleConsole.Modes.Cmd && top >= 0 && top2 > top)
                     cli.MoveCursorTo(left2, top2);
             };
             return progress;
         }
 
-        private static void RenderData(StyleConsole cli, ConsoleProgressStyle style, string caption, OneProgress value)
+        private static string RenderData(StyleConsole cli, ConsoleProgressStyle style, string caption, OneProgress value, string status)
         {
             var maxWidth = GetBufferSafeWidth();
             var width = style.Size switch
@@ -177,10 +177,24 @@ namespace Trivial.CommandLine
 
             var v = value?.Value ?? -1;
             if (v > 1) v = 1;
-            if (double.IsNaN(v)) return;
+            if (double.IsNaN(v))
+            {
+                cli.WriteLine(col);
+                return null;
+            }
+
             var w = (int)Math.Round(width * v);
             if (w < 0) w = 0;
             var isError = value?.IsFailed == true || value?.IsNotSupported == true;
+            var isSucc = !isError && value?.IsSuccessful == true;
+            var newStatus = $"{(isError ? "e" : (isSucc ? "s" : "p"))}{w}/{maxWidth}";
+            if (status == newStatus)
+            {
+                cli.Flush();
+                cli.MoveCursorBy(0, 1);
+                return status;
+            }
+
             if (barChar == ' ')
             {
                 col.Add(barChar, w, new ConsoleTextStyle(null, null, isError ? style.ErrorRgbColor : style.BarRgbColor, isError ? style.ErrorConsoleColor : style.BarConsoleColor));
@@ -195,7 +209,7 @@ namespace Trivial.CommandLine
             if (v >= 0)
             {
                 var s = v.ToString("#0%");
-                if (s.Length > 3) s = value?.IsSuccessful == true ? " √" : "99%";
+                if (s.Length > 3) s = isSucc ? " √" : "99%";
                 col.Add(" " + s, new ConsoleTextStyle(style.ValueRgbColor, style.ValueConsoleColor, style.BackgroundRgbColor, style.BackgroundConsoleColor));
             }
 
@@ -203,6 +217,7 @@ namespace Trivial.CommandLine
             cli.Clear(StyleConsole.RelativeAreas.Line);
             cli.BackspaceToBeginning();
             cli.WriteLine(col);
+            return status;
         }
     }
 }
