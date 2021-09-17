@@ -7,7 +7,7 @@ using System.Security;
 using Trivial.Data;
 using Trivial.IO;
 
-#if NETFRAMEWORK
+#if NETFRAMEWORK || NET6_0_OR_GREATER
 using Reg = Microsoft.Win32.Registry;
 using RegistryKey = Microsoft.Win32.RegistryKey;
 
@@ -21,6 +21,12 @@ namespace Trivial.Web
         /// <summary>
         /// The Windows Registry access.
         /// </summary>
+#if NET6_0_OR_GREATER
+    [System.Runtime.Versioning.SupportedOSPlatform("windows")]
+#endif
+#if NET6_0_OR_GREATER
+    [System.Runtime.Versioning.SupportedOSPlatform("windows")]
+#endif
         public static class Registry
         {
             /// <summary>

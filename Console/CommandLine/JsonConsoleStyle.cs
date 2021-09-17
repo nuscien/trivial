@@ -16,7 +16,12 @@ namespace Trivial.CommandLine
     public class JsonConsoleStyle : ICloneable
     {
         /// <summary>
-        /// Gets or sets the foreground color of string.
+        /// Gets or sets the foreground color of property key.
+        /// </summary>
+        public Color? PropertyForegroundRgbColor { get; set; } = Color.FromArgb(0xCE, 0x91, 0x78);
+
+        /// <summary>
+        /// Gets or sets the foreground color of string value.
         /// </summary>
         public Color? StringForegroundRgbColor { get; set; } = Color.FromArgb(0xCE, 0x91, 0x78);
 
@@ -41,9 +46,14 @@ namespace Trivial.CommandLine
         public Color? BackgroundRgbColor { get; set; }
 
         /// <summary>
-        /// Gets or sets the foreground color of language keyword.
+        /// Gets or sets the foreground color of property key.
         /// </summary>
-        public ConsoleColor? StringForegroundConsoleColor { get; set; } = ConsoleColor.Gray;
+        public ConsoleColor? PropertyForegroundConsoleColor { get; set; } = ConsoleColor.Gray;
+
+        /// <summary>
+        /// Gets or sets the foreground color of string value.
+        /// </summary>
+        public ConsoleColor? StringForegroundConsoleColor { get; set; } = ConsoleColor.Green;
 
         /// <summary>
         /// Gets or sets the foreground color of number.
@@ -189,7 +199,12 @@ namespace Trivial.CommandLine
             foreach (var prop in json)
             {
                 cmd.Add(spaces);
-                cmd.Add(CreateText(prop.Key));
+                cmd.Add(new(
+                    JsonStringNode.ToJson(prop.Key),
+                    PropertyForegroundRgbColor,
+                    PropertyForegroundConsoleColor,
+                    BackgroundRgbColor,
+                    BackgroundConsoleColor));
                 cmd.Add(CreateByPunctuation(": "));
                 cmd.AddRange(CreateTextCollection(prop.Value, indentLevel + 1));
                 cmd.Add(CreateByPunctuation(","));

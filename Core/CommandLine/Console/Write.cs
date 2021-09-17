@@ -2136,28 +2136,49 @@ namespace Trivial.CommandLine
         /// <summary>
         /// Writes the current line terminator for each item, to the standard output stream.
         /// </summary>
-        /// <param name="col">The string collection to write. Each one in a line.</param>
-        public void WriteLines(IEnumerable<string> col)
+        /// <param name="value">The string collection to write. Each one in a line.</param>
+        public void WriteLines(IEnumerable<string> value)
         {
-            if (col == null) return;
-            foreach (var item in col)
-            {
-                WriteLine(item);
-            }
+            if (value == null) return;
+            col.Add(new ConsoleText(string.Join(Environment.NewLine, value)));
+            Flush();
+        }
+
+        /// <summary>
+        /// Writes the current line terminator for each item, to the standard output stream.
+        /// </summary>
+        /// <param name="style">The content style.</param>
+        /// <param name="value">The string collection to write. Each one in a line.</param>
+        public void WriteLines(ConsoleTextStyle style, IEnumerable<string> value)
+        {
+            if (value == null) return;
+            col.Add(new ConsoleText(string.Join(Environment.NewLine, value), style));
+            Flush();
         }
 
         /// <summary>
         /// Writes the current line terminator for each item, to the standard output stream.
         /// </summary>
         /// <param name="foreground">The foreground color of the console.</param>
-        /// <param name="col">The string collection to write. Each one in a line.</param>
-        public void WriteLines(ConsoleColor foreground, IEnumerable<string> col)
+        /// <param name="value">The string collection to write. Each one in a line.</param>
+        public void WriteLines(ConsoleColor foreground, IEnumerable<string> value)
         {
-            if (col == null) return;
-            foreach (var item in col)
-            {
-                WriteLine(foreground, item);
-            }
+            if (value == null) return;
+            col.Add(new ConsoleText(string.Join(Environment.NewLine, value), foreground));
+            Flush();
+        }
+
+        /// <summary>
+        /// Writes the current line terminator for each item, to the standard output stream.
+        /// </summary>
+        /// <param name="foreground">The foreground color of the console.</param>
+        /// <param name="background">The background color.</param>
+        /// <param name="value">The string collection to write. Each one in a line.</param>
+        public void WriteLines(ConsoleColor foreground, ConsoleColor background, IEnumerable<string> value)
+        {
+            if (value == null) return;
+            col.Add(new ConsoleText(string.Join(Environment.NewLine, value), foreground, background));
+            Flush();
         }
     }
 }

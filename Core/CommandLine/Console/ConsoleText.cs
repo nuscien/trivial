@@ -49,9 +49,9 @@ namespace Trivial.CommandLine
         /// Initializes a new instance of the ConsoleTextStyle class.
         /// </summary>
         /// <param name="foreground">The foreground color.</param>
-        /// <param name="foreground2">The backup foreground color.</param>
+        /// <param name="foreground2">The fallback foreground color.</param>
         /// <param name="background">The background color.</param>
-        /// <param name="background2">The backup background color.</param>
+        /// <param name="background2">The fallback background color.</param>
         public ConsoleTextStyle(Color? foreground, ConsoleColor? foreground2, Color? background, ConsoleColor? background2)
         {
             ForegroundRgbColor = foreground;
@@ -107,15 +107,25 @@ namespace Trivial.CommandLine
 
 #if NETFRAMEWORK
         /// <summary>
-        /// Sets the font style.
+        /// Gets or sets the font style.
         /// </summary>
-        /// <param name="style">The font style to set.</param>
-        public void Set(FontStyle style)
+        public FontStyle FontStyle
         {
-            Bold = style.HasFlag(FontStyle.Bold);
-            Italic = style.HasFlag(FontStyle.Italic);
-            Underline = style.HasFlag(FontStyle.Underline);
-            Strikeout = style.HasFlag(FontStyle.Strikeout);
+            get
+            {
+                return (Bold ? FontStyle.Bold : FontStyle.Regular)
+                    | (Italic ? FontStyle.Italic : FontStyle.Regular)
+                    | (Underline ? FontStyle.Underline : FontStyle.Regular)
+                    | (Strikeout ? FontStyle.Strikeout : FontStyle.Regular);
+            }
+
+            set
+            {
+                Bold = value.HasFlag(FontStyle.Bold);
+                Italic = value.HasFlag(FontStyle.Italic);
+                Underline = value.HasFlag(FontStyle.Underline);
+                Strikeout = value.HasFlag(FontStyle.Strikeout);
+            }
         }
 #endif
 
@@ -163,19 +173,6 @@ namespace Trivial.CommandLine
         /// <param name="r">The red component value. Valid values are 0 through 255.</param>
         /// <param name="g">The green component value. Valid values are 0 through 255.</param>
         /// <param name="b">The blue component value. Valid values are 0 through 255.</param>
-        /// <param name="fallback">The fallback color.</param>
-        public void SetBackground(byte r, byte g, byte b, ConsoleColor fallback)
-        {
-            BackgroundRgbColor = Color.FromArgb(r, g, b);
-            BackgroundConsoleColor = fallback;
-        }
-
-        /// <summary>
-        /// Sets the background.
-        /// </summary>
-        /// <param name="r">The red component value. Valid values are 0 through 255.</param>
-        /// <param name="g">The green component value. Valid values are 0 through 255.</param>
-        /// <param name="b">The blue component value. Valid values are 0 through 255.</param>
         /// <param name="convertToFallback">true if also convert to fallback console color.</param>
         public void SetBackground(byte r, byte g, byte b, bool convertToFallback = false)
         {
@@ -187,12 +184,61 @@ namespace Trivial.CommandLine
         /// <summary>
         /// Sets the background.
         /// </summary>
+        /// <param name="r">The red component value. Valid values are 0 through 255.</param>
+        /// <param name="g">The green component value. Valid values are 0 through 255.</param>
+        /// <param name="b">The blue component value. Valid values are 0 through 255.</param>
+        /// <param name="fallback">The fallback color.</param>
+        public void SetBackground(byte r, byte g, byte b, ConsoleColor fallback)
+        {
+            BackgroundRgbColor = Color.FromArgb(r, g, b);
+            BackgroundConsoleColor = fallback;
+        }
+
+        /// <summary>
+        /// Sets the background.
+        /// </summary>
         /// <param name="rgbColor">The RGB color.</param>
         /// <param name="consoleColor">The fallback console color.</param>
         public void SetBackground(Color? rgbColor, ConsoleColor? consoleColor)
         {
             BackgroundRgbColor = rgbColor;
             BackgroundConsoleColor = consoleColor;
+        }
+
+        /// <summary>
+        /// Clears all foreground colors.
+        /// </summary>
+        public void ClearForeground()
+        {
+            ForegroundConsoleColor = null;
+            ForegroundRgbColor = null;
+        }
+
+        /// <summary>
+        /// Clears all background colors.
+        /// </summary>
+        public void ClearBackground()
+        {
+            BackgroundConsoleColor = null;
+            BackgroundRgbColor = null;
+        }
+
+        /// <summary>
+        /// Clears all RGB colors.
+        /// </summary>
+        public void ClearRgbColors()
+        {
+            ForegroundRgbColor = null;
+            BackgroundRgbColor = null;
+        }
+
+        /// <summary>
+        /// Clears all console colors.
+        /// </summary>
+        public void ClearConsoleColors()
+        {
+            ForegroundConsoleColor = null;
+            BackgroundConsoleColor = null;
         }
 
         /// <summary>

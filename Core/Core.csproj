@@ -1,14 +1,14 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net5.0;netcoreapp3.1;netstandard2.0;net48;net461</TargetFrameworks>
+    <TargetFrameworks>net6.0;net5.0;netcoreapp3.1;netstandard2.0;net48;net461</TargetFrameworks>
     <AssemblyName>Trivial</AssemblyName>
     <RootNamespace>Trivial</RootNamespace>
     <PackageId>Trivial</PackageId>
     <Product>Trivial</Product>
     <Authors>Kingcean Tuan</Authors>
     <Company>Nanchang Jinchen Software Co., Ltd.</Company>
-    <Version>4.0.0-preview3</Version>
+    <Version>4.0.0-preview4</Version>
     <AssemblyVersion>4.0.0.0</AssemblyVersion>
     <FileVersion>4.0.0.0</FileVersion>
     <Description>A library providing lots of useful utilities, models and services, including interceptor, retry policy, writable JSON DOM, PEM, JWT, stream combination, JSON HTTP web client, JSON converters, CSV parser, numerals, coordinates, angle, arithmetic, sets, etc.</Description>

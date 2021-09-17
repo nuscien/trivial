@@ -1219,10 +1219,27 @@ namespace Trivial.CommandLine
         /// <summary>
         /// Writes the current line terminator for each item, to the standard output stream.
         /// </summary>
+        /// <param name="style">The content style.</param>
+        /// <param name="col">The string collection to write. Each one in a line.</param>
+        public static void WriteLines(ConsoleTextStyle style, IEnumerable<string> col)
+            => StyleConsole.Default.WriteLines(style, col);
+
+        /// <summary>
+        /// Writes the current line terminator for each item, to the standard output stream.
+        /// </summary>
         /// <param name="foreground">The foreground color of the console.</param>
         /// <param name="col">The string collection to write. Each one in a line.</param>
         public static void WriteLines(ConsoleColor foreground, IEnumerable<string> col)
             => StyleConsole.Default.WriteLines(foreground, col);
+
+        /// <summary>
+        /// Writes the current line terminator for each item, to the standard output stream.
+        /// </summary>
+        /// <param name="foreground">The foreground color of the console.</param>
+        /// <param name="background">The background color.</param>
+        /// <param name="col">The string collection to write. Each one in a line.</param>
+        public static void WriteLines(ConsoleColor foreground, ConsoleColor background, IEnumerable<string> col)
+            => StyleConsole.Default.WriteLines(foreground, background, col);
 
         /// <summary>
         /// Writes a collection of item for selecting.

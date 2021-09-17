@@ -23,14 +23,15 @@ DefaultConsole.WriteLine(new LinearGradientConsoleStyle(
 This also supports background.
 
 ```csharp
-DefaultConsole.WriteLine(new LinearGradientConsoleStyle(
-    ConsoleColor.Gray, // Fallback foreground color
+var style = new LinearGradientConsoleStyle(
+    ConsoleColor.Gray,  // Fallback foreground color
     System.Drawing.Color.FromArgb(64, 250, 250), // From foreground color
-    System.Drawing.Color.FromArgb(240, 240, 240), // To foreground color
+    System.Drawing.Color.FromArgb(240, 240, 240),// To foreground color
     null,  // Fallback background color
-    System.Drawing.Color.FromArgb(250, 64, 64),   // From background color
-    System.Drawing.Color.FromArgb(64, 64, 250) // To background color
-), "Linear gradient for both foreground and background.");
+    System.Drawing.Color.FromArgb(250, 64, 64),  // From background color
+    System.Drawing.Color.FromArgb(64, 64, 250)   // To background color
+);
+DefaultConsole.WriteLine(style, "Linear gradient for both foreground and background.");
 ```
 
 ## Repeated Color
@@ -38,7 +39,7 @@ DefaultConsole.WriteLine(new LinearGradientConsoleStyle(
 This is used to output a text of that each character has a specific color.
 
 ```csharp
-DefaultConsole.WriteLine(new RepeatedColorConsoleStyle(
+var style = new RepeatedColorConsoleStyle(
     new[] { // Fallback foreground colors
         ConsoleColor.Red,
         ConsoleColor.Green,
@@ -52,9 +53,23 @@ DefaultConsole.WriteLine(new RepeatedColorConsoleStyle(
         System.Drawing.Color.FromArgb(250, 64, 250),
         System.Drawing.Color.FromArgb(64, 250, 250)
     })
-{
+{   // Other font style
     Italic = true
-}, "Colorful string.");
+};
+DefaultConsole.WriteLine(style, "Colorful string.");
+```
+
+## Highlight
+
+Following is an example to highlight a keyword.
+
+```csharp
+var style = new HighlightConsoleStyle(
+    null,   // Style for normal text
+    new ConsoleTextStyle(null, ConsoleColor.DarkYellow), // Style for highlight text
+    "dolor" // Query string (keyword to highlight)
+);
+DefaultConsole.WriteLine(style, "Lorem ipsum dolor sit amet, consectetur adipiscing... ");
 ```
 
 ## Customize

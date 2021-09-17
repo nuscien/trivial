@@ -8,10 +8,13 @@ using Microsoft.Win32;
 
 namespace Trivial.Data
 {
-#if NETFRAMEWORK
+#if NETFRAMEWORK || NET6_0_OR_GREATER
     /// <summary>
     /// The Windows Registry utility.
     /// </summary>
+#if NET6_0_OR_GREATER
+    [System.Runtime.Versioning.SupportedOSPlatform("windows")]
+#endif
     public static class RegistryUtility
     {
         /// <summary>

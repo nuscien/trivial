@@ -11,8 +11,13 @@ pool:
 
 variables:
   buildConfiguration: 'Release'
-
+  
 steps:
+- task: UseDotNet@2
+  displayName: 'Use .NET SDK 5.0'
+  inputs:
+    version: 6.0.x
+
 - task: UseDotNet@2
   displayName: 'Use .NET SDK 5.0'
   inputs:
