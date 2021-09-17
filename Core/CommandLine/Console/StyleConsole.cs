@@ -289,7 +289,7 @@ namespace Trivial.CommandLine
                         if (key.Modifiers == ConsoleModifiers.Shift || key.Modifiers == ConsoleModifiers.Control)
                         {
                             str.Clear();
-                            if (replaceChar.HasValue && normalMode) Backspace(len + 1);
+                            if (replaceChar.HasValue && normalMode) Backspace(len);
                             break;
                         }
 
