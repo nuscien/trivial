@@ -116,8 +116,8 @@ namespace Trivial.CommandLine
             }
 
             var step = s.Length - 1;
-            var fore = fromFore ?? toFore;
-            var back = fromBack ?? toBack;
+            var hasFore = fromFore.HasValue || toFore.HasValue;
+            var hasBack = fromBack.HasValue || toBack.HasValue;
             var foreDelta = fromFore.HasValue && toFore.HasValue
                 ? ((toFore.Value.R - fromFore.Value.R) * 1.0 / step, (toFore.Value.G - fromFore.Value.B) * 1.0 / step, (toFore.Value.B - fromFore.Value.B) * 1.0 / step)
                 : (0.0, 0.0, 0.0);
@@ -125,16 +125,22 @@ namespace Trivial.CommandLine
                 ? ((toBack.Value.R - fromBack.Value.R) * 1.0 / step, (toBack.Value.G - fromBack.Value.B) * 1.0 / step, (toBack.Value.B - fromBack.Value.B) * 1.0 / step)
                 : (0.0, 0.0, 0.0);
             var last = s.Length - 1;
+            double foreR = fromFore?.R ?? toFore?.R ?? 0;
+            double foreG = fromFore?.G ?? toFore?.G ?? 0;
+            double foreB = fromFore?.B ?? toFore?.B ?? 0;
+            double backR = fromBack?.R ?? toBack?.R ?? 0;
+            double backG = fromBack?.G ?? toBack?.G ?? 0;
+            double backB = fromBack?.B ?? toBack?.B ?? 0;
             for (var i = 1; i < last; i++)
             {
-                if (fore.HasValue) fore = Color.FromArgb(
-                    PlusChannel(fore.Value.R, foreDelta.Item1),
-                    PlusChannel(fore.Value.G, foreDelta.Item2),
-                    PlusChannel(fore.Value.B, foreDelta.Item3));
-                if (back.HasValue) back = Color.FromArgb(
-                    PlusChannel(back.Value.R, backDelta.Item1),
-                    PlusChannel(back.Value.G, backDelta.Item2),
-                    PlusChannel(back.Value.B, backDelta.Item3));
+                Color? fore = hasFore ? Color.FromArgb(
+                    PlusChannel(ref foreR, foreDelta.Item1),
+                    PlusChannel(ref foreG, foreDelta.Item2),
+                    PlusChannel(ref foreB, foreDelta.Item3)) : null;
+                Color? back = hasBack ? Color.FromArgb(
+                    PlusChannel(ref backR, backDelta.Item1),
+                    PlusChannel(ref backG, backDelta.Item2),
+                    PlusChannel(ref backB, backDelta.Item3)) : null;
                 col.Add(s[i], 1, new ConsoleTextStyle(fore, FallbackForegroundColor, back, FallbackBackgroundColor)
                 {
                     Blink = Blink,
@@ -156,12 +162,13 @@ namespace Trivial.CommandLine
             return col;
         }
 
-        private int PlusChannel(int c, double delta)
+        private static int PlusChannel(ref double c, double delta)
         {
-            c = (int)Math.Round(c + delta);
-            if (c < 0) return 0;
-            else if (c > 255) return 255;
-            return c;
+            c = Math.Round(c + delta);
+            var r = (int)c;
+            if (r < 0) return 0;
+            else if (r > 255) return 255;
+            return r;
         }
     }
 }

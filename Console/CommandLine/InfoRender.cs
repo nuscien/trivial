@@ -189,6 +189,50 @@ namespace Trivial.CommandLine
         }
 
         /// <summary>
+        /// Removes rest content value.
+        /// </summary>
+        /// <param name="s">The console text instance to limit length.</param>
+        /// <param name="length">The length at most.</param>
+        public static void RemoveRest(this ConsoleText s, int length)
+        {
+            if (s == null) return;
+            var sb = s.Content;
+            if (sb.Length <= length / 2) return;
+            var count = 0;
+            var n = new StringBuilder();
+            foreach (var c in sb.ToString())
+            {
+                var needStop = true;
+                switch (c)
+                {
+                    case '\t':
+                        count += 4;
+                        break;
+                    case '\r':
+                    case '\n':
+                    case '\0':
+                        needStop = false;
+                        break;
+                    case '\b':
+                        break;
+                    default:
+                        count += GetLetterWidth(c);
+                        break;
+                }
+
+                if (needStop || count > length) break;
+                n.Append(c);
+            }
+
+            sb.Clear();
+#if NETFRAMEWORK || NETSTANDARD2_0_OR_GREATER
+            sb.Append(n.ToString());
+#else
+            sb.Append(n);
+#endif
+        }
+
+        /// <summary>
         /// Tries to gets the row position of the cursor within the buffer area.
         /// </summary>
         /// <param name="cli">The command line interface.</param>

@@ -97,7 +97,7 @@ namespace Trivial.CommandLine
         /// <summary>
         /// Gets or sets the progress background color.
         /// </summary>
-        public Color? PendingRgbColor { get; set; }
+        public Color? PendingRgbColor { get; set; } = Color.FromArgb(68, 68, 68);
 
         /// <summary>
         /// Gets or sets the progress bar color.
@@ -106,7 +106,7 @@ namespace Trivial.CommandLine
         /// <summary>
         /// Gets or sets the progress bar color.
         /// </summary>
-        public Color? BarRgbColor { get; set; }
+        public Color? BarRgbColor { get; set; } = Color.FromArgb(48, 192, 128);
 
         /// <summary>
         /// Gets or sets the error color.
@@ -116,7 +116,7 @@ namespace Trivial.CommandLine
         /// <summary>
         /// Gets or sets the error color.
         /// </summary>
-        public Color? ErrorRgbColor { get; set; }
+        public Color? ErrorRgbColor { get; set; } = Color.FromArgb(212, 48, 48);
 
         /// <summary>
         /// Gets or sets the foreground color of caption.
