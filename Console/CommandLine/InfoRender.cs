@@ -202,7 +202,7 @@ namespace Trivial.CommandLine
             var n = new StringBuilder();
             foreach (var c in sb.ToString())
             {
-                var needStop = true;
+                var needStop = false;
                 switch (c)
                 {
                     case '\t':
@@ -211,7 +211,7 @@ namespace Trivial.CommandLine
                     case '\r':
                     case '\n':
                     case '\0':
-                        needStop = false;
+                        needStop = true;
                         break;
                     case '\b':
                         break;
