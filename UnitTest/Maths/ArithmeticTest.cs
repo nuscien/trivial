@@ -40,13 +40,16 @@ namespace Trivial.Maths
 
             // Factorial.
             Assert.AreEqual(2432902008176640000, Arithmetic.Factorial(20));
+            Assert.AreEqual(2432902008176640000.0, Arithmetic.FactorialApproximate(20));
 
             // Positional notation.
             Assert.AreEqual("120", Numbers.ToPositionalNotationString(168, 12));
+            Assert.AreEqual("120", Numbers.ToPositionalNotationString((uint)168, 12));
             Assert.AreEqual("8a", Numbers.ToPositionalNotationString(170.0, 20));
             Assert.AreEqual("8a.2", Numbers.ToPositionalNotationString(170.1, 20));
             Assert.AreEqual("3.47d01bpf", Numbers.ToPositionalNotationString(3.14159265, 30));
             Assert.AreEqual("0.6204620462", Numbers.ToPositionalNotationString(0.9, 7));
+            Assert.AreEqual((short)168, Numbers.ParseToInt16("120", 12));
             Assert.AreEqual(168, Numbers.ParseToInt32("120", 12));
             Assert.AreEqual(-168L, Numbers.ParseToInt64("-120", 12));
             Assert.AreEqual(170, Numbers.ParseToInt32("8a", 20));
@@ -69,9 +72,41 @@ namespace Trivial.Maths
 
             // Compare
             Assert.AreEqual(1, Arithmetic.Min(1, 2, 3));
-            Assert.AreEqual(1, Arithmetic.Min(1, 2, 3, 4, 5));
+            Assert.AreEqual(1, Arithmetic.Min(1, 2, 3, 4, 5, 6));
+            Assert.AreEqual(1, Arithmetic.Min(2, 1, 3));
+            Assert.AreEqual(1, Arithmetic.Min(2, 1, 3, 4, 5, 6));
+            Assert.AreEqual(1, Arithmetic.Min(8, 7, 1));
+            Assert.AreEqual(1, Arithmetic.Min(2, 7, 3, 4, 1, 2));
+            Assert.AreEqual(1L, Arithmetic.Min(1, 2L, 3));
+            Assert.AreEqual(1L, Arithmetic.Min(1, 2L, 3, 4, 5, 6));
+            Assert.AreEqual(1L, Arithmetic.Min(2, 1L, 3));
+            Assert.AreEqual(1L, Arithmetic.Min(2, 1L, 3, 4, 5, 6));
+            Assert.AreEqual(1L, Arithmetic.Min(8, 7L, 1));
+            Assert.AreEqual(1L, Arithmetic.Min(2, 7L, 3, 4, 1, 2));
+            Assert.AreEqual(1.0, Arithmetic.Min(1, 2.0, 3));
+            Assert.AreEqual(1.0, Arithmetic.Min(1, 2.0, 3, 4, 5, 6));
+            Assert.AreEqual(1.0, Arithmetic.Min(2, 1, 3.0));
+            Assert.AreEqual(1.0, Arithmetic.Min(2, 1, 3.0, 4, 5, 6));
+            Assert.AreEqual(1.0, Arithmetic.Min(8, 7, 1.0));
+            Assert.AreEqual(1.0, Arithmetic.Min(2, 7, 3.0, 4, 1, 2));
             Assert.AreEqual(9, Arithmetic.Max(7, 8, 9));
             Assert.AreEqual(9, Arithmetic.Max(5, 6, 7, 8, 9));
+            Assert.AreEqual(9, Arithmetic.Max(2, 9, 3));
+            Assert.AreEqual(9, Arithmetic.Max(2, 9, 3, 4, 5, 6));
+            Assert.AreEqual(9, Arithmetic.Max(9, 7, 1));
+            Assert.AreEqual(9, Arithmetic.Max(9, 7, 3, 4, 1, 2));
+            Assert.AreEqual(9L, Arithmetic.Max(7, 8L, 9));
+            Assert.AreEqual(9L, Arithmetic.Max(5, 6L, 7, 8, 9));
+            Assert.AreEqual(9L, Arithmetic.Max(2, 9L, 3));
+            Assert.AreEqual(9L, Arithmetic.Max(2, 9L, 3, 4, 5, 6));
+            Assert.AreEqual(9L, Arithmetic.Max(9, 7L, 1));
+            Assert.AreEqual(9L, Arithmetic.Max(9, 7L, 3, 4, 1, 2));
+            Assert.AreEqual(9.0, Arithmetic.Max(7, 8.0, 9));
+            Assert.AreEqual(9.0, Arithmetic.Max(5, 6.0, 7, 8, 9));
+            Assert.AreEqual(9.0, Arithmetic.Max(2, 9.0, 3));
+            Assert.AreEqual(9.0, Arithmetic.Max(2, 9.0, 3, 4, 5, 6));
+            Assert.AreEqual(9.0, Arithmetic.Max(9, 7.0, 1));
+            Assert.AreEqual(9.0, Arithmetic.Max(9, 7.0, 3, 4, 1, 2));
         }
 
         /// <summary>

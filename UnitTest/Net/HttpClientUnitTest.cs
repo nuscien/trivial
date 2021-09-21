@@ -6,6 +6,7 @@ using System.Text;
 using System.Text.Json;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Trivial.Security;
 using Trivial.Text;
 
 namespace Trivial.Net
@@ -26,6 +27,17 @@ namespace Trivial.Net
             Assert.IsNotNull(content);
             var mime = content.Headers.ContentType.ToString().YieldSplit(new List<string> { " " }).FirstOrDefault().YieldSplit(";", StringSplitOptions.RemoveEmptyEntries).FirstOrDefault();
             Assert.AreEqual(Web.WebFormat.JsonMIME, mime);
+
+            var oauth = new OAuthClient("someone", "secret", null);
+            oauth.Scope.Add("test");
+            oauth.Scope.Add("another");
+            Assert.AreEqual("test another", oauth.ScopeString);
+            oauth.ScopeString = "query";
+            var oneSec = TimeSpan.FromSeconds(1);
+            oauth.Timeout = oneSec;
+            Assert.AreEqual(1, oauth.Scope.Count);
+            var client = oauth.Create<JsonModel>();
+            Assert.AreEqual(oneSec, client.Timeout);
         }
     }
 }

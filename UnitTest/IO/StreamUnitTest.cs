@@ -31,10 +31,21 @@ namespace Trivial.IO
                 s.Dispose();
             }
 
+            reader.Close();
+
             str = "abcdefg\rhijklmn\nopq rst\r\nuvw xyz";
             using var stream2 = CharsReader.ToStream(str);
             var lines = CharsReader.ReadLines(stream2, Encoding.UTF8).ToList();
             Assert.AreEqual(4, lines.Count);
+
+            reader = new CharsReader(str);
+            Assert.AreEqual('a', reader.Peek());
+            Assert.AreEqual('a', reader.Read());
+            var arr = new char[] { ' ', ' ', ' ', ' ', ' ', ' ', ' ' };
+            reader.Read(arr, 1, 4);
+            Assert.AreEqual('b', arr[1]);
+            reader.ReadLine();
+            reader.Dispose();
         }
     }
 }
