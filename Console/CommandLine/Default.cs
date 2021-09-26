@@ -1084,7 +1084,7 @@ namespace Trivial.CommandLine
         /// <param name="ex">The exception.</param>
         /// <param name="stackTrace">true if output stack trace; otherwise, false.</param>
         public static void WriteLine(Exception ex, bool stackTrace = false)
-            => StyleConsole.Default.WriteLine(null as ConsoleTextStyle, null as ConsoleTextStyle, ex, stackTrace);
+            => StyleConsole.Default.WriteLine(new ConsoleTextStyle(ConsoleColor.Red), null as ConsoleTextStyle, ex, stackTrace);
 
         /// <summary>
         /// Writes an exception, followed by the current line terminator, to the standard output stream.

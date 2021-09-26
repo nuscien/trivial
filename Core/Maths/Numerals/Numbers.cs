@@ -238,17 +238,17 @@ namespace Trivial.Maths
         public static string ToPositionalNotationString(long value, int radix)
         {
             if (radix < 2 || radix > 36) throw new ArgumentOutOfRangeException(nameof(radix), "radix should be in 2-36.");
-            var integerStr = string.Empty;
+            var integerStr = new StringBuilder();
             var integerPart = Math.Abs(value);
             if (integerPart == 0) return "0";
             while (integerPart != 0)
             {
-                integerStr = num36[(int)(integerPart % radix)] + integerStr;
+                integerStr.Insert(0, num36[(int)(integerPart % radix)]);
                 integerPart /= radix;
             }
 
-            if (value < 0) return "-" + integerStr;
-            return integerStr;
+            if (value < 0) integerStr.Insert(0, '-');
+            return integerStr.ToString();
         }
 
         /// <summary>
@@ -271,18 +271,18 @@ namespace Trivial.Maths
         public static string ToPositionalNotationString(double value, int radix)
         {
             if (radix < 2 || radix > 36) throw new ArgumentOutOfRangeException(nameof(radix), "radix should be in 2-36.");
-            var integerStr = string.Empty;
+            var str = new StringBuilder();
             var fractionalStr = string.Empty;
             var integerPart = Math.Abs((long)value);
             var fractionalPart = Math.Abs(value) - integerPart;
             if (integerPart == 0)
             {
-                integerStr = "0";
+                str.Append('0');
             }
 
             while (integerPart != 0)
             {
-                integerStr = num36[(int)(integerPart % radix)] + integerStr;
+                str.Insert(0, num36[(int)(integerPart % radix)]);
                 integerPart /= radix;
             }
 
@@ -307,9 +307,7 @@ namespace Trivial.Maths
             while (fractionalStr.Length > 0 && fractionalStr.LastIndexOf('0') == (fractionalStr.Length - 1))
                 fractionalStr = fractionalStr.Remove(fractionalStr.Length - 1);
 
-            var str = new StringBuilder();
-            if (value < 0) str.Append('-');
-            str.Append(integerStr);
+            if (value < 0) str.Insert(0, '-');
             if (!string.IsNullOrEmpty(fractionalStr))
             {
                 str.Append('.');

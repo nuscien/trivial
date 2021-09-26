@@ -268,7 +268,7 @@ namespace Trivial.CommandLine
         {
             try
             {
-                return cli.CursorLeft;
+                return (cli ?? StyleConsole.Default).CursorLeft;
             }
             catch (IOException)
             {
@@ -280,17 +280,23 @@ namespace Trivial.CommandLine
             {
             }
             catch (SecurityException)
+            {
+            }
+            catch (System.Runtime.InteropServices.ExternalException)
+            {
+            }
+            catch (ArgumentException)
             {
             }
 
             return null;
         }
 
-        private static int GetBufferSafeWidth()
+        private static int GetBufferSafeWidth(StyleConsole cli)
         {
             try
             {
-                return Console.BufferWidth - 1;
+                return (cli ?? StyleConsole.Default).BufferWidth - 1;
             }
             catch (IOException)
             {
@@ -302,6 +308,12 @@ namespace Trivial.CommandLine
             {
             }
             catch (SecurityException)
+            {
+            }
+            catch (System.Runtime.InteropServices.ExternalException)
+            {
+            }
+            catch (ArgumentException)
             {
             }
 

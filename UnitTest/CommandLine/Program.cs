@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections;
 using System.Drawing;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Trivial.CommandLine
@@ -23,6 +25,7 @@ namespace Trivial.CommandLine
             dispatcher.Register<Text.CsvVerb>("csv");
             dispatcher.Register<Chemistry.ChemistryVerb>("chemistry");
             dispatcher.Register<SelectionVerb>("select");
+            dispatcher.Register<Data.EanVerb>("barcode");
             return dispatcher.ProcessAsync();
         }
 

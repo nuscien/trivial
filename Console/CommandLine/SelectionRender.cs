@@ -368,7 +368,7 @@ namespace Trivial.CommandLine
         /// <returns>The result of selection: offset, count, rows, columns, paging tips, customized tips, page size, item length.</returns>
         private static (int, int, int, int, bool, bool, int, int) RenderData<T>(this StyleConsole cli, List<SelectionItem<T>> collection, SelectionConsoleOptions options, int select)
         {
-            var maxWidth = GetBufferSafeWidth();
+            var maxWidth = GetBufferSafeWidth(cli);
             var itemLen = options.Column.HasValue ? (int)Math.Floor(maxWidth * 1.0 / options.Column.Value) : maxWidth;
             if (options.MaxLength.HasValue) itemLen = Math.Min(options.MaxLength.Value, itemLen);
             if (options.MinLength.HasValue) itemLen = Math.Max(options.MinLength.Value, itemLen);
@@ -627,7 +627,7 @@ namespace Trivial.CommandLine
             int i;
             if (listAllData)
             {
-                var maxWidth = GetBufferSafeWidth();
+                var maxWidth = GetBufferSafeWidth(cli);
                 var itemLen = options.Column.HasValue ? (int)Math.Floor(maxWidth * 1.0 / options.Column.Value) : maxWidth;
                 if (options.MaxLength.HasValue) itemLen = Math.Min(options.MaxLength.Value, itemLen);
                 if (options.MinLength.HasValue) itemLen = Math.Max(options.MinLength.Value, itemLen);
