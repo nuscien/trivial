@@ -10,7 +10,7 @@ using Trivial.CommandLine;
 namespace Trivial.Data
 {
     /// <summary>
-    /// The International Article Number, a.k.a. European Article Number or EAN-13.
+    /// The International Article Number, a.k.a. European Article Number or EAN.
     /// </summary>
     public partial class InternationalArticleNumber
     {
@@ -32,7 +32,7 @@ namespace Trivial.Data
         /// <returns>The boolean list.</returns>
         public List<bool> ToBarcode(StyleConsole cli, ConsoleTextStyle style)
         {
-            List<bool> barcode = null;
+            List<bool> barcode;
             try
             {
                 barcode = ToBarcode();

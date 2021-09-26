@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace Trivial.Data
 {
     /// <summary>
-    /// The International Article Number, a.k.a. European Article Number or EAN-13.
+    /// The International Article Number, a.k.a. European Article Number or EAN.
     /// </summary>
     public partial class InternationalArticleNumber
     {
@@ -266,7 +266,7 @@ namespace Trivial.Data
         /// <summary>
         /// Creates an EAN.
         /// </summary>
-        /// <param name="sequence">The EAN digits.</param>
+        /// <param name="sequence">The EAN digits; or barcode areas that white represented as 0 and black represented as 1.</param>
         /// <returns>An instance of the EAN.</returns>
         /// <exception cref="ArgumentNullException">The input sequence was null.</exception>
         /// <exception cref="InvalidOperationException">The digits was not valid.</exception>

@@ -60,6 +60,7 @@ The MIME constants and its mapping of file extension part.
 ![.NET Framework 4.6.1](./docs/assets/badge_NET_Fx_4_6_1.svg)
 
 - [MIME constants](./docs/web/mime)
+- [EAN](./docs/data/ean)
 
 ## [Trivial.Web](./Web)
 

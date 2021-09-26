@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace Trivial.Data
 {
     /// <summary>
-    /// The 13-Code International Article Number, a.k.a. 13-Code European Article Number or EAN-13.
+    /// The International Article Number, a.k.a. European Article Number or EAN.
     /// </summary>
     public partial class InternationalArticleNumber
     {
