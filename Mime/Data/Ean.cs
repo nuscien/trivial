@@ -63,11 +63,117 @@ namespace Trivial.Data
         /// White represented as false, black represented as true.
         /// </summary>
         /// <returns>The boolean list of barcode.</returns>
+        /// <exception cref="InvalidOperationException">It was not an EAN-13 ro EAN-8 code.</exception>
         public List<bool> ToBarcode()
         {
             var codes = ToList();
             var col = new List<bool>();
-            if (codes.Count == 8)
+            if (codes.Count == 13)
+            {
+                col.Add(true);
+                col.Add(false);
+                col.Add(true);
+                switch (value.FirstOrDefault())
+                {
+                    case '0':
+                        col.AddRange(codes[1].ToList(Encodings.L));
+                        col.AddRange(codes[2].ToList(Encodings.L));
+                        col.AddRange(codes[3].ToList(Encodings.L));
+                        col.AddRange(codes[4].ToList(Encodings.L));
+                        col.AddRange(codes[5].ToList(Encodings.L));
+                        col.AddRange(codes[6].ToList(Encodings.L));
+                        break;
+                    case '1':
+                        col.AddRange(codes[1].ToList(Encodings.L));
+                        col.AddRange(codes[2].ToList(Encodings.L));
+                        col.AddRange(codes[3].ToList(Encodings.G));
+                        col.AddRange(codes[4].ToList(Encodings.L));
+                        col.AddRange(codes[5].ToList(Encodings.G));
+                        col.AddRange(codes[6].ToList(Encodings.G));
+                        break;
+                    case '2':
+                        col.AddRange(codes[1].ToList(Encodings.L));
+                        col.AddRange(codes[2].ToList(Encodings.L));
+                        col.AddRange(codes[3].ToList(Encodings.G));
+                        col.AddRange(codes[4].ToList(Encodings.G));
+                        col.AddRange(codes[5].ToList(Encodings.L));
+                        col.AddRange(codes[6].ToList(Encodings.G));
+                        break;
+                    case '3':
+                        col.AddRange(codes[1].ToList(Encodings.L));
+                        col.AddRange(codes[2].ToList(Encodings.L));
+                        col.AddRange(codes[3].ToList(Encodings.G));
+                        col.AddRange(codes[4].ToList(Encodings.G));
+                        col.AddRange(codes[5].ToList(Encodings.G));
+                        col.AddRange(codes[6].ToList(Encodings.L));
+                        break;
+                    case '4':
+                        col.AddRange(codes[1].ToList(Encodings.L));
+                        col.AddRange(codes[2].ToList(Encodings.G));
+                        col.AddRange(codes[3].ToList(Encodings.L));
+                        col.AddRange(codes[4].ToList(Encodings.L));
+                        col.AddRange(codes[5].ToList(Encodings.G));
+                        col.AddRange(codes[6].ToList(Encodings.G));
+                        break;
+                    case '5':
+                        col.AddRange(codes[1].ToList(Encodings.L));
+                        col.AddRange(codes[2].ToList(Encodings.G));
+                        col.AddRange(codes[3].ToList(Encodings.G));
+                        col.AddRange(codes[4].ToList(Encodings.L));
+                        col.AddRange(codes[5].ToList(Encodings.L));
+                        col.AddRange(codes[6].ToList(Encodings.G));
+                        break;
+                    case '6':
+                        col.AddRange(codes[1].ToList(Encodings.L));
+                        col.AddRange(codes[2].ToList(Encodings.G));
+                        col.AddRange(codes[3].ToList(Encodings.G));
+                        col.AddRange(codes[4].ToList(Encodings.G));
+                        col.AddRange(codes[5].ToList(Encodings.L));
+                        col.AddRange(codes[6].ToList(Encodings.L));
+                        break;
+                    case '7':
+                        col.AddRange(codes[1].ToList(Encodings.L));
+                        col.AddRange(codes[2].ToList(Encodings.G));
+                        col.AddRange(codes[3].ToList(Encodings.L));
+                        col.AddRange(codes[4].ToList(Encodings.G));
+                        col.AddRange(codes[5].ToList(Encodings.L));
+                        col.AddRange(codes[6].ToList(Encodings.G));
+                        break;
+                    case '8':
+                        col.AddRange(codes[1].ToList(Encodings.L));
+                        col.AddRange(codes[2].ToList(Encodings.G));
+                        col.AddRange(codes[3].ToList(Encodings.L));
+                        col.AddRange(codes[4].ToList(Encodings.G));
+                        col.AddRange(codes[5].ToList(Encodings.G));
+                        col.AddRange(codes[6].ToList(Encodings.L));
+                        break;
+                    case '9':
+                        col.AddRange(codes[1].ToList(Encodings.L));
+                        col.AddRange(codes[2].ToList(Encodings.G));
+                        col.AddRange(codes[3].ToList(Encodings.G));
+                        col.AddRange(codes[4].ToList(Encodings.L));
+                        col.AddRange(codes[5].ToList(Encodings.G));
+                        col.AddRange(codes[6].ToList(Encodings.L));
+                        break;
+                }
+
+                col.Add(false);
+                col.Add(true);
+                col.Add(false);
+                col.Add(true);
+                col.Add(false);
+                col.AddRange(codes[7].ToList(Encodings.R));
+                col.AddRange(codes[8].ToList(Encodings.R));
+                col.AddRange(codes[9].ToList(Encodings.R));
+                col.AddRange(codes[10].ToList(Encodings.R));
+                col.AddRange(codes[11].ToList(Encodings.R));
+                col.AddRange(codes[12].ToList(Encodings.R));
+                col.Add(true);
+                col.Add(false);
+                col.Add(true);
+                return col;
+            }
+            else if (codes.Count == 8)
             {
                 col.Add(true);
                 col.Add(false);
@@ -90,117 +196,52 @@ namespace Trivial.Data
                 col.Add(true);
                 return col;
             }
-            
-            if (codes.Count != 13)
-                throw new InvalidOperationException("The count of digit is not any of 7, 8, 12 or 13.");
-            col.Add(true);
-            col.Add(false);
-            col.Add(true);
-            switch (value.FirstOrDefault())
+            else if (codes.Count == 5)
             {
-                case '0':
-                    col.AddRange(codes[1].ToList(Encodings.L));
-                    col.AddRange(codes[2].ToList(Encodings.L));
-                    col.AddRange(codes[3].ToList(Encodings.L));
-                    col.AddRange(codes[4].ToList(Encodings.L));
-                    col.AddRange(codes[5].ToList(Encodings.L));
-                    col.AddRange(codes[6].ToList(Encodings.L));
-                    break;
-                case '1':
-                    col.AddRange(codes[1].ToList(Encodings.L));
-                    col.AddRange(codes[2].ToList(Encodings.L));
-                    col.AddRange(codes[3].ToList(Encodings.G));
-                    col.AddRange(codes[4].ToList(Encodings.L));
-                    col.AddRange(codes[5].ToList(Encodings.G));
-                    col.AddRange(codes[6].ToList(Encodings.G));
-                    break;
-                case '2':
-                    col.AddRange(codes[1].ToList(Encodings.L));
-                    col.AddRange(codes[2].ToList(Encodings.L));
-                    col.AddRange(codes[3].ToList(Encodings.G));
-                    col.AddRange(codes[4].ToList(Encodings.G));
-                    col.AddRange(codes[5].ToList(Encodings.L));
-                    col.AddRange(codes[6].ToList(Encodings.G));
-                    break;
-                case '3':
-                    col.AddRange(codes[1].ToList(Encodings.L));
-                    col.AddRange(codes[2].ToList(Encodings.L));
-                    col.AddRange(codes[3].ToList(Encodings.G));
-                    col.AddRange(codes[4].ToList(Encodings.G));
-                    col.AddRange(codes[5].ToList(Encodings.G));
-                    col.AddRange(codes[6].ToList(Encodings.L));
-                    break;
-                case '4':
-                    col.AddRange(codes[1].ToList(Encodings.L));
-                    col.AddRange(codes[2].ToList(Encodings.G));
-                    col.AddRange(codes[3].ToList(Encodings.L));
-                    col.AddRange(codes[4].ToList(Encodings.L));
-                    col.AddRange(codes[5].ToList(Encodings.G));
-                    col.AddRange(codes[6].ToList(Encodings.G));
-                    break;
-                case '5':
-                    col.AddRange(codes[1].ToList(Encodings.L));
-                    col.AddRange(codes[2].ToList(Encodings.G));
-                    col.AddRange(codes[3].ToList(Encodings.G));
-                    col.AddRange(codes[4].ToList(Encodings.L));
-                    col.AddRange(codes[5].ToList(Encodings.L));
-                    col.AddRange(codes[6].ToList(Encodings.G));
-                    break;
-                case '6':
-                    col.AddRange(codes[1].ToList(Encodings.L));
-                    col.AddRange(codes[2].ToList(Encodings.G));
-                    col.AddRange(codes[3].ToList(Encodings.G));
-                    col.AddRange(codes[4].ToList(Encodings.G));
-                    col.AddRange(codes[5].ToList(Encodings.L));
-                    col.AddRange(codes[6].ToList(Encodings.L));
-                    break;
-                case '7':
-                    col.AddRange(codes[1].ToList(Encodings.L));
-                    col.AddRange(codes[2].ToList(Encodings.G));
-                    col.AddRange(codes[3].ToList(Encodings.L));
-                    col.AddRange(codes[4].ToList(Encodings.G));
-                    col.AddRange(codes[5].ToList(Encodings.L));
-                    col.AddRange(codes[6].ToList(Encodings.G));
-                    break;
-                case '8':
-                    col.AddRange(codes[1].ToList(Encodings.L));
-                    col.AddRange(codes[2].ToList(Encodings.G));
-                    col.AddRange(codes[3].ToList(Encodings.L));
-                    col.AddRange(codes[4].ToList(Encodings.G));
-                    col.AddRange(codes[5].ToList(Encodings.G));
-                    col.AddRange(codes[6].ToList(Encodings.L));
-                    break;
-                case '9':
-                    col.AddRange(codes[1].ToList(Encodings.L));
-                    col.AddRange(codes[2].ToList(Encodings.G));
-                    col.AddRange(codes[3].ToList(Encodings.G));
-                    col.AddRange(codes[4].ToList(Encodings.L));
-                    col.AddRange(codes[5].ToList(Encodings.G));
-                    col.AddRange(codes[6].ToList(Encodings.L));
-                    break;
+                var checksum = Checksum();
+                col.Add(false);
+                col.Add(true);
+                col.Add(false);
+                col.Add(true);
+                col.Add(true);
+                col.AddRange(codes[0].ToList(checksum < 4 ? Encodings.G : Encodings.L));
+                col.Add(false);
+                col.Add(true);
+                col.AddRange(codes[1].ToList(checksum == 0 || checksum == 4 || checksum == 7 || checksum == 8 ? Encodings.G : Encodings.L));
+                col.Add(false);
+                col.Add(true);
+                col.AddRange(codes[2].ToList(checksum == 1 || checksum == 4 || checksum == 5 || checksum == 9 ? Encodings.G : Encodings.L));
+                col.Add(false);
+                col.Add(true);
+                col.AddRange(codes[3].ToList(checksum == 2 || checksum == 5 || checksum == 6 || checksum == 7 ? Encodings.G : Encodings.L));
+                col.Add(false);
+                col.Add(true);
+                col.AddRange(codes[4].ToList(checksum == 3 || checksum == 6 || checksum == 8 || checksum == 9 ? Encodings.G : Encodings.L));
+                return col;
+            }
+            else if (codes.Count == 2)
+            {
+                var checksum = Checksum();
+                col.Add(false);
+                col.Add(true);
+                col.Add(false);
+                col.Add(true);
+                col.Add(true);
+                col.AddRange(codes[0].ToList(checksum % 4 < 2 ? Encodings.L : Encodings.G));
+                col.Add(false);
+                col.Add(true);
+                col.AddRange(codes[1].ToList(checksum % 2 == 0 ? Encodings.L : Encodings.G));
+                return col;
             }
 
-            col.Add(false);
-            col.Add(true);
-            col.Add(false);
-            col.Add(true);
-            col.Add(false);
-            col.AddRange(codes[7].ToList(Encodings.R));
-            col.AddRange(codes[8].ToList(Encodings.R));
-            col.AddRange(codes[9].ToList(Encodings.R));
-            col.AddRange(codes[10].ToList(Encodings.R));
-            col.AddRange(codes[11].ToList(Encodings.R));
-            col.AddRange(codes[12].ToList(Encodings.R));
-            col.Add(true);
-            col.Add(false);
-            col.Add(true);
-            return col;
+            throw new InvalidOperationException("The count of digit is not any of 7, 8, 12 or 13.");
         }
 
         /// <summary>
         /// Converts to a string.
         /// </summary>
         /// <returns>The barcode string.</returns>
+        /// <exception cref="InvalidOperationException">It was not an EAN-13 ro EAN-8 code.</exception>
         public string ToBarcodeString()
             => string.Join(string.Empty, ToBarcode().Select(ele => ele ? '1' : '0'));
 
@@ -210,6 +251,7 @@ namespace Trivial.Data
         /// <param name="black">The value of black represented.</param>
         /// <param name="white">The value of white represented.</param>
         /// <returns>The barcode string.</returns>
+        /// <exception cref="InvalidOperationException">It was not an EAN-13 ro EAN-8 code.</exception>
         public string ToBarcodeString(char black, char white)
             => string.Join(string.Empty, ToBarcode().Select(ele => ele ? black : white));
 
@@ -218,6 +260,7 @@ namespace Trivial.Data
         /// </summary>
         /// <param name="selector">The selector to convert boolean array to a string. Per boolean value, white represented as false, black represented as true.</param>
         /// <returns>The barcode string.</returns>
+        /// <exception cref="InvalidOperationException">It was not an EAN-13 ro EAN-8 code.</exception>
         public string ToBarcodeString(Func<bool, char> selector)
             => selector != null ? string.Join(string.Empty, ToBarcode().Select(selector)) : ToBarcodeString();
 
@@ -226,6 +269,7 @@ namespace Trivial.Data
         /// </summary>
         /// <param name="selector">The selector to convert boolean array to a string. Per boolean value, white represented as false, black represented as true.</param>
         /// <returns>The barcode string.</returns>
+        /// <exception cref="InvalidOperationException">It was not an EAN-13 ro EAN-8 code.</exception>
         public string ToBarcodeString(Func<bool, int, char> selector)
             => selector != null ? string.Join(string.Empty, ToBarcode().Select(selector)) : ToBarcodeString();
 
@@ -238,6 +282,22 @@ namespace Trivial.Data
         /// <exception cref="InvalidOperationException">The digits was not valid.</exception>
         public static InternationalArticleNumber Create(params byte[] digits)
         {
+            if (digits.Length < 6)
+            {
+                foreach (var d in digits)
+                {
+                    if (d > 9) throw new InvalidOperationException("The digit should be less than 10.");
+                }
+
+                if (digits.Length == 5 || digits.Length == 2)
+                    return new InternationalArticleNumber
+                    {
+                        value = string.Join(string.Empty, digits)
+                    };
+
+                throw new InvalidOperationException("The count of digit is too less.");
+            }
+
             var check = Checksum(digits);
             var col = digits.Length switch
             {
@@ -246,7 +306,8 @@ namespace Trivial.Data
                 18 => digits[17] == check ? digits.Take(17) : null,
                 _ => digits
             };
-            if (col == null) throw new InvalidOperationException($"Check failed. Expects {check} but {digits.LastOrDefault()}.");
+            if (col == null)
+                throw new InvalidOperationException($"Check failed. Expects {check} but {digits.LastOrDefault()}.");
             return new InternationalArticleNumber
             {
                 value = string.Join(string.Empty, col) + check
@@ -274,7 +335,7 @@ namespace Trivial.Data
         {
             if (sequence == null) throw new ArgumentNullException(nameof(sequence), "sequence should not be null.");
             sequence = sequence.Trim();
-            if (sequence.Length < 67 || sequence.Replace("0", string.Empty).Replace("1", string.Empty).Replace("-", string.Empty).Trim().Length > 0)
+            if (sequence.Length < 21 || sequence.Contains('9') || sequence.Replace("0", string.Empty).Replace("1", string.Empty).Replace("-", string.Empty).Trim().Length > 0)
                 return Create(ToList(sequence));
             var col = new List<bool>();
             foreach (var c in sequence)
@@ -298,12 +359,56 @@ namespace Trivial.Data
 #pragma warning disable IDE0056
             if (barcode == null) throw new ArgumentNullException(nameof(barcode), "barcode should not be null.");
             var col = barcode?.ToList();
+            var sb = new StringBuilder();
+            if (col.Count < 49)
+            {
+                if (col.Count != 21 && col.Count != 48)
+                    throw new InvalidOperationException("The count of barcode area is too less.");
+                if (col[0] || !col[1] || col[2] || !col[3] || !col[4])
+                    throw new InvalidOperationException("The start marker is not invalid.");
+                for (var i = 5; i < col.Count; i += 9)
+                {
+                    var n = GetLeftDigitNumber(col, i, out _);
+                    sb.Append(n);
+                }
+
+                return Create(sb.ToString());
+            }
+
             if (!col[0] || col[1] || !col[2] || col[3])
                 throw new InvalidOperationException("The start marker is not invalid.");
             if (!col[col.Count - 1] || col[col.Count - 2] || !col[col.Count - 3] || col[col.Count - 4])
                 throw new InvalidOperationException("The end marker is not invalid.");
-            var sb = new StringBuilder();
-            if (col.Count == 67)
+            if (col.Count == 95)
+            {
+                {
+                    var n = GetLeftDigitNumber(col, 3, out var e);
+                    if (e == Encodings.G)
+                    {
+                        col.Reverse();
+                        n = GetLeftDigitNumber(col, 3, out e);
+                    }
+
+                    if (e != Encodings.L) throw new InvalidOperationException("The format of the first digit is invalid.");
+                    sb.Append(n);
+                }
+
+                var left = new List<bool> { false };
+                for (var i = 10; i < 45; i += 7)
+                {
+                    var n = GetLeftDigitNumber(col, i, out var e);
+                    left.Add(e == Encodings.G);
+                    sb.Append(n);
+                }
+
+                sb.Insert(0, GetFirstDigitNumber(left));
+                for (var i = 50; i < 92; i += 7)
+                {
+                    var n = GetRightDigitNumber(col, i);
+                    sb.Append(n);
+                }
+            }
+            else if (col.Count == 67)
             {
                 {
                     var n = GetLeftDigitNumber(col, 3, out var e);
@@ -358,35 +463,6 @@ namespace Trivial.Data
                     sb.Append(n);
                 }
             }
-            else if (col.Count == 95)
-            {
-                {
-                    var n = GetLeftDigitNumber(col, 3, out var e);
-                    if (e == Encodings.G)
-                    {
-                        col.Reverse();
-                        n = GetLeftDigitNumber(col, 3, out e);
-                    }
-
-                    if (e != Encodings.L) throw new InvalidOperationException("The format of the first digit is invalid.");
-                    sb.Append(n);
-                }
-
-                var left = new List<bool> { false };
-                for (var i = 10; i < 45; i += 7)
-                {
-                    var n = GetLeftDigitNumber(col, i, out var e);
-                    left.Add(e == Encodings.G);
-                    sb.Append(n);
-                }
-
-                sb.Insert(0, GetFirstDigitNumber(left));
-                for (var i = 50; i < 92; i += 7)
-                {
-                    var n = GetRightDigitNumber(col, i);
-                    sb.Append(n);
-                }
-            }
             else
             {
                 throw new InvalidOperationException("The count of barcode is invalid. Should be 95 or 67.");
@@ -406,11 +482,18 @@ namespace Trivial.Data
         public static byte Checksum(params byte[] digits)
         {
             if (digits == null) throw new ArgumentNullException(nameof(digits), "digits should not be null.");
+            foreach (var d in digits)
+            {
+                if (d > 9) throw new InvalidOperationException("The digit should be less than 10.");
+            }
+
             return (byte)(digits.Length switch
             {
                 12 or 13 => (10 - ((digits[0] + digits[2] + digits[4] + digits[6] + digits[8] + digits[10] + (digits[1] + digits[3] + digits[5] + digits[7] + digits[9] + digits[11]) * 3) % 10)) % 10,
                 7 or 8 => (10 - ((digits[1] + digits[3] + digits[5] + (digits[0] + digits[2] + digits[4] + digits[6]) * 3) % 10)) % 10,
                 17 or 18 => (10 - ((digits[1] + digits[3] + digits[5] + digits[7] + digits[9] + digits[11] + digits[13] + digits[15] + (digits[0] + digits[2] + digits[4] + digits[6] + digits[8] + digits[10] + digits[12] + digits[14] + digits[16]) * 3) % 10)) % 10,
+                5 => ((digits[0] + digits[2] + digits[4]) * 3 + (digits[1] + digits[3]) * 9) % 10,
+                2 => (digits[0] * 2 + digits[1]) % 4,
                 _ => throw new InvalidOperationException("The count of digit is not any of 7, 8, 12 or 13.")
             });
         }
@@ -446,6 +529,7 @@ namespace Trivial.Data
                 13 => (10 - ((digits[0] + digits[2] + digits[4] + digits[6] + digits[8] + digits[10] + (digits[1] + digits[3] + digits[5] + digits[7] + digits[9] + digits[11]) * 3) % 10)) % 10 == digits[12],
                 8 => (10 - ((digits[1] + digits[3] + digits[5] + (digits[0] + digits[2] + digits[4] + digits[6]) * 3) % 10)) % 10 == digits[7],
                 18 => (10 - ((digits[1] + digits[3] + digits[5] + digits[7] + digits[9] + digits[11] + digits[13] + digits[15] + (digits[0] + digits[2] + digits[4] + digits[6] + digits[8] + digits[10] + digits[12] + digits[14] + digits[16]) * 3) % 10)) % 10 == digits[17],
+                5 or 2 => true,
                 _ => false
             };
 

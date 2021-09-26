@@ -15,22 +15,14 @@ namespace Trivial.Data
     public partial class InternationalArticleNumber
     {
         /// <summary>
-        /// Converts to boolean list.
-        /// White represented as false, black represented as true.
-        /// </summary>
-        /// <param name="cli">The command line interface proxy.</param>
-        /// <returns>The boolean list.</returns>
-        public List<bool> ToBarcode(StyleConsole cli)
-            => ToBarcode(cli, null);
-
-        /// <summary>
-        /// Converts to boolean list.
+        /// Converts to boolean list and writes to the standard output stream.
         /// White represented as false, black represented as true.
         /// </summary>
         /// <param name="cli">The command line interface proxy.</param>
         /// <param name="style">The style that foreground represents black and background represents white.</param>
         /// <returns>The boolean list.</returns>
-        public List<bool> ToBarcode(StyleConsole cli, ConsoleTextStyle style)
+        /// <exception cref="InvalidOperationException">It was not an EAN-13 ro EAN-8 code.</exception>
+        public List<bool> ToBarcode(StyleConsole cli, ConsoleTextStyle style = null)
         {
             List<bool> barcode;
             try
@@ -189,6 +181,29 @@ namespace Trivial.Data
 
                 col.Add(' ', 6, white);
                 col.Add(Environment.NewLine);
+            }
+            else if ((barcode.Count == 48 && s.Length == 5) || (barcode.Count == 21 && s.Length == 2))
+            {
+                col.Add(' ', 14, white);
+                foreach (var c in s)
+                {
+                    col.Add(c, 1, style);
+                    col.Add(' ', 8, white);
+                }
+
+                col.Add(' ', 1, white);
+                col.Add(Environment.NewLine);
+                for (var i = 0; i < 4; i++)
+                {
+                    col.Add(' ', 6, white);
+                    foreach (var b in barcode)
+                    {
+                        col.Add(' ', 1, b ? black : white);
+                    }
+
+                    col.Add(' ', 6, white);
+                    col.Add(Environment.NewLine);
+                }
             }
             else
             {

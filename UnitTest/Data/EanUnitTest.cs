@@ -41,6 +41,22 @@ namespace Trivial.Data
             Assert.AreEqual(s, ean.ToString());
             Assert.AreEqual(8, ean.ToList().Count);
             Assert.IsTrue(InternationalArticleNumber.Validate(s));
+
+            s = "52495";
+            ean = InternationalArticleNumber.Create(s);
+            bin = ean.ToBarcodeString();
+            ean = InternationalArticleNumber.Create(bin);
+            Assert.AreEqual(s, ean.ToString());
+            Assert.AreEqual(5, ean.ToList().Count);
+            Assert.IsTrue(InternationalArticleNumber.Validate(s));
+
+            s = "53";
+            ean = InternationalArticleNumber.Create(s);
+            bin = ean.ToBarcodeString();
+            ean = InternationalArticleNumber.Create(bin);
+            Assert.AreEqual(s, ean.ToString());
+            Assert.AreEqual(2, ean.ToList().Count);
+            Assert.IsTrue(InternationalArticleNumber.Validate(s));
         }
     }
 
