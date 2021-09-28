@@ -65,12 +65,18 @@ namespace Trivial.Data
             // Code 128
             var code128 = Code128.CreateB(new byte[] { 43, 73, 78, 71, 67, 69, 65, 78 });
             Assert.AreEqual("Kingcean", code128.ToString());
+            code128 = Code128.CreateA("Kingcean");
+            Assert.AreEqual("Kingcean", code128.ToString());
 
             // GS1-128
             code128 = Code128.CreateC(new byte[] { 102, 42, 18, 40, 20, 50, 101, 16 });
             Assert.AreEqual("[FNC1]42184020500", code128.ToString());
-            Assert.AreEqual((byte)92, code128.Skip(code128.Count - 2).ToList()[0]);
             var ai = code128.GetAiData();
+            Assert.AreEqual("42184020500", ai.First());
+            code128 = Code128.CreateGs1(421, "84020500");
+            Assert.AreEqual("[Start C] [FNC1] 42 18 40 20 50 [Code A] 16 [Check symbol 92] [Stop]", code128.ToString(Code128.Formats.Values));
+            Assert.AreEqual((byte)92, code128.Skip(code128.Count - 2).ToList()[0]);
+            ai = code128.GetAiData();
             Assert.AreEqual("42184020500", ai.First());
         }
     }

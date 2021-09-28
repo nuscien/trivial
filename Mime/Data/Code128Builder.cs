@@ -56,23 +56,148 @@ namespace Trivial.Data
         /// </summary>
         /// <returns>A collection with application identifiers and their data value.</returns>
         public IEnumerable<string> GetAiData()
-#if NETFRAMEWORK || NETSTANDARD2_0
-            => ToString().Split(new[] { "[FNC1]" }, StringSplitOptions.None).Skip(1).Select(ele =>
-#else
-            => ToString().Split("[FNC1]", StringSplitOptions.None).Skip(1).Select(ele =>
-#endif
+        {
+            if (v.Count < 4) yield break;
+            var subtype = v[0] switch
             {
-                var pos = ele.IndexOf('[');
-                return pos < 0 ? ele : ele.Substring(0, pos);
-            });
+                103 => Subtypes.A,
+                104 => Subtypes.B,
+                105 => Subtypes.C,
+                _ => (Subtypes)0
+            };
+            if (subtype == 0) yield break;
+            var sb = new StringBuilder();
+            var subtype2 = subtype;
+            var high = false;
+            var rec = false;
+            foreach (var b in v.Skip(1).Take(v.Count - 3))
+            {
+                if (b > 101)
+                {
+                    if (b > 102) break;
+                    rec = true;
+                    if (sb.Length > 0)
+                    {
+                        yield return sb.ToString();
+                        sb.Clear();
+                    }
+
+                    continue;
+                }
+
+                var st = subtype;
+                subtype = subtype2;
+                if (st == Subtypes.C)
+                {
+                    high = false;
+                    if (b < 100 || b == 102)
+                    {
+                        if (rec) sb.Append(b.ToString("00"));
+                        continue;
+                    }
+
+                    switch (b)
+                    {
+                        case 100:
+                            subtype = subtype2 = Subtypes.B;
+                            break;
+                        case 101:
+                            subtype = subtype2 = Subtypes.A;
+                            break;
+                    }
+
+                    continue;
+                }
+
+                var isA = st == Subtypes.A;
+                if (!isA && st != Subtypes.B)
+                {
+                    high = false;
+                    continue;
+                }
+
+                if (b < 96)
+                {
+                    if (high)
+                    {
+                        high = false;
+                        var c = (char)(ToString(st, b).FirstOrDefault() + 128);
+                        if (rec) sb.Append(c);
+                    }
+                    else
+                    {
+                        if (rec) sb.Append(ToString(st, b));
+                    }
+
+                    continue;
+                }
+
+                switch (b)
+                {
+                    case 96:
+                        rec = false;
+                        if (sb.Length > 0)
+                        {
+                            yield return sb.ToString();
+                            sb.Clear();
+                        }
+
+                        break;
+                    case 97:
+                        rec = false;
+                        if (sb.Length > 0)
+                        {
+                            yield return sb.ToString();
+                            sb.Clear();
+                        }
+
+                        break;
+                    case 98:
+                        subtype = isA ? Subtypes.B : Subtypes.A;
+                        continue;
+                    case 99:
+                        subtype = subtype2 = Subtypes.C;
+                        break;
+                    case 100:
+                        if (!isA)
+                        {
+                            high = !high;
+                            continue;
+                        }
+
+                        subtype = subtype2 = Subtypes.B;
+                        break;
+                    case 101:
+                        if (isA)
+                        {
+                            high = !high;
+                            continue;
+                        }
+
+                        subtype = subtype2 = Subtypes.A;
+                        break;
+                }
+
+                high = false;
+            }
+
+            if (sb.Length > 0) yield return sb.ToString();
+        }
 
         /// <summary>
         /// Returns a string that represents the current object.
         /// </summary>
         /// <returns>A string that represents the current object.</returns>
         public override string ToString()
+            => ToString(Formats.Regular);
+
+        /// <summary>
+        /// Returns a string that represents the current object.
+        /// </summary>
+        /// <param name="format">The output string format.</param>
+        /// <returns>A string that represents the current object.</returns>
+        public string ToString(Formats format)
         {
-            var sb = new StringBuilder();
             if (v.Count < 4) return string.Empty;
             var subtype = v[0] switch
             {
@@ -82,6 +207,89 @@ namespace Trivial.Data
                 _ => (Subtypes)0
             };
             if (subtype == 0) return string.Empty;
+            var sb = new StringBuilder();
+            switch (format)
+            {
+                case Formats.Hex:
+                    foreach (var b in v)
+                    {
+                        sb.Append(b.ToString("x2"));
+                    }
+
+                    return sb.ToString();
+                case Formats.Values:
+                    foreach (var b in v.Take(v.Count - 2))
+                    {
+                        if (subtype == Subtypes.C && b < 100)
+                        {
+                            sb.Append(b);
+                            sb.Append(' ');
+                            continue;
+                        }
+
+                        switch (b)
+                        {
+                            case 96:
+                                sb.Append("[FNC3] ");
+                                break;
+                            case 97:
+                                sb.Append("[FNC2] ");
+                                break;
+                            case 98:
+                                sb.Append(subtype == Subtypes.A ? "[Shift B] " : "[Shift A] ");
+                                break;
+                            case 99:
+                                subtype = Subtypes.C;
+                                sb.Append("[Code C] ");
+                                break;
+                            case 100:
+                                if (subtype == Subtypes.B)
+                                {
+                                    sb.Append("[FNC4] ");
+                                }
+                                else
+                                {
+                                    subtype = Subtypes.B;
+                                    sb.Append("[Code B] ");
+                                }
+
+                                break;
+                            case 101:
+                                if (subtype == Subtypes.A)
+                                {
+                                    sb.Append("[FNC4] ");
+                                }
+                                else
+                                {
+                                    subtype = Subtypes.A;
+                                    sb.Append("[Code A] ");
+                                }
+
+                                break;
+                            case 102:
+                                sb.Append("[FNC1] ");
+                                break;
+                            case 103:
+                                sb.Append("[Start A] ");
+                                break;
+                            case 104:
+                                sb.Append("[Start B] ");
+                                break;
+                            case 105:
+                                sb.Append("[Start C] ");
+                                break;
+                            default:
+                                sb.Append(b);
+                                sb.Append(' ');
+                                break;
+                        }
+                    }
+
+                    sb.Append($"[Check symbol {v[v.Count - 2]:g}] [Stop]");
+                    return sb.ToString().Trim();
+            }
+
+            var appendFunc = format == Formats.Regular;
             var subtype2 = subtype;
             var high = false;
             foreach (var b in v.Skip(1).Take(v.Count - 3))
@@ -89,7 +297,7 @@ namespace Trivial.Data
                 if (b > 101)
                 {
                     if (b > 102) break;
-                    sb.Append("[FNC1]");
+                    if (appendFunc) sb.Append("[FNC1]");
                     continue;
                 }
 
@@ -143,10 +351,10 @@ namespace Trivial.Data
                 switch (b)
                 {
                     case 96:
-                        sb.Append("[FNC3]");
+                        if (appendFunc) sb.Append("[FNC3]");
                         break;
                     case 97:
-                        sb.Append("[FNC2]");
+                        if (appendFunc) sb.Append("[FNC2]");
                         break;
                     case 98:
                         subtype = isA ? Subtypes.B : Subtypes.A;
@@ -177,7 +385,7 @@ namespace Trivial.Data
                 high = false;
             }
 
-            return sb.ToString().Trim();
+            return sb.ToString();
         }
 
         /// <summary>
@@ -229,7 +437,7 @@ namespace Trivial.Data
         /// Creates with Start Code A.
         /// </summary>
         /// <param name="values">The value collection of symbol.</param>
-        /// <returns>The Code 128 builder.</returns>
+        /// <returns>The Code 128 instance.</returns>
         /// <exception cref="ArgumentNullException">values was null.</exception>
         /// <exception cref="ArgumentException">values was empty.</exception>
         /// <exception cref="InvalidOperationException">Any value is invalid.</exception>
@@ -237,10 +445,21 @@ namespace Trivial.Data
             => Create(values, 103);
 
         /// <summary>
+        /// Creates with Start Code A.
+        /// </summary>
+        /// <param name="s">The string value collection of symbol.</param>
+        /// <returns>The Code 128 instance.</returns>
+        /// <exception cref="ArgumentNullException">values was null.</exception>
+        /// <exception cref="ArgumentException">values was empty.</exception>
+        /// <exception cref="InvalidOperationException">Any value is invalid.</exception>
+        public static Code128 CreateA(string s)
+            => Create(Subtypes.A, s);
+
+        /// <summary>
         /// Creates with Start Code B.
         /// </summary>
         /// <param name="values">The value collection of symbol.</param>
-        /// <returns>The Code 128 builder.</returns>
+        /// <returns>The Code 128 instance.</returns>
         /// <exception cref="ArgumentNullException">values was null.</exception>
         /// <exception cref="ArgumentException">values was empty.</exception>
         /// <exception cref="InvalidOperationException">Any value is invalid.</exception>
@@ -248,10 +467,21 @@ namespace Trivial.Data
             => Create(values, 104);
 
         /// <summary>
+        /// Creates with Start Code B.
+        /// </summary>
+        /// <param name="s">The string value collection of symbol.</param>
+        /// <returns>The Code 128 instance.</returns>
+        /// <exception cref="ArgumentNullException">values was null.</exception>
+        /// <exception cref="ArgumentException">values was empty.</exception>
+        /// <exception cref="InvalidOperationException">Any value is invalid.</exception>
+        public static Code128 CreateB(string s)
+            => Create(Subtypes.B, s);
+
+        /// <summary>
         /// Creates with Start Code C.
         /// </summary>
         /// <param name="values">The value collection of symbol.</param>
-        /// <returns>The Code 128 builder.</returns>
+        /// <returns>The Code 128 instance.</returns>
         /// <exception cref="ArgumentNullException">values was null.</exception>
         /// <exception cref="ArgumentException">values was empty.</exception>
         /// <exception cref="InvalidOperationException">Any value is invalid.</exception>
@@ -261,9 +491,119 @@ namespace Trivial.Data
         /// <summary>
         /// Creates with Start Code C.
         /// </summary>
-        /// <param name="subtype">The sub-type.</param>
+        /// <param name="s">The string value collection of symbol.</param>
+        /// <returns>The Code 128 instance.</returns>
+        /// <exception cref="ArgumentNullException">values was null.</exception>
+        /// <exception cref="ArgumentException">values was empty.</exception>
+        /// <exception cref="InvalidOperationException">Any value is invalid.</exception>
+        public static Code128 CreateC(string s)
+            => Create(Subtypes.C, s);
+
+        /// <summary>
+        /// Creates GS1-128 code.
+        /// </summary>
+        /// <param name="ai">The application identifier.</param>
+        /// <param name="data">The data value.</param>
+        /// <returns>The Code 128 instance.</returns>
+        /// <exception cref="ArgumentNullException">values was null.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">ai was less than 0.</exception>
+        /// <exception cref="ArgumentException">values was empty.</exception>
+        /// <exception cref="InvalidOperationException">Any value is invalid.</exception>
+        public static Code128 CreateGs1(int ai, string data)
+        {
+            if (ai < 0) throw new ArgumentOutOfRangeException(nameof(ai), "ai should not be less than zero.");
+            var col = new List<byte>
+            {
+                102,
+            };
+            Fill(col, Subtypes.C, $"{ai:00}{data}");
+            return Create(Subtypes.C, col);
+        }
+
+        /// <summary>
+        /// Creates GS1-128 code.
+        /// </summary>
+        /// <param name="part1">The string 1 with application identifier and its data value.</param>
+        /// <param name="part2">The string 2 with application identifier and its data value.</param>
+        /// <param name="part3">The string 3 with application identifier and its data value.</param>
+        /// <param name="part4">The string 4 with application identifier and its data value.</param>
+        /// <param name="part5">The string 5 with application identifier and its data value.</param>
+        /// <param name="part6">The string 6 with application identifier and its data value.</param>
+        /// <param name="part7">The string 7 with application identifier and its data value.</param>
+        /// <param name="part8">The string 8 with application identifier and its data value.</param>
+        /// <returns>The Code 128 instance.</returns>
+        /// <exception cref="ArgumentNullException">values was null.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">ai was less than 0.</exception>
+        /// <exception cref="ArgumentException">values was empty.</exception>
+        /// <exception cref="InvalidOperationException">Any value is invalid.</exception>
+        public static Code128 CreateGs1(string part1, string part2, string part3 = null, string part4 = null, string part5 = null, string part6 = null, string part7 = null, string part8 = null)
+        {
+            var col = new List<byte>();
+            var subtype = Subtypes.C;
+            if (!string.IsNullOrEmpty(part1))
+            {
+                col.Add(102);
+                subtype = Fill(col, Subtypes.C, part1);
+            }
+
+            if (!string.IsNullOrEmpty(part2))
+            {
+                if (subtype != Subtypes.C) col.Add(99);
+                col.Add(102);
+                subtype = Fill(col, Subtypes.C, part2);
+            }
+
+            if (!string.IsNullOrEmpty(part3))
+            {
+                if (subtype != Subtypes.C) col.Add(99);
+                col.Add(102);
+                subtype = Fill(col, Subtypes.C, part3);
+            }
+
+            if (!string.IsNullOrEmpty(part4))
+            {
+                if (subtype != Subtypes.C) col.Add(99);
+                col.Add(102);
+                subtype = Fill(col, Subtypes.C, part4);
+            }
+
+            if (!string.IsNullOrEmpty(part5))
+            {
+                if (subtype != Subtypes.C) col.Add(99);
+                col.Add(102);
+                subtype = Fill(col, Subtypes.C, part5);
+            }
+
+            if (!string.IsNullOrEmpty(part6))
+            {
+                if (subtype != Subtypes.C) col.Add(99);
+                col.Add(102);
+                subtype = Fill(col, Subtypes.C, part6);
+            }
+
+            if (!string.IsNullOrEmpty(part7))
+            {
+                if (subtype != Subtypes.C) col.Add(99);
+                col.Add(102);
+                subtype = Fill(col, Subtypes.C, part7);
+            }
+
+            if (!string.IsNullOrEmpty(part8))
+            {
+                if (subtype != Subtypes.C) col.Add(99);
+                col.Add(102);
+                Fill(col, Subtypes.C, part8);
+            }
+
+            return Create(Subtypes.C, col);
+        }
+
+        /// <summary>
+        /// Creates with the specific sub-type.
+        /// </summary>
+        /// <param name="subtype">The sub-type to use.</param>
         /// <param name="values">The value collection of symbol.</param>
-        /// <returns>The Code 128 builder.</returns>
+        /// <returns>The Code 128 instance.</returns>
         /// <exception cref="ArgumentNullException">values was null.</exception>
         /// <exception cref="ArgumentException">values was empty.</exception>
         /// <exception cref="InvalidOperationException">Any value is invalid.</exception>
@@ -280,7 +620,7 @@ namespace Trivial.Data
         /// Creates by boolean collection that white represented as false and black represented as true..
         /// </summary>
         /// <param name="values">The value collection of symbol.</param>
-        /// <returns>The Code 128 builder.</returns>
+        /// <returns>The Code 128 instance.</returns>
         /// <exception cref="ArgumentNullException">values was null.</exception>
         /// <exception cref="ArgumentException">values was empty.</exception>
         /// <exception cref="InvalidOperationException">Any value is invalid.</exception>
@@ -323,7 +663,7 @@ namespace Trivial.Data
         /// Creates by symbols.
         /// </summary>
         /// <param name="values">The value collection of symbol.</param>
-        /// <returns>The Code 128 builder.</returns>
+        /// <returns>The Code 128 instance.</returns>
         /// <exception cref="ArgumentNullException">values was null.</exception>
         /// <exception cref="ArgumentException">values was empty.</exception>
         /// <exception cref="InvalidOperationException">Any value is invalid.</exception>
@@ -336,11 +676,186 @@ namespace Trivial.Data
         }
 
         /// <summary>
+        /// Creates with the specific sub-type.
+        /// </summary>
+        /// <param name="subtype">The sub-type of start code.</param>
+        /// <param name="s">The string to encode.</param>
+        /// <returns>The Code 128 instance.</returns>
+        /// <exception cref="ArgumentNullException">values was null.</exception>
+        /// <exception cref="ArgumentException">values was empty.</exception>
+        /// <exception cref="InvalidOperationException">Any value is invalid.</exception>
+        public static Code128 Create(Subtypes subtype, string s)
+        {
+            var col = new List<byte>();
+            Fill(col, subtype, s);
+            return Create(subtype, col);
+        }
+
+        /// <summary>
+        /// Fills symbols.
+        /// </summary>
+        /// <param name="col">The byte array of symbol value to fill.</param>
+        /// <param name="subtype">The sub-type of start code.</param>
+        /// <param name="s">The string to encode.</param>
+        /// <returns>The subtype of last one.</returns>
+        /// <exception cref="ArgumentNullException">values was null.</exception>
+        /// <exception cref="ArgumentException">values was empty.</exception>
+        /// <exception cref="InvalidOperationException">Any value is invalid.</exception>
+        private static Subtypes Fill(List<byte> col, Subtypes subtype, string s)
+        {
+            if (s == null) return subtype;
+            var bytes = Encoding.ASCII.GetBytes(s);
+            byte? reserved = null;
+            foreach (var b in bytes)
+            {
+                if (subtype == Subtypes.A)
+                {
+                    if (reserved.HasValue)
+                    {
+                        col.Add((byte)(reserved.Value + 16));
+                        reserved = null;
+                    }
+
+                    if (b > 31 && b < 96)
+                    {
+                        col.Add((byte)(b - 32));
+                    }
+                    else if (b < 32)
+                    {
+                        col.Add((byte)(b + 64));
+                    }
+                    else if (b > 127)
+                    {
+                        col.Add(101);
+                        var b2 = b - 128;
+                        if (b2 > 31 && b2 < 96)
+                        {
+                            col.Add((byte)(b2 - 32));
+                        }
+                        else if (b2 < 32)
+                        {
+                            col.Add((byte)(b2 + 64));
+                        }
+                        else
+                        {
+                            subtype = Subtypes.B;
+                            col.Add(100);
+                            col.Add((byte)(b2 - 32));
+                        }
+                    }
+                    else
+                    {
+                        subtype = Subtypes.B;
+                        col.Add(100);
+                        col.Add((byte)(b - 32));
+                    }
+                }
+                else if (subtype == Subtypes.B)
+                {
+                    if (reserved.HasValue)
+                    {
+                        col.Add((byte)(reserved.Value + 16));
+                        reserved = null;
+                    }
+
+                    if (b > 31 && b < 128)
+                    {
+                        col.Add((byte)(b - 32));
+                    }
+                    else if (b > 127)
+                    {
+                        col.Add(100);
+                        var b2 = b - 128;
+                        if (b2 > 31)
+                        {
+                            col.Add((byte)(b - 32));
+                        }
+                        else
+                        {
+                            subtype = Subtypes.A;
+                            col.Add(101);
+                            col.Add((byte)(b2 + 64));
+                        }
+                    }
+                    else
+                    {
+                        subtype = Subtypes.A;
+                        col.Add(101);
+                        col.Add((byte)(b + 64));
+                    }
+                }
+                else if (subtype == Subtypes.C)
+                {
+                    if (b < 48)
+                    {
+                        if (b < 32)
+                        {
+                            subtype = Subtypes.A;
+                            col.Add(101);
+                            col.Add((byte)(b + 64));
+                        }
+                        else
+                        {
+                            subtype = Subtypes.B;
+                            col.Add(100);
+                            col.Add((byte)(b - 32));
+                        }
+                    }
+                    else if (b > 57)
+                    {
+                        if (b > 159)
+                        {
+                            subtype = Subtypes.A;
+                            col.Add(100);
+                            col.Add(100);
+                            col.Add((byte)(b - 160));
+                        }
+                        else if (b > 127)
+                        {
+                            subtype = Subtypes.A;
+                            col.Add(101);
+                            col.Add(101);
+                            col.Add((byte)(b - 64));
+                        }
+                        else
+                        {
+                            subtype = Subtypes.B;
+                            col.Add(100);
+                            col.Add((byte)(b - 32));
+                        }
+                    }
+                    else if (reserved.HasValue)
+                    {
+                        col.Add((byte)(reserved.Value * 10 + b - 48));
+                        reserved = null;
+                    }
+                    else
+                    {
+                        reserved = (byte)(b - 48);
+                    }
+                }
+                else
+                {
+                    throw new InvalidOperationException($"The subtype is not valid.");
+                }
+            }
+
+            if (reserved.HasValue)
+            {
+                if (subtype == Subtypes.C)
+                    col.Add(101);
+                col.Add((byte)(reserved.Value + 16));
+            }
+
+            return subtype;
+        }
+
+        /// <summary>
         /// Creates with the specific start code.
         /// </summary>
         /// <param name="values">The value collection of symbol.</param>
         /// <param name="startCode">The value of start code.</param>
-        /// <returns>The Code 128 builder.</returns>
+        /// <returns>The Code 128 instance.</returns>
         /// <exception cref="ArgumentNullException">values was null.</exception>
         /// <exception cref="ArgumentException">values was empty.</exception>
         /// <exception cref="InvalidOperationException">Any value is invalid.</exception>
