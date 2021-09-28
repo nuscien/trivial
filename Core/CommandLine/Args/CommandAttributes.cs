@@ -7,7 +7,7 @@ namespace Trivial.CommandLine
     /// <summary>
     /// The parameter resolving modes.
     /// </summary>
-    public enum CommandParameterModes
+    public enum CommandParameterModes : byte
     {
         /// <summary>
         /// The first parameter.

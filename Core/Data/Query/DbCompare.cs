@@ -12,7 +12,7 @@ namespace Trivial.Data
     /// <summary>
     /// Specifies comparing operators for database.
     /// </summary>
-    public enum DbCompareOperator
+    public enum DbCompareOperator : byte
     {
         /// <summary>
         /// Equaling.
@@ -63,7 +63,7 @@ namespace Trivial.Data
     /// <summary>
     /// Specifies the sequence way.
     /// </summary>
-    public enum SortingOrder
+    public enum SortingOrder : byte
     {
         /// <summary>
         /// No sequence.

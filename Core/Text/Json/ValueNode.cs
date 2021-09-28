@@ -380,7 +380,7 @@ namespace Trivial.Text
     /// <summary>
     /// The indent styles.
     /// </summary>
-    public enum IndentStyles
+    public enum IndentStyles : byte
     {
         /// <summary>
         /// Minified format. Without any extra white space.

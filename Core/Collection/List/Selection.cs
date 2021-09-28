@@ -10,7 +10,7 @@ namespace Trivial.Collection
     /// <summary>
     /// The input types for selection result.
     /// </summary>
-    public enum SelectionResultTypes
+    public enum SelectionResultTypes : byte
     {
         /// <summary>
         /// The operation has been cancelled.

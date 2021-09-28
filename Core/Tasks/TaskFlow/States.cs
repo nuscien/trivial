@@ -9,7 +9,7 @@ namespace Trivial.Tasks
     /// <summary>
     /// The states of task flow.
     /// </summary>
-    public enum TaskFlowStates
+    public enum TaskFlowStates : byte
     {
         /// <summary>
         /// Unknown state.

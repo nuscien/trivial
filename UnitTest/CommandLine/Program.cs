@@ -25,7 +25,7 @@ namespace Trivial.CommandLine
             dispatcher.Register<Text.CsvVerb>("csv");
             dispatcher.Register<Chemistry.ChemistryVerb>("chemistry");
             dispatcher.Register<SelectionVerb>("select");
-            dispatcher.Register<Data.EanVerb>("barcode");
+            dispatcher.Register<Data.BarcodeVerb>("barcode");
             return dispatcher.ProcessAsync();
         }
 

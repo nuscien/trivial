@@ -8,7 +8,7 @@ namespace Trivial.Tasks
     /// <summary>
     /// The task states.
     /// </summary>
-    public enum TaskStates
+    public enum TaskStates : byte
     {
         /// <summary>
         /// Ready for processing.

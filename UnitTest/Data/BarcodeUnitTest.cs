@@ -12,10 +12,10 @@ using Trivial.CommandLine;
 namespace Trivial.Data
 {
     /// <summary>
-    /// The unit test for International Article Number.
+    /// The unit test for barcode.
     /// </summary>
     [TestClass]
-    public class EanUnitTest
+    public class BarcodeUnitTest
     {
         /// <summary>
         /// Tests International Article Number parser.
@@ -26,6 +26,7 @@ namespace Trivial.Data
             Assert.IsFalse(InternationalArticleNumber.Validate("abcdefg"));
             Assert.IsFalse(InternationalArticleNumber.Validate("4003994155480"));
 
+            // EAN-13
             var ean = InternationalArticleNumber.Create("400399415548");
             var bin = ean.ToBarcodeString();
             ean = InternationalArticleNumber.Create(bin);
@@ -34,6 +35,7 @@ namespace Trivial.Data
             Assert.AreEqual(13, ean.ToList().Count);
             Assert.IsTrue(InternationalArticleNumber.Validate(s));
 
+            // EAN-8
             ean = InternationalArticleNumber.Create("7351353");
             bin = ean.ToBarcodeString();
             ean = InternationalArticleNumber.Create(bin);
@@ -42,6 +44,7 @@ namespace Trivial.Data
             Assert.AreEqual(8, ean.ToList().Count);
             Assert.IsTrue(InternationalArticleNumber.Validate(s));
 
+            // EAN-5
             s = "52495";
             ean = InternationalArticleNumber.Create(s);
             bin = ean.ToBarcodeString();
@@ -50,6 +53,7 @@ namespace Trivial.Data
             Assert.AreEqual(5, ean.ToList().Count);
             Assert.IsTrue(InternationalArticleNumber.Validate(s));
 
+            // EAN-2
             s = "53";
             ean = InternationalArticleNumber.Create(s);
             bin = ean.ToBarcodeString();
@@ -57,10 +61,21 @@ namespace Trivial.Data
             Assert.AreEqual(s, ean.ToString());
             Assert.AreEqual(2, ean.ToList().Count);
             Assert.IsTrue(InternationalArticleNumber.Validate(s));
+
+            // Code 128
+            var code128 = Code128.CreateB(new byte[] { 43, 73, 78, 71, 67, 69, 65, 78 });
+            Assert.AreEqual("Kingcean", code128.ToString());
+
+            // GS1-128
+            code128 = Code128.CreateC(new byte[] { 102, 42, 18, 40, 20, 50, 101, 16 });
+            Assert.AreEqual("[FNC1]42184020500", code128.ToString());
+            Assert.AreEqual((byte)92, code128.Skip(code128.Count - 2).ToList()[0]);
+            var ai = code128.GetAiData();
+            Assert.AreEqual("42184020500", ai.First());
         }
     }
 
-    class EanVerb : BaseCommandVerb
+    class BarcodeVerb : BaseCommandVerb
     {
         public static string Description => "International Article Number";
 
@@ -75,6 +90,19 @@ namespace Trivial.Data
                 s = DefaultConsole.ReadLine();
                 if (string.IsNullOrWhiteSpace(s)) return;
             }
+            //else if (s == "128A" || s == "128a" || s == "128B" || s == "128b" || s == "128C" || s == "128c")
+            //{
+            //    var c = Enum.Parse<Code128.Subtypes>(s.ToUpperInvariant()[3].ToString());
+            //    s = Arguments.Verb.TryGet(1);
+            //    if (string.IsNullOrWhiteSpace(s))
+            //    {
+            //        DefaultConsole.Write("Please type an Code 128: ");
+            //        s = DefaultConsole.ReadLine();
+            //        if (string.IsNullOrWhiteSpace(s)) return;
+            //    }
+
+            //    var code128 = Code128.Create(c, s);
+            //}
 
             try
             {

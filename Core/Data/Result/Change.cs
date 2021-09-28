@@ -26,7 +26,7 @@ namespace Trivial.Data
     /// <summary>
     /// The method to change.
     /// </summary>
-    public enum ChangeMethods
+    public enum ChangeMethods : byte
     {
         /// <summary>
         /// Unknown.
@@ -72,7 +72,7 @@ namespace Trivial.Data
     /// <summary>
     /// The kinds of change error.
     /// </summary>
-    public enum ChangeErrorKinds
+    public enum ChangeErrorKinds : byte
     {
         /// <summary>
         /// No error.

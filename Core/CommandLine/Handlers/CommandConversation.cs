@@ -11,7 +11,7 @@ namespace Trivial.CommandLine
     /// <summary>
     /// The conversation modes for command processing.
     /// </summary>
-    public enum CommandConversationModes
+    public enum CommandConversationModes : byte
     {
         /// <summary>
         /// Turns on when no arguments input; otherwise, turns off.

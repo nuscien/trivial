@@ -10,7 +10,7 @@ namespace Trivial.Geography
     /// <summary>
     /// Latitudes.
     /// </summary>
-    public enum Latitudes
+    public enum Latitudes : byte
     {
         /// <summary>
         /// The equator.
@@ -31,7 +31,7 @@ namespace Trivial.Geography
     /// <summary>
     /// Longitudes.
     /// </summary>
-    public enum Longitudes
+    public enum Longitudes : byte
     {
         /// <summary>
         /// Prime meridian.

@@ -20,7 +20,7 @@ namespace Trivial.Data
     /// <summary>
     /// Criteria types.
     /// </summary>
-    public enum CriteriaType
+    public enum CriteriaType : byte
     {
         /// <summary>
         /// For all resources without query criteria.

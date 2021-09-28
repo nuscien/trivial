@@ -14,7 +14,7 @@ namespace Trivial.Text
     /// <summary>
     /// Letter cases.
     /// </summary>
-    public enum Cases
+    public enum Cases : byte
     {
         /// <summary>
         /// Keep original.

@@ -12,7 +12,7 @@ namespace Trivial.Data
     /// <summary>
     /// Specifies database value types.
     /// </summary>
-    public enum DbValueType
+    public enum DbValueType : byte
     {
         /// <summary>
         /// String.

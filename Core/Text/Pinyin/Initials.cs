@@ -14,7 +14,7 @@ namespace Trivial.Text
     /// <summary>
     /// The Pinyin initials.
     /// </summary>
-    public enum PinyinInitials
+    public enum PinyinInitials : byte
     {
         /// <summary>
         /// Initial B (ㄅ p).

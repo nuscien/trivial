@@ -11,7 +11,7 @@ namespace Trivial.Tasks
     /// <summary>
     /// The way to pick in the interceptor, e.g. invoke the first one, the last one or the whole.
     /// </summary>
-    public enum InterceptorModes
+    public enum InterceptorModes : byte
     {
         /// <summary>
         /// Execute all actions without any intercept.

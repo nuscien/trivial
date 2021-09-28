@@ -15,7 +15,7 @@ namespace Trivial.Maths
     /// <summary>
     /// Quadrants.
     /// </summary>
-    public enum Quadrants
+    public enum Quadrants : byte
     {
         /// <summary>
         /// Origin, X is 0 and Y is 0.

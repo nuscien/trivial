@@ -6,7 +6,7 @@ In `Trivial.Data` [namespace](../) of `Trivial.Mime.dll` [library](../../).
 
 ## EAN
 
-You can parse an array or a string with following information to an EAN with 2-, 5-, 8- or 13-code.
+You can parse an array or a string with any of following information to an EAN with 2-, 5-, 8- or 13-code.
 
 - Boolean values that white represented as false and black represented as true.
 - Areas that white represented as 0 and black represented as 1.

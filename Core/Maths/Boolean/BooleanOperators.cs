@@ -99,7 +99,7 @@ namespace Trivial.Maths
     /// <summary>
     /// Specifies basic boolean comparing operators.
     /// </summary>
-    public enum BasicCompareOperator
+    public enum BasicCompareOperator : byte
     {
         /// <summary>
         /// Equaling.
@@ -135,7 +135,7 @@ namespace Trivial.Maths
     /// <summary>
     /// Specifies unary boolean computing operators.
     /// </summary>
-    public enum UnaryBooleanOperator
+    public enum UnaryBooleanOperator : byte
     {
         /// <summary>
         /// No action.
@@ -151,7 +151,7 @@ namespace Trivial.Maths
     /// <summary>
     /// Specifies binary boolean computing operators.
     /// </summary>
-    public enum BinaryBooleanOperator
+    public enum BinaryBooleanOperator : byte
     {
         /// <summary>
         /// AND Boolean operator.
@@ -172,7 +172,7 @@ namespace Trivial.Maths
     /// <summary>
     /// Specifies 3D boolean computing operators.
     /// </summary>
-    public enum CollectionBooleanOperator
+    public enum CollectionBooleanOperator : byte
     {
         /// <summary>
         /// Union two collections.
@@ -193,7 +193,7 @@ namespace Trivial.Maths
     /// <summary>
     /// Specifies criteria boolean computing operators.
     /// </summary>
-    public enum CriteriaBooleanOperator
+    public enum CriteriaBooleanOperator : byte
     {
         /// <summary>
         /// AND Boolean operator.

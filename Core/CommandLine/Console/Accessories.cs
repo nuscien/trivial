@@ -21,7 +21,7 @@ namespace Trivial.CommandLine
         /// <summary>
         /// The terminal mode.
         /// </summary>
-        public enum Modes
+        public enum Modes : byte
         {
             /// <summary>
             /// ANSI escape sequences.
@@ -42,7 +42,7 @@ namespace Trivial.CommandLine
         /// <summary>
         /// The areas related current cusor to remove.
         /// </summary>
-        public enum RelativeAreas
+        public enum RelativeAreas : byte
         {
             /// <summary>
             /// None.

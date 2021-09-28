@@ -9,7 +9,7 @@ namespace Trivial.Chemistry
     /// <summary>
     /// The types of chemcial bond.
     /// </summary>
-    public enum ChemicalBondTypes
+    public enum ChemicalBondTypes : byte
     {
         /// <summary>
         /// Ionic bond.

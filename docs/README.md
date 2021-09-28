@@ -60,6 +60,7 @@ The MIME constants and its mapping of file extension part.
 
 - [MIME constants](./web/mime)
 - [EAN](./data/ean)
+- [Code 128 and GS1-128](./data/code128)
 
 ### Trivial.Web
 

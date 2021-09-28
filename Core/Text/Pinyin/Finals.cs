@@ -14,7 +14,7 @@ namespace Trivial.Text
     /// <summary>
     /// The Pinyin finals.
     /// </summary>
-    public enum PinyinFinals
+    public enum PinyinFinals : byte
     {
         /// <summary>
         /// Final A (ㄚ).

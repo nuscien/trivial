@@ -9,7 +9,7 @@ namespace Trivial.Geography
     /// <summary>
     /// Topographies.
     /// </summary>
-    public enum Topographies
+    public enum Topographies : byte
     {
         /// <summary>
         /// Plain topography.
@@ -40,7 +40,7 @@ namespace Trivial.Geography
     /// <summary>
     /// The seven continents on Earth.
     /// </summary>
-    public enum Continents
+    public enum Continents : byte
     {
         /// <summary>
         /// Asia.
@@ -81,7 +81,7 @@ namespace Trivial.Geography
     /// <summary>
     /// The four oceans on Earth.
     /// </summary>
-    public enum Oceans
+    public enum Oceans : byte
     {
         /// <summary>
         /// The Pacific Ocean.
@@ -107,7 +107,7 @@ namespace Trivial.Geography
     /// <summary>
     /// The solar climatic zone.
     /// </summary>
-    public enum SolarClimaticZones
+    public enum SolarClimaticZones : byte
     {
         /// <summary>
         /// Tropics.
@@ -138,7 +138,7 @@ namespace Trivial.Geography
     /// <summary>
     /// The climate zones.
     /// </summary>
-    public enum BuildingsClimateZones
+    public enum BuildingsClimateZones : byte
     {
         /// <summary>
         /// The hot-humid climate.

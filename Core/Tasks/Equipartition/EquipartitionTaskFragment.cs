@@ -27,7 +27,7 @@ namespace Trivial.Tasks
         /// <summary>
         /// Task fragment states.
         /// </summary>
-        public enum FragmentStates
+        public enum FragmentStates : byte
         {
             /// <summary>
             /// Pending to assign.

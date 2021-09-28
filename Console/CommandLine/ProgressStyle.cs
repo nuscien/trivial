@@ -15,7 +15,7 @@ namespace Trivial.CommandLine
         /// <summary>
         /// Progress sizes (width).
         /// </summary>
-        public enum Sizes
+        public enum Sizes : byte
         {
             /// <summary>
             /// Normal size.
@@ -46,7 +46,7 @@ namespace Trivial.CommandLine
         /// <summary>
         /// The output text kinds filling in progress.
         /// </summary>
-        public enum Kinds
+        public enum Kinds : byte
         {
             /// <summary>
             /// Whitespace (rectangle).

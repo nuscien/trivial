@@ -21,7 +21,7 @@ namespace Trivial.Maths
         /// <summary>
         /// The modes to rectify.
         /// </summary>
-        public enum RectifyModes
+        public enum RectifyModes : byte
         {
             /// <summary>
             /// Forbidden.
