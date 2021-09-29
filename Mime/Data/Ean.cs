@@ -59,6 +59,26 @@ namespace Trivial.Data
         }
 
         /// <summary>
+        /// Returns a string that represents the barcode in stroke path for SVG or XAML.
+        /// </summary>
+        /// <param name="height">The bar height.</param>
+        /// <returns>A stroke path string that represents the barcode.</returns>
+        public string ToPathString(int height = 40)
+        {
+            var sb = new StringBuilder();
+            var i = 6;
+            sb.Append("M0,0 ");
+            foreach (var b in ToBarcode())
+            {
+                i++;
+                if (b) sb.Append($"M{i},0 L{i},{height} ");
+            }
+
+            sb.Append($"M{i + 6},0");
+            return sb.ToString();
+        }
+
+        /// <summary>
         /// Converts to boolean list.
         /// White represented as false, black represented as true.
         /// </summary>

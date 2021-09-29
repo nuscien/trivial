@@ -56,7 +56,17 @@ namespace Trivial.Data
             /// <summary>
             /// Hex values.
             /// </summary>
-            Hex = 3
+            Hex = 3,
+
+            /// <summary>
+            /// The barcode areas that white represented as 0 and black represented as 1.
+            /// </summary>
+            Barcode = 4,
+
+            /// <summary>
+            /// The stroke path data used in SVG and XAML.
+            /// </summary>
+            Path = 5
         }
 
         /// <summary>

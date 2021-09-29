@@ -37,7 +37,7 @@ GS1-128 is an application standard of the GS1 implementation using the Code 128 
 You can create a GS1-128 code as following.
 
 ```csharp
-// Parse an AI and its data value.
+// Create by an application identifier and its data value.
 var ean128 = Code128.CreateGs1(421, "84020500");
 Console.WriteLine(ean128.ToString()); // -> [FNC1]4218402050
 Console.WriteLine(ean128.GetAiData().First()); // -> 42184020500
@@ -45,4 +45,20 @@ Console.WriteLine(ean128.GetAiData().First()); // -> 42184020500
 // Equivalent usage as following.
 ean128 = Code128.CreateC(new byte[] { 102, 42, 18, 40, 20, 50, 101, 16 });
 Console.WriteLine(ean128.ToString(Code128.Formats.Text)); // -> 42184020500
+```
+
+## SVG
+
+Following is a sample to convert Code 128 (and GS1-128) to SVG.
+
+```csharp
+public string ToSvgString(Code128 code, int height, byte r, byte g, byte b)
+    => $"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<svg version=\"1.1\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\"><g><path d=\"{code.ToPathString(height)}\" stroke=\"#{r:x2)}{g:x2}{b:x2}\"></path></g></svg>"
+```
+
+Usage.
+
+```csharp
+// var code128 = Code128.CreateA("Kingcean");
+var svg = ToSvgString(code128, 40, 0x33, 0x33, 0x33);
 ```

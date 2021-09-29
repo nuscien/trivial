@@ -31,12 +31,35 @@ namespace Trivial.Data
         public int Count => v.Count;
 
         /// <summary>
+        /// Gets the sub-type.
+        /// </summary>
+        public Subtypes Subtype => v.Count > 3 ? v[0] switch
+        {
+            103 => Subtypes.A,
+            104 => Subtypes.B,
+            105 => Subtypes.C,
+            _ => (Subtypes)0
+        } : 0;
+
+        /// <summary>
+        /// Gets the checksum; or 0, if not available.
+        /// </summary>
+        public byte Checksum => v.Count > 3 ? v[v.Count - 2] : (byte)0;
+
+        /// <summary>
         /// Gets the value of the specific symbol.
         /// </summary>
         /// <param name="index">The index of symbol.</param>
         /// <returns>The value of the symbol.</returns>
         /// <exception cref="ArgumentOutOfRangeException">The index was out of range.</exception>
         public byte this[int index] => v[index];
+
+        /// <summary>
+        /// Returns symbol values without start code, checksum, and stop code. 
+        /// </summary>
+        /// <returns>A collection of symbol value without start code, checksum, and stop code.</returns>
+        public IEnumerable<byte> TakeData()
+            => v.Count > 3 ? v.Skip(1).Take(v.Count - 3) : new List<byte>();
 
         /// <summary>
         /// Converts to boolean list.
@@ -46,8 +69,12 @@ namespace Trivial.Data
         public List<bool> ToBarcode()
         {
             var list = v.SelectMany(GetPattern).ToList();
-            list.Add(true);
-            list.Add(true);
+            if (list.Count > 10)
+            {
+                list.Add(true);
+                list.Add(true);
+            }
+
             return list;
         }
 
@@ -185,6 +212,32 @@ namespace Trivial.Data
         }
 
         /// <summary>
+        /// Returns a string that represents the barcode in stroke path for SVG or XAML.
+        /// </summary>
+        /// <param name="height">The bar height.</param>
+        /// <returns>A stroke path string that represents the barcode.</returns>
+        public string ToPathString(int height = 40)
+        {
+            var sb = new StringBuilder();
+            var i = 9;
+            sb.Append("M0,0 ");
+            foreach (var b in v)
+            {
+                if (b > 106) continue;
+                var binary = patterns[b];
+                foreach (var c in binary)
+                {
+                    i++;
+                    if (c == '1')
+                        sb.Append($"M{i},0 L{i},{height} ");
+                }
+            }
+
+            sb.Append($"M{i + 1},{0} L{i + 1},{height} M{i + 2},{0} L{i + 2},{height} M{i + 12},0");
+            return sb.ToString();
+        }
+
+        /// <summary>
         /// Returns a string that represents the current object.
         /// </summary>
         /// <returns>A string that represents the current object.</returns>
@@ -210,6 +263,9 @@ namespace Trivial.Data
             var sb = new StringBuilder();
             switch (format)
             {
+                case Formats.Regular:
+                case Formats.Text:
+                    break;
                 case Formats.Hex:
                     foreach (var b in v)
                     {
@@ -287,6 +343,10 @@ namespace Trivial.Data
 
                     sb.Append($"[Check symbol {v[v.Count - 2]:g}] [Stop]");
                     return sb.ToString().Trim();
+                case Formats.Barcode:
+                    return ToBarcodeString();
+                case Formats.Path:
+                    return ToPathString(40);
             }
 
             var appendFunc = format == Formats.Regular;
@@ -392,7 +452,6 @@ namespace Trivial.Data
         /// Converts to a string.
         /// </summary>
         /// <returns>The barcode string.</returns>
-        /// <exception cref="InvalidOperationException">It was not an EAN-13 ro EAN-8 code.</exception>
         public string ToBarcodeString()
         {
             var sb = new StringBuilder();
@@ -401,7 +460,7 @@ namespace Trivial.Data
                 sb.Append(GetPattern(b));
             }
 
-            sb.Append("11");
+            if (sb.Length > 10) sb.Append("11");
             return sb.ToString();
         }
 
@@ -411,7 +470,6 @@ namespace Trivial.Data
         /// <param name="black">The value of black represented.</param>
         /// <param name="white">The value of white represented.</param>
         /// <returns>The barcode string.</returns>
-        /// <exception cref="InvalidOperationException">It was not an EAN-13 ro EAN-8 code.</exception>
         public string ToBarcodeString(char black, char white)
             => string.Join(string.Empty, ToBarcode().Select(ele => ele ? black : white));
 
@@ -420,7 +478,6 @@ namespace Trivial.Data
         /// </summary>
         /// <param name="selector">The selector to convert boolean array to a string. Per boolean value, white represented as false, black represented as true.</param>
         /// <returns>The barcode string.</returns>
-        /// <exception cref="InvalidOperationException">It was not an EAN-13 ro EAN-8 code.</exception>
         public string ToBarcodeString(Func<bool, char> selector)
             => selector != null ? string.Join(string.Empty, ToBarcode().Select(selector)) : ToBarcodeString();
 
@@ -429,7 +486,6 @@ namespace Trivial.Data
         /// </summary>
         /// <param name="selector">The selector to convert boolean array to a string. Per boolean value, white represented as false, black represented as true.</param>
         /// <returns>The barcode string.</returns>
-        /// <exception cref="InvalidOperationException">It was not an EAN-13 ro EAN-8 code.</exception>
         public string ToBarcodeString(Func<bool, int, char> selector)
             => selector != null ? string.Join(string.Empty, ToBarcode().Select(selector)) : ToBarcodeString();
 
