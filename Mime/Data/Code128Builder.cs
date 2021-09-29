@@ -31,7 +31,7 @@ namespace Trivial.Data
         public int Count => v.Count;
 
         /// <summary>
-        /// Gets the sub-type.
+        /// Gets the start sub-type.
         /// </summary>
         public Subtypes Subtype => v.Count > 3 ? v[0] switch
         {
@@ -490,6 +490,53 @@ namespace Trivial.Data
             => selector != null ? string.Join(string.Empty, ToBarcode().Select(selector)) : ToBarcodeString();
 
         /// <summary>
+        /// Gets all sub-types used in value.
+        /// </summary>
+        /// <returns>A collection of sub-type.</returns>
+        public IEnumerable<Subtypes> GetSubtypesUsed()
+        {
+            var subtype = Subtype;
+            yield return subtype;
+            foreach (var b in v.Skip(1).Take(v.Count - 3))
+            {
+                if (b < 98) continue;
+                if (b > 102) break;
+                switch (b)
+                {
+                    case 99:
+                        if (subtype == Subtypes.C) break;
+                        subtype = Subtypes.C;
+                        yield return subtype;
+                        break;
+                    case 100:
+                        if (subtype == Subtypes.B) break;
+                        subtype = Subtypes.B;
+                        yield return subtype;
+                        break;
+                    case 101:
+                        if (subtype == Subtypes.A) break;
+                        subtype = Subtypes.A;
+                        yield return subtype;
+                        break;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Returns an enumerator that iterates through the symbol collection.
+        /// </summary>
+        /// <returns>A enumerator of the symbol collection.</returns>
+        public IEnumerator<byte> GetEnumerator()
+            => v.GetEnumerator();
+
+        /// <summary>
+        /// Returns an enumerator that iterates through the symbol collection.
+        /// </summary>
+        /// <returns>A enumerator of the symbol collection.</returns>
+        IEnumerator IEnumerable.GetEnumerator()
+            => ((IEnumerable)v).GetEnumerator();
+
+        /// <summary>
         /// Creates with Start Code A.
         /// </summary>
         /// <param name="values">The value collection of symbol.</param>
@@ -556,6 +603,17 @@ namespace Trivial.Data
             => Create(Subtypes.C, s);
 
         /// <summary>
+        /// Creates with Start Code C.
+        /// </summary>
+        /// <param name="s">The integer value of symbol.</param>
+        /// <returns>The Code 128 instance.</returns>
+        /// <exception cref="ArgumentNullException">values was null.</exception>
+        /// <exception cref="ArgumentException">values was empty.</exception>
+        /// <exception cref="InvalidOperationException">Any value is invalid.</exception>
+        public static Code128 CreateC(long s)
+            => Create(Subtypes.C, s.ToString("g"));
+
+        /// <summary>
         /// Creates GS1-128 code.
         /// </summary>
         /// <param name="ai">The application identifier.</param>
@@ -568,10 +626,7 @@ namespace Trivial.Data
         public static Code128 CreateGs1(int ai, string data)
         {
             if (ai < 0) throw new ArgumentOutOfRangeException(nameof(ai), "ai should not be less than zero.");
-            var col = new List<byte>
-            {
-                102,
-            };
+            var col = new List<byte> { 102 };
             Fill(col, Subtypes.C, $"{ai:00}{data}");
             return Create(Subtypes.C, col);
         }
@@ -948,18 +1003,57 @@ namespace Trivial.Data
         }
 
         /// <summary>
-        /// Returns an enumerator that iterates through the symbol collection.
+        /// Adds all code 128 instances into one.
         /// </summary>
-        /// <returns>A enumerator of the symbol collection.</returns>
-        public IEnumerator<byte> GetEnumerator()
-            => v.GetEnumerator();
+        /// <param name="col">The collection to combine.</param>
+        /// <returns>A code 128 instance combined.</returns>
+        public static Code128 Join(IEnumerable<Code128> col)
+        {
+            if (col is null) return null;
+            var list = col.Where(ele => ele != null && ele.Count > 3).ToList();
+            if (list.Count < 2) return list.Count == 1 ? list[0] : null;
+            var first = list[0];
+            var subtype = first.GetSubtypesUsed().Last();
+            var bytes = first.TakeData().ToList();
+            foreach (var c in list.Skip(1))
+            {
+                var rightSubtype = c.Subtype;
+                if (subtype != rightSubtype) bytes.Add(rightSubtype switch
+                {
+                    Subtypes.A => 101,
+                    Subtypes.B => 100,
+                    _ => 99
+                });
+                bytes.AddRange(c.TakeData());
+                subtype = c.GetSubtypesUsed().Last();
+            }
+
+            return Create(first.Subtype, bytes);
+        }
 
         /// <summary>
-        /// Returns an enumerator that iterates through the symbol collection.
+        /// Adds.
+        /// leftValue + rightValue
         /// </summary>
-        /// <returns>A enumerator of the symbol collection.</returns>
-        IEnumerator IEnumerable.GetEnumerator()
-            => ((IEnumerable)v).GetEnumerator();
+        /// <param name="leftValue">The left value.</param>
+        /// <param name="rightValue">The right value.</param>
+        /// <returns>A result after Add operation.</returns>
+        public static Code128 operator +(Code128 leftValue, Code128 rightValue)
+        {
+            if (rightValue is null) return leftValue;
+            if (leftValue is null) return rightValue;
+            var subtype = leftValue.GetSubtypesUsed().Last();
+            var bytes = leftValue.TakeData().ToList();
+            var rightSubtype = rightValue.Subtype;
+            if (subtype != rightSubtype) bytes.Add(rightSubtype switch
+            {
+                Subtypes.A => 101,
+                Subtypes.B => 100,
+                _ => 99
+            });
+            bytes.AddRange(rightValue.TakeData());
+            return Create(leftValue.Subtype, bytes);
+        }
 #pragma warning restore IDE0056
     }
 }

@@ -1098,6 +1098,24 @@ namespace Trivial.CommandLine
             => StyleConsole.Default.WriteLine(captionStyle, messageStyle, ex, stackTrace);
 
         /// <summary>
+        /// Writes an exception, followed by the current line terminator, to the standard output stream.
+        /// It will flush immediately.
+        /// </summary>
+        /// <param name="ex">The error information.</param>
+        public static void WriteLine(Data.ErrorMessageResult ex)
+            => StyleConsole.Default.WriteLine(new ConsoleTextStyle(ConsoleColor.Red), null as ConsoleTextStyle, ex);
+
+        /// <summary>
+        /// Writes an exception, followed by the current line terminator, to the standard output stream.
+        /// It will flush immediately.
+        /// </summary>
+        /// <param name="ex">The error information.</param>
+        /// <param name="captionStyle">The style of header.</param>
+        /// <param name="messageStyle">The style of details.</param>
+        public static void WriteLine(ConsoleTextStyle captionStyle, ConsoleTextStyle messageStyle, Data.ErrorMessageResult ex)
+            => StyleConsole.Default.WriteLine(captionStyle, messageStyle, ex);
+
+        /// <summary>
         /// Writes a JSON object, followed by the current line terminator, to the standard output stream.
         /// It will flush immediately.
         /// </summary>

@@ -47,6 +47,28 @@ ean128 = Code128.CreateC(new byte[] { 102, 42, 18, 40, 20, 50, 101, 16 });
 Console.WriteLine(ean128.ToString(Code128.Formats.Text)); // -> 42184020500
 ```
 
+## Combination
+
+You can add 2 or more Code 128 instances to generate a new one.
+
+```csharp
+// By operator plus (+)
+var a = Code128.CreateB("Good ") + Code128.CreateB("morning!");
+Console.WriteLine(a.ToString()); // -> Good morning!
+```
+
+We also provide a way to combine a set of Code 128 instances.
+
+```csharp
+var b = Code128.Join(new List<Code128>
+{
+    Code128.CreateB("How "),
+    Code128.CreateB("are ")
+    Code128.CreateB("you?")
+});
+Console.WriteLine(b.ToString()); // -> How are you?
+```
+
 ## SVG
 
 Following is a sample to convert Code 128 (and GS1-128) to SVG.

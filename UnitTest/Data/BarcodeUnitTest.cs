@@ -78,6 +78,15 @@ namespace Trivial.Data
             Assert.AreEqual((byte)92, code128.Skip(code128.Count - 2).ToList()[0]);
             ai = code128.GetAiData();
             Assert.AreEqual("42184020500", ai.First());
+
+            // Code 128 combination
+            code128 += Code128.Gs1Generator.BankAccount("100016") + Code128.CreateA(" Something... ") + Code128.Join(new List<Code128>
+            {
+                Code128.CreateA("And "),
+                Code128.CreateC(123),
+                Code128.Gs1Generator.Sn("01234567890123456789")
+            });
+            Assert.AreEqual("[FNC1]42184020500[FNC1]8007100016 Something... And 123[FNC1]2101234567890123456789", code128.ToString());
         }
     }
 

@@ -34,9 +34,9 @@ namespace Trivial.CommandLine
         /// It will flush immediately.
         /// </summary>
         /// <param name="cli">The command line interface proxy.</param>
-        /// <param name="ex">The exception.</param>
         /// <param name="captionStyle">The style of header.</param>
         /// <param name="messageStyle">The style of details.</param>
+        /// <param name="ex">The exception.</param>
         /// <param name="stackTrace">true if output stack trace; otherwise, false.</param>
         public static void WriteLine(this StyleConsole cli, ConsoleTextStyle captionStyle, ConsoleTextStyle messageStyle, Exception ex, bool stackTrace = false)
         {
@@ -74,6 +74,46 @@ namespace Trivial.CommandLine
                 message.Content.AppendLine();
                 message.Content.AppendLine("Stack trace");
                 message.Content.Append(ex.StackTrace);
+            }
+
+            cli.WriteLine(header, message);
+        }
+        /// <summary>
+        /// Writes an exception, followed by the current line terminator, to the standard output stream.
+        /// It will flush immediately.
+        /// </summary>
+        /// <param name="cli">The command line interface proxy.</param>
+        /// <param name="ex">The error information.</param>
+        public static void WriteLine(this StyleConsole cli, Data.ErrorMessageResult ex)
+            => WriteLine(cli, new ConsoleTextStyle
+            {
+                ForegroundConsoleColor = ConsoleColor.Red
+            }, null, ex);
+
+        /// <summary>
+        /// Writes an exception, followed by the current line terminator, to the standard output stream.
+        /// It will flush immediately.
+        /// </summary>
+        /// <param name="cli">The command line interface proxy.</param>
+        /// <param name="captionStyle">The style of header.</param>
+        /// <param name="messageStyle">The style of details.</param>
+        /// <param name="ex">The error information.</param>
+        public static void WriteLine(this StyleConsole cli, ConsoleTextStyle captionStyle, ConsoleTextStyle messageStyle, Data.ErrorMessageResult ex)
+        {
+            if (ex == null) return;
+            if (cli == null) cli = StyleConsole.Default;
+            var header = new ConsoleText(Resource.Error, captionStyle);
+            if (!string.IsNullOrWhiteSpace(ex.Message)) header.Content.Append(ex.Message);
+            var message = new ConsoleText(Environment.NewLine, messageStyle);
+            if (!string.IsNullOrWhiteSpace(ex.ErrorCode))
+                message.Content.Append($" [ErrCode] {ex.ErrorCode}");
+            if (ex.Details != null)
+            {
+                foreach (var line in ex.Details)
+                {
+                    message.Content.AppendLine();
+                    message.Content.Append($"- {line}");
+                }
             }
 
             cli.WriteLine(header, message);

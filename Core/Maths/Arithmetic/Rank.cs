@@ -21,7 +21,7 @@ namespace Trivial.Maths
     /// <typeparam name="T">The type of item.</typeparam>
     public class RankResult3<T> where T : IComparable
     {
-        private Func<T, T, int> compareHandler;
+        private readonly Func<T, T, int> compareHandler;
 
         /// <summary>
         /// Initializes a new instance of the RankResult3 class.
