@@ -19,6 +19,8 @@ namespace Trivial.Data
         /// </summary>
         public static class Gs1Generator
         {
+            /* https://www.gs1.org/standards/barcodes/application-identifiers */
+
             /// <summary>
             /// Creates serial shipping container code.
             /// </summary>
@@ -196,108 +198,177 @@ namespace Trivial.Data
                 => CreateGs1(30, data.ToString("g"));
 
             /// <summary>
-            /// Creates net weight in kilo gram (kg).
+            /// Creates product net weight in kilo gram (kg).
             /// </summary>
+            /// <param name="y">A number of decimal places in the following value, should be less than 10.</param>
             /// <param name="data">The data without AI, should be less than 1,000,000,000.</param>
-            /// <param name="container">true if it is for container; otherwise, false, for product.</param>
             /// <returns>The code 128 instance.</returns>
-            public static Code128 Weight(int data, bool container = false)
-                => CreateGs1(container ? 3300 : 3100, data.ToString("000000"));
+            /// <exception cref="ArgumentOutOfRangeException">y or data was out of range.</exception>
+            public static Code128 ProductWeight(byte y, int data)
+                => CreateGs1Decimal(3100, y, data);
 
             /// <summary>
-            /// Creates size in meters.
+            /// Creates container gross weight in kilo gram (kg).
             /// </summary>
-            /// <param name="x">The length, should be less than 1,000,000.</param>
-            /// <param name="y">The width/diamete, should be less than 1,000,000.</param>
-            /// <param name="z">The depth/thickness/height, should be less than 1,000,000.</param>
-            /// <param name="container">true if it is for container; otherwise, false, for product.</param>
+            /// <param name="y">A number of decimal places in the following value, should be less than 10.</param>
+            /// <param name="data">The data without AI, should be less than 1,000,000,000.</param>
             /// <returns>The code 128 instance.</returns>
-            public static Code128 Size(int x, int? y = null, int? z = null, bool container = false)
-            {
-                var col = new List<byte> { 102, (byte)(container ? 33 : 31), 10 };
-                Fill(col, Subtypes.C, x.ToString("000000"));
-                if (y.HasValue)
-                {
-                    col.Add((byte)(container ? 33 : 31));
-                    col.Add(20);
-                    Fill(col, Subtypes.C, y.Value.ToString("000000"));
-                }
-
-                if (z.HasValue)
-                {
-                    col.Add((byte)(container ? 33 : 31));
-                    col.Add(30);
-                    Fill(col, Subtypes.C, z.Value.ToString("000000"));
-                }
-
-                return Create(Subtypes.C, col);
-            }
+            /// <exception cref="ArgumentOutOfRangeException">y or data was out of range.</exception>
+            public static Code128 ContainerWeight(byte y, int data)
+                => CreateGs1Decimal(3300, y, data);
 
             /// <summary>
-            /// Creates area in square meters.
+            /// Creates product length in meters.
             /// </summary>
-            /// <param name="data">The data without AI, should be less than 1,000,000,000.</param>
-            /// <param name="container">true if it is for container; otherwise, false, for product.</param>
+            /// <param name="y">A number of decimal places in the following value, should be less than 10.</param>
+            /// <param name="data">The data without AI, should be less than 1,000,000.</param>
             /// <returns>The code 128 instance.</returns>
-            public static Code128 Area(int data, bool container = false)
-                => CreateGs1(container ? 3340 : 3140, data.ToString("000000"));
+            /// <exception cref="ArgumentOutOfRangeException">y or data was out of range.</exception>
+            public static Code128 ProductLength(byte y, int data)
+                => CreateGs1Decimal(3110, y, data);
 
             /// <summary>
-            /// Creates net volume in liters.
+            /// Creates container length in meters.
             /// </summary>
-            /// <param name="data">The data without AI, should be less than 1,000,000,000.</param>
-            /// <param name="container">true if it is for container; otherwise, false, for product.</param>
+            /// <param name="y">A number of decimal places in the following value, should be less than 10.</param>
+            /// <param name="data">The data without AI, should be less than 1,000,000.</param>
             /// <returns>The code 128 instance.</returns>
-            public static Code128 Volume(int data, bool container = false)
-                => CreateGs1(container ? 3350 : 3150, data.ToString("000000"));
+            /// <exception cref="ArgumentOutOfRangeException">y or data was out of range.</exception>
+            public static Code128 ContainerLength(byte y, int data)
+                => CreateGs1Decimal(3310, y, null, data);
 
             /// <summary>
-            /// Creates net volume in liters.
+            /// Creates product width/diamete in meters.
             /// </summary>
-            /// <param name="kind">
-            /// <para>The kind of property.</para>
-            /// <list type="bullet">
-            /// <item>Net weight in kg (0-9).</item>
-            /// <item>Length in meters (10-19).</item>
-            /// <item>Width/diamete in meters (20-29).</item>
-            /// <item>Depth/thickness/height in meters (30-39).</item>
-            /// <item>Area in square meters (40-49).</item>
-            /// <item>Volume in liters (50-59), or in cubic meters (60-69).</item>
-            /// </list>
-            /// </param>
-            /// <param name="data">The data without AI, should be less than 1,000,000,000.</param>
-            /// <param name="container">true if it is for container; otherwise, false, for product.</param>
+            /// <param name="y">A number of decimal places in the following value, should be less than 10.</param>
+            /// <param name="data">The data without AI, should be less than 1,000,000.</param>
             /// <returns>The code 128 instance.</returns>
-            public static Code128 Property(byte kind, int data, bool container = false)
-                => CreateGs1((container ? 33 : 31) * 100 + kind, data.ToString("000000"));
+            /// <exception cref="ArgumentOutOfRangeException">y or data was out of range.</exception>
+            public static Code128 ProductWidth(byte y, int data)
+                => CreateGs1Decimal(3120, y, data);
+
+            /// <summary>
+            /// Creates container width/diamete in meters.
+            /// </summary>
+            /// <param name="y">A number of decimal places in the following value, should be less than 10.</param>
+            /// <param name="data">The data without AI, should be less than 1,000,000.</param>
+            /// <returns>The code 128 instance.</returns>
+            /// <exception cref="ArgumentOutOfRangeException">y or data was out of range.</exception>
+            public static Code128 ContainerWidth(byte y, int data)
+                => CreateGs1Decimal(3320, y, data);
+
+            /// <summary>
+            /// Creates product depth/thickness/height in meters.
+            /// </summary>
+            /// <param name="y">A number of decimal places in the following value, should be less than 10.</param>
+            /// <param name="data">The data without AI, should be less than 1,000,000.</param>
+            /// <returns>The code 128 instance.</returns>
+            /// <exception cref="ArgumentOutOfRangeException">y or data was out of range.</exception>
+            public static Code128 ProductDepth(byte y, int data)
+                => CreateGs1Decimal(3130, y, data);
+
+            /// <summary>
+            /// Creates container depth/thickness/height in meters.
+            /// </summary>
+            /// <param name="y">A number of decimal places in the following value, should be less than 10.</param>
+            /// <param name="data">The data without AI, should be less than 1,000,000.</param>
+            /// <returns>The code 128 instance.</returns>
+            /// <exception cref="ArgumentOutOfRangeException">y or data was out of range.</exception>
+            public static Code128 ContainerDepth(byte y, int data)
+                => CreateGs1Decimal(3330, y, data);
+
+            /// <summary>
+            /// Creates product area in square meters.
+            /// </summary>
+            /// <param name="y">A number of decimal places in the following value, should be less than 10.</param>
+            /// <param name="data">The data without AI, should be less than 1,000,000.</param>
+            /// <returns>The code 128 instance.</returns>
+            /// <exception cref="ArgumentOutOfRangeException">y or data was out of range.</exception>
+            public static Code128 ProductArea(byte y, int data)
+                => CreateGs1Decimal(3140, y, data);
+
+            /// <summary>
+            /// Creates container area in square meters.
+            /// </summary>
+            /// <param name="y">A number of decimal places in the following value, should be less than 10.</param>
+            /// <param name="data">The data without AI, should be less than 1,000,000.</param>
+            /// <returns>The code 128 instance.</returns>
+            /// <exception cref="ArgumentOutOfRangeException">y or data was out of range.</exception>
+            public static Code128 ContainerArea(byte y, int data)
+                => CreateGs1Decimal(3340, y, data);
+
+            /// <summary>
+            /// Creates product net volume in liters.
+            /// </summary>
+            /// <param name="y">A number of decimal places in the following value.</param>
+            /// <param name="data">The data without AI, should be less than 1,000,000.</param>
+            /// <returns>The code 128 instance.</returns>
+            /// <exception cref="ArgumentOutOfRangeException">y or data was out of range.</exception>
+            public static Code128 ProductVolume(byte y, int data)
+                => y > 9 ? CreateGs1Decimal(3160, (byte)(y - 10), data) : CreateGs1Decimal(3150, y, data);
+
+            /// <summary>
+            /// Creates container gross volume in liters.
+            /// </summary>
+            /// <param name="y">A number of decimal places in the following value.</param>
+            /// <param name="data">The data without AI, should be less than 1,000,000.</param>
+            /// <returns>The code 128 instance.</returns>
+            /// <exception cref="ArgumentOutOfRangeException">y or data was out of range.</exception>
+            public static Code128 ContainerVolume(byte y, int data)
+                => y > 9 ? CreateGs1Decimal(3360, (byte)(y - 10), data) : CreateGs1Decimal(3350, y, data);
 
             /// <summary>
             /// Creates count of units contained.
             /// </summary>
-            /// <param name="data">The data without AI, should be less than 1_000_000_000.</param>
+            /// <param name="data">The data without AI, should be less than 1,000,000,000.</param>
             /// <returns>The code 128 instance.</returns>
             public static Code128 UnitCount(int data)
                 => CreateGs1(37, data.ToString("g"));
 
             /// <summary>
-            /// Creates net volume in liters.
+            /// Creates applicable amount payable.
             /// </summary>
-            /// <param name="kind">
-            /// <para>The kind of property.</para>
-            /// <list type="bullet">
-            /// <item>Local currency (0-9).</item>
-            /// <item>With ISO currency code (10-19).</item>
-            /// <item>Local currency per single item (20-29).</item>
-            /// <item>With ISO currency code per single item (30-39).</item>
-            /// </list>
-            /// </param>
-            /// <param name="data">The data without AI, should be less than 1,000,000,000.</param>
+            /// <param name="y">A number of decimal places in the following value, should be less than 10.</param>
+            /// <param name="data">The data without AI, should be less than 1,000,000,000,000,000.</param>
             /// <returns>The code 128 instance.</returns>
-            public static Code128 AmountPayable(byte kind, string data)
-                => CreateGs1(39 * 100 + kind, data);
+            /// <exception cref="ArgumentOutOfRangeException">y or data was out of range.</exception>
+            public static Code128 AmountPayable(byte y, long data)
+                => CreateGs1Decimal(3900, y, null, data);
 
             /// <summary>
-            /// Creates Customer purchase order number.
+            /// Creates applicable amount payable with optional ISO currency code.
+            /// </summary>
+            /// <param name="y">A number of decimal places in the following value, should be less than 10.</param>
+            /// <param name="currencyCode">The ISO currency code.</param>
+            /// <param name="data">The data without AI, should be less than 1,000,000,000,000,000.</param>
+            /// <returns>The code 128 instance.</returns>
+            /// <exception cref="ArgumentOutOfRangeException">y or data was out of range.</exception>
+            public static Code128 AmountPayable(byte y, string currencyCode, long data)
+                => CreateGs1Decimal(string.IsNullOrEmpty(currencyCode) ? 3900 : 3910, y, currencyCode, data);
+
+            /// <summary>
+            /// Creates applicable amount payable (variable measure trade item).
+            /// </summary>
+            /// <param name="y">A number of decimal places in the following value, should be less than 10.</param>
+            /// <param name="data">The data without AI, should be less than 1,000,000,000,000,000.</param>
+            /// <returns>The code 128 instance.</returns>
+            /// <exception cref="ArgumentOutOfRangeException">y or data was out of range.</exception>
+            public static Code128 TradeItemAmountPayable(byte y, long data)
+                => CreateGs1Decimal(3920, y, null, data);
+
+            /// <summary>
+            /// Creates applicable amount payable with optional ISO currency code (variable measure trade item).
+            /// </summary>
+            /// <param name="y">A number of decimal places in the following value, should be less than 10.</param>
+            /// <param name="currencyCode">The ISO currency code.</param>
+            /// <param name="data">The data without AI, should be less than 1,000,000,000,000,000.</param>
+            /// <returns>The code 128 instance.</returns>
+            /// <exception cref="ArgumentOutOfRangeException">y or data was out of range.</exception>
+            public static Code128 TradeItemAmountPayable(byte y, string currencyCode, long data)
+                => CreateGs1Decimal(string.IsNullOrEmpty(currencyCode) ? 3920 : 3930, y, currencyCode, data);
+
+            /// <summary>
+            /// Creates customer purchase order number.
             /// </summary>
             /// <param name="data">The data without AI, length is up to 30.</param>
             /// <returns>The code 128 instance.</returns>
@@ -327,6 +398,62 @@ namespace Trivial.Data
             /// <returns>The code 128 instance.</returns>
             public static Code128 Routing(string data)
                 => CreateGs1(403, data);
+
+            /// <summary>
+            /// Creates ship/deliver to postal code (single postal authority).
+            /// </summary>
+            /// <param name="data">The data without AI, length is up to 20.</param>
+            /// <returns>The code 128 instance.</returns>
+            public static Code128 ToSinglePostalAuthorityCode(string data)
+                => CreateGs1(420, data);
+
+            /// <summary>
+            /// Creates ship/deliver to postal code (with ISO country code).
+            /// </summary>
+            /// <param name="data">The data without AI, length is variable from 3 to 15.</param>
+            /// <returns>The code 128 instance.</returns>
+            public static Code128 ToPostalCode(string data)
+                => CreateGs1(421, data);
+
+            /// <summary>
+            /// Creates ISO country code of origin.
+            /// </summary>
+            /// <param name="data">The data without AI, length should be 3.</param>
+            /// <returns>The code 128 instance.</returns>
+            public static Code128 OriginCountry(string data)
+                => CreateGs1(422, data);
+
+            /// <summary>
+            /// Creates one or more ISO country code of initial processing.
+            /// </summary>
+            /// <param name="data">The data without AI, length is variable from 3 to 15.</param>
+            /// <returns>The code 128 instance.</returns>
+            public static Code128 InitialProcessingCountries(string data)
+                => CreateGs1(423, data);
+
+            /// <summary>
+            /// Creates ISO country code of processing.
+            /// </summary>
+            /// <param name="data">The data without AI, length should be 3.</param>
+            /// <returns>The code 128 instance.</returns>
+            public static Code128 ProcessingCountry(string data)
+                => CreateGs1(424, data);
+
+            /// <summary>
+            /// Creates ISO country code of disassembly.
+            /// </summary>
+            /// <param name="data">The data without AI, length should be 3.</param>
+            /// <returns>The code 128 instance.</returns>
+            public static Code128 DisassemblyCountry(string data)
+                => CreateGs1(425, data);
+
+            /// <summary>
+            /// Creates ISO country code of full process chain.
+            /// </summary>
+            /// <param name="data">The data without AI, length should be 3.</param>
+            /// <returns>The code 128 instance.</returns>
+            public static Code128 FullProcessChainCountry(string data)
+                => CreateGs1(426, data);
 
             /// <summary>
             /// Creates NATO stock number.
@@ -487,6 +614,39 @@ namespace Trivial.Data
             /// <returns>The code 128 instance.</returns>
             public static Code128 InternalCompanyCodes9(string data)
                 => CreateGs1(99, data);
+
+            /// <summary>
+            /// Creates net volume in liters.
+            /// </summary>
+            /// <param name="ai">The application identifier.</param>
+            /// <param name="y">A number of decimal places in the following value, should be less than 10.</param>
+            /// <param name="data">The data without AI, should be less than 1,000,000.</param>
+            /// <returns>The code 128 instance.</returns>
+            /// <exception cref="ArgumentOutOfRangeException">y or data was out of range.</exception>
+            private static Code128 CreateGs1Decimal(int ai, byte y, int data)
+            {
+                if (y > 9) throw new ArgumentOutOfRangeException(nameof(y), "y should be less than 10.");
+                if (data < 0) throw new ArgumentOutOfRangeException(nameof(data), "data should be in 0-999,999 but it is negative currently.");
+                if (data > 999_999) throw new ArgumentOutOfRangeException(nameof(data), "data should be in 0-999,999 but it is greater than 999,999 currently.");
+                return CreateGs1(ai + y, data.ToString("000000"));
+            }
+
+            /// <summary>
+            /// Creates net volume in liters.
+            /// </summary>
+            /// <param name="ai">The application identifier.</param>
+            /// <param name="y">A number of decimal places in the following value, should be less than 10.</param>
+            /// <param name="prefix">The prefix of data.</param>
+            /// <param name="data">The data without AI, should be less than 1,000,000,000.</param>
+            /// <returns>The code 128 instance.</returns>
+            /// <exception cref="ArgumentOutOfRangeException">y or data was out of range.</exception>
+            private static Code128 CreateGs1Decimal(int ai, byte y, string prefix, long data)
+            {
+                if (y > 9) throw new ArgumentOutOfRangeException(nameof(y), "y should be less than 10.");
+                if (data < 0) throw new ArgumentOutOfRangeException(nameof(data), "data should be in 0-999,999,999,999,999 but it is negative currently.");
+                if (data > 999_999_999_999_999) throw new ArgumentOutOfRangeException(nameof(data), "data should be in 0-999,999,999,999,999, but it is greater than 999,999,999,999,999 currently.");
+                return CreateGs1(ai + y, string.IsNullOrEmpty(prefix) ? data.ToString("g") : $"{prefix}{data:g}");
+            }
         }
 #pragma warning restore IDE0056
 

@@ -19,7 +19,7 @@ namespace Trivial.Data
         /// <summary>
         /// Initializes a new instance of Code128 class.
         /// </summary>
-        /// <param name="values"></param>
+        /// <param name="values">The byte array of symbol.</param>
         private Code128(List<byte> values)
         {
             v = values ?? new List<byte>();
@@ -42,9 +42,9 @@ namespace Trivial.Data
         } : 0;
 
         /// <summary>
-        /// Gets the checksum; or 0, if not available.
+        /// Gets the checksum; or 255, if not available.
         /// </summary>
-        public byte Checksum => v.Count > 3 ? v[v.Count - 2] : (byte)0;
+        public byte Checksum => v.Count > 3 ? v[v.Count - 2] : (byte)255;
 
         /// <summary>
         /// Gets the value of the specific symbol.
@@ -352,12 +352,14 @@ namespace Trivial.Data
             var appendFunc = format == Formats.Regular;
             var subtype2 = subtype;
             var high = false;
+            var high2 = false;
             foreach (var b in v.Skip(1).Take(v.Count - 3))
             {
                 if (b > 101)
                 {
                     if (b > 102) break;
                     if (appendFunc) sb.Append("[FNC1]");
+                    high = high2 = false;
                     continue;
                 }
 
@@ -365,7 +367,7 @@ namespace Trivial.Data
                 subtype = subtype2;
                 if (st == Subtypes.C)
                 {
-                    high = false;
+                    high = high2 = false;
                     if (b < 100 || b == 102)
                     {
                         sb.Append(b.ToString("00"));
@@ -388,7 +390,7 @@ namespace Trivial.Data
                 var isA = st == Subtypes.A;
                 if (!isA && st != Subtypes.B)
                 {
-                    high = false;
+                    high = high2 = false;
                     continue;
                 }
 
@@ -396,12 +398,13 @@ namespace Trivial.Data
                 {
                     if (high)
                     {
-                        high = false;
+                        high = high2;
                         var c = (char)(ToString(st, b).FirstOrDefault() + 128);
                         sb.Append(c);
                     }
                     else
                     {
+                        high = high2;
                         sb.Append(ToString(st, b));
                     }
 
@@ -425,7 +428,8 @@ namespace Trivial.Data
                     case 100:
                         if (!isA)
                         {
-                            high = !high;
+                            if (high != high2) high2 = high;
+                            else high = !high;
                             continue;
                         }
 
@@ -434,7 +438,8 @@ namespace Trivial.Data
                     case 101:
                         if (isA)
                         {
-                            high = !high;
+                            if (high != high2) high2 = high;
+                            else high = !high;
                             continue;
                         }
 
@@ -442,7 +447,7 @@ namespace Trivial.Data
                         break;
                 }
 
-                high = false;
+                high = high2;
             }
 
             return sb.ToString();

@@ -68,6 +68,10 @@ namespace Trivial.Data
             code128 = Code128.CreateA("Kingcean");
             Assert.AreEqual("Kingcean", code128.ToString());
 
+            // Code 128 high character
+            code128 = Code128.CreateB(new byte[] { 52, 100, 52, 52, 100, 100, 52, 52, 100, 52, 52, 100, 100, 52, 100, 100, 101, 52 });
+            Assert.AreEqual("TÔTÔÔTÔTÔ", code128.ToString());
+
             // GS1-128
             code128 = Code128.CreateC(new byte[] { 102, 42, 18, 40, 20, 50, 101, 16 });
             Assert.AreEqual("[FNC1]42184020500", code128.ToString());
