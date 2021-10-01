@@ -620,7 +620,7 @@ namespace Trivial.Data
             /// <summary>
             /// Creates global service relationship number.
             /// </summary>
-            /// <param name="recipient">true if identify the relationship between an organisation offering services and the recipient of services; otherwise, false, provider.<param>
+            /// <param name="recipient">true if identify the relationship between an organisation offering services and the recipient of services; otherwise, false, provider.</param>
             /// <param name="data">The data without AI, length should be 18.</param>
             /// <returns>The code 128 instance.</returns>
             public static Code128 GlobalServiceRelationship(bool recipient, string data)
@@ -731,7 +731,7 @@ namespace Trivial.Data
                 => CreateGs1(99, data);
 
             /// <summary>
-            /// Creates net volume in liters.
+            /// Creates for decimal.
             /// </summary>
             /// <param name="ai">The application identifier.</param>
             /// <param name="y">A number of decimal places in the following value, should be less than 10.</param>
@@ -747,7 +747,7 @@ namespace Trivial.Data
             }
 
             /// <summary>
-            /// Creates net volume in liters.
+            /// Creates for decimal.
             /// </summary>
             /// <param name="ai">The application identifier.</param>
             /// <param name="y">A number of decimal places in the following value, should be less than 10.</param>
