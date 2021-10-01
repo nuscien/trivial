@@ -1,7 +1,7 @@
 ﻿# [Trivial.Mime](../docs/web/mime)
 
 Commonly used MIME content types and its file extension part mapping.
-Also provide parsers and barcode information generators of Code 128 and EAN-13
+Also provide parsers and barcode information generators of Code 128 and EAN-13.
 
 ## Import
 
@@ -36,7 +36,7 @@ var pptx = MimeConstants.GetByFileExtension(".pptx");
 
 ## EAN
 
-Create 2-, 5-, 8- and 13-bit International Article Number and get its barcode information.
+Create 2-, 5-, 8- and 13-bit International Article Number to get its barcode information.
 
 ```csharp
 // Parse an EAN-13.
@@ -57,7 +57,9 @@ ean = InternationalArticleNumber.Create("101011101101111010110001001100101010100
 Console.WriteLine(ean.ToString()); // -> 73513537
 ```
 
-# Code 128
+## Code 128
+
+Create code 128 to get its barcode information.
 
 ```csharp
 // Create by symbol values without checksum.

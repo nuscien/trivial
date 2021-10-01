@@ -48,6 +48,7 @@ Including the periodic table and basic chemistry models, e.g. chemical element, 
 ### Trivial.Mime
 
 The MIME constants and its mapping of file extension part.
+Also provide Code-128 and EAN parser supports.
 
 [![NuGet package](https://img.shields.io/nuget/dt/Trivial.Mime?label=nuget+downloads)](https://www.nuget.org/packages/Trivial.Mime)
 

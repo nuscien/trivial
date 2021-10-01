@@ -74,8 +74,8 @@ Console.WriteLine(b.ToString()); // -> How are you?
 Following is a sample to convert Code 128 (and GS1-128) to SVG.
 
 ```csharp
-public string ToSvgString(Code128 code, int height, byte r, byte g, byte b)
-    => $"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<svg version=\"1.1\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\"><g><path d=\"{code.ToPathString(height)}\" stroke=\"#{r:x2)}{g:x2}{b:x2}\"></path></g></svg>"
+public static string ToSvgString(Code128 code, int height, byte r, byte g, byte b)
+    => $"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<svg version=\"1.1\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\"><g><path d=\"{code.ToPathString(height)}\" stroke=\"#{r:x2)}{g:x2}{b:x2}\"></path></g></svg>";
 ```
 
 Usage.
