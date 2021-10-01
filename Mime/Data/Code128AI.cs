@@ -94,12 +94,12 @@ namespace Trivial.Data
                 => CreateGs1Date(17, data);
 
             /// <summary>
-            /// Creates product variant.
+            /// Creates internal product variant.
             /// </summary>
-            /// <param name="data">The data without AI, length should be 2.</param>
+            /// <param name="data">The data without AI, should be less than 100.</param>
             /// <returns>The code 128 instance.</returns>
-            public static Code128 ProductVariant(string data)
-                => CreateGs1(20, data);
+            public static Code128 ProductVariant(byte data)
+                => CreateGs1(20, data.ToString("g"));
 
             /// <summary>
             /// Creates serial number.
@@ -136,10 +136,10 @@ namespace Trivial.Data
             /// <summary>
             /// Creates Made-to-Order Variation Number.
             /// </summary>
-            /// <param name="data">The data without AI, length is up to 6.</param>
+            /// <param name="data">The data without AI, should be less than 1,000,000.</param>
             /// <returns>The code 128 instance.</returns>
-            public static Code128 MadeToOrderVariation(string data)
-                => CreateGs1(242, data);
+            public static Code128 MadeToOrderVariation(int data)
+                => CreateGs1(242, data.ToString("g"));
 
             /// <summary>
             /// Creates packaging component number.
@@ -456,6 +456,46 @@ namespace Trivial.Data
                 => CreateGs1(426, data);
 
             /// <summary>
+            /// Creates service code description.
+            /// </summary>
+            /// <param name="data">The data without AI, length is up to 35.</param>
+            /// <returns>The code 128 instance.</returns>
+            public static Code128 ServiceCodeDescription(string data)
+                => CreateGs1(3420, data);
+
+            /// <summary>
+            /// Creates dangerous goods flag.
+            /// </summary>
+            /// <param name="data">true if the data without AI is yes (as 1); otherwise, false.</param>
+            /// <returns>The code 128 instance.</returns>
+            public static Code128 Dangerous(bool data)
+                => CreateGs1(3421, data ? "1" : "0");
+
+            /// <summary>
+            /// Creates authority to leave.
+            /// </summary>
+            /// <param name="data">true if the data without AI is yes (as 1); otherwise, false.</param>
+            /// <returns>The code 128 instance.</returns>
+            public static Code128 AuthorityToLeave(bool data)
+                => CreateGs1(3422, data ? "1" : "0");
+
+            /// <summary>
+            /// Creates signature required flag.
+            /// </summary>
+            /// <param name="data">true if the data without AI is yes (as 1); otherwise, false.</param>
+            /// <returns>The code 128 instance.</returns>
+            public static Code128 SignatureRequired(bool data)
+                => CreateGs1(3423, data ? "1" : "0");
+
+            /// <summary>
+            /// Creates release date.
+            /// </summary>
+            /// <param name="data">The data without AI, length should be 13.</param>
+            /// <returns>The code 128 instance.</returns>
+            public static Code128 Release(DateTime data)
+                => CreateGs1Date(3426, data);
+
+            /// <summary>
             /// Creates NATO stock number.
             /// </summary>
             /// <param name="data">The data without AI, length should be 13.</param>
@@ -468,8 +508,58 @@ namespace Trivial.Data
             /// </summary>
             /// <param name="data">The data without AI, length is up to 4.</param>
             /// <returns>The code 128 instance.</returns>
-            public static Code128 ActivePotency(string data)
-                => CreateGs1(7004, data);
+            public static Code128 ActivePotency(int data)
+                => CreateGs1(7004, data.ToString("g"));
+
+            /// <summary>
+            /// Creates catch area.
+            /// </summary>
+            /// <param name="data">The data without AI, length is up to 12.</param>
+            /// <returns>The code 128 instance.</returns>
+            public static Code128 CatchArea(string data)
+                => CreateGs1(7005, data);
+
+            /// <summary>
+            /// Creates first freeze date.
+            /// </summary>
+            /// <param name="data">The data without AI, length should be 13.</param>
+            /// <returns>The code 128 instance.</returns>
+            public static Code128 FirstFreeze(DateTime data)
+                => CreateGs1Date(7006, data);
+
+            /// <summary>
+            /// Creates harvest date.
+            /// </summary>
+            /// <param name="data">The data without AI, length should be 13.</param>
+            /// <returns>The code 128 instance.</returns>
+            public static Code128 Harvest(DateTime data)
+                => CreateGs1Date(7007, data);
+
+            /// <summary>
+            /// Creates production method.
+            /// </summary>
+            /// <param name="data">The data without AI, length is up to 2.</param>
+            /// <returns>The code 128 instance.</returns>
+            public static Code128 ProductionMethod(string data)
+                => CreateGs1(7010, data);
+
+            /// <summary>
+            /// Creates certification reference.
+            /// </summary>
+            /// <param name="y">The certification number, should be 0-9.</param>
+            /// <param name="data">The data without AI, length is up to 30.</param>
+            /// <returns>The code 128 instance.</returns>
+            /// <exception cref="ArgumentOutOfRangeException">y ws greater than 9.</exception>
+            public static Code128 Certification(byte y, string data)
+                => y < 10 ? CreateGs1(7230 + y, data) : throw new ArgumentOutOfRangeException(nameof(y), "y should be less than 10.");
+
+            /// <summary>
+            /// Creates protocol ID.
+            /// </summary>
+            /// <param name="data">The data without AI, length is up to 20.</param>
+            /// <returns>The code 128 instance.</returns>
+            public static Code128 Protocol(string data)
+                => CreateGs1(7240, data);
 
             /// <summary>
             /// Creates roll products: width/length/core diameter/direction/splices.
@@ -512,12 +602,37 @@ namespace Trivial.Data
                 => CreateGs1(8007, data);
 
             /// <summary>
+            /// Creates software version.
+            /// </summary>
+            /// <param name="data">The data without AI, length is up to 20.</param>
+            /// <returns>The code 128 instance.</returns>
+            public static Code128 SoftwareVersion(string data)
+                => CreateGs1(8012, data);
+
+            /// <summary>
+            /// Creates global model number.
+            /// </summary>
+            /// <param name="data">The data without AI, length is up to 25.</param>
+            /// <returns>The code 128 instance.</returns>
+            public static Code128 Gmn(string data)
+                => CreateGs1(8013, data);
+
+            /// <summary>
             /// Creates global service relationship number.
             /// </summary>
-            /// <param name="data">The data without AI, length is variable from 13 to 25.</param>
+            /// <param name="recipient">true if identify the relationship between an organisation offering services and the recipient of services; otherwise, false, provider.<param>
+            /// <param name="data">The data without AI, length should be 18.</param>
             /// <returns>The code 128 instance.</returns>
-            public static Code128 GlobalServiceRelationship(string data)
-                => CreateGs1(8018, data);
+            public static Code128 GlobalServiceRelationship(bool recipient, string data)
+                => CreateGs1(recipient ? 8018 : 8017, data);
+
+            /// <summary>
+            /// Creates service relation instance number.
+            /// </summary>
+            /// <param name="data">The data without AI, length is up to 10.</param>
+            /// <returns>The code 128 instance.</returns>
+            public static Code128 Srin(string data)
+                => CreateGs1(8019, data);
 
             /// <summary>
             /// Creates payment slip reference number.
