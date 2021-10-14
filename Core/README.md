@@ -119,14 +119,14 @@ using Trivial.Text;
 
 ### JSON
 
-Includes writable JSON DOM `JsonObject` and `JsonArray`.
+Includes writable JSON DOM `JsonObjectNode` and `JsonArrayNode`.
 And includes lots of useful converter like following.
 
 - `JsonJavaScriptTicksConverter`, and its nullable value conveters and fallback converters, to convert `DateTime` or `DateTime?` from/to JavaScript ticks number in JSON.
 - `JsonUnixTimestampConverter`, and its nullable value conveters and fallback converters, to convert `DateTime` or `DateTime?` from/to Unix timestamp number in JSON.
 - `JsonNumberConverter` and `JsonNumberConverter.NumberStringConverter`, to read number string in JSON.
 - `JsonStringListConverter` and its character separated converters (such as `JsonStringListConverter.WhiteSpaceSeparatedConverter`), to convert a string list from/to a string in JSON.
-- `JsonObjectConverter`, to convert `JsonObject` and `JsonArray`.
+- `JsonObjectNodeConverter`, to convert `JsonObjectNode` and `JsonArrayNode`.
 
 ### CSV
 
