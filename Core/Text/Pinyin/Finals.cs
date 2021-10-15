@@ -46,7 +46,7 @@ namespace Trivial.Text
         /// </summary>
         V = 6,
 
-        // Eh = 7, // Reserved (ㄝ).
+        // Eh = 7, // Reserved for final Ê (ㄝ).
 
         /// <summary>
         /// Final Er (ㄦ).

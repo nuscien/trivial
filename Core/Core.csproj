@@ -24,7 +24,7 @@
     <PackageIcon>logo.png</PackageIcon>
     <PackageIconUrl>https://github.com/nuscien/trivial/raw/master/Materials/logo.png</PackageIconUrl>
     <PackageTags>tasks interceptor numerals json oauth2-client jwt-token csv-parser stream pem coordinates uri</PackageTags>
-    <LangVersion>9.0</LangVersion>
+    <LangVersion>10.0</LangVersion>
     <ApplicationIcon>..\Materials\Trivial.ico</ApplicationIcon>
   </PropertyGroup>
 

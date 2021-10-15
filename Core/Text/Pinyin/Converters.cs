@@ -331,7 +331,7 @@ namespace Trivial.Text
                 {
                     "ㄚ" => PinyinFinals.A,
                     "ㄛ" => PinyinFinals.O,
-                    "ㄜ" or "ㄝ" or "Ê" or "ê" => PinyinFinals.E,
+                    "ㄜ" or "ㄝ" or "Ê" or "ê" => PinyinFinals.E, // "Ê" or "ê" => PinyinFinals.Eh,
                     "丨" or "ㄧ" or "一" => PinyinFinals.I,
                     "ㄨ" => PinyinFinals.U,
                     "ㄩ" or "Ü" or "ü" => PinyinFinals.V,
