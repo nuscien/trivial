@@ -127,12 +127,12 @@ namespace Trivial.Maths
         /// <summary>
         /// Number 11.
         /// </summary>
-        public string Eleven => IsLowerCase ? "ⅹⅰ" : "Ⅺ";
+        public string Eleven => IsLowerCase ? "ⅺ" : "Ⅺ";
 
         /// <summary>
         /// Number 12.
         /// </summary>
-        public string Twelve => IsLowerCase ? "ⅹⅱ" : "Ⅻ";
+        public string Twelve => IsLowerCase ? "ⅻ" : "Ⅻ";
 
         /// <summary>
         /// Number 13.
@@ -182,56 +182,208 @@ namespace Trivial.Maths
         /// <summary>
         /// Number 40.
         /// </summary>
-        public string Forty => IsLowerCase ? "xl" : "XL";
+        public string Forty => IsLowerCase ? "ⅹⅼ" : "ⅩⅬ";
 
         /// <summary>
         /// Number 50.
         /// </summary>
-        public string Fifty => IsLowerCase ? "l" : "L";
+        public string Fifty => IsLowerCase ? "ⅼ" : "Ⅼ";
 
         /// <summary>
         /// Number 60.
         /// </summary>
-        public string Sixty => IsLowerCase ? "lx" : "LX";
+        public string Sixty => IsLowerCase ? "ⅼⅹ" : "ⅬⅩ";
 
         /// <summary>
         /// Number 70.
         /// </summary>
-        public string Seventy => IsLowerCase ? "lxx" : "LXX";
+        public string Seventy => IsLowerCase ? "ⅼⅹⅹ" : "ⅬⅩⅩ";
 
         /// <summary>
         /// Number 80.
         /// </summary>
-        public string Eighty => IsLowerCase ? "lxxx" : "LXXX";
+        public string Eighty => IsLowerCase ? "ⅼⅹⅹⅹ" : "ⅬⅩⅩⅩ";
 
         /// <summary>
         /// Number 90.
         /// </summary>
-        public string Ninety => IsLowerCase ? "xc" : "XC";
+        public string Ninety => IsLowerCase ? "ⅹⅽ" : "ⅩⅭ";
 
         /// <summary>
         /// Number 100.
         /// </summary>
-        public string OneHundred => IsLowerCase ? "c" : "C";
+        public string OneHundred => IsLowerCase ? "ⅽ" : "Ⅽ";
 
         /// <summary>
         /// Number 500.
         /// </summary>
-        public string FiveHundred => IsLowerCase ? "d" : "D";
+        public string FiveHundred => IsLowerCase ? "ⅾ" : "Ⅾ";
 
         /// <summary>
         /// Number 1000.
         /// </summary>
-        public string OneThousand => IsLowerCase ? "m" : "M";
+        public string OneThousand => IsLowerCase ? "ⅿ" : "Ⅿ";
 
         /// <summary>
         /// Roman number digits.
         /// </summary>
-        public static readonly RomanNumerals Uppercase = new RomanNumerals();
+        public static readonly RomanNumerals Uppercase = new();
 
         /// <summary>
         /// Roman number digits.
         /// </summary>
-        public static readonly RomanNumerals Lowercase = new RomanNumerals(true);
+        public static readonly RomanNumerals Lowercase = new(true);
+
+        /// <summary>
+        /// Gets the string of a specific number.
+        /// </summary>
+        /// <param name="number">The number.</param>
+        /// <returns>A string for the number.</returns>
+        public string ToString(int number)
+        {
+            var sb = new StringBuilder();
+            if (number < 0) sb.Append('-');
+            number = Math.Abs(number);
+            var s = number.ToString("g", System.Globalization.CultureInfo.InvariantCulture).Trim();
+            if (number < 13)
+            {
+                sb.Append(number switch
+                {
+                    0 => "0",
+                    1 => One,
+                    2 => Two,
+                    3 => Three,
+                    4 => Four,
+                    5 => Five,
+                    6 => Six,
+                    7 => Seven,
+                    8 => Eight,
+                    9 => Nine,
+                    10 => Ten,
+                    11 => Eleven,
+                    12 => Twelve,
+                    _ => string.Empty
+                });
+                return sb.ToString();
+            }
+            else if (!IsLowerCase && number < 13)
+            {
+                sb.Append(number == 11 ? Eleven : Twelve);
+                return sb.ToString();
+            }
+
+            if (number >= 10000)
+            {
+                if (number < 100000)
+                {
+                    int decadeCount;
+                    if (number < 20000)
+                        decadeCount = 10;
+                    else if (number < 30000)
+                        decadeCount = 20;
+                    else if (number < 40000)
+                        decadeCount = 30;
+                    else if (number < 50000)
+                        decadeCount = 40;
+                    else if (number < 60000)
+                        decadeCount = 50;
+                    else if (number < 70000)
+                        decadeCount = 60;
+                    else if (number < 80000)
+                        decadeCount = 70;
+                    else if (number < 90000)
+                        decadeCount = 80;
+                    else
+                        decadeCount = 90;
+                    sb.Append(IsLowerCase ? 'ⅿ' : 'Ⅿ', decadeCount);
+                }
+                else
+                {
+                    sb.Append(s);
+                    return sb.ToString();
+                }
+            }
+
+            var i = 0;
+            if (s.Length == 4)
+            {
+                var c = s[0] switch
+                {
+                    '0' or ',' => string.Empty,
+                    '1' => IsLowerCase ? "ⅿ" : "Ⅿ",
+                    '2' => IsLowerCase ? "ⅿⅿ" : "ⅯⅯ",
+                    '3' => IsLowerCase ? "ⅿⅿⅿ" : "ⅯⅯⅯ",
+                    '4' => IsLowerCase ? "ⅿⅿⅿⅿ" : "ⅯⅯⅯⅯ",
+                    '5' => IsLowerCase ? "ⅿⅿⅿⅿⅿ" : "ⅯⅯⅯⅯⅯ",
+                    '6' => IsLowerCase ? "ⅿⅿⅿⅿⅿⅿ" : "ⅯⅯⅯⅯⅯⅯ",
+                    '7' => IsLowerCase ? "ⅿⅿⅿⅿⅿⅿⅿ" : "ⅯⅯⅯⅯⅯⅯⅯ",
+                    '8' => IsLowerCase ? "ⅿⅿⅿⅿⅿⅿⅿⅿ" : "ⅯⅯⅯⅯⅯⅯⅯⅯ",
+                    '9' => IsLowerCase ? "ⅿⅿⅿⅿⅿⅿⅿⅿⅿ" : "ⅯⅯⅯⅯⅯⅯⅯⅯⅯ",
+                    _ => s[0].ToString()
+                };
+                sb.Append(c);
+                i = 1;
+            }
+
+            if (s.Length > 2)
+            {
+                var c = s[i] switch
+                {
+                    '0' => string.Empty,
+                    '1' => IsLowerCase ? "ⅽ" : "Ⅽ",
+                    '2' => IsLowerCase ? "ⅽⅽ" : "ⅭⅭ",
+                    '3' => IsLowerCase ? "ⅽⅽⅽ" : "ⅭⅭⅭ",
+                    '4' => IsLowerCase ? "ⅽⅾ" : "ⅭⅮ",
+                    '5' => IsLowerCase ? "ⅾ" : "Ⅾ",
+                    '6' => IsLowerCase ? "ⅾⅽ" : "ⅮⅭ",
+                    '7' => IsLowerCase ? "ⅾⅽⅽ" : "ⅮⅭⅭ",
+                    '8' => IsLowerCase ? "ⅾⅽⅽⅽ" : "ⅮⅭⅭⅭ",
+                    '9' => IsLowerCase ? "ⅽⅿ" : "ⅭⅯ",
+                    _ => s[0].ToString()
+                };
+                sb.Append(c);
+                i++;
+            }
+
+            if (s.Length > 1)
+            {
+                var c = s[i] switch
+                {
+                    '0' => string.Empty,
+                    '1' => IsLowerCase ? "ⅹ" : "Ⅹ",
+                    '2' => IsLowerCase ? "ⅹⅹ" : "ⅩⅩ",
+                    '3' => IsLowerCase ? "ⅹⅹⅹ" : "ⅩⅩⅩ",
+                    '4' => IsLowerCase ? "ⅹⅼ" : "Ⅹ",
+                    '5' => IsLowerCase ? "ⅼ" : "Ⅼ",
+                    '6' => IsLowerCase ? "ⅼⅹ" : "ⅬⅩ",
+                    '7' => IsLowerCase ? "ⅼⅹⅹ" : "ⅬⅩⅩ",
+                    '8' => IsLowerCase ? "ⅼⅹⅹⅹ" : "ⅬⅩⅩⅩ",
+                    '9' => IsLowerCase ? "ⅹⅽ" : "ⅩⅭ",
+                    _ => s[0].ToString()
+                };
+                sb.Append(c);
+                i++;
+            }
+
+            {
+                var c = s[i] switch
+                {
+                    '0' => string.Empty,
+                    '1' => One,
+                    '2' => Two,
+                    '3' => Three,
+                    '4' => Four,
+                    '5' => Five,
+                    '6' => Six,
+                    '7' => Seven,
+                    '8' => Eight,
+                    '9' => Nine,
+                    _ => s[0].ToString()
+                };
+                sb.Append(c);
+            }
+
+            return sb.ToString();
+        }
     }
 }

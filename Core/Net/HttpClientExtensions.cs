@@ -129,7 +129,7 @@ namespace Trivial.Net
             if (type == typeof(JsonObject)) return (T)(object)await JsonObject.ParseAsync(stream, default, cancellationToken);
             if (type == typeof(JsonDocument)) return (T)(object)await JsonDocument.ParseAsync(stream, default, cancellationToken);
             if (type == typeof(JsonArray)) return (T)(object)await JsonArray.ParseAsync(stream, default, cancellationToken);
-            return await JsonSerializer.DeserializeAsync<T>(stream, default, cancellationToken);
+            return await JsonSerializer.DeserializeAsync<T>(stream, null as JsonSerializerOptions, cancellationToken);
         }
 
         /// <summary>
