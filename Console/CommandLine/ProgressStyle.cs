@@ -103,6 +103,7 @@ namespace Trivial.CommandLine
         /// Gets or sets the progress bar color.
         /// </summary>
         public ConsoleColor BarConsoleColor { get; set; } = ConsoleColor.Green;
+
         /// <summary>
         /// Gets or sets the progress bar color.
         /// </summary>

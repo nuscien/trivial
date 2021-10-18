@@ -250,6 +250,11 @@ namespace Trivial.CommandLine
         public string InputPrompt { get; set; }
 
         /// <summary>
+        /// Gets or sets the console instance.
+        /// </summary>
+        public StyleConsole Console { get; set; }
+
+        /// <summary>
         /// Registers a command handler.
         /// </summary>
         /// <param name="key">The key to register.</param>
@@ -532,7 +537,7 @@ namespace Trivial.CommandLine
                 if (conversationMode == null && ConversationMode == CommandConversationModes.Off) break;
                 try
                 {
-                    if (Console.CursorLeft > 0) Console.WriteLine();
+                    if (System.Console.CursorLeft > 0) System.Console.WriteLine();
                 }
                 catch (System.Security.SecurityException)
                 {
@@ -559,13 +564,13 @@ namespace Trivial.CommandLine
                 {
                 }
 
-                Console.Write(InputPrompt ?? "> ");
+                System.Console.Write(InputPrompt ?? "> ");
                 string str = null;
                 while (string.IsNullOrEmpty(str))
                 {
                     try
                     {
-                        str = Console.ReadLine()?.Trim();
+                        str = System.Console.ReadLine()?.Trim();
                     }
                     catch (ArgumentException)
                     {
@@ -724,6 +729,7 @@ namespace Trivial.CommandLine
         {
             return new CommandConversationContext
             {
+                Console = Console,
                 ExitKeys = ExitKeys.AsReadOnly()
             };
         }
@@ -733,6 +739,7 @@ namespace Trivial.CommandLine
             context.Mode = mode ?? ConversationMode;
             context.Description = GetDescription();
             context.Handler = handler;
+            context.Console = Console;
             context.ProcessingTime = DateTime.Now;
         }
 
@@ -803,9 +810,9 @@ namespace Trivial.CommandLine
                     foreach (var item in GetDescription())
                     {
                         if (item.Key.Length < 8)
-                            Console.WriteLine("{0}\t \t{1}", item.Key, item.Value);
+                            System.Console.WriteLine("{0}\t \t{1}", item.Key, item.Value);
                         else
-                            Console.WriteLine("{0} \t{1}", item.Key, item.Value);
+                            System.Console.WriteLine("{0} \t{1}", item.Key, item.Value);
                     }
                 }
 

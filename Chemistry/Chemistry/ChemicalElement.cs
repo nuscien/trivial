@@ -548,14 +548,9 @@ namespace Trivial.Chemistry
             sb.Append(Name);
             sb.Append(" (");
             if (AtomicNumber < 1)
-            {
                 sb.Append('?');
-            }
             else
-            {
-                sb.Append('#');
                 sb.Append(AtomicNumber);
-            }
 
             if (!Name.Equals(Symbol, StringComparison.OrdinalIgnoreCase)
                 && !"?".Equals(Symbol, StringComparison.OrdinalIgnoreCase))

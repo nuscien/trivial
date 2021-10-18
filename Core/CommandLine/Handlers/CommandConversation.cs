@@ -73,5 +73,10 @@ namespace Trivial.CommandLine
         /// Gets the current processing date time.
         /// </summary>
         public DateTime ProcessingTime { get; internal set; } = DateTime.Now;
+
+        /// <summary>
+        /// Gets the console instance.
+        /// </summary>
+        public StyleConsole Console { get; internal set; } = StyleConsole.Default;
     }
 }

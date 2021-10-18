@@ -235,6 +235,13 @@ namespace Trivial.CommandLine
         }
 
         /// <summary>
+        /// Gets the console instance from context.
+        /// </summary>
+        /// <returns>The console instance.</returns>
+        protected StyleConsole GetConsole()
+            => Context?.Console ?? StyleConsole.Default;
+
+        /// <summary>
         /// Tests if the exception on processing need be thrown.
         /// </summary>
         /// <param name="ex">The exception.</param>
