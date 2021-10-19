@@ -233,7 +233,7 @@ namespace Trivial.CommandLine
             }
 
             var spaces = CreateByWhitespace(Environment.NewLine + new string(' ', (indentLevel + 1) * 2));
-            cmd.Add(CreateByPunctuation("{"));
+            cmd.Add(CreateByPunctuation("["));
             foreach (var prop in json)
             {
                 cmd.Add(spaces);
@@ -244,7 +244,7 @@ namespace Trivial.CommandLine
             if (cmd.Count > 1) cmd.RemoveAt(cmd.Count - 1);
             cmd.Add(CreateByWhitespace(Environment.NewLine));
             cmd.Add(CreateByWhitespace(new string(' ', indentLevel * 2)));
-            cmd.Add(CreateByPunctuation("}"));
+            cmd.Add(CreateByPunctuation("]"));
             return cmd;
         }
 

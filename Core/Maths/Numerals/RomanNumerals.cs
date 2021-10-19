@@ -240,6 +240,15 @@ namespace Trivial.Maths
         /// <param name="number">The number.</param>
         /// <returns>A string for the number.</returns>
         public string ToString(int number)
+            => ToString(number);
+
+        /// <summary>
+        /// Gets the string of a specific number.
+        /// </summary>
+        /// <param name="number">The number.</param>
+        /// <param name="useLatinAlphabet">true if uses lower-character Unicode Latin letter; otherwise false.</param>
+        /// <returns>A string for the number.</returns>
+        public string ToString(int number, bool useLatinAlphabet)
         {
             var sb = new StringBuilder();
             if (number < 0) sb.Append('-');
@@ -264,18 +273,15 @@ namespace Trivial.Maths
                     12 => Twelve,
                     _ => string.Empty
                 });
-                return sb.ToString();
-            }
-            else if (!IsLowerCase && number < 13)
-            {
-                sb.Append(number == 11 ? Eleven : Twelve);
-                return sb.ToString();
+                return useLatinAlphabet ? ConvertToLatinAlphabet(sb.ToString()) : sb.ToString();
             }
 
+            var i = 0;
             if (number >= 10000)
             {
                 if (number < 100000)
                 {
+                    i++;
                     int decadeCount;
                     if (number < 20000)
                         decadeCount = 10;
@@ -304,10 +310,9 @@ namespace Trivial.Maths
                 }
             }
 
-            var i = 0;
-            if (s.Length == 4)
+            if (s.Length > 3)
             {
-                var c = s[0] switch
+                var c = s[i] switch
                 {
                     '0' or ',' => string.Empty,
                     '1' => IsLowerCase ? "ⅿ" : "Ⅿ",
@@ -322,7 +327,7 @@ namespace Trivial.Maths
                     _ => s[0].ToString()
                 };
                 sb.Append(c);
-                i = 1;
+                i++;
             }
 
             if (s.Length > 2)
@@ -353,7 +358,7 @@ namespace Trivial.Maths
                     '1' => IsLowerCase ? "ⅹ" : "Ⅹ",
                     '2' => IsLowerCase ? "ⅹⅹ" : "ⅩⅩ",
                     '3' => IsLowerCase ? "ⅹⅹⅹ" : "ⅩⅩⅩ",
-                    '4' => IsLowerCase ? "ⅹⅼ" : "Ⅹ",
+                    '4' => IsLowerCase ? "ⅹⅼ" : "ⅩⅬ",
                     '5' => IsLowerCase ? "ⅼ" : "Ⅼ",
                     '6' => IsLowerCase ? "ⅼⅹ" : "ⅬⅩ",
                     '7' => IsLowerCase ? "ⅼⅹⅹ" : "ⅬⅩⅩ",
@@ -383,7 +388,29 @@ namespace Trivial.Maths
                 sb.Append(c);
             }
 
-            return sb.ToString();
+            return useLatinAlphabet ? ConvertToLatinAlphabet(sb.ToString()) : sb.ToString();
+        }
+
+        private string ConvertToLatinAlphabet(string s)
+        {
+            s = s.Replace(One, "I")
+                .Replace(Two, "II")
+                .Replace(Three, "III")
+                .Replace(Four, "IV")
+                .Replace(Five, "V")
+                .Replace(Six, "VI")
+                .Replace(Seven, "VII")
+                .Replace(Eight, "VII")
+                .Replace(Nine, "IX")
+                .Replace(Ten, "X")
+                .Replace(Eleven, "XI")
+                .Replace(Twelve, "XII")
+                .Replace(Fifty, "L")
+                .Replace(OneHundred, "C")
+                .Replace(FiveHundred, "D")
+                .Replace(OneThousand, "M")
+                .Trim();
+            return IsLowerCase ? s.ToLowerInvariant() : s;
         }
     }
 }

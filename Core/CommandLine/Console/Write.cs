@@ -294,11 +294,38 @@ namespace Trivial.CommandLine
         /// Writes the specified number to the standard output stream.
         /// Note it may not flush immediately.
         /// </summary>
+        /// <param name="number">A number to output.</param>
+        /// <param name="format">A standard or custom numeric format string.</param>
+        /// <exception cref="FormatException">format is invalid or not supported.</exception>
+        public void Write(int number, string format)
+        {
+            col.Add(new ConsoleText(number.ToString(format)));
+            OnAppend();
+        }
+
+        /// <summary>
+        /// Writes the specified number to the standard output stream.
+        /// Note it may not flush immediately.
+        /// </summary>
         /// <param name="style">The content style.</param>
         /// <param name="number">A number to output.</param>
         public void Write(ConsoleTextStyle style, int number)
         {
             col.Add(new ConsoleText(number.ToString("g"), style));
+            OnAppend();
+        }
+
+        /// <summary>
+        /// Writes the specified number to the standard output stream.
+        /// Note it may not flush immediately.
+        /// </summary>
+        /// <param name="style">The content style.</param>
+        /// <param name="number">A number to output.</param>
+        /// <param name="format">A standard or custom numeric format string.</param>
+        /// <exception cref="FormatException">format is invalid or not supported.</exception>
+        public void Write(ConsoleTextStyle style, int number, string format)
+        {
+            col.Add(new ConsoleText(number.ToString(format), style));
             OnAppend();
         }
 
@@ -319,11 +346,40 @@ namespace Trivial.CommandLine
         /// Note it may not flush immediately.
         /// </summary>
         /// <param name="foreground">The foreground color.</param>
+        /// <param name="number">A number to output.</param>
+        /// <param name="format">A standard or custom numeric format string.</param>
+        /// <exception cref="FormatException">format is invalid or not supported.</exception>
+        public void Write(ConsoleColor foreground, int number, string format)
+        {
+            col.Add(new ConsoleText(number.ToString(format), foreground));
+            OnAppend();
+        }
+
+        /// <summary>
+        /// Writes the specified number to the standard output stream.
+        /// Note it may not flush immediately.
+        /// </summary>
+        /// <param name="foreground">The foreground color.</param>
         /// <param name="background">The background color.</param>
         /// <param name="number">A number to output.</param>
         public void Write(ConsoleColor? foreground, ConsoleColor? background, int number)
         {
             col.Add(new ConsoleText(number.ToString("g"), foreground, background));
+            OnAppend();
+        }
+
+        /// <summary>
+        /// Writes the specified number to the standard output stream.
+        /// Note it may not flush immediately.
+        /// </summary>
+        /// <param name="foreground">The foreground color.</param>
+        /// <param name="background">The background color.</param>
+        /// <param name="number">A number to output.</param>
+        /// <param name="format">A standard or custom numeric format string.</param>
+        /// <exception cref="FormatException">format is invalid or not supported.</exception>
+        public void Write(ConsoleColor? foreground, ConsoleColor? background, int number, string format)
+        {
+            col.Add(new ConsoleText(number.ToString(format), foreground, background));
             OnAppend();
         }
 
@@ -534,11 +590,38 @@ namespace Trivial.CommandLine
         /// Writes the specified number to the standard output stream.
         /// Note it may not flush immediately.
         /// </summary>
+        /// <param name="number">A number to output.</param>
+        /// <param name="format">A standard or custom numeric format string.</param>
+        /// <exception cref="FormatException">format is invalid or not supported.</exception>
+        public void Write(double number, string format)
+        {
+            col.Add(new ConsoleText(number.ToString(format)));
+            OnAppend();
+        }
+
+        /// <summary>
+        /// Writes the specified number to the standard output stream.
+        /// Note it may not flush immediately.
+        /// </summary>
         /// <param name="style">The content style.</param>
         /// <param name="number">A number to output.</param>
         public void Write(ConsoleTextStyle style, double number)
         {
             col.Add(new ConsoleText(number.ToString("g"), style));
+            OnAppend();
+        }
+
+        /// <summary>
+        /// Writes the specified number to the standard output stream.
+        /// Note it may not flush immediately.
+        /// </summary>
+        /// <param name="style">The content style.</param>
+        /// <param name="number">A number to output.</param>
+        /// <param name="format">A standard or custom numeric format string.</param>
+        /// <exception cref="FormatException">format is invalid or not supported.</exception>
+        public void Write(ConsoleTextStyle style, double number, string format)
+        {
+            col.Add(new ConsoleText(number.ToString(format), style));
             OnAppend();
         }
 
@@ -559,11 +642,40 @@ namespace Trivial.CommandLine
         /// Note it may not flush immediately.
         /// </summary>
         /// <param name="foreground">The foreground color.</param>
+        /// <param name="number">A number to output.</param>
+        /// <param name="format">A standard or custom numeric format string.</param>
+        /// <exception cref="FormatException">format is invalid or not supported.</exception>
+        public void Write(ConsoleColor foreground, double number, string format)
+        {
+            col.Add(new ConsoleText(number.ToString(format), foreground));
+            OnAppend();
+        }
+
+        /// <summary>
+        /// Writes the specified number to the standard output stream.
+        /// Note it may not flush immediately.
+        /// </summary>
+        /// <param name="foreground">The foreground color.</param>
         /// <param name="background">The background color.</param>
         /// <param name="number">A number to output.</param>
         public void Write(ConsoleColor? foreground, ConsoleColor? background, double number)
         {
             col.Add(new ConsoleText(number.ToString("g"), foreground, background));
+            OnAppend();
+        }
+
+        /// <summary>
+        /// Writes the specified number to the standard output stream.
+        /// Note it may not flush immediately.
+        /// </summary>
+        /// <param name="foreground">The foreground color.</param>
+        /// <param name="background">The background color.</param>
+        /// <param name="number">A number to output.</param>
+        /// <param name="format">A standard or custom numeric format string.</param>
+        /// <exception cref="FormatException">format is invalid or not supported.</exception>
+        public void Write(ConsoleColor? foreground, ConsoleColor? background, double number, string format)
+        {
+            col.Add(new ConsoleText(number.ToString(format), foreground, background));
             OnAppend();
         }
 
@@ -719,7 +831,21 @@ namespace Trivial.CommandLine
         }
 
         /// <summary>
-        /// Writes the specified data value to the standard output stream.
+        /// Writes the specified data to the standard output stream.
+        /// Note it may not flush immediately.
+        /// </summary>
+        /// <param name="model">A representation model.</param>
+        public void Write(IConsoleTextCreator model)
+        {
+            if (model == null) return;
+            var list = model.CreateTextCollection();
+            if (list == null) return;
+            col.AddRange(list);
+            OnAppend();
+        }
+
+        /// <summary>
+        /// Writes the specified data to the standard output stream.
         /// Note it may not flush immediately.
         /// </summary>
         /// <typeparam name="T">The type of data model.</typeparam>
@@ -729,6 +855,24 @@ namespace Trivial.CommandLine
         {
             if (style == null) return;
             var list = style.CreateTextCollection(data);
+            if (list == null) return;
+            col.AddRange(list);
+            OnAppend();
+        }
+
+        /// <summary>
+        /// Writes the specified data to the standard output stream.
+        /// Note it may not flush immediately.
+        /// </summary>
+        /// <typeparam name="TData">The type of data model.</typeparam>
+        /// <typeparam name="TOptions">The additional options.</typeparam>
+        /// <param name="style">The style.</param>
+        /// <param name="data">A data model.</param>
+        /// <param name="options">The additional options.</param>
+        public void Write<TData, TOptions>(IConsoleTextCreator<TData, TOptions> style, TData data, TOptions options)
+        {
+            if (style == null) return;
+            var list = style.CreateTextCollection(data, options);
             if (list == null) return;
             col.AddRange(list);
             OnAppend();
@@ -1336,6 +1480,20 @@ namespace Trivial.CommandLine
         /// Writes the specified data to the standard output stream.
         /// It will flush immediately.
         /// </summary>
+        /// <param name="model">A representation model.</param>
+        public void WriteImmediately(IConsoleTextCreator model)
+        {
+            if (model == null) return;
+            var list = model.CreateTextCollection();
+            if (list == null) return;
+            col.AddRange(list);
+            Flush();
+        }
+
+        /// <summary>
+        /// Writes the specified data to the standard output stream.
+        /// It will flush immediately.
+        /// </summary>
         /// <typeparam name="T">The type of data model.</typeparam>
         /// <param name="style">The style.</param>
         /// <param name="data">A data model.</param>
@@ -1343,6 +1501,24 @@ namespace Trivial.CommandLine
         {
             if (style == null) return;
             var list = style.CreateTextCollection(data);
+            if (list == null) return;
+            col.AddRange(list);
+            Flush();
+        }
+
+        /// <summary>
+        /// Writes the specified data to the standard output stream.
+        /// It will flush immediately.
+        /// </summary>
+        /// <typeparam name="TData">The type of data model.</typeparam>
+        /// <typeparam name="TOptions">The additional options.</typeparam>
+        /// <param name="style">The style.</param>
+        /// <param name="data">A data model.</param>
+        /// <param name="options">The additional options.</param>
+        public void WriteImmediately<TData, TOptions>(IConsoleTextCreator<TData, TOptions> style, TData data, TOptions options)
+        {
+            if (style == null) return;
+            var list = style.CreateTextCollection(data, options);
             if (list == null) return;
             col.AddRange(list);
             Flush();
@@ -1627,11 +1803,40 @@ namespace Trivial.CommandLine
         /// Writes the specified number, followed by the current line terminator, to the standard output stream.
         /// It will flush immediately.
         /// </summary>
+        /// <param name="number">A number to output.</param>
+        /// <param name="format">A standard or custom numeric format string.</param>
+        /// <exception cref="FormatException">format is invalid or not supported.</exception>
+        public void WriteLine(int number, string format)
+        {
+            col.Add(new ConsoleText(number.ToString(format)));
+            col.Add(new ConsoleText(Environment.NewLine));
+            Flush();
+        }
+
+        /// <summary>
+        /// Writes the specified number, followed by the current line terminator, to the standard output stream.
+        /// It will flush immediately.
+        /// </summary>
         /// <param name="style">The content style.</param>
         /// <param name="number">A number to output.</param>
         public void WriteLine(ConsoleTextStyle style, int number)
         {
             col.Add(new ConsoleText(number.ToString("g"), style));
+            col.Add(new ConsoleText(Environment.NewLine));
+            Flush();
+        }
+
+        /// <summary>
+        /// Writes the specified number, followed by the current line terminator, to the standard output stream.
+        /// It will flush immediately.
+        /// </summary>
+        /// <param name="style">The content style.</param>
+        /// <param name="number">A number to output.</param>
+        /// <param name="format">A standard or custom numeric format string.</param>
+        /// <exception cref="FormatException">format is invalid or not supported.</exception>
+        public void WriteLine(ConsoleTextStyle style, int number, string format)
+        {
+            col.Add(new ConsoleText(number.ToString(format), style));
             col.Add(new ConsoleText(Environment.NewLine));
             Flush();
         }
@@ -1654,11 +1859,42 @@ namespace Trivial.CommandLine
         /// It will flush immediately.
         /// </summary>
         /// <param name="foreground">The foreground color.</param>
+        /// <param name="number">A number to output.</param>
+        /// <param name="format">A standard or custom numeric format string.</param>
+        /// <exception cref="FormatException">format is invalid or not supported.</exception>
+        public void WriteLine(ConsoleColor foreground, int number, string format)
+        {
+            col.Add(new ConsoleText(number.ToString(format), foreground));
+            col.Add(new ConsoleText(Environment.NewLine));
+            Flush();
+        }
+
+        /// <summary>
+        /// Writes the specified number, followed by the current line terminator, to the standard output stream.
+        /// It will flush immediately.
+        /// </summary>
+        /// <param name="foreground">The foreground color.</param>
         /// <param name="background">The background color.</param>
         /// <param name="number">A number to output.</param>
         public void WriteLine(ConsoleColor? foreground, ConsoleColor? background, int number)
         {
             col.Add(new ConsoleText(number.ToString("g"), foreground, background));
+            col.Add(new ConsoleText(Environment.NewLine));
+            Flush();
+        }
+
+        /// <summary>
+        /// Writes the specified number, followed by the current line terminator, to the standard output stream.
+        /// It will flush immediately.
+        /// </summary>
+        /// <param name="foreground">The foreground color.</param>
+        /// <param name="background">The background color.</param>
+        /// <param name="number">A number to output.</param>
+        /// <param name="format">A standard or custom numeric format string.</param>
+        /// <exception cref="FormatException">format is invalid or not supported.</exception>
+        public void WriteLine(ConsoleColor? foreground, ConsoleColor? background, int number, string format)
+        {
+            col.Add(new ConsoleText(number.ToString(format), foreground, background));
             col.Add(new ConsoleText(Environment.NewLine));
             Flush();
         }
@@ -1887,11 +2123,40 @@ namespace Trivial.CommandLine
         /// Writes the specified number, followed by the current line terminator, to the standard output stream.
         /// It will flush immediately.
         /// </summary>
+        /// <param name="number">A number to output.</param>
+        /// <param name="format">A standard or custom numeric format string.</param>
+        /// <exception cref="FormatException">format is invalid or not supported.</exception>
+        public void WriteLine(double number, string format)
+        {
+            col.Add(new ConsoleText(number.ToString(format)));
+            col.Add(new ConsoleText(Environment.NewLine));
+            Flush();
+        }
+
+        /// <summary>
+        /// Writes the specified number, followed by the current line terminator, to the standard output stream.
+        /// It will flush immediately.
+        /// </summary>
         /// <param name="style">The content style.</param>
         /// <param name="number">A number to output.</param>
         public void WriteLine(ConsoleTextStyle style, double number)
         {
             col.Add(new ConsoleText(number.ToString("g"), style));
+            col.Add(new ConsoleText(Environment.NewLine));
+            Flush();
+        }
+
+        /// <summary>
+        /// Writes the specified number, followed by the current line terminator, to the standard output stream.
+        /// It will flush immediately.
+        /// </summary>
+        /// <param name="style">The content style.</param>
+        /// <param name="number">A number to output.</param>
+        /// <param name="format">A standard or custom numeric format string.</param>
+        /// <exception cref="FormatException">format is invalid or not supported.</exception>
+        public void WriteLine(ConsoleTextStyle style, double number, string format)
+        {
+            col.Add(new ConsoleText(number.ToString(format), style));
             col.Add(new ConsoleText(Environment.NewLine));
             Flush();
         }
@@ -1914,11 +2179,42 @@ namespace Trivial.CommandLine
         /// It will flush immediately.
         /// </summary>
         /// <param name="foreground">The foreground color.</param>
+        /// <param name="number">A number to output.</param>
+        /// <param name="format">A standard or custom numeric format string.</param>
+        /// <exception cref="FormatException">format is invalid or not supported.</exception>
+        public void WriteLine(ConsoleColor foreground, double number, string format)
+        {
+            col.Add(new ConsoleText(number.ToString(format), foreground));
+            col.Add(new ConsoleText(Environment.NewLine));
+            Flush();
+        }
+
+        /// <summary>
+        /// Writes the specified number, followed by the current line terminator, to the standard output stream.
+        /// It will flush immediately.
+        /// </summary>
+        /// <param name="foreground">The foreground color.</param>
         /// <param name="background">The background color.</param>
         /// <param name="number">A number to output.</param>
         public void WriteLine(ConsoleColor? foreground, ConsoleColor? background, double number)
         {
             col.Add(new ConsoleText(number.ToString("g"), foreground, background));
+            col.Add(new ConsoleText(Environment.NewLine));
+            Flush();
+        }
+
+        /// <summary>
+        /// Writes the specified number, followed by the current line terminator, to the standard output stream.
+        /// It will flush immediately.
+        /// </summary>
+        /// <param name="foreground">The foreground color.</param>
+        /// <param name="background">The background color.</param>
+        /// <param name="number">A number to output.</param>
+        /// <param name="format">A standard or custom numeric format string.</param>
+        /// <exception cref="FormatException">format is invalid or not supported.</exception>
+        public void WriteLine(ConsoleColor? foreground, ConsoleColor? background, double number, string format)
+        {
+            col.Add(new ConsoleText(number.ToString(format), foreground, background));
             col.Add(new ConsoleText(Environment.NewLine));
             Flush();
         }
@@ -2087,6 +2383,21 @@ namespace Trivial.CommandLine
         /// Writes the specified data, followed by the current line terminator, to the standard output stream.
         /// It will flush immediately.
         /// </summary>
+        /// <param name="model">A representation model.</param>
+        public void WriteLine(IConsoleTextCreator model)
+        {
+            if (model == null) return;
+            var list = model.CreateTextCollection();
+            if (list == null) return;
+            col.AddRange(list);
+            if (!model.ContainsTerminator) col.Add(new ConsoleText(Environment.NewLine));
+            Flush();
+        }
+
+        /// <summary>
+        /// Writes the specified data, followed by the current line terminator, to the standard output stream.
+        /// It will flush immediately.
+        /// </summary>
         /// <typeparam name="T">The type of data model.</typeparam>
         /// <param name="style">The style.</param>
         /// <param name="data">A data model.</param>
@@ -2096,7 +2407,26 @@ namespace Trivial.CommandLine
             var list = style.CreateTextCollection(data);
             if (list == null) return;
             col.AddRange(list);
-            col.Add(new ConsoleText(Environment.NewLine));
+            if (!style.ContainsTerminator) col.Add(new ConsoleText(Environment.NewLine));
+            Flush();
+        }
+
+        /// <summary>
+        /// Writes the specified data, followed by the current line terminator, to the standard output stream.
+        /// It will flush immediately.
+        /// </summary>
+        /// <typeparam name="TData">The type of data model.</typeparam>
+        /// <typeparam name="TOptions">The additional options.</typeparam>
+        /// <param name="style">The style.</param>
+        /// <param name="data">A data model.</param>
+        /// <param name="options">The additional options.</param>
+        public void WriteLine<TData, TOptions>(IConsoleTextCreator<TData, TOptions> style, TData data, TOptions options)
+        {
+            if (style == null) return;
+            var list = style.CreateTextCollection(data, options);
+            if (list == null) return;
+            col.AddRange(list);
+            if (!style.ContainsTerminator) col.Add(new ConsoleText(Environment.NewLine));
             Flush();
         }
 

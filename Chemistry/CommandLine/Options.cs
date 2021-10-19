@@ -34,7 +34,7 @@ namespace Trivial.CommandLine
     /// <summary>
     /// The console style for chemical element.
     /// </summary>
-    public class ChemicalElementConsoleStyle
+    public class ChemicalElementConsoleStyle : ICloneable, IConsoleTextCreator<ChemicalElement, ChemicalElementRepresentationKinds>
     {
         /// <summary>
         /// Gets or sets the fallback console color of element name.
@@ -138,5 +138,38 @@ namespace Trivial.CommandLine
             BackgroundConsoleColor = null;
             BackgroundRgbColor = null;
         }
+
+        /// <summary>
+        /// Clones an object.
+        /// </summary>
+        /// <returns>The object copied from this instance.</returns>
+        public virtual ChemicalElementConsoleStyle Clone()
+            => MemberwiseClone() as ChemicalElementConsoleStyle;
+
+        /// <summary>
+        /// Clones an object.
+        /// </summary>
+        /// <returns>The object copied from this instance.</returns>
+        object ICloneable.Clone()
+            => MemberwiseClone();
+
+        /// <summary>
+        /// Gets a value indicating whether it has already contained a line terminator.
+        /// </summary>
+        bool IConsoleTextCreator<ChemicalElement, ChemicalElementRepresentationKinds>.ContainsTerminator => true;
+
+        /// <summary>
+        /// Creates the console text collection based on this style.
+        /// </summary>
+        /// <param name="element">The chemical element.</param>
+        /// <param name="kind">The presentation kind.</param>
+        /// <returns>A collection of console text.</returns>
+        IEnumerable<ConsoleText> IConsoleTextCreator<ChemicalElement, ChemicalElementRepresentationKinds>.CreateTextCollection(ChemicalElement element, ChemicalElementRepresentationKinds kind)
+            => kind switch
+            {
+                ChemicalElementRepresentationKinds.Details => ChemistryCommandLine.ToConsoleText(this, element, false),
+                ChemicalElementRepresentationKinds.DetailsAndIsotopes => ChemistryCommandLine.ToConsoleText(this, element, true),
+                _ => ChemistryCommandLine.ToSimpleConsoleText(this, element, false),
+            };
     }
 }

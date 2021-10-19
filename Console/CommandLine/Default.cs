@@ -236,10 +236,31 @@ namespace Trivial.CommandLine
         /// Writes the specified number to the standard output stream.
         /// Note it may not flush immediately.
         /// </summary>
+        /// <param name="number">A number to output.</param>
+        /// <param name="format">A standard or custom numeric format string.</param>
+        /// <exception cref="FormatException">format is invalid or not supported.</exception>
+        public static void Write(int number, string format)
+            => StyleConsole.Default.Write(number, format);
+
+        /// <summary>
+        /// Writes the specified number to the standard output stream.
+        /// Note it may not flush immediately.
+        /// </summary>
         /// <param name="style">The content style.</param>
         /// <param name="number">A number to output.</param>
         public static void Write(ConsoleTextStyle style, int number)
             => StyleConsole.Default.Write(style, number);
+
+        /// <summary>
+        /// Writes the specified number to the standard output stream.
+        /// Note it may not flush immediately.
+        /// </summary>
+        /// <param name="style">The content style.</param>
+        /// <param name="number">A number to output.</param>
+        /// <param name="format">A standard or custom numeric format string.</param>
+        /// <exception cref="FormatException">format is invalid or not supported.</exception>
+        public static void Write(ConsoleTextStyle style, int number, string format)
+            => StyleConsole.Default.Write(style, number, format);
 
         /// <summary>
         /// Writes the specified number to the standard output stream.
@@ -255,10 +276,33 @@ namespace Trivial.CommandLine
         /// Note it may not flush immediately.
         /// </summary>
         /// <param name="foreground">The foreground color.</param>
+        /// <param name="number">A number to output.</param>
+        /// <param name="format">A standard or custom numeric format string.</param>
+        /// <exception cref="FormatException">format is invalid or not supported.</exception>
+        public static void Write(ConsoleColor foreground, int number, string format)
+            => StyleConsole.Default.Write(foreground, number, format);
+
+        /// <summary>
+        /// Writes the specified number to the standard output stream.
+        /// Note it may not flush immediately.
+        /// </summary>
+        /// <param name="foreground">The foreground color.</param>
         /// <param name="background">The background color.</param>
         /// <param name="number">A number to output.</param>
         public static void Write(ConsoleColor? foreground, ConsoleColor? background, int number)
             => StyleConsole.Default.Write(foreground, background, number);
+
+        /// <summary>
+        /// Writes the specified number to the standard output stream.
+        /// Note it may not flush immediately.
+        /// </summary>
+        /// <param name="foreground">The foreground color.</param>
+        /// <param name="background">The background color.</param>
+        /// <param name="number">A number to output.</param>
+        /// <param name="format">A standard or custom numeric format string.</param>
+        /// <exception cref="FormatException">format is invalid or not supported.</exception>
+        public static void Write(ConsoleColor? foreground, ConsoleColor? background, int number, string format)
+            => StyleConsole.Default.Write(foreground, background, number, format);
 
         /// <summary>
         /// Writes the specified number to the standard output stream.
@@ -416,10 +460,31 @@ namespace Trivial.CommandLine
         /// Writes the specified number to the standard output stream.
         /// Note it may not flush immediately.
         /// </summary>
+        /// <param name="number">A number to output.</param>
+        /// <param name="format">A standard or custom numeric format string.</param>
+        /// <exception cref="FormatException">format is invalid or not supported.</exception>
+        public static void Write(double number, string format)
+            => StyleConsole.Default.Write(number, format);
+
+        /// <summary>
+        /// Writes the specified number to the standard output stream.
+        /// Note it may not flush immediately.
+        /// </summary>
         /// <param name="style">The content style.</param>
         /// <param name="number">A number to output.</param>
         public static void Write(ConsoleTextStyle style, double number)
             => StyleConsole.Default.Write(style, number);
+
+        /// <summary>
+        /// Writes the specified number to the standard output stream.
+        /// Note it may not flush immediately.
+        /// </summary>
+        /// <param name="style">The content style.</param>
+        /// <param name="number">A number to output.</param>
+        /// <param name="format">A standard or custom numeric format string.</param>
+        /// <exception cref="FormatException">format is invalid or not supported.</exception>
+        public static void Write(ConsoleTextStyle style, double number, string format)
+            => StyleConsole.Default.Write(style, number, format);
 
         /// <summary>
         /// Writes the specified number to the standard output stream.
@@ -435,10 +500,33 @@ namespace Trivial.CommandLine
         /// Note it may not flush immediately.
         /// </summary>
         /// <param name="foreground">The foreground color.</param>
+        /// <param name="number">A number to output.</param>
+        /// <param name="format">A standard or custom numeric format string.</param>
+        /// <exception cref="FormatException">format is invalid or not supported.</exception>
+        public static void Write(ConsoleColor foreground, double number, string format)
+            => StyleConsole.Default.Write(foreground, number, format);
+
+        /// <summary>
+        /// Writes the specified number to the standard output stream.
+        /// Note it may not flush immediately.
+        /// </summary>
+        /// <param name="foreground">The foreground color.</param>
         /// <param name="background">The background color.</param>
         /// <param name="number">A number to output.</param>
         public static void Write(ConsoleColor? foreground, ConsoleColor? background, double number)
             => StyleConsole.Default.Write(foreground, background, number);
+
+        /// <summary>
+        /// Writes the specified number to the standard output stream.
+        /// Note it may not flush immediately.
+        /// </summary>
+        /// <param name="foreground">The foreground color.</param>
+        /// <param name="background">The background color.</param>
+        /// <param name="number">A number to output.</param>
+        /// <param name="format">A standard or custom numeric format string.</param>
+        /// <exception cref="FormatException">format is invalid or not supported.</exception>
+        public static void Write(ConsoleColor? foreground, ConsoleColor? background, double number, string format)
+            => StyleConsole.Default.Write(foreground, background, number, format);
 
         /// <summary>
         /// Writes the specified characters to the standard output stream.
@@ -538,11 +626,31 @@ namespace Trivial.CommandLine
         /// Writes the specified data to the standard output stream.
         /// Note it may not flush immediately.
         /// </summary>
+        /// <param name="model">A representation model.</param>
+        public static void Write(IConsoleTextCreator model)
+            => StyleConsole.Default.Write(model);
+
+        /// <summary>
+        /// Writes the specified data to the standard output stream.
+        /// Note it may not flush immediately.
+        /// </summary>
         /// <typeparam name="T">The type of data model.</typeparam>
         /// <param name="style">The style.</param>
         /// <param name="data">A data model.</param>
         public static void Write<T>(IConsoleTextCreator<T> style, T data)
             => StyleConsole.Default.Write(style, data);
+
+        /// <summary>
+        /// Writes the specified data to the standard output stream.
+        /// Note it may not flush immediately.
+        /// </summary>
+        /// <typeparam name="TData">The type of data model.</typeparam>
+        /// <typeparam name="TOptions">The additional options.</typeparam>
+        /// <param name="style">The style.</param>
+        /// <param name="data">A data model.</param>
+        /// <param name="options">The additional options.</param>
+        public static void Write<TData, TOptions>(IConsoleTextCreator<TData, TOptions> style, TData data, TOptions options)
+            => StyleConsole.Default.Write(style, data, options);
 
         /// <summary>
         /// Writes the specified characters to the standard output stream.
@@ -768,10 +876,31 @@ namespace Trivial.CommandLine
         /// Writes the specified number, followed by the current line terminator, to the standard output stream.
         /// It will flush immediately.
         /// </summary>
+        /// <param name="number">A number to output.</param>
+        /// <param name="format">A standard or custom numeric format string.</param>
+        /// <exception cref="FormatException">format is invalid or not supported.</exception>
+        public static void WriteLine(int number, string format)
+            => StyleConsole.Default.WriteLine(number);
+
+        /// <summary>
+        /// Writes the specified number, followed by the current line terminator, to the standard output stream.
+        /// It will flush immediately.
+        /// </summary>
         /// <param name="style">The content style.</param>
         /// <param name="number">A number to output.</param>
         public static void WriteLine(ConsoleTextStyle style, int number)
             => StyleConsole.Default.WriteLine(style, number);
+
+        /// <summary>
+        /// Writes the specified number, followed by the current line terminator, to the standard output stream.
+        /// It will flush immediately.
+        /// </summary>
+        /// <param name="style">The content style.</param>
+        /// <param name="number">A number to output.</param>
+        /// <param name="format">A standard or custom numeric format string.</param>
+        /// <exception cref="FormatException">format is invalid or not supported.</exception>
+        public static void WriteLine(ConsoleTextStyle style, int number, string format)
+            => StyleConsole.Default.WriteLine(style, number, format);
 
         /// <summary>
         /// Writes the specified number, followed by the current line terminator, to the standard output stream.
@@ -787,10 +916,33 @@ namespace Trivial.CommandLine
         /// It will flush immediately.
         /// </summary>
         /// <param name="foreground">The foreground color.</param>
+        /// <param name="number">A number to output.</param>
+        /// <param name="format">A standard or custom numeric format string.</param>
+        /// <exception cref="FormatException">format is invalid or not supported.</exception>
+        public static void WriteLine(ConsoleColor foreground, int number, string format)
+            => StyleConsole.Default.WriteLine(foreground, number, format);
+
+        /// <summary>
+        /// Writes the specified number, followed by the current line terminator, to the standard output stream.
+        /// It will flush immediately.
+        /// </summary>
+        /// <param name="foreground">The foreground color.</param>
         /// <param name="background">The background color.</param>
         /// <param name="number">A number to output.</param>
         public static void WriteLine(ConsoleColor? foreground, ConsoleColor? background, int number)
             => StyleConsole.Default.WriteLine(foreground, background, number);
+
+        /// <summary>
+        /// Writes the specified number, followed by the current line terminator, to the standard output stream.
+        /// It will flush immediately.
+        /// </summary>
+        /// <param name="foreground">The foreground color.</param>
+        /// <param name="background">The background color.</param>
+        /// <param name="number">A number to output.</param>
+        /// <param name="format">A standard or custom numeric format string.</param>
+        /// <exception cref="FormatException">format is invalid or not supported.</exception>
+        public static void WriteLine(ConsoleColor? foreground, ConsoleColor? background, int number, string format)
+            => StyleConsole.Default.WriteLine(foreground, background, number, format);
 
         /// <summary>
         /// Writes the specified number, followed by the current line terminator, to the standard output stream.
@@ -948,10 +1100,31 @@ namespace Trivial.CommandLine
         /// Writes the specified number, followed by the current line terminator, to the standard output stream.
         /// It will flush immediately.
         /// </summary>
+        /// <param name="number">A number to output.</param>
+        /// <param name="format">A standard or custom numeric format string.</param>
+        /// <exception cref="FormatException">format is invalid or not supported.</exception>
+        public static void WriteLine(double number, string format)
+            => StyleConsole.Default.WriteLine(number, format);
+
+        /// <summary>
+        /// Writes the specified number, followed by the current line terminator, to the standard output stream.
+        /// It will flush immediately.
+        /// </summary>
         /// <param name="style">The content style.</param>
         /// <param name="number">A number to output.</param>
         public static void WriteLine(ConsoleTextStyle style, double number)
             => StyleConsole.Default.WriteLine(style, number);
+
+        /// <summary>
+        /// Writes the specified number, followed by the current line terminator, to the standard output stream.
+        /// It will flush immediately.
+        /// </summary>
+        /// <param name="style">The content style.</param>
+        /// <param name="number">A number to output.</param>
+        /// <param name="format">A standard or custom numeric format string.</param>
+        /// <exception cref="FormatException">format is invalid or not supported.</exception>
+        public static void WriteLine(ConsoleTextStyle style, double number, string format)
+            => StyleConsole.Default.WriteLine(style, number, format);
 
         /// <summary>
         /// Writes the specified number, followed by the current line terminator, to the standard output stream.
@@ -967,10 +1140,33 @@ namespace Trivial.CommandLine
         /// It will flush immediately.
         /// </summary>
         /// <param name="foreground">The foreground color.</param>
+        /// <param name="number">A number to output.</param>
+        /// <param name="format">A standard or custom numeric format string.</param>
+        /// <exception cref="FormatException">format is invalid or not supported.</exception>
+        public static void WriteLine(ConsoleColor foreground, double number, string format)
+            => StyleConsole.Default.WriteLine(foreground, number, format);
+
+        /// <summary>
+        /// Writes the specified number, followed by the current line terminator, to the standard output stream.
+        /// It will flush immediately.
+        /// </summary>
+        /// <param name="foreground">The foreground color.</param>
         /// <param name="background">The background color.</param>
         /// <param name="number">A number to output.</param>
         public static void WriteLine(ConsoleColor? foreground, ConsoleColor? background, double number)
             => StyleConsole.Default.WriteLine(foreground, background, number);
+
+        /// <summary>
+        /// Writes the specified number, followed by the current line terminator, to the standard output stream.
+        /// It will flush immediately.
+        /// </summary>
+        /// <param name="foreground">The foreground color.</param>
+        /// <param name="background">The background color.</param>
+        /// <param name="number">A number to output.</param>
+        /// <param name="format">A standard or custom numeric format string.</param>
+        /// <exception cref="FormatException">format is invalid or not supported.</exception>
+        public static void WriteLine(ConsoleColor? foreground, ConsoleColor? background, double number, string format)
+            => StyleConsole.Default.WriteLine(foreground, background, number, format);
 
         /// <summary>
         /// Writes the specified characters, followed by the current line terminator, to the standard output stream.
@@ -1170,11 +1366,31 @@ namespace Trivial.CommandLine
         /// Writes the specified data, followed by the current line terminator, to the standard output stream.
         /// It will flush immediately.
         /// </summary>
+        /// <param name="model">A representation model.</param>
+        public static void WriteLine<T>(IConsoleTextCreator model)
+            => StyleConsole.Default.WriteLine(model);
+
+        /// <summary>
+        /// Writes the specified data, followed by the current line terminator, to the standard output stream.
+        /// It will flush immediately.
+        /// </summary>
         /// <typeparam name="T">The type of data model.</typeparam>
         /// <param name="style">The style.</param>
         /// <param name="data">A data model.</param>
         public static void WriteLine<T>(IConsoleTextCreator<T> style, T data)
             => StyleConsole.Default.WriteLine(style, data);
+
+        /// <summary>
+        /// Writes the specified data, followed by the current line terminator, to the standard output stream.
+        /// It will flush immediately.
+        /// </summary>
+        /// <typeparam name="TData">The type of data model.</typeparam>
+        /// <typeparam name="TOptions">The additional options.</typeparam>
+        /// <param name="style">The style.</param>
+        /// <param name="data">A data model.</param>
+        /// <param name="options">The additional options.</param>
+        public static void WriteLine<TData, TOptions>(IConsoleTextCreator<TData, TOptions> style, TData data, TOptions options)
+            => StyleConsole.Default.WriteLine(style, data, options);
 
         /// <summary>
         /// Writes a progress component, followed by the current line terminator, to the standard output stream.

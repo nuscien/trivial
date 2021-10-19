@@ -46,6 +46,14 @@ namespace Trivial.Maths
                     case "kana":
                         WriteNumber(num, JapaneseNumerals.Kana);
                         break;
+                    case "roman":
+                        {
+                            if (Numbers.TryParseToInt32(num, 10, out var value) && value < 100000)
+                                CommandLine.StyleConsole.Default.WriteLine($"{value}{Environment.NewLine}{RomanNumerals.Uppercase.ToString(value, true)}");
+                            else
+                                CommandLine.StyleConsole.Default.WriteLine(ConsoleColor.Red, "Expect an integer.");
+                        }
+                        break;
                 }
 
                 return;
@@ -261,19 +269,21 @@ namespace Trivial.Maths
         private static void WriteNumber(string str, INumberLocalization localInt)
         {
             var cli = CommandLine.StyleConsole.Default;
-            if (!long.TryParse(str, out long value))
+            if (!long.TryParse(str, out var value))
             {
-                if (!double.TryParse(str, out double dV))
+                if (!double.TryParse(str, out var dV))
                 {
-                    cli.WriteLine("Expect a number.");
+                    cli.WriteLine($"{dV}{Environment.NewLine}{localInt.ToString(dV)}.");
                     return;
                 }
-
-                cli.WriteLine("{0}: {1}.", dV, localInt.ToString(dV));
-                return;
+                else if (!Numbers.TryParseToInt64(str, 10, out value))
+                {
+                    cli.WriteLine(ConsoleColor.Red, "Expect a number.");
+                    return;
+                }
             }
 
-            cli.WriteLine("{0}: {1}; {2}.", value, localInt.ToString(value, false), localInt.ToString(value, true));
+            cli.WriteLine($"{value}{Environment.NewLine}{ localInt.ToString(value, false)}{Environment.NewLine}{localInt.ToString(value, true)}.");
         }
     }
 }
