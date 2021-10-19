@@ -16,7 +16,7 @@ namespace Trivial.CommandLine
     public static class ChemistryCommandLine
     {
         /// <summary>
-        /// Writes the specified string value, followed by the current line terminator, to the standard output stream.
+        /// Writes the specified chemical element, followed by the current line terminator, to the standard output stream.
         /// </summary>
         /// <param name="element">A chemicial element.</param>
         /// <param name="kind">The kind to represent the information of chemical element.</param>
@@ -24,7 +24,7 @@ namespace Trivial.CommandLine
             => WriteLine(StyleConsole.Default, new ChemicalElementConsoleStyle(), element, kind);
 
         /// <summary>
-        /// Writes the specified string value, followed by the current line terminator, to the standard output stream.
+        /// Writes the specified chemical element, followed by the current line terminator, to the standard output stream.
         /// </summary>
         /// <param name="console">The console instance.</param>
         /// <param name="element">A chemicial element.</param>
@@ -33,7 +33,7 @@ namespace Trivial.CommandLine
             => WriteLine(console, new ChemicalElementConsoleStyle(), element, kind);
 
         /// <summary>
-        /// Writes the specified string value, followed by the current line terminator, to the standard output stream.
+        /// Writes the specified chemical element, followed by the current line terminator, to the standard output stream.
         /// </summary>
         /// <param name="console">The console instance.</param>
         /// <param name="style">The style.</param>
@@ -41,22 +41,221 @@ namespace Trivial.CommandLine
         /// <param name="kind">The kind to represent the information of chemical element.</param>
         public static void WriteLine(this StyleConsole console, ChemicalElementConsoleStyle style, ChemicalElement element, ChemicalElementRepresentationKinds kind)
         {
-            if (console == null) console = StyleConsole.Default;
-            IEnumerable<ConsoleText> col;
-            switch (kind)
+            var col = kind switch
             {
-                case ChemicalElementRepresentationKinds.Details:
-                    col = ToConsoleText(style, element, false);
-                    break;
-                case ChemicalElementRepresentationKinds.DetailsAndIsotopes:
-                    col = ToConsoleText(style, element, true);
-                    break;
-                default:
-                    col = ToSimpleConsoleText(style, element, false);
-                    break;
+                ChemicalElementRepresentationKinds.Details => ToConsoleText(style, element, false),
+                ChemicalElementRepresentationKinds.DetailsAndIsotopes => ToConsoleText(style, element, true),
+                _ => ToSimpleConsoleText(style, element, false),
+            };
+            (console ?? StyleConsole.Default).Write(col);
+        }
+
+        /// <summary>
+        /// Writes the specified chemistry periodic table, followed by the current line terminator, to the standard output stream.
+        /// </summary>
+        /// <param name="console">The console instance.</param>
+        /// <param name="style">The style.</param>
+        public static void WriteTable(StyleConsole console, ChemicalElementConsoleStyle style)
+        {
+            var col = new List<ConsoleText>();
+            if (style == null) style = new();
+            var symbolStyle = new ConsoleTextStyle
+            {
+                ForegroundConsoleColor = style.SymbolConsoleColor,
+                ForegroundRgbColor = style.SymbolRgbColor,
+                BackgroundConsoleColor = style.BackgroundConsoleColor,
+                BackgroundRgbColor = style.BackgroundRgbColor
+            };
+            var numberStyle = new ConsoleTextStyle
+            {
+                ForegroundConsoleColor = style.AtomicNumberConsoleColor,
+                ForegroundRgbColor = style.AtomicNumberRgbColor,
+                BackgroundConsoleColor = style.BackgroundConsoleColor,
+                BackgroundRgbColor = style.BackgroundRgbColor
+            };
+            var punctuationStyle = new ConsoleTextStyle
+            {
+                ForegroundConsoleColor = style.PunctuationConsoleColor,
+                ForegroundRgbColor = style.PunctuationRgbColor,
+                BackgroundConsoleColor = style.BackgroundConsoleColor,
+                BackgroundRgbColor = style.BackgroundRgbColor
+            };
+
+            col.Add("1 ", punctuationStyle);
+            AppendSymbol(col, ChemicalElement.H, symbolStyle);
+            col.Add(' ', 64, punctuationStyle);
+            AppendSymbol(col, ChemicalElement.He, symbolStyle);
+            col.AddNewLine();
+            col.Add("  ", punctuationStyle);
+            AppendNumber(col, 1, numberStyle);
+            col.Add(' ', 64, punctuationStyle);
+            AppendNumber(col, 2, numberStyle);
+            col.AddNewLine();
+            col.AddNewLine();
+
+            col.Add("2 ", punctuationStyle);
+            AppendSymbol(col, ChemicalElement.Li, symbolStyle);
+            AppendSymbol(col, ChemicalElement.Be, symbolStyle);
+            col.Add(' ', 40, punctuationStyle);
+            AppendSymbol(col, ChemicalElement.B, symbolStyle);
+            AppendSymbol(col, ChemicalElement.C, symbolStyle);
+            AppendSymbol(col, ChemicalElement.N, symbolStyle);
+            AppendSymbol(col, ChemicalElement.O, symbolStyle);
+            AppendSymbol(col, ChemicalElement.F, symbolStyle);
+            AppendSymbol(col, ChemicalElement.Ne, symbolStyle);
+            col.AddNewLine();
+            col.Add("  ", punctuationStyle);
+            AppendNumber(col, 3, numberStyle, 2);
+            col.Add(' ', 40, punctuationStyle);
+            AppendNumber(col, 5, numberStyle, 6);
+            col.AddNewLine();
+            col.AddNewLine();
+
+            col.Add("3 ", punctuationStyle);
+            AppendSymbol(col, ChemicalElement.Na, symbolStyle);
+            AppendSymbol(col, ChemicalElement.Mg, symbolStyle);
+            col.Add(' ', 40, punctuationStyle);
+            AppendSymbol(col, ChemicalElement.Al, symbolStyle);
+            AppendSymbol(col, ChemicalElement.Si, symbolStyle);
+            AppendSymbol(col, ChemicalElement.P, symbolStyle);
+            AppendSymbol(col, ChemicalElement.S, symbolStyle);
+            AppendSymbol(col, ChemicalElement.Cl, symbolStyle);
+            AppendSymbol(col, ChemicalElement.Ar, symbolStyle);
+            col.AddNewLine();
+            col.Add("  ", punctuationStyle);
+            AppendNumber(col, 11, numberStyle, 2);
+            col.Add(' ', 40, punctuationStyle);
+            AppendNumber(col, 13, numberStyle, 6);
+            col.AddNewLine();
+            col.AddNewLine();
+
+            col.Add("4 ", punctuationStyle);
+            for (var i = 19; i <= 36; i++)
+            {
+                AppendSymbol(col, ChemicalElement.Get(i), symbolStyle);
             }
 
-            console.Write(col);
+            col.AddNewLine();
+            col.Add("  ", punctuationStyle);
+            AppendNumber(col, 19, numberStyle, 18);
+            col.AddNewLine();
+            col.AddNewLine();
+
+            col.Add("5 ", punctuationStyle);
+            for (var i = 37; i <= 54; i++)
+            {
+                AppendSymbol(col, ChemicalElement.Get(i), symbolStyle);
+            }
+
+            col.AddNewLine();
+            col.Add("  ", punctuationStyle);
+            AppendNumber(col, 37, numberStyle, 18);
+            col.AddNewLine();
+            col.AddNewLine();
+
+            col.Add("6 ", punctuationStyle);
+            for (var i = 55; i < 58; i++)
+            {
+                AppendSymbol(col, ChemicalElement.Get(i), symbolStyle);
+            }
+
+            for (var i = 72; i <= 86; i++)
+            {
+                AppendSymbol(col, ChemicalElement.Get(i), symbolStyle);
+            }
+
+            col.AddNewLine();
+            col.Add("  ", punctuationStyle);
+            AppendNumber(col, 55, numberStyle, 2);
+            col.Add("... ", punctuationStyle);
+            AppendNumber(col, 72, numberStyle, 15);
+            col.AddNewLine();
+            col.AddNewLine();
+
+            col.Add("7 ", punctuationStyle);
+            for (var i = 87; i < 90; i++)
+            {
+                AppendSymbol(col, ChemicalElement.Get(i), symbolStyle);
+            }
+
+            for (var i = 104; i <= 118; i++)
+            {
+                AppendSymbol(col, ChemicalElement.Get(i), symbolStyle);
+            }
+
+            col.AddNewLine();
+            col.Add("  ", punctuationStyle);
+            AppendNumber(col, 87, numberStyle, 2);
+            col.Add("... ", punctuationStyle);
+            AppendNumber(col, 104, numberStyle, 15);
+            col.AddNewLine();
+            col.AddNewLine();
+
+            col.Add(ChemicalElement.La.Symbol, symbolStyle);
+            col.Add('-', 1, punctuationStyle);
+            col.Add(ChemicalElement.Lu.Symbol, symbolStyle);
+            col.Add("\t  ", punctuationStyle);
+            for (var i = 57; i <= 71; i++)
+            {
+                AppendSymbol(col, ChemicalElement.Get(i), symbolStyle);
+            }
+
+            col.AddNewLine();
+            col.Add("\t  ", punctuationStyle);
+            AppendNumber(col, 57, numberStyle, 15);
+            col.AddNewLine();
+            col.AddNewLine();
+
+            col.Add(ChemicalElement.Ac.Symbol, symbolStyle);
+            col.Add('-', 1, punctuationStyle);
+            col.Add(ChemicalElement.Lr.Symbol, symbolStyle);
+            col.Add("\t  ");
+            for (var i = 89; i <= 103; i++)
+            {
+                AppendSymbol(col, ChemicalElement.Get(i), symbolStyle);
+            }
+
+            col.AddNewLine();
+            col.Add("\t  ", punctuationStyle);
+            AppendNumber(col, 89, numberStyle, 15);
+            col.AddNewLine();
+            col.AddNewLine();
+
+            if (ChemicalElement.Has(119) && ChemicalElement.Has(120))
+            {
+                col.Add("8 ", punctuationStyle);
+                col.Add("119 ", numberStyle);
+                col.Add('-', 1, punctuationStyle);
+                col.Add(" 168 ", numberStyle);
+                AppendSymbol(col, ChemicalElement.Get(119), symbolStyle);
+                AppendSymbol(col, ChemicalElement.Get(120), symbolStyle);
+                for (var i = 121; i < 131; i++)
+                {
+                    if (ChemicalElement.Has(i))
+                        AppendSymbol(col, ChemicalElement.Get(i), symbolStyle);
+                    else
+                        break;
+                }
+
+                col.Add("...", punctuationStyle);
+                col.AddNewLine();
+            }
+            else
+            {
+                col.Add("8 ", punctuationStyle);
+                col.Add("119 ", numberStyle);
+                col.Add('-', 1, punctuationStyle);
+                col.Add(" 168 ", numberStyle);
+                col.AddNewLine();
+            }
+
+            col.Add("9 ", punctuationStyle);
+            col.Add("169 ", numberStyle);
+            col.Add('-', 1, punctuationStyle);
+            col.Add(" 218 ", numberStyle);
+            col.AddNewLine();
+
+            (console ?? StyleConsole.Default).Write(col);
         }
 
         /// <summary>
@@ -262,5 +461,25 @@ namespace Trivial.CommandLine
 
         internal static void AddNewLine(this List<ConsoleText> col)
             => col.Add(Environment.NewLine);
+
+        internal static void AppendNumber(List<ConsoleText> col, int i, ConsoleTextStyle style, int count = 1)
+        {
+            var k = i + count;
+            for (var j = i; j < k; j++)
+            {
+                var s = j.ToString("g");
+                col.Add(s, style);
+                col.Add(' ', 4 - s.Length, style);
+            }
+        }
+
+        private static void AppendSymbol(List<ConsoleText> col, ChemicalElement element, ConsoleTextStyle style)
+        {
+            var s = element.Symbol?.Trim();
+            if (string.IsNullOrEmpty(s)) return;
+            if (s.Length > 4) s = s.Substring(0, 4);
+            col.Add(s, style);
+            col.Add(' ', 4 - s.Length, style);
+        }
     }
 }

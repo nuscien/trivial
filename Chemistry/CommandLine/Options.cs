@@ -64,7 +64,7 @@ namespace Trivial.CommandLine
         /// <summary>
         /// Gets or sets the RGB color of atomic number.
         /// </summary>
-        public Color? AtomicNumberRgbColor { get; set; } = Color.FromArgb(160, 160, 192);
+        public Color? AtomicNumberRgbColor { get; set; } = Color.FromArgb(160, 160, 240);
 
         /// <summary>
         /// Gets or sets the fallback console color of element additional property key.
@@ -74,7 +74,7 @@ namespace Trivial.CommandLine
         /// <summary>
         /// Gets or sets the RGB color of additional property key.
         /// </summary>
-        public Color? PropertyKeyRgbColor { get; set; } = Color.FromArgb(128, 144, 160);
+        public Color? PropertyKeyRgbColor { get; set; } = Color.FromArgb(0xCE, 0x91, 0x78);
 
         /// <summary>
         /// Gets or sets the fallback console color of additional property value.
@@ -94,7 +94,7 @@ namespace Trivial.CommandLine
         /// <summary>
         /// Gets or sets the RGB color of element isotope information.
         /// </summary>
-        public Color? IsotopeRgbColor { get; set; }
+        public Color? IsotopeRgbColor { get; set; } = Color.FromArgb(160, 160, 160);
 
         /// <summary>
         /// Gets or sets the fallback console color of punctuation marks.
@@ -115,5 +115,28 @@ namespace Trivial.CommandLine
         /// Gets or sets the RGB color of background.
         /// </summary>
         public Color? BackgroundRgbColor { get; set; }
+
+        /// <summary>
+        /// Clears all colors.
+        /// </summary>
+        public void Clear()
+        {
+            NameConsoleColor = null;
+            NameRgbColor = null;
+            SymbolConsoleColor = null;
+            SymbolRgbColor = null;
+            AtomicNumberConsoleColor = null;
+            AtomicNumberRgbColor = null;
+            PropertyKeyConsoleColor = null;
+            PropertyKeyRgbColor = null;
+            PropertyValueConsoleColor = null;
+            PropertyValueRgbColor = null;
+            IsotopeConsoleColor = null;
+            IsotopeRgbColor = null;
+            PunctuationConsoleColor = null;
+            PunctuationRgbColor = null;
+            BackgroundConsoleColor = null;
+            BackgroundRgbColor = null;
+        }
     }
 }

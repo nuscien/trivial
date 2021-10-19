@@ -92,7 +92,7 @@ namespace Trivial.CommandLine
                 s = Arguments.Verb.TryGet(1);
                 if (string.IsNullOrEmpty(s))
                 {
-                    WritePeriodicTable();
+                    ChemistryCommandLine.WriteTable(GetConsole(), ChemicalElementStyle);
                 }
                 else if (int.TryParse(s, out var period) && period > 0)
                 {
@@ -285,7 +285,7 @@ namespace Trivial.CommandLine
 
             if (s == "periodic" || s == "table" || s == "元素周期表" || s == "周期表")
             {
-                WritePeriodicTable();
+                ChemistryCommandLine.WriteTable(GetConsole(), ChemicalElementStyle);
                 return;
             }
 
@@ -368,7 +368,7 @@ namespace Trivial.CommandLine
                         i++;
                         if (element.AtomicNumber < 1000)
                         {
-                            AppendNumber(col, element.AtomicNumber, numberStyle);
+                            ChemistryCommandLine.AppendNumber(col, element.AtomicNumber, numberStyle);
                         }
                         else
                         {
@@ -453,7 +453,7 @@ namespace Trivial.CommandLine
             var eles = s.Split(new[] { " " }, StringSplitOptions.RemoveEmptyEntries).Distinct().Select(i => ChemicalElement.Get(i)).Where(i => i != null).Distinct().ToList();
             if (eles.Count < 1)
             {
-                console.WriteLine(NotFoundTips ?? "Not found.");
+                console.WriteLine(ConsoleColor.Red, NotFoundTips ?? "Not found.");
                 return;
             }
 
@@ -617,210 +617,6 @@ namespace Trivial.CommandLine
             WriteTips(verb, "molecular <formula>", ElementTips, "Get the information of the specific molecular formula.");
         }
 
-        private List<ConsoleText> WritePeriodicTable()
-        {
-            var col = new List<ConsoleText>();
-            var style = ChemicalElementStyle ?? new();
-            var symbolStyle = new ConsoleTextStyle
-            {
-                ForegroundConsoleColor = style.SymbolConsoleColor,
-                ForegroundRgbColor = style.SymbolRgbColor,
-                BackgroundConsoleColor = style.BackgroundConsoleColor,
-                BackgroundRgbColor = style.BackgroundRgbColor
-            };
-            var numberStyle = new ConsoleTextStyle
-            {
-                ForegroundConsoleColor = style.AtomicNumberConsoleColor,
-                ForegroundRgbColor = style.AtomicNumberRgbColor,
-                BackgroundConsoleColor = style.BackgroundConsoleColor,
-                BackgroundRgbColor = style.BackgroundRgbColor
-            };
-            var punctuationStyle = new ConsoleTextStyle
-            {
-                ForegroundConsoleColor = style.PunctuationConsoleColor,
-                ForegroundRgbColor = style.PunctuationRgbColor,
-                BackgroundConsoleColor = style.BackgroundConsoleColor,
-                BackgroundRgbColor = style.BackgroundRgbColor
-            };
-
-            col.Add("1 ", punctuationStyle);
-            AppendSymbol(col, ChemicalElement.H, symbolStyle);
-            col.Add(' ', 64, punctuationStyle);
-            AppendSymbol(col, ChemicalElement.He, symbolStyle);
-            col.AddNewLine();
-            col.Add("  ", punctuationStyle);
-            AppendNumber(col, 1, numberStyle);
-            col.Add(' ', 64, punctuationStyle);
-            AppendNumber(col, 2, numberStyle);
-            col.AddNewLine();
-            col.AddNewLine();
-
-            col.Add("2 ", punctuationStyle);
-            AppendSymbol(col, ChemicalElement.Li, symbolStyle);
-            AppendSymbol(col, ChemicalElement.Be, symbolStyle);
-            col.Add(' ', 40, punctuationStyle);
-            AppendSymbol(col, ChemicalElement.B, symbolStyle);
-            AppendSymbol(col, ChemicalElement.C, symbolStyle);
-            AppendSymbol(col, ChemicalElement.N, symbolStyle);
-            AppendSymbol(col, ChemicalElement.O, symbolStyle);
-            AppendSymbol(col, ChemicalElement.F, symbolStyle);
-            AppendSymbol(col, ChemicalElement.Ne, symbolStyle);
-            col.AddNewLine();
-            col.Add("  ", punctuationStyle);
-            AppendNumber(col, 3, numberStyle, 2);
-            col.Add(' ', 40, punctuationStyle);
-            AppendNumber(col, 5, numberStyle, 6);
-            col.AddNewLine();
-            col.AddNewLine();
-
-            col.Add("3 ", punctuationStyle);
-            AppendSymbol(col, ChemicalElement.Na, symbolStyle);
-            AppendSymbol(col, ChemicalElement.Mg, symbolStyle);
-            col.Add(' ', 40, punctuationStyle);
-            AppendSymbol(col, ChemicalElement.Al, symbolStyle);
-            AppendSymbol(col, ChemicalElement.Si, symbolStyle);
-            AppendSymbol(col, ChemicalElement.P, symbolStyle);
-            AppendSymbol(col, ChemicalElement.S, symbolStyle);
-            AppendSymbol(col, ChemicalElement.Cl, symbolStyle);
-            AppendSymbol(col, ChemicalElement.Ar, symbolStyle);
-            col.AddNewLine();
-            col.Add("  ", punctuationStyle);
-            AppendNumber(col, 11, numberStyle, 2);
-            col.Add(' ', 40, punctuationStyle);
-            AppendNumber(col, 13, numberStyle, 6);
-            col.AddNewLine();
-            col.AddNewLine();
-
-            col.Add("4 ", punctuationStyle);
-            for (var i = 19; i <= 36; i++)
-            {
-                AppendSymbol(col, ChemicalElement.Get(i), symbolStyle);
-            }
-
-            col.AddNewLine();
-            col.Add("  ", punctuationStyle);
-            AppendNumber(col, 19, numberStyle, 18);
-            col.AddNewLine();
-            col.AddNewLine();
-
-            col.Add("5 ", punctuationStyle);
-            for (var i = 37; i <= 54; i++)
-            {
-                AppendSymbol(col, ChemicalElement.Get(i), symbolStyle);
-            }
-
-            col.AddNewLine();
-            col.Add("  ", punctuationStyle);
-            AppendNumber(col, 37, numberStyle, 18);
-            col.AddNewLine();
-            col.AddNewLine();
-
-            col.Add("6 ", punctuationStyle);
-            for (var i = 55; i < 58; i++)
-            {
-                AppendSymbol(col, ChemicalElement.Get(i), symbolStyle);
-            }
-
-            for (var i = 72; i <= 86; i++)
-            {
-                AppendSymbol(col, ChemicalElement.Get(i), symbolStyle);
-            }
-
-            col.AddNewLine();
-            col.Add("  ", punctuationStyle);
-            AppendNumber(col, 55, numberStyle, 2);
-            col.Add("... ", punctuationStyle);
-            AppendNumber(col, 72, numberStyle, 15);
-            col.AddNewLine();
-            col.AddNewLine();
-
-            col.Add("7 ", punctuationStyle);
-            for (var i = 87; i < 90; i++)
-            {
-                AppendSymbol(col, ChemicalElement.Get(i), symbolStyle);
-            }
-
-            for (var i = 104; i <= 118; i++)
-            {
-                AppendSymbol(col, ChemicalElement.Get(i), symbolStyle);
-            }
-
-            col.AddNewLine();
-            col.Add("  ", punctuationStyle);
-            AppendNumber(col, 87, numberStyle, 2);
-            col.Add("... ", punctuationStyle);
-            AppendNumber(col, 104, numberStyle, 15);
-            col.AddNewLine();
-            col.AddNewLine();
-
-            col.Add(ChemicalElement.La.Symbol, symbolStyle);
-            col.Add('-', 1, punctuationStyle);
-            col.Add(ChemicalElement.Lu.Symbol, symbolStyle);
-            col.Add("\t  ", punctuationStyle);
-            for (var i = 57; i <= 71; i++)
-            {
-                AppendSymbol(col, ChemicalElement.Get(i), symbolStyle);
-            }
-
-            col.AddNewLine();
-            col.Add("\t  ", punctuationStyle);
-            AppendNumber(col, 57, numberStyle, 15);
-            col.AddNewLine();
-            col.AddNewLine();
-
-            col.Add(ChemicalElement.Ac.Symbol, symbolStyle);
-            col.Add('-', 1, punctuationStyle);
-            col.Add(ChemicalElement.Lr.Symbol, symbolStyle);
-            col.Add("\t  ");
-            for (var i = 89; i <= 103; i++)
-            {
-                AppendSymbol(col, ChemicalElement.Get(i), symbolStyle);
-            }
-
-            col.AddNewLine();
-            col.Add("\t  ", punctuationStyle);
-            AppendNumber(col, 89, numberStyle, 15);
-            col.AddNewLine();
-            col.AddNewLine();
-
-            if (ChemicalElement.Has(119) && ChemicalElement.Has(120))
-            {
-                col.Add("8 ", punctuationStyle);
-                col.Add("119 ", numberStyle);
-                col.Add('-', 1, punctuationStyle);
-                col.Add("168 ", numberStyle);
-                AppendSymbol(col, ChemicalElement.Get(119), symbolStyle);
-                AppendSymbol(col, ChemicalElement.Get(120), symbolStyle);
-                for (var i = 121; i < 131; i++)
-                {
-                    if (ChemicalElement.Has(i))
-                        AppendSymbol(col, ChemicalElement.Get(i), symbolStyle);
-                    else
-                        break;
-                }
-
-                col.Add("...", punctuationStyle);
-                col.AddNewLine();
-            }
-            else
-            {
-                col.Add("8 ", punctuationStyle);
-                col.Add("119 ", numberStyle);
-                col.Add('-', 1, punctuationStyle);
-                col.Add("168 ", numberStyle);
-                col.AddNewLine();
-            }
-
-            col.Add("9 ", punctuationStyle);
-            col.Add("169 ", numberStyle);
-            col.Add('-', 1, punctuationStyle);
-            col.Add("218 ", numberStyle);
-            col.AddNewLine();
-
-            GetConsole().Write(col);
-            return col;
-        }
-
         private void WriteTips(string verb, string cmd, string desc, string descBackup)
         {
             GetConsole().WriteLine("{0} {1}{2} {3}", verb, cmd, Environment.NewLine, desc ?? descBackup);
@@ -845,26 +641,6 @@ namespace Trivial.CommandLine
                 return name.Contains(q, StringComparison.OrdinalIgnoreCase);
 #endif
             };
-        }
-
-        private static void AppendSymbol(List<ConsoleText> col, ChemicalElement element, ConsoleTextStyle style)
-        {
-            var s = element.Symbol?.Trim();
-            if (string.IsNullOrEmpty(s)) return;
-            if (s.Length > 4) s = s.Substring(0, 4);
-            col.Add(s, style);
-            col.Add(' ', 4 - s.Length, style);
-        }
-
-        private static void AppendNumber(List<ConsoleText> col, int i, ConsoleTextStyle style, int count = 1)
-        {
-            var k = i + count;
-            for (var j = i; j < k; j++)
-            {
-                var s = j.ToString("g");
-                col.Add(s, style);
-                col.Add(' ', 4 - s.Length, style);
-            }
         }
 #pragma warning restore IDE0057
     }
