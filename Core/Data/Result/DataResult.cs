@@ -19,7 +19,6 @@ using Trivial.Text;
 
 namespace Trivial.Data
 {
-
     /// <summary>
     /// The collection result.
     /// </summary>
@@ -45,7 +44,7 @@ namespace Trivial.Data
         /// <summary>
         /// Gets or sets the message.
         /// </summary>
-        [DataMember(Name = "message")]
+        [DataMember(Name = "message", EmitDefaultValue = false)]
         [JsonPropertyName("message")]
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public string Message { get; set; }
@@ -54,7 +53,7 @@ namespace Trivial.Data
         /// <summary>
         /// Gets or sets the tracking identifier.
         /// </summary>
-        [DataMember(Name = "track")]
+        [DataMember(Name = "track", EmitDefaultValue = false)]
         [JsonPropertyName("track")]
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public string TrackingId { get; set; }
@@ -349,17 +348,17 @@ namespace Trivial.Data
         /// <summary>
         /// Gets or sets the offset of the result.
         /// </summary>
-        [DataMember(Name = "offset")]
-        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+        [DataMember(Name = "offset", EmitDefaultValue = false)]
         [JsonPropertyName("offset")]
-        public int? Offset { get; set; }
+         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+       public int? Offset { get; set; }
 
         /// <summary>
         /// Gets or sets the total count.
         /// </summary>
-        [DataMember(Name = "count")]
-        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+        [DataMember(Name = "count", EmitDefaultValue = false)]
         [JsonPropertyName("count")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
         public int? TotalCount { get; set; }
 
         /// <summary>
@@ -579,7 +578,7 @@ namespace Trivial.Data
         /// <summary>
         /// Gets or sets the offset of the result.
         /// </summary>
-        [DataMember(Name = TokenInfo.ErrorCodeProperty)]
+        [DataMember(Name = TokenInfo.ErrorCodeProperty, EmitDefaultValue = false)]
         [JsonPropertyName(TokenInfo.ErrorCodeProperty)]
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public string ErrorCode { get; set; }
@@ -587,7 +586,7 @@ namespace Trivial.Data
         /// <summary>
         /// Gets or sets the offset of the result.
         /// </summary>
-        [DataMember(Name = "details")]
+        [DataMember(Name = "details", EmitDefaultValue = false)]
         [JsonPropertyName("details")]
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public List<string> Details { get; set; }
