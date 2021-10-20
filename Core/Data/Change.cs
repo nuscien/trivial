@@ -484,7 +484,7 @@ namespace Trivial.Data
         /// <summary>
         /// Gets or sets the change method result.
         /// </summary>
-        [DataMember(Name = "message", EmitDefaultValue = true)]
+        [DataMember(Name = "message", EmitDefaultValue = false)]
         [JsonPropertyName("message")]
 #if !NETCOREAPP3_1
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
