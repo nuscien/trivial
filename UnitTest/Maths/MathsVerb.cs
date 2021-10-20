@@ -40,6 +40,15 @@ namespace Trivial.Maths
                     case "kana":
                         WriteNumber(VerbParameter.Values[1], JapaneseNumerals.Kana);
                         break;
+                    case "roman":
+                        {
+                            if (Arithmetic.TryParseToInt32(VerbParameter.Values[1], 10, out var value) && value < 100000)
+                                ConsoleLine.WriteLine($"{value}{Environment.NewLine}{RomanNumerals.Uppercase.ToString(value, true)}");
+                            else
+                                ConsoleLine.WriteLine(ConsoleColor.Red, "Expect an integer.");
+                        }
+
+                        break;
                 }
 
                 return;
@@ -285,7 +294,7 @@ namespace Trivial.Maths
             {
                 if (!double.TryParse(str, out double dV))
                 {
-                    ConsoleLine.Write("Expect a number.");
+                    ConsoleLine.Write(ConsoleColor.Red, "Expect a number.");
                     ConsoleLine.End();
                     return;
                 }
