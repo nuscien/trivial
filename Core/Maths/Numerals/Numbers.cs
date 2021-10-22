@@ -786,6 +786,16 @@ namespace Trivial.Maths
                     if (j % level > 0) return null;
                     return j;
                 }
+                else if (s.Length == 1)
+                {
+                    var j = TryParseToInt32(s[0]);
+                    if (j.HasValue)
+                    {
+                        if (j.Value < 10) return j * level;
+                        if (j.Value == 10 && level != 10) return j * level;
+                        return null;
+                    }
+                }
             }
 
             return TryParseNumericWordInternal(word);
@@ -831,13 +841,74 @@ namespace Trivial.Maths
                     if (j % level > 0) return null;
                     return j;
                 }
+                else if (s.Length == 1)
+                {
+                    var j = TryParseToInt32(s[0]);
+                    if (j.HasValue)
+                    {
+                        if (j.Value < 10) return j * level;
+                        if (j.Value == 10 && level != 10) return j * level;
+                        return null;
+                    }
+                }
             }
 
             return TryParseNumericWordInternal(word);
         }
 
         private static int? TryParseNumericWordInternal(string word)
-            => word.ToLowerInvariant() switch
+        {
+            word = word.ToLowerInvariant();
+            if (word.Length < 4)
+            {
+                if (word.Length == 2)
+                {
+                    var decade = TryParseToInt32(word[0]);
+                    var digit = TryParseToInt32(word[1]);
+                    if (decade.HasValue && decade.Value % 10 == 0 && decade.Value < 100 && digit.HasValue && digit.Value < 10)
+                        return decade + digit;
+                    return null;
+                }
+                else if (word.Length == 3)
+                {
+                    if (word[1] == '十' || word[1] == '拾')
+                    {
+                        var decade = TryParseToInt32(word[0]);
+                        var digit = TryParseToInt32(word[2]);
+                        if (decade.HasValue && decade.Value < 10 && digit.HasValue && digit.Value < 10)
+                            return decade.Value * 10 + digit;
+                        return null;
+                    }
+                }
+            }
+            else if (word.Contains("ty-"))
+            {
+                int decade;
+                if (word.StartsWith("twenty-")) decade = 20;
+                else if (word.StartsWith("thirty-")) decade = 30;
+                else if (word.StartsWith("forty-")) decade = 40;
+                else if (word.StartsWith("fifty-")) decade = 50;
+                else if (word.StartsWith("sixty-")) decade = 60;
+                else if (word.StartsWith("seventy-")) decade = 70;
+                else if (word.StartsWith("eighty-")) decade = 80;
+                else if (word.StartsWith("ninty-")) decade = 90;
+                else return null;
+                int digit;
+                if (word.EndsWith("ty-one") || word.EndsWith("ty-first")) digit = 1;
+                else if (word.EndsWith("ty-two") || word.EndsWith("ty-second")) digit = 2;
+                else if (word.EndsWith("ty-three") || word.EndsWith("ty-third")) digit = 3;
+                else if (word.EndsWith("ty-four") || word.EndsWith("ty-fourth")) digit = 4;
+                else if (word.EndsWith("ty-five") || word.EndsWith("ty-fifth")) digit = 5;
+                else if (word.EndsWith("ty-six") || word.EndsWith("ty-sixth")) digit = 6;
+                else if (word.EndsWith("ty-seven") || word.EndsWith("ty-seventh")) digit = 7;
+                else if (word.EndsWith("ty-eight") || word.EndsWith("ty-eighth")) digit = 8;
+                else if (word.EndsWith("ty-nine") || word.EndsWith("ty-ninth")) digit = 9;
+                else return null;
+                if (word.IndexOf("ty-") < word.LastIndexOf("ty-")) return null;
+                return decade + digit;
+            }
+
+            return word switch
             {
                 "zero" or "nought" or "nill" or "れい" or "zéro" or "nul" => 0,
                 "one" or "first" or "いち" or "하나" or "un" or "une" or "unu" => 1,
@@ -850,46 +921,47 @@ namespace Trivial.Maths
                 "eight" or "eighth" or "viii" or "はち" or "여덟" or "huit" => 8,
                 "nine" or "ninth" or "ix" or "きゅう" or "아홉" or "neuf" or "naŭ" => 9,
                 "ten" or "tenth" or "一十" or "壹拾" or "一零" or "一〇" or "１０" or "じゅう" or "dix" or "dek" => 10,
-                "eleven" or "eleventh" or "xi" or "一十一" or "十一" or "一一" or "１１" or "onze" => 11,
-                "twelve" or "twelfth" or "xii" or "dozen" or "a dozen" or "一十二" or "十二" or "一二" or "一打" or "１２" or "douze" => 12,
-                "thirteen" or "xiii" or "一十三" or "十三" or "一三" or "１３" or "treize" => 13,
-                "fourteen" or "xiv" or "一十四" or "十四" or "一四" or "１４" or "quatorze" => 14,
-                "fifteen" or "xv" or "一十五" or "十五" or "一五" or "１５" or "quinze" => 15,
-                "sixteen" or "xvi" or "一十六" or "十六" or "一六" or "１６" or "seize" => 16,
-                "seventeen" or "xvii" or "一十七" or "十七" or "一七" or "１７" or "dix-sept" => 17,
-                "eighteen" or "xviii" or "一十八" or "十八" or "一八" or "１８" or "dix-huit" => 18,
-                "ninteen" or "xix" or "一十九" or "十九" or "一九" or "１９" or "dix-neuf" => 19,
-                "twenty" or "xx" or "二十" or "贰拾" or "二零" or "二〇" or "２０" or "vingt" => 20,
-                "twenty-one" or "xxi" or "二十一" or "廿一" or "二一" or "２１" or "vingt et un" => 21,
-                "twenty-two" or "xxii" or "二十二" or "廿二" or "二二" or "２２" or "vingt-deux" => 22,
-                "twenty-three" or "xxiii" or "二十三" or "廿三" or "二三" or "２３" or "vingt-trois" => 23,
-                "twenty-four" or "xxiv" or "二十四" or "廿四" or "二四" or "２４" or "vingt-quatre" => 24,
-                "twenty-five" or "xxv" or "二十五" or "廿五" or "二五" or "２５" or "vingt-cinq" => 25,
-                "twenty-six" or "xxvi" or "二十六" or "廿六" or "二六" or "２６" or "vingt-six" => 26,
-                "twenty-seven" or "xxvii" or "二十七" or "廿七" or "二七" or "２７" or "vingt-sept" => 27,
-                "twenty-eight" or "xxviii" or "二十八" or "廿八" or "二八" or "２８" or "vingt-huit" => 28,
-                "twenty-nine" or "xxix" or "二十九" or "廿九" or "二九" or "２９" or "vingt-neuf" => 29,
-                "thirty" or "xxx" or "三十" or "叄拾" or "三零" or "三〇" or "３０" or "trente" => 30,
-                "forty" or "xl" or "四十" or "肆拾" or "四零" or "四〇" or "４０" or "quarante" => 40,
-                "fifty" or "五十" or "伍拾" or "五零" or "五〇" or "半百" or "５０" or "cinquante" => 50,
-                "sixty" or "六十" or "陆拾" or "六零" or "六〇" or "６０" or "soixante" => 60,
-                "seventy" or "七十" or "柒拾" or "七零" or "七〇" or "７０" or "soixante-dix" => 70,
-                "eighty" or "八十" or "捌拾" or "八零" or "八〇" or "８０" or "quatre-vingts" => 80,
-                "ninty" or "九十" or "玖拾" or "九零" or "九〇" or "９０" or "quatre-vingt-dix" => 90,
-                "一百" or "壹佰" or "一零零" or "一〇〇" or "１００" or "hundred" or "a hundred" or "one hundred" or "ひゃく" or "いちひゃく" or "cent" => 100,
-                "两百" or "二百" or "贰佰" or "二零零" or "二〇〇" or "２００" or "two hundred" or "cc" or "deux cents" => 200,
-                "三百" or "叄佰" or "三零零" or "三〇〇" or "３００" or "three hundred" or "ccc" or "trois cents" => 300,
-                "四百" or "肆佰" or "四零零" or "四〇〇" or "４００" or "four hundred" or "cd" or "quatre cents" => 400,
-                "五百" or "伍佰" or "五零零" or "五〇〇" or "５００" or "five hundred" or "cinq cents" => 500,
-                "六百" or "陆佰" or "六零零" or "六〇〇" or "６００" or "six hundred" or "six cents" => 600,
-                "七百" or "柒佰" or "七零零" or "七〇〇" or "７００" or "seven hundred" or "sept cents" => 700,
-                "八百" or "捌佰" or "八零零" or "八〇〇" or "８００" or "eight hundred" or "huit cents" => 800,
-                "九百" or "玖佰" or "九零零" or "九〇〇" or "９００" or "nine hundred" or "neuf cents" => 900,
-                "kilo" or "a kilo" or "thousand" or "a thousand" or "one thousand" or "一千" or "壹仟" or "１０００" or "せん" or "いちせん" or "mille" or "millennium" or "1e3" => 1000,
-                "一万" or "壹萬" or "壹万" or "１００００" or "ten thousand" or "ten kilo" or "まん" or "いちまん" or "1e4" => 10000,
-                "a million" or "one million" or "million" or "mega" or "1 mega" or "一百万" or "壹佰萬" or "壹佰万" or "１００００００" or "1e6" => 1000000,
+                "eleven" or "eleventh" or "xi" or "一十一" or "一一" or "１１" or "onze" => 11,
+                "twelve" or "twelfth" or "xii" or "dozen" or "a dozen" or "一十二" or "一二" or "一打" or "１２" or "douze" => 12,
+                "thirteen" or "xiii" or "一十三" or "一三" or "１３" or "treize" => 13,
+                "fourteen" or "xiv" or "一十四" or "一四" or "１４" or "quatorze" => 14,
+                "fifteen" or "xv" or "一十五" or "一五" or "１５" or "quinze" => 15,
+                "sixteen" or "xvi" or "一十六" or "一六" or "１６" or "seize" => 16,
+                "seventeen" or "xvii" or "一十七" or "一七" or "１７" or "dix-sept" => 17,
+                "eighteen" or "xviii" or "一十八" or "一八" or "１８" or "dix-huit" => 18,
+                "ninteen" or "xix" or "一十九" or "一九" or "１９" or "dix-neuf" => 19,
+                "twenty" or "xx" or "ⅹⅹ" or "二零" or "二〇" or "２０" or "vingt" => 20,
+                "xxi" or "ⅹⅹi" or "ⅹⅺ" or "二一" or "２１" or "vingt et un" => 21,
+                "xxii" or "ⅹⅹⅱ" or "ⅹⅻ" or "二二" or "２２" or "vingt-deux" => 22,
+                "xxiii" or "ⅹⅹⅲ" or "二三" or "２３" or "vingt-trois" => 23,
+                "xxiv" or "ⅹⅹⅳ" or "二四" or "２４" or "vingt-quatre" => 24,
+                "xxv" or "ⅹⅹⅴ" or "二五" or "２５" or "vingt-cinq" => 25,
+                "xxvi" or "ⅹⅹⅵ" or "二六" or "２６" or "vingt-six" => 26,
+                "xxvii" or "ⅹⅹⅶ" or "二七" or "２７" or "vingt-sept" => 27,
+                "xxviii" or "ⅹⅹⅷ" or "二八" or "２８" or "vingt-huit" => 28,
+                "xxix" or "ⅹⅹⅸ" or "二九" or "２９" or "vingt-neuf" => 29,
+                "ⅹⅹⅹ" or "三零" or "三〇" or "３０" or "trente" => 30,
+                "forty" or "ⅹⅼ" or "四零" or "四〇" or "４０" or "quarante" => 40,
+                "fifty" or "五零" or "五〇" or "半百" or "５０" or "cinquante" => 50,
+                "sixty" or "ⅼⅹ" or "六零" or "六〇" or "６０" or "soixante" => 60,
+                "seventy" or "ⅼⅹⅹ" or "七零" or "七〇" or "７０" or "soixante-dix" => 70,
+                "eighty" or "ⅼⅹⅹⅹ" or "八零" or "八〇" or "８０" or "quatre-vingts" => 80,
+                "ninty" or "ⅼⅽ" or "九零" or "九〇" or "９０" or "quatre-vingt-dix" => 90,
+                "一零零" or "一〇〇" or "１００" or "hundred" or "a hundred" or "one hundred" or "ひゃく" or "いちひゃく" or "cent" => 100,
+                "二零零" or "二〇〇" or "２００" or "two hundred" or "ⅽⅽ" or "deux cents" => 200,
+                "三零零" or "三〇〇" or "３００" or "three hundred" or "ⅽⅽⅽ" or "trois cents" => 300,
+                "四零零" or "四〇〇" or "４００" or "four hundred" or "ⅽⅾ" or "quatre cents" => 400,
+                "五零零" or "五〇〇" or "５００" or "five hundred" or "cinq cents" => 500,
+                "六零零" or "六〇〇" or "６００" or "six hundred" or "ⅾⅽ" or "six cents" => 600,
+                "七零零" or "七〇〇" or "７００" or "seven hundred" or "ⅾⅽⅽ" or "sept cents" => 700,
+                "八零零" or "八〇〇" or "８００" or "eight hundred" or "ⅾⅽⅽⅽ" or "huit cents" => 800,
+                "九零零" or "九〇〇" or "９００" or "nine hundred" or "ⅽⅿ" or "neuf cents" => 900,
+                "kilo" or "a kilo" or "thousand" or "a thousand" or "one thousand" or "１０００" or "せん" or "いちせん" or "mille" or "millennium" or "1e3" => 1000,
+                "１００００" or "ten thousand" or "ten kilo" or "まん" or "いちまん" or "1e4" => 10000,
+                "a million" or "one million" or "million" or "mega" or "1 mega" or "百万" or "一百万" or "佰萬" or "壹佰萬" or "佰万" or "壹佰万" or "１００００００" or "1e6" => 1000000,
                 _ => null
             };
+        }
 #pragma warning restore IDE0056, IDE0057
     }
 }

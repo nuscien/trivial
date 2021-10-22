@@ -53,6 +53,16 @@ namespace Trivial.Maths
                             else
                                 CommandLine.StyleConsole.Default.WriteLine(ConsoleColor.Red, "Expect an integer.");
                         }
+
+                        break;
+                    case "parse":
+                        {
+                            if (Numbers.TryParseToInt32(num, 10, out var value))
+                                CommandLine.StyleConsole.Default.WriteLine(value);
+                            else
+                                CommandLine.StyleConsole.Default.WriteLine(ConsoleColor.Red, "Parse failed.");
+                        }
+
                         break;
                 }
 
