@@ -49,6 +49,15 @@ namespace Trivial.Maths
                         }
 
                         break;
+                    case "parse":
+                        {
+                            if (Arithmetic.TryParseToInt32(VerbParameter.Values[1], 10, out var value))
+                                ConsoleLine.WriteLine(value);
+                            else
+                                ConsoleLine.WriteLine(ConsoleColor.Red, "Parse failed.");
+                        }
+
+                        break;
                 }
 
                 return;
