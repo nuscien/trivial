@@ -395,7 +395,11 @@ namespace Trivial.Web
             if (t == typeof(string)) return Base64UrlEncode(obj.ToString(), Encoding.UTF8);
             return Base64UrlEncode(StringExtensions.ToJson(obj, options ?? new JsonSerializerOptions
             {
+#if NETCOREAPP3_1
                 IgnoreNullValues = true
+#else
+                DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull
+#endif
             }));
         }
 

@@ -793,7 +793,11 @@ namespace Trivial.Security
         {
             return StringExtensions.ToJson(this, new System.Text.Json.JsonSerializerOptions
             {
+#if NETCOREAPP3_1
                 IgnoreNullValues = true
+#else
+                DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull
+#endif
             });
         }
     }

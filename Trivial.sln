@@ -3,8 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31808.319
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Console", "Console\Console.csproj", "{B090E686-8BA7-4F78-BA09-318B1A7F33F6}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{0F8ADD5A-FE92-432F-8387-1D410D61F7FA}"
 	ProjectSection(SolutionItems) = preProject
 		azure-pipelines.yml = azure-pipelines.yml
@@ -17,6 +15,10 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Core", "Core\Core.csproj", "{11EA09FD-F493-449D-A501-E8C9CD8A9985}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UnitTest", "UnitTest\UnitTest.csproj", "{C1155112-852C-414B-A7B2-591C7EEFECE6}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Console", "Console\Console.csproj", "{B090E686-8BA7-4F78-BA09-318B1A7F33F6}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Chemistry", "Chemistry\Chemistry.csproj", "{CACBF47E-5253-4981-84E4-B38955DEC21B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -36,6 +38,10 @@ Global
 		{C1155112-852C-414B-A7B2-591C7EEFECE6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C1155112-852C-414B-A7B2-591C7EEFECE6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C1155112-852C-414B-A7B2-591C7EEFECE6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CACBF47E-5253-4981-84E4-B38955DEC21B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CACBF47E-5253-4981-84E4-B38955DEC21B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CACBF47E-5253-4981-84E4-B38955DEC21B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CACBF47E-5253-4981-84E4-B38955DEC21B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
