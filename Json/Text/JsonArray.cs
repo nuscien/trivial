@@ -3,8 +3,10 @@ using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Security;
 using System.Text;
 using System.Text.Json;
@@ -668,7 +670,7 @@ namespace Trivial.Text
         /// <exception cref="InvalidOperationException">The value kind is not the expected one.</exception>
         public object GetEnumValue(Type type, int index)
         {
-            if (TryGetInt32Value(index, out var v)) type is null ? v : return Enum.ToObject(type, v);
+            if (TryGetInt32Value(index, out var v)) return type is null ? v : Enum.ToObject(type, v);
             var str = GetStringValue(index);
             return type is null ? str : Enum.Parse(type, str);
         }
@@ -686,7 +688,7 @@ namespace Trivial.Text
         /// <exception cref="InvalidOperationException">The value kind is not the expected one.</exception>
         public object GetEnumValue(Type type, int index, bool ignoreCase)
         {
-            if (TryGetInt32Value(index, out var v)) type is null ? v : return Enum.ToObject(type, v);
+            if (TryGetInt32Value(index, out var v)) return type is null ? v : Enum.ToObject(type, v);
             var str = GetStringValue(index);
             return type is null ? str : Enum.Parse(type, str, ignoreCase);
         }
@@ -3623,7 +3625,7 @@ namespace Trivial.Text
         /// <returns>A new object that is a copy of this instance.</returns>
         public JsonArray Clone()
         {
-            return new JsonArray(store, store is Collection.SynchronizedList<IJsonValueResolver>);
+            return new JsonArray(store, store is SynchronizedList<IJsonValueResolver>);
         }
 
         /// <summary>

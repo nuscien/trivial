@@ -4,6 +4,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Security;
 using System.Text;
 using System.Text.Json;
@@ -935,7 +936,7 @@ namespace Trivial.Text
             if (type.IsEnum) return type == typeof(JsonValueKind) ? GetValueKind(key) : GetEnumValue(type, key, false);
             if (type.IsValueType)
             {
-                if (kind == JsonValueKind.Null || kind == JsonValueKind.Undefined)
+                if (IsNullOrUndefined(key))
                 {
                     if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>)) return null;
                     throw new InvalidOperationException("The type is value type but the value is null or undefined.", new InvalidCastException("Cannot cast null to a struct."));
