@@ -491,6 +491,27 @@ namespace Trivial.Console
             if (options.Column.HasValue && columns > options.Column.Value) columns = options.Column.Value;
             var itemLen2 = Math.Max(1, itemLen - 1);
             if (System.Console.CursorLeft > 0) System.Console.WriteLine();
+            try
+            {
+                System.Console.CursorTop--;
+                System.Console.CursorTop++;
+                for (var i = 0; i < 24; i++)
+                {
+                    System.Console.WriteLine();
+                }
+
+                System.Console.CursorTop -= 24;
+            }
+            catch (IOException)
+            {
+            }
+            catch (SecurityException)
+            {
+            }
+            catch (PlatformNotSupportedException)
+            {
+            }
+
             var top = System.Console.CursorTop;
             var offset = 0;
             var selected = 0;
