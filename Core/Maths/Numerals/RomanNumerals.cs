@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -225,6 +225,21 @@ namespace Trivial.Maths
         public string OneThousand => IsLowerCase ? "ⅿ" : "Ⅿ";
 
         /// <summary>
+        /// Number 2,000.
+        /// </summary>
+        public string TwoThousand => IsLowerCase ? "ⅿⅿ" : "ⅯⅯ";
+
+        /// <summary>
+        /// Number 5,000.
+        /// </summary>
+        public string FiveThousand => "ↁ";
+
+        /// <summary>
+        /// Number 10,000.
+        /// </summary>
+        public string TenThousand => "ↂ";
+
+        /// <summary>
         /// Roman number digits.
         /// </summary>
         public static readonly RomanNumerals Uppercase = new();
@@ -284,24 +299,24 @@ namespace Trivial.Maths
                     i++;
                     int decadeCount;
                     if (number < 20000)
-                        decadeCount = 10;
+                        decadeCount = 1;
                     else if (number < 30000)
-                        decadeCount = 20;
+                        decadeCount = 2;
                     else if (number < 40000)
-                        decadeCount = 30;
+                        decadeCount = 3;
                     else if (number < 50000)
-                        decadeCount = 40;
+                        decadeCount = 4;
                     else if (number < 60000)
-                        decadeCount = 50;
+                        decadeCount = 5;
                     else if (number < 70000)
-                        decadeCount = 60;
+                        decadeCount = 6;
                     else if (number < 80000)
-                        decadeCount = 70;
+                        decadeCount = 7;
                     else if (number < 90000)
-                        decadeCount = 80;
+                        decadeCount = 8;
                     else
                         decadeCount = 90;
-                    sb.Append(IsLowerCase ? 'ⅿ' : 'Ⅿ', decadeCount);
+                    sb.Append('ↂ', decadeCount);
                 }
                 else
                 {
@@ -318,12 +333,12 @@ namespace Trivial.Maths
                     '1' => IsLowerCase ? "ⅿ" : "Ⅿ",
                     '2' => IsLowerCase ? "ⅿⅿ" : "ⅯⅯ",
                     '3' => IsLowerCase ? "ⅿⅿⅿ" : "ⅯⅯⅯ",
-                    '4' => IsLowerCase ? "ⅿⅿⅿⅿ" : "ⅯⅯⅯⅯ",
-                    '5' => IsLowerCase ? "ⅿⅿⅿⅿⅿ" : "ⅯⅯⅯⅯⅯ",
-                    '6' => IsLowerCase ? "ⅿⅿⅿⅿⅿⅿ" : "ⅯⅯⅯⅯⅯⅯ",
-                    '7' => IsLowerCase ? "ⅿⅿⅿⅿⅿⅿⅿ" : "ⅯⅯⅯⅯⅯⅯⅯ",
-                    '8' => IsLowerCase ? "ⅿⅿⅿⅿⅿⅿⅿⅿ" : "ⅯⅯⅯⅯⅯⅯⅯⅯ",
-                    '9' => IsLowerCase ? "ⅿⅿⅿⅿⅿⅿⅿⅿⅿ" : "ⅯⅯⅯⅯⅯⅯⅯⅯⅯ",
+                    '4' => IsLowerCase ? "ⅿↁ" : "Ⅿↁ",
+                    '5' => "ↁ",
+                    '6' => IsLowerCase ? "ↁⅿ" : "ↁⅯ",
+                    '7' => IsLowerCase ? "ↁⅿⅿ" : "ↁⅯⅯ",
+                    '8' => IsLowerCase ? "ↁⅿⅿⅿ" : "ↁⅯⅯⅯ",
+                    '9' => IsLowerCase ? "ⅿↂ" : "Ⅿↂ",
                     _ => s[0].ToString()
                 };
                 sb.Append(c);
