@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 using Trivial.Maths;
@@ -16,7 +17,10 @@ namespace Trivial.Drawing
     /// </summary>
     public static partial class ColorCalculator
     {
-#pragma warning disable IDE0057
+#pragma warning disable IDE0057, CA1846
+
+        #region Parse
+
         /// <summary>
         /// Tries to parse a color.
         /// </summary>
@@ -42,7 +46,7 @@ namespace Trivial.Drawing
                 pos = value.IndexOf(')');
                 if (pos >= 0) value = value.Substring(0, pos).Trim();
                 var isError = false;
-                var arr = value.Split(new[] { ',' }).Select(ele =>
+                var arr = value.Split(value.Contains(',') ? new[] { ',' } : new[] { ' ' }).Select(ele =>
                 {
                     var item = ele?.Trim();
                     if (string.IsNullOrEmpty(item)) return 0;
@@ -52,8 +56,15 @@ namespace Trivial.Drawing
                         if (item.EndsWith('%')) return r * 0.01;
                         if (item.EndsWith('‰')) return r * 0.001;
                         if (item.EndsWith('‱')) return r * 0.0001;
+                        if (item.EndsWith('°')) return r;
                     }
 
+                    if (item.Contains('x') && Numbers.TryParseToInt32(item, 16, out var i))
+                        return i;
+                    if (item.EndsWith("deg") && float.TryParse(item.Substring(0, item.Length - 3).Trim(), out r))
+                        return r;
+                    if (item.EndsWith("degree") && float.TryParse(item.Substring(0, item.Length - 6).Trim(), out r))
+                        return r;
                     isError = true;
                     return 0;
                 }).ToList();
@@ -183,6 +194,85 @@ namespace Trivial.Drawing
             throw new FormatException("s is not a color.", new ArgumentException("s is not supported.", nameof(s)));
         }
 
+        /// <summary>
+        /// Converts a color to hex format string.
+        /// </summary>
+        /// <param name="value">The source color value.</param>
+        /// <returns>A hex format string.</returns>
+        public static string ToHexString(Color value)
+            => value.A == 255 ? $"#{value.A:x2}{value.R:x2}{value.G:x2}{value.B:x2}" : $"#{value.R:x2}{value.G:x2}{value.B:x2}";
+
+        /// <summary>
+        /// Converts a color to hex format string.
+        /// </summary>
+        /// <param name="value">The source color value.</param>
+        /// <returns>A hex format string.</returns>
+        public static string ToRgbaString(Color value)
+            => $"rgba({value.R}, {value.G}, {value.B}, {value.A})";
+
+        /// <summary>
+        /// Parses the color from a JSON token.
+        /// </summary>
+        /// <param name="reader">The reader.</param>
+        /// <returns>The color read from JSON token.</returns>
+        internal static Color ParseValue(ref Utf8JsonReader reader)
+        {
+            switch (reader.TokenType)
+            {
+                case JsonTokenType.Null:
+                case JsonTokenType.False:
+                    return default;
+                case JsonTokenType.Number:
+                    return Parse("#" + reader.GetInt32().ToString("x8"));
+                case JsonTokenType.String:
+                    return Parse(reader.GetString());
+                case JsonTokenType.StartObject:
+                    var json = JsonObjectNode.ParseValue(ref reader);
+                    if (json == null) break;
+                    var a = json.TryGetFloatValue("a") ?? json.TryGetFloatValue("A") ?? json.TryGetFloatValue("alpha") ?? json.TryGetFloatValue("Alpha") ?? json.TryGetFloatValue("ALPHA") ?? 1;
+                    var r = json.TryGetInt32Value("r") ?? json.TryGetInt32Value("R") ?? json.TryGetInt32Value("red") ?? json.TryGetInt32Value("Red") ?? json.TryGetInt32Value("RED");
+                    var g = json.TryGetInt32Value("g") ?? json.TryGetInt32Value("G") ?? json.TryGetInt32Value("green") ?? json.TryGetInt32Value("Green") ?? json.TryGetInt32Value("GREEN");
+                    var b = json.TryGetInt32Value("b") ?? json.TryGetInt32Value("B") ?? json.TryGetInt32Value("blue") ?? json.TryGetInt32Value("Blue") ?? json.TryGetInt32Value("BLUE");
+                    if (r.HasValue || g.HasValue || b.HasValue)
+                        return Color.FromArgb(ToChannel(a * 255), r ?? 0, g ?? 0, b ?? 0);
+                    var h = json.TryGetInt32Value("h") ?? json.TryGetInt32Value("H") ?? json.TryGetInt32Value("hue") ?? json.TryGetInt32Value("Hue") ?? json.TryGetInt32Value("HUE");
+                    if (h.HasValue)
+                    {
+                        var s = json.TryGetFloatValue("s") ?? json.TryGetFloatValue("S") ?? json.TryGetFloatValue("saturation") ?? json.TryGetFloatValue("Saturation") ?? json.TryGetFloatValue("SATURATION");
+                        var l = json.TryGetFloatValue("l") ?? json.TryGetFloatValue("L") ?? json.TryGetFloatValue("lightness") ?? json.TryGetFloatValue("Lightness") ?? json.TryGetFloatValue("LIGHTNESS");
+                        return FromHSL(h.Value, s ?? 0, l ?? 0, a);
+                    }
+
+                    var c = json.TryGetInt32Value("c") ?? json.TryGetInt32Value("C") ?? json.TryGetInt32Value("cyan") ?? json.TryGetInt32Value("Cyan") ?? json.TryGetInt32Value("CYAN");
+                    var m = json.TryGetInt32Value("m") ?? json.TryGetInt32Value("M") ?? json.TryGetInt32Value("magenta") ?? json.TryGetInt32Value("Magenta") ?? json.TryGetInt32Value("MAGENTA");
+                    var y = json.TryGetInt32Value("y") ?? json.TryGetInt32Value("Y") ?? json.TryGetInt32Value("yellow") ?? json.TryGetInt32Value("Yellow") ?? json.TryGetInt32Value("YELLOW");
+                    var k = json.TryGetInt32Value("k") ?? json.TryGetInt32Value("K") ?? json.TryGetInt32Value("black") ?? json.TryGetInt32Value("Black") ?? json.TryGetInt32Value("BLACK");
+                    if (c.HasValue && m.HasValue && y.HasValue && k.HasValue)
+                        return FromCMYK(c.Value, m.Value, y.Value, k.Value, a);
+                    break;
+                case JsonTokenType.StartArray:
+                    var arr = JsonArrayNode.ParseValue(ref reader);
+                    if (arr == null) break;
+                    if (arr.Count < 3 || arr.Count > 4) break;
+                    var i = 0;
+                    var alpha = 255;
+                    if (arr.Count == 4)
+                    {
+                        i = 1;
+                        alpha = arr.TryGetInt32Value(0) ?? 255;
+                    }
+
+                    var item0 = arr.TryGetInt32Value(i);
+                    var item1 = arr.TryGetInt32Value(i + 1);
+                    var item2 = arr.TryGetInt32Value(i + 2);
+                    if (!item0.HasValue || !item1.HasValue || !item2.HasValue) break;
+                    return Color.FromArgb(alpha, item0.Value, item1.Value, item2.Value);
+            }
+
+            throw new JsonException($"The token type is {reader.TokenType} but expect a JSON object or a color format string.");
+        }
+
+        #endregion
         #region HSL
 
         /// <summary>
@@ -238,17 +328,17 @@ namespace Trivial.Drawing
         {
             if (vH < 0) vH += 1;
             if (vH > 1) vH -= 1;
-            if (6.0 * vH < 1) return v1 + (v2 - v1) * 6.0 * vH;
-            if (2.0 * vH < 1) return v2;
-            if (3.0 * vH < 2) return v1 + (v2 - v1) * ((2.0 / 3.0) - vH) * 6.0;
+            if (6 * vH < 1) return v1 + (v2 - v1) * 6 * vH;
+            if (2 * vH < 1) return v2;
+            if (3 * vH < 2) return v1 + (v2 - v1) * ((2d / 3) - vH) * 6;
             return v1;
         }
-
+        
         /// <summary>
         /// Converts a color to HSL.
         /// </summary>
         /// <param name="value">The color to get HSL values.</param>
-        /// <returns>The HSL tuple.</returns>
+        /// <returns>The HSL tuple: hue [0°..360°], saturation [0..1] and lightness [0..1].</returns>
         public static (double, double, double) ToHSL(Color value)
         {
             var min = Arithmetic.Min(value.R, value.G, value.B) / 255d;
@@ -268,7 +358,7 @@ namespace Trivial.Drawing
         /// Converts a color to HSV.
         /// </summary>
         /// <param name="value">The color to get HSV values.</param>
-        /// <returns>The HSV tuple.</returns>
+        /// <returns>The HSV tuple: hue [0°..360°], saturation [0..1] and value [0..1].</returns>
         public static (double, double, double) ToHSV(Color value)
         {
             var min = Arithmetic.Min(value.R, value.G, value.B) / 255d;
@@ -322,7 +412,7 @@ namespace Trivial.Drawing
         /// Converts a color to CMYK.
         /// </summary>
         /// <param name="value">The color to get CMYK values.</param>
-        /// <returns>The CMYK tuple.</returns>
+        /// <returns>The CMYK tuple: cyan[0..1], magenta[0..1], yellow[0..1] and black key[0..1].</returns>
         public static (double, double, double, double) ToCMYK(Color value)
         {
             if (value.R == 0 && value.G == 0 && value.B == 0)
@@ -334,6 +424,49 @@ namespace Trivial.Drawing
             if (1d - black == 0d)
                 return (0d, 0d, 0d, 1d);
             return ((1d - red - black) / (1d - black), (1d - green - black) / (1d - black), (1d - blue - black) / (1d - black), black);
+        }
+
+        #endregion
+        #region LAB & LXY
+
+        /// <summary>
+        /// Convert a color to a CIE XYZ color.
+        /// </summary>
+        /// <param name="value">The color to get XYZ values.</param>
+        /// <returns>The CIE XYZ tuple: x [0..1], y [0..1] and z [0..1].</returns>
+        public static (double, double, double) ToCIEXYZ(Color value)
+        {
+            var red = value.R / 255d;
+            var green = value.G / 255d;
+            var blue = value.B / 255d;
+            var redLinear = (red > 0.04045) ? Math.Pow((red + 0.055) / 1.055, 2.4) : (red / 12.92);
+            var greenLinear = (green > 0.04045) ? Math.Pow((green + 0.055) / 1.055, 2.4) : (green / 12.92);
+            var blueLinear = (blue > 0.04045) ? Math.Pow((blue + 0.055) / 1.055, 2.4) : (blue / 12.92);
+            return (
+                (redLinear * 0.4124) + (greenLinear * 0.3576) + (blueLinear * 0.1805),
+                (redLinear * 0.2126) + (greenLinear * 0.7152) + (blueLinear * 0.0722),
+                (redLinear * 0.0193) + (greenLinear * 0.1192) + (blueLinear * 0.9505));
+        }
+
+        /// <summary>
+        /// Convert a color to a CIE LAB color.
+        /// </summary>
+        /// <param name="value">The color to get CMYK values.</param>
+        /// <returns>The CIE LAB tuple: lightness [0..100] and 2 chromaticities [-128..127].</returns>
+        public static (double, double, double) ToCIELAB(Color value)
+        {
+            var xyz = ToCIEXYZ(value);
+            var x = xyz.Item1 * 100 / 95.0489;
+            var y = xyz.Item2 * 100 / 100;
+            var z = xyz.Item3 * 100 / 108.8840;
+            var delta = 6d / 29;
+            var m = 1d / 3 * Math.Pow(delta, -2);
+            var t = Math.Pow(delta, 3);
+            var fa = 16d / 116;
+            var fx = (x > t) ? Math.Pow(x, 1d / 3d) : (x * m) + fa;
+            var fy = (y > t) ? Math.Pow(y, 1d / 3d) : (y * m) + fa;
+            var fz = (z > t) ? Math.Pow(z, 1d / 3d) : (z * m) + fa;
+            return ((116 * fy) - 16, 500 * (fx - fy), 200 * (fy - fz));
         }
 
         #endregion
@@ -386,22 +519,6 @@ namespace Trivial.Drawing
                 return true;
             }
 
-            if (s.Length == 4)
-            {
-                var a = GetDigit(s, 0);
-                var r = GetDigit(s, 1);
-                var g = GetDigit(s, 2);
-                var b = GetDigit(s, 3);
-                if (a < 0 || r < 0 || g < 0 || b < 0)
-                {
-                    result = default;
-                    return false;
-                }
-
-                result = Color.FromArgb(a * 16 + a, r * 16 + r, g * 16 + g, b * 16 + b);
-                return true;
-            }
-
             result = default;
             return false;
         }
@@ -427,6 +544,6 @@ namespace Trivial.Drawing
                 'F' or 'f' => 15,
                 _ => -1
             };
-#pragma warning restore IDE0057
+#pragma warning restore IDE0057, CA1846
     }
 }

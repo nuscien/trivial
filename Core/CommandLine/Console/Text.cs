@@ -3,7 +3,10 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
+
+using Trivial.Text;
 
 namespace Trivial.CommandLine
 {
@@ -63,52 +66,64 @@ namespace Trivial.CommandLine
         /// <summary>
         /// Gets or sets a value indicating whether the text is blink.
         /// </summary>
+        [JsonPropertyName("blink")]
         public bool Blink { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether the text is bold.
         /// </summary>
+        [JsonPropertyName("b")]
         public bool Bold { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether the text is italic.
         /// </summary>
+        [JsonPropertyName("i")]
         public bool Italic { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether the text is underlined.
         /// </summary>
+        [JsonPropertyName("u")]
         public bool Underline { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether the text is strikeout.
         /// </summary>
+        [JsonPropertyName("strikeout")]
         public bool Strikeout { get; set; }
 
         /// <summary>
         /// Gets or sets the RGB color for foreground.
         /// </summary>
+        [JsonPropertyName("fore")]
+        [JsonConverter(typeof(JsonNumberConverter))]
         public Color? ForegroundRgbColor { get; set; }
 
         /// <summary>
         /// Gets or sets the RGB color for background.
         /// </summary>
+        [JsonPropertyName("back")]
+        [JsonConverter(typeof(JsonNumberConverter))]
         public Color? BackgroundRgbColor { get; set; }
-        
+
         /// <summary>
         /// Gets or sets the console color for foreground.
         /// </summary>
+        [JsonPropertyName("fore2")]
         public ConsoleColor? ForegroundConsoleColor { get; set; }
 
         /// <summary>
         /// Gets or sets the console color for background.
         /// </summary>
+        [JsonPropertyName("back2")]
         public ConsoleColor? BackgroundConsoleColor { get; set; }
 
 #if NETFRAMEWORK
         /// <summary>
         /// Gets or sets the font style.
         /// </summary>
+        [JsonIgnore]
         public FontStyle FontStyle
         {
             get

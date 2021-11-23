@@ -4,6 +4,7 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 using Trivial.Text;
@@ -18,61 +19,79 @@ namespace Trivial.CommandLine
         /// <summary>
         /// Gets or sets the foreground color of property key.
         /// </summary>
+        [JsonPropertyName("property")]
+        [JsonConverter(typeof(JsonNumberConverter))]
         public Color? PropertyForegroundRgbColor { get; set; } = Color.FromArgb(0xCE, 0x91, 0x78);
 
         /// <summary>
         /// Gets or sets the foreground color of string value.
         /// </summary>
+        [JsonPropertyName("string")]
+        [JsonConverter(typeof(JsonNumberConverter))]
         public Color? StringForegroundRgbColor { get; set; } = Color.FromArgb(0xCE, 0x91, 0x78);
 
         /// <summary>
         /// Gets or sets the foreground color of language keyword.
         /// </summary>
+        [JsonPropertyName("keyword")]
+        [JsonConverter(typeof(JsonNumberConverter))]
         public Color? KeywordForegroundRgbColor { get; set; } = Color.FromArgb(0x56, 0x9C, 0xD6);
 
         /// <summary>
         /// Gets or sets the foreground color of number.
         /// </summary>
+        [JsonPropertyName("number")]
+        [JsonConverter(typeof(JsonNumberConverter))]
         public Color? NumberForegroundRgbColor { get; set; } = Color.FromArgb(0xB5, 0xCE, 0xA8);
 
         /// <summary>
         /// Gets or sets the foreground color of punctuation.
         /// </summary>
+        [JsonPropertyName("punctuation")]
+        [JsonConverter(typeof(JsonNumberConverter))]
         public Color? PunctuationForegroundRgbColor { get; set; } = Color.FromArgb(0xDC, 0xDC, 0xDC);
 
         /// <summary>
         /// Gets or sets the background color.
         /// </summary>
+        [JsonPropertyName("back")]
+        [JsonConverter(typeof(JsonNumberConverter))]
         public Color? BackgroundRgbColor { get; set; }
 
         /// <summary>
         /// Gets or sets the foreground color of property key.
         /// </summary>
+        [JsonPropertyName("property2")]
         public ConsoleColor? PropertyForegroundConsoleColor { get; set; } = ConsoleColor.Gray;
 
         /// <summary>
         /// Gets or sets the foreground color of string value.
         /// </summary>
+        [JsonPropertyName("string2")]
         public ConsoleColor? StringForegroundConsoleColor { get; set; } = ConsoleColor.Green;
+
+        /// <summary>
+        /// Gets or sets the foreground color of keyword.
+        /// </summary>
+        [JsonPropertyName("keyword2")]
+        public ConsoleColor? KeywordForegroundConsoleColor { get; set; } = ConsoleColor.Cyan;
 
         /// <summary>
         /// Gets or sets the foreground color of number.
         /// </summary>
-        public ConsoleColor? KeywordForegroundConsoleColor { get; set; } = ConsoleColor.Cyan;
+        [JsonPropertyName("number2")]
+        public ConsoleColor? NumberForegroundConsoleColor { get; set; } = ConsoleColor.Yellow;
 
         /// <summary>
         /// Gets or sets the foreground color of punctuation.
         /// </summary>
-        public ConsoleColor? NumberForegroundConsoleColor { get; set; } = ConsoleColor.Yellow;
-
-        /// <summary>
-        /// Gets or sets the foreground color of string.
-        /// </summary>
+        [JsonPropertyName("punctuation2")]
         public ConsoleColor? PunctuationForegroundConsoleColor { get; set; } = ConsoleColor.Gray;
 
         /// <summary>
         /// Gets or sets the background color.
         /// </summary>
+        [JsonPropertyName("back2")]
         public ConsoleColor? BackgroundConsoleColor { get; set; }
 
         /// <summary>

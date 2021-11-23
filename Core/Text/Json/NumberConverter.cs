@@ -922,6 +922,84 @@ namespace Trivial.Text
         }
 
         /// <summary>
+        /// Json hex color string value converter.
+        /// </summary>
+        sealed class HexColorConverter : JsonConverter<System.Drawing.Color>
+        {
+            /// <inheritdoc />
+            public override System.Drawing.Color Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+                => Drawing.ColorCalculator.ParseValue(ref reader);
+
+            /// <inheritdoc />
+            public override void Write(Utf8JsonWriter writer, System.Drawing.Color value, JsonSerializerOptions options)
+            {
+                writer.WriteStringValue(Drawing.ColorCalculator.ToHexString(value));
+            }
+        }
+
+        /// <summary>
+        /// Json hex color string value converter.
+        /// </summary>
+        sealed class NullableHexColorConverter : JsonConverter<System.Drawing.Color?>
+        {
+            /// <inheritdoc />
+            public override System.Drawing.Color? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+                => reader.TokenType switch
+                {
+                    JsonTokenType.Null or JsonTokenType.False => null,
+                    _ => Drawing.ColorCalculator.ParseValue(ref reader)
+                };
+
+            /// <inheritdoc />
+            public override void Write(Utf8JsonWriter writer, System.Drawing.Color? value, JsonSerializerOptions options)
+            {
+                if (value.HasValue)
+                    writer.WriteStringValue(Drawing.ColorCalculator.ToHexString(value.Value));
+                else
+                    writer.WriteNullValue();
+            }
+        }
+
+        /// <summary>
+        /// Json RGBA color string value converter.
+        /// </summary>
+        sealed class RgbaColorConverter : JsonConverter<System.Drawing.Color>
+        {
+            /// <inheritdoc />
+            public override System.Drawing.Color Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+                => Drawing.ColorCalculator.ParseValue(ref reader);
+
+            /// <inheritdoc />
+            public override void Write(Utf8JsonWriter writer, System.Drawing.Color value, JsonSerializerOptions options)
+            {
+                writer.WriteStringValue(Drawing.ColorCalculator.ToRgbaString(value));
+            }
+        }
+
+        /// <summary>
+        /// Json RGBA color string value converter.
+        /// </summary>
+        sealed class NullableRgbaColorConverter : JsonConverter<System.Drawing.Color?>
+        {
+            /// <inheritdoc />
+            public override System.Drawing.Color? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+                => reader.TokenType switch
+                {
+                    JsonTokenType.Null or JsonTokenType.False => null,
+                    _ => Drawing.ColorCalculator.ParseValue(ref reader)
+                };
+
+            /// <inheritdoc />
+            public override void Write(Utf8JsonWriter writer, System.Drawing.Color? value, JsonSerializerOptions options)
+            {
+                if (value.HasValue)
+                    writer.WriteStringValue(Drawing.ColorCalculator.ToRgbaString(value.Value));
+                else
+                    writer.WriteNullValue();
+            }
+        }
+
+        /// <summary>
         /// Json Int32 interval converter.
         /// </summary>
         sealed class Int32IntervalConverter : JsonConverter<StructValueSimpleInterval<int>>
@@ -1273,6 +1351,8 @@ namespace Trivial.Text
                 if (typeToConvert == typeof(Angle)) return new AngleConverter();
                 if (typeToConvert == typeof(Angle.Model)) return new AngleModelConverter();
                 if (typeToConvert == typeof(Angle?)) return new AngleNullableConverter();
+                if (typeToConvert == typeof(System.Drawing.Color)) return new RgbaColorConverter();
+                if (typeToConvert == typeof(System.Drawing.Color?)) return new NullableRgbaColorConverter();
                 throw new JsonException(typeToConvert.Name + " is not expected.");
             }
 
@@ -1326,6 +1406,8 @@ namespace Trivial.Text
                 if (typeToConvert == typeof(Angle)) return new AngleConverter();
                 if (typeToConvert == typeof(Angle.Model)) return new AngleModelConverter();
                 if (typeToConvert == typeof(Angle?)) return new AngleNullableConverter();
+                if (typeToConvert == typeof(System.Drawing.Color)) return new HexColorConverter();
+                if (typeToConvert == typeof(System.Drawing.Color?)) return new NullableHexColorConverter();
                 throw new JsonException(typeToConvert.Name + " is not expected.");
             }
 
@@ -1374,6 +1456,8 @@ namespace Trivial.Text
             if (typeToConvert == typeof(Angle)) return new AngleConverter();
             if (typeToConvert == typeof(Angle.Model)) return new AngleModelConverter();
             if (typeToConvert == typeof(Angle?)) return new AngleNullableConverter();
+            if (typeToConvert == typeof(System.Drawing.Color)) return new HexColorConverter();
+            if (typeToConvert == typeof(System.Drawing.Color?)) return new NullableHexColorConverter();
             throw new JsonException(typeToConvert.Name + " is not expected.");
         }
 
@@ -1424,7 +1508,9 @@ namespace Trivial.Text
                 || typeToConvert == typeof(VersionSimpleInterval)
                 || typeToConvert == typeof(Angle)
                 || typeToConvert == typeof(Angle.Model)
-                || typeToConvert == typeof(Angle?);
+                || typeToConvert == typeof(Angle?)
+                || typeToConvert == typeof(System.Drawing.Color)
+                || typeToConvert == typeof(System.Drawing.Color?);
         }
 
         private static T ParseNumber<T>(ref Utf8JsonReader reader, Func<string, T> parser) where T : struct

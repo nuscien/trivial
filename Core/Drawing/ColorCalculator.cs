@@ -75,6 +75,45 @@ namespace Trivial.Drawing
         }
 
         /// <summary>
+        /// Reverses RGB.
+        /// </summary>
+        /// <param name="value">The source color value.</param>
+        /// <returns>The color to reverse.</returns>
+        public static Color Reverse(Color value)
+            => Color.FromArgb(value.A, 255 - value.R, 255 - value.G, 255 - value.B);
+
+        /// <summary>
+        /// Adds saturate filter.
+        /// </summary>
+        /// <param name="value">The source color value.</param>
+        /// <param name="amount">The saturate to add filter. Value is from 0 to 1.</param>
+        /// <returns>A new color with additional saturate.</returns>
+        public static Color SaturateFilter(Color value, double amount)
+        {
+            var hsl = ToHSL(value);
+            var saturate = hsl.Item2 * amount;
+            if (saturate < 0) saturate = 0;
+            else if (saturate > 1) saturate = 1;
+            return FromHSL(hsl.Item1, saturate, hsl.Item3);
+        }
+
+        /// <summary>
+        /// Rotates hue.
+        /// </summary>
+        /// <param name="value">The source color value.</param>
+        /// <param name="amount">The hue to rotate. Value is from 0 to 360.</param>
+        /// <returns>A new color with hue rotation.</returns>
+        public static Color RotateHue(Color value, double amount)
+        {
+            var hsl = ToHSL(value);
+            if (amount > 360 || amount < 0) amount %= 360;
+            var hue = hsl.Item1 + amount;
+            if (hue < 0) hue += 360;
+            else if (hue > 360) hue -= 360;
+            return FromHSL(hue, hsl.Item2, hsl.Item3);
+        }
+
+        /// <summary>
         /// Gets a collection.
         /// </summary>
         /// <param name="from">The color from.</param>
