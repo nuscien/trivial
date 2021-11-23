@@ -406,7 +406,12 @@ namespace Trivial.Text
     ""M"": ""[3.1415926, " + Numbers.InfiniteSymbol + @"]"",
     ""N"": ""[3.6.0, 5.0.0)"",
     ""O"": 2,
-    ""P"": ""unauthorized""
+    ""P"": ""unauthorized"",
+    ""R"": ""#CC3333"",
+    ""S"": ""rgba(240, 240, 16, 0.8)"",
+    ""T"": { ""b"": 255 },
+    ""V"": ""unknown"",
+    ""W"": 17.24
 }";
             model2 = JsonSerializer.Deserialize<JsonAttributeTestModel>(str);
             Assert.AreEqual(1, model2.H.Count);
@@ -455,6 +460,14 @@ namespace Trivial.Text
             Assert.AreEqual(Data.ChangeErrorKinds.Unauthorized, model2.O);
             Assert.AreEqual(Data.ChangeErrorKinds.Unauthorized, model2.P);
             Assert.AreEqual(Data.ChangeErrorKinds.None, model2.Q);
+            Assert.AreEqual(0xCC, model2.R.R);
+            Assert.AreEqual(240, model2.S.G);
+            Assert.IsTrue(model.S.A < 0.9 && model2.S.A > 0.7);
+            Assert.AreEqual(255, model2.T.B);
+            Assert.IsNull(model2.U);
+            Assert.AreEqual(Data.ChangeMethods.Unknown, model2.V);
+            Assert.AreEqual(17, model2.W.Degree);
+            Assert.IsTrue(model2.W.Arcminute > 0);
             str = JsonSerializer.Serialize(model2);
             Assert.IsNotNull(str);
         }

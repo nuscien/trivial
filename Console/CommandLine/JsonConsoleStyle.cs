@@ -62,36 +62,42 @@ namespace Trivial.CommandLine
         /// Gets or sets the foreground color of property key.
         /// </summary>
         [JsonPropertyName("property2")]
+        [JsonConverter(typeof(JsonIntegerEnumCompatibleConverter))]
         public ConsoleColor? PropertyForegroundConsoleColor { get; set; } = ConsoleColor.Gray;
 
         /// <summary>
         /// Gets or sets the foreground color of string value.
         /// </summary>
         [JsonPropertyName("string2")]
+        [JsonConverter(typeof(JsonIntegerEnumCompatibleConverter))]
         public ConsoleColor? StringForegroundConsoleColor { get; set; } = ConsoleColor.Green;
 
         /// <summary>
         /// Gets or sets the foreground color of keyword.
         /// </summary>
         [JsonPropertyName("keyword2")]
+        [JsonConverter(typeof(JsonIntegerEnumCompatibleConverter))]
         public ConsoleColor? KeywordForegroundConsoleColor { get; set; } = ConsoleColor.Cyan;
 
         /// <summary>
         /// Gets or sets the foreground color of number.
         /// </summary>
         [JsonPropertyName("number2")]
+        [JsonConverter(typeof(JsonIntegerEnumCompatibleConverter))]
         public ConsoleColor? NumberForegroundConsoleColor { get; set; } = ConsoleColor.Yellow;
 
         /// <summary>
         /// Gets or sets the foreground color of punctuation.
         /// </summary>
         [JsonPropertyName("punctuation2")]
+        [JsonConverter(typeof(JsonIntegerEnumCompatibleConverter))]
         public ConsoleColor? PunctuationForegroundConsoleColor { get; set; } = ConsoleColor.Gray;
 
         /// <summary>
         /// Gets or sets the background color.
         /// </summary>
         [JsonPropertyName("back2")]
+        [JsonConverter(typeof(JsonIntegerEnumCompatibleConverter))]
         public ConsoleColor? BackgroundConsoleColor { get; set; }
 
         /// <summary>

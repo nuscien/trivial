@@ -80,5 +80,23 @@ namespace Trivial.Text
 
         [JsonConverter(typeof(JsonIntegerEnumCompatibleConverter))]
         public Data.ChangeErrorKinds Q { get; set; }
+
+        [JsonConverter(typeof(JsonNumberConverter))]
+        public System.Drawing.Color R { get; set; }
+
+        [JsonConverter(typeof(JsonNumberConverter.NumberStringConverter))]
+        public System.Drawing.Color S { get; set; }
+
+        [JsonConverter(typeof(JsonNumberConverter))]
+        public System.Drawing.Color T { get; set; }
+
+        [JsonConverter(typeof(JsonIntegerEnumCompatibleConverter))]
+        public Data.ChangeMethods? U { get; set; }
+
+        [JsonConverter(typeof(JsonIntegerEnumCompatibleConverter))]
+        public Data.ChangeMethods? V { get; set; }
+
+        [JsonConverter(typeof(JsonNumberConverter))]
+        public Maths.Angle W { get; set; }
     }
 }

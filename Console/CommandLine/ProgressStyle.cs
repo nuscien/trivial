@@ -3,7 +3,10 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
+
+using Trivial.Text;
 
 namespace Trivial.CommandLine
 {
@@ -82,76 +85,105 @@ namespace Trivial.CommandLine
         /// <summary>
         /// Gets or sets the background color of the component.
         /// </summary>
+        [JsonPropertyName("back2")]
+        [JsonConverter(typeof(JsonIntegerEnumCompatibleConverter))]
         public ConsoleColor? BackgroundConsoleColor { get; set; }
 
         /// <summary>
         /// Gets or sets the background color of the component.
         /// </summary>
+        [JsonPropertyName("back")]
+        [JsonConverter(typeof(JsonNumberConverter))]
         public Color? BackgroundRgbColor { get; set; }
 
         /// <summary>
         /// Gets or sets the progress background color.
         /// </summary>
+        [JsonPropertyName("pending2")]
+        [JsonConverter(typeof(JsonIntegerEnumCompatibleConverter))]
         public ConsoleColor PendingConsoleColor { get; set; } = ConsoleColor.DarkGray;
 
         /// <summary>
         /// Gets or sets the progress background color.
         /// </summary>
+        [JsonPropertyName("pending")]
+        [JsonConverter(typeof(JsonNumberConverter))]
         public Color? PendingRgbColor { get; set; } = Color.FromArgb(68, 68, 68);
 
         /// <summary>
         /// Gets or sets the progress bar color.
         /// </summary>
+        [JsonPropertyName("bar2")]
+        [JsonConverter(typeof(JsonIntegerEnumCompatibleConverter))]
         public ConsoleColor BarConsoleColor { get; set; } = ConsoleColor.Green;
 
         /// <summary>
         /// Gets or sets the progress bar color.
         /// </summary>
+        [JsonPropertyName("bar")]
+        [JsonConverter(typeof(JsonNumberConverter))]
         public Color? BarRgbColor { get; set; } = Color.FromArgb(48, 192, 128);
 
         /// <summary>
         /// Gets or sets the error color.
         /// </summary>
+        [JsonPropertyName("error2")]
+        [JsonConverter(typeof(JsonIntegerEnumCompatibleConverter))]
         public ConsoleColor ErrorConsoleColor { get; set; } = ConsoleColor.Red;
 
         /// <summary>
         /// Gets or sets the error color.
         /// </summary>
+        [JsonPropertyName("error")]
+        [JsonConverter(typeof(JsonNumberConverter))]
         public Color? ErrorRgbColor { get; set; } = Color.FromArgb(212, 48, 48);
 
         /// <summary>
         /// Gets or sets the foreground color of caption.
         /// </summary>
+        [JsonPropertyName("caption2")]
+        [JsonConverter(typeof(JsonIntegerEnumCompatibleConverter))]
         public ConsoleColor? CaptionConsoleColor { get; set; }
 
         /// <summary>
         /// Gets or sets the foreground color of caption.
         /// </summary>
+        [JsonPropertyName("caption")]
+        [JsonConverter(typeof(JsonNumberConverter))]
         public Color? CaptionRgbColor { get; set; }
 
         /// <summary>
         /// Gets or sets the foreground color of value.
         /// </summary>
+        [JsonPropertyName("value2")]
+        [JsonConverter(typeof(JsonIntegerEnumCompatibleConverter))]
         public ConsoleColor? ValueConsoleColor { get; set; } = ConsoleColor.Gray;
 
         /// <summary>
         /// Gets or sets the foreground color of value.
         /// </summary>
+        [JsonPropertyName("value")]
+        [JsonConverter(typeof(JsonNumberConverter))]
         public Color? ValueRgbColor { get; set; }
 
         /// <summary>
         /// Gets or sets the progress size (width).
         /// </summary>
+        [JsonPropertyName("size")]
+        [JsonConverter(typeof(JsonIntegerEnumCompatibleConverter))]
         public Sizes Size { get; set; }
 
         /// <summary>
         /// Gets or sets the progress style.
         /// </summary>
+        [JsonPropertyName("kind")]
+        [JsonConverter(typeof(JsonIntegerEnumCompatibleConverter))]
         public Kinds Kind { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether remove the white space between caption and progress.
         /// </summary>
+        [JsonPropertyName("slim")]
         public bool IgnoreCaptionSeparator { get; set; }
     }
 }

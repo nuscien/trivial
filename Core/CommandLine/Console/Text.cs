@@ -111,12 +111,14 @@ namespace Trivial.CommandLine
         /// Gets or sets the console color for foreground.
         /// </summary>
         [JsonPropertyName("fore2")]
+        [JsonConverter(typeof(JsonIntegerEnumCompatibleConverter))]
         public ConsoleColor? ForegroundConsoleColor { get; set; }
 
         /// <summary>
         /// Gets or sets the console color for background.
         /// </summary>
         [JsonPropertyName("back2")]
+        [JsonConverter(typeof(JsonIntegerEnumCompatibleConverter))]
         public ConsoleColor? BackgroundConsoleColor { get; set; }
 
 #if NETFRAMEWORK
