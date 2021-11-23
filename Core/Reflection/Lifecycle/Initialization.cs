@@ -32,6 +32,25 @@ namespace Trivial.Reflection
         }
 
         /// <summary>
+        /// Deconstructor.
+        /// </summary>
+        ~Initialization()
+        {
+            if (semaphoreSlim == null) return;
+            try
+            {
+                semaphoreSlim.Dispose();
+                semaphoreSlim = null;
+            }
+            catch (InvalidOperationException)
+            {
+            }
+            catch (NullReferenceException)
+            {
+            }
+        }
+
+        /// <summary>
         /// Gets a System.Threading.WaitHandle that can be used to wait on the semaphore.
         /// </summary>
         /// <exception cref="ObjectDisposedException">The System.Threading.SemaphoreSlim has been disposed.</exception>
@@ -53,7 +72,7 @@ namespace Trivial.Reflection
             {
                 await semaphoreSlim.WaitAsync();
             }
-            catch (ObjectDisposedException)
+            catch (InvalidOperationException)
             {
                 return;
             }
@@ -74,7 +93,7 @@ namespace Trivial.Reflection
                 {
                     if (semaphoreSlim != null) semaphoreSlim.Release();
                 }
-                catch (ObjectDisposedException)
+                catch (InvalidOperationException)
                 {
                 }
                 catch (NullReferenceException)
@@ -113,10 +132,10 @@ namespace Trivial.Reflection
                 await semaphoreSlim.WaitAsync();
                 if (semaphoreSlim != null) semaphoreSlim.Release();
             }
-            catch (NullReferenceException)
+            catch (InvalidOperationException)
             {
             }
-            catch (ObjectDisposedException)
+            catch (NullReferenceException)
             {
             }
         }
@@ -135,10 +154,10 @@ namespace Trivial.Reflection
                 result = await semaphoreSlim.WaitAsync(timeout);
                 if (result && semaphoreSlim != null) semaphoreSlim.Release();
             }
-            catch (NullReferenceException)
+            catch (InvalidOperationException)
             {
             }
-            catch (ObjectDisposedException)
+            catch (NullReferenceException)
             {
             }
 
@@ -156,10 +175,10 @@ namespace Trivial.Reflection
                 semaphoreSlim.Dispose();
                 semaphoreSlim = null;
             }
-            catch (NullReferenceException)
+            catch (InvalidOperationException)
             {
             }
-            catch (ObjectDisposedException)
+            catch (NullReferenceException)
             {
             }
         }
@@ -177,11 +196,11 @@ namespace Trivial.Reflection
             {
                 if (semaphoreSlim.CurrentCount == 1) semaphoreSlim.Dispose();
             }
-            catch (NullReferenceException)
+            catch (InvalidOperationException)
             {
                 if (semaphoreSlim == null) return;
             }
-            catch (ObjectDisposedException)
+            catch (NullReferenceException)
             {
                 if (semaphoreSlim == null) return;
             }

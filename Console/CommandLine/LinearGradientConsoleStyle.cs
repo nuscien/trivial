@@ -115,23 +115,22 @@ namespace Trivial.CommandLine
                 return col;
             }
 
-            var step = s.Length - 1;
+            var steps = s.Length - 1;
             var hasFore = fromFore.HasValue || toFore.HasValue;
             var hasBack = fromBack.HasValue || toBack.HasValue;
             var foreDelta = fromFore.HasValue && toFore.HasValue
-                ? ((toFore.Value.R - fromFore.Value.R) * 1.0 / step, (toFore.Value.G - fromFore.Value.B) * 1.0 / step, (toFore.Value.B - fromFore.Value.B) * 1.0 / step)
+                ? ((toFore.Value.R - fromFore.Value.R) * 1.0 / steps, (toFore.Value.G - fromFore.Value.B) * 1.0 / steps, (toFore.Value.B - fromFore.Value.B) * 1.0 / steps)
                 : (0.0, 0.0, 0.0);
             var backDelta = fromBack.HasValue && toBack.HasValue
-                ? ((toBack.Value.R - fromBack.Value.R) * 1.0 / step, (toBack.Value.G - fromBack.Value.B) * 1.0 / step, (toBack.Value.B - fromBack.Value.B) * 1.0 / step)
+                ? ((toBack.Value.R - fromBack.Value.R) * 1.0 / steps, (toBack.Value.G - fromBack.Value.B) * 1.0 / steps, (toBack.Value.B - fromBack.Value.B) * 1.0 / steps)
                 : (0.0, 0.0, 0.0);
-            var last = s.Length - 1;
             double foreR = fromFore?.R ?? toFore?.R ?? 0;
             double foreG = fromFore?.G ?? toFore?.G ?? 0;
             double foreB = fromFore?.B ?? toFore?.B ?? 0;
             double backR = fromBack?.R ?? toBack?.R ?? 0;
             double backG = fromBack?.G ?? toBack?.G ?? 0;
             double backB = fromBack?.B ?? toBack?.B ?? 0;
-            for (var i = 1; i < last; i++)
+            for (var i = 1; i < steps; i++)
             {
                 Color? fore = hasFore ? Color.FromArgb(
                     PlusChannel(ref foreR, foreDelta.Item1),

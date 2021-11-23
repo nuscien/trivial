@@ -371,15 +371,14 @@ namespace Trivial.Reflection
         /// <returns>A version instance.</returns>
         public static Version ToVersion(string s)
         {
+            #pragma warning disable IDE0057
             s = s?.Trim();
             if (string.IsNullOrEmpty(s)) return null;
             var end = s.IndexOf('-');
             if (end >= 0) s = s.Substring(0, end);
             end = s.IndexOf("+");
             if (end >= 0) s = s.Substring(0, end);
-            #pragma warning disable IDE0057
             while (s.EndsWith(".*")) s = s.Substring(0, s.Length - 2);
-            #pragma warning restore IDE0057
             if (s.Length == 0 || s == "*") return null;
             var arr = s.Split('.');
             if (!int.TryParse(arr[0], out var major)) return null;
@@ -387,6 +386,7 @@ namespace Trivial.Reflection
             if (arr.Length < 3 || !int.TryParse(arr[2], out var build)) return new Version(major, minor);
             if (arr.Length < 4 || !int.TryParse(arr[3], out var rev)) return new Version(major, minor, build);
             return new Version(major, minor, build, rev);
+            #pragma warning restore IDE0057
         }
 
         /// <summary>
@@ -407,6 +407,7 @@ namespace Trivial.Reflection
         /// </returns>
         public static int Compare(string x, string y, bool isWideX)
         {
+            #pragma warning disable IDE0057
             x = x?.Trim();
             y = y?.Trim();
             var r = 1;
@@ -415,9 +416,7 @@ namespace Trivial.Reflection
             if (x.StartsWith("+")) return -r;
             while (x.EndsWith(".*"))
             {
-                #pragma warning disable IDE0057
                 x = x.Substring(0, x.Length - 2);
-                #pragma warning restore IDE0057
                 isWideX = true;
             }
 
@@ -472,6 +471,7 @@ namespace Trivial.Reflection
 
             if (leftArr.Length == y.Length) return 0;
             return leftArr.Length > y.Length ? -r : r;
+            #pragma warning restore IDE0057
         }
     }
 }

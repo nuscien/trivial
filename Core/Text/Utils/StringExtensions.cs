@@ -467,6 +467,14 @@ namespace Trivial.Text
             return new string(list.ToArray());
         }
 
+#if NETOLDVER
+        internal static bool StartsWith(this string s, char value)
+            => s.StartsWith(value.ToString());
+
+        internal static bool EndsWith(this string s, char value)
+            => s.EndsWith(value.ToString());
+#endif
+
         internal static string SubRangeString(this string s, int start, int end, bool reverseEnd = false)
         {
 #if NETOLDVER
