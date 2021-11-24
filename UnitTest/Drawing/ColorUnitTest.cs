@@ -80,6 +80,13 @@ namespace Trivial.Drawing
             Assert.AreEqual(color, ColorCalculator.ToggleBrightness(color));
             color = Color.FromArgb(240, 10, 10);
             Assert.AreEqual(Color.FromArgb(245, 15, 15), ColorCalculator.ToggleBrightness(color));
+
+            color = ColorCalculator.Overlay(
+                Color.FromArgb(128, 255, 0, 0),
+                Color.FromArgb(255, 0, 0, 255));
+            Assert.AreEqual(128, color.R);
+            Assert.AreEqual(255, color.A);
+            Assert.AreEqual(127, color.B);
         }
     }
 }

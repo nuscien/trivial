@@ -53,9 +53,9 @@ namespace Trivial.Drawing
                     if (float.TryParse(item, out var r)) return r;
                     if (item.Length > 1 && float.TryParse(item.Substring(0, item.Length - 1), out r))
                     {
-                        if (item.EndsWith('%')) return r * 0.01;
-                        if (item.EndsWith('‰')) return r * 0.001;
-                        if (item.EndsWith('‱')) return r * 0.0001;
+                        if (item.EndsWith('%')) return r * 0.01f;
+                        if (item.EndsWith('‰')) return r * 0.001f;
+                        if (item.EndsWith('‱')) return r * 0.0001f;
                         if (item.EndsWith('°')) return r;
                     }
 
@@ -276,7 +276,7 @@ namespace Trivial.Drawing
         #region HSL
 
         /// <summary>
-        /// Creates color from HSL.
+        /// Creates color from HSL (hue-saturation-lightness).
         /// </summary>
         /// <param name="hue">The hue. Value is from 0 to 360.</param>
         /// <param name="saturation">The saturation. Value is from 0 to 1.</param>
@@ -286,7 +286,7 @@ namespace Trivial.Drawing
             => FromHSL(hue, saturation, lightness, 255);
 
         /// <summary>
-        /// Creates color from HSL.
+        /// Creates color from HSL (hue-saturation-lightness).
         /// </summary>
         /// <param name="hue">The hue. Value is from 0 to 360.</param>
         /// <param name="saturation">The saturation. Value is from 0 to 1.</param>
@@ -297,7 +297,7 @@ namespace Trivial.Drawing
             => FromHSL(hue, saturation, lightness, (byte)ToChannel(alpha * 255));
 
         /// <summary>
-        /// Creates color from HSL.
+        /// Creates color from HSL (hue-saturation-lightness).
         /// </summary>
         /// <param name="hue">The hue. Value is from 0 to 360.</param>
         /// <param name="saturation">The saturation. Value is from 0 to 1.</param>
@@ -317,11 +317,62 @@ namespace Trivial.Drawing
             else j = lightness + saturation - (saturation * lightness);
             i = 2d * lightness - j;
             var h = hue / 360d;
+            var aThird = 1d / 3d;
             return Color.FromArgb(
                 alpha,
-                ToChannel(255d * FromHue(i, j, h + (1d / 3d))),
+                ToChannel(255d * FromHue(i, j, h + aThird)),
                 ToChannel(255d * FromHue(i, j, h)),
-                ToChannel(255d * FromHue(i, j, h - (1d / 3d))));
+                ToChannel(255d * FromHue(i, j, h - aThird)));
+        }
+
+        /// <summary>
+        /// Creates color from HSL (hue-saturation-lightness).
+        /// </summary>
+        /// <param name="hue">The hue. Value is from 0 to 360.</param>
+        /// <param name="saturation">The saturation. Value is from 0 to 1.</param>
+        /// <param name="lightness">The lightness. Value is from 0 to 1.</param>
+        /// <returns>A color.</returns>
+        public static Color FromHSL(float hue, float saturation, float lightness)
+            => FromHSL(hue, saturation, lightness, 255);
+
+        /// <summary>
+        /// Creates color from HSL (hue-saturation-lightness).
+        /// </summary>
+        /// <param name="hue">The hue. Value is from 0 to 360.</param>
+        /// <param name="saturation">The saturation. Value is from 0 to 1.</param>
+        /// <param name="lightness">The lightness. Value is from 0 to 1.</param>
+        /// <param name="alpha">The alpha. Value is from 0 to 1.</param>
+        /// <returns>A color.</returns>
+        public static Color FromHSL(float hue, float saturation, float lightness, float alpha)
+            => FromHSL(hue, saturation, lightness, (byte)ToChannel(alpha * 255));
+
+        /// <summary>
+        /// Creates color from HSL (hue-saturation-lightness).
+        /// </summary>
+        /// <param name="hue">The hue. Value is from 0 to 360.</param>
+        /// <param name="saturation">The saturation. Value is from 0 to 1.</param>
+        /// <param name="lightness">The lightness. Value is from 0 to 1.</param>
+        /// <param name="alpha">The alpha. Value is from 0 to 255.</param>
+        /// <returns>A color.</returns>
+        public static Color FromHSL(float hue, float saturation, float lightness, byte alpha)
+        {
+            float i, j;
+            if (saturation == 0)
+            {
+                var channel = ToChannel(lightness * 255f);
+                return Color.FromArgb(alpha, channel, channel, channel);
+            }
+
+            if (lightness < 0.5) j = lightness * (1 + saturation);
+            else j = lightness + saturation - (saturation * lightness);
+            i = 2f * lightness - j;
+            var h = hue / 360f;
+            var aThird = 1f / 3f;
+            return Color.FromArgb(
+                alpha,
+                ToChannel(255f * FromHue(i, j, h + aThird)),
+                ToChannel(255f * FromHue(i, j, h)),
+                ToChannel(255f * FromHue(i, j, h - aThird)));
         }
 
         private static double FromHue(double v1, double v2, double vH)
@@ -333,9 +384,19 @@ namespace Trivial.Drawing
             if (3 * vH < 2) return v1 + (v2 - v1) * ((2d / 3) - vH) * 6;
             return v1;
         }
-        
+
+        private static float FromHue(float v1, float v2, float vH)
+        {
+            if (vH < 0) vH += 1;
+            if (vH > 1) vH -= 1;
+            if (6 * vH < 1) return v1 + (v2 - v1) * 6 * vH;
+            if (2 * vH < 1) return v2;
+            if (3 * vH < 2) return v1 + (v2 - v1) * ((2f / 3) - vH) * 6;
+            return v1;
+        }
+
         /// <summary>
-        /// Converts a color to HSL.
+        /// Converts a color to HSL (hue-saturation-lightness).
         /// </summary>
         /// <param name="value">The color to get HSL values.</param>
         /// <returns>The HSL tuple: hue [0°..360°], saturation [0..1] and lightness [0..1].</returns>
@@ -351,11 +412,28 @@ namespace Trivial.Drawing
             return (value.GetHue(), (max - min) / (2d - (max + min)), lightness);
         }
 
+        /// <summary>
+        /// Converts a color to HSL (hue-saturation-lightness).
+        /// </summary>
+        /// <param name="value">The color to get HSL values.</param>
+        /// <returns>The HSL tuple: hue [0°..360°], saturation [0..1] and lightness [0..1].</returns>
+        private static (float, float, float) ToSingleHSL(Color value)
+        {
+            var min = Arithmetic.Min(value.R, value.G, value.B) / 255f;
+            var max = Arithmetic.Max(value.R, value.G, value.B) / 255f;
+            var lightness = (max + min) / 2f;
+            if (lightness == 0f || min == max)
+                return (value.GetHue(), 0f, lightness);
+            if (lightness > 0f && lightness <= 0.5f)
+                return (value.GetHue(), (max - min) / (max + min), lightness);
+            return (value.GetHue(), (max - min) / (2f - (max + min)), lightness);
+        }
+
         #endregion
         #region HSV
 
         /// <summary>
-        /// Converts a color to HSV.
+        /// Converts a color to HSV (hue-saturation-value).
         /// </summary>
         /// <param name="value">The color to get HSV values.</param>
         /// <returns>The HSV tuple: hue [0°..360°], saturation [0..1] and value [0..1].</returns>
@@ -370,7 +448,7 @@ namespace Trivial.Drawing
         #region CMYK
 
         /// <summary>
-        /// Creates color from HSL.
+        /// Creates color from CMYK.
         /// </summary>
         /// <param name="cyan">The cyan. Value is from 0 to 1.</param>
         /// <param name="magenta">The magenta. Value is from 0 to 1.</param>
@@ -381,7 +459,7 @@ namespace Trivial.Drawing
             => FromCMYK(cyan, magenta, yellow, black, 255);
 
         /// <summary>
-        /// Creates color from HSL.
+        /// Creates color from CMYK.
         /// </summary>
         /// <param name="cyan">The cyan. Value is from 0 to 1.</param>
         /// <param name="magenta">The magenta. Value is from 0 to 1.</param>
@@ -393,7 +471,7 @@ namespace Trivial.Drawing
             => FromCMYK(cyan, magenta, yellow, black, (byte)ToChannel(alpha * 255));
 
         /// <summary>
-        /// Creates color from HSL.
+        /// Creates color from CMYK.
         /// </summary>
         /// <param name="cyan">The cyan. Value is from 0 to 1.</param>
         /// <param name="magenta">The magenta. Value is from 0 to 1.</param>
@@ -402,6 +480,45 @@ namespace Trivial.Drawing
         /// <param name="alpha">The alpha. Value is from 0 to 255.</param>
         /// <returns>A color.</returns>
         public static Color FromCMYK(double cyan, double magenta, double yellow, double black, byte alpha)
+            => Color.FromArgb(
+                alpha,
+                ToChannel(255 * (1 - cyan) * (1 - black)),
+                ToChannel(255 * (1 - magenta) * (1 - black)),
+                ToChannel(255 * (1 - yellow) * (1 - black)));
+
+        /// <summary>
+        /// Creates color from CMYK.
+        /// </summary>
+        /// <param name="cyan">The cyan. Value is from 0 to 1.</param>
+        /// <param name="magenta">The magenta. Value is from 0 to 1.</param>
+        /// <param name="yellow">The yellow. Value is from 0 to 1.</param>
+        /// <param name="black">The black. Value is from 0 to 1.</param>
+        /// <returns>A color.</returns>
+        public static Color FromCMYK(float cyan, float magenta, float yellow, float black)
+            => FromCMYK(cyan, magenta, yellow, black, 255);
+
+        /// <summary>
+        /// Creates color from CMYK.
+        /// </summary>
+        /// <param name="cyan">The cyan. Value is from 0 to 1.</param>
+        /// <param name="magenta">The magenta. Value is from 0 to 1.</param>
+        /// <param name="yellow">The yellow. Value is from 0 to 1.</param>
+        /// <param name="black">The black. Value is from 0 to 1.</param>
+        /// <param name="alpha">The alpha. Value is from 0 to 1.</param>
+        /// <returns>A color.</returns>
+        public static Color FromCMYK(float cyan, float magenta, float yellow, float black, float alpha)
+            => FromCMYK(cyan, magenta, yellow, black, (byte)ToChannel(alpha * 255));
+
+        /// <summary>
+        /// Creates color from CMYK.
+        /// </summary>
+        /// <param name="cyan">The cyan. Value is from 0 to 1.</param>
+        /// <param name="magenta">The magenta. Value is from 0 to 1.</param>
+        /// <param name="yellow">The yellow. Value is from 0 to 1.</param>
+        /// <param name="black">The black. Value is from 0 to 1.</param>
+        /// <param name="alpha">The alpha. Value is from 0 to 255.</param>
+        /// <returns>A color.</returns>
+        public static Color FromCMYK(float cyan, float magenta, float yellow, float black, byte alpha)
             => Color.FromArgb(
                 alpha,
                 ToChannel(255 * (1 - cyan) * (1 - black)),
