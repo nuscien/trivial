@@ -66,6 +66,7 @@ namespace Trivial.Drawing
             var ratio = top.A * 1f / 255;
             if (bottom.A < 255) ratio += (255 - bottom.A) / 255f * (1 - ratio);
             if (ratio >= 1) return top;
+            var negRatio = 1 - ratio;
 #if NETOLDVER
             var a = 255 - (int)Math.Round((255d - top.A) * (255d - bottom.A) * 255);
 #else
@@ -73,9 +74,9 @@ namespace Trivial.Drawing
 #endif
             return Color.FromArgb(
                 a,
-                ToChannel(top.R * ratio + bottom.R),
-                ToChannel(top.G * ratio + bottom.G),
-                ToChannel(top.B * ratio + bottom.B));
+                ToChannel(top.R * ratio + bottom.R * negRatio),
+                ToChannel(top.G * ratio + bottom.G * negRatio),
+                ToChannel(top.B * ratio + bottom.B * negRatio));
         }
 
         /// <summary>
