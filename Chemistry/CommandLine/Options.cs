@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 using Trivial.Collection;
 using Trivial.Chemistry;
+using Trivial.Text;
 
 namespace Trivial.CommandLine
 {
@@ -39,81 +41,129 @@ namespace Trivial.CommandLine
         /// <summary>
         /// Gets or sets the fallback console color of element name.
         /// </summary>
+        [JsonPropertyName("name2")]
+        [JsonConverter(typeof(JsonIntegerEnumCompatibleConverter))]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public ConsoleColor? NameConsoleColor { get; set; }
 
         /// <summary>
         /// Gets or sets the RGB color of element name.
         /// </summary>
+        [JsonPropertyName("name")]
+        [JsonConverter(typeof(JsonNumberConverter))]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public Color? NameRgbColor { get; set; }
 
         /// <summary>
         /// Gets or sets the fallback console color of element symbol.
         /// </summary>
+        [JsonPropertyName("symbol2")]
+        [JsonConverter(typeof(JsonIntegerEnumCompatibleConverter))]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public ConsoleColor? SymbolConsoleColor { get; set; } = ConsoleColor.Yellow;
 
         /// <summary>
         /// Gets or sets the RGB color of element symbol.
         /// </summary>
+        [JsonPropertyName("symbol")]
+        [JsonConverter(typeof(JsonNumberConverter))]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public Color? SymbolRgbColor { get; set; } = Color.FromArgb(0xF9, 0xEE, 0x88);
 
         /// <summary>
         /// Gets or sets the fallback console color of atomic number.
         /// </summary>
+        [JsonPropertyName("z2")]
+        [JsonConverter(typeof(JsonIntegerEnumCompatibleConverter))]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public ConsoleColor? AtomicNumberConsoleColor { get; set; }
 
         /// <summary>
         /// Gets or sets the RGB color of atomic number.
         /// </summary>
+        [JsonPropertyName("z")]
+        [JsonConverter(typeof(JsonNumberConverter))]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public Color? AtomicNumberRgbColor { get; set; } = Color.FromArgb(160, 160, 240);
 
         /// <summary>
         /// Gets or sets the fallback console color of element additional property key.
         /// </summary>
+        [JsonPropertyName("key2")]
+        [JsonConverter(typeof(JsonIntegerEnumCompatibleConverter))]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public ConsoleColor? PropertyKeyConsoleColor { get; set; }
 
         /// <summary>
         /// Gets or sets the RGB color of additional property key.
         /// </summary>
+        [JsonPropertyName("key")]
+        [JsonConverter(typeof(JsonNumberConverter))]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public Color? PropertyKeyRgbColor { get; set; } = Color.FromArgb(0xCE, 0x91, 0x78);
 
         /// <summary>
         /// Gets or sets the fallback console color of additional property value.
         /// </summary>
+        [JsonPropertyName("value2")]
+        [JsonConverter(typeof(JsonIntegerEnumCompatibleConverter))]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public ConsoleColor? PropertyValueConsoleColor { get; set; }
 
         /// <summary>
         /// Gets or sets the RGB color of additional property value.
         /// </summary>
+        [JsonPropertyName("value")]
+        [JsonConverter(typeof(JsonNumberConverter))]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public Color? PropertyValueRgbColor { get; set; }
 
         /// <summary>
         /// Gets or sets the fallback console color of element isotope information.
         /// </summary>
+        [JsonPropertyName("isotope2")]
+        [JsonConverter(typeof(JsonIntegerEnumCompatibleConverter))]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public ConsoleColor? IsotopeConsoleColor { get; set; }
 
         /// <summary>
         /// Gets or sets the RGB color of element isotope information.
         /// </summary>
+        [JsonPropertyName("isotope")]
+        [JsonConverter(typeof(JsonNumberConverter))]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public Color? IsotopeRgbColor { get; set; } = Color.FromArgb(160, 160, 160);
 
         /// <summary>
         /// Gets or sets the fallback console color of punctuation marks.
         /// </summary>
+        [JsonPropertyName("punctuation2")]
+        [JsonConverter(typeof(JsonIntegerEnumCompatibleConverter))]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public ConsoleColor? PunctuationConsoleColor { get; set; }
 
         /// <summary>
         /// Gets or sets the RGB color of element punctuation marks.
         /// </summary>
+        [JsonPropertyName("punctuation")]
+        [JsonConverter(typeof(JsonNumberConverter))]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public Color? PunctuationRgbColor { get; set; } = Color.FromArgb(128, 128, 128);
 
         /// <summary>
         /// Gets or sets the fallback console color of background.
         /// </summary>
+        [JsonPropertyName("back2")]
+        [JsonConverter(typeof(JsonIntegerEnumCompatibleConverter))]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public ConsoleColor? BackgroundConsoleColor { get; set; }
 
         /// <summary>
         /// Gets or sets the RGB color of background.
         /// </summary>
+        [JsonPropertyName("back")]
+        [JsonConverter(typeof(JsonNumberConverter))]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public Color? BackgroundRgbColor { get; set; }
 
         /// <summary>

@@ -134,10 +134,10 @@ namespace Trivial.Drawing
         {
             if (a.A == b.A)
                 return Color.FromArgb(
-                Math.Max(a.A, b.A),
-                ToChannel((a.R + b.R) / 2),
-                ToChannel((a.G + b.G) / 2),
-                ToChannel((a.B + b.B) / 2));
+                    Math.Max(a.A, b.A),
+                    ToChannel((a.R + b.R) / 2),
+                    ToChannel((a.G + b.G) / 2),
+                    ToChannel((a.B + b.B) / 2));
             var topAlpha = a.A / 255f;
             var bottomAlpha = b.A / 255f;
             var total = topAlpha + bottomAlpha;
@@ -184,10 +184,10 @@ namespace Trivial.Drawing
         {
             if (a.A == b.A)
                 return Color.FromArgb(
-                Math.Max(a.A, b.A),
-                ToChannel(a.R + b.R),
-                ToChannel(a.G + b.G),
-                ToChannel(a.B + b.B));
+                    Math.Max(a.A, b.A),
+                    ToChannel(a.R + b.R),
+                    ToChannel(a.G + b.G),
+                    ToChannel(a.B + b.B));
             float alpha = a.A + b.A;
             var topAlpha = a.A / alpha;
             var bottomAlpha = b.A / alpha;

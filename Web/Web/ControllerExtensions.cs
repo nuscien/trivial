@@ -290,7 +290,7 @@ namespace Trivial.Web
             {
                 ContentType = WebFormat.JsonMIME,
                 StatusCode = 200,
-                Content = value.ToString()
+                Content = value?.ToString() ?? "null"
             };
 
         /// <summary>
@@ -303,7 +303,33 @@ namespace Trivial.Web
             {
                 ContentType = WebFormat.JsonMIME,
                 StatusCode = 200,
-                Content = value.ToString()
+                Content = value?.ToString() ?? "null"
+            };
+
+        /// <summary>
+        /// Convert to an action result.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <returns>The action result.</returns>
+        public static ContentResult ToActionResult(System.Text.Json.Nodes.JsonObject value)
+            => new()
+            {
+                ContentType = WebFormat.JsonMIME,
+                StatusCode = 200,
+                Content = value?.ToJsonString() ?? "null"
+            };
+
+        /// <summary>
+        /// Convert to an action result.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <returns>The action result.</returns>
+        public static ContentResult ToActionResult(System.Text.Json.Nodes.JsonArray value)
+            => new()
+            {
+                ContentType = WebFormat.JsonMIME,
+                StatusCode = 200,
+                Content = value?.ToJsonString() ?? "null"
             };
 
         /// <summary>

@@ -87,6 +87,7 @@ namespace Trivial.CommandLine
         /// </summary>
         [JsonPropertyName("back2")]
         [JsonConverter(typeof(JsonIntegerEnumCompatibleConverter))]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public ConsoleColor? BackgroundConsoleColor { get; set; }
 
         /// <summary>
@@ -94,6 +95,7 @@ namespace Trivial.CommandLine
         /// </summary>
         [JsonPropertyName("back")]
         [JsonConverter(typeof(JsonNumberConverter))]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public Color? BackgroundRgbColor { get; set; }
 
         /// <summary>
@@ -108,6 +110,7 @@ namespace Trivial.CommandLine
         /// </summary>
         [JsonPropertyName("pending")]
         [JsonConverter(typeof(JsonNumberConverter))]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public Color? PendingRgbColor { get; set; } = Color.FromArgb(68, 68, 68);
 
         /// <summary>
@@ -122,6 +125,7 @@ namespace Trivial.CommandLine
         /// </summary>
         [JsonPropertyName("bar")]
         [JsonConverter(typeof(JsonNumberConverter))]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public Color? BarRgbColor { get; set; } = Color.FromArgb(48, 192, 128);
 
         /// <summary>
@@ -136,6 +140,7 @@ namespace Trivial.CommandLine
         /// </summary>
         [JsonPropertyName("error")]
         [JsonConverter(typeof(JsonNumberConverter))]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public Color? ErrorRgbColor { get; set; } = Color.FromArgb(212, 48, 48);
 
         /// <summary>
@@ -143,6 +148,7 @@ namespace Trivial.CommandLine
         /// </summary>
         [JsonPropertyName("caption2")]
         [JsonConverter(typeof(JsonIntegerEnumCompatibleConverter))]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public ConsoleColor? CaptionConsoleColor { get; set; }
 
         /// <summary>
@@ -150,6 +156,7 @@ namespace Trivial.CommandLine
         /// </summary>
         [JsonPropertyName("caption")]
         [JsonConverter(typeof(JsonNumberConverter))]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public Color? CaptionRgbColor { get; set; }
 
         /// <summary>
@@ -157,6 +164,7 @@ namespace Trivial.CommandLine
         /// </summary>
         [JsonPropertyName("value2")]
         [JsonConverter(typeof(JsonIntegerEnumCompatibleConverter))]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public ConsoleColor? ValueConsoleColor { get; set; } = ConsoleColor.Gray;
 
         /// <summary>
@@ -164,6 +172,7 @@ namespace Trivial.CommandLine
         /// </summary>
         [JsonPropertyName("value")]
         [JsonConverter(typeof(JsonNumberConverter))]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public Color? ValueRgbColor { get; set; }
 
         /// <summary>
@@ -184,6 +193,7 @@ namespace Trivial.CommandLine
         /// Gets or sets a value indicating whether remove the white space between caption and progress.
         /// </summary>
         [JsonPropertyName("slim")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
         public bool IgnoreCaptionSeparator { get; set; }
     }
 }

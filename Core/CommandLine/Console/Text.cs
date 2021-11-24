@@ -67,30 +67,35 @@ namespace Trivial.CommandLine
         /// Gets or sets a value indicating whether the text is blink.
         /// </summary>
         [JsonPropertyName("blink")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
         public bool Blink { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether the text is bold.
         /// </summary>
         [JsonPropertyName("b")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
         public bool Bold { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether the text is italic.
         /// </summary>
         [JsonPropertyName("i")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
         public bool Italic { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether the text is underlined.
         /// </summary>
         [JsonPropertyName("u")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
         public bool Underline { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether the text is strikeout.
         /// </summary>
         [JsonPropertyName("strikeout")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
         public bool Strikeout { get; set; }
 
         /// <summary>
@@ -98,6 +103,7 @@ namespace Trivial.CommandLine
         /// </summary>
         [JsonPropertyName("fore")]
         [JsonConverter(typeof(JsonNumberConverter))]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public Color? ForegroundRgbColor { get; set; }
 
         /// <summary>
@@ -105,6 +111,7 @@ namespace Trivial.CommandLine
         /// </summary>
         [JsonPropertyName("back")]
         [JsonConverter(typeof(JsonNumberConverter))]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public Color? BackgroundRgbColor { get; set; }
 
         /// <summary>
@@ -112,6 +119,7 @@ namespace Trivial.CommandLine
         /// </summary>
         [JsonPropertyName("fore2")]
         [JsonConverter(typeof(JsonIntegerEnumCompatibleConverter))]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public ConsoleColor? ForegroundConsoleColor { get; set; }
 
         /// <summary>
@@ -119,6 +127,7 @@ namespace Trivial.CommandLine
         /// </summary>
         [JsonPropertyName("back2")]
         [JsonConverter(typeof(JsonIntegerEnumCompatibleConverter))]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public ConsoleColor? BackgroundConsoleColor { get; set; }
 
 #if NETFRAMEWORK
@@ -263,14 +272,25 @@ namespace Trivial.CommandLine
         /// </summary>
         /// <returns>The object copied from this instance.</returns>
         public virtual ConsoleTextStyle Clone()
-            => MemberwiseClone() as ConsoleTextStyle;
+            => new()
+            {
+                Blink = Blink,
+                Bold = Bold,
+                Italic = Italic,
+                Underline = Underline,
+                Strikeout = Strikeout,
+                ForegroundRgbColor = ForegroundRgbColor,
+                ForegroundConsoleColor = ForegroundConsoleColor,
+                BackgroundRgbColor = BackgroundRgbColor,
+                BackgroundConsoleColor = BackgroundConsoleColor
+            };
 
         /// <summary>
         /// Clones an object.
         /// </summary>
         /// <returns>The object copied from this instance.</returns>
         object ICloneable.Clone()
-            => MemberwiseClone();
+            => Clone();
 
         /// <summary>
         /// Adds.

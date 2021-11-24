@@ -21,6 +21,7 @@ namespace Trivial.CommandLine
         /// </summary>
         [JsonPropertyName("property")]
         [JsonConverter(typeof(JsonNumberConverter))]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public Color? PropertyForegroundRgbColor { get; set; } = Color.FromArgb(0xCE, 0x91, 0x78);
 
         /// <summary>
@@ -28,6 +29,7 @@ namespace Trivial.CommandLine
         /// </summary>
         [JsonPropertyName("string")]
         [JsonConverter(typeof(JsonNumberConverter))]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public Color? StringForegroundRgbColor { get; set; } = Color.FromArgb(0xCE, 0x91, 0x78);
 
         /// <summary>
@@ -35,6 +37,7 @@ namespace Trivial.CommandLine
         /// </summary>
         [JsonPropertyName("keyword")]
         [JsonConverter(typeof(JsonNumberConverter))]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public Color? KeywordForegroundRgbColor { get; set; } = Color.FromArgb(0x56, 0x9C, 0xD6);
 
         /// <summary>
@@ -42,6 +45,7 @@ namespace Trivial.CommandLine
         /// </summary>
         [JsonPropertyName("number")]
         [JsonConverter(typeof(JsonNumberConverter))]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public Color? NumberForegroundRgbColor { get; set; } = Color.FromArgb(0xB5, 0xCE, 0xA8);
 
         /// <summary>
@@ -49,6 +53,7 @@ namespace Trivial.CommandLine
         /// </summary>
         [JsonPropertyName("punctuation")]
         [JsonConverter(typeof(JsonNumberConverter))]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public Color? PunctuationForegroundRgbColor { get; set; } = Color.FromArgb(0xDC, 0xDC, 0xDC);
 
         /// <summary>
@@ -56,6 +61,7 @@ namespace Trivial.CommandLine
         /// </summary>
         [JsonPropertyName("back")]
         [JsonConverter(typeof(JsonNumberConverter))]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public Color? BackgroundRgbColor { get; set; }
 
         /// <summary>
@@ -63,6 +69,7 @@ namespace Trivial.CommandLine
         /// </summary>
         [JsonPropertyName("property2")]
         [JsonConverter(typeof(JsonIntegerEnumCompatibleConverter))]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public ConsoleColor? PropertyForegroundConsoleColor { get; set; } = ConsoleColor.Gray;
 
         /// <summary>
@@ -70,6 +77,7 @@ namespace Trivial.CommandLine
         /// </summary>
         [JsonPropertyName("string2")]
         [JsonConverter(typeof(JsonIntegerEnumCompatibleConverter))]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public ConsoleColor? StringForegroundConsoleColor { get; set; } = ConsoleColor.Green;
 
         /// <summary>
@@ -77,6 +85,7 @@ namespace Trivial.CommandLine
         /// </summary>
         [JsonPropertyName("keyword2")]
         [JsonConverter(typeof(JsonIntegerEnumCompatibleConverter))]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public ConsoleColor? KeywordForegroundConsoleColor { get; set; } = ConsoleColor.Cyan;
 
         /// <summary>
@@ -84,6 +93,7 @@ namespace Trivial.CommandLine
         /// </summary>
         [JsonPropertyName("number2")]
         [JsonConverter(typeof(JsonIntegerEnumCompatibleConverter))]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public ConsoleColor? NumberForegroundConsoleColor { get; set; } = ConsoleColor.Yellow;
 
         /// <summary>
@@ -91,6 +101,7 @@ namespace Trivial.CommandLine
         /// </summary>
         [JsonPropertyName("punctuation2")]
         [JsonConverter(typeof(JsonIntegerEnumCompatibleConverter))]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public ConsoleColor? PunctuationForegroundConsoleColor { get; set; } = ConsoleColor.Gray;
 
         /// <summary>
@@ -98,6 +109,7 @@ namespace Trivial.CommandLine
         /// </summary>
         [JsonPropertyName("back2")]
         [JsonConverter(typeof(JsonIntegerEnumCompatibleConverter))]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public ConsoleColor? BackgroundConsoleColor { get; set; }
 
         /// <summary>
