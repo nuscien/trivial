@@ -46,6 +46,32 @@ namespace Trivial.Drawing
         /// Diff each channel.
         /// </summary>
         Diff = 6,
+
+        /// <summary>
+        /// Remove each channel value.
+        /// </summary>
+        Remove = 7,
+    }
+
+    /// <summary>
+    /// Color channels.
+    /// </summary>
+    public enum ColorChannels
+    {
+        /// <summary>
+        /// Red.
+        /// </summary>
+        Red = 1,
+
+        /// <summary>
+        /// Green.
+        /// </summary>
+        Green = 2,
+
+        /// <summary>
+        /// Blue.
+        /// </summary>
+        Blue = 3
     }
 
     /// <summary>
@@ -126,8 +152,25 @@ namespace Trivial.Drawing
                 ColorMixTypes.Deepen => MixByDeepen(a, b),
                 ColorMixTypes.Accent => MixByAccent(a, b),
                 ColorMixTypes.Diff => MixByDiff(a, b),
+                ColorMixTypes.Remove => MixByRemove(a, b),
                 _ => MixByMean(a, b),
             };
+        }
+
+        /// <summary>
+        /// Mixes colors.
+        /// </summary>
+        /// <param name="merge">The handler to merge each channel.</param>
+        /// <param name="a">The color 1.</param>
+        /// <param name="b">The color 2.</param>
+        /// <returns>A new color.</returns>
+        public static Color Mix(Func<byte, byte, ColorChannels, byte> merge, Color a, Color b)
+        {
+            if (merge == null) return MixByMean(a, b);
+            var red = merge(a.R, b.R, ColorChannels.Red);
+            var green = merge(a.G, b.G, ColorChannels.Green);
+            var blue = merge(a.B, b.B, ColorChannels.Blue);
+            return MixWithAlpha(red, green, blue, a, b);
         }
 
         private static Color MixByMean(Color a, Color b)
@@ -206,6 +249,17 @@ namespace Trivial.Drawing
             if (green < 0) green += 256;
             var blue = a.B - b.B;
             if (blue < 0) blue += 256;
+            return MixWithAlpha(red, green, blue, a, b);
+        }
+
+        private static Color MixByRemove(Color a, Color b)
+        {
+            var red = a.R - b.R;
+            if (red < 0) red = 0;
+            var green = a.G - b.G;
+            if (green < 0) green = 0;
+            var blue = a.B - b.B;
+            if (blue < 0) blue = 0;
             return MixWithAlpha(red, green, blue, a, b);
         }
 

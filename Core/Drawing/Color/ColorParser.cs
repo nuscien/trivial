@@ -400,7 +400,7 @@ namespace Trivial.Drawing
         /// </summary>
         /// <param name="value">The color to get HSL values.</param>
         /// <returns>The HSL tuple: hue [0°..360°], saturation [0..1] and lightness [0..1].</returns>
-        public static (double, double, double) ToHSL(Color value)
+        public static (double H, double S, double L) ToHSL(Color value)
         {
             var min = Arithmetic.Min(value.R, value.G, value.B) / 255d;
             var max = Arithmetic.Max(value.R, value.G, value.B) / 255d;
@@ -437,7 +437,7 @@ namespace Trivial.Drawing
         /// </summary>
         /// <param name="value">The color to get HSV values.</param>
         /// <returns>The HSV tuple: hue [0°..360°], saturation [0..1] and value [0..1].</returns>
-        public static (double, double, double) ToHSV(Color value)
+        public static (double H, double S, double V) ToHSV(Color value)
         {
             var min = Arithmetic.Min(value.R, value.G, value.B) / 255d;
             var max = Arithmetic.Max(value.R, value.G, value.B) / 255d;
@@ -530,7 +530,7 @@ namespace Trivial.Drawing
         /// </summary>
         /// <param name="value">The color to get CMYK values.</param>
         /// <returns>The CMYK tuple: cyan[0..1], magenta[0..1], yellow[0..1] and black key[0..1].</returns>
-        public static (double, double, double, double) ToCMYK(Color value)
+        public static (double C, double M, double Y, double K) ToCMYK(Color value)
         {
             if (value.R == 0 && value.G == 0 && value.B == 0)
                 return (0d, 0d, 0d, 1d);
@@ -551,7 +551,7 @@ namespace Trivial.Drawing
         /// </summary>
         /// <param name="value">The color to get XYZ values.</param>
         /// <returns>The CIE XYZ tuple: x [0..1], y [0..1] and z [0..1].</returns>
-        public static (double, double, double) ToCIEXYZ(Color value)
+        public static (double X, double Y, double Z) ToCIEXYZ(Color value)
         {
             var red = value.R / 255d;
             var green = value.G / 255d;
@@ -570,7 +570,7 @@ namespace Trivial.Drawing
         /// </summary>
         /// <param name="value">The color to get CMYK values.</param>
         /// <returns>The CIE LAB tuple: lightness [0..100] and 2 chromaticities [-128..127].</returns>
-        public static (double, double, double) ToCIELAB(Color value)
+        public static (double L, double A, double B) ToCIELAB(Color value)
         {
             var xyz = ToCIEXYZ(value);
             var x = xyz.Item1 * 100 / 95.0489;
