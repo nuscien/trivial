@@ -96,21 +96,21 @@ namespace Trivial.CommandLine
             if (result.Data is Drawing.ColorMixTypes mixType)
             {
                 InitColors();
-                cli.Write("Blend ");
+                cli.Write("Blend");
                 foreach (var item in blendColors)
                 {
                     cli.Write(item, "■");
                 }
 
                 cli.WriteLine();
-                cli.Write("Base  ");
+                cli.Write("Base ");
                 foreach (var item in baseColors)
                 {
                     cli.Write(item, "■");
                 }
 
                 cli.WriteLine();
-                cli.Write("Mix   ");
+                cli.Write("Mixed");
                 for (var i = 0; i < blendColors.Count; i++) 
                 {
                     cli.Write(Drawing.ColorCalculator.Mix(mixType, blendColors[i], baseColors[i]), "■");
@@ -163,9 +163,6 @@ namespace Trivial.CommandLine
                     Color.FromArgb(0x66, 0x99, 0x99),
                     Color.FromArgb(0x66, 0x66, 0x99),
                     Color.FromArgb(0x99, 0x66, 0x99),
-                    Color.FromArgb(0x80, 0x80, 0x80),
-                    Color.FromArgb(0xFF, 0xFF, 0xFF),
-                    Color.FromArgb(0, 0, 0),
                     Color.FromArgb(0xFF, 0, 0),
                     Color.FromArgb(0xFF, 0xFF, 0),
                     Color.FromArgb(0, 0xFF, 0),
@@ -181,6 +178,33 @@ namespace Trivial.CommandLine
                     Color.FromArgb(0x80, 0x80, 0x80),
                     Color.FromArgb(0xFF, 0xFF, 0xFF),
                     Color.FromArgb(0, 0, 0),
+                    Color.FromArgb(0x80, 0x80, 0x80),
+                    Color.FromArgb(0xFF, 0xFF, 0xFF),
+                    Color.FromArgb(0, 0, 0),
+                    Color.FromArgb(0xFF, 0, 0),
+                    Color.FromArgb(0xFF, 0xFF, 0),
+                    Color.FromArgb(0, 0xFF, 0),
+                    Color.FromArgb(0, 0xFF, 0xFF),
+                    Color.FromArgb(0, 0, 0xFF),
+                    Color.FromArgb(0xFF, 0, 0xFF),
+                    Color.FromArgb(0x99, 0x66, 0x66),
+                    Color.FromArgb(0x99, 0x99, 0x66),
+                    Color.FromArgb(0x66, 0x99, 0x66),
+                    Color.FromArgb(0x66, 0x99, 0x99),
+                    Color.FromArgb(0x66, 0x66, 0x99),
+                    Color.FromArgb(0x99, 0x66, 0x99),
+                    Color.FromArgb(0xFF, 0, 0),
+                    Color.FromArgb(0xFF, 0xFF, 0),
+                    Color.FromArgb(0, 0xFF, 0),
+                    Color.FromArgb(0, 0xFF, 0xFF),
+                    Color.FromArgb(0, 0, 0xFF),
+                    Color.FromArgb(0xFF, 0, 0xFF),
+                    Color.FromArgb(0x99, 0x66, 0x66),
+                    Color.FromArgb(0x99, 0x99, 0x66),
+                    Color.FromArgb(0x66, 0x99, 0x66),
+                    Color.FromArgb(0x66, 0x99, 0x99),
+                    Color.FromArgb(0x66, 0x66, 0x99),
+                    Color.FromArgb(0x99, 0x66, 0x99),
                 };
             if (baseColors == null)
                 baseColors = new List<Color>
@@ -190,29 +214,53 @@ namespace Trivial.CommandLine
                     Color.FromArgb(0, 0xFF, 0xFF),
                     Color.FromArgb(0, 0, 0xFF),
                     Color.FromArgb(0xFF, 0, 0xFF),
-                    Color.FromArgb(0x99, 0x66, 0x66),
+                    Color.FromArgb(0xFF, 0, 0),
                     Color.FromArgb(0x99, 0x99, 0x66),
                     Color.FromArgb(0x66, 0x99, 0x66),
                     Color.FromArgb(0x66, 0x99, 0x99),
                     Color.FromArgb(0x66, 0x66, 0x99),
                     Color.FromArgb(0x99, 0x66, 0x99),
-                    Color.FromArgb(0x80, 0x80, 0x80),
-                    Color.FromArgb(0xFF, 0xFF, 0xFF),
-                    Color.FromArgb(0, 0, 0),
-                    Color.FromArgb(0xFF, 0, 0),
+                    Color.FromArgb(0x99, 0x66, 0x66),
                     Color.FromArgb(0, 0xFF, 0),
                     Color.FromArgb(0, 0xFF, 0xFF),
                     Color.FromArgb(0, 0, 0xFF),
                     Color.FromArgb(0xFF, 0, 0xFF),
+                    Color.FromArgb(0xFF, 0, 0),
+                    Color.FromArgb(0xFF, 0xFF, 0),
+                    Color.FromArgb(0x66, 0x99, 0x66),
+                    Color.FromArgb(0x66, 0x99, 0x99),
+                    Color.FromArgb(0x66, 0x66, 0x99),
+                    Color.FromArgb(0x99, 0x66, 0x99),
                     Color.FromArgb(0x99, 0x66, 0x66),
+                    Color.FromArgb(0x99, 0x99, 0x66),
+                    Color.FromArgb(0xFF, 0xFF, 0xFF),
+                    Color.FromArgb(0, 0, 0),
+                    Color.FromArgb(0x80, 0x80, 0x80),
+                    Color.FromArgb(0, 0, 0),
+                    Color.FromArgb(0x80, 0x80, 0x80),
+                    Color.FromArgb(0xFF, 0xFF, 0xFF),
                     Color.FromArgb(0x99, 0x99, 0x66),
                     Color.FromArgb(0x66, 0x99, 0x66),
                     Color.FromArgb(0x66, 0x99, 0x99),
                     Color.FromArgb(0x66, 0x66, 0x99),
                     Color.FromArgb(0x99, 0x66, 0x99),
-                    Color.FromArgb(0x80, 0x80, 0x80),
-                    Color.FromArgb(0xFF, 0xFF, 0xFF),
-                    Color.FromArgb(0, 0, 0),
+                    Color.FromArgb(0x99, 0x66, 0x66),
+                    Color.FromArgb(0xFF, 0xFF, 0),
+                    Color.FromArgb(0, 0xFF, 0),
+                    Color.FromArgb(0, 0xFF, 0xFF),
+                    Color.FromArgb(0, 0, 0xFF),
+                    Color.FromArgb(0xFF, 0, 0xFF),
+                    Color.FromArgb(0xFF, 0, 0),
+                    Color.FromArgb(0x66, 0x99, 0x66),
+                    Color.FromArgb(0x66, 0x99, 0x99),
+                    Color.FromArgb(0x66, 0x66, 0x99),
+                    Color.FromArgb(0x99, 0x66, 0x99),
+                    Color.FromArgb(0x99, 0x66, 0x66),
+                    Color.FromArgb(0x99, 0x99, 0x66),
+                    Color.FromArgb(0, 0xFF, 0),
+                    Color.FromArgb(0, 0xFF, 0xFF),
+                    Color.FromArgb(0, 0, 0xFF),
+                    Color.FromArgb(0xFF, 0, 0xFF),
                     Color.FromArgb(0xFF, 0, 0),
                     Color.FromArgb(0xFF, 0xFF, 0),
                 };
