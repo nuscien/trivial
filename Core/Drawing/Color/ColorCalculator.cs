@@ -238,6 +238,44 @@ namespace Trivial.Drawing
             => value?.Select(ele => SaturateFilter(ele, amount));
 
         /// <summary>
+        /// Sets high saturation.
+        /// </summary>
+        /// <param name="value">The source color value collection.</param>
+        /// <returns>A new color with high saturation.</returns>
+        public static Color HighSaturation(Color value)
+        {
+            if (value.R == value.G && value.R == value.B) return value;
+            var high = (byte)Maths.Arithmetic.Max(value.R, value.G, value.B);
+            var low = (byte)Maths.Arithmetic.Min(value.R, value.G, value.B);
+            var diff = Math.Min((byte)(255 - high), low);
+            var ratio = diff / 255f;
+            return Color.FromArgb(
+                value.A,
+                HighSaturation(value.R, high, low, diff, ratio),
+                HighSaturation(value.G, high, low, diff, ratio),
+                HighSaturation(value.B, high, low, diff, ratio));
+        }
+
+        private static int HighSaturation(byte channel, byte high, byte low, byte diff, float ratio)
+        {
+            if (channel == high) return channel += diff;
+            if (channel == low) return channel -= diff;
+            if (channel < 128) return ToChannel(channel - channel * ratio);
+            else return ToChannel(channel + (255 - channel) * ratio);
+        }
+
+        /// <summary>
+        /// Sets grayscale.
+        /// </summary>
+        /// <param name="value">The source color value collection.</param>
+        /// <returns>A new color with grayscale.</returns>
+        public static Color Grayscale(Color value)
+        {
+            var channel = ToChannel((value.R + value.G + value.B) / 3f);
+            return Color.FromArgb(value.A, channel, channel, channel);
+        }
+
+        /// <summary>
         /// Rotates hue.
         /// </summary>
         /// <param name="value">The source color value.</param>

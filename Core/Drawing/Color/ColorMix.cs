@@ -10,7 +10,7 @@ namespace Trivial.Drawing
     /// <summary>
     /// The types to mix colors.
     /// </summary>
-    public enum ColorMixTypes
+    public enum ColorMixTypes : byte
     {
         /// <summary>
         /// Average (mean).
@@ -66,26 +66,36 @@ namespace Trivial.Drawing
         Accent = 8,
 
         /// <summary>
-        /// Diff each channel of the blend color by the base color.
-        /// </summary>
-        Diff = 9,
-
-        /// <summary>
         /// Remove each channel value of the blend color by the base color.
         /// </summary>
-        Remove = 10,
+        Remove = 9,
+
+        /// <summary>
+        /// Diff absolutely each channel of the blend color by the base color.
+        /// </summary>
+        Diff = 10,
+
+        /// <summary>
+        /// Diff cycled each channel of the blend color by the base color.
+        /// </summary>
+        Distance = 11,
 
         /// <summary>
         /// Symmetry each channel of the blend color by the base color.
         /// </summary>
-        Symmetry = 11,
+        Symmetry = 12,
+
+        /// <summary>
+        /// High saturation.
+        /// </summary>
+        Saturation = 13,
     }
 
     /// <summary>
     /// Color channels.
     /// </summary>
     [Flags]
-    public enum ColorChannels
+    public enum ColorChannels : byte
     {
         /// <summary>
         /// Red.
@@ -192,9 +202,11 @@ namespace Trivial.Drawing
                 ColorMixTypes.Deepen => MixByDeepen(a, b),
                 ColorMixTypes.Emphasis => MixByEmphasis(a, b),
                 ColorMixTypes.Accent => MixByAccent(a, b),
-                ColorMixTypes.Diff => MixByDiff(a, b),
                 ColorMixTypes.Remove => MixByRemove(a, b),
+                ColorMixTypes.Diff => MixByDiff(a, b),
+                ColorMixTypes.Distance => MixByDistance(a, b),
                 ColorMixTypes.Symmetry => MixBySymmetry(a, b),
+                ColorMixTypes.Saturation => MixBySaturation(a, b),
                 _ => MixByMean(a, b)
             };
 
@@ -228,7 +240,7 @@ namespace Trivial.Drawing
             foreach (var item in a)
             {
                 i++;
-                if (arr.Count < i)
+                if (i < arr.Count)
                     yield return Mix(type, item, arr[i]);
                 else
                     yield return item;
@@ -435,17 +447,6 @@ namespace Trivial.Drawing
                     ToChannel(a.B * topAlpha + b.B * bottomAlpha));
         }
 
-        private static Color MixByDiff(Color a, Color b)
-        {
-            var red = a.R - b.R;
-            if (red < 0) red += 256;
-            var green = a.G - b.G;
-            if (green < 0) green += 256;
-            var blue = a.B - b.B;
-            if (blue < 0) blue += 256;
-            return MixWithAlpha(red, green, blue, a, b);
-        }
-
         private static Color MixByRemove(Color a, Color b)
         {
             var red = a.R - b.R;
@@ -454,6 +455,25 @@ namespace Trivial.Drawing
             if (green < 0) green = 0;
             var blue = a.B - b.B;
             if (blue < 0) blue = 0;
+            return MixWithAlpha(red, green, blue, a, b);
+        }
+
+        private static Color MixByDiff(Color a, Color b)
+        {
+            var red = Math.Abs(a.R - b.R);
+            var green = Math.Abs(a.G - b.G);
+            var blue = Math.Abs(a.B - b.B);
+            return MixWithAlpha(red, green, blue, a, b);
+        }
+
+        private static Color MixByDistance(Color a, Color b)
+        {
+            var red = a.R - b.R;
+            if (red < 0) red += 256;
+            var green = a.G - b.G;
+            if (green < 0) green += 256;
+            var blue = a.B - b.B;
+            if (blue < 0) blue += 256;
             return MixWithAlpha(red, green, blue, a, b);
         }
 
@@ -469,6 +489,12 @@ namespace Trivial.Drawing
             if (blue < 0) blue = 0;
             else if (blue > 255) blue = 255;
             return MixWithAlpha(red, green, blue, a, b);
+        }
+
+        private static Color MixBySaturation(Color a, Color b)
+        {
+            var c = MixByMean(a, b);
+            return HighSaturation(c);
         }
 
         private static Color MixWithAlpha(int red, int green, int blue, Color a, Color b)

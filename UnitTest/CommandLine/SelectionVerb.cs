@@ -31,7 +31,7 @@ namespace Trivial.CommandLine
             col.Add('j', "json");
             col.Add('e', "error");
             col.Add('?', "help", null);
-            for (var i = 0; i < 12; i++)
+            for (var i = 0; i < 14; i++)
             {
                 var mix = (Drawing.ColorMixTypes)i;
                 col.Add(mix.ToString(), mix);
@@ -97,6 +97,7 @@ namespace Trivial.CommandLine
             {
                 InitColors();
                 cli.Write("Blend");
+                var c = Color.FromArgb(80, 80, 80);
                 foreach (var item in blendColors)
                 {
                     cli.Write(item, "■");
@@ -111,9 +112,10 @@ namespace Trivial.CommandLine
 
                 cli.WriteLine();
                 cli.Write("Mixed");
-                for (var i = 0; i < blendColors.Count; i++) 
+                var colors = Drawing.ColorCalculator.Mix(mixType, blendColors, baseColors);
+                foreach (var item in colors)
                 {
-                    cli.Write(Drawing.ColorCalculator.Mix(mixType, blendColors[i], baseColors[i]), "■");
+                    cli.Write(item, "■");
                 }
             }
         }
@@ -127,9 +129,8 @@ namespace Trivial.CommandLine
                 BarConsoleColor = ConsoleColor.White,
                 BackgroundConsoleColor = ConsoleColor.DarkBlue
             }, "Running 1:");
-            Tasks.OneProgress progress2 = null;
             cli.WriteLine("And another one...");
-            progress2 = cli.WriteLine(new ConsoleProgressStyle(), "Running 2:");
+            var progress2 = cli.WriteLine(new ConsoleProgressStyle(), "Running 2:");
             for (var i = 0; i <= 50; i++)
             {
                 await Task.Delay(10);
