@@ -214,6 +214,60 @@ namespace Trivial.Drawing
             return MixWithAlpha(red, green, blue, a, b);
         }
 
+        /// <summary>
+        /// Mixes colors.
+        /// </summary>
+        /// <param name="type">The type to mix colors.</param>
+        /// <param name="a">The collection of blend color.</param>
+        /// <param name="b">The collection of base color.</param>
+        /// <returns>A new color collection mixed.</returns>
+        public static IEnumerable<Color> Mix(ColorMixTypes type, IEnumerable<Color> a, IEnumerable<Color> b)
+        {
+            var arr = b.ToList();
+            var i = -1;
+            foreach (var item in a)
+            {
+                i++;
+                if (arr.Count < i)
+                    yield return Mix(type, item, arr[i]);
+                else
+                    yield return item;
+            }
+
+            i++;
+            for (; i < arr.Count; i++)
+            {
+                yield return arr[i];
+            }
+        }
+
+        /// <summary>
+        /// Mixes colors.
+        /// </summary>
+        /// <param name="merge">The handler to merge each channel.</param>
+        /// <param name="a">The blend color.</param>
+        /// <param name="b">The base color.</param>
+        /// <returns>A new color mixed.</returns>
+        public static IEnumerable<Color> Mix(Func<byte, byte, ColorChannels, byte> merge, IEnumerable<Color> a, IEnumerable<Color> b)
+        {
+            var arr = b.ToList();
+            var i = -1;
+            foreach (var item in a)
+            {
+                i++;
+                if (arr.Count < i)
+                    yield return Mix(merge, item, arr[i]);
+                else
+                    yield return item;
+            }
+
+            i++;
+            for (; i < arr.Count; i++)
+            {
+                yield return arr[i];
+            }
+        }
+
 #if NETFRAMEWORK
         /// <summary>
         /// Mixes bitmaps.

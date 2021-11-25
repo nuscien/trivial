@@ -445,6 +445,23 @@ namespace Trivial.Drawing
         }
 
         #endregion
+        #region HSI
+
+        /// <summary>
+        /// Converts a color to HSI (hue-saturation-intensity).
+        /// </summary>
+        /// <param name="value">The color to get HSI values.</param>
+        /// <returns>The HSI tuple: hue [0°..360°], saturation [0..1] and value [0..1].</returns>
+        public static (double H, double S, double I) ToHSI(Color value)
+        {
+            if (value.R == 0 && value.G == 0 && value.B == 0)
+                return (0d, 0d, 0d);
+            var intensity = (value.R / 255d + value.G / 255d + value.B / 255d) / 3d;
+            var min = Arithmetic.Min(value.R, value.G, value.B) / 255d;
+            return (value.GetHue(), 1d - (min / intensity), intensity);
+        }
+
+        #endregion
         #region CMYK
 
         /// <summary>

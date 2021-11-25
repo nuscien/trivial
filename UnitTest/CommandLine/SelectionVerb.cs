@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -12,6 +13,9 @@ namespace Trivial.CommandLine
 {
     class SelectionVerb : BaseCommandVerb
     {
+        private static List<Color> blendColors;
+        private static List<Color> baseColors;
+
         public static string Description => "Selection";
 
         /// <inheritdoc />
@@ -27,6 +31,12 @@ namespace Trivial.CommandLine
             col.Add('j', "json");
             col.Add('e', "error");
             col.Add('?', "help", null);
+            for (var i = 0; i < 12; i++)
+            {
+                var mix = (Drawing.ColorMixTypes)i;
+                col.Add(mix.ToString(), mix);
+            }
+
             for (var i = 0; i < 120; i++)
             {
                 col.Add(i.ToString());
@@ -82,6 +92,30 @@ namespace Trivial.CommandLine
                     cli.WriteLine("This is a sample.");
                     return;
             }
+
+            if (result.Data is Drawing.ColorMixTypes mixType)
+            {
+                InitColors();
+                cli.Write("Blend ");
+                foreach (var item in blendColors)
+                {
+                    cli.Write(item, "■");
+                }
+
+                cli.WriteLine();
+                cli.Write("Base  ");
+                foreach (var item in baseColors)
+                {
+                    cli.Write(item, "■");
+                }
+
+                cli.WriteLine();
+                cli.Write("Mix   ");
+                for (var i = 0; i < blendColors.Count; i++) 
+                {
+                    cli.Write(Drawing.ColorCalculator.Mix(mixType, blendColors[i], baseColors[i]), "■");
+                }
+            }
         }
 
         public static async Task ShowProgressAsync()
@@ -110,6 +144,78 @@ namespace Trivial.CommandLine
             progress = cli.WriteLine(new ConsoleProgressStyle(), "Running 3:");
             await progress.IncreaseAsync(null, 0.02, 0.6, 10);
             progress.Fail();
+        }
+
+        private static void InitColors()
+        {
+            if (blendColors == null)
+                blendColors = new List<Color>
+                {
+                    Color.FromArgb(0xFF, 0, 0),
+                    Color.FromArgb(0xFF, 0xFF, 0),
+                    Color.FromArgb(0, 0xFF, 0),
+                    Color.FromArgb(0, 0xFF, 0xFF),
+                    Color.FromArgb(0, 0, 0xFF),
+                    Color.FromArgb(0xFF, 0, 0xFF),
+                    Color.FromArgb(0x99, 0x66, 0x66),
+                    Color.FromArgb(0x99, 0x99, 0x66),
+                    Color.FromArgb(0x66, 0x99, 0x66),
+                    Color.FromArgb(0x66, 0x99, 0x99),
+                    Color.FromArgb(0x66, 0x66, 0x99),
+                    Color.FromArgb(0x99, 0x66, 0x99),
+                    Color.FromArgb(0x80, 0x80, 0x80),
+                    Color.FromArgb(0xFF, 0xFF, 0xFF),
+                    Color.FromArgb(0, 0, 0),
+                    Color.FromArgb(0xFF, 0, 0),
+                    Color.FromArgb(0xFF, 0xFF, 0),
+                    Color.FromArgb(0, 0xFF, 0),
+                    Color.FromArgb(0, 0xFF, 0xFF),
+                    Color.FromArgb(0, 0, 0xFF),
+                    Color.FromArgb(0xFF, 0, 0xFF),
+                    Color.FromArgb(0x99, 0x66, 0x66),
+                    Color.FromArgb(0x99, 0x99, 0x66),
+                    Color.FromArgb(0x66, 0x99, 0x66),
+                    Color.FromArgb(0x66, 0x99, 0x99),
+                    Color.FromArgb(0x66, 0x66, 0x99),
+                    Color.FromArgb(0x99, 0x66, 0x99),
+                    Color.FromArgb(0x80, 0x80, 0x80),
+                    Color.FromArgb(0xFF, 0xFF, 0xFF),
+                    Color.FromArgb(0, 0, 0),
+                };
+            if (baseColors == null)
+                baseColors = new List<Color>
+                {
+                    Color.FromArgb(0xFF, 0xFF, 0),
+                    Color.FromArgb(0, 0xFF, 0),
+                    Color.FromArgb(0, 0xFF, 0xFF),
+                    Color.FromArgb(0, 0, 0xFF),
+                    Color.FromArgb(0xFF, 0, 0xFF),
+                    Color.FromArgb(0x99, 0x66, 0x66),
+                    Color.FromArgb(0x99, 0x99, 0x66),
+                    Color.FromArgb(0x66, 0x99, 0x66),
+                    Color.FromArgb(0x66, 0x99, 0x99),
+                    Color.FromArgb(0x66, 0x66, 0x99),
+                    Color.FromArgb(0x99, 0x66, 0x99),
+                    Color.FromArgb(0x80, 0x80, 0x80),
+                    Color.FromArgb(0xFF, 0xFF, 0xFF),
+                    Color.FromArgb(0, 0, 0),
+                    Color.FromArgb(0xFF, 0, 0),
+                    Color.FromArgb(0, 0xFF, 0),
+                    Color.FromArgb(0, 0xFF, 0xFF),
+                    Color.FromArgb(0, 0, 0xFF),
+                    Color.FromArgb(0xFF, 0, 0xFF),
+                    Color.FromArgb(0x99, 0x66, 0x66),
+                    Color.FromArgb(0x99, 0x99, 0x66),
+                    Color.FromArgb(0x66, 0x99, 0x66),
+                    Color.FromArgb(0x66, 0x99, 0x99),
+                    Color.FromArgb(0x66, 0x66, 0x99),
+                    Color.FromArgb(0x99, 0x66, 0x99),
+                    Color.FromArgb(0x80, 0x80, 0x80),
+                    Color.FromArgb(0xFF, 0xFF, 0xFF),
+                    Color.FromArgb(0, 0, 0),
+                    Color.FromArgb(0xFF, 0, 0),
+                    Color.FromArgb(0xFF, 0xFF, 0),
+                };
         }
     }
 }
