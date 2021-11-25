@@ -54,8 +54,8 @@ namespace Trivial.Drawing
             color = ColorCalculator.Parse("rgb(226, 37, 168, 0.8)");
             Assert.AreEqual(168, color.B);
 
-            Assert.AreEqual(102, ColorCalculator.Alpha(color, 0.5).A);
-            Assert.AreEqual(128, ColorCalculator.Alpha(color, 0.5, true).A);
+            Assert.AreEqual(102, ColorCalculator.Opacity(color, 0.5).A);
+            Assert.AreEqual(128, ColorCalculator.Opacity(color, 0.5, true).A);
             Assert.IsTrue(ColorCalculator.Darken(color, 0.1).R < 226);
 
             color = ColorCalculator.Parse("red");
@@ -87,6 +87,35 @@ namespace Trivial.Drawing
             Assert.AreEqual(128, color.R);
             Assert.AreEqual(255, color.A);
             Assert.AreEqual(127, color.B);
+
+            color = ColorCalculator.Mix(
+                ColorMixTypes.Normal,
+                Color.FromArgb(240, 0, 0),
+                Color.FromArgb(0, 240, 0));
+            Assert.AreEqual(120, color.R);
+            Assert.AreEqual(120, color.G);
+            Assert.AreEqual(0, color.B);
+            color = ColorCalculator.Mix(
+                ColorMixTypes.Lighten,
+                Color.FromArgb(255, 192, 0),
+                Color.FromArgb(0, 240, 64));
+            Assert.AreEqual(255, color.R);
+            Assert.AreEqual(240, color.G);
+            Assert.AreEqual(64, color.B);
+            color = ColorCalculator.Mix(
+                ColorMixTypes.Darken,
+                Color.FromArgb(255, 192, 0),
+                Color.FromArgb(0, 240, 64));
+            Assert.AreEqual(0, color.R);
+            Assert.AreEqual(192, color.G);
+            Assert.AreEqual(0, color.B);
+            color = ColorCalculator.Mix(
+                ColorMixTypes.Accent,
+                Color.FromArgb(255, 192, 0),
+                Color.FromArgb(0, 240, 64));
+            Assert.AreEqual(255, color.R);
+            Assert.AreEqual(255, color.G);
+            Assert.AreEqual(64, color.B);
         }
     }
 }

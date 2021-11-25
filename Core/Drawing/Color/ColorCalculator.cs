@@ -13,34 +13,48 @@ namespace Trivial.Drawing
     public static partial class ColorCalculator
     {
         /// <summary>
-        /// Calculates to get the alpha color.
+        /// Calculates to get the color with opacity and a given color.
         /// </summary>
         /// <param name="value">The source color value.</param>
         /// <param name="alpha">The alpha channel. Value is from 0 to 1.</param>
         /// <param name="resetOriginalAlpha">true if use new alpha channel directly instead base the current one; otherwise, false.</param>
-        /// <returns></returns>
-        public static Color Alpha(Color value, double alpha, bool resetOriginalAlpha = false)
+        /// <returns>A color with new alpha channel value.</returns>
+        public static Color Opacity(Color value, double alpha, bool resetOriginalAlpha = false)
             => Color.FromArgb(resetOriginalAlpha ? ToChannel(alpha * 255) : ToChannel(value.A * alpha), value.R, value.G, value.B);
 
         /// <summary>
-        /// Calculates to get the alpha color.
+        /// Calculates to get the color with opacity and a given color.
         /// </summary>
         /// <param name="value">The source color value.</param>
         /// <param name="alpha">The alpha channel. Value is from 0 to 1.</param>
         /// <param name="resetOriginalAlpha">true if use new alpha channel directly instead base the current one; otherwise, false.</param>
-        /// <returns></returns>
-        public static Color Alpha(Color value, float alpha, bool resetOriginalAlpha = false)
+        /// <returns>A color with new alpha channel value.</returns>
+        public static Color Opacity(Color value, float alpha, bool resetOriginalAlpha = false)
             => Color.FromArgb(resetOriginalAlpha ? ToChannel(alpha * 255) : ToChannel(value.A * alpha), value.R, value.G, value.B);
 
         /// <summary>
-        /// Calculates to get the alpha color.
+        /// Calculates to get the color with opacity and a given color.
         /// </summary>
         /// <param name="value">The source color value.</param>
         /// <param name="alpha">The alpha channel. Value is from 0 to 255.</param>
         /// <param name="resetOriginalAlpha">true if use new alpha channel directly instead base the current one; otherwise, false.</param>
-        /// <returns></returns>
-        public static Color Alpha(Color value, byte alpha, bool resetOriginalAlpha = false)
+        /// <returns>A color with new alpha channel value.</returns>
+        public static Color Opacity(Color value, byte alpha, bool resetOriginalAlpha = false)
             => Color.FromArgb(resetOriginalAlpha ? ToChannel(alpha) : ToChannel(alpha / 255d * value.A), value.R, value.G, value.B);
+
+        /// <summary>
+        /// Creates a new color by set a channel to a given color.
+        /// </summary>
+        /// <param name="value">The base color.</param>
+        /// <param name="channel">The channel to set.</param>
+        /// <param name="newValue">The new value of channel.</param>
+        /// <returns>A color with new channel value.</returns>
+        public static Color SetChannel(Color value, ColorChannels channel, byte newValue)
+            => Color.FromArgb(
+                channel.HasFlag((ColorChannels)8) ? newValue : value.A,
+                channel.HasFlag(ColorChannels.Red) ? newValue : value.R,
+                channel.HasFlag(ColorChannels.Green) ? newValue : value.G,
+                channel.HasFlag(ColorChannels.Blue) ? newValue : value.B);
 
         /// <summary>
         /// Increases brighness.
@@ -232,8 +246,9 @@ namespace Trivial.Drawing
         public static Color RotateHue(Color value, double amount)
         {
             if (double.IsNaN(amount)) return value;
-            var hsl = ToHSL(value);
             if (amount > 360 || amount < 0) amount %= 360;
+            if (amount == 0) return value;
+            var hsl = ToHSL(value);
             var hue = hsl.Item1 + amount;
             if (hue < 0) hue += 360;
             else if (hue > 360) hue -= 360;

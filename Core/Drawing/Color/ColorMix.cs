@@ -14,48 +14,77 @@ namespace Trivial.Drawing
     {
         /// <summary>
         /// Average (mean).
+        /// Like 2 pigments mix together.
         /// </summary>
         Normal = 0,
 
         /// <summary>
-        /// Merge each channel by the maximum.
+        /// Merge each channel by the maximum value.
+        /// Like 2 lights shine the same place.
         /// </summary>
         Lighten = 1,
 
         /// <summary>
-        /// Merge each channel by the minimum.
+        /// Merge each channel by the minimum value.
+        /// Like 2 optical filters overlap.
         /// </summary>
         Darken = 2,
 
         /// <summary>
-        /// Color linear dodge.
+        /// Merge each channel by the minimum value or maximum value.
+        /// So the saturation value of the new color will be as higher as the one merged.
         /// </summary>
-        Weaken = 3,
+        Wetness = 3,
+
+        /// <summary>
+        /// Merge each channel by the middle value.
+        /// So the saturation value of the new color will be as lower as the one merged.
+        /// </summary>
+        Dryness = 4,
+
+        /// <summary>
+        /// Color linear dodge.
+        /// Like 2 lights increase each other.
+        /// </summary>
+        Weaken = 5,
 
         /// <summary>
         /// Color linear burn.
+        /// Like 2 optical filters overlap with additional loss.
         /// </summary>
-        Deepen = 4,
+        Deepen = 6,
 
         /// <summary>
-        /// Add each channel.
+        /// Emphasize each channel.
+        /// Color dodge if the channel in base color is greater than gray; otherwise, color burn.
         /// </summary>
-        Accent = 5,
+        Emphasis = 7,
 
         /// <summary>
-        /// Diff each channel.
+        /// Add each channel of the blend color and the base color.
         /// </summary>
-        Diff = 6,
+        Accent = 8,
 
         /// <summary>
-        /// Remove each channel value.
+        /// Diff each channel of the blend color by the base color.
         /// </summary>
-        Remove = 7,
+        Diff = 9,
+
+        /// <summary>
+        /// Remove each channel value of the blend color by the base color.
+        /// </summary>
+        Remove = 10,
+
+        /// <summary>
+        /// Symmetry each channel of the blend color by the base color.
+        /// </summary>
+        Symmetry = 11,
     }
 
     /// <summary>
     /// Color channels.
     /// </summary>
+    [Flags]
     public enum ColorChannels
     {
         /// <summary>
@@ -71,7 +100,7 @@ namespace Trivial.Drawing
         /// <summary>
         /// Blue.
         /// </summary>
-        Blue = 3
+        Blue = 4
     }
 
     /// <summary>
@@ -113,7 +142,7 @@ namespace Trivial.Drawing
         /// <param name="bottom">The color on bottom.</param>
         /// <returns>A new color.</returns>
         public static Color Overlay(Color top, double alpha, Color bottom)
-            => Overlay(Alpha(top, alpha), bottom);
+            => Overlay(Opacity(top, alpha), bottom);
 
         /// <summary>
         /// Adds a color on another one.
@@ -123,7 +152,7 @@ namespace Trivial.Drawing
         /// <param name="bottom">The color on bottom.</param>
         /// <returns>A new color.</returns>
         public static Color Overlay(Color top, float alpha, Color bottom)
-            => Overlay(Alpha(top, alpha), bottom);
+            => Overlay(Opacity(top, alpha), bottom);
 
         /// <summary>
         /// Adds a color on another one.
@@ -133,37 +162,49 @@ namespace Trivial.Drawing
         /// <param name="bottom">The color on bottom.</param>
         /// <returns>A new color.</returns>
         public static Color Overlay(Color top, byte alpha, Color bottom)
-            => Overlay(Alpha(top, alpha), bottom);
+            => Overlay(Opacity(top, alpha), bottom);
+
+        /// <summary>
+        /// Adds a color on another one.
+        /// </summary>
+        /// <param name="top">The color on top.</param>
+        /// <param name="middle">The color in middle.</param>
+        /// <param name="bottom">The color on bottom.</param>
+        /// <returns>A new color.</returns>
+        public static Color Overlay(Color top, Color middle, Color bottom)
+            => Overlay(top, Overlay(middle, bottom));
 
         /// <summary>
         /// Mixes colors.
         /// </summary>
         /// <param name="type">The type to mix colors.</param>
-        /// <param name="a">The color 1.</param>
-        /// <param name="b">The color 2.</param>
-        /// <returns>A new color.</returns>
+        /// <param name="a">The blend color.</param>
+        /// <param name="b">The base color.</param>
+        /// <returns>A new color mixed.</returns>
         public static Color Mix(ColorMixTypes type, Color a, Color b)
-        {
-            return type switch
+            => type switch
             {
                 ColorMixTypes.Lighten => MixByLighten(a, b),
                 ColorMixTypes.Darken => MixByDarken(a, b),
                 ColorMixTypes.Weaken => MixByWeaken(a, b),
+                ColorMixTypes.Wetness => MixByWetness(a, b),
+                ColorMixTypes.Dryness => MixByDryness(a, b),
                 ColorMixTypes.Deepen => MixByDeepen(a, b),
+                ColorMixTypes.Emphasis => MixByEmphasis(a, b),
                 ColorMixTypes.Accent => MixByAccent(a, b),
                 ColorMixTypes.Diff => MixByDiff(a, b),
                 ColorMixTypes.Remove => MixByRemove(a, b),
-                _ => MixByMean(a, b),
+                ColorMixTypes.Symmetry => MixBySymmetry(a, b),
+                _ => MixByMean(a, b)
             };
-        }
 
         /// <summary>
         /// Mixes colors.
         /// </summary>
         /// <param name="merge">The handler to merge each channel.</param>
-        /// <param name="a">The color 1.</param>
-        /// <param name="b">The color 2.</param>
-        /// <returns>A new color.</returns>
+        /// <param name="a">The blend color.</param>
+        /// <param name="b">The base color.</param>
+        /// <returns>A new color mixed.</returns>
         public static Color Mix(Func<byte, byte, ColorChannels, byte> merge, Color a, Color b)
         {
             if (merge == null) return MixByMean(a, b);
@@ -172,6 +213,75 @@ namespace Trivial.Drawing
             var blue = merge(a.B, b.B, ColorChannels.Blue);
             return MixWithAlpha(red, green, blue, a, b);
         }
+
+#if NETFRAMEWORK
+        /// <summary>
+        /// Mixes bitmaps.
+        /// </summary>
+        /// <param name="type">The type to mix bitmaps.</param>
+        /// <param name="a">The blend bitmap.</param>
+        /// <param name="b">The base bitmap.</param>
+        /// <returns>A new bitmap mixed.</returns>
+        public static Bitmap Mix(ColorMixTypes type, Bitmap a, Bitmap b)
+        {
+            int x, y;
+            if (a == null || b == null) return null;
+            var w = Math.Max(a.Width, b.Width);
+            var h = Math.Max(a.Height, b.Height);
+            var n = new Bitmap(w, h);
+            for (x = 0; x < w; x++)
+            {
+                if (x < a.Width && x < b.Width)
+                {
+                    for (y = 0; y < h; y++)
+                    {
+                        if (y < a.Height && x < b.Height)
+                        {
+                            var c = a.GetPixel(x, y);
+                            var d = b.GetPixel(x, y);
+                            n.SetPixel(x, y, Mix(type, c, d));
+                        }
+                        else if (y < a.Height)
+                        {
+                            for (y = 0; y < h; y++)
+                            {
+                                n.SetPixel(x, y, a.GetPixel(x, y));
+                            }
+                        }
+                        else if (y < b.Height)
+                        {
+                            for (y = 0; y < h; y++)
+                            {
+                                n.SetPixel(x, y, b.GetPixel(x, y));
+                            }
+                        }
+                    }
+                }
+                else if (x < a.Width)
+                {
+                    for (y = 0; y < h; y++)
+                    {
+                        if (y < a.Height)
+                            n.SetPixel(x, y, a.GetPixel(x, y));
+                        else
+                            n.SetPixel(x, y, Color.Transparent);
+                    }
+                }
+                else if (x < b.Width)
+                {
+                    for (y = 0; y < h; y++)
+                    {
+                        if (y < b.Height)
+                            n.SetPixel(x, y, b.GetPixel(x, y));
+                        else
+                            n.SetPixel(x, y, Color.Transparent);
+                    }
+                }
+            }
+
+            return n;
+        }
+#endif
 
         private static Color MixByMean(Color a, Color b)
         {
@@ -207,6 +317,22 @@ namespace Trivial.Drawing
             return MixWithAlpha(red, green, blue, a, b);
         }
 
+        private static Color MixByWetness(Color a, Color b)
+        {
+            var red = Math.Abs(128 - a.R) >= Math.Abs(128 - b.R) ? a.R : b.R;
+            var green = Math.Abs(128 - a.G) >= Math.Abs(128 - b.G) ? a.G : b.G;
+            var blue = Math.Abs(128 - a.B) >= Math.Abs(128 - b.B) ? a.B : b.B;
+            return MixWithAlpha(red, green, blue, a, b);
+        }
+
+        private static Color MixByDryness(Color a, Color b)
+        {
+            var red = Math.Abs(128 - a.R) <= Math.Abs(128 - b.R) ? a.R : b.R;
+            var green = Math.Abs(128 - a.G) <= Math.Abs(128 - b.G) ? a.G : b.G;
+            var blue = Math.Abs(128 - a.B) <= Math.Abs(128 - b.B) ? a.B : b.B;
+            return MixWithAlpha(red, green, blue, a, b);
+        }
+
         private static Color MixByWeaken(Color a, Color b)
         {
             var red = 255 - (255 - a.R) * (255 - b.R) / 255f;
@@ -220,6 +346,20 @@ namespace Trivial.Drawing
             var red = a.R * b.R / 255f;
             var green = a.G * b.G / 255f;
             var blue = a.B * b.B / 255f;
+            return MixWithAlpha(red, green, blue, a, b);
+        }
+
+        private static Color MixByEmphasis(Color a, Color b)
+        {
+            var red = (a.R > 127 ? 255 - a.R : a.R) * (b.R > 127 ? 255 - b.R : b.R) / 255f;
+            var green = (a.G > 127 ? 255 - a.G : a.G) * (b.G > 127 ? 255 - b.G : b.G) / 255f;
+            var blue = (a.B > 127 ? 255 - a.B : a.B) * (b.B > 127 ? 255 - b.B : b.B) / 255f;
+            if (a.R > 127) red = (b.R > 127 ? 255 : a.R) - red;
+            else red = b.R > 127 ? a.R + red : red;
+            if (a.G > 127) green = (b.G > 127 ? 255 : a.G) - green;
+            else green = b.G > 127 ? a.G + red : green;
+            if (a.B > 127) blue = (b.B > 127 ? 255 : a.B) - blue;
+            else blue = b.B > 127 ? a.B + blue : blue;
             return MixWithAlpha(red, green, blue, a, b);
         }
 
@@ -260,6 +400,20 @@ namespace Trivial.Drawing
             if (green < 0) green = 0;
             var blue = a.B - b.B;
             if (blue < 0) blue = 0;
+            return MixWithAlpha(red, green, blue, a, b);
+        }
+
+        private static Color MixBySymmetry(Color a, Color b)
+        {
+            var red = 2 * b.R - a.R;
+            if (red < 0) red = 0;
+            else if (red > 255) red = 255;
+            var green = 2 * b.G - a.G;
+            if (green < 0) green = 0;
+            else if (green > 255) green = 255;
+            var blue = 2 * b.B - a.B;
+            if (blue < 0) blue = 0;
+            else if (blue > 255) blue = 255;
             return MixWithAlpha(red, green, blue, a, b);
         }
 
