@@ -186,6 +186,7 @@ namespace Trivial.Drawing
         /// </summary>
         /// <param name="s">The input string to parse.</param>
         /// <returns>The result color parsed.</returns>
+        /// <exception cref="FormatException">s was incorrect to parse as a color.</exception>
         public static Color Parse(string s)
         {
             s = s.Trim();
@@ -215,58 +216,69 @@ namespace Trivial.Drawing
         /// </summary>
         /// <param name="reader">The reader.</param>
         /// <returns>The color read from JSON token.</returns>
+        /// <exception cref="JsonException">The token type is unexpected or the value was invalid.</exception>
         internal static Color ParseValue(ref Utf8JsonReader reader)
         {
-            switch (reader.TokenType)
+            try
             {
-                case JsonTokenType.Null:
-                case JsonTokenType.False:
-                    return default;
-                case JsonTokenType.Number:
-                    return Parse("#" + reader.GetInt32().ToString("x8"));
-                case JsonTokenType.String:
-                    return Parse(reader.GetString());
-                case JsonTokenType.StartObject:
-                    var json = JsonObjectNode.ParseValue(ref reader);
-                    if (json == null) break;
-                    var a = json.TryGetFloatValue("a") ?? json.TryGetFloatValue("A") ?? json.TryGetFloatValue("alpha") ?? json.TryGetFloatValue("Alpha") ?? json.TryGetFloatValue("ALPHA") ?? 1;
-                    var r = json.TryGetInt32Value("r") ?? json.TryGetInt32Value("R") ?? json.TryGetInt32Value("red") ?? json.TryGetInt32Value("Red") ?? json.TryGetInt32Value("RED");
-                    var g = json.TryGetInt32Value("g") ?? json.TryGetInt32Value("G") ?? json.TryGetInt32Value("green") ?? json.TryGetInt32Value("Green") ?? json.TryGetInt32Value("GREEN");
-                    var b = json.TryGetInt32Value("b") ?? json.TryGetInt32Value("B") ?? json.TryGetInt32Value("blue") ?? json.TryGetInt32Value("Blue") ?? json.TryGetInt32Value("BLUE");
-                    if (r.HasValue || g.HasValue || b.HasValue)
-                        return Color.FromArgb(ToChannel(a * 255), r ?? 0, g ?? 0, b ?? 0);
-                    var h = json.TryGetInt32Value("h") ?? json.TryGetInt32Value("H") ?? json.TryGetInt32Value("hue") ?? json.TryGetInt32Value("Hue") ?? json.TryGetInt32Value("HUE");
-                    if (h.HasValue)
-                    {
-                        var s = json.TryGetFloatValue("s") ?? json.TryGetFloatValue("S") ?? json.TryGetFloatValue("saturation") ?? json.TryGetFloatValue("Saturation") ?? json.TryGetFloatValue("SATURATION");
-                        var l = json.TryGetFloatValue("l") ?? json.TryGetFloatValue("L") ?? json.TryGetFloatValue("lightness") ?? json.TryGetFloatValue("Lightness") ?? json.TryGetFloatValue("LIGHTNESS");
-                        return FromHSL(h.Value, s ?? 0, l ?? 0, a);
-                    }
+                switch (reader.TokenType)
+                {
+                    case JsonTokenType.Null:
+                    case JsonTokenType.False:
+                        return default;
+                    case JsonTokenType.Number:
+                        return Parse("#" + reader.GetInt32().ToString("x8"));
+                    case JsonTokenType.String:
+                        return Parse(reader.GetString());
+                    case JsonTokenType.StartObject:
+                        var json = JsonObjectNode.ParseValue(ref reader);
+                        if (json == null) break;
+                        var a = json.TryGetFloatValue("a") ?? json.TryGetFloatValue("A") ?? json.TryGetFloatValue("alpha") ?? json.TryGetFloatValue("Alpha") ?? json.TryGetFloatValue("ALPHA") ?? 1;
+                        var r = json.TryGetInt32Value("r") ?? json.TryGetInt32Value("R") ?? json.TryGetInt32Value("red") ?? json.TryGetInt32Value("Red") ?? json.TryGetInt32Value("RED");
+                        var g = json.TryGetInt32Value("g") ?? json.TryGetInt32Value("G") ?? json.TryGetInt32Value("green") ?? json.TryGetInt32Value("Green") ?? json.TryGetInt32Value("GREEN");
+                        var b = json.TryGetInt32Value("b") ?? json.TryGetInt32Value("B") ?? json.TryGetInt32Value("blue") ?? json.TryGetInt32Value("Blue") ?? json.TryGetInt32Value("BLUE");
+                        if (r.HasValue || g.HasValue || b.HasValue)
+                            return Color.FromArgb(ToChannel(a * 255), r ?? 0, g ?? 0, b ?? 0);
+                        var h = json.TryGetInt32Value("h") ?? json.TryGetInt32Value("H") ?? json.TryGetInt32Value("hue") ?? json.TryGetInt32Value("Hue") ?? json.TryGetInt32Value("HUE");
+                        if (h.HasValue)
+                        {
+                            var s = json.TryGetFloatValue("s") ?? json.TryGetFloatValue("S") ?? json.TryGetFloatValue("saturation") ?? json.TryGetFloatValue("Saturation") ?? json.TryGetFloatValue("SATURATION");
+                            var l = json.TryGetFloatValue("l") ?? json.TryGetFloatValue("L") ?? json.TryGetFloatValue("lightness") ?? json.TryGetFloatValue("Lightness") ?? json.TryGetFloatValue("LIGHTNESS");
+                            return FromHSL(h.Value, s ?? 0, l ?? 0, a);
+                        }
 
-                    var c = json.TryGetInt32Value("c") ?? json.TryGetInt32Value("C") ?? json.TryGetInt32Value("cyan") ?? json.TryGetInt32Value("Cyan") ?? json.TryGetInt32Value("CYAN");
-                    var m = json.TryGetInt32Value("m") ?? json.TryGetInt32Value("M") ?? json.TryGetInt32Value("magenta") ?? json.TryGetInt32Value("Magenta") ?? json.TryGetInt32Value("MAGENTA");
-                    var y = json.TryGetInt32Value("y") ?? json.TryGetInt32Value("Y") ?? json.TryGetInt32Value("yellow") ?? json.TryGetInt32Value("Yellow") ?? json.TryGetInt32Value("YELLOW");
-                    var k = json.TryGetInt32Value("k") ?? json.TryGetInt32Value("K") ?? json.TryGetInt32Value("black") ?? json.TryGetInt32Value("Black") ?? json.TryGetInt32Value("BLACK");
-                    if (c.HasValue && m.HasValue && y.HasValue && k.HasValue)
-                        return FromCMYK(c.Value, m.Value, y.Value, k.Value, a);
-                    break;
-                case JsonTokenType.StartArray:
-                    var arr = JsonArrayNode.ParseValue(ref reader);
-                    if (arr == null) break;
-                    if (arr.Count < 3 || arr.Count > 4) break;
-                    var i = 0;
-                    var alpha = 255;
-                    if (arr.Count == 4)
-                    {
-                        i = 1;
-                        alpha = arr.TryGetInt32Value(0) ?? 255;
-                    }
+                        var c = json.TryGetInt32Value("c") ?? json.TryGetInt32Value("C") ?? json.TryGetInt32Value("cyan") ?? json.TryGetInt32Value("Cyan") ?? json.TryGetInt32Value("CYAN");
+                        var m = json.TryGetInt32Value("m") ?? json.TryGetInt32Value("M") ?? json.TryGetInt32Value("magenta") ?? json.TryGetInt32Value("Magenta") ?? json.TryGetInt32Value("MAGENTA");
+                        var y = json.TryGetInt32Value("y") ?? json.TryGetInt32Value("Y") ?? json.TryGetInt32Value("yellow") ?? json.TryGetInt32Value("Yellow") ?? json.TryGetInt32Value("YELLOW");
+                        var k = json.TryGetInt32Value("k") ?? json.TryGetInt32Value("K") ?? json.TryGetInt32Value("black") ?? json.TryGetInt32Value("Black") ?? json.TryGetInt32Value("BLACK");
+                        if (c.HasValue && m.HasValue && y.HasValue && k.HasValue)
+                            return FromCMYK(c.Value, m.Value, y.Value, k.Value, a);
+                        break;
+                    case JsonTokenType.StartArray:
+                        var arr = JsonArrayNode.ParseValue(ref reader);
+                        if (arr == null) break;
+                        if (arr.Count < 3 || arr.Count > 4) break;
+                        var i = 0;
+                        var alpha = 255;
+                        if (arr.Count == 4)
+                        {
+                            i = 1;
+                            alpha = arr.TryGetInt32Value(0) ?? 255;
+                        }
 
-                    var item0 = arr.TryGetInt32Value(i);
-                    var item1 = arr.TryGetInt32Value(i + 1);
-                    var item2 = arr.TryGetInt32Value(i + 2);
-                    if (!item0.HasValue || !item1.HasValue || !item2.HasValue) break;
-                    return Color.FromArgb(alpha, item0.Value, item1.Value, item2.Value);
+                        var item0 = arr.TryGetInt32Value(i);
+                        var item1 = arr.TryGetInt32Value(i + 1);
+                        var item2 = arr.TryGetInt32Value(i + 2);
+                        if (!item0.HasValue || !item1.HasValue || !item2.HasValue) break;
+                        return Color.FromArgb(alpha, item0.Value, item1.Value, item2.Value);
+                }
+            }
+            catch (ArgumentException)
+            {
+            }
+            catch (FormatException ex)
+            {
+                throw new JsonException($"Cannot parse the value.", ex);
             }
 
             throw new JsonException($"The token type is {reader.TokenType} but expect a JSON object or a color format string.");

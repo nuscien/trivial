@@ -15,6 +15,7 @@ namespace Trivial.CommandLine
     {
         private static List<Color> blendColors;
         private static List<Color> baseColors;
+        private static List<Color> saturateColors;
 
         public static string Description => "Selection";
 
@@ -24,19 +25,20 @@ namespace Trivial.CommandLine
             await RunAsync(null, cancellationToken);
             var cli = StyleConsole.Default;
             var col = new SelectionData();
-            col.Add('a', "aaa", null);
-            col.Add('b', "bbb 二号");
-            col.Add('p', "password");
-            col.Add('l', "progress");
-            col.Add('j', "json");
-            col.Add('e', "error");
-            col.Add('?', "help", null);
-            for (var i = 0; i < 14; i++)
+            col.Add('a', "Aaa", null);
+            col.Add('b', "Bbb 二号");
+            col.Add('p', "Password");
+            col.Add('l', "Progress");
+            col.Add('j', "JSON");
+            col.Add('e', "Error");
+            col.Add('?', "Help", null);
+            for (var i = 0; i < 16; i++)
             {
                 var mix = (Drawing.ColorMixTypes)i;
                 col.Add(mix.ToString(), mix);
             }
 
+            col.Add("Saturate");
             for (var i = 0; i < 120; i++)
             {
                 col.Add(i.ToString());
@@ -65,7 +67,7 @@ namespace Trivial.CommandLine
             }
 
             cli.WriteLine("-> {0}\t{1}", result.Value, result.InputType);
-            switch (result.Title ?? result.Value)
+            switch ((result.Title ?? result.Value)?.ToLowerInvariant())
             {
                 case "aaa":
                 case "bbb":
@@ -86,6 +88,20 @@ namespace Trivial.CommandLine
                     return;
                 case "error":
                     cli.WriteLine(new InvalidOperationException("Test", new NotSupportedException()));
+                    break;
+                case "saturate":
+                    InitColors();
+                    for (var i = 0; i < 5; i++)
+                    {
+                        var saturate = (Drawing.RelativeSaturationLevels)i;
+                        foreach (var item in saturateColors)
+                        {
+                            cli.Write(Drawing.ColorCalculator.Saturate(item, saturate), "■");
+                        }
+
+                        cli.WriteLine(saturate.ToString());
+                    }
+
                     break;
                 case "help":
                 case "?":
@@ -264,6 +280,31 @@ namespace Trivial.CommandLine
                     Color.FromArgb(0xFF, 0, 0xFF),
                     Color.FromArgb(0xFF, 0, 0),
                     Color.FromArgb(0xFF, 0xFF, 0),
+                };
+            if (saturateColors == null)
+                saturateColors = new List<Color>
+                {
+                    Color.FromArgb(0xFF, 0xFF, 0),
+                    Color.FromArgb(0, 0xFF, 0),
+                    Color.FromArgb(0, 0xFF, 0xFF),
+                    Color.FromArgb(0, 0, 0xFF),
+                    Color.FromArgb(0xFF, 0, 0xFF),
+                    Color.FromArgb(0xFF, 0, 0),
+                    Color.FromArgb(0x99, 0x99, 0x66),
+                    Color.FromArgb(0x66, 0x99, 0x66),
+                    Color.FromArgb(0x66, 0x99, 0x99),
+                    Color.FromArgb(0x66, 0x66, 0x99),
+                    Color.FromArgb(0x99, 0x66, 0x99),
+                    Color.FromArgb(0x99, 0x66, 0x66),
+                    Color.FromArgb(0x99, 0x66, 0x33),
+                    Color.FromArgb(0x33, 0x99, 0x66),
+                    Color.FromArgb(0x66, 0x33, 0x99),
+                    Color.FromArgb(0x99, 0x33, 0x66),
+                    Color.FromArgb(0x66, 0x99, 0x33),
+                    Color.FromArgb(0x33, 0x66, 0x99),
+                    Color.FromArgb(0x80, 0x80, 0x80),
+                    Color.FromArgb(0xFF, 0xFF, 0xFF),
+                    Color.FromArgb(0, 0, 0)
                 };
         }
     }

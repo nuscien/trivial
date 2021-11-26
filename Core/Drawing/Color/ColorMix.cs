@@ -19,76 +19,86 @@ namespace Trivial.Drawing
         Normal = 0,
 
         /// <summary>
+        /// The layer of the blend color covers the layer of the base color.
+        /// </summary>
+        Cover = 1,
+
+        /// <summary>
         /// Merge each channel by the maximum value.
         /// Like 2 lights shine the same place.
         /// </summary>
-        Lighten = 1,
+        Lighten = 2,
 
         /// <summary>
         /// Merge each channel by the minimum value.
         /// Like 2 optical filters overlap.
         /// </summary>
-        Darken = 2,
+        Darken = 3,
 
         /// <summary>
         /// Merge each channel by the minimum value or maximum value.
         /// So the saturation value of the new color will be as higher as the one merged.
         /// </summary>
-        Wetness = 3,
+        Wetness = 4,
 
         /// <summary>
         /// Merge each channel by the middle value.
         /// So the saturation value of the new color will be as lower as the one merged.
         /// </summary>
-        Dryness = 4,
+        Dryness = 5,
 
         /// <summary>
         /// Color linear dodge.
         /// Like 2 lights increase each other.
         /// </summary>
-        Weaken = 5,
+        Weaken = 6,
 
         /// <summary>
         /// Color linear burn.
         /// Like 2 optical filters overlap with additional loss.
         /// </summary>
-        Deepen = 6,
+        Deepen = 7,
 
         /// <summary>
         /// Emphasize each channel.
         /// Color dodge if the channel in base color is greater than gray; otherwise, color burn.
         /// </summary>
-        Emphasis = 7,
+        Emphasis = 8,
 
         /// <summary>
-        /// Add each channel of the blend color and the base color.
+        /// Add each channel of the blend color and the base color. Then cover to fit.
         /// </summary>
-        Accent = 8,
+        Accent = 9,
+
+        /// <summary>
+        /// Add each channel of the blend color and the base color. Then contain to fit.
+        /// </summary>
+        Add = 10,
 
         /// <summary>
         /// Remove each channel value of the blend color by the base color.
         /// </summary>
-        Remove = 9,
+        Remove = 11,
 
         /// <summary>
         /// Diff absolutely each channel of the blend color by the base color.
         /// </summary>
-        Diff = 10,
+        Diff = 12,
 
         /// <summary>
         /// Diff cycled each channel of the blend color by the base color.
         /// </summary>
-        Distance = 11,
+        Distance = 13,
 
         /// <summary>
         /// Symmetry each channel of the blend color by the base color.
         /// </summary>
-        Symmetry = 12,
+        Symmetry = 14,
 
         /// <summary>
-        /// High saturation.
+        /// Transform each channel further.
         /// </summary>
-        Saturation = 13,
+        Strengthen = 15,
     }
 
     /// <summary>
@@ -111,6 +121,37 @@ namespace Trivial.Drawing
         /// Blue.
         /// </summary>
         Blue = 4
+    }
+
+    /// <summary>
+    /// The relative levels of saturation.
+    /// </summary>
+    public enum RelativeSaturationLevels : byte
+    {
+        /// <summary>
+        /// No change.
+        /// </summary>
+        Regular = 0,
+
+        /// <summary>
+        /// High saturation.
+        /// </summary>
+        High = 1,
+
+        /// <summary>
+        /// Low saturation.
+        /// </summary>
+        Low = 2,
+
+        /// <summary>
+        /// Accent.
+        /// </summary>
+        Most = 3,
+
+        /// <summary>
+        /// Grayscale.
+        /// </summary>
+        Gray = 4
     }
 
     /// <summary>
@@ -194,6 +235,7 @@ namespace Trivial.Drawing
         public static Color Mix(ColorMixTypes type, Color a, Color b)
             => type switch
             {
+                ColorMixTypes.Cover => MixByCover(a, b),
                 ColorMixTypes.Lighten => MixByLighten(a, b),
                 ColorMixTypes.Darken => MixByDarken(a, b),
                 ColorMixTypes.Weaken => MixByWeaken(a, b),
@@ -202,13 +244,24 @@ namespace Trivial.Drawing
                 ColorMixTypes.Deepen => MixByDeepen(a, b),
                 ColorMixTypes.Emphasis => MixByEmphasis(a, b),
                 ColorMixTypes.Accent => MixByAccent(a, b),
+                ColorMixTypes.Add => MixByAdd(a, b),
                 ColorMixTypes.Remove => MixByRemove(a, b),
                 ColorMixTypes.Diff => MixByDiff(a, b),
                 ColorMixTypes.Distance => MixByDistance(a, b),
                 ColorMixTypes.Symmetry => MixBySymmetry(a, b),
-                ColorMixTypes.Saturation => MixBySaturation(a, b),
+                ColorMixTypes.Strengthen => MixByStrengthen(a, b),
                 _ => MixByMean(a, b)
             };
+
+        /// <summary>
+        /// Mixes colors.
+        /// </summary>
+        /// <param name="level">The relative saturation level.</param>
+        /// <param name="a">The blend color.</param>
+        /// <param name="b">The base color.</param>
+        /// <returns>A new color mixed.</returns>
+        public static Color Mix(RelativeSaturationLevels level, Color a, Color b)
+            => Saturate(MixByMean(a, b), level);
 
         /// <summary>
         /// Mixes colors.
@@ -367,45 +420,60 @@ namespace Trivial.Drawing
                 ToChannel((a.B * topAlpha + b.B * bottomAlpha) / total));
         }
 
-        private static Color MixByLighten(Color a, Color b)
+        private static Color MixByCover(Color a, Color b)
         {
-            var red = Math.Max(a.R, b.R);
-            var green = Math.Max(a.G, b.G);
-            var blue = Math.Max(a.B, b.B);
-            return MixWithAlpha(red, green, blue, a, b);
+            if (a.A == 0) return b;
+            if (b.A == 0 || a.A == 255) return a;
+            var ratio = a.A * 1f / 255;
+            if (b.A < 255) ratio += (255 - b.A) / 255f * (1 - ratio);
+            if (ratio >= 1) return a;
+            var negRatio = 1 - ratio;
+            return Color.FromArgb(
+                Math.Max(a.A, b.A),
+                ToChannel(a.R * ratio + b.R * negRatio),
+                ToChannel(a.G * ratio + b.G * negRatio),
+                ToChannel(a.B * ratio + b.B * negRatio));
         }
+
+        private static Color MixByLighten(Color a, Color b)
+            => MixWithAlpha(
+                Math.Max(a.R, b.R),
+                Math.Max(a.G, b.G),
+                Math.Max(a.B, b.B),
+                a,
+                b);
 
         private static Color MixByDarken(Color a, Color b)
-        {
-            var red = Math.Min(a.R, b.R);
-            var green = Math.Min(a.G, b.G);
-            var blue = Math.Min(a.B, b.B);
-            return MixWithAlpha(red, green, blue, a, b);
-        }
+            => MixWithAlpha(
+                Math.Min(a.R, b.R),
+                Math.Min(a.G, b.G),
+                Math.Min(a.B, b.B),
+                a,
+                b);
 
         private static Color MixByWetness(Color a, Color b)
-        {
-            var red = Math.Abs(128 - a.R) >= Math.Abs(128 - b.R) ? a.R : b.R;
-            var green = Math.Abs(128 - a.G) >= Math.Abs(128 - b.G) ? a.G : b.G;
-            var blue = Math.Abs(128 - a.B) >= Math.Abs(128 - b.B) ? a.B : b.B;
-            return MixWithAlpha(red, green, blue, a, b);
-        }
+            => MixWithAlpha(
+                Math.Abs(128 - a.R) >= Math.Abs(128 - b.R) ? a.R : b.R,
+                Math.Abs(128 - a.G) >= Math.Abs(128 - b.G) ? a.G : b.G,
+                Math.Abs(128 - a.B) >= Math.Abs(128 - b.B) ? a.B : b.B,
+                a,
+                b);
 
         private static Color MixByDryness(Color a, Color b)
-        {
-            var red = Math.Abs(128 - a.R) <= Math.Abs(128 - b.R) ? a.R : b.R;
-            var green = Math.Abs(128 - a.G) <= Math.Abs(128 - b.G) ? a.G : b.G;
-            var blue = Math.Abs(128 - a.B) <= Math.Abs(128 - b.B) ? a.B : b.B;
-            return MixWithAlpha(red, green, blue, a, b);
-        }
+            => MixWithAlpha(
+                Math.Abs(128 - a.R) <= Math.Abs(128 - b.R) ? a.R : b.R,
+                Math.Abs(128 - a.G) <= Math.Abs(128 - b.G) ? a.G : b.G,
+                Math.Abs(128 - a.B) <= Math.Abs(128 - b.B) ? a.B : b.B,
+                a,
+                b);
 
         private static Color MixByWeaken(Color a, Color b)
-        {
-            var red = 255 - (255 - a.R) * (255 - b.R) / 255f;
-            var green = 255 - (255 - a.G) * (255 - b.G) / 255f;
-            var blue = 255 - (255 - a.B) * (255 - b.B) / 255f;
-            return MixWithAlpha(red, green, blue, a, b);
-        }
+            => MixWithAlpha(
+                255 - (255 - a.R) * (255 - b.R) / 255f,
+                255 - (255 - a.G) * (255 - b.G) / 255f,
+                255 - (255 - a.B) * (255 - b.B) / 255f,
+                a,
+                b);
 
         private static Color MixByDeepen(Color a, Color b)
         {
@@ -447,6 +515,24 @@ namespace Trivial.Drawing
                     ToChannel(a.B * topAlpha + b.B * bottomAlpha));
         }
 
+        private static Color MixByAdd(Color a, Color b)
+        {   // ToDo: Finish it.
+            if (a.A == b.A)
+                return Color.FromArgb(
+                    Math.Max(a.A, b.A),
+                    ToChannel(a.R + b.R),
+                    ToChannel(a.G + b.G),
+                    ToChannel(a.B + b.B));
+            float alpha = a.A + b.A;
+            var topAlpha = a.A / alpha;
+            var bottomAlpha = b.A / alpha;
+            return Color.FromArgb(
+                Math.Max(a.A, b.A),
+                    ToChannel(a.R * topAlpha + b.R * bottomAlpha),
+                    ToChannel(a.G * topAlpha + b.G * bottomAlpha),
+                    ToChannel(a.B * topAlpha + b.B * bottomAlpha));
+        }
+
         private static Color MixByRemove(Color a, Color b)
         {
             var red = a.R - b.R;
@@ -459,12 +545,7 @@ namespace Trivial.Drawing
         }
 
         private static Color MixByDiff(Color a, Color b)
-        {
-            var red = Math.Abs(a.R - b.R);
-            var green = Math.Abs(a.G - b.G);
-            var blue = Math.Abs(a.B - b.B);
-            return MixWithAlpha(red, green, blue, a, b);
-        }
+            => MixWithAlpha(Math.Abs(a.R - b.R), Math.Abs(a.G - b.G), Math.Abs(a.B - b.B), a, b);
 
         private static Color MixByDistance(Color a, Color b)
         {
@@ -491,10 +572,18 @@ namespace Trivial.Drawing
             return MixWithAlpha(red, green, blue, a, b);
         }
 
-        private static Color MixBySaturation(Color a, Color b)
+        private static Color MixByStrengthen(Color a, Color b)
         {
-            var c = MixByMean(a, b);
-            return HighSaturation(c);
+            var red = 2 * a.R - b.R;
+            if (red < 0) red = 0;
+            else if (red > 255) red = 255;
+            var green = 2 * a.G - b.G;
+            if (green < 0) green = 0;
+            else if (green > 255) green = 255;
+            var blue = 2 * a.B - b.B;
+            if (blue < 0) blue = 0;
+            else if (blue > 255) blue = 255;
+            return MixWithAlpha(red, green, blue, a, b);
         }
 
         private static Color MixWithAlpha(int red, int green, int blue, Color a, Color b)
