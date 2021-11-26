@@ -57,6 +57,29 @@ namespace Trivial.Drawing
                 channel.HasFlag(ColorChannels.Blue) ? newValue : value.B);
 
         /// <summary>
+        /// Gets the channel value of a specific color.
+        /// </summary>
+        /// <param name="value">The color to get the channel.</param>
+        /// <param name="channel">The channel to get.</param>
+        /// <returns>The channel value.</returns>
+        public static byte GetChannelValue(Color value, ColorChannels channel)
+        {
+            var arr = new List<byte>();
+            if (channel.HasFlag((ColorChannels)8)) arr.Add(value.A);
+            if (channel.HasFlag(ColorChannels.Red)) arr.Add(value.R);
+            if (channel.HasFlag(ColorChannels.Green)) arr.Add(value.G);
+            if (channel.HasFlag(ColorChannels.Blue)) arr.Add(value.B);
+            if (arr.Count == 0) return 127;
+            float count = 0;
+            foreach (var n in arr)
+            {
+                count += n;
+            }
+
+            return (byte)Math.Round(count / arr.Count);
+        }
+
+        /// <summary>
         /// Increases brighness.
         /// </summary>
         /// <param name="value">The source color value.</param>
@@ -238,7 +261,7 @@ namespace Trivial.Drawing
             => value?.Select(ele => Saturate(ele, ratio));
 
         /// <summary>
-        /// Sets high saturation.
+        /// Adds saturate filter.
         /// </summary>
         /// <param name="value">The source color value collection.</param>
         /// <param name="level">The relative saturation level.</param>
@@ -303,10 +326,39 @@ namespace Trivial.Drawing
                     }
                 case RelativeSaturationLevels.Gray:
                     return Grayscale(value);
+                case RelativeSaturationLevels.Exposure:
+                    {
+                        if (high == 255) return value;
+                        var ratio = (255 - low) / (high - low);
+                        return Color.FromArgb(
+                            value.A,
+                            SaturateExposure(value.R, high, low, ratio),
+                            SaturateExposure(value.G, high, low, ratio),
+                            SaturateExposure(value.B, high, low, ratio));
+                    }
+                case RelativeSaturationLevels.Shadow:
+                    {
+                        if (low == 0) return value;
+                        var ratio = high / (high - low);
+                        return Color.FromArgb(
+                            value.A,
+                            SaturateShadow(value.R, high, low, ratio),
+                            SaturateShadow(value.G, high, low, ratio),
+                            SaturateShadow(value.B, high, low, ratio));
+                    }
                 default:
                     return value;
             }
         }
+
+        /// <summary>
+        /// Adds saturate filter.
+        /// </summary>
+        /// <param name="value">The source color value collection.</param>
+        /// <param name="level">The relative saturation level.</param>
+        /// <returns>A new color with additional saturation.</returns>
+        public static IEnumerable<Color> Saturate(IEnumerable<Color> value, RelativeSaturationLevels level)
+            => value?.Select(ele => Saturate(ele, level));
 
         private static int Saturate(byte channel, byte high, byte low, byte diff, float ratio)
         {
@@ -322,6 +374,20 @@ namespace Trivial.Drawing
             if (channel == low) return newLow;
             if (channel < 128) return ToChannel(127 - (127 - channel) * ratio);
             else return ToChannel(128 + (channel - 128) * ratio);
+        }
+
+        private static int SaturateExposure(byte channel, byte high, byte low, float ratio)
+        {
+            if (channel == high) return 255;
+            if (channel == low) return low;
+            return ToChannel((channel - low) * ratio + low);
+        }
+
+        private static int SaturateShadow(byte channel, byte high, byte low, float ratio)
+        {
+            if (channel == high) return high;
+            if (channel == low) return 0;
+            return ToChannel(channel * ratio);
         }
 
         /// <summary>
@@ -387,6 +453,24 @@ namespace Trivial.Drawing
                 ToChannel(value.G * ratio + gray * grayRatio),
                 ToChannel(value.B * ratio + gray * grayRatio));
         }
+
+        /// <summary>
+        /// Rotates hue.
+        /// </summary>
+        /// <param name="value">The source color value.</param>
+        /// <param name="amount">The hue to rotate. Value is from 0 to 360.</param>
+        /// <returns>A new color with hue rotation.</returns>
+        public static Color RotateHue(Color value, byte amount)
+            => RotateHue(value, (float)amount);
+
+        /// <summary>
+        /// Rotates hue.
+        /// </summary>
+        /// <param name="value">The source color value.</param>
+        /// <param name="amount">The hue to rotate. Value is from 0 to 360.</param>
+        /// <returns>A new color with hue rotation.</returns>
+        public static Color RotateHue(Color value, int amount)
+            => RotateHue(value, (float)amount);
 
         /// <summary>
         /// Rotates hue.

@@ -39,6 +39,7 @@ namespace Trivial.CommandLine
             }
 
             col.Add("Saturate");
+            col.Add("Brightness");
             for (var i = 0; i < 120; i++)
             {
                 col.Add(i.ToString());
@@ -91,7 +92,7 @@ namespace Trivial.CommandLine
                     break;
                 case "saturate":
                     InitColors();
-                    for (var i = 0; i < 5; i++)
+                    for (var i = 0; i < 7; i++)
                     {
                         var saturate = (Drawing.RelativeSaturationLevels)i;
                         foreach (var item in saturateColors)
@@ -102,6 +103,44 @@ namespace Trivial.CommandLine
                         cli.WriteLine(saturate.ToString());
                     }
 
+                    foreach (var item in saturateColors)
+                    {
+                        cli.Write(Drawing.ColorCalculator.ToggleBrightness(item), "■");
+                    }
+
+                    cli.WriteLine("Light-Dark");
+                    foreach (var item in saturateColors)
+                    {
+                        cli.Write(Drawing.ColorCalculator.Reverse(item), "■");
+                    }
+
+                    cli.WriteLine("Reverse");
+                    break;
+                case "brightness":
+                    InitColors();
+                    for (var i = -4; i < 5; i++)
+                    {
+                        var saturate = (Drawing.RelativeSaturationLevels)i;
+                        foreach (var item in saturateColors)
+                        {
+                            cli.Write(Drawing.ColorCalculator.Saturate(item, saturate), "■");
+                        }
+
+                        cli.WriteLine(saturate.ToString());
+                    }
+
+                    foreach (var item in saturateColors)
+                    {
+                        cli.Write(Drawing.ColorCalculator.ToggleBrightness(item), "■");
+                    }
+
+                    cli.WriteLine("Light-Dark");
+                    foreach (var item in saturateColors)
+                    {
+                        cli.Write(Drawing.ColorCalculator.Reverse(item), "■");
+                    }
+
+                    cli.WriteLine("Reverse");
                     break;
                 case "help":
                 case "?":
@@ -113,7 +152,6 @@ namespace Trivial.CommandLine
             {
                 InitColors();
                 cli.Write("Blend");
-                var c = Color.FromArgb(80, 80, 80);
                 foreach (var item in blendColors)
                 {
                     cli.Write(item, "■");
@@ -284,24 +322,30 @@ namespace Trivial.CommandLine
             if (saturateColors == null)
                 saturateColors = new List<Color>
                 {
+                    Color.FromArgb(0xFF, 0, 0),
                     Color.FromArgb(0xFF, 0xFF, 0),
                     Color.FromArgb(0, 0xFF, 0),
                     Color.FromArgb(0, 0xFF, 0xFF),
                     Color.FromArgb(0, 0, 0xFF),
                     Color.FromArgb(0xFF, 0, 0xFF),
-                    Color.FromArgb(0xFF, 0, 0),
+                    Color.FromArgb(0x99, 0x66, 0x66),
                     Color.FromArgb(0x99, 0x99, 0x66),
                     Color.FromArgb(0x66, 0x99, 0x66),
                     Color.FromArgb(0x66, 0x99, 0x99),
                     Color.FromArgb(0x66, 0x66, 0x99),
                     Color.FromArgb(0x99, 0x66, 0x99),
-                    Color.FromArgb(0x99, 0x66, 0x66),
                     Color.FromArgb(0x99, 0x66, 0x33),
                     Color.FromArgb(0x33, 0x99, 0x66),
                     Color.FromArgb(0x66, 0x33, 0x99),
                     Color.FromArgb(0x99, 0x33, 0x66),
                     Color.FromArgb(0x66, 0x99, 0x33),
                     Color.FromArgb(0x33, 0x66, 0x99),
+                    Color.FromArgb(0xFF, 0x99, 0x99),
+                    Color.FromArgb(0x99, 0xFF, 0x99),
+                    Color.FromArgb(0x99, 0x99, 0xFF),
+                    Color.FromArgb(0x66, 0, 0),
+                    Color.FromArgb(0, 0x66, 0),
+                    Color.FromArgb(0, 0, 0x66),
                     Color.FromArgb(0x80, 0x80, 0x80),
                     Color.FromArgb(0xFF, 0xFF, 0xFF),
                     Color.FromArgb(0, 0, 0)

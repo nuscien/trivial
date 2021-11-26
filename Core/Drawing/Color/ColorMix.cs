@@ -96,7 +96,7 @@ namespace Trivial.Drawing
         Symmetry = 14,
 
         /// <summary>
-        /// Transform each channel further.
+        /// Translate each channel of the blend color away from the base color with same gap and cover to fit.
         /// </summary>
         Strengthen = 15,
     }
@@ -144,14 +144,24 @@ namespace Trivial.Drawing
         Low = 2,
 
         /// <summary>
-        /// Accent.
+        /// Adjust saturation to most.
         /// </summary>
         Most = 3,
 
         /// <summary>
         /// Grayscale.
         /// </summary>
-        Gray = 4
+        Gray = 4,
+
+        /// <summary>
+        /// Translate and scale to exposure.
+        /// </summary>
+        Exposure = 5,
+
+        /// <summary>
+        /// Translate and scale to shadow.
+        /// </summary>
+        Shadow = 6,
     }
 
     /// <summary>
@@ -287,24 +297,17 @@ namespace Trivial.Drawing
         /// <param name="b">The collection of base color.</param>
         /// <returns>A new color collection mixed.</returns>
         public static IEnumerable<Color> Mix(ColorMixTypes type, IEnumerable<Color> a, IEnumerable<Color> b)
-        {
-            var arr = b.ToList();
-            var i = -1;
-            foreach (var item in a)
-            {
-                i++;
-                if (i < arr.Count)
-                    yield return Mix(type, item, arr[i]);
-                else
-                    yield return item;
-            }
+            => Mix(Mix, type, a, b);
 
-            i++;
-            for (; i < arr.Count; i++)
-            {
-                yield return arr[i];
-            }
-        }
+        /// <summary>
+        /// Mixes colors.
+        /// </summary>
+        /// <param name="level">The relative saturation level.</param>
+        /// <param name="a">The collection of blend color.</param>
+        /// <param name="b">The collection of base color.</param>
+        /// <returns>A new color collection mixed.</returns>
+        public static IEnumerable<Color> Mix(RelativeSaturationLevels level, IEnumerable<Color> a, IEnumerable<Color> b)
+            => Mix(Mix, level, a, b);
 
         /// <summary>
         /// Mixes colors.
@@ -314,14 +317,25 @@ namespace Trivial.Drawing
         /// <param name="b">The base color.</param>
         /// <returns>A new color mixed.</returns>
         public static IEnumerable<Color> Mix(Func<byte, byte, ColorChannels, byte> merge, IEnumerable<Color> a, IEnumerable<Color> b)
+            => Mix(Mix, merge, a, b);
+
+        /// <summary>
+        /// Mixes colors.
+        /// </summary>
+        /// <param name="merge">The handler to merge each color.</param>
+        /// <param name="kind">The way or options to merge.</param>
+        /// <param name="a">The collection of blend color.</param>
+        /// <param name="b">The collection of base color.</param>
+        /// <returns>A new color collection mixed.</returns>
+        private static IEnumerable<Color> Mix<T>(Func<T, Color, Color, Color> merge, T kind, IEnumerable<Color> a, IEnumerable<Color> b)
         {
             var arr = b.ToList();
             var i = -1;
             foreach (var item in a)
             {
                 i++;
-                if (arr.Count < i)
-                    yield return Mix(merge, item, arr[i]);
+                if (i < arr.Count)
+                    yield return merge(kind, item, arr[i]);
                 else
                     yield return item;
             }

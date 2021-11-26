@@ -191,6 +191,25 @@ namespace Trivial.Maths
         /// <param name="a">Number 1 to compare.</param>
         /// <param name="b">Number 2 to compare.</param>
         /// <returns>One of the parameter, whichever is smaller.</returns>
+        public static sbyte Min(sbyte a, sbyte b)
+            => Math.Min(a, b);
+
+        /// <summary>
+        /// Returns the smaller of the specific numbers.
+        /// </summary>
+        /// <param name="a">Number 1 to compare.</param>
+        /// <param name="b">Number 2 to compare.</param>
+        /// <param name="c">Number 3 to compare.</param>
+        /// <returns>One of the parameter, whichever is smaller.</returns>
+        public static sbyte Min(sbyte a, sbyte b, sbyte c)
+            => Math.Min(Math.Min(a, b), c);
+
+        /// <summary>
+        /// Returns the smaller of the specific numbers.
+        /// </summary>
+        /// <param name="a">Number 1 to compare.</param>
+        /// <param name="b">Number 2 to compare.</param>
+        /// <returns>One of the parameter, whichever is smaller.</returns>
         public static short Min(short a, short b)
             => Math.Min(a, b);
 
@@ -210,6 +229,25 @@ namespace Trivial.Maths
         /// <param name="a">Number 1 to compare.</param>
         /// <param name="b">Number 2 to compare.</param>
         /// <returns>One of the parameter, whichever is smaller.</returns>
+        public static ushort Min(ushort a, ushort b)
+            => Math.Min(a, b);
+
+        /// <summary>
+        /// Returns the smaller of the specific numbers.
+        /// </summary>
+        /// <param name="a">Number 1 to compare.</param>
+        /// <param name="b">Number 2 to compare.</param>
+        /// <param name="c">Number 3 to compare.</param>
+        /// <returns>One of the parameter, whichever is smaller.</returns>
+        public static ushort Min(ushort a, ushort b, ushort c)
+            => Math.Min(Math.Min(a, b), c);
+
+        /// <summary>
+        /// Returns the smaller of the specific numbers.
+        /// </summary>
+        /// <param name="a">Number 1 to compare.</param>
+        /// <param name="b">Number 2 to compare.</param>
+        /// <returns>One of the parameter, whichever is smaller.</returns>
         public static int Min(int a, int b)
             => Math.Min(a, b);
 
@@ -221,6 +259,25 @@ namespace Trivial.Maths
         /// <param name="c">Number 3 to compare.</param>
         /// <returns>One of the parameter, whichever is smaller.</returns>
         public static int Min(int a, int b, int c)
+            => Math.Min(Math.Min(a, b), c);
+
+        /// <summary>
+        /// Returns the smaller of the specific numbers.
+        /// </summary>
+        /// <param name="a">Number 1 to compare.</param>
+        /// <param name="b">Number 2 to compare.</param>
+        /// <returns>One of the parameter, whichever is smaller.</returns>
+        public static uint Min(uint a, uint b)
+            => Math.Min(a, b);
+
+        /// <summary>
+        /// Returns the smaller of the specific numbers.
+        /// </summary>
+        /// <param name="a">Number 1 to compare.</param>
+        /// <param name="b">Number 2 to compare.</param>
+        /// <param name="c">Number 3 to compare.</param>
+        /// <returns>One of the parameter, whichever is smaller.</returns>
+        public static uint Min(uint a, uint b, uint c)
             => Math.Min(Math.Min(a, b), c);
 
         /// <summary>
@@ -250,14 +307,19 @@ namespace Trivial.Maths
         /// </summary>
         /// <param name="a">Number 1 to compare.</param>
         /// <param name="b">Number 2 to compare.</param>
-        /// <param name="c">Optional number 3 to compare.</param>
         /// <returns>One of the parameter, whichever is smaller.</returns>
-        public static long Min(long a, long b, long? c = null)
-        {
-            var m = Math.Min(a, b);
-            if (c.HasValue) m = Math.Min(m, c.Value);
-            return m;
-        }
+        public static long Min(long a, long b)
+            => Math.Min(a, b);
+
+        /// <summary>
+        /// Returns the smaller of the specific numbers.
+        /// </summary>
+        /// <param name="a">Number 1 to compare.</param>
+        /// <param name="b">Number 2 to compare.</param>
+        /// <param name="c">Number 3 to compare.</param>
+        /// <returns>One of the parameter, whichever is smaller.</returns>
+        public static long Min(long a, long b, long c)
+            => Math.Min(Math.Min(a, b), c);
 
         /// <summary>
         /// Returns the smaller of the specific numbers.
@@ -280,6 +342,46 @@ namespace Trivial.Maths
             if (h.HasValue) m = Math.Min(m, h.Value);
             return m;
         }
+
+        /// <summary>
+        /// Returns the smaller of the specific numbers.
+        /// </summary>
+        /// <param name="a">Number 1 to compare.</param>
+        /// <param name="b">Number 2 to compare.</param>
+        /// <returns>One of the parameter, whichever is smaller.</returns>
+        public static ulong Min(ulong a, ulong b)
+            => Math.Min(a, b);
+
+        /// <summary>
+        /// Returns the smaller of the specific numbers.
+        /// </summary>
+        /// <param name="a">Number 1 to compare.</param>
+        /// <param name="b">Number 2 to compare.</param>
+        /// <param name="c">Number 3 to compare.</param>
+        /// <returns>One of the parameter, whichever is smaller.</returns>
+        public static ulong Min(ulong a, ulong b, ulong c)
+            => Math.Min(Math.Min(a, b), c);
+
+#if NET5_0_OR_GREATER
+        /// <summary>
+        /// Returns the smaller of the specific numbers.
+        /// </summary>
+        /// <param name="a">Number 1 to compare.</param>
+        /// <param name="b">Number 2 to compare.</param>
+        /// <returns>One of the parameter, whichever is smaller.</returns>
+        public static Half Min(Half a, Half b)
+            => a <= b ? a : b;
+
+        /// <summary>
+        /// Returns the smaller of the specific numbers.
+        /// </summary>
+        /// <param name="a">Number 1 to compare.</param>
+        /// <param name="b">Number 2 to compare.</param>
+        /// <param name="c">Number 3 to compare.</param>
+        /// <returns>One of the parameter, whichever is smaller.</returns>
+        public static Half Min(Half a, Half b, Half c)
+            => Min(Min(a, b), c);
+#endif
 
         /// <summary>
         /// Returns the smaller of the specific numbers.
@@ -390,6 +492,63 @@ namespace Trivial.Maths
         }
 
         /// <summary>
+        /// Returns the smaller of the specific time spans.
+        /// </summary>
+        /// <param name="a">Number 1 to compare.</param>
+        /// <param name="b">Number 2 to compare.</param>
+        /// <returns>One of the parameter, whichever is smaller.</returns>
+        public static TimeSpan Min(TimeSpan a, TimeSpan b)
+            => a <= b ? a : b;
+
+        /// <summary>
+        /// Returns the smaller of the specific time spans.
+        /// </summary>
+        /// <param name="a">Number 1 to compare.</param>
+        /// <param name="b">Number 2 to compare.</param>
+        /// <param name="c">Number 3 to compare.</param>
+        /// <returns>One of the parameter, whichever is smaller.</returns>
+        public static TimeSpan Min(TimeSpan a, TimeSpan b, TimeSpan c)
+            => Min(Min(a, b), c);
+
+        /// <summary>
+        /// Returns the smaller of the specific dates and times.
+        /// </summary>
+        /// <param name="a">Number 1 to compare.</param>
+        /// <param name="b">Number 2 to compare.</param>
+        /// <returns>One of the parameter, whichever is smaller.</returns>
+        public static DateTime Min(DateTime a, DateTime b)
+            => a <= b ? a : b;
+
+        /// <summary>
+        /// Returns the smaller of the specific dates and times.
+        /// </summary>
+        /// <param name="a">Number 1 to compare.</param>
+        /// <param name="b">Number 2 to compare.</param>
+        /// <param name="c">Number 3 to compare.</param>
+        /// <returns>One of the parameter, whichever is smaller.</returns>
+        public static DateTime Min(DateTime a, DateTime b, DateTime c)
+            => Min(Min(a, b), c);
+
+        /// <summary>
+        /// Returns the smaller of the specific dates and times.
+        /// </summary>
+        /// <param name="a">Number 1 to compare.</param>
+        /// <param name="b">Number 2 to compare.</param>
+        /// <returns>One of the parameter, whichever is smaller.</returns>
+        public static DateTimeOffset Min(DateTimeOffset a, DateTimeOffset b)
+            => a <= b ? a : b;
+
+        /// <summary>
+        /// Returns the smaller of the specific dates and times.
+        /// </summary>
+        /// <param name="a">Number 1 to compare.</param>
+        /// <param name="b">Number 2 to compare.</param>
+        /// <param name="c">Number 3 to compare.</param>
+        /// <returns>One of the parameter, whichever is smaller.</returns>
+        public static DateTimeOffset Min(DateTimeOffset a, DateTimeOffset b, DateTimeOffset c)
+            => Min(Min(a, b), c);
+
+        /// <summary>
         /// Returns the larger of the specific numbers.
         /// </summary>
         /// <param name="a">Number 1 to compare.</param>
@@ -406,6 +565,25 @@ namespace Trivial.Maths
         /// <param name="c">Number 3 to compare.</param>
         /// <returns>One of the parameter, whichever is larger.</returns>
         public static byte Max(byte a, byte b, byte c)
+            => Math.Max(Math.Max(a, b), c);
+
+        /// <summary>
+        /// Returns the larger of the specific numbers.
+        /// </summary>
+        /// <param name="a">Number 1 to compare.</param>
+        /// <param name="b">Number 2 to compare.</param>
+        /// <returns>One of the parameter, whichever is larger.</returns>
+        public static sbyte Max(sbyte a, sbyte b)
+            => Math.Max(a, b);
+
+        /// <summary>
+        /// Returns the larger of the specific numbers.
+        /// </summary>
+        /// <param name="a">Number 1 to compare.</param>
+        /// <param name="b">Number 2 to compare.</param>
+        /// <param name="c">Number 3 to compare.</param>
+        /// <returns>One of the parameter, whichever is larger.</returns>
+        public static sbyte Max(sbyte a, sbyte b, sbyte c)
             => Math.Max(Math.Max(a, b), c);
 
         /// <summary>
@@ -433,6 +611,25 @@ namespace Trivial.Maths
         /// <param name="a">Number 1 to compare.</param>
         /// <param name="b">Number 2 to compare.</param>
         /// <returns>One of the parameter, whichever is larger.</returns>
+        public static ushort Max(ushort a, ushort b)
+            => Math.Max(a, b);
+
+        /// <summary>
+        /// Returns the larger of the specific numbers.
+        /// </summary>
+        /// <param name="a">Number 1 to compare.</param>
+        /// <param name="b">Number 2 to compare.</param>
+        /// <param name="c">Number 3 to compare.</param>
+        /// <returns>One of the parameter, whichever is larger.</returns>
+        public static ushort Max(ushort a, ushort b, ushort c)
+            => Math.Max(Math.Max(a, b), c);
+
+        /// <summary>
+        /// Returns the larger of the specific numbers.
+        /// </summary>
+        /// <param name="a">Number 1 to compare.</param>
+        /// <param name="b">Number 2 to compare.</param>
+        /// <returns>One of the parameter, whichever is larger.</returns>
         public static int Max(int a, int b)
             => Math.Max(a, b);
 
@@ -444,6 +641,25 @@ namespace Trivial.Maths
         /// <param name="c">Number 3 to compare.</param>
         /// <returns>One of the parameter, whichever is larger.</returns>
         public static int Max(int a, int b, int c)
+            => Math.Max(Math.Max(a, b), c);
+
+        /// <summary>
+        /// Returns the larger of the specific numbers.
+        /// </summary>
+        /// <param name="a">Number 1 to compare.</param>
+        /// <param name="b">Number 2 to compare.</param>
+        /// <returns>One of the parameter, whichever is larger.</returns>
+        public static uint Max(uint a, uint b)
+            => Math.Max(a, b);
+
+        /// <summary>
+        /// Returns the larger of the specific numbers.
+        /// </summary>
+        /// <param name="a">Number 1 to compare.</param>
+        /// <param name="b">Number 2 to compare.</param>
+        /// <param name="c">Number 3 to compare.</param>
+        /// <returns>One of the parameter, whichever is larger.</returns>
+        public static uint Max(uint a, uint b, uint c)
             => Math.Max(Math.Max(a, b), c);
 
         /// <summary>
@@ -473,14 +689,19 @@ namespace Trivial.Maths
         /// </summary>
         /// <param name="a">Number 1 to compare.</param>
         /// <param name="b">Number 2 to compare.</param>
-        /// <param name="c">Optional number 3 to compare.</param>
         /// <returns>One of the parameter, whichever is larger.</returns>
-        public static long Max(long a, long b, long? c = null)
-        {
-            var m = Math.Max(a, b);
-            if (c.HasValue) m = Math.Max(m, c.Value);
-            return m;
-        }
+        public static long Max(long a, long b)
+            => Math.Max(a, b);
+
+        /// <summary>
+        /// Returns the larger of the specific numbers.
+        /// </summary>
+        /// <param name="a">Number 1 to compare.</param>
+        /// <param name="b">Number 2 to compare.</param>
+        /// <param name="c">Number 3 to compare.</param>
+        /// <returns>One of the parameter, whichever is larger.</returns>
+        public static long Max(long a, long b, long c)
+            => Math.Max(Math.Max(a, b), c);
 
         /// <summary>
         /// Returns the larger of the specific numbers.
@@ -503,6 +724,46 @@ namespace Trivial.Maths
             if (h.HasValue) m = Math.Max(m, h.Value);
             return m;
         }
+
+        /// <summary>
+        /// Returns the larger of the specific numbers.
+        /// </summary>
+        /// <param name="a">Number 1 to compare.</param>
+        /// <param name="b">Number 2 to compare.</param>
+        /// <returns>One of the parameter, whichever is larger.</returns>
+        public static ulong Max(ulong a, ulong b)
+            => Math.Max(a, b);
+
+        /// <summary>
+        /// Returns the larger of the specific numbers.
+        /// </summary>
+        /// <param name="a">Number 1 to compare.</param>
+        /// <param name="b">Number 2 to compare.</param>
+        /// <param name="c">Number 3 to compare.</param>
+        /// <returns>One of the parameter, whichever is larger.</returns>
+        public static ulong Max(ulong a, ulong b, ulong c)
+            => Math.Max(Math.Max(a, b), c);
+
+#if NET5_0_OR_GREATER
+        /// <summary>
+        /// Returns the larger of the specific numbers.
+        /// </summary>
+        /// <param name="a">Number 1 to compare.</param>
+        /// <param name="b">Number 2 to compare.</param>
+        /// <returns>One of the parameter, whichever is larger.</returns>
+        public static Half Max(Half a, Half b)
+            => a >= b ? a : b;
+
+        /// <summary>
+        /// Returns the larger of the specific numbers.
+        /// </summary>
+        /// <param name="a">Number 1 to compare.</param>
+        /// <param name="b">Number 2 to compare.</param>
+        /// <param name="c">Number 3 to compare.</param>
+        /// <returns>One of the parameter, whichever is larger.</returns>
+        public static Half Max(Half a, Half b, Half c)
+            => Max(Max(a, b), c);
+#endif
 
         /// <summary>
         /// Returns the larger of the specific numbers.
@@ -611,5 +872,62 @@ namespace Trivial.Maths
             if (h.HasValue) m = Math.Max(m, h.Value);
             return m;
         }
+
+        /// <summary>
+        /// Returns the larger of the specific time spans.
+        /// </summary>
+        /// <param name="a">Number 1 to compare.</param>
+        /// <param name="b">Number 2 to compare.</param>
+        /// <returns>One of the parameter, whichever is larger.</returns>
+        public static TimeSpan Max(TimeSpan a, TimeSpan b)
+            => a >= b ? a : b;
+
+        /// <summary>
+        /// Returns the larger of the specific time spans.
+        /// </summary>
+        /// <param name="a">Number 1 to compare.</param>
+        /// <param name="b">Number 2 to compare.</param>
+        /// <param name="c">Number 3 to compare.</param>
+        /// <returns>One of the parameter, whichever is larger.</returns>
+        public static TimeSpan Max(TimeSpan a, TimeSpan b, TimeSpan c)
+            => Max(Max(a, b), c);
+
+        /// <summary>
+        /// Returns the larger of the specific dates and times.
+        /// </summary>
+        /// <param name="a">Number 1 to compare.</param>
+        /// <param name="b">Number 2 to compare.</param>
+        /// <returns>One of the parameter, whichever is larger.</returns>
+        public static DateTime Max(DateTime a, DateTime b)
+            => a >= b ? a : b;
+
+        /// <summary>
+        /// Returns the larger of the specific dates and times.
+        /// </summary>
+        /// <param name="a">Number 1 to compare.</param>
+        /// <param name="b">Number 2 to compare.</param>
+        /// <param name="c">Number 3 to compare.</param>
+        /// <returns>One of the parameter, whichever is larger.</returns>
+        public static DateTime Max(DateTime a, DateTime b, DateTime c)
+            => Max(Max(a, b), c);
+
+        /// <summary>
+        /// Returns the larger of the specific dates and times.
+        /// </summary>
+        /// <param name="a">Number 1 to compare.</param>
+        /// <param name="b">Number 2 to compare.</param>
+        /// <returns>One of the parameter, whichever is larger.</returns>
+        public static DateTimeOffset Max(DateTimeOffset a, DateTimeOffset b)
+            => a >= b ? a : b;
+
+        /// <summary>
+        /// Returns the larger of the specific dates and times.
+        /// </summary>
+        /// <param name="a">Number 1 to compare.</param>
+        /// <param name="b">Number 2 to compare.</param>
+        /// <param name="c">Number 3 to compare.</param>
+        /// <returns>One of the parameter, whichever is larger.</returns>
+        public static DateTimeOffset Max(DateTimeOffset a, DateTimeOffset b, DateTimeOffset c)
+            => Max(Max(a, b), c);
     }
 }
