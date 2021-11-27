@@ -27,6 +27,7 @@ This library includes utilities and services for tasks, security, JSON, etc.
 - [File and stream](./io/)
 - [Maths and numerals](./maths/)
 - [Reflection](./reflection/)
+- [Colors](./drawing/)
 - [Geography](./geo/)
 - [Command line](./cmdline/)
 
@@ -88,4 +89,4 @@ The useful utilities for ASP.NET application.
 
 The rich user interface console controls of `cmd`.
 
-- [Console utilities and components](./console/)
+- [Console components](./cmdline/controls)

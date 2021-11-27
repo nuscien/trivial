@@ -1,4 +1,4 @@
-﻿# Trivial.Web
+﻿# [Trivial.Web](https://trivial.kingcean.net/web/controller)
 
 ASP.NET Core extensions.
 

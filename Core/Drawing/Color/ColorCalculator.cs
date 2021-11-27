@@ -219,11 +219,11 @@ namespace Trivial.Drawing
         public static Color Saturate(Color value, double ratio)
         {
             if (double.IsNaN(ratio)) return value;
-            var (H, S, L) = ToHSL(value);
-            var saturate = S * ratio;
+            var (h, s, l) = ToHSL(value);
+            var saturate = s * ratio;
             if (saturate < 0) saturate = 0;
             else if (saturate > 1) saturate = 1;
-            return FromHSL(H, saturate, L);
+            return FromHSL(h, saturate, l);
         }
 
         /// <summary>
@@ -483,11 +483,11 @@ namespace Trivial.Drawing
             if (double.IsNaN(amount)) return value;
             if (amount > 360 || amount < 0) amount %= 360;
             if (amount == 0) return value;
-            var (H, S, L) = ToHSL(value);
-            var hue = H + amount;
+            var (h, s, l) = ToHSL(value);
+            var hue = h + amount;
             if (hue < 0) hue += 360;
             else if (hue > 360) hue -= 360;
-            return FromHSL(hue, S, L);
+            return FromHSL(hue, s, l);
         }
 
         /// <summary>

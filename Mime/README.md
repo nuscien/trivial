@@ -1,4 +1,4 @@
-﻿# [Trivial.Mime](../docs/web/mime)
+﻿# [Trivial.Mime](https://trivial.kingcean.net/web/mime)
 
 Commonly used MIME content types and its file extension part mapping.
 Also provide parsers and barcode information generators of Code 128 and EAN-13.

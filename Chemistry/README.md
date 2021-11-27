@@ -1,4 +1,4 @@
-﻿# [Trivial.Chemistry](../docs/chemistry)
+﻿# [Trivial.Chemistry](https://trivial.kingcean.net/chemistry)
 
 This library includes the basic chemistry models.
 

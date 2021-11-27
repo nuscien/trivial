@@ -412,7 +412,7 @@ namespace Trivial.Drawing
         /// </summary>
         /// <param name="value">The color to get HSL values.</param>
         /// <returns>The HSL tuple: hue [0°..360°], saturation [0..1] and lightness [0..1].</returns>
-        public static (double H, double S, double L) ToHSL(Color value)
+        public static (double h, double s, double l) ToHSL(Color value)
         {
             var min = Arithmetic.Min(value.R, value.G, value.B) / 255d;
             var max = Arithmetic.Max(value.R, value.G, value.B) / 255d;
@@ -449,7 +449,7 @@ namespace Trivial.Drawing
         /// </summary>
         /// <param name="value">The color to get HSV values.</param>
         /// <returns>The HSV tuple: hue [0°..360°], saturation [0..1] and value [0..1].</returns>
-        public static (double H, double S, double V) ToHSV(Color value)
+        public static (double h, double s, double v) ToHSV(Color value)
         {
             var min = Arithmetic.Min(value.R, value.G, value.B) / 255d;
             var max = Arithmetic.Max(value.R, value.G, value.B) / 255d;
@@ -464,7 +464,7 @@ namespace Trivial.Drawing
         /// </summary>
         /// <param name="value">The color to get HSI values.</param>
         /// <returns>The HSI tuple: hue [0°..360°], saturation [0..1] and value [0..1].</returns>
-        public static (double H, double S, double I) ToHSI(Color value)
+        public static (double h, double s, double i) ToHSI(Color value)
         {
             if (value.R == 0 && value.G == 0 && value.B == 0)
                 return (0d, 0d, 0d);
@@ -477,7 +477,7 @@ namespace Trivial.Drawing
         #region CMYK
 
         /// <summary>
-        /// Creates color from CMYK.
+        /// Creates color from CMYK (cyan-magenta-yellow-black).
         /// </summary>
         /// <param name="cyan">The cyan. Value is from 0 to 1.</param>
         /// <param name="magenta">The magenta. Value is from 0 to 1.</param>
@@ -488,7 +488,7 @@ namespace Trivial.Drawing
             => FromCMYK(cyan, magenta, yellow, black, 255);
 
         /// <summary>
-        /// Creates color from CMYK.
+        /// Creates color from CMYK (cyan-magenta-yellow-black).
         /// </summary>
         /// <param name="cyan">The cyan. Value is from 0 to 1.</param>
         /// <param name="magenta">The magenta. Value is from 0 to 1.</param>
@@ -500,7 +500,7 @@ namespace Trivial.Drawing
             => FromCMYK(cyan, magenta, yellow, black, (byte)ToChannel(alpha * 255));
 
         /// <summary>
-        /// Creates color from CMYK.
+        /// Creates color from CMYK (cyan-magenta-yellow-black).
         /// </summary>
         /// <param name="cyan">The cyan. Value is from 0 to 1.</param>
         /// <param name="magenta">The magenta. Value is from 0 to 1.</param>
@@ -516,7 +516,7 @@ namespace Trivial.Drawing
                 ToChannel(255 * (1 - yellow) * (1 - black)));
 
         /// <summary>
-        /// Creates color from CMYK.
+        /// Creates color from CMYK (cyan-magenta-yellow-black).
         /// </summary>
         /// <param name="cyan">The cyan. Value is from 0 to 1.</param>
         /// <param name="magenta">The magenta. Value is from 0 to 1.</param>
@@ -527,7 +527,7 @@ namespace Trivial.Drawing
             => FromCMYK(cyan, magenta, yellow, black, 255);
 
         /// <summary>
-        /// Creates color from CMYK.
+        /// Creates color from CMYK (cyan-magenta-yellow-black).
         /// </summary>
         /// <param name="cyan">The cyan. Value is from 0 to 1.</param>
         /// <param name="magenta">The magenta. Value is from 0 to 1.</param>
@@ -539,7 +539,7 @@ namespace Trivial.Drawing
             => FromCMYK(cyan, magenta, yellow, black, (byte)ToChannel(alpha * 255));
 
         /// <summary>
-        /// Creates color from CMYK.
+        /// Creates color from CMYK (cyan-magenta-yellow-black).
         /// </summary>
         /// <param name="cyan">The cyan. Value is from 0 to 1.</param>
         /// <param name="magenta">The magenta. Value is from 0 to 1.</param>
@@ -555,11 +555,11 @@ namespace Trivial.Drawing
                 ToChannel(255 * (1 - yellow) * (1 - black)));
 
         /// <summary>
-        /// Converts a color to CMYK.
+        /// Converts a color to CMYK (cyan-magenta-yellow-black).
         /// </summary>
         /// <param name="value">The color to get CMYK values.</param>
         /// <returns>The CMYK tuple: cyan[0..1], magenta[0..1], yellow[0..1] and black key[0..1].</returns>
-        public static (double C, double M, double Y, double K) ToCMYK(Color value)
+        public static (double c, double m, double y, double k) ToCMYK(Color value)
         {
             if (value.R == 0 && value.G == 0 && value.B == 0)
                 return (0d, 0d, 0d, 1d);
@@ -580,7 +580,7 @@ namespace Trivial.Drawing
         /// </summary>
         /// <param name="value">The color to get XYZ values.</param>
         /// <returns>The CIE XYZ tuple: x [0..1], y [0..1] and z [0..1].</returns>
-        public static (double X, double Y, double Z) ToCIEXYZ(Color value)
+        public static (double x, double y, double z) ToCIEXYZ(Color value)
         {
             var red = value.R / 255d;
             var green = value.G / 255d;
@@ -595,11 +595,11 @@ namespace Trivial.Drawing
         }
 
         /// <summary>
-        /// Convert a color to a CIE LAB color.
+        /// Convert a color to a CIE LAB (lightness and 2 chromaticities) color.
         /// </summary>
         /// <param name="value">The color to get CMYK values.</param>
-        /// <returns>The CIE LAB tuple: lightness [0..100] and 2 chromaticities [-128..127].</returns>
-        public static (double L, double A, double B) ToCIELAB(Color value)
+        /// <returns>The CIE LAB tuple: lightness [0..100] and 2 chromaticities (a and b) [-128..127].</returns>
+        public static (double l, double a, double b) ToCIELAB(Color value)
         {
             var xyz = ToCIEXYZ(value);
             var x = xyz.Item1 * 100 / 95.0489;

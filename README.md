@@ -28,6 +28,7 @@ including interceptor, retry policy, writable JSON DOM, PEM, JWT, stream combina
 - [File and stream](./docs/io)
 - [Collection](./docs/collection)
 - [Reflection](./docs/reflection)
+- [Colors](./docs/drawing/)
 - [Geography](./docs/geo)
 - [Command line](./docs/cmdline/)
 

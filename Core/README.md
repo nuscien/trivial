@@ -2,7 +2,7 @@
 
 Includes utilities and services for tasks, security, JSON, etc.
 
-## [Tasks](../docs/tasks)
+## [Tasks](https://trivial.kingcean.net/tasks)
 
 ```csharp
 using Trivial.Tasks;
@@ -24,8 +24,6 @@ Set an action with a specific interceptor to control its execution.
 - `Interceptor.Multiple`:
   A handler to execute for the specific times and the state will be reset after a while.
 
-Following is an example for debounce.
-
 ```csharp
 // Set an action with interceptor.
 var action = Interceptor.Debounce(() =>
@@ -42,7 +40,7 @@ action();
 Create a linear retry policy by `LinearRetryPolicy` or a customized one to process an action with the specific retry policy.
 And you can use `ObservableTask` to observe the state of an action processing.
 
-## [Network](../docs/net)
+## [Network](https://trivial.kingcean.net/net)
 
 Contains the helper functions and extension functions for network, such as HTTP web client and its content.
 
@@ -53,7 +51,7 @@ using Trivial.Net;
 And you can also use `JsonHttpClient` to serialize the JSON format response with retry policy supports.
 And `HttpUri` for HTTP URI fields accessing.
 
-## [Security](../docs/security)
+## [Security](https://trivial.kingcean.net/security)
 
 ```csharp
 using Trivial.Security;
@@ -111,7 +109,7 @@ Use the extension methods in the `SecureStringExtensions` class to convert the s
 
 You can also use the class `RSASecretExchange` to transfer the secret with RSA encryption.
 
-## [Text](../docs/text)
+## [Text](https://trivial.kingcean.net/text)
 
 ```csharp
 using Trivial.Text;
@@ -122,11 +120,10 @@ using Trivial.Text;
 Includes writable JSON DOM `JsonObjectNode` and `JsonArrayNode`.
 And includes lots of useful converter like following.
 
-- `JsonJavaScriptTicksConverter`, and its nullable value conveters and fallback converters, to convert `DateTime` or `DateTime?` from/to JavaScript ticks number in JSON.
-- `JsonUnixTimestampConverter`, and its nullable value conveters and fallback converters, to convert `DateTime` or `DateTime?` from/to Unix timestamp number in JSON.
+- `JsonJavaScriptTicksConverter`, and its fallback converters, to convert `DateTime` from/to JavaScript ticks number in JSON.
+- `JsonUnixTimestampConverter`, and its fallback converters, to convert `DateTime` from/to Unix timestamp number in JSON.
 - `JsonNumberConverter` and `JsonNumberConverter.NumberStringConverter`, to read number string in JSON.
 - `JsonStringListConverter` and its character separated converters (such as `JsonStringListConverter.WhiteSpaceSeparatedConverter`), to convert a string list from/to a string in JSON.
-- `JsonObjectNodeConverter`, to convert `JsonObjectNode` and `JsonArrayNode`.
 
 ### CSV
 
@@ -141,7 +138,7 @@ foreach (var model in csv.ConvertTo<CsvModel>(new[] { "A", "B" }))
 }
 ```
 
-## [Data](../docs/data)
+## [Data](https://trivial.kingcean.net/data)
 
 ```csharp
 using Trivial.Data;
@@ -151,7 +148,7 @@ using Trivial.Data;
 
 Save a number of model in memory cache by generic class `DataCacheCollection`.
 
-## [Mathematics](../docs/maths)
+## [Mathematics](https://trivial.kingcean.net/maths)
 
 ```csharp
 using Trivial.Maths;
@@ -199,7 +196,8 @@ And `ChineseNumerals` for Chinese and `JapaneseNumerals` for Japanese.
 
 ## Further
 
-- [IO](../docs/io)
-- [Geography](../docs/geo)
-- [Reflection](../docs/reflection)
-- [CommandLine](../docs/cmdline)
+- [Drawing](https://trivial.kingcean.net/drawing)
+- [IO](https://trivial.kingcean.net/io)
+- [Geography](https://trivial.kingcean.net/geo)
+- [Reflection](https://trivial.kingcean.net/reflection)
+- [CommandLine](https://trivial.kingcean.net/cmdline)

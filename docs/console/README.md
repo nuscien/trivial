@@ -1,3 +1,5 @@
+> This documentation is only for v3 (old version). See [latest version](../cmdline).
+
 # Trivial.Console
 
 The rich user interface console controls of `cmd`.
