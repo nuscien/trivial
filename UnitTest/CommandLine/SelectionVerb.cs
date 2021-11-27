@@ -120,13 +120,13 @@ namespace Trivial.CommandLine
                     InitColors();
                     for (var i = -4; i < 5; i++)
                     {
-                        var saturate = (Drawing.RelativeSaturationLevels)i;
+                        var percent = i * 0.2;
                         foreach (var item in saturateColors)
                         {
-                            cli.Write(Drawing.ColorCalculator.Saturate(item, saturate), "■");
+                            cli.Write(Drawing.ColorCalculator.Lighten(item, i * 0.2), "■");
                         }
 
-                        cli.WriteLine(saturate.ToString());
+                        cli.WriteLine(percent.ToString("#%"));
                     }
 
                     foreach (var item in saturateColors)

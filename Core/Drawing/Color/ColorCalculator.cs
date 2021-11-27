@@ -96,7 +96,7 @@ namespace Trivial.Drawing
                 value.A,
                 ToChannel((bg - value.R) * ratio + value.R),
                 ToChannel((bg - value.G) * ratio + value.G),
-                ToChannel((bg - value.B) * ratio) + value.B);
+                ToChannel((bg - value.B) * ratio + value.B));
         }
 
         /// <summary>
@@ -116,7 +116,7 @@ namespace Trivial.Drawing
                 value.A,
                 ToChannel((bg - value.R) * ratio + value.R),
                 ToChannel((bg - value.G) * ratio + value.G),
-                ToChannel((bg - value.B) * ratio) + value.B);
+                ToChannel((bg - value.B) * ratio + value.B));
         }
 
         /// <summary>
