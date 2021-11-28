@@ -87,6 +87,6 @@ The useful utilities for ASP.NET application.
 ![.NET Framework 4.8](./assets/badge_NET_Fx_4_8.svg)
 ![.NET Framework 4.6.1](./assets/badge_NET_Fx_4_6_1.svg)
 
-The rich user interface console controls of `cmd`.
+The rich user controls of command line interface.
 
 - [Console components](./cmdline/controls)

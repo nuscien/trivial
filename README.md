@@ -77,7 +77,7 @@ The useful utilities for ASP.NET application.
 
 ## [Trivial.Console](./Console)
 
-The rich UX CLI controls for `cmd`.
+The rich UX CLI controls.
 
 [![NuGet package](https://img.shields.io/nuget/dt/Trivial.Console?label=nuget+downloads)](https://www.nuget.org/packages/Trivial.Console)
 

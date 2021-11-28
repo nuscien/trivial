@@ -314,6 +314,21 @@ namespace Trivial.Reflection
         protected void WriteTo(Utf8JsonWriter writer) => JsonObjectNode.ConvertFrom(this).WriteTo(writer);
 
         /// <summary>
+        /// Copies data from another instance.
+        /// </summary>
+        /// <param name="props">The properties to copy.</param>
+        /// <param name="skipIfExist">true if skip when the property has already existed; otherwise, false.</param>
+        protected void CopyFrom(BaseObservableProperties props, bool skipIfExist = false)
+        {
+            var copy = new Dictionary<string, object>(props.cache);
+            foreach (var prop in copy)
+            {
+                if (skipIfExist && cache.ContainsKey(prop.Key)) continue;
+                SetProperty(prop.Key, prop.Value);
+            }
+        }
+
+        /// <summary>
         /// Returns an enumerator that iterates through the collection.
         /// </summary>
         /// <returns>An enumerator that can be used to iterate through the collection.</returns>

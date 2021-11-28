@@ -60,6 +60,11 @@ namespace Trivial.Maths
             public const string PerThousandSign = "‰";
 
             /// <summary>
+            /// The sign of per ten thousand.
+            /// </summary>
+            public const string PerTenThousandSign = "‱";
+
+            /// <summary>
             /// The sign of N-Ary summation.
             /// </summary>
             public const string SummationSign = "∑";
