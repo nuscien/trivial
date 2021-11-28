@@ -152,12 +152,99 @@ namespace Trivial.Web
         /// </summary>
         /// <param name="request">The query collection.</param>
         /// <param name="key">The key.</param>
-        /// <returns>The string value; or null, if non-exist.</returns>
+        /// <returns>The number value; or null, if non-exist or parse failed.</returns>
         public static int? TryGetInt32Value(this IQueryCollection request, string key)
         {
             var s = request[key].Select(ele => ele?.Trim()).FirstOrDefault(ele => !string.IsNullOrEmpty(ele));
             if (Maths.Numbers.TryParseToInt32(s, 10, out var r)) return r;
             return null;
+        }
+
+        /// <summary>
+        /// Gets the integer value.
+        /// </summary>
+        /// <param name="request">The query collection.</param>
+        /// <param name="key">The key.</param>
+        /// <param name="result">The output result.</param>
+        /// <returns>true if parse succeeded; otherwise, false.</returns>
+        public static bool TryGetInt32Value(this IQueryCollection request, string key, out int result)
+        {
+            var r = TryGetInt32Value(request, key);
+            if (r.HasValue)
+            {
+                result = r.Value;
+                return true;
+            }
+
+            result = default;
+            return false;
+        }
+
+        /// <summary>
+        /// Gets the integer value.
+        /// </summary>
+        /// <param name="request">The query collection.</param>
+        /// <param name="key">The key.</param>
+        /// <returns>The number value; or null, if non-exist or parse failed.</returns>
+        public static long? TryGetInt64Value(this IQueryCollection request, string key)
+        {
+            var s = request[key].Select(ele => ele?.Trim()).FirstOrDefault(ele => !string.IsNullOrEmpty(ele));
+            if (Maths.Numbers.TryParseToInt64(s, 10, out var r)) return r;
+            return null;
+        }
+
+        /// <summary>
+        /// Gets the integer value.
+        /// </summary>
+        /// <param name="request">The query collection.</param>
+        /// <param name="key">The key.</param>
+        /// <param name="result">The output result.</param>
+        /// <returns>true if parse succeeded; otherwise, false.</returns>
+        public static bool TryGetInt64Value(this IQueryCollection request, string key, out long result)
+        {
+            var r = TryGetInt64Value(request, key);
+            if (r.HasValue)
+            {
+                result = r.Value;
+                return true;
+            }
+
+            result = default;
+            return false;
+        }
+
+        /// <summary>
+        /// Tries get a property as boolean.
+        /// </summary>
+        /// <param name="request">The query.</param>
+        /// <param name="key">The property key.</param>
+        /// <returns>true if it is true; or false, if it is false; or null, if not supported.</returns>
+        public static bool? TryGetBoolean(this IQueryCollection request, string key)
+        {
+            var plain = request?.GetFirstStringValue(key, true)?.ToLowerInvariant();
+            var isPlain = JsonBooleanNode.TryParse(plain);
+            return isPlain?.Value;
+        }
+
+        /// <summary>
+        /// Tries get a property as boolean.
+        /// </summary>
+        /// <param name="request">The query.</param>
+        /// <param name="key">The property key.</param>
+        /// <param name="result">The result.</param>
+        /// <returns>true if parse succeeded; otherwise, false.</returns>
+        public static bool TryGetBoolean(this IQueryCollection request, string key, out bool result)
+        {
+            var plain = request?.GetFirstStringValue(key, true)?.ToLowerInvariant();
+            var isPlain = JsonBooleanNode.TryParse(plain);
+            if (isPlain == null)
+            {
+                result = false;
+                return false;
+            }
+
+            result = isPlain.Value;
+            return true;
         }
 
         /// <summary>
@@ -403,40 +490,6 @@ namespace Trivial.Web
 
             q.Remove("random");
             return q;
-        }
-
-        /// <summary>
-        /// Tries get a property as boolean.
-        /// </summary>
-        /// <param name="request">The query.</param>
-        /// <param name="key">The property key.</param>
-        /// <returns>true if it is true; or false, if it is false; or null, if not supported.</returns>
-        public static bool? TryGetBoolean(this IQueryCollection request, string key)
-        {
-            var plain = request?.GetFirstStringValue(key, true)?.ToLowerInvariant();
-            var isPlain = JsonBooleanNode.TryParse(plain);
-            return isPlain?.Value;
-        }
-
-        /// <summary>
-        /// Tries get a property as boolean.
-        /// </summary>
-        /// <param name="request">The query.</param>
-        /// <param name="key">The property key.</param>
-        /// <param name="result">The result.</param>
-        /// <returns>true if parse succeeded; otherwise, false.</returns>
-        public static bool TryGetBoolean(this IQueryCollection request, string key, out bool result)
-        {
-            var plain = request?.GetFirstStringValue(key, true)?.ToLowerInvariant();
-            var isPlain = JsonBooleanNode.TryParse(plain);
-            if (isPlain == null)
-            {
-                result = false;
-                return false;
-            }
-
-            result = isPlain.Value;
-            return true;
         }
 
         /// <summary>
