@@ -46,7 +46,9 @@ namespace Trivial.Drawing
                 pos = value.IndexOf(')');
                 if (pos >= 0) value = value.Substring(0, pos).Trim();
                 var isError = false;
-                var arr = value.Split(value.Contains(',') ? new[] { ',' } : new[] { ' ' }).Select(ele =>
+                var arr = (value.Contains(',')
+                    ? value.Split(new[] { ',' })
+                    : value.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries)).Select(ele =>
                 {
                     var item = ele?.Trim();
                     if (string.IsNullOrEmpty(item)) return 0;

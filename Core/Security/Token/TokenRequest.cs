@@ -1119,7 +1119,7 @@ namespace Trivial.Security
         /// <param name="ignoreDomain">true if ignore the domain; otherwise, set user name as domain and user name.</param>
         public PasswordTokenRequestBody(NetworkCredential credential, bool ignoreDomain = false) : base(PasswordGrantType)
         {
-            if (string.IsNullOrWhiteSpace(credential.Domain) || ignoreDomain || credential.UserName.IndexOf('@') >= 0)
+            if (string.IsNullOrWhiteSpace(credential.Domain) || ignoreDomain || credential.UserName.Contains('@'))
             {
                 UserName = credential.Domain;
             }
@@ -1384,7 +1384,7 @@ namespace Trivial.Security
         /// <summary>
         /// The handlers.
         /// </summary>
-        private readonly Dictionary<string, Func<QueryData, Task<(T, TokenInfo)>>> handlers = new Dictionary<string, Func<QueryData, Task<(T, TokenInfo)>>>();
+        private readonly Dictionary<string, Func<QueryData, Task<(T, TokenInfo)>>> handlers = new();
 
         /// <summary>
         /// Adds or removes the event handler after signing in.

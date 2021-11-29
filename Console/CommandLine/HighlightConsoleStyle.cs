@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 using Trivial.Collection;
@@ -46,21 +47,27 @@ namespace Trivial.CommandLine
         /// <summary>
         /// Gets or sets the fallback foreground color.
         /// </summary>
+        [JsonPropertyName("normal")]
         public ConsoleTextStyle Normal { get; } = new();
 
         /// <summary>
         /// Gets or sets the fallback background color.
         /// </summary>
+        [JsonPropertyName("highlight")]
         public ConsoleTextStyle Highlight { get; } = new();
 
         /// <summary>
         /// Gets or sets a value indicating whether the text is strikeout.
         /// </summary>
+        [JsonPropertyName("q")]
         public List<string> Query { get; } = new();
 
         /// <summary>
         /// Gets or sets one of the enumeration values that specifies the rules for the search.
         /// </summary>
+        [JsonPropertyName("compare")]
+        [JsonConverter(typeof(JsonIntegerEnumCompatibleConverter))]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
         public StringComparison ComparisonType { get; set; }
 
         /// <summary>

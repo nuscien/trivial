@@ -13,13 +13,13 @@ using Trivial.Tasks;
 Set an action with a specific interceptor to control its execution.
 
 - `Interceptor.Debounce`:
-  You may request to invoke a specific action several times in a short time but only the last one should be executed and previous ones should be ignored.
+  Request to invoke a specific action several times in a short time but only the last one should be executed and previous ones should be ignored.
   A sample is real-time search suggestion.
 - `Interceptor.Throttle`:
-  You may want to execute an action only once in a short time even if you invoke several times.
+  Raise actually only once in a short time even if invoke several times.
   A sample is the submit button in a form.
 - `Interceptor.Times`:
-  You can define an action can be only executed only when invoke in the specific times range and others will be ignored.
+  The action can be only executed only when invoke in the specific times range and others will be ignored.
   A sample is double click.
 - `Interceptor.Multiple`:
   A handler to execute for the specific times and the state will be reset after a while.
@@ -48,7 +48,7 @@ Contains the helper functions and extension functions for network, such as HTTP 
 using Trivial.Net;
 ```
 
-And you can also use `JsonHttpClient` to serialize the JSON format response with retry policy supports.
+Use `JsonHttpClient` to serialize the JSON format response with retry policy supports.
 And `HttpUri` for HTTP URI fields accessing.
 
 ## [Security](https://trivial.kingcean.net/security)
@@ -82,7 +82,7 @@ Provide a set of tools for OAuth including following models.
 - `AppAccessingKey` The app identifier and secret key.
 - `OAuthClient` The token container with the ability to resolve the access token and create the JSON HTTP web client to access the resources required authentication.
 
-And you can also implement the `OAuthBasedClient` base class to create your own business HTTP web client factory with OAuth supports.
+Optional to implement the `OAuthBasedClient` base class to create your own business HTTP web client factory with OAuth supports.
 
 ### JWT
 
@@ -107,7 +107,7 @@ var jwtSame = JsonWebToken<Model>.Parse(jwtStr, sign); // jwtSame.ToEncodedStrin
 
 Use the extension methods in the `SecureStringExtensions` class to convert the secret between `SecureString` and `String`/`StringBuilder`/`Byte[]`.
 
-You can also use the class `RSASecretExchange` to transfer the secret with RSA encryption.
+And class `RSASecretExchange` is used to transfer the secret with RSA encryption.
 
 ## [Text](https://trivial.kingcean.net/text)
 
@@ -194,9 +194,25 @@ And `ChineseNumerals` for Chinese and `JapaneseNumerals` for Japanese.
 - `ThreeDimensionalPoint` The point in 3D (stereoscophic) coordinates.
 - `FourDimensionalPoint` The point in 4D (spacetime) coordinates.
 
+## [Drawing](https://trivial.kingcean.net/drawing)
+
+```csharp
+using Trivial.Drawing;
+```
+
+### Color calculator
+
+Color adjustment, converter, parser and mixer.
+
+```csharp
+var color = ColorCalculator.Parse("rgb(226, 37, 0xA8)");
+color = ColorCalculator.Opacity(color, 0.9);
+color = ColorCalculator.Saturate(color, RelativeSaturationLevels.High);
+color = ColorCalculator.Mix(ColorMixTypes.Lighten, color, Color.FromArgb(0, 240, 0));
+```
+
 ## Further
 
-- [Drawing](https://trivial.kingcean.net/drawing)
 - [IO](https://trivial.kingcean.net/io)
 - [Geography](https://trivial.kingcean.net/geo)
 - [Reflection](https://trivial.kingcean.net/reflection)
