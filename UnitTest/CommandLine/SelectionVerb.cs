@@ -126,7 +126,7 @@ namespace Trivial.CommandLine
                             cli.Write(Drawing.ColorCalculator.Lighten(item, i * 0.2), "■");
                         }
 
-                        cli.WriteLine(percent.ToString("#%"));
+                        cli.WriteLine(percent.ToString("0%"));
                     }
 
                     foreach (var item in saturateColors)

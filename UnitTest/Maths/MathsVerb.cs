@@ -72,7 +72,7 @@ namespace Trivial.Maths
             await Test();
         }
 
-        private async Task Test()
+        private static async Task Test()
         {
             var cli = CommandLine.StyleConsole.Default;
 
