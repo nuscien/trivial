@@ -124,47 +124,6 @@ namespace Trivial.Drawing
     }
 
     /// <summary>
-    /// The relative levels of saturation.
-    /// </summary>
-    public enum RelativeSaturationLevels : byte
-    {
-        /// <summary>
-        /// No change.
-        /// </summary>
-        Regular = 0,
-
-        /// <summary>
-        /// High saturation.
-        /// </summary>
-        High = 1,
-
-        /// <summary>
-        /// Low saturation.
-        /// </summary>
-        Low = 2,
-
-        /// <summary>
-        /// Adjust saturation to most.
-        /// </summary>
-        Most = 3,
-
-        /// <summary>
-        /// Grayscale.
-        /// </summary>
-        Gray = 4,
-
-        /// <summary>
-        /// Translate and scale to exposure.
-        /// </summary>
-        Exposure = 5,
-
-        /// <summary>
-        /// Translate and scale to shadow.
-        /// </summary>
-        Shadow = 6,
-    }
-
-    /// <summary>
     /// Color calculator.
     /// </summary>
     public static partial class ColorCalculator

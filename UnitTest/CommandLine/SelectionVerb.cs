@@ -92,6 +92,17 @@ namespace Trivial.CommandLine
                     break;
                 case "saturate":
                     InitColors();
+                    for (var i = 0; i < 11; i++)
+                    {
+                        var percent = i * 0.2;
+                        foreach (var item in saturateColors)
+                        {
+                            cli.Write(Drawing.ColorCalculator.Saturate(item, percent), "■");
+                        }
+
+                        cli.WriteLine(percent.ToString("0%"));
+                    }
+
                     for (var i = 0; i < 7; i++)
                     {
                         var saturate = (Drawing.RelativeSaturationLevels)i;
@@ -103,18 +114,6 @@ namespace Trivial.CommandLine
                         cli.WriteLine(saturate.ToString());
                     }
 
-                    foreach (var item in saturateColors)
-                    {
-                        cli.Write(Drawing.ColorCalculator.ToggleBrightness(item), "■");
-                    }
-
-                    cli.WriteLine("Light-Dark");
-                    foreach (var item in saturateColors)
-                    {
-                        cli.Write(Drawing.ColorCalculator.Reverse(item), "■");
-                    }
-
-                    cli.WriteLine("Reverse");
                     break;
                 case "brightness":
                     InitColors();
@@ -123,18 +122,23 @@ namespace Trivial.CommandLine
                         var percent = i * 0.2;
                         foreach (var item in saturateColors)
                         {
-                            cli.Write(Drawing.ColorCalculator.Lighten(item, i * 0.2), "■");
+                            cli.Write(Drawing.ColorCalculator.Lighten(item, percent), "■");
                         }
 
                         cli.WriteLine(percent.ToString("0%"));
                     }
 
-                    foreach (var item in saturateColors)
+                    for (var i = 0; i < 7; i++)
                     {
-                        cli.Write(Drawing.ColorCalculator.ToggleBrightness(item), "■");
+                        var brightness = (Drawing.RelativeBrightnessLevels)i;
+                        foreach (var item in saturateColors)
+                        {
+                            cli.Write(Drawing.ColorCalculator.ToggleBrightness(item, brightness), "■");
+                        }
+
+                        cli.WriteLine(brightness.ToString());
                     }
 
-                    cli.WriteLine("Light-Dark");
                     foreach (var item in saturateColors)
                     {
                         cli.Write(Drawing.ColorCalculator.Reverse(item), "■");
