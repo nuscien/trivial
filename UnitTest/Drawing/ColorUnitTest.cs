@@ -76,7 +76,7 @@ namespace Trivial.Drawing
             Assert.AreEqual(0, color.B);
 
             color = Color.FromArgb(255, 0, 0);
-            Assert.AreEqual(Color.FromArgb(0, 255, 255), ColorCalculator.Reverse(color));
+            Assert.AreEqual(Color.FromArgb(0, 255, 255), ColorCalculator.Invert(color));
             Assert.AreEqual(color, ColorCalculator.ToggleBrightness(color));
             color = Color.FromArgb(240, 10, 10);
             Assert.AreEqual(Color.FromArgb(245, 15, 15), ColorCalculator.ToggleBrightness(color));

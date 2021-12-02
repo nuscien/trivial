@@ -444,7 +444,7 @@ namespace Trivial.Drawing
         }
 
         #endregion
-        #region HSV
+        #region HSV & HSI & HSB
 
         /// <summary>
         /// Converts a color to HSV (hue-saturation-value).
@@ -457,9 +457,6 @@ namespace Trivial.Drawing
             var max = Arithmetic.Max(value.R, value.G, value.B) / 255d;
             return (value.GetHue(), max == 0d ? 0d : (max - min) / max, max);
         }
-
-        #endregion
-        #region HSI
 
         /// <summary>
         /// Converts a color to HSI (hue-saturation-intensity).
@@ -474,6 +471,14 @@ namespace Trivial.Drawing
             var min = Arithmetic.Min(value.R, value.G, value.B) / 255d;
             return (value.GetHue(), 1d - (min / intensity), intensity);
         }
+
+        /// <summary>
+        /// Converts a color to HSI (hue-saturation-brightness).
+        /// </summary>
+        /// <param name="value">The color to get HSB values.</param>
+        /// <returns>The HSI tuple: hue [0°..360°], saturation [0..1] and value [0..1].</returns>
+        public static (double h, double s, double b) ToHSB(Color value)
+            => (value.GetHue(), value.GetSaturation(), value.GetBrightness());
 
         #endregion
         #region CMYK

@@ -40,6 +40,7 @@ namespace Trivial.CommandLine
 
             col.Add("Saturate");
             col.Add("Brightness");
+            col.Add("Invert");
             for (var i = 0; i < 120; i++)
             {
                 col.Add(i.ToString());
@@ -139,12 +140,26 @@ namespace Trivial.CommandLine
                         cli.WriteLine(brightness.ToString());
                     }
 
+                    break;
+                case "invert":
+                    InitColors();
                     foreach (var item in saturateColors)
                     {
-                        cli.Write(Drawing.ColorCalculator.Reverse(item), "■");
+                        cli.Write(Drawing.ColorCalculator.Invert(item), "■");
                     }
 
-                    cli.WriteLine("Reverse");
+                    cli.WriteLine("Inverse");
+                    for (var i = 0; i < 6; i++)
+                    {
+                        var percent = i * 0.2;
+                        foreach (var item in saturateColors)
+                        {
+                            cli.Write(Drawing.ColorCalculator.Invert(item, percent), "■");
+                        }
+
+                        cli.WriteLine(percent.ToString("0%"));
+                    }
+
                     break;
                 case "help":
                 case "?":

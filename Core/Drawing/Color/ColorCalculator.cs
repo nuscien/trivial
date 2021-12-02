@@ -17,9 +17,36 @@ namespace Trivial.Drawing
         /// </summary>
         /// <param name="value">The source color value.</param>
         /// <param name="alpha">The alpha channel. Value is from 0 to 1.</param>
+        /// <returns>A color with new alpha channel value.</returns>
+        public static Color Opacity(Color value, double alpha)
+            => Color.FromArgb(ToChannel(value.A * alpha), value.R, value.G, value.B);
+
+        /// <summary>
+        /// Calculates to get the color with opacity and a given color.
+        /// </summary>
+        /// <param name="value">The source color value.</param>
+        /// <param name="alpha">The alpha channel. Value is from 0 to 1.</param>
+        /// <returns>A color with new alpha channel value.</returns>
+        public static Color Opacity(Color value, float alpha)
+            => Color.FromArgb(ToChannel(value.A * alpha), value.R, value.G, value.B);
+
+        /// <summary>
+        /// Calculates to get the color with opacity and a given color.
+        /// </summary>
+        /// <param name="value">The source color value.</param>
+        /// <param name="alpha">The alpha channel. Value is from 0 to 255.</param>
+        /// <returns>A color with new alpha channel value.</returns>
+        public static Color Opacity(Color value, byte alpha)
+            => Color.FromArgb(ToChannel(alpha / 255f * value.A), value.R, value.G, value.B);
+
+        /// <summary>
+        /// Calculates to get the color with opacity and a given color.
+        /// </summary>
+        /// <param name="value">The source color value.</param>
+        /// <param name="alpha">The alpha channel. Value is from 0 to 1.</param>
         /// <param name="resetOriginalAlpha">true if use new alpha channel directly instead base the current one; otherwise, false.</param>
         /// <returns>A color with new alpha channel value.</returns>
-        public static Color Opacity(Color value, double alpha, bool resetOriginalAlpha = false)
+        public static Color Opacity(Color value, double alpha, bool resetOriginalAlpha)
             => Color.FromArgb(resetOriginalAlpha ? ToChannel(alpha * 255) : ToChannel(value.A * alpha), value.R, value.G, value.B);
 
         /// <summary>
@@ -29,7 +56,7 @@ namespace Trivial.Drawing
         /// <param name="alpha">The alpha channel. Value is from 0 to 1.</param>
         /// <param name="resetOriginalAlpha">true if use new alpha channel directly instead base the current one; otherwise, false.</param>
         /// <returns>A color with new alpha channel value.</returns>
-        public static Color Opacity(Color value, float alpha, bool resetOriginalAlpha = false)
+        public static Color Opacity(Color value, float alpha, bool resetOriginalAlpha)
             => Color.FromArgb(resetOriginalAlpha ? ToChannel(alpha * 255) : ToChannel(value.A * alpha), value.R, value.G, value.B);
 
         /// <summary>
@@ -39,8 +66,65 @@ namespace Trivial.Drawing
         /// <param name="alpha">The alpha channel. Value is from 0 to 255.</param>
         /// <param name="resetOriginalAlpha">true if use new alpha channel directly instead base the current one; otherwise, false.</param>
         /// <returns>A color with new alpha channel value.</returns>
-        public static Color Opacity(Color value, byte alpha, bool resetOriginalAlpha = false)
-            => Color.FromArgb(resetOriginalAlpha ? ToChannel(alpha) : ToChannel(alpha / 255d * value.A), value.R, value.G, value.B);
+        public static Color Opacity(Color value, byte alpha, bool resetOriginalAlpha)
+            => Color.FromArgb(resetOriginalAlpha ? ToChannel(alpha) : ToChannel(alpha / 255f * value.A), value.R, value.G, value.B);
+
+        /// <summary>
+        /// Calculates to get the color with opacity and a given color.
+        /// </summary>
+        /// <param name="value">The source color collection.</param>
+        /// <param name="alpha">The alpha channel. Value is from 0 to 255.</param>
+        /// <returns>A color collection with new alpha channel value.</returns>
+        public static IEnumerable<Color> Opacity(IEnumerable<Color> value, double alpha)
+            => value?.Select(ele => Opacity(ele, alpha));
+
+        /// <summary>
+        /// Calculates to get the color with opacity and a given color.
+        /// </summary>
+        /// <param name="value">The source color collection.</param>
+        /// <param name="alpha">The alpha channel. Value is from 0 to 255.</param>
+        /// <returns>A color collection with new alpha channel value.</returns>
+        public static IEnumerable<Color> Opacity(IEnumerable<Color> value, float alpha)
+            => value?.Select(ele => Opacity(ele, alpha));
+
+        /// <summary>
+        /// Calculates to get the color with opacity and a given color.
+        /// </summary>
+        /// <param name="value">The source color collection.</param>
+        /// <param name="alpha">The alpha channel. Value is from 0 to 255.</param>
+        /// <returns>A color collection with new alpha channel value.</returns>
+        public static IEnumerable<Color> Opacity(IEnumerable<Color> value, byte alpha)
+            => value?.Select(ele => Opacity(ele, alpha));
+
+        /// <summary>
+        /// Calculates to get the color with opacity and a given color.
+        /// </summary>
+        /// <param name="value">The source color collection.</param>
+        /// <param name="alpha">The alpha channel. Value is from 0 to 255.</param>
+        /// <param name="resetOriginalAlpha">true if use new alpha channel directly instead base the current one; otherwise, false.</param>
+        /// <returns>A color collection with new alpha channel value.</returns>
+        public static IEnumerable<Color> Opacity(IEnumerable<Color> value, double alpha, bool resetOriginalAlpha)
+            => value?.Select(ele => Opacity(ele, alpha, resetOriginalAlpha));
+
+        /// <summary>
+        /// Calculates to get the color with opacity and a given color.
+        /// </summary>
+        /// <param name="value">The source color collection.</param>
+        /// <param name="alpha">The alpha channel. Value is from 0 to 255.</param>
+        /// <param name="resetOriginalAlpha">true if use new alpha channel directly instead base the current one; otherwise, false.</param>
+        /// <returns>A color collection with new alpha channel value.</returns>
+        public static IEnumerable<Color> Opacity(IEnumerable<Color> value, float alpha, bool resetOriginalAlpha)
+            => value?.Select(ele => Opacity(ele, alpha, resetOriginalAlpha));
+
+        /// <summary>
+        /// Calculates to get the color with opacity and a given color.
+        /// </summary>
+        /// <param name="value">The source color collection.</param>
+        /// <param name="alpha">The alpha channel. Value is from 0 to 255.</param>
+        /// <param name="resetOriginalAlpha">true if use new alpha channel directly instead base the current one; otherwise, false.</param>
+        /// <returns>A color collection with new alpha channel value.</returns>
+        public static IEnumerable<Color> Opacity(IEnumerable<Color> value, byte alpha, bool resetOriginalAlpha)
+            => value?.Select(ele => Opacity(ele, alpha, resetOriginalAlpha));
 
         /// <summary>
         /// Creates a new color by set a channel to a given color.
@@ -80,20 +164,74 @@ namespace Trivial.Drawing
         }
 
         /// <summary>
-        /// Reverses RGB.
+        /// Inverts RGB.
         /// </summary>
         /// <param name="value">The source color value.</param>
         /// <returns>The color to reverse.</returns>
-        public static Color Reverse(Color value)
+        public static Color Invert(Color value)
             => Color.FromArgb(value.A, 255 - value.R, 255 - value.G, 255 - value.B);
 
         /// <summary>
-        /// Reverses RGB.
+        /// Inverts RGB.
+        /// </summary>
+        /// <param name="value">The source color value.</param>
+        /// <param name="ratio">The ratio to change. Value is from 0 to 1.</param>
+        /// <returns>The color to reverse.</returns>
+        public static Color Invert(Color value, double ratio)
+        {
+            if (ratio > 1) ratio = 1;
+            else if (ratio < 0) ratio = 0;
+            var a = 255 * ratio;
+            var b = 1 - 2 * ratio;
+            return Color.FromArgb(value.A,
+                ToChannel(a + b * value.R),
+                ToChannel(a + b * value.G),
+                ToChannel(a + b * value.B));
+        }
+
+        /// <summary>
+        /// Inverts RGB.
+        /// </summary>
+        /// <param name="value">The source color value.</param>
+        /// <param name="ratio">The ratio to change. Value is from 0 to 1.</param>
+        /// <returns>The color to reverse.</returns>
+        public static Color Invert(Color value, float ratio)
+        {
+            if (ratio > 1) ratio = 1;
+            else if (ratio < 0) ratio = 0;
+            var a = 255 * ratio;
+            var b = (2 * ratio + 1);
+            return Color.FromArgb(value.A,
+                ToChannel(a - b * value.R),
+                ToChannel(a - b * value.G),
+                ToChannel(a - b * value.B));
+        }
+
+        /// <summary>
+        /// Inverts RGB.
         /// </summary>
         /// <param name="value">The source color value collection.</param>
         /// <returns>The color to reverse.</returns>
-        public static IEnumerable<Color> Reverse(IEnumerable<Color> value)
-            => value?.Select(ele => Reverse(ele));
+        public static IEnumerable<Color> Invert(IEnumerable<Color> value)
+            => value?.Select(ele => Invert(ele));
+
+        /// <summary>
+        /// Inverts RGB.
+        /// </summary>
+        /// <param name="value">The source color value collection.</param>
+        /// <param name="ratio">The ratio to change. Value is from 0 to 1.</param>
+        /// <returns>The color to reverse.</returns>
+        public static IEnumerable<Color> Invert(IEnumerable<Color> value, double ratio)
+            => value?.Select(ele => Invert(ele, ratio));
+
+        /// <summary>
+        /// Inverts RGB.
+        /// </summary>
+        /// <param name="value">The source color value collection.</param>
+        /// <param name="ratio">The ratio to change. Value is from 0 to 1.</param>
+        /// <returns>The color to reverse.</returns>
+        public static IEnumerable<Color> Invert(IEnumerable<Color> value, float ratio)
+            => value?.Select(ele => Invert(ele, ratio));
 
         /// <summary>
         /// Rotates hue.
@@ -147,6 +285,24 @@ namespace Trivial.Drawing
             else if (hue > 360) hue -= 360;
             return FromHSL(hue, hsl.Item2, hsl.Item3);
         }
+
+        /// <summary>
+        /// Rotates hue.
+        /// </summary>
+        /// <param name="value">The source color value collection.</param>
+        /// <param name="amount">The hue to rotate. Value is from 0 to 360.</param>
+        /// <returns>A new color with hue rotation.</returns>
+        public static IEnumerable<Color> RotateHue(IEnumerable<Color> value, byte amount)
+            => RotateHue(value, (float)amount);
+
+        /// <summary>
+        /// Rotates hue.
+        /// </summary>
+        /// <param name="value">The source color value collection.</param>
+        /// <param name="amount">The hue to rotate. Value is from 0 to 360.</param>
+        /// <returns>A new color with hue rotation.</returns>
+        public static IEnumerable<Color> RotateHue(IEnumerable<Color> value, int amount)
+            => RotateHue(value, (float)amount);
 
         /// <summary>
         /// Rotates hue.
@@ -243,6 +399,26 @@ namespace Trivial.Drawing
             if (blueRatio != 0) blue = ToChannel(((blueRatio > 0 ? 255 : 0) - blue) * Math.Abs(blueRatio) + blue);
             return Color.FromArgb(value.A, red, green, blue);
         }
+
+        /// <summary>
+        /// Adjusts color balance.
+        /// </summary>
+        /// <param name="value">The source color collection.</param>
+        /// <param name="channel">The channel to set.</param>
+        /// <param name="ratio">The ratio to change. Value is from -1 to 1.</param>
+        /// <returns>The color collection after color balance.</returns>
+        public static IEnumerable<Color> ColorBalance(IEnumerable<Color> value, ColorChannels channel, double ratio)
+            => value?.Select(ele => ColorBalance(ele, channel, ratio));
+
+        /// <summary>
+        /// Adjusts color balance.
+        /// </summary>
+        /// <param name="value">The source color collection.</param>
+        /// <param name="channel">The channel to set.</param>
+        /// <param name="ratio">The ratio to change. Value is from -1 to 1.</param>
+        /// <returns>The color collection after color balance.</returns>
+        public static IEnumerable<Color> ColorBalance(IEnumerable<Color> value, ColorChannels channel, float ratio)
+            => value?.Select(ele => ColorBalance(ele, channel, ratio));
 
         /// <summary>
         /// Gets a collection.

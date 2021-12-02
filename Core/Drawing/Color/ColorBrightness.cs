@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 
 namespace Trivial.Drawing
 {
-
     /// <summary>
     /// The relative levels of brightness.
     /// </summary>
@@ -19,9 +18,9 @@ namespace Trivial.Drawing
         Regular = 0,
 
         /// <summary>
-        /// Reverse.
+        /// Toggle between light mode and dark mode.
         /// </summary>
-        Reverse = 1,
+        Switch = 1,
 
         /// <summary>
         /// Translate to high level.
@@ -175,7 +174,7 @@ namespace Trivial.Drawing
             var delta = high - min;
             switch (level)
             {
-                case RelativeBrightnessLevels.Reverse:
+                case RelativeBrightnessLevels.Switch:
                     break;
                 case RelativeBrightnessLevels.High:
                     if (high <= min) return value;

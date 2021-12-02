@@ -16,6 +16,7 @@ Adjust colors by following methods.
 - Saturation filter and grayscale
 - Rotate hue
 - With specific channel(s)
+- Color balance
 - Reverse
 
 ```csharp
