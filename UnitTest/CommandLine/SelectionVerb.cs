@@ -148,7 +148,7 @@ namespace Trivial.CommandLine
                         cli.Write(Drawing.ColorCalculator.Invert(item), "■");
                     }
 
-                    cli.WriteLine("Inverse");
+                    cli.WriteLine("Invert");
                     for (var i = 0; i < 6; i++)
                     {
                         var percent = i * 0.2;
