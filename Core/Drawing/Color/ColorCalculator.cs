@@ -179,8 +179,8 @@ namespace Trivial.Drawing
         /// <returns>The color to reverse.</returns>
         public static Color Invert(Color value, double ratio)
         {
-            if (ratio > 1) ratio = 1;
-            else if (ratio < 0) ratio = 0;
+            if (ratio >= 1) return Color.FromArgb(value.A, 255 - value.R, 255 - value.G, 255 - value.B);
+            if (ratio <= 0) return value;
             var a = 255 * ratio;
             var b = 1 - 2 * ratio;
             return Color.FromArgb(value.A,
@@ -197,14 +197,14 @@ namespace Trivial.Drawing
         /// <returns>The color to reverse.</returns>
         public static Color Invert(Color value, float ratio)
         {
-            if (ratio > 1) ratio = 1;
-            else if (ratio < 0) ratio = 0;
+            if (ratio >= 1) return Color.FromArgb(value.A, 255 - value.R, 255 - value.G, 255 - value.B);
+            if (ratio <= 0) return value;
             var a = 255 * ratio;
-            var b = (2 * ratio + 1);
+            var b = 1 - 2 * ratio;
             return Color.FromArgb(value.A,
-                ToChannel(a - b * value.R),
-                ToChannel(a - b * value.G),
-                ToChannel(a - b * value.B));
+                ToChannel(a + b * value.R),
+                ToChannel(a + b * value.G),
+                ToChannel(a + b * value.B));
         }
 
         /// <summary>
