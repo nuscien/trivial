@@ -11,7 +11,7 @@
 		<Version>5.2.0</Version>
 		<AssemblyVersion>5.2.0.0</AssemblyVersion>
 		<FileVersion>5.2.0.0</FileVersion>
-		<Description>The MIME constants.</Description>
+		<Description>The MIME constants and the barcode generators.</Description>
 		<Copyright>Copyright (c) 2018 Kingcean Tuan.</Copyright>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 		<PackageProjectUrl>https://github.com/nuscien/trivial/wiki/core</PackageProjectUrl>

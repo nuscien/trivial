@@ -48,7 +48,7 @@ Contains the helper functions and extension functions for network, such as HTTP 
 using Trivial.Net;
 ```
 
-Use `JsonHttpClient` to serialize the JSON format response with retry policy supports.
+Use `JsonHttpClient` to serialize the JSON format response with additional retry policy.
 And `HttpUri` for HTTP URI fields accessing.
 
 ## [Security](https://trivial.kingcean.net/security)
@@ -56,23 +56,6 @@ And `HttpUri` for HTTP URI fields accessing.
 ```csharp
 using Trivial.Security;
 ```
-
-### RSA
-
-Convert a PEM (OpenSSL RSA key) or an XML string to the `RSAParameters` struct.
-
-```csharp
-var parameters = RSAParametersConvert.Parse(pem);
-```
-
-And you can convert back by using the extension method `ToPrivatePEMString` or `ToPublicPEMString`.
-And the extension method `ToXElement` to XML.
-
-### Symmetric & Hash
-
-Use a symmetric algorithm to encrypt and decrypt a string by calling `SymmetricUtilities.Encrypt` and `SymmetricUtilities.DecryptText` functions.
-
-For hash algorithm, you can call `HashUtilities.ToHashString` function to get hash from a plain string and call `HashUtilities.Verify` to verify.
 
 ### Access token
 
@@ -103,11 +86,28 @@ var header = jwt.ToAuthenticationHeaderValue();
 var jwtSame = JsonWebToken<Model>.Parse(jwtStr, sign); // jwtSame.ToEncodedString() == header.Parameter
 ```
 
+### RSA
+
+Convert a PEM (OpenSSL RSA key) or an XML string to the `RSAParameters` struct.
+
+```csharp
+var parameters = RSAParametersConvert.Parse(pem);
+```
+
+And convert back by extension method `ToPrivatePEMString` or `ToPublicPEMString`.
+Or to XML by extension method `ToXElement`.
+
+### Symmetric & Hash
+
+Use a symmetric algorithm to encrypt and decrypt a string by calling `SymmetricUtilities.Encrypt` and `SymmetricUtilities.DecryptText` functions.
+
+For hash algorithm, you can call `HashUtilities.ToHashString` function to get hash from a plain string and call `HashUtilities.Verify` to verify.
+
 ### Secure string
 
-Use the extension methods in the `SecureStringExtensions` class to convert the secret between `SecureString` and `String`/`StringBuilder`/`Byte[]`.
+Convert the secret between `SecureString` and `String`/`StringBuilder`/`Byte[]` by the `SecureStringExtensions` class.
 
-And class `RSASecretExchange` is used to transfer the secret with RSA encryption.
+And class `RSASecretExchange` is used to transfer the secret by RSA encryption.
 
 ## [Text](https://trivial.kingcean.net/text)
 
@@ -120,10 +120,10 @@ using Trivial.Text;
 Includes writable JSON DOM `JsonObjectNode` and `JsonArrayNode`.
 And includes lots of useful converter like following.
 
-- `JsonJavaScriptTicksConverter`, and its fallback converters, to convert `DateTime` from/to JavaScript ticks number in JSON.
-- `JsonUnixTimestampConverter`, and its fallback converters, to convert `DateTime` from/to Unix timestamp number in JSON.
+- `JsonJavaScriptTicksConverter` and its fallback converters to convert `DateTime` from/to JavaScript ticks number in JSON.
+- `JsonUnixTimestampConverter` and its fallback converters to convert `DateTime` from/to Unix timestamp number in JSON.
 - `JsonNumberConverter` and `JsonNumberConverter.NumberStringConverter`, to read number string in JSON.
-- `JsonStringListConverter` and its character separated converters (such as `JsonStringListConverter.WhiteSpaceSeparatedConverter`), to convert a string list from/to a string in JSON.
+- `JsonStringListConverter` and its character separated converters (such as `JsonStringListConverter.WhiteSpaceSeparatedConverter`) to convert a string list from/to a string in JSON.
 
 ### CSV
 
@@ -147,6 +147,23 @@ using Trivial.Data;
 ### Cache
 
 Save a number of model in memory cache by generic class `DataCacheCollection`.
+
+## [Drawing](https://trivial.kingcean.net/drawing)
+
+```csharp
+using Trivial.Drawing;
+```
+
+### Color calculator
+
+Color adjustment, converter, parser and mixer.
+
+```csharp
+var color = ColorCalculator.Parse("rgb(226, 37, 0xA8)");
+color = ColorCalculator.Opacity(color, 0.9);
+color = ColorCalculator.Saturate(color, RelativeSaturationLevels.High);
+color = ColorCalculator.Mix(ColorMixTypes.Lighten, color, Color.FromArgb(0, 240, 0));
+```
 
 ## [Mathematics](https://trivial.kingcean.net/maths)
 
@@ -193,23 +210,6 @@ And `ChineseNumerals` for Chinese and `JapaneseNumerals` for Japanese.
 - `TwoDimensionalPoint` The point in 2D (flat) coordinates.
 - `ThreeDimensionalPoint` The point in 3D (stereoscophic) coordinates.
 - `FourDimensionalPoint` The point in 4D (spacetime) coordinates.
-
-## [Drawing](https://trivial.kingcean.net/drawing)
-
-```csharp
-using Trivial.Drawing;
-```
-
-### Color calculator
-
-Color adjustment, converter, parser and mixer.
-
-```csharp
-var color = ColorCalculator.Parse("rgb(226, 37, 0xA8)");
-color = ColorCalculator.Opacity(color, 0.9);
-color = ColorCalculator.Saturate(color, RelativeSaturationLevels.High);
-color = ColorCalculator.Mix(ColorMixTypes.Lighten, color, Color.FromArgb(0, 240, 0));
-```
 
 ## Further
 
