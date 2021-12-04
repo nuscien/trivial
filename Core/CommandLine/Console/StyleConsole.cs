@@ -566,6 +566,14 @@ namespace Trivial.CommandLine
             Cleared?.Invoke(this, new DataEventArgs<RelativeAreas>(area));
         }
 
+        /// <summary>
+        /// Tests if the output of the instance always contain a line terminator.
+        /// </summary>
+        /// <param name="instance">The instance of the console handler wrapper.</param>
+        /// <returns>true if it will always include a line terminator on output; otherwise, false.</returns>
+        public static bool IsBlockOutputOnly(IConsoleTextCreator instance)
+            => instance?.ContainsTerminator ?? false;
+
         private void ReadLine(ConsoleColor? foreground, SecureString str, char? replaceChar, bool inline = false)
         {
             var s = ReadLine();

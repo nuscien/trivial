@@ -20,18 +20,21 @@ namespace Trivial.CommandLine
         /// Gets or sets the minimum length for each item.
         /// </summary>
         [JsonPropertyName("minlen")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public int? MinLength { get; set; }
 
         /// <summary>
         /// Gets or sets the maximum length for each item.
         /// </summary>
         [JsonPropertyName("maxlen")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public int? MaxLength { get; set; }
 
         /// <summary>
         /// Gets or sets the maximum column count to display.
         /// </summary>
         [JsonPropertyName("columns")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public int? Column { get; set; }
 
         /// <summary>
@@ -39,6 +42,7 @@ namespace Trivial.CommandLine
         /// null for disable paging.
         /// </summary>
         [JsonPropertyName("rows")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public int? MaxRow { get; set; }
 
         /// <summary>
@@ -46,6 +50,7 @@ namespace Trivial.CommandLine
         /// null for disable tips.
         /// </summary>
         [JsonPropertyName("tip")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public string Tips { get; set; } = Resource.SelectionTips;
 
         /// <summary>
@@ -53,6 +58,7 @@ namespace Trivial.CommandLine
         /// Or null to disable tips.
         /// </summary>
         [JsonPropertyName("pagetip")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public string PagingTips { get; set; } = "← [PgUp] | {from} - {end} / {total} | [PgDn] →";
 
         /// <summary>
@@ -60,6 +66,7 @@ namespace Trivial.CommandLine
         /// Or null to disable additional question line.
         /// </summary>
         [JsonPropertyName("q")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public string Question { get; set; } = Resource.ToSelect;
 
         /// <summary>
@@ -67,6 +74,7 @@ namespace Trivial.CommandLine
         /// Or null to disable manual mode.
         /// </summary>
         [JsonPropertyName("manualq")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public string ManualQuestion { get; set; }
 
         /// <summary>
@@ -74,6 +82,7 @@ namespace Trivial.CommandLine
         /// Or null to disable manual mode.
         /// </summary>
         [JsonPropertyName("notsupportq")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public string QuestionWhenNotSupported { get; set; }
 
         /// <summary>
@@ -81,6 +90,7 @@ namespace Trivial.CommandLine
         /// </summary>
         [JsonPropertyName("fore")]
         [JsonConverter(typeof(JsonIntegerEnumCompatibleConverter))]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public ConsoleColor? ForegroundColor { get; set; }
 
         /// <summary>
@@ -88,6 +98,7 @@ namespace Trivial.CommandLine
         /// </summary>
         [JsonPropertyName("back")]
         [JsonConverter(typeof(JsonIntegerEnumCompatibleConverter))]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public ConsoleColor? BackgroundColor { get; set; }
 
         /// <summary>
@@ -95,6 +106,7 @@ namespace Trivial.CommandLine
         /// </summary>
         [JsonPropertyName("selfore2")]
         [JsonConverter(typeof(JsonIntegerEnumCompatibleConverter))]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public ConsoleColor? SelectedForegroundConsoleColor { get; set; } = ConsoleColor.Black;
 
         /// <summary>
@@ -102,6 +114,7 @@ namespace Trivial.CommandLine
         /// </summary>
         [JsonPropertyName("selfore")]
         [JsonConverter(typeof(JsonNumberConverter))]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public Color? SelectedForegroundRgbColor { get; set; }
 
         /// <summary>
@@ -109,6 +122,7 @@ namespace Trivial.CommandLine
         /// </summary>
         [JsonPropertyName("selback2")]
         [JsonConverter(typeof(JsonIntegerEnumCompatibleConverter))]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public ConsoleColor? SelectedBackgroundConsoleColor { get; set; } = ConsoleColor.Cyan;
 
         /// <summary>
@@ -116,6 +130,7 @@ namespace Trivial.CommandLine
         /// </summary>
         [JsonPropertyName("selback")]
         [JsonConverter(typeof(JsonNumberConverter))]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public Color? SelectedBackgroundRgbColor { get; set; } = Color.FromArgb(0x55, 0xCC, 0xEE);
 
         /// <summary>
@@ -123,6 +138,7 @@ namespace Trivial.CommandLine
         /// </summary>
         [JsonPropertyName("qfore2")]
         [JsonConverter(typeof(JsonIntegerEnumCompatibleConverter))]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public ConsoleColor? QuestionForegroundConsoleColor { get; set; }
 
         /// <summary>
@@ -130,6 +146,7 @@ namespace Trivial.CommandLine
         /// </summary>
         [JsonPropertyName("qfore")]
         [JsonConverter(typeof(JsonNumberConverter))]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public Color? QuestionForegroundRgbColor { get; set; }
 
         /// <summary>
@@ -137,6 +154,7 @@ namespace Trivial.CommandLine
         /// </summary>
         [JsonPropertyName("qback2")]
         [JsonConverter(typeof(JsonIntegerEnumCompatibleConverter))]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public ConsoleColor? QuestionBackgroundConsoleColor { get; set; }
 
         /// <summary>
@@ -144,6 +162,7 @@ namespace Trivial.CommandLine
         /// </summary>
         [JsonPropertyName("qback")]
         [JsonConverter(typeof(JsonNumberConverter))]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public Color? QuestionBackgroundRgbColor { get; set; }
 
         /// <summary>
@@ -151,6 +170,7 @@ namespace Trivial.CommandLine
         /// </summary>
         [JsonPropertyName("tipfore2")]
         [JsonConverter(typeof(JsonIntegerEnumCompatibleConverter))]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public ConsoleColor? TipsForegroundConsoleColor { get; set; } = ConsoleColor.Yellow;
 
         /// <summary>
@@ -158,6 +178,7 @@ namespace Trivial.CommandLine
         /// </summary>
         [JsonPropertyName("tipfore")]
         [JsonConverter(typeof(JsonNumberConverter))]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public Color? TipsForegroundRgbColor { get; set; } = Color.FromArgb(0xF9, 0xEE, 0x88);
 
         /// <summary>
@@ -165,6 +186,7 @@ namespace Trivial.CommandLine
         /// </summary>
         [JsonPropertyName("tipback2")]
         [JsonConverter(typeof(JsonIntegerEnumCompatibleConverter))]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public ConsoleColor? TipsBackgroundConsoleColor { get; set; }
 
         /// <summary>
@@ -172,6 +194,7 @@ namespace Trivial.CommandLine
         /// </summary>
         [JsonPropertyName("tipback")]
         [JsonConverter(typeof(JsonNumberConverter))]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public Color? TipsBackgroundRgbColor { get; set; }
 
         /// <summary>
@@ -179,6 +202,7 @@ namespace Trivial.CommandLine
         /// </summary>
         [JsonPropertyName("pagefore2")]
         [JsonConverter(typeof(JsonIntegerEnumCompatibleConverter))]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public ConsoleColor? PagingForegroundConsoleColor { get; set; }
 
         /// <summary>
@@ -186,6 +210,7 @@ namespace Trivial.CommandLine
         /// </summary>
         [JsonPropertyName("pagefore")]
         [JsonConverter(typeof(JsonNumberConverter))]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public Color? PagingForegroundRgbColor { get; set; }
 
         /// <summary>
@@ -193,6 +218,7 @@ namespace Trivial.CommandLine
         /// </summary>
         [JsonPropertyName("pageback2")]
         [JsonConverter(typeof(JsonIntegerEnumCompatibleConverter))]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public ConsoleColor? PagingBackgroundConsoleColor { get; set; }
 
         /// <summary>
@@ -200,6 +226,7 @@ namespace Trivial.CommandLine
         /// </summary>
         [JsonPropertyName("pageback")]
         [JsonConverter(typeof(JsonNumberConverter))]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public Color? PagingBackgroundRgbColor { get; set; }
 
         /// <summary>
@@ -207,6 +234,7 @@ namespace Trivial.CommandLine
         /// </summary>
         [JsonPropertyName("itemfore2")]
         [JsonConverter(typeof(JsonIntegerEnumCompatibleConverter))]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public ConsoleColor? ItemForegroundConsoleColor { get; set; }
 
         /// <summary>
@@ -214,6 +242,7 @@ namespace Trivial.CommandLine
         /// </summary>
         [JsonPropertyName("itemfore")]
         [JsonConverter(typeof(JsonNumberConverter))]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public Color? ItemForegroundRgbColor { get; set; }
 
         /// <summary>
@@ -221,6 +250,7 @@ namespace Trivial.CommandLine
         /// </summary>
         [JsonPropertyName("itemback2")]
         [JsonConverter(typeof(JsonIntegerEnumCompatibleConverter))]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public ConsoleColor? ItemBackgroundConsoleColor { get; set; }
 
         /// <summary>
@@ -228,18 +258,21 @@ namespace Trivial.CommandLine
         /// </summary>
         [JsonPropertyName("itemback")]
         [JsonConverter(typeof(JsonNumberConverter))]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public Color? ItemBackgroundRgbColor { get; set; }
 
         /// <summary>
         /// Gets or sets the prefix for the item.
         /// </summary>
         [JsonPropertyName("prefix")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public string Prefix { get; set; }
 
         /// <summary>
         /// Gets or sets the prefix for the item selected.
         /// </summary>
         [JsonPropertyName("selprefix")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
         public string SelectedPrefix { get; set; }
 
         /// <summary>

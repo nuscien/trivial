@@ -228,7 +228,7 @@ namespace Trivial.Maths
             {
                 if (obj is decimal m) return (decimal)this == m;
                 if (obj is float s) return (float)this == s;
-                if (obj is int i) return LongDenominator == 1L && LongNumerator == (long)Math.Abs(i) && IsNegative == i < 0;
+                if (obj is int i) return LongDenominator == 1L && LongNumerator == Math.Abs(i) && IsNegative == i < 0;
                 if (obj is long l) return LongDenominator == 1L && LongNumerator == Math.Abs(l) && IsNegative == l < 0;
             }
             catch (InvalidCastException)
@@ -252,12 +252,10 @@ namespace Trivial.Maths
         /// </returns>
         /// <param name="other">An object to compare with this object.</param>
         public bool Equals(Fraction other)
-        {
-            return LongNumerator == other.LongNumerator
+            => LongNumerator == other.LongNumerator
                 && LongDenominator == other.LongDenominator
                 && IsPositive == other.IsPositive
                 && IsNegative == other.IsNegative;
-        }
 
         /// <summary>
         /// Indicates whether the current object is equal to another object of the same type.
@@ -267,9 +265,7 @@ namespace Trivial.Maths
         /// </returns>
         /// <param name="other">An object to compare with this object.</param>
         public bool Equals(double other)
-        {
-            return (double)this == other;
-        }
+            => (double)this == other;
 
         /// <summary>
         /// Compares the current object with another object of the same type.
@@ -279,9 +275,7 @@ namespace Trivial.Maths
         /// </returns>
         /// <param name="other">An object to compare with this object.</param>
         public int CompareTo(Fraction other)
-        {
-            return ((double)this).CompareTo((double)other);
-        }
+            => ((double)this).CompareTo((double)other);
 
         /// <summary>
         /// Compares the current object with another object of the same type.
@@ -291,15 +285,11 @@ namespace Trivial.Maths
         /// </returns>
         /// <param name="other">An object to compare with this object.</param>
         public int CompareTo(double other)
-        {
-            return ((double)this).CompareTo(other);
-        }
+            => ((double)this).CompareTo(other);
 
         /// <inhericdoc />
         public override int GetHashCode()
-        {
-            return ((double)this).GetHashCode();
-        }
+            => ((double)this).GetHashCode();
 
         /// <summary>
         /// Compares two angles to indicate if they are same.
@@ -339,9 +329,7 @@ namespace Trivial.Maths
         /// <param name="rightValue">The right value to compare.</param>
         /// <returns>true if they are same; otherwise, false.</returns>
         public static bool operator ==(Fraction leftValue, double rightValue)
-        {
-            return (double)leftValue == rightValue;
-        }
+            => (double)leftValue == rightValue;
 
         /// <summary>
         /// Compares two angles to indicate if they are different.
@@ -351,9 +339,47 @@ namespace Trivial.Maths
         /// <param name="rightValue">The right value to compare.</param>
         /// <returns>true if they are different; otherwise, false.</returns>
         public static bool operator !=(Fraction leftValue, double rightValue)
-        {
-            return (double)leftValue != rightValue;
-        }
+            => (double)leftValue != rightValue;
+
+        /// <summary>
+        /// Compares two angles to indicate if they are same.
+        /// leftValue == rightValue
+        /// </summary>
+        /// <param name="leftValue">The left value to compare.</param>
+        /// <param name="rightValue">The right value to compare.</param>
+        /// <returns>true if they are same; otherwise, false.</returns>
+        public static bool operator ==(Fraction leftValue, int rightValue)
+            => (double)leftValue == rightValue;
+
+        /// <summary>
+        /// Compares two angles to indicate if they are different.
+        /// leftValue != rightValue
+        /// </summary>
+        /// <param name="leftValue">The left value to compare.</param>
+        /// <param name="rightValue">The right value to compare.</param>
+        /// <returns>true if they are different; otherwise, false.</returns>
+        public static bool operator !=(Fraction leftValue, int rightValue)
+            => (double)leftValue != rightValue;
+
+        /// <summary>
+        /// Compares two angles to indicate if they are same.
+        /// leftValue == rightValue
+        /// </summary>
+        /// <param name="leftValue">The left value to compare.</param>
+        /// <param name="rightValue">The right value to compare.</param>
+        /// <returns>true if they are same; otherwise, false.</returns>
+        public static bool operator ==(Fraction leftValue, long rightValue)
+            => (double)leftValue == rightValue;
+
+        /// <summary>
+        /// Compares two angles to indicate if they are different.
+        /// leftValue != rightValue
+        /// </summary>
+        /// <param name="leftValue">The left value to compare.</param>
+        /// <param name="rightValue">The right value to compare.</param>
+        /// <returns>true if they are different; otherwise, false.</returns>
+        public static bool operator !=(Fraction leftValue, long rightValue)
+            => (double)leftValue != rightValue;
 
         /// <summary>
         /// Compares if left is smaller than right.
@@ -362,9 +388,7 @@ namespace Trivial.Maths
         /// <param name="rightValue">The right value to compare.</param>
         /// <returns>true if the left one is smaller than the right one; otherwise, false.</returns>
         public static bool operator <(Fraction leftValue, Fraction rightValue)
-        {
-            return (double)leftValue < (double)rightValue;
-        }
+            => (double)leftValue < (double)rightValue;
 
         /// <summary>
         /// Compares if left is greater than right.
@@ -373,9 +397,7 @@ namespace Trivial.Maths
         /// <param name="rightValue">The right value to compare.</param>
         /// <returns>true if the left one is greater than the right one; otherwise, false.</returns>
         public static bool operator >(Fraction leftValue, Fraction rightValue)
-        {
-            return (double)leftValue > (double)rightValue;
-        }
+            => (double)leftValue > (double)rightValue;
 
         /// <summary>
         /// Compares if left is smaller than right.
@@ -384,9 +406,7 @@ namespace Trivial.Maths
         /// <param name="rightValue">The right value to compare.</param>
         /// <returns>true if the left one is smaller than the right one; otherwise, false.</returns>
         public static bool operator <(Fraction leftValue, double rightValue)
-        {
-            return (double)leftValue < rightValue;
-        }
+            => (double)leftValue < rightValue;
 
         /// <summary>
         /// Compares if left is greater than right.
@@ -395,9 +415,43 @@ namespace Trivial.Maths
         /// <param name="rightValue">The right value to compare.</param>
         /// <returns>true if the left one is greater than the right one; otherwise, false.</returns>
         public static bool operator >(Fraction leftValue, double rightValue)
-        {
-            return (double)leftValue > rightValue;
-        }
+            => (double)leftValue > rightValue;
+
+        /// <summary>
+        /// Compares if left is smaller than right.
+        /// </summary>
+        /// <param name="leftValue">The left value to compare.</param>
+        /// <param name="rightValue">The right value to compare.</param>
+        /// <returns>true if the left one is smaller than the right one; otherwise, false.</returns>
+        public static bool operator <(Fraction leftValue, int rightValue)
+            => (double)leftValue < rightValue;
+
+        /// <summary>
+        /// Compares if left is greater than right.
+        /// </summary>
+        /// <param name="leftValue">The left value to compare.</param>
+        /// <param name="rightValue">The right value to compare.</param>
+        /// <returns>true if the left one is greater than the right one; otherwise, false.</returns>
+        public static bool operator >(Fraction leftValue, int rightValue)
+            => (double)leftValue > rightValue;
+
+        /// <summary>
+        /// Compares if left is smaller than right.
+        /// </summary>
+        /// <param name="leftValue">The left value to compare.</param>
+        /// <param name="rightValue">The right value to compare.</param>
+        /// <returns>true if the left one is smaller than the right one; otherwise, false.</returns>
+        public static bool operator <(Fraction leftValue, long rightValue)
+            => (double)leftValue < rightValue;
+
+        /// <summary>
+        /// Compares if left is greater than right.
+        /// </summary>
+        /// <param name="leftValue">The left value to compare.</param>
+        /// <param name="rightValue">The right value to compare.</param>
+        /// <returns>true if the left one is greater than the right one; otherwise, false.</returns>
+        public static bool operator >(Fraction leftValue, long rightValue)
+            => (double)leftValue > rightValue;
 
         /// <summary>
         /// Compares if left is smaller than or equals to right.
@@ -438,9 +492,7 @@ namespace Trivial.Maths
         /// <param name="rightValue">The right value to compare.</param>
         /// <returns>true if the left one is smaller than or equals to the right one; otherwise, false.</returns>
         public static bool operator <=(Fraction leftValue, double rightValue)
-        {
-            return (double)leftValue <= rightValue;
-        }
+            => (double)leftValue <= rightValue;
 
         /// <summary>
         /// Compares if left is greater than or equals to right.
@@ -449,9 +501,43 @@ namespace Trivial.Maths
         /// <param name="rightValue">The right value to compare.</param>
         /// <returns>true if the left one is greater than or equals to the right one; otherwise, false.</returns>
         public static bool operator >=(Fraction leftValue, double rightValue)
-        {
-            return (double)leftValue >= rightValue;
-        }
+            => (double)leftValue >= rightValue;
+
+        /// <summary>
+        /// Compares if left is smaller than or equals to right.
+        /// </summary>
+        /// <param name="leftValue">The left value to compare.</param>
+        /// <param name="rightValue">The right value to compare.</param>
+        /// <returns>true if the left one is smaller than or equals to the right one; otherwise, false.</returns>
+        public static bool operator <=(Fraction leftValue, int rightValue)
+            => (double)leftValue <= rightValue;
+
+        /// <summary>
+        /// Compares if left is greater than or equals to right.
+        /// </summary>
+        /// <param name="leftValue">The left value to compare.</param>
+        /// <param name="rightValue">The right value to compare.</param>
+        /// <returns>true if the left one is greater than or equals to the right one; otherwise, false.</returns>
+        public static bool operator >=(Fraction leftValue, int rightValue)
+            => (double)leftValue >= rightValue;
+
+        /// <summary>
+        /// Compares if left is smaller than or equals to right.
+        /// </summary>
+        /// <param name="leftValue">The left value to compare.</param>
+        /// <param name="rightValue">The right value to compare.</param>
+        /// <returns>true if the left one is smaller than or equals to the right one; otherwise, false.</returns>
+        public static bool operator <=(Fraction leftValue, long rightValue)
+            => (double)leftValue <= rightValue;
+
+        /// <summary>
+        /// Compares if left is greater than or equals to right.
+        /// </summary>
+        /// <param name="leftValue">The left value to compare.</param>
+        /// <param name="rightValue">The right value to compare.</param>
+        /// <returns>true if the left one is greater than or equals to the right one; otherwise, false.</returns>
+        public static bool operator >=(Fraction leftValue, long rightValue)
+            => (double)leftValue >= rightValue;
 
         /// <summary>
         /// Converts to a floating number.
@@ -459,9 +545,7 @@ namespace Trivial.Maths
         /// <param name="value">The fraction value.</param>
         /// <returns>A floating number.</returns>
         public static explicit operator double(Fraction value)
-        {
-            return value.LongNumerator * (value.IsNegative ? - 1.0 : 1.0) / value.LongDenominator;
-        }
+            => value.LongNumerator * (value.IsNegative ? - 1.0 : 1.0) / value.LongDenominator;
 
         /// <summary>
         /// Converts to a floating number.
@@ -469,9 +553,7 @@ namespace Trivial.Maths
         /// <param name="value">The fraction value.</param>
         /// <returns>A floating number.</returns>
         public static explicit operator float(Fraction value)
-        {
-            return value.LongNumerator * (value.IsNegative ? -1f : 1f) / value.LongDenominator;
-        }
+            => value.LongNumerator * (value.IsNegative ? -1f : 1f) / value.LongDenominator;
 
         /// <summary>
         /// Converts to a floating number.
@@ -479,9 +561,7 @@ namespace Trivial.Maths
         /// <param name="value">The fraction value.</param>
         /// <returns>A floating number.</returns>
         public static explicit operator decimal(Fraction value)
-        {
-            return value.LongNumerator * (value.IsNegative ? -1m : 1m) / value.LongDenominator;
-        }
+            => value.LongNumerator * (value.IsNegative ? -1m : 1m) / value.LongDenominator;
 
         /// <summary>
         /// Converts to an integer.
@@ -489,9 +569,7 @@ namespace Trivial.Maths
         /// <param name="value">The fraction value.</param>
         /// <returns>A floating number.</returns>
         public static explicit operator long(Fraction value)
-        {
-            return (long)(value.LongNumerator * (value.IsNegative ? -1.0 : 1.0) / value.LongDenominator);
-        }
+            => (long)(value.LongNumerator * (value.IsNegative ? -1.0 : 1.0) / value.LongDenominator);
 
         /// <summary>
         /// Converts to an integer.
@@ -499,9 +577,7 @@ namespace Trivial.Maths
         /// <param name="value">The fraction value.</param>
         /// <returns>A floating number.</returns>
         public static explicit operator int(Fraction value)
-        {
-            return (int)(value.LongNumerator * (value.IsNegative ? -1.0 : 1.0) / value.LongDenominator);
-        }
+            => (int)(value.LongNumerator * (value.IsNegative ? -1.0 : 1.0) / value.LongDenominator);
 
         /// <summary>
         /// Converts to an integer.
@@ -509,9 +585,7 @@ namespace Trivial.Maths
         /// <param name="value">The fraction value.</param>
         /// <returns>A floating number.</returns>
         public static explicit operator short(Fraction value)
-        {
-            return (short)(value.LongNumerator * (value.IsNegative ? -1.0 : 1.0) / value.LongDenominator);
-        }
+            => (short)(value.LongNumerator * (value.IsNegative ? -1.0 : 1.0) / value.LongDenominator);
 
         /// <summary>
         /// Converts to a floating number.
@@ -519,9 +593,7 @@ namespace Trivial.Maths
         /// <param name="value">The fraction value.</param>
         /// <returns>A floating number.</returns>
         public static explicit operator Text.JsonDoubleNode(Fraction value)
-        {
-            return new(value.LongNumerator * (value.IsNegative ? -1.0 : 1.0) / value.LongDenominator);
-        }
+            => new(value.LongNumerator * (value.IsNegative ? -1.0 : 1.0) / value.LongDenominator);
 
         /// <summary>
         /// Converts to a floating number.
@@ -529,9 +601,7 @@ namespace Trivial.Maths
         /// <param name="value">The fraction value.</param>
         /// <returns>A floating number.</returns>
         public static explicit operator Text.JsonStringNode(Fraction value)
-        {
-            return new(value.ToString());
-        }
+            => new(value.ToString());
 
         /// <summary>
         /// Converts to a floating number.
@@ -539,9 +609,7 @@ namespace Trivial.Maths
         /// <param name="value">The fraction value.</param>
         /// <returns>A floating number.</returns>
         public static explicit operator System.Text.Json.Nodes.JsonValue(Fraction value)
-        {
-            return System.Text.Json.Nodes.JsonValue.Create(value.LongNumerator * (value.IsNegative ? -1.0 : 1.0) / value.LongDenominator);
-        }
+            => System.Text.Json.Nodes.JsonValue.Create(value.LongNumerator * (value.IsNegative ? -1.0 : 1.0) / value.LongDenominator);
 
         /// <summary>
         /// Converts to a floating number.
@@ -549,9 +617,7 @@ namespace Trivial.Maths
         /// <param name="value">The fraction value.</param>
         /// <returns>A floating number.</returns>
         public static explicit operator System.Text.Json.Nodes.JsonNode(Fraction value)
-        {
-            return System.Text.Json.Nodes.JsonValue.Create(value.LongNumerator * (value.IsNegative ? -1.0 : 1.0) / value.LongDenominator);
-        }
+            => System.Text.Json.Nodes.JsonValue.Create(value.LongNumerator * (value.IsNegative ? -1.0 : 1.0) / value.LongDenominator);
 
         /// <summary>
         /// Pluses fractions.
@@ -576,9 +642,7 @@ namespace Trivial.Maths
         /// <param name="rightValue">The right value for addition operator.</param>
         /// <returns>A result after addition.</returns>
         public static Fraction operator +(Fraction leftValue, int rightValue)
-        {
-            return new Fraction(rightValue * leftValue.LongDenominator + leftValue.LongNumerator, leftValue.LongDenominator);
-        }
+            => new(rightValue * leftValue.LongDenominator + leftValue.LongNumerator, leftValue.LongDenominator);
 
         /// <summary>
         /// Pluses fractions.
@@ -588,9 +652,7 @@ namespace Trivial.Maths
         /// <param name="rightValue">The right value for addition operator.</param>
         /// <returns>A result after addition.</returns>
         public static Fraction operator +(int leftValue, Fraction rightValue)
-        {
-            return new Fraction(leftValue * rightValue.LongDenominator + rightValue.LongNumerator, rightValue.LongDenominator);
-        }
+            => new(leftValue * rightValue.LongDenominator + rightValue.LongNumerator, rightValue.LongDenominator);
 
         /// <summary>
         /// Pluses fractions.
@@ -600,9 +662,7 @@ namespace Trivial.Maths
         /// <param name="rightValue">The right value for addition operator.</param>
         /// <returns>A result after addition.</returns>
         public static Fraction operator +(Fraction leftValue, long rightValue)
-        {
-            return new Fraction(rightValue * leftValue.LongDenominator + leftValue.LongNumerator, leftValue.LongDenominator);
-        }
+            => new(rightValue * leftValue.LongDenominator + leftValue.LongNumerator, leftValue.LongDenominator);
 
         /// <summary>
         /// Pluses fractions.
@@ -612,9 +672,7 @@ namespace Trivial.Maths
         /// <param name="rightValue">The right value for addition operator.</param>
         /// <returns>A result after addition.</returns>
         public static Fraction operator +(long leftValue, Fraction rightValue)
-        {
-            return new Fraction(leftValue * rightValue.LongDenominator + rightValue.LongNumerator, rightValue.LongDenominator);
-        }
+            => new(leftValue * rightValue.LongDenominator + rightValue.LongNumerator, rightValue.LongDenominator);
 
         /// <summary>
         /// Subtracts fractions.
@@ -639,9 +697,7 @@ namespace Trivial.Maths
         /// <param name="rightValue">The right value for addition operator.</param>
         /// <returns>A result after Subtraction.</returns>
         public static Fraction operator -(Fraction leftValue, int rightValue)
-        {
-            return new Fraction(-rightValue * leftValue.LongDenominator + leftValue.LongNumerator, leftValue.LongDenominator);
-        }
+            => new(-rightValue * leftValue.LongDenominator + leftValue.LongNumerator, leftValue.LongDenominator);
 
         /// <summary>
         /// Subtracts fractions.
@@ -651,9 +707,7 @@ namespace Trivial.Maths
         /// <param name="rightValue">The right value for addition operator.</param>
         /// <returns>A result after Subtraction.</returns>
         public static Fraction operator -(int leftValue, Fraction rightValue)
-        {
-            return new Fraction(leftValue * rightValue.LongDenominator - rightValue.LongNumerator, rightValue.LongDenominator);
-        }
+            => new(leftValue * rightValue.LongDenominator - rightValue.LongNumerator, rightValue.LongDenominator);
 
         /// <summary>
         /// Subtracts fractions.
@@ -663,9 +717,7 @@ namespace Trivial.Maths
         /// <param name="rightValue">The right value for addition operator.</param>
         /// <returns>A result after Subtraction.</returns>
         public static Fraction operator -(Fraction leftValue, long rightValue)
-        {
-            return new Fraction(-rightValue * leftValue.LongDenominator + leftValue.LongNumerator, leftValue.LongDenominator);
-        }
+            => new(-rightValue * leftValue.LongDenominator + leftValue.LongNumerator, leftValue.LongDenominator);
 
         /// <summary>
         /// Subtracts fractions.
@@ -675,9 +727,7 @@ namespace Trivial.Maths
         /// <param name="rightValue">The right value for addition operator.</param>
         /// <returns>A result after Subtraction.</returns>
         public static Fraction operator -(long leftValue, Fraction rightValue)
-        {
-            return new Fraction(leftValue * rightValue.LongDenominator + rightValue.LongNumerator, rightValue.LongDenominator);
-        }
+            => new(leftValue * rightValue.LongDenominator + rightValue.LongNumerator, rightValue.LongDenominator);
 
         /// <summary>
         /// Negates the current value.
@@ -686,9 +736,7 @@ namespace Trivial.Maths
         /// <param name="value">The value to negate.</param>
         /// <returns>A result after negation.</returns>
         public static Fraction operator -(Fraction value)
-        {
-            return new Fraction(-value.LongNumerator, value.LongDenominator);
-        }
+            => new(-value.LongNumerator, value.LongDenominator);
 
         /// <summary>
         /// Multiplies fractions.
@@ -698,9 +746,7 @@ namespace Trivial.Maths
         /// <param name="rightValue">The right value for addition operator.</param>
         /// <returns>A result after multiply.</returns>
         public static Fraction operator *(Fraction leftValue, Fraction rightValue)
-        {
-            return new Fraction(leftValue.LongNumerator * rightValue.LongNumerator, leftValue.LongDenominator * rightValue.LongDenominator);
-        }
+            => new(leftValue.LongNumerator * rightValue.LongNumerator, leftValue.LongDenominator * rightValue.LongDenominator);
 
         /// <summary>
         /// Multiplies fractions.
@@ -710,9 +756,7 @@ namespace Trivial.Maths
         /// <param name="rightValue">The right value for addition operator.</param>
         /// <returns>A result after multiply.</returns>
         public static Fraction operator *(Fraction leftValue, int rightValue)
-        {
-            return new Fraction(leftValue.LongNumerator * rightValue, leftValue.LongDenominator);
-        }
+            => new(leftValue.LongNumerator * rightValue, leftValue.LongDenominator);
 
         /// <summary>
         /// Multiplies fractions.
@@ -722,9 +766,7 @@ namespace Trivial.Maths
         /// <param name="rightValue">The right value for addition operator.</param>
         /// <returns>A result after multiply.</returns>
         public static Fraction operator *(int leftValue, Fraction rightValue)
-        {
-            return new Fraction(leftValue * rightValue.LongNumerator, rightValue.LongDenominator);
-        }
+            => new(leftValue * rightValue.LongNumerator, rightValue.LongDenominator);
 
         /// <summary>
         /// Multiplies fractions.
@@ -734,9 +776,7 @@ namespace Trivial.Maths
         /// <param name="rightValue">The right value for addition operator.</param>
         /// <returns>A result after multiply.</returns>
         public static Fraction operator *(Fraction leftValue, long rightValue)
-        {
-            return new Fraction(leftValue.LongNumerator * rightValue, leftValue.LongDenominator);
-        }
+            => new(leftValue.LongNumerator * rightValue, leftValue.LongDenominator);
 
         /// <summary>
         /// Multiplies fractions.
@@ -746,9 +786,7 @@ namespace Trivial.Maths
         /// <param name="rightValue">The right value for addition operator.</param>
         /// <returns>A result after multiply.</returns>
         public static Fraction operator *(long leftValue, Fraction rightValue)
-        {
-            return new Fraction(leftValue * rightValue.LongNumerator, rightValue.LongDenominator);
-        }
+            => new(leftValue * rightValue.LongNumerator, rightValue.LongDenominator);
 
         /// <summary>
         /// Multiplies fractions.
@@ -758,9 +796,7 @@ namespace Trivial.Maths
         /// <param name="rightValue">The right value for addition operator.</param>
         /// <returns>A result after multiply.</returns>
         public static Fraction operator /(Fraction leftValue, Fraction rightValue)
-        {
-            return new Fraction(leftValue.LongNumerator * rightValue.LongDenominator, leftValue.LongNumerator * rightValue.LongDenominator);
-        }
+            => new(leftValue.LongNumerator * rightValue.LongDenominator, leftValue.LongNumerator * rightValue.LongDenominator);
 
         /// <summary>
         /// Multiplies fractions.
@@ -770,9 +806,7 @@ namespace Trivial.Maths
         /// <param name="rightValue">The right value for addition operator.</param>
         /// <returns>A result after multiply.</returns>
         public static Fraction operator /(Fraction leftValue, int rightValue)
-        {
-            return new Fraction(leftValue.LongNumerator, leftValue.LongDenominator * rightValue);
-        }
+            => new(leftValue.LongNumerator, leftValue.LongDenominator * rightValue);
 
         /// <summary>
         /// Multiplies fractions.
@@ -782,9 +816,7 @@ namespace Trivial.Maths
         /// <param name="rightValue">The right value for addition operator.</param>
         /// <returns>A result after multiply.</returns>
         public static Fraction operator /(int leftValue, Fraction rightValue)
-        {
-            return new Fraction(leftValue * rightValue.LongDenominator, rightValue.LongNumerator);
-        }
+            => new(leftValue * rightValue.LongDenominator, rightValue.LongNumerator);
 
         /// <summary>
         /// Multiplies fractions.
@@ -794,9 +826,7 @@ namespace Trivial.Maths
         /// <param name="rightValue">The right value for addition operator.</param>
         /// <returns>A result after multiply.</returns>
         public static Fraction operator /(Fraction leftValue, long rightValue)
-        {
-            return new Fraction(leftValue.LongNumerator, leftValue.LongDenominator * rightValue);
-        }
+            => new(leftValue.LongNumerator, leftValue.LongDenominator * rightValue);
 
         /// <summary>
         /// Multiplies fractions.
@@ -806,8 +836,6 @@ namespace Trivial.Maths
         /// <param name="rightValue">The right value for addition operator.</param>
         /// <returns>A result after multiply.</returns>
         public static Fraction operator /(long leftValue, Fraction rightValue)
-        {
-            return new Fraction(leftValue * rightValue.LongDenominator, rightValue.LongNumerator);
-        }
+            => new(leftValue * rightValue.LongDenominator, rightValue.LongNumerator);
     }
 }

@@ -21,6 +21,7 @@ namespace Trivial.Maths
     /// </summary>
     public static class IntervalUtility
     {
+#pragma warning disable IDE0057
         internal const string ErrorParseMessage = "The string to parse was not in the internal format.";
 
         #region Simple interval
@@ -415,7 +416,7 @@ namespace Trivial.Maths
         /// <param name="op">The operation.</param>
         /// <returns>The interval instance parsed.</returns>
         /// <exception cref="FormatException">The string to parse is not the internal format.</exception>
-        public static NullableValueSimpleInterval<int> ParseForNullableInt32(int value, BasicCompareOperator op) => new NullableValueSimpleInterval<int>(
+        public static NullableValueSimpleInterval<int> ParseForNullableInt32(int value, BasicCompareOperator op) => new(
             value,
             op);
 
@@ -426,7 +427,7 @@ namespace Trivial.Maths
         /// <param name="valueB">The seconde value.</param>
         /// <returns>The interval instance parsed.</returns>
         /// <exception cref="FormatException">The string to parse is not the internal format.</exception>
-        public static NullableValueSimpleInterval<int> ParseForNullableInt32(int valueA, int valueB) => new NullableValueSimpleInterval<int>(
+        public static NullableValueSimpleInterval<int> ParseForNullableInt32(int valueA, int valueB) => new(
             valueA,
             valueB);
 
@@ -439,7 +440,7 @@ namespace Trivial.Maths
         /// <param name="rightOpen">true if it is right open; otherwise, right closed.</param>
         /// <returns>The interval instance parsed.</returns>
         /// <exception cref="FormatException">The string to parse is not the internal format.</exception>
-        public static NullableValueSimpleInterval<int> ParseForNullableInt32(int valueA, int valueB, bool leftOpen, bool rightOpen) => new NullableValueSimpleInterval<int>(
+        public static NullableValueSimpleInterval<int> ParseForNullableInt32(int valueA, int valueB, bool leftOpen, bool rightOpen) => new(
             valueA,
             valueB,
             leftOpen,
@@ -525,7 +526,7 @@ namespace Trivial.Maths
         /// <param name="op">The operation.</param>
         /// <returns>The interval instance parsed.</returns>
         /// <exception cref="FormatException">The string to parse is not the internal format.</exception>
-        public static NullableValueSimpleInterval<long> ParseForNullableInt64(long value, BasicCompareOperator op) => new NullableValueSimpleInterval<long>(
+        public static NullableValueSimpleInterval<long> ParseForNullableInt64(long value, BasicCompareOperator op) => new(
             value,
             op);
 
@@ -536,7 +537,7 @@ namespace Trivial.Maths
         /// <param name="valueB">The seconde value.</param>
         /// <returns>The interval instance parsed.</returns>
         /// <exception cref="FormatException">The string to parse is not the internal format.</exception>
-        public static NullableValueSimpleInterval<long> ParseForNullableInt64(long valueA, long valueB) => new NullableValueSimpleInterval<long>(
+        public static NullableValueSimpleInterval<long> ParseForNullableInt64(long valueA, long valueB) => new(
             valueA,
             valueB);
 
@@ -549,7 +550,7 @@ namespace Trivial.Maths
         /// <param name="rightOpen">true if it is right open; otherwise, right closed.</param>
         /// <returns>The interval instance parsed.</returns>
         /// <exception cref="FormatException">The string to parse is not the internal format.</exception>
-        public static NullableValueSimpleInterval<long> ParseForNullableInt64(long valueA, long valueB, bool leftOpen, bool rightOpen) => new NullableValueSimpleInterval<long>(
+        public static NullableValueSimpleInterval<long> ParseForNullableInt64(long valueA, long valueB, bool leftOpen, bool rightOpen) => new(
             valueA,
             valueB,
             leftOpen,
@@ -610,7 +611,7 @@ namespace Trivial.Maths
         /// <param name="op">The operation.</param>
         /// <returns>The interval instance parsed.</returns>
         /// <exception cref="FormatException">The string to parse is not the internal format.</exception>
-        public static StructValueSimpleInterval<double> ParseForDouble(double value, BasicCompareOperator op) => new StructValueSimpleInterval<double>(
+        public static StructValueSimpleInterval<double> ParseForDouble(double value, BasicCompareOperator op) => new(
             value,
             op,
             double.NegativeInfinity,
@@ -623,7 +624,7 @@ namespace Trivial.Maths
         /// <param name="valueB">The seconde value.</param>
         /// <returns>The interval instance parsed.</returns>
         /// <exception cref="FormatException">The string to parse is not the internal format.</exception>
-        public static StructValueSimpleInterval<double> ParseForDouble(double valueA, double valueB) => new StructValueSimpleInterval<double>(
+        public static StructValueSimpleInterval<double> ParseForDouble(double valueA, double valueB) => new(
             valueA,
             valueB,
             false,
@@ -640,7 +641,7 @@ namespace Trivial.Maths
         /// <param name="rightOpen">true if it is right open; otherwise, right closed.</param>
         /// <returns>The interval instance parsed.</returns>
         /// <exception cref="FormatException">The string to parse is not the internal format.</exception>
-        public static StructValueSimpleInterval<double> ParseForDouble(double valueA, double valueB, bool leftOpen, bool rightOpen) => new StructValueSimpleInterval<double>(
+        public static StructValueSimpleInterval<double> ParseForDouble(double valueA, double valueB, bool leftOpen, bool rightOpen) => new(
             valueA,
             valueB,
             leftOpen,
@@ -898,5 +899,6 @@ namespace Trivial.Maths
         }
 
         #endregion
+#pragma warning restore IDE0057
     }
 }

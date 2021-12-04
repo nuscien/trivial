@@ -214,6 +214,39 @@ namespace Trivial.Web
         }
 
         /// <summary>
+        /// Gets the integer value.
+        /// </summary>
+        /// <param name="request">The query collection.</param>
+        /// <param name="key">The key.</param>
+        /// <returns>The number value; or null, if non-exist or parse failed.</returns>
+        public static double? TryGetDoubleValue(this IQueryCollection request, string key)
+        {
+            var s = request[key].Select(ele => ele?.Trim()).FirstOrDefault(ele => !string.IsNullOrEmpty(ele));
+            if (double.TryParse(s, out var r)) return r;
+            return null;
+        }
+
+        /// <summary>
+        /// Gets the integer value.
+        /// </summary>
+        /// <param name="request">The query collection.</param>
+        /// <param name="key">The key.</param>
+        /// <param name="result">The output result.</param>
+        /// <returns>true if parse succeeded; otherwise, false.</returns>
+        public static bool TryGetDoubleValue(this IQueryCollection request, string key, out double result)
+        {
+            var r = TryGetDoubleValue(request, key);
+            if (r.HasValue)
+            {
+                result = r.Value;
+                return true;
+            }
+
+            result = default;
+            return false;
+        }
+
+        /// <summary>
         /// Tries get a property as boolean.
         /// </summary>
         /// <param name="request">The query.</param>

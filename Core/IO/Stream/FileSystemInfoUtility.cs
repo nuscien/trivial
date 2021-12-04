@@ -292,16 +292,26 @@ namespace Trivial.IO
             if (path.IndexOf("%") != 0) return path;
             var arr = new Dictionary<string, Environment.SpecialFolder>
             {
+                { "AppData", Environment.SpecialFolder.ApplicationData },
                 { "appdata", Environment.SpecialFolder.ApplicationData },
+                { "LocalAppData", Environment.SpecialFolder.LocalApplicationData },
                 { "localappdata", Environment.SpecialFolder.LocalApplicationData },
                 { "ProgramFiles", Environment.SpecialFolder.ProgramFiles },
+                { "programfiles", Environment.SpecialFolder.ProgramFiles },
                 { "ProgramFiles(x86)", Environment.SpecialFolder.ProgramFilesX86 },
+                { "programfiles(x86)", Environment.SpecialFolder.ProgramFilesX86 },
                 { "CommonProgramFiles", Environment.SpecialFolder.CommonProgramFiles },
                 { "CommonProgramFiles(x86)", Environment.SpecialFolder.CommonProgramFilesX86 },
                 { "CommonProgramFilesW6432", Environment.SpecialFolder.CommonProgramFiles },
+                { "commonprogramFiles", Environment.SpecialFolder.CommonProgramFiles },
+                { "commonprogramfiles(x86)", Environment.SpecialFolder.CommonProgramFilesX86 },
+                { "commonprogramfilesw6432", Environment.SpecialFolder.CommonProgramFiles },
+                { "WinDir", Environment.SpecialFolder.Windows },
                 { "windir", Environment.SpecialFolder.Windows },
                 { "SystemRoot", Environment.SpecialFolder.Windows },
-                { "UserProfile", Environment.SpecialFolder.UserProfile }
+                { "systemroot", Environment.SpecialFolder.Windows },
+                { "UserProfile", Environment.SpecialFolder.UserProfile },
+                { "userprofile", Environment.SpecialFolder.UserProfile }
             };
             var endSign = path.IndexOf("%\\", 2) - 1;
             if (endSign < 3) return null;

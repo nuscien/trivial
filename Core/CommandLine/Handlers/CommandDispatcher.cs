@@ -182,7 +182,7 @@ namespace Trivial.CommandLine
         /// <summary>
         /// Help keys.
         /// </summary>
-        private readonly static IList<string> helpKeys = new List<string>() { "?", "help", "get-help", "gethelp", "帮助", "获取帮助" };
+        private readonly static IList<string> helpKeys = new List<string>() { "?", "help", "get-help", "gethelp", "帮助", "获取帮助", "❓" };
 
         /// <summary>
         /// Handlers.
@@ -242,7 +242,7 @@ namespace Trivial.CommandLine
         /// <summary>
         /// Gets the exit keys.
         /// </summary>
-        public List<string> ExitKeys { get; } = new() { "exit", "quit", "close", "bye", "goodbye", "end", "关闭", "退出" };
+        public List<string> ExitKeys { get; } = new() { "exit", "quit", "close", "bye", "goodbye", "end", "shutdown", "关闭", "退出", "再见" };
 
         /// <summary>
         /// Gets or sets the input prompt.

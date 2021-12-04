@@ -22,6 +22,12 @@ namespace Trivial.CommandLine
         public static string Description => ChemistryResource.Chemistry;
 
         /// <summary>
+        /// Gets or sets the help document.
+        /// </summary>
+        public static string HelpInfo { get; set; }
+
+
+        /// <summary>
         /// Gets or sets the tips header for usages.
         /// </summary>
         public static string UsagesTips { get; set; }
@@ -75,6 +81,11 @@ namespace Trivial.CommandLine
         /// Gets or sets the tips for molecular formula.
         /// </summary>
         public static string MolecularFormulaTips { get; set; }
+
+        /// <summary>
+        /// Gets or sets the color of verb in help document.
+        /// </summary>
+        public static System.Drawing.Color VerbColorInHelp { get; set; } = System.Drawing.Color.FromArgb(0xF0, 0xE8, 0xA0);
 
         /// <summary>
         /// Gets or sets the console style of chemical element.
@@ -289,7 +300,7 @@ namespace Trivial.CommandLine
                 return;
             }
 
-            if (s == "help" || s == "usages" || s == "?" || s == "帮助")
+            if (s == "help" || s == "get-help" || s == "usages" || s == "?" || s == "帮助")
             {
                 WriteHelp(Arguments.Verb.Key, Arguments.Verb.TryGet(1));
                 return;
@@ -301,7 +312,7 @@ namespace Trivial.CommandLine
                 return;
             }
 
-            if (s == "element" || s == "z" || s == "元素" || (s == "Z" && Arguments.Verb.Count > 1))
+            if (s == "element" || s == "get-element" || s == "z" || s == "元素" || (s == "Z" && Arguments.Verb.Count > 1))
             {
                 s = Arguments.Verb.TryGet(1);
                 if (s.Equals("help", StringComparison.Ordinal) || s.Equals("?", StringComparison.Ordinal))
@@ -529,13 +540,14 @@ namespace Trivial.CommandLine
             {
                 case "":
                     break;
+                case "get-element":
                 case "element":
                 case "z":
                 case "Z":
                 case "元素":
                     WriteTips(verb, "element <symbol>", ElementTips, "Get details of the specific chemical element by symbol or atomic numbers.");
                     console.WriteLine();
-                    console.WriteLine(ExamplesTips ?? "Examples");
+                    console.WriteLine(ExamplesTips ?? "EXAMPLES");
                     console.WriteLine();
                     console.WriteLine(verb + " element 6");
                     console.WriteLine("{0} element {1}", verb, ChemicalElement.Au?.Symbol ?? ChemicalElement.Pt?.Symbol ?? ChemicalElement.O?.Symbol ?? "1");
@@ -551,7 +563,7 @@ namespace Trivial.CommandLine
                 case "Period":
                     WriteTips(verb, "period <period>", PeriodTips, "List chemical elements in the specific period.");
                     console.WriteLine();
-                    console.WriteLine(ExamplesTips ?? "Examples");
+                    console.WriteLine(ExamplesTips ?? "EXAMPLES");
                     console.WriteLine();
                     console.WriteLine(verb + " period 2");
                     console.WriteLine(verb + " period 7");
@@ -566,7 +578,7 @@ namespace Trivial.CommandLine
                 case "全部":
                     WriteTips(verb, lsKey + " <start>-<end>", ElementListTips, "List a speicific range of chemical elements.");
                     console.WriteLine();
-                    console.WriteLine(ExamplesTips ?? "Examples");
+                    console.WriteLine(ExamplesTips ?? "EXAMPLES");
                     console.WriteLine();
                     console.WriteLine("{0} {1} 10-29", verb, lsKey);
                     console.WriteLine("{0} {1} 20", verb, lsKey);
@@ -577,17 +589,18 @@ namespace Trivial.CommandLine
                 case "分子":
                     WriteTips(verb, "molecular <formula>", ElementTips, "Get the information of the specific molecular formula.");
                     console.WriteLine();
-                    console.WriteLine(ExamplesTips ?? "Examples");
+                    console.WriteLine(ExamplesTips ?? "EXAMPLES");
                     console.WriteLine();
                     console.WriteLine(verb + " molecular Fe3O4");
                     console.WriteLine(verb + " molecular R-COOH");
                     return;
+                case "about":
                 case "copyright":
                     if (!ChemistryResource.Chemistry.Equals("Chemistry", StringComparison.Ordinal))
                         console.WriteLine(ChemistryResource.Chemistry);
                     var ver = System.Reflection.Assembly.GetExecutingAssembly()?.GetName()?.Version;
+                    console.WriteLine(System.Drawing.Color.FromArgb(0xF0, 0xAA, 0xBB), "Trivial.Chemistry");
                     var sb = new StringBuilder();
-                    sb.AppendLine("Trivial.Chemistry");
                     if (ver != null)
                     {
                         sb.AppendFormat("{0}.{1}.{2}", ver.Major, ver.Minor, ver.Build);
@@ -602,7 +615,14 @@ namespace Trivial.CommandLine
                     break;
             }
 
-            console.WriteLine(UsagesTips ?? "Usages");
+            var s = HelpInfo?.Trim();
+            if (!string.IsNullOrEmpty(s))
+            {
+                console.WriteLine(s);
+                console.WriteLine();
+            }
+
+            console.WriteLine(UsagesTips ?? "USAGES");
             console.WriteLine();
             WriteTips(verb, "element <symbol>", ElementTips, "Get details of the specific chemical element by symbol or atomic numbers.");
             console.WriteLine();
@@ -619,7 +639,8 @@ namespace Trivial.CommandLine
 
         private void WriteTips(string verb, string cmd, string desc, string descBackup)
         {
-            GetConsole().WriteLine("{0} {1}{2} {3}", verb, cmd, Environment.NewLine, desc ?? descBackup);
+            GetConsole().WriteLine(VerbColorInHelp, $"{verb} {cmd}");
+            GetConsole().WriteLine($"  {desc ?? descBackup}");
         }
 
         private static Func<ChemicalElement, bool> GetFilter(string q)

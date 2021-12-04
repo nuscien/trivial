@@ -8,10 +8,10 @@
     <Product>Trivial</Product>
     <Authors>Kingcean Tuan</Authors>
     <Company>Nanchang Jinchen Software Co., Ltd.</Company>
-    <Version>5.1.0</Version>
+    <Version>5.2.0</Version>
     <AssemblyVersion>5.1.0.0</AssemblyVersion>
-    <FileVersion>5.1.0.0</FileVersion>
-    <Description>The useful utilities for console application including command dispatcher, arguments parser and some rich user interface console controls.</Description>
+    <FileVersion>5.2.0.0</FileVersion>
+    <Description>The rich user interface console controls and utilities.</Description>
     <Copyright>Copyright (c) 2018 Kingcean Tuan.</Copyright>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/nuscien/trivial/wiki/console</PackageProjectUrl>

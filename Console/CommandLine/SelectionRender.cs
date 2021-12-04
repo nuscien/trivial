@@ -123,6 +123,27 @@ namespace Trivial.CommandLine
         /// <summary>
         /// Writes a collection of item for selecting.
         /// </summary>
+        /// <param name="cli">The command line interface proxy.</param>
+        /// <param name="collection">The collection data.</param>
+        /// <param name="options">The selection display options.</param>
+        /// <returns>The result of selection.</returns>
+        public static SelectionResult<string> Select(this StyleConsole cli, IEnumerable<string> collection, SelectionConsoleOptions options = null)
+        {
+            if (collection == null) return null;
+            if (cli == null) cli = StyleConsole.Default;
+            if (options == null) options = new();
+            else options = options.Clone();
+            cli.Flush();
+            var c = new SelectionData<string>();
+            c.AddRange(collection);
+            if (cli.Handler == null && cli.Mode == StyleConsole.Modes.Text)
+                return SelectForText(cli, c, options);
+            return Select(cli, c, options, 0);
+        }
+
+        /// <summary>
+        /// Writes a collection of item for selecting.
+        /// </summary>
         /// <typeparam name="T">The type of data.</typeparam>
         /// <param name="cli">The command line interface proxy.</param>
         /// <param name="collection">The collection data.</param>
@@ -356,6 +377,30 @@ namespace Trivial.CommandLine
                 }
             }
         }
+
+        /// <summary>
+        /// Tests if the input string is to get help.
+        /// </summary>
+        /// <param name="s">The input string.</param>
+        /// <returns>true if to get help; otherwise, false.</returns>
+        public static bool IsAboutToGetHelp(string s)
+            => !string.IsNullOrEmpty(s) && s.Trim().ToLowerInvariant() switch
+            {
+                "?" or "help" or "gethelp" or "get-help" or "-?" or "/h" or "--?" or "-help" or "--help" or "/help" or "帮助" or "bangzhu" or "/bangzhu" or "--bangzhu" or "获取帮助" or "❓" => true,
+                _ => false
+            };
+
+        /// <summary>
+        /// Tests if the input string is to exit.
+        /// </summary>
+        /// <param name="s">The input string.</param>
+        /// <returns>true if to exit; otherwise, false.</returns>
+        public static bool IsAboutToExit(string s)
+            => !string.IsNullOrEmpty(s) && s.Trim().ToLowerInvariant() switch
+            {
+                "exit" or "quit" or "close" or "bye" or "byebye" or "goodbye" or "good-bye" or "end" or "shutdown" or "shut-down" or "关闭" or "退出" or "再见" or "guanbi" or "tuichu" or "zaijian" => true,
+                _ => false
+            };
 
         /// <summary>
         /// Writes a collection of item for selecting.
