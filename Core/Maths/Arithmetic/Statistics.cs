@@ -266,14 +266,10 @@ namespace Trivial.Maths
         /// <param name="col">The input collection of number.</param>
         /// <param name="count">The count of the mode.</param>
         /// <returns>The mode of the sequence of number.</returns>
+        /// <exception cref="ArgumentNullException">col was null.</exception>
         public static IEnumerable<T> Mode<T>(IEnumerable<T> col, out int count)
         {
-            if (col == null)
-            {
-                count = 0;
-                return null;
-            }
-
+            if (col is null) throw new ArgumentNullException(nameof(col), "col should not be null.");
             var dict = new Dictionary<T, int>();
             foreach (var item in col)
             {
@@ -302,10 +298,62 @@ namespace Trivial.Maths
         /// </summary>
         /// <param name="col">The input collection of number.</param>
         /// <returns>The mode of the sequence of number.</returns>
-        public static (IEnumerable<T> values, int count) Mode<T>(IEnumerable<T> col)
+        public static IEnumerable<T> Mode<T>(IEnumerable<T> col)
+            => Mode(col, out _);
+
+        /// <summary>
+        /// Computes the median of a sequence of number.
+        /// </summary>
+        /// <param name="col">The input collection of number.</param>
+        /// <param name="keySelector">A function to extract a key from an element.</param>
+        /// <param name="count">The count of the median numbers.</param>
+        /// <returns>The median of the sequence of number.</returns>
+        /// <exception cref="ArgumentNullException">col was null.</exception>
+        public static TSource Median<TSource, TKey>(IEnumerable<TSource> col, Func<TSource, TKey> keySelector, out int count)
         {
-            col = Mode(col, out var count);
-            return (col, count);
+            if (col is null) throw new ArgumentNullException(nameof(col), "col should not be null.");
+            var list = col.Where(ele => ele is not null).OrderBy(keySelector).ToList();
+            var i = 0;
+            var j = list.Count - 1;
+            while (i < j)
+            {
+                if (list[i].Equals(list[j]))
+                    break;
+                i++;
+                j--;
+            }
+
+            count = j - i + 1;
+            return list[i];
         }
+
+        /// <summary>
+        /// Computes the median of a sequence of number.
+        /// </summary>
+        /// <param name="col">The input collection of number.</param>
+        /// <param name="keySelector">A function to extract a key from an element.</param>
+        /// <returns>The median of the sequence of number.</returns>
+        /// <exception cref="ArgumentNullException">col was null.</exception>
+        public static TSource Median<TSource, TKey>(IEnumerable<TSource> col, Func<TSource, TKey> keySelector)
+            => Median(col, keySelector, out _);
+
+        /// <summary>
+        /// Computes the median of a sequence of number.
+        /// </summary>
+        /// <param name="col">The input collection of number.</param>
+        /// <param name="count">The count of the median numbers.</param>
+        /// <returns>The median of the sequence of number.</returns>
+        /// <exception cref="ArgumentNullException">col was null.</exception>
+        public static T Median<T>(IEnumerable<T> col, out int count)
+            => Median(col, ele => ele, out count);
+
+        /// <summary>
+        /// Computes the median of a sequence of number.
+        /// </summary>
+        /// <param name="col">The input collection of number.</param>
+        /// <returns>The median of the sequence of number.</returns>
+        /// <exception cref="ArgumentNullException">col was null.</exception>
+        public static T Median<T>(IEnumerable<T> col)
+            => Median(col, ele => ele, out _);
     }
 }
