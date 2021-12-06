@@ -9,6 +9,7 @@
 // --------------------------------------------------------------------------------------------------------------------
 
 using System;
+using System.Text.Json.Serialization;
 
 namespace Trivial.Maths
 {
@@ -119,6 +120,7 @@ namespace Trivial.Maths
         /// <summary>
         /// Gets or sets the value of X (horizontal position). The value is same as ItemA.
         /// </summary>
+        [JsonPropertyName("x")]
         public TUnit X
         {
             get => ItemA;
@@ -128,6 +130,7 @@ namespace Trivial.Maths
         /// <summary>
         /// Gets or sets the value of Y (vertical position). The value is same as ItemB.
         /// </summary>
+        [JsonPropertyName("y")]
         public TUnit Y
         {
             get => ItemB;
@@ -201,6 +204,7 @@ namespace Trivial.Maths
         /// <summary>
         /// Gets the quadrant.
         /// </summary>
+        [JsonIgnore(Condition = JsonIgnoreCondition.Always)]
         public Quadrants Quadrant
         {
             get
