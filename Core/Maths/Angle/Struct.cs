@@ -63,8 +63,15 @@ namespace Trivial.Maths
         /// <summary>
         /// Initializes a new instance of the Angle struct.
         /// </summary>
+        public Angle() : this(0, null)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the Angle struct.
+        /// </summary>
         /// <param name="degrees">The total degrees.</param>
-        public Angle(double degrees) : this(degrees, null)
+        public Angle(double degrees) : this(double.IsNaN(degrees) ? 0 : degrees, null)
         {
         }
 

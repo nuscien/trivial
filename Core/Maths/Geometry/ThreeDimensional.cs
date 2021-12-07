@@ -24,21 +24,5 @@ namespace Trivial.Maths
         {
             return Math.Abs(a * point.X + b * point.Y + c * point.Z + d) / Math.Sqrt(a * a + b * b + c * c);
         }
-
-        /// <summary>
-        /// Computes superficial area of a sphere.
-        /// </summary>
-        /// <param name="radius">The radius.</param>
-        /// <returns>The area.</returns>
-        public static double SphereArea(double radius)
-            => Math.PI * radius * radius * 4;
-
-        /// <summary>
-        /// Computes volume of a sphere.
-        /// </summary>
-        /// <param name="radius">The radius.</param>
-        /// <returns>The volume.</returns>
-        public static double SphereVolume(double radius)
-            => Math.PI * Math.Pow(radius, 3) * 4 / 3;
     }
 }

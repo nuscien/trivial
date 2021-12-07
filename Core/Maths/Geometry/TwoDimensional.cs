@@ -61,17 +61,18 @@ namespace Trivial.Maths
         /// </summary>
         /// <param name="point">The point.</param>
         /// <param name="origin">The origin point.</param>
-        /// <param name="alpha">Radian to counter clockwise rotate.</param>
+        /// <param name="alpha">The angle to counter clockwise rotate.</param>
         /// <returns>The point after rotation.</returns>
-        public static DoubleTwoDimensionalPoint Rotate(DoubleTwoDimensionalPoint point, DoubleTwoDimensionalPoint origin, double alpha)
+        public static DoubleTwoDimensionalPoint Rotate(DoubleTwoDimensionalPoint point, DoubleTwoDimensionalPoint origin, Angle alpha)
         {
             if (point == null) point = new();
             if (origin == null) origin = new();
+            var radian = alpha.Radians;
             var x = origin.X - point.X;
             var y = origin.Y - point.Y;
             return new DoubleTwoDimensionalPoint(
-                x * Math.Cos(alpha) - y * Math.Sin(alpha) + x,
-                y * Math.Cos(alpha) + x * Math.Sin(alpha) + y);
+                x * Math.Cos(radian) - y * Math.Sin(radian) + x,
+                y * Math.Cos(radian) + x * Math.Sin(radian) + y);
         }
 
         /// <summary>
@@ -279,7 +280,7 @@ namespace Trivial.Maths
         /// <param name="polygon">The polygon.</param>
         /// <returns>true if the circle is in the polygon or is intersected with the polygon; otherwise, false.</returns>
         /// <exception cref="ArgumentNullException">radius was null.</exception>
-        public static bool IsInOrIntersected(Circle circle, DoubleTwoDimensionalPoint[] polygon)
+        public static bool IsInOrIntersected(CircleShape circle, DoubleTwoDimensionalPoint[] polygon)
         {
             if (circle == null || double.IsNaN(circle.Radius)) throw new ArgumentNullException(nameof(circle), "circle should not be null.");
             var d = Distance(circle.Center, polygon, out _);
@@ -293,7 +294,7 @@ namespace Trivial.Maths
         /// <param name="polygon">The polygon.</param>
         /// <returns>true if the circle is in the polygon or is intersected with the polygon; otherwise, false.</returns>
         /// <exception cref="ArgumentNullException">radius was null.</exception>
-        public static bool IsInOrIntersected(Circle circle, IList<DoubleTwoDimensionalPoint> polygon)
+        public static bool IsInOrIntersected(CircleShape circle, IList<DoubleTwoDimensionalPoint> polygon)
         {
             if (circle == null || double.IsNaN(circle.Radius)) throw new ArgumentNullException(nameof(circle), "circle should not be null.");
             var d = Distance(circle.Center, polygon, out _);
@@ -984,7 +985,7 @@ namespace Trivial.Maths
         /// <param name="b">The second circle.</param>
         /// <returns>The relationship between 2 circles.</returns>
         /// <exception cref="ArgumentException">a or b was invalid.</exception>
-        public static RelationshipBetweenCircles Relation(Circle a, Circle b)
+        public static RelationshipBetweenCircles Relation(CircleShape a, CircleShape b)
         {
             if (a == null) a = new();
             if (b == null) b = new();
@@ -1010,7 +1011,7 @@ namespace Trivial.Maths
             return (RelationshipBetweenCircles)7; // Error!
         }
 
-        private static (DoubleTwoDimensionalPoint, DoubleTwoDimensionalPoint) Pointcuts(Circle circle, DoubleTwoDimensionalPoint point, double radius)
+        private static (DoubleTwoDimensionalPoint, DoubleTwoDimensionalPoint) Pointcuts(CircleShape circle, DoubleTwoDimensionalPoint point, double radius)
         {
             var a = point.X - circle.X;
             var b = point.Y - circle.Y;
@@ -1053,7 +1054,7 @@ namespace Trivial.Maths
         /// <param name="b">The second circle.</param>
         /// <returns>The area.</returns>
         /// <exception cref="ArgumentException">a or b was invalid.</exception>
-        public static double Area(Circle a, Circle b)
+        public static double Area(CircleShape a, CircleShape b)
         {
             var rela = Relation(a, b);
             switch (rela)
@@ -1102,21 +1103,12 @@ namespace Trivial.Maths
         }
 
         /// <summary>
-        /// Gets the area of an ellipse.
-        /// </summary>
-        /// <param name="a">Parameter a.</param>
-        /// <param name="b">Parameter b.</param>
-        /// <returns>The area.</returns>
-        public static double EllipseArea(double a, double b)
-            => a * b * Math.PI;
-
-        /// <summary>
         /// Gets the pointcuts.
         /// </summary>
         /// <param name="circle">The circle.</param>
         /// <param name="point">The point.</param>
         /// <returns>The 2 pointcuts.</returns>
-        public static (DoubleTwoDimensionalPoint, DoubleTwoDimensionalPoint) Pointcuts(Circle circle, DoubleTwoDimensionalPoint point)
+        public static (DoubleTwoDimensionalPoint, DoubleTwoDimensionalPoint) Pointcuts(CircleShape circle, DoubleTwoDimensionalPoint point)
         {
             var p = new DoubleTwoDimensionalPoint((circle.X + point.X) / 2, (circle.Y + point.Y) / 2);
             var dx = p.X - circle.X;
@@ -1131,7 +1123,7 @@ namespace Trivial.Maths
         /// <param name="circle">The circle.</param>
         /// <param name="line">The straight line.</param>
         /// <returns>The pointcuts. It may only contains 1 or even none.</returns>
-        public static (DoubleTwoDimensionalPoint, DoubleTwoDimensionalPoint) Pointcuts(Circle circle, StraightLine line)
+        public static (DoubleTwoDimensionalPoint, DoubleTwoDimensionalPoint) Pointcuts(CircleShape circle, StraightLine line)
         {
             int res;
             var a = line.A;
