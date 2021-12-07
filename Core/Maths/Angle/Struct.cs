@@ -492,6 +492,31 @@ namespace Trivial.Maths
         }
 
         /// <summary>
+        /// Converts from radian.
+        /// </summary>
+        /// <param name="radian">The radian.</param>
+        /// <param name="boundary">The boundary options.</param>
+        /// <returns>An angle.</returns>
+        public static Angle FromRadian(double radian, BoundaryOptions boundary)
+            => new(radian * 180 / Math.PI, boundary);
+
+        /// <summary>
+        /// Converts from radian.
+        /// </summary>
+        /// <param name="radian">The radian.</param>
+        /// <returns>An angle.</returns>
+        public static Angle FromRadian(double radian)
+            => new(radian * 180 / Math.PI);
+
+        /// <summary>
+        /// Converts from radian.
+        /// </summary>
+        /// <param name="radian">The radian.</param>
+        /// <returns>An angle.</returns>
+        public static Angle FromRadian(float radian)
+            => new(radian * 180 / Math.PI);
+
+        /// <summary>
         /// Returns a new angle that adds the specified number of degrees to the value of this instance.
         /// </summary>
         /// <param name="value">A number of whole and fractional degrees. The value parameter can be negative or positive.</param>

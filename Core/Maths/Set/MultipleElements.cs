@@ -114,6 +114,7 @@ namespace Trivial.Maths
         public override bool Equals(object other)
         {
             if (other is null) return false;
+            if (ReferenceEquals(this, other)) return true;
             if (other is BaseMultipleElements<T> b) return Equals(b);
             if (other is IEnumerable<T> l) return Equals(l);
             return false;

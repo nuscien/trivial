@@ -20,6 +20,8 @@ namespace Trivial.Maths
     /// </summary>
     public static partial class Arithmetic
     {
+        internal const double DoubleAccuracy = 1e-10;
+
         /// <summary>
         /// Gets a result of factorial for a specific number.
         /// </summary>

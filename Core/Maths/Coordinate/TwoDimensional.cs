@@ -142,9 +142,7 @@ namespace Trivial.Maths
         /// </summary>
         /// <returns>A new object that is a copy of this instance.</returns>
         public override object Clone()
-        {
-            return new TwoDimensionalPoint<TUnit>(X, Y);
-        }
+            => new TwoDimensionalPoint<TUnit>(X, Y);
 
         /// <summary>
         /// Indicates whether the current object is equal to another object of the same type.
@@ -152,9 +150,7 @@ namespace Trivial.Maths
         /// <param name="other">An object to compare with this object.</param>
         /// <returns> true if the current object is equal to the other parameter; otherwise, false.</returns>
         public bool Equals(TwoElements<TUnit> other)
-        {
-            return other != null && X.Equals(other.ItemA) && Y.Equals(other.ItemB);
-        }
+            => other is not null && X.Equals(other.ItemA) && Y.Equals(other.ItemB);
 
         /// <summary>
         /// Returns the point string value of this instance.
@@ -181,7 +177,7 @@ namespace Trivial.Maths
     /// <summary>
     /// The point of 2D (flat) mathematics coordinate.
     /// </summary>
-    public class DoubleTwoDimensionalPoint : TwoDimensionalPoint<double>, IAdditionCapable<DoubleTwoDimensionalPoint>, ISubtractionCapable<DoubleTwoDimensionalPoint>, INegationCapable<DoubleTwoDimensionalPoint>
+    public class DoubleTwoDimensionalPoint : TwoDimensionalPoint<double>, IAdditionCapable<DoubleTwoDimensionalPoint>, ISubtractionCapable<DoubleTwoDimensionalPoint>, INegationCapable<DoubleTwoDimensionalPoint>, IEquatable<TwoDimensionalPoint<double>>
     {
         /// <summary>
         /// Initializes a new instance of the DoubleTwoDimensionalPoint class.
@@ -341,9 +337,35 @@ namespace Trivial.Maths
         /// </summary>
         /// <returns>A new object that is a copy of this instance.</returns>
         public override object Clone()
+            => new DoubleTwoDimensionalPoint(X, Y);
+
+        /// <summary>
+        /// Determines whether the specified object is equal to the current object.
+        /// </summary>
+        /// <param name="other">The object to compare with the current object.</param>
+        /// <returns>true if the specified object is equal to the current object; otherwise, false.</returns>
+        public bool Equals(TwoDimensionalPoint<double> other)
+            => other is not null && (Math.Abs(X - other.X) < Arithmetic.DoubleAccuracy) && (Math.Abs(Y - other.Y) < Arithmetic.DoubleAccuracy);
+
+        /// <summary>
+        /// Determines whether the specified object is equal to the current object.
+        /// </summary>
+        /// <param name="other">The object to compare with the current object.</param>
+        /// <returns>true if the specified object is equal to the current object; otherwise, false.</returns>
+        public override bool Equals(object other)
         {
-            return new DoubleTwoDimensionalPoint(X, Y);
+            if (other is null) return false;
+            if (ReferenceEquals(this, other)) return true;
+            if (other is TwoDimensionalPoint<double> p) return Equals(p);
+            return base.Equals(other);
         }
+
+        /// <summary>
+        /// Serves as the default hash function.
+        /// </summary>
+        /// <returns>A hash code for the current object.</returns>
+        public override int GetHashCode()
+            => base.GetHashCode();
 
         /// <summary>
         /// Converts a vector to the point.
@@ -382,7 +404,7 @@ namespace Trivial.Maths
     /// <summary>
     /// The point of 2D (flat) integer coordinate.
     /// </summary>
-    public class Int32TwoDimensionalPoint : TwoDimensionalPoint<int>, IAdditionCapable<Int32TwoDimensionalPoint>, ISubtractionCapable<Int32TwoDimensionalPoint>, INegationCapable<Int32TwoDimensionalPoint>
+    public class Int32TwoDimensionalPoint : TwoDimensionalPoint<int>, IAdditionCapable<Int32TwoDimensionalPoint>, ISubtractionCapable<Int32TwoDimensionalPoint>, INegationCapable<Int32TwoDimensionalPoint>, IEquatable<TwoDimensionalPoint<int>>
     {
         /// <summary>
         /// Initializes a new instance of the Int32TwoDimensionalPoint class.
@@ -516,6 +538,34 @@ namespace Trivial.Maths
         /// <returns>A new object that is a copy of this instance.</returns>
         public override object Clone()
             => new Int32TwoDimensionalPoint(X, Y);
+
+        /// <summary>
+        /// Determines whether the specified object is equal to the current object.
+        /// </summary>
+        /// <param name="other">The object to compare with the current object.</param>
+        /// <returns>true if the specified object is equal to the current object; otherwise, false.</returns>
+        public bool Equals(TwoDimensionalPoint<int> other)
+            => other is not null && X == other.X && Y == other.Y;
+
+        /// <summary>
+        /// Determines whether the specified object is equal to the current object.
+        /// </summary>
+        /// <param name="other">The object to compare with the current object.</param>
+        /// <returns>true if the specified object is equal to the current object; otherwise, false.</returns>
+        public override bool Equals(object other)
+        {
+            if (other is null) return false;
+            if (ReferenceEquals(this, other)) return true;
+            if (other is TwoDimensionalPoint<int> p) return Equals(p);
+            return base.Equals(other);
+        }
+
+        /// <summary>
+        /// Serves as the default hash function.
+        /// </summary>
+        /// <returns>A hash code for the current object.</returns>
+        public override int GetHashCode()
+            => base.GetHashCode();
 
         /// <summary>
         /// Converts to point.

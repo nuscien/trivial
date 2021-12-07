@@ -30,11 +30,11 @@ namespace Trivial.Maths
         /// Initializes a new instance of the LineSegment class.
         /// </summary>
         /// <param name="start">The start point.</param>
-        /// <param name="end">Then end point.</param>
+        /// <param name="end">The end point.</param>
         public LineSegment(DoubleTwoDimensionalPoint start, DoubleTwoDimensionalPoint end)
         {
-            this.start = start;
-            this.end = end;
+            this.start = start ?? new();
+            this.end = end ?? new();
         }
 
         /// <summary>
@@ -62,28 +62,44 @@ namespace Trivial.Maths
         /// </summary>
         [JsonPropertyName("x1")]
         [DataMember(Name = "x1")]
-        public double StartX => Start.X;
+        public double StartX
+        {
+            get => Start.X;
+            set => Start.X = value;
+        }
 
         /// <summary>
         /// Gets the x of start point.
         /// </summary>
         [JsonPropertyName("y1")]
         [DataMember(Name = "y1")]
-        public double StartY => Start.Y;
+        public double StartY
+        {
+            get => Start.Y;
+            set => Start.Y = value;
+        }
 
         /// <summary>
         /// Gets the x of start point.
         /// </summary>
         [JsonPropertyName("x2")]
         [DataMember(Name = "x2")]
-        public double EndX => End.X;
+        public double EndX
+        {
+            get => End.X;
+            set => End.X = value;
+        }
 
         /// <summary>
         /// Gets the x of start point.
         /// </summary>
         [JsonPropertyName("y2")]
         [DataMember(Name = "y2")]
-        public double EndY => End.Y;
+        public double EndY
+        {
+            get => End.Y;
+            set => End.Y = value;
+        }
 
         /// <summary>
         /// Gets the length.
@@ -115,6 +131,29 @@ namespace Trivial.Maths
             }
 
             return $"{StartX}, {StartY} → {EndX}, {EndY}";
+        }
+
+        /// <summary>
+        /// Test if a point is on the line.
+        /// </summary>
+        /// <param name="point">The point to test.</param>
+        /// <returns>true if the point is on the line; otherwise, false.</returns>
+        public bool Contains(DoubleTwoDimensionalPoint point)
+        {
+            if (point == null) point = new();
+            return Geometry.CrossProduct(End, point, Start) == 0 && (point.X - Start.X) * (point.X - End.X) <= 0 && (point.Y - Start.Y) * (point.Y - End.Y) <= 0;
+        }
+
+        /// <summary>
+        /// Converts to a line.
+        /// </summary>
+        /// <param name="value">The line segment.</param>
+        public static explicit operator StraightLine(LineSegment value)
+        {
+            if (value is null) return null;
+            var width = value.Start.X - value.End.X;
+            var height = value.Start.Y - value.End.Y;
+            return new StraightLine(width, -height, value.Start.Y / height - value.Start.X / width);
         }
     }
 
@@ -269,52 +308,23 @@ namespace Trivial.Maths
             return $"{A} x + {B} y + {C} = 0";
         }
 
+        /// <summary>
+        /// Converts to angle.
+        /// </summary>
+        /// <param name="value">The line.</param>
+        public static explicit operator Angle(StraightLine value)
+            => value is null ? new Angle(0) : Geometry.Angle(value);
+
         private static double GetSlope(double a, double b)
         {
-            if (b == 0 || double.IsNaN(b) || (b <= Geometry.Accuracy && b >= -Geometry.Accuracy))
+            if (b == 0 || double.IsNaN(b) || (b <= Arithmetic.DoubleAccuracy && b >= -Arithmetic.DoubleAccuracy))
             {
-                if (a > Geometry.Accuracy) return double.PositiveInfinity;
-                if (a < -Geometry.Accuracy) return double.NegativeInfinity;
+                if (a > Arithmetic.DoubleAccuracy) return double.PositiveInfinity;
+                if (a < -Arithmetic.DoubleAccuracy) return double.NegativeInfinity;
                 return double.NaN;
             }
 
             return -a / b;
         }
-    }
-
-    /// <summary>
-    /// The relationship between 2 circles.
-    /// </summary>
-    public enum RelationshipBetweenCircles
-    {
-        /// <summary>
-        /// Congruence.
-        /// </summary>
-        Congruence = 0,
-
-        /// <summary>
-        /// Separation.
-        /// </summary>
-        Separation = 1,
-
-        /// <summary>
-        /// Externally tangent.
-        /// </summary>
-        ExternallyTangent = 2,
-
-        /// <summary>
-        /// Intersection.
-        /// </summary>
-        Intersection = 3,
-
-        /// <summary>
-        /// Inscribe.
-        /// </summary>
-        Inscribe = 4,
-
-        /// <summary>
-        /// Inclusion
-        /// </summary>
-        Inclusion = 5
     }
 }
