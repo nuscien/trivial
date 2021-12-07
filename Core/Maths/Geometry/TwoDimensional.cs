@@ -681,7 +681,7 @@ namespace Trivial.Maths
             {
                 p1 = polygon[i];
                 p2 = polygon[(i + 1) % count];
-                AddRegion(p1.X, p1.Y, p2.X, p2.Y, ref xtr, ref ytr, ref wtr, ref xtl, ref ytl, ref wtl); //全局变量变化处 
+                AddRegion(p1.X, p1.Y, p2.X, p2.Y, ref xtr, ref ytr, ref wtr, ref xtl, ref ytl, ref wtl);
             }
 
             return new DoubleTwoDimensionalPoint(
@@ -707,7 +707,7 @@ namespace Trivial.Maths
             {
                 p1 = polygon[i];
                 p2 = polygon[(i + 1) % count];
-                AddRegion(p1.X, p1.Y, p2.X, p2.Y, ref xtr, ref ytr, ref wtr, ref xtl, ref ytl, ref wtl); //全局变量变化处 
+                AddRegion(p1.X, p1.Y, p2.X, p2.Y, ref xtr, ref ytr, ref wtr, ref xtl, ref ytl, ref wtl);
             }
 
             return new DoubleTwoDimensionalPoint(
@@ -1100,6 +1100,15 @@ namespace Trivial.Maths
                 ? r1 * r1 * (Math.PI - sita1 / 2 + Math.Sin(sita1) / 2) + r2 * r2 * (sita2 - Math.Sin(sita2)) / 2
                 : (r1 * r1 * (sita1 - Math.Sin(sita1)) + r2 * r2 * (sita2 - Math.Sin(sita2))) / 2;
         }
+
+        /// <summary>
+        /// Gets the area of an ellipse.
+        /// </summary>
+        /// <param name="a">Parameter a.</param>
+        /// <param name="b">Parameter b.</param>
+        /// <returns>The area.</returns>
+        public static double EllipseArea(double a, double b)
+            => a * b * Math.PI;
 
         /// <summary>
         /// Gets the pointcuts.
