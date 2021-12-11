@@ -45,40 +45,50 @@ namespace Trivial.Maths
     }
 
     /// <summary>
-    /// The circle.
+    /// The circle in coordinate.
     /// </summary>
     [DataContract]
-    public class CircleShape
+    public class CoordinateCircle
     {
         private DoubleTwoDimensionalPoint center;
 
         /// <summary>
-        /// Initializes a new instance of the Circle class.
+        /// Initializes a new instance of the CoordinateCircle class.
         /// </summary>
-        public CircleShape()
+        public CoordinateCircle()
         {
             center = new();
             Radius = 0;
         }
 
         /// <summary>
-        /// Initializes a new instance of the Circle class.
+        /// Initializes a new instance of the CoordinateCircle class.
+        /// </summary>
+        /// <param name="r">The radius.</param>
+        public CoordinateCircle(double r)
+        {
+            center = new(0, 0);
+            Radius = double.IsNaN(r) ? 0 : r;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the CoordinateCircle class.
         /// </summary>
         /// <param name="x">The x of center point.</param>
         /// <param name="y">The y of center point.</param>
         /// <param name="r">The radius.</param>
-        public CircleShape(double x, double y, double r)
+        public CoordinateCircle(double x, double y, double r)
         {
             center = new(x, y);
             Radius = double.IsNaN(r) ? 0 : r;
         }
 
         /// <summary>
-        /// Initializes a new instance of the Circle class.
+        /// Initializes a new instance of the CoordinateCircle class.
         /// </summary>
         /// <param name="center">The center point.</param>
         /// <param name="r">The radius.</param>
-        public CircleShape(DoubleTwoDimensionalPoint center, double r)
+        public CoordinateCircle(DoubleTwoDimensionalPoint center, double r)
         {
             this.center = center ?? new();
             Radius = double.IsNaN(r) ? 0 : r;
@@ -102,22 +112,22 @@ namespace Trivial.Maths
         }
 
         /// <summary>
-        /// Gets the x of start point.
+        /// Gets the x of the center point.
         /// </summary>
         [JsonPropertyName("x")]
         [DataMember(Name = "x")]
-        public double X
+        public double CenterX
         {
             get => Center.X;
             set => Center.X = value;
         }
 
         /// <summary>
-        /// Gets the x of start point.
+        /// Gets the x of the center point.
         /// </summary>
         [JsonPropertyName("y")]
         [DataMember(Name = "y")]
-        public double Y
+        public double CenterY
         {
             get => Center.Y;
             set => Center.Y = value;
@@ -126,14 +136,50 @@ namespace Trivial.Maths
         /// <summary>
         /// Gets the perimeter.
         /// </summary>
-        [JsonIgnore(Condition = JsonIgnoreCondition.Always)]
-        public double Perimeter => 2 * Math.PI * Radius;
+        public double Perimeter()
+            => 2 * Math.PI * Radius;
 
         /// <summary>
         /// Gets the area.
         /// </summary>
-        [JsonIgnore(Condition = JsonIgnoreCondition.Always)]
-        public double Area => Math.PI * Radius * Radius;
+        public double Area()
+            => Math.PI * Radius * Radius;
+
+        /// <summary>
+        /// Gets y by x.
+        /// </summary>
+        /// <param name="x">X.</param>
+        /// <returns>Y.</returns>
+        public (double, double) GetY(double x)
+        {
+            var delta = x - CenterX;
+            var r = delta == 0 ? Radius : Math.Sqrt(Radius * Radius - delta * delta);
+            if (double.IsNaN(r) || r > Radius) return (double.NaN, double.NaN);
+            if (r == 0) return (CenterY, double.NaN);
+            return (CenterY + r, CenterY - r);
+        }
+
+        /// <summary>
+        /// Gets x by y.
+        /// </summary>
+        /// <param name="y">Y.</param>
+        /// <returns>X.</returns>
+        public (double, double) GetX(double y)
+        {
+            var delta = y - CenterY;
+            var r = delta == 0 ? Radius : Math.Sqrt(Radius * Radius - delta * delta);
+            if (double.IsNaN(r) || r > Radius) return (double.NaN, double.NaN);
+            if (r == 0) return (CenterY, double.NaN);
+            return (CenterX + r, CenterX - r);
+        }
+
+        /// <summary>
+        /// Test if a point is on the line.
+        /// </summary>
+        /// <param name="point">The point to test.</param>
+        /// <returns>true if the point is on the line; otherwise, false.</returns>
+        public bool Contains(DoubleTwoDimensionalPoint point)
+            => point != null && Math.Abs(Math.Pow(point.X - CenterX, 2) + Math.Pow(point.Y - CenterY, 2) - Radius * Radius) < InternalHelper.DoubleAccuracy;
 
         /// <summary>
         /// Returns a string that represents the line.
@@ -143,7 +189,7 @@ namespace Trivial.Maths
         {
             try
             {
-                return $"{X:0.########}, {Y:0.########} (r {Radius:0.########})";
+                return $"{CenterX:0.########}, {CenterY:0.########} (r {Radius:0.########})";
             }
             catch (ArgumentException)
             {
@@ -158,14 +204,14 @@ namespace Trivial.Maths
             {
             }
 
-            return $"{X}, {Y} (r {Radius})";
+            return $"{CenterX}, {CenterY} (r {Radius})";
         }
 
         /// <summary>
         /// Converts to angle.
         /// </summary>
         /// <param name="value">The line.</param>
-        public static explicit operator EllipseShape(CircleShape value)
+        public static explicit operator CoordinateEllipse(CoordinateCircle value)
             => value is null ? new() : new(value.Center, value.Radius, value.Radius);
 
         /// <summary>
@@ -175,7 +221,7 @@ namespace Trivial.Maths
         /// <param name="b">The second point.</param>
         /// <param name="c">The third point.</param>
         /// <returns>The circle; or null, if failed.</returns>
-        public static CircleShape ByPeriphery(DoubleTwoDimensionalPoint a, DoubleTwoDimensionalPoint b, DoubleTwoDimensionalPoint c)
+        public static CoordinateCircle ByPeriphery(DoubleTwoDimensionalPoint a, DoubleTwoDimensionalPoint b, DoubleTwoDimensionalPoint c)
         {
             if (a == null) a = new();
             if (b == null) b = new();
@@ -187,11 +233,11 @@ namespace Trivial.Maths
             var z1 = x1 * (a.X + b.X) + y1 * (a.Y + b.Y);
             var z2 = x2 * (a.X + c.X) + y2 * (a.Y + c.Y);
             var d = 2.0 * (x1 * (c.Y - b.Y) - y1 * (c.X - b.X));
-            if (Math.Abs(d) < Arithmetic.DoubleAccuracy) return null;
+            if (Math.Abs(d) < InternalHelper.DoubleAccuracy) return null;
             var center = new DoubleTwoDimensionalPoint(
                 (y2 * z1 - y1 * z2) / d,
                 (x1 * z2 - x2 * z1) / d);
-            return new CircleShape(center, Geometry.Distance(a, center));
+            return new CoordinateCircle(center, Geometry.Distance(a, center));
         }
 
         /// <summary>
@@ -201,7 +247,7 @@ namespace Trivial.Maths
         /// <param name="b">The second point.</param>
         /// <param name="c">The third point.</param>
         /// <returns>The circle.</returns>
-        public static CircleShape Incircle(DoubleTwoDimensionalPoint a, DoubleTwoDimensionalPoint b, DoubleTwoDimensionalPoint c)
+        public static CoordinateCircle Incircle(DoubleTwoDimensionalPoint a, DoubleTwoDimensionalPoint b, DoubleTwoDimensionalPoint c)
         {
             var dx31 = c.X - a.X;
             var dy31 = c.Y - a.Y;
@@ -223,22 +269,22 @@ namespace Trivial.Maths
             var c2 = a2 * b.X + b2 * b.Y;
             var x = (c1 * b2 - c2 * b1) / (a1 * b2 - a2 * b1);
             var y = (c2 * a1 - c1 * a2) / (a1 * b2 - a2 * b1);
-            return new CircleShape(x, y, Math.Abs(dy21 * x - dx21 * y + dx21 * a.Y - dy21 * a.X) / d21);
+            return new CoordinateCircle(x, y, Math.Abs(dy21 * x - dx21 * y + dx21 * a.Y - dy21 * a.X) / d21);
         }
     }
 
     /// <summary>
-    /// Ellipse.
+    /// Ellipse in coordinate.
     /// </summary>
     [DataContract]
-    public class EllipseShape
+    public class CoordinateEllipse
     {
         private DoubleTwoDimensionalPoint center;
 
         /// <summary>
-        /// Initializes a new instance of the Ellipse class.
+        /// Initializes a new instance of the CoordinateEllipse class.
         /// </summary>
-        public EllipseShape()
+        public CoordinateEllipse()
         {
             Alpha = new Angle();
             center = new();
@@ -247,13 +293,26 @@ namespace Trivial.Maths
         }
 
         /// <summary>
-        /// Initializes a new instance of the Ellipse class.
+        /// Initializes a new instance of the CoordinateEllipse class.
+        /// </summary>
+        /// <param name="a">The longer radius.</param>
+        /// <param name="b">The shorter radius.</param>
+        public CoordinateEllipse(double a, double b)
+        {
+            Alpha = new Angle();
+            center = new(0, 0);
+            A = double.IsNaN(a) ? 0 : a;
+            B = double.IsNaN(b) ? 0 : b;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the CoordinateEllipse class.
         /// </summary>
         /// <param name="x">The x of center point.</param>
         /// <param name="y">The y of center point.</param>
         /// <param name="a">The longer radius.</param>
         /// <param name="b">The shorter radius.</param>
-        public EllipseShape(double x, double y, double a, double b)
+        public CoordinateEllipse(double x, double y, double a, double b)
         {
             Alpha = new Angle();
             center = new(x, y);
@@ -262,12 +321,12 @@ namespace Trivial.Maths
         }
 
         /// <summary>
-        /// Initializes a new instance of the Ellipse class.
+        /// Initializes a new instance of the CoordinateEllipse class.
         /// </summary>
         /// <param name="center">The center point.</param>
         /// <param name="a">The longer radius.</param>
         /// <param name="b">The shorter radius.</param>
-        public EllipseShape(DoubleTwoDimensionalPoint center, double a, double b)
+        public CoordinateEllipse(DoubleTwoDimensionalPoint center, double a, double b)
         {
             Alpha = new Angle();
             this.center = center;
@@ -276,14 +335,14 @@ namespace Trivial.Maths
         }
 
         /// <summary>
-        /// Initializes a new instance of the Ellipse class.
+        /// Initializes a new instance of the CoordinateEllipse class.
         /// </summary>
         /// <param name="alpha">The angle between X-axis and the line of focuses.</param>
         /// <param name="x">The x of center point.</param>
         /// <param name="y">The y of center point.</param>
         /// <param name="a">The longer radius.</param>
         /// <param name="b">The shorter radius.</param>
-        public EllipseShape(Angle alpha, double x, double y, double a, double b)
+        public CoordinateEllipse(Angle alpha, double x, double y, double a, double b)
         {
             Alpha = alpha;
             center = new(x, y);
@@ -292,13 +351,13 @@ namespace Trivial.Maths
         }
 
         /// <summary>
-        /// Initializes a new instance of the Ellipse class.
+        /// Initializes a new instance of the CoordinateEllipse class.
         /// </summary>
         /// <param name="alpha">The angle between X-axis and the line of focuses.</param>
         /// <param name="center">The center point.</param>
         /// <param name="a">The longer radius.</param>
         /// <param name="b">The shorter radius.</param>
-        public EllipseShape(Angle alpha, DoubleTwoDimensionalPoint center, double a, double b)
+        public CoordinateEllipse(Angle alpha, DoubleTwoDimensionalPoint center, double a, double b)
         {
             Alpha = alpha;
             this.center = center;
@@ -338,22 +397,22 @@ namespace Trivial.Maths
         }
 
         /// <summary>
-        /// Gets the x of start point.
+        /// Gets the x of the center point.
         /// </summary>
         [JsonPropertyName("x")]
         [DataMember(Name = "x")]
-        public double X
+        public double CenterX
         {
             get => Center.X;
             set => Center.X = value;
         }
 
         /// <summary>
-        /// Gets the x of start point.
+        /// Gets the x of the center point.
         /// </summary>
         [JsonPropertyName("y")]
         [DataMember(Name = "y")]
-        public double Y
+        public double CenterY
         {
             get => Center.Y;
             set => Center.Y = value;
@@ -372,7 +431,7 @@ namespace Trivial.Maths
         public double H => Math.Pow(A - B, 2) / Math.Pow(A + B, 2);
 
         /// <summary>
-        /// Gets the eccentricity.
+        /// Gets the focal distance.
         /// </summary>
         [JsonIgnore(Condition = JsonIgnoreCondition.Always)]
         public double C => Math.Sqrt(A * A - B * B);
@@ -380,21 +439,17 @@ namespace Trivial.Maths
         /// <summary>
         /// Gets the perimeter.
         /// </summary>
-        [JsonIgnore(Condition = JsonIgnoreCondition.Always)]
-        public double Perimeter
+        public double Perimeter()
         {
-            get
-            {
-                var h3 = H * 3;
-                return Math.PI * (A + B) * (1 + h3 / (10 + Math.Sqrt(4 - h3)));
-            }
+            var h3 = H * 3;
+            return Math.PI * (A + B) * (1 + h3 / (10 + Math.Sqrt(4 - h3)));
         }
 
         /// <summary>
         /// Gets the area.
         /// </summary>
-        [JsonIgnore(Condition = JsonIgnoreCondition.Always)]
-        public double Area => Math.PI * A * B;
+        public double Area()
+            => Math.PI * A * B;
 
         /// <summary>
         /// Gets focuses.
@@ -418,129 +473,190 @@ namespace Trivial.Maths
         /// <returns>A string that represents the line.</returns>
         public override string ToString()
         {
-            try
-            {
-                return $"{X:0.########}, {Y:0.########} (a {A:0.########} b {B:0.########})";
-            }
-            catch (ArgumentException)
-            {
-            }
-            catch (InvalidOperationException)
-            {
-            }
-            catch (FormatException)
-            {
-            }
-            catch (NullReferenceException)
-            {
-            }
-
-            return $"{X}, {Y} (a {A} b {B})";
+            var sb = new StringBuilder();
+            if (CenterX == 0 || double.IsNaN(CenterX)) sb.Append("x²");
+            else sb.AppendFormat("(x - {0})²", CenterX);
+            sb.Append(" + ");
+            if (CenterY == 0 || double.IsNaN(CenterY)) sb.Append("y²");
+            else sb.AppendFormat("(y - {0})²", CenterY);
+            sb.Append(" = 1");
+            if (Alpha.AbsDegrees >= InternalHelper.DoubleAccuracy) sb.AppendFormat(" (rotate {0})", Alpha);
+            return sb.ToString();
         }
     }
 
     /// <summary>
-    /// The sphere.
+    /// Hyperbola in coordinate.
     /// </summary>
     [DataContract]
-    public class SphereShape
+    public class CoordinateHyperbola
     {
-        private DoubleThreeDimensionalPoint center;
+        private DoubleTwoDimensionalPoint center;
 
         /// <summary>
-        /// Initializes a new instance of the Circle class.
+        /// Initializes a new instance of the CoordinateHyperbola class.
         /// </summary>
-        public SphereShape()
+        public CoordinateHyperbola()
         {
-            center = new();
-            Radius = 0;
+            Alpha = new Angle();
+            center = new(0, 0);
+            A = 0;
+            B = 0;
         }
 
         /// <summary>
-        /// Initializes a new instance of the Circle class.
+        /// Initializes a new instance of the CoordinateHyperbola class.
+        /// </summary>
+        /// <param name="a">The longer radius.</param>
+        /// <param name="b">The shorter radius.</param>
+        public CoordinateHyperbola(double a, double b)
+        {
+            Alpha = new Angle();
+            center = new(0, 0);
+            A = double.IsNaN(a) ? 0 : a;
+            B = double.IsNaN(b) ? 0 : b;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the CoordinateHyperbola class.
         /// </summary>
         /// <param name="x">The x of center point.</param>
         /// <param name="y">The y of center point.</param>
-        /// <param name="z">The z of center point.</param>
-        /// <param name="r">The radius.</param>
-        public SphereShape(double x, double y, double z, double r)
+        /// <param name="a">The longer radius.</param>
+        /// <param name="b">The shorter radius.</param>
+        public CoordinateHyperbola(double x, double y, double a, double b)
         {
-            center = new(x, y, z);
-            Radius = double.IsNaN(r) ? 0 : r;
+            Alpha = new Angle();
+            center = new(x, y);
+            A = double.IsNaN(a) ? 0 : a;
+            B = double.IsNaN(b) ? 0 : b;
         }
 
         /// <summary>
-        /// Initializes a new instance of the Circle class.
+        /// Initializes a new instance of the CoordinateHyperbola class.
         /// </summary>
         /// <param name="center">The center point.</param>
-        /// <param name="r">The radius.</param>
-        public SphereShape(DoubleThreeDimensionalPoint center, double r)
+        /// <param name="a">The longer radius.</param>
+        /// <param name="b">The shorter radius.</param>
+        public CoordinateHyperbola(DoubleTwoDimensionalPoint center, double a, double b)
         {
-            this.center = center ?? new();
-            Radius = double.IsNaN(r) ? 0 : r;
+            Alpha = new Angle();
+            this.center = center ?? new(0, 0);
+            A = double.IsNaN(a) ? 0 : a;
+            B = double.IsNaN(b) ? 0 : b;
         }
 
         /// <summary>
-        /// Gets or sets the radius.
+        /// Initializes a new instance of the CoordinateHyperbola class.
         /// </summary>
-        [JsonPropertyName("r")]
-        [DataMember(Name = "r")]
-        public double Radius { get; set; }
+        /// <param name="alpha">The angle between X-axis and the line of focuses.</param>
+        /// <param name="x">The x of center point.</param>
+        /// <param name="y">The y of center point.</param>
+        /// <param name="a">The longer radius.</param>
+        /// <param name="b">The shorter radius.</param>
+        public CoordinateHyperbola(Angle alpha, double x, double y, double a, double b)
+        {
+            Alpha = alpha;
+            center = new(x, y);
+            A = double.IsNaN(a) ? 0 : a;
+            B = double.IsNaN(b) ? 0 : b;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the CoordinateHyperbola class.
+        /// </summary>
+        /// <param name="alpha">The angle between X-axis and the line of focuses.</param>
+        /// <param name="center">The center point.</param>
+        /// <param name="a">The longer radius.</param>
+        /// <param name="b">The shorter radius.</param>
+        public CoordinateHyperbola(Angle alpha, DoubleTwoDimensionalPoint center, double a, double b)
+        {
+            Alpha = alpha;
+            this.center = center;
+            A = double.IsNaN(a) ? 0 : a;
+            B = double.IsNaN(b) ? 0 : b;
+        }
+
+        /// <summary>
+        /// Gets or sets the angle between X-axis and the line of focuses.
+        /// </summary>
+        [JsonPropertyName("alpha")]
+        [DataMember(Name = "alpha")]
+        public Angle Alpha { get; set; }
+
+        /// <summary>
+        /// Gets or sets the longer radius.
+        /// </summary>
+        [JsonPropertyName("a")]
+        [DataMember(Name = "a")]
+        public double A { get; set; }
+
+        /// <summary>
+        /// Gets or sets the longer radius.
+        /// </summary>
+        [JsonPropertyName("b")]
+        [DataMember(Name = "b")]
+        public double B { get; set; }
 
         /// <summary>
         /// Gets or sets the center point.
         /// </summary>
         [JsonIgnore(Condition = JsonIgnoreCondition.Always)]
-        public DoubleThreeDimensionalPoint Center
+        public DoubleTwoDimensionalPoint Center
         {
             get => center;
             set => center = value ?? new();
         }
 
         /// <summary>
-        /// Gets the x of start point.
+        /// Gets the x of the center point.
         /// </summary>
         [JsonPropertyName("x")]
         [DataMember(Name = "x")]
-        public double X
+        public double CenterX
         {
             get => Center.X;
             set => Center.X = value;
         }
 
         /// <summary>
-        /// Gets the x of start point.
+        /// Gets the x of the center point.
         /// </summary>
         [JsonPropertyName("y")]
         [DataMember(Name = "y")]
-        public double Y
+        public double CenterY
         {
             get => Center.Y;
             set => Center.Y = value;
         }
 
         /// <summary>
-        /// Gets the x of start point.
+        /// Gets the eccentricity.
         /// </summary>
-        [JsonPropertyName("z")]
-        [DataMember(Name = "z")]
-        public double Z
+        [JsonIgnore(Condition = JsonIgnoreCondition.Always)]
+        public double Eccentricity => Math.Sqrt(1 + Math.Pow(B / A, 2));
+
+        /// <summary>
+        /// Gets the focal distance.
+        /// </summary>
+        [JsonIgnore(Condition = JsonIgnoreCondition.Always)]
+        public double C => Math.Sqrt(A * A + B * B);
+
+        /// <summary>
+        /// Gets focuses.
+        /// </summary>
+        /// <returns>The focuses.</returns>
+        public (DoubleTwoDimensionalPoint, DoubleTwoDimensionalPoint) Focuses()
         {
-            get => Center.Z;
-            set => Center.Z = value;
+            var c = C;
+            if (Alpha.Degrees == 0 || Alpha.Degrees == 360)
+                return (new(center.X - c, center.Y), new(center.X + c, center.Y));
+            if (Alpha.Degrees == 90 || Alpha.Degrees == 270)
+                return (new(center.X, center.Y - c), new(center.X, center.Y + c));
+            return (
+                Geometry.Rotate(new DoubleTwoDimensionalPoint(center.X - c, center.Y), null, Alpha),
+                Geometry.Rotate(new DoubleTwoDimensionalPoint(center.X + c, center.Y), null, Alpha));
         }
-
-        /// <summary>
-        /// Gets the area.
-        /// </summary>
-        [JsonIgnore(Condition = JsonIgnoreCondition.Always)]
-        public double Area => Math.PI * Radius * Radius * 4;
-
-        /// <summary>
-        /// Gets the perimeter.
-        /// </summary>
-        [JsonIgnore(Condition = JsonIgnoreCondition.Always)]
-        public double Volume => Math.PI * Math.Pow(Radius, 3) * 4 / 3;
 
         /// <summary>
         /// Returns a string that represents the line.
@@ -548,24 +664,15 @@ namespace Trivial.Maths
         /// <returns>A string that represents the line.</returns>
         public override string ToString()
         {
-            try
-            {
-                return $"{X:0.########}, {Y:0.########}, {Z:0.########} (r {Radius:0.########})";
-            }
-            catch (ArgumentException)
-            {
-            }
-            catch (InvalidOperationException)
-            {
-            }
-            catch (FormatException)
-            {
-            }
-            catch (NullReferenceException)
-            {
-            }
-
-            return $"{X}, {Y}, {Z} (r {Radius})";
+            var sb = new StringBuilder();
+            if (CenterX == 0 || double.IsNaN(CenterX)) sb.Append("x²");
+            else sb.AppendFormat("(x - {0})²", CenterX);
+            sb.Append(" - ");
+            if (CenterY == 0 || double.IsNaN(CenterY)) sb.Append("y²");
+            else sb.AppendFormat("(y - {0})²", CenterY);
+            sb.Append(" = 1");
+            if (Alpha.AbsDegrees >= InternalHelper.DoubleAccuracy) sb.AppendFormat(" (rotate {0})", Alpha);
+            return sb.ToString();
         }
     }
 }

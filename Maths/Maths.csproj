@@ -2,16 +2,16 @@
 
 	<PropertyGroup>
 		<TargetFrameworks>net6.0;net5.0;netcoreapp3.1;netstandard2.0;net48;net461</TargetFrameworks>
-		<AssemblyName>Trivial.Mime</AssemblyName>
-		<RootNamespace>Trivial</RootNamespace>
-		<PackageId>Trivial.Mime</PackageId>
+		<AssemblyName>Trivial.Maths</AssemblyName>
+		<RootNamespace>Trivial.Maths</RootNamespace>
+		<PackageId>Trivial.Maths</PackageId>
 		<Product>Trivial</Product>
 		<Authors>Kingcean Tuan</Authors>
 		<Company>Nanchang Jinchen Software Co., Ltd.</Company>
-		<Version>5.2.0</Version>
-		<AssemblyVersion>5.2.0.0</AssemblyVersion>
-		<FileVersion>5.2.0.0</FileVersion>
-		<Description>The MIME constants and the barcode generators.</Description>
+		<Version>1.0.0</Version>
+		<AssemblyVersion>1.0.0.0</AssemblyVersion>
+		<FileVersion>1.0.0.0</FileVersion>
+		<Description>The mathematics utilites.</Description>
 		<Copyright>Copyright (c) 2018 Kingcean Tuan.</Copyright>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 		<PackageProjectUrl>https://github.com/nuscien/trivial/wiki/core</PackageProjectUrl>
@@ -21,9 +21,9 @@
 		<RepositoryUrl>https://github.com/nuscien/trivial</RepositoryUrl>
 		<RepositoryType>git</RepositoryType>
 		<PublishRepositoryUrl>true</PublishRepositoryUrl>
-		<PackageIcon>mime.png</PackageIcon>
+		<PackageIcon>logo.png</PackageIcon>
 		<PackageIconUrl>https://github.com/nuscien/trivial/raw/master/Materials/logo.png</PackageIconUrl>
-		<PackageTags>mime files barcode</PackageTags>
+		<PackageTags>maths</PackageTags>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<LangVersion>10.0</LangVersion>
 	</PropertyGroup>
@@ -53,11 +53,11 @@
 	<ItemGroup>
 		<None Include="README.md" Pack="true" PackagePath="README.md" />
 		<None Include="..\LICENSE" Pack="true" PackagePath="LICENSE" />
-		<None Include="..\Materials\mime.png" Pack="true" PackagePath="mime.png" />
+		<None Include="..\Materials\logo.png" Pack="true" PackagePath="logo.png" />
 	</ItemGroup>
 
 	<ItemGroup>
-	  <ProjectReference Include="..\Core\Core.csproj" />
+		<ProjectReference Include="..\Core\Core.csproj" />
 	</ItemGroup>
 
 </Project>

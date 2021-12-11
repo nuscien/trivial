@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace Trivial.Maths
 {
     /// <summary>
-    /// The line segment.
+    /// The line segment in coordinate.
     /// </summary>
     [DataContract]
     public class LineSegment
@@ -139,10 +139,7 @@ namespace Trivial.Maths
         /// <param name="point">The point to test.</param>
         /// <returns>true if the point is on the line; otherwise, false.</returns>
         public bool Contains(DoubleTwoDimensionalPoint point)
-        {
-            if (point == null) point = new();
-            return Geometry.CrossProduct(End, point, Start) == 0 && (point.X - Start.X) * (point.X - End.X) <= 0 && (point.Y - Start.Y) * (point.Y - End.Y) <= 0;
-        }
+            => point != null && Geometry.CrossProduct(End, point, Start) == 0 && (point.X - Start.X) * (point.X - End.X) <= 0 && (point.Y - Start.Y) * (point.Y - End.Y) <= 0;
 
         /// <summary>
         /// Converts to a line.
@@ -158,7 +155,7 @@ namespace Trivial.Maths
     }
 
     /// <summary>
-    /// The straight line.
+    /// The straight line in coordinate.
     /// </summary>
     [DataContract]
     public class StraightLine
@@ -283,6 +280,30 @@ namespace Trivial.Maths
         public double Intercept { get; }
 
         /// <summary>
+        /// Gets y by x.
+        /// </summary>
+        /// <param name="x">X.</param>
+        /// <returns>Y.</returns>
+        public double GetY(double x)
+            => -(A * x + C) / B;
+
+        /// <summary>
+        /// Gets x by y.
+        /// </summary>
+        /// <param name="y">Y.</param>
+        /// <returns>X.</returns>
+        public double GetX(double y)
+            => -(B * y + C) / A;
+
+        /// <summary>
+        /// Test if a point is on the line.
+        /// </summary>
+        /// <param name="point">The point to test.</param>
+        /// <returns>true if the point is on the line; otherwise, false.</returns>
+        public bool Contains(DoubleTwoDimensionalPoint point)
+            => point != null && Math.Abs(A * point.X + B * point.Y + C) < InternalHelper.DoubleAccuracy;
+
+        /// <summary>
         /// Returns a string that represents the line.
         /// </summary>
         /// <returns>A string that represents the line.</returns>
@@ -317,10 +338,10 @@ namespace Trivial.Maths
 
         private static double GetSlope(double a, double b)
         {
-            if (b == 0 || double.IsNaN(b) || (b <= Arithmetic.DoubleAccuracy && b >= -Arithmetic.DoubleAccuracy))
+            if (b == 0 || double.IsNaN(b) || (b <= InternalHelper.DoubleAccuracy && b >= -InternalHelper.DoubleAccuracy))
             {
-                if (a > Arithmetic.DoubleAccuracy) return double.PositiveInfinity;
-                if (a < -Arithmetic.DoubleAccuracy) return double.NegativeInfinity;
+                if (a > InternalHelper.DoubleAccuracy) return double.PositiveInfinity;
+                if (a < -InternalHelper.DoubleAccuracy) return double.NegativeInfinity;
                 return double.NaN;
             }
 

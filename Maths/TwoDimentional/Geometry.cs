@@ -91,7 +91,7 @@ namespace Trivial.Maths
             var dsy = start.Y - vertex.Y;
             var dex = end.X - vertex.X;
             var dey = end.Y - vertex.Y;
-            if (Math.Abs(dex) < Arithmetic.DoubleAccuracy && Math.Abs(dey) < Arithmetic.DoubleAccuracy) return 0;
+            if (Math.Abs(dex) < InternalHelper.DoubleAccuracy && Math.Abs(dey) < InternalHelper.DoubleAccuracy) return 0;
             var cosfi = dsx * dex + dsy * dey;
             var norm = (dsx * dsx + dsy * dsy) * (dex * dex + dey * dey);
             cosfi /= Math.Sqrt(norm);
@@ -280,11 +280,11 @@ namespace Trivial.Maths
         /// <param name="polygon">The polygon.</param>
         /// <returns>true if the circle is in the polygon or is intersected with the polygon; otherwise, false.</returns>
         /// <exception cref="ArgumentNullException">radius was null.</exception>
-        public static bool IsInOrIntersected(CircleShape circle, DoubleTwoDimensionalPoint[] polygon)
+        public static bool IsInOrIntersected(CoordinateCircle circle, DoubleTwoDimensionalPoint[] polygon)
         {
             if (circle == null || double.IsNaN(circle.Radius)) throw new ArgumentNullException(nameof(circle), "circle should not be null.");
             var d = Distance(circle.Center, polygon, out _);
-            return d < circle.Radius || Math.Abs(d - circle.Radius) < Arithmetic.DoubleAccuracy;
+            return d < circle.Radius || Math.Abs(d - circle.Radius) < InternalHelper.DoubleAccuracy;
         }
 
         /// <summary>
@@ -294,11 +294,11 @@ namespace Trivial.Maths
         /// <param name="polygon">The polygon.</param>
         /// <returns>true if the circle is in the polygon or is intersected with the polygon; otherwise, false.</returns>
         /// <exception cref="ArgumentNullException">radius was null.</exception>
-        public static bool IsInOrIntersected(CircleShape circle, IList<DoubleTwoDimensionalPoint> polygon)
+        public static bool IsInOrIntersected(CoordinateCircle circle, IList<DoubleTwoDimensionalPoint> polygon)
         {
             if (circle == null || double.IsNaN(circle.Radius)) throw new ArgumentNullException(nameof(circle), "circle should not be null.");
             var d = Distance(circle.Center, polygon, out _);
-            return d < circle.Radius || Math.Abs(d - circle.Radius) < Arithmetic.DoubleAccuracy;
+            return d < circle.Radius || Math.Abs(d - circle.Radius) < InternalHelper.DoubleAccuracy;
         }
 
         /// <summary>
@@ -384,9 +384,9 @@ namespace Trivial.Maths
         internal static double AngleRadian(StraightLine line)
         {
             if (line == null) throw new ArgumentNullException(nameof(line), "line should noe be null.");
-            if (Math.Abs(line.A) < Arithmetic.DoubleAccuracy)
+            if (Math.Abs(line.A) < InternalHelper.DoubleAccuracy)
                 return 0;
-            if (Math.Abs(line.B) < Arithmetic.DoubleAccuracy)
+            if (Math.Abs(line.B) < InternalHelper.DoubleAccuracy)
                 return Math.PI / 2;
             if (line.Slope > 0)
                 return Math.Atan(line.Slope);
@@ -446,7 +446,7 @@ namespace Trivial.Maths
         public static bool IsIntersected(StraightLine a, StraightLine b, out DoubleTwoDimensionalPoint p)
         {
             var d = a.A * b.B - b.A * a.B;
-            if (Math.Abs(d) < Arithmetic.DoubleAccuracy)
+            if (Math.Abs(d) < InternalHelper.DoubleAccuracy)
             {
                 p = new DoubleTwoDimensionalPoint();
                 return false;
@@ -479,7 +479,7 @@ namespace Trivial.Maths
             var j = b.A * a.B - a.A * b.B;
             var m = (i * a.B + j * a.A) / (a.B * a.B + a.A * a.A);
             var n = (j * a.B - i * a.A) / (a.B * a.B + a.A * a.A);
-            if (Math.Abs(a.A * b.B - b.A * a.B) < Arithmetic.DoubleAccuracy)
+            if (Math.Abs(a.A * b.B - b.A * a.B) < InternalHelper.DoubleAccuracy)
                 return new StraightLine(b.A, b.B, b.C);
             var x = (a.B * b.C - b.B * a.C) / (a.A * b.B - b.A * a.B);
             var y = (b.A * a.C - a.A * b.C) / (a.A * b.B - b.A * a.B);
@@ -718,7 +718,7 @@ namespace Trivial.Maths
 
         private static void AddPosPart(double x, double y, double w, ref double xtr, ref double ytr, ref double wtr)
         {
-            if (Math.Abs(wtr + w) < Arithmetic.DoubleAccuracy) return;
+            if (Math.Abs(wtr + w) < InternalHelper.DoubleAccuracy) return;
             xtr = (wtr * xtr + w * x) / (wtr + w);
             ytr = (wtr * ytr + w * y) / (wtr + w);
             wtr = w + wtr;
@@ -726,7 +726,7 @@ namespace Trivial.Maths
 
         private static void AddNegPart(double x, double y, double w, ref double xtl, ref double ytl, ref double wtl)
         {
-            if (Math.Abs(wtl + w) < Arithmetic.DoubleAccuracy) return;
+            if (Math.Abs(wtl + w) < InternalHelper.DoubleAccuracy) return;
             xtl = (wtl * xtl + w * x) / (wtl + w);
             ytl = (wtl * ytl + w * y) / (wtl + w);
             wtl = w + wtl;
@@ -734,7 +734,7 @@ namespace Trivial.Maths
 
         private static void AddRegion(double x1, double y1, double x2, double y2, ref double xtr, ref double ytr, ref double wtr, ref double xtl, ref double ytl, ref double wtl)
         {
-            if (Math.Abs(x1 - x2) < Arithmetic.DoubleAccuracy) return;
+            if (Math.Abs(x1 - x2) < InternalHelper.DoubleAccuracy) return;
             if (x2 > x1)
             {
                 AddPosPart((x2 + x1) / 2, y1 / 2, (x2 - x1) * y1, ref xtr, ref ytr, ref wtr);
@@ -954,7 +954,7 @@ namespace Trivial.Maths
             if (double.IsNaN(radius)) throw new ArgumentException("radius should be a valid number.", nameof(radius), new InvalidOperationException("radius is invalid."));
             var d = (point.X - center.X) * (point.X - center.X) + (point.Y - center.Y) * (point.Y - center.Y);
             var r = radius * radius;
-            return d < r || Math.Abs(d - r) < Arithmetic.DoubleAccuracy;
+            return d < r || Math.Abs(d - r) < InternalHelper.DoubleAccuracy;
         }
 
         /// <summary>
@@ -969,11 +969,11 @@ namespace Trivial.Maths
             if (a == null) a = new();
             if (b == null) b = new();
             if (c == null) c = new();
-            if (Math.Abs(DotProduct(a, b, c)) < Arithmetic.DoubleAccuracy)
+            if (Math.Abs(DotProduct(a, b, c)) < InternalHelper.DoubleAccuracy)
                 return new DoubleTwoDimensionalPoint(a.X + b.X - c.X, a.Y + b.Y - c.Y);
-            if (Math.Abs(DotProduct(a, c, b)) < Arithmetic.DoubleAccuracy)
+            if (Math.Abs(DotProduct(a, c, b)) < InternalHelper.DoubleAccuracy)
                 return new DoubleTwoDimensionalPoint(a.X + c.X - b.X, a.Y + c.Y - b.X);
-            if (Math.Abs(DotProduct(c, b, a)) < Arithmetic.DoubleAccuracy)
+            if (Math.Abs(DotProduct(c, b, a)) < InternalHelper.DoubleAccuracy)
                 return new DoubleTwoDimensionalPoint(c.X + b.X - a.X, c.Y + b.Y - a.Y);
             return null;
         }
@@ -985,7 +985,7 @@ namespace Trivial.Maths
         /// <param name="b">The second circle.</param>
         /// <returns>The relationship between 2 circles.</returns>
         /// <exception cref="ArgumentException">a or b was invalid.</exception>
-        public static RelationshipBetweenCircles Relation(CircleShape a, CircleShape b)
+        public static RelationshipBetweenCircles Relation(CoordinateCircle a, CoordinateCircle b)
         {
             if (a == null) a = new();
             if (b == null) b = new();
@@ -996,11 +996,11 @@ namespace Trivial.Maths
             if (double.IsNaN(radius1)) throw new ArgumentException("a radius should be a valid number.", nameof(a), new InvalidOperationException("radius1 is invalid."));
             if (double.IsNaN(radius2)) throw new ArgumentException("b radius should be a valid number.", nameof(b), new InvalidOperationException("radius2 is invalid."));
             var d = Math.Sqrt((center1.X - center2.X) * (center1.X - center2.X) + (center1.Y - center2.Y) * (center1.Y - center2.Y));
-            if (d < Arithmetic.DoubleAccuracy && Math.Abs(radius1 - radius2) < Arithmetic.DoubleAccuracy)
+            if (d < InternalHelper.DoubleAccuracy && Math.Abs(radius1 - radius2) < InternalHelper.DoubleAccuracy)
                 return RelationshipBetweenCircles.Congruence;
-            if (Math.Abs(d - radius1 - radius2) < Arithmetic.DoubleAccuracy)
+            if (Math.Abs(d - radius1 - radius2) < InternalHelper.DoubleAccuracy)
                 return RelationshipBetweenCircles.ExternallyTangent;
-            if (Math.Abs(d - Math.Abs(radius1 - radius2)) < Arithmetic.DoubleAccuracy)
+            if (Math.Abs(d - Math.Abs(radius1 - radius2)) < InternalHelper.DoubleAccuracy)
                 return RelationshipBetweenCircles.Inscribe;
             if (d > radius1 + radius2)
                 return RelationshipBetweenCircles.Separation;
@@ -1011,10 +1011,10 @@ namespace Trivial.Maths
             return (RelationshipBetweenCircles)7; // Error!
         }
 
-        private static (DoubleTwoDimensionalPoint, DoubleTwoDimensionalPoint) Pointcuts(CircleShape circle, DoubleTwoDimensionalPoint point, double radius)
+        private static (DoubleTwoDimensionalPoint, DoubleTwoDimensionalPoint) Pointcuts(CoordinateCircle circle, DoubleTwoDimensionalPoint point, double radius)
         {
-            var a = point.X - circle.X;
-            var b = point.Y - circle.Y;
+            var a = point.X - circle.CenterX;
+            var b = point.Y - circle.CenterY;
             var r = (a * a + b * b + circle.Radius * circle.Radius - radius * radius) / 2;
             var left = new DoubleTwoDimensionalPoint();
             var right = new DoubleTwoDimensionalPoint();
@@ -1054,19 +1054,19 @@ namespace Trivial.Maths
         /// <param name="b">The second circle.</param>
         /// <returns>The area.</returns>
         /// <exception cref="ArgumentException">a or b was invalid.</exception>
-        public static double Area(CircleShape a, CircleShape b)
+        public static double Area(CoordinateCircle a, CoordinateCircle b)
         {
             var rela = Relation(a, b);
             switch (rela)
             {
                 case RelationshipBetweenCircles.Inclusion:
-                    return Math.Max(a.Area, b.Area);
+                    return Math.Max(a.Area(), b.Area());
                 case RelationshipBetweenCircles.Separation:
                 case RelationshipBetweenCircles.ExternallyTangent:
                 case RelationshipBetweenCircles.Inscribe:
-                    return a.Area + b.Area;
+                    return a.Area() + b.Area();
                 case RelationshipBetweenCircles.Congruence:
-                    return a.Area;
+                    return a.Area();
             }
 
             var (left, right) = Pointcuts(a, b.Center, b.Radius);
@@ -1108,11 +1108,11 @@ namespace Trivial.Maths
         /// <param name="circle">The circle.</param>
         /// <param name="point">The point.</param>
         /// <returns>The 2 pointcuts.</returns>
-        public static (DoubleTwoDimensionalPoint, DoubleTwoDimensionalPoint) Pointcuts(CircleShape circle, DoubleTwoDimensionalPoint point)
+        public static (DoubleTwoDimensionalPoint, DoubleTwoDimensionalPoint) Pointcuts(CoordinateCircle circle, DoubleTwoDimensionalPoint point)
         {
-            var p = new DoubleTwoDimensionalPoint((circle.X + point.X) / 2, (circle.Y + point.Y) / 2);
-            var dx = p.X - circle.X;
-            var dy = p.Y - circle.Y;
+            var p = new DoubleTwoDimensionalPoint((circle.CenterX + point.X) / 2, (circle.CenterY + point.Y) / 2);
+            var dx = p.X - circle.CenterX;
+            var dy = p.Y - circle.CenterY;
             var r = Math.Sqrt(dx * dx + dy * dy);
             return Pointcuts(circle, p, r);
         }
@@ -1123,12 +1123,12 @@ namespace Trivial.Maths
         /// <param name="circle">The circle.</param>
         /// <param name="line">The straight line.</param>
         /// <returns>The pointcuts. It may only contains 1 or even none.</returns>
-        public static (DoubleTwoDimensionalPoint, DoubleTwoDimensionalPoint) Pointcuts(CircleShape circle, StraightLine line)
+        public static (DoubleTwoDimensionalPoint, DoubleTwoDimensionalPoint) Pointcuts(CoordinateCircle circle, StraightLine line)
         {
             int res;
             var a = line.A;
             var b = line.B;
-            var c = line.C + a * circle.X + b * circle.Y;
+            var c = line.C + a * circle.CenterX + b * circle.CenterY;
             var left = new DoubleTwoDimensionalPoint();
             var right = new DoubleTwoDimensionalPoint();
             var r2 = circle.Radius * circle.Radius;
@@ -1193,11 +1193,11 @@ namespace Trivial.Maths
                 return (null, null);
             }
 
-            left.X += circle.X;
-            left.Y += circle.Y;
+            left.X += circle.CenterX;
+            left.Y += circle.CenterY;
             if (res == 1) return (left, null);
-            right.X += circle.X;
-            right.Y += circle.Y;
+            right.X += circle.CenterX;
+            right.Y += circle.CenterY;
             return (left, right);
         }
     }
