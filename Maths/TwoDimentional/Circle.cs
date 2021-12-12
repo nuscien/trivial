@@ -48,7 +48,7 @@ namespace Trivial.Maths
     /// The circle in coordinate.
     /// </summary>
     [DataContract]
-    public class CoordinateCircle
+    public class CoordinateCircle : IPixelOutline<double>, ICoordinateTuplePoint<double>
     {
         private DoubleTwoDimensionalPoint center;
 
@@ -178,8 +178,28 @@ namespace Trivial.Maths
         /// </summary>
         /// <param name="point">The point to test.</param>
         /// <returns>true if the point is on the line; otherwise, false.</returns>
-        public bool Contains(DoubleTwoDimensionalPoint point)
+        public bool Contains(TwoDimensionalPoint<double> point)
             => point != null && Math.Abs(Math.Pow(point.X - CenterX, 2) + Math.Pow(point.Y - CenterY, 2) - Radius * Radius) < InternalHelper.DoubleAccuracy;
+
+        /// <summary>
+        /// Generates point collection in the specific zone and accuracy.
+        /// </summary>
+        /// <param name="left">The left boundary.</param>
+        /// <param name="right">The right boundary.</param>
+        /// <param name="accuracy">The step in x.</param>
+        /// <returns>A point collection.</returns>
+        public IEnumerable<DoubleTwoDimensionalPoint> DrawPoints(double left, double right, double accuracy)
+            => InternalHelper.DrawPoints(this, left, right, accuracy);
+
+        /// <summary>
+        /// Generates point collection in the specific zone and accuracy.
+        /// </summary>
+        /// <param name="left">The left boundary.</param>
+        /// <param name="right">The right boundary.</param>
+        /// <param name="accuracy">The step in x.</param>
+        /// <returns>A point collection.</returns>
+        IEnumerable<TwoDimensionalPoint<double>> IPixelOutline<double>.DrawPoints(double left, double right, double accuracy)
+            => InternalHelper.DrawPoints(this, left, right, accuracy);
 
         /// <summary>
         /// Returns a string that represents the line.
@@ -451,6 +471,69 @@ namespace Trivial.Maths
         public double Area()
             => Math.PI * A * B;
 
+        ///// <summary>
+        ///// Gets y by x.
+        ///// </summary>
+        ///// <param name="x">X.</param>
+        ///// <returns>Y.</returns>
+        //public (double, double) GetY(double x)
+        //{
+        //    var width = x - CenterX;
+        //    var y = Math.Sqrt((1 - width * width / A * A) * B * B);
+        //    if (double.IsNaN(y)) return (double.NaN, double.NaN);
+        //    if (y == 0) return (y, double.NaN);
+        //    return (-y, y);
+        //}
+
+        ///// <summary>
+        ///// Gets x by y.
+        ///// </summary>
+        ///// <param name="y">Y.</param>
+        ///// <returns>X.</returns>
+        //public (double, double) GetX(double y)
+        //{
+        //    var height = y - CenterY;
+        //    var x = Math.Sqrt((1 - height * height / B * B) * A * A);
+        //    if (double.IsNaN(x)) return (double.NaN, double.NaN);
+        //    if (x == 0) return (x, double.NaN);
+        //    return (-x, x);
+        //}
+
+        /// <summary>
+        /// Test if a point is on the line.
+        /// </summary>
+        /// <param name="point">The point to test.</param>
+        /// <returns>true if the point is on the line; otherwise, false.</returns>
+        public bool Contains(TwoDimensionalPoint<double> point)
+        {
+            if (point == null) return false;
+            if (Alpha.AbsDegrees > 0)
+                point = Geometry.Rotate(point, center, Alpha);
+            var width = point.X - CenterX;
+            var height = point.Y - CenterY;
+            return Math.Abs(width * width + height * height - 1) < InternalHelper.DoubleAccuracy;
+        }
+
+        ///// <summary>
+        ///// Generates point collection in the specific zone and accuracy.
+        ///// </summary>
+        ///// <param name="left">The left boundary.</param>
+        ///// <param name="right">The right boundary.</param>
+        ///// <param name="accuracy">The step in x.</param>
+        ///// <returns>A point collection.</returns>
+        //public IEnumerable<DoubleTwoDimensionalPoint> DrawPoints(double left, double right, double accuracy)
+        //    => InternalHelper.DrawPoints(this, left, right, accuracy);
+
+        ///// <summary>
+        ///// Generates point collection in the specific zone and accuracy.
+        ///// </summary>
+        ///// <param name="left">The left boundary.</param>
+        ///// <param name="right">The right boundary.</param>
+        ///// <param name="accuracy">The step in x.</param>
+        ///// <returns>A point collection.</returns>
+        //IEnumerable<TwoDimensionalPoint<double>> IPixelOutline<double>.DrawPoints(double left, double right, double accuracy)
+        //    => InternalHelper.DrawPoints(this, left, right, accuracy);
+
         /// <summary>
         /// Gets focuses.
         /// </summary>
@@ -476,10 +559,10 @@ namespace Trivial.Maths
             var sb = new StringBuilder();
             if (CenterX == 0 || double.IsNaN(CenterX)) sb.Append("x²");
             else sb.AppendFormat("(x - {0})²", CenterX);
-            sb.Append(" + ");
+            sb.AppendFormat("/ {0}² + ", A);
             if (CenterY == 0 || double.IsNaN(CenterY)) sb.Append("y²");
             else sb.AppendFormat("(y - {0})²", CenterY);
-            sb.Append(" = 1");
+            sb.AppendFormat("/ {0}² = 1", B);
             if (Alpha.AbsDegrees >= InternalHelper.DoubleAccuracy) sb.AppendFormat(" (rotate {0})", Alpha);
             return sb.ToString();
         }
@@ -658,6 +741,69 @@ namespace Trivial.Maths
                 Geometry.Rotate(new DoubleTwoDimensionalPoint(center.X + c, center.Y), null, Alpha));
         }
 
+        ///// <summary>
+        ///// Gets y by x.
+        ///// </summary>
+        ///// <param name="x">X.</param>
+        ///// <returns>Y.</returns>
+        //public (double, double) GetY(double x)
+        //{
+        //    var width = x - CenterX;
+        //    var y = Math.Sqrt((width * width / A * A - 1) * B * B);
+        //    if (double.IsNaN(y)) return (double.NaN, double.NaN);
+        //    if (y == 0) return (y, double.NaN);
+        //    return (-y, y);
+        //}
+
+        ///// <summary>
+        ///// Gets x by y.
+        ///// </summary>
+        ///// <param name="y">Y.</param>
+        ///// <returns>X.</returns>
+        //public (double, double) GetX(double y)
+        //{
+        //    var height = y - CenterY;
+        //    var x = Math.Sqrt((height * height / B * B + 1) * A * A);
+        //    if (double.IsNaN(x)) return (double.NaN, double.NaN);
+        //    if (x == 0) return (x, double.NaN);
+        //    return (-x, x);
+        //}
+
+        /// <summary>
+        /// Test if a point is on the line.
+        /// </summary>
+        /// <param name="point">The point to test.</param>
+        /// <returns>true if the point is on the line; otherwise, false.</returns>
+        public bool Contains(TwoDimensionalPoint<double> point)
+        {
+            if (point == null) return false;
+            if (Alpha.AbsDegrees > 0)
+                point = Geometry.Rotate(point, center, Alpha);
+            var width = point.X - CenterX;
+            var height = point.Y - CenterY;
+            return Math.Abs(width * width - height * height - 1) < InternalHelper.DoubleAccuracy;
+        }
+
+        ///// <summary>
+        ///// Generates point collection in the specific zone and accuracy.
+        ///// </summary>
+        ///// <param name="left">The left boundary.</param>
+        ///// <param name="right">The right boundary.</param>
+        ///// <param name="accuracy">The step in x.</param>
+        ///// <returns>A point collection.</returns>
+        //public IEnumerable<DoubleTwoDimensionalPoint> DrawPoints(double left, double right, double accuracy)
+        //    => InternalHelper.DrawPoints(this, left, right, accuracy);
+
+        ///// <summary>
+        ///// Generates point collection in the specific zone and accuracy.
+        ///// </summary>
+        ///// <param name="left">The left boundary.</param>
+        ///// <param name="right">The right boundary.</param>
+        ///// <param name="accuracy">The step in x.</param>
+        ///// <returns>A point collection.</returns>
+        //IEnumerable<TwoDimensionalPoint<double>> IPixelOutline<double>.DrawPoints(double left, double right, double accuracy)
+        //    => InternalHelper.DrawPoints(this, left, right, accuracy);
+
         /// <summary>
         /// Returns a string that represents the line.
         /// </summary>
@@ -667,10 +813,10 @@ namespace Trivial.Maths
             var sb = new StringBuilder();
             if (CenterX == 0 || double.IsNaN(CenterX)) sb.Append("x²");
             else sb.AppendFormat("(x - {0})²", CenterX);
-            sb.Append(" - ");
+            sb.AppendFormat("/ {0}² - ", A);
             if (CenterY == 0 || double.IsNaN(CenterY)) sb.Append("y²");
             else sb.AppendFormat("(y - {0})²", CenterY);
-            sb.Append(" = 1");
+            sb.AppendFormat("/ {0}² = 1", B);
             if (Alpha.AbsDegrees >= InternalHelper.DoubleAccuracy) sb.AppendFormat(" (rotate {0})", Alpha);
             return sb.ToString();
         }

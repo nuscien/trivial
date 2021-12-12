@@ -12,7 +12,7 @@ namespace Trivial.Maths
     /// The line segment in coordinate.
     /// </summary>
     [DataContract]
-    public class LineSegment
+    public class LineSegment : IPixelOutline<double>, ICoordinateSinglePoint<double>
     {
         private DoubleTwoDimensionalPoint start;
         private DoubleTwoDimensionalPoint end;
@@ -80,7 +80,7 @@ namespace Trivial.Maths
         }
 
         /// <summary>
-        /// Gets the x of start point.
+        /// Gets the x of end point.
         /// </summary>
         [JsonPropertyName("x2")]
         [DataMember(Name = "x2")]
@@ -91,7 +91,7 @@ namespace Trivial.Maths
         }
 
         /// <summary>
-        /// Gets the x of start point.
+        /// Gets the x of end point.
         /// </summary>
         [JsonPropertyName("y2")]
         [DataMember(Name = "y2")]
@@ -134,12 +134,48 @@ namespace Trivial.Maths
         }
 
         /// <summary>
+        /// Gets y by x.
+        /// </summary>
+        /// <param name="x">X.</param>
+        /// <returns>Y.</returns>
+        public double GetY(double x)
+            => (x - StartX) / (StartX - EndX) * (StartY - EndY) + StartY;
+
+        /// <summary>
+        /// Gets x by y.
+        /// </summary>
+        /// <param name="y">Y.</param>
+        /// <returns>X.</returns>
+        public double GetX(double y)
+            => (y - StartY) / (StartY - EndY) * (StartX - EndX) + StartX;
+
+        /// <summary>
         /// Test if a point is on the line.
         /// </summary>
         /// <param name="point">The point to test.</param>
         /// <returns>true if the point is on the line; otherwise, false.</returns>
-        public bool Contains(DoubleTwoDimensionalPoint point)
-            => point != null && Geometry.CrossProduct(End, point, Start) == 0 && (point.X - Start.X) * (point.X - End.X) <= 0 && (point.Y - Start.Y) * (point.Y - End.Y) <= 0;
+        public bool Contains(TwoDimensionalPoint<double> point)
+            => point != null && Math.Abs((point.Y - StartY) / (StartY - EndY) - (point.X - StartX) / (StartX - EndX)) < InternalHelper.DoubleAccuracy;
+
+        /// <summary>
+        /// Generates point collection in the specific zone and accuracy.
+        /// </summary>
+        /// <param name="left">The left boundary.</param>
+        /// <param name="right">The right boundary.</param>
+        /// <param name="accuracy">The step in x.</param>
+        /// <returns>A point collection.</returns>
+        public IEnumerable<DoubleTwoDimensionalPoint> DrawPoints(double left, double right, double accuracy)
+            => InternalHelper.DrawPoints(this, left, right, accuracy);
+
+        /// <summary>
+        /// Generates point collection in the specific zone and accuracy.
+        /// </summary>
+        /// <param name="left">The left boundary.</param>
+        /// <param name="right">The right boundary.</param>
+        /// <param name="accuracy">The step in x.</param>
+        /// <returns>A point collection.</returns>
+        IEnumerable<TwoDimensionalPoint<double>> IPixelOutline<double>.DrawPoints(double left, double right, double accuracy)
+            => InternalHelper.DrawPoints(this, left, right, accuracy);
 
         /// <summary>
         /// Converts to a line.
@@ -158,7 +194,7 @@ namespace Trivial.Maths
     /// The straight line in coordinate.
     /// </summary>
     [DataContract]
-    public class StraightLine
+    public class StraightLine : IPixelOutline<double>, ICoordinateSinglePoint<double>
     {
         /// <summary>
         /// <para>Initializes a new instance of the StraightLine class.</para>
@@ -300,8 +336,28 @@ namespace Trivial.Maths
         /// </summary>
         /// <param name="point">The point to test.</param>
         /// <returns>true if the point is on the line; otherwise, false.</returns>
-        public bool Contains(DoubleTwoDimensionalPoint point)
+        public bool Contains(TwoDimensionalPoint<double> point)
             => point != null && Math.Abs(A * point.X + B * point.Y + C) < InternalHelper.DoubleAccuracy;
+
+        /// <summary>
+        /// Generates point collection in the specific zone and accuracy.
+        /// </summary>
+        /// <param name="left">The left boundary.</param>
+        /// <param name="right">The right boundary.</param>
+        /// <param name="accuracy">The step in x.</param>
+        /// <returns>A point collection.</returns>
+        public IEnumerable<DoubleTwoDimensionalPoint> DrawPoints(double left, double right, double accuracy)
+            => InternalHelper.DrawPoints(this, left, right, accuracy);
+
+        /// <summary>
+        /// Generates point collection in the specific zone and accuracy.
+        /// </summary>
+        /// <param name="left">The left boundary.</param>
+        /// <param name="right">The right boundary.</param>
+        /// <param name="accuracy">The step in x.</param>
+        /// <returns>A point collection.</returns>
+        IEnumerable<TwoDimensionalPoint<double>> IPixelOutline<double>.DrawPoints(double left, double right, double accuracy)
+            => InternalHelper.DrawPoints(this, left, right, accuracy);
 
         /// <summary>
         /// Returns a string that represents the line.

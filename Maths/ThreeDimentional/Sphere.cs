@@ -9,41 +9,41 @@ using System.Threading.Tasks;
 namespace Trivial.Maths
 {
     /// <summary>
-    /// The sphere.
+    /// The sphere in coordinate.
     /// </summary>
     [DataContract]
-    public class SphereShape
+    public class CoordinateSphere
     {
         private DoubleThreeDimensionalPoint center;
 
         /// <summary>
-        /// Initializes a new instance of the Circle class.
+        /// Initializes a new instance of the CoordinateSphere class.
         /// </summary>
-        public SphereShape()
+        public CoordinateSphere()
         {
             center = new();
             Radius = 0;
         }
 
         /// <summary>
-        /// Initializes a new instance of the Circle class.
+        /// Initializes a new instance of the CoordinateSphere class.
         /// </summary>
         /// <param name="x">The x of center point.</param>
         /// <param name="y">The y of center point.</param>
         /// <param name="z">The z of center point.</param>
         /// <param name="r">The radius.</param>
-        public SphereShape(double x, double y, double z, double r)
+        public CoordinateSphere(double x, double y, double z, double r)
         {
             center = new(x, y, z);
             Radius = double.IsNaN(r) ? 0 : r;
         }
 
         /// <summary>
-        /// Initializes a new instance of the Circle class.
+        /// Initializes a new instance of the CoordinateSphere class.
         /// </summary>
         /// <param name="center">The center point.</param>
         /// <param name="r">The radius.</param>
-        public SphereShape(DoubleThreeDimensionalPoint center, double r)
+        public CoordinateSphere(DoubleThreeDimensionalPoint center, double r)
         {
             this.center = center ?? new();
             Radius = double.IsNaN(r) ? 0 : r;

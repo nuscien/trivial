@@ -17,7 +17,7 @@ namespace Trivial.Maths
         /// <param name="start">The start point.</param>
         /// <param name="end">The end point.</param>
         /// <returns>The distance.</returns>
-        public static double Distance(DoubleTwoDimensionalPoint start, DoubleTwoDimensionalPoint end)
+        public static double Distance(TwoDimensionalPoint<double> start, TwoDimensionalPoint<double> end)
         {
             if (start == null) start = new();
             if (end == null) end = new();
@@ -33,7 +33,7 @@ namespace Trivial.Maths
         /// <param name="b">Another point.</param>
         /// <param name="o">The vertex/origin point.</param>
         /// <returns>The vector cross product. Greater than 0 if anticlockwise; equals to 0 if collineation; less than 0 if clockwise.</returns>
-        public static double CrossProduct(DoubleTwoDimensionalPoint a, DoubleTwoDimensionalPoint b, DoubleTwoDimensionalPoint o = null)
+        public static double CrossProduct(TwoDimensionalPoint<double> a, TwoDimensionalPoint<double> b, TwoDimensionalPoint<double> o = null)
         {
             if (a == null) a = new();
             if (b == null) b = new();
@@ -48,7 +48,7 @@ namespace Trivial.Maths
         /// <param name="b">Another point.</param>
         /// <param name="o">The vertex/origin point.</param>
         /// <returns>The vector dot (scalar) product. Greater than 0 if it is obtuse angle; equals to 0 if it is right angle; less than 0 if it is acute angle.</returns>
-        public static double DotProduct(DoubleTwoDimensionalPoint a, DoubleTwoDimensionalPoint b, DoubleTwoDimensionalPoint o = null)
+        public static double DotProduct(TwoDimensionalPoint<double> a, TwoDimensionalPoint<double> b, TwoDimensionalPoint<double> o = null)
         {
             if (a == null) a = new();
             if (b == null) b = new();
@@ -63,7 +63,7 @@ namespace Trivial.Maths
         /// <param name="origin">The origin point.</param>
         /// <param name="alpha">The angle to counter clockwise rotate.</param>
         /// <returns>The point after rotation.</returns>
-        public static DoubleTwoDimensionalPoint Rotate(DoubleTwoDimensionalPoint point, DoubleTwoDimensionalPoint origin, Angle alpha)
+        public static DoubleTwoDimensionalPoint Rotate(TwoDimensionalPoint<double> point, TwoDimensionalPoint<double> origin, Angle alpha)
         {
             if (point == null) point = new();
             if (origin == null) origin = new();
@@ -82,7 +82,7 @@ namespace Trivial.Maths
         /// <param name="start">The start point.</param>
         /// <param name="end">The end point.</param>
         /// <returns>The included angle radian of line vertex-start and line vertex-end.</returns>
-        internal static double AngleRadian(DoubleTwoDimensionalPoint vertex, DoubleTwoDimensionalPoint start, DoubleTwoDimensionalPoint end)
+        internal static double AngleRadian(TwoDimensionalPoint<double> vertex, TwoDimensionalPoint<double> start, TwoDimensionalPoint<double> end)
         {
             if (vertex == null) vertex = new();
             if (start == null) start = new();
@@ -109,7 +109,7 @@ namespace Trivial.Maths
         /// <param name="start">The start point.</param>
         /// <param name="end">The end point.</param>
         /// <returns>The included angle of line vertex-start and line vertex-end.</returns>
-        public static Angle Angle(DoubleTwoDimensionalPoint vertex, DoubleTwoDimensionalPoint start, DoubleTwoDimensionalPoint end)
+        public static Angle Angle(TwoDimensionalPoint<double> vertex, TwoDimensionalPoint<double> start, TwoDimensionalPoint<double> end)
             => Maths.Angle.FromRadian(AngleRadian(vertex, start, end));
 
         /// <summary>
@@ -119,13 +119,16 @@ namespace Trivial.Maths
         /// <param name="line">The line to compare.</param>
         /// <returns>The relative position ratio. Less than 0 if the point is on the backward extension of the line segment; greater than 1 if forward; equals to 0 if on the start point of the line segment; equals to 1 if on the end point; between 0 and 1 if on the line segment.</returns>
         /// <exception cref="ArgumentNullException">line was null.</exception>
-        public static double Relation(DoubleTwoDimensionalPoint point, LineSegment line)
+        public static double Relation(TwoDimensionalPoint<double> point, LineSegment line)
         {
             if (line == null) throw new ArgumentNullException(nameof(line), "line should not be null.");
             if (point == null) point = new();
             LineSegment l = new();
             l.Start = line.Start;
-            l.End = point;
+            if (point is DoubleTwoDimensionalPoint p)
+                l.End = p;
+            else
+                l.End = new DoubleTwoDimensionalPoint(point.X, point.Y);
             return DotProduct(l.End, line.End, line.Start) / (Distance(line.Start, line.End) * Distance(line.Start, line.End));
         }
 
@@ -136,7 +139,7 @@ namespace Trivial.Maths
         /// <param name="line">The line.</param>
         /// <returns>The foot point.</returns>
         /// <exception cref="ArgumentNullException">line was null.</exception>
-        public static DoubleTwoDimensionalPoint GetFootPoint(DoubleTwoDimensionalPoint point, LineSegment line)
+        public static DoubleTwoDimensionalPoint GetFootPoint(TwoDimensionalPoint<double> point, LineSegment line)
         {
             var r = Relation(point, line);
             return new(
@@ -152,7 +155,7 @@ namespace Trivial.Maths
         /// <param name="closest">The foot point or the closest point.</param>
         /// <returns>The distance.</returns>
         /// <exception cref="ArgumentNullException">line was null.</exception>
-        public static double Distance(DoubleTwoDimensionalPoint point, LineSegment line, out DoubleTwoDimensionalPoint closest)
+        public static double Distance(TwoDimensionalPoint<double> point, LineSegment line, out DoubleTwoDimensionalPoint closest)
         {
             if (point == null) point = new();
             var r = Relation(point, line);
@@ -180,7 +183,7 @@ namespace Trivial.Maths
         /// <param name="line">The line.</param>
         /// <returns>The distance.</returns>
         /// <exception cref="ArgumentNullException">line was null.</exception>
-        public static double Distance(DoubleTwoDimensionalPoint point, LineSegment line)
+        public static double Distance(TwoDimensionalPoint<double> point, LineSegment line)
             => Distance(point, line, out _);
 
         /// <summary>
@@ -191,7 +194,7 @@ namespace Trivial.Maths
         /// <param name="extendToLine">true if extend the line segment to a line; otherwise, false.</param>
         /// <returns>The distance.</returns>
         /// <exception cref="ArgumentNullException">line was null.</exception>
-        public static double Distance(DoubleTwoDimensionalPoint point, LineSegment line, bool extendToLine)
+        public static double Distance(TwoDimensionalPoint<double> point, LineSegment line, bool extendToLine)
             => extendToLine
             ? Math.Abs(CrossProduct(point, line.End, line.Start)) / Distance(line.Start, line.End)
             : Distance(point, line, out _);
@@ -203,7 +206,7 @@ namespace Trivial.Maths
         /// <param name="polyline">The polyline.</param>
         /// <param name="closest">The foot point or the closest point.</param>
         /// <returns>The distance.</returns>
-        public static double Distance(DoubleTwoDimensionalPoint point, DoubleTwoDimensionalPoint[] polyline, out DoubleTwoDimensionalPoint closest)
+        public static double Distance(TwoDimensionalPoint<double> point, DoubleTwoDimensionalPoint[] polyline, out DoubleTwoDimensionalPoint closest)
         {
             var cd = double.PositiveInfinity;
             double td;
@@ -232,7 +235,7 @@ namespace Trivial.Maths
         /// <param name="point">The point.</param>
         /// <param name="polyline">The polyline.</param>
         /// <returns>The distance.</returns>
-        public static double Distance(DoubleTwoDimensionalPoint point, DoubleTwoDimensionalPoint[] polyline)
+        public static double Distance(TwoDimensionalPoint<double> point, DoubleTwoDimensionalPoint[] polyline)
             => Distance(point, polyline, out _);
 
         /// <summary>
@@ -242,7 +245,7 @@ namespace Trivial.Maths
         /// <param name="polyline">The polyline.</param>
         /// <param name="closest">The foot point or the closest point.</param>
         /// <returns>The distance.</returns>
-        public static double Distance(DoubleTwoDimensionalPoint point, IList<DoubleTwoDimensionalPoint> polyline, out DoubleTwoDimensionalPoint closest)
+        public static double Distance(TwoDimensionalPoint<double> point, IList<DoubleTwoDimensionalPoint> polyline, out DoubleTwoDimensionalPoint closest)
         {
             var cd = double.PositiveInfinity;
             double td;
@@ -270,7 +273,7 @@ namespace Trivial.Maths
         /// <param name="point">The point.</param>
         /// <param name="polyline">The polyline.</param>
         /// <returns>The distance.</returns>
-        public static double Distance(DoubleTwoDimensionalPoint point, IList<DoubleTwoDimensionalPoint> polyline)
+        public static double Distance(TwoDimensionalPoint<double> point, IList<DoubleTwoDimensionalPoint> polyline)
             => Distance(point, polyline, out _);
 
         /// <summary>
