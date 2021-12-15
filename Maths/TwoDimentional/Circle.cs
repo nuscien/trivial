@@ -51,6 +51,7 @@ namespace Trivial.Maths
     public class CoordinateCircle : IPixelOutline<double>, ICoordinateTuplePoint<double>, ICloneable
     {
         private DoubleTwoDimensionalPoint center;
+        private double radius;
 
         /// <summary>
         /// Initializes a new instance of the CoordinateCircle class.
@@ -58,7 +59,7 @@ namespace Trivial.Maths
         public CoordinateCircle()
         {
             center = new();
-            Radius = 0;
+            radius = 0;
         }
 
         /// <summary>
@@ -68,7 +69,7 @@ namespace Trivial.Maths
         public CoordinateCircle(double r)
         {
             center = new(0, 0);
-            Radius = double.IsNaN(r) ? 0 : r;
+            radius = double.IsNaN(r) ? 0 : Math.Abs(r);
         }
 
         /// <summary>
@@ -80,7 +81,7 @@ namespace Trivial.Maths
         public CoordinateCircle(double x, double y, double r)
         {
             center = new(x, y);
-            Radius = double.IsNaN(r) ? 0 : r;
+            radius = double.IsNaN(r) ? 0 : Math.Abs(r);
         }
 
         /// <summary>
@@ -91,15 +92,20 @@ namespace Trivial.Maths
         public CoordinateCircle(DoubleTwoDimensionalPoint center, double r)
         {
             this.center = center ?? new();
-            Radius = double.IsNaN(r) ? 0 : r;
+            radius = double.IsNaN(r) ? 0 : Math.Abs(r);
         }
 
         /// <summary>
         /// Gets or sets the radius.
         /// </summary>
+        /// <exception cref="InvalidOperationException">Radius was less than 0.</exception>
         [JsonPropertyName("r")]
         [DataMember(Name = "r")]
-        public double Radius { get; set; }
+        public double Radius
+        {
+            get => radius;
+            set => radius = !double.IsNaN(value) && value >= 0 ? value : throw new InvalidOperationException("Radius should equal to or be greater than 0.");
+        }
 
         /// <summary>
         /// Gets or sets the center point.
@@ -184,6 +190,14 @@ namespace Trivial.Maths
         /// <summary>
         /// Generates point collection in the specific zone and accuracy.
         /// </summary>
+        /// <param name="accuracy">The step in x.</param>
+        /// <returns>A point collection.</returns>
+        public IEnumerable<DoubleTwoDimensionalPoint> DrawPoints(double accuracy)
+            => InternalHelper.DrawPoints(this, CenterX - Radius, CenterX + Radius, accuracy);
+
+        /// <summary>
+        /// Generates point collection in the specific zone and accuracy.
+        /// </summary>
         /// <param name="left">The left boundary.</param>
         /// <param name="right">The right boundary.</param>
         /// <param name="accuracy">The step in x.</param>
@@ -224,7 +238,7 @@ namespace Trivial.Maths
             {
             }
 
-            return $"{CenterX}, {CenterY} (r {Radius})";
+            return $"⊙ {CenterX}, {CenterY} (r {Radius})";
         }
 
         /// <summary>
@@ -378,6 +392,8 @@ namespace Trivial.Maths
     public class CoordinateEllipse : IPixelOutline<double>, ICoordinateTuplePoint<double>, ICloneable
     {
         private DoubleTwoDimensionalPoint center;
+        private double radiusA;
+        private double radiusB;
 
         /// <summary>
         /// Initializes a new instance of the CoordinateEllipse class.
@@ -386,8 +402,8 @@ namespace Trivial.Maths
         {
             Alpha = new Angle();
             center = new();
-            A = 0;
-            B = 0;
+            radiusA = 0;
+            radiusB = 0;
         }
 
         /// <summary>
@@ -399,8 +415,7 @@ namespace Trivial.Maths
         {
             Alpha = new Angle();
             center = new(0, 0);
-            A = double.IsNaN(a) ? 0 : a;
-            B = double.IsNaN(b) ? 0 : b;
+            SetRadius(a, b);
         }
 
         /// <summary>
@@ -414,8 +429,7 @@ namespace Trivial.Maths
         {
             Alpha = new Angle();
             center = new(x, y);
-            A = double.IsNaN(a) ? 0 : a;
-            B = double.IsNaN(b) ? 0 : b;
+            SetRadius(a, b);
         }
 
         /// <summary>
@@ -428,8 +442,7 @@ namespace Trivial.Maths
         {
             Alpha = new Angle();
             this.center = center;
-            A = double.IsNaN(a) ? 0 : a;
-            B = double.IsNaN(b) ? 0 : b;
+            SetRadius(a, b);
         }
 
         /// <summary>
@@ -444,8 +457,7 @@ namespace Trivial.Maths
         {
             Alpha = alpha;
             center = new(x, y);
-            A = double.IsNaN(a) ? 0 : a;
-            B = double.IsNaN(b) ? 0 : b;
+            SetRadius(a, b);
         }
 
         /// <summary>
@@ -459,8 +471,7 @@ namespace Trivial.Maths
         {
             Alpha = alpha;
             this.center = center;
-            A = double.IsNaN(a) ? 0 : a;
-            B = double.IsNaN(b) ? 0 : b;
+            SetRadius(a, b);
         }
 
         /// <summary>
@@ -473,16 +484,55 @@ namespace Trivial.Maths
         /// <summary>
         /// Gets or sets the longer radius.
         /// </summary>
+        /// <exception cref="InvalidOperationException">The value was less than 0.</exception>
         [JsonPropertyName("a")]
         [DataMember(Name = "a")]
-        public double A { get; set; }
+        public double A
+        {
+            get
+            {
+                return radiusA;
+            }
+
+            set
+            {
+                if (double.IsNaN(value) || value < 0) throw new InvalidOperationException("The value should equal to or be greater than 0.");
+                if (value >= radiusB)
+                {
+                    radiusA = value;
+                    return;
+                }
+
+                radiusA = radiusB;
+                radiusB = value;
+            }
+        }
 
         /// <summary>
-        /// Gets or sets the longer radius.
+        /// Gets or sets the shorter radius.
         /// </summary>
         [JsonPropertyName("b")]
         [DataMember(Name = "b")]
-        public double B { get; set; }
+        public double B
+        {
+            get
+            {
+                return radiusB;
+            }
+
+            set
+            {
+                if (double.IsNaN(value) || value < 0) throw new InvalidOperationException("The value should equal to or be greater than 0.");
+                if (value <= radiusA)
+                {
+                    radiusB = value;
+                    return;
+                }
+
+                radiusB = radiusA;
+                radiusA = value;
+            }
+        }
 
         /// <summary>
         /// Gets or sets the center point.
@@ -744,6 +794,26 @@ namespace Trivial.Maths
             if (leftValue is null || rightValue is null) return true;
             return !leftValue.Equals(rightValue);
         }
+
+        /// <summary>
+        /// Sets A and B.
+        /// </summary>
+        /// <param name="a">The longer radius.</param>
+        /// <param name="b">The shorter radius.</param>
+        public void SetRadius(double a, double b)
+        {
+            a = double.IsNaN(a) ? 0 : Math.Abs(a);
+            b = double.IsNaN(b) ? 0 : Math.Abs(b);
+            if (b > a)
+            {
+                var c = a;
+                a = b;
+                b = c;
+            }
+
+            radiusA = a;
+            radiusB = b;
+        }
     }
 
     /// <summary>
@@ -753,6 +823,8 @@ namespace Trivial.Maths
     public class CoordinateHyperbola : IPixelOutline<double>, ICoordinateTuplePoint<double>, ICloneable
     {
         private DoubleTwoDimensionalPoint center;
+        private double radiusA;
+        private double radiusB;
 
         /// <summary>
         /// Initializes a new instance of the CoordinateHyperbola class.
@@ -761,8 +833,8 @@ namespace Trivial.Maths
         {
             Alpha = new Angle();
             center = new(0, 0);
-            A = 0;
-            B = 0;
+            radiusA = 0;
+            radiusB = 0;
         }
 
         /// <summary>
@@ -774,8 +846,7 @@ namespace Trivial.Maths
         {
             Alpha = new Angle();
             center = new(0, 0);
-            A = double.IsNaN(a) ? 0 : a;
-            B = double.IsNaN(b) ? 0 : b;
+            SetRadius(a, b);
         }
 
         /// <summary>
@@ -789,8 +860,7 @@ namespace Trivial.Maths
         {
             Alpha = new Angle();
             center = new(x, y);
-            A = double.IsNaN(a) ? 0 : a;
-            B = double.IsNaN(b) ? 0 : b;
+            SetRadius(a, b);
         }
 
         /// <summary>
@@ -803,8 +873,7 @@ namespace Trivial.Maths
         {
             Alpha = new Angle();
             this.center = center ?? new(0, 0);
-            A = double.IsNaN(a) ? 0 : a;
-            B = double.IsNaN(b) ? 0 : b;
+            SetRadius(a, b);
         }
 
         /// <summary>
@@ -819,8 +888,7 @@ namespace Trivial.Maths
         {
             Alpha = alpha;
             center = new(x, y);
-            A = double.IsNaN(a) ? 0 : a;
-            B = double.IsNaN(b) ? 0 : b;
+            SetRadius(a, b);
         }
 
         /// <summary>
@@ -834,8 +902,7 @@ namespace Trivial.Maths
         {
             Alpha = alpha;
             this.center = center;
-            A = double.IsNaN(a) ? 0 : a;
-            B = double.IsNaN(b) ? 0 : b;
+            SetRadius(a, b);
         }
 
         /// <summary>
@@ -848,16 +915,55 @@ namespace Trivial.Maths
         /// <summary>
         /// Gets or sets the longer radius.
         /// </summary>
+        /// <exception cref="InvalidOperationException">The value was less than 0.</exception>
         [JsonPropertyName("a")]
         [DataMember(Name = "a")]
-        public double A { get; set; }
+        public double A
+        {
+            get
+            {
+                return radiusA;
+            }
+
+            set
+            {
+                if (double.IsNaN(value) || value < 0) throw new InvalidOperationException("The value should equal to or be greater than 0.");
+                if (value >= radiusB)
+                {
+                    radiusA = value;
+                    return;
+                }
+
+                radiusA = radiusB;
+                radiusB = value;
+            }
+        }
 
         /// <summary>
-        /// Gets or sets the longer radius.
+        /// Gets or sets the shorter radius.
         /// </summary>
         [JsonPropertyName("b")]
         [DataMember(Name = "b")]
-        public double B { get; set; }
+        public double B
+        {
+            get
+            {
+                return radiusB;
+            }
+
+            set
+            {
+                if (double.IsNaN(value) || value < 0) throw new InvalidOperationException("The value should equal to or be greater than 0.");
+                if (value <= radiusA)
+                {
+                    radiusB = value;
+                    return;
+                }
+
+                radiusB = radiusA;
+                radiusA = value;
+            }
+        }
 
         /// <summary>
         /// Gets or sets the center point.
@@ -1068,6 +1174,26 @@ namespace Trivial.Maths
             if (leftValue is null && rightValue is null) return false;
             if (leftValue is null || rightValue is null) return true;
             return !leftValue.Equals(rightValue);
+        }
+
+        /// <summary>
+        /// Sets A and B.
+        /// </summary>
+        /// <param name="a">The longer radius.</param>
+        /// <param name="b">The shorter radius.</param>
+        public void SetRadius(double a, double b)
+        {
+            a = double.IsNaN(a) ? 0 : Math.Abs(a);
+            b = double.IsNaN(b) ? 0 : Math.Abs(b);
+            if (b > a)
+            {
+                var c = a;
+                a = b;
+                b = c;
+            }
+
+            radiusA = a;
+            radiusB = b;
         }
     }
 }
