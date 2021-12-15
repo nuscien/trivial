@@ -26,6 +26,7 @@ namespace Trivial.Maths
         /// <param name="boundary">The boundary options.</param>
         public Angle(double degrees, BoundaryOptions boundary)
         {
+            if (double.IsNaN(degrees)) degrees = 0;
             var degree = (int)degrees;
             var restValue = (Math.Abs(degrees) - Math.Abs(degree)) * 60;
             var minute = (int)restValue;

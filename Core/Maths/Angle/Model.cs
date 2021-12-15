@@ -789,6 +789,7 @@ namespace Trivial.Maths
             /// <param name="degrees">The total degrees.</param>
             private void SetDegrees(double degrees)
             {
+                if (double.IsNaN(degrees)) degrees = 0;
                 degree = (int)degrees;
                 var d = degree;
                 var boundary = Boundary;
