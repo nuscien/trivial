@@ -12,7 +12,7 @@ namespace Trivial.Maths
     /// The sphere in coordinate.
     /// </summary>
     [DataContract]
-    public class CoordinateSphere
+    public class CoordinateSphere : ICloneable
     {
         private DoubleThreeDimensionalPoint center;
 
@@ -136,5 +136,19 @@ namespace Trivial.Maths
 
             return $"{X}, {Y}, {Z} (r {Radius})";
         }
+
+        /// <summary>
+        /// Creates a new object that is a copy of the current instance.
+        /// </summary>
+        /// <returns>An instance copied from current one.</returns>
+        public CoordinateSphere Clone()
+            => new(center, double.IsNaN(Radius) ? 0d : Radius);
+
+        /// <summary>
+        /// Creates a new object that is a copy of the current instance.
+        /// </summary>
+        /// <returns>An instance copied from current one.</returns>
+        object ICloneable.Clone()
+            => Clone();
     }
 }

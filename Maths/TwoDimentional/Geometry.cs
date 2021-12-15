@@ -66,6 +66,7 @@ namespace Trivial.Maths
         public static DoubleTwoDimensionalPoint Rotate(TwoDimensionalPoint<double> point, TwoDimensionalPoint<double> origin, Angle alpha)
         {
             if (point == null) point = new();
+            if (alpha.Degrees == 0) return new DoubleTwoDimensionalPoint(point.X, point.Y);
             if (origin == null) origin = new();
             var radian = alpha.Radians;
             var x = origin.X - point.X;

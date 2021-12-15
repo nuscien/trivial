@@ -12,7 +12,7 @@ namespace Trivial.Maths
     /// The line segment in coordinate.
     /// </summary>
     [DataContract]
-    public class LineSegment : IPixelOutline<double>, ICoordinateSinglePoint<double>
+    public class LineSegment : IPixelOutline<double>, ICoordinateSinglePoint<double>, ICloneable, IEquatable<LineSegment>
     {
         private DoubleTwoDimensionalPoint start;
         private DoubleTwoDimensionalPoint end;
@@ -176,6 +176,75 @@ namespace Trivial.Maths
         /// <returns>A point collection.</returns>
         IEnumerable<TwoDimensionalPoint<double>> IPixelOutline<double>.DrawPoints(double left, double right, double accuracy)
             => InternalHelper.DrawPoints(this, left, right, accuracy);
+
+        /// <summary>
+        /// Creates a new object that is a copy of the current instance.
+        /// </summary>
+        /// <returns>An instance copied from current one.</returns>
+        public LineSegment Clone()
+            => new(start, end);
+
+        /// <summary>
+        /// Creates a new object that is a copy of the current instance.
+        /// </summary>
+        /// <returns>An instance copied from current one.</returns>
+        object ICloneable.Clone()
+            => Clone();
+
+        /// <summary>
+        /// Determines whether the specified object is equal to the current object.
+        /// </summary>
+        /// <param name="other">The object to compare with the current object.</param>
+        /// <returns>true if the specified object is equal to the current object; otherwise, false.</returns>
+        public bool Equals(LineSegment other)
+        {
+            if (other is null) return false;
+            if (ReferenceEquals(this, other)) return true;
+            return StartX == other.StartX && StartY == other.StartY && EndX == other.EndX && EndY == other.EndY;
+        }
+
+        /// <summary>
+        /// Determines whether the specified object is equal to the current object.
+        /// </summary>
+        /// <param name="obj">The object to compare with the current object.</param>
+        /// <returns>true if the specified object is equal to the current object; otherwise, false.</returns>
+        public override bool Equals(object obj)
+        {
+            if (obj is null) return false;
+            return Equals(obj as LineSegment);
+        }
+
+        /// <inheritdoc />
+        public override int GetHashCode()
+            => Tuple.Create(StartX, StartY, EndX, EndY).GetHashCode();
+
+        /// <summary>
+        /// Compares two angles to indicate if they are same.
+        /// leftValue == rightValue
+        /// </summary>
+        /// <param name="leftValue">The left value to compare.</param>
+        /// <param name="rightValue">The right value to compare.</param>
+        /// <returns>true if they are same; otherwise, false.</returns>
+        public static bool operator ==(LineSegment leftValue, LineSegment rightValue)
+        {
+            if (leftValue is null && rightValue is null) return true;
+            if (leftValue is null || rightValue is null) return false;
+            return leftValue.Equals(rightValue);
+        }
+
+        /// <summary>
+        /// Compares two angles to indicate if they are different.
+        /// leftValue != rightValue
+        /// </summary>
+        /// <param name="leftValue">The left value to compare.</param>
+        /// <param name="rightValue">The right value to compare.</param>
+        /// <returns>true if they are different; otherwise, false.</returns>
+        public static bool operator !=(LineSegment leftValue, LineSegment rightValue)
+        {
+            if (leftValue is null && rightValue is null) return false;
+            if (leftValue is null || rightValue is null) return true;
+            return !leftValue.Equals(rightValue);
+        }
 
         /// <summary>
         /// Converts to a line.
@@ -383,6 +452,60 @@ namespace Trivial.Maths
             }
 
             return $"{A} x + {B} y + {C} = 0";
+        }
+        /// <summary>
+        /// Determines whether the specified object is equal to the current object.
+        /// </summary>
+        /// <param name="other">The object to compare with the current object.</param>
+        /// <returns>true if the specified object is equal to the current object; otherwise, false.</returns>
+        public bool Equals(StraightLine other)
+        {
+            if (other is null) return false;
+            if (ReferenceEquals(this, other)) return true;
+            return A == other.A && B == other.B && C == other.C;
+        }
+
+        /// <summary>
+        /// Determines whether the specified object is equal to the current object.
+        /// </summary>
+        /// <param name="obj">The object to compare with the current object.</param>
+        /// <returns>true if the specified object is equal to the current object; otherwise, false.</returns>
+        public override bool Equals(object obj)
+        {
+            if (obj is null) return false;
+            return Equals(obj as StraightLine);
+        }
+
+        /// <inheritdoc />
+        public override int GetHashCode()
+            => Tuple.Create(A, B, C).GetHashCode();
+
+        /// <summary>
+        /// Compares two angles to indicate if they are same.
+        /// leftValue == rightValue
+        /// </summary>
+        /// <param name="leftValue">The left value to compare.</param>
+        /// <param name="rightValue">The right value to compare.</param>
+        /// <returns>true if they are same; otherwise, false.</returns>
+        public static bool operator ==(StraightLine leftValue, StraightLine rightValue)
+        {
+            if (leftValue is null && rightValue is null) return true;
+            if (leftValue is null || rightValue is null) return false;
+            return leftValue.Equals(rightValue);
+        }
+
+        /// <summary>
+        /// Compares two angles to indicate if they are different.
+        /// leftValue != rightValue
+        /// </summary>
+        /// <param name="leftValue">The left value to compare.</param>
+        /// <param name="rightValue">The right value to compare.</param>
+        /// <returns>true if they are different; otherwise, false.</returns>
+        public static bool operator !=(StraightLine leftValue, StraightLine rightValue)
+        {
+            if (leftValue is null && rightValue is null) return false;
+            if (leftValue is null || rightValue is null) return true;
+            return !leftValue.Equals(rightValue);
         }
 
         /// <summary>

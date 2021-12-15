@@ -26,6 +26,7 @@ namespace Trivial.Maths
         /// <param name="boundary">The boundary options.</param>
         public Angle(double degrees, BoundaryOptions boundary)
         {
+            if (double.IsNaN(degrees)) degrees = 0;
             var degree = (int)degrees;
             var restValue = (Math.Abs(degrees) - Math.Abs(degree)) * 60;
             var minute = (int)restValue;
@@ -451,9 +452,7 @@ namespace Trivial.Maths
         /// <param name="obj">The Angle to copy.</param>
         /// <returns>A new Angle object with the same value as this instance.</returns>
         public static Angle Copy(Angle obj)
-        {
-            return new Angle(obj.Degree, obj.Arcminute, obj.Arcsecond);
-        }
+            => new(obj.Degree, obj.Arcminute, obj.Arcsecond);
 
         /// <summary>
         /// Computes the total degrees.
@@ -485,17 +484,17 @@ namespace Trivial.Maths
             if (split.Length < 2)
             {
                 var degrees = float.Parse(s.Replace(";", string.Empty).Replace(",", string.Empty).Replace(Symbols.DegreeUnit, string.Empty).Replace(Symbols.ArcminuteUnit, string.Empty).Replace(Symbols.ArcsecondUnit, string.Empty));
-                return new Angle(degrees);
+                return new(degrees);
             }
 
             var positive = true;
-            if (split[0].IndexOf("-") >= 0)
+            if (split[0].Contains("-"))
             {
                 positive = false;
                 split[0] = split[0].Replace("-", string.Empty);
             }
 
-            return new Angle(int.Parse(split[0]) * (positive ? 1 : -1), int.Parse(split[1]), split.Length > 2 ? float.Parse(split[2]) : 0);
+            return new(int.Parse(split[0]) * (positive ? 1 : -1), int.Parse(split[1]), split.Length > 2 ? float.Parse(split[2]) : 0);
         }
 
         /// <summary>
@@ -528,27 +527,21 @@ namespace Trivial.Maths
         /// </summary>
         /// <param name="value">A number of whole and fractional degrees. The value parameter can be negative or positive.</param>
         public Angle AddDegrees(int value)
-        {
-            return new Angle(Degree + value, Arcminute, Arcsecond);
-        }
+            => new(Degree + value, Arcminute, Arcsecond);
 
         /// <summary>
         /// Returns a new angle that adds the specified number of arcminutes to the value of this instance.
         /// </summary>
         /// <param name="value">A number of whole and fractional arcminutes. The value parameter can be negative or positive.</param>
         public Angle AddArcminutes(int value)
-        {
-            return new Angle(Degree, Arcminute + value, Arcsecond);
-        }
+            => new(Degree, Arcminute + value, Arcsecond);
 
         /// <summary>
         /// Returns a new angle that adds the specified number of arcseconds to the value of this instance.
         /// </summary>
         /// <param name="value">A number of whole and fractional arcseconds. The value parameter can be negative or positive.</param>
         public Angle AddArcseconds(float value)
-        {
-            return new Angle(Degree, Arcminute, Arcsecond + value);
-        }
+            => new(Degree, Arcminute, Arcsecond + value);
 
         /// <summary>
         /// Compares the current object with another object of the same type.
@@ -558,9 +551,7 @@ namespace Trivial.Maths
         /// </returns>
         /// <param name="other">An object to compare with this object.</param>
         public int CompareTo(object other)
-        {
-            return Degrees.CompareTo(other);
-        }
+            => Degrees.CompareTo(other);
 
         /// <summary>
         /// Compares the current object with another object of the same type.
@@ -586,9 +577,7 @@ namespace Trivial.Maths
         /// </returns>
         /// <param name="other">An object to compare with this object.</param>
         public int CompareTo(double other)
-        {
-            return Degrees.CompareTo(other);
-        }
+            => Degrees.CompareTo(other);
 
         /// <summary>
         /// Compares the current object with another object of the same type.
@@ -598,18 +587,14 @@ namespace Trivial.Maths
         /// </returns>
         /// <param name="other">An object to compare with this object.</param>
         public int CompareTo(int other)
-        {
-            return Degrees.CompareTo(other);
-        }
+            => Degrees.CompareTo(other);
 
         /// <summary>
         /// Returns the hash code for this instance.
         /// </summary>
         /// <returns>A 32-bit signed integer that is the hash code for this instance.</returns>
         public override int GetHashCode()
-        {
-            return Degrees.GetHashCode();
-        }
+            => Degrees.GetHashCode();
 
         /// <summary>
         /// Indicates whether the current object is equal to another object of the same type.
@@ -634,9 +619,7 @@ namespace Trivial.Maths
         /// </returns>
         /// <param name="other">An object to compare with this object.</param>
         public bool Equals(IAngle other)
-        {
-            return (Degree == other.Degree) && (Arcminute == other.Arcminute) && Arcsecond.Equals(other.Arcsecond);
-        }
+            => (Degree == other.Degree) && (Arcminute == other.Arcminute) && Arcsecond.Equals(other.Arcsecond);
 
         /// <summary>
         /// Indicates whether the current object is equal to another object of the same type.
@@ -646,9 +629,7 @@ namespace Trivial.Maths
         /// </returns>
         /// <param name="other">An object to compare with this object.</param>
         public bool Equals(double other)
-        {
-            return Degrees.Equals(other);
-        }
+            => Degrees.Equals(other);
 
         /// <summary>
         /// Indicates whether the current object is equal to another object of the same type.
@@ -658,9 +639,7 @@ namespace Trivial.Maths
         /// </returns>
         /// <param name="other">An object to compare with this object.</param>
         public bool Equals(int other)
-        {
-            return Degrees.Equals(other);
-        }
+            => Degrees.Equals(other);
 
         /// <summary>
         /// Pluses another value.
@@ -669,9 +648,7 @@ namespace Trivial.Maths
         /// <param name="value">A given value to be added.</param>
         /// <returns>A result after addition.</returns>
         public Angle Plus(Angle value)
-        {
-            return new Angle(Degrees + value.Degrees);
-        }
+            => new(Degrees + value.Degrees);
 
         /// <summary>
         /// Minuses another value.
@@ -680,9 +657,7 @@ namespace Trivial.Maths
         /// <param name="value">A given value to be added.</param>
         /// <returns>A result after subtraction.</returns>
         public Angle Minus(Angle value)
-        {
-            return new Angle(Degrees - value.Degrees);
-        }
+            => new(Degrees - value.Degrees);
 
         /// <summary>
         /// Negates the current value.
@@ -690,9 +665,7 @@ namespace Trivial.Maths
         /// </summary>
         /// <returns>A result after negation.</returns>
         public Angle Negate()
-        {
-            return new Angle(-Degrees);
-        }
+            => new(-Degrees);
 
         /// <summary>
         /// Gets the absolute value.
@@ -700,28 +673,22 @@ namespace Trivial.Maths
         /// </summary>
         /// <returns>A absolute result.</returns>
         public Angle Abs()
-        {
-            return new Angle(AbsDegrees);
-        }
-
-        /// <summary>
-        /// Gets a unit element for addition and subtraction.
-        /// 0
-        /// </summary>
-        /// <returns>An element zero for the value.</returns>
-        public Angle GetElementZero()
-        {
-            return ZeroDegree;
-        }
+            => new(AbsDegrees);
 
         /// <summary>
         /// Returns the angle string value of this instance.
         /// </summary>
         /// <returns>A System.String containing this angle.</returns>
         public override string ToString()
-        {
-            return (IsNegative ? "-" : string.Empty) + this.ToAbsAngleString();
-        }
+            => (IsNegative ? "-" : string.Empty) + this.ToAbsAngleString();
+
+        /// <summary>
+        /// Gets a unit element for addition and subtraction.
+        /// 0
+        /// </summary>
+        /// <returns>An element zero for the value.</returns>
+        Angle IAdvancedAdditionCapable<Angle>.GetElementZero()
+            => ZeroDegree;
 
         internal static void AdaptValue(BoundaryOptions boundary, ref int degree, ref int minute, ref float second)
         {
