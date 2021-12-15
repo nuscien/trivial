@@ -30,12 +30,12 @@
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
 		<OutputPath>..\bin\Debug\</OutputPath>
-		<DocumentationFile>..\bin\$(Configuration)\$(TargetFramework)\Trivial.Mime.xml</DocumentationFile>
+		<DocumentationFile>..\bin\$(Configuration)\$(TargetFramework)\Trivial.Maths.xml</DocumentationFile>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
 		<OutputPath>..\bin\Release\</OutputPath>
-		<DocumentationFile>..\bin\$(Configuration)\$(TargetFramework)\Trivial.Mime.xml</DocumentationFile>
+		<DocumentationFile>..\bin\$(Configuration)\$(TargetFramework)\Trivial.Maths.xml</DocumentationFile>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(TargetFramework)' == 'netstandard2.0' OR '$(TargetFramework)' == 'net48' OR '$(TargetFramework)' == 'net461'">
