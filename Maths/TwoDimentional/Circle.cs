@@ -511,6 +511,7 @@ namespace Trivial.Maths
         /// <summary>
         /// Gets or sets the shorter radius.
         /// </summary>
+        /// <exception cref="InvalidOperationException">The value was less than 0.</exception>
         [JsonPropertyName("b")]
         [DataMember(Name = "b")]
         public double B
@@ -942,6 +943,7 @@ namespace Trivial.Maths
         /// <summary>
         /// Gets or sets the shorter radius.
         /// </summary>
+        /// <exception cref="InvalidOperationException">The value was less than 0.</exception>
         [JsonPropertyName("b")]
         [DataMember(Name = "b")]
         public double B
