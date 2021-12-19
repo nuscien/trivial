@@ -68,7 +68,7 @@ namespace Trivial.Maths
     /// The generic 2D (flat) coordinate point.
     /// </summary>
     /// <typeparam name="TUnit">The type of unit.</typeparam>
-    public class TwoDimensionalPoint<TUnit> : TwoElements<TUnit>, IEquatable<TwoElements<TUnit>> where TUnit : struct, IComparable<TUnit>, IEquatable<TUnit>
+    public class Point2D<TUnit> : TwoElements<TUnit>, IEquatable<TwoElements<TUnit>> where TUnit : struct, IComparable<TUnit>, IEquatable<TUnit>
     {
         /// <summary>
         /// The event arguments with the position.
@@ -101,7 +101,7 @@ namespace Trivial.Maths
         /// Initializes a new instance of the TwoDimensionalPoint class.
         /// </summary>
         /// <remarks>You can use this to initialize an instance for the class.</remarks>
-        public TwoDimensionalPoint()
+        public Point2D()
         {
         }
 
@@ -111,7 +111,7 @@ namespace Trivial.Maths
         /// <param name="x">The value of X.</param>
         /// <param name="y">The value of Y.</param>
         /// <remarks>You can use this to initialize an instance for the class.</remarks>
-        public TwoDimensionalPoint(TUnit x, TUnit y)
+        public Point2D(TUnit x, TUnit y)
         {
             X = x;
             Y = y;
@@ -142,7 +142,7 @@ namespace Trivial.Maths
         /// </summary>
         /// <returns>A new object that is a copy of this instance.</returns>
         public override object Clone()
-            => new TwoDimensionalPoint<TUnit>(X, Y);
+            => new Point2D<TUnit>(X, Y);
 
         /// <summary>
         /// Indicates whether the current object is equal to another object of the same type.
@@ -177,13 +177,13 @@ namespace Trivial.Maths
     /// <summary>
     /// The point of 2D (flat) mathematics coordinate.
     /// </summary>
-    public class DoubleTwoDimensionalPoint : TwoDimensionalPoint<double>, IAdditionCapable<DoubleTwoDimensionalPoint>, ISubtractionCapable<DoubleTwoDimensionalPoint>, INegationCapable<DoubleTwoDimensionalPoint>, IEquatable<TwoDimensionalPoint<double>>
+    public class DoublePoint2D : Point2D<double>, IAdditionCapable<DoublePoint2D>, ISubtractionCapable<DoublePoint2D>, INegationCapable<DoublePoint2D>, IEquatable<Point2D<double>>
     {
         /// <summary>
         /// Initializes a new instance of the DoubleTwoDimensionalPoint class.
         /// </summary>
         /// <remarks>You can use this to initialize an instance for the class.</remarks>
-        public DoubleTwoDimensionalPoint()
+        public DoublePoint2D()
         {
         }
 
@@ -193,7 +193,7 @@ namespace Trivial.Maths
         /// <param name="x">The value of X.</param>
         /// <param name="y">The value of Y.</param>
         /// <remarks>You can use this to initialize an instance for the class.</remarks>
-        public DoubleTwoDimensionalPoint(double x, double y) : base(x, y)
+        public DoublePoint2D(double x, double y) : base(x, y)
         {
         }
 
@@ -228,11 +228,11 @@ namespace Trivial.Maths
         /// </summary>
         /// <param name="value">The value to be plused.</param>
         /// <returns>A result after leftValue plus rightValue.</returns>
-        public DoubleTwoDimensionalPoint Plus(TwoDimensionalPoint<double> value)
+        public DoublePoint2D Plus(Point2D<double> value)
         {
             return value != null
-                ? new DoubleTwoDimensionalPoint(X + value.X, Y + value.Y)
-                : new DoubleTwoDimensionalPoint(X, Y);
+                ? new DoublePoint2D(X + value.X, Y + value.Y)
+                : new DoublePoint2D(X, Y);
         }
 
         /// <summary>
@@ -241,11 +241,11 @@ namespace Trivial.Maths
         /// </summary>
         /// <param name="value">The value to be plused.</param>
         /// <returns>A result after leftValue plus rightValue.</returns>
-        public DoubleTwoDimensionalPoint Plus(TwoDimensionalPoint<int> value)
+        public DoublePoint2D Plus(Point2D<int> value)
         {
             return value != null
-                ? new DoubleTwoDimensionalPoint(X + value.X, Y + value.Y)
-                : new DoubleTwoDimensionalPoint(X, Y);
+                ? new DoublePoint2D(X + value.X, Y + value.Y)
+                : new DoublePoint2D(X, Y);
         }
 
         /// <summary>
@@ -254,11 +254,11 @@ namespace Trivial.Maths
         /// </summary>
         /// <param name="value">The value to be plused.</param>
         /// <returns>A result after leftValue plus rightValue.</returns>
-        public DoubleTwoDimensionalPoint Plus(DoubleTwoDimensionalPoint value)
+        public DoublePoint2D Plus(DoublePoint2D value)
         {
             return value != null
-                ? new DoubleTwoDimensionalPoint(X + value.X, Y + value.Y)
-                : new DoubleTwoDimensionalPoint(X, Y);
+                ? new DoublePoint2D(X + value.X, Y + value.Y)
+                : new DoublePoint2D(X, Y);
         }
 
         /// <summary>
@@ -267,11 +267,11 @@ namespace Trivial.Maths
         /// </summary>
         /// <param name="value">The value to be minuses.</param>
         /// <returns>A result after leftValue minus rightValue.</returns>
-        public DoubleTwoDimensionalPoint Minus(TwoDimensionalPoint<double> value)
+        public DoublePoint2D Minus(Point2D<double> value)
         {
             return value != null
-                ? new DoubleTwoDimensionalPoint(X - value.X, Y - value.Y)
-                : new DoubleTwoDimensionalPoint(X, Y);
+                ? new DoublePoint2D(X - value.X, Y - value.Y)
+                : new DoublePoint2D(X, Y);
         }
 
         /// <summary>
@@ -280,11 +280,11 @@ namespace Trivial.Maths
         /// </summary>
         /// <param name="value">The value to be minuses.</param>
         /// <returns>A result after leftValue minus rightValue.</returns>
-        public DoubleTwoDimensionalPoint Minus(TwoDimensionalPoint<int> value)
+        public DoublePoint2D Minus(Point2D<int> value)
         {
             return value != null
-                ? new DoubleTwoDimensionalPoint(X - value.X, Y - value.Y)
-                : new DoubleTwoDimensionalPoint(X, Y);
+                ? new DoublePoint2D(X - value.X, Y - value.Y)
+                : new DoublePoint2D(X, Y);
         }
 
         /// <summary>
@@ -293,11 +293,11 @@ namespace Trivial.Maths
         /// </summary>
         /// <param name="value">The value to be minuses.</param>
         /// <returns>A result after leftValue minus rightValue.</returns>
-        public DoubleTwoDimensionalPoint Minus(DoubleTwoDimensionalPoint value)
+        public DoublePoint2D Minus(DoublePoint2D value)
         {
             return value != null
-                ? new DoubleTwoDimensionalPoint(X - value.X, Y - value.Y)
-                : new DoubleTwoDimensionalPoint(X, Y);
+                ? new DoublePoint2D(X - value.X, Y - value.Y)
+                : new DoublePoint2D(X, Y);
         }
 
         /// <summary>
@@ -305,9 +305,9 @@ namespace Trivial.Maths
         /// -this
         /// </summary>
         /// <returns>A result after negation.</returns>
-        public DoubleTwoDimensionalPoint Negate()
+        public DoublePoint2D Negate()
         {
-            return new DoubleTwoDimensionalPoint(-X, -Y);
+            return new DoublePoint2D(-X, -Y);
         }
 
         /// <summary>
@@ -337,14 +337,14 @@ namespace Trivial.Maths
         /// </summary>
         /// <returns>A new object that is a copy of this instance.</returns>
         public override object Clone()
-            => new DoubleTwoDimensionalPoint(X, Y);
+            => new DoublePoint2D(X, Y);
 
         /// <summary>
         /// Determines whether the specified object is equal to the current object.
         /// </summary>
         /// <param name="other">The object to compare with the current object.</param>
         /// <returns>true if the specified object is equal to the current object; otherwise, false.</returns>
-        public bool Equals(TwoDimensionalPoint<double> other)
+        public bool Equals(Point2D<double> other)
             => other is not null && (Math.Abs(X - other.X) < Arithmetic.DoubleAccuracy) && (Math.Abs(Y - other.Y) < Arithmetic.DoubleAccuracy);
 
         /// <summary>
@@ -356,7 +356,7 @@ namespace Trivial.Maths
         {
             if (other is null) return false;
             if (ReferenceEquals(this, other)) return true;
-            if (other is TwoDimensionalPoint<double> p) return Equals(p);
+            if (other is Point2D<double> p) return Equals(p);
             return base.Equals(other);
         }
 
@@ -368,10 +368,41 @@ namespace Trivial.Maths
             => base.GetHashCode();
 
         /// <summary>
+        /// Converts to a point.
+        /// </summary>
+        /// <param name="value">The point converted.</param>
+        /// <returns>An instance of the point class.</returns>
+        public static explicit operator System.Numerics.Vector2(DoublePoint2D value)
+            => new((float)value.X, (float)value.Y);
+
+        /// <summary>
+        /// Converts to a point.
+        /// </summary>
+        /// <param name="value">The point converted.</param>
+        /// <returns>An instance of the point class.</returns>
+        public static explicit operator System.Drawing.PointF(DoublePoint2D value)
+            => new((float)value.X, (float)value.Y);
+
+        /// <summary>
+        /// Converts a point.
+        /// </summary>
+        /// <param name="value">The point to convert.</param>
+        public static implicit operator DoublePoint2D(Point2D<int> value)
+            => new(value.X, value.Y);
+
+        /// <summary>
+        /// Converts a point.
+        /// </summary>
+        /// <param name="value">The point to convert.</param>
+        public static implicit operator DoublePoint2D(Point2D<float> value)
+            => new(value.X, value.Y);
+
+        /// <summary>
         /// Converts a vector to the point.
         /// </summary>
         /// <param name="value">The vector to convert.</param>
-        public static implicit operator DoubleTwoDimensionalPoint(System.Numerics.Vector2 value)
+        /// <returns>An instance of the point class.</returns>
+        public static implicit operator DoublePoint2D(System.Numerics.Vector2 value)
             => new(value.X, value.Y);
 
         /// <summary>
@@ -379,7 +410,7 @@ namespace Trivial.Maths
         /// </summary>
         /// <param name="p">The point value.</param>
         /// <returns>An instance of the point class.</returns>
-        public static implicit operator DoubleTwoDimensionalPoint(System.Drawing.PointF p)
+        public static implicit operator DoublePoint2D(System.Drawing.PointF p)
             => new(p.X, p.Y);
 
         /// <summary>
@@ -388,8 +419,8 @@ namespace Trivial.Maths
         /// <param name="leftValue">The left value for addition operator.</param>
         /// <param name="rightValue">The right value for addition operator.</param>
         /// <returns>A result after addition.</returns>
-        public static DoubleTwoDimensionalPoint operator +(DoubleTwoDimensionalPoint leftValue, DoubleTwoDimensionalPoint rightValue)
-            => (leftValue ?? new DoubleTwoDimensionalPoint()).Plus(rightValue);
+        public static DoublePoint2D operator +(DoublePoint2D leftValue, DoublePoint2D rightValue)
+            => (leftValue ?? new DoublePoint2D()).Plus(rightValue);
 
         /// <summary>
         /// Pluses two points in coordinate.
@@ -397,20 +428,20 @@ namespace Trivial.Maths
         /// <param name="leftValue">The left value for addition operator.</param>
         /// <param name="rightValue">The right value for addition operator.</param>
         /// <returns>A result after addition.</returns>
-        public static DoubleTwoDimensionalPoint operator -(DoubleTwoDimensionalPoint leftValue, DoubleTwoDimensionalPoint rightValue)
-            => (leftValue ?? new DoubleTwoDimensionalPoint()).Minus(rightValue);
+        public static DoublePoint2D operator -(DoublePoint2D leftValue, DoublePoint2D rightValue)
+            => (leftValue ?? new DoublePoint2D()).Minus(rightValue);
     }
 
     /// <summary>
     /// The point of 2D (flat) integer coordinate.
     /// </summary>
-    public class Int32TwoDimensionalPoint : TwoDimensionalPoint<int>, IAdditionCapable<Int32TwoDimensionalPoint>, ISubtractionCapable<Int32TwoDimensionalPoint>, INegationCapable<Int32TwoDimensionalPoint>, IEquatable<TwoDimensionalPoint<int>>
+    public class Int32Point2D : Point2D<int>, IAdditionCapable<Int32Point2D>, ISubtractionCapable<Int32Point2D>, INegationCapable<Int32Point2D>, IEquatable<Point2D<int>>
     {
         /// <summary>
         /// Initializes a new instance of the Int32TwoDimensionalPoint class.
         /// </summary>
         /// <remarks>You can use this to initialize an instance for the class.</remarks>
-        public Int32TwoDimensionalPoint()
+        public Int32Point2D()
         {
         }
 
@@ -420,7 +451,7 @@ namespace Trivial.Maths
         /// <param name="x">The value of X.</param>
         /// <param name="y">The value of Y.</param>
         /// <remarks>You can use this to initialize an instance for the class.</remarks>
-        public Int32TwoDimensionalPoint(int x, int y) : base(x, y)
+        public Int32Point2D(int x, int y) : base(x, y)
         {
         }
 
@@ -454,11 +485,11 @@ namespace Trivial.Maths
         /// </summary>
         /// <param name="value">The value to be plused.</param>
         /// <returns>A result after leftValue plus rightValue.</returns>
-        public Int32TwoDimensionalPoint Plus(TwoDimensionalPoint<int> value)
+        public Int32Point2D Plus(Point2D<int> value)
         {
             return value != null
-                ? new Int32TwoDimensionalPoint(X + value.X, Y + value.Y)
-                : new Int32TwoDimensionalPoint(X, Y);
+                ? new Int32Point2D(X + value.X, Y + value.Y)
+                : new Int32Point2D(X, Y);
         }
 
         /// <summary>
@@ -467,11 +498,11 @@ namespace Trivial.Maths
         /// </summary>
         /// <param name="value">The value to be plused.</param>
         /// <returns>A result after leftValue plus rightValue.</returns>
-        public Int32TwoDimensionalPoint Plus(Int32TwoDimensionalPoint value)
+        public Int32Point2D Plus(Int32Point2D value)
         {
             return value != null
-                ? new Int32TwoDimensionalPoint(X + value.X, Y + value.Y)
-                : new Int32TwoDimensionalPoint(X, Y);
+                ? new Int32Point2D(X + value.X, Y + value.Y)
+                : new Int32Point2D(X, Y);
         }
 
         /// <summary>
@@ -480,11 +511,11 @@ namespace Trivial.Maths
         /// </summary>
         /// <param name="value">The value to be minuses.</param>
         /// <returns>A result after leftValue minus rightValue.</returns>
-        public Int32TwoDimensionalPoint Minus(TwoDimensionalPoint<int> value)
+        public Int32Point2D Minus(Point2D<int> value)
         {
             return value != null
-                ? new Int32TwoDimensionalPoint(X - value.X, Y - value.Y)
-                : new Int32TwoDimensionalPoint(X, Y);
+                ? new Int32Point2D(X - value.X, Y - value.Y)
+                : new Int32Point2D(X, Y);
         }
 
         /// <summary>
@@ -493,11 +524,11 @@ namespace Trivial.Maths
         /// </summary>
         /// <param name="value">The value to be minuses.</param>
         /// <returns>A result after leftValue minus rightValue.</returns>
-        public Int32TwoDimensionalPoint Minus(Int32TwoDimensionalPoint value)
+        public Int32Point2D Minus(Int32Point2D value)
         {
             return value != null
-                ? new Int32TwoDimensionalPoint(X - value.X, Y - value.Y)
-                : new Int32TwoDimensionalPoint(X, Y);
+                ? new Int32Point2D(X - value.X, Y - value.Y)
+                : new Int32Point2D(X, Y);
         }
 
         /// <summary>
@@ -505,9 +536,9 @@ namespace Trivial.Maths
         /// -this
         /// </summary>
         /// <returns>A result after negation.</returns>
-        public Int32TwoDimensionalPoint Negate()
+        public Int32Point2D Negate()
         {
-            return new Int32TwoDimensionalPoint(-X, -Y);
+            return new Int32Point2D(-X, -Y);
         }
 
         /// <summary>
@@ -537,14 +568,14 @@ namespace Trivial.Maths
         /// </summary>
         /// <returns>A new object that is a copy of this instance.</returns>
         public override object Clone()
-            => new Int32TwoDimensionalPoint(X, Y);
+            => new Int32Point2D(X, Y);
 
         /// <summary>
         /// Determines whether the specified object is equal to the current object.
         /// </summary>
         /// <param name="other">The object to compare with the current object.</param>
         /// <returns>true if the specified object is equal to the current object; otherwise, false.</returns>
-        public bool Equals(TwoDimensionalPoint<int> other)
+        public bool Equals(Point2D<int> other)
             => other is not null && X == other.X && Y == other.Y;
 
         /// <summary>
@@ -556,7 +587,7 @@ namespace Trivial.Maths
         {
             if (other is null) return false;
             if (ReferenceEquals(this, other)) return true;
-            if (other is TwoDimensionalPoint<int> p) return Equals(p);
+            if (other is Point2D<int> p) return Equals(p);
             return base.Equals(other);
         }
 
@@ -572,7 +603,7 @@ namespace Trivial.Maths
         /// </summary>
         /// <param name="p">The point.</param>
         /// <returns>An instance of the point.</returns>
-        public static explicit operator System.Drawing.Point(Int32TwoDimensionalPoint p)
+        public static explicit operator System.Drawing.Point(Int32Point2D p)
             => new(p.X, p.Y);
 
         /// <summary>
@@ -580,7 +611,7 @@ namespace Trivial.Maths
         /// </summary>
         /// <param name="p">The point value.</param>
         /// <returns>An instance of the point class.</returns>
-        public static implicit operator Int32TwoDimensionalPoint(System.Drawing.Point p)
+        public static implicit operator Int32Point2D(System.Drawing.Point p)
             => new(p.X, p.Y);
 
         /// <summary>
@@ -589,8 +620,8 @@ namespace Trivial.Maths
         /// <param name="leftValue">The left value for addition operator.</param>
         /// <param name="rightValue">The right value for addition operator.</param>
         /// <returns>A result after addition.</returns>
-        public static Int32TwoDimensionalPoint operator +(Int32TwoDimensionalPoint leftValue, Int32TwoDimensionalPoint rightValue)
-            => (leftValue ?? new Int32TwoDimensionalPoint()).Plus(rightValue);
+        public static Int32Point2D operator +(Int32Point2D leftValue, Int32Point2D rightValue)
+            => (leftValue ?? new Int32Point2D()).Plus(rightValue);
 
         /// <summary>
         /// Pluses two points in coordinate.
@@ -598,7 +629,7 @@ namespace Trivial.Maths
         /// <param name="leftValue">The left value for addition operator.</param>
         /// <param name="rightValue">The right value for addition operator.</param>
         /// <returns>A result after addition.</returns>
-        public static Int32TwoDimensionalPoint operator -(Int32TwoDimensionalPoint leftValue, Int32TwoDimensionalPoint rightValue)
-            => (leftValue ?? new Int32TwoDimensionalPoint()).Minus(rightValue);
+        public static Int32Point2D operator -(Int32Point2D leftValue, Int32Point2D rightValue)
+            => (leftValue ?? new Int32Point2D()).Minus(rightValue);
     }
 }

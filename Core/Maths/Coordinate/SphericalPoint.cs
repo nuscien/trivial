@@ -205,7 +205,7 @@ namespace Trivial.Maths
         /// Converts a number to a spherical point.
         /// </summary>
         /// <param name="value">The point.</param>
-        public static implicit operator SphericalPoint(ThreeDimensionalPoint<double> value)
+        public static implicit operator SphericalPoint(Point3D<double> value)
         {
             if (value == null) return null;
             var r = Math.Sqrt(value.X * value.X + value.Y * value.Y + value.Z * value.Z);
@@ -216,7 +216,7 @@ namespace Trivial.Maths
         /// Converts a number to a spherical point.
         /// </summary>
         /// <param name="value">The point.</param>
-        public static implicit operator SphericalPoint(ThreeDimensionalPoint<long> value)
+        public static implicit operator SphericalPoint(Point3D<long> value)
         {
             if (value == null) return null;
             var r = Math.Sqrt(value.X * 1.0 * value.X + value.Y * 1.0 * value.Y + value.Z * 1.0 * value.Z);
@@ -227,7 +227,7 @@ namespace Trivial.Maths
         /// Converts a number to a spherical point.
         /// </summary>
         /// <param name="value">The point.</param>
-        public static implicit operator SphericalPoint(ThreeDimensionalPoint<int> value)
+        public static implicit operator SphericalPoint(Point3D<int> value)
         {
             if (value == null) return null;
             var r = Math.Sqrt(value.X * 1.0 * value.X + value.Y * 1.0 * value.Y + value.Z * 1.0 * value.Z);
@@ -238,10 +238,10 @@ namespace Trivial.Maths
         /// Converts a number to a spherical point.
         /// </summary>
         /// <param name="value">The point.</param>
-        public static explicit operator DoubleThreeDimensionalPoint(SphericalPoint value)
+        public static explicit operator DoublePoint3D(SphericalPoint value)
         {
             if (value == null) return null;
-            return new DoubleThreeDimensionalPoint(value.Theta.Sin() * value.Phi.Cos() * value.Radius, value.Theta.Sin() * value.Phi.Sin() * value.Radius, value.Theta.Cos() * value.Radius);
+            return new DoublePoint3D(value.Theta.Sin() * value.Phi.Cos() * value.Radius, value.Theta.Sin() * value.Phi.Sin() * value.Radius, value.Theta.Cos() * value.Radius);
         }
     }
 }

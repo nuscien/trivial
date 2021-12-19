@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -17,7 +18,7 @@ namespace Trivial.Maths
         /// <param name="start">The start point.</param>
         /// <param name="end">The end point.</param>
         /// <returns>The distance.</returns>
-        public static double Distance(TwoDimensionalPoint<double> start, TwoDimensionalPoint<double> end)
+        public static double Distance(Point2D<double> start, Point2D<double> end)
         {
             if (start == null) start = new();
             if (end == null) end = new();
@@ -27,18 +28,69 @@ namespace Trivial.Maths
         }
 
         /// <summary>
+        /// Computes euclidean metric.
+        /// </summary>
+        /// <param name="start">The start point.</param>
+        /// <param name="end">The end point.</param>
+        /// <returns>The distance.</returns>
+        public static float Distance(PointF start, PointF end)
+        {
+            var width = end.X - start.X;
+            var height = end.Y - start.Y;
+#if NETCOREAPP3_1_OR_GREATER
+            return MathF.Sqrt(width * width + height * height);
+#else
+            return (float)Math.Sqrt(width * width + height * height);
+#endif
+        }
+
+        /// <summary>
         /// Computes vector cross product.
         /// </summary>
         /// <param name="a">A point.</param>
         /// <param name="b">Another point.</param>
         /// <param name="o">The vertex/origin point.</param>
         /// <returns>The vector cross product. Greater than 0 if anticlockwise; equals to 0 if collineation; less than 0 if clockwise.</returns>
-        public static double CrossProduct(TwoDimensionalPoint<double> a, TwoDimensionalPoint<double> b, TwoDimensionalPoint<double> o = null)
+        public static double CrossProduct(Point2D<double> a, Point2D<double> b, Point2D<double> o = null)
         {
             if (a == null) a = new();
             if (b == null) b = new();
             if (o == null) o = new();
             return (a.X - o.X) * (b.Y - o.Y) - (b.X - o.X) * (a.Y - o.Y);
+        }
+
+        /// <summary>
+        /// Computes vector cross product.
+        /// </summary>
+        /// <param name="a">A point.</param>
+        /// <param name="b">Another point.</param>
+        /// <param name="o">The vertex/origin point.</param>
+        /// <returns>The vector cross product. Greater than 0 if anticlockwise; equals to 0 if collineation; less than 0 if clockwise.</returns>
+        public static float CrossProduct(PointF a, PointF b, PointF o)
+            => (a.X - o.X) * (b.Y - o.Y) - (b.X - o.X) * (a.Y - o.Y);
+
+        /// <summary>
+        /// Computes vector cross product.
+        /// </summary>
+        /// <param name="a">A point.</param>
+        /// <param name="b">Another point.</param>
+        /// <returns>The vector cross product. Greater than 0 if anticlockwise; equals to 0 if collineation; less than 0 if clockwise.</returns>
+        public static float CrossProduct(PointF a, PointF b)
+            => CrossProduct(a, b, new PointF(0, 0));
+
+        /// <summary>
+        /// Computes vector dot (scalar) product.
+        /// </summary>
+        /// <param name="a">A point.</param>
+        /// <param name="b">Another point.</param>
+        /// <param name="o">The vertex/origin point.</param>
+        /// <returns>The vector dot (scalar) product. Greater than 0 if it is obtuse angle; equals to 0 if it is right angle; less than 0 if it is acute angle.</returns>
+        public static double DotProduct(Point2D<double> a, Point2D<double> b, Point2D<double> o = null)
+        {
+            if (a == null) a = new();
+            if (b == null) b = new();
+            if (o == null) o = new();
+            return (a.X - o.X) * (b.X - o.X) + (a.Y - o.Y) * (b.Y - o.Y);
         }
 
         /// <summary>
@@ -48,12 +100,36 @@ namespace Trivial.Maths
         /// <param name="b">Another point.</param>
         /// <param name="o">The vertex/origin point.</param>
         /// <returns>The vector dot (scalar) product. Greater than 0 if it is obtuse angle; equals to 0 if it is right angle; less than 0 if it is acute angle.</returns>
-        public static double DotProduct(TwoDimensionalPoint<double> a, TwoDimensionalPoint<double> b, TwoDimensionalPoint<double> o = null)
+        public static float DotProduct(PointF a, PointF b, PointF o)
+            => (a.X - o.X) * (b.X - o.X) + (a.Y - o.Y) * (b.Y - o.Y);
+
+        /// <summary>
+        /// Computes vector dot (scalar) product.
+        /// </summary>
+        /// <param name="a">A point.</param>
+        /// <param name="b">Another point.</param>
+        /// <returns>The vector dot (scalar) product. Greater than 0 if it is obtuse angle; equals to 0 if it is right angle; less than 0 if it is acute angle.</returns>
+        public static float DotProduct(PointF a, PointF b)
+            => DotProduct(a, b, new PointF(0, 0));
+
+        /// <summary>
+        /// Gets the point after counter clockwise rotation.
+        /// </summary>
+        /// <param name="point">The point.</param>
+        /// <param name="origin">The origin point.</param>
+        /// <param name="alpha">The angle to counter clockwise rotate.</param>
+        /// <returns>The point after rotation.</returns>
+        public static DoublePoint2D Rotate(Point2D<double> point, Point2D<double> origin, Angle alpha)
         {
-            if (a == null) a = new();
-            if (b == null) b = new();
-            if (o == null) o = new();
-            return (a.X - o.X) * (b.X - o.X) + (a.Y - o.Y) * (b.Y - o.Y);
+            if (point == null) point = new();
+            if (alpha.Degrees == 0) return new DoublePoint2D(point.X, point.Y);
+            if (origin == null) origin = new();
+            var radian = alpha.Radians;
+            var x = origin.X - point.X;
+            var y = origin.Y - point.Y;
+            return new DoublePoint2D(
+                x * Math.Cos(radian) - y * Math.Sin(radian) + x,
+                y * Math.Cos(radian) + x * Math.Sin(radian) + y);
         }
 
         /// <summary>
@@ -63,17 +139,21 @@ namespace Trivial.Maths
         /// <param name="origin">The origin point.</param>
         /// <param name="alpha">The angle to counter clockwise rotate.</param>
         /// <returns>The point after rotation.</returns>
-        public static DoubleTwoDimensionalPoint Rotate(TwoDimensionalPoint<double> point, TwoDimensionalPoint<double> origin, Angle alpha)
+        public static PointF Rotate(PointF point, PointF origin, Angle alpha)
         {
-            if (point == null) point = new();
-            if (alpha.Degrees == 0) return new DoubleTwoDimensionalPoint(point.X, point.Y);
-            if (origin == null) origin = new();
-            var radian = alpha.Radians;
+            if (alpha.Degrees == 0) return point;
+            var radian = (float)alpha.Radians;
             var x = origin.X - point.X;
             var y = origin.Y - point.Y;
-            return new DoubleTwoDimensionalPoint(
-                x * Math.Cos(radian) - y * Math.Sin(radian) + x,
-                y * Math.Cos(radian) + x * Math.Sin(radian) + y);
+#if NETCOREAPP3_1_OR_GREATER
+            return new PointF(
+                x * MathF.Cos(radian) - y * MathF.Sin(radian) + x,
+                y * MathF.Cos(radian) + x * MathF.Sin(radian) + y);
+#else
+            return new PointF(
+                x * (float)Math.Cos(radian) - y * (float)Math.Sin(radian) + x,
+                y * (float)Math.Cos(radian) + x * (float)Math.Sin(radian) + y);
+#endif
         }
 
         /// <summary>
@@ -83,7 +163,7 @@ namespace Trivial.Maths
         /// <param name="start">The start point.</param>
         /// <param name="end">The end point.</param>
         /// <returns>The included angle radian of line vertex-start and line vertex-end.</returns>
-        internal static double AngleRadian(TwoDimensionalPoint<double> vertex, TwoDimensionalPoint<double> start, TwoDimensionalPoint<double> end)
+        internal static double AngleRadian(Point2D<double> vertex, Point2D<double> start, Point2D<double> end)
         {
             if (vertex == null) vertex = new();
             if (start == null) start = new();
@@ -109,8 +189,42 @@ namespace Trivial.Maths
         /// <param name="vertex">The vertex point.</param>
         /// <param name="start">The start point.</param>
         /// <param name="end">The end point.</param>
+        /// <returns>The included angle radian of line vertex-start and line vertex-end.</returns>
+        internal static float AngleRadian(PointF vertex, PointF start, PointF end)
+        {
+            var dsx = start.X - vertex.X;
+            var dsy = start.Y - vertex.Y;
+            var dex = end.X - vertex.X;
+            var dey = end.Y - vertex.Y;
+            if (Math.Abs(dex) < InternalHelper.DoubleAccuracy && Math.Abs(dey) < InternalHelper.DoubleAccuracy) return 0;
+            var cosfi = dsx * dex + dsy * dey;
+            var norm = (dsx * dsx + dsy * dsy) * (dex * dex + dey * dey);
+            cosfi /= (float)Math.Sqrt(norm);
+            if (cosfi >= 1.0) return 0;
+            if (cosfi <= -1.0) return -(float)Math.PI;
+            var fi = (float)Math.Acos(cosfi);
+            if (dsx * dey - dsy * dex > 0) return fi;
+            return -fi;
+        }
+
+        /// <summary>
+        /// Computes included angle.
+        /// </summary>
+        /// <param name="vertex">The vertex point.</param>
+        /// <param name="start">The start point.</param>
+        /// <param name="end">The end point.</param>
         /// <returns>The included angle of line vertex-start and line vertex-end.</returns>
-        public static Angle Angle(TwoDimensionalPoint<double> vertex, TwoDimensionalPoint<double> start, TwoDimensionalPoint<double> end)
+        public static Angle Angle(Point2D<double> vertex, Point2D<double> start, Point2D<double> end)
+            => Maths.Angle.FromRadian(AngleRadian(vertex, start, end));
+
+        /// <summary>
+        /// Computes included angle.
+        /// </summary>
+        /// <param name="vertex">The vertex point.</param>
+        /// <param name="start">The start point.</param>
+        /// <param name="end">The end point.</param>
+        /// <returns>The included angle of line vertex-start and line vertex-end.</returns>
+        public static Angle Angle(PointF vertex, PointF start, PointF end)
             => Maths.Angle.FromRadian(AngleRadian(vertex, start, end));
 
         /// <summary>
@@ -120,16 +234,29 @@ namespace Trivial.Maths
         /// <param name="line">The line to compare.</param>
         /// <returns>The relative position ratio. Less than 0 if the point is on the backward extension of the line segment; greater than 1 if forward; equals to 0 if on the start point of the line segment; equals to 1 if on the end point; between 0 and 1 if on the line segment.</returns>
         /// <exception cref="ArgumentNullException">line was null.</exception>
-        public static double Relation(TwoDimensionalPoint<double> point, LineSegment line)
+        public static double Relation(Point2D<double> point, LineSegment line)
         {
             if (line == null) throw new ArgumentNullException(nameof(line), "line should not be null.");
             if (point == null) point = new();
+            var l = new LineSegment(
+                line.Start,
+                point is DoublePoint2D p ? p : new DoublePoint2D(point.X, point.Y));
+            return DotProduct(l.End, line.End, line.Start) / (Distance(line.Start, line.End) * Distance(line.Start, line.End));
+        }
+
+        /// <summary>
+        /// Gets the position of a point that relative to a specific line.
+        /// </summary>
+        /// <param name="point">The point to get the relative position.</param>
+        /// <param name="line">The line to compare.</param>
+        /// <returns>The relative position ratio. Less than 0 if the point is on the backward extension of the line segment; greater than 1 if forward; equals to 0 if on the start point of the line segment; equals to 1 if on the end point; between 0 and 1 if on the line segment.</returns>
+        /// <exception cref="ArgumentNullException">line was null.</exception>
+        public static double Relation(PointF point, LineSegment line)
+        {
+            if (line == null) throw new ArgumentNullException(nameof(line), "line should not be null.");
             LineSegment l = new();
             l.Start = line.Start;
-            if (point is DoubleTwoDimensionalPoint p)
-                l.End = p;
-            else
-                l.End = new DoubleTwoDimensionalPoint(point.X, point.Y);
+            l.End = new DoublePoint2D(point.X, point.Y);
             return DotProduct(l.End, line.End, line.Start) / (Distance(line.Start, line.End) * Distance(line.Start, line.End));
         }
 
@@ -140,7 +267,7 @@ namespace Trivial.Maths
         /// <param name="line">The line.</param>
         /// <returns>The foot point.</returns>
         /// <exception cref="ArgumentNullException">line was null.</exception>
-        public static DoubleTwoDimensionalPoint GetFootPoint(TwoDimensionalPoint<double> point, LineSegment line)
+        public static DoublePoint2D GetFootPoint(Point2D<double> point, LineSegment line)
         {
             var r = Relation(point, line);
             return new(
@@ -156,7 +283,7 @@ namespace Trivial.Maths
         /// <param name="closest">The foot point or the closest point.</param>
         /// <returns>The distance.</returns>
         /// <exception cref="ArgumentNullException">line was null.</exception>
-        public static double Distance(TwoDimensionalPoint<double> point, LineSegment line, out DoubleTwoDimensionalPoint closest)
+        public static double Distance(Point2D<double> point, LineSegment line, out DoublePoint2D closest)
         {
             if (point == null) point = new();
             var r = Relation(point, line);
@@ -184,7 +311,7 @@ namespace Trivial.Maths
         /// <param name="line">The line.</param>
         /// <returns>The distance.</returns>
         /// <exception cref="ArgumentNullException">line was null.</exception>
-        public static double Distance(TwoDimensionalPoint<double> point, LineSegment line)
+        public static double Distance(Point2D<double> point, LineSegment line)
             => Distance(point, line, out _);
 
         /// <summary>
@@ -195,7 +322,7 @@ namespace Trivial.Maths
         /// <param name="extendToLine">true if extend the line segment to a line; otherwise, false.</param>
         /// <returns>The distance.</returns>
         /// <exception cref="ArgumentNullException">line was null.</exception>
-        public static double Distance(TwoDimensionalPoint<double> point, LineSegment line, bool extendToLine)
+        public static double Distance(Point2D<double> point, LineSegment line, bool extendToLine)
             => extendToLine
             ? Math.Abs(CrossProduct(point, line.End, line.Start)) / Distance(line.Start, line.End)
             : Distance(point, line, out _);
@@ -207,12 +334,12 @@ namespace Trivial.Maths
         /// <param name="polyline">The polyline.</param>
         /// <param name="closest">The foot point or the closest point.</param>
         /// <returns>The distance.</returns>
-        public static double Distance(TwoDimensionalPoint<double> point, DoubleTwoDimensionalPoint[] polyline, out DoubleTwoDimensionalPoint closest)
+        public static double Distance(Point2D<double> point, DoublePoint2D[] polyline, out DoublePoint2D closest)
         {
             var cd = double.PositiveInfinity;
             double td;
             LineSegment l = new();
-            DoubleTwoDimensionalPoint cq = new();
+            DoublePoint2D cq = new();
             var count = polyline.Length - 1;
             for (var i = 0; i < count; i++)
             {
@@ -236,7 +363,7 @@ namespace Trivial.Maths
         /// <param name="point">The point.</param>
         /// <param name="polyline">The polyline.</param>
         /// <returns>The distance.</returns>
-        public static double Distance(TwoDimensionalPoint<double> point, DoubleTwoDimensionalPoint[] polyline)
+        public static double Distance(Point2D<double> point, DoublePoint2D[] polyline)
             => Distance(point, polyline, out _);
 
         /// <summary>
@@ -246,12 +373,12 @@ namespace Trivial.Maths
         /// <param name="polyline">The polyline.</param>
         /// <param name="closest">The foot point or the closest point.</param>
         /// <returns>The distance.</returns>
-        public static double Distance(TwoDimensionalPoint<double> point, IList<DoubleTwoDimensionalPoint> polyline, out DoubleTwoDimensionalPoint closest)
+        public static double Distance(Point2D<double> point, IList<DoublePoint2D> polyline, out DoublePoint2D closest)
         {
             var cd = double.PositiveInfinity;
             double td;
             LineSegment l = new();
-            DoubleTwoDimensionalPoint cq = new();
+            DoublePoint2D cq = new();
             var count = polyline.Count - 1;
             for (var i = 0; i < count; i++)
             {
@@ -274,7 +401,7 @@ namespace Trivial.Maths
         /// <param name="point">The point.</param>
         /// <param name="polyline">The polyline.</param>
         /// <returns>The distance.</returns>
-        public static double Distance(TwoDimensionalPoint<double> point, IList<DoubleTwoDimensionalPoint> polyline)
+        public static double Distance(Point2D<double> point, IList<DoublePoint2D> polyline)
             => Distance(point, polyline, out _);
 
         /// <summary>
@@ -284,7 +411,7 @@ namespace Trivial.Maths
         /// <param name="polygon">The polygon.</param>
         /// <returns>true if the circle is in the polygon or is intersected with the polygon; otherwise, false.</returns>
         /// <exception cref="ArgumentNullException">radius was null.</exception>
-        public static bool IsInOrIntersected(CoordinateCircle circle, DoubleTwoDimensionalPoint[] polygon)
+        public static bool IsInOrIntersected(CoordinateCircle circle, DoublePoint2D[] polygon)
         {
             if (circle == null || double.IsNaN(circle.Radius)) throw new ArgumentNullException(nameof(circle), "circle should not be null.");
             var d = Distance(circle.Center, polygon, out _);
@@ -298,7 +425,7 @@ namespace Trivial.Maths
         /// <param name="polygon">The polygon.</param>
         /// <returns>true if the circle is in the polygon or is intersected with the polygon; otherwise, false.</returns>
         /// <exception cref="ArgumentNullException">radius was null.</exception>
-        public static bool IsInOrIntersected(CoordinateCircle circle, IList<DoubleTwoDimensionalPoint> polygon)
+        public static bool IsInOrIntersected(CoordinateCircle circle, IList<DoublePoint2D> polygon)
         {
             if (circle == null || double.IsNaN(circle.Radius)) throw new ArgumentNullException(nameof(circle), "circle should not be null.");
             var d = Distance(circle.Center, polygon, out _);
@@ -376,7 +503,7 @@ namespace Trivial.Maths
         {
             if (a == null) throw new ArgumentNullException(nameof(a), "a should not be null");
             if (b == null) throw new ArgumentNullException(nameof(b), "b should not be null");
-            return Angle(new(0, 0), new(a.End.X - a.Start.X, a.End.Y - a.Start.Y), new(b.End.X - b.Start.X, b.End.Y - b.Start.Y));
+            return Angle(new DoublePoint2D(0, 0), new DoublePoint2D(a.End.X - a.Start.X, a.End.Y - a.Start.Y), new DoublePoint2D(b.End.X - b.Start.X, b.End.Y - b.Start.Y));
         }
 
         /// <summary>
@@ -404,7 +531,35 @@ namespace Trivial.Maths
         /// <param name="line">The line.</param>
         /// <returns>The angle.</returns>
         /// <exception cref="ArgumentNullException">line was null.</exception>
+        internal static double AngleRadian(StraightLineF line)
+        {
+            if (line == null) throw new ArgumentNullException(nameof(line), "line should noe be null.");
+            if (Math.Abs(line.A) < InternalHelper.SingleAccuracy)
+                return 0;
+            if (Math.Abs(line.B) < InternalHelper.SingleAccuracy)
+                return Math.PI / 2;
+            if (line.Slope > 0)
+                return Math.Atan(line.Slope);
+            else
+                return Math.PI + Math.Atan(line.Slope);
+        }
+
+        /// <summary>
+        /// Gets the angle of the line.
+        /// </summary>
+        /// <param name="line">The line.</param>
+        /// <returns>The angle.</returns>
+        /// <exception cref="ArgumentNullException">line was null.</exception>
         public static Angle Angle(StraightLine line)
+            => Maths.Angle.FromRadian(AngleRadian(line));
+
+        /// <summary>
+        /// Gets the angle of the line.
+        /// </summary>
+        /// <param name="line">The line.</param>
+        /// <returns>The angle.</returns>
+        /// <exception cref="ArgumentNullException">line was null.</exception>
+        public static Angle Angle(StraightLineF line)
             => Maths.Angle.FromRadian(AngleRadian(line));
 
         /// <summary>
@@ -414,11 +569,11 @@ namespace Trivial.Maths
         /// <param name="line">The line.</param>
         /// <returns>The symmetry point.</returns>
         /// <exception cref="ArgumentNullException">line was null.</exception>
-        public static DoubleTwoDimensionalPoint Symmetry(DoubleTwoDimensionalPoint point, StraightLine line)
+        public static DoublePoint2D Symmetry(DoublePoint2D point, StraightLine line)
         {
             if (line == null) throw new ArgumentNullException(nameof(line), "line should noe be null.");
             if (point == null) point = new();
-            return new DoubleTwoDimensionalPoint(
+            return new DoublePoint2D(
                 ((line.B * line.B - line.A * line.A) * point.X - 2 * line.A * line.B * point.Y - 2 * line.A * line.C) / (line.A * line.A + line.B * line.B),
                 ((line.A * line.A - line.B * line.B) * point.Y - 2 * line.A * line.B * point.X - 2 * line.B * line.C) / (line.A * line.A + line.B * line.B));
         }
@@ -431,7 +586,7 @@ namespace Trivial.Maths
         /// <param name="line">The line.</param>
         /// <returns>true if they are in same side; otherwise, false.</returns>
         /// <exception cref="ArgumentNullException">line was null.</exception>
-        public static bool AreSameSide(DoubleTwoDimensionalPoint a, DoubleTwoDimensionalPoint b, StraightLine line)
+        public static bool AreSameSide(DoublePoint2D a, DoublePoint2D b, StraightLine line)
         {
             if (line == null) throw new ArgumentNullException(nameof(line), "line should noe be null.");
             if (a == null) a = new();
@@ -447,16 +602,16 @@ namespace Trivial.Maths
         /// <param name="b">The second line.</param>
         /// <param name="p">The point intersected.</param>
         /// <returns>true if they are intersected; otherwise, false.</returns>
-        public static bool IsIntersected(StraightLine a, StraightLine b, out DoubleTwoDimensionalPoint p)
+        public static bool IsIntersected(StraightLine a, StraightLine b, out DoublePoint2D p)
         {
             var d = a.A * b.B - b.A * a.B;
             if (Math.Abs(d) < InternalHelper.DoubleAccuracy)
             {
-                p = new DoubleTwoDimensionalPoint();
+                p = new DoublePoint2D();
                 return false;
             }
 
-            p = new DoubleTwoDimensionalPoint(
+            p = new DoublePoint2D(
                 (b.C * a.B - a.C * b.B) / d,
                 (b.A * a.C - a.A * b.C) / d);
             return true;
@@ -497,7 +652,7 @@ namespace Trivial.Maths
         /// <returns>true if it is a simple polygon; otherwise, false.</returns>
         /// <exception cref="ArgumentException">polygon was invalid because its points are less than 3.</exception>
         /// <exception cref="ArgumentNullException">polygon was null.</exception>
-        public static bool IsSimple(DoubleTwoDimensionalPoint[] polygon)
+        public static bool IsSimple(DoublePoint2D[] polygon)
         {
             if (polygon == null) throw new ArgumentNullException(nameof(polygon), "polygon should not be null.");
             if (polygon.Length < 3) throw new ArgumentException("polygon is invalid because the points are less than 3.");
@@ -530,7 +685,7 @@ namespace Trivial.Maths
         /// </summary>
         /// <param name="polygon">The polygon. Requires to input by anticlockwise.</param>
         /// <returns>true if it is a simple polygon; otherwise, false.</returns>
-        public static bool IsSimple(IList<DoubleTwoDimensionalPoint> polygon)
+        public static bool IsSimple(IList<DoublePoint2D> polygon)
         {
             int cn;
             LineSegment l1 = new();
@@ -561,7 +716,7 @@ namespace Trivial.Maths
         /// </summary>
         /// <param name="polygon">The polygon.</param>
         /// <returns>The boolean array about if each point is convexity.</returns>
-        public static IList<bool> Convexity(DoubleTwoDimensionalPoint[] polygon)
+        public static IList<bool> Convexity(DoublePoint2D[] polygon)
         {
             var index = 0;
             var len = polygon.Length;
@@ -597,7 +752,7 @@ namespace Trivial.Maths
         /// </summary>
         /// <param name="polygon">The polygon.</param>
         /// <returns>true if it is a convex polygon.</returns>
-        public static bool IsConvex(DoubleTwoDimensionalPoint[] polygon)
+        public static bool IsConvex(DoublePoint2D[] polygon)
             => !Convexity(polygon).Any(ele => !ele);
 
         /// <summary>
@@ -605,7 +760,7 @@ namespace Trivial.Maths
         /// </summary>
         /// <param name="polygon">The polygon.</param>
         /// <returns>The area of the polygon. Greater than 0 if anticlockwise; less than 0 if clockwise.</returns>
-        public static double Area(DoubleTwoDimensionalPoint[] polygon)
+        public static double Area(DoublePoint2D[] polygon)
         {
             var count = polygon.Length;
             if (count < 3) return 0;
@@ -623,7 +778,7 @@ namespace Trivial.Maths
         /// </summary>
         /// <param name="polygon">The polygon.</param>
         /// <returns>The area of the polygon. Greater than 0 if anticlockwise; less than 0 if clockwise.</returns>
-        public static double Area(IList<DoubleTwoDimensionalPoint> polygon)
+        public static double Area(IList<DoublePoint2D> polygon)
         {
             var count = polygon.Count;
             if (count < 3) return 0;
@@ -641,7 +796,7 @@ namespace Trivial.Maths
         /// </summary>
         /// <param name="polygon">The polygon.</param>
         /// <returns>The area of the polygon. Greater than 0 if anticlockwise; less than 0 if clockwise.</returns>
-        public static double AbsArea(DoubleTwoDimensionalPoint[] polygon)
+        public static double AbsArea(DoublePoint2D[] polygon)
             => Math.Abs(Area(polygon));
 
         /// <summary>
@@ -649,7 +804,7 @@ namespace Trivial.Maths
         /// </summary>
         /// <param name="polygon">The polygon.</param>
         /// <returns>The area of the polygon. Greater than 0 if anticlockwise; less than 0 if clockwise.</returns>
-        public static double AbsArea(IList<DoubleTwoDimensionalPoint> polygon)
+        public static double AbsArea(IList<DoublePoint2D> polygon)
             => Math.Abs(Area(polygon));
 
         /// <summary>
@@ -657,7 +812,7 @@ namespace Trivial.Maths
         /// </summary>
         /// <param name="polygon">The polygon.</param>
         /// <returns>true if it is anticlockwise; otherwise, false.</returns>
-        public static bool IsAnticlockwise(DoubleTwoDimensionalPoint[] polygon)
+        public static bool IsAnticlockwise(DoublePoint2D[] polygon)
             => Area(polygon) > 0;
 
         /// <summary>
@@ -665,7 +820,7 @@ namespace Trivial.Maths
         /// </summary>
         /// <param name="polygon">The polygon.</param>
         /// <returns>true if it is anticlockwise; otherwise, false.</returns>
-        public static bool IsAnticlockwise(IList<DoubleTwoDimensionalPoint> polygon)
+        public static bool IsAnticlockwise(IList<DoublePoint2D> polygon)
             => Area(polygon) > 0;
 
         /// <summary>
@@ -674,11 +829,11 @@ namespace Trivial.Maths
         /// <param name="polygon">The polygon.</param>
         /// <returns>The center of gravity of the polygon.</returns>
         /// <exception cref="InvalidOperationException">Only supports simple polygon.</exception>
-        public static DoubleTwoDimensionalPoint CenterOfGravity(DoubleTwoDimensionalPoint[] polygon)
+        public static DoublePoint2D CenterOfGravity(DoublePoint2D[] polygon)
         {
             if (!IsSimple(polygon)) throw new InvalidOperationException("Only supports simple polygon.", new NotImplementedException("Only supports simple polygon."));
-            DoubleTwoDimensionalPoint p1;
-            DoubleTwoDimensionalPoint p2;
+            DoublePoint2D p1;
+            DoublePoint2D p2;
             double xtr, ytr, wtr, xtl, ytl, wtl;
             xtr = ytr = wtr = xtl = ytl = wtl = 0d;
             var count = polygon.Length;
@@ -689,7 +844,7 @@ namespace Trivial.Maths
                 AddRegion(p1.X, p1.Y, p2.X, p2.Y, ref xtr, ref ytr, ref wtr, ref xtl, ref ytl, ref wtl);
             }
 
-            return new DoubleTwoDimensionalPoint(
+            return new DoublePoint2D(
                 (wtr * xtr + wtl * xtl) / (wtr + wtl),
                 (wtr * ytr + wtl * ytl) / (wtr + wtl));
         }
@@ -700,13 +855,13 @@ namespace Trivial.Maths
         /// <param name="polygon">The polygon.</param>
         /// <returns>The center of gravity of the polygon.</returns>
         /// <exception cref="InvalidOperationException">Only supports simple polygon.</exception>
-        public static DoubleTwoDimensionalPoint CenterOfGravity(IList<DoubleTwoDimensionalPoint> polygon)
+        public static DoublePoint2D CenterOfGravity(IList<DoublePoint2D> polygon)
         {
             if (!IsSimple(polygon)) throw new InvalidOperationException("Only supports simple polygon.", new NotImplementedException("Only supports simple polygon."));
             double xtr, ytr, wtr, xtl, ytl, wtl;
             xtr = ytr = wtr = xtl = ytl = wtl = 0d;
-            DoubleTwoDimensionalPoint p1;
-            DoubleTwoDimensionalPoint p2;
+            DoublePoint2D p1;
+            DoublePoint2D p2;
             var count = polygon.Count;
             for (int i = 0; i < count; i++)
             {
@@ -715,7 +870,7 @@ namespace Trivial.Maths
                 AddRegion(p1.X, p1.Y, p2.X, p2.Y, ref xtr, ref ytr, ref wtr, ref xtl, ref ytl, ref wtl);
             }
 
-            return new DoubleTwoDimensionalPoint(
+            return new DoublePoint2D(
                 (wtr * xtr + wtl * xtl) / (wtr + wtl),
                 (wtr * ytr + wtl * ytl) / (wtr + wtl));
         }
@@ -761,7 +916,7 @@ namespace Trivial.Maths
         /// <exception cref="ArgumentException">polygon was invalid because its points are less than 3.</exception>
         /// <exception cref="ArgumentNullException">polygon was null.</exception>
         /// <exception cref="InvalidOperationException">polygon was not simple.</exception>
-        public static void PointTangentPoly(DoubleTwoDimensionalPoint point, DoubleTwoDimensionalPoint[] polygon, out DoubleTwoDimensionalPoint right, out DoubleTwoDimensionalPoint left)
+        public static void PointTangentPoly(DoublePoint2D point, DoublePoint2D[] polygon, out DoublePoint2D right, out DoublePoint2D left)
         {
             if (!IsSimple(polygon)) throw new InvalidOperationException("Only supports simple polygon.", new NotImplementedException("Only supports simple polygon."));
             if (point == null) point = new();
@@ -803,7 +958,7 @@ namespace Trivial.Maths
         /// <exception cref="ArgumentException">polygon was invalid because its points are less than 3.</exception>
         /// <exception cref="ArgumentNullException">polygon was null.</exception>
         /// <exception cref="InvalidOperationException">polygon was not simple.</exception>
-        public static void PointTangentPoly(DoubleTwoDimensionalPoint point, IList<DoubleTwoDimensionalPoint> polygon, out DoubleTwoDimensionalPoint right, out DoubleTwoDimensionalPoint left)
+        public static void PointTangentPoly(DoublePoint2D point, IList<DoublePoint2D> polygon, out DoublePoint2D right, out DoublePoint2D left)
         {
             if (!IsSimple(polygon)) throw new InvalidOperationException("Only supports simple polygon.", new NotImplementedException("Only supports simple polygon."));
             if (point == null) point = new();
@@ -843,13 +998,13 @@ namespace Trivial.Maths
         /// <exception cref="ArgumentException">polygon was invalid because its points are less than 3.</exception>
         /// <exception cref="ArgumentNullException">polygon was null.</exception>
         /// <exception cref="InvalidOperationException">polygon was not simple.</exception>
-        public static DoubleTwoDimensionalPoint GetCore(DoubleTwoDimensionalPoint[] polygon)
+        public static DoublePoint2D GetCore(DoublePoint2D[] polygon)
         {
             if (!IsSimple(polygon)) throw new InvalidOperationException("Only supports simple polygon.", new NotImplementedException("Only supports simple polygon."));
             LineSegment l = new();
             var lineset = new List<StraightLine>();
             var count = polygon.Length;
-            DoubleTwoDimensionalPoint p = null;
+            DoublePoint2D p = null;
             int i, j, k;
             for (i = 0; i < count; i++)
             {
@@ -889,13 +1044,13 @@ namespace Trivial.Maths
         /// <exception cref="ArgumentException">polygon was invalid because its points are less than 3.</exception>
         /// <exception cref="ArgumentNullException">polygon was null.</exception>
         /// <exception cref="InvalidOperationException">polygon was not simple.</exception>
-        public static DoubleTwoDimensionalPoint GetCore(IList<DoubleTwoDimensionalPoint> polygon)
+        public static DoublePoint2D GetCore(IList<DoublePoint2D> polygon)
         {
             if (!IsSimple(polygon)) throw new InvalidOperationException("Only supports simple polygon.", new NotImplementedException("Only supports simple polygon."));
             LineSegment l = new();
             var lineset = new List<StraightLine>();
             var count = polygon.Count;
-            DoubleTwoDimensionalPoint p = null;
+            DoublePoint2D p = null;
             int i, j, k;
             for (i = 0; i < count; i++)
             {
@@ -932,7 +1087,7 @@ namespace Trivial.Maths
         /// </summary>
         /// <param name="polygon">The polygon.</param>
         /// <returns>true if has core; otherwise, false.</returns>
-        public static bool HasCore(DoubleTwoDimensionalPoint[] polygon)
+        public static bool HasCore(DoublePoint2D[] polygon)
             => GetCore(polygon) != null;
 
         /// <summary>
@@ -940,7 +1095,7 @@ namespace Trivial.Maths
         /// </summary>
         /// <param name="polygon">The polygon.</param>
         /// <returns>true if has core; otherwise, false.</returns>
-        public static bool HasCore(IList<DoubleTwoDimensionalPoint> polygon)
+        public static bool HasCore(IList<DoublePoint2D> polygon)
             => GetCore(polygon) != null;
 
         /// <summary>
@@ -951,7 +1106,7 @@ namespace Trivial.Maths
         /// <param name="radius">The radius of the circle.</param>
         /// <returns>true if the point is in the circle; otherwise, false.</returns>
         /// <exception cref="ArgumentException">radius was invalid.</exception>
-        public static bool IsIn(DoubleTwoDimensionalPoint point, DoubleTwoDimensionalPoint center, double radius)
+        public static bool IsIn(DoublePoint2D point, DoublePoint2D center, double radius)
         {
             if (point == null) point = new();
             if (center == null) center = new();
@@ -968,17 +1123,17 @@ namespace Trivial.Maths
         /// <param name="b">The second point.</param>
         /// <param name="c">The third point.</param>
         /// <returns>The forth point; or null if failed.</returns>
-        public static DoubleTwoDimensionalPoint GetRestPoint(DoubleTwoDimensionalPoint a, DoubleTwoDimensionalPoint b, DoubleTwoDimensionalPoint c)
+        public static DoublePoint2D GetRestPoint(DoublePoint2D a, DoublePoint2D b, DoublePoint2D c)
         {
             if (a == null) a = new();
             if (b == null) b = new();
             if (c == null) c = new();
             if (Math.Abs(DotProduct(a, b, c)) < InternalHelper.DoubleAccuracy)
-                return new DoubleTwoDimensionalPoint(a.X + b.X - c.X, a.Y + b.Y - c.Y);
+                return new DoublePoint2D(a.X + b.X - c.X, a.Y + b.Y - c.Y);
             if (Math.Abs(DotProduct(a, c, b)) < InternalHelper.DoubleAccuracy)
-                return new DoubleTwoDimensionalPoint(a.X + c.X - b.X, a.Y + c.Y - b.X);
+                return new DoublePoint2D(a.X + c.X - b.X, a.Y + c.Y - b.X);
             if (Math.Abs(DotProduct(c, b, a)) < InternalHelper.DoubleAccuracy)
-                return new DoubleTwoDimensionalPoint(c.X + b.X - a.X, c.Y + b.Y - a.Y);
+                return new DoublePoint2D(c.X + b.X - a.X, c.Y + b.Y - a.Y);
             return null;
         }
 
@@ -1015,13 +1170,13 @@ namespace Trivial.Maths
             return (RelationshipBetweenCircles)7; // Error!
         }
 
-        private static (DoubleTwoDimensionalPoint, DoubleTwoDimensionalPoint) Pointcuts(CoordinateCircle circle, DoubleTwoDimensionalPoint point, double radius)
+        private static (DoublePoint2D, DoublePoint2D) Pointcuts(CoordinateCircle circle, DoublePoint2D point, double radius)
         {
             var a = point.X - circle.CenterX;
             var b = point.Y - circle.CenterY;
             var r = (a * a + b * b + circle.Radius * circle.Radius - radius * radius) / 2;
-            var left = new DoubleTwoDimensionalPoint();
-            var right = new DoubleTwoDimensionalPoint();
+            var left = new DoublePoint2D();
+            var right = new DoublePoint2D();
             if (a == 0 && b != 0)
             {
                 left.Y = right.Y = r / b;
@@ -1112,9 +1267,9 @@ namespace Trivial.Maths
         /// <param name="circle">The circle.</param>
         /// <param name="point">The point.</param>
         /// <returns>The 2 pointcuts.</returns>
-        public static (DoubleTwoDimensionalPoint, DoubleTwoDimensionalPoint) Pointcuts(CoordinateCircle circle, DoubleTwoDimensionalPoint point)
+        public static (DoublePoint2D, DoublePoint2D) Pointcuts(CoordinateCircle circle, DoublePoint2D point)
         {
-            var p = new DoubleTwoDimensionalPoint((circle.CenterX + point.X) / 2, (circle.CenterY + point.Y) / 2);
+            var p = new DoublePoint2D((circle.CenterX + point.X) / 2, (circle.CenterY + point.Y) / 2);
             var dx = p.X - circle.CenterX;
             var dy = p.Y - circle.CenterY;
             var r = Math.Sqrt(dx * dx + dy * dy);
@@ -1127,14 +1282,14 @@ namespace Trivial.Maths
         /// <param name="circle">The circle.</param>
         /// <param name="line">The straight line.</param>
         /// <returns>The pointcuts. It may only contains 1 or even none.</returns>
-        public static (DoubleTwoDimensionalPoint, DoubleTwoDimensionalPoint) Pointcuts(CoordinateCircle circle, StraightLine line)
+        public static (DoublePoint2D, DoublePoint2D) Pointcuts(CoordinateCircle circle, StraightLine line)
         {
             int res;
             var a = line.A;
             var b = line.B;
             var c = line.C + a * circle.CenterX + b * circle.CenterY;
-            var left = new DoubleTwoDimensionalPoint();
-            var right = new DoubleTwoDimensionalPoint();
+            var left = new DoublePoint2D();
+            var right = new DoublePoint2D();
             var r2 = circle.Radius * circle.Radius;
             if (a == 0 && b != 0)
             {

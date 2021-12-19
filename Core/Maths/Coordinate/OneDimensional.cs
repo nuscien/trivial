@@ -16,13 +16,13 @@ namespace Trivial.Maths
     /// The generic 1D (line) coordinate point.
     /// </summary>
     /// <typeparam name="TUnit">The type of unit.</typeparam>
-    public class OneDimensionalPoint<TUnit> : SingleElement<TUnit>, IEquatable<SingleElement<TUnit>> where TUnit : struct, IComparable<TUnit>, IEquatable<TUnit>
+    public class Point1D<TUnit> : SingleElement<TUnit>, IEquatable<SingleElement<TUnit>> where TUnit : struct, IComparable<TUnit>, IEquatable<TUnit>
     {
         /// <summary>
         /// Initializes a new instance of the OneDimensionalPoint class.
         /// </summary>
         /// <remarks>You can use this to initialize an instance for the class.</remarks>
-        public OneDimensionalPoint()
+        public Point1D()
         {
         }
 
@@ -31,7 +31,7 @@ namespace Trivial.Maths
         /// </summary>
         /// <param name="x">The value of X.</param>
         /// <remarks>You can use this to initialize an instance for the class.</remarks>
-        public OneDimensionalPoint(TUnit x)
+        public Point1D(TUnit x)
         {
             X = x;
         }
@@ -51,7 +51,7 @@ namespace Trivial.Maths
         /// <returns>A new object that is a copy of this instance.</returns>
         public override object Clone()
         {
-            return new OneDimensionalPoint<TUnit>(X);
+            return new Point1D<TUnit>(X);
         }
 
         /// <summary>
@@ -78,10 +78,10 @@ namespace Trivial.Maths
     /// The point of 1D (line) mathematics coordinate.
     /// </summary>
     public class DoubleOneDimensionalPoint
-        : OneDimensionalPoint<double>,
+        : Point1D<double>,
         IAdvancedAdditionCapable<DoubleOneDimensionalPoint>,
-        IComparable<OneDimensionalPoint<double>>,
-        IComparable<OneDimensionalPoint<int>>,
+        IComparable<Point1D<double>>,
+        IComparable<Point1D<int>>,
         IComparable<double>,
         IComparable<int>
     {
@@ -119,7 +119,7 @@ namespace Trivial.Maths
         /// </summary>
         /// <param name="value">The value to be plused.</param>
         /// <returns>A result after leftValue plus rightValue.</returns>
-        public DoubleOneDimensionalPoint Plus(OneDimensionalPoint<double> value)
+        public DoubleOneDimensionalPoint Plus(Point1D<double> value)
         {
             return value != null
                 ? new DoubleOneDimensionalPoint(X + value.X)
@@ -132,7 +132,7 @@ namespace Trivial.Maths
         /// </summary>
         /// <param name="value">The value to be plused.</param>
         /// <returns>A result after leftValue plus rightValue.</returns>
-        public DoubleOneDimensionalPoint Plus(OneDimensionalPoint<int> value)
+        public DoubleOneDimensionalPoint Plus(Point1D<int> value)
         {
             return value != null
                 ? new DoubleOneDimensionalPoint(X + value.X)
@@ -158,7 +158,7 @@ namespace Trivial.Maths
         /// </summary>
         /// <param name="value">The value to be minuses.</param>
         /// <returns>A result after leftValue minus rightValue.</returns>
-        public DoubleOneDimensionalPoint Minus(OneDimensionalPoint<double> value)
+        public DoubleOneDimensionalPoint Minus(Point1D<double> value)
         {
             return value != null
                 ? new DoubleOneDimensionalPoint(X - value.X)
@@ -171,7 +171,7 @@ namespace Trivial.Maths
         /// </summary>
         /// <param name="value">The value to be minuses.</param>
         /// <returns>A result after leftValue minus rightValue.</returns>
-        public DoubleOneDimensionalPoint Minus(OneDimensionalPoint<int> value)
+        public DoubleOneDimensionalPoint Minus(Point1D<int> value)
         {
             return value != null
                 ? new DoubleOneDimensionalPoint(X - value.X)
@@ -230,7 +230,7 @@ namespace Trivial.Maths
         /// Greater than zero This object is greater than <paramref name="other"/>. 
         /// </returns>
         /// <param name="other">An object to compare with this object.</param>
-        public int CompareTo(OneDimensionalPoint<double> other)
+        public int CompareTo(Point1D<double> other)
         {
             if (other is null) return X.CompareTo(null);
             return X.CompareTo(other.X);
@@ -246,7 +246,7 @@ namespace Trivial.Maths
         /// Greater than zero This object is greater than <paramref name="other"/>. 
         /// </returns>
         /// <param name="other">An object to compare with this object.</param>
-        public int CompareTo(OneDimensionalPoint<int> other)
+        public int CompareTo(Point1D<int> other)
         {
             if (other is null) return X.CompareTo(null);
             return X.CompareTo(other.X);
@@ -336,10 +336,10 @@ namespace Trivial.Maths
     /// The point of 1D (line) integer coordinate.
     /// </summary>
     public class Int32OneDimensionalPoint
-        : OneDimensionalPoint<int>,
+        : Point1D<int>,
         IAdvancedAdditionCapable<Int32OneDimensionalPoint>,
-        IComparable<OneDimensionalPoint<double>>,
-        IComparable<OneDimensionalPoint<int>>,
+        IComparable<Point1D<double>>,
+        IComparable<Point1D<int>>,
         IComparable<double>,
         IComparable<int>
     {
@@ -377,7 +377,7 @@ namespace Trivial.Maths
         /// </summary>
         /// <param name="value">The value to be plused.</param>
         /// <returns>A result after leftValue plus rightValue.</returns>
-        public Int32OneDimensionalPoint Plus(OneDimensionalPoint<int> value)
+        public Int32OneDimensionalPoint Plus(Point1D<int> value)
         {
             return value != null
                 ? new Int32OneDimensionalPoint(X + value.X)
@@ -403,7 +403,7 @@ namespace Trivial.Maths
         /// </summary>
         /// <param name="value">The value to be minuses.</param>
         /// <returns>A result after leftValue minus rightValue.</returns>
-        public Int32OneDimensionalPoint Minus(OneDimensionalPoint<int> value)
+        public Int32OneDimensionalPoint Minus(Point1D<int> value)
         {
             return value != null
                 ? new Int32OneDimensionalPoint(X - value.X)
@@ -462,7 +462,7 @@ namespace Trivial.Maths
         /// Greater than zero This object is greater than <paramref name="other"/>. 
         /// </returns>
         /// <param name="other">An object to compare with this object.</param>
-        public int CompareTo(OneDimensionalPoint<double> other)
+        public int CompareTo(Point1D<double> other)
         {
             if (other is null) return X.CompareTo(null);
             return X.CompareTo(other.X);
@@ -478,7 +478,7 @@ namespace Trivial.Maths
         /// Greater than zero This object is greater than <paramref name="other"/>. 
         /// </returns>
         /// <param name="other">An object to compare with this object.</param>
-        public int CompareTo(OneDimensionalPoint<int> other)
+        public int CompareTo(Point1D<int> other)
         {
             if (other is null) return X.CompareTo(null);
             return X.CompareTo(other.X);

@@ -36,12 +36,12 @@ namespace Trivial.CommandLine
         /// <summary>
         /// Adds or removes the handler occurred after cursor moving by.
         /// </summary>
-        public event EventHandler<Maths.Int32TwoDimensionalPoint.DataEventArgs> CursorMovedBy;
+        public event EventHandler<Maths.Int32Point2D.DataEventArgs> CursorMovedBy;
 
         /// <summary>
         /// Adds or removes the handler occurred after cursor moving To.
         /// </summary>
-        public event EventHandler<Maths.Int32TwoDimensionalPoint.DataEventArgs> CursorMovedTo;
+        public event EventHandler<Maths.Int32Point2D.DataEventArgs> CursorMovedTo;
 
         /// <summary>
         /// Adds or removes the handler occurred after output area clearing.
@@ -336,7 +336,7 @@ namespace Trivial.CommandLine
             if (h != null)
             {
                 h.MoveCursorBy(x, y, context);
-                CursorMovedBy?.Invoke(this, new Maths.Int32TwoDimensionalPoint.DataEventArgs(x, y));
+                CursorMovedBy?.Invoke(this, new Maths.Int32Point2D.DataEventArgs(x, y));
                 return;
             }
 
@@ -419,7 +419,7 @@ namespace Trivial.CommandLine
                     break;
             }
 
-            CursorMovedBy?.Invoke(this, new Maths.Int32TwoDimensionalPoint.DataEventArgs(x, y));
+            CursorMovedBy?.Invoke(this, new Maths.Int32Point2D.DataEventArgs(x, y));
         }
 
         /// <summary>
@@ -433,7 +433,7 @@ namespace Trivial.CommandLine
             if (h != null)
             {
                 h.MoveCursorTo(x, y, context);
-                CursorMovedTo?.Invoke(this, new Maths.Int32TwoDimensionalPoint.DataEventArgs(x, y));
+                CursorMovedTo?.Invoke(this, new Maths.Int32Point2D.DataEventArgs(x, y));
                 return;
             }
 
@@ -505,7 +505,7 @@ namespace Trivial.CommandLine
                     break;
             }
 
-            CursorMovedTo?.Invoke(this, new Maths.Int32TwoDimensionalPoint.DataEventArgs(x, y));
+            CursorMovedTo?.Invoke(this, new Maths.Int32Point2D.DataEventArgs(x, y));
         }
 
         /// <summary>

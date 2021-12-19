@@ -16,13 +16,13 @@ namespace Trivial.Maths
     /// The generic 4D (time and space) coordinate point.
     /// </summary>
     /// <typeparam name="TUnit">The type of unit.</typeparam>
-    public class FourDimensionalPoint<TUnit> : FourElements<TUnit> where TUnit : struct, IComparable<TUnit>, IEquatable<TUnit>
+    public class Point4D<TUnit> : FourElements<TUnit> where TUnit : struct, IComparable<TUnit>, IEquatable<TUnit>
     {
         /// <summary>
         /// Initializes a new instance of the FourDimensionalPoint class.
         /// </summary>
         /// <remarks>You can use this to initialize an instance for the class.</remarks>
-        public FourDimensionalPoint()
+        public Point4D()
         {
         }
 
@@ -34,7 +34,7 @@ namespace Trivial.Maths
         /// <param name="z">The value of Z.</param>
         /// <param name="t">The value of T.</param>
         /// <remarks>You can use this to initialize an instance for the class.</remarks>
-        public FourDimensionalPoint(TUnit x, TUnit y, TUnit z, TUnit t)
+        public Point4D(TUnit x, TUnit y, TUnit z, TUnit t)
         {
             X = x;
             Y = y;
@@ -109,7 +109,7 @@ namespace Trivial.Maths
     /// </summary>
     /// <typeparam name="TSpaceUnit">The type of space unit.</typeparam>
     /// <typeparam name="TTimeUnit">The type of time unit.</typeparam>
-    public class FourDimensionalPoint<TSpaceUnit, TTimeUnit> : ThreeDimensionalPoint<TSpaceUnit>
+    public class Point4D<TSpaceUnit, TTimeUnit> : Point3D<TSpaceUnit>
         where TSpaceUnit : struct, IComparable<TSpaceUnit>, IEquatable<TSpaceUnit>
         where TTimeUnit : struct, IComparable<TTimeUnit>, IEquatable<TTimeUnit>
     {
@@ -117,7 +117,7 @@ namespace Trivial.Maths
         /// Initializes a new instance of the FourDimensionalPoint class.
         /// </summary>
         /// <remarks>You can use this to initialize an instance for the class.</remarks>
-        public FourDimensionalPoint()
+        public Point4D()
         {
         }
 
@@ -129,7 +129,7 @@ namespace Trivial.Maths
         /// <param name="z">The value of Z.</param>
         /// <param name="t">The value of T.</param>
         /// <remarks>You can use this to initialize an instance for the class.</remarks>
-        public FourDimensionalPoint(TSpaceUnit x, TSpaceUnit y, TSpaceUnit z, TTimeUnit t)
+        public Point4D(TSpaceUnit x, TSpaceUnit y, TSpaceUnit z, TTimeUnit t)
         {
             X = x;
             Y = y;
@@ -175,7 +175,7 @@ namespace Trivial.Maths
         /// </summary>
         /// <param name="other">The object to compare with the current object.</param>
         /// <returns>true if the specified object is equal to the current object; otherwise, false.</returns>
-        public virtual bool Equals(FourDimensionalPoint<TSpaceUnit, TTimeUnit> other)
+        public virtual bool Equals(Point4D<TSpaceUnit, TTimeUnit> other)
         {
             return other != null && X.Equals(other.X) && Y.Equals(other.Y) && Z.Equals(other.Z) && T.Equals(other.T);
         }
@@ -184,7 +184,7 @@ namespace Trivial.Maths
     /// <summary>
     /// The point of the 4D (time and space) mathematics coordinate and date time.
     /// </summary>
-    public class SpacetimePoint : FourDimensionalPoint<double, DateTime>
+    public class SpacetimePoint : Point4D<double, DateTime>
     {
         /// <summary>
         /// Initializes a new instance of the SpaceTimePoint class.
@@ -212,7 +212,7 @@ namespace Trivial.Maths
         /// </summary>
         /// <param name="value">The value to be plused.</param>
         /// <returns>A result after leftValue plus rightValue.</returns>
-        public SpacetimePoint Plus(FourDimensionalPoint<double, TimeSpan> value)
+        public SpacetimePoint Plus(Point4D<double, TimeSpan> value)
         {
             return value != null
                 ? new SpacetimePoint(X + value.X, Y + value.Y, Z + value.Z, T + value.T)
@@ -225,7 +225,7 @@ namespace Trivial.Maths
         /// </summary>
         /// <param name="value">The value to be plused.</param>
         /// <returns>A result after leftValue plus rightValue.</returns>
-        public SpacetimePoint Plus(FourDimensionalPoint<int, TimeSpan> value)
+        public SpacetimePoint Plus(Point4D<int, TimeSpan> value)
         {
             return value != null
                 ? new SpacetimePoint(X + value.X, Y + value.Y, Z + value.Z, T + value.T)
@@ -238,7 +238,7 @@ namespace Trivial.Maths
         /// </summary>
         /// <param name="value">The value to be minuses.</param>
         /// <returns>A result after leftValue minus rightValue.</returns>
-        public SpacetimePoint Minus(FourDimensionalPoint<double, TimeSpan> value)
+        public SpacetimePoint Minus(Point4D<double, TimeSpan> value)
         {
             return value != null
                 ? new SpacetimePoint(X - value.X, Y - value.Y, Z - value.Z, T - value.T)
@@ -251,7 +251,7 @@ namespace Trivial.Maths
         /// </summary>
         /// <param name="value">The value to be minuses.</param>
         /// <returns>A result after leftValue minus rightValue.</returns>
-        public SpacetimePoint Minus(FourDimensionalPoint<int, TimeSpan> value)
+        public SpacetimePoint Minus(Point4D<int, TimeSpan> value)
         {
             return value != null
                 ? new SpacetimePoint(X - value.X, Y - value.Y, Z - value.Z, T - value.T)
@@ -305,7 +305,7 @@ namespace Trivial.Maths
     /// <summary>
     /// The point of the 4D (time and space) mathematics coordinate and time span.
     /// </summary>
-    public class RelativeSpacetimePoint : FourDimensionalPoint<double, TimeSpan>
+    public class RelativeSpacetimePoint : Point4D<double, TimeSpan>
     {
         /// <summary>
         /// Initializes a new instance of the RelativeSpacetimePoint class.
@@ -333,7 +333,7 @@ namespace Trivial.Maths
         /// </summary>
         /// <param name="value">The value to be plused.</param>
         /// <returns>A result after leftValue plus rightValue.</returns>
-        public RelativeSpacetimePoint Plus(FourDimensionalPoint<double, TimeSpan> value)
+        public RelativeSpacetimePoint Plus(Point4D<double, TimeSpan> value)
         {
             return value != null
                 ? new RelativeSpacetimePoint(X + value.X, Y + value.Y, Z + value.Z, T + value.T)
@@ -346,7 +346,7 @@ namespace Trivial.Maths
         /// </summary>
         /// <param name="value">The value to be plused.</param>
         /// <returns>A result after leftValue plus rightValue.</returns>
-        public RelativeSpacetimePoint Plus(FourDimensionalPoint<int, TimeSpan> value)
+        public RelativeSpacetimePoint Plus(Point4D<int, TimeSpan> value)
         {
             return value != null
                 ? new RelativeSpacetimePoint(X + value.X, Y + value.Y, Z + value.Z, T + value.T)
@@ -372,7 +372,7 @@ namespace Trivial.Maths
         /// </summary>
         /// <param name="value">The value to be minuses.</param>
         /// <returns>A result after leftValue minus rightValue.</returns>
-        public RelativeSpacetimePoint Minus(FourDimensionalPoint<double, TimeSpan> value)
+        public RelativeSpacetimePoint Minus(Point4D<double, TimeSpan> value)
         {
             return value != null
                 ? new RelativeSpacetimePoint(X - value.X, Y - value.Y, Z - value.Z, T - value.T)
@@ -385,7 +385,7 @@ namespace Trivial.Maths
         /// </summary>
         /// <param name="value">The value to be minuses.</param>
         /// <returns>A result after leftValue minus rightValue.</returns>
-        public RelativeSpacetimePoint Minus(FourDimensionalPoint<int, TimeSpan> value)
+        public RelativeSpacetimePoint Minus(Point4D<int, TimeSpan> value)
         {
             return value != null
                 ? new RelativeSpacetimePoint(X - value.X, Y - value.Y, Z - value.Z, T - value.T)

@@ -18,11 +18,11 @@ namespace Trivial.Maths
         /// <param name="leftValue">The left value for addition operator.</param>
         /// <param name="rightValue">The right value for addition operator.</param>
         /// <returns>A result after addition.</returns>
-        public static OneDimensionalPoint<int> Plus(OneDimensionalPoint<int> leftValue, OneDimensionalPoint<int> rightValue)
+        public static Point1D<int> Plus(Point1D<int> leftValue, Point1D<int> rightValue)
         {
-            if (leftValue is null) leftValue = new OneDimensionalPoint<int>();
-            if (rightValue is null) rightValue = new OneDimensionalPoint<int>();
-            return new OneDimensionalPoint<int>
+            if (leftValue is null) leftValue = new Point1D<int>();
+            if (rightValue is null) rightValue = new Point1D<int>();
+            return new Point1D<int>
             {
                 X = leftValue.X + rightValue.X
             };
@@ -35,11 +35,11 @@ namespace Trivial.Maths
         /// <param name="leftValue">The left value for addition operator.</param>
         /// <param name="rightValue">The right value for addition operator.</param>
         /// <returns>A result after addition.</returns>
-        public static OneDimensionalPoint<long> Plus(OneDimensionalPoint<long> leftValue, OneDimensionalPoint<long> rightValue)
+        public static Point1D<long> Plus(Point1D<long> leftValue, Point1D<long> rightValue)
         {
-            if (leftValue is null) leftValue = new OneDimensionalPoint<long>();
-            if (rightValue is null) rightValue = new OneDimensionalPoint<long>();
-            return new OneDimensionalPoint<long>
+            if (leftValue is null) leftValue = new Point1D<long>();
+            if (rightValue is null) rightValue = new Point1D<long>();
+            return new Point1D<long>
             {
                 X = leftValue.X + rightValue.X
             };
@@ -52,11 +52,11 @@ namespace Trivial.Maths
         /// <param name="leftValue">The left value for addition operator.</param>
         /// <param name="rightValue">The right value for addition operator.</param>
         /// <returns>A result after addition.</returns>
-        public static OneDimensionalPoint<float> Plus(OneDimensionalPoint<float> leftValue, OneDimensionalPoint<float> rightValue)
+        public static Point1D<float> Plus(Point1D<float> leftValue, Point1D<float> rightValue)
         {
-            if (leftValue is null) leftValue = new OneDimensionalPoint<float>();
-            if (rightValue is null) rightValue = new OneDimensionalPoint<float>();
-            return new OneDimensionalPoint<float>
+            if (leftValue is null) leftValue = new Point1D<float>();
+            if (rightValue is null) rightValue = new Point1D<float>();
+            return new Point1D<float>
             {
                 X = leftValue.X + rightValue.X
             };
@@ -69,11 +69,11 @@ namespace Trivial.Maths
         /// <param name="leftValue">The left value for addition operator.</param>
         /// <param name="rightValue">The right value for addition operator.</param>
         /// <returns>A result after addition.</returns>
-        public static OneDimensionalPoint<double> Plus(OneDimensionalPoint<double> leftValue, OneDimensionalPoint<double> rightValue)
+        public static Point1D<double> Plus(Point1D<double> leftValue, Point1D<double> rightValue)
         {
-            if (leftValue is null) leftValue = new OneDimensionalPoint<double>();
-            if (rightValue is null) rightValue = new OneDimensionalPoint<double>();
-            return new OneDimensionalPoint<double>
+            if (leftValue is null) leftValue = new Point1D<double>();
+            if (rightValue is null) rightValue = new Point1D<double>();
+            return new Point1D<double>
             {
                 X = leftValue.X + rightValue.X
             };
@@ -86,11 +86,11 @@ namespace Trivial.Maths
         /// <param name="leftValue">The left value for subtration operator.</param>
         /// <param name="rightValue">The right value for subtration operator.</param>
         /// <returns>A result after subtration.</returns>
-        public static OneDimensionalPoint<int> Minus(OneDimensionalPoint<int> leftValue, OneDimensionalPoint<int> rightValue)
+        public static Point1D<int> Minus(Point1D<int> leftValue, Point1D<int> rightValue)
         {
-            if (leftValue is null) leftValue = new OneDimensionalPoint<int>();
-            if (rightValue is null) rightValue = new OneDimensionalPoint<int>();
-            return new OneDimensionalPoint<int>
+            if (leftValue is null) leftValue = new Point1D<int>();
+            if (rightValue is null) rightValue = new Point1D<int>();
+            return new Point1D<int>
             {
                 X = leftValue.X - rightValue.X
             };
@@ -103,11 +103,11 @@ namespace Trivial.Maths
         /// <param name="leftValue">The left value for subtration operator.</param>
         /// <param name="rightValue">The right value for subtration operator.</param>
         /// <returns>A result after subtration.</returns>
-        public static OneDimensionalPoint<long> Minus(OneDimensionalPoint<long> leftValue, OneDimensionalPoint<long> rightValue)
+        public static Point1D<long> Minus(Point1D<long> leftValue, Point1D<long> rightValue)
         {
-            if (leftValue is null) leftValue = new OneDimensionalPoint<long>();
-            if (rightValue is null) rightValue = new OneDimensionalPoint<long>();
-            return new OneDimensionalPoint<long>
+            if (leftValue is null) leftValue = new Point1D<long>();
+            if (rightValue is null) rightValue = new Point1D<long>();
+            return new Point1D<long>
             {
                 X = leftValue.X - rightValue.X
             };
@@ -120,11 +120,11 @@ namespace Trivial.Maths
         /// <param name="leftValue">The left value for subtration operator.</param>
         /// <param name="rightValue">The right value for subtration operator.</param>
         /// <returns>A result after subtration.</returns>
-        public static OneDimensionalPoint<float> Minus(OneDimensionalPoint<float> leftValue, OneDimensionalPoint<float> rightValue)
+        public static Point1D<float> Minus(Point1D<float> leftValue, Point1D<float> rightValue)
         {
-            if (leftValue is null) leftValue = new OneDimensionalPoint<float>();
-            if (rightValue is null) rightValue = new OneDimensionalPoint<float>();
-            return new OneDimensionalPoint<float>
+            if (leftValue is null) leftValue = new Point1D<float>();
+            if (rightValue is null) rightValue = new Point1D<float>();
+            return new Point1D<float>
             {
                 X = leftValue.X - rightValue.X
             };
@@ -137,11 +137,11 @@ namespace Trivial.Maths
         /// <param name="leftValue">The left value for subtration operator.</param>
         /// <param name="rightValue">The right value for subtration operator.</param>
         /// <returns>A result after subtration.</returns>
-        public static OneDimensionalPoint<double> Minus(OneDimensionalPoint<double> leftValue, OneDimensionalPoint<double> rightValue)
+        public static Point1D<double> Minus(Point1D<double> leftValue, Point1D<double> rightValue)
         {
-            if (leftValue is null) leftValue = new OneDimensionalPoint<double>();
-            if (rightValue is null) rightValue = new OneDimensionalPoint<double>();
-            return new OneDimensionalPoint<double>
+            if (leftValue is null) leftValue = new Point1D<double>();
+            if (rightValue is null) rightValue = new Point1D<double>();
+            return new Point1D<double>
             {
                 X = leftValue.X - rightValue.X
             };
@@ -152,11 +152,11 @@ namespace Trivial.Maths
         /// </summary>
         /// <param name="value">A value to create mirror.</param>
         /// <returns>A result mirrored with the specific point in coordinate.</returns>
-        public static OneDimensionalPoint<int> Negate(OneDimensionalPoint<int> value)
+        public static Point1D<int> Negate(Point1D<int> value)
         {
             if (value is null)
                 throw new ArgumentNullException("value");
-            return new OneDimensionalPoint<int>
+            return new Point1D<int>
             {
                 X = -value.X
             };
@@ -167,11 +167,11 @@ namespace Trivial.Maths
         /// </summary>
         /// <param name="value">A value to create mirror.</param>
         /// <returns>A result mirrored with the specific point in coordinate.</returns>
-        public static OneDimensionalPoint<long> Negate(OneDimensionalPoint<long> value)
+        public static Point1D<long> Negate(Point1D<long> value)
         {
             if (value is null)
                 throw new ArgumentNullException("value");
-            return new OneDimensionalPoint<long>
+            return new Point1D<long>
             {
                 X = -value.X
             };
@@ -182,11 +182,11 @@ namespace Trivial.Maths
         /// </summary>
         /// <param name="value">A value to create mirror.</param>
         /// <returns>A result mirrored with the specific point in coordinate.</returns>
-        public static OneDimensionalPoint<float> Negate(OneDimensionalPoint<float> value)
+        public static Point1D<float> Negate(Point1D<float> value)
         {
             if (value is null)
                 throw new ArgumentNullException("value");
-            return new OneDimensionalPoint<float>
+            return new Point1D<float>
             {
                 X = -value.X
             };
@@ -197,11 +197,11 @@ namespace Trivial.Maths
         /// </summary>
         /// <param name="value">A value to create mirror.</param>
         /// <returns>A result mirrored with the specific point in coordinate.</returns>
-        public static OneDimensionalPoint<double> Negate(OneDimensionalPoint<double> value)
+        public static Point1D<double> Negate(Point1D<double> value)
         {
             if (value is null)
                 throw new ArgumentNullException("value");
-            return new OneDimensionalPoint<double>
+            return new Point1D<double>
             {
                 X = -value.X
             };
@@ -213,7 +213,7 @@ namespace Trivial.Maths
         /// <param name="pointA">One of points to begin.</param>
         /// <param name="pointB">Another point to end.</param>
         /// <returns>A distance between two points.</returns>
-        public static int GetDistance(OneDimensionalPoint<int> pointA, OneDimensionalPoint<int> pointB)
+        public static int GetDistance(Point1D<int> pointA, Point1D<int> pointB)
         {
             if (pointA is null)
                 throw new ArgumentNullException("pointA");
@@ -228,7 +228,7 @@ namespace Trivial.Maths
         /// <param name="pointA">One of points to begin.</param>
         /// <param name="pointB">Another point to end.</param>
         /// <returns>A distance between two points.</returns>
-        public static long GetDistance(OneDimensionalPoint<long> pointA, OneDimensionalPoint<long> pointB)
+        public static long GetDistance(Point1D<long> pointA, Point1D<long> pointB)
         {
             if (pointA is null)
                 throw new ArgumentNullException("pointA");
@@ -243,7 +243,7 @@ namespace Trivial.Maths
         /// <param name="pointA">One of points to begin.</param>
         /// <param name="pointB">Another point to end.</param>
         /// <returns>A distance between two points.</returns>
-        public static float GetDistance(OneDimensionalPoint<float> pointA, OneDimensionalPoint<float> pointB)
+        public static float GetDistance(Point1D<float> pointA, Point1D<float> pointB)
         {
             if (pointA is null)
                 throw new ArgumentNullException("pointA");
@@ -258,7 +258,7 @@ namespace Trivial.Maths
         /// <param name="pointA">One of points to begin.</param>
         /// <param name="pointB">Another point to end.</param>
         /// <returns>A distance between two points.</returns>
-        public static double GetDistance(OneDimensionalPoint<double> pointA, OneDimensionalPoint<double> pointB)
+        public static double GetDistance(Point1D<double> pointA, Point1D<double> pointB)
         {
             if (pointA is null)
                 throw new ArgumentNullException("pointA");
@@ -278,11 +278,11 @@ namespace Trivial.Maths
         /// <param name="leftValue">The left value for addition operator.</param>
         /// <param name="rightValue">The right value for addition operator.</param>
         /// <returns>A result after addition.</returns>
-        public static TwoDimensionalPoint<int> Plus(TwoDimensionalPoint<int> leftValue, TwoDimensionalPoint<int> rightValue)
+        public static Point2D<int> Plus(Point2D<int> leftValue, Point2D<int> rightValue)
         {
-            if (leftValue is null) leftValue = new TwoDimensionalPoint<int>();
-            if (rightValue is null) rightValue = new TwoDimensionalPoint<int>();
-            return new TwoDimensionalPoint<int>
+            if (leftValue is null) leftValue = new Point2D<int>();
+            if (rightValue is null) rightValue = new Point2D<int>();
+            return new Point2D<int>
             {
                 X = leftValue.X + rightValue.X,
                 Y = leftValue.Y + rightValue.Y
@@ -296,11 +296,11 @@ namespace Trivial.Maths
         /// <param name="leftValue">The left value for addition operator.</param>
         /// <param name="rightValue">The right value for addition operator.</param>
         /// <returns>A result after addition.</returns>
-        public static TwoDimensionalPoint<long> Plus(TwoDimensionalPoint<long> leftValue, TwoDimensionalPoint<long> rightValue)
+        public static Point2D<long> Plus(Point2D<long> leftValue, Point2D<long> rightValue)
         {
-            if (leftValue is null) leftValue = new TwoDimensionalPoint<long>();
-            if (rightValue is null) rightValue = new TwoDimensionalPoint<long>();
-            return new TwoDimensionalPoint<long>
+            if (leftValue is null) leftValue = new Point2D<long>();
+            if (rightValue is null) rightValue = new Point2D<long>();
+            return new Point2D<long>
             {
                 X = leftValue.X + rightValue.X,
                 Y = leftValue.Y + rightValue.Y
@@ -314,11 +314,11 @@ namespace Trivial.Maths
         /// <param name="leftValue">The left value for addition operator.</param>
         /// <param name="rightValue">The right value for addition operator.</param>
         /// <returns>A result after addition.</returns>
-        public static TwoDimensionalPoint<float> Plus(TwoDimensionalPoint<float> leftValue, TwoDimensionalPoint<float> rightValue)
+        public static Point2D<float> Plus(Point2D<float> leftValue, Point2D<float> rightValue)
         {
-            if (leftValue is null) leftValue = new TwoDimensionalPoint<float>();
-            if (rightValue is null) rightValue = new TwoDimensionalPoint<float>();
-            return new TwoDimensionalPoint<float>
+            if (leftValue is null) leftValue = new Point2D<float>();
+            if (rightValue is null) rightValue = new Point2D<float>();
+            return new Point2D<float>
             {
                 X = leftValue.X + rightValue.X,
                 Y = leftValue.Y + rightValue.Y
@@ -332,11 +332,11 @@ namespace Trivial.Maths
         /// <param name="leftValue">The left value for addition operator.</param>
         /// <param name="rightValue">The right value for addition operator.</param>
         /// <returns>A result after addition.</returns>
-        public static TwoDimensionalPoint<double> Plus(TwoDimensionalPoint<double> leftValue, TwoDimensionalPoint<double> rightValue)
+        public static Point2D<double> Plus(Point2D<double> leftValue, Point2D<double> rightValue)
         {
-            if (leftValue is null) leftValue = new TwoDimensionalPoint<double>();
-            if (rightValue is null) rightValue = new TwoDimensionalPoint<double>();
-            return new TwoDimensionalPoint<double>
+            if (leftValue is null) leftValue = new Point2D<double>();
+            if (rightValue is null) rightValue = new Point2D<double>();
+            return new Point2D<double>
             {
                 X = leftValue.X + rightValue.X,
                 Y = leftValue.Y + rightValue.Y
@@ -350,11 +350,11 @@ namespace Trivial.Maths
         /// <param name="leftValue">The left value for subtration operator.</param>
         /// <param name="rightValue">The right value for subtration operator.</param>
         /// <returns>A result after subtration.</returns>
-        public static TwoDimensionalPoint<int> Minus(TwoDimensionalPoint<int> leftValue, TwoDimensionalPoint<int> rightValue)
+        public static Point2D<int> Minus(Point2D<int> leftValue, Point2D<int> rightValue)
         {
-            if (leftValue is null) leftValue = new TwoDimensionalPoint<int>();
-            if (rightValue is null) rightValue = new TwoDimensionalPoint<int>();
-            return new TwoDimensionalPoint<int>
+            if (leftValue is null) leftValue = new Point2D<int>();
+            if (rightValue is null) rightValue = new Point2D<int>();
+            return new Point2D<int>
             {
                 X = leftValue.X - rightValue.X,
                 Y = leftValue.Y - rightValue.Y
@@ -368,11 +368,11 @@ namespace Trivial.Maths
         /// <param name="leftValue">The left value for subtration operator.</param>
         /// <param name="rightValue">The right value for subtration operator.</param>
         /// <returns>A result after subtration.</returns>
-        public static TwoDimensionalPoint<long> Minus(TwoDimensionalPoint<long> leftValue, TwoDimensionalPoint<long> rightValue)
+        public static Point2D<long> Minus(Point2D<long> leftValue, Point2D<long> rightValue)
         {
-            if (leftValue is null) leftValue = new TwoDimensionalPoint<long>();
-            if (rightValue is null) rightValue = new TwoDimensionalPoint<long>();
-            return new TwoDimensionalPoint<long>
+            if (leftValue is null) leftValue = new Point2D<long>();
+            if (rightValue is null) rightValue = new Point2D<long>();
+            return new Point2D<long>
             {
                 X = leftValue.X - rightValue.X,
                 Y = leftValue.Y - rightValue.Y
@@ -386,11 +386,11 @@ namespace Trivial.Maths
         /// <param name="leftValue">The left value for subtration operator.</param>
         /// <param name="rightValue">The right value for subtration operator.</param>
         /// <returns>A result after subtration.</returns>
-        public static TwoDimensionalPoint<float> Minus(TwoDimensionalPoint<float> leftValue, TwoDimensionalPoint<float> rightValue)
+        public static Point2D<float> Minus(Point2D<float> leftValue, Point2D<float> rightValue)
         {
-            if (leftValue is null) leftValue = new TwoDimensionalPoint<float>();
-            if (rightValue is null) rightValue = new TwoDimensionalPoint<float>();
-            return new TwoDimensionalPoint<float>
+            if (leftValue is null) leftValue = new Point2D<float>();
+            if (rightValue is null) rightValue = new Point2D<float>();
+            return new Point2D<float>
             {
                 X = leftValue.X - rightValue.X,
                 Y = leftValue.Y - rightValue.Y
@@ -404,11 +404,11 @@ namespace Trivial.Maths
         /// <param name="leftValue">The left value for subtration operator.</param>
         /// <param name="rightValue">The right value for subtration operator.</param>
         /// <returns>A result after subtration.</returns>
-        public static TwoDimensionalPoint<double> Minus(TwoDimensionalPoint<double> leftValue, TwoDimensionalPoint<double> rightValue)
+        public static Point2D<double> Minus(Point2D<double> leftValue, Point2D<double> rightValue)
         {
-            if (leftValue is null) leftValue = new TwoDimensionalPoint<double>();
-            if (rightValue is null) rightValue = new TwoDimensionalPoint<double>();
-            return new TwoDimensionalPoint<double>
+            if (leftValue is null) leftValue = new Point2D<double>();
+            if (rightValue is null) rightValue = new Point2D<double>();
+            return new Point2D<double>
             {
                 X = leftValue.X - rightValue.X,
                 Y = leftValue.Y - rightValue.Y
@@ -420,11 +420,11 @@ namespace Trivial.Maths
         /// </summary>
         /// <param name="value">A value to create mirror.</param>
         /// <returns>A result mirrored with the specific point in coordinate.</returns>
-        public static TwoDimensionalPoint<int> Negate(TwoDimensionalPoint<int> value)
+        public static Point2D<int> Negate(Point2D<int> value)
         {
             if (value is null)
                 throw new ArgumentNullException("value");
-            return new TwoDimensionalPoint<int>
+            return new Point2D<int>
             {
                 X = -value.X,
                 Y = -value.Y
@@ -436,11 +436,11 @@ namespace Trivial.Maths
         /// </summary>
         /// <param name="value">A value to create mirror.</param>
         /// <returns>A result mirrored with the specific point in coordinate.</returns>
-        public static TwoDimensionalPoint<long> Negate(TwoDimensionalPoint<long> value)
+        public static Point2D<long> Negate(Point2D<long> value)
         {
             if (value is null)
                 throw new ArgumentNullException("value");
-            return new TwoDimensionalPoint<long>
+            return new Point2D<long>
             {
                 X = -value.X,
                 Y = -value.Y
@@ -452,11 +452,11 @@ namespace Trivial.Maths
         /// </summary>
         /// <param name="value">A value to create mirror.</param>
         /// <returns>A result mirrored with the specific point in coordinate.</returns>
-        public static TwoDimensionalPoint<float> Negate(TwoDimensionalPoint<float> value)
+        public static Point2D<float> Negate(Point2D<float> value)
         {
             if (value is null)
                 throw new ArgumentNullException("value");
-            return new TwoDimensionalPoint<float>
+            return new Point2D<float>
             {
                 X = -value.X,
                 Y = -value.Y
@@ -468,11 +468,11 @@ namespace Trivial.Maths
         /// </summary>
         /// <param name="value">A value to create mirror.</param>
         /// <returns>A result mirrored with the specific point in coordinate.</returns>
-        public static TwoDimensionalPoint<double> Negate(TwoDimensionalPoint<double> value)
+        public static Point2D<double> Negate(Point2D<double> value)
         {
             if (value is null)
                 throw new ArgumentNullException("value");
-            return new TwoDimensionalPoint<double>
+            return new Point2D<double>
             {
                 X = -value.X,
                 Y = -value.Y
@@ -485,7 +485,7 @@ namespace Trivial.Maths
         /// <param name="pointA">One of points to begin.</param>
         /// <param name="pointB">Another point to end.</param>
         /// <returns>A distance between two points.</returns>
-        public static double GetDistance(TwoDimensionalPoint<int> pointA, TwoDimensionalPoint<int> pointB)
+        public static double GetDistance(Point2D<int> pointA, Point2D<int> pointB)
         {
             if (pointA is null)
                 throw new ArgumentNullException("pointA");
@@ -500,7 +500,7 @@ namespace Trivial.Maths
         /// <param name="pointA">One of points to begin.</param>
         /// <param name="pointB">Another point to end.</param>
         /// <returns>A distance between two points.</returns>
-        public static double GetDistance(TwoDimensionalPoint<long> pointA, TwoDimensionalPoint<long> pointB)
+        public static double GetDistance(Point2D<long> pointA, Point2D<long> pointB)
         {
             if (pointA is null)
                 throw new ArgumentNullException("pointA");
@@ -515,7 +515,7 @@ namespace Trivial.Maths
         /// <param name="pointA">One of points to begin.</param>
         /// <param name="pointB">Another point to end.</param>
         /// <returns>A distance between two points.</returns>
-        public static double GetDistance(TwoDimensionalPoint<float> pointA, TwoDimensionalPoint<float> pointB)
+        public static double GetDistance(Point2D<float> pointA, Point2D<float> pointB)
         {
             if (pointA is null)
                 throw new ArgumentNullException("pointA");
@@ -532,7 +532,7 @@ namespace Trivial.Maths
         /// <param name="pointA">One of points to begin.</param>
         /// <param name="pointB">Another point to end.</param>
         /// <returns>A distance between two points.</returns>
-        public static double GetDistance(TwoDimensionalPoint<double> pointA, TwoDimensionalPoint<double> pointB)
+        public static double GetDistance(Point2D<double> pointA, Point2D<double> pointB)
         {
             if (pointA is null)
                 throw new ArgumentNullException("pointA");
@@ -554,11 +554,11 @@ namespace Trivial.Maths
         /// <param name="leftValue">The left value for addition operator.</param>
         /// <param name="rightValue">The right value for addition operator.</param>
         /// <returns>A result after addition.</returns>
-        public static ThreeDimensionalPoint<int> Plus(ThreeDimensionalPoint<int> leftValue, ThreeDimensionalPoint<int> rightValue)
+        public static Point3D<int> Plus(Point3D<int> leftValue, Point3D<int> rightValue)
         {
-            if (leftValue is null) leftValue = new ThreeDimensionalPoint<int>();
-            if (rightValue is null) rightValue = new ThreeDimensionalPoint<int>();
-            return new ThreeDimensionalPoint<int>
+            if (leftValue is null) leftValue = new Point3D<int>();
+            if (rightValue is null) rightValue = new Point3D<int>();
+            return new Point3D<int>
             {
                 X = leftValue.X + rightValue.X,
                 Y = leftValue.Y + rightValue.Y,
@@ -573,11 +573,11 @@ namespace Trivial.Maths
         /// <param name="leftValue">The left value for addition operator.</param>
         /// <param name="rightValue">The right value for addition operator.</param>
         /// <returns>A result after addition.</returns>
-        public static ThreeDimensionalPoint<long> Plus(ThreeDimensionalPoint<long> leftValue, ThreeDimensionalPoint<long> rightValue)
+        public static Point3D<long> Plus(Point3D<long> leftValue, Point3D<long> rightValue)
         {
-            if (leftValue is null) leftValue = new ThreeDimensionalPoint<long>();
-            if (rightValue is null) rightValue = new ThreeDimensionalPoint<long>();
-            return new ThreeDimensionalPoint<long>
+            if (leftValue is null) leftValue = new Point3D<long>();
+            if (rightValue is null) rightValue = new Point3D<long>();
+            return new Point3D<long>
             {
                 X = leftValue.X + rightValue.X,
                 Y = leftValue.Y + rightValue.Y,
@@ -592,11 +592,11 @@ namespace Trivial.Maths
         /// <param name="leftValue">The left value for addition operator.</param>
         /// <param name="rightValue">The right value for addition operator.</param>
         /// <returns>A result after addition.</returns>
-        public static ThreeDimensionalPoint<float> Plus(ThreeDimensionalPoint<float> leftValue, ThreeDimensionalPoint<float> rightValue)
+        public static Point3D<float> Plus(Point3D<float> leftValue, Point3D<float> rightValue)
         {
-            if (leftValue is null) leftValue = new ThreeDimensionalPoint<float>();
-            if (rightValue is null) rightValue = new ThreeDimensionalPoint<float>();
-            return new ThreeDimensionalPoint<float>
+            if (leftValue is null) leftValue = new Point3D<float>();
+            if (rightValue is null) rightValue = new Point3D<float>();
+            return new Point3D<float>
             {
                 X = leftValue.X + rightValue.X,
                 Y = leftValue.Y + rightValue.Y,
@@ -611,11 +611,11 @@ namespace Trivial.Maths
         /// <param name="leftValue">The left value for addition operator.</param>
         /// <param name="rightValue">The right value for addition operator.</param>
         /// <returns>A result after addition.</returns>
-        public static ThreeDimensionalPoint<double> Plus(ThreeDimensionalPoint<double> leftValue, ThreeDimensionalPoint<double> rightValue)
+        public static Point3D<double> Plus(Point3D<double> leftValue, Point3D<double> rightValue)
         {
-            if (leftValue is null) leftValue = new ThreeDimensionalPoint<double>();
-            if (rightValue is null) rightValue = new ThreeDimensionalPoint<double>();
-            return new ThreeDimensionalPoint<double>
+            if (leftValue is null) leftValue = new Point3D<double>();
+            if (rightValue is null) rightValue = new Point3D<double>();
+            return new Point3D<double>
             {
                 X = leftValue.X + rightValue.X,
                 Y = leftValue.Y + rightValue.Y,
@@ -630,11 +630,11 @@ namespace Trivial.Maths
         /// <param name="leftValue">The left value for subtration operator.</param>
         /// <param name="rightValue">The right value for subtration operator.</param>
         /// <returns>A result after subtration.</returns>
-        public static ThreeDimensionalPoint<int> Minus(ThreeDimensionalPoint<int> leftValue, ThreeDimensionalPoint<int> rightValue)
+        public static Point3D<int> Minus(Point3D<int> leftValue, Point3D<int> rightValue)
         {
-            if (leftValue is null) leftValue = new ThreeDimensionalPoint<int>();
-            if (rightValue is null) rightValue = new ThreeDimensionalPoint<int>();
-            return new ThreeDimensionalPoint<int>
+            if (leftValue is null) leftValue = new Point3D<int>();
+            if (rightValue is null) rightValue = new Point3D<int>();
+            return new Point3D<int>
             {
                 X = leftValue.X - rightValue.X,
                 Y = leftValue.Y - rightValue.Y,
@@ -649,11 +649,11 @@ namespace Trivial.Maths
         /// <param name="leftValue">The left value for subtration operator.</param>
         /// <param name="rightValue">The right value for subtration operator.</param>
         /// <returns>A result after subtration.</returns>
-        public static ThreeDimensionalPoint<long> Minus(ThreeDimensionalPoint<long> leftValue, ThreeDimensionalPoint<long> rightValue)
+        public static Point3D<long> Minus(Point3D<long> leftValue, Point3D<long> rightValue)
         {
-            if (leftValue is null) leftValue = new ThreeDimensionalPoint<long>();
-            if (rightValue is null) rightValue = new ThreeDimensionalPoint<long>();
-            return new ThreeDimensionalPoint<long>
+            if (leftValue is null) leftValue = new Point3D<long>();
+            if (rightValue is null) rightValue = new Point3D<long>();
+            return new Point3D<long>
             {
                 X = leftValue.X - rightValue.X,
                 Y = leftValue.Y - rightValue.Y,
@@ -668,11 +668,11 @@ namespace Trivial.Maths
         /// <param name="leftValue">The left value for subtration operator.</param>
         /// <param name="rightValue">The right value for subtration operator.</param>
         /// <returns>A result after subtration.</returns>
-        public static ThreeDimensionalPoint<float> Minus(ThreeDimensionalPoint<float> leftValue, ThreeDimensionalPoint<float> rightValue)
+        public static Point3D<float> Minus(Point3D<float> leftValue, Point3D<float> rightValue)
         {
-            if (leftValue is null) leftValue = new ThreeDimensionalPoint<float>();
-            if (rightValue is null) rightValue = new ThreeDimensionalPoint<float>();
-            return new ThreeDimensionalPoint<float>
+            if (leftValue is null) leftValue = new Point3D<float>();
+            if (rightValue is null) rightValue = new Point3D<float>();
+            return new Point3D<float>
             {
                 X = leftValue.X - rightValue.X,
                 Y = leftValue.Y - rightValue.Y,
@@ -687,11 +687,11 @@ namespace Trivial.Maths
         /// <param name="leftValue">The left value for addition operator.</param>
         /// <param name="rightValue">The right value for addition operator.</param>
         /// <returns>A result after addition.</returns>
-        public static ThreeDimensionalPoint<double> Minus(ThreeDimensionalPoint<double> leftValue, ThreeDimensionalPoint<double> rightValue)
+        public static Point3D<double> Minus(Point3D<double> leftValue, Point3D<double> rightValue)
         {
-            if (leftValue is null) leftValue = new ThreeDimensionalPoint<double>();
-            if (rightValue is null) rightValue = new ThreeDimensionalPoint<double>();
-            return new ThreeDimensionalPoint<double>
+            if (leftValue is null) leftValue = new Point3D<double>();
+            if (rightValue is null) rightValue = new Point3D<double>();
+            return new Point3D<double>
             {
                 X = leftValue.X - rightValue.X,
                 Y = leftValue.Y - rightValue.Y,
@@ -704,11 +704,11 @@ namespace Trivial.Maths
         /// </summary>
         /// <param name="value">A value to create mirror.</param>
         /// <returns>A result mirrored with the specific point in coordinate.</returns>
-        public static ThreeDimensionalPoint<int> Negate(ThreeDimensionalPoint<int> value)
+        public static Point3D<int> Negate(Point3D<int> value)
         {
             if (value is null)
                 throw new ArgumentNullException("value");
-            return new ThreeDimensionalPoint<int>
+            return new Point3D<int>
             {
                 X = -value.X,
                 Y = -value.Y,
@@ -721,11 +721,11 @@ namespace Trivial.Maths
         /// </summary>
         /// <param name="value">A value to create mirror.</param>
         /// <returns>A result mirrored with the specific point in coordinate.</returns>
-        public static ThreeDimensionalPoint<long> Negate(ThreeDimensionalPoint<long> value)
+        public static Point3D<long> Negate(Point3D<long> value)
         {
             if (value is null)
                 throw new ArgumentNullException("value");
-            return new ThreeDimensionalPoint<long>
+            return new Point3D<long>
             {
                 X = -value.X,
                 Y = -value.Y,
@@ -738,11 +738,11 @@ namespace Trivial.Maths
         /// </summary>
         /// <param name="value">A value to create mirror.</param>
         /// <returns>A result mirrored with the specific point in coordinate.</returns>
-        public static ThreeDimensionalPoint<float> Negate(ThreeDimensionalPoint<float> value)
+        public static Point3D<float> Negate(Point3D<float> value)
         {
             if (value is null)
                 throw new ArgumentNullException("value");
-            return new ThreeDimensionalPoint<float>
+            return new Point3D<float>
             {
                 X = -value.X,
                 Y = -value.Y,
@@ -755,11 +755,11 @@ namespace Trivial.Maths
         /// </summary>
         /// <param name="value">A value to create mirror.</param>
         /// <returns>A result mirrored with the specific point in coordinate.</returns>
-        public static ThreeDimensionalPoint<double> Negate(ThreeDimensionalPoint<double> value)
+        public static Point3D<double> Negate(Point3D<double> value)
         {
             if (value is null)
                 throw new ArgumentNullException("value");
-            return new ThreeDimensionalPoint<double>
+            return new Point3D<double>
             {
                 X = -value.X,
                 Y = -value.Y,
@@ -773,7 +773,7 @@ namespace Trivial.Maths
         /// <param name="pointA">One of points to begin.</param>
         /// <param name="pointB">Another point to end.</param>
         /// <returns>A distance between two points.</returns>
-        public static double GetDistance(ThreeDimensionalPoint<int> pointA, ThreeDimensionalPoint<int> pointB)
+        public static double GetDistance(Point3D<int> pointA, Point3D<int> pointB)
         {
             if (pointA is null)
                 throw new ArgumentNullException("pointA");
@@ -788,7 +788,7 @@ namespace Trivial.Maths
         /// <param name="pointA">One of points to begin.</param>
         /// <param name="pointB">Another point to end.</param>
         /// <returns>A distance between two points.</returns>
-        public static double GetDistance(ThreeDimensionalPoint<long> pointA, ThreeDimensionalPoint<long> pointB)
+        public static double GetDistance(Point3D<long> pointA, Point3D<long> pointB)
         {
             if (pointA is null)
                 throw new ArgumentNullException("pointA");
@@ -803,7 +803,7 @@ namespace Trivial.Maths
         /// <param name="pointA">One of points to begin.</param>
         /// <param name="pointB">Another point to end.</param>
         /// <returns>A distance between two points.</returns>
-        public static double GetDistance(ThreeDimensionalPoint<float> pointA, ThreeDimensionalPoint<float> pointB)
+        public static double GetDistance(Point3D<float> pointA, Point3D<float> pointB)
         {
             if (pointA is null)
                 throw new ArgumentNullException("pointA");
@@ -821,7 +821,7 @@ namespace Trivial.Maths
         /// <param name="pointA">One of points to begin.</param>
         /// <param name="pointB">Another point to end.</param>
         /// <returns>A distance between two points.</returns>
-        public static double GetDistance(ThreeDimensionalPoint<double> pointA, ThreeDimensionalPoint<double> pointB)
+        public static double GetDistance(Point3D<double> pointA, Point3D<double> pointB)
         {
             if (pointA is null)
                 throw new ArgumentNullException("pointA");
@@ -844,11 +844,11 @@ namespace Trivial.Maths
         /// <param name="leftValue">The left value for addition operator.</param>
         /// <param name="rightValue">The right value for addition operator.</param>
         /// <returns>A result after addition.</returns>
-        public static FourDimensionalPoint<int> Plus(FourDimensionalPoint<int> leftValue, FourDimensionalPoint<int> rightValue)
+        public static Point4D<int> Plus(Point4D<int> leftValue, Point4D<int> rightValue)
         {
-            if (leftValue is null) leftValue = new FourDimensionalPoint<int>();
-            if (rightValue is null) rightValue = new FourDimensionalPoint<int>();
-            return new FourDimensionalPoint<int>
+            if (leftValue is null) leftValue = new Point4D<int>();
+            if (rightValue is null) rightValue = new Point4D<int>();
+            return new Point4D<int>
             {
                 X = leftValue.X + rightValue.X,
                 Y = leftValue.Y + rightValue.Y,
@@ -864,11 +864,11 @@ namespace Trivial.Maths
         /// <param name="leftValue">The left value for addition operator.</param>
         /// <param name="rightValue">The right value for addition operator.</param>
         /// <returns>A result after addition.</returns>
-        public static FourDimensionalPoint<long> Plus(FourDimensionalPoint<long> leftValue, FourDimensionalPoint<long> rightValue)
+        public static Point4D<long> Plus(Point4D<long> leftValue, Point4D<long> rightValue)
         {
-            if (leftValue is null) leftValue = new FourDimensionalPoint<long>();
-            if (rightValue is null) rightValue = new FourDimensionalPoint<long>();
-            return new FourDimensionalPoint<long>
+            if (leftValue is null) leftValue = new Point4D<long>();
+            if (rightValue is null) rightValue = new Point4D<long>();
+            return new Point4D<long>
             {
                 X = leftValue.X + rightValue.X,
                 Y = leftValue.Y + rightValue.Y,
@@ -884,11 +884,11 @@ namespace Trivial.Maths
         /// <param name="leftValue">The left value for addition operator.</param>
         /// <param name="rightValue">The right value for addition operator.</param>
         /// <returns>A result after addition.</returns>
-        public static FourDimensionalPoint<float> Plus(FourDimensionalPoint<float> leftValue, FourDimensionalPoint<float> rightValue)
+        public static Point4D<float> Plus(Point4D<float> leftValue, Point4D<float> rightValue)
         {
-            if (leftValue is null) leftValue = new FourDimensionalPoint<float>();
-            if (rightValue is null) rightValue = new FourDimensionalPoint<float>();
-            return new FourDimensionalPoint<float>
+            if (leftValue is null) leftValue = new Point4D<float>();
+            if (rightValue is null) rightValue = new Point4D<float>();
+            return new Point4D<float>
             {
                 X = leftValue.X + rightValue.X,
                 Y = leftValue.Y + rightValue.Y,
@@ -904,11 +904,11 @@ namespace Trivial.Maths
         /// <param name="leftValue">The left value for addition operator.</param>
         /// <param name="rightValue">The right value for addition operator.</param>
         /// <returns>A result after addition.</returns>
-        public static FourDimensionalPoint<double> Plus(FourDimensionalPoint<double> leftValue, FourDimensionalPoint<double> rightValue)
+        public static Point4D<double> Plus(Point4D<double> leftValue, Point4D<double> rightValue)
         {
-            if (leftValue is null) leftValue = new FourDimensionalPoint<double>();
-            if (rightValue is null) rightValue = new FourDimensionalPoint<double>();
-            return new FourDimensionalPoint<double>
+            if (leftValue is null) leftValue = new Point4D<double>();
+            if (rightValue is null) rightValue = new Point4D<double>();
+            return new Point4D<double>
             {
                 X = leftValue.X + rightValue.X,
                 Y = leftValue.Y + rightValue.Y,
@@ -924,11 +924,11 @@ namespace Trivial.Maths
         /// <param name="leftValue">The left value for subtration operator.</param>
         /// <param name="rightValue">The right value for subtration operator.</param>
         /// <returns>A result after subtration.</returns>
-        public static FourDimensionalPoint<int> Minus(FourDimensionalPoint<int> leftValue, FourDimensionalPoint<int> rightValue)
+        public static Point4D<int> Minus(Point4D<int> leftValue, Point4D<int> rightValue)
         {
-            if (leftValue is null) leftValue = new FourDimensionalPoint<int>();
-            if (rightValue is null) rightValue = new FourDimensionalPoint<int>();
-            return new FourDimensionalPoint<int>
+            if (leftValue is null) leftValue = new Point4D<int>();
+            if (rightValue is null) rightValue = new Point4D<int>();
+            return new Point4D<int>
             {
                 X = leftValue.X - rightValue.X,
                 Y = leftValue.Y - rightValue.Y,
@@ -944,11 +944,11 @@ namespace Trivial.Maths
         /// <param name="leftValue">The left value for subtration operator.</param>
         /// <param name="rightValue">The right value for subtration operator.</param>
         /// <returns>A result after subtration.</returns>
-        public static FourDimensionalPoint<long> Minus(FourDimensionalPoint<long> leftValue, FourDimensionalPoint<long> rightValue)
+        public static Point4D<long> Minus(Point4D<long> leftValue, Point4D<long> rightValue)
         {
-            if (leftValue is null) leftValue = new FourDimensionalPoint<long>();
-            if (rightValue is null) rightValue = new FourDimensionalPoint<long>();
-            return new FourDimensionalPoint<long>
+            if (leftValue is null) leftValue = new Point4D<long>();
+            if (rightValue is null) rightValue = new Point4D<long>();
+            return new Point4D<long>
             {
                 X = leftValue.X - rightValue.X,
                 Y = leftValue.Y - rightValue.Y,
@@ -964,11 +964,11 @@ namespace Trivial.Maths
         /// <param name="leftValue">The left value for subtration operator.</param>
         /// <param name="rightValue">The right value for subtration operator.</param>
         /// <returns>A result after subtration.</returns>
-        public static FourDimensionalPoint<float> Minus(FourDimensionalPoint<float> leftValue, FourDimensionalPoint<float> rightValue)
+        public static Point4D<float> Minus(Point4D<float> leftValue, Point4D<float> rightValue)
         {
-            if (leftValue is null) leftValue = new FourDimensionalPoint<float>();
-            if (rightValue is null) rightValue = new FourDimensionalPoint<float>();
-            return new FourDimensionalPoint<float>
+            if (leftValue is null) leftValue = new Point4D<float>();
+            if (rightValue is null) rightValue = new Point4D<float>();
+            return new Point4D<float>
             {
                 X = leftValue.X - rightValue.X,
                 Y = leftValue.Y - rightValue.Y,
@@ -984,11 +984,11 @@ namespace Trivial.Maths
         /// <param name="leftValue">The left value for addition operator.</param>
         /// <param name="rightValue">The right value for addition operator.</param>
         /// <returns>A result after addition.</returns>
-        public static FourDimensionalPoint<double> Minus(FourDimensionalPoint<double> leftValue, FourDimensionalPoint<double> rightValue)
+        public static Point4D<double> Minus(Point4D<double> leftValue, Point4D<double> rightValue)
         {
-            if (leftValue is null) leftValue = new FourDimensionalPoint<double>();
-            if (rightValue is null) rightValue = new FourDimensionalPoint<double>();
-            return new FourDimensionalPoint<double>
+            if (leftValue is null) leftValue = new Point4D<double>();
+            if (rightValue is null) rightValue = new Point4D<double>();
+            return new Point4D<double>
             {
                 X = leftValue.X - rightValue.X,
                 Y = leftValue.Y - rightValue.Y,
@@ -1002,11 +1002,11 @@ namespace Trivial.Maths
         /// </summary>
         /// <param name="value">A value to create mirror.</param>
         /// <returns>A result mirrored with the specific point in coordinate.</returns>
-        public static FourDimensionalPoint<int> Negate(FourDimensionalPoint<int> value)
+        public static Point4D<int> Negate(Point4D<int> value)
         {
             if (value is null)
                 throw new ArgumentNullException("value");
-            return new FourDimensionalPoint<int>
+            return new Point4D<int>
             {
                 X = -value.X,
                 Y = -value.Y,
@@ -1020,11 +1020,11 @@ namespace Trivial.Maths
         /// </summary>
         /// <param name="value">A value to create mirror.</param>
         /// <returns>A result mirrored with the specific point in coordinate.</returns>
-        public static FourDimensionalPoint<long> Negate(FourDimensionalPoint<long> value)
+        public static Point4D<long> Negate(Point4D<long> value)
         {
             if (value is null)
                 throw new ArgumentNullException("value");
-            return new FourDimensionalPoint<long>
+            return new Point4D<long>
             {
                 X = -value.X,
                 Y = -value.Y,
@@ -1038,11 +1038,11 @@ namespace Trivial.Maths
         /// </summary>
         /// <param name="value">A value to create mirror.</param>
         /// <returns>A result mirrored with the specific point in coordinate.</returns>
-        public static FourDimensionalPoint<float> Negate(FourDimensionalPoint<float> value)
+        public static Point4D<float> Negate(Point4D<float> value)
         {
             if (value is null)
                 throw new ArgumentNullException("value");
-            return new FourDimensionalPoint<float>
+            return new Point4D<float>
             {
                 X = -value.X,
                 Y = -value.Y,
@@ -1056,11 +1056,11 @@ namespace Trivial.Maths
         /// </summary>
         /// <param name="value">A value to create mirror.</param>
         /// <returns>A result mirrored with the specific point in coordinate.</returns>
-        public static FourDimensionalPoint<double> Negate(FourDimensionalPoint<double> value)
+        public static Point4D<double> Negate(Point4D<double> value)
         {
             if (value is null)
                 throw new ArgumentNullException("value");
-            return new FourDimensionalPoint<double>
+            return new Point4D<double>
             {
                 X = -value.X,
                 Y = -value.Y,
@@ -1080,11 +1080,11 @@ namespace Trivial.Maths
         /// <param name="leftValue">The left value for addition operator.</param>
         /// <param name="rightValue">The right value for addition operator.</param>
         /// <returns>A result after addition.</returns>
-        public static FourDimensionalPoint<int, TimeSpan> Plus(FourDimensionalPoint<int, TimeSpan> leftValue, FourDimensionalPoint<int, TimeSpan> rightValue)
+        public static Point4D<int, TimeSpan> Plus(Point4D<int, TimeSpan> leftValue, Point4D<int, TimeSpan> rightValue)
         {
-            if (leftValue is null) leftValue = new FourDimensionalPoint<int, TimeSpan>();
-            if (rightValue is null) rightValue = new FourDimensionalPoint<int, TimeSpan>();
-            return new FourDimensionalPoint<int, TimeSpan>
+            if (leftValue is null) leftValue = new Point4D<int, TimeSpan>();
+            if (rightValue is null) rightValue = new Point4D<int, TimeSpan>();
+            return new Point4D<int, TimeSpan>
             {
                 X = leftValue.X + rightValue.X,
                 Y = leftValue.Y + rightValue.Y,
@@ -1100,11 +1100,11 @@ namespace Trivial.Maths
         /// <param name="leftValue">The left value for addition operator.</param>
         /// <param name="rightValue">The right value for addition operator.</param>
         /// <returns>A result after addition.</returns>
-        public static FourDimensionalPoint<long, TimeSpan> Plus(FourDimensionalPoint<long, TimeSpan> leftValue, FourDimensionalPoint<long, TimeSpan> rightValue)
+        public static Point4D<long, TimeSpan> Plus(Point4D<long, TimeSpan> leftValue, Point4D<long, TimeSpan> rightValue)
         {
-            if (leftValue is null) leftValue = new FourDimensionalPoint<long, TimeSpan>();
-            if (rightValue is null) rightValue = new FourDimensionalPoint<long, TimeSpan>();
-            return new FourDimensionalPoint<long, TimeSpan>
+            if (leftValue is null) leftValue = new Point4D<long, TimeSpan>();
+            if (rightValue is null) rightValue = new Point4D<long, TimeSpan>();
+            return new Point4D<long, TimeSpan>
             {
                 X = leftValue.X + rightValue.X,
                 Y = leftValue.Y + rightValue.Y,
@@ -1120,11 +1120,11 @@ namespace Trivial.Maths
         /// <param name="leftValue">The left value for addition operator.</param>
         /// <param name="rightValue">The right value for addition operator.</param>
         /// <returns>A result after addition.</returns>
-        public static FourDimensionalPoint<float, TimeSpan> Plus(FourDimensionalPoint<float, TimeSpan> leftValue, FourDimensionalPoint<float, TimeSpan> rightValue)
+        public static Point4D<float, TimeSpan> Plus(Point4D<float, TimeSpan> leftValue, Point4D<float, TimeSpan> rightValue)
         {
-            if (leftValue is null) leftValue = new FourDimensionalPoint<float, TimeSpan>();
-            if (rightValue is null) rightValue = new FourDimensionalPoint<float, TimeSpan>();
-            return new FourDimensionalPoint<float, TimeSpan>
+            if (leftValue is null) leftValue = new Point4D<float, TimeSpan>();
+            if (rightValue is null) rightValue = new Point4D<float, TimeSpan>();
+            return new Point4D<float, TimeSpan>
             {
                 X = leftValue.X + rightValue.X,
                 Y = leftValue.Y + rightValue.Y,
@@ -1140,11 +1140,11 @@ namespace Trivial.Maths
         /// <param name="leftValue">The left value for addition operator.</param>
         /// <param name="rightValue">The right value for addition operator.</param>
         /// <returns>A result after addition.</returns>
-        public static FourDimensionalPoint<double, TimeSpan> Plus(FourDimensionalPoint<double, TimeSpan> leftValue, FourDimensionalPoint<double, TimeSpan> rightValue)
+        public static Point4D<double, TimeSpan> Plus(Point4D<double, TimeSpan> leftValue, Point4D<double, TimeSpan> rightValue)
         {
-            if (leftValue is null) leftValue = new FourDimensionalPoint<double, TimeSpan>();
-            if (rightValue is null) rightValue = new FourDimensionalPoint<double, TimeSpan>();
-            return new FourDimensionalPoint<double, TimeSpan>
+            if (leftValue is null) leftValue = new Point4D<double, TimeSpan>();
+            if (rightValue is null) rightValue = new Point4D<double, TimeSpan>();
+            return new Point4D<double, TimeSpan>
             {
                 X = leftValue.X + rightValue.X,
                 Y = leftValue.Y + rightValue.Y,
@@ -1160,11 +1160,11 @@ namespace Trivial.Maths
         /// <param name="leftValue">The left value for subtration operator.</param>
         /// <param name="rightValue">The right value for subtration operator.</param>
         /// <returns>A result after subtration.</returns>
-        public static FourDimensionalPoint<int, TimeSpan> Minus(FourDimensionalPoint<int, TimeSpan> leftValue, FourDimensionalPoint<int, TimeSpan> rightValue)
+        public static Point4D<int, TimeSpan> Minus(Point4D<int, TimeSpan> leftValue, Point4D<int, TimeSpan> rightValue)
         {
-            if (leftValue is null) leftValue = new FourDimensionalPoint<int, TimeSpan>();
-            if (rightValue is null) rightValue = new FourDimensionalPoint<int, TimeSpan>();
-            return new FourDimensionalPoint<int, TimeSpan>
+            if (leftValue is null) leftValue = new Point4D<int, TimeSpan>();
+            if (rightValue is null) rightValue = new Point4D<int, TimeSpan>();
+            return new Point4D<int, TimeSpan>
             {
                 X = leftValue.X - rightValue.X,
                 Y = leftValue.Y - rightValue.Y,
@@ -1180,11 +1180,11 @@ namespace Trivial.Maths
         /// <param name="leftValue">The left value for subtration operator.</param>
         /// <param name="rightValue">The right value for subtration operator.</param>
         /// <returns>A result after subtration.</returns>
-        public static FourDimensionalPoint<long, TimeSpan> Minus(FourDimensionalPoint<long, TimeSpan> leftValue, FourDimensionalPoint<long, TimeSpan> rightValue)
+        public static Point4D<long, TimeSpan> Minus(Point4D<long, TimeSpan> leftValue, Point4D<long, TimeSpan> rightValue)
         {
-            if (leftValue is null) leftValue = new FourDimensionalPoint<long, TimeSpan>();
-            if (rightValue is null) rightValue = new FourDimensionalPoint<long, TimeSpan>();
-            return new FourDimensionalPoint<long, TimeSpan>
+            if (leftValue is null) leftValue = new Point4D<long, TimeSpan>();
+            if (rightValue is null) rightValue = new Point4D<long, TimeSpan>();
+            return new Point4D<long, TimeSpan>
             {
                 X = leftValue.X - rightValue.X,
                 Y = leftValue.Y - rightValue.Y,
@@ -1200,11 +1200,11 @@ namespace Trivial.Maths
         /// <param name="leftValue">The left value for subtration operator.</param>
         /// <param name="rightValue">The right value for subtration operator.</param>
         /// <returns>A result after subtration.</returns>
-        public static FourDimensionalPoint<float, TimeSpan> Minus(FourDimensionalPoint<float, TimeSpan> leftValue, FourDimensionalPoint<float, TimeSpan> rightValue)
+        public static Point4D<float, TimeSpan> Minus(Point4D<float, TimeSpan> leftValue, Point4D<float, TimeSpan> rightValue)
         {
-            if (leftValue is null) leftValue = new FourDimensionalPoint<float, TimeSpan>();
-            if (rightValue is null) rightValue = new FourDimensionalPoint<float, TimeSpan>();
-            return new FourDimensionalPoint<float, TimeSpan>
+            if (leftValue is null) leftValue = new Point4D<float, TimeSpan>();
+            if (rightValue is null) rightValue = new Point4D<float, TimeSpan>();
+            return new Point4D<float, TimeSpan>
             {
                 X = leftValue.X - rightValue.X,
                 Y = leftValue.Y - rightValue.Y,
@@ -1220,11 +1220,11 @@ namespace Trivial.Maths
         /// <param name="leftValue">The left value for addition operator.</param>
         /// <param name="rightValue">The right value for addition operator.</param>
         /// <returns>A result after addition.</returns>
-        public static FourDimensionalPoint<double, TimeSpan> Minus(FourDimensionalPoint<double, TimeSpan> leftValue, FourDimensionalPoint<double, TimeSpan> rightValue)
+        public static Point4D<double, TimeSpan> Minus(Point4D<double, TimeSpan> leftValue, Point4D<double, TimeSpan> rightValue)
         {
-            if (leftValue is null) leftValue = new FourDimensionalPoint<double, TimeSpan>();
-            if (rightValue is null) rightValue = new FourDimensionalPoint<double, TimeSpan>();
-            return new FourDimensionalPoint<double, TimeSpan>
+            if (leftValue is null) leftValue = new Point4D<double, TimeSpan>();
+            if (rightValue is null) rightValue = new Point4D<double, TimeSpan>();
+            return new Point4D<double, TimeSpan>
             {
                 X = leftValue.X - rightValue.X,
                 Y = leftValue.Y - rightValue.Y,
@@ -1238,11 +1238,11 @@ namespace Trivial.Maths
         /// </summary>
         /// <param name="value">A value to create mirror.</param>
         /// <returns>A result mirrored with the specific point in coordinate.</returns>
-        public static FourDimensionalPoint<int, TimeSpan> Negate(FourDimensionalPoint<int, TimeSpan> value)
+        public static Point4D<int, TimeSpan> Negate(Point4D<int, TimeSpan> value)
         {
             if (value is null)
                 throw new ArgumentNullException("value");
-            return new FourDimensionalPoint<int, TimeSpan>
+            return new Point4D<int, TimeSpan>
             {
                 X = -value.X,
                 Y = -value.Y,
@@ -1256,11 +1256,11 @@ namespace Trivial.Maths
         /// </summary>
         /// <param name="value">A value to create mirror.</param>
         /// <returns>A result mirrored with the specific point in coordinate.</returns>
-        public static FourDimensionalPoint<long, TimeSpan> Negate(FourDimensionalPoint<long, TimeSpan> value)
+        public static Point4D<long, TimeSpan> Negate(Point4D<long, TimeSpan> value)
         {
             if (value is null)
                 throw new ArgumentNullException("value");
-            return new FourDimensionalPoint<long, TimeSpan>
+            return new Point4D<long, TimeSpan>
             {
                 X = -value.X,
                 Y = -value.Y,
@@ -1274,11 +1274,11 @@ namespace Trivial.Maths
         /// </summary>
         /// <param name="value">A value to create mirror.</param>
         /// <returns>A result mirrored with the specific point in coordinate.</returns>
-        public static FourDimensionalPoint<float, TimeSpan> Negate(FourDimensionalPoint<float, TimeSpan> value)
+        public static Point4D<float, TimeSpan> Negate(Point4D<float, TimeSpan> value)
         {
             if (value is null)
                 throw new ArgumentNullException("value");
-            return new FourDimensionalPoint<float, TimeSpan>
+            return new Point4D<float, TimeSpan>
             {
                 X = -value.X,
                 Y = -value.Y,
@@ -1292,11 +1292,11 @@ namespace Trivial.Maths
         /// </summary>
         /// <param name="value">A value to create mirror.</param>
         /// <returns>A result mirrored with the specific point in coordinate.</returns>
-        public static FourDimensionalPoint<double, TimeSpan> Negate(FourDimensionalPoint<double, TimeSpan> value)
+        public static Point4D<double, TimeSpan> Negate(Point4D<double, TimeSpan> value)
         {
             if (value is null)
                 throw new ArgumentNullException("value");
-            return new FourDimensionalPoint<double, TimeSpan>
+            return new Point4D<double, TimeSpan>
             {
                 X = -value.X,
                 Y = -value.Y,

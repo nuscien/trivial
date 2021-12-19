@@ -23,7 +23,7 @@ namespace Trivial.Maths
         public void TestGeometry()
         {
             // Points
-            var angle = Geometry.Angle(new DoubleTwoDimensionalPoint(0, 0), new DoubleTwoDimensionalPoint(1, 0), new DoubleTwoDimensionalPoint(0, 1));
+            var angle = Geometry.Angle(new DoublePoint2D(0, 0), new DoublePoint2D(1, 0), new DoublePoint2D(0, 1));
             Assert.AreEqual(90, angle.AbsDegree);
         }
     }

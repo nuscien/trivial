@@ -14,7 +14,7 @@ namespace Trivial.Maths
     [DataContract]
     public class CoordinateSphere : ICloneable
     {
-        private DoubleThreeDimensionalPoint center;
+        private DoublePoint3D center;
 
         /// <summary>
         /// Initializes a new instance of the CoordinateSphere class.
@@ -43,7 +43,7 @@ namespace Trivial.Maths
         /// </summary>
         /// <param name="center">The center point.</param>
         /// <param name="r">The radius.</param>
-        public CoordinateSphere(DoubleThreeDimensionalPoint center, double r)
+        public CoordinateSphere(DoublePoint3D center, double r)
         {
             this.center = center ?? new();
             Radius = double.IsNaN(r) ? 0 : r;
@@ -60,7 +60,7 @@ namespace Trivial.Maths
         /// Gets or sets the center point.
         /// </summary>
         [JsonIgnore(Condition = JsonIgnoreCondition.Always)]
-        public DoubleThreeDimensionalPoint Center
+        public DoublePoint3D Center
         {
             get => center;
             set => center = value ?? new();

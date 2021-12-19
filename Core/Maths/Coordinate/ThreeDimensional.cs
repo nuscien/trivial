@@ -16,7 +16,7 @@ namespace Trivial.Maths
     /// The generic 3D (stereoscophic) coordinate point.
     /// </summary>
     /// <typeparam name="TUnit">The type of unit.</typeparam>
-    public class ThreeDimensionalPoint<TUnit> : ThreeElements<TUnit>, IEquatable<ThreeElements<TUnit>> where TUnit : struct, IComparable<TUnit>, IEquatable<TUnit>
+    public class Point3D<TUnit> : ThreeElements<TUnit>, IEquatable<ThreeElements<TUnit>> where TUnit : struct, IComparable<TUnit>, IEquatable<TUnit>
     {
         /// <summary>
         /// The event arguments with the position.
@@ -56,7 +56,7 @@ namespace Trivial.Maths
         /// Initializes a new instance of the ThreeDimensionalPoint class.
         /// </summary>
         /// <remarks>You can use this to initialize an instance for the class.</remarks>
-        public ThreeDimensionalPoint()
+        public Point3D()
         {
         }
 
@@ -67,7 +67,7 @@ namespace Trivial.Maths
         /// <param name="y">The value of Y.</param>
         /// <param name="z">The value of Z.</param>
         /// <remarks>You can use this to initialize an instance for the class.</remarks>
-        public ThreeDimensionalPoint(TUnit x, TUnit y, TUnit z)
+        public Point3D(TUnit x, TUnit y, TUnit z)
         {
             X = x;
             Y = y;
@@ -106,7 +106,7 @@ namespace Trivial.Maths
         /// </summary>
         /// <returns>A new object that is a copy of this instance.</returns>
         public override object Clone()
-            => new ThreeDimensionalPoint<TUnit>(X, Y, Z);
+            => new Point3D<TUnit>(X, Y, Z);
 
         /// <summary>
         /// Indicates whether the current object is equal to another object of the same type.
@@ -143,13 +143,13 @@ namespace Trivial.Maths
     /// <summary>
     /// The point of 3D (stereoscophic) mathematics coordinate.
     /// </summary>
-    public class DoubleThreeDimensionalPoint : ThreeDimensionalPoint<double>, IAdditionCapable<DoubleThreeDimensionalPoint>, ISubtractionCapable<DoubleThreeDimensionalPoint>, INegationCapable<DoubleThreeDimensionalPoint>, IEquatable<ThreeDimensionalPoint<double>>
+    public class DoublePoint3D : Point3D<double>, IAdditionCapable<DoublePoint3D>, ISubtractionCapable<DoublePoint3D>, INegationCapable<DoublePoint3D>, IEquatable<Point3D<double>>
     {
         /// <summary>
         /// Initializes a new instance of the DoubleThreeDimensionalPoint class.
         /// </summary>
         /// <remarks>You can use this to initialize an instance for the class.</remarks>
-        public DoubleThreeDimensionalPoint()
+        public DoublePoint3D()
         {
         }
 
@@ -160,7 +160,7 @@ namespace Trivial.Maths
         /// <param name="y">The value of Y.</param>
         /// <param name="z">The value of Z.</param>
         /// <remarks>You can use this to initialize an instance for the class.</remarks>
-        public DoubleThreeDimensionalPoint(double x, double y, double z) : base(x, y, z)
+        public DoublePoint3D(double x, double y, double z) : base(x, y, z)
         {
         }
 
@@ -170,11 +170,11 @@ namespace Trivial.Maths
         /// </summary>
         /// <param name="value">The value to be plused.</param>
         /// <returns>A result after leftValue plus rightValue.</returns>
-        public DoubleThreeDimensionalPoint Plus(ThreeDimensionalPoint<double> value)
+        public DoublePoint3D Plus(Point3D<double> value)
         {
             return value != null
-                ? new DoubleThreeDimensionalPoint(X + value.X, Y + value.Y, Z + value.Z)
-                : new DoubleThreeDimensionalPoint(X, Y, Z);
+                ? new DoublePoint3D(X + value.X, Y + value.Y, Z + value.Z)
+                : new DoublePoint3D(X, Y, Z);
         }
 
         /// <summary>
@@ -183,11 +183,11 @@ namespace Trivial.Maths
         /// </summary>
         /// <param name="value">The value to be plused.</param>
         /// <returns>A result after leftValue plus rightValue.</returns>
-        public DoubleThreeDimensionalPoint Plus(ThreeDimensionalPoint<int> value)
+        public DoublePoint3D Plus(Point3D<int> value)
         {
             return value != null
-                ? new DoubleThreeDimensionalPoint(X + value.X, Y + value.Y, Z + value.Z)
-                : new DoubleThreeDimensionalPoint(X, Y, Z);
+                ? new DoublePoint3D(X + value.X, Y + value.Y, Z + value.Z)
+                : new DoublePoint3D(X, Y, Z);
         }
 
         /// <summary>
@@ -196,11 +196,11 @@ namespace Trivial.Maths
         /// </summary>
         /// <param name="value">The value to be plused.</param>
         /// <returns>A result after leftValue plus rightValue.</returns>
-        public DoubleThreeDimensionalPoint Plus(DoubleThreeDimensionalPoint value)
+        public DoublePoint3D Plus(DoublePoint3D value)
         {
             return value != null
-                ? new DoubleThreeDimensionalPoint(X + value.X, Y + value.Y, Z + value.Z)
-                : new DoubleThreeDimensionalPoint(X, Y, Z);
+                ? new DoublePoint3D(X + value.X, Y + value.Y, Z + value.Z)
+                : new DoublePoint3D(X, Y, Z);
         }
 
         /// <summary>
@@ -209,11 +209,11 @@ namespace Trivial.Maths
         /// </summary>
         /// <param name="value">The value to be minuses.</param>
         /// <returns>A result after leftValue minus rightValue.</returns>
-        public DoubleThreeDimensionalPoint Minus(ThreeDimensionalPoint<double> value)
+        public DoublePoint3D Minus(Point3D<double> value)
         {
             return value != null
-                ? new DoubleThreeDimensionalPoint(X - value.X, Y - value.Y, Z - value.Z)
-                : new DoubleThreeDimensionalPoint(X, Y, Z);
+                ? new DoublePoint3D(X - value.X, Y - value.Y, Z - value.Z)
+                : new DoublePoint3D(X, Y, Z);
         }
 
         /// <summary>
@@ -222,11 +222,11 @@ namespace Trivial.Maths
         /// </summary>
         /// <param name="value">The value to be minuses.</param>
         /// <returns>A result after leftValue minus rightValue.</returns>
-        public DoubleThreeDimensionalPoint Minus(ThreeDimensionalPoint<int> value)
+        public DoublePoint3D Minus(Point3D<int> value)
         {
             return value != null
-                ? new DoubleThreeDimensionalPoint(X - value.X, Y - value.Y, Z - value.Z)
-                : new DoubleThreeDimensionalPoint(X, Y, Z);
+                ? new DoublePoint3D(X - value.X, Y - value.Y, Z - value.Z)
+                : new DoublePoint3D(X, Y, Z);
         }
 
         /// <summary>
@@ -235,11 +235,11 @@ namespace Trivial.Maths
         /// </summary>
         /// <param name="value">The value to be minuses.</param>
         /// <returns>A result after leftValue minus rightValue.</returns>
-        public DoubleThreeDimensionalPoint Minus(DoubleThreeDimensionalPoint value)
+        public DoublePoint3D Minus(DoublePoint3D value)
         {
             return value != null
-                ? new DoubleThreeDimensionalPoint(X - value.X, Y - value.Y, Z - value.Z)
-                : new DoubleThreeDimensionalPoint(X, Y, Z);
+                ? new DoublePoint3D(X - value.X, Y - value.Y, Z - value.Z)
+                : new DoublePoint3D(X, Y, Z);
         }
 
         /// <summary>
@@ -247,9 +247,9 @@ namespace Trivial.Maths
         /// -this
         /// </summary>
         /// <returns>A result after negation.</returns>
-        public DoubleThreeDimensionalPoint Negate()
+        public DoublePoint3D Negate()
         {
-            return new DoubleThreeDimensionalPoint(-X, -Y, -Z);
+            return new DoublePoint3D(-X, -Y, -Z);
         }
 
         /// <summary>
@@ -280,14 +280,14 @@ namespace Trivial.Maths
         /// </summary>
         /// <returns>A new object that is a copy of this instance.</returns>
         public override object Clone()
-            => new DoubleThreeDimensionalPoint(X, Y, Z);
+            => new DoublePoint3D(X, Y, Z);
 
         /// <summary>
         /// Determines whether the specified object is equal to the current object.
         /// </summary>
         /// <param name="other">The object to compare with the current object.</param>
         /// <returns>true if the specified object is equal to the current object; otherwise, false.</returns>
-        public bool Equals(ThreeDimensionalPoint<double> other)
+        public bool Equals(Point3D<double> other)
             => other is not null && (Math.Abs(X - other.X) < Arithmetic.DoubleAccuracy) && (Math.Abs(Y - other.Y) < Arithmetic.DoubleAccuracy) && (Math.Abs(X - other.X) < Arithmetic.DoubleAccuracy);
 
         /// <summary>
@@ -299,7 +299,7 @@ namespace Trivial.Maths
         {
             if (other is null) return false;
             if (ReferenceEquals(this, other)) return true;
-            if (other is ThreeDimensionalPoint<double> p) return Equals(p);
+            if (other is Point3D<double> p) return Equals(p);
             return base.Equals(other);
         }
 
@@ -314,9 +314,27 @@ namespace Trivial.Maths
         /// Converts a vector to the point.
         /// </summary>
         /// <param name="value">The vector to convert.</param>
-        public static implicit operator DoubleThreeDimensionalPoint(System.Numerics.Vector3 value)
+        public static implicit operator DoublePoint3D(System.Numerics.Vector3 value)
         {
-            return new DoubleThreeDimensionalPoint(value.X, value.Y, value.Y);
+            return new DoublePoint3D(value.X, value.Y, value.Y);
+        }
+
+        /// <summary>
+        /// Converts a vectorpoint.
+        /// </summary>
+        /// <param name="value">The point to convert.</param>
+        public static implicit operator DoublePoint3D(Point3D<int> value)
+        {
+            return new DoublePoint3D(value.X, value.Y, value.Y);
+        }
+
+        /// <summary>
+        /// Converts a vectorpoint.
+        /// </summary>
+        /// <param name="value">The point to convert.</param>
+        public static implicit operator DoublePoint3D(Point3D<float> value)
+        {
+            return new DoublePoint3D(value.X, value.Y, value.Y);
         }
 
         /// <summary>
@@ -325,9 +343,9 @@ namespace Trivial.Maths
         /// <param name="leftValue">The left value for addition operator.</param>
         /// <param name="rightValue">The right value for addition operator.</param>
         /// <returns>A result after addition.</returns>
-        public static DoubleThreeDimensionalPoint operator +(DoubleThreeDimensionalPoint leftValue, DoubleThreeDimensionalPoint rightValue)
+        public static DoublePoint3D operator +(DoublePoint3D leftValue, DoublePoint3D rightValue)
         {
-            return (leftValue ?? new DoubleThreeDimensionalPoint()).Plus(rightValue);
+            return (leftValue ?? new DoublePoint3D()).Plus(rightValue);
         }
 
         /// <summary>
@@ -336,22 +354,22 @@ namespace Trivial.Maths
         /// <param name="leftValue">The left value for addition operator.</param>
         /// <param name="rightValue">The right value for addition operator.</param>
         /// <returns>A result after addition.</returns>
-        public static DoubleThreeDimensionalPoint operator -(DoubleThreeDimensionalPoint leftValue, DoubleThreeDimensionalPoint rightValue)
+        public static DoublePoint3D operator -(DoublePoint3D leftValue, DoublePoint3D rightValue)
         {
-            return (leftValue ?? new DoubleThreeDimensionalPoint()).Minus(rightValue);
+            return (leftValue ?? new DoublePoint3D()).Minus(rightValue);
         }
     }
 
     /// <summary>
     /// The point of 3D (stereoscophic) integer coordinate.
     /// </summary>
-    public class Int32ThreeDimensionalPoint : ThreeDimensionalPoint<int>, IAdditionCapable<Int32ThreeDimensionalPoint>, ISubtractionCapable<Int32ThreeDimensionalPoint>, INegationCapable<Int32ThreeDimensionalPoint>, IEquatable<ThreeDimensionalPoint<int>>
+    public class Int32Point3D : Point3D<int>, IAdditionCapable<Int32Point3D>, ISubtractionCapable<Int32Point3D>, INegationCapable<Int32Point3D>, IEquatable<Point3D<int>>
     {
         /// <summary>
         /// Initializes a new instance of the Int32ThreeDimensionalPoint class.
         /// </summary>
         /// <remarks>You can use this to initialize an instance for the class.</remarks>
-        public Int32ThreeDimensionalPoint()
+        public Int32Point3D()
         {
         }
 
@@ -362,7 +380,7 @@ namespace Trivial.Maths
         /// <param name="y">The value of Y.</param>
         /// <param name="z">The value of Z.</param>
         /// <remarks>You can use this to initialize an instance for the class.</remarks>
-        public Int32ThreeDimensionalPoint(int x, int y, int z) : base(x, y, z)
+        public Int32Point3D(int x, int y, int z) : base(x, y, z)
         {
         }
 
@@ -372,11 +390,11 @@ namespace Trivial.Maths
         /// </summary>
         /// <param name="value">The value to be plused.</param>
         /// <returns>A result after leftValue plus rightValue.</returns>
-        public Int32ThreeDimensionalPoint Plus(ThreeDimensionalPoint<int> value)
+        public Int32Point3D Plus(Point3D<int> value)
         {
             return value != null
-                ? new Int32ThreeDimensionalPoint(X + value.X, Y + value.Y, Z + value.Z)
-                : new Int32ThreeDimensionalPoint(X, Y, Z);
+                ? new Int32Point3D(X + value.X, Y + value.Y, Z + value.Z)
+                : new Int32Point3D(X, Y, Z);
         }
 
         /// <summary>
@@ -385,11 +403,11 @@ namespace Trivial.Maths
         /// </summary>
         /// <param name="value">The value to be plused.</param>
         /// <returns>A result after leftValue plus rightValue.</returns>
-        public Int32ThreeDimensionalPoint Plus(Int32ThreeDimensionalPoint value)
+        public Int32Point3D Plus(Int32Point3D value)
         {
             return value != null
-                ? new Int32ThreeDimensionalPoint(X + value.X, Y + value.Y, Z + value.Z)
-                : new Int32ThreeDimensionalPoint(X, Y, Z);
+                ? new Int32Point3D(X + value.X, Y + value.Y, Z + value.Z)
+                : new Int32Point3D(X, Y, Z);
         }
 
         /// <summary>
@@ -398,11 +416,11 @@ namespace Trivial.Maths
         /// </summary>
         /// <param name="value">The value to be minuses.</param>
         /// <returns>A result after leftValue minus rightValue.</returns>
-        public Int32ThreeDimensionalPoint Minus(ThreeDimensionalPoint<int> value)
+        public Int32Point3D Minus(Point3D<int> value)
         {
             return value != null
-                ? new Int32ThreeDimensionalPoint(X - value.X, Y - value.Y, Z - value.Z)
-                : new Int32ThreeDimensionalPoint(X, Y, Z);
+                ? new Int32Point3D(X - value.X, Y - value.Y, Z - value.Z)
+                : new Int32Point3D(X, Y, Z);
         }
 
         /// <summary>
@@ -411,11 +429,11 @@ namespace Trivial.Maths
         /// </summary>
         /// <param name="value">The value to be minuses.</param>
         /// <returns>A result after leftValue minus rightValue.</returns>
-        public Int32ThreeDimensionalPoint Minus(Int32ThreeDimensionalPoint value)
+        public Int32Point3D Minus(Int32Point3D value)
         {
             return value != null
-                ? new Int32ThreeDimensionalPoint(X - value.X, Y - value.Y, Z - value.Z)
-                : new Int32ThreeDimensionalPoint(X, Y, Z);
+                ? new Int32Point3D(X - value.X, Y - value.Y, Z - value.Z)
+                : new Int32Point3D(X, Y, Z);
         }
 
         /// <summary>
@@ -423,9 +441,9 @@ namespace Trivial.Maths
         /// -this
         /// </summary>
         /// <returns>A result after negation.</returns>
-        public Int32ThreeDimensionalPoint Negate()
+        public Int32Point3D Negate()
         {
-            return new Int32ThreeDimensionalPoint(-X, -Y, -Z);
+            return new Int32Point3D(-X, -Y, -Z);
         }
 
         /// <summary>
@@ -456,14 +474,14 @@ namespace Trivial.Maths
         /// </summary>
         /// <returns>A new object that is a copy of this instance.</returns>
         public override object Clone()
-            => new Int32ThreeDimensionalPoint(X, Y, Z);
+            => new Int32Point3D(X, Y, Z);
 
         /// <summary>
         /// Determines whether the specified object is equal to the current object.
         /// </summary>
         /// <param name="other">The object to compare with the current object.</param>
         /// <returns>true if the specified object is equal to the current object; otherwise, false.</returns>
-        public bool Equals(ThreeDimensionalPoint<int> other)
+        public bool Equals(Point3D<int> other)
             => other is not null && X == other.X && Y == other.Y && Z == other.Z;
 
         /// <summary>
@@ -475,7 +493,7 @@ namespace Trivial.Maths
         {
             if (other is null) return false;
             if (ReferenceEquals(this, other)) return true;
-            if (other is ThreeDimensionalPoint<int> p) return Equals(p);
+            if (other is Point3D<int> p) return Equals(p);
             return base.Equals(other);
         }
 
@@ -492,9 +510,9 @@ namespace Trivial.Maths
         /// <param name="leftValue">The left value for addition operator.</param>
         /// <param name="rightValue">The right value for addition operator.</param>
         /// <returns>A result after addition.</returns>
-        public static Int32ThreeDimensionalPoint operator +(Int32ThreeDimensionalPoint leftValue, Int32ThreeDimensionalPoint rightValue)
+        public static Int32Point3D operator +(Int32Point3D leftValue, Int32Point3D rightValue)
         {
-            return (leftValue ?? new Int32ThreeDimensionalPoint()).Plus(rightValue);
+            return (leftValue ?? new Int32Point3D()).Plus(rightValue);
         }
 
         /// <summary>
@@ -503,9 +521,9 @@ namespace Trivial.Maths
         /// <param name="leftValue">The left value for addition operator.</param>
         /// <param name="rightValue">The right value for addition operator.</param>
         /// <returns>A result after addition.</returns>
-        public static Int32ThreeDimensionalPoint operator -(Int32ThreeDimensionalPoint leftValue, Int32ThreeDimensionalPoint rightValue)
+        public static Int32Point3D operator -(Int32Point3D leftValue, Int32Point3D rightValue)
         {
-            return (leftValue ?? new Int32ThreeDimensionalPoint()).Minus(rightValue);
+            return (leftValue ?? new Int32Point3D()).Minus(rightValue);
         }
     }
 }

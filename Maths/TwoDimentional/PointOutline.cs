@@ -18,7 +18,7 @@ namespace Trivial.Maths
         /// <param name="right">The right boundary.</param>
         /// <param name="accuracy">The step in x.</param>
         /// <returns>A point collection.</returns>
-        IEnumerable<TwoDimensionalPoint<TUnit>> DrawPoints(TUnit left, TUnit right, TUnit accuracy);
+        IEnumerable<Point2D<TUnit>> DrawPoints(TUnit left, TUnit right, TUnit accuracy);
     }
 
     /// <summary>
@@ -45,7 +45,7 @@ namespace Trivial.Maths
         /// </summary>
         /// <param name="point">The point to test.</param>
         /// <returns>true if the point is on the line; otherwise, false.</returns>
-        bool Contains(TwoDimensionalPoint<TUnit> point);
+        bool Contains(Point2D<TUnit> point);
     }
 
     /// <summary>
@@ -72,6 +72,6 @@ namespace Trivial.Maths
         /// </summary>
         /// <param name="point">The point to test.</param>
         /// <returns>true if the point is on the line; otherwise, false.</returns>
-        bool Contains(TwoDimensionalPoint<TUnit> point);
+        bool Contains(Point2D<TUnit> point);
     }
 }

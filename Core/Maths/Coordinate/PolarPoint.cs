@@ -194,7 +194,7 @@ namespace Trivial.Maths
         /// Converts a number to a polar point.
         /// </summary>
         /// <param name="value">The point.</param>
-        public static implicit operator PolarPoint(TwoDimensionalPoint<double> value)
+        public static implicit operator PolarPoint(Point2D<double> value)
         {
             if (value == null) return null;
             return new PolarPoint(Math.Sqrt(value.X * value.X + value.Y * value.Y), Math.Atan(value.Y / value.X));
@@ -204,7 +204,7 @@ namespace Trivial.Maths
         /// Converts a number to a polar point.
         /// </summary>
         /// <param name="value">The point.</param>
-        public static implicit operator PolarPoint(TwoDimensionalPoint<long> value)
+        public static implicit operator PolarPoint(Point2D<long> value)
         {
             if (value == null) return null;
             return new PolarPoint(Math.Sqrt(value.X * 1.0 * value.X + value.Y * 1.0 * value.Y), Math.Atan(value.Y * 1.0 / value.X));
@@ -214,7 +214,7 @@ namespace Trivial.Maths
         /// Converts a number to a polar point.
         /// </summary>
         /// <param name="value">The point.</param>
-        public static implicit operator PolarPoint(TwoDimensionalPoint<int> value)
+        public static implicit operator PolarPoint(Point2D<int> value)
         {
             if (value == null) return null;
             return new PolarPoint(Math.Sqrt(value.X * 1.0 * value.X + value.Y * 1.0 * value.Y), Math.Atan(value.Y * 1.0 / value.X));
@@ -224,10 +224,10 @@ namespace Trivial.Maths
         /// Converts a number to a polar point.
         /// </summary>
         /// <param name="value">The point.</param>
-        public static explicit operator DoubleTwoDimensionalPoint(PolarPoint value)
+        public static explicit operator DoublePoint2D(PolarPoint value)
         {
             if (value == null) return null;
-            return new DoubleTwoDimensionalPoint(value.Theta.Cos() * value.Radius, value.Theta.Sin() * value.Radius);
+            return new DoublePoint2D(value.Theta.Cos() * value.Radius, value.Theta.Sin() * value.Radius);
         }
     }
 }

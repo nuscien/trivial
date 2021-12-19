@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Runtime.Serialization;
 using System.Text;
@@ -12,49 +13,49 @@ namespace Trivial.Maths
     /// The line segment in coordinate.
     /// </summary>
     [DataContract]
-    public class LineSegment : IPixelOutline<double>, ICoordinateSinglePoint<double>, ICloneable, IEquatable<LineSegment>
+    public class LineSegmentF : IPixelOutline<float>, ICoordinateSinglePoint<float>, ICloneable, IEquatable<LineSegmentF>
     {
-        private DoublePoint2D start;
-        private DoublePoint2D end;
+        private PointF start;
+        private PointF end;
 
         /// <summary>
-        /// Initializes a new instance of the LineSegment class.
+        /// Initializes a new instance of the LineSegmentF class.
         /// </summary>
-        public LineSegment()
+        public LineSegmentF()
         {
             start = new();
             end = new();
         }
 
         /// <summary>
-        /// Initializes a new instance of the LineSegment class.
+        /// Initializes a new instance of the LineSegmentF class.
         /// </summary>
         /// <param name="start">The start point.</param>
         /// <param name="end">The end point.</param>
-        public LineSegment(DoublePoint2D start, DoublePoint2D end)
+        public LineSegmentF(PointF start, PointF end)
         {
-            this.start = start ?? new();
-            this.end = end ?? new();
+            this.start = start;
+            this.end = end;
         }
 
         /// <summary>
         /// Gets or sets the start point.
         /// </summary>
         [JsonIgnore(Condition = JsonIgnoreCondition.Always)]
-        public DoublePoint2D Start
+        public PointF Start
         {
             get => start;
-            set => start = value ?? new();
+            set => start = value;
         }
 
         /// <summary>
         /// Gets or sets the end point.
         /// </summary>
         [JsonIgnore(Condition = JsonIgnoreCondition.Always)]
-        public DoublePoint2D End
+        public PointF End
         {
             get => end;
-            set => end = value ?? new();
+            set => end = value;
         }
 
         /// <summary>
@@ -62,10 +63,10 @@ namespace Trivial.Maths
         /// </summary>
         [JsonPropertyName("x1")]
         [DataMember(Name = "x1")]
-        public double StartX
+        public float StartX
         {
             get => Start.X;
-            set => Start.X = value;
+            set => Start = new PointF(float.IsNaN(value) ? 0f : value, Start.Y);
         }
 
         /// <summary>
@@ -73,10 +74,10 @@ namespace Trivial.Maths
         /// </summary>
         [JsonPropertyName("y1")]
         [DataMember(Name = "y1")]
-        public double StartY
+        public float StartY
         {
             get => Start.Y;
-            set => Start.Y = value;
+            set => Start = new PointF(Start.X, float.IsNaN(value) ? 0f : value);
         }
 
         /// <summary>
@@ -84,10 +85,10 @@ namespace Trivial.Maths
         /// </summary>
         [JsonPropertyName("x2")]
         [DataMember(Name = "x2")]
-        public double EndX
+        public float EndX
         {
             get => End.X;
-            set => End.X = value;
+            set => End = new PointF(float.IsNaN(value) ? 0f : value, End.Y);
         }
 
         /// <summary>
@@ -95,17 +96,21 @@ namespace Trivial.Maths
         /// </summary>
         [JsonPropertyName("y2")]
         [DataMember(Name = "y2")]
-        public double EndY
+        public float EndY
         {
             get => End.Y;
-            set => End.Y = value;
+            set => End = new PointF(Start.X, float.IsNaN(value) ? 0f : value);
         }
 
         /// <summary>
         /// Gets the length.
         /// </summary>
         [JsonIgnore(Condition = JsonIgnoreCondition.Always)]
-        public double Length => Math.Sqrt(Math.Pow(End.X - Start.X, 2) + Math.Pow(End.Y - Start.Y, 2));
+#if NETCOREAPP3_1_OR_GREATER
+        public float Length => MathF.Sqrt(MathF.Pow(End.X - Start.X, 2) + MathF.Pow(End.Y - Start.Y, 2));
+#else
+        public float Length => (float)Math.Sqrt((float)Math.Pow(End.X - Start.X, 2) + (float)Math.Pow(End.Y - Start.Y, 2));
+#endif
 
         /// <summary>
         /// Returns a string that represents the line.
@@ -138,7 +143,7 @@ namespace Trivial.Maths
         /// </summary>
         /// <param name="x">X.</param>
         /// <returns>Y.</returns>
-        public double GetY(double x)
+        public float GetY(float x)
             => (x - StartX) / (StartX - EndX) * (StartY - EndY) + StartY;
 
         /// <summary>
@@ -146,7 +151,7 @@ namespace Trivial.Maths
         /// </summary>
         /// <param name="y">Y.</param>
         /// <returns>X.</returns>
-        public double GetX(double y)
+        public float GetX(float y)
             => (y - StartY) / (StartY - EndY) * (StartX - EndX) + StartX;
 
         /// <summary>
@@ -154,8 +159,8 @@ namespace Trivial.Maths
         /// </summary>
         /// <param name="point">The point to test.</param>
         /// <returns>true if the point is on the line; otherwise, false.</returns>
-        public bool Contains(Point2D<double> point)
-            => point != null && Math.Abs((point.Y - StartY) / (StartY - EndY) - (point.X - StartX) / (StartX - EndX)) < InternalHelper.DoubleAccuracy;
+        public bool Contains(Point2D<float> point)
+            => point != null && Math.Abs((point.Y - StartY) / (StartY - EndY) - (point.X - StartX) / (StartX - EndX)) < InternalHelper.SingleAccuracy;
 
         /// <summary>
         /// Generates point collection in the specific zone and accuracy.
@@ -164,7 +169,7 @@ namespace Trivial.Maths
         /// <param name="right">The right boundary.</param>
         /// <param name="accuracy">The step in x.</param>
         /// <returns>A point collection.</returns>
-        public IEnumerable<DoublePoint2D> DrawPoints(double left, double right, double accuracy)
+        public IEnumerable<PointF> DrawPoints(float left, float right, float accuracy)
             => InternalHelper.DrawPoints(this, left, right, accuracy);
 
         /// <summary>
@@ -174,8 +179,8 @@ namespace Trivial.Maths
         /// <param name="right">The right boundary.</param>
         /// <param name="accuracy">The step in x.</param>
         /// <returns>A point collection.</returns>
-        IEnumerable<Point2D<double>> IPixelOutline<double>.DrawPoints(double left, double right, double accuracy)
-            => InternalHelper.DrawPoints(this, left, right, accuracy);
+        IEnumerable<Point2D<float>> IPixelOutline<float>.DrawPoints(float left, float right, float accuracy)
+            => InternalHelper.DrawPoints(this, left, right, accuracy).Select(ele => new Point2D<float>(ele.X, ele.Y));
 
         /// <summary>
         /// Creates a new object that is a copy of the current instance.
@@ -196,7 +201,7 @@ namespace Trivial.Maths
         /// </summary>
         /// <param name="other">The object to compare with the current object.</param>
         /// <returns>true if the specified object is equal to the current object; otherwise, false.</returns>
-        public bool Equals(LineSegment other)
+        public bool Equals(LineSegmentF other)
         {
             if (other is null) return false;
             if (ReferenceEquals(this, other)) return true;
@@ -211,7 +216,7 @@ namespace Trivial.Maths
         public override bool Equals(object obj)
         {
             if (obj is null) return false;
-            return Equals(obj as LineSegment);
+            return Equals(obj as LineSegmentF);
         }
 
         /// <inheritdoc />
@@ -225,7 +230,7 @@ namespace Trivial.Maths
         /// <param name="leftValue">The left value to compare.</param>
         /// <param name="rightValue">The right value to compare.</param>
         /// <returns>true if they are same; otherwise, false.</returns>
-        public static bool operator ==(LineSegment leftValue, LineSegment rightValue)
+        public static bool operator ==(LineSegmentF leftValue, LineSegmentF rightValue)
         {
             if (leftValue is null && rightValue is null) return true;
             if (leftValue is null || rightValue is null) return false;
@@ -239,7 +244,7 @@ namespace Trivial.Maths
         /// <param name="leftValue">The left value to compare.</param>
         /// <param name="rightValue">The right value to compare.</param>
         /// <returns>true if they are different; otherwise, false.</returns>
-        public static bool operator !=(LineSegment leftValue, LineSegment rightValue)
+        public static bool operator !=(LineSegmentF leftValue, LineSegmentF rightValue)
         {
             if (leftValue is null && rightValue is null) return false;
             if (leftValue is null || rightValue is null) return true;
@@ -250,12 +255,12 @@ namespace Trivial.Maths
         /// Converts to a line.
         /// </summary>
         /// <param name="value">The line segment.</param>
-        public static explicit operator StraightLine(LineSegment value)
+        public static explicit operator StraightLineF(LineSegmentF value)
         {
             if (value is null) return null;
             var width = value.Start.X - value.End.X;
             var height = value.Start.Y - value.End.Y;
-            return new StraightLine(width, -height, value.Start.Y / height - value.Start.X / width);
+            return new(width, -height, value.Start.Y / height - value.Start.X / width);
         }
     }
 
@@ -263,13 +268,13 @@ namespace Trivial.Maths
     /// The straight line in coordinate.
     /// </summary>
     [DataContract]
-    public class StraightLine : IPixelOutline<double>, ICoordinateSinglePoint<double>, IEquatable<StraightLine>
+    public class StraightLineF : IPixelOutline<float>, ICoordinateSinglePoint<float>, IEquatable<StraightLineF>
     {
         /// <summary>
-        /// <para>Initializes a new instance of the StraightLine class.</para>
+        /// <para>Initializes a new instance of the StraightLineF class.</para>
         /// <para>General form: ax+by+c=0 (a≥0).</para>
         /// </summary>
-        public StraightLine()
+        public StraightLineF()
         {
             A = 1;
             B = -1;
@@ -279,28 +284,28 @@ namespace Trivial.Maths
         }
 
         /// <summary>
-        /// <para>Initializes a new instance of the StraightLine class.</para>
+        /// <para>Initializes a new instance of the StraightLineF class.</para>
         /// <para>General form: ax+by+c=0 (a≥0).</para>
         /// </summary>
         /// <param name="a">Parameter a.</param>
         /// <param name="b">Parameter b.</param>
         /// <param name="c">Parameter c.</param>
-        public StraightLine(double a, double b, double c)
+        public StraightLineF(float a, float b, float c)
         {
             A = a;
             B = b;
             C = c;
             Slope = GetSlope(a, b);
-            Intercept = b == 0 || double.IsNaN(b) ? double.NaN : -c / b;
+            Intercept = b == 0 || float.IsNaN(b) ? float.NaN : -c / b;
         }
 
         /// <summary>
-        /// <para>Initializes a new instance of the StraightLine class.</para>
+        /// <para>Initializes a new instance of the StraightLineF class.</para>
         /// <para>Slope intercept form: y=kx+b.</para>
         /// </summary>
         /// <param name="k">Parameter k.</param>
         /// <param name="b">Parameter b.</param>
-        public StraightLine(double k, double b)
+        public StraightLineF(float k, float b)
         {
             Slope = k;
             Intercept = b;
@@ -310,23 +315,21 @@ namespace Trivial.Maths
         }
 
         /// <summary>
-        /// <para>Initializes a new instance of the StraightLine class.</para>
+        /// <para>Initializes a new instance of the StraightLineF class.</para>
         /// </summary>
         /// <param name="line">The line segment to extend.</param>
-        public StraightLine(LineSegment line)
+        public StraightLineF(LineSegmentF line)
             : this(line.Start, line.End)
         {
         }
 
         /// <summary>
-        /// <para>Initializes a new instance of the StraightLine class.</para>
+        /// <para>Initializes a new instance of the StraightLineF class.</para>
         /// </summary>
         /// <param name="a">The first point.</param>
         /// <param name="b">The second point.</param>
-        public StraightLine(DoublePoint2D a, DoublePoint2D b)
+        public StraightLineF(PointF a, PointF b)
         {
-            if (a == null) a = new();
-            if (b == null) b = new();
             if (a.X == b.X && a.Y == b.Y)
             {
                 A = 1;
@@ -348,7 +351,7 @@ namespace Trivial.Maths
             B = sign * (a.X - b.X);
             C = sign * (a.Y * b.X - a.X * b.Y);
             Slope = GetSlope(A, B);
-            Intercept = B == 0 || double.IsNaN(B) ? double.NaN : -C / B;
+            Intercept = B == 0 || float.IsNaN(B) ? float.NaN : -C / B;
         }
 
         /// <summary>
@@ -356,40 +359,40 @@ namespace Trivial.Maths
         /// </summary>
         [JsonPropertyName("a")]
         [DataMember(Name = "a")]
-        public double A { get; }
+        public float A { get; }
 
         /// <summary>
         /// Gets or sets parameter b in general form.
         /// </summary>
         [JsonPropertyName("b")]
         [DataMember(Name = "b")]
-        public double B { get; }
+        public float B { get; }
 
         /// <summary>
         /// Gets or sets parameter c in general form.
         /// </summary>
         [JsonPropertyName("c")]
         [DataMember(Name = "c")]
-        public double C { get; }
+        public float C { get; }
 
         /// <summary>
         /// Gets or sets the slope. Parameter k in slope intercept form.
         /// </summary>
         [JsonIgnore(Condition = JsonIgnoreCondition.Always)]
-        public double Slope { get; }
+        public float Slope { get; }
 
         /// <summary>
         /// Gets or sets the intercept. Parameter b in slope intercept form.
         /// </summary>
         [JsonIgnore(Condition = JsonIgnoreCondition.Always)]
-        public double Intercept { get; }
+        public float Intercept { get; }
 
         /// <summary>
         /// Gets y by x.
         /// </summary>
         /// <param name="x">X.</param>
         /// <returns>Y.</returns>
-        public double GetY(double x)
+        public float GetY(float x)
             => -(A * x + C) / B;
 
         /// <summary>
@@ -397,7 +400,7 @@ namespace Trivial.Maths
         /// </summary>
         /// <param name="y">Y.</param>
         /// <returns>X.</returns>
-        public double GetX(double y)
+        public float GetX(float y)
             => -(B * y + C) / A;
 
         /// <summary>
@@ -405,8 +408,8 @@ namespace Trivial.Maths
         /// </summary>
         /// <param name="point">The point to test.</param>
         /// <returns>true if the point is on the line; otherwise, false.</returns>
-        public bool Contains(Point2D<double> point)
-            => point != null && Math.Abs(A * point.X + B * point.Y + C) < InternalHelper.DoubleAccuracy;
+        public bool Contains(Point2D<float> point)
+            => point != null && Math.Abs(A * point.X + B * point.Y + C) < InternalHelper.SingleAccuracy;
 
         /// <summary>
         /// Generates point collection in the specific zone and accuracy.
@@ -415,7 +418,7 @@ namespace Trivial.Maths
         /// <param name="right">The right boundary.</param>
         /// <param name="accuracy">The step in x.</param>
         /// <returns>A point collection.</returns>
-        public IEnumerable<DoublePoint2D> DrawPoints(double left, double right, double accuracy)
+        public IEnumerable<PointF> DrawPoints(float left, float right, float accuracy)
             => InternalHelper.DrawPoints(this, left, right, accuracy);
 
         /// <summary>
@@ -425,8 +428,8 @@ namespace Trivial.Maths
         /// <param name="right">The right boundary.</param>
         /// <param name="accuracy">The step in x.</param>
         /// <returns>A point collection.</returns>
-        IEnumerable<Point2D<double>> IPixelOutline<double>.DrawPoints(double left, double right, double accuracy)
-            => InternalHelper.DrawPoints(this, left, right, accuracy);
+        IEnumerable<Point2D<float>> IPixelOutline<float>.DrawPoints(float left, float right, float accuracy)
+            => InternalHelper.DrawPoints(this, left, right, accuracy).Select(ele => new Point2D<float>(ele.X, ele.Y));
 
         /// <summary>
         /// Returns a string that represents the line.
@@ -458,7 +461,7 @@ namespace Trivial.Maths
         /// </summary>
         /// <param name="other">The object to compare with the current object.</param>
         /// <returns>true if the specified object is equal to the current object; otherwise, false.</returns>
-        public bool Equals(StraightLine other)
+        public bool Equals(StraightLineF other)
         {
             if (other is null) return false;
             if (ReferenceEquals(this, other)) return true;
@@ -473,7 +476,7 @@ namespace Trivial.Maths
         public override bool Equals(object obj)
         {
             if (obj is null) return false;
-            return Equals(obj as StraightLine);
+            return Equals(obj as StraightLineF);
         }
 
         /// <inheritdoc />
@@ -487,7 +490,7 @@ namespace Trivial.Maths
         /// <param name="leftValue">The left value to compare.</param>
         /// <param name="rightValue">The right value to compare.</param>
         /// <returns>true if they are same; otherwise, false.</returns>
-        public static bool operator ==(StraightLine leftValue, StraightLine rightValue)
+        public static bool operator ==(StraightLineF leftValue, StraightLineF rightValue)
         {
             if (leftValue is null && rightValue is null) return true;
             if (leftValue is null || rightValue is null) return false;
@@ -501,7 +504,7 @@ namespace Trivial.Maths
         /// <param name="leftValue">The left value to compare.</param>
         /// <param name="rightValue">The right value to compare.</param>
         /// <returns>true if they are different; otherwise, false.</returns>
-        public static bool operator !=(StraightLine leftValue, StraightLine rightValue)
+        public static bool operator !=(StraightLineF leftValue, StraightLineF rightValue)
         {
             if (leftValue is null && rightValue is null) return false;
             if (leftValue is null || rightValue is null) return true;
@@ -512,16 +515,16 @@ namespace Trivial.Maths
         /// Converts to angle.
         /// </summary>
         /// <param name="value">The line.</param>
-        public static explicit operator Angle(StraightLine value)
+        public static explicit operator Angle(StraightLineF value)
             => value is null ? new Angle(0) : Geometry.Angle(value);
 
-        private static double GetSlope(double a, double b)
+        private static float GetSlope(float a, float b)
         {
-            if (b == 0 || double.IsNaN(b) || (b <= InternalHelper.DoubleAccuracy && b >= -InternalHelper.DoubleAccuracy))
+            if (b == 0 || float.IsNaN(b) || (b <= InternalHelper.SingleAccuracy && b >= -InternalHelper.SingleAccuracy))
             {
-                if (a > InternalHelper.DoubleAccuracy) return double.PositiveInfinity;
-                if (a < -InternalHelper.DoubleAccuracy) return double.NegativeInfinity;
-                return double.NaN;
+                if (a > InternalHelper.SingleAccuracy) return float.PositiveInfinity;
+                if (a < -InternalHelper.SingleAccuracy) return float.NegativeInfinity;
+                return float.NaN;
             }
 
             return -a / b;

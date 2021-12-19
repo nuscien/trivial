@@ -20,7 +20,7 @@ namespace Trivial.Maths
         /// <param name="c">The c parameter of plane.</param>
         /// <param name="d">The d parameter of plane.</param>
         /// <returns>The distance.</returns>
-        public static double Distance(DoubleThreeDimensionalPoint point, double a, double b, double c, double d)
+        public static double Distance(DoublePoint3D point, double a, double b, double c, double d)
         {
             return Math.Abs(a * point.X + b * point.Y + c * point.Z + d) / Math.Sqrt(a * a + b * b + c * c);
         }

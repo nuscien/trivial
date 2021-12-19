@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Runtime.Serialization;
 using System.Text;
@@ -9,90 +10,54 @@ using System.Threading.Tasks;
 namespace Trivial.Maths
 {
     /// <summary>
-    /// The relationship between 2 circles.
-    /// </summary>
-    public enum RelationshipBetweenCircles
-    {
-        /// <summary>
-        /// Congruence.
-        /// </summary>
-        Congruence = 0,
-
-        /// <summary>
-        /// Separation.
-        /// </summary>
-        Separation = 1,
-
-        /// <summary>
-        /// Externally tangent.
-        /// </summary>
-        ExternallyTangent = 2,
-
-        /// <summary>
-        /// Intersection.
-        /// </summary>
-        Intersection = 3,
-
-        /// <summary>
-        /// Inscribe.
-        /// </summary>
-        Inscribe = 4,
-
-        /// <summary>
-        /// Inclusion
-        /// </summary>
-        Inclusion = 5
-    }
-
-    /// <summary>
     /// The circle in coordinate.
     /// </summary>
     [DataContract]
-    public class CoordinateCircle : IPixelOutline<double>, ICoordinateTuplePoint<double>, ICloneable, IEquatable<CoordinateCircle>
+    public class CoordinateCircleF : IPixelOutline<float>, ICoordinateTuplePoint<float>, ICloneable, IEquatable<CoordinateCircleF>
     {
-        private DoublePoint2D center;
-        private double radius;
+        private PointF center;
+        private float radius;
 
         /// <summary>
-        /// Initializes a new instance of the CoordinateCircle class.
+        /// Initializes a new instance of the CoordinateCircleF class.
         /// </summary>
-        public CoordinateCircle()
+        public CoordinateCircleF()
         {
             center = new();
             radius = 0;
         }
 
         /// <summary>
-        /// Initializes a new instance of the CoordinateCircle class.
+        /// Initializes a new instance of the CoordinateCircleF class.
         /// </summary>
         /// <param name="r">The radius.</param>
-        public CoordinateCircle(double r)
+        public CoordinateCircleF(float r)
         {
             center = new(0, 0);
-            radius = double.IsNaN(r) ? 0 : Math.Abs(r);
+            radius = float.IsNaN(r) ? 0 : Math.Abs(r);
         }
 
         /// <summary>
-        /// Initializes a new instance of the CoordinateCircle class.
+        /// Initializes a new instance of the CoordinateCircleF class.
         /// </summary>
         /// <param name="x">The x of center point.</param>
         /// <param name="y">The y of center point.</param>
         /// <param name="r">The radius.</param>
-        public CoordinateCircle(double x, double y, double r)
+        public CoordinateCircleF(float x, float y, float r)
         {
             center = new(x, y);
-            radius = double.IsNaN(r) ? 0 : Math.Abs(r);
+            radius = float.IsNaN(r) ? 0 : Math.Abs(r);
         }
 
         /// <summary>
-        /// Initializes a new instance of the CoordinateCircle class.
+        /// Initializes a new instance of the CoordinateCircleF class.
         /// </summary>
         /// <param name="center">The center point.</param>
         /// <param name="r">The radius.</param>
-        public CoordinateCircle(DoublePoint2D center, double r)
+        public CoordinateCircleF(PointF center, float r)
         {
-            this.center = center ?? new();
-            radius = double.IsNaN(r) ? 0 : Math.Abs(r);
+            this.center = center;
+            radius = float.IsNaN(r) ? 0 : Math.Abs(r);
         }
 
         /// <summary>
@@ -101,20 +66,20 @@ namespace Trivial.Maths
         /// <exception cref="InvalidOperationException">Radius was less than 0.</exception>
         [JsonPropertyName("r")]
         [DataMember(Name = "r")]
-        public double Radius
+        public float Radius
         {
             get => radius;
-            set => radius = !double.IsNaN(value) && value >= 0 ? value : throw new InvalidOperationException("Radius should equal to or be greater than 0.");
+            set => radius = !float.IsNaN(value) && value >= 0 ? value : throw new InvalidOperationException("Radius should equal to or be greater than 0.");
         }
 
         /// <summary>
         /// Gets or sets the center point.
         /// </summary>
         [JsonIgnore(Condition = JsonIgnoreCondition.Always)]
-        public DoublePoint2D Center
+        public PointF Center
         {
             get => center;
-            set => center = value ?? new();
+            set => center = value;
         }
 
         /// <summary>
@@ -122,10 +87,10 @@ namespace Trivial.Maths
         /// </summary>
         [JsonPropertyName("x")]
         [DataMember(Name = "x")]
-        public double CenterX
+        public float CenterX
         {
             get => Center.X;
-            set => Center.X = value;
+            set => Center = new PointF(float.IsNaN(value) ? 0f : value, Center.Y);
         }
 
         /// <summary>
@@ -133,35 +98,39 @@ namespace Trivial.Maths
         /// </summary>
         [JsonPropertyName("y")]
         [DataMember(Name = "y")]
-        public double CenterY
+        public float CenterY
         {
             get => Center.Y;
-            set => Center.Y = value;
+            set => Center = new PointF(Center.X, float.IsNaN(value) ? 0f : value);
         }
 
         /// <summary>
         /// Gets the perimeter.
         /// </summary>
-        public double Perimeter()
-            => 2 * Math.PI * Radius;
+        public float Perimeter()
+            => (float)(2 * Math.PI * Radius);
 
         /// <summary>
         /// Gets the area.
         /// </summary>
-        public double Area()
-            => Math.PI * Radius * Radius;
+        public float Area()
+            => (float)(Math.PI * Radius * Radius);
 
         /// <summary>
         /// Gets y by x.
         /// </summary>
         /// <param name="x">X.</param>
         /// <returns>Y.</returns>
-        public (double, double) GetY(double x)
+        public (float, float) GetY(float x)
         {
             var delta = x - CenterX;
-            var r = delta == 0 ? Radius : Math.Sqrt(Radius * Radius - delta * delta);
-            if (double.IsNaN(r) || r > Radius) return (double.NaN, double.NaN);
-            if (r == 0) return (CenterY, double.NaN);
+#if NETCOREAPP3_1_OR_GREATER
+            var r = delta == 0 ? Radius : MathF.Sqrt(Radius * Radius - delta * delta);
+#else
+            var r = delta == 0 ? Radius : (float)Math.Sqrt(Radius * Radius - delta * delta);
+#endif
+            if (float.IsNaN(r) || r > Radius) return (float.NaN, float.NaN);
+            if (r == 0) return (CenterY, float.NaN);
             return (CenterY + r, CenterY - r);
         }
 
@@ -170,12 +139,16 @@ namespace Trivial.Maths
         /// </summary>
         /// <param name="y">Y.</param>
         /// <returns>X.</returns>
-        public (double, double) GetX(double y)
+        public (float, float) GetX(float y)
         {
             var delta = y - CenterY;
-            var r = delta == 0 ? Radius : Math.Sqrt(Radius * Radius - delta * delta);
-            if (double.IsNaN(r) || r > Radius) return (double.NaN, double.NaN);
-            if (r == 0) return (CenterY, double.NaN);
+#if NETCOREAPP3_1_OR_GREATER
+            var r = delta == 0 ? Radius : MathF.Sqrt(Radius * Radius - delta * delta);
+#else
+            var r = delta == 0 ? Radius : (float)Math.Sqrt(Radius * Radius - delta * delta);
+#endif
+            if (float.IsNaN(r) || r > Radius) return (float.NaN, float.NaN);
+            if (r == 0) return (CenterY, float.NaN);
             return (CenterX + r, CenterX - r);
         }
 
@@ -184,15 +157,23 @@ namespace Trivial.Maths
         /// </summary>
         /// <param name="point">The point to test.</param>
         /// <returns>true if the point is on the line; otherwise, false.</returns>
-        public bool Contains(Point2D<double> point)
-            => point != null && Math.Abs(Math.Pow(point.X - CenterX, 2) + Math.Pow(point.Y - CenterY, 2) - Radius * Radius) < InternalHelper.DoubleAccuracy;
+        public bool Contains(Point2D<float> point)
+            => point != null && Math.Abs(Math.Pow(point.X - CenterX, 2) + Math.Pow(point.Y - CenterY, 2) - Radius * Radius) < InternalHelper.SingleAccuracy;
+
+        /// <summary>
+        /// Test if a point is on the line.
+        /// </summary>
+        /// <param name="point">The point to test.</param>
+        /// <returns>true if the point is on the line; otherwise, false.</returns>
+        public bool Contains(PointF point)
+            => Math.Abs(Math.Pow(point.X - CenterX, 2) + Math.Pow(point.Y - CenterY, 2) - Radius * Radius) < InternalHelper.SingleAccuracy;
 
         /// <summary>
         /// Generates point collection in the specific zone and accuracy.
         /// </summary>
         /// <param name="accuracy">The step in x.</param>
         /// <returns>A point collection.</returns>
-        public IEnumerable<DoublePoint2D> DrawPoints(double accuracy)
+        public IEnumerable<PointF> DrawPoints(float accuracy)
             => InternalHelper.DrawPoints(this, CenterX - Radius, CenterX + Radius, accuracy);
 
         /// <summary>
@@ -202,7 +183,7 @@ namespace Trivial.Maths
         /// <param name="right">The right boundary.</param>
         /// <param name="accuracy">The step in x.</param>
         /// <returns>A point collection.</returns>
-        public IEnumerable<DoublePoint2D> DrawPoints(double left, double right, double accuracy)
+        public IEnumerable<PointF> DrawPoints(float left, float right, float accuracy)
             => InternalHelper.DrawPoints(this, left, right, accuracy);
 
         /// <summary>
@@ -212,8 +193,8 @@ namespace Trivial.Maths
         /// <param name="right">The right boundary.</param>
         /// <param name="accuracy">The step in x.</param>
         /// <returns>A point collection.</returns>
-        IEnumerable<Point2D<double>> IPixelOutline<double>.DrawPoints(double left, double right, double accuracy)
-            => InternalHelper.DrawPoints(this, left, right, accuracy);
+        IEnumerable<Point2D<float>> IPixelOutline<float>.DrawPoints(float left, float right, float accuracy)
+            => InternalHelper.DrawPoints(this, left, right, accuracy).Select(ele => new Point2D<float>(ele.X, ele.Y));
 
         /// <summary>
         /// Returns a string that represents the line.
@@ -246,7 +227,7 @@ namespace Trivial.Maths
         /// </summary>
         /// <returns>An instance copied from current one.</returns>
         public CoordinateCircle Clone()
-            => new(center, double.IsNaN(Radius) ? 0d : Radius);
+            => new(center, float.IsNaN(Radius) ? 0d : Radius);
 
         /// <summary>
         /// Creates a new object that is a copy of the current instance.
@@ -260,7 +241,7 @@ namespace Trivial.Maths
         /// </summary>
         /// <param name="other">The object to compare with the current object.</param>
         /// <returns>true if the specified object is equal to the current object; otherwise, false.</returns>
-        public bool Equals(CoordinateCircle other)
+        public bool Equals(CoordinateCircleF other)
         {
             if (other is null) return false;
             if (ReferenceEquals(this, other)) return true;
@@ -272,7 +253,7 @@ namespace Trivial.Maths
         /// </summary>
         /// <param name="other">The object to compare with the current object.</param>
         /// <returns>true if the specified object is equal to the current object; otherwise, false.</returns>
-        public bool Equals(CoordinateEllipse other)
+        public bool Equals(CoordinateEllipseF other)
             => other is not null && CenterX == other.CenterX && CenterY == other.CenterY && Radius == other.A && Radius == other.B;
 
         /// <summary>
@@ -283,8 +264,8 @@ namespace Trivial.Maths
         public override bool Equals(object obj)
         {
             if (obj is null) return false;
-            if (obj is CoordinateEllipse ellipse) Equals(ellipse);
-            return Equals(obj as CoordinateCircle);
+            if (obj is CoordinateEllipseF ellipse) Equals(ellipse);
+            return Equals(obj as CoordinateCircleF);
         }
 
         /// <inheritdoc />
@@ -298,7 +279,7 @@ namespace Trivial.Maths
         /// <param name="leftValue">The left value to compare.</param>
         /// <param name="rightValue">The right value to compare.</param>
         /// <returns>true if they are same; otherwise, false.</returns>
-        public static bool operator ==(CoordinateCircle leftValue, CoordinateCircle rightValue)
+        public static bool operator ==(CoordinateCircleF leftValue, CoordinateCircleF rightValue)
         {
             if (leftValue is null && rightValue is null) return true;
             if (leftValue is null || rightValue is null) return false;
@@ -312,7 +293,7 @@ namespace Trivial.Maths
         /// <param name="leftValue">The left value to compare.</param>
         /// <param name="rightValue">The right value to compare.</param>
         /// <returns>true if they are different; otherwise, false.</returns>
-        public static bool operator !=(CoordinateCircle leftValue, CoordinateCircle rightValue)
+        public static bool operator !=(CoordinateCircleF leftValue, CoordinateCircleF rightValue)
         {
             if (leftValue is null && rightValue is null) return false;
             if (leftValue is null || rightValue is null) return true;
@@ -323,7 +304,7 @@ namespace Trivial.Maths
         /// Converts to angle.
         /// </summary>
         /// <param name="value">The line.</param>
-        public static explicit operator CoordinateEllipse(CoordinateCircle value)
+        public static explicit operator CoordinateEllipseF(CoordinateCircleF value)
             => value is null ? new() : new(value.Center, value.Radius, value.Radius);
 
         /// <summary>
@@ -333,23 +314,20 @@ namespace Trivial.Maths
         /// <param name="b">The second point.</param>
         /// <param name="c">The third point.</param>
         /// <returns>The circle; or null, if failed.</returns>
-        public static CoordinateCircle ByPeriphery(DoublePoint2D a, DoublePoint2D b, DoublePoint2D c)
+        public static CoordinateCircleF ByPeriphery(PointF a, PointF b, PointF c)
         {
-            if (a == null) a = new();
-            if (b == null) b = new();
-            if (c == null) c = new();
             var x1 = b.X - a.X;
             var y1 = b.Y - a.Y;
             var x2 = c.X - a.X;
             var y2 = c.Y - a.Y;
             var z1 = x1 * (a.X + b.X) + y1 * (a.Y + b.Y);
             var z2 = x2 * (a.X + c.X) + y2 * (a.Y + c.Y);
-            var d = 2.0 * (x1 * (c.Y - b.Y) - y1 * (c.X - b.X));
-            if (Math.Abs(d) < InternalHelper.DoubleAccuracy) return null;
-            var center = new DoublePoint2D(
+            var d = 2F * (x1 * (c.Y - b.Y) - y1 * (c.X - b.X));
+            if (Math.Abs(d) < InternalHelper.SingleAccuracy) return null;
+            var center = new PointF(
                 (y2 * z1 - y1 * z2) / d,
                 (x1 * z2 - x2 * z1) / d);
-            return new CoordinateCircle(center, Geometry.Distance(a, center));
+            return new CoordinateCircleF(center, Geometry.Distance(a, center));
         }
 
         /// <summary>
@@ -359,14 +337,14 @@ namespace Trivial.Maths
         /// <param name="b">The second point.</param>
         /// <param name="c">The third point.</param>
         /// <returns>The circle.</returns>
-        public static CoordinateCircle Incircle(DoublePoint2D a, DoublePoint2D b, DoublePoint2D c)
+        public static CoordinateCircleF Incircle(PointF a, PointF b, PointF c)
         {
             var dx31 = c.X - a.X;
             var dy31 = c.Y - a.Y;
             var dx21 = b.X - a.X;
             var dy21 = b.Y - a.Y;
-            var d31 = Math.Sqrt(dx31 * dx31 + dy31 * dy31);
-            var d21 = Math.Sqrt(dx21 * dx21 + dy21 * dy21);
+            var d31 = (float)Math.Sqrt(dx31 * dx31 + dy31 * dy31);
+            var d21 = (float)Math.Sqrt(dx21 * dx21 + dy21 * dy21);
             var a1 = dx31 * d21 - dx21 * d31;
             var b1 = dy31 * d21 - dy21 * d31;
             var c1 = a1 * a.X + b1 * a.Y;
@@ -374,14 +352,14 @@ namespace Trivial.Maths
             var dy32 = c.Y - b.Y;
             var dx12 = -dx21;
             var dy12 = -dy21;
-            var d32 = Math.Sqrt(dx32 * dx32 + dy32 * dy32);
+            var d32 = (float)Math.Sqrt(dx32 * dx32 + dy32 * dy32);
             var d12 = d21;
             var a2 = dx12 * d32 - dx32 * d12;
             var b2 = dy12 * d32 - dy32 * d12;
             var c2 = a2 * b.X + b2 * b.Y;
             var x = (c1 * b2 - c2 * b1) / (a1 * b2 - a2 * b1);
             var y = (c2 * a1 - c1 * a2) / (a1 * b2 - a2 * b1);
-            return new CoordinateCircle(x, y, Math.Abs(dy21 * x - dx21 * y + dx21 * a.Y - dy21 * a.X) / d21);
+            return new CoordinateCircleF(x, y, (float)Math.Abs(dy21 * x - dx21 * y + dx21 * a.Y - dy21 * a.X) / d21);
         }
     }
 
@@ -389,16 +367,16 @@ namespace Trivial.Maths
     /// Ellipse in coordinate.
     /// </summary>
     [DataContract]
-    public class CoordinateEllipse : IPixelOutline<double>, ICoordinateTuplePoint<double>, ICloneable, IEquatable<CoordinateEllipse>
+    public class CoordinateEllipseF : IPixelOutline<float>, ICoordinateTuplePoint<float>, ICloneable, IEquatable<CoordinateEllipseF>
     {
-        private DoublePoint2D center;
-        private double radiusA;
-        private double radiusB;
+        private PointF center;
+        private float radiusA;
+        private float radiusB;
 
         /// <summary>
-        /// Initializes a new instance of the CoordinateEllipse class.
+        /// Initializes a new instance of the CoordinateEllipseF class.
         /// </summary>
-        public CoordinateEllipse()
+        public CoordinateEllipseF()
         {
             Alpha = new Angle();
             center = new();
@@ -407,11 +385,11 @@ namespace Trivial.Maths
         }
 
         /// <summary>
-        /// Initializes a new instance of the CoordinateEllipse class.
+        /// Initializes a new instance of the CoordinateEllipseF class.
         /// </summary>
         /// <param name="a">The longer radius.</param>
         /// <param name="b">The shorter radius.</param>
-        public CoordinateEllipse(double a, double b)
+        public CoordinateEllipseF(float a, float b)
         {
             Alpha = new Angle();
             center = new(0, 0);
@@ -419,13 +397,13 @@ namespace Trivial.Maths
         }
 
         /// <summary>
-        /// Initializes a new instance of the CoordinateEllipse class.
+        /// Initializes a new instance of the CoordinateEllipseF class.
         /// </summary>
         /// <param name="x">The x of center point.</param>
         /// <param name="y">The y of center point.</param>
         /// <param name="a">The longer radius.</param>
         /// <param name="b">The shorter radius.</param>
-        public CoordinateEllipse(double x, double y, double a, double b)
+        public CoordinateEllipseF(float x, float y, float a, float b)
         {
             Alpha = new Angle();
             center = new(x, y);
@@ -433,12 +411,12 @@ namespace Trivial.Maths
         }
 
         /// <summary>
-        /// Initializes a new instance of the CoordinateEllipse class.
+        /// Initializes a new instance of the CoordinateEllipseF class.
         /// </summary>
         /// <param name="center">The center point.</param>
         /// <param name="a">The longer radius.</param>
         /// <param name="b">The shorter radius.</param>
-        public CoordinateEllipse(DoublePoint2D center, double a, double b)
+        public CoordinateEllipseF(PointF center, float a, float b)
         {
             Alpha = new Angle();
             this.center = center;
@@ -446,14 +424,14 @@ namespace Trivial.Maths
         }
 
         /// <summary>
-        /// Initializes a new instance of the CoordinateEllipse class.
+        /// Initializes a new instance of the CoordinateEllipseF class.
         /// </summary>
         /// <param name="alpha">The angle between X-axis and the line of focuses.</param>
         /// <param name="x">The x of center point.</param>
         /// <param name="y">The y of center point.</param>
         /// <param name="a">The longer radius.</param>
         /// <param name="b">The shorter radius.</param>
-        public CoordinateEllipse(Angle alpha, double x, double y, double a, double b)
+        public CoordinateEllipseF(Angle alpha, float x, float y, float a, float b)
         {
             Alpha = alpha;
             center = new(x, y);
@@ -461,13 +439,13 @@ namespace Trivial.Maths
         }
 
         /// <summary>
-        /// Initializes a new instance of the CoordinateEllipse class.
+        /// Initializes a new instance of the CoordinateEllipseF class.
         /// </summary>
         /// <param name="alpha">The angle between X-axis and the line of focuses.</param>
         /// <param name="center">The center point.</param>
         /// <param name="a">The longer radius.</param>
         /// <param name="b">The shorter radius.</param>
-        public CoordinateEllipse(Angle alpha, DoublePoint2D center, double a, double b)
+        public CoordinateEllipseF(Angle alpha, PointF center, float a, float b)
         {
             Alpha = alpha;
             this.center = center;
@@ -487,7 +465,7 @@ namespace Trivial.Maths
         /// <exception cref="InvalidOperationException">The value was less than 0.</exception>
         [JsonPropertyName("a")]
         [DataMember(Name = "a")]
-        public double A
+        public float A
         {
             get
             {
@@ -496,7 +474,7 @@ namespace Trivial.Maths
 
             set
             {
-                if (double.IsNaN(value) || value < 0) throw new InvalidOperationException("The value should equal to or be greater than 0.");
+                if (float.IsNaN(value) || value < 0) throw new InvalidOperationException("The value should equal to or be greater than 0.");
                 if (value >= radiusB)
                 {
                     radiusA = value;
@@ -514,7 +492,7 @@ namespace Trivial.Maths
         /// <exception cref="InvalidOperationException">The value was less than 0.</exception>
         [JsonPropertyName("b")]
         [DataMember(Name = "b")]
-        public double B
+        public float B
         {
             get
             {
@@ -523,7 +501,7 @@ namespace Trivial.Maths
 
             set
             {
-                if (double.IsNaN(value) || value < 0) throw new InvalidOperationException("The value should equal to or be greater than 0.");
+                if (float.IsNaN(value) || value < 0) throw new InvalidOperationException("The value should equal to or be greater than 0.");
                 if (value <= radiusA)
                 {
                     radiusB = value;
@@ -539,10 +517,10 @@ namespace Trivial.Maths
         /// Gets or sets the center point.
         /// </summary>
         [JsonIgnore(Condition = JsonIgnoreCondition.Always)]
-        public DoublePoint2D Center
+        public PointF Center
         {
             get => center;
-            set => center = value ?? new();
+            set => center = value;
         }
 
         /// <summary>
@@ -550,10 +528,10 @@ namespace Trivial.Maths
         /// </summary>
         [JsonPropertyName("x")]
         [DataMember(Name = "x")]
-        public double CenterX
+        public float CenterX
         {
             get => Center.X;
-            set => Center.X = value;
+            set => Center = new PointF(float.IsNaN(value) ? 0f : value, Center.Y);
         }
 
         /// <summary>
@@ -561,50 +539,70 @@ namespace Trivial.Maths
         /// </summary>
         [JsonPropertyName("y")]
         [DataMember(Name = "y")]
-        public double CenterY
+        public float CenterY
         {
             get => Center.Y;
-            set => Center.Y = value;
+            set => Center = new PointF(Center.X, float.IsNaN(value) ? 0f : value);
         }
 
         /// <summary>
         /// Gets the eccentricity.
         /// </summary>
         [JsonIgnore(Condition = JsonIgnoreCondition.Always)]
-        public double Eccentricity => Math.Sqrt(1 - Math.Pow(B / A, 2));
+#if NETCOREAPP3_1_OR_GREATER
+        public float Eccentricity => MathF.Sqrt(1 - MathF.Pow(B / A, 2));
+#else
+        public float Eccentricity => (float)Math.Sqrt(1 - Math.Pow(B / A, 2));
+#endif
 
         /// <summary>
         /// Gets the middle value h.
         /// </summary>
         [JsonIgnore(Condition = JsonIgnoreCondition.Always)]
-        public double H => Math.Pow(A - B, 2) / Math.Pow(A + B, 2);
+#if NETCOREAPP3_1_OR_GREATER
+        public float H => MathF.Pow(A - B, 2) / MathF.Pow(A + B, 2);
+#else
+        public float H => (float)Math.Pow(A - B, 2) / (float)Math.Pow(A + B, 2);
+#endif
 
         /// <summary>
         /// Gets the focal distance.
         /// </summary>
         [JsonIgnore(Condition = JsonIgnoreCondition.Always)]
-        public double C => Math.Sqrt(A * A - B * B);
+#if NETCOREAPP3_1_OR_GREATER
+        public float C => MathF.Sqrt(A * A - B * B);
+#else
+        public float C => (float)Math.Sqrt(A * A - B * B);
+#endif
 
         /// <summary>
         /// Gets the perimeter.
         /// </summary>
-        public double Perimeter()
+        public float Perimeter()
         {
             var h3 = H * 3;
-            return Math.PI * (A + B) * (1 + h3 / (10 + Math.Sqrt(4 - h3)));
+#if NETCOREAPP3_1_OR_GREATER
+            return MathF.PI * (A + B) * (1 + h3 / (10 + MathF.Sqrt(4 - h3)));
+#else
+            return (float)Math.PI * (A + B) * (1 + h3 / (10 + (float)Math.Sqrt(4 - h3)));
+#endif
         }
 
         /// <summary>
         /// Gets the area.
         /// </summary>
-        public double Area()
-            => Math.PI * A * B;
+        public float Area()
+#if NETCOREAPP3_1_OR_GREATER
+            => MathF.PI * A * B;
+#else
+            => (float)Math.PI * A * B;
+#endif
 
         /// <summary>
         /// Gets focuses.
         /// </summary>
         /// <returns>The focuses.</returns>
-        public (DoublePoint2D, DoublePoint2D) Focuses()
+        public (PointF, PointF) Focuses()
         {
             var c = C;
             if (Alpha.Degrees == 0 || Alpha.Degrees == 360)
@@ -612,8 +610,8 @@ namespace Trivial.Maths
             if (Alpha.Degrees == 90 || Alpha.Degrees == 270)
                 return (new(center.X, center.Y - c), new(center.X, center.Y + c));
             return (
-                Geometry.Rotate(new DoublePoint2D(center.X - c, center.Y), null, Alpha),
-                Geometry.Rotate(new DoublePoint2D(center.X + c, center.Y), null, Alpha));
+                Geometry.Rotate(new PointF(center.X - c, center.Y), new PointF(0F, 0F), Alpha),
+                Geometry.Rotate(new PointF(center.X + c, center.Y), new PointF(0F, 0F), Alpha));
         }
 
         /// <summary>
@@ -621,13 +619,17 @@ namespace Trivial.Maths
         /// </summary>
         /// <param name="x">X.</param>
         /// <returns>Y.</returns>
-        public (double, double) GetY(double x)
+        public (float, float) GetY(float x)
         {
-            x = Geometry.Rotate(new DoublePoint2D(x, 0), center, Alpha).X;
+            x = Geometry.Rotate(new PointF(x, 0), center, Alpha).X;
             var width = x - CenterX;
-            var y = Math.Sqrt((1 - width * width / A * A) * B * B);
-            if (double.IsNaN(y)) return (double.NaN, double.NaN);
-            if (y == 0) return (y, double.NaN);
+#if NETCOREAPP3_1_OR_GREATER
+            var y = MathF.Sqrt((1 - width * width / A * A) * B * B);
+#else
+            var y = (float)Math.Sqrt((1 - width * width / A * A) * B * B);
+#endif
+            if (float.IsNaN(y)) return (float.NaN, float.NaN);
+            if (y == 0) return (y, float.NaN);
             return (-y, y);
         }
 
@@ -636,13 +638,17 @@ namespace Trivial.Maths
         /// </summary>
         /// <param name="y">Y.</param>
         /// <returns>X.</returns>
-        public (double, double) GetX(double y)
+        public (float, float) GetX(float y)
         {
-            y = Geometry.Rotate(new DoublePoint2D(0, y), center, Alpha).Y;
+            y = Geometry.Rotate(new PointF(0, y), center, Alpha).Y;
             var height = y - CenterY;
-            var x = Math.Sqrt((1 - height * height / B * B) * A * A);
-            if (double.IsNaN(x)) return (double.NaN, double.NaN);
-            if (x == 0) return (x, double.NaN);
+#if NETCOREAPP3_1_OR_GREATER
+            var x = MathF.Sqrt((1 - height * height / B * B) * A * A);
+#else
+            var x = (float)Math.Sqrt((1 - height * height / B * B) * A * A);
+#endif
+            if (float.IsNaN(x)) return (float.NaN, float.NaN);
+            if (x == 0) return (x, float.NaN);
             return (-x, x);
         }
 
@@ -651,14 +657,21 @@ namespace Trivial.Maths
         /// </summary>
         /// <param name="point">The point to test.</param>
         /// <returns>true if the point is on the line; otherwise, false.</returns>
-        public bool Contains(Point2D<double> point)
+        public bool Contains(Point2D<float> point)
+            => point is not null && Contains(new PointF(point.X, point.Y));
+
+        /// <summary>
+        /// Test if a point is on the line.
+        /// </summary>
+        /// <param name="point">The point to test.</param>
+        /// <returns>true if the point is on the line; otherwise, false.</returns>
+        public bool Contains(PointF point)
         {
-            if (point == null) return false;
             if (Alpha.AbsDegrees > 0)
                 point = Geometry.Rotate(point, center, Alpha);
             var width = point.X - CenterX;
             var height = point.Y - CenterY;
-            return Math.Abs(width * width + height * height - 1) < InternalHelper.DoubleAccuracy;
+            return Math.Abs(width * width + height * height - 1) < InternalHelper.SingleAccuracy;
         }
 
         /// <summary>
@@ -666,18 +679,18 @@ namespace Trivial.Maths
         /// </summary>
         /// <param name="accuracy">The step in x.</param>
         /// <returns>A point collection.</returns>
-        public IEnumerable<DoublePoint2D> DrawPoints(double accuracy)
+        public IEnumerable<PointF> DrawPoints(float accuracy)
         {
             if (accuracy < 0) accuracy = Math.Abs(accuracy);
-            if (accuracy < InternalHelper.DoubleAccuracy) accuracy = InternalHelper.DoubleAccuracy;
+            if (accuracy < InternalHelper.SingleAccuracy) accuracy = InternalHelper.SingleAccuracy;
             for (var x = -A; x <= A; x += accuracy)
             {
                 var width = x - CenterX;
-                var y = Math.Sqrt((1 - width * width / A * A) * B * B);
-                if (double.IsNaN(y)) continue;
-                if (y == 0) yield return Geometry.Rotate(new Point2D<double>(x, y), center, Alpha);
-                yield return Geometry.Rotate(new Point2D<double>(x, -y), center, Alpha);
-                yield return Geometry.Rotate(new Point2D<double>(x, y), center, Alpha);
+                var y = (float)Math.Sqrt((1 - width * width / A * A) * B * B);
+                if (float.IsNaN(y)) continue;
+                if (y == 0) yield return Geometry.Rotate(new PointF(x, y), center, Alpha);
+                yield return Geometry.Rotate(new PointF(x, -y), center, Alpha);
+                yield return Geometry.Rotate(new PointF(x, y), center, Alpha);
             }
         }
 
@@ -688,7 +701,7 @@ namespace Trivial.Maths
         /// <param name="right">The right boundary.</param>
         /// <param name="accuracy">The step in x.</param>
         /// <returns>A point collection.</returns>
-        public IEnumerable<DoublePoint2D> DrawPoints(double left, double right, double accuracy)
+        public IEnumerable<PointF> DrawPoints(float left, float right, float accuracy)
             => InternalHelper.DrawPoints(this, left, right, accuracy);
 
         /// <summary>
@@ -698,8 +711,8 @@ namespace Trivial.Maths
         /// <param name="right">The right boundary.</param>
         /// <param name="accuracy">The step in x.</param>
         /// <returns>A point collection.</returns>
-        IEnumerable<Point2D<double>> IPixelOutline<double>.DrawPoints(double left, double right, double accuracy)
-            => InternalHelper.DrawPoints(this, left, right, accuracy);
+        IEnumerable<Point2D<float>> IPixelOutline<float>.DrawPoints(float left, float right, float accuracy)
+            => InternalHelper.DrawPoints(this, left, right, accuracy).Select(ele => new Point2D<float>(ele.X, ele.Y));
 
         /// <summary>
         /// Returns a string that represents the line.
@@ -708,13 +721,13 @@ namespace Trivial.Maths
         public override string ToString()
         {
             var sb = new StringBuilder();
-            if (CenterX == 0 || double.IsNaN(CenterX)) sb.Append("x²");
+            if (CenterX == 0 || float.IsNaN(CenterX)) sb.Append("x²");
             else sb.AppendFormat("(x - {0})²", CenterX);
             sb.AppendFormat("/ {0}² + ", A);
-            if (CenterY == 0 || double.IsNaN(CenterY)) sb.Append("y²");
+            if (CenterY == 0 || float.IsNaN(CenterY)) sb.Append("y²");
             else sb.AppendFormat("(y - {0})²", CenterY);
             sb.AppendFormat("/ {0}² = 1", B);
-            if (Alpha.AbsDegrees >= InternalHelper.DoubleAccuracy) sb.AppendFormat(" (rotate {0})", Alpha);
+            if (Alpha.AbsDegrees >= InternalHelper.SingleAccuracy) sb.AppendFormat(" (rotate {0})", Alpha);
             return sb.ToString();
         }
 
@@ -737,7 +750,7 @@ namespace Trivial.Maths
         /// </summary>
         /// <param name="other">The object to compare with the current object.</param>
         /// <returns>true if the specified object is equal to the current object; otherwise, false.</returns>
-        public bool Equals(CoordinateEllipse other)
+        public bool Equals(CoordinateEllipseF other)
         {
             if (other is null) return false;
             if (ReferenceEquals(this, other)) return true;
@@ -749,7 +762,7 @@ namespace Trivial.Maths
         /// </summary>
         /// <param name="other">The object to compare with the current object.</param>
         /// <returns>true if the specified object is equal to the current object; otherwise, false.</returns>
-        public bool Equals(CoordinateCircle other)
+        public bool Equals(CoordinateCircleF other)
             => other is not null && CenterX == other.CenterX && CenterY == other.CenterY && A == other.Radius && B == other.Radius;
 
         /// <summary>
@@ -760,8 +773,8 @@ namespace Trivial.Maths
         public override bool Equals(object obj)
         {
             if (obj is null) return false;
-            if (obj is CoordinateCircle ellipse) return Equals(ellipse);
-            return Equals(obj as CoordinateEllipse);
+            if (obj is CoordinateCircleF ellipse) return Equals(ellipse);
+            return Equals(obj as CoordinateEllipseF);
         }
 
         /// <inheritdoc />
@@ -775,7 +788,7 @@ namespace Trivial.Maths
         /// <param name="leftValue">The left value to compare.</param>
         /// <param name="rightValue">The right value to compare.</param>
         /// <returns>true if they are same; otherwise, false.</returns>
-        public static bool operator ==(CoordinateEllipse leftValue, CoordinateEllipse rightValue)
+        public static bool operator ==(CoordinateEllipseF leftValue, CoordinateEllipseF rightValue)
         {
             if (leftValue is null && rightValue is null) return true;
             if (leftValue is null || rightValue is null) return false;
@@ -789,7 +802,7 @@ namespace Trivial.Maths
         /// <param name="leftValue">The left value to compare.</param>
         /// <param name="rightValue">The right value to compare.</param>
         /// <returns>true if they are different; otherwise, false.</returns>
-        public static bool operator !=(CoordinateEllipse leftValue, CoordinateEllipse rightValue)
+        public static bool operator !=(CoordinateEllipseF leftValue, CoordinateEllipseF rightValue)
         {
             if (leftValue is null && rightValue is null) return false;
             if (leftValue is null || rightValue is null) return true;
@@ -801,10 +814,10 @@ namespace Trivial.Maths
         /// </summary>
         /// <param name="a">The longer radius.</param>
         /// <param name="b">The shorter radius.</param>
-        public void SetRadius(double a, double b)
+        public void SetRadius(float a, float b)
         {
-            a = double.IsNaN(a) ? 0 : Math.Abs(a);
-            b = double.IsNaN(b) ? 0 : Math.Abs(b);
+            a = float.IsNaN(a) ? 0 : Math.Abs(a);
+            b = float.IsNaN(b) ? 0 : Math.Abs(b);
             if (b > a)
             {
                 var c = a;
@@ -821,16 +834,16 @@ namespace Trivial.Maths
     /// Hyperbola in coordinate.
     /// </summary>
     [DataContract]
-    public class CoordinateHyperbola : IPixelOutline<double>, ICoordinateTuplePoint<double>, ICloneable, IEquatable<CoordinateHyperbola>
+    public class CoordinateHyperbolaF : IPixelOutline<float>, ICoordinateTuplePoint<float>, ICloneable, IEquatable<CoordinateHyperbolaF>
     {
-        private DoublePoint2D center;
-        private double radiusA;
-        private double radiusB;
+        private PointF center;
+        private float radiusA;
+        private float radiusB;
 
         /// <summary>
-        /// Initializes a new instance of the CoordinateHyperbola class.
+        /// Initializes a new instance of the CoordinateHyperbolaF class.
         /// </summary>
-        public CoordinateHyperbola()
+        public CoordinateHyperbolaF()
         {
             Alpha = new Angle();
             center = new(0, 0);
@@ -839,11 +852,11 @@ namespace Trivial.Maths
         }
 
         /// <summary>
-        /// Initializes a new instance of the CoordinateHyperbola class.
+        /// Initializes a new instance of the CoordinateHyperbolaF class.
         /// </summary>
         /// <param name="a">The longer radius.</param>
         /// <param name="b">The shorter radius.</param>
-        public CoordinateHyperbola(double a, double b)
+        public CoordinateHyperbolaF(float a, float b)
         {
             Alpha = new Angle();
             center = new(0, 0);
@@ -851,13 +864,13 @@ namespace Trivial.Maths
         }
 
         /// <summary>
-        /// Initializes a new instance of the CoordinateHyperbola class.
+        /// Initializes a new instance of the CoordinateHyperbolaF class.
         /// </summary>
         /// <param name="x">The x of center point.</param>
         /// <param name="y">The y of center point.</param>
         /// <param name="a">The longer radius.</param>
         /// <param name="b">The shorter radius.</param>
-        public CoordinateHyperbola(double x, double y, double a, double b)
+        public CoordinateHyperbolaF(float x, float y, float a, float b)
         {
             Alpha = new Angle();
             center = new(x, y);
@@ -865,27 +878,27 @@ namespace Trivial.Maths
         }
 
         /// <summary>
-        /// Initializes a new instance of the CoordinateHyperbola class.
+        /// Initializes a new instance of the CoordinateHyperbolaF class.
         /// </summary>
         /// <param name="center">The center point.</param>
         /// <param name="a">The longer radius.</param>
         /// <param name="b">The shorter radius.</param>
-        public CoordinateHyperbola(DoublePoint2D center, double a, double b)
+        public CoordinateHyperbolaF(PointF center, float a, float b)
         {
             Alpha = new Angle();
-            this.center = center ?? new(0, 0);
+            this.center = center;
             SetRadius(a, b);
         }
 
         /// <summary>
-        /// Initializes a new instance of the CoordinateHyperbola class.
+        /// Initializes a new instance of the CoordinateHyperbolaF class.
         /// </summary>
         /// <param name="alpha">The angle between X-axis and the line of focuses.</param>
         /// <param name="x">The x of center point.</param>
         /// <param name="y">The y of center point.</param>
         /// <param name="a">The longer radius.</param>
         /// <param name="b">The shorter radius.</param>
-        public CoordinateHyperbola(Angle alpha, double x, double y, double a, double b)
+        public CoordinateHyperbolaF(Angle alpha, float x, float y, float a, float b)
         {
             Alpha = alpha;
             center = new(x, y);
@@ -893,13 +906,13 @@ namespace Trivial.Maths
         }
 
         /// <summary>
-        /// Initializes a new instance of the CoordinateHyperbola class.
+        /// Initializes a new instance of the CoordinateHyperbolaF class.
         /// </summary>
         /// <param name="alpha">The angle between X-axis and the line of focuses.</param>
         /// <param name="center">The center point.</param>
         /// <param name="a">The longer radius.</param>
         /// <param name="b">The shorter radius.</param>
-        public CoordinateHyperbola(Angle alpha, DoublePoint2D center, double a, double b)
+        public CoordinateHyperbolaF(Angle alpha, PointF center, float a, float b)
         {
             Alpha = alpha;
             this.center = center;
@@ -919,7 +932,7 @@ namespace Trivial.Maths
         /// <exception cref="InvalidOperationException">The value was less than 0.</exception>
         [JsonPropertyName("a")]
         [DataMember(Name = "a")]
-        public double A
+        public float A
         {
             get
             {
@@ -928,7 +941,7 @@ namespace Trivial.Maths
 
             set
             {
-                if (double.IsNaN(value) || value < 0) throw new InvalidOperationException("The value should equal to or be greater than 0.");
+                if (float.IsNaN(value) || value < 0) throw new InvalidOperationException("The value should equal to or be greater than 0.");
                 if (value >= radiusB)
                 {
                     radiusA = value;
@@ -946,7 +959,7 @@ namespace Trivial.Maths
         /// <exception cref="InvalidOperationException">The value was less than 0.</exception>
         [JsonPropertyName("b")]
         [DataMember(Name = "b")]
-        public double B
+        public float B
         {
             get
             {
@@ -955,7 +968,7 @@ namespace Trivial.Maths
 
             set
             {
-                if (double.IsNaN(value) || value < 0) throw new InvalidOperationException("The value should equal to or be greater than 0.");
+                if (float.IsNaN(value) || value < 0) throw new InvalidOperationException("The value should equal to or be greater than 0.");
                 if (value <= radiusA)
                 {
                     radiusB = value;
@@ -971,10 +984,10 @@ namespace Trivial.Maths
         /// Gets or sets the center point.
         /// </summary>
         [JsonIgnore(Condition = JsonIgnoreCondition.Always)]
-        public DoublePoint2D Center
+        public PointF Center
         {
             get => center;
-            set => center = value ?? new();
+            set => center = value;
         }
 
         /// <summary>
@@ -982,10 +995,10 @@ namespace Trivial.Maths
         /// </summary>
         [JsonPropertyName("x")]
         [DataMember(Name = "x")]
-        public double CenterX
+        public float CenterX
         {
             get => Center.X;
-            set => Center.X = value;
+            set => Center = new PointF(float.IsNaN(value) ? 0f : value, Center.Y);
         }
 
         /// <summary>
@@ -993,29 +1006,37 @@ namespace Trivial.Maths
         /// </summary>
         [JsonPropertyName("y")]
         [DataMember(Name = "y")]
-        public double CenterY
+        public float CenterY
         {
             get => Center.Y;
-            set => Center.Y = value;
+            set => Center = new PointF(Center.X, float.IsNaN(value) ? 0f : value);
         }
 
         /// <summary>
         /// Gets the eccentricity.
         /// </summary>
         [JsonIgnore(Condition = JsonIgnoreCondition.Always)]
-        public double Eccentricity => Math.Sqrt(1 + Math.Pow(B / A, 2));
+#if NETCOREAPP3_1_OR_GREATER
+        public float Eccentricity => MathF.Sqrt(1 + MathF.Pow(B / A, 2));
+#else
+        public float Eccentricity => (float)Math.Sqrt(1 + Math.Pow(B / A, 2));
+#endif
 
         /// <summary>
         /// Gets the focal distance.
         /// </summary>
         [JsonIgnore(Condition = JsonIgnoreCondition.Always)]
-        public double C => Math.Sqrt(A * A + B * B);
+#if NETCOREAPP3_1_OR_GREATER
+        public float C => MathF.Sqrt(A * A + B * B);
+#else
+        public float C => (float)Math.Sqrt(A * A + B * B);
+#endif
 
         /// <summary>
         /// Gets focuses.
         /// </summary>
         /// <returns>The focuses.</returns>
-        public (DoublePoint2D, DoublePoint2D) Focuses()
+        public (PointF, PointF) Focuses()
         {
             var c = C;
             if (Alpha.Degrees == 0 || Alpha.Degrees == 360)
@@ -1023,8 +1044,8 @@ namespace Trivial.Maths
             if (Alpha.Degrees == 90 || Alpha.Degrees == 270)
                 return (new(center.X, center.Y - c), new(center.X, center.Y + c));
             return (
-                Geometry.Rotate(new DoublePoint2D(center.X - c, center.Y), null, Alpha),
-                Geometry.Rotate(new DoublePoint2D(center.X + c, center.Y), null, Alpha));
+                Geometry.Rotate(new PointF(center.X - c, center.Y), new PointF(0F, 0F), Alpha),
+                Geometry.Rotate(new PointF(center.X + c, center.Y), new PointF(0F, 0F), Alpha));
         }
 
         /// <summary>
@@ -1032,13 +1053,17 @@ namespace Trivial.Maths
         /// </summary>
         /// <param name="x">X.</param>
         /// <returns>Y.</returns>
-        public (double, double) GetY(double x)
+        public (float, float) GetY(float x)
         {
-            x = Geometry.Rotate(new DoublePoint2D(x, 0), center, Alpha).X;
+            x = Geometry.Rotate(new PointF(x, 0), center, Alpha).X;
             var width = x - CenterX;
-            var y = Math.Sqrt((width * width / A * A - 1) * B * B);
-            if (double.IsNaN(y)) return (double.NaN, double.NaN);
-            if (y == 0) return (y, double.NaN);
+#if NETCOREAPP3_1_OR_GREATER
+            var y = MathF.Sqrt((width * width / A * A - 1) * B * B);
+#else
+            var y = (float)Math.Sqrt((width * width / A * A - 1) * B * B);
+#endif
+            if (float.IsNaN(y)) return (float.NaN, float.NaN);
+            if (y == 0) return (y, float.NaN);
             return (-y, y);
         }
 
@@ -1047,13 +1072,17 @@ namespace Trivial.Maths
         /// </summary>
         /// <param name="y">Y.</param>
         /// <returns>X.</returns>
-        public (double, double) GetX(double y)
+        public (float, float) GetX(float y)
         {
-            y = Geometry.Rotate(new DoublePoint2D(0, y), center, Alpha).Y;
+            y = Geometry.Rotate(new PointF(0, y), center, Alpha).Y;
             var height = y - CenterY;
-            var x = Math.Sqrt((height * height / B * B + 1) * A * A);
-            if (double.IsNaN(x)) return (double.NaN, double.NaN);
-            if (x == 0) return (x, double.NaN);
+#if NETCOREAPP3_1_OR_GREATER
+            var x = MathF.Sqrt((height * height / B * B + 1) * A * A);
+#else
+            var x = (float)Math.Sqrt((height * height / B * B + 1) * A * A);
+#endif
+            if (float.IsNaN(x)) return (float.NaN, float.NaN);
+            if (x == 0) return (x, float.NaN);
             return (-x, x);
         }
 
@@ -1062,24 +1091,31 @@ namespace Trivial.Maths
         /// </summary>
         /// <param name="point">The point to test.</param>
         /// <returns>true if the point is on the line; otherwise, false.</returns>
-        public bool Contains(Point2D<double> point)
+        public bool Contains(PointF point)
         {
-            if (point == null) return false;
             if (Alpha.AbsDegrees > 0)
                 point = Geometry.Rotate(point, center, Alpha);
             var width = point.X - CenterX;
             var height = point.Y - CenterY;
-            return Math.Abs(width * width - height * height - 1) < InternalHelper.DoubleAccuracy;
+            return Math.Abs(width * width - height * height - 1) < InternalHelper.SingleAccuracy;
         }
 
         /// <summary>
+        /// Test if a point is on the line.
+        /// </summary>
+        /// <param name="point">The point to test.</param>
+        /// <returns>true if the point is on the line; otherwise, false.</returns>
+        public bool Contains(Point2D<float> point)
+            => point is not null && Contains(new PointF(point.X, point.Y));
+
+        /// <summary>
         /// Generates point collection in the specific zone and accuracy.
         /// </summary>
         /// <param name="left">The left boundary.</param>
         /// <param name="right">The right boundary.</param>
         /// <param name="accuracy">The step in x.</param>
         /// <returns>A point collection.</returns>
-        public IEnumerable<DoublePoint2D> DrawPoints(double left, double right, double accuracy)
+        public IEnumerable<PointF> DrawPoints(float left, float right, float accuracy)
             => InternalHelper.DrawPoints(this, left, right, accuracy);
 
         /// <summary>
@@ -1089,8 +1125,8 @@ namespace Trivial.Maths
         /// <param name="right">The right boundary.</param>
         /// <param name="accuracy">The step in x.</param>
         /// <returns>A point collection.</returns>
-        IEnumerable<Point2D<double>> IPixelOutline<double>.DrawPoints(double left, double right, double accuracy)
-            => InternalHelper.DrawPoints(this, left, right, accuracy);
+        IEnumerable<Point2D<float>> IPixelOutline<float>.DrawPoints(float left, float right, float accuracy)
+            => InternalHelper.DrawPoints(this, left, right, accuracy).Select(ele => new Point2D<float>(ele.X, ele.Y));
 
         /// <summary>
         /// Returns a string that represents the line.
@@ -1099,13 +1135,13 @@ namespace Trivial.Maths
         public override string ToString()
         {
             var sb = new StringBuilder();
-            if (CenterX == 0 || double.IsNaN(CenterX)) sb.Append("x²");
+            if (CenterX == 0 || float.IsNaN(CenterX)) sb.Append("x²");
             else sb.AppendFormat("(x - {0})²", CenterX);
             sb.AppendFormat("/ {0}² - ", A);
-            if (CenterY == 0 || double.IsNaN(CenterY)) sb.Append("y²");
+            if (CenterY == 0 || float.IsNaN(CenterY)) sb.Append("y²");
             else sb.AppendFormat("(y - {0})²", CenterY);
             sb.AppendFormat("/ {0}² = 1", B);
-            if (Alpha.AbsDegrees >= InternalHelper.DoubleAccuracy) sb.AppendFormat(" (rotate {0})", Alpha);
+            if (Alpha.AbsDegrees >= InternalHelper.SingleAccuracy) sb.AppendFormat(" (rotate {0})", Alpha);
             return sb.ToString();
         }
 
@@ -1128,7 +1164,7 @@ namespace Trivial.Maths
         /// </summary>
         /// <param name="other">The object to compare with the current object.</param>
         /// <returns>true if the specified object is equal to the current object; otherwise, false.</returns>
-        public bool Equals(CoordinateHyperbola other)
+        public bool Equals(CoordinateHyperbolaF other)
         {
             if (other is null) return false;
             if (ReferenceEquals(this, other)) return true;
@@ -1143,7 +1179,7 @@ namespace Trivial.Maths
         public override bool Equals(object obj)
         {
             if (obj is null) return false;
-            return Equals(obj as CoordinateHyperbola);
+            return Equals(obj as CoordinateHyperbolaF);
         }
 
         /// <inheritdoc />
@@ -1157,7 +1193,7 @@ namespace Trivial.Maths
         /// <param name="leftValue">The left value to compare.</param>
         /// <param name="rightValue">The right value to compare.</param>
         /// <returns>true if they are same; otherwise, false.</returns>
-        public static bool operator ==(CoordinateHyperbola leftValue, CoordinateHyperbola rightValue)
+        public static bool operator ==(CoordinateHyperbolaF leftValue, CoordinateHyperbolaF rightValue)
         {
             if (leftValue is null && rightValue is null) return true;
             if (leftValue is null || rightValue is null) return false;
@@ -1171,7 +1207,7 @@ namespace Trivial.Maths
         /// <param name="leftValue">The left value to compare.</param>
         /// <param name="rightValue">The right value to compare.</param>
         /// <returns>true if they are different; otherwise, false.</returns>
-        public static bool operator !=(CoordinateHyperbola leftValue, CoordinateHyperbola rightValue)
+        public static bool operator !=(CoordinateHyperbolaF leftValue, CoordinateHyperbolaF rightValue)
         {
             if (leftValue is null && rightValue is null) return false;
             if (leftValue is null || rightValue is null) return true;
@@ -1183,10 +1219,10 @@ namespace Trivial.Maths
         /// </summary>
         /// <param name="a">The longer radius.</param>
         /// <param name="b">The shorter radius.</param>
-        public void SetRadius(double a, double b)
+        public void SetRadius(float a, float b)
         {
-            a = double.IsNaN(a) ? 0 : Math.Abs(a);
-            b = double.IsNaN(b) ? 0 : Math.Abs(b);
+            a = float.IsNaN(a) ? 0 : Math.Abs(a);
+            b = float.IsNaN(b) ? 0 : Math.Abs(b);
             if (b > a)
             {
                 var c = a;
