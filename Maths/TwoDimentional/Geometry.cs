@@ -238,10 +238,7 @@ namespace Trivial.Maths
         {
             if (line == null) throw new ArgumentNullException(nameof(line), "line should not be null.");
             if (point == null) point = new();
-            var l = new LineSegment(
-                line.Start,
-                point is DoublePoint2D p ? p : new DoublePoint2D(point.X, point.Y));
-            return DotProduct(l.End, line.End, line.Start) / (Distance(line.Start, line.End) * Distance(line.Start, line.End));
+            return DotProduct(point is DoublePoint2D p ? p : new DoublePoint2D(point.X, point.Y), line.End, line.Start) / (Distance(line.Start, line.End) * Distance(line.Start, line.End));
         }
 
         /// <summary>
@@ -251,13 +248,10 @@ namespace Trivial.Maths
         /// <param name="line">The line to compare.</param>
         /// <returns>The relative position ratio. Less than 0 if the point is on the backward extension of the line segment; greater than 1 if forward; equals to 0 if on the start point of the line segment; equals to 1 if on the end point; between 0 and 1 if on the line segment.</returns>
         /// <exception cref="ArgumentNullException">line was null.</exception>
-        public static double Relation(PointF point, LineSegment line)
+        public static float Relation(PointF point, LineSegmentF line)
         {
             if (line == null) throw new ArgumentNullException(nameof(line), "line should not be null.");
-            LineSegment l = new();
-            l.Start = line.Start;
-            l.End = new DoublePoint2D(point.X, point.Y);
-            return DotProduct(l.End, line.End, line.Start) / (Distance(line.Start, line.End) * Distance(line.Start, line.End));
+            return DotProduct(new PointF(point.X, point.Y), line.End, line.Start) / (Distance(line.Start, line.End) * Distance(line.Start, line.End));
         }
 
         /// <summary>
@@ -268,6 +262,21 @@ namespace Trivial.Maths
         /// <returns>The foot point.</returns>
         /// <exception cref="ArgumentNullException">line was null.</exception>
         public static DoublePoint2D GetFootPoint(Point2D<double> point, LineSegment line)
+        {
+            var r = Relation(point, line);
+            return new(
+                line.Start.X + r * (line.End.X - line.Start.X),
+                line.Start.Y + r * (line.End.Y - line.Start.Y));
+        }
+
+        /// <summary>
+        /// Gets the foot point.
+        /// </summary>
+        /// <param name="point">The point.</param>
+        /// <param name="line">The line.</param>
+        /// <returns>The foot point.</returns>
+        /// <exception cref="ArgumentNullException">line was null.</exception>
+        public static PointF GetFootPoint(PointF point, LineSegmentF line)
         {
             var r = Relation(point, line);
             return new(
