@@ -337,6 +337,57 @@ namespace Trivial.Maths
             : Distance(point, line, out _);
 
         /// <summary>
+        /// Computes the distance between the point and the line.
+        /// </summary>
+        /// <param name="point">The point.</param>
+        /// <param name="line">The line.</param>
+        /// <param name="closest">The foot point or the closest point.</param>
+        /// <returns>The distance.</returns>
+        /// <exception cref="ArgumentNullException">line was null.</exception>
+        public static float Distance(PointF point, LineSegmentF line, out PointF closest)
+        {
+            var r = Relation(point, line);
+            if (r < 0)
+            {
+                closest = line.Start;
+                return Distance(point, line.Start);
+            }
+            if (r > 1)
+            {
+                closest = line.End;
+                return Distance(point, line.End);
+            }
+
+            closest = new(
+                line.Start.X + r * (line.End.X - line.Start.X),
+                line.Start.Y + r * (line.End.Y - line.Start.Y));
+            return Distance(point, closest);
+        }
+
+        /// <summary>
+        /// Computes the distance between the point and the line.
+        /// </summary>
+        /// <param name="point">The point.</param>
+        /// <param name="line">The line.</param>
+        /// <returns>The distance.</returns>
+        /// <exception cref="ArgumentNullException">line was null.</exception>
+        public static double Distance(PointF point, LineSegmentF line)
+            => Distance(point, line, out _);
+
+        /// <summary>
+        /// Computes the distance between the point and the line.
+        /// </summary>
+        /// <param name="point">The point.</param>
+        /// <param name="line">The line.</param>
+        /// <param name="extendToLine">true if extend the line segment to a line; otherwise, false.</param>
+        /// <returns>The distance.</returns>
+        /// <exception cref="ArgumentNullException">line was null.</exception>
+        public static float Distance(PointF point, LineSegmentF line, bool extendToLine)
+            => extendToLine
+            ? Math.Abs(CrossProduct(point, line.End, line.Start)) / Distance(line.Start, line.End)
+            : Distance(point, line, out _);
+
+        /// <summary>
         /// Computes the distance between the point and the polyline.
         /// </summary>
         /// <param name="point">The point.</param>
@@ -414,6 +465,83 @@ namespace Trivial.Maths
             => Distance(point, polyline, out _);
 
         /// <summary>
+        /// Computes the distance between the point and the polyline.
+        /// </summary>
+        /// <param name="point">The point.</param>
+        /// <param name="polyline">The polyline.</param>
+        /// <param name="closest">The foot point or the closest point.</param>
+        /// <returns>The distance.</returns>
+        public static double Distance(PointF point, PointF[] polyline, out PointF closest)
+        {
+            var cd = double.PositiveInfinity;
+            double td;
+            LineSegmentF l = new();
+            PointF cq = new();
+            var count = polyline.Length - 1;
+            for (var i = 0; i < count; i++)
+            {
+                l.Start = polyline[i];
+                l.End = polyline[i + 1];
+                td = Distance(point, l, out var tq);
+                if (td < cd)
+                {
+                    cd = td;
+                    cq = tq;
+                }
+            }
+
+            closest = cq;
+            return cd;
+        }
+
+        /// <summary>
+        /// Computes the distance between the point and the polyline.
+        /// </summary>
+        /// <param name="point">The point.</param>
+        /// <param name="polyline">The polyline.</param>
+        /// <returns>The distance.</returns>
+        public static double Distance(PointF point, PointF[] polyline)
+            => Distance(point, polyline, out _);
+
+        /// <summary>
+        /// Computes the distance between the point and the polyline.
+        /// </summary>
+        /// <param name="point">The point.</param>
+        /// <param name="polyline">The polyline.</param>
+        /// <param name="closest">The foot point or the closest point.</param>
+        /// <returns>The distance.</returns>
+        public static double Distance(PointF point, IList<PointF> polyline, out PointF closest)
+        {
+            var cd = double.PositiveInfinity;
+            double td;
+            LineSegmentF l = new();
+            PointF cq = new();
+            var count = polyline.Count - 1;
+            for (var i = 0; i < count; i++)
+            {
+                l.Start = polyline[i];
+                l.End = polyline[i + 1];
+                td = Distance(point, l, out var tq);
+                if (td < cd)
+                {
+                    cd = td;
+                    cq = tq;
+                }
+            }
+            closest = cq;
+            return cd;
+        }
+
+        /// <summary>
+        /// Computes the distance between the point and the polyline.
+        /// </summary>
+        /// <param name="point">The point.</param>
+        /// <param name="polyline">The polyline.</param>
+        /// <returns>The distance.</returns>
+        public static double Distance(PointF point, IList<PointF> polyline)
+            => Distance(point, polyline, out _);
+
+        /// <summary>
         /// Tests if the circle is in the polygon or is intersected with the polygon.
         /// </summary>
         /// <param name="circle">The circle.</param>
@@ -442,12 +570,55 @@ namespace Trivial.Maths
         }
 
         /// <summary>
+        /// Tests if the circle is in the polygon or is intersected with the polygon.
+        /// </summary>
+        /// <param name="circle">The circle.</param>
+        /// <param name="polygon">The polygon.</param>
+        /// <returns>true if the circle is in the polygon or is intersected with the polygon; otherwise, false.</returns>
+        /// <exception cref="ArgumentNullException">radius was null.</exception>
+        public static bool IsInOrIntersected(CoordinateCircleF circle, PointF[] polygon)
+        {
+            if (circle == null || double.IsNaN(circle.Radius)) throw new ArgumentNullException(nameof(circle), "circle should not be null.");
+            var d = Distance(circle.Center, polygon, out _);
+            return d < circle.Radius || Math.Abs(d - circle.Radius) < InternalHelper.DoubleAccuracy;
+        }
+
+        /// <summary>
+        /// Tests if the circle is in the polygon or is intersected with the polygon.
+        /// </summary>
+        /// <param name="circle">The circle.</param>
+        /// <param name="polygon">The polygon.</param>
+        /// <returns>true if the circle is in the polygon or is intersected with the polygon; otherwise, false.</returns>
+        /// <exception cref="ArgumentNullException">radius was null.</exception>
+        public static bool IsInOrIntersected(CoordinateCircleF circle, IList<PointF> polygon)
+        {
+            if (circle == null || double.IsNaN(circle.Radius)) throw new ArgumentNullException(nameof(circle), "circle should not be null.");
+            var d = Distance(circle.Center, polygon, out _);
+            return d < circle.Radius || Math.Abs(d - circle.Radius) < InternalHelper.DoubleAccuracy;
+        }
+
+        /// <summary>
         /// Gets the handed rotation state.
         /// </summary>
         /// <param name="a">The first line.</param>
         /// <param name="b">The second line.</param>
         /// <returns>The state. Less than 0 if left handed rotation; equals to 0 if the same; Greater than 0 if right handed rotation.</returns>
         public static double HandedRotation(LineSegment a, LineSegment b)
+        {
+            var dx1 = a.Start.X - a.End.X;
+            var dy1 = a.Start.Y - a.End.Y;
+            var dx2 = b.Start.X - b.End.X;
+            var dy2 = b.Start.Y - b.End.Y;
+            return dx2 * dy1 - dx1 * dy2;
+        }
+
+        /// <summary>
+        /// Gets the handed rotation state.
+        /// </summary>
+        /// <param name="a">The first line.</param>
+        /// <param name="b">The second line.</param>
+        /// <returns>The state. Less than 0 if left handed rotation; equals to 0 if the same; Greater than 0 if right handed rotation.</returns>
+        public static float HandedRotation(LineSegmentF a, LineSegmentF b)
         {
             var dx1 = a.Start.X - a.End.X;
             var dy1 = a.Start.Y - a.End.Y;
@@ -485,12 +656,57 @@ namespace Trivial.Maths
         }
 
         /// <summary>
+        /// Computes sine of 2 vectors.
+        /// </summary>
+        /// <param name="a">The first vector.</param>
+        /// <param name="b">The second vector.</param>
+        /// <returns>The sine.</returns>
+        /// <exception cref="ArgumentNullException">a or b was null.</exception>
+        public static double Sin(LineSegmentF a, LineSegmentF b)
+        {
+            if (a == null) throw new ArgumentNullException(nameof(a), "a should not be null");
+            if (b == null) throw new ArgumentNullException(nameof(b), "b should not be null");
+            return (Distance(a.End, a.Start) * Distance(b.End, b.Start)) / ((a.End.X - a.Start.X) * (b.End.X - b.Start.X) + (a.End.Y - a.Start.Y) * (b.End.Y - b.Start.Y));
+        }
+
+        /// <summary>
+        /// Computes cosine of 2 vectors.
+        /// </summary>
+        /// <param name="a">The first vector.</param>
+        /// <param name="b">The second vector.</param>
+        /// <returns>The cosine.</returns>
+        /// <exception cref="ArgumentNullException">a or b was null.</exception>
+        public static double Cos(LineSegmentF a, LineSegmentF b)
+        {
+            if (a == null) throw new ArgumentNullException(nameof(a), "a should not be null");
+            if (b == null) throw new ArgumentNullException(nameof(b), "b should not be null");
+            return ((a.End.X - a.Start.X) * (b.End.X - b.Start.X) + (a.End.Y - a.Start.Y) * (b.End.Y - b.Start.Y)) / (Distance(a.End, a.Start) * Distance(b.End, b.Start));
+        }
+
+        /// <summary>
         /// Tests if 2 line segments are intersected.
         /// </summary>
         /// <param name="a">The first line.</param>
         /// <param name="b">The second line.</param>
         /// <returns>true if the 2 lines are intersected, including connect with vertex; otherwise, false.</returns>
         public static bool IsIntersected(LineSegment a, LineSegment b)
+        {
+            if (a == null || b == null) return false;
+            return (Math.Max(a.Start.X, a.End.X) >= Math.Min(b.Start.X, b.End.X)) &&
+                (Math.Max(b.Start.X, b.End.X) >= Math.Min(a.Start.X, a.End.X)) &&
+                (Math.Max(a.Start.Y, a.End.Y) >= Math.Min(b.Start.Y, b.End.Y)) &&
+                (Math.Max(b.Start.Y, b.End.Y) >= Math.Min(a.Start.Y, a.End.Y)) &&
+                (CrossProduct(b.Start, a.End, a.Start) * CrossProduct(a.End, b.End, a.Start) >= 0) &&
+                (CrossProduct(a.Start, b.End, b.Start) * CrossProduct(b.End, a.End, b.Start) >= 0);
+        }
+
+        /// <summary>
+        /// Tests if 2 line segments are intersected.
+        /// </summary>
+        /// <param name="a">The first line.</param>
+        /// <param name="b">The second line.</param>
+        /// <returns>true if the 2 lines are intersected, including connect with vertex; otherwise, false.</returns>
+        public static bool IsIntersected(LineSegmentF a, LineSegmentF b)
         {
             if (a == null || b == null) return false;
             return (Math.Max(a.Start.X, a.End.X) >= Math.Min(b.Start.X, b.End.X)) &&
@@ -509,6 +725,20 @@ namespace Trivial.Maths
         /// <returns>The included angle of line vertex-start and line vertex-end.</returns>
         /// <exception cref="ArgumentNullException">a or b was null.</exception>
         public static Angle Angle(LineSegment a, LineSegment b)
+        {
+            if (a == null) throw new ArgumentNullException(nameof(a), "a should not be null");
+            if (b == null) throw new ArgumentNullException(nameof(b), "b should not be null");
+            return Angle(new DoublePoint2D(0, 0), new DoublePoint2D(a.End.X - a.Start.X, a.End.Y - a.Start.Y), new DoublePoint2D(b.End.X - b.Start.X, b.End.Y - b.Start.Y));
+        }
+
+        /// <summary>
+        /// Computes included angle.
+        /// </summary>
+        /// <param name="a">The first line segment.</param>
+        /// <param name="b">The second line segment.</param>
+        /// <returns>The included angle of line vertex-start and line vertex-end.</returns>
+        /// <exception cref="ArgumentNullException">a or b was null.</exception>
+        public static Angle Angle(LineSegmentF a, LineSegmentF b)
         {
             if (a == null) throw new ArgumentNullException(nameof(a), "a should not be null");
             if (b == null) throw new ArgumentNullException(nameof(b), "b should not be null");
@@ -582,7 +812,22 @@ namespace Trivial.Maths
         {
             if (line == null) throw new ArgumentNullException(nameof(line), "line should noe be null.");
             if (point == null) point = new();
-            return new DoublePoint2D(
+            return new(
+                ((line.B * line.B - line.A * line.A) * point.X - 2 * line.A * line.B * point.Y - 2 * line.A * line.C) / (line.A * line.A + line.B * line.B),
+                ((line.A * line.A - line.B * line.B) * point.Y - 2 * line.A * line.B * point.X - 2 * line.B * line.C) / (line.A * line.A + line.B * line.B));
+        }
+
+        /// <summary>
+        /// Computes symmetry point from a line.
+        /// </summary>
+        /// <param name="point">The point.</param>
+        /// <param name="line">The line.</param>
+        /// <returns>The symmetry point.</returns>
+        /// <exception cref="ArgumentNullException">line was null.</exception>
+        public static PointF Symmetry(PointF point, StraightLineF line)
+        {
+            if (line == null) throw new ArgumentNullException(nameof(line), "line should noe be null.");
+            return new(
                 ((line.B * line.B - line.A * line.A) * point.X - 2 * line.A * line.B * point.Y - 2 * line.A * line.C) / (line.A * line.A + line.B * line.B),
                 ((line.A * line.A - line.B * line.B) * point.Y - 2 * line.A * line.B * point.X - 2 * line.B * line.C) / (line.A * line.A + line.B * line.B));
         }
@@ -600,8 +845,21 @@ namespace Trivial.Maths
             if (line == null) throw new ArgumentNullException(nameof(line), "line should noe be null.");
             if (a == null) a = new();
             if (b == null) b = new();
-            return (line.A * a.X + line.B * a.Y + line.C) *
-            (line.A * b.X + line.B * b.Y + line.C) > 0;
+            return (line.A * a.X + line.B * a.Y + line.C) * (line.A * b.X + line.B * b.Y + line.C) > 0;
+        }
+
+        /// <summary>
+        /// Tests the specific 2 point are in same side.
+        /// </summary>
+        /// <param name="a">The first point.</param>
+        /// <param name="b">The second point.</param>
+        /// <param name="line">The line.</param>
+        /// <returns>true if they are in same side; otherwise, false.</returns>
+        /// <exception cref="ArgumentNullException">line was null.</exception>
+        public static bool AreSameSide(PointF a, PointF b, StraightLineF line)
+        {
+            if (line == null) throw new ArgumentNullException(nameof(line), "line should noe be null.");
+            return (line.A * a.X + line.B * a.Y + line.C) * (line.A * b.X + line.B * b.Y + line.C) > 0;
         }
 
         /// <summary>
@@ -616,11 +874,11 @@ namespace Trivial.Maths
             var d = a.A * b.B - b.A * a.B;
             if (Math.Abs(d) < InternalHelper.DoubleAccuracy)
             {
-                p = new DoublePoint2D();
+                p = new();
                 return false;
             }
 
-            p = new DoublePoint2D(
+            p = new(
                 (b.C * a.B - a.C * b.B) / d,
                 (b.A * a.C - a.A * b.C) / d);
             return true;
@@ -636,6 +894,37 @@ namespace Trivial.Maths
             => IsIntersected(a, b, out _);
 
         /// <summary>
+        /// Tests if 2 line are intersection.
+        /// </summary>
+        /// <param name="a">The first line.</param>
+        /// <param name="b">The second line.</param>
+        /// <param name="p">The point intersected.</param>
+        /// <returns>true if they are intersected; otherwise, false.</returns>
+        public static bool IsIntersected(StraightLineF a, StraightLineF b, out PointF p)
+        {
+            var d = a.A * b.B - b.A * a.B;
+            if (Math.Abs(d) < InternalHelper.DoubleAccuracy)
+            {
+                p = new();
+                return false;
+            }
+
+            p = new(
+                (b.C * a.B - a.C * b.B) / d,
+                (b.A * a.C - a.A * b.C) / d);
+            return true;
+        }
+
+        /// <summary>
+        /// Tests if 2 line are intersected.
+        /// </summary>
+        /// <param name="a">The first line.</param>
+        /// <param name="b">The second line.</param>
+        /// <returns>true if they are intersected; otherwise, false.</returns>
+        public static bool IsIntersected(StraightLineF a, StraightLineF b)
+            => IsIntersected(a, b, out _);
+
+        /// <summary>
         /// Gets the line relected.
         /// </summary>
         /// <param name="a">Mirror.</param>
@@ -648,10 +937,29 @@ namespace Trivial.Maths
             var m = (i * a.B + j * a.A) / (a.B * a.B + a.A * a.A);
             var n = (j * a.B - i * a.A) / (a.B * a.B + a.A * a.A);
             if (Math.Abs(a.A * b.B - b.A * a.B) < InternalHelper.DoubleAccuracy)
-                return new StraightLine(b.A, b.B, b.C);
+                return new(b.A, b.B, b.C);
             var x = (a.B * b.C - b.B * a.C) / (a.A * b.B - b.A * a.B);
             var y = (b.A * a.C - a.A * b.C) / (a.A * b.B - b.A * a.B);
-            return new StraightLine(n, -m, m * y - x * n);
+            return new(n, -m, m * y - x * n);
+        }
+
+        /// <summary>
+        /// Gets the line relected.
+        /// </summary>
+        /// <param name="a">Mirror.</param>
+        /// <param name="b">Incoming light.</param>
+        /// <returns>The output light.</returns>
+        public static StraightLineF Reflect(StraightLineF a, StraightLineF b)
+        {
+            var i = a.B * b.B + a.A * b.A;
+            var j = b.A * a.B - a.A * b.B;
+            var m = (i * a.B + j * a.A) / (a.B * a.B + a.A * a.A);
+            var n = (j * a.B - i * a.A) / (a.B * a.B + a.A * a.A);
+            if (Math.Abs(a.A * b.B - b.A * a.B) < InternalHelper.DoubleAccuracy)
+                return new(b.A, b.B, b.C);
+            var x = (a.B * b.C - b.B * a.C) / (a.A * b.B - b.A * a.B);
+            var y = (b.A * a.C - a.A * b.C) / (a.A * b.B - b.A * a.B);
+            return new(n, -m, m * y - x * n);
         }
 
         /// <summary>
@@ -664,7 +972,7 @@ namespace Trivial.Maths
         public static bool IsSimple(DoublePoint2D[] polygon)
         {
             if (polygon == null) throw new ArgumentNullException(nameof(polygon), "polygon should not be null.");
-            if (polygon.Length < 3) throw new ArgumentException("polygon is invalid because the points are less than 3.");
+            if (polygon.Length < 3) throw new ArgumentException("polygon is invalid because the points are less than 3.", nameof(polygon));
             int cn;
             LineSegment l1 = new();
             LineSegment l2 = new();
@@ -699,6 +1007,72 @@ namespace Trivial.Maths
             int cn;
             LineSegment l1 = new();
             LineSegment l2 = new();
+            var count = polygon.Count;
+            for (var i = 0; i < count; i++)
+            {
+                l1.Start = polygon[i];
+                l1.End = polygon[(i + 1) % count];
+                cn = count - 3;
+                while (cn != 0)
+                {
+                    l2.Start = polygon[(i + 2) % count];
+                    l2.End = polygon[(i + 3) % count];
+                    if (IsIntersected(l1, l2))
+                        break;
+                    cn--;
+                }
+
+                if (cn != 0) return false;
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// Tests if the polygon is simple.
+        /// </summary>
+        /// <param name="polygon">The polygon. Requires to input by anticlockwise.</param>
+        /// <returns>true if it is a simple polygon; otherwise, false.</returns>
+        /// <exception cref="ArgumentException">polygon was invalid because its points are less than 3.</exception>
+        /// <exception cref="ArgumentNullException">polygon was null.</exception>
+        public static bool IsSimple(PointF[] polygon)
+        {
+            if (polygon == null) throw new ArgumentNullException(nameof(polygon), "polygon should not be null.");
+            if (polygon.Length < 3) throw new ArgumentException("polygon is invalid because the points are less than 3.", nameof(polygon));
+            int cn;
+            LineSegmentF l1 = new();
+            LineSegmentF l2 = new();
+            var count = polygon.Length;
+            for (var i = 0; i < count; i++)
+            {
+                l1.Start = polygon[i];
+                l1.End = polygon[(i + 1) % count];
+                cn = count - 3;
+                while (cn != 0)
+                {
+                    l2.Start = polygon[(i + 2) % count];
+                    l2.End = polygon[(i + 3) % count];
+                    if (IsIntersected(l1, l2))
+                        break;
+                    cn--;
+                }
+
+                if (cn != 0) return false;
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// Tests if the polygon is simple.
+        /// </summary>
+        /// <param name="polygon">The polygon. Requires to input by anticlockwise.</param>
+        /// <returns>true if it is a simple polygon; otherwise, false.</returns>
+        public static bool IsSimple(IList<PointF> polygon)
+        {
+            int cn;
+            LineSegmentF l1 = new();
+            LineSegmentF l2 = new();
             var count = polygon.Count;
             for (var i = 0; i < count; i++)
             {
@@ -816,6 +1190,59 @@ namespace Trivial.Maths
         public static double AbsArea(IList<DoublePoint2D> polygon)
             => Math.Abs(Area(polygon));
 
+
+        /// <summary>
+        /// Computes the area of the polygon.
+        /// </summary>
+        /// <param name="polygon">The polygon.</param>
+        /// <returns>The area of the polygon. Greater than 0 if anticlockwise; less than 0 if clockwise.</returns>
+        public static float Area(PointF[] polygon)
+        {
+            var count = polygon.Length;
+            if (count < 3) return 0;
+            var s = polygon[0].Y * (polygon[count - 1].X - polygon[1].X);
+            for (var i = 1; i < count; i++)
+            {
+                s += polygon[i].Y * (polygon[i - 1].X - polygon[(i + 1) % count].X);
+            }
+
+            return s / 2;
+        }
+
+        /// <summary>
+        /// Computes the area of the polygon.
+        /// </summary>
+        /// <param name="polygon">The polygon.</param>
+        /// <returns>The area of the polygon. Greater than 0 if anticlockwise; less than 0 if clockwise.</returns>
+        public static float Area(IList<PointF> polygon)
+        {
+            var count = polygon.Count;
+            if (count < 3) return 0;
+            var s = polygon[0].Y * (polygon[count - 1].X - polygon[1].X);
+            for (var i = 1; i < count; i++)
+            {
+                s += polygon[i].Y * (polygon[i - 1].X - polygon[(i + 1) % count].X);
+            }
+
+            return s / 2;
+        }
+
+        /// <summary>
+        /// Computes the absolute area of the polygon.
+        /// </summary>
+        /// <param name="polygon">The polygon.</param>
+        /// <returns>The area of the polygon. Greater than 0 if anticlockwise; less than 0 if clockwise.</returns>
+        public static float AbsArea(PointF[] polygon)
+            => Math.Abs(Area(polygon));
+
+        /// <summary>
+        /// Computes the absolute area of the polygon.
+        /// </summary>
+        /// <param name="polygon">The polygon.</param>
+        /// <returns>The area of the polygon. Greater than 0 if anticlockwise; less than 0 if clockwise.</returns>
+        public static float AbsArea(IList<PointF> polygon)
+            => Math.Abs(Area(polygon));
+
         /// <summary>
         /// Tests if the points in polygon is anticlockwise.
         /// </summary>
@@ -830,6 +1257,22 @@ namespace Trivial.Maths
         /// <param name="polygon">The polygon.</param>
         /// <returns>true if it is anticlockwise; otherwise, false.</returns>
         public static bool IsAnticlockwise(IList<DoublePoint2D> polygon)
+            => Area(polygon) > 0;
+
+        /// <summary>
+        /// Tests if the points in polygon is anticlockwise.
+        /// </summary>
+        /// <param name="polygon">The polygon.</param>
+        /// <returns>true if it is anticlockwise; otherwise, false.</returns>
+        public static bool IsAnticlockwise(PointF[] polygon)
+            => Area(polygon) > 0;
+
+        /// <summary>
+        /// Tests if the points in polygon is anticlockwise.
+        /// </summary>
+        /// <param name="polygon">The polygon.</param>
+        /// <returns>true if it is anticlockwise; otherwise, false.</returns>
+        public static bool IsAnticlockwise(IList<PointF> polygon)
             => Area(polygon) > 0;
 
         /// <summary>
@@ -853,7 +1296,7 @@ namespace Trivial.Maths
                 AddRegion(p1.X, p1.Y, p2.X, p2.Y, ref xtr, ref ytr, ref wtr, ref xtl, ref ytl, ref wtl);
             }
 
-            return new DoublePoint2D(
+            return new(
                 (wtr * xtr + wtl * xtl) / (wtr + wtl),
                 (wtr * ytr + wtl * ytl) / (wtr + wtl));
         }
@@ -879,9 +1322,61 @@ namespace Trivial.Maths
                 AddRegion(p1.X, p1.Y, p2.X, p2.Y, ref xtr, ref ytr, ref wtr, ref xtl, ref ytl, ref wtl);
             }
 
-            return new DoublePoint2D(
+            return new(
                 (wtr * xtr + wtl * xtl) / (wtr + wtl),
                 (wtr * ytr + wtl * ytl) / (wtr + wtl));
+        }
+
+        /// <summary>
+        /// Gets the center of gravity of the polygon.
+        /// </summary>
+        /// <param name="polygon">The polygon.</param>
+        /// <returns>The center of gravity of the polygon.</returns>
+        /// <exception cref="InvalidOperationException">Only supports simple polygon.</exception>
+        public static PointF CenterOfGravity(PointF[] polygon)
+        {
+            if (!IsSimple(polygon)) throw new InvalidOperationException("Only supports simple polygon.", new NotImplementedException("Only supports simple polygon."));
+            PointF p1;
+            PointF p2;
+            double xtr, ytr, wtr, xtl, ytl, wtl;
+            xtr = ytr = wtr = xtl = ytl = wtl = 0f;
+            var count = polygon.Length;
+            for (int i = 0; i < count; i++)
+            {
+                p1 = polygon[i];
+                p2 = polygon[(i + 1) % count];
+                AddRegion(p1.X, p1.Y, p2.X, p2.Y, ref xtr, ref ytr, ref wtr, ref xtl, ref ytl, ref wtl);
+            }
+
+            return new(
+                (float)(wtr * xtr + wtl * xtl) / (float)(wtr + wtl),
+                (float)(wtr * ytr + wtl * ytl) / (float)(wtr + wtl));
+        }
+
+        /// <summary>
+        /// Gets the center of gravity of the polygon.
+        /// </summary>
+        /// <param name="polygon">The polygon.</param>
+        /// <returns>The center of gravity of the polygon.</returns>
+        /// <exception cref="InvalidOperationException">Only supports simple polygon.</exception>
+        public static PointF CenterOfGravity(IList<PointF> polygon)
+        {
+            if (!IsSimple(polygon)) throw new InvalidOperationException("Only supports simple polygon.", new NotImplementedException("Only supports simple polygon."));
+            double xtr, ytr, wtr, xtl, ytl, wtl;
+            xtr = ytr = wtr = xtl = ytl = wtl = 0f;
+            PointF p1;
+            PointF p2;
+            var count = polygon.Count;
+            for (int i = 0; i < count; i++)
+            {
+                p1 = polygon[i];
+                p2 = polygon[(i + 1) % count];
+                AddRegion(p1.X, p1.Y, p2.X, p2.Y, ref xtr, ref ytr, ref wtr, ref xtl, ref ytl, ref wtl);
+            }
+
+            return new(
+                (float)(wtr * xtr + wtl * xtl) / (float)(wtr + wtl),
+                (float)(wtr * ytr + wtl * ytl) / (float)(wtr + wtl));
         }
 
         private static void AddPosPart(double x, double y, double w, ref double xtr, ref double ytr, ref double wtr)
@@ -1169,6 +1664,39 @@ namespace Trivial.Maths
             if (Math.Abs(d - radius1 - radius2) < InternalHelper.DoubleAccuracy)
                 return RelationshipBetweenCircles.ExternallyTangent;
             if (Math.Abs(d - Math.Abs(radius1 - radius2)) < InternalHelper.DoubleAccuracy)
+                return RelationshipBetweenCircles.Inscribe;
+            if (d > radius1 + radius2)
+                return RelationshipBetweenCircles.Separation;
+            if (d < Math.Abs(radius1 - radius2))
+                return RelationshipBetweenCircles.Inclusion;
+            if (Math.Abs(radius1 - radius2) < d && d < radius1 + radius2)
+                return RelationshipBetweenCircles.Intersection;
+            return (RelationshipBetweenCircles)7; // Error!
+        }
+
+        /// <summary>
+        /// Gets the relationship between 2 circles.
+        /// </summary>
+        /// <param name="a">The first circle.</param>
+        /// <param name="b">The second circle.</param>
+        /// <returns>The relationship between 2 circles.</returns>
+        /// <exception cref="ArgumentException">a or b was invalid.</exception>
+        public static RelationshipBetweenCircles Relation(CoordinateCircleF a, CoordinateCircleF b)
+        {
+            if (a == null) a = new();
+            if (b == null) b = new();
+            var center1 = a.Center;
+            var center2 = b.Center;
+            var radius1 = a.Radius;
+            var radius2 = b.Radius;
+            if (float.IsNaN(radius1)) throw new ArgumentException("a radius should be a valid number.", nameof(a), new InvalidOperationException("radius1 is invalid."));
+            if (float.IsNaN(radius2)) throw new ArgumentException("b radius should be a valid number.", nameof(b), new InvalidOperationException("radius2 is invalid."));
+            var d = Math.Sqrt((center1.X - center2.X) * (center1.X - center2.X) + (center1.Y - center2.Y) * (center1.Y - center2.Y));
+            if (d < InternalHelper.SingleAccuracy && Math.Abs(radius1 - radius2) < InternalHelper.SingleAccuracy)
+                return RelationshipBetweenCircles.Congruence;
+            if (Math.Abs(d - radius1 - radius2) < InternalHelper.SingleAccuracy)
+                return RelationshipBetweenCircles.ExternallyTangent;
+            if (Math.Abs(d - Math.Abs(radius1 - radius2)) < InternalHelper.SingleAccuracy)
                 return RelationshipBetweenCircles.Inscribe;
             if (d > radius1 + radius2)
                 return RelationshipBetweenCircles.Separation;
