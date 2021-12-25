@@ -11,73 +11,72 @@
 using System;
 using System.Text.Json.Serialization;
 
-namespace Trivial.Maths
+namespace Trivial.Maths;
+
+/// <summary>
+/// The struct of degree (angle).
+/// </summary>
+public partial struct Angle : IComparable, IComparable<IAngle>, IEquatable<IAngle>, IComparable<double>, IEquatable<double>, IComparable<int>, IEquatable<int>, IAdvancedAdditionCapable<Angle>
 {
     /// <summary>
-    /// The struct of degree (angle).
+    /// The modes to rectify.
     /// </summary>
-    public partial struct Angle : IComparable, IComparable<IAngle>, IEquatable<IAngle>, IComparable<double>, IEquatable<double>, IComparable<int>, IEquatable<int>, IAdvancedAdditionCapable<Angle>
+    public enum RectifyModes : byte
     {
         /// <summary>
-        /// The modes to rectify.
+        /// Forbidden.
+        /// It will throw an ArgumentOutOfRangeException if the value is out of range.
         /// </summary>
-        public enum RectifyModes : byte
+        None = 0,
+
+        /// <summary>
+        /// Circulation.
+        /// It will turn to the other side of the range for the value out of range.
+        /// </summary>
+        Cycle = 1,
+
+        /// <summary>
+        /// Turn back like a pendulum.
+        /// It will retrace when touch the boundary.
+        /// </summary>
+        Bounce = 2
+    }
+
+    /// <summary>
+    /// The angle boundary guard options.
+    /// </summary>
+    public class BoundaryOptions
+    {
+        /// <summary>
+        /// Initializes a new instance of the BoundaryOptions class.
+        /// </summary>
+        /// <param name="max">The maximum degree.</param>
+        /// <param name="canBeNegative">true if the minimum degree is the negatived of the maximum one; otherwise, false, the minimum is 0.</param>
+        /// <param name="rectify">The mode to rectify.</param>
+        public BoundaryOptions(int max, bool canBeNegative, RectifyModes rectify)
         {
-            /// <summary>
-            /// Forbidden.
-            /// It will throw an ArgumentOutOfRangeException if the value is out of range.
-            /// </summary>
-            None = 0,
-
-            /// <summary>
-            /// Circulation.
-            /// It will turn to the other side of the range for the value out of range.
-            /// </summary>
-            Cycle = 1,
-
-            /// <summary>
-            /// Turn back like a pendulum.
-            /// It will retrace when touch the boundary.
-            /// </summary>
-            Bounce = 2
+            MaxDegree = max;
+            CanBeNegative = canBeNegative;
+            RectifyMode = rectify;
         }
 
         /// <summary>
-        /// The angle boundary guard options.
+        /// Gets the maximum degree supported. Should be greater than 0.
         /// </summary>
-        public class BoundaryOptions
-        {
-            /// <summary>
-            /// Initializes a new instance of the BoundaryOptions class.
-            /// </summary>
-            /// <param name="max">The maximum degree.</param>
-            /// <param name="canBeNegative">true if the minimum degree is the negatived of the maximum one; otherwise, false, the minimum is 0.</param>
-            /// <param name="rectify">The mode to rectify.</param>
-            public BoundaryOptions(int max, bool canBeNegative, RectifyModes rectify)
-            {
-                MaxDegree = max;
-                CanBeNegative = canBeNegative;
-                RectifyMode = rectify;
-            }
+        [JsonPropertyName("max")]
+        public int MaxDegree { get; }
 
-            /// <summary>
-            /// Gets the maximum degree supported. Should be greater than 0.
-            /// </summary>
-            [JsonPropertyName("max")]
-            public int MaxDegree { get; }
+        /// <summary>
+        /// Gets a value indicating whether the angle value can be negative.
+        /// </summary>
+        [JsonPropertyName("negative")]
+        public bool CanBeNegative { get; }
 
-            /// <summary>
-            /// Gets a value indicating whether the angle value can be negative.
-            /// </summary>
-            [JsonPropertyName("negative")]
-            public bool CanBeNegative { get; }
-
-            /// <summary>
-            /// Gets the mode to rectify if the value is out of the scope.
-            /// </summary>
-            [JsonPropertyName("rectify")]
-            [JsonConverter(typeof(JsonStringEnumConverter))]
-            public RectifyModes RectifyMode { get; }
-        }
+        /// <summary>
+        /// Gets the mode to rectify if the value is out of the scope.
+        /// </summary>
+        [JsonPropertyName("rectify")]
+        [JsonConverter(typeof(JsonStringEnumConverter))]
+        public RectifyModes RectifyMode { get; }
     }
 }

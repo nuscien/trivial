@@ -271,7 +271,6 @@ namespace Trivial.Chemistry
     class Model
     {
         [JsonPropertyName("e")]
-        [JsonConverter(typeof(ChemicalElementJsonConverter))]
         public ChemicalElement Element { get; set; }
     }
 }

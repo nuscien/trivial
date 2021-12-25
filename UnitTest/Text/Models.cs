@@ -96,7 +96,6 @@ namespace Trivial.Text
         [JsonConverter(typeof(JsonIntegerEnumCompatibleConverter))]
         public Data.ChangeMethods? V { get; set; }
 
-        [JsonConverter(typeof(JsonNumberConverter))]
         public Maths.Angle W { get; set; }
     }
 }
