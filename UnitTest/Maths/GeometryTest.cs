@@ -8,32 +8,31 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Trivial.Maths
+namespace Trivial.Maths;
+
+/// <summary>
+/// Arithmetic unit test.
+/// </summary>
+[TestClass]
+public class GeometryTest
 {
     /// <summary>
-    /// Arithmetic unit test.
+    /// Tests arithmetic.
     /// </summary>
-    [TestClass]
-    public class GeometryTest
+    [TestMethod]
+    public void TestGeometry()
     {
-        /// <summary>
-        /// Tests arithmetic.
-        /// </summary>
-        [TestMethod]
-        public void TestGeometry()
-        {
-            // Points
-            var angle = Geometry.Angle(new DoublePoint2D(0, 0), new DoublePoint2D(1, 0), new DoublePoint2D(0, 1));
-            Assert.AreEqual(90, angle.AbsDegree);
+        // Points
+        var angle = Geometry.Angle(new DoublePoint2D(0, 0), new DoublePoint2D(1, 0), new DoublePoint2D(0, 1));
+        Assert.AreEqual(90, angle.AbsDegree);
 
-            var point = JsonSerializer.Deserialize<IntPoint2D>("{ \"x\": 12.8, \"y\": \"62\" }");
-            Assert.AreEqual(13, point.X);
-            Assert.AreEqual(62, point.Y);
+        var point = JsonSerializer.Deserialize<IntPoint2D>("{ \"x\": 12.8, \"y\": \"62\" }");
+        Assert.AreEqual(13, point.X);
+        Assert.AreEqual(62, point.Y);
 
-            var point2 = JsonSerializer.Deserialize<DoublePoint3D>("{ \"x\": 12.8, \"y\": \"62\" }");
-            Assert.AreEqual(12.8, point2.X);
-            Assert.AreEqual(62, point2.Y);
-            Assert.AreEqual(0, point2.Z);
-        }
+        var point2 = JsonSerializer.Deserialize<DoublePoint3D>("{ \"x\": 12.8, \"y\": \"62\" }");
+        Assert.AreEqual(12.8, point2.X);
+        Assert.AreEqual(62, point2.Y);
+        Assert.AreEqual(0, point2.Z);
     }
 }

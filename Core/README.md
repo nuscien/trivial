@@ -206,10 +206,10 @@ And `ChineseNumerals` for Chinese and `JapaneseNumerals` for Japanese.
 
 ### Rectangular coordinates
 
-- `OneDimensionalPoint` The point in 1D (line) coordinates.
-- `TwoDimensionalPoint` The point in 2D (flat) coordinates.
-- `ThreeDimensionalPoint` The point in 3D (stereoscophic) coordinates.
-- `FourDimensionalPoint` The point in 4D (spacetime) coordinates.
+- `IntPoint1D` `DoublePoint1D` The point in 1D (line) coordinates.
+- `IntPoint2D` `DoublePoint2D` The point in 2D (flat) coordinates.
+- `IntPoint3D` `DoublePoint3D` The point in 3D (stereoscophic) coordinates.
+- `SpacetimePoint` The point in 4D (spacetime) coordinates.
 
 ## Further
 

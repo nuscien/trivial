@@ -114,7 +114,7 @@ namespace Trivial.Maths
         where TTimeUnit : struct, IComparable<TTimeUnit>, IEquatable<TTimeUnit>
     {
         /// <summary>
-        /// Initializes a new instance of the FourDimensionalPoint class.
+        /// Initializes a new instance of the Point4D class.
         /// </summary>
         /// <remarks>You can use this to initialize an instance for the class.</remarks>
         public Point4D()
@@ -122,7 +122,7 @@ namespace Trivial.Maths
         }
 
         /// <summary>
-        /// Initializes a new instance of the FourDimensionalPoint class.
+        /// Initializes a new instance of the Point4D class.
         /// </summary>
         /// <param name="x">The value of X.</param>
         /// <param name="y">The value of Y.</param>
