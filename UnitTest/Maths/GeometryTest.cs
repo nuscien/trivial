@@ -25,6 +25,15 @@ namespace Trivial.Maths
             // Points
             var angle = Geometry.Angle(new DoublePoint2D(0, 0), new DoublePoint2D(1, 0), new DoublePoint2D(0, 1));
             Assert.AreEqual(90, angle.AbsDegree);
+
+            var point = JsonSerializer.Deserialize<IntPoint2D>("{ \"x\": 12.8, \"y\": \"62\" }");
+            Assert.AreEqual(13, point.X);
+            Assert.AreEqual(62, point.Y);
+
+            var point2 = JsonSerializer.Deserialize<DoublePoint3D>("{ \"x\": 12.8, \"y\": \"62\" }");
+            Assert.AreEqual(12.8, point2.X);
+            Assert.AreEqual(62, point2.Y);
+            Assert.AreEqual(0, point2.Z);
         }
     }
 }

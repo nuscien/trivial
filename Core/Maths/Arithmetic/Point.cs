@@ -1306,5 +1306,9 @@ namespace Trivial.Maths
         }
 
         #endregion
+
+        #region JSON
+
+        #endregion
     }
 }

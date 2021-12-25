@@ -21,7 +21,7 @@
 		<RepositoryUrl>https://github.com/nuscien/trivial</RepositoryUrl>
 		<RepositoryType>git</RepositoryType>
 		<PublishRepositoryUrl>true</PublishRepositoryUrl>
-		<PackageIcon>logo.png</PackageIcon>
+		<PackageIcon>maths.png</PackageIcon>
 		<PackageIconUrl>https://github.com/nuscien/trivial/raw/master/Materials/logo.png</PackageIconUrl>
 		<PackageTags>maths</PackageTags>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
@@ -53,7 +53,7 @@
 	<ItemGroup>
 		<None Include="README.md" Pack="true" PackagePath="README.md" />
 		<None Include="..\LICENSE" Pack="true" PackagePath="LICENSE" />
-		<None Include="..\Materials\logo.png" Pack="true" PackagePath="logo.png" />
+		<None Include="..\Materials\maths.png" Pack="true" PackagePath="maths.png" />
 	</ItemGroup>
 
 	<ItemGroup>

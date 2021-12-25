@@ -1264,8 +1264,20 @@ namespace Trivial.Text
         /// <returns>The value; or null if fail to resolve.</returns>
         public ushort? TryGetUInt16Value(string key)
         {
-            if (TryGetJsonValue<JsonIntegerNode>(key, out var p1)) return (ushort)p1;
-            if (TryGetJsonValue<JsonDoubleNode>(key, out var p2)) return (ushort)p2;
+            try
+            {
+                if (TryGetJsonValue<JsonIntegerNode>(key, out var p1)) return (ushort)p1;
+                if (TryGetJsonValue<JsonDoubleNode>(key, out var p2)) return (ushort)Math.Round(p2.Value);
+            }
+            catch (InvalidCastException)
+            {
+                return null;
+            }
+            catch (ArgumentOutOfRangeException)
+            {
+                return null;
+            }
+
             var str = TryGetStringValue(key);
             if (string.IsNullOrWhiteSpace(str) || !Numbers.TryParseToUInt16(str, 10, out var p3)) return null;
             return p3;
@@ -1291,8 +1303,20 @@ namespace Trivial.Text
         /// <returns>The value; or null if fail to resolve.</returns>
         public uint? TryGetUInt32Value(string key)
         {
-            if (TryGetJsonValue<JsonIntegerNode>(key, out var p1)) return (uint)p1;
-            if (TryGetJsonValue<JsonDoubleNode>(key, out var p2)) return (uint)p2;
+            try
+            {
+                if (TryGetJsonValue<JsonIntegerNode>(key, out var p1)) return (uint)p1;
+                if (TryGetJsonValue<JsonDoubleNode>(key, out var p2)) return (uint)Math.Round(p2.Value);
+            }
+            catch (InvalidCastException)
+            {
+                return null;
+            }
+            catch (ArgumentOutOfRangeException)
+            {
+                return null;
+            }
+
             var str = TryGetStringValue(key);
             if (string.IsNullOrWhiteSpace(str) || !Numbers.TryParseToUInt32(str, 10, out var p3)) return null;
             return p3;
@@ -1318,8 +1342,20 @@ namespace Trivial.Text
         /// <returns>The value; or null if fail to resolve.</returns>
         public short? TryGetInt16Value(string key)
         {
-            if (TryGetJsonValue<JsonIntegerNode>(key, out var p1)) return (short)p1;
-            if (TryGetJsonValue<JsonDoubleNode>(key, out var p2)) return (short)p2;
+            try
+            {
+                if (TryGetJsonValue<JsonIntegerNode>(key, out var p1)) return (short)p1;
+                if (TryGetJsonValue<JsonDoubleNode>(key, out var p2)) return (short)Math.Round(p2.Value);
+            }
+            catch (InvalidCastException)
+            {
+                return null;
+            }
+            catch (ArgumentOutOfRangeException)
+            {
+                return null;
+            }
+
             var str = TryGetStringValue(key);
             if (string.IsNullOrWhiteSpace(str) || !Numbers.TryParseToInt16(str, 10, out var p3)) return null;
             return p3;
@@ -1346,7 +1382,19 @@ namespace Trivial.Text
         public int? TryGetInt32Value(string key)
         {
             if (TryGetJsonValue<JsonIntegerNode>(key, out var p1)) return (int)p1;
-            if (TryGetJsonValue<JsonDoubleNode>(key, out var p2)) return (int)p2;
+            try
+            {
+                if (TryGetJsonValue<JsonDoubleNode>(key, out var p2)) return (int)Math.Round(p2.Value);
+            }
+            catch (InvalidCastException)
+            {
+                return null;
+            }
+            catch (ArgumentOutOfRangeException)
+            {
+                return null;
+            }
+
             var str = TryGetStringValue(key);
             if (string.IsNullOrWhiteSpace(str) || !Numbers.TryParseToInt32(str, 10, out var p3)) return null;
             return p3;
@@ -1373,7 +1421,19 @@ namespace Trivial.Text
         public long? TryGetInt64Value(string key)
         {
             if (TryGetJsonValue<JsonIntegerNode>(key, out var p1)) return p1.Value;
-            if (TryGetJsonValue<JsonDoubleNode>(key, out var p2)) return (long)p2;
+            try
+            {
+                if (TryGetJsonValue<JsonDoubleNode>(key, out var p2)) return (long)Math.Round(p2.Value);
+            }
+            catch (InvalidCastException)
+            {
+                return null;
+            }
+            catch (ArgumentOutOfRangeException)
+            {
+                return null;
+            }
+
             var str = TryGetStringValue(key);
             if (string.IsNullOrWhiteSpace(str) || !Numbers.TryParseToInt64(str, 10, out var p3)) return null;
             return p3;
@@ -1399,7 +1459,19 @@ namespace Trivial.Text
         /// <returns>The value; or null if fail to resolve.</returns>
         public float? TryGetFloatValue(string key)
         {
-            if (TryGetJsonValue<JsonDoubleNode>(key, out var p1)) return (float)p1;
+            try
+            {
+                if (TryGetJsonValue<JsonDoubleNode>(key, out var p1)) return (float)p1;
+            }
+            catch (InvalidCastException)
+            {
+                return null;
+            }
+            catch (ArgumentOutOfRangeException)
+            {
+                return null;
+            }
+
             if (TryGetJsonValue<JsonIntegerNode>(key, out var p2)) return (float)p2;
             var str = TryGetStringValue(key);
             if (string.IsNullOrWhiteSpace(str) || !float.TryParse(str, out var p3)) return null;
