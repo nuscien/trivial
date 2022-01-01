@@ -182,7 +182,7 @@ public class Point2D<TUnit> : TwoElements<TUnit>, IEquatable<TwoElements<TUnit>>
 /// The point of 2D (flat) mathematics coordinate.
 /// </summary>
 [JsonConverter(typeof(DoublePoint2DConverter))]
-public class DoublePoint2D : Point2D<double>, IAdditionCapable<DoublePoint2D>, ISubtractionCapable<DoublePoint2D>, INegationCapable<DoublePoint2D>, IEquatable<Point2D<double>>
+public class DoublePoint2D : Point2D<double>, IAdditionCapable<DoublePoint2D>, ISubtractionCapable<DoublePoint2D>, INegationCapable<DoublePoint2D>, IEquatable<System.Drawing.PointF>, IEquatable<Point2D<int>>, IEquatable<Point2D<double>>
 {
     /// <summary>
     /// Initializes a new instance of the DoublePoint2D class.
@@ -319,9 +319,9 @@ public class DoublePoint2D : Point2D<double>, IAdditionCapable<DoublePoint2D>, I
     /// Converts to an instance of JSON.
     /// </summary>
     /// <returns>A JSON object instance.</returns>
-    public Text.JsonObjectNode ToJson()
+    public JsonObjectNode ToJson()
     {
-        return ToJson(new Text.JsonObjectNode());
+        return ToJson(new JsonObjectNode());
     }
 
     /// <summary>
@@ -329,9 +329,9 @@ public class DoublePoint2D : Point2D<double>, IAdditionCapable<DoublePoint2D>, I
     /// </summary>
     /// <param name="obj">The optional JSON object instance to add properties.</param>
     /// <returns>A JSON object instance.</returns>
-    public Text.JsonObjectNode ToJson(Text.JsonObjectNode obj)
+    public JsonObjectNode ToJson(JsonObjectNode obj)
     {
-        if (obj is null) obj = new Text.JsonObjectNode();
+        if (obj is null) obj = new JsonObjectNode();
         obj.SetValue("x", X);
         obj.SetValue("y", Y);
         return obj;
@@ -343,6 +343,22 @@ public class DoublePoint2D : Point2D<double>, IAdditionCapable<DoublePoint2D>, I
     /// <returns>A new object that is a copy of this instance.</returns>
     public override object Clone()
         => new DoublePoint2D(X, Y);
+
+    /// <summary>
+    /// Determines whether the specified object is equal to the current object.
+    /// </summary>
+    /// <param name="other">The object to compare with the current object.</param>
+    /// <returns>true if the specified object is equal to the current object; otherwise, false.</returns>
+    public bool Equals(System.Drawing.PointF other)
+        => X == other.X && Y == other.Y;
+
+    /// <summary>
+    /// Determines whether the specified object is equal to the current object.
+    /// </summary>
+    /// <param name="other">The object to compare with the current object.</param>
+    /// <returns>true if the specified object is equal to the current object; otherwise, false.</returns>
+    public bool Equals(Point2D<int> other)
+        => other is not null && X == other.X && Y == other.Y;
 
     /// <summary>
     /// Determines whether the specified object is equal to the current object.
@@ -362,6 +378,8 @@ public class DoublePoint2D : Point2D<double>, IAdditionCapable<DoublePoint2D>, I
         if (other is null) return false;
         if (ReferenceEquals(this, other)) return true;
         if (other is Point2D<double> p) return Equals(p);
+        if (other is Point2D<int> p2) return Equals(p2);
+        if (other is System.Drawing.PointF p3) return Equals(p3);
         return base.Equals(other);
     }
 
@@ -441,7 +459,7 @@ public class DoublePoint2D : Point2D<double>, IAdditionCapable<DoublePoint2D>, I
 /// The point of 2D (flat) integer coordinate.
 /// </summary>
 [JsonConverter(typeof(IntPoint2DConverter))]
-public class IntPoint2D : Point2D<int>, IAdditionCapable<IntPoint2D>, ISubtractionCapable<IntPoint2D>, INegationCapable<IntPoint2D>, IEquatable<Point2D<int>>
+public class IntPoint2D : Point2D<int>, IAdditionCapable<IntPoint2D>, ISubtractionCapable<IntPoint2D>, INegationCapable<IntPoint2D>, IEquatable<System.Drawing.Point>, IEquatable<Point2D<int>>, IEquatable<Point2D<double>>
 {
     /// <summary>
     /// Initializes a new instance of the IntPoint2D class.
@@ -551,9 +569,9 @@ public class IntPoint2D : Point2D<int>, IAdditionCapable<IntPoint2D>, ISubtracti
     /// Converts to an instance of JSON.
     /// </summary>
     /// <returns>A JSON object instance.</returns>
-    public Text.JsonObjectNode ToJson()
+    public JsonObjectNode ToJson()
     {
-        return ToJson(new Text.JsonObjectNode());
+        return ToJson(new JsonObjectNode());
     }
 
     /// <summary>
@@ -561,9 +579,9 @@ public class IntPoint2D : Point2D<int>, IAdditionCapable<IntPoint2D>, ISubtracti
     /// </summary>
     /// <param name="obj">The optional JSON object instance to add properties.</param>
     /// <returns>A JSON object instance.</returns>
-    public Text.JsonObjectNode ToJson(Text.JsonObjectNode obj)
+    public JsonObjectNode ToJson(JsonObjectNode obj)
     {
-        if (obj is null) obj = new Text.JsonObjectNode();
+        if (obj is null) obj = new JsonObjectNode();
         obj.SetValue("x", X);
         obj.SetValue("y", Y);
         return obj;
@@ -581,7 +599,23 @@ public class IntPoint2D : Point2D<int>, IAdditionCapable<IntPoint2D>, ISubtracti
     /// </summary>
     /// <param name="other">The object to compare with the current object.</param>
     /// <returns>true if the specified object is equal to the current object; otherwise, false.</returns>
+    public bool Equals(System.Drawing.Point other)
+        => X == other.X && Y == other.Y;
+
+    /// <summary>
+    /// Determines whether the specified object is equal to the current object.
+    /// </summary>
+    /// <param name="other">The object to compare with the current object.</param>
+    /// <returns>true if the specified object is equal to the current object; otherwise, false.</returns>
     public bool Equals(Point2D<int> other)
+        => other is not null && X == other.X && Y == other.Y;
+
+    /// <summary>
+    /// Determines whether the specified object is equal to the current object.
+    /// </summary>
+    /// <param name="other">The object to compare with the current object.</param>
+    /// <returns>true if the specified object is equal to the current object; otherwise, false.</returns>
+    public bool Equals(Point2D<double> other)
         => other is not null && X == other.X && Y == other.Y;
 
     /// <summary>
@@ -594,6 +628,8 @@ public class IntPoint2D : Point2D<int>, IAdditionCapable<IntPoint2D>, ISubtracti
         if (other is null) return false;
         if (ReferenceEquals(this, other)) return true;
         if (other is Point2D<int> p) return Equals(p);
+        if (other is Point2D<double> p2) return Equals(p2);
+        if (other is System.Drawing.Point p3) return Equals(p3);
         return base.Equals(other);
     }
 
