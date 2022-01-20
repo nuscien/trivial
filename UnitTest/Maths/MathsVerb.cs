@@ -57,7 +57,7 @@ class MathsVerb : CommandLine.BaseCommandVerb
                     break;
                 case "parse":
                     {
-                        if (Numbers.TryParseToInt32(num, 10, out var value))
+                        if (Numbers.TryParseToInt64(num, 10, out var value))
                             CommandLine.StyleConsole.Default.WriteLine(value);
                         else
                             CommandLine.StyleConsole.Default.WriteLine(ConsoleColor.Red, "Parse failed.");

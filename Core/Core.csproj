@@ -22,7 +22,7 @@
     <RepositoryType>git</RepositoryType>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <PackageIcon>logo.png</PackageIcon>
-    <PackageIconUrl>https://github.com/nuscien/trivial/raw/master/Materials/logo.png</PackageIconUrl>
+    <PackageIconUrl>https://github.com/nuscien/trivial/raw/main/Materials/logo.png</PackageIconUrl>
     <PackageTags>tasks interceptor numerals json oauth2-client jwt-token csv-parser stream pem coordinates uri</PackageTags>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <LangVersion>10.0</LangVersion>

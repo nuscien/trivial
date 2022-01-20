@@ -413,7 +413,7 @@ public static class Numbers
             return false;
         }
 
-        s = s.Trim().ToLowerInvariant();
+        s = s.Trim();
         if (radix == 10)
         {
             if (int.TryParse(s, out result)) return true;
@@ -431,6 +431,7 @@ public static class Numbers
             return false;
         }
 
+        s = s.ToLowerInvariant();
         var num = 0;
         var pos = 0;
         var neg = false;
@@ -460,16 +461,29 @@ public static class Numbers
             neg = true;
             pos++;
         }
+        else if (radix == 10 && s.StartsWith("0x"))
+        {
+            radix = 16;
+            if (s.StartsWith("0x-"))
+            {
+                pos += 3;
+                neg = true;
+            }
+            else
+            {
+                pos += 2;
+            }
+        }
 
         for (; pos < s.Length; pos++)
         {
             var c = s[pos];
-            num *= radix;
             var i = num36.IndexOf(c);
             if (i < 0)
             {
                 if (c == ' ' || c == '_' || c == ',') continue;
-                if (c == '.' || c == '\t' || c == '\r' || c == '\n' || c == '\0') break;
+                if (c == '\r' || c == '\n' || c == '\0') break;
+                if (c == '.' && pos == s.Length - 1) break;
                 result = default;
                 return false;
             }
@@ -479,6 +493,7 @@ public static class Numbers
                 return false;
             }
 
+            num *= radix;
             num += i;
         }
 
@@ -501,7 +516,7 @@ public static class Numbers
             return false;
         }
 
-        s = s.Trim().ToLowerInvariant();
+        s = s.Trim();
         if (radix == 10)
         {
             if (long.TryParse(s, out result)) return true;
@@ -519,6 +534,7 @@ public static class Numbers
             return false;
         }
 
+        s = s.ToLowerInvariant();
         var num = 0L;
         var pos = 0;
         var neg = false;
@@ -548,16 +564,29 @@ public static class Numbers
             neg = true;
             pos++;
         }
+        else if (radix == 10 && s.StartsWith("0x"))
+        {
+            radix = 16;
+            if (s.StartsWith("0x-"))
+            {
+                pos += 3;
+                neg = true;
+            }
+            else
+            {
+                pos += 2;
+            }
+        }
 
         for (; pos < s.Length; pos++)
         {
             var c = s[pos];
-            num *= radix;
             var i = num36.IndexOf(c);
             if (i < 0)
             {
                 if (c == ' ' || c == '_' || c == ',') continue;
-                if (c == '.' || c == '\t' || c == '\r' || c == '\n' || c == '\0') break;
+                if (c == '\r' || c == '\n' || c == '\0') break;
+                if (c == '.' && pos == s.Length - 1) break;
                 result = default;
                 return false;
             }
@@ -567,6 +596,7 @@ public static class Numbers
                 return false;
             }
 
+            num *= radix;
             num += i;
         }
 
@@ -781,11 +811,17 @@ public static class Numbers
                 if (s.Length < 1) return level;
             }
 
-            if (int.TryParse(s, out var i))
+            if (float.TryParse(s, out var i))
             {
-                var j = i * level;
-                if (j % level > 0) return null;
-                return j;
+                try
+                {
+                    var j = (int)Math.Round(i * level);
+                    return j;
+                }
+                catch (InvalidCastException)
+                {
+                    return null;
+                }
             }
             else if (s.Length == 1)
             {
@@ -836,11 +872,17 @@ public static class Numbers
                 if (s.Length < 1) return level;
             }
 
-            if (long.TryParse(s, out var i))
+            if (float.TryParse(s, out var i))
             {
-                var j = i * level;
-                if (j % level > 0) return null;
-                return j;
+                try
+                {
+                    var j = (long)Math.Round(i * level);
+                    return j;
+                }
+                catch (InvalidCastException)
+                {
+                    return null;
+                }
             }
             else if (s.Length == 1)
             {
