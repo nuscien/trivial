@@ -815,7 +815,7 @@ public static class Numbers
             {
                 try
                 {
-                    var j = (int)Math.Round(i * level);
+                    var j = (int)i * level;
                     return j;
                 }
                 catch (InvalidCastException)
@@ -876,7 +876,7 @@ public static class Numbers
             {
                 try
                 {
-                    var j = (long)Math.Round(i * level);
+                    var j = (long)i * level;
                     return j;
                 }
                 catch (InvalidCastException)

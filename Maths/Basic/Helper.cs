@@ -43,6 +43,7 @@ namespace Trivial.Maths
             var y2 = graph.GetY(right);
             if (!double.IsNaN(y2)) yield return new(right, y2);
         }
+
         /// <summary>
         /// Generates point collection in the specific zone and accuracy.
         /// </summary>

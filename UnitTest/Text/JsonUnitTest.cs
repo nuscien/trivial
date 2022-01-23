@@ -96,6 +96,7 @@ public class JsonUnitTest
         json.EnableThreadSafeMode(3);
         Assert.IsTrue(json.GetObjectValue("props", "p1", "p3").GetBooleanValue("p2"));
         Assert.IsTrue(json["props", "p1", "p3", "p2"].GetBoolean());
+        Assert.IsTrue(json.TryGetObjectValue("props", "p1", "p3").GetBooleanValue("p2"));
         Assert.IsTrue(json.TryGetValue("props.p1.p3.p2", true).GetBoolean());
         Assert.IsTrue(json.TryGetValue("props. 'p1'.'p3'.p2", true).GetBoolean());
         Assert.IsTrue(json.TryGetValue("[props]['p1'][p3][ 'p2' ]", true).GetBoolean());

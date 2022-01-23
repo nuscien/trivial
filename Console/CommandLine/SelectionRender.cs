@@ -386,7 +386,7 @@ namespace Trivial.CommandLine
         public static bool IsAboutToGetHelp(string s)
             => !string.IsNullOrEmpty(s) && s.Trim().ToLowerInvariant() switch
             {
-                "?" or "help" or "gethelp" or "get-help" or "-?" or "/h" or "--?" or "-help" or "--help" or "/help" or "帮助" or "bangzhu" or "/bangzhu" or "--bangzhu" or "获取帮助" or "❓" => true,
+                "?" or "help" or "gethelp" or "get-help" or "-?" or "/h" or "--?" or "-help" or "--help" or "/help" or "帮助" or "bangzhu" or "/bangzhu" or "--bangzhu" or "获取帮助" or "助け" or "❓" => true,
                 _ => false
             };
 
@@ -398,7 +398,7 @@ namespace Trivial.CommandLine
         public static bool IsAboutToExit(string s)
             => !string.IsNullOrEmpty(s) && s.Trim().ToLowerInvariant() switch
             {
-                "exit" or "quit" or "close" or "bye" or "byebye" or "goodbye" or "good-bye" or "end" or "shutdown" or "shut-down" or "关闭" or "退出" or "再见" or "guanbi" or "tuichu" or "zaijian" => true,
+                "exit" or "quit" or "close" or "bye" or "byebye" or "goodbye" or "good-bye" or "end" or "shutdown" or "shut-down" or "关闭" or "退出" or "再见" or "guanbi" or "tuichu" or "zaijian" or "さようなら" => true,
                 _ => false
             };
 

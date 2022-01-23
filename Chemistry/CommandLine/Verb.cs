@@ -523,7 +523,7 @@ namespace Trivial.CommandLine
                         ForegroundConsoleColor = ConsoleColor.Red
                     }
                 },
-                "The period was too large."
+                message
             });
 
         private void WriteHelp(string verb, string key = null)
@@ -587,7 +587,7 @@ namespace Trivial.CommandLine
                 case "molecular":
                 case "formula":
                 case "分子":
-                    WriteTips(verb, "molecular <formula>", ElementTips, "Get the information of the specific molecular formula.");
+                    WriteTips(verb, "molecular <formula>", MolecularFormulaTips, "Get the information of the specific molecular formula.");
                     console.WriteLine();
                     console.WriteLine(ExamplesTips ?? "EXAMPLES");
                     console.WriteLine();
@@ -634,7 +634,7 @@ namespace Trivial.CommandLine
             console.WriteLine();
             WriteTips(verb, lsKey + " <start>-<end>", ElementListTips, "List a speicific range of chemical elements.");
             console.WriteLine();
-            WriteTips(verb, "molecular <formula>", ElementTips, "Get the information of the specific molecular formula.");
+            WriteTips(verb, "molecular <formula>", MolecularFormulaTips, "Get the information of the specific molecular formula.");
         }
 
         private void WriteTips(string verb, string cmd, string desc, string descBackup)

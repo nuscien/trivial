@@ -96,6 +96,17 @@ namespace Trivial.Maths
         }
 
         /// <summary>
+        /// Initializes a new instance of the CoordinateCircle class.
+        /// </summary>
+        /// <param name="circle">The circle.</param>
+        public CoordinateCircle(CoordinateCircleF circle)
+        {
+            if (circle == null) circle = new();
+            center = circle.Center;
+            radius = circle.Radius;
+        }
+
+        /// <summary>
         /// Gets or sets the radius.
         /// </summary>
         /// <exception cref="InvalidOperationException">Radius was less than 0.</exception>
@@ -472,6 +483,17 @@ namespace Trivial.Maths
             Alpha = alpha;
             this.center = center;
             SetRadius(a, b);
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the CoordinateEllipse class.
+        /// </summary>
+        /// <param name="ellipse">The Ellipse.</param>
+        public CoordinateEllipse(CoordinateEllipseF ellipse)
+        {
+            if (ellipse == null) ellipse = new();
+            Alpha = ellipse.Alpha;
+            center = ellipse.Center;
         }
 
         /// <summary>

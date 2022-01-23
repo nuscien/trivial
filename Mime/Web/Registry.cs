@@ -24,9 +24,6 @@ namespace Trivial.Web
 #if NET6_0_OR_GREATER
     [System.Runtime.Versioning.SupportedOSPlatform("windows")]
 #endif
-#if NET6_0_OR_GREATER
-    [System.Runtime.Versioning.SupportedOSPlatform("windows")]
-#endif
         public static class Registry
         {
             /// <summary>

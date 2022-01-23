@@ -1565,7 +1565,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     /// <returns>The value.</returns>
     public JsonObjectNode TryGetObjectValue(string key, string subKey, params string[] keyPath)
     {
-        var json = TryGetObjectValue(key);
+        var json = TryGetObjectValueByProperty(this, key);
         if (json is null) return null;
         if (!string.IsNullOrWhiteSpace(subKey)) json = TryGetObjectValueByProperty(json, subKey);
         foreach (var k in keyPath)

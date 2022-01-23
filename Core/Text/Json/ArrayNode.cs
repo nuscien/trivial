@@ -2399,11 +2399,15 @@ public class JsonArrayNode : IJsonContainerNode, IJsonDataNode, IReadOnlyList<IJ
     /// Projects each element of a sequence into a new form.
     /// </summary>
     /// <typeparam name="T">The type of the value returned by selector.</typeparam>
-    /// <param name="selector">A transform function to apply to each element.</param>
+    /// <param name="removeNotMatched">true if remove the type does not match the expected; otherwise, false.</param>
     /// <returns>A collection whose elements are the result of invoking the transform function on each element of source.</returns>
-    public IEnumerable<T> Select<T>(Func<IJsonDataNode, T> selector)
+    public IEnumerable<T> Select<T>(bool removeNotMatched) where T : IJsonDataNode
     {
-        return store.Select(ele => selector(ele ?? JsonValues.Null));
+        foreach (var item in store)
+        {
+            if (item is T t) yield return t;
+            if (!removeNotMatched) yield return default;
+        }
     }
 
     /// <summary>
@@ -2412,10 +2416,17 @@ public class JsonArrayNode : IJsonContainerNode, IJsonDataNode, IReadOnlyList<IJ
     /// <typeparam name="T">The type of the value returned by selector.</typeparam>
     /// <param name="selector">A transform function to apply to each element.</param>
     /// <returns>A collection whose elements are the result of invoking the transform function on each element of source.</returns>
+    public IEnumerable<T> Select<T>(Func<IJsonDataNode, T> selector)
+        => store.Select(ele => selector(ele ?? JsonValues.Null));
+
+    /// <summary>
+    /// Projects each element of a sequence into a new form.
+    /// </summary>
+    /// <typeparam name="T">The type of the value returned by selector.</typeparam>
+    /// <param name="selector">A transform function to apply to each element.</param>
+    /// <returns>A collection whose elements are the result of invoking the transform function on each element of source.</returns>
     public IEnumerable<T> Select<T>(Func<IJsonDataNode, int, T> selector)
-    {
-        return store.Select((ele, i) => selector(ele ?? JsonValues.Null, i));
-    }
+        => store.Select((ele, i) => selector(ele ?? JsonValues.Null, i));
 
     /// <summary>
     /// Gets a collection of all property values for each element.
@@ -2423,8 +2434,7 @@ public class JsonArrayNode : IJsonContainerNode, IJsonDataNode, IReadOnlyList<IJ
     /// <param name="key">The specific property key.</param>
     /// <returns>A collection whose elements are the result of invoking the transform function on each element of source.</returns>
     public IEnumerable<IJsonDataNode> SelectProperty(string key)
-    {
-        return Select(ele =>
+        => Select(ele =>
         {
             if (ele is null) return null;
             if (ele is JsonObjectNode json) return json.TryGetValue(key);
@@ -2432,7 +2442,6 @@ public class JsonArrayNode : IJsonContainerNode, IJsonDataNode, IReadOnlyList<IJ
             if (ele is JsonStringNode jStr && (jStr as IJsonDataNode).TryGetValue(key, out var subStr)) return subStr;
             return null;
         });
-    }
 
     /// <summary>
     /// Fills items by null until the count matches the specific minimum requirement.

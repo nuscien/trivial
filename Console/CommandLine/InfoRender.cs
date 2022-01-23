@@ -181,9 +181,7 @@ namespace Trivial.CommandLine
         /// </summary>
         /// <param name="list">The console text collection.</param>
         public static void AddEmptyLine(this IList<ConsoleText> list)
-        {
-            list.Add(new ConsoleText(Environment.NewLine));
-        }
+            => list?.Add(new ConsoleText(Environment.NewLine));
 
         /// <summary>
         /// Writes a sentense to allow pressing a key to continue.

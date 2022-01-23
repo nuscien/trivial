@@ -38,6 +38,17 @@ namespace Trivial.Maths
         }
 
         /// <summary>
+        /// Initializes a new instance of the LineSegment class.
+        /// </summary>
+        /// <param name="line">The line segment.</param>
+        public LineSegment(LineSegmentF line)
+        {
+            if (line == null) line = new();
+            start = line.Start;
+            end = line.End;
+        }
+
+        /// <summary>
         /// Gets or sets the start point.
         /// </summary>
         [JsonIgnore(Condition = JsonIgnoreCondition.Always)]
@@ -349,6 +360,20 @@ namespace Trivial.Maths
             C = sign * (a.Y * b.X - a.X * b.Y);
             Slope = GetSlope(A, B);
             Intercept = B == 0 || double.IsNaN(B) ? double.NaN : -C / B;
+        }
+
+        /// <summary>
+        /// <para>Initializes a new instance of the StraightLine class.</para>
+        /// </summary>
+        /// <param name="line">The line.</param>
+        public StraightLine(StraightLineF line)
+        {
+            if (line == null) line = new();
+            Slope = line.Slope;
+            Intercept = line.Intercept;
+            B = line.B;
+            A = line.A;
+            C = line.C;
         }
 
         /// <summary>

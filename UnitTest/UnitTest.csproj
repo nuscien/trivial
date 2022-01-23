@@ -9,7 +9,7 @@
     <Product>Trivial</Product>
     <Authors>Kingcean Tuan</Authors>
     <Company>Nanchang Jinchen Software Co., Ltd.</Company>
-    <Version>6.0.0</Version>
+    <Version>6.1.0</Version>
     <Description>The sample of Trivial libraries.</Description>
     <Copyright>Copyright (c) 2018 Kingcean Tuan.</Copyright>
     <StartupObject>Trivial.CommandLine.Program</StartupObject>

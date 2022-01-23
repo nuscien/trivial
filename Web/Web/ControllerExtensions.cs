@@ -214,7 +214,40 @@ namespace Trivial.Web
         }
 
         /// <summary>
-        /// Gets the integer value.
+        /// Gets the floating value.
+        /// </summary>
+        /// <param name="request">The query collection.</param>
+        /// <param name="key">The key.</param>
+        /// <returns>The number value; or null, if non-exist or parse failed.</returns>
+        public static float? TryGetSingleValue(this IQueryCollection request, string key)
+        {
+            var s = request[key].Select(ele => ele?.Trim()).FirstOrDefault(ele => !string.IsNullOrEmpty(ele));
+            if (float.TryParse(s, out var r)) return r;
+            return null;
+        }
+
+        /// <summary>
+        /// Gets the floating value.
+        /// </summary>
+        /// <param name="request">The query collection.</param>
+        /// <param name="key">The key.</param>
+        /// <param name="result">The output result.</param>
+        /// <returns>true if parse succeeded; otherwise, false.</returns>
+        public static bool TryGetSingleValue(this IQueryCollection request, string key, out float result)
+        {
+            var r = TryGetSingleValue(request, key);
+            if (r.HasValue)
+            {
+                result = r.Value;
+                return true;
+            }
+
+            result = default;
+            return false;
+        }
+
+        /// <summary>
+        /// Gets the floating value.
         /// </summary>
         /// <param name="request">The query collection.</param>
         /// <param name="key">The key.</param>
@@ -227,7 +260,7 @@ namespace Trivial.Web
         }
 
         /// <summary>
-        /// Gets the integer value.
+        /// Gets the floating value.
         /// </summary>
         /// <param name="request">The query collection.</param>
         /// <param name="key">The key.</param>
