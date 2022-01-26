@@ -42,6 +42,35 @@ namespace Trivial.Data
         }
 
         /// <summary>
+        /// Initializes a new instance of the DataCacheItemInfo class.
+        /// </summary>
+        /// <param name="id">The identifier.</param>
+        /// <param name="value">The value.</param>
+        /// <param name="creation">The creation time.</param>
+        /// <param name="expiration">The optional expiration to override current policy.</param>
+        public DataCacheItemInfo(string id, T value, DateTime creation, TimeSpan? expiration = null)
+        {
+            Id = string.IsNullOrWhiteSpace(id) ? Guid.NewGuid().ToString() : id;
+            Value = value;
+            Expiration = expiration;
+            if (creation > DateTime.Now) return;
+            UpdateDate = creation;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the DataCacheItemInfo class.
+        /// </summary>
+        /// <param name="ns">The namespace of resource group; or null for no namespace ones.</param>
+        /// <param name="id">The identifier in the resource group.</param>
+        /// <param name="value">The value.</param>
+        /// <param name="creation">The creation time.</param>
+        /// <param name="expiration">The optional expiration to override current policy.</param>
+        public DataCacheItemInfo(string ns, string id, T value, DateTime creation, TimeSpan? expiration = null) : this(id, value, creation, expiration)
+        {
+            Namespace = string.IsNullOrWhiteSpace(ns) ? null : ns.Trim();
+        }
+
+        /// <summary>
         /// Gets or sets the namespace.
         /// </summary>
         public string Namespace { get; }

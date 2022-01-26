@@ -211,9 +211,9 @@ namespace Trivial.Data
         /// <param name="value">The value.</param>
         /// <param name="expiration">The optional expiration to override current policy.</param>
         public void Add(string ns, string id, T value, TimeSpan? expiration = null)
-        {
-            Add(new DataCacheItemInfo<T>(ns, id, value, expiration));
-        }
+            => Add(items.TryGetValue(GetIdWithPrefix(ns, id), out var item) && item != null
+                ? new DataCacheItemInfo<T>(ns, id, value, expiration) { CreationDate = item.CreationDate }
+                : new DataCacheItemInfo<T>(ns, id, value, expiration));
 
         /// <summary>
         /// Removes all elements from the collection.
