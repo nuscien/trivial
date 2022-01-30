@@ -38,12 +38,17 @@ namespace Trivial.Web
             public const string Mp3 = "audio/mpeg";
 
             /// <summary>
-            /// The MIME content type of OGG Vobis.
+            /// The MIME content type of OGG Vobis (by Xiph.Org Foundation).
             /// </summary>
             public const string Ogg = "audio/ogg";
 
             /// <summary>
-            /// The MIME content type of WebA.
+            /// The MIME content type of opus (by Xiph.Org Foundation).
+            /// </summary>
+            public const string Opus = "audio/opus";
+
+            /// <summary>
+            /// The MIME content type of WebA (by Google).
             /// </summary>
             public const string Weba = "audio/webm";
 
@@ -61,6 +66,11 @@ namespace Trivial.Web
             /// The MIME content type of Free Lossless Audio Codec.
             /// </summary>
             public const string Flac = "audio/x-flac";
+
+            /// <summary>
+            /// The MIME content type of ape (Monkey's Audio).
+            /// </summary>
+            public const string Ape = "audio/x-ape";
 
             /// <summary>
             /// The MIME content type of Matroska.

@@ -351,6 +351,7 @@ namespace Trivial.CommandLine
         /// <exception cref="FormatException">format is invalid or not supported.</exception>
         public void Write(ConsoleColor foreground, int number, string format)
         {
+            if (string.IsNullOrEmpty(format)) format = "g";
             col.Add(new ConsoleText(number.ToString(format), foreground));
             OnAppend();
         }
@@ -1808,6 +1809,7 @@ namespace Trivial.CommandLine
         /// <exception cref="FormatException">format is invalid or not supported.</exception>
         public void WriteLine(int number, string format)
         {
+            if (string.IsNullOrEmpty(format)) format = "g";
             col.Add(new ConsoleText(number.ToString(format)));
             col.Add(new ConsoleText(Environment.NewLine));
             Flush();
@@ -2443,6 +2445,22 @@ namespace Trivial.CommandLine
             }
 
             WriteImmediately(sb.ToString());
+        }
+
+        /// <summary>
+        /// Writes the current line terminator for each item, to the standard output stream.
+        /// </summary>
+        /// <param name="content">The text content collection.</param>
+        public void WriteLines(IEnumerable<ConsoleText> content)
+        {
+            if (content == null) return;
+            foreach (var item in content)
+            {
+                if (item != null) col.Add(item);
+                col.Add(new ConsoleText(Environment.NewLine));
+            }
+
+            Flush();
         }
 
         /// <summary>

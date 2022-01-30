@@ -68,7 +68,7 @@ namespace Trivial.Web
             public const string Svg = "image/svg+xml";
 
             /// <summary>
-            /// The MIME content type of WebP.
+            /// The MIME content type of WebP (by Google).
             /// </summary>
             public const string Webp = "image/webp";
 

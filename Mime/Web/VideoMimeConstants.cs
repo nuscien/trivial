@@ -63,7 +63,7 @@ namespace Trivial.Web
             public const string QuickTime = "video/quicktime";
 
             /// <summary>
-            /// The MIME content type of WebM.
+            /// The MIME content type of WebM (by Google).
             /// </summary>
             public const string Webm = "video/webm";
 

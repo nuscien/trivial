@@ -835,7 +835,7 @@ namespace Trivial.CommandLine
         /// </summary>
         /// <param name="s">A composite format string to output.</param>
         public static void WriteLine(SecureString s)
-            => StyleConsole.Default.WriteLine(s.ToUnsecureString());
+            => StyleConsole.Default.WriteLine(s?.ToUnsecureString());
 
         /// <summary>
         /// Writes the specified string value, followed by the current line terminator, to the standard output stream.
@@ -843,7 +843,7 @@ namespace Trivial.CommandLine
         /// <param name="style">The content style.</param>
         /// <param name="s">A composite format string to output.</param>
         public static void WriteLine(ConsoleTextStyle style, SecureString s)
-            => StyleConsole.Default.WriteLine(style, s.ToUnsecureString());
+            => StyleConsole.Default.WriteLine(style, s?.ToUnsecureString());
 
         /// <summary>
         /// Writes the specified string value, followed by the current line terminator, to the standard output stream.
@@ -852,7 +852,7 @@ namespace Trivial.CommandLine
         /// <param name="foreground">The foreground color.</param>
         /// <param name="s">A composite format string to output.</param>
         public static void WriteLine(ConsoleColor foreground, SecureString s)
-            => StyleConsole.Default.WriteLine(foreground, s.ToUnsecureString());
+            => StyleConsole.Default.WriteLine(foreground, s?.ToUnsecureString());
 
         /// <summary>
         /// Writes the specified string value, followed by the current line terminator, to the standard output stream.
@@ -880,7 +880,7 @@ namespace Trivial.CommandLine
         /// <param name="format">A standard or custom numeric format string.</param>
         /// <exception cref="FormatException">format is invalid or not supported.</exception>
         public static void WriteLine(int number, string format)
-            => StyleConsole.Default.WriteLine(number);
+            => StyleConsole.Default.WriteLine(number, format);
 
         /// <summary>
         /// Writes the specified number, followed by the current line terminator, to the standard output stream.
@@ -1438,10 +1438,17 @@ namespace Trivial.CommandLine
         /// <summary>
         /// Writes the current line terminator for each item, to the standard output stream.
         /// </summary>
+        /// <param name="content">The text content collection.</param>
+        public static void WriteLines(IEnumerable<ConsoleText> content)
+            => StyleConsole.Default.WriteLines(content);
+
+        /// <summary>
+        /// Writes the current line terminator for each item, to the standard output stream.
+        /// </summary>
         /// <param name="content">The text content.</param>
         /// <param name="additionalContext">The additional text content collection.</param>
         public static void WriteLines(ConsoleText content, params ConsoleText[] additionalContext)
-            => WriteLines(content, additionalContext);
+            => StyleConsole.Default.WriteLines(content, additionalContext);
 
         /// <summary>
         /// Writes the current line terminator for each item, to the standard output stream.
@@ -1474,6 +1481,56 @@ namespace Trivial.CommandLine
         /// <param name="col">The string collection to write. Each one in a line.</param>
         public static void WriteLines(ConsoleColor foreground, ConsoleColor background, IEnumerable<string> col)
             => StyleConsole.Default.WriteLines(foreground, background, col);
+
+        /// <summary>
+        /// Writes the current line terminator for each item, to the standard output stream.
+        /// </summary>
+        /// <param name="col">The string collection to write. Each one in a line.</param>
+        /// <param name="selector">A transform function to apply to each source element; the second parameter of the function represents the index of the source element.</param>
+        public static void WriteLines<T>(IEnumerable<T> col, Func<T, int, string> selector)
+        {
+            if (col == null) return;
+            if (selector == null) selector = (ele, i) => ele?.ToString();
+            StyleConsole.Default.WriteLines(col.Select(selector));
+        }
+
+        /// <summary>
+        /// Writes the current line terminator for each item, to the standard output stream.
+        /// </summary>
+        /// <param name="foreground">The foreground color of the console.</param>
+        /// <param name="col">The string collection to write. Each one in a line.</param>
+        /// <param name="selector">A transform function to apply to each source element; the second parameter of the function represents the index of the source element.</param>
+        public static void WriteLines<T>(ConsoleColor foreground, IEnumerable<T> col, Func<T, int, string> selector)
+        {
+            if (col == null) return;
+            if (selector == null) selector = (ele, i) => ele?.ToString();
+            StyleConsole.Default.WriteLines(foreground, col.Select(selector));
+        }
+
+        /// <summary>
+        /// Writes the current line terminator for each item, to the standard output stream.
+        /// </summary>
+        /// <param name="col">The string collection to write. Each one in a line.</param>
+        /// <param name="selector">A transform function to apply to each element.</param>
+        public static void WriteLines<T>(IEnumerable<T> col, Func<T, string> selector)
+        {
+            if (col == null) return;
+            if (selector == null) selector = ele => ele?.ToString();
+            StyleConsole.Default.WriteLines(col.Select(selector));
+        }
+
+        /// <summary>
+        /// Writes the current line terminator for each item, to the standard output stream.
+        /// </summary>
+        /// <param name="foreground">The foreground color of the console.</param>
+        /// <param name="col">The string collection to write. Each one in a line.</param>
+        /// <param name="selector">A transform function to apply to each element.</param>
+        public static void WriteLines<T>(ConsoleColor foreground, IEnumerable<T> col, Func<T, string> selector)
+        {
+            if (col == null) return;
+            if (selector == null) selector = ele => ele?.ToString();
+            StyleConsole.Default.WriteLines(foreground, col.Select(selector));
+        }
 
         /// <summary>
         /// Writes a collection of item for selecting.

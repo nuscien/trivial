@@ -29,6 +29,19 @@ namespace Trivial.Maths
         /// <summary>
         /// Initializes a new instance of the LineSegment class.
         /// </summary>
+        /// <param name="x1">X of the start point.</param>
+        /// <param name="y1">Y of the start point.</param>
+        /// <param name="x2">X of the end point.</param>
+        /// <param name="y2">Y of the end point.</param>
+        public LineSegment(double x1, double y1, double x2, double y2)
+        {
+            start = new(x1, y1);
+            end = new(x2, y2);
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the LineSegment class.
+        /// </summary>
         /// <param name="start">The start point.</param>
         /// <param name="end">The end point.</param>
         public LineSegment(DoublePoint2D start, DoublePoint2D end)

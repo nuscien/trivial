@@ -1608,7 +1608,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     {
         var v = TryGetObjectValue(key);
         result = v;
-        return !(v is null) || IsNull(key);
+        return v is not null || IsNull(key);
     }
 
     /// <summary>
@@ -1662,7 +1662,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     {
         var v = TryGetArrayValue(key);
         result = v;
-        return !(v is null);
+        return v is not null;
     }
 
     /// <summary>
@@ -2041,7 +2041,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     {
         var v = TryGetValue(key);
         result = v;
-        return !(v is null);
+        return v is not null;
     }
 
     /// <summary>
@@ -2054,7 +2054,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     {
         var v = TryGetValue(key);
         result = v;
-        return !(v is null);
+        return v is not null;
     }
 
     /// <summary>
@@ -4250,7 +4250,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
         {
             foreach (var item in keys)
             {
-                if (store.TryGetValue(item, out var r) && !(r is null) && r.ValueKind != JsonValueKind.Null && r.ValueKind != JsonValueKind.Undefined)
+                if (store.TryGetValue(item, out var r) && r is not null && r.ValueKind != JsonValueKind.Null && r.ValueKind != JsonValueKind.Undefined)
                     dict[item] = r;
             }
         }

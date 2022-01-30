@@ -98,7 +98,7 @@ namespace Trivial.CommandLine
             await RunAsync(null, cancellationToken);
             var s = Arguments.Verb?.TryGet(0);
             var console = GetConsole();
-            if (s == "period" || s == "周期" || (s == "Period" && Arguments.Verb.Count > 1))
+            if (s == "period" || s == "p" || s == "周期" || (s == "Period" && Arguments.Verb.Count > 1))
             {
                 s = Arguments.Verb.TryGet(1);
                 if (string.IsNullOrEmpty(s))
@@ -153,7 +153,7 @@ namespace Trivial.CommandLine
             var q = Arguments.GetMergedValue("q")?.Trim();
             if (q.Length < 1) q = null;
 
-            if (s == "*" || s == "all")
+            if (s == "*" || s == "all" || s == "a")
             {
                 foreach (var i in ChemicalElement.Where(GetFilter(q)))
                 {
@@ -163,7 +163,7 @@ namespace Trivial.CommandLine
                 return;
             }
 
-            if (s == "ls" || s == "list" || s == "dir" || s == "全部")
+            if (s == "ls" || s == "l" || s == "list" || s == "dir" || s == "全部")
             {
                 var filter = Arguments.Verb.TryGet(1)?.Trim()?.Split('-');
                 List<ChemicalElement> col = null;
@@ -294,7 +294,7 @@ namespace Trivial.CommandLine
                 return;
             }
 
-            if (s == "periodic" || s == "table" || s == "元素周期表" || s == "周期表")
+            if (s == "periodic" || s == "table" || s == "t" || s == "元素周期表" || s == "周期表")
             {
                 ChemistryCommandLine.WriteTable(GetConsole(), ChemicalElementStyle);
                 return;
