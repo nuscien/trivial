@@ -1230,6 +1230,62 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     /// </summary>
     /// <param name="key">The property key.</param>
     /// <returns>The value; or null if fail to resolve.</returns>
+    public Uri TryGetUriValue(string key)
+    {
+        if (!TryGetStringValue(key, out var str) || string.IsNullOrWhiteSpace(str))
+        {
+            return null;
+        }
+
+        try
+        {
+            return new Uri(str);
+        }
+        catch (FormatException)
+        {
+        }
+        catch (ArgumentException)
+        {
+        }
+
+        return null;
+    }
+
+    /// <summary>
+    /// Tries to get the value of the specific property.
+    /// </summary>
+    /// <param name="key">The property key.</param>
+    /// <param name="result">The result.</param>
+    /// <returns>true if has the property and the type is the one expected; otherwise, false.</returns>
+    public bool TryGetUriValue(string key, out Uri result)
+    {
+        if (!TryGetStringValue(key, out var str) || string.IsNullOrWhiteSpace(str))
+        {
+            result = null;
+            return false;
+        }
+
+        try
+        {
+            result = new Uri(str);
+            return true;
+        }
+        catch (FormatException)
+        {
+        }
+        catch (ArgumentException)
+        {
+        }
+
+        result = null;
+        return false;
+    }
+
+    /// <summary>
+    /// Tries to get the value of the specific property.
+    /// </summary>
+    /// <param name="key">The property key.</param>
+    /// <returns>The value; or null if fail to resolve.</returns>
     public Guid? TryGetGuidValue(string key)
     {
         if (!TryGetStringValue(key, out var str) || string.IsNullOrWhiteSpace(str) || !Guid.TryParse(str, out var result))
@@ -1554,6 +1610,18 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
         if (string.IsNullOrEmpty(key)) return this;
         if (TryGetJsonValue<JsonObjectNode>(key, out var p)) return p;
         return null;
+    }
+
+    /// <summary>
+    /// Tries to get the value of the specific property.
+    /// </summary>
+    /// <param name="key">The property key.</param>
+    /// <param name="ignoreNotMatched">true if ignore any item which is not JSON object; otherwise, false.</param>
+    /// <returns>The list; or null, if no such array property.</returns>
+    public List<JsonObjectNode> TryGetObjectListValue(string key, bool ignoreNotMatched = false)
+    {
+        if (!TryGetJsonValue<JsonArrayNode>(key, out var p)) return null;
+        return ignoreNotMatched ? p.OfType<JsonObjectNode>().ToList() : p.Select(ele => ele is JsonObjectNode json ? json : null).ToList();
     }
 
     /// <summary>
@@ -2078,20 +2146,20 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     /// <summary>
     /// Tries to get the value of the specific property.
     /// </summary>
-    /// <param name="keyPath">The additional property key path.</param>
+    /// <typeparam name="T">The type of value. Should be one of IJsonDataNode (or its sub-class), String, Int32, Int64, Boolean, Single, Double, Decimal or StringBuilder.</typeparam>
+    /// <param name="keyPath">The property key path.</param>
     /// <returns>The value.</returns>
-    public T TryGetValue<T>(params string[] keyPath) where T : IJsonDataNode
-    {
-        return TryGetValue(keyPath) is T result ? result : default;
-    }
+    public T TryGetValue<T>(params string[] keyPath)
+        => TryGetValue<T>(keyPath, out var r) ? r : default;
 
     /// <summary>
     /// Tries to get the value of the specific property.
     /// </summary>
+    /// <typeparam name="T">The type of value. Should be one of IJsonDataNode (or its sub-class), String, Int32, Int64, Boolean, Single, Double, Decimal or StringBuilder.</typeparam>
     /// <param name="keyPath">The additional property key path.</param>
     /// <param name="result">The result.</param>
     /// <returns>true if has the property and the type is the one expected; otherwise, false.</returns>
-    public bool TryGetValue<T>(IEnumerable<string> keyPath, out T result) where T : IJsonDataNode
+    public bool TryGetValue<T>(IEnumerable<string> keyPath, out T result)
     {
         if (!TryGetValue(keyPath, out var r))
         {
@@ -2103,6 +2171,172 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
         {
             result = v;
             return true;
+        }
+
+        var type = typeof(T);
+        try
+        {
+            if (type == typeof(string))
+            {
+                if (r.TryGetString(out var s))
+                {
+                    result = (T)(object)s;
+                    return true;
+                }
+            }
+            else if (type.IsEnum)
+            {
+                if (r is JsonIntegerNode i)
+                {
+                    result = (T)Enum.ToObject(type, i.Value);
+                    return true;
+                }
+                else if (r is JsonStringNode s)
+                {
+                    result = (T)s.TryToEnum(type);
+                    return true;
+                }
+            }
+            else if (type.IsValueType)
+            {
+                if (r.ValueKind == JsonValueKind.Null || r.ValueKind == JsonValueKind.Undefined)
+                {
+                }
+                else if (type == typeof(int))
+                {
+                    if (r.TryGetInt32(out var i))
+                    {
+                        result = (T)(object)i;
+                        return true;
+                    }
+                }
+                else if (type == typeof(long))
+                {
+                    if (r.TryGetInt64(out var l))
+                    {
+                        result = (T)(object)l;
+                        return true;
+                    }
+                }
+                else if (type == typeof(double))
+                {
+                    if (r.TryGetDouble(out var d))
+                    {
+                        result = (T)(object)d;
+                        return true;
+                    }
+                }
+                else if (type == typeof(float))
+                {
+                    if (r.TryGetSingle(out var f))
+                    {
+                        result = (T)(object)f;
+                        return true;
+                    }
+                }
+                else if (type == typeof(decimal))
+                {
+                    if (r.TryGetDecimal(out var d))
+                    {
+                        result = (T)(object)d;
+                        return true;
+                    }
+                }
+                else if (type == typeof(bool))
+                {
+                    if (r.TryGetBoolean(out var b))
+                    {
+                        result = (T)(object)b;
+                        return true;
+                    }
+                }
+                else if (type == typeof(DateTime))
+                {
+                    if (r.TryGetDateTime(out var d))
+                    {
+                        result = (T)(object)d;
+                        return true;
+                    }
+                }
+                else if (type == typeof(Guid))
+                {
+                    if (r.TryGetGuid(out var g))
+                    {
+                        result = (T)(object)g;
+                        return true;
+                    }
+                }
+                else if (type == typeof(uint))
+                {
+                    if (r.TryGetUInt32(out var i))
+                    {
+                        result = (T)(object)i;
+                        return true;
+                    }
+                }
+                else if (type == typeof(Uri))
+                {
+                    if (r.TryGetString(out var s) && Uri.TryCreate(s, UriKind.RelativeOrAbsolute, out var u))
+                    {
+                        result = (T)(object)u;
+                        return true;
+                    }
+                }
+            }
+            else if (type == typeof(StringBuilder))
+            {
+                if (r.TryGetString(out var s))
+                {
+                    result = (T)(object)new StringBuilder(s);
+                    return true;
+                }
+            }
+            else if (type.IsClass)
+            {
+                if (r is JsonObjectNode json)
+                {
+                    result = json.Deserialize<T>();
+                    return true;
+                }
+                else if (r is JsonArrayNode arr)
+                {
+                    result = arr.Deserialize<T>();
+                    return true;
+                }
+                else if (r is JsonStringNode s)
+                {
+                    json = TryParse(s.Value);
+                    if (json != null)
+                    {
+                        result = json.Deserialize<T>();
+                        return true;
+                    }
+                }
+            }
+        }
+        catch (ArgumentException)
+        {
+        }
+        catch (InvalidCastException)
+        {
+        }
+        catch (InvalidOperationException)
+        {
+        }
+        catch (NullReferenceException)
+        {
+        }
+        catch (OverflowException)
+        {
+        }
+        catch (FormatException)
+        {
+        }
+        catch (JsonException)
+        {
+        }
+        catch (NotSupportedException)
+        {
         }
 
         result = default;

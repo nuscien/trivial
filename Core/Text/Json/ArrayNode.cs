@@ -1124,6 +1124,62 @@ public class JsonArrayNode : IJsonContainerNode, IJsonDataNode, IReadOnlyList<IJ
     /// </summary>
     /// <param name="index">The zero-based index of the element to get.</param>
     /// <returns>The value; or null if fail to resolve.</returns>
+    public Uri TryGetUriValue(int index)
+    {
+        if (!TryGetStringValue(index, out var str) || string.IsNullOrWhiteSpace(str))
+        {
+            return null;
+        }
+
+        try
+        {
+            return new Uri(str);
+        }
+        catch (FormatException)
+        {
+        }
+        catch (ArgumentException)
+        {
+        }
+
+        return null;
+    }
+
+    /// <summary>
+    /// Tries to get the value of the specific index.
+    /// </summary>
+    /// <param name="index">The zero-based index of the element to get.</param>
+    /// <param name="result">The result.</param>
+    /// <returns>true if has the index and the type is the one expected; otherwise, false.</returns>
+    public bool TryGetUriValue(int index, out Uri result)
+    {
+        if (!TryGetStringValue(index, out var str) || string.IsNullOrWhiteSpace(str))
+        {
+            result = null;
+            return false;
+        }
+
+        try
+        {
+            result = new Uri(str);
+            return true;
+        }
+        catch (FormatException)
+        {
+        }
+        catch (ArgumentException)
+        {
+        }
+
+        result = null;
+        return false;
+    }
+
+    /// <summary>
+    /// Tries to get the value of the specific index.
+    /// </summary>
+    /// <param name="index">The zero-based index of the element to get.</param>
+    /// <returns>The value; or null if fail to resolve.</returns>
     public Guid? TryGetGuidValue(int index)
     {
         if (!TryGetStringValue(index, out var str) || string.IsNullOrWhiteSpace(str) || !Guid.TryParse(str, out var result))

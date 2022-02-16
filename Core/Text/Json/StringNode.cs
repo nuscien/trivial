@@ -449,10 +449,76 @@ public class JsonStringNode : IJsonStringNode, IJsonValueNode<string>, IJsonData
     /// <summary>
     /// Tries to parse the value to an enum.
     /// </summary>
+    /// <param name="type">The type of enum.</param>
+    /// <returns>An enum.</returns>
+    public object TryToEnum(Type type)
+    {
+        if (string.IsNullOrWhiteSpace(Value)) return null;
+        if (type == null || !type.IsEnum) return null;
+        try
+        {
+#if NETOLDVER
+            return Enum.Parse(type, Value);
+#else
+            if (Enum.TryParse(type, Value, out var r)) return r;
+#endif
+        }
+        catch (ArgumentException)
+        {
+        }
+        catch (OverflowException)
+        {
+        }
+        catch (NullReferenceException)
+        {
+        }
+        catch (InvalidOperationException)
+        {
+        }
+
+        return null;
+    }
+
+    /// <summary>
+    /// Tries to parse the value to an enum.
+    /// </summary>
+    /// <param name="type">The type of enum.</param>
+    /// <param name="ignoreCase">true if ignore case; otherwise, false.</param>
+    /// <returns>An enum.</returns>
+    public object TryToEnum(Type type, bool ignoreCase)
+    {
+        if (string.IsNullOrWhiteSpace(Value)) return null;
+        if (type == null || !type.IsEnum) return null;
+        try
+        {
+#if NETOLDVER
+            return Enum.Parse(type, Value, ignoreCase);
+#else
+            if (Enum.TryParse(type, Value, ignoreCase, out var r)) return r;
+#endif
+        }
+        catch (ArgumentException)
+        {
+        }
+        catch (OverflowException)
+        {
+        }
+        catch (NullReferenceException)
+        {
+        }
+        catch (InvalidOperationException)
+        {
+        }
+
+        return null;
+    }
+
+    /// <summary>
+    /// Tries to parse the value to an enum.
+    /// </summary>
     /// <typeparam name="T">The enum type to parse.</typeparam>
     /// <param name="ignoreCase">true if ignore case; otherwise, false.</param>
     /// <returns>An enum.</returns>
-    /// <exception cref="InvalidOperationException">Value was null.</exception>
     public T? TryToEnum<T>(bool ignoreCase) where T : struct, Enum
     {
         if (Value == null) return null;
@@ -466,7 +532,6 @@ public class JsonStringNode : IJsonStringNode, IJsonValueNode<string>, IJsonData
     /// <typeparam name="T">The enum type to parse.</typeparam>
     /// <param name="result">The result output.</param>
     /// <returns>true if parse succeeded; otherwise, false.</returns>
-    /// <exception cref="InvalidOperationException">Value was null.</exception>
     public bool TryToEnum<T>(out T result) where T : struct, Enum
     {
         if (Value != null && Enum.TryParse(Value, out result))
@@ -483,7 +548,6 @@ public class JsonStringNode : IJsonStringNode, IJsonValueNode<string>, IJsonData
     /// <param name="ignoreCase">true if ignore case; otherwise, false.</param>
     /// <param name="result">The result output.</param>
     /// <returns>true if parse succeeded; otherwise, false.</returns>
-    /// <exception cref="InvalidOperationException">Value was null.</exception>
     public bool TryToEnum<T>(bool ignoreCase, out T result) where T : struct, Enum
     {
         if (Value != null && Enum.TryParse(Value, ignoreCase, out result))
