@@ -63,6 +63,7 @@ public class JsonUnitTest
         Assert.AreEqual(17, json.GetObjectValue("props", "p1").GetDateTimeValue("p9").Day);
         Assert.AreEqual(2020, json.GetValue<DateTime>("props", "p1", "p9").Year);
         Assert.AreEqual(0, json.GetValue<DateTime>("props", "p1", "p9").Second);
+        Assert.AreEqual(2020, json.TryGetValue<DateTime>("props", "p1", "p9").Year);
         Assert.IsNull(json.TryGetObjectValue("props", "p1", "p3", "p6"));
         Assert.AreEqual(4567, p1.GetInt32Value("p7"));
         Assert.AreEqual(4567, p1.GetValue<int>("p7"));

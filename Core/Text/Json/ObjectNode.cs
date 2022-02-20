@@ -2411,6 +2411,65 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     }
 
     /// <summary>
+    /// Deserializes a property value.
+    /// </summary>
+    /// <typeparam name="T">The type of model to deserialize.</typeparam>
+    /// <param name="key">The property key.</param>
+    /// <param name="options">Options to control the behavior during parsing.</param>
+    /// <param name="result">The result.</param>
+    /// <returns>true if deserialize succeeded; otherwise, false.</returns>
+    /// <exception cref="ArgumentException">readerOptions contains unsupported options.</exception>
+    /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+    /// <exception cref="JsonException">The JSON is invalid. -or- TValue is not compatible with the JSON.</exception>
+    public bool TryDeserializeValue<T>(string key, JsonSerializerOptions options, out T result)
+    {
+        if (!store.TryGetValue(key, out var item))
+        {
+            result = default;
+            return false;
+        }
+
+        try
+        {
+            if (item is null || item.ValueKind == JsonValueKind.Undefined)
+            {
+                result = default;
+                return false;
+            }
+
+            if (item.ValueKind == JsonValueKind.Null)
+            {
+                result = default;
+                return typeof(T).IsClass;
+            }
+
+            result = JsonSerializer.Deserialize<T>(item.ToString(), options);
+            return true;
+        }
+        catch (NotSupportedException)
+        {
+        }
+        catch (ArgumentException)
+        {
+        }
+        catch (FormatException)
+        {
+        }
+        catch (JsonException)
+        {
+        }
+        catch (NullReferenceException)
+        {
+        }
+        catch (InvalidOperationException)
+        {
+        }
+
+        result = default;
+        return false;
+    }
+
+    /// <summary>
     /// Removes property of the specific key.
     /// </summary>
     /// <param name="key">The property key.</param>
