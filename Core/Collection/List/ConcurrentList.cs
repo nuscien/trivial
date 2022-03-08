@@ -543,6 +543,35 @@ namespace Trivial.Collection
         }
 
         /// <summary>
+        /// Removes all the elements that match the conditions defined by the specified predicate.
+        /// </summary>
+        /// <param name="match">The predicate delegate that defines the conditions of the elements to remove.</param>
+        /// <param name="itemsRemoved">The items removed.</param>
+        /// <returns>The number of elements removed from the list.</returns>
+        public void RemoveAll(Predicate<T> match, out IList<T> itemsRemoved)
+        {
+            if (match is null)
+            {
+                itemsRemoved = new List<T>();
+                return;
+            }
+
+            List<T> copied = null;
+            lock (locker)
+            {
+                copied = list.Where(ele => match(ele)).ToList();
+                list.RemoveAll(match);
+            }
+
+            itemsRemoved = copied;
+            if (Changed == null || copied == null)
+            for (var i = 0; i < copied.Count; i++)
+            {
+                Changed?.Invoke(this, new ChangeEventArgs<T>(copied[i], default, ChangeMethods.Remove, i));
+            }
+        }
+
+        /// <summary>
         /// Removes a range of elements from the list.
         /// </summary>
         /// <param name="index">The zero-based starting index of the range of elements to remove.</param>

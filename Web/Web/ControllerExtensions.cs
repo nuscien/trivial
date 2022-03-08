@@ -541,6 +541,26 @@ namespace Trivial.Web
         /// Converts an exception to action result with exception message.
         /// </summary>
         /// <param name="controller">The controller.</param>
+        /// <param name="ex">The exception.</param>
+        /// <param name="errorCode">The error code.</param>
+        /// <param name="ignoreUnknownException">true if return null for unknown exception; otherwise, false.</param>
+        /// <returns>The action result.</returns>
+        public static ActionResult ExceptionResult(this ControllerBase controller, Exception ex, string errorCode, bool ignoreUnknownException = false)
+        {
+            if (ex == null) return controller.StatusCode(500);
+            var result = new ErrorMessageResult(ex, errorCode);
+            var status = GetStatusCode(ex, ignoreUnknownException);
+            if (!status.HasValue) return null;
+            return new JsonResult(result)
+            {
+                StatusCode = status.Value
+            };
+        }
+
+        /// <summary>
+        /// Converts an exception to action result with exception message.
+        /// </summary>
+        /// <param name="controller">The controller.</param>
         /// <param name="status">The HTTP status code.</param>
         /// <param name="ex">The exception.</param>
         /// <returns>The action result.</returns>
@@ -548,6 +568,24 @@ namespace Trivial.Web
         {
             if (ex == null) return controller.StatusCode(status);
             var result = new ErrorMessageResult(ex);
+            return new JsonResult(result)
+            {
+                StatusCode = status
+            };
+        }
+
+        /// <summary>
+        /// Converts an exception to action result with exception message.
+        /// </summary>
+        /// <param name="controller">The controller.</param>
+        /// <param name="status">The HTTP status code.</param>
+        /// <param name="ex">The exception.</param>
+        /// <param name="errorCode">The error code.</param>
+        /// <returns>The action result.</returns>
+        public static ActionResult ExceptionResult(this ControllerBase controller, int status, Exception ex, string errorCode)
+        {
+            if (ex == null) return controller.StatusCode(status);
+            var result = new ErrorMessageResult(ex, errorCode);
             return new JsonResult(result)
             {
                 StatusCode = status

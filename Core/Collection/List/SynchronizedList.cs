@@ -864,6 +864,28 @@ namespace Trivial.Collection
         }
 
         /// <summary>
+        /// Removes the System.Collections.Generic.IList`1 item at the specified index.
+        /// </summary>
+        /// <param name="index">The zero-based index of the item to remove.</param>
+        /// <param name="itemRemoved">The item removed.</param>
+        /// <exception cref="ArgumentOutOfRangeException">index is not a valid index in the list.</exception>
+        public void RemoveAt(int index, out T itemRemoved)
+        {
+            slim.EnterWriteLock();
+            try
+            {
+                itemRemoved = list[index];
+                list.RemoveAt(index);
+            }
+            finally
+            {
+                slim.ExitWriteLock();
+            }
+
+            Changed?.Invoke(this, new ChangeEventArgs<T>(itemRemoved, default, ChangeMethods.Remove, index));
+        }
+
+        /// <summary>
         /// Removes all the elements that match the conditions defined by the specified predicate.
         /// </summary>
         /// <param name="match">The predicate delegate that defines the conditions of the elements to remove.</param>
@@ -896,6 +918,40 @@ namespace Trivial.Collection
         }
 
         /// <summary>
+        /// Removes all the elements that match the conditions defined by the specified predicate.
+        /// </summary>
+        /// <param name="match">The predicate delegate that defines the conditions of the elements to remove.</param>
+        /// <param name="itemsRemoved">The items removed.</param>
+        /// <returns>The number of elements removed from the list.</returns>
+        public void RemoveAll(Predicate<T> match, out IList<T> itemsRemoved)
+        {
+            if (match is null)
+            {
+                itemsRemoved = new List<T>();
+                return;
+            }
+
+            List<T> copied = null;
+            slim.EnterWriteLock();
+            try
+            {
+                copied = list.Where(ele => match(ele)).ToList();
+                list.RemoveAll(match);
+            }
+            finally
+            {
+                slim.ExitWriteLock();
+            }
+
+            itemsRemoved = copied;
+            if (Changed == null || copied == null) return;
+            for (var i = 0; i < copied.Count; i++)
+            {
+                Changed?.Invoke(this, new ChangeEventArgs<T>(copied[i], default, ChangeMethods.Remove, i));
+            }
+        }
+
+        /// <summary>
         /// Removes a range of elements from the list.
         /// </summary>
         /// <param name="index">The zero-based starting index of the range of elements to remove.</param>
@@ -916,6 +972,36 @@ namespace Trivial.Collection
                 slim.ExitWriteLock();
             }
 
+            if (Changed == null || copied == null) return;
+            for (var i = 0; i < copied.Count; i++)
+            {
+                Changed?.Invoke(this, new ChangeEventArgs<T>(copied[i], default, ChangeMethods.Remove, i));
+            }
+        }
+
+        /// <summary>
+        /// Removes a range of elements from the list.
+        /// </summary>
+        /// <param name="index">The zero-based starting index of the range of elements to remove.</param>
+        /// <param name="count">The number of elements to remove.</param>
+        /// <param name="itemsRemoved">The items removed.</param>
+        /// <exception cref="ArgumentNullException">index is less than 0. -or- count is less than 0.</exception>
+        /// <exception cref="ArgumentException">index and count do not denote a valid range of elements in the list.</exception>
+        public void RemoveRange(int index, int count, out IList<T> itemsRemoved)
+        {
+            List<T> copied = null;
+            slim.EnterWriteLock();
+            try
+            {
+                copied = list.Skip(index).Take(count).ToList();
+                list.RemoveRange(index, count);
+            }
+            finally
+            {
+                slim.ExitWriteLock();
+            }
+
+            itemsRemoved = copied;
             if (Changed == null || copied == null) return;
             for (var i = 0; i < copied.Count; i++)
             {

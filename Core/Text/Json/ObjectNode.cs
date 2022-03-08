@@ -515,6 +515,66 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     /// Gets the value kind of the specific property.
     /// </summary>
     /// <param name="key">The property key.</param>
+    /// <param name="result">The value result output.</param>
+    /// <returns>The value.</returns>
+    /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+    public JsonValueKind GetValueKind(string key, out object result)
+    {
+        var kind = GetValueKind(key, false);
+        switch (kind)
+        {
+            case JsonValueKind.String:
+                result = TryGetStringValue(key);
+                break;
+            case JsonValueKind.True:
+                result = true;
+                break;
+            case JsonValueKind.False:
+                result = false;
+                break;
+            case JsonValueKind.Object:
+                result = TryGetObjectValue(key);
+                break;
+            case JsonValueKind.Array:
+                result = TryGetArrayValue(key);
+                break;
+            case JsonValueKind.Number:
+                var d = TryGetDoubleValue(key);
+                if (!d.HasValue)
+                {
+                    result = null;
+                    break;
+                }
+
+                if (double.IsNaN(d.Value))
+                {
+                    result = d.Value;
+                }
+                else if (TryGetInt64Value(key, out var l) && d == l)
+                {
+                    if (l <= int.MaxValue && l >= int.MinValue)
+                        result = (int)l;
+                    else
+                        result = l;
+                }
+                else
+                {
+                    result = d.Value;
+                }
+
+                break;
+            default:
+                result = null;
+                break;
+        }
+
+        return kind;
+    }
+
+    /// <summary>
+    /// Gets the value kind of the specific property.
+    /// </summary>
+    /// <param name="key">The property key.</param>
     /// <param name="strictMode">true if enable strict mode; otherwise, false, to return undefined for non-existing.</param>
     /// <returns>The value.</returns>
     /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
@@ -4632,18 +4692,14 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     /// </summary>
     /// <returns>A dictionary that contains the key value pairs from this instance.</returns>
     public Dictionary<string, IJsonDataNode> ToDictionary()
-    {
-        return new Dictionary<string, IJsonDataNode>(store);
-    }
+        => new(store);
 
     /// <summary>
     /// Creates a new object that is a copy of the current instance.
     /// </summary>
     /// <returns>A new object that is a copy of this instance.</returns>
     public JsonObjectNode Clone()
-    {
-        return new JsonObjectNode(store, store is ConcurrentDictionary<string, IJsonDataNode>);
-    }
+        => new(store, store is ConcurrentDictionary<string, IJsonDataNode>);
 
     /// <summary>
     /// Creates a new object that is a copy of the current instance.
@@ -4668,36 +4724,28 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     /// </summary>
     /// <returns>A new object that is a copy of this instance.</returns>
     object ICloneable.Clone()
-    {
-        return Clone();
-    }
+        => Clone();
 
     /// <summary>
     /// Returns an enumerator that iterates through the properties collection.
     /// </summary>
     /// <returns>An enumerator that can be used to iterate through the properties collection.</returns>
     public IEnumerator<KeyValuePair<string, IJsonDataNode>> GetEnumerator()
-    {
-        return store.GetEnumerator();
-    }
+        => store.GetEnumerator();
 
     /// <summary>
     /// Returns an enumerator that iterates through the properties collection.
     /// </summary>
     /// <returns>An enumerator that can be used to iterate through the properties collection.</returns>
     IEnumerator<KeyValuePair<string, IJsonValueNode>> IEnumerable<KeyValuePair<string, IJsonValueNode>>.GetEnumerator()
-    {
-        return store.Select(ele =>  new KeyValuePair<string, IJsonValueNode>(ele.Key, ele.Value ?? JsonValues.Null)).GetEnumerator();
-    }
+        => store.Select(ele => new KeyValuePair<string, IJsonValueNode>(ele.Key, ele.Value ?? JsonValues.Null)).GetEnumerator();
 
     /// <summary>
     /// Returns an enumerator that iterates through the properties collection.
     /// </summary>
     /// <returns>An enumerator that can be used to iterate through the properties collection.</returns>
     IEnumerator IEnumerable.GetEnumerator()
-    {
-        return store.GetEnumerator();
-    }
+        => store.GetEnumerator();
 
     /// <summary>
     /// Gets the value of the element as a boolean.
