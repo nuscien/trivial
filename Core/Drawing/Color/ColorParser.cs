@@ -29,7 +29,7 @@ public static partial class ColorCalculator
     /// <returns>true if parse succeeded; otherwise, false.</returns>
     public static bool TryParse(string s, out Color result)
     {
-        s = s.Trim();
+        s = s?.Trim();
         if (string.IsNullOrEmpty(s))
         {
             result = Color.Transparent;
