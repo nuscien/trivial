@@ -247,10 +247,10 @@ namespace Trivial.Web
                 "nsc" => "video/x-ms-asf",
                 "wvx" => "video/x-ms-wvx",
                 "flv" => "video/x-flv",
-                "rm" => "application/vnd.rn-realmedia",
+                "rm" or "rmvb" => "application/vnd.rn-realmedia",
 
                 // Text
-                "txt" or "text" or "log" or "def" or "ini" or "gitignore" or "editorconfig" or "bas" or "cnf" or "xdr" or "asm" or "vcs" => Text.StringExtensions.PlainTextMIME,
+                "txt" or "text" or "log" or "def" or "ini" or "gitignore" or "editorconfig" or "bas" or "cnf" or "xdr" or "asm" or "vcs" or "lrc" => Text.StringExtensions.PlainTextMIME,
                 "csv" => Text.CsvParser.MIME,
                 "tsv" => Text.TsvParser.MIME,
                 "md" => MarkdownMIME,
