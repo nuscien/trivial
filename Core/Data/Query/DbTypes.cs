@@ -7,51 +7,50 @@
 // </summary>
 // --------------------------------------------------------------------------------------------------------------------
 
-namespace Trivial.Data
+namespace Trivial.Data;
+
+/// <summary>
+/// Specifies database value types.
+/// </summary>
+public enum DbValueType : byte
 {
     /// <summary>
-    /// Specifies database value types.
+    /// String.
     /// </summary>
-    public enum DbValueType : byte
-    {
-        /// <summary>
-        /// String.
-        /// </summary>
-        LiteralString = 0,
+    LiteralString = 0,
 
-        /// <summary>
-        /// Integer with 32 bit length.
-        /// </summary>
-        Int32 = 1,
+    /// <summary>
+    /// Integer with 32 bit length.
+    /// </summary>
+    Int32 = 1,
 
-        /// <summary>
-        /// Single decimal number.
-        /// </summary>
-        SingleDecimal = 2,
+    /// <summary>
+    /// Single decimal number.
+    /// </summary>
+    SingleDecimal = 2,
 
-        /// <summary>
-        /// Date time UTC.
-        /// </summary>
-        DateTimeUtc = 3,
-        
-        /// <summary>
-        /// Boolean.
-        /// </summary>
-        Boolean = 4,
+    /// <summary>
+    /// Date time UTC.
+    /// </summary>
+    DateTimeUtc = 3,
+    
+    /// <summary>
+    /// Boolean.
+    /// </summary>
+    Boolean = 4,
 
-        /// <summary>
-        /// Integer with 64 bit length.
-        /// </summary>
-        Int64 = 5,
+    /// <summary>
+    /// Integer with 64 bit length.
+    /// </summary>
+    Int64 = 5,
 
-        /// <summary>
-        /// Double decimal number.
-        /// </summary>
-        DoubleDecimal = 6,
+    /// <summary>
+    /// Double decimal number.
+    /// </summary>
+    DoubleDecimal = 6,
 
-        /// <summary>
-        /// Date time with offset.
-        /// </summary>
-        DateTimeOffset = 7
-    }
+    /// <summary>
+    /// Date time with offset.
+    /// </summary>
+    DateTimeOffset = 7
 }

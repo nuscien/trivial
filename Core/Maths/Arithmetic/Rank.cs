@@ -13,157 +13,156 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Trivial.Maths
+namespace Trivial.Maths;
+
+/// <summary>
+/// The result for rank of 3 items.
+/// </summary>
+/// <typeparam name="T">The type of item.</typeparam>
+public class RankResult3<T> where T : IComparable
 {
+    private readonly Func<T, T, int> compareHandler;
+
     /// <summary>
-    /// The result for rank of 3 items.
+    /// Initializes a new instance of the RankResult3 class.
     /// </summary>
-    /// <typeparam name="T">The type of item.</typeparam>
-    public class RankResult3<T> where T : IComparable
+    /// <param name="item1">Item 1.</param>
+    /// <param name="item2">Item 2.</param>
+    /// <param name="item3">Item 3.</param>
+    /// <param name="compare">An optional compare function.</param>
+    public RankResult3(T item1, T item2, T item3, Func<T, T, int> compare = null)
     {
-        private readonly Func<T, T, int> compareHandler;
-
-        /// <summary>
-        /// Initializes a new instance of the RankResult3 class.
-        /// </summary>
-        /// <param name="item1">Item 1.</param>
-        /// <param name="item2">Item 2.</param>
-        /// <param name="item3">Item 3.</param>
-        /// <param name="compare">An optional compare function.</param>
-        public RankResult3(T item1, T item2, T item3, Func<T, T, int> compare = null)
+        Item1 = item1;
+        Item2 = item2;
+        Item3 = item3;
+        compareHandler = compare;
+        if (Compare(item1, item2) > 0)
         {
-            Item1 = item1;
-            Item2 = item2;
-            Item3 = item3;
-            compareHandler = compare;
-            if (Compare(item1, item2) > 0)
-            {
-                if (Compare(item2, item3) > 0)
-                    SetRank(1, 2, 3, 1, 2, 3);
-                else if (Compare(item2, item3) == 0)
-                    SetRank(1, 2, 2, 1, 2, 3);
-                else if (Compare(item1, item3) > 0)
-                    SetRank(1, 3, 2, 1, 3, 2);
-                else if (Compare(item1, item3) < 0)
-                    SetRank(2, 3, 1, 3, 1, 2);
-                else
-                    SetRank(1, 2, 1, 1, 3, 2);
-            }
-            else if (Compare(item1, item2) < 0)
-            {
-                if (Compare(item1, item3) > 0)
-                    SetRank(2, 1, 3, 2, 1, 3);
-                else if (Compare(item1, item3) == 0)
-                    SetRank(2, 1, 2, 2, 1, 3);
-                else if (Compare(item2, item3) > 0)
-                    SetRank(3, 1, 2, 2, 3, 1);
-                else if (Compare(item2, item3) < 0)
-                    SetRank(3, 2, 1, 3, 2, 1);
-                else
-                    SetRank(2, 1, 1, 2, 3, 1);
-            }
+            if (Compare(item2, item3) > 0)
+                SetRank(1, 2, 3, 1, 2, 3);
+            else if (Compare(item2, item3) == 0)
+                SetRank(1, 2, 2, 1, 2, 3);
+            else if (Compare(item1, item3) > 0)
+                SetRank(1, 3, 2, 1, 3, 2);
+            else if (Compare(item1, item3) < 0)
+                SetRank(2, 3, 1, 3, 1, 2);
             else
-            {
-                if (Compare(item1, item3) > 0)
-                    SetRank(1, 1, 2, 1, 2, 3);
-                else if (Compare(item1, item3) < 0)
-                    SetRank(2, 2, 1, 3, 1, 2);
-                else
-                    SetRank(1, 1, 1, 1, 2, 3);
-            }
+                SetRank(1, 2, 1, 1, 3, 2);
         }
-
-        /// <summary>
-        /// Gets the item 1.
-        /// </summary>
-        public T Item1 { get; }
-
-        /// <summary>
-        /// Gets the item 2.
-        /// </summary>
-        public T Item2 { get; }
-
-        /// <summary>
-        /// Gets the item 3.
-        /// </summary>
-        public T Item3 { get; }
-
-        /// <summary>
-        /// Gets the rank number for item 1.
-        /// </summary>
-        public int RankFor1 { get; private set; }
-
-        /// <summary>
-        /// Gets the rank number for item 2.
-        /// </summary>
-        public int RankFor2 { get; private set; }
-
-        /// <summary>
-        /// Gets the rank number for item 3.
-        /// </summary>
-        public int RankFor3 { get; private set; }
-
-        /// <summary>
-        /// Gets the number 1 of item.
-        /// </summary>
-        public T Number1 { get; private set; }
-
-        /// <summary>
-        /// Gets the number 2 of item.
-        /// </summary>
-        public T Number2 { get; private set; }
-
-        /// <summary>
-        /// Gets the number 3 of item.
-        /// </summary>
-        public T Number3 { get; private set; }
-
-        /// <summary>
-        /// Gets the index of number 1.
-        /// </summary>
-        public int IndexOfNumber1 { get; private set; }
-
-        /// <summary>
-        /// Gets the index of number 2.
-        /// </summary>
-        public int IndexOfNumber2 { get; private set; }
-
-        /// <summary>
-        /// Gets the index of number 3.
-        /// </summary>
-        public int IndexOfNumber3 { get; private set; }
-
-        /// <summary>
-        /// Gets the item by index.
-        /// </summary>
-        /// <param name="index">The index.</param>
-        /// <returns>The value of the specific item.</returns>
-        /// <exception cref="ArgumentOutOfRangeException">index was less than 1 or greater than 3.</exception>
-        public T this[int index]
+        else if (Compare(item1, item2) < 0)
         {
-            get => index switch
-            {
-                1 => Item1,
-                2 => Item2,
-                3 => Item3,
-                _ => throw new ArgumentOutOfRangeException(nameof(index), "index is less than 1 or greater than 3.")
-            };
+            if (Compare(item1, item3) > 0)
+                SetRank(2, 1, 3, 2, 1, 3);
+            else if (Compare(item1, item3) == 0)
+                SetRank(2, 1, 2, 2, 1, 3);
+            else if (Compare(item2, item3) > 0)
+                SetRank(3, 1, 2, 2, 3, 1);
+            else if (Compare(item2, item3) < 0)
+                SetRank(3, 2, 1, 3, 2, 1);
+            else
+                SetRank(2, 1, 1, 2, 3, 1);
         }
-
-        private void SetRank(int a, int b, int c, int no1, int no2, int no3)
+        else
         {
-            RankFor1 = a;
-            RankFor2 = b;
-            RankFor3 = c;
-            IndexOfNumber1 = no1;
-            IndexOfNumber2 = no2;
-            IndexOfNumber3 = no3;
-            Number1 = this[1];
-            Number2 = this[2];
-            Number3 = this[3];
+            if (Compare(item1, item3) > 0)
+                SetRank(1, 1, 2, 1, 2, 3);
+            else if (Compare(item1, item3) < 0)
+                SetRank(2, 2, 1, 3, 1, 2);
+            else
+                SetRank(1, 1, 1, 1, 2, 3);
         }
-
-        private int Compare(T a, T b)
-            => compareHandler == null ? a.CompareTo(b) : compareHandler(a, b);
     }
+
+    /// <summary>
+    /// Gets the item 1.
+    /// </summary>
+    public T Item1 { get; }
+
+    /// <summary>
+    /// Gets the item 2.
+    /// </summary>
+    public T Item2 { get; }
+
+    /// <summary>
+    /// Gets the item 3.
+    /// </summary>
+    public T Item3 { get; }
+
+    /// <summary>
+    /// Gets the rank number for item 1.
+    /// </summary>
+    public int RankFor1 { get; private set; }
+
+    /// <summary>
+    /// Gets the rank number for item 2.
+    /// </summary>
+    public int RankFor2 { get; private set; }
+
+    /// <summary>
+    /// Gets the rank number for item 3.
+    /// </summary>
+    public int RankFor3 { get; private set; }
+
+    /// <summary>
+    /// Gets the number 1 of item.
+    /// </summary>
+    public T Number1 { get; private set; }
+
+    /// <summary>
+    /// Gets the number 2 of item.
+    /// </summary>
+    public T Number2 { get; private set; }
+
+    /// <summary>
+    /// Gets the number 3 of item.
+    /// </summary>
+    public T Number3 { get; private set; }
+
+    /// <summary>
+    /// Gets the index of number 1.
+    /// </summary>
+    public int IndexOfNumber1 { get; private set; }
+
+    /// <summary>
+    /// Gets the index of number 2.
+    /// </summary>
+    public int IndexOfNumber2 { get; private set; }
+
+    /// <summary>
+    /// Gets the index of number 3.
+    /// </summary>
+    public int IndexOfNumber3 { get; private set; }
+
+    /// <summary>
+    /// Gets the item by index.
+    /// </summary>
+    /// <param name="index">The index.</param>
+    /// <returns>The value of the specific item.</returns>
+    /// <exception cref="ArgumentOutOfRangeException">index was less than 1 or greater than 3.</exception>
+    public T this[int index]
+    {
+        get => index switch
+        {
+            1 => Item1,
+            2 => Item2,
+            3 => Item3,
+            _ => throw new ArgumentOutOfRangeException(nameof(index), "index is less than 1 or greater than 3.")
+        };
+    }
+
+    private void SetRank(int a, int b, int c, int no1, int no2, int no3)
+    {
+        RankFor1 = a;
+        RankFor2 = b;
+        RankFor3 = c;
+        IndexOfNumber1 = no1;
+        IndexOfNumber2 = no2;
+        IndexOfNumber3 = no3;
+        Number1 = this[1];
+        Number2 = this[2];
+        Number3 = this[3];
+    }
+
+    private int Compare(T a, T b)
+        => compareHandler == null ? a.CompareTo(b) : compareHandler(a, b);
 }

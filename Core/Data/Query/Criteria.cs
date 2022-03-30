@@ -15,413 +15,412 @@ using System.Linq;
 using System.Text;
 using Trivial.Maths;
 
-namespace Trivial.Data
+namespace Trivial.Data;
+
+/// <summary>
+/// Criteria types.
+/// </summary>
+public enum CriteriaType : byte
 {
     /// <summary>
-    /// Criteria types.
+    /// For all resources without query criteria.
     /// </summary>
-    public enum CriteriaType : byte
+    All = 0,
+
+    /// <summary>
+    /// The collection query criteria.
+    /// </summary>
+    Collection = 1,
+
+    /// <summary>
+    /// The property query criteria.
+    /// </summary>
+    Property = 2
+}
+
+/// <summary>
+/// The query criteria interface.
+/// </summary>
+public interface ICriteria
+{
+    /// <summary>
+    /// Gets the query criteria type.
+    /// </summary>
+    CriteriaType CriteriaType { get; }
+}
+
+/// <summary>
+/// Collection query criteria.
+/// </summary>
+public sealed class CollectionCriteria : List<ICriteria>, ICriteria
+{
+    /// <summary>
+    /// Gets the query criteria type.
+    /// </summary>
+    public CriteriaType CriteriaType => CriteriaType.Collection;
+
+    /// <summary>
+    /// Gets or sets the value of operator.
+    /// </summary>
+    public CriteriaBooleanOperator Operator { get; set; }
+
+    /// <summary>
+    /// Initializes a new instance of the CollectionCriteria class.
+    /// </summary>
+    /// <remarks>You can use this to initialize an instance for the class.</remarks>
+    public CollectionCriteria()
     {
-        /// <summary>
-        /// For all resources without query criteria.
-        /// </summary>
-        All = 0,
-
-        /// <summary>
-        /// The collection query criteria.
-        /// </summary>
-        Collection = 1,
-
-        /// <summary>
-        /// The property query criteria.
-        /// </summary>
-        Property = 2
+        Operator = CriteriaBooleanOperator.And;
     }
 
     /// <summary>
-    /// The query criteria interface.
+    /// Initializes a new instance of the CollectionCriteria class.
     /// </summary>
-    public interface ICriteria
+    /// <param name="op">The collection operator for each item.</param>
+    /// <remarks>You can use this to initialize an instance for the class.</remarks>
+    public CollectionCriteria(CriteriaBooleanOperator op)
     {
-        /// <summary>
-        /// Gets the query criteria type.
-        /// </summary>
-        CriteriaType CriteriaType { get; }
+        Operator = op;
     }
 
     /// <summary>
-    /// Collection query criteria.
+    /// AND operator for criteria.
     /// </summary>
-    public sealed class CollectionCriteria : List<ICriteria>, ICriteria
+    /// <param name="x">Criteria x.</param>
+    /// <param name="y">Criteria y.</param>
+    /// <returns>A collection of criteria.</returns>
+    public static CollectionCriteria operator &(CollectionCriteria x, ICriteria y)
     {
-        /// <summary>
-        /// Gets the query criteria type.
-        /// </summary>
-        public CriteriaType CriteriaType => CriteriaType.Collection;
+        return And(x, y);
+    }
 
-        /// <summary>
-        /// Gets or sets the value of operator.
-        /// </summary>
-        public CriteriaBooleanOperator Operator { get; set; }
+    /// <summary>
+    /// AND operator for criteria.
+    /// </summary>
+    /// <param name="x">Criteria x.</param>
+    /// <param name="y">Criteria y.</param>
+    /// <returns>A collection of criteria.</returns>
+    public static CollectionCriteria operator &(ICriteria x, CollectionCriteria y)
+    {
+        return And(x, y);
+    }
 
-        /// <summary>
-        /// Initializes a new instance of the CollectionCriteria class.
-        /// </summary>
-        /// <remarks>You can use this to initialize an instance for the class.</remarks>
-        public CollectionCriteria()
+    /// <summary>
+    /// AND operator for criteria.
+    /// </summary>
+    /// <param name="x">Criteria x.</param>
+    /// <param name="y">Criteria y.</param>
+    /// <returns>A collection of criteria.</returns>
+    public static CollectionCriteria operator &(CollectionCriteria x, CollectionCriteria y)
+    {
+        return And(x, y);
+    }
+
+    /// <summary>
+    /// OR operator for criteria.
+    /// </summary>
+    /// <param name="x">Criteria x.</param>
+    /// <param name="y">Criteria y.</param>
+    /// <returns>A collection of criteria.</returns>
+    public static CollectionCriteria operator |(CollectionCriteria x, ICriteria y)
+    {
+        return Or(x, y);
+    }
+
+    /// <summary>
+    /// OR operator for criteria.
+    /// </summary>
+    /// <param name="x">Criteria x.</param>
+    /// <param name="y">Criteria y.</param>
+    /// <returns>A collection of criteria.</returns>
+    public static CollectionCriteria operator |(ICriteria x, CollectionCriteria y)
+    {
+        return Or(x, y);
+    }
+
+    /// <summary>
+    /// OR operator for criteria.
+    /// </summary>
+    /// <param name="x">Criteria x.</param>
+    /// <param name="y">Criteria y.</param>
+    /// <returns>A collection of criteria.</returns>
+    public static CollectionCriteria operator |(CollectionCriteria x, CollectionCriteria y)
+    {
+        return Or(x, y);
+    }
+
+    /// <summary>
+    /// Creates a collection criteria with AND operation.
+    /// </summary>
+    /// <param name="criteriaA">Criteria A.</param>
+    /// <param name="criteriaB">Criteria B.</param>
+    /// <param name="criterias">Other criterias.</param>
+    /// <returns>A collection criteria</returns>
+    public static CollectionCriteria And(ICriteria criteriaA, ICriteria criteriaB, params ICriteria[] criterias)
+    {
+        var cri = new CollectionCriteria { Operator = CriteriaBooleanOperator.And };
+        if (criteriaA != null) cri.Add(criteriaA);
+        if (criteriaB != null) cri.Add(criteriaB);
+        if (criterias != null && criterias.Length > 0) cri.AddRange(criterias);
+        return cri;
+    }
+
+    /// <summary>
+    /// Creates a collection criteria with Or operation.
+    /// </summary>
+    /// <param name="criteriaA">Criteria A.</param>
+    /// <param name="criteriaB">Criteria B.</param>
+    /// <param name="criterias">Other criterias.</param>
+    /// <returns>A collection criteria</returns>
+    public static CollectionCriteria Or(ICriteria criteriaA, ICriteria criteriaB, params ICriteria[] criterias)
+    {
+        var cri = new CollectionCriteria { Operator = CriteriaBooleanOperator.Or };
+        if (criteriaA != null) cri.Add(criteriaA);
+        if (criteriaB != null) cri.Add(criteriaB);
+        if (criterias != null && criterias.Length > 0) cri.AddRange(criterias);
+        return cri;
+    }
+
+    /// <summary>
+    /// Gets if given criteria is for all.
+    /// </summary>
+    /// <param name="criteria">The criteria for testing.</param>
+    /// <returns>true if for getting all; otherwise, false.</returns>
+    public static bool IsForAll(ICriteria criteria)
+    {
+        if (criteria == null || criteria.CriteriaType == CriteriaType.All) return true;
+        if (criteria.CriteriaType == CriteriaType.Collection)
         {
-            Operator = CriteriaBooleanOperator.And;
+            var col = criteria as IEnumerable<ICriteria>;
+            if (col != null && col.Count() == 0) return true;
+        }
+        else if (criteria.CriteriaType == CriteriaType.Property)
+        {
+            var prop = criteria as PropertyCriteria;
+            if (prop != null
+                && prop.Condition.ValueIsNull
+                && (prop.Condition.Operator == DbCompareOperator.Contains || prop.Condition.Operator == DbCompareOperator.StartsWith || prop.Condition.Operator == DbCompareOperator.EndsWith))
+                return true;
         }
 
-        /// <summary>
-        /// Initializes a new instance of the CollectionCriteria class.
-        /// </summary>
-        /// <param name="op">The collection operator for each item.</param>
-        /// <remarks>You can use this to initialize an instance for the class.</remarks>
-        public CollectionCriteria(CriteriaBooleanOperator op)
+        return false;
+    }
+
+    /// <summary>
+    /// Returns a string that represents the current object.
+    /// </summary>
+    /// <returns>A string that represents the current object.</returns>
+    public override string ToString()
+    {
+        var str = new StringBuilder();
+        var step = 0;
+        foreach (var item in this)
         {
-            Operator = op;
+            if (item == null) continue;
+            if (step > 0) str.AppendFormat(CultureInfo.InvariantCulture, " {0} ", Operator.ToString());
+            str.AppendFormat(CultureInfo.InvariantCulture, "({0})", item.ToString());
+            step++;
         }
 
-        /// <summary>
-        /// AND operator for criteria.
-        /// </summary>
-        /// <param name="x">Criteria x.</param>
-        /// <param name="y">Criteria y.</param>
-        /// <returns>A collection of criteria.</returns>
-        public static CollectionCriteria operator &(CollectionCriteria x, ICriteria y)
+        return str.ToString();
+    }
+}
+
+/// <summary>
+/// Property query criteria.
+/// </summary>
+public sealed class PropertyCriteria : ICriteria
+{
+    /// <summary>
+    /// Initializes a new instance of the PropertyCriteria class.
+    /// </summary>
+    /// <remarks>You can use this to initialize an instance for the class.</remarks>
+    public PropertyCriteria()
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the PropertyCriteria class.
+    /// </summary>
+    /// <param name="name">The property name.</param>
+    /// <param name="condition">The condition.</param>
+    /// <remarks>You can use this to initialize an instance for the class.</remarks>
+    public PropertyCriteria(string name, ISimpleCondition condition)
+    {
+        Name = name;
+        Condition = condition;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the PropertyCriteria class.
+    /// </summary>
+    /// <param name="name">The property name.</param>
+    /// <param name="op">The operator.</param>
+    /// <param name="value">The value of property.</param>
+    /// <remarks>You can use this to initialize an instance for the class.</remarks>
+    public PropertyCriteria(string name, DbCompareOperator op, string value)
+    {
+        Name = name;
+        Condition = new StringCondition { Operator = op, Value = value };
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the PropertyCriteria class.
+    /// </summary>
+    /// <param name="name">The property name.</param>
+    /// <param name="op">The operator.</param>
+    /// <param name="value">The value of property.</param>
+    /// <remarks>You can use this to initialize an instance for the class.</remarks>
+    public PropertyCriteria(string name, BasicCompareOperator op, int value)
+    {
+        Name = name;
+        var ope = ToOperator(op);
+        Condition = new Int32Condition { Operator = ope, Value = value };
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the PropertyCriteria class.
+    /// </summary>
+    /// <param name="name">The property name.</param>
+    /// <param name="op">The operator.</param>
+    /// <param name="value">The value of property.</param>
+    /// <remarks>You can use this to initialize an instance for the class.</remarks>
+    public PropertyCriteria(string name, BasicCompareOperator op, float value)
+    {
+        Name = name;
+        var ope = ToOperator(op);
+        Condition = new SingleCondition { Operator = ope, Value = value };
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the PropertyCriteria class.
+    /// </summary>
+    /// <param name="name">The property name.</param>
+    /// <param name="op">The operator.</param>
+    /// <param name="value">The value of property.</param>
+    /// <remarks>You can use this to initialize an instance for the class.</remarks>
+    public PropertyCriteria(string name, BasicCompareOperator op, DateTime value)
+    {
+        Name = name;
+        var ope = ToOperator(op);
+        Condition = new DateTimeCondition { Operator = ope, Value = value };
+    }
+
+    /// <summary>
+    /// Gets the query criteria type.
+    /// </summary>
+    public CriteriaType CriteriaType => CriteriaType.Property;
+
+    /// <summary>
+    /// Gets or sets property name.
+    /// </summary>
+    public string Name { get; set; }
+
+    /// <summary>
+    /// Gets or sets condition.
+    /// </summary>
+    public ISimpleCondition Condition { get; set; }
+
+    /// <summary>
+    /// Returns a string that represents the current object.
+    /// </summary>
+    /// <returns>A string that represents the current object.</returns>
+    public override string ToString()
+    {
+        return string.Format(
+            CultureInfo.InvariantCulture,
+            "[{0}] {1}",
+            Name != null ? Name : "[empty]",
+            Condition != null ? Condition.ToString() : "null");
+    }
+
+    /// <summary>
+    /// Converts given basic compare operator to database compare operator.
+    /// </summary>
+    /// <param name="op">A basic compare operator to convert.</param>
+    /// <returns>A database compare operator converted.</returns>
+    public static DbCompareOperator ToOperator(BasicCompareOperator op)
+    {
+        switch (op)
         {
-            return And(x, y);
-        }
-
-        /// <summary>
-        /// AND operator for criteria.
-        /// </summary>
-        /// <param name="x">Criteria x.</param>
-        /// <param name="y">Criteria y.</param>
-        /// <returns>A collection of criteria.</returns>
-        public static CollectionCriteria operator &(ICriteria x, CollectionCriteria y)
-        {
-            return And(x, y);
-        }
-
-        /// <summary>
-        /// AND operator for criteria.
-        /// </summary>
-        /// <param name="x">Criteria x.</param>
-        /// <param name="y">Criteria y.</param>
-        /// <returns>A collection of criteria.</returns>
-        public static CollectionCriteria operator &(CollectionCriteria x, CollectionCriteria y)
-        {
-            return And(x, y);
-        }
-
-        /// <summary>
-        /// OR operator for criteria.
-        /// </summary>
-        /// <param name="x">Criteria x.</param>
-        /// <param name="y">Criteria y.</param>
-        /// <returns>A collection of criteria.</returns>
-        public static CollectionCriteria operator |(CollectionCriteria x, ICriteria y)
-        {
-            return Or(x, y);
-        }
-
-        /// <summary>
-        /// OR operator for criteria.
-        /// </summary>
-        /// <param name="x">Criteria x.</param>
-        /// <param name="y">Criteria y.</param>
-        /// <returns>A collection of criteria.</returns>
-        public static CollectionCriteria operator |(ICriteria x, CollectionCriteria y)
-        {
-            return Or(x, y);
-        }
-
-        /// <summary>
-        /// OR operator for criteria.
-        /// </summary>
-        /// <param name="x">Criteria x.</param>
-        /// <param name="y">Criteria y.</param>
-        /// <returns>A collection of criteria.</returns>
-        public static CollectionCriteria operator |(CollectionCriteria x, CollectionCriteria y)
-        {
-            return Or(x, y);
-        }
-
-        /// <summary>
-        /// Creates a collection criteria with AND operation.
-        /// </summary>
-        /// <param name="criteriaA">Criteria A.</param>
-        /// <param name="criteriaB">Criteria B.</param>
-        /// <param name="criterias">Other criterias.</param>
-        /// <returns>A collection criteria</returns>
-        public static CollectionCriteria And(ICriteria criteriaA, ICriteria criteriaB, params ICriteria[] criterias)
-        {
-            var cri = new CollectionCriteria { Operator = CriteriaBooleanOperator.And };
-            if (criteriaA != null) cri.Add(criteriaA);
-            if (criteriaB != null) cri.Add(criteriaB);
-            if (criterias != null && criterias.Length > 0) cri.AddRange(criterias);
-            return cri;
-        }
-
-        /// <summary>
-        /// Creates a collection criteria with Or operation.
-        /// </summary>
-        /// <param name="criteriaA">Criteria A.</param>
-        /// <param name="criteriaB">Criteria B.</param>
-        /// <param name="criterias">Other criterias.</param>
-        /// <returns>A collection criteria</returns>
-        public static CollectionCriteria Or(ICriteria criteriaA, ICriteria criteriaB, params ICriteria[] criterias)
-        {
-            var cri = new CollectionCriteria { Operator = CriteriaBooleanOperator.Or };
-            if (criteriaA != null) cri.Add(criteriaA);
-            if (criteriaB != null) cri.Add(criteriaB);
-            if (criterias != null && criterias.Length > 0) cri.AddRange(criterias);
-            return cri;
-        }
-
-        /// <summary>
-        /// Gets if given criteria is for all.
-        /// </summary>
-        /// <param name="criteria">The criteria for testing.</param>
-        /// <returns>true if for getting all; otherwise, false.</returns>
-        public static bool IsForAll(ICriteria criteria)
-        {
-            if (criteria == null || criteria.CriteriaType == CriteriaType.All) return true;
-            if (criteria.CriteriaType == CriteriaType.Collection)
-            {
-                var col = criteria as IEnumerable<ICriteria>;
-                if (col != null && col.Count() == 0) return true;
-            }
-            else if (criteria.CriteriaType == CriteriaType.Property)
-            {
-                var prop = criteria as PropertyCriteria;
-                if (prop != null
-                    && prop.Condition.ValueIsNull
-                    && (prop.Condition.Operator == DbCompareOperator.Contains || prop.Condition.Operator == DbCompareOperator.StartsWith || prop.Condition.Operator == DbCompareOperator.EndsWith))
-                    return true;
-            }
-
-            return false;
-        }
-
-        /// <summary>
-        /// Returns a string that represents the current object.
-        /// </summary>
-        /// <returns>A string that represents the current object.</returns>
-        public override string ToString()
-        {
-            var str = new StringBuilder();
-            var step = 0;
-            foreach (var item in this)
-            {
-                if (item == null) continue;
-                if (step > 0) str.AppendFormat(CultureInfo.InvariantCulture, " {0} ", Operator.ToString());
-                str.AppendFormat(CultureInfo.InvariantCulture, "({0})", item.ToString());
-                step++;
-            }
-
-            return str.ToString();
+            case BasicCompareOperator.Greater:
+                return DbCompareOperator.Greater;
+            case BasicCompareOperator.GreaterOrEqual:
+                return DbCompareOperator.GreaterOrEqual;
+            case BasicCompareOperator.Less:
+                return DbCompareOperator.Less;
+            case BasicCompareOperator.LessOrEqual:
+                return DbCompareOperator.LessOrEqual;
+            case BasicCompareOperator.NotEqual:
+                return DbCompareOperator.NotEqual;
+            default:
+                return DbCompareOperator.Equal;
         }
     }
 
     /// <summary>
-    /// Property query criteria.
+    /// AND operator for criteria.
     /// </summary>
-    public sealed class PropertyCriteria : ICriteria
+    /// <param name="x">Criteria x.</param>
+    /// <param name="y">Criteria y.</param>
+    /// <returns>A collection of criteria.</returns>
+    public static CollectionCriteria operator &(PropertyCriteria x, ICriteria y)
     {
-        /// <summary>
-        /// Initializes a new instance of the PropertyCriteria class.
-        /// </summary>
-        /// <remarks>You can use this to initialize an instance for the class.</remarks>
-        public PropertyCriteria()
-        {
-        }
+        return CollectionCriteria.And(x, y);
+    }
 
-        /// <summary>
-        /// Initializes a new instance of the PropertyCriteria class.
-        /// </summary>
-        /// <param name="name">The property name.</param>
-        /// <param name="condition">The condition.</param>
-        /// <remarks>You can use this to initialize an instance for the class.</remarks>
-        public PropertyCriteria(string name, ISimpleCondition condition)
-        {
-            Name = name;
-            Condition = condition;
-        }
+    /// <summary>
+    /// AND operator for criteria.
+    /// </summary>
+    /// <param name="x">Criteria x.</param>
+    /// <param name="y">Criteria y.</param>
+    /// <returns>A collection of criteria.</returns>
+    public static CollectionCriteria operator &(ICriteria x, PropertyCriteria y)
+    {
+        return CollectionCriteria.And(x, y);
+    }
 
-        /// <summary>
-        /// Initializes a new instance of the PropertyCriteria class.
-        /// </summary>
-        /// <param name="name">The property name.</param>
-        /// <param name="op">The operator.</param>
-        /// <param name="value">The value of property.</param>
-        /// <remarks>You can use this to initialize an instance for the class.</remarks>
-        public PropertyCriteria(string name, DbCompareOperator op, string value)
-        {
-            Name = name;
-            Condition = new StringCondition { Operator = op, Value = value };
-        }
+    /// <summary>
+    /// AND operator for criteria.
+    /// </summary>
+    /// <param name="x">Criteria x.</param>
+    /// <param name="y">Criteria y.</param>
+    /// <returns>A collection of criteria.</returns>
+    public static CollectionCriteria operator &(PropertyCriteria x, PropertyCriteria y)
+    {
+        return CollectionCriteria.And(x, y);
+    }
 
-        /// <summary>
-        /// Initializes a new instance of the PropertyCriteria class.
-        /// </summary>
-        /// <param name="name">The property name.</param>
-        /// <param name="op">The operator.</param>
-        /// <param name="value">The value of property.</param>
-        /// <remarks>You can use this to initialize an instance for the class.</remarks>
-        public PropertyCriteria(string name, BasicCompareOperator op, int value)
-        {
-            Name = name;
-            var ope = ToOperator(op);
-            Condition = new Int32Condition { Operator = ope, Value = value };
-        }
+    /// <summary>
+    /// OR operator for criteria.
+    /// </summary>
+    /// <param name="x">Criteria x.</param>
+    /// <param name="y">Criteria y.</param>
+    /// <returns>A collection of criteria.</returns>
+    public static CollectionCriteria operator |(PropertyCriteria x, ICriteria y)
+    {
+        return CollectionCriteria.Or(x, y);
+    }
 
-        /// <summary>
-        /// Initializes a new instance of the PropertyCriteria class.
-        /// </summary>
-        /// <param name="name">The property name.</param>
-        /// <param name="op">The operator.</param>
-        /// <param name="value">The value of property.</param>
-        /// <remarks>You can use this to initialize an instance for the class.</remarks>
-        public PropertyCriteria(string name, BasicCompareOperator op, float value)
-        {
-            Name = name;
-            var ope = ToOperator(op);
-            Condition = new SingleCondition { Operator = ope, Value = value };
-        }
+    /// <summary>
+    /// OR operator for criteria.
+    /// </summary>
+    /// <param name="x">Criteria x.</param>
+    /// <param name="y">Criteria y.</param>
+    /// <returns>A collection of criteria.</returns>
+    public static CollectionCriteria operator |(ICriteria x, PropertyCriteria y)
+    {
+        return CollectionCriteria.Or(x, y);
+    }
 
-        /// <summary>
-        /// Initializes a new instance of the PropertyCriteria class.
-        /// </summary>
-        /// <param name="name">The property name.</param>
-        /// <param name="op">The operator.</param>
-        /// <param name="value">The value of property.</param>
-        /// <remarks>You can use this to initialize an instance for the class.</remarks>
-        public PropertyCriteria(string name, BasicCompareOperator op, DateTime value)
-        {
-            Name = name;
-            var ope = ToOperator(op);
-            Condition = new DateTimeCondition { Operator = ope, Value = value };
-        }
-
-        /// <summary>
-        /// Gets the query criteria type.
-        /// </summary>
-        public CriteriaType CriteriaType => CriteriaType.Property;
-
-        /// <summary>
-        /// Gets or sets property name.
-        /// </summary>
-        public string Name { get; set; }
-
-        /// <summary>
-        /// Gets or sets condition.
-        /// </summary>
-        public ISimpleCondition Condition { get; set; }
-
-        /// <summary>
-        /// Returns a string that represents the current object.
-        /// </summary>
-        /// <returns>A string that represents the current object.</returns>
-        public override string ToString()
-        {
-            return string.Format(
-                CultureInfo.InvariantCulture,
-                "[{0}] {1}",
-                Name != null ? Name : "[empty]",
-                Condition != null ? Condition.ToString() : "null");
-        }
-
-        /// <summary>
-        /// Converts given basic compare operator to database compare operator.
-        /// </summary>
-        /// <param name="op">A basic compare operator to convert.</param>
-        /// <returns>A database compare operator converted.</returns>
-        public static DbCompareOperator ToOperator(BasicCompareOperator op)
-        {
-            switch (op)
-            {
-                case BasicCompareOperator.Greater:
-                    return DbCompareOperator.Greater;
-                case BasicCompareOperator.GreaterOrEqual:
-                    return DbCompareOperator.GreaterOrEqual;
-                case BasicCompareOperator.Less:
-                    return DbCompareOperator.Less;
-                case BasicCompareOperator.LessOrEqual:
-                    return DbCompareOperator.LessOrEqual;
-                case BasicCompareOperator.NotEqual:
-                    return DbCompareOperator.NotEqual;
-                default:
-                    return DbCompareOperator.Equal;
-            }
-        }
-
-        /// <summary>
-        /// AND operator for criteria.
-        /// </summary>
-        /// <param name="x">Criteria x.</param>
-        /// <param name="y">Criteria y.</param>
-        /// <returns>A collection of criteria.</returns>
-        public static CollectionCriteria operator &(PropertyCriteria x, ICriteria y)
-        {
-            return CollectionCriteria.And(x, y);
-        }
-
-        /// <summary>
-        /// AND operator for criteria.
-        /// </summary>
-        /// <param name="x">Criteria x.</param>
-        /// <param name="y">Criteria y.</param>
-        /// <returns>A collection of criteria.</returns>
-        public static CollectionCriteria operator &(ICriteria x, PropertyCriteria y)
-        {
-            return CollectionCriteria.And(x, y);
-        }
-
-        /// <summary>
-        /// AND operator for criteria.
-        /// </summary>
-        /// <param name="x">Criteria x.</param>
-        /// <param name="y">Criteria y.</param>
-        /// <returns>A collection of criteria.</returns>
-        public static CollectionCriteria operator &(PropertyCriteria x, PropertyCriteria y)
-        {
-            return CollectionCriteria.And(x, y);
-        }
-
-        /// <summary>
-        /// OR operator for criteria.
-        /// </summary>
-        /// <param name="x">Criteria x.</param>
-        /// <param name="y">Criteria y.</param>
-        /// <returns>A collection of criteria.</returns>
-        public static CollectionCriteria operator |(PropertyCriteria x, ICriteria y)
-        {
-            return CollectionCriteria.Or(x, y);
-        }
-
-        /// <summary>
-        /// OR operator for criteria.
-        /// </summary>
-        /// <param name="x">Criteria x.</param>
-        /// <param name="y">Criteria y.</param>
-        /// <returns>A collection of criteria.</returns>
-        public static CollectionCriteria operator |(ICriteria x, PropertyCriteria y)
-        {
-            return CollectionCriteria.Or(x, y);
-        }
-
-        /// <summary>
-        /// OR operator for criteria.
-        /// </summary>
-        /// <param name="x">Criteria x.</param>
-        /// <param name="y">Criteria y.</param>
-        /// <returns>A collection of criteria.</returns>
-        public static CollectionCriteria operator |(PropertyCriteria x, PropertyCriteria y)
-        {
-            return CollectionCriteria.Or(x, y);
-        }
+    /// <summary>
+    /// OR operator for criteria.
+    /// </summary>
+    /// <param name="x">Criteria x.</param>
+    /// <param name="y">Criteria y.</param>
+    /// <returns>A collection of criteria.</returns>
+    public static CollectionCriteria operator |(PropertyCriteria x, PropertyCriteria y)
+    {
+        return CollectionCriteria.Or(x, y);
     }
 }

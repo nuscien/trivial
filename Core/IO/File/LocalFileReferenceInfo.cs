@@ -62,6 +62,21 @@ public class LocalDirectoryReferenceInfo : BaseDirectoryReferenceInfo<DirectoryI
     }
 
     /// <summary>
+    /// Lists all sub-directories.
+    /// </summary>
+    /// <param name="searchPattern">The search string to match against the names of directories. This parameter can contain a combination of valid literal path and wildcard (* and ?) characters, but it doesn't support regular expressions.</param>
+    /// <returns>The directory collection.</returns>
+    public IEnumerable<LocalDirectoryReferenceInfo> GetDirectories(string searchPattern)
+    {
+        var dir = Source;
+        if (dir == null) return new List<LocalDirectoryReferenceInfo>();
+        if (parent == null) parent = new LocalDirectoryReferenceInfo(dir);
+        var col = string.IsNullOrEmpty(searchPattern) ? dir.EnumerateDirectories() : dir.EnumerateDirectories(searchPattern);
+        if (col == null) return new List<LocalDirectoryReferenceInfo>();
+        return col.Select(ele => new LocalDirectoryReferenceInfo(ele, this));
+    }
+
+    /// <summary>
     /// Lists all files.
     /// </summary>
     /// <returns>The file collection.</returns>
@@ -87,6 +102,21 @@ public class LocalDirectoryReferenceInfo : BaseDirectoryReferenceInfo<DirectoryI
     }
 
     /// <summary>
+    /// Lists all files.
+    /// </summary>
+    /// <param name="searchPattern">The search string to match against the names of directories. This parameter can contain a combination of valid literal path and wildcard (* and ?) characters, but it doesn't support regular expressions.</param>
+    /// <returns>The directory collection.</returns>
+    public IEnumerable<LocalFileReferenceInfo> GetFiles(string searchPattern)
+    {
+        var dir = Source;
+        if (dir == null) return new List<LocalFileReferenceInfo>();
+        if (parent == null) parent = new LocalDirectoryReferenceInfo(dir);
+        var col = string.IsNullOrEmpty(searchPattern) ? dir.EnumerateFiles() : dir.EnumerateFiles(searchPattern);
+        if (col == null) return new List<LocalFileReferenceInfo>();
+        return col.Select(ele => new LocalFileReferenceInfo(ele, this));
+    }
+
+    /// <summary>
     /// Lists all sub-directories.
     /// </summary>
     /// <returns>The directory collection.</returns>
@@ -103,6 +133,14 @@ public class LocalDirectoryReferenceInfo : BaseDirectoryReferenceInfo<DirectoryI
         => GetReadOnlyListAsync(GetDirectories(showHidden, predicate));
 
     /// <summary>
+    /// Lists all sub-directories.
+    /// </summary>
+    /// <param name="searchPattern">The search string to match against the names of directories. This parameter can contain a combination of valid literal path and wildcard (* and ?) characters, but it doesn't support regular expressions.</param>
+    /// <returns>The directory collection.</returns>
+    public Task<IReadOnlyList<LocalDirectoryReferenceInfo>> GetDirectoriesAsync(string searchPattern)
+        => GetReadOnlyListAsync(GetDirectories(searchPattern));
+
+    /// <summary>
     /// Lists all files.
     /// </summary>
     /// <returns>The file collection.</returns>
@@ -117,6 +155,14 @@ public class LocalDirectoryReferenceInfo : BaseDirectoryReferenceInfo<DirectoryI
     /// <returns>The file collection.</returns>
     public Task<IReadOnlyList<LocalFileReferenceInfo>> GetFilesAsync(bool showHidden, Func<FileInfo, bool> predicate = null)
         => GetReadOnlyListAsync(GetFiles(showHidden, predicate));
+
+    /// <summary>
+    /// Lists all files.
+    /// </summary>
+    /// <param name="searchPattern">The search string to match against the names of directories. This parameter can contain a combination of valid literal path and wildcard (* and ?) characters, but it doesn't support regular expressions.</param>
+    /// <returns>The file collection.</returns>
+    public Task<IReadOnlyList<LocalFileReferenceInfo>> GetFilesAsync(string searchPattern)
+        => GetReadOnlyListAsync(GetFiles(searchPattern));
 
     /// <summary>
     /// Lists all files.
