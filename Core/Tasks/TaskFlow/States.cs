@@ -4,31 +4,30 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Trivial.Tasks
+namespace Trivial.Tasks;
+
+/// <summary>
+/// The states of task flow.
+/// </summary>
+public enum TaskFlowStates : byte
 {
     /// <summary>
-    /// The states of task flow.
+    /// Unknown state.
     /// </summary>
-    public enum TaskFlowStates : byte
-    {
-        /// <summary>
-        /// Unknown state.
-        /// </summary>
-        Unknown = 0,
+    Unknown = 0,
 
-        /// <summary>
-        /// The task is running.
-        /// </summary>
-        Running = 1,
+    /// <summary>
+    /// The task is running.
+    /// </summary>
+    Running = 1,
 
-        /// <summary>
-        /// Completed successfully.
-        /// </summary>
-        Success = 2,
+    /// <summary>
+    /// Completed successfully.
+    /// </summary>
+    Success = 2,
 
-        /// <summary>
-        /// Faulted.
-        /// </summary>
-        Failure = 3
-    }
+    /// <summary>
+    /// Faulted.
+    /// </summary>
+    Failure = 3
 }

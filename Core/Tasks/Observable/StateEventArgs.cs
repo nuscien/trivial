@@ -2,99 +2,98 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Trivial.Tasks
+namespace Trivial.Tasks;
+
+/// <summary>
+/// The state event handler.
+/// </summary>
+/// <typeparam name="T">The type of the state.</typeparam>
+/// <param name="sender">The sender.</param>
+/// <param name="e">The event arguments.</param>
+public delegate void StateEventHandler<T>(object sender, StateEventArgs<T> e);
+
+/// <summary>
+/// The result event handler.
+/// </summary>
+/// <typeparam name="T">The type of the result.</typeparam>
+/// <param name="sender">The sender.</param>
+/// <param name="e">The event arguments.</param>
+public delegate void ResultEventHandler<T>(object sender, ResultEventArgs<T> e);
+
+/// <summary>
+/// The event arguments with message.
+/// </summary>
+public class MessageEventArgs : EventArgs
 {
     /// <summary>
-    /// The state event handler.
+    /// Initializes a new instance of the MessageEventArgs class.
     /// </summary>
-    /// <typeparam name="T">The type of the state.</typeparam>
-    /// <param name="sender">The sender.</param>
-    /// <param name="e">The event arguments.</param>
-    public delegate void StateEventHandler<T>(object sender, StateEventArgs<T> e);
+    /// <param name="message">The additional message.</param>
+    public MessageEventArgs(string message = null) => Message = message;
 
     /// <summary>
-    /// The result event handler.
+    /// Gets the additional message.
     /// </summary>
-    /// <typeparam name="T">The type of the result.</typeparam>
-    /// <param name="sender">The sender.</param>
-    /// <param name="e">The event arguments.</param>
-    public delegate void ResultEventHandler<T>(object sender, ResultEventArgs<T> e);
+    public string Message { get; }
+}
+
+/// <summary>
+/// The event arguments with state.
+/// </summary>
+/// <typeparam name="T">The type of the state.</typeparam>
+public class StateEventArgs<T> : MessageEventArgs
+{
+    /// <summary>
+    /// Initializes a new instance of the StateEventArgs class.
+    /// </summary>
+    /// <param name="state">The state.</param>
+    public StateEventArgs(T state) => State = state;
 
     /// <summary>
-    /// The event arguments with message.
+    /// Initializes a new instance of the StateEventArgs class.
     /// </summary>
-    public class MessageEventArgs : EventArgs
+    /// <param name="state">The state.</param>
+    /// <param name="message">The additional message.</param>
+    public StateEventArgs(T state, string message) : base(message) => State = state;
+
+    /// <summary>
+    /// Gets the state.
+    /// </summary>
+    public T State { get; }
+}
+
+/// <summary>
+/// The event arguments with result.
+/// </summary>
+/// <typeparam name="T">The type of the result.</typeparam>
+public class ResultEventArgs<T> : StateEventArgs<TaskStates>
+{
+    /// <summary>
+    /// Initializes a new instance of the ResultEventArgs class.
+    /// </summary>
+    /// <param name="result">The result.</param>
+    /// <param name="state">The state.</param>
+    /// <param name="exception">The exception.</param>
+    public ResultEventArgs(T result, TaskStates state = TaskStates.Done, Exception exception = null) : base(state)
     {
-        /// <summary>
-        /// Initializes a new instance of the MessageEventArgs class.
-        /// </summary>
-        /// <param name="message">The additional message.</param>
-        public MessageEventArgs(string message = null) => Message = message;
-
-        /// <summary>
-        /// Gets the additional message.
-        /// </summary>
-        public string Message { get; }
+        Result = result;
+        Exception = exception;
     }
 
     /// <summary>
-    /// The event arguments with state.
+    /// Initializes a new instance of the ResultEventArgs class.
     /// </summary>
-    /// <typeparam name="T">The type of the state.</typeparam>
-    public class StateEventArgs<T> : MessageEventArgs
-    {
-        /// <summary>
-        /// Initializes a new instance of the StateEventArgs class.
-        /// </summary>
-        /// <param name="state">The state.</param>
-        public StateEventArgs(T state) => State = state;
-
-        /// <summary>
-        /// Initializes a new instance of the StateEventArgs class.
-        /// </summary>
-        /// <param name="state">The state.</param>
-        /// <param name="message">The additional message.</param>
-        public StateEventArgs(T state, string message) : base(message) => State = state;
-
-        /// <summary>
-        /// Gets the state.
-        /// </summary>
-        public T State { get; }
-    }
+    /// <param name="exception">The exception.</param>
+    /// <param name="state">The state.</param>
+    public ResultEventArgs(Exception exception, TaskStates state = TaskStates.Faulted) : base(state) => Exception = exception;
 
     /// <summary>
-    /// The event arguments with result.
+    /// Gets the result.
     /// </summary>
-    /// <typeparam name="T">The type of the result.</typeparam>
-    public class ResultEventArgs<T> : StateEventArgs<TaskStates>
-    {
-        /// <summary>
-        /// Initializes a new instance of the ResultEventArgs class.
-        /// </summary>
-        /// <param name="result">The result.</param>
-        /// <param name="state">The state.</param>
-        /// <param name="exception">The exception.</param>
-        public ResultEventArgs(T result, TaskStates state = TaskStates.Done, Exception exception = null) : base(state)
-        {
-            Result = result;
-            Exception = exception;
-        }
+    public T Result { get; }
 
-        /// <summary>
-        /// Initializes a new instance of the ResultEventArgs class.
-        /// </summary>
-        /// <param name="exception">The exception.</param>
-        /// <param name="state">The state.</param>
-        public ResultEventArgs(Exception exception, TaskStates state = TaskStates.Faulted) : base(state) => Exception = exception;
-
-        /// <summary>
-        /// Gets the result.
-        /// </summary>
-        public T Result { get; }
-
-        /// <summary>
-        /// Gets the exception.
-        /// </summary>
-        public Exception Exception { get; }
-    }
+    /// <summary>
+    /// Gets the exception.
+    /// </summary>
+    public Exception Exception { get; }
 }

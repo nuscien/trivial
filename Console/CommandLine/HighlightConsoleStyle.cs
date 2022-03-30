@@ -73,6 +73,8 @@ namespace Trivial.CommandLine
         /// <summary>
         /// The search starting position to search.
         /// </summary>
+        [JsonPropertyName("start")]
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
         public int StartPosition { get; set; }
 
 #pragma warning disable IDE0057

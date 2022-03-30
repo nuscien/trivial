@@ -6,77 +6,76 @@ using System.Threading.Tasks;
 
 using Trivial.Text;
 
-namespace Trivial.CommandLine
+namespace Trivial.CommandLine;
+
+/// <summary>
+/// The conversation modes for command processing.
+/// </summary>
+public enum CommandConversationModes : byte
 {
     /// <summary>
-    /// The conversation modes for command processing.
+    /// Turns on when no arguments input; otherwise, turns off.
     /// </summary>
-    public enum CommandConversationModes : byte
-    {
-        /// <summary>
-        /// Turns on when no arguments input; otherwise, turns off.
-        /// </summary>
-        Auto = 0,
-
-        /// <summary>
-        /// Turns off the conversation mode.
-        /// </summary>
-        Off = 1,
-
-        /// <summary>
-        /// Keeps to turns on.
-        /// </summary>
-        On = 2
-    }
+    Auto = 0,
 
     /// <summary>
-    /// The context of command conversation.
+    /// Turns off the conversation mode.
     /// </summary>
-    public class CommandConversationContext
-    {
-        /// <summary>
-        /// Gets the tracking identifier.
-        /// </summary>
-        public Guid Id { get; } = Guid.NewGuid();
+    Off = 1,
 
-        /// <summary>
-        /// Gets the current conversation modes for command processing.
-        /// </summary>
-        public CommandConversationModes Mode { get; internal set; }
+    /// <summary>
+    /// Keeps to turns on.
+    /// </summary>
+    On = 2
+}
 
-        /// <summary>
-        /// Gets the shared data.
-        /// </summary>
-        public JsonObjectNode Data { get; } = new JsonObjectNode();
+/// <summary>
+/// The context of command conversation.
+/// </summary>
+public class CommandConversationContext
+{
+    /// <summary>
+    /// Gets the tracking identifier.
+    /// </summary>
+    public Guid Id { get; } = Guid.NewGuid();
 
-        /// <summary>
-        /// Gets some of verb description registered.
-        /// </summary>
-        public IDictionary<string, string> Description { get; internal set; }
+    /// <summary>
+    /// Gets the current conversation modes for command processing.
+    /// </summary>
+    public CommandConversationModes Mode { get; internal set; }
 
-        /// <summary>
-        /// Gets some of verb key registered.
-        /// </summary>
-        public IEnumerable<string> StaticKeys => Description.Keys;
+    /// <summary>
+    /// Gets the shared data.
+    /// </summary>
+    public JsonObjectNode Data { get; } = new JsonObjectNode();
 
-        /// <summary>
-        /// Gets the keys for exit.
-        /// </summary>
-        public IReadOnlyList<string> ExitKeys { get; internal set; }
+    /// <summary>
+    /// Gets some of verb description registered.
+    /// </summary>
+    public IDictionary<string, string> Description { get; internal set; }
 
-        /// <summary>
-        /// Gets the current command handler.
-        /// </summary>
-        public ICommandHandler Handler { get; internal set; }
+    /// <summary>
+    /// Gets some of verb key registered.
+    /// </summary>
+    public IEnumerable<string> StaticKeys => Description.Keys;
 
-        /// <summary>
-        /// Gets the current processing date time.
-        /// </summary>
-        public DateTime ProcessingTime { get; internal set; } = DateTime.Now;
+    /// <summary>
+    /// Gets the keys for exit.
+    /// </summary>
+    public IReadOnlyList<string> ExitKeys { get; internal set; }
 
-        /// <summary>
-        /// Gets the console instance.
-        /// </summary>
-        public StyleConsole Console { get; internal set; } = StyleConsole.Default;
-    }
+    /// <summary>
+    /// Gets the current command handler.
+    /// </summary>
+    public ICommandHandler Handler { get; internal set; }
+
+    /// <summary>
+    /// Gets the current processing date time.
+    /// </summary>
+    public DateTime ProcessingTime { get; internal set; } = DateTime.Now;
+
+    /// <summary>
+    /// Gets the console instance.
+    /// </summary>
+    public StyleConsole Console { get; internal set; } = StyleConsole.Default;
 }

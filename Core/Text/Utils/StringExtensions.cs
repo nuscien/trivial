@@ -447,6 +447,34 @@ namespace Trivial.Text
             return sb.ToString();
         }
 
+        /// <summary>
+        /// Gets the substring between two keywords.
+        /// </summary>
+        /// <param name="s">The input string.</param>
+        /// <param name="start">The start keyword.</param>
+        /// <param name="end">The end keword.</param>
+        /// <param name="include">true if output includes the keywords; otherwise, false.</param>
+        /// <param name="startIndex">The start index to search.</param>
+        /// <returns>The substring.</returns>
+        public static string Between(string s, string start, string end, bool include = false, int startIndex = 0)
+        {
+            if (string.IsNullOrEmpty(s)) return s;
+            var i = string.IsNullOrEmpty(start) ? startIndex : s.IndexOf(start, startIndex);
+            if (i < 0) return string.Empty;
+            if (include)
+            {
+                s = s.Substring(i);
+                if (string.IsNullOrEmpty(end)) return s;
+                i = s.IndexOf(end, start.Length);
+                return i < 0 ? s : s.Substring(0, i + end.Length);
+            }
+
+            s = s.Substring(i + start.Length);
+            if (string.IsNullOrEmpty(end)) return s;
+            i = s.IndexOf(end);
+            return i < 0 ? s : s.Substring(0, i);
+        }
+
         internal static StringBuilder Append(StringBuilder sb, StringBuilder value)
         {
             if (value != null)

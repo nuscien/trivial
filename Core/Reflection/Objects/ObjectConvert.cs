@@ -6,378 +6,377 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 
-namespace Trivial.Reflection
+namespace Trivial.Reflection;
+
+/// <summary>
+/// The type utility.
+/// </summary>
+public static class ObjectConvert
 {
     /// <summary>
-    /// The type utility.
+    /// Converts the given object to a specific struct.
     /// </summary>
-    public static class ObjectConvert
+    /// <param name="type">The type of object to return.</param>
+    /// <param name="value">The value to convert.</param>
+    /// <returns>An object converted.</returns>
+    /// <exception cref="InvalidCastException">Failed to convert.</exception>
+    /// <exception cref="FormatException">value is not in a format recognized by conversion type.</exception>
+    /// <exception cref="ArgumentNullException">type or value was null.</exception>
+    /// <exception cref="ArgumentException">value was not the one in the type or content format supported.</exception>
+    /// <exception cref="OverflowException">value was outside the range of the underlying type of the specific type to convert.</exception>
+    public static object Invoke(Type type, object value)
     {
-        /// <summary>
-        /// Converts the given object to a specific struct.
-        /// </summary>
-        /// <param name="type">The type of object to return.</param>
-        /// <param name="value">The value to convert.</param>
-        /// <returns>An object converted.</returns>
-        /// <exception cref="InvalidCastException">Failed to convert.</exception>
-        /// <exception cref="FormatException">value is not in a format recognized by conversion type.</exception>
-        /// <exception cref="ArgumentNullException">type or value was null.</exception>
-        /// <exception cref="ArgumentException">value was not the one in the type or content format supported.</exception>
-        /// <exception cref="OverflowException">value was outside the range of the underlying type of the specific type to convert.</exception>
-        public static object Invoke(Type type, object value)
+        if (type == null) throw new ArgumentNullException(nameof(type), "type should not be null.");
+        if (type == typeof(string))
         {
-            if (type == null) throw new ArgumentNullException(nameof(type), "type should not be null.");
-            if (type == typeof(string))
+            if (value is Stream streamValue)
             {
-                if (value is Stream streamValue)
-                {
-                    using var reader = new StreamReader(streamValue);
-                    return reader.ReadToEnd();
-                }
-
-                return Convert.ToString(value);
+                using var reader = new StreamReader(streamValue);
+                return reader.ReadToEnd();
             }
 
-            if (value == null)
-            {
-                if (type.IsClass || IsNullableValueType(type)) return null;
-                throw new ArgumentNullException(nameof(value), "value should not be null.");
-            }
-
-            var objectType = value.GetType();
-            if (objectType.IsValueType || objectType.IsEnum) return Convert.ChangeType(value, type);
-            if (value is string str)
-            {
-                if (type == typeof(string)) return str;
-                if (type.IsEnum)
-                {
-                    return Enum.Parse(type, str);
-                }
-
-                try
-                {
-                    var parser = type.GetMethod("Parse", new[] { typeof(string) });
-                    if (parser != null && parser.IsStatic && !parser.IsAbstract)
-                    {
-                        return parser.Invoke(null, new[] { str });
-                    }
-                }
-                catch (ArgumentException)
-                {
-                }
-                catch (AmbiguousMatchException)
-                {
-                }
-                catch (InvalidOperationException)
-                {
-                }
-                catch (MemberAccessException)
-                {
-                }
-                catch (NotSupportedException)
-                {
-                }
-                catch (TargetInvocationException)
-                {
-                }
-                catch (TargetException)
-                {
-                }
-
-                if (type == typeof(Stream) || type.IsSubclassOf(typeof(Stream)))
-                {
-                    var stream = new MemoryStream();
-                    using (var writer = new StreamWriter(stream))
-                    {
-                        writer.Write(str);
-                        writer.Flush();
-                    }
-
-                    return stream;
-                }
-            }
-
-            return Convert.ChangeType(value, type);
+            return Convert.ToString(value);
         }
 
-        /// <summary>
-        /// Converts the given object to a specific struct.
-        /// </summary>
-        /// <typeparam name="T">The type of object to return.</typeparam>
-        /// <param name="value">The value to convert.</param>
-        /// <returns>An object converted.</returns>
-        /// <exception cref="InvalidCastException">Failed to convert.</exception>
-        /// <exception cref="ArgumentNullException">value is null.</exception>
-        /// <exception cref="ArgumentException">value is not the one in the type or content format supported.</exception>
-        /// <exception cref="OverflowException">value is outside the range of the underlying type of the specific type to convert.</exception>
-        public static T Invoke<T>(object value)
+        if (value == null)
         {
-            return (T)Invoke(typeof(T), value);
+            if (type.IsClass || IsNullableValueType(type)) return null;
+            throw new ArgumentNullException(nameof(value), "value should not be null.");
         }
 
-        /// <summary>
-        /// Tries to convert the given object to a specific struct.
-        /// </summary>
-        /// <typeparam name="T">The type of the value type instance to return.</typeparam>
-        /// <param name="value">The value to convert.</param>
-        /// <returns>An struct converted.</returns>
-        public static T? TryInvokeForStruct<T>(object value) where T : struct
+        var objectType = value.GetType();
+        if (objectType.IsValueType || objectType.IsEnum) return Convert.ChangeType(value, type);
+        if (value is string str)
         {
-            if (value == null) return null;
+            if (type == typeof(string)) return str;
+            if (type.IsEnum)
+            {
+                return Enum.Parse(type, str);
+            }
+
             try
             {
-                return Invoke<T>(value);
-            }
-            catch (InvalidCastException)
-            {
+                var parser = type.GetMethod("Parse", new[] { typeof(string) });
+                if (parser != null && parser.IsStatic && !parser.IsAbstract)
+                {
+                    return parser.Invoke(null, new[] { str });
+                }
             }
             catch (ArgumentException)
             {
             }
-            catch (OverflowException)
+            catch (AmbiguousMatchException)
             {
             }
-            catch (FormatException)
+            catch (InvalidOperationException)
             {
             }
-            catch (IOException)
+            catch (MemberAccessException)
             {
             }
-            catch (NullReferenceException)
+            catch (NotSupportedException)
+            {
+            }
+            catch (TargetInvocationException)
+            {
+            }
+            catch (TargetException)
             {
             }
 
-            return null;
+            if (type == typeof(Stream) || type.IsSubclassOf(typeof(Stream)))
+            {
+                var stream = new MemoryStream();
+                using (var writer = new StreamWriter(stream))
+                {
+                    writer.Write(str);
+                    writer.Flush();
+                }
+
+                return stream;
+            }
         }
 
-        /// <summary>
-        /// Tries to convert the given object to a specific struct.
-        /// </summary>
-        /// <typeparam name="T">The type of reference type instance to return.</typeparam>
-        /// <param name="value">The value to convert.</param>
-        /// <returns>An struct converted.</returns>
-        public static T TryInvokeForClass<T>(object value) where T : class
-        {
-            if (value == null) return null;
-            try
-            {
-                return Invoke<T>(value);
-            }
-            catch (InvalidCastException)
-            {
-            }
-            catch (ArgumentException)
-            {
-            }
-            catch (OverflowException)
-            {
-            }
-            catch (FormatException)
-            {
-            }
-            catch (IOException)
-            {
-            }
-            catch (NullReferenceException)
-            {
-            }
+        return Convert.ChangeType(value, type);
+    }
 
-            return null;
+    /// <summary>
+    /// Converts the given object to a specific struct.
+    /// </summary>
+    /// <typeparam name="T">The type of object to return.</typeparam>
+    /// <param name="value">The value to convert.</param>
+    /// <returns>An object converted.</returns>
+    /// <exception cref="InvalidCastException">Failed to convert.</exception>
+    /// <exception cref="ArgumentNullException">value is null.</exception>
+    /// <exception cref="ArgumentException">value is not the one in the type or content format supported.</exception>
+    /// <exception cref="OverflowException">value is outside the range of the underlying type of the specific type to convert.</exception>
+    public static T Invoke<T>(object value)
+    {
+        return (T)Invoke(typeof(T), value);
+    }
+
+    /// <summary>
+    /// Tries to convert the given object to a specific struct.
+    /// </summary>
+    /// <typeparam name="T">The type of the value type instance to return.</typeparam>
+    /// <param name="value">The value to convert.</param>
+    /// <returns>An struct converted.</returns>
+    public static T? TryInvokeForStruct<T>(object value) where T : struct
+    {
+        if (value == null) return null;
+        try
+        {
+            return Invoke<T>(value);
+        }
+        catch (InvalidCastException)
+        {
+        }
+        catch (ArgumentException)
+        {
+        }
+        catch (OverflowException)
+        {
+        }
+        catch (FormatException)
+        {
+        }
+        catch (IOException)
+        {
+        }
+        catch (NullReferenceException)
+        {
         }
 
-        /// <summary>
-        /// Tries to convert the given object to a specific struct.
-        /// </summary>
-        /// <typeparam name="T">The type of the value type instance to return.</typeparam>
-        /// <param name="value">The value to convert.</param>
-        /// <param name="output">The result output.</param>
-        /// <returns>true if convert succeeded; otherwise, false.</returns>
-        public static bool TryInvokeForStruct<T>(object value, out T output) where T : struct
+        return null;
+    }
+
+    /// <summary>
+    /// Tries to convert the given object to a specific struct.
+    /// </summary>
+    /// <typeparam name="T">The type of reference type instance to return.</typeparam>
+    /// <param name="value">The value to convert.</param>
+    /// <returns>An struct converted.</returns>
+    public static T TryInvokeForClass<T>(object value) where T : class
+    {
+        if (value == null) return null;
+        try
         {
-            if (value == null && IsNullableValueType(typeof(T)))
-            {
-                output = default;
-                return true;
-            }
+            return Invoke<T>(value);
+        }
+        catch (InvalidCastException)
+        {
+        }
+        catch (ArgumentException)
+        {
+        }
+        catch (OverflowException)
+        {
+        }
+        catch (FormatException)
+        {
+        }
+        catch (IOException)
+        {
+        }
+        catch (NullReferenceException)
+        {
+        }
 
-            var result = TryInvokeForStruct<T>(value);
-            if (!result.HasValue)
-            {
-                output = default;
-                return false;
-            }
+        return null;
+    }
 
-            output = result.Value;
+    /// <summary>
+    /// Tries to convert the given object to a specific struct.
+    /// </summary>
+    /// <typeparam name="T">The type of the value type instance to return.</typeparam>
+    /// <param name="value">The value to convert.</param>
+    /// <param name="output">The result output.</param>
+    /// <returns>true if convert succeeded; otherwise, false.</returns>
+    public static bool TryInvokeForStruct<T>(object value, out T output) where T : struct
+    {
+        if (value == null && IsNullableValueType(typeof(T)))
+        {
+            output = default;
             return true;
         }
 
-        /// <summary>
-        /// Tries to convert the given object to a specific struct.
-        /// </summary>
-        /// <typeparam name="T">The type of the value type instance to return.</typeparam>
-        /// <param name="value">The value to convert.</param>
-        /// <param name="output">The result output.</param>
-        /// <returns>true if convert succeeded; otherwise, false.</returns>
-        public static bool TryInvokeForClass<T>(object value, out T output) where T : class
+        var result = TryInvokeForStruct<T>(value);
+        if (!result.HasValue)
+        {
+            output = default;
+            return false;
+        }
+
+        output = result.Value;
+        return true;
+    }
+
+    /// <summary>
+    /// Tries to convert the given object to a specific struct.
+    /// </summary>
+    /// <typeparam name="T">The type of the value type instance to return.</typeparam>
+    /// <param name="value">The value to convert.</param>
+    /// <param name="output">The result output.</param>
+    /// <returns>true if convert succeeded; otherwise, false.</returns>
+    public static bool TryInvokeForClass<T>(object value, out T output) where T : class
+    {
+        try
+        {
+            output = Invoke<T>(value);
+            return true;
+        }
+        catch (InvalidCastException)
+        {
+        }
+        catch (ArgumentException)
+        {
+        }
+        catch (OverflowException)
+        {
+        }
+        catch (FormatException)
+        {
+        }
+        catch (IOException)
+        {
+        }
+        catch (NullReferenceException)
+        {
+        }
+
+        output = null;
+        return false;
+    }
+
+    /// <summary>
+    /// Returns the typed instance.
+    /// </summary>
+    /// <typeparam name="T">The type of each instance in the collection.</typeparam>
+    /// <param name="fields">The field values.</param>
+    /// <param name="creator">The instance factory.</param>
+    /// <param name="propertyNames">The optional property names to map.</param>
+    /// <returns>A typed instance based on the fields.</returns>
+    public static T Invoke<T>(IReadOnlyList<string> fields, Func<IReadOnlyList<string>, T> creator, IEnumerable<string> propertyNames = null)
+    {
+        var type = typeof(T);
+        var props = propertyNames?.Select(ele =>
         {
             try
             {
-                output = Invoke<T>(value);
-                return true;
+                if (!string.IsNullOrWhiteSpace(ele)) return type.GetProperty(ele);
             }
-            catch (InvalidCastException)
-            {
-            }
-            catch (ArgumentException)
-            {
-            }
-            catch (OverflowException)
-            {
-            }
-            catch (FormatException)
-            {
-            }
-            catch (IOException)
-            {
-            }
-            catch (NullReferenceException)
+            catch (AmbiguousMatchException)
             {
             }
 
-            output = null;
-            return false;
+            return null;
+        })?.ToList();
+        if (props != null && props.Count == 0) props = null;
+        return Invoke(fields, creator, props);
+    }
+
+    /// <summary>
+    /// Returns the typed instance.
+    /// </summary>
+    /// <typeparam name="T">The type of each instance in the collection.</typeparam>
+    /// <param name="fields">The field values.</param>
+    /// <param name="propertyNames">The optional property names to map.</param>
+    /// <returns>A typed instance based on the fields.</returns>
+    public static T Invoke<T>(IReadOnlyList<string> fields, IEnumerable<string> propertyNames)
+    {
+        return Invoke<T>(fields, null, propertyNames);
+    }
+
+    /// <summary>
+    /// Returns the typed instance.
+    /// </summary>
+    /// <typeparam name="T">The type of each instance in the collection.</typeparam>
+    /// <param name="fields">The field values.</param>
+    /// <param name="creator">The instance factory.</param>
+    /// <param name="properties">The optional properties to map.</param>
+    /// <returns>A typed instance based on the fields.</returns>
+    public static T Invoke<T>(IReadOnlyList<string> fields, Func<IReadOnlyList<string>, T> creator, IReadOnlyList<PropertyInfo> properties)
+    {
+        var instance = creator != null ? creator(fields) : Activator.CreateInstance<T>();
+        if (instance == null) return default;
+        if (properties != null)
+        {
+            for (var i = 0; i < Math.Min(properties.Count, fields.Count); i++)
+            {
+                var prop = properties[i];
+                if (prop == null || !prop.CanWrite) continue;
+                var propV = Invoke(prop.PropertyType, fields[i]);
+                prop.SetValue(instance, propV);
+            }
         }
 
-        /// <summary>
-        /// Returns the typed instance.
-        /// </summary>
-        /// <typeparam name="T">The type of each instance in the collection.</typeparam>
-        /// <param name="fields">The field values.</param>
-        /// <param name="creator">The instance factory.</param>
-        /// <param name="propertyNames">The optional property names to map.</param>
-        /// <returns>A typed instance based on the fields.</returns>
-        public static T Invoke<T>(IReadOnlyList<string> fields, Func<IReadOnlyList<string>, T> creator, IEnumerable<string> propertyNames = null)
-        {
-            var type = typeof(T);
-            var props = propertyNames?.Select(ele =>
-            {
-                try
-                {
-                    if (!string.IsNullOrWhiteSpace(ele)) return type.GetProperty(ele);
-                }
-                catch (AmbiguousMatchException)
-                {
-                }
+        return instance;
+    }
 
-                return null;
-            })?.ToList();
-            if (props != null && props.Count == 0) props = null;
-            return Invoke(fields, creator, props);
-        }
+    /// <summary>
+    /// Resolves a singleton instance.
+    /// </summary>
+    /// <typeparam name="T">The type of instance.</typeparam>
+    /// <param name="resolver">The singleton resolver.</param>
+    /// <returns>An instance resolved.</returns>
+    /// <exception cref="NotSupportedException">The type of instance was not support to resolve.</exception>
+    public static T Resolve<T>(this ISingletonResolver resolver)
+    {
+        if (resolver == null) throw new ArgumentNullException(nameof(resolver), "resolver should not be null.");
+        return resolver.Resolve<T>(null);
+    }
 
-        /// <summary>
-        /// Returns the typed instance.
-        /// </summary>
-        /// <typeparam name="T">The type of each instance in the collection.</typeparam>
-        /// <param name="fields">The field values.</param>
-        /// <param name="propertyNames">The optional property names to map.</param>
-        /// <returns>A typed instance based on the fields.</returns>
-        public static T Invoke<T>(IReadOnlyList<string> fields, IEnumerable<string> propertyNames)
-        {
-            return Invoke<T>(fields, null, propertyNames);
-        }
+    /// <summary>
+    /// Resolves a singleton instance.
+    /// </summary>
+    /// <param name="resolver">The singleton resolver.</param>
+    /// <param name="type">The type of instance.</param>
+    /// <param name="key">The key.</param>
+    /// <returns>An instance resolved.</returns>
+    /// <exception cref="NotSupportedException">The type of instance was not support to resolve.</exception>
+    public static object Resolve(this ISingletonResolver resolver, Type type, string key = null)
+    {
+        if (resolver == null) throw new ArgumentNullException(nameof(resolver), "resolver should not be null.");
+        var resolverType = typeof(ISingletonResolver);
+        var method = resolverType.GetMethod("Resolve", new[] { typeof(string) });
+        var genericMethod = method.MakeGenericMethod(new [] { type });
+        return genericMethod.Invoke(resolver, new object[] { key });
+    }
 
-        /// <summary>
-        /// Returns the typed instance.
-        /// </summary>
-        /// <typeparam name="T">The type of each instance in the collection.</typeparam>
-        /// <param name="fields">The field values.</param>
-        /// <param name="creator">The instance factory.</param>
-        /// <param name="properties">The optional properties to map.</param>
-        /// <returns>A typed instance based on the fields.</returns>
-        public static T Invoke<T>(IReadOnlyList<string> fields, Func<IReadOnlyList<string>, T> creator, IReadOnlyList<PropertyInfo> properties)
-        {
-            var instance = creator != null ? creator(fields) : Activator.CreateInstance<T>();
-            if (instance == null) return default;
-            if (properties != null)
-            {
-                for (var i = 0; i < Math.Min(properties.Count, fields.Count); i++)
-                {
-                    var prop = properties[i];
-                    if (prop == null || !prop.CanWrite) continue;
-                    var propV = Invoke(prop.PropertyType, fields[i]);
-                    prop.SetValue(instance, propV);
-                }
-            }
+    /// <summary>
+    /// Resolves a singleton instance.
+    /// </summary>
+    /// <typeparam name="T">The type of instance.</typeparam>
+    /// <param name="resolver">The singleton resolver.</param>
+    /// <param name="result">An instance resolved.</param>
+    /// <returns>true if resolve succeeded; otherwise, false.</returns>
+    public static bool TryResolve<T>(this ISingletonResolver resolver, out T result)
+    {
+        if (resolver != null) return resolver.TryResolve(null, out result);
+        result = default;
+        return false;
+    }
 
-            return instance;
-        }
-
-        /// <summary>
-        /// Resolves a singleton instance.
-        /// </summary>
-        /// <typeparam name="T">The type of instance.</typeparam>
-        /// <param name="resolver">The singleton resolver.</param>
-        /// <returns>An instance resolved.</returns>
-        /// <exception cref="NotSupportedException">The type of instance was not support to resolve.</exception>
-        public static T Resolve<T>(this ISingletonResolver resolver)
-        {
-            if (resolver == null) throw new ArgumentNullException(nameof(resolver), "resolver should not be null.");
-            return resolver.Resolve<T>(null);
-        }
-
-        /// <summary>
-        /// Resolves a singleton instance.
-        /// </summary>
-        /// <param name="resolver">The singleton resolver.</param>
-        /// <param name="type">The type of instance.</param>
-        /// <param name="key">The key.</param>
-        /// <returns>An instance resolved.</returns>
-        /// <exception cref="NotSupportedException">The type of instance was not support to resolve.</exception>
-        public static object Resolve(this ISingletonResolver resolver, Type type, string key = null)
-        {
-            if (resolver == null) throw new ArgumentNullException(nameof(resolver), "resolver should not be null.");
-            var resolverType = typeof(ISingletonResolver);
-            var method = resolverType.GetMethod("Resolve", new[] { typeof(string) });
-            var genericMethod = method.MakeGenericMethod(new [] { type });
-            return genericMethod.Invoke(resolver, new object[] { key });
-        }
-
-        /// <summary>
-        /// Resolves a singleton instance.
-        /// </summary>
-        /// <typeparam name="T">The type of instance.</typeparam>
-        /// <param name="resolver">The singleton resolver.</param>
-        /// <param name="result">An instance resolved.</param>
-        /// <returns>true if resolve succeeded; otherwise, false.</returns>
-        public static bool TryResolve<T>(this ISingletonResolver resolver, out T result)
-        {
-            if (resolver != null) return resolver.TryResolve(null, out result);
-            result = default;
-            return false;
-        }
-
-        internal static T ParseEnum<T>(string s) where T : struct
-        {
+    internal static T ParseEnum<T>(string s) where T : struct
+    {
 #if NETOLDVER
-            return (T)Enum.Parse(typeof(T), s);
+        return (T)Enum.Parse(typeof(T), s);
 #else
-            return Enum.Parse<T>(s);
+        return Enum.Parse<T>(s);
 #endif
-        }
+    }
 
-        internal static T ParseEnum<T>(string s, bool ignoreCase) where T : struct
-        {
+    internal static T ParseEnum<T>(string s, bool ignoreCase) where T : struct
+    {
 #if NETOLDVER
-            return (T)Enum.Parse(typeof(T), s, ignoreCase);
+        return (T)Enum.Parse(typeof(T), s, ignoreCase);
 #else
-            return Enum.Parse<T>(s, ignoreCase);
+        return Enum.Parse<T>(s, ignoreCase);
 #endif
-        }
+    }
 
-        private static bool IsNullableValueType(Type type)
-        {
-            return type.IsValueType && type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>);
-        }
+    private static bool IsNullableValueType(Type type)
+    {
+        return type.IsValueType && type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>);
     }
 }
