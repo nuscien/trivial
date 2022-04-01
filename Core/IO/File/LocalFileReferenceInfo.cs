@@ -123,7 +123,7 @@ public class LocalDirectoryReferenceInfo : BaseDirectoryReferenceInfo<DirectoryI
         if (col == null) return new List<LocalFileReferenceInfo>();
         if (!showHidden) col = col.Where(ele => !ele.Attributes.HasFlag(FileAttributes.Hidden));
         if (predicate != null) col = col.Where(predicate);
-        return col.Select(ele => new LocalFileReferenceInfo(ele, this));
+        return col.Select(ele => CreateFileReferenceInfo(ele, this));
     }
 
     /// <summary>
@@ -137,7 +137,7 @@ public class LocalDirectoryReferenceInfo : BaseDirectoryReferenceInfo<DirectoryI
         if (dir == null) return new List<LocalFileReferenceInfo>();
         var col = string.IsNullOrEmpty(searchPattern) ? dir.EnumerateFiles() : dir.EnumerateFiles(searchPattern);
         if (col == null) return new List<LocalFileReferenceInfo>();
-        return col.Select(ele => new LocalFileReferenceInfo(ele, this));
+        return col.Select(ele => CreateFileReferenceInfo(ele, this));
     }
 
     /// <summary>
@@ -308,8 +308,18 @@ public class LocalDirectoryReferenceInfo : BaseDirectoryReferenceInfo<DirectoryI
     {
         if (dir == null) return Task.FromResult<IReadOnlyList<IFileReferenceInfo>>(new List<IFileReferenceInfo>());
         if (parent == null) parent = new LocalDirectoryReferenceInfo(dir);
-        var col = dir.EnumerateFiles()?.Where(ele => !ele.Attributes.HasFlag(FileAttributes.Hidden))?.Select(ele => new LocalFileReferenceInfo(ele, parent) as IFileReferenceInfo)?.ToList() ?? new List<IFileReferenceInfo>();
+        var col = dir.EnumerateFiles()?.Where(ele => !ele.Attributes.HasFlag(FileAttributes.Hidden))?.Select(ele => CreateFileReferenceInfo(ele, parent) as IFileReferenceInfo)?.ToList() ?? new List<IFileReferenceInfo>();
         return Task.FromResult<IReadOnlyList<IFileReferenceInfo>>(col);
+    }
+
+    private static LocalFileReferenceInfo CreateFileReferenceInfo(FileInfo ele, LocalDirectoryReferenceInfo parent)
+    {
+#if !NETFRAMEWORK
+        if (ele.Extension?.Equals(".zip", StringComparison.OrdinalIgnoreCase) == true)
+            return new ZipFileReferenceInfo(ele, parent);
+        else
+#endif
+            return new LocalFileReferenceInfo(ele, parent);
     }
 }
 

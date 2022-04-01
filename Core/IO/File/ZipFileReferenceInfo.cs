@@ -19,6 +19,7 @@ namespace Trivial.IO;
 /// </summary>
 public class ZipFileReferenceInfo : LocalPackageFileReferenceInfo, IDirectoryHostReferenceInfo
 {
+    private bool hasInit;
     private readonly object locker = new();
     private readonly List<ZipArchiveEntryReferenceInfo> files = new();
     private readonly Dictionary<string, ZipArchiveDirectoryReferenceInfo> dirs = new();
@@ -40,7 +41,7 @@ public class ZipFileReferenceInfo : LocalPackageFileReferenceInfo, IDirectoryHos
     public ZipArchiveDirectoryReferenceInfo GetDirectory(string path)
     {
         path = path?.Trim() ?? string.Empty;
-        if (!path.EndsWith('\\')) path = path.Substring(path.Length - 1).TrimEnd();
+        if (path.EndsWith('\\')) path = path.Substring(path.Length - 1).TrimEnd();
         if (string.IsNullOrEmpty(path)) return null;
         return dirs.TryGetValue(path, out var info) ? info : null;
     }
@@ -51,7 +52,7 @@ public class ZipFileReferenceInfo : LocalPackageFileReferenceInfo, IDirectoryHos
     /// <returns>The directory collection.</returns>
     public IReadOnlyList<ZipArchiveDirectoryReferenceInfo> GetDirectories()
     {
-        Load();
+        EnsureInitialization();
         var col = new List<ZipArchiveDirectoryReferenceInfo>();
         foreach (var dir in dirs)
         {
@@ -68,7 +69,7 @@ public class ZipFileReferenceInfo : LocalPackageFileReferenceInfo, IDirectoryHos
     /// <returns>The directory collection.</returns>
     public IReadOnlyList<ZipArchiveDirectoryReferenceInfo> GetSubDirectories(string path)
     {
-        Load();
+        EnsureInitialization();
         path = path?.Trim() ?? string.Empty;
         if (!path.EndsWith('\\')) path = string.Concat(path, '\\');
         if (path.Length < 2) return GetDirectories();
@@ -89,7 +90,7 @@ public class ZipFileReferenceInfo : LocalPackageFileReferenceInfo, IDirectoryHos
     /// <returns>The file collection.</returns>
     public IReadOnlyList<ZipArchiveEntryReferenceInfo> GetFiles()
     {
-        Load();
+        EnsureInitialization();
         return files.AsReadOnly();
     }
 
@@ -137,36 +138,62 @@ public class ZipFileReferenceInfo : LocalPackageFileReferenceInfo, IDirectoryHos
     Task<IFileContainerReferenceInfo> IDirectoryHostReferenceInfo.GetParentAsync()
         => Task.FromResult<IFileContainerReferenceInfo>(GetParent());
 
-    private void Load()
+    /// <summary>
+    /// Ensures the item is initialized.
+    /// </summary>
+    public void EnsureInitialization()
     {
-        if (files != null) return;
+        if (hasInit) return;
         lock (locker)
         {
-            if (files != null) return;
+            if (hasInit) return;
             var file = Source;
-            if (file == null || !file.Exists) return;
-            using var zip = new ZipArchive(file.OpenRead());
-            var col = zip.Entries.ToList();
-            foreach (var entry in col)
+            try
             {
-                var path = entry.FullName.Split(new[] { '\\', '/' }, StringSplitOptions.RemoveEmptyEntries);
-                if (path.Length == 0) continue;
-                var dir = path.Take(path.Length - 1).ToList();
-                if (dir.Count == 0)
+                if (file == null || !file.Exists) return;
+                using var zip = new ZipArchive(file.OpenRead());
+                var col = zip.Entries.ToList();
+                foreach (var entry in col)
                 {
-                    files.Add(new ZipArchiveEntryReferenceInfo(entry, this));
-                    continue;
-                }
+                    var path = entry.FullName.Split(new[] { '\\', '/' }, StringSplitOptions.RemoveEmptyEntries);
+                    if (path.Length == 0) continue;
+                    var dir = path.Take(path.Length - 1).ToList();
+                    if (dir.Count == 0)
+                    {
+                        files.Add(new ZipArchiveEntryReferenceInfo(entry, this));
+                        continue;
+                    }
 
-                var dirName = StringExtensions.Join('\\', dir);
-                if (!dirs.TryGetValue(dirName, out var info))
-                {
-                    info = new ZipArchiveDirectoryReferenceInfo(dir, this);
-                    dirs[dirName] = info;
-                }
+                    var dirName = StringExtensions.Join('\\', dir);
+                    if (!dirs.TryGetValue(dirName, out var info))
+                    {
+                        info = new ZipArchiveDirectoryReferenceInfo(dir, this);
+                        dirs[dirName] = info;
+                    }
 
-                info.Add(entry);
+                    info.Add(entry);
+                }
             }
+            catch (InvalidDataException)
+            {
+            }
+            catch (ArgumentException)
+            {
+            }
+            catch (InvalidOperationException)
+            {
+            }
+            catch (NullReferenceException)
+            {
+            }
+            catch (IOException)
+            {
+            }
+            catch (ExternalException)
+            {
+            }
+
+            hasInit = true;
         }
     }
 }
@@ -188,7 +215,7 @@ public class ZipArchiveDirectoryReferenceInfo : BaseDirectoryReferenceInfo<IRead
     {
         this.owner = owner;
         RelativePath = StringExtensions.Join('\\', path);
-        Name = path.Count > 0 ? path[0] : string.Empty;
+        Name = path.Count > 0 ? path[path.Count - 1] : string.Empty;
         LastModification = DateTime.Now;
         Exists = true;
     }
@@ -203,9 +230,7 @@ public class ZipArchiveDirectoryReferenceInfo : BaseDirectoryReferenceInfo<IRead
     /// </summary>
     /// <returns>The directory collection.</returns>
     public IReadOnlyList<ZipArchiveDirectoryReferenceInfo> GetDirectories()
-    {
-        return owner.GetSubDirectories(RelativePath);
-    }
+        => owner.GetSubDirectories(RelativePath);
 
     /// <summary>
     /// Lists all sub-directories of the specific relative path.
