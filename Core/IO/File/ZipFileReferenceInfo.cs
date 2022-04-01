@@ -19,7 +19,6 @@ namespace Trivial.IO;
 /// </summary>
 public class ZipFileReferenceInfo : LocalPackageFileReferenceInfo, IDirectoryHostReferenceInfo
 {
-    private bool hasInit;
     private readonly object locker = new();
     private readonly List<ZipArchiveEntryReferenceInfo> files = new();
     private readonly Dictionary<string, ZipArchiveDirectoryReferenceInfo> dirs = new();
@@ -45,6 +44,16 @@ public class ZipFileReferenceInfo : LocalPackageFileReferenceInfo, IDirectoryHos
         if (string.IsNullOrEmpty(path)) return null;
         return dirs.TryGetValue(path, out var info) ? info : null;
     }
+
+    /// <summary>
+    /// Gets a value indiciating whether the instance has initialized.
+    /// </summary>
+    public bool HasInitialized { get; private set; }
+
+    /// <summary>
+    /// Gets the error message if has.
+    /// </summary>
+    public string ErrorMessage { get; private set; }
 
     /// <summary>
     /// Lists all sub-directories.
@@ -143,15 +152,16 @@ public class ZipFileReferenceInfo : LocalPackageFileReferenceInfo, IDirectoryHos
     /// </summary>
     public void EnsureInitialization()
     {
-        if (hasInit) return;
+        if (HasInitialized) return;
         lock (locker)
         {
-            if (hasInit) return;
+            if (HasInitialized) return;
             var file = Source;
             try
             {
                 if (file == null || !file.Exists) return;
-                using var zip = new ZipArchive(file.OpenRead());
+                using var stream = file.OpenRead();
+                using var zip = new ZipArchive(stream);
                 var col = zip.Entries.ToList();
                 foreach (var entry in col)
                 {
@@ -174,26 +184,48 @@ public class ZipFileReferenceInfo : LocalPackageFileReferenceInfo, IDirectoryHos
                     info.Add(entry);
                 }
             }
-            catch (InvalidDataException)
+            catch (ArgumentException ex)
             {
+                ErrorMessage = ex.Message;
             }
-            catch (ArgumentException)
+            catch (InvalidDataException ex)
             {
+                ErrorMessage = ex.Message;
             }
-            catch (InvalidOperationException)
+            catch (InvalidOperationException ex)
             {
+                ErrorMessage = ex.Message;
             }
-            catch (NullReferenceException)
+            catch (UnauthorizedAccessException ex)
             {
+                ErrorMessage = ex.Message;
             }
-            catch (IOException)
+            catch (SecurityException ex)
             {
+                ErrorMessage = ex.Message;
             }
-            catch (ExternalException)
+            catch (IOException ex)
             {
+                ErrorMessage = ex.Message;
+            }
+            catch (NotSupportedException ex)
+            {
+                ErrorMessage = ex.Message;
+            }
+            catch (NullReferenceException ex)
+            {
+                ErrorMessage = ex.Message;
+            }
+            catch (ApplicationException ex)
+            {
+                ErrorMessage = ex.Message;
+            }
+            catch (ExternalException ex)
+            {
+                ErrorMessage = ex.Message;
             }
 
-            hasInit = true;
+            HasInitialized = true;
         }
     }
 }
