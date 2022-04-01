@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 namespace Trivial.IO;
 
 /// <summary>
-/// The reference information of file.
+/// The reference information of directory.
 /// </summary>
 public class LocalDirectoryReferenceInfo : BaseDirectoryReferenceInfo<DirectoryInfo>, IDirectoryHostReferenceInfo
 {
@@ -24,6 +24,29 @@ public class LocalDirectoryReferenceInfo : BaseDirectoryReferenceInfo<DirectoryI
     public LocalDirectoryReferenceInfo(DirectoryInfo directory, LocalDirectoryReferenceInfo parent = null) : base(directory)
     {
         this.parent = parent;
+        if (directory == null) return;
+        try
+        {
+            Creation = directory.CreationTime;
+        }
+        catch (IOException)
+        {
+        }
+        catch (NotSupportedException)
+        {
+        }
+        catch (InvalidOperationException)
+        {
+        }
+        catch (UnauthorizedAccessException)
+        {
+        }
+        catch (SecurityException)
+        {
+        }
+        catch (ExternalException)
+        {
+        }
     }
 
     /// <summary>
@@ -35,6 +58,11 @@ public class LocalDirectoryReferenceInfo : BaseDirectoryReferenceInfo<DirectoryI
     {
         this.parent = parent;
     }
+
+    /// <summary>
+    /// Gets the date created.
+    /// </summary>
+    public DateTime Creation { get; private set; }
 
     /// <summary>
     /// Lists all sub-directories.
@@ -53,7 +81,6 @@ public class LocalDirectoryReferenceInfo : BaseDirectoryReferenceInfo<DirectoryI
     {
         var dir = Source;
         if (dir == null) return new List<LocalDirectoryReferenceInfo>();
-        if (parent == null) parent = new LocalDirectoryReferenceInfo(dir);
         var col = dir.EnumerateDirectories();
         if (col == null) return new List<LocalDirectoryReferenceInfo>();
         if (!showHidden) col = col.Where(ele => !ele.Attributes.HasFlag(FileAttributes.Hidden));
@@ -70,7 +97,6 @@ public class LocalDirectoryReferenceInfo : BaseDirectoryReferenceInfo<DirectoryI
     {
         var dir = Source;
         if (dir == null) return new List<LocalDirectoryReferenceInfo>();
-        if (parent == null) parent = new LocalDirectoryReferenceInfo(dir);
         var col = string.IsNullOrEmpty(searchPattern) ? dir.EnumerateDirectories() : dir.EnumerateDirectories(searchPattern);
         if (col == null) return new List<LocalDirectoryReferenceInfo>();
         return col.Select(ele => new LocalDirectoryReferenceInfo(ele, this));
@@ -93,7 +119,6 @@ public class LocalDirectoryReferenceInfo : BaseDirectoryReferenceInfo<DirectoryI
     {
         var dir = Source;
         if (dir == null) return new List<LocalFileReferenceInfo>();
-        if (parent == null) parent = new LocalDirectoryReferenceInfo(dir);
         var col = dir.EnumerateFiles();
         if (col == null) return new List<LocalFileReferenceInfo>();
         if (!showHidden) col = col.Where(ele => !ele.Attributes.HasFlag(FileAttributes.Hidden));
@@ -110,7 +135,6 @@ public class LocalDirectoryReferenceInfo : BaseDirectoryReferenceInfo<DirectoryI
     {
         var dir = Source;
         if (dir == null) return new List<LocalFileReferenceInfo>();
-        if (parent == null) parent = new LocalDirectoryReferenceInfo(dir);
         var col = string.IsNullOrEmpty(searchPattern) ? dir.EnumerateFiles() : dir.EnumerateFiles(searchPattern);
         if (col == null) return new List<LocalFileReferenceInfo>();
         return col.Select(ele => new LocalFileReferenceInfo(ele, this));
@@ -189,6 +213,7 @@ public class LocalDirectoryReferenceInfo : BaseDirectoryReferenceInfo<DirectoryI
         {
             source.Refresh();
             Name = source.Name;
+            Creation = source.CreationTime;
             LastModification = source.LastWriteTime;
             if (GetParent().Source != Source.Parent)
             {
@@ -273,8 +298,7 @@ public class LocalDirectoryReferenceInfo : BaseDirectoryReferenceInfo<DirectoryI
 
     internal static Task<IReadOnlyList<IDirectoryReferenceInfo>> GetDirectoriesAsync(DirectoryInfo dir, LocalDirectoryReferenceInfo parent)
     {
-        if (dir == null)
-            return Task.FromResult<IReadOnlyList<IDirectoryReferenceInfo>>(new List<IDirectoryReferenceInfo>());
+        if (dir == null) return Task.FromResult<IReadOnlyList<IDirectoryReferenceInfo>>(new List<IDirectoryReferenceInfo>());
         if (parent == null) parent = new LocalDirectoryReferenceInfo(dir);
         var col = dir.EnumerateDirectories()?.Where(ele => !ele.Attributes.HasFlag(FileAttributes.Hidden))?.Select(ele => new LocalDirectoryReferenceInfo(ele, parent) as IDirectoryReferenceInfo)?.ToList() ?? new List<IDirectoryReferenceInfo>();
         return Task.FromResult<IReadOnlyList<IDirectoryReferenceInfo>>(col);
@@ -282,8 +306,7 @@ public class LocalDirectoryReferenceInfo : BaseDirectoryReferenceInfo<DirectoryI
 
     internal static Task<IReadOnlyList<IFileReferenceInfo>> GetFilesAsync(DirectoryInfo dir, LocalDirectoryReferenceInfo parent)
     {
-        if (dir == null)
-            return Task.FromResult<IReadOnlyList<IFileReferenceInfo>>(new List<IFileReferenceInfo>());
+        if (dir == null) return Task.FromResult<IReadOnlyList<IFileReferenceInfo>>(new List<IFileReferenceInfo>());
         if (parent == null) parent = new LocalDirectoryReferenceInfo(dir);
         var col = dir.EnumerateFiles()?.Where(ele => !ele.Attributes.HasFlag(FileAttributes.Hidden))?.Select(ele => new LocalFileReferenceInfo(ele, parent) as IFileReferenceInfo)?.ToList() ?? new List<IFileReferenceInfo>();
         return Task.FromResult<IReadOnlyList<IFileReferenceInfo>>(col);
@@ -302,7 +325,47 @@ public class LocalFileReferenceInfo: BaseFileReferenceInfo<FileInfo>
     /// <param name="parent">The parent folder.</param>
     public LocalFileReferenceInfo(FileInfo file, LocalDirectoryReferenceInfo parent = null) : base(file, parent)
     {
+        if (file == null) return;
+        try
+        {
+            Extension = file.Extension;
+            Creation = file.CreationTime;
+            Attributes = file.Attributes;
+        }
+        catch (IOException)
+        {
+        }
+        catch (NotSupportedException)
+        {
+        }
+        catch (InvalidOperationException)
+        {
+        }
+        catch (UnauthorizedAccessException)
+        {
+        }
+        catch (SecurityException)
+        {
+        }
+        catch (ExternalException)
+        {
+        }
     }
+
+    /// <summary>
+    /// Gets the extension name.
+    /// </summary>
+    public string Extension { get; private set; }
+
+    /// <summary>
+    /// Gets the date created.
+    /// </summary>
+    public DateTime Creation { get; private set; }
+
+    /// <summary>
+    /// Gets the file attributes.
+    /// </summary>
+    public FileAttributes Attributes { get; private set; }
 
     /// <summary>
     /// Refreshes the state of the object.
@@ -315,6 +378,8 @@ public class LocalFileReferenceInfo: BaseFileReferenceInfo<FileInfo>
         {
             source.Refresh();
             Name = source.Name;
+            Extension = source.Extension;
+            Creation = source.CreationTime;
             LastModification = source.LastWriteTime;
             Size = source.Length;
             if (GetParent().Source != Source.Directory)
@@ -344,14 +409,54 @@ public class LocalFileReferenceInfo: BaseFileReferenceInfo<FileInfo>
     }
 
     /// <summary>
+    /// Opens a file in the specified mode and other options.
+    /// </summary>
+    /// <param name="mode">A constant specifying the mode (for example, Open or Append) in which to open the file.</param>
+    /// <param name="access">A constant specifying whether to open the file with Read, Write, or ReadWrite file access.</param>
+    /// <param name="share">A constant specifying the type of access other file stream objects have to this file.</param>
+    /// <returns>A file opened in the specified mode, access options and shared options.</returns>
+    /// <exception cref="SecurityException">The caller does not have the required permission.</exception>
+    /// <exception cref="FileNotFoundException">The file is not found.</exception>
+    /// <exception cref="UnauthorizedAccessException">The file is read-only.</exception>
+    /// <exception cref="DirectoryNotFoundException">The specified path is invalid, such as being on an unmapped drive.</exception>
+    /// <exception cref="IOException">The file is already open.</exception>
+    public FileStream Open(FileMode mode, FileAccess access = FileAccess.ReadWrite, FileShare share = FileShare.None)
+    {
+        var file = Source;
+        if (file == null) throw new FileNotFoundException("The file does not specify.");
+        return file.Open(mode, access, share);
+    }
+
+#if NET6_0_OR_GREATER
+    /// <summary>
+    /// Opens a file in the specified mode and other options.
+    /// </summary>
+    /// <param name="options">An object that describes optional file stream parameters to use.</param>
+    /// <returns>A file opened in the specified mode, access options and shared options.</returns>
+    /// <exception cref="SecurityException">The caller does not have the required permission.</exception>
+    /// <exception cref="FileNotFoundException">The file is not found.</exception>
+    /// <exception cref="UnauthorizedAccessException">The file is read-only.</exception>
+    /// <exception cref="DirectoryNotFoundException">The specified path is invalid, such as being on an unmapped drive.</exception>
+    /// <exception cref="IOException">The file is already open.</exception>
+    public FileStream Open(FileStreamOptions options)
+    {
+        var file = Source;
+        if (file == null) throw new FileNotFoundException("The file does not specify.");
+        return options == null ? file.Open(FileMode.OpenOrCreate) : file.Open(options);
+    }
+#endif
+
+    /// <summary>
     /// Gets the parent.
     /// </summary>
+    /// <return>The parent.</return>
     public new LocalDirectoryReferenceInfo GetParent()
         => base.GetParent() as LocalDirectoryReferenceInfo;
 
     /// <summary>
     /// Gets the parent.
     /// </summary>
+    /// <return>The parent.</return>
     protected override IFileContainerReferenceInfo GetParentInfo()
     {
         var info = base.GetParentInfo();

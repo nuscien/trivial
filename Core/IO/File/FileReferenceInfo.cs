@@ -72,16 +72,16 @@ public interface IDirectoryReferenceInfo : IFileContainerReferenceInfo
 public interface IDirectoryHostReferenceInfo : IDirectoryReferenceInfo
 {
     /// <summary>
-    /// Lists all files.
-    /// </summary>
-    /// <returns>The file collection.</returns>
-    Task<IReadOnlyList<IFileReferenceInfo>> GetFilesAsync();
-
-    /// <summary>
     /// Lists all sub-directories.
     /// </summary>
     /// <returns>The directory collection.</returns>
     Task<IReadOnlyList<IDirectoryReferenceInfo>> GetDirectoriesAsync();
+
+    /// <summary>
+    /// Lists all files.
+    /// </summary>
+    /// <returns>The file collection.</returns>
+    Task<IReadOnlyList<IFileReferenceInfo>> GetFilesAsync();
 
     /// <summary>
     /// Gets the parent.
@@ -147,7 +147,7 @@ public class BaseFileSystemReferenceInfo : IFileSystemReferenceInfo
 }
 
 /// <summary>
-/// The reference information of file.
+/// The reference information of directory.
 /// </summary>
 public class BaseDirectoryReferenceInfo : BaseFileSystemReferenceInfo, IDirectoryReferenceInfo
 {
@@ -406,6 +406,7 @@ public class BaseFileReferenceInfo : BaseFileSystemReferenceInfo, IFileReference
     /// <summary>
     /// Gets the parent.
     /// </summary>
+    /// <return>The parent.</return>
     public BaseDirectoryReferenceInfo GetParent()
         => GetParentInfo() as BaseDirectoryReferenceInfo;
 

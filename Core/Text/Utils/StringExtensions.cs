@@ -506,6 +506,13 @@ public static class StringExtensions
         => s.Contains(value.ToString());
 #endif
 
+    internal static string Join(char value, IEnumerable<string> col)
+#if NETOLDVER
+        => string.Join(value.ToString(), col);
+#else
+        => string.Join(value, col);
+#endif
+
     internal static string SubRangeString(this string s, int start, int end, bool reverseEnd = false)
     {
 #if NETOLDVER

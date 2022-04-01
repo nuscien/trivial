@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Security;
 using System.Text;
 using System.Threading;
@@ -380,7 +381,10 @@ public static class FileSystemInfoUtility
         catch (InvalidOperationException)
         {
         }
-        catch (PathTooLongException)
+        catch (IOException)
+        {
+        }
+        catch (ExternalException)
         {
         }
 
@@ -439,9 +443,6 @@ public static class FileSystemInfoUtility
         catch (UnauthorizedAccessException)
         {
         }
-        catch (IOException)
-        {
-        }
         catch (ArgumentException)
         {
         }
@@ -452,6 +453,12 @@ public static class FileSystemInfoUtility
         {
         }
         catch (InvalidOperationException)
+        {
+        }
+        catch (IOException)
+        {
+        }
+        catch (ExternalException)
         {
         }
 
@@ -502,6 +509,9 @@ public static class FileSystemInfoUtility
         {
         }
         catch (InvalidOperationException)
+        {
+        }
+        catch (ExternalException)
         {
         }
 
