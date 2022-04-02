@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
+using System.Runtime.InteropServices;
 using System.Security;
 
 using Microsoft.Win32;
@@ -30,9 +31,39 @@ public static class RegistryUtility
     {
         path = path?.Trim();
         if (string.IsNullOrEmpty(path)) return regKey;
-        if (regKey == null) return null;
         try
         {
+            if (regKey != null) return regKey.OpenSubKey(path, writable);
+            var i = path.IndexOf('\\', 0);
+            if (i == 0) i = path.TrimStart('\\').IndexOf('\\');
+            var key = (i < 0 ? path : path.Substring(0, i)).Trim().ToUpperInvariant();
+            switch (key)
+            {
+                case "HKEY_CLASSES_ROOT":
+                    regKey = Registry.ClassesRoot;
+                    break;
+                case "HKEY_CURRENT_CONFIG":
+                    regKey = Registry.CurrentConfig;
+                    break;
+                case "HKEY_CURRENT_USER":
+                    regKey = Registry.CurrentUser;
+                    break;
+                case "HKEY_LOCAL_MACHINE":
+                    regKey = Registry.LocalMachine;
+                    break;
+                case "HKEY_PERFORMANCE_DATA":
+                    regKey = Registry.PerformanceData;
+                    break;
+                case "HKEY_USERS":
+                    regKey = Registry.Users;
+                    break;
+                default:
+                    return null;
+            }
+
+            if (i < 0) return regKey;
+            path = path.Substring(i + 1);
+            if (string.IsNullOrEmpty(path)) return regKey;
             return regKey.OpenSubKey(path, writable);
         }
         catch (SecurityException)
@@ -114,7 +145,31 @@ public static class RegistryUtility
     /// <param name="value">The value output.</param>
     /// <returns>The value to get.</returns>
     public static bool TryGetValue<T>(RegistryKey regKey, string name, out T value)
+        => TryGetValue(regKey, null, name, out value);
+
+    /// <summary>
+    /// Tries to get the specific value.
+    /// </summary>
+    /// <typeparam name="T">The type of the value to cast.</typeparam>
+    /// <param name="path">The path of the sub key.</param>
+    /// <param name="name">The name of the value to retrieve. This string is not case-sensitive.</param>
+    /// <param name="value">The value output.</param>
+    /// <returns>The value to get.</returns>
+    public static bool TryGetValue<T>(string path, string name, out T value)
+        => TryGetValue(null, path, name, out value);
+
+    /// <summary>
+    /// Tries to get the specific value.
+    /// </summary>
+    /// <typeparam name="T">The type of the value to cast.</typeparam>
+    /// <param name="regKey">The registry key.</param>
+    /// <param name="path">The path of the sub key.</param>
+    /// <param name="name">The name of the value to retrieve. This string is not case-sensitive.</param>
+    /// <param name="value">The value output.</param>
+    /// <returns>The value to get.</returns>
+    public static bool TryGetValue<T>(RegistryKey regKey, string path, string name, out T value)
     {
+        regKey = TryOpenSubKey(regKey, path);
         if (regKey == null)
         {
             value = default;
@@ -151,7 +206,7 @@ public static class RegistryUtility
         catch (NotImplementedException)
         {
         }
-        catch (Win32Exception)
+        catch (ExternalException)
         {
         }
 

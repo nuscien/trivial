@@ -46,6 +46,23 @@ public static partial class MimeConstants
         /// <summary>
         /// Gets the MIME content type by file extension part.
         /// </summary>
+        /// <param name="file">The file information.</param>
+        /// <returns>The MIME content type.</returns>
+        public static string GetByFileExtension(LocalFileReferenceInfo file)
+            => GetByFileExtension(file?.Extension, StreamMIME);
+
+        /// <summary>
+        /// Gets the MIME content type by file extension part.
+        /// </summary>
+        /// <param name="file">The file information.</param>
+        /// <param name="defaultMime">The default MIME content type.</param>
+        /// <returns>The MIME content type.</returns>
+        public static string GetByFileExtension(LocalFileReferenceInfo file, string defaultMime)
+            => GetByFileExtension(file?.Extension, defaultMime);
+
+        /// <summary>
+        /// Gets the MIME content type by file extension part.
+        /// </summary>
         /// <param name="fileExtension">The file extension.</param>
         /// <returns>The MIME content type.</returns>
         public static string GetByFileExtension(string fileExtension)
@@ -112,6 +129,14 @@ public static partial class MimeConstants
         /// <param name="file">The file information.</param>
         /// <returns>The file association information; or null, if not found or failure.</returns>
         public static FileAssociationInfo GetFileAssociationInfo(FileInfo file)
+            => GetFileAssociationInfo(file?.Extension);
+
+        /// <summary>
+        /// Gets the file association information.
+        /// </summary>
+        /// <param name="file">The file information.</param>
+        /// <returns>The file association information; or null, if not found or failure.</returns>
+        public static FileAssociationInfo GetFileAssociationInfo(LocalFileReferenceInfo file)
             => GetFileAssociationInfo(file?.Extension);
 
         /// <summary>

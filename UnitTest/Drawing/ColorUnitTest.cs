@@ -52,8 +52,8 @@ namespace Trivial.Drawing
             Assert.AreEqual(168, color.B);
             Assert.IsTrue(Math.Abs(color.GetHue() - 318.412) < 0.1);
             color = ColorCalculator.Parse("rgb(226, 37, 168, 0.8)");
+            Assert.AreEqual("rgba(226, 37, 168, 0.8)", ColorCalculator.ToRgbaString(color));
             Assert.AreEqual(168, color.B);
-
             Assert.AreEqual(102, ColorCalculator.Opacity(color, 0.5).A);
             Assert.AreEqual(128, ColorCalculator.Opacity(color, 0.5, true).A);
             Assert.IsTrue(ColorCalculator.Darken(color, 0.1).R < 226);
@@ -62,6 +62,7 @@ namespace Trivial.Drawing
             Assert.AreEqual(255, color.R);
             Assert.AreEqual(0, color.G);
             Assert.AreEqual(0, color.B);
+            Assert.AreEqual("rgba(255, 0, 0, 1)", ColorCalculator.ToRgbaString(color));
             color = ColorCalculator.Parse("#F00");
             Assert.AreEqual(255, color.R);
             Assert.AreEqual(0, color.G);

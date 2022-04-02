@@ -91,6 +91,16 @@ namespace Trivial.Data
                 Code128.Gs1Generator.Sn("01234567890123456789")
             });
             Assert.AreEqual("[FNC1]42184020500[FNC1]8007100016 Something... And 123[FNC1]2101234567890123456789", code128.ToString());
+
+//#if NET6_0_OR_GREATER
+//            if (System.Runtime.InteropServices.RuntimeInformation.IsOSPlatform(System.Runtime.InteropServices.OSPlatform.Windows))
+//            {
+//                Assert.IsTrue(RegistryUtility.TryGetValue("HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion", "ProductName", out string v));
+//                Assert.AreEqual("Windows 10 Pro", v);
+//                Assert.IsTrue(RegistryUtility.TryGetValue(Microsoft.Win32.Registry.LocalMachine, "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion", "ProductName", out v));
+//                Assert.AreEqual("Windows 10 Pro", v);
+//            }
+//#endif
         }
     }
 

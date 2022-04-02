@@ -720,6 +720,16 @@ public static class ControllerExtensions
     /// Creates a file result.
     /// </summary>
     /// <param name="source">The source.</param>
+    /// <param name="entityTag">The entity tag associated with the file.</param>
+    /// <param name="mime">The optional MIME content type; or null, if detects automatically.</param>
+    /// <returns>A file result; or null, if non-exists.</returns>
+    public static FileStreamResult FileResult(IO.BaseFileReferenceInfo<FileInfo> source, EntityTagHeaderValue entityTag = null, string mime = null)
+        => FileResult(source?.Source, entityTag, mime);
+
+    /// <summary>
+    /// Creates a file result.
+    /// </summary>
+    /// <param name="source">The source.</param>
     /// <param name="downloadName">The file name used for downloading.</param>
     /// <param name="lastModified">The last modified information associated with the file.</param>
     /// <param name="mime">The optional MIME content type; or null, if detects automatically.</param>

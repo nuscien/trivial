@@ -203,7 +203,7 @@ public static partial class ColorCalculator
     /// <param name="value">The source color value.</param>
     /// <returns>A hex format string.</returns>
     public static string ToHexString(Color value)
-        => value.A == 255 ? $"#{value.A:x2}{value.R:x2}{value.G:x2}{value.B:x2}" : $"#{value.R:x2}{value.G:x2}{value.B:x2}";
+        => value.A == 255 ? $"#{value.R:x2}{value.G:x2}{value.B:x2}" : $"#{value.A:x2}{value.R:x2}{value.G:x2}{value.B:x2}";
 
     /// <summary>
     /// Converts a color to hex format string.
@@ -211,7 +211,7 @@ public static partial class ColorCalculator
     /// <param name="value">The source color value.</param>
     /// <returns>A hex format string.</returns>
     public static string ToRgbaString(Color value)
-        => $"rgba({value.R}, {value.G}, {value.B}, {value.A})";
+        => $"rgba({value.R}, {value.G}, {value.B}, {value.A / 255d:0.######})";
 
     /// <summary>
     /// Parses the color from a JSON token.
