@@ -1289,6 +1289,37 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     /// Tries to get the value of the specific property.
     /// </summary>
     /// <param name="key">The property key.</param>
+    /// <param name="returnNullIfEmpty">true if returns null when the value is empty or white space; otherwise, false.</param>
+    /// <returns>A string trimmed.</returns>
+    public string TryGetStringTrimmedValue(string key, bool returnNullIfEmpty = false)
+    {
+        var s = TryGetStringValue(key)?.Trim();
+        if (returnNullIfEmpty && string.IsNullOrEmpty(s)) return null;
+        return s;
+    }
+
+    /// <summary>
+    /// Tries to get the value of the specific property.
+    /// </summary>
+    /// <param name="key">The property key.</param>
+    /// <param name="result">The result trimmed.</param>
+    /// <returns>true if has the property and the type is the one expected; otherwise, false.</returns>
+    public bool TryGetStringTrimmedValue(string key, out string result)
+    {
+        if (!TryGetStringValue(key, out var r))
+        {
+            result = default;
+            return false;
+        }
+        
+        result = r?.Trim();
+        return true;
+    }
+
+    /// <summary>
+    /// Tries to get the value of the specific property.
+    /// </summary>
+    /// <param name="key">The property key.</param>
     /// <returns>The value; or null if fail to resolve.</returns>
     public Uri TryGetUriValue(string key)
     {

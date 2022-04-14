@@ -1120,6 +1120,37 @@ public class JsonArrayNode : IJsonContainerNode, IJsonDataNode, IReadOnlyList<IJ
     }
 
     /// <summary>
+    /// Gets the value at the specific index.
+    /// </summary>
+    /// <param name="index">The zero-based index of the element to get.</param>
+    /// <param name="returnNullIfEmpty">true if returns null when the value is empty or white space; otherwise, false.</param>
+    /// <returns>A string trimmed.</returns>
+    public string TryGetStringTrimmedValue(int index, bool returnNullIfEmpty = false)
+    {
+        var s = TryGetStringValue(index)?.Trim();
+        if (returnNullIfEmpty && string.IsNullOrEmpty(s)) return null;
+        return s;
+    }
+
+    /// <summary>
+    /// Gets the value at the specific index.
+    /// </summary>
+    /// <param name="index">The zero-based index of the element to get.</param>
+    /// <param name="result">The result trimmed.</param>
+    /// <returns>true if has the property and the type is the one expected; otherwise, false.</returns>
+    public bool TryGetStringTrimmedValue(int index, out string result)
+    {
+        if (!TryGetStringValue(index, out var r))
+        {
+            result = default;
+            return false;
+        }
+
+        result = r?.Trim();
+        return true;
+    }
+
+    /// <summary>
     /// Tries to get the value of the specific index.
     /// </summary>
     /// <param name="index">The zero-based index of the element to get.</param>
