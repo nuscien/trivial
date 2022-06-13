@@ -47,7 +47,6 @@ public class JsonIntegerEnumCompatibleConverter : JsonConverterFactory
 
         throw new JsonException("Only integer enum supported.");
     }
-
 }
 
 /// <summary>

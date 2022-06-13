@@ -360,7 +360,7 @@ public class RSASignatureProvider : ISignatureProvider
         Name = signAlgorithmName;
         rsa = RSA.Create();
         needDispose = true;
-        CanSign = rsaParams.D!= null && rsaParams.D.Length > 0;
+        CanSign = rsaParams.D != null && rsaParams.D.Length > 0;
         rsa.ImportParameters(rsaParams);
         hashName = hashAlgorithmName;
     }
