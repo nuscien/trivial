@@ -4,6 +4,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
 using System.Security;
 using System.Text;
@@ -5343,6 +5344,56 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
         {
         }
         catch (AggregateException)
+        {
+        }
+
+        return null;
+    }
+
+    /// <summary>
+    /// Tries to parse a string to a JSON object.
+    /// </summary>
+    /// <param name="file">A file with JSON object string content to parse.</param>
+    /// <param name="options">Options to control the reader behavior during parsing.</param>
+    /// <returns>A JSON object instance; or null, if error format.</returns>
+    public static JsonObjectNode TryParse(FileInfo file, JsonDocumentOptions options = default)
+    {
+        try
+        {
+            using var stream = file.OpenRead();
+            return Parse(stream, options);
+        }
+        catch (ArgumentException)
+        {
+        }
+        catch (InvalidOperationException)
+        {
+        }
+        catch (JsonException)
+        {
+        }
+        catch (FormatException)
+        {
+        }
+        catch (InvalidCastException)
+        {
+        }
+        catch (IOException)
+        {
+        }
+        catch (SecurityException)
+        {
+        }
+        catch (UnauthorizedAccessException)
+        {
+        }
+        catch (NullReferenceException)
+        {
+        }
+        catch (AggregateException)
+        {
+        }
+        catch (ExternalException)
         {
         }
 
