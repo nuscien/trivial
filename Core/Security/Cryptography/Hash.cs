@@ -9,6 +9,7 @@
 // --------------------------------------------------------------------------------------------------------------------
 
 using System;
+using System.IO;
 using System.Security;
 using System.Security.Cryptography;
 using System.Text;
@@ -100,8 +101,32 @@ public static class HashUtility
     /// <param name="encoding">The text encoding.</param>
     /// <returns>A hash string value of the given string; or null, if h or input is null.</returns>
     public static string ComputeHashString(this HashAlgorithm alg, SecureString secureString, Encoding encoding = null)
+        => ComputeHashString(alg, secureString.ToUnsecureString(), encoding);
+
+    /// <summary>
+    /// Gets the hash value of a file.
+    /// </summary>
+    /// <param name="alg">The hash algorithm instance.</param>
+    /// <param name="file">The file to hash.</param>
+    /// <returns>The hash value.</returns>
+    /// <exception cref="UnauthorizedAccessException">Unauthorized to access the file.</exception>
+    /// <exception cref="IOException">IO exception about the file.</exception>
+    public static string ComputeHashString(this HashAlgorithm alg, FileInfo file)
     {
-        return ComputeHashString(alg, secureString.ToUnsecureString(), encoding);
+        if (alg == null || file == null) return null;
+        byte[] retVal;
+        using (var stream = file.OpenRead())
+        {
+            retVal = alg.ComputeHash(stream);
+        }
+
+        var sb = new StringBuilder();
+        for (int i = 0; i < retVal.Length; i++)
+        {
+            sb.Append(retVal[i].ToString("x2"));
+        }
+
+        return sb.ToString();
     }
 
     /// <summary>
@@ -135,6 +160,24 @@ public static class HashUtility
         // Return the hash string computed.
         using var alg = h();
         return ComputeHashString(h(), plainText);
+    }
+
+    /// <summary>
+    /// Gets the hash value of a file.
+    /// </summary>
+    /// <param name="h">The hash algorithm object maker.</param>
+    /// <param name="file">The file to hash.</param>
+    /// <returns>The hash value.</returns>
+    /// <exception cref="UnauthorizedAccessException">Unauthorized to access the file.</exception>
+    /// <exception cref="IOException">IO exception about the file.</exception>
+    public static string ComputeHashString<T>(Func<T> h, FileInfo file) where T : HashAlgorithm
+    {
+        // Check if the arguments is not null.
+        if (h == null || file == null) return null;
+
+        // Return the hash string computed.
+        using var alg = h();
+        return ComputeHashString(h(), file);
     }
 
     /// <summary>
@@ -173,10 +216,8 @@ public static class HashUtility
     /// <param name="encoding">The text encoding.</param>
     /// <returns>A hash string value of the given string; or null, if h or input is null.</returns>
     /// <exception cref="NotSupportedException">The hash algorithm name is not supported.</exception>
-    public static string ComputeHashString<T>(HashAlgorithmName h, SecureString secureString, Encoding encoding = null)
-    {
-        return ComputeHashString(h, secureString.ToUnsecureString(), encoding);
-    }
+    public static string ComputeHashString(HashAlgorithmName h, SecureString secureString, Encoding encoding = null)
+        => ComputeHashString(h, secureString.ToUnsecureString(), encoding);
 
     /// <summary>
     /// Creates a hash algorithm instance.
