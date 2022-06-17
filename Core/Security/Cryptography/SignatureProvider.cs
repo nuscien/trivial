@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Security.Cryptography;
 using System.Text;
 using Trivial.Collection;
@@ -29,6 +30,13 @@ public interface ISignatureProvider
     byte[] Sign(byte[] data);
 
     /// <summary>
+    /// Computes the signature for the specified hash value.
+    /// </summary>
+    /// <param name="data">The data to sign.</param>
+    /// <returns>The signature for the specified hash value.</returns>
+    byte[] Sign(Stream data);
+
+    /// <summary>
     /// Verifies that a digital signature is valid by calculating the hash value of the specified data
     /// using the specified hash algorithm and padding, and comparing it to the provided signature.
     /// </summary>
@@ -36,6 +44,15 @@ public interface ISignatureProvider
     /// <param name="signature">The signature data to be verified.</param>
     /// <returns>true if the signature is valid; otherwise, false.</returns>
     bool Verify(byte[] data, byte[] signature);
+
+    /// <summary>
+    /// Verifies that a digital signature is valid by calculating the hash value of the specified data
+    /// using the specified hash algorithm and padding, and comparing it to the provided signature.
+    /// </summary>
+    /// <param name="data">The data to sign.</param>
+    /// <param name="signature">The signature data to be verified.</param>
+    /// <returns>true if the signature is valid; otherwise, false.</returns>
+    bool Verify(Stream data, byte[] signature);
 }
 
 /// <summary>
@@ -210,9 +227,15 @@ public class HashSignatureProvider : ISignatureProvider
     /// <param name="data">The data to sign.</param>
     /// <returns>The signature for the specified hash value.</returns>
     public byte[] Sign(byte[] data)
-    {
-        return alg.ComputeHash(data);
-    }
+        => alg.ComputeHash(data);
+
+    /// <summary>
+    /// Computes the signature for the specified hash value.
+    /// </summary>
+    /// <param name="data">The data to sign.</param>
+    /// <returns>The signature for the specified hash value.</returns>
+    public byte[] Sign(Stream data)
+        => alg.ComputeHash(data);
 
     /// <summary>
     /// Verifies that a digital signature is valid by calculating the hash value of the specified data
@@ -222,9 +245,17 @@ public class HashSignatureProvider : ISignatureProvider
     /// <param name="signature">The signature data to be verified.</param>
     /// <returns>true if the signature is valid; otherwise, false.</returns>
     public bool Verify(byte[] data, byte[] signature)
-    {
-        return ListExtensions.Equals(Sign(data), signature);
-    }
+        => ListExtensions.Equals(Sign(data), signature);
+
+    /// <summary>
+    /// Verifies that a digital signature is valid by calculating the hash value of the specified data
+    /// using the specified hash algorithm and padding, and comparing it to the provided signature.
+    /// </summary>
+    /// <param name="data">The data to sign.</param>
+    /// <param name="signature">The signature data to be verified.</param>
+    /// <returns>true if the signature is valid; otherwise, false.</returns>
+    public bool Verify(Stream data, byte[] signature)
+        => ListExtensions.Equals(Sign(data), signature);
 }
 
 /// <summary>
@@ -429,9 +460,15 @@ public class RSASignatureProvider : ISignatureProvider
     /// <param name="data">The data to sign.</param>
     /// <returns>The signature for the specified hash value.</returns>
     public byte[] Sign(byte[] data)
-    {
-        return rsa.SignData(data, hashName, RSASignaturePadding.Pkcs1);
-    }
+        => rsa.SignData(data, hashName, RSASignaturePadding.Pkcs1);
+
+    /// <summary>
+    /// Computes the signature for the specified hash value.
+    /// </summary>
+    /// <param name="data">The data to sign.</param>
+    /// <returns>The signature for the specified hash value.</returns>
+    public byte[] Sign(Stream data)
+        => rsa.SignData(data, hashName, RSASignaturePadding.Pkcs1);
 
     /// <summary>
     /// Verifies that a digital signature is valid by calculating the hash value of the specified data
@@ -441,9 +478,17 @@ public class RSASignatureProvider : ISignatureProvider
     /// <param name="signature">The signature data to be verified.</param>
     /// <returns>true if the signature is valid; otherwise, false.</returns>
     public bool Verify(byte[] data, byte[] signature)
-    {
-        return rsa.VerifyData(data, signature, hashName, RSASignaturePadding.Pkcs1);
-    }
+        => rsa.VerifyData(data, signature, hashName, RSASignaturePadding.Pkcs1);
+
+    /// <summary>
+    /// Verifies that a digital signature is valid by calculating the hash value of the specified data
+    /// using the specified hash algorithm and padding, and comparing it to the provided signature.
+    /// </summary>
+    /// <param name="data">The data to sign.</param>
+    /// <param name="signature">The signature data to be verified.</param>
+    /// <returns>true if the signature is valid; otherwise, false.</returns>
+    public bool Verify(Stream data, byte[] signature)
+        => rsa.VerifyData(data, signature, hashName, RSASignaturePadding.Pkcs1);
 }
 
 #if !NETFRAMEWORK
@@ -601,9 +646,15 @@ public class ECDsaSignatureProvider : ISignatureProvider
     /// <param name="data">The data to sign.</param>
     /// <returns>The signature for the specified hash value.</returns>
     public byte[] Sign(byte[] data)
-    {
-        return ecdsa.SignData(data, hashName);
-    }
+        => ecdsa.SignData(data, hashName);
+
+    /// <summary>
+    /// Computes the signature for the specified hash value.
+    /// </summary>
+    /// <param name="data">The data to sign.</param>
+    /// <returns>The signature for the specified hash value.</returns>
+    public byte[] Sign(Stream data)
+        => ecdsa.SignData(data, hashName);
 
     /// <summary>
     /// Verifies that a digital signature is valid by calculating the hash value of the specified data
@@ -613,9 +664,17 @@ public class ECDsaSignatureProvider : ISignatureProvider
     /// <param name="signature">The signature data to be verified.</param>
     /// <returns>true if the signature is valid; otherwise, false.</returns>
     public bool Verify(byte[] data, byte[] signature)
-    {
-        return ecdsa.VerifyData(data, signature, hashName);
-    }
+        => ecdsa.VerifyData(data, signature, hashName);
+
+    /// <summary>
+    /// Verifies that a digital signature is valid by calculating the hash value of the specified data
+    /// using the specified hash algorithm and padding, and comparing it to the provided signature.
+    /// </summary>
+    /// <param name="data">The data to sign.</param>
+    /// <param name="signature">The signature data to be verified.</param>
+    /// <returns>true if the signature is valid; otherwise, false.</returns>
+    public bool Verify(Stream data, byte[] signature)
+        => ecdsa.VerifyData(data, signature, hashName);
 }
 #endif
 
@@ -741,8 +800,19 @@ public class KeyedSignatureProvider : ISignatureProvider
     /// <param name="value">The value to sign.</param>
     /// <returns>The signature for the specified hash value.</returns>
     public byte[] Sign(byte[] value)
+        => sign(value, secretBytes);
+
+    /// <summary>
+    /// Computes the signature for the specified hash value.
+    /// </summary>
+    /// <param name="value">The value to sign.</param>
+    /// <returns>The signature for the specified hash value.</returns>
+    public byte[] Sign(Stream value)
     {
-        return sign(value, secretBytes);
+        var bytes = new byte[value.Length];
+        value.Read(bytes, 0, bytes.Length);
+        value.Seek(0, SeekOrigin.Begin);
+        return sign(bytes, secretBytes);
     }
 
     /// <summary>
@@ -753,9 +823,25 @@ public class KeyedSignatureProvider : ISignatureProvider
     /// <param name="signature">The signature data to be verified.</param>
     /// <returns>true if the signature is valid; otherwise, false.</returns>
     public bool Verify(byte[] data, byte[] signature)
-    {
-        return verify != null
+        => verify != null
             ? verify(data, signature, secretBytes)
             : ListExtensions.Equals(sign(data, secretBytes), signature);
+
+    /// <summary>
+    /// Verifies that a digital signature is valid by calculating the hash value of the specified data
+    /// using the specified hash algorithm and padding, and comparing it to the provided signature.
+    /// </summary>
+    /// <param name="data">The data to sign.</param>
+    /// <param name="signature">The signature data to be verified.</param>
+    /// <returns>true if the signature is valid; otherwise, false.</returns>
+    public bool Verify(Stream data, byte[] signature)
+    {
+        if (data == null || !data.CanRead) return false;
+        var bytes = new byte[data.Length];
+        data.Read(bytes, 0, bytes.Length);
+        data.Seek(0, SeekOrigin.Begin);
+        return verify != null
+            ? verify(bytes, signature, secretBytes)
+            : ListExtensions.Equals(sign(bytes, secretBytes), signature);
     }
 }
