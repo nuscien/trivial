@@ -145,5 +145,12 @@ public class SetUnitTest
         Assert.IsTrue(d.IsInInterval("2.0"));
         Assert.IsTrue(d.IsInInterval("6.0.0.0"));
         Assert.IsFalse(d.IsInInterval("6.2.0.100"));
+
+        Assert.IsTrue(Reflection.VersionComparer.Compare("1.0.0", "1.0.0", false) == 0);
+        Assert.IsTrue(Reflection.VersionComparer.Compare("1.0.1", "1.0.0", false) > 0);
+        Assert.IsTrue(Reflection.VersionComparer.Compare("1.0.0", "1.0.1", false) < 0);
+        Assert.IsTrue(Reflection.VersionComparer.Compare("1.1.0", "1.0.0", false) > 0);
+        Assert.IsTrue(Reflection.VersionComparer.Compare("1.0.0", "1.1.0", false) < 0);
+        Assert.IsTrue(Reflection.VersionComparer.Compare("1.0.0.0", "1.0.0", false) > 0);
     }
 }

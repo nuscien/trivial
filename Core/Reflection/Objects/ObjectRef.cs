@@ -410,6 +410,7 @@ public class VersionComparer : IComparer<string>
         #pragma warning disable IDE0057
         x = x?.Trim();
         y = y?.Trim();
+        if (x == y) return 0;
         var r = 1;
         if (string.IsNullOrEmpty(y) || y.StartsWith("+")) return r;
         if (string.IsNullOrEmpty(x)) return 0;
@@ -469,8 +470,8 @@ public class VersionComparer : IComparer<string>
             if (a.Length != b.Length) return a.Length < b.Length ? -r : r;
         }
 
-        if (leftArr.Length == y.Length) return 0;
-        return leftArr.Length > y.Length ? -r : r;
+        if (leftArr.Length == rightArr.Length) return 0;
+        return leftArr.Length > rightArr.Length ? -r : r;
         #pragma warning restore IDE0057
     }
 }

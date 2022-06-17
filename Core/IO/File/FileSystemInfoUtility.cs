@@ -24,6 +24,7 @@ public static class FileSystemInfoUtility
     /// <returns>The destination directory.</returns>
     private static DirectoryInfo CopyTo(DirectoryInfo source, string destPath, CancellationToken cancellationToken = default)
     {
+        Directory.CreateDirectory(destPath);
         foreach (var item in source.GetFiles())
         {
             item.CopyTo(Path.Combine(destPath, item.Name), true);
