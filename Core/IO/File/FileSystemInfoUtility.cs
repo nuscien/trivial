@@ -533,4 +533,43 @@ public static class FileSystemInfoUtility
         folder = TryGetSubDirectory(folder, folderName2);
         return string.IsNullOrEmpty(folderName3) ? folder : TryGetSubDirectory(folder, folderName3);
     }
+
+    /// <summary>
+    /// Gets the relative path.
+    /// </summary>
+    /// <param name="dir">The directory to get.</param>
+    /// <param name="root">The root directory.</param>
+    /// <returns>The relative path.</returns>
+    public static string GetRelativePath(DirectoryInfo dir, DirectoryInfo root)
+    {
+        string path = null;
+        while (dir != null && dir != root && dir.FullName != root.FullName)
+        {
+            path = path == null ? dir.Name : Path.Combine(dir.Name, path);
+            if (dir == dir.Parent) break;
+            dir = dir.Parent;
+        }
+
+        return path;
+    }
+
+    /// <summary>
+    /// Gets the relative path.
+    /// </summary>
+    /// <param name="file">The file to get.</param>
+    /// <param name="root">The root directory.</param>
+    /// <returns>The relative path.</returns>
+    public static string GetRelativePath(FileInfo file, DirectoryInfo root)
+    {
+        var parent = file.Directory;
+        var path = file.Name;
+        while (parent != null && parent != root && parent.FullName != root.FullName)
+        {
+            path = Path.Combine(parent.Name, path);
+            if (parent == parent.Parent) break;
+            parent = parent.Parent;
+        }
+
+        return path;
+    }
 }
