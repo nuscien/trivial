@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Security;
 using System.Security.Claims;
 using System.Text;
@@ -860,6 +861,8 @@ public static class ControllerExtensions
             || ex is ApplicationException
             || ex is InvalidCastException
             || ex is FormatException
+            || ex is ArithmeticException
+            || ex is ExternalException
             || ex is InvalidDataException)) return null;
         return 500;
     }

@@ -82,6 +82,30 @@ public static partial class ConsoleRenderExtensions
     /// </summary>
     /// <param name="cli">The command line interface proxy.</param>
     /// <param name="path">The parent foler path.</param>
+    /// <param name="onlyFiles">true if only display files; otherwise, false.</param>
+    /// <param name="options">The selection display options.</param>
+    /// <param name="searchPattern">The search string to match against the names of directories and files. This parameter can contain a combination of valid literal path and wildcard (* and ?) characters, but it doesn't support regular expressions.</param>
+    /// <returns>The result of selection.</returns>
+    /// <exception cref="ArgumentException">searchPattern contains one or more invalid characters defined by the System.IO.Path.GetInvalidPathChars method.</exception>
+    /// <exception cref="DirectoryNotFoundException">The specified path is invalid (for example, it is on an unmapped drive).</exception>
+    /// <exception cref="SecurityException">The caller does not have the required permission.</exception>
+    public static SelectionResult<FileSystemInfo> Select(this StyleConsole cli, DirectoryInfo path, bool onlyFiles, SelectionConsoleOptions options = null, string searchPattern = null)
+    {
+        var c = new SelectionData<FileSystemInfo>();
+        var col = string.IsNullOrEmpty(searchPattern) ? path.GetFiles() : path.GetFiles(searchPattern);
+        foreach (var f in col)
+        {
+            c.Add(f.Name, f);
+        }
+
+        return Select(cli, c, options);
+    }
+
+    /// <summary>
+    /// Writes a collection of item for selecting.
+    /// </summary>
+    /// <param name="cli">The command line interface proxy.</param>
+    /// <param name="path">The parent foler path.</param>
     /// <param name="predicate">A function to test each element for a condition.</param>
     /// <param name="options">The selection display options.</param>
     /// <returns>The result of selection.</returns>
