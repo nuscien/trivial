@@ -91,6 +91,7 @@ public static partial class ConsoleRenderExtensions
     /// <exception cref="SecurityException">The caller does not have the required permission.</exception>
     public static SelectionResult<FileSystemInfo> Select(this StyleConsole cli, DirectoryInfo path, bool onlyFiles, SelectionConsoleOptions options = null, string searchPattern = null)
     {
+        if (!onlyFiles) return Select(cli, path, options, searchPattern);
         var c = new SelectionData<FileSystemInfo>();
         var col = string.IsNullOrEmpty(searchPattern) ? path.GetFiles() : path.GetFiles(searchPattern);
         foreach (var f in col)
