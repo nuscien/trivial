@@ -3472,8 +3472,8 @@ public class JsonArrayNode : IJsonContainerNode, IJsonDataNode, IReadOnlyList<IJ
         {
             var isNull = !other.TryGetValue(i, out var r) || r is null || r.ValueKind == JsonValueKind.Null || r.ValueKind == JsonValueKind.Undefined;
             var prop = store[i];
-            if (prop is null || prop.ValueKind == JsonValueKind.Null || prop.ValueKind == JsonValueKind.Undefined)
-                return isNull;
+            if (!isNull && (prop is null || prop.ValueKind == JsonValueKind.Null || prop.ValueKind == JsonValueKind.Undefined))
+                return false;
             if (isNull || !JsonValues.Equals(prop, r)) return false;
         }
 

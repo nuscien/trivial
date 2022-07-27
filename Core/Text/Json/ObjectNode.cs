@@ -4239,8 +4239,8 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
         foreach (var prop in store)
         {
             var isNull = !other.TryGetValue(prop.Key, out var r) || r is null || r.ValueKind == JsonValueKind.Null || r.ValueKind == JsonValueKind.Undefined;
-            if (prop.Value is null || prop.Value.ValueKind == JsonValueKind.Null || prop.Value.ValueKind == JsonValueKind.Undefined)
-                return isNull;
+            if (!isNull && (prop.Value is null || prop.Value.ValueKind == JsonValueKind.Null || prop.Value.ValueKind == JsonValueKind.Undefined))
+                return false;
             if (isNull || !JsonValues.Equals(prop.Value, r)) return false;
         }
 
