@@ -19,18 +19,38 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link href="/assets/logo.png" rel="shortcut icon" type="image/png">
     <link rel="stylesheet" href="{{ '/assets/css/style.css?v=' | append: site.github.build_revision | relative_url }}">
+    <link rel="stylesheet" href="{{ '/css/layout.css' | relative_url }}" />
   </head>
   <body>
-
-    <header style="background-color: #333; background-image: url(/assets/bg_title.jpg); background-position: center; " role="banner">
-      <div class="main-content" style="font-size: 20px; line-height: 60px; padding-top: 0; padding-bottom: 0;">
-        <a href="https://trivial.kingcean.com" style="color: rgba(255, 255, 255, 0.9); text-shadow: rgba(0, 0, 0, 0.7) 0 0 2px; ">Trivial</a>
-      </div>
+    <header>
+      <section>
+        <h1><strong>Trivial</strong><span></span></h1>
+        <ul>
+          <li class="state-sel" >
+            <a href="https://trivial.kingcean.net">Core libraries</a>
+          </li>
+          <li>
+            <a href="https://nuscien.github.io/winkit/">WindowsKit &amp; LWA</a>
+          </li>
+        </ul>
+      </section>
     </header>
 
     <main id="content" class="main-content" role="main">
       {{ content }}
     </main>
 
+    <footer>
+      <section>
+        <div class="x-copyright">
+          <strong>Trivial libraries</strong><br />
+          <span>© Kingcean Tuan 2021. All rights reserved</span><br />
+          <br /><span>Other links</span>
+          <br /><a href="https://kingcean.net">Kingcean.net</a>
+          <br /><a href="https://nuscien.github.io">NuScien</a>
+          <br /><a href="https://dot.net">Microsoft .NET</a>
+        </div>
+      </section>
+    </footer>
   </body>
 </html>
