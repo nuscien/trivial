@@ -1253,9 +1253,10 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     /// Tries to get the value of the specific property.
     /// </summary>
     /// <param name="key">The property key.</param>
+    /// <param name="strictMode">true if enable strict mode; otherwise, false, to return undefined for non-existing.</param>
     /// <param name="result">The result.</param>
     /// <returns>true if has the property and the type is the one expected; otherwise, false.</returns>
-    public bool TryGetStringValue(string key, out string result)
+    public bool TryGetStringValue(string key, bool strictMode, out string result)
     {
         if (!store.TryGetValue(key, out var data))
         {
@@ -1269,9 +1270,9 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
             return true;
         }
 
-        if (data is JsonStringNode str)
+        if (data is IJsonStringNode str)
         {
-            result = str.Value;
+            result = str.StringValue;
             return true;
         }
 
@@ -1283,8 +1284,17 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
             _ => null
         };
 
-        return result != null;
+        return !strictMode && result != null;
     }
+
+    /// <summary>
+    /// Tries to get the value of the specific property.
+    /// </summary>
+    /// <param name="key">The property key.</param>
+    /// <param name="result">The result.</param>
+    /// <returns>true if has the property and the type is the one expected; otherwise, false.</returns>
+    public bool TryGetStringValue(string key, out string result)
+        => TryGetStringValue(key, false, out result);
 
     /// <summary>
     /// Tries to get the value of the specific property.
@@ -1297,6 +1307,20 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
         var s = TryGetStringValue(key)?.Trim();
         if (returnNullIfEmpty && string.IsNullOrEmpty(s)) return null;
         return s;
+    }
+
+    /// <summary>
+    /// Tries to get the value of the specific property.
+    /// </summary>
+    /// <param name="key">The property key.</param>
+    /// <param name="valueCase">The case.</param>
+    /// <param name="invariant">true if uses the casing rules of invariant culture; otherwise, false.</param>
+    /// <param name="returnNullIfEmpty">true if returns null when the value is empty or white space; otherwise, false.</param>
+    /// <returns>A string trimmed.</returns>
+    public string TryGetStringTrimmedValue(string key, Cases valueCase, bool invariant = false, bool returnNullIfEmpty = false)
+    {
+        var s = TryGetStringTrimmedValue(key, returnNullIfEmpty);
+        return invariant ? s.ToSpecificCaseInvariant(valueCase) : s.ToSpecificCase(valueCase);
     }
 
     /// <summary>
@@ -1332,6 +1356,33 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
         try
         {
             return new Uri(str);
+        }
+        catch (FormatException)
+        {
+        }
+        catch (ArgumentException)
+        {
+        }
+
+        return null;
+    }
+
+    /// <summary>
+    /// Tries to get the value of the specific property.
+    /// </summary>
+    /// <param name="key">The property key.</param>
+    /// <param name="kind">Specifies whether the URI string is a relative URI, absolute URI, or is indeterminate.</param>
+    /// <returns>The value; or null if fail to resolve.</returns>
+    public Uri TryGetUriValue(string key, UriKind kind)
+    {
+        if (!TryGetStringValue(key, out var str) || string.IsNullOrWhiteSpace(str))
+        {
+            return null;
+        }
+
+        try
+        {
+            return new Uri(str, kind);
         }
         catch (FormatException)
         {
@@ -2852,6 +2903,20 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     /// <param name="key">The property key.</param>
     /// <param name="value">The value to set.</param>
     /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+    public void SetValue(string key, IEnumerable<double> value)
+    {
+        AssertKey(key);
+        var arr = new JsonArrayNode();
+        arr.AddRange(value);
+        store[key] = arr;
+    }
+
+    /// <summary>
+    /// Sets the value of the specific property.
+    /// </summary>
+    /// <param name="key">The property key.</param>
+    /// <param name="value">The value to set.</param>
+    /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
     public void SetValue(string key, IEnumerable<JsonObjectNode> value)
     {
         AssertKey(key);
@@ -4116,6 +4181,20 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     /// <param name="key">The property key.</param>
     /// <param name="value">The value of the property.</param>
     /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+    public void Add(string key, IEnumerable<double> value)
+    {
+        AssertKey(key);
+        var arr = new JsonArrayNode();
+        arr.AddRange(value);
+        store.Add(key, arr);
+    }
+
+    /// <summary>
+    /// Adds a property with the provided key and value to the JSON object.
+    /// </summary>
+    /// <param name="key">The property key.</param>
+    /// <param name="value">The value of the property.</param>
+    /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
     public void Add(string key, IEnumerable<JsonObjectNode> value)
     {
         AssertKey(key);
@@ -4326,6 +4405,38 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
 
         writer.WriteEndObject();
     }
+
+    /// <summary>
+    /// Writes to file.
+    /// </summary>
+    /// <param name="path">The path of the file. If the target file already exists, it is overwritten.</param>
+    /// <param name="style">The indent style.</param>
+    /// <exception cref="IOException">IO exception.</exception>
+    /// <exception cref="SecurityException">Write failed because of security exception.</exception>
+    /// <exception cref="ArgumentException">path was invalid..</exception>
+    /// <exception cref="ArgumentNullException">path was null.</exception>
+    /// <exception cref="NotSupportedException">path was not supported.</exception>
+    /// <exception cref="UnauthorizedAccessException">Write failed because of unauthorized access exception.</exception>
+    public void WriteTo(string path, IndentStyles style = IndentStyles.Minified)
+        => File.WriteAllText(path, ToString(style) ?? "null", Encoding.UTF8);
+
+#if NETCOREAPP || NET5_0_OR_GREATER
+    /// <summary>
+    /// Writes to file.
+    /// </summary>
+    /// <param name="path">The path of the file. If the target file already exists, it is overwritten.</param>
+    /// <param name="style">The indent style.</param>
+    /// <param name="cancellationToken">The token to monitor for cancellation requests.</param>
+    /// <returns>A task that represents the asynchronous write operation.</returns>
+    /// <exception cref="IOException">IO exception.</exception>
+    /// <exception cref="SecurityException">Write failed because of security exception.</exception>
+    /// <exception cref="ArgumentException">path was invalid..</exception>
+    /// <exception cref="ArgumentNullException">path was null.</exception>
+    /// <exception cref="NotSupportedException">path was not supported.</exception>
+    /// <exception cref="UnauthorizedAccessException">Write failed because of unauthorized access exception.</exception>
+    public Task WriteToAsync(string path, IndentStyles style = IndentStyles.Minified, CancellationToken cancellationToken = default)
+        => File.WriteAllTextAsync(path, ToString(style) ?? "null", Encoding.UTF8, cancellationToken);
+#endif
 
     /// <summary>
     /// Gets the JSON format string of the value.

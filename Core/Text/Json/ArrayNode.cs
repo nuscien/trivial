@@ -927,13 +927,11 @@ public class JsonArrayNode : IJsonContainerNode, IJsonDataNode, IReadOnlyList<IJ
     /// <returns>The value. It will be null if the value is null.</returns>
     /// <exception cref="InvalidOperationException">The item value kind is not string.</exception>
     public IEnumerable<string> GetStringCollection(Func<IJsonDataNode, bool> predicate)
-    {
-        return store.Select(ele =>
+        => store.Select(ele =>
         {
             if (ele is null) return JsonValues.Null;
             return ele;
         }).Where(predicate).Select(ele => ele?.GetString());
-    }
 
     /// <summary>
     /// Gets the value as a string collection.
@@ -942,13 +940,11 @@ public class JsonArrayNode : IJsonContainerNode, IJsonDataNode, IReadOnlyList<IJ
     /// <returns>The value. It will be null if the value is null.</returns>
     /// <exception cref="InvalidOperationException">The item value kind is not string.</exception>
     public IEnumerable<string> GetStringCollection(Func<IJsonDataNode, int, bool> predicate)
-    {
-        return store.Select(ele =>
+        => store.Select(ele =>
         {
             if (ele is null) return JsonValues.Null;
             return ele;
         }).Where(predicate).Select(ele => ele?.GetString());
-    }
 
     /// <summary>
     /// Gets the value as a string collection.
@@ -957,9 +953,7 @@ public class JsonArrayNode : IJsonContainerNode, IJsonDataNode, IReadOnlyList<IJ
     /// <returns>The value. It will be null if the value is null.</returns>
     /// <exception cref="InvalidOperationException">The item value kind is not string.</exception>
     public IEnumerable<string> GetStringCollection(Func<string, bool> predicate)
-    {
-        return store.Select(ele => ele?.GetString()).Where(predicate);
-    }
+        => store.Select(ele => ele?.GetString()).Where(predicate);
 
     /// <summary>
     /// Gets the value as a string collection.
@@ -968,9 +962,7 @@ public class JsonArrayNode : IJsonContainerNode, IJsonDataNode, IReadOnlyList<IJ
     /// <returns>The value. It will be null if the value is null.</returns>
     /// <exception cref="InvalidOperationException">The item value kind is not string.</exception>
     public IEnumerable<string> GetStringCollection(Func<string, int, bool> predicate)
-    {
-        return store.Select(ele => ele?.GetString()).Where(predicate);
-    }
+        => store.Select(ele => ele?.GetString()).Where(predicate);
 
     /// <summary>
     /// Gets all string values.
@@ -978,9 +970,7 @@ public class JsonArrayNode : IJsonContainerNode, IJsonDataNode, IReadOnlyList<IJ
     /// <param name="nullForOtherKinds">true if set null in the result for other kinds; otherwise, false, to skip.</param>
     /// <returns>The JSON string value collection.</returns>
     public IEnumerable<JsonStringNode> GetStringValues(bool nullForOtherKinds = false)
-    {
-        return GetSpecificKindValues<JsonStringNode>(nullForOtherKinds);
-    }
+        => GetSpecificKindValues<JsonStringNode>(nullForOtherKinds);
 
     /// <summary>
     /// Gets all integer values.
@@ -988,9 +978,7 @@ public class JsonArrayNode : IJsonContainerNode, IJsonDataNode, IReadOnlyList<IJ
     /// <param name="nullForOtherKinds">true if set null in the result for other kinds; otherwise, false, to skip.</param>
     /// <returns>The JSON integer value collection.</returns>
     public IEnumerable<JsonIntegerNode> GetIntegerValues(bool nullForOtherKinds = false)
-    {
-        return GetSpecificKindValues<JsonIntegerNode>(nullForOtherKinds);
-    }
+        => GetSpecificKindValues<JsonIntegerNode>(nullForOtherKinds);
 
     /// <summary>
     /// Gets all double float number values.
@@ -1008,9 +996,7 @@ public class JsonArrayNode : IJsonContainerNode, IJsonDataNode, IReadOnlyList<IJ
     /// <param name="nullForOtherKinds">true if set null in the result for other kinds; otherwise, false, to skip.</param>
     /// <returns>The JSON boolean value collection.</returns>
     public IEnumerable<JsonBooleanNode> GetBooleanValues(bool nullForOtherKinds = false)
-    {
-        return GetSpecificKindValues<JsonBooleanNode>(nullForOtherKinds);
-    }
+        => GetSpecificKindValues<JsonBooleanNode>(nullForOtherKinds);
 
     /// <summary>
     /// Gets all JSON object values.
@@ -1018,9 +1004,7 @@ public class JsonArrayNode : IJsonContainerNode, IJsonDataNode, IReadOnlyList<IJ
     /// <param name="nullForOtherKinds">true if set null in the result for other kinds; otherwise, false, to skip.</param>
     /// <returns>The JSON object value collection.</returns>
     public IEnumerable<JsonObjectNode> GetObjectValues(bool nullForOtherKinds = false)
-    {
-        return GetSpecificKindValues<JsonObjectNode>(nullForOtherKinds);
-    }
+        => GetSpecificKindValues<JsonObjectNode>(nullForOtherKinds);
 
     /// <summary>
     /// Gets all JSON array values.
@@ -1028,9 +1012,7 @@ public class JsonArrayNode : IJsonContainerNode, IJsonDataNode, IReadOnlyList<IJ
     /// <param name="nullForOtherKinds">true if set null in the result for other kinds; otherwise, false, to skip.</param>
     /// <returns>The JSON array value collection.</returns>
     public IEnumerable<JsonArrayNode> GetArrayValues(bool nullForOtherKinds = false)
-    {
-        return GetSpecificKindValues<JsonArrayNode>(nullForOtherKinds);
-    }
+        => GetSpecificKindValues<JsonArrayNode>(nullForOtherKinds);
 
     /// <summary>
     /// Gets the value as a string collection.
@@ -1165,6 +1147,33 @@ public class JsonArrayNode : IJsonContainerNode, IJsonDataNode, IReadOnlyList<IJ
         try
         {
             return new Uri(str);
+        }
+        catch (FormatException)
+        {
+        }
+        catch (ArgumentException)
+        {
+        }
+
+        return null;
+    }
+
+    /// <summary>
+    /// Tries to get the value of the specific index.
+    /// </summary>
+    /// <param name="index">The zero-based index of the element to get.</param>
+    /// <param name="kind">Specifies whether the URI string is a relative URI, absolute URI, or is indeterminate.</param>
+    /// <returns>The value; or null if fail to resolve.</returns>
+    public Uri TryGetUriValue(int index, UriKind kind)
+    {
+        if (!TryGetStringValue(index, out var str) || string.IsNullOrWhiteSpace(str))
+        {
+            return null;
+        }
+
+        try
+        {
+            return new Uri(str, kind);
         }
         catch (FormatException)
         {
@@ -2800,6 +2809,24 @@ public class JsonArrayNode : IJsonContainerNode, IJsonDataNode, IReadOnlyList<IJ
     }
 
     /// <summary>
+    /// Adds a collection of integer.
+    /// </summary>
+    /// <param name="values">An integer collection to add.</param>
+    /// <returns>The count of item added.</returns>
+    public int AddRange(IEnumerable<double> values)
+    {
+        var count = 0;
+        if (values == null) return count;
+        foreach (var item in values)
+        {
+            store.Add(new JsonDoubleNode(item));
+            count++;
+        }
+
+        return count;
+    }
+
+    /// <summary>
     /// Adds a collection of JSON object.
     /// </summary>
     /// <param name="values">A JSON object collection to add.</param>
@@ -3162,6 +3189,26 @@ public class JsonArrayNode : IJsonContainerNode, IJsonDataNode, IReadOnlyList<IJ
     /// <param name="values">A string collection to add.</param>
     /// <returns>The count of item added.</returns>
     /// <exception cref="ArgumentOutOfRangeException">The index was out of range.</exception>
+    public int InsertRange(int index, IEnumerable<double> values)
+    {
+        var count = 0;
+        if (values == null) return count;
+        foreach (var item in values)
+        {
+            store.Insert(index + count, new JsonDoubleNode(item));
+            count++;
+        }
+
+        return count;
+    }
+
+    /// <summary>
+    /// Adds a JSON array.
+    /// </summary>
+    /// <param name="index">The zero-based index of the element to get.</param>
+    /// <param name="values">A string collection to add.</param>
+    /// <returns>The count of item added.</returns>
+    /// <exception cref="ArgumentOutOfRangeException">The index was out of range.</exception>
     public int InsertRange(int index, IEnumerable<JsonObjectNode> values)
     {
         var count = 0;
@@ -3271,6 +3318,38 @@ public class JsonArrayNode : IJsonContainerNode, IJsonDataNode, IReadOnlyList<IJ
 
         writer.WriteEndArray();
     }
+
+    /// <summary>
+    /// Writes to file. If the target file already exists, it is overwritten.
+    /// </summary>
+    /// <param name="path">The path of the file.</param>
+    /// <param name="style">The indent style.</param>
+    /// <exception cref="IOException">IO exception.</exception>
+    /// <exception cref="SecurityException">Write failed because of security exception.</exception>
+    /// <exception cref="ArgumentException">path was invalid..</exception>
+    /// <exception cref="ArgumentNullException">path was null.</exception>
+    /// <exception cref="NotSupportedException">path was not supported.</exception>
+    /// <exception cref="UnauthorizedAccessException">Write failed because of unauthorized access exception.</exception>
+    public void WriteTo(string path, IndentStyles style = IndentStyles.Minified)
+        => File.WriteAllText(path, ToString(style) ?? "null", Encoding.UTF8);
+
+#if NETCOREAPP || NET5_0_OR_GREATER
+    /// <summary>
+    /// Writes to file. If the target file already exists, it is overwritten.
+    /// </summary>
+    /// <param name="path">The path of the file.</param>
+    /// <param name="style">The indent style.</param>
+    /// <param name="cancellationToken">The token to monitor for cancellation requests.</param>
+    /// <returns>A task that represents the asynchronous write operation.</returns>
+    /// <exception cref="IOException">IO exception.</exception>
+    /// <exception cref="SecurityException">Write failed because of security exception.</exception>
+    /// <exception cref="ArgumentException">path was invalid..</exception>
+    /// <exception cref="ArgumentNullException">path was null.</exception>
+    /// <exception cref="NotSupportedException">path was not supported.</exception>
+    /// <exception cref="UnauthorizedAccessException">Write failed because of unauthorized access exception.</exception>
+    public Task WriteToAsync(string path, IndentStyles style = IndentStyles.Minified, CancellationToken cancellationToken = default)
+        => File.WriteAllTextAsync(path, ToString(style) ?? "null", Encoding.UTF8, cancellationToken);
+#endif
 
     /// <summary>
     /// Deserializes.

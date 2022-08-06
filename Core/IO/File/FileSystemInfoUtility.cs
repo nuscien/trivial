@@ -150,6 +150,95 @@ public static class FileSystemInfoUtility
         });
 
     /// <summary>
+    /// Tries to write the specific string to file. If the target file already exists, it is overwritten.
+    /// </summary>
+    /// <param name="path">The path of file to write.</param>
+    /// <param name="content">The content to write.</param>
+    /// <param name="encoding">The encoding to use.</param>
+    /// <returns>true if write succeeded; otherwise, false.</returns>
+    public static bool TryWriteAllTextAsync(string path, string content, Encoding encoding = null)
+    {
+        try
+        {
+            if (encoding == null) File.WriteAllText(path, content);
+            else File.WriteAllText(path, content, encoding);
+            return true;
+        }
+        catch (ArgumentException)
+        {
+        }
+        catch (IOException)
+        {
+        }
+        catch (SecurityException)
+        {
+        }
+        catch (UnauthorizedAccessException)
+        {
+        }
+        catch (InvalidOperationException)
+        {
+        }
+        catch (NotSupportedException)
+        {
+        }
+        catch (AggregateException)
+        {
+        }
+        catch (ExternalException)
+        {
+        }
+
+        return false;
+    }
+
+#if NETCOREAPP || NET5_0_OR_GREATER
+    /// <summary>
+    /// Tries to write the specific string to file. If the target file already exists, it is overwritten.
+    /// </summary>
+    /// <param name="path">The path of file to write.</param>
+    /// <param name="content">The content to write.</param>
+    /// <param name="encoding">The encoding to use.</param>
+    /// <param name="cancellationToken">The token to monitor for cancellation requests.</param>
+    /// <returns>true if write succeeded; otherwise, false.</returns>
+    public static async Task<bool> TryWriteAllTextAsync(string path, string content, Encoding encoding = null, CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            if (encoding == null) await File.WriteAllTextAsync(path, content, cancellationToken);
+            else await File.WriteAllTextAsync(path, content, encoding, cancellationToken);
+            return true;
+        }
+        catch (ArgumentException)
+        {
+        }
+        catch (IOException)
+        {
+        }
+        catch (SecurityException)
+        {
+        }
+        catch (UnauthorizedAccessException)
+        {
+        }
+        catch (InvalidOperationException)
+        {
+        }
+        catch (NotSupportedException)
+        {
+        }
+        catch (AggregateException)
+        {
+        }
+        catch (ExternalException)
+        {
+        }
+
+        return false;
+    }
+#endif
+
+    /// <summary>
     /// Reads lines from a specific stream.
     /// </summary>
     /// <param name="file">The file to read.</param>
