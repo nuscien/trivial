@@ -420,6 +420,27 @@ public class JsonArrayNode : IJsonContainerNode, IJsonDataNode, IReadOnlyList<IJ
     }
 
     /// <summary>
+    /// Tests if the value kind of the property is the specific one.
+    /// </summary>
+    /// <param name="index">The zero-based index of the element to get.</param>
+    /// <param name="kind">The value kind expected.</param>
+    /// <returns>true if the value kind is the specific one; otherwise, false.</returns>
+    public bool IsValueKind(int index, JsonValueKind kind)
+    {
+        if (index < 0 && index >= store.Count) return kind == JsonValueKind.Undefined;
+        try
+        {
+            var value = store[index];
+            if (value is not null) return value.ValueKind == kind;
+        }
+        catch (ArgumentException)
+        {
+        }
+
+        return kind == JsonValueKind.Undefined;
+    }
+
+    /// <summary>
     /// Determines whether it contains an item value with the specific index.
     /// </summary>
     /// <param name="index">The zero-based index of the element to get.</param>

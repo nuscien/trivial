@@ -438,6 +438,18 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     }
 
     /// <summary>
+    /// Tests if the value kind of the property is the specific one.
+    /// </summary>
+    /// <param name="key">The property key.</param>
+    /// <param name="kind">The value kind expected.</param>
+    /// <returns>true if the value kind is the specific one; otherwise, false.</returns>
+    public bool IsValueKind(string key, JsonValueKind kind)
+    {
+        if (!store.TryGetValue(key, out var value) || value is null) return kind == JsonValueKind.Undefined;
+        return value.ValueKind == kind;
+    }
+
+    /// <summary>
     /// Determines whether it contains an property value with the specific key.
     /// </summary>
     /// <param name="key">The property key.</param>
@@ -1819,7 +1831,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     {
         var v = TryGetObjectValue(key);
         result = v;
-        return v is not null || IsNull(key);
+        return v is not null || IsValueKind(key, JsonValueKind.Null);
     }
 
     /// <summary>
