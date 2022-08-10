@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFrameworks>net6.0;net5.0;netcoreapp3.1;netstandard2.0;net48;net461</TargetFrameworks>
+		<TargetFrameworks>net6.0;net5.0;netcoreapp3.1;netstandard2.0;net481;net48;net461</TargetFrameworks>
 		<AssemblyName>Trivial.Mime</AssemblyName>
 		<RootNamespace>Trivial</RootNamespace>
 		<PackageId>Trivial.Mime</PackageId>
@@ -38,11 +38,11 @@
 		<DocumentationFile>..\bin\$(Configuration)\$(TargetFramework)\Trivial.Mime.xml</DocumentationFile>
 	</PropertyGroup>
 
-	<PropertyGroup Condition="'$(TargetFramework)' == 'netstandard2.0' OR '$(TargetFramework)' == 'net48' OR '$(TargetFramework)' == 'net461'">
+	<PropertyGroup Condition="'$(TargetFramework)' == 'netstandard2.0' OR '$(TargetFramework)' == 'net481' OR '$(TargetFramework)' == 'net48' OR '$(TargetFramework)' == 'net461'">
 		<DefineConstants>NETOLDVER</DefineConstants>
 	</PropertyGroup>
 
-	<ItemGroup Condition="'$(TargetFramework)' == 'net48' OR '$(TargetFramework)' == 'net461'">
+	<ItemGroup Condition="'$(TargetFramework)' == 'net481' OR '$(TargetFramework)' == 'net48' OR '$(TargetFramework)' == 'net461'">
 		<PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.2" PrivateAssets="All" />
 	</ItemGroup>
 

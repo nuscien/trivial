@@ -1468,7 +1468,7 @@ public class JsonArrayNode : IJsonContainerNode, IJsonDataNode, IReadOnlyList<IJ
     /// </summary>
     /// <param name="index">The zero-based index of the element to get.</param>
     /// <returns>The value; or null if fail to resolve.</returns>
-    public float? TryGetFloatValue(int index)
+    public float? TryGetSingleValue(int index)
     {
         try
         {
@@ -1495,9 +1495,9 @@ public class JsonArrayNode : IJsonContainerNode, IJsonDataNode, IReadOnlyList<IJ
     /// <param name="index">The zero-based index of the element to get.</param>
     /// <param name="result">The result.</param>
     /// <returns>true if has the index and the type is the one expected; otherwise, false.</returns>
-    public bool TryGetFloatValue(int index, out float result)
+    public bool TryGetSingleValue(int index, out float result)
     {
-        var v = TryGetFloatValue(index);
+        var v = TryGetSingleValue(index);
         result = v ?? default;
         return v.HasValue;
     }

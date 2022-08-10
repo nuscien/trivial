@@ -1311,6 +1311,36 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     /// <summary>
     /// Tries to get the value of the specific property.
     /// </summary>
+    /// <param name="keyPath">The path of property key.</param>
+    /// <returns>A string.</returns>
+    public string TryGetStringValue(IEnumerable<string> keyPath)
+    {
+        var value = TryGetValue(keyPath);
+        if (value is null) return null;
+        return value.TryGetString(out var s) ? s : null;
+    }
+
+    /// <summary>
+    /// Tries to get the value of the specific property.
+    /// </summary>
+    /// <param name="keyPath">The path of property key.</param>
+    /// <param name="result">The result.</param>
+    /// <returns>true if has the property and the type is the one expected; otherwise, false.</returns>
+    public bool TryGetStringValue(IEnumerable<string> keyPath, out string result)
+    {
+        var value = TryGetValue(keyPath);
+        if (value is null)
+        {
+            result = null;
+            return false;
+        }
+
+        return value.TryGetString(out result);
+    }
+
+    /// <summary>
+    /// Tries to get the value of the specific property.
+    /// </summary>
     /// <param name="key">The property key.</param>
     /// <param name="returnNullIfEmpty">true if returns null when the value is empty or white space; otherwise, false.</param>
     /// <returns>A string trimmed.</returns>
@@ -1351,6 +1381,26 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
         
         result = r?.Trim();
         return true;
+    }
+
+    /// <summary>
+    /// Tries to get the value of the specific property.
+    /// </summary>
+    /// <param name="key">The property key.</param>
+    /// <param name="ignoreNotMatched">true if ignore any item which is not JSON string; otherwise, false.</param>
+    /// <returns>The list; or null, if no such array property.</returns>
+    public List<string> TryGetStringListValue(string key, bool ignoreNotMatched = false)
+    {
+        if (!TryGetJsonValue<JsonArrayNode>(key, out var p)) return null;
+        var col = ignoreNotMatched ? p.Select(ele => ele is IJsonStringNode s ? s.StringValue : null).Where(ele => ele is not null) : p.Select(ele =>
+        {
+            if (ele is IJsonStringNode s) return s.StringValue;
+            if (ele is JsonIntegerNode i) return i.ToString();
+            if (ele is JsonDoubleNode f) return f.ToString();
+            if (ele is JsonBooleanNode b) return b.ToString();
+            return null;
+        });
+        return col.ToList();
     }
 
     /// <summary>
@@ -1627,6 +1677,36 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     /// <summary>
     /// Tries to get the value of the specific property.
     /// </summary>
+    /// <param name="keyPath">The path of property key.</param>
+    /// <returns>A string.</returns>
+    public int? TryGetInt32Value(IEnumerable<string> keyPath)
+    {
+        var value = TryGetValue(keyPath);
+        if (value is null) return null;
+        return value.TryGetInt32(out var s) ? s : null;
+    }
+
+    /// <summary>
+    /// Tries to get the value of the specific property.
+    /// </summary>
+    /// <param name="keyPath">The path of property key.</param>
+    /// <param name="result">The result.</param>
+    /// <returns>true if has the property and the type is the one expected; otherwise, false.</returns>
+    public bool TryGetInt32Value(IEnumerable<string> keyPath, out int result)
+    {
+        var value = TryGetValue(keyPath);
+        if (value is null)
+        {
+            result = default;
+            return false;
+        }
+
+        return value.TryGetInt32(out result);
+    }
+
+    /// <summary>
+    /// Tries to get the value of the specific property.
+    /// </summary>
     /// <param name="key">The property key.</param>
     /// <returns>The value; or null if fail to resolve.</returns>
     public long? TryGetInt64Value(string key)
@@ -1668,7 +1748,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     /// </summary>
     /// <param name="key">The property key.</param>
     /// <returns>The value; or null if fail to resolve.</returns>
-    public float? TryGetFloatValue(string key)
+    public float? TryGetSingleValue(string key)
     {
         try
         {
@@ -1695,11 +1775,41 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     /// <param name="key">The property key.</param>
     /// <param name="result">The result.</param>
     /// <returns>true if has the property and the type is the one expected; otherwise, false.</returns>
-    public bool TryGetFloatValue(string key, out float result)
+    public bool TryGetSingleValue(string key, out float result)
     {
-        var v = TryGetFloatValue(key);
+        var v = TryGetSingleValue(key);
         result = v ?? default;
         return v.HasValue;
+    }
+
+    /// <summary>
+    /// Tries to get the value of the specific property.
+    /// </summary>
+    /// <param name="keyPath">The path of property key.</param>
+    /// <returns>A string.</returns>
+    public float? TryGetSingleValue(IEnumerable<string> keyPath)
+    {
+        var value = TryGetValue(keyPath);
+        if (value is null) return null;
+        return value.TryGetSingle(out var s) ? s : null;
+    }
+
+    /// <summary>
+    /// Tries to get the value of the specific property.
+    /// </summary>
+    /// <param name="keyPath">The path of property key.</param>
+    /// <param name="result">The result.</param>
+    /// <returns>true if has the property and the type is the one expected; otherwise, false.</returns>
+    public bool TryGetSingleValue(IEnumerable<string> keyPath, out float result)
+    {
+        var value = TryGetValue(keyPath);
+        if (value is null)
+        {
+            result = default;
+            return false;
+        }
+
+        return value.TryGetSingle(out result);
     }
 
     /// <summary>
@@ -1732,6 +1842,36 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     /// <summary>
     /// Tries to get the value of the specific property.
     /// </summary>
+    /// <param name="keyPath">The path of property key.</param>
+    /// <returns>A string.</returns>
+    public double? TryGetDoubleValue(IEnumerable<string> keyPath)
+    {
+        var value = TryGetValue(keyPath);
+        if (value is null) return null;
+        return value.TryGetDouble(out var s) ? s : null;
+    }
+
+    /// <summary>
+    /// Tries to get the value of the specific property.
+    /// </summary>
+    /// <param name="keyPath">The path of property key.</param>
+    /// <param name="result">The result.</param>
+    /// <returns>true if has the property and the type is the one expected; otherwise, false.</returns>
+    public bool TryGetDoubleValue(IEnumerable<string> keyPath, out double result)
+    {
+        var value = TryGetValue(keyPath);
+        if (value is null)
+        {
+            result = default;
+            return false;
+        }
+
+        return value.TryGetDouble(out result);
+    }
+
+    /// <summary>
+    /// Tries to get the value of the specific property.
+    /// </summary>
     /// <param name="key">The property key.</param>
     /// <returns>The value; or null if fail to resolve.</returns>
     public bool? TryGetBooleanValue(string key)
@@ -1753,6 +1893,36 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
         var v = TryGetBooleanValue(key);
         result = v ?? default;
         return v.HasValue;
+    }
+
+    /// <summary>
+    /// Tries to get the value of the specific property.
+    /// </summary>
+    /// <param name="keyPath">The path of property key.</param>
+    /// <returns>A string.</returns>
+    public bool? TryGetBooleanValue(IEnumerable<string> keyPath)
+    {
+        var value = TryGetValue(keyPath);
+        if (value is null) return null;
+        return value.TryGetBoolean(out var s) ? s : null;
+    }
+
+    /// <summary>
+    /// Tries to get the value of the specific property.
+    /// </summary>
+    /// <param name="keyPath">The path of property key.</param>
+    /// <param name="result">The result.</param>
+    /// <returns>true if has the property and the type is the one expected; otherwise, false.</returns>
+    public bool TryGetBooleanValue(IEnumerable<string> keyPath, out bool result)
+    {
+        var value = TryGetValue(keyPath);
+        if (value is null)
+        {
+            result = default;
+            return false;
+        }
+
+        return value.TryGetBoolean(out result);
     }
 
     /// <summary>
@@ -1886,6 +2056,27 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
         var v = TryGetArrayValue(key);
         result = v;
         return v is not null;
+    }
+
+    /// <summary>
+    /// Tries to get the value of the specific property.
+    /// </summary>
+    /// <param name="keyPath">The path of property key.</param>
+    /// <returns>A string.</returns>
+    public JsonArrayNode TryGetArrayValue(IEnumerable<string> keyPath)
+        => TryGetValue(keyPath) as JsonArrayNode;
+
+    /// <summary>
+    /// Tries to get the value of the specific property.
+    /// </summary>
+    /// <param name="keyPath">The path of property key.</param>
+    /// <param name="result">The result.</param>
+    /// <returns>true if has the property and the type is the one expected; otherwise, false.</returns>
+    public bool TryGetArrayValue(IEnumerable<string> keyPath, out JsonArrayNode result)
+    {
+        var value = TryGetValue(keyPath);
+        result = value as JsonArrayNode;
+        return result is not null;
     }
 
     /// <summary>
