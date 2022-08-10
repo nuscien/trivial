@@ -1746,6 +1746,36 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     /// <summary>
     /// Tries to get the value of the specific property.
     /// </summary>
+    /// <param name="keyPath">The path of property key.</param>
+    /// <returns>A string.</returns>
+    public long? TryGetInt64Value(IEnumerable<string> keyPath)
+    {
+        var value = TryGetValue(keyPath);
+        if (value is null) return null;
+        return value.TryGetInt64(out var s) ? s : null;
+    }
+
+    /// <summary>
+    /// Tries to get the value of the specific property.
+    /// </summary>
+    /// <param name="keyPath">The path of property key.</param>
+    /// <param name="result">The result.</param>
+    /// <returns>true if has the property and the type is the one expected; otherwise, false.</returns>
+    public bool TryGetInt64Value(IEnumerable<string> keyPath, out long result)
+    {
+        var value = TryGetValue(keyPath);
+        if (value is null)
+        {
+            result = default;
+            return false;
+        }
+
+        return value.TryGetInt64(out result);
+    }
+
+    /// <summary>
+    /// Tries to get the value of the specific property.
+    /// </summary>
     /// <param name="key">The property key.</param>
     /// <returns>The value; or null if fail to resolve.</returns>
     public float? TryGetSingleValue(string key)

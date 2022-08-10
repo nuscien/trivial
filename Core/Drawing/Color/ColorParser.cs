@@ -235,7 +235,7 @@ public static partial class ColorCalculator
                 case JsonTokenType.StartObject:
                     var json = JsonObjectNode.ParseValue(ref reader);
                     if (json == null) break;
-                    var a = json.TryGetFloatValue("a") ?? json.TryGetFloatValue("A") ?? json.TryGetFloatValue("alpha") ?? json.TryGetFloatValue("Alpha") ?? json.TryGetFloatValue("ALPHA") ?? 1;
+                    var a = json.TryGetSingleValue("a") ?? json.TryGetSingleValue("A") ?? json.TryGetSingleValue("alpha") ?? json.TryGetSingleValue("Alpha") ?? json.TryGetSingleValue("ALPHA") ?? 1;
                     var r = json.TryGetInt32Value("r") ?? json.TryGetInt32Value("R") ?? json.TryGetInt32Value("red") ?? json.TryGetInt32Value("Red") ?? json.TryGetInt32Value("RED");
                     var g = json.TryGetInt32Value("g") ?? json.TryGetInt32Value("G") ?? json.TryGetInt32Value("green") ?? json.TryGetInt32Value("Green") ?? json.TryGetInt32Value("GREEN");
                     var b = json.TryGetInt32Value("b") ?? json.TryGetInt32Value("B") ?? json.TryGetInt32Value("blue") ?? json.TryGetInt32Value("Blue") ?? json.TryGetInt32Value("BLUE");
@@ -244,8 +244,8 @@ public static partial class ColorCalculator
                     var h = json.TryGetInt32Value("h") ?? json.TryGetInt32Value("H") ?? json.TryGetInt32Value("hue") ?? json.TryGetInt32Value("Hue") ?? json.TryGetInt32Value("HUE");
                     if (h.HasValue)
                     {
-                        var s = json.TryGetFloatValue("s") ?? json.TryGetFloatValue("S") ?? json.TryGetFloatValue("saturation") ?? json.TryGetFloatValue("Saturation") ?? json.TryGetFloatValue("SATURATION");
-                        var l = json.TryGetFloatValue("l") ?? json.TryGetFloatValue("L") ?? json.TryGetFloatValue("lightness") ?? json.TryGetFloatValue("Lightness") ?? json.TryGetFloatValue("LIGHTNESS");
+                        var s = json.TryGetSingleValue("s") ?? json.TryGetSingleValue("S") ?? json.TryGetSingleValue("saturation") ?? json.TryGetSingleValue("Saturation") ?? json.TryGetSingleValue("SATURATION");
+                        var l = json.TryGetSingleValue("l") ?? json.TryGetSingleValue("L") ?? json.TryGetSingleValue("lightness") ?? json.TryGetSingleValue("Lightness") ?? json.TryGetSingleValue("LIGHTNESS");
                         return FromHSL(h.Value, s ?? 0, l ?? 0, a);
                     }
 
