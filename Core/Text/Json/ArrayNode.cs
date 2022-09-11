@@ -1576,7 +1576,7 @@ public class JsonArrayNode : IJsonContainerNode, IJsonDataNode, IReadOnlyList<IJ
     {
         var v = TryGetObjectValue(index);
         result = v;
-        return !(v is null);
+        return v is not null;
     }
 
     /// <summary>
@@ -1600,7 +1600,7 @@ public class JsonArrayNode : IJsonContainerNode, IJsonDataNode, IReadOnlyList<IJ
     {
         var v = TryGetArrayValue(index);
         result = v;
-        return !(v is null);
+        return v is not null;
     }
 
     /// <summary>
@@ -1852,7 +1852,7 @@ public class JsonArrayNode : IJsonContainerNode, IJsonDataNode, IReadOnlyList<IJ
     {
         var v = TryGetValue(index);
         result = v;
-        return !(v is null);
+        return v is not null;
     }
 
     /// <summary>
@@ -2924,6 +2924,22 @@ public class JsonArrayNode : IJsonContainerNode, IJsonDataNode, IReadOnlyList<IJ
     }
 
     /// <summary>
+    /// Determines the index of a specific item in the JSON array.
+    /// </summary>
+    /// <param name="value">The object to locate in the JSON array.</param>
+    /// <returns>The index of item if found in the JSON array; otherwise, -1.</returns>
+    public int IndexOf(JsonObjectNode value)
+        => store.IndexOf(value);
+
+    /// <summary>
+    /// Determines the index of a specific item in the JSON array.
+    /// </summary>
+    /// <param name="value">The object to locate in the JSON array.</param>
+    /// <returns>The index of item if found in the JSON array; otherwise, -1.</returns>
+    public int IndexOf(JsonArrayNode value)
+        => store.IndexOf(value);
+
+    /// <summary>
     /// Inserts null at the specific index.
     /// </summary>
     /// <param name="index">The zero-based index of the element to get.</param>
@@ -3465,7 +3481,7 @@ public class JsonArrayNode : IJsonContainerNode, IJsonDataNode, IReadOnlyList<IJ
     /// <returns>A collection of values of the specific JSON value kind.</returns>
     public IEnumerable<IJsonDataNode> Where(JsonValueKind kind, Func<IJsonDataNode, int, int, bool> predicate = null)
     {
-        if (predicate == null) predicate = PassTrue;
+        predicate ??= PassTrue;
         var i = -1;
         var j = -1;
         if (kind == JsonValueKind.Null || kind == JsonValueKind.Undefined)
