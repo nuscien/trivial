@@ -7,6 +7,7 @@ using System.Security;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Trivial.Text;
 
 namespace Trivial.IO;
 
@@ -364,6 +365,60 @@ public static class FileSystemInfoUtility
         if (size > 999) return (size / 1024.0).ToString("F1") + "K" + unit;
         return size.ToString() + unit;
     }
+
+#pragma warning disable IDE0057
+    /// <summary>
+    /// Gets the directory information instance by relative path.
+    /// </summary>
+    /// <param name="root">The root path.</param>
+    /// <param name="relative">The relative path.</param>
+    /// <returns>The directory.</returns>
+    public static DirectoryInfo GetDirectoryInfoByRelative(DirectoryInfo root, string relative)
+    {
+        if (string.IsNullOrEmpty(relative))
+            return root;
+        if (relative.EndsWith('/') || relative.EndsWith('\\'))
+            relative = relative.Substring(0, relative.Length - 1);
+        if (relative.Length < 1 || relative == "." || relative == "~")
+            return root;
+        if (relative.StartsWith("./") || relative.StartsWith(".\\"))
+            relative = relative.Substring(2);
+        while (relative.StartsWith("../") || relative.StartsWith("..\\"))
+        {
+            root = root.Parent;
+            relative = relative.Substring(3);
+        }
+
+        if (relative == "..")
+            return root.Parent;
+        return relative == "." ? root : TryGetDirectoryInfo(root.FullName, relative);
+    }
+
+    /// <summary>
+    /// Gets the file information instance by relative path.
+    /// </summary>
+    /// <param name="root">The root path.</param>
+    /// <param name="relative">The relative path.</param>
+    /// <returns>The file.</returns>
+    public static FileInfo GetFileInfoByRelative(DirectoryInfo root, string relative)
+    {
+        if (string.IsNullOrEmpty(relative))
+            return null;
+        if (relative.EndsWith('/') || relative.EndsWith('\\'))
+            relative = relative.Substring(0, relative.Length - 1);
+        if (relative.Length < 1 || relative == "." || relative == "~")
+            return null;
+        if (relative.StartsWith("./") || relative.StartsWith(".\\"))
+            relative = relative.Substring(2);
+        while (relative.StartsWith("../") || relative.StartsWith("..\\"))
+        {
+            root = root.Parent;
+            relative = relative.Substring(3);
+        }
+
+        return relative == ".." || relative == "." ? null : TryGetFileInfo(root.FullName, relative);
+    }
+#pragma warning restore IDE0057
 
     /// <summary>
     /// Gets the specific directory path.
