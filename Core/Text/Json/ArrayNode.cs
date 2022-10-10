@@ -1967,9 +1967,7 @@ public class JsonArrayNode : IJsonContainerNode, IJsonDataNode, IReadOnlyList<IJ
     /// <param name="index">The zero-based index of the element to get.</param>
     /// <exception cref="ArgumentOutOfRangeException">The index is out of range.</exception>
     public void Remove(int index)
-    {
-        store.RemoveAt(index);
-    }
+        => store.RemoveAt(index);
 
 #if !NETOLDVER
     /// <summary>
@@ -1978,9 +1976,7 @@ public class JsonArrayNode : IJsonContainerNode, IJsonDataNode, IReadOnlyList<IJ
     /// <param name="index">The zero-based index of the element to get.</param>
     /// <returns>The value.</returns>
     public IJsonDataNode TryGetValue(Index index)
-    {
-        return TryGetValue(index.IsFromEnd ? Count - index.Value : index.Value);
-    }
+        => TryGetValue(index.IsFromEnd ? Count - index.Value : index.Value);
 
     /// <summary>
     /// Tries to get the value at the specific index.
@@ -1989,9 +1985,7 @@ public class JsonArrayNode : IJsonContainerNode, IJsonDataNode, IReadOnlyList<IJ
     /// <param name="result">The result.</param>
     /// <returns>true if has the index and the type is the one expected; otherwise, false.</returns>
     public bool TryGetValue(Index index, out IJsonDataNode result)
-    {
-        return TryGetValue(index.IsFromEnd ? Count - index.Value : index.Value, out result);
-    }
+        => TryGetValue(index.IsFromEnd ? Count - index.Value : index.Value, out result);
 
     /// <summary>
     /// Removes the element at the specific index.
@@ -1999,9 +1993,7 @@ public class JsonArrayNode : IJsonContainerNode, IJsonDataNode, IReadOnlyList<IJ
     /// <param name="index">The zero-based index of the element to get.</param>
     /// <exception cref="ArgumentOutOfRangeException">The index is out of range.</exception>
     public void Remove(Index index)
-    {
-        store.RemoveAt(index.IsFromEnd ? store.Count - index.Value : index.Value);
-    }
+        => store.RemoveAt(index.IsFromEnd ? store.Count - index.Value : index.Value);
 #endif
 
     /// <summary>
@@ -2834,6 +2826,42 @@ public class JsonArrayNode : IJsonContainerNode, IJsonDataNode, IReadOnlyList<IJ
     /// </summary>
     /// <param name="values">An integer collection to add.</param>
     /// <returns>The count of item added.</returns>
+    public int AddRange(IEnumerable<long> values)
+    {
+        var count = 0;
+        if (values == null) return count;
+        foreach (var item in values)
+        {
+            store.Add(new JsonIntegerNode(item));
+            count++;
+        }
+
+        return count;
+    }
+
+    /// <summary>
+    /// Adds a collection of floating number.
+    /// </summary>
+    /// <param name="values">An floating number collection to add.</param>
+    /// <returns>The count of item added.</returns>
+    public int AddRange(IEnumerable<float> values)
+    {
+        var count = 0;
+        if (values == null) return count;
+        foreach (var item in values)
+        {
+            store.Add(new JsonDoubleNode(item));
+            count++;
+        }
+
+        return count;
+    }
+
+    /// <summary>
+    /// Adds a collection of floating number.
+    /// </summary>
+    /// <param name="values">An floating number collection to add.</param>
+    /// <returns>The count of item added.</returns>
     public int AddRange(IEnumerable<double> values)
     {
         var count = 0;
@@ -2841,6 +2869,24 @@ public class JsonArrayNode : IJsonContainerNode, IJsonDataNode, IReadOnlyList<IJ
         foreach (var item in values)
         {
             store.Add(new JsonDoubleNode(item));
+            count++;
+        }
+
+        return count;
+    }
+
+    /// <summary>
+    /// Adds a collection of boolean value.
+    /// </summary>
+    /// <param name="values">An boolean value collection to add.</param>
+    /// <returns>The count of item added.</returns>
+    public int AddRange(IEnumerable<bool> values)
+    {
+        var count = 0;
+        if (values == null) return count;
+        foreach (var item in values)
+        {
+            store.Add(new JsonBooleanNode(item));
             count++;
         }
 
@@ -3537,6 +3583,94 @@ public class JsonArrayNode : IJsonContainerNode, IJsonDataNode, IReadOnlyList<IJ
     {
         if (predicate == null) return store.Select(ele => ele ?? JsonValues.Null);
         return store.Select(ele => ele ?? JsonValues.Null).Where(predicate);
+    }
+
+    /// <summary>
+    /// Filters the elements of the JSON array based on a specific type.
+    /// </summary>
+    /// <typeparam name="T">The type to filter the element.</typeparam>
+    /// <returns>A collection that contains elements from the input sequence of the specific type.</returns>
+    public IEnumerable<T> OfType<T>()
+    {
+        var type = typeof(T);
+        var col = store.Where(ele => ele != null && ele.ValueKind != JsonValueKind.Null && ele.ValueKind != JsonValueKind.Undefined).ToList();
+        var list = new List<T>();
+        if (type == typeof(string))
+        {
+            foreach (var item in col)
+            {
+                if (item.TryGetString(out var r)) list.Add((T)(object)r);
+            }
+        }
+        else if (type == typeof(int))
+        {
+            foreach (var item in col)
+            {
+                if (item.ValueKind != JsonValueKind.True && item.ValueKind != JsonValueKind.False && item.TryGetInt32(out var r)) list.Add((T)(object)r);
+            }
+        }
+        else if (type == typeof(long))
+        {
+            foreach (var item in col)
+            {
+                if (item.ValueKind != JsonValueKind.True && item.ValueKind != JsonValueKind.False && item.TryGetInt64(out var r)) list.Add((T)(object)r);
+            }
+        }
+        else if (type == typeof(float))
+        {
+            foreach (var item in col)
+            {
+                if (item.ValueKind != JsonValueKind.True && item.ValueKind != JsonValueKind.False && item.TryGetSingle(out var r)) list.Add((T)(object)r);
+            }
+        }
+        else if (type == typeof(double))
+        {
+            foreach (var item in col)
+            {
+                if (item.ValueKind != JsonValueKind.True && item.ValueKind != JsonValueKind.False && item.TryGetDouble(out var r)) list.Add((T)(object)r);
+            }
+        }
+        else if (type == typeof(decimal))
+        {
+            foreach (var item in col)
+            {
+                if (item.ValueKind != JsonValueKind.True && item.ValueKind != JsonValueKind.False && item.TryGetDecimal(out var r)) list.Add((T)(object)r);
+            }
+        }
+        else if (type == typeof(bool))
+        {
+            foreach (var item in col)
+            {
+                if (item.TryGetBoolean(out var r)) list.Add((T)(object)r);
+            }
+        }
+        else if (type == typeof(uint))
+        {
+            foreach (var item in col)
+            {
+                if (item.TryGetUInt32(out var r)) list.Add((T)(object)r);
+            }
+        }
+        else if (type == typeof(Guid))
+        {
+            foreach (var item in col)
+            {
+                if (item.TryGetGuid(out var r)) list.Add((T)(object)r);
+            }
+        }
+        else if (type == typeof(JsonValueKind))
+        {
+            foreach (var item in store)
+            {
+                list.Add((T)(object)(item != null ? item.ValueKind : JsonValueKind.Undefined));
+            }
+        }
+        else
+        {
+            return store.OfType<T>();
+        }
+
+        return list;
     }
 
     /// <summary>

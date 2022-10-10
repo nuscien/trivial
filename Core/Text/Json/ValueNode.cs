@@ -975,6 +975,57 @@ public static class JsonValues
     }
 
     /// <summary>
+    /// Tries to get the value of the specific property for each object.
+    /// </summary>
+    /// <param name="col">The JSON object collection.</param>
+    /// <param name="key">The property key.</param>
+    /// <returns>The property list.</returns>
+    public static List<IJsonDataNode> TryGetValues(this IEnumerable<JsonObjectNode> col, string key)
+    {
+        var list = new List<IJsonDataNode>();
+        if (col == null) return list;
+        foreach (var item in col)
+        {
+            var json = item?.TryGetObjectValue(key);
+            list.Add(json ?? Undefined);
+        }
+
+        return list;
+    }
+
+    /// <summary>
+    /// Tries to get the value of the specific property for each object.
+    /// </summary>
+    /// <param name="col">The JSON object collection.</param>
+    /// <param name="key">The property key.</param>
+    /// <param name="ignoreNotMatched">true if ignore any item which is not JSON object; otherwise, false.</param>
+    /// <returns>The property list.</returns>
+    public static List<JsonObjectNode> TryGetObjectValues(this IEnumerable<JsonObjectNode> col, string key, bool ignoreNotMatched = false)
+    {
+        var list = new List<JsonObjectNode>();
+        if (col == null) return list;
+        if (ignoreNotMatched)
+        {
+            foreach (var item in col)
+            {
+                var json = item?.TryGetObjectValue(key);
+                if (json == null) continue;
+                list.Add(json);
+            }
+        }
+        else
+        {
+            foreach (var item in col)
+            {
+                var json = item?.TryGetObjectValue(key);
+                list.Add(json);
+            }
+        }
+
+        return list;
+    }
+
+    /// <summary>
     /// Compares two instances to indicate if they are same.
     /// leftValue == rightValue
     /// </summary>

@@ -333,6 +333,12 @@ public class JsonUnitTest
         };
         jArr.AddNull();
         jArr.Add(1234);
+        Assert.AreEqual(4, jArr.OfType<string>().Count());
+        Assert.AreEqual("true", jArr.OfType<string>().ToList()[1]);
+        Assert.AreEqual(1, jArr.OfType<long>().Count());
+        Assert.AreEqual(0, jArr.OfType<JsonObjectNode>().Count());
+        Assert.AreEqual(2, jArr.OfType<IJsonStringNode>().Count());
+        Assert.AreEqual("defg", jArr.OfType<IJsonStringNode>().ToList()[1].StringValue);
         var jObj = new JsonObjectNode();
         jObj.SetValue("hijk", jArr);
         jObj.SetValue("lmn", "opq");

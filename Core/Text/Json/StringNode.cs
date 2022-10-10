@@ -65,9 +65,33 @@ public class JsonStringNode : IJsonStringNode, IJsonValueNode<string>, IJsonData
     /// Initializes a new instance of the JsonString class.
     /// </summary>
     /// <param name="value">The value.</param>
+    /// <param name="format">A standard or custom date and time format string.</param>
+    public JsonStringNode(DateTime value, string format)
+    {
+        Value = value.ToString(format);
+        ValueKind = JsonValueKind.String;
+        ValueType = 1;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the JsonString class.
+    /// </summary>
+    /// <param name="value">The value.</param>
     public JsonStringNode(DateTimeOffset value)
     {
         Value = value.ToString("yyyy-MM-ddTHH:mm:ss.fffzzz");
+        ValueKind = JsonValueKind.String;
+        ValueType = 1;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the JsonString class.
+    /// </summary>
+    /// <param name="value">The value.</param>
+    /// <param name="format">A standard or custom date and time format string.</param>
+    public JsonStringNode(DateTimeOffset value, string format)
+    {
+        Value = value.ToString(format);
         ValueKind = JsonValueKind.String;
         ValueType = 1;
     }
@@ -130,6 +154,15 @@ public class JsonStringNode : IJsonStringNode, IJsonValueNode<string>, IJsonData
     /// </summary>
     /// <param name="value">The value.</param>
     public JsonStringNode(TimeSpan value) : this(value.ToString("c"))
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the JsonString class.
+    /// </summary>
+    /// <param name="value">The value.</param>
+    /// <param name="format">A standard or custom time span format string.</param>
+    public JsonStringNode(TimeSpan value, string format) : this(value.ToString(format))
     {
     }
 
@@ -241,7 +274,7 @@ public class JsonStringNode : IJsonStringNode, IJsonValueNode<string>, IJsonData
     /// Initializes a new instance of the JsonString class.
     /// </summary>
     /// <param name="value">The value.</param>
-    public JsonStringNode(Maths.Fraction value) : this(value.ToString())
+    public JsonStringNode(Fraction value) : this(value.ToString())
     {
     }
 
@@ -558,6 +591,94 @@ public class JsonStringNode : IJsonStringNode, IJsonValueNode<string>, IJsonData
     }
 
     /// <summary>
+    /// Reports the zero-based index of the first occurrence of the specified string in this instance. The search starts at a specified character position.
+    /// </summary>
+    /// <param name="value">The string to seek.</param>
+    /// <param name="start">The search starting position.</param>
+    /// <returns>The zero-based index position of value from the start of the current instance if that string is found, or -1 if it is not.</returns>
+    /// <exception cref="ArgumentNullException">value is null.</exception>
+    /// <exception cref="ArgumentOutOfRangeException">startIndex is less than 0 (zero) or greater than the length of this string.</exception>
+    public int IndexOf(string value, int start = 0)
+        => Value?.IndexOf(value, start) ?? (value == null ? string.Empty.IndexOf(value) : -1);
+
+    /// <summary>
+    /// Reports the zero-based index of the first occurrence of the specified string in this instance. The search starts at a specified character position.
+    /// </summary>
+    /// <param name="value">The string to seek.</param>
+    /// <param name="start">The search starting position.</param>
+    /// <param name="count">The number of character positions to examine.</param>
+    /// <returns>count or startIndex is negative. -or- startIndex is greater than the length of this string. -or- count is greater than the length of this string minus start index.</returns>
+    /// <exception cref="ArgumentNullException">value is null.</exception>
+    /// <exception cref="ArgumentOutOfRangeException">startIndex is less than 0 (zero) or greater than the length of this string.</exception>
+    public int IndexOf(string value, int start, int count)
+        => Value?.IndexOf(value, start, count) ?? (value == null ? string.Empty.IndexOf(value) : -1);
+
+    /// <summary>
+    /// Reports the zero-based index of the first occurrence of the specified character in this instance. The search starts at a specified character position.
+    /// </summary>
+    /// <param name="value">The string to seek.</param>
+    /// <param name="start">The search starting position.</param>
+    /// <returns>The zero-based index position of value from the start of the current instance if that string is found, or -1 if it is not.</returns>
+    /// <exception cref="ArgumentOutOfRangeException">startIndex is less than 0 (zero) or greater than the length of this string.</exception>
+    public int IndexOf(char value, int start = 0)
+        => Value?.IndexOf(value, start) ?? -1;
+
+    /// <summary>
+    /// Reports the zero-based index of the first occurrence of the specified character in this instance. The search starts at a specified character position.
+    /// </summary>
+    /// <param name="value">The string to seek.</param>
+    /// <param name="start">The search starting position.</param>
+    /// <param name="count">The number of character positions to examine.</param>
+    /// <returns>count or startIndex is negative. -or- startIndex is greater than the length of this string. -or- count is greater than the length of this string minus start index.</returns>
+    /// <exception cref="ArgumentOutOfRangeException">startIndex is less than 0 (zero) or greater than the length of this string.</exception>
+    public int IndexOf(char value, int start, int count)
+        => Value?.IndexOf(value, start, count) ?? -1;
+
+    /// <summary>
+    /// Reports the zero-based index position of the last occurrence of a specified string within this instance. The search starts at a specified character position and proceeds backward toward the beginning of the string.
+    /// </summary>
+    /// <param name="value">The string to seek.</param>
+    /// <param name="start">The search starting position.</param>
+    /// <returns>The zero-based index position of value from the start of the current instance if that string is found, or -1 if it is not.</returns>
+    /// <exception cref="ArgumentNullException">value is null.</exception>
+    /// <exception cref="ArgumentOutOfRangeException">startIndex is less than 0 (zero) or greater than the length of this string.</exception>
+    public int LastIndexOf(string value, int start = 0)
+        => Value?.LastIndexOf(value, start) ?? (value == null ? string.Empty.LastIndexOf(value) : -1);
+
+    /// <summary>
+    /// Reports the zero-based index position of the last occurrence of a specified string within this instance. The search starts at a specified character position and proceeds backward toward the beginning of the string.
+    /// </summary>
+    /// <param name="value">The string to seek.</param>
+    /// <param name="start">The search starting position.</param>
+    /// <param name="count">The number of character positions to examine.</param>
+    /// <returns>count or startIndex is negative. -or- startIndex is greater than the length of this string. -or- count is greater than the length of this string minus start index.</returns>
+    /// <exception cref="ArgumentNullException">value is null.</exception>
+    /// <exception cref="ArgumentOutOfRangeException">startIndex is less than 0 (zero) or greater than the length of this string.</exception>
+    public int LastIndexOf(string value, int start, int count)
+        => Value?.LastIndexOf(value, start, count) ?? (value == null ? string.Empty.LastIndexOf(value) : -1);
+
+    /// <summary>
+    /// Reports the zero-based index position of the last occurrence of a specified character within this instance. The search starts at a specified character position and proceeds backward toward the beginning of the string.
+    /// </summary>
+    /// <param name="value">The string to seek.</param>
+    /// <param name="start">The search starting position.</param>
+    /// <returns>The zero-based index position of value from the start of the current instance if that string is found, or -1 if it is not.</returns>
+    /// <exception cref="ArgumentOutOfRangeException">startIndex is less than 0 (zero) or greater than the length of this string.</exception>
+    public int LastIndexOf(char value, int start = 0)
+        => Value?.LastIndexOf(value, start) ?? -1;
+
+    /// <summary>
+    /// Reports the zero-based index position of the last occurrence of a specified character within this instance. The search starts at a specified character position and proceeds backward toward the beginning of the string.
+    /// </summary>
+    /// <param name="value">The string to seek.</param>
+    /// <param name="start">The search starting position.</param>
+    /// <param name="count">The number of character positions to examine.</param>
+    /// <returns>count or startIndex is negative. -or- startIndex is greater than the length of this string. -or- count is greater than the length of this string minus start index.</returns>
+    /// <exception cref="ArgumentOutOfRangeException">startIndex is less than 0 (zero) or greater than the length of this string.</exception>
+    public int LastIndexOf(char value, int start, int count)
+        => Value?.LastIndexOf(value, start, count) ?? -1;
+
+    /// <summary>
     /// Retrieves a substring from this instance. The substring starts at a specified character position and has a specified length.
     /// </summary>
     /// <param name="startIndex">The zero-based starting character position of a substring in this instance.</param>
@@ -659,6 +780,10 @@ public class JsonStringNode : IJsonStringNode, IJsonValueNode<string>, IJsonData
         if (other is IJsonStringNode strJson) return Value.Equals(strJson.StringValue);
         if (other is IJsonValueNode vJson) return ToString().Equals(vJson.ToString(), StringComparison.InvariantCulture);
         if (other is StringBuilder sb) return Value.Equals(sb.ToString());
+        if (other is int i) return TryGetInt32(out var i2) && i == i2;
+        if (other is long i3) return TryGetInt64(out var i4) && i3 == i4;
+        if (other is DateTime dt) return TryGetDateTime(out var dt2) && dt == dt2;
+        if (other is bool b) return TryGetBoolean(out var b2) && b == b2;
         return Value.Equals(other);
     }
 
@@ -771,13 +896,13 @@ public class JsonStringNode : IJsonStringNode, IJsonValueNode<string>, IJsonData
         switch (ValueType)
         {
             case 2:
-                if (long.TryParse(s, out var l)) return Web.WebFormat.ParseDate(l);
+                if (long.TryParse(s, out var l)) return WebFormat.ParseDate(l);
                 break;
             default:
                 break;
         }
 
-        var date = Web.WebFormat.ParseDate(s);
+        var date = WebFormat.ParseDate(s);
         if (date.HasValue) return date.Value;
         throw new FormatException("The string is not JSON date format.");
     }

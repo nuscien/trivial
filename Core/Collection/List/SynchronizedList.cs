@@ -811,6 +811,36 @@ public class SynchronizedList<T> : IList<T>, ICloneable
         Changed?.Invoke(this, new ChangeEventArgs<T>(old, value, ChangeMethods.Update, index));
     }
 
+    /// <summary>
+    /// Replaces an item to a new one. Only the first one will be replaced. No action if the old item does not exist.
+    /// </summary>
+    /// <param name="oldItem">The old item to remove.</param>
+    /// <param name="newItem">The new item to update.</param>
+    /// <returns>true if replace succeeded; otherwise, false, e.g. the old item does not exist.</returns>
+    public bool Replace(T oldItem, T newItem)
+    {
+        if (ReferenceEquals(oldItem, newItem)) return true;
+        var i = -1;
+        slim.EnterWriteLock();
+        try
+        {
+            if (Changed != null) i = list.IndexOf(oldItem);
+            if (!list.Remove(oldItem)) return false;
+            list.Insert(i, newItem);
+        }
+        catch (ArgumentOutOfRangeException)
+        {
+            return false;
+        }
+        finally
+        {
+            slim.ExitWriteLock();
+        }
+
+        if (i >= 0) Changed?.Invoke(this, new ChangeEventArgs<T>(oldItem, newItem, ChangeMethods.Update, i));
+        return true;
+    }
+
     /// <inheritdoc />
     public bool Remove(T item)
     {

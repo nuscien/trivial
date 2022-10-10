@@ -386,6 +386,8 @@ public class JsonIntegerNode : IJsonValueNode<long>, IJsonDataNode, IJsonNumberN
             return ToString().Equals(other.ToString(), StringComparison.InvariantCultureIgnoreCase);
         }
 
+        if (other is string s) return Maths.Numbers.TryParseToInt64(s, 10, out var i) && Value == i;
+        if (other is DateTime dt) return WebFormat.ParseDate(Value) == dt;
         return Value.Equals(other);
     }
 
