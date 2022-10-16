@@ -45,10 +45,7 @@ public static class HashUtility
     /// <param name="encoding">The text encoding.</param>
     /// <returns>A hash string value of the given string; or null, if h or input is null.</returns>
     public static byte[] ComputeHash(this HashAlgorithm alg, SecureString secureString, Encoding encoding = null)
-    {
-        // Return the hash bytes.
-        return ComputeHash(alg, secureString, encoding);
-    }
+        => ComputeHash(alg, secureString, encoding);
 
     /// <summary>
     /// Computes a hash string value of a specific string instance.
@@ -258,10 +255,7 @@ public static class HashUtility
     /// <returns>A hash string value of the given string.</returns>
     [Obsolete("SHA-1 is no longer considered secure. Please use SHA-512 or other better one instead.")]
     public static string ComputeSHA1String(string plainText, Encoding encoding = null)
-    {
-        // Create a new instance of the SHA512CryptoServiceProvider object.
-        return ComputeHashString(SHA1.Create, plainText, encoding);
-    }
+        => ComputeHashString(SHA1.Create, plainText, encoding);
 
     /// <summary>
     /// Computes a SHA-512 (of SHA-2 family) hash string value of a specific string instance.
@@ -269,10 +263,7 @@ public static class HashUtility
     /// <param name="plainText">The original input value to get hash.</param>
     /// <returns>A hash string value of the given string.</returns>
     public static string ComputeSHA512String(byte[] plainText)
-    {
-        // Create a new instance of the SHA-512 crypto service provider object.
-        return ComputeHashString(SHA512.Create, plainText);
-    }
+        => ComputeHashString(SHA512.Create, plainText);
 
     /// <summary>
     /// Computes a SHA-512 (of SHA-2 family) hash string value of a specific string instance.
@@ -281,10 +272,7 @@ public static class HashUtility
     /// <param name="encoding">The text encoding.</param>
     /// <returns>A hash string value of the given string.</returns>
     public static string ComputeSHA512String(string plainText, Encoding encoding = null)
-    {
-        // Create a new instance of the SHA-512 crypto service provider object.
-        return ComputeHashString(SHA512.Create, plainText, encoding);
-    }
+        => ComputeHashString(SHA512.Create, plainText, encoding);
 
     /// <summary>
     /// Computes a SHA-512 (of SHA-2 family) hash string value of a specific string instance.
@@ -293,10 +281,7 @@ public static class HashUtility
     /// <param name="encoding">The text encoding.</param>
     /// <returns>A hash string value of the given string.</returns>
     public static string ComputeSHA512String(SecureString secureString, Encoding encoding = null)
-    {
-        // Create a new instance of the SHA-512 crypto service provider object.
-        return ComputeHashString(SHA512.Create, secureString, encoding);
-    }
+        => ComputeHashString(SHA512.Create, secureString, encoding);
 
     /// <summary>
     /// Computes a SHA-3-512 hash string value of a specific string instance.
@@ -305,10 +290,7 @@ public static class HashUtility
     /// <param name="encoding">The text encoding.</param>
     /// <returns>A hash string value of the given string.</returns>
     public static string ComputeSHA3512String(string plainText, Encoding encoding = null)
-    {
-        // Create a new instance of the SHA-3-512 crypto service provider object.
-        return ComputeHashString(SHA3Managed.Create512, plainText, encoding);
-    }
+        => ComputeHashString(SHA3Managed.Create512, plainText, encoding);
 
     /// <summary>
     /// Computes a SHA-3-512 hash string value of a specific string instance.
@@ -317,10 +299,7 @@ public static class HashUtility
     /// <param name="encoding">The text encoding.</param>
     /// <returns>A hash string value of the given string.</returns>
     public static string ComputeSHA3512String(SecureString secureString, Encoding encoding = null)
-    {
-        // Create a new instance of the SHA-3-512 crypto service provider object.
-        return ComputeHashString(SHA3Managed.Create512, secureString, encoding);
-    }
+        => ComputeHashString(SHA3Managed.Create512, secureString, encoding);
 
     /// <summary>
     /// Computes a SHA-3-512 hash string value of a specific string instance.
@@ -328,10 +307,7 @@ public static class HashUtility
     /// <param name="plainText">The original input value to get hash.</param>
     /// <returns>A hash string value of the given string.</returns>
     public static string ComputeSHA3512String(byte[] plainText)
-    {
-        // Create a new instance of the SHA-3-512 crypto service provider object.
-        return ComputeHashString(SHA3Managed.Create512, plainText);
-    }
+        => ComputeHashString(SHA3Managed.Create512, plainText);
 
     /// <summary>
     /// Verifies a hash against a string.
@@ -342,12 +318,9 @@ public static class HashUtility
     /// <param name="encoding">The text encoding.</param>
     /// <returns>true if hash is a hash value of input; otherwise, false.</returns>
     public static bool Verify(this HashAlgorithm alg, string plainText, string hash, Encoding encoding = null)
-    {
-        // Return the result after StringComparer comparing.
-        return alg != null ?
+        => alg != null ?
             StringComparer.OrdinalIgnoreCase.Equals(ComputeHashString(alg, plainText, encoding), hash) :
             (string.IsNullOrEmpty(hash) || StringComparer.OrdinalIgnoreCase.Equals(plainText, hash));
-    }
 
     /// <summary>
     /// Verifies a hash against a string.
@@ -358,9 +331,7 @@ public static class HashUtility
     /// <param name="encoding">The text encoding.</param>
     /// <returns>true if hash is a hash value of input; otherwise, false.</returns>
     public static bool Verify(this HashAlgorithm alg, SecureString secureString, string hash, Encoding encoding = null)
-    {
-        return Verify(alg, secureString.ToUnsecureString(), hash, encoding);
-    }
+        => Verify(alg, secureString.ToUnsecureString(), hash, encoding);
 
     /// <summary>
     /// Verifies a hash against a byte array.
@@ -371,12 +342,9 @@ public static class HashUtility
     /// <param name="encoding">The text encoding.</param>
     /// <returns>true if hash is a hash value of input; otherwise, false.</returns>
     public static bool Verify(this HashAlgorithm alg, string plainText, byte[] hash, Encoding encoding = null)
-    {
-        // Return the result after StringComparer comparing.
-        return alg != null ?
+        => alg != null ?
             StringComparer.OrdinalIgnoreCase.Equals(ComputeHash(alg, plainText, encoding), hash) :
             (hash == null || hash.Length == 0);
-    }
 
     /// <summary>
     /// Verifies a hash against a byte array.
@@ -387,10 +355,7 @@ public static class HashUtility
     /// <param name="encoding">The text encoding.</param>
     /// <returns>true if hash is a hash value of input; otherwise, false.</returns>
     public static bool Verify(this HashAlgorithm alg, SecureString secureString, byte[] hash, Encoding encoding = null)
-    {
-        return Verify(alg, secureString.ToUnsecureString(), hash, encoding);
-    }
-
+        => Verify(alg, secureString.ToUnsecureString(), hash, encoding);
 
     /// <summary>
     /// Verifies a hash against a bytes.
@@ -400,12 +365,9 @@ public static class HashUtility
     /// <param name="hash">A hash string for comparing.</param>
     /// <returns>true if hash is a hash value of input; otherwise, false.</returns>
     public static bool Verify(this HashAlgorithm alg, byte[] input, string hash)
-    {
-        // Return the result after StringComparer comparing.
-        return alg != null ?
+        => alg != null ?
             StringComparer.OrdinalIgnoreCase.Equals(ComputeHashString(alg, input), hash) :
             string.IsNullOrEmpty(hash);
-    }
 
     /// <summary>
     /// Verifies a hash against a bytes.
@@ -415,12 +377,9 @@ public static class HashUtility
     /// <param name="hash">A hash bytes for comparing.</param>
     /// <returns>true if hash is a hash value of input; otherwise, false.</returns>
     public static bool Verify(this HashAlgorithm alg, byte[] input, byte[] hash)
-    {
-        // Return the result after StringComparer comparing.
-        return alg != null ?
+        => alg != null ?
             Collection.ListExtensions.Equals(alg.ComputeHash(input), hash) :
             (hash == null || hash.Length == 0);
-    }
 
     /// <summary>
     /// Verifies a hash against a string.
@@ -431,12 +390,9 @@ public static class HashUtility
     /// <param name="encoding">The text encoding.</param>
     /// <returns>true if hash is a hash value of input; otherwise, false.</returns>
     public static bool Verify<T>(Func<T> h, string plainText, string hash, Encoding encoding = null) where T : HashAlgorithm
-    {
-        // Return the result after StringComparer comparing.
-        return h != null ?
+        => h != null ?
             StringComparer.OrdinalIgnoreCase.Equals(ComputeHashString(h, plainText, encoding), hash) :
             (string.IsNullOrEmpty(hash) || StringComparer.OrdinalIgnoreCase.Equals(plainText, hash));
-    }
 
     /// <summary>
     /// Verifies a hash against a string.
@@ -446,12 +402,9 @@ public static class HashUtility
     /// <param name="hash">A hash string for comparing.</param>
     /// <returns>true if hash is a hash value of input; otherwise, false.</returns>
     public static bool Verify(Func<string, string> alg, string plainText, string hash)
-    {
-        // Return the result after StringComparer comparing.
-        return alg != null ?
+        => alg != null ?
             StringComparer.OrdinalIgnoreCase.Equals(alg(plainText), hash) :
             (string.IsNullOrEmpty(hash) || StringComparer.OrdinalIgnoreCase.Equals(plainText, hash));
-    }
 
     /// <summary>
     /// Verifies a hash against a string.
@@ -462,10 +415,7 @@ public static class HashUtility
     /// <param name="encoding">The text encoding.</param>
     /// <returns>true if hash is a hash value of input; otherwise, false.</returns>
     public static bool Verify(HashAlgorithmName name, string plainText, string hash, Encoding encoding = null)
-    {
-        // Return the result after StringComparer comparing.
-        return StringComparer.OrdinalIgnoreCase.Equals(ComputeHashString(name, plainText, encoding), hash);
-    }
+        => StringComparer.OrdinalIgnoreCase.Equals(ComputeHashString(name, plainText, encoding), hash);
 
     /// <summary>
     /// Verifies a hash against a string.
@@ -476,9 +426,7 @@ public static class HashUtility
     /// <param name="encoding">The text encoding.</param>
     /// <returns>true if hash is a hash value of input; otherwise, false.</returns>
     public static bool Verify(HashAlgorithmName name, SecureString secureString, string hash, Encoding encoding = null)
-    {
-        return Verify(name, secureString.ToUnsecureString(), hash, encoding);
-    }
+        => Verify(name, secureString.ToUnsecureString(), hash, encoding);
 
     /// <summary>
     /// Verifies a SHA-1 hash against a string.
@@ -489,10 +437,7 @@ public static class HashUtility
     /// <returns>true if hash is a hash value of input; otherwise, false.</returns>
     [Obsolete("SHA-1 is no longer considered secure.")]
     public static bool VerifySHA1(string plainText, string hash, Encoding encoding = null)
-    {
-        // Return the result after StringComparer comparing.
-        return StringComparer.OrdinalIgnoreCase.Equals(ComputeSHA1String(plainText, encoding), hash);
-    }
+        => StringComparer.OrdinalIgnoreCase.Equals(ComputeSHA1String(plainText, encoding), hash);
 
     /// <summary>
     /// Verifies a SHA-512 (of SHA-2 family) hash against a string.
@@ -502,10 +447,7 @@ public static class HashUtility
     /// <param name="encoding">The text encoding.</param>
     /// <returns>true if hash is a hash value of input; otherwise, false.</returns>
     public static bool VerifySHA512(string plainText, string hash, Encoding encoding = null)
-    {
-        // Return the result after StringComparer comparing.
-        return StringComparer.OrdinalIgnoreCase.Equals(ComputeSHA512String(plainText, encoding), hash);
-    }
+        => StringComparer.OrdinalIgnoreCase.Equals(ComputeSHA512String(plainText, encoding), hash);
 
     /// <summary>
     /// Verifies a SHA-512 (of SHA-2 family) hash against a string.
@@ -515,10 +457,7 @@ public static class HashUtility
     /// <param name="encoding">The text encoding.</param>
     /// <returns>true if hash is a hash value of input; otherwise, false.</returns>
     public static bool VerifySHA512(SecureString secureString, string hash, Encoding encoding = null)
-    {
-        // Return the result after StringComparer comparing.
-        return StringComparer.OrdinalIgnoreCase.Equals(ComputeSHA512String(secureString, encoding), hash);
-    }
+        => StringComparer.OrdinalIgnoreCase.Equals(ComputeSHA512String(secureString, encoding), hash);
 
     /// <summary>
     /// Verifies a SHA-512 (of SHA-2 family) hash against a string.
@@ -527,10 +466,7 @@ public static class HashUtility
     /// <param name="hash">A hash string for comparing.</param>
     /// <returns>true if hash is a hash value of input; otherwise, false.</returns>
     public static bool VerifySHA512(byte[] plainText, string hash)
-    {
-        // Return the result after StringComparer comparing.
-        return StringComparer.OrdinalIgnoreCase.Equals(ComputeSHA512String(plainText), hash);
-    }
+        => StringComparer.OrdinalIgnoreCase.Equals(ComputeSHA512String(plainText), hash);
 
     /// <summary>
     /// Verifies a SHA-3-512 hash against a string.
@@ -540,10 +476,7 @@ public static class HashUtility
     /// <param name="encoding">The text encoding.</param>
     /// <returns>true if hash is a hash value of input; otherwise, false.</returns>
     public static bool VerifySHA3512(string plainText, string hash, Encoding encoding = null)
-    {
-        // Return the result after StringComparer comparing.
-        return StringComparer.OrdinalIgnoreCase.Equals(ComputeSHA3512String(plainText, encoding), hash);
-    }
+        => StringComparer.OrdinalIgnoreCase.Equals(ComputeSHA3512String(plainText, encoding), hash);
 
     /// <summary>
     /// Verifies a SHA-3-512 hash against a string.
@@ -553,10 +486,7 @@ public static class HashUtility
     /// <param name="encoding">The text encoding.</param>
     /// <returns>true if hash is a hash value of input; otherwise, false.</returns>
     public static bool VerifySHA3512(SecureString secureString, string hash, Encoding encoding = null)
-    {
-        // Return the result after StringComparer comparing.
-        return StringComparer.OrdinalIgnoreCase.Equals(ComputeSHA3512String(secureString, encoding), hash);
-    }
+        => StringComparer.OrdinalIgnoreCase.Equals(ComputeSHA3512String(secureString, encoding), hash);
 
     /// <summary>
     /// Verifies a SHA-3-512 hash against a string.
@@ -565,10 +495,7 @@ public static class HashUtility
     /// <param name="hash">A hash string for comparing.</param>
     /// <returns>true if hash is a hash value of input; otherwise, false.</returns>
     public static bool VerifySHA3512(byte[] plainText, string hash)
-    {
-        // Return the result after StringComparer comparing.
-        return StringComparer.OrdinalIgnoreCase.Equals(ComputeSHA3512String(plainText), hash);
-    }
+        => StringComparer.OrdinalIgnoreCase.Equals(ComputeSHA3512String(plainText), hash);
 
     /// <summary>
     /// Computes the signature for the specified hash value.
@@ -578,7 +505,5 @@ public static class HashUtility
     /// <param name="encoding">The text encoding.</param>
     /// <returns>The signature for the specified hash value.</returns>
     public static byte[] Sign(this ISignatureProvider sign, string value, Encoding encoding = null)
-    {
-        return sign.Sign((encoding ?? Encoding.UTF8).GetBytes(value));
-    }
+        => sign.Sign((encoding ?? Encoding.UTF8).GetBytes(value));
 }

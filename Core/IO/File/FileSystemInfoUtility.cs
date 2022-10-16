@@ -628,6 +628,71 @@ public static class FileSystemInfoUtility
     /// Gets the directory information instance of the sub-folder.
     /// </summary>
     /// <param name="dir">The directory information.</param>
+    /// <param name="fileName">The file name.</param>
+    /// <returns>The directory information instance; or null, if accesses failed.</returns>
+    public static FileInfo TryGetFileInfo(DirectoryInfo dir, string fileName)
+    {
+        if (string.IsNullOrEmpty(fileName)) return null;
+        try
+        {
+            if (dir == null || !dir.Exists) return null;
+            return dir.EnumerateFiles(fileName).FirstOrDefault(ele => fileName.Equals(ele.Name, StringComparison.OrdinalIgnoreCase));
+        }
+        catch (UnauthorizedAccessException)
+        {
+        }
+        catch (IOException)
+        {
+        }
+        catch (ArgumentException)
+        {
+        }
+        catch (NotSupportedException)
+        {
+        }
+        catch (SecurityException)
+        {
+        }
+        catch (InvalidOperationException)
+        {
+        }
+        catch (ExternalException)
+        {
+        }
+
+        try
+        {
+            return TryGetFileInfo(dir.FullName, fileName);
+        }
+        catch (UnauthorizedAccessException)
+        {
+        }
+        catch (IOException)
+        {
+        }
+        catch (ArgumentException)
+        {
+        }
+        catch (NotSupportedException)
+        {
+        }
+        catch (SecurityException)
+        {
+        }
+        catch (InvalidOperationException)
+        {
+        }
+        catch (ExternalException)
+        {
+        }
+
+        return null;
+    }
+
+    /// <summary>
+    /// Gets the directory information instance of the sub-folder.
+    /// </summary>
+    /// <param name="dir">The directory information.</param>
     /// <param name="folderName">The folder name.</param>
     /// <returns>The directory information instance; or null, if accesses failed.</returns>
     public static DirectoryInfo TryGetSubDirectory(DirectoryInfo dir, string folderName)
@@ -660,7 +725,33 @@ public static class FileSystemInfoUtility
         {
         }
 
-        return TryGetDirectoryInfo(dir.FullName, folderName);
+        try
+        {
+            return TryGetDirectoryInfo(dir.FullName, folderName);
+        }
+        catch (UnauthorizedAccessException)
+        {
+        }
+        catch (IOException)
+        {
+        }
+        catch (ArgumentException)
+        {
+        }
+        catch (NotSupportedException)
+        {
+        }
+        catch (SecurityException)
+        {
+        }
+        catch (InvalidOperationException)
+        {
+        }
+        catch (ExternalException)
+        {
+        }
+
+        return null;
     }
 
     /// <summary>

@@ -91,7 +91,5 @@ public class PasswordChanging
     /// </summary>
     /// <returns>The chagne event argument object.</returns>
     public ChangeEventArgs<SecureString> ToChangeEventArgs()
-    {
-        return new ChangeEventArgs<SecureString>(OldPassword, NewPassword, "password", true);
-    }
+        => new ChangeEventArgs<SecureString>(OldPassword, NewPassword, "password", true);
 }

@@ -9,34 +9,24 @@ namespace Trivial.Security;
 /// Managed SHA-3 family hash algorithm.
 /// </summary>
 /// <remarks>
-/// Note: Will be replaced by the .NET built-in implementation when available.
+/// Note: Will remove when the .NET built-in implementation is available.
 /// </remarks>
 internal class SHA3Managed : HashAlgorithm
 {
     public static new SHA3Managed Create()
-    {
-        return new SHA3Managed(512);
-    }
+        => new(512);
 
     public static SHA3Managed Create224()
-    {
-        return new SHA3Managed(224);
-    }
+        => new(224);
 
     public static SHA3Managed Create256()
-    {
-        return new SHA3Managed(256);
-    }
+        => new(256);
 
     public static SHA3Managed Create384()
-    {
-        return new SHA3Managed(384);
-    }
+        => new(384);
 
     public static SHA3Managed Create512()
-    {
-        return new SHA3Managed(512);
-    }
+        => new(512);
 
     public const int KeccakB = 1600;
     public const int KeccakNumberOfRounds = 24;
@@ -140,7 +130,7 @@ internal class SHA3Managed : HashAlgorithm
         if (cbSize == 0) return;
 
         var sizeInBytes = SizeInBytes;
-        if (buffer == null) buffer = new byte[sizeInBytes];
+        buffer ??= new byte[sizeInBytes];
         var stride = sizeInBytes >> 3;
         var utemps = new ulong[stride];
         if (buffLength == sizeInBytes) throw new InvalidOperationException("Unexpected error that the internal buffer is full.");

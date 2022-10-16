@@ -111,6 +111,18 @@ public class JsonStringNode : IJsonStringNode, IJsonValueNode<string>, IJsonData
     /// Initializes a new instance of the JsonString class.
     /// </summary>
     /// <param name="value">The value.</param>
+    /// <param name="format">A standard or custom GUID format string.</param>
+    public JsonStringNode(Guid value, string format)
+    {
+        Value = value.ToString(format);
+        ValueKind = JsonValueKind.String;
+        ValueType = 4;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the JsonString class.
+    /// </summary>
+    /// <param name="value">The value.</param>
     public JsonStringNode(Uri value)
     {
         Value = value.OriginalString;
@@ -164,6 +176,15 @@ public class JsonStringNode : IJsonStringNode, IJsonValueNode<string>, IJsonData
     /// <param name="format">A standard or custom time span format string.</param>
     public JsonStringNode(TimeSpan value, string format) : this(value.ToString(format))
     {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the JsonString class.
+    /// </summary>
+    /// <param name="value">The value.</param>
+    public JsonStringNode(short value) : this(value.ToString("g", CultureInfo.InvariantCulture))
+    {
+        ValueType = 2;
     }
 
     /// <summary>
