@@ -2510,14 +2510,11 @@ public class JsonArrayNode : IJsonContainerNode, IJsonDataNode, IReadOnlyList<IJ
     /// </summary>
     /// <param name="oldValue">The old value.</param>
     /// <param name="newValue">The new value.</param>
+    /// <param name="onlyFirst">true if replace first only; otherwise, false.</param>
     /// <returns>The count of item replaced.</returns>
-    public int ReplaceValue(JsonObjectNode oldValue, JsonObjectNode newValue)
+    public int ReplaceValue(JsonObjectNode oldValue, JsonObjectNode newValue, bool onlyFirst = false)
     {
-        if (store is SynchronizedList<IJsonDataNode> syncList) return syncList.Replace((item, i) =>
-        {
-            return ReferenceEquals(item, oldValue) ? newValue : item;
-        });
-
+        if (store is SynchronizedList<IJsonDataNode> syncList) return onlyFirst ? syncList.Replace(oldValue, newValue, 1) : syncList.Replace(oldValue, newValue);
         if (ReferenceEquals(oldValue, newValue)) return 0;
         var count = -1;
         try
@@ -2528,6 +2525,7 @@ public class JsonArrayNode : IJsonContainerNode, IJsonDataNode, IReadOnlyList<IJ
                 if (!ObjectRef<IJsonDataNode>.ReferenceEquals(test, oldValue)) continue;
                 store[i] = newValue;
                 count++;
+                if (onlyFirst) break;
             }
         }
         catch (ArgumentOutOfRangeException)

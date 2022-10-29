@@ -141,6 +141,11 @@ public class JsonUnitTest
         Assert.AreEqual(JsonValueKind.Array, json["dot.net"].ValueKind);
         Assert.AreEqual("e", json.TryGetValue("[dot.net][1]['.[][][]....\\\"\\\'\\\\.'][1]", true).GetString());
         Assert.AreEqual(4, json.TryGetValue("'dot.net'.1.\".[][][]....\\\"\\\'\\\\.\".length", true).GetInt32());
+        json.GetArrayValue("dot.net").ReplaceValue(json.GetArrayValue("dot.net").GetObjectValue(1), new JsonObjectNode
+        {
+            { "then", "true" }
+        });
+        Assert.IsTrue(json.TryGetBooleanValue(new[] { "dot.net", "1", "then" }));
         json.Remove("dot.net");
         Assert.IsFalse(json.ContainsKey("dot.net"));
         Assert.IsNull(json.TryGetValue("dot.net"));

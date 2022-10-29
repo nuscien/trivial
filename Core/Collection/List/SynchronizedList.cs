@@ -887,6 +887,52 @@ public class SynchronizedList<T> : IList<T>, ICloneable
     }
 
     /// <summary>
+    /// Replaces an item to a new one for all.
+    /// </summary>
+    /// <param name="oldItem">The old item to remove.</param>
+    /// <param name="newItem">The new item to update.</param>
+    /// <param name="maxCount">The maximum count of item to replace.</param>
+    /// <param name="compare">The optional compare handler. Or null to test by reference equaling.</param>
+    /// <returns>The count of item to replace.</returns>
+    public int Replace(T oldItem, T newItem, int maxCount, Func<T, T, bool> compare = null)
+    {
+        if (ReferenceEquals(oldItem, newItem)) return 0;
+        var count = -1;
+        compare ??= ObjectRef<T>.ReferenceEquals;
+        var args = new List<ChangeEventArgs<T>>();
+        slim.EnterWriteLock();
+        try
+        {
+            for (var i = 0; i < list.Count; i++)
+            {
+                var test = list[i];
+                if (!compare(test, oldItem)) continue;
+                list[i] = newItem;
+                count++;
+                args.Add(new ChangeEventArgs<T>(test, newItem, ChangeMethods.Update, i));
+                if (count >= maxCount) break;
+            }
+        }
+        catch (ArgumentOutOfRangeException)
+        {
+        }
+        finally
+        {
+            slim.ExitWriteLock();
+        }
+
+        if (Changed != null)
+        {
+            foreach (var argsItem in args)
+            {
+                Changed?.Invoke(this, argsItem);
+            }
+        }
+
+        return count;
+    }
+
+    /// <summary>
     /// Replaces by given test handler.
     /// </summary>
     /// <param name="replace">The handler to compare old item to return the new one.</param>
