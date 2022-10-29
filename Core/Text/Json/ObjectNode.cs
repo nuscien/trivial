@@ -1928,6 +1928,44 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     /// <summary>
     /// Tries to get the value of the specific property.
     /// </summary>
+    /// <param name="key">The property key.</param>
+    /// <param name="exactly">true if only boolean value kind; otherwise, false.</param>
+    /// <param name="result">The result.</param>
+    /// <returns>true if has the property and the type is the one expected; otherwise, false.</returns>
+    public bool TryGetBooleanValue(string key, bool exactly, out bool result)
+    {
+        if (TryGetJsonValue<JsonBooleanNode>(key, out var p))
+        {
+            result = p.Value;
+            return true;
+        }
+        else if (exactly)
+        {
+            result = default;
+            return false;
+        }
+
+        var str = TryGetStringValue(key);
+        if (string.IsNullOrWhiteSpace(str))
+        {
+            result = default;
+            return false;
+        }
+
+        var b = JsonBooleanNode.TryParse(str);
+        if (b == null)
+        {
+            result = default;
+            return false;
+        }
+
+        result = b.Value;
+        return true;
+    }
+
+    /// <summary>
+    /// Tries to get the value of the specific property.
+    /// </summary>
     /// <param name="keyPath">The path of property key.</param>
     /// <returns>A string.</returns>
     public bool? TryGetBooleanValue(IEnumerable<string> keyPath)
@@ -3088,7 +3126,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     public void SetValue(string key, JsonObjectNode value)
     {
         AssertKey(key);
-        store[key] = value != this ? value : value.Clone();
+        store[key] = ReferenceEquals(value, this) ? value.Clone() : value;
     }
 
     /// <summary>

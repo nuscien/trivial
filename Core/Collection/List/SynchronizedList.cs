@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading;
 
 using Trivial.Data;
+using Trivial.Reflection;
 
 namespace Trivial.Collection;
 
@@ -817,7 +818,7 @@ public class SynchronizedList<T> : IList<T>, ICloneable
     /// <param name="oldItem">The old item to remove.</param>
     /// <param name="newItem">The new item to update.</param>
     /// <returns>true if replace succeeded; otherwise, false, e.g. the old item does not exist.</returns>
-    public bool Replace(T oldItem, T newItem)
+    public bool ReplaceFirst(T oldItem, T newItem)
     {
         if (ReferenceEquals(oldItem, newItem)) return true;
         var i = -1;
@@ -839,6 +840,92 @@ public class SynchronizedList<T> : IList<T>, ICloneable
 
         if (i >= 0) Changed?.Invoke(this, new ChangeEventArgs<T>(oldItem, newItem, ChangeMethods.Update, i));
         return true;
+    }
+
+    /// <summary>
+    /// Replaces an item to a new one for all.
+    /// </summary>
+    /// <param name="oldItem">The old item to remove.</param>
+    /// <param name="newItem">The new item to update.</param>
+    /// <param name="compare">The optional compare handler. Or null to test by reference equaling.</param>
+    /// <returns>The count of item to replace.</returns>
+    public int Replace(T oldItem, T newItem, Func<T, T, bool> compare = null)
+    {
+        if (ReferenceEquals(oldItem, newItem)) return 0;
+        var count = -1;
+        compare ??= ObjectRef<T>.ReferenceEquals;
+        var args = new List<ChangeEventArgs<T>>();
+        slim.EnterWriteLock();
+        try
+        {
+            for (var i = 0; i < list.Count; i++)
+            {
+                var test = list[i];
+                if (!compare(test, oldItem)) continue;
+                list[i] = newItem;
+                count++;
+                args.Add(new ChangeEventArgs<T>(test, newItem, ChangeMethods.Update, i));
+            }
+        }
+        catch (ArgumentOutOfRangeException)
+        {
+        }
+        finally
+        {
+            slim.ExitWriteLock();
+        }
+
+        if (Changed != null)
+        {
+            foreach (var argsItem in args)
+            {
+                Changed?.Invoke(this, argsItem);
+            }
+        }
+
+        return count;
+    }
+
+    /// <summary>
+    /// Replaces by given test handler.
+    /// </summary>
+    /// <param name="replace">The handler to compare old item to return the new one.</param>
+    /// <returns>The count of item to replace.</returns>
+    public int Replace(Func<T, int, T> replace)
+    {
+        if (replace == null) return 0;
+        var count = -1;
+        var args = new List<ChangeEventArgs<T>>();
+        slim.EnterWriteLock();
+        try
+        {
+            for (var i = 0; i < list.Count; i++)
+            {
+                var test = list[i];
+                var item = replace(test, i);
+                if (ReferenceEquals(test, item)) continue;
+                list[i] = item;
+                count++;
+                args.Add(new ChangeEventArgs<T>(test, item, ChangeMethods.Update, i));
+            }
+        }
+        catch (ArgumentOutOfRangeException)
+        {
+        }
+        finally
+        {
+            slim.ExitWriteLock();
+        }
+
+        if (Changed != null)
+        {
+            foreach (var argsItem in args)
+            {
+                Changed?.Invoke(this, argsItem);
+            }
+        }
+
+        return count;
     }
 
     /// <inheritdoc />

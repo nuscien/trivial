@@ -128,6 +128,8 @@ public sealed class ObjectRef<T> : IObjectRef<T>, IObjectRef
     /// </summary>
     /// <param name="value">The value.</param>
     public static IObjectRef<T> Create(T value) => new InstanceObjectRef<T>(value);
+
+    internal static bool ReferenceEquals(T a, T b) => object.ReferenceEquals(a, b);
 }
 
 /// <summary>

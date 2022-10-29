@@ -12,7 +12,8 @@ using System.Text;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
-
+using Trivial.Collection;
+using Trivial.Data;
 using Trivial.Maths;
 using Trivial.Reflection;
 
@@ -111,7 +112,7 @@ public class JsonArrayNode : IJsonContainerNode, IJsonDataNode, IReadOnlyList<IJ
     /// <param name="threadSafe">true if enable thread-safe; otherwise, false.</param>
     private JsonArrayNode(IList<IJsonDataNode> copy, bool threadSafe = false)
     {
-        if (threadSafe) store = new Collection.SynchronizedList<IJsonDataNode>();
+        if (threadSafe) store = new SynchronizedList<IJsonDataNode>();
         if (copy == null) return;
         foreach (var ele in copy)
         {
@@ -2502,6 +2503,38 @@ public class JsonArrayNode : IJsonContainerNode, IJsonDataNode, IReadOnlyList<IJ
     {
         if (store.Count == index) store.Add(JsonValues.Null);
         store[index] = new JsonIntegerNode(value.ToFileTimeUtc());
+    }
+
+    /// <summary>
+    /// Replaces the old value to a new one by reference equaling.
+    /// </summary>
+    /// <param name="oldValue">The old value.</param>
+    /// <param name="newValue">The new value.</param>
+    /// <returns>The count of item replaced.</returns>
+    public int ReplaceValue(JsonObjectNode oldValue, JsonObjectNode newValue)
+    {
+        if (store is SynchronizedList<IJsonDataNode> syncList) return syncList.Replace((item, i) =>
+        {
+            return ReferenceEquals(item, oldValue) ? newValue : item;
+        });
+
+        if (ReferenceEquals(oldValue, newValue)) return 0;
+        var count = -1;
+        try
+        {
+            for (var i = 0; i < store.Count; i++)
+            {
+                var test = store[i];
+                if (!ObjectRef<IJsonDataNode>.ReferenceEquals(test, oldValue)) continue;
+                store[i] = newValue;
+                count++;
+            }
+        }
+        catch (ArgumentOutOfRangeException)
+        {
+        }
+
+        return count;
     }
 
     /// <summary>
