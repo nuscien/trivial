@@ -25,6 +25,7 @@ namespace Trivial.Text;
 [System.Text.Json.Serialization.JsonConverter(typeof(JsonObjectNodeConverter))]
 public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<string, IJsonValueNode>, IDictionary<string, IJsonDataNode>, IReadOnlyDictionary<string, IJsonValueNode>, IReadOnlyDictionary<string, IJsonDataNode>, IEquatable<JsonObjectNode>, IEquatable<IJsonValueNode>, ISerializable
 {
+#pragma warning disable IDE0056,IDE0057
     private IDictionary<string, IJsonDataNode> store = new Dictionary<string, IJsonDataNode>();
 
     /// <summary>
@@ -2164,16 +2165,13 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     /// </summary>
     /// <param name="keyPath">The property key path.</param>
     /// <returns>The value.</returns>
-    /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
-    /// <exception cref="ArgumentOutOfRangeException">The property does not exist.</exception>
-    /// <exception cref="InvalidOperationException">The value kind is not the expected one.</exception>
     public JsonObjectNode TryGetObjectValue(IEnumerable<string> keyPath)
     {
         var json = this;
         if (keyPath == null) return json;
         foreach (var k in keyPath)
         {
-            if (json is null) throw new InvalidOperationException($"Cannot get property {k} of null.");
+            if (json is null) return null;
             json = json.TryGetObjectValue(k);
         }
 
@@ -2221,6 +2219,30 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
 
         result = json;
         return true;
+    }
+
+    /// <summary>
+    /// Tries to get the value of the specific property.
+    /// </summary>
+    /// <param name="key">The property key.</param>
+    /// <param name="root">The root node.</param>
+    /// <returns>The value.</returns>
+    public JsonObjectNode TryGetRefObjectValue(string key, JsonObjectNode root)
+    {
+        root ??= this;
+        var json = TryGetObjectValue(key);
+        if (json == null) return null;
+        var refPath = json.TryGetStringValue("$ref");
+        if (string.IsNullOrWhiteSpace(refPath)) return json;
+        if (refPath == JsonValues.SELF_REF) return this;
+        if (refPath.StartsWith("#/"))
+        {
+            var path = refPath.Substring(2).Split('/');
+            return root.TryGetObjectValue(path);
+        }
+
+        if (refPath == "$") return root;
+        return root.TryGetValue(refPath, true) as JsonObjectNode;
     }
 
     /// <summary>
@@ -2915,8 +2937,8 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     {
         if (!isPath) return TryGetValue(key);
         if (key == null) return this;
-
-#pragma warning disable IDE0057
+        if (key.StartsWith("$.")) key = key.Substring(2);
+        else if (key.StartsWith("$[")) key = key.Substring(1);
         var traditional = key.StartsWith("[") && key.EndsWith("]");
         var arr = traditional ? key.Substring(1, key.Length - 2).Split(new [] { "][" }, StringSplitOptions.None) : key.Split('.');
         var path = new List<string>();
@@ -2929,10 +2951,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
                 var propTrim3 = prop.TrimEnd();
                 if (propTrim3.EndsWith(quote)) quote = null;
                 var appendStr = (traditional ? "][" : ".") + (quote != null ? prop : propTrim3.Substring(0, propTrim3.Length - 1));
-
-#pragma warning disable IDE0056
                 path[path.Count - 1] += appendStr;
-#pragma warning restore IDE0056
                 continue;
             }
 
@@ -2968,7 +2987,6 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
             path.Add(propTrim);
         }
 
-#pragma warning restore IDE0057
         return TryGetValue(path);
     }
 
@@ -3297,7 +3315,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     public void SetValue(string key, float value)
     {
         AssertKey(key);
-        store[key] = new JsonDoubleNode(value);
+        store[key] = float.IsNaN(value) ? JsonValues.Null : new JsonDoubleNode(value);
     }
 
     /// <summary>
@@ -3309,7 +3327,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     public void SetValue(string key, double value)
     {
         AssertKey(key);
-        store[key] = new JsonDoubleNode(value);
+        store[key] = double.IsNaN(value) ? JsonValues.Null : new JsonDoubleNode(value);
     }
 
     /// <summary>
@@ -4652,7 +4670,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     /// <exception cref="ArgumentNullException">key is null.</exception>
     /// <exception cref="ArgumentException">An element with the same key already exists in the JSON object.</exception>
     public void Add(string key, float value)
-        => store.Add(key, new JsonDoubleNode(value));
+        => store.Add(key, float.IsNaN(value) ? JsonValues.Null : new JsonDoubleNode(value));
 
     /// <summary>
     /// Adds a property with the provided key and value to the JSON object.
@@ -4662,7 +4680,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     /// <exception cref="ArgumentNullException">key is null.</exception>
     /// <exception cref="ArgumentException">An element with the same key already exists in the JSON object.</exception>
     public void Add(string key, double value)
-        => store.Add(key, new JsonDoubleNode(value));
+        => store.Add(key, double.IsNaN(value) ? JsonValues.Null : new JsonDoubleNode(value));
 
     /// <summary>
     /// Adds a property with the provided key and value to the JSON object.
@@ -5070,9 +5088,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     /// <param name="indentStyle">The indent style.</param>
     /// <returns>A JSON format string.</returns>
     public string ToString(IndentStyles indentStyle)
-    {
-        return ConvertToString(indentStyle, 0);
-    }
+        => ConvertToString(indentStyle, 0);
 
     /// <summary>
     /// Gets the JSON format string of the value.
@@ -5139,9 +5155,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     /// </summary>
     /// <returns>A YAML format string.</returns>
     public string ToYamlString()
-    {
-        return ConvertToYamlString(0);
-    }
+        => ConvertToYamlString(0);
 
     /// <summary>
     /// Gets the YAML format string of the value.
@@ -6207,4 +6221,5 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     {
         return true;
     }
+#pragma warning restore IDE0056,IDE0057
 }

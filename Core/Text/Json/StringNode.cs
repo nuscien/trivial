@@ -279,6 +279,17 @@ public class JsonStringNode : IJsonStringNode, IJsonValueNode<string>, IJsonData
     /// Initializes a new instance of the JsonString class.
     /// </summary>
     /// <param name="value">The value.</param>
+    /// <param name="format">A standard or custom time span format string.</param>
+    /// <param name="provider">An object that supplies culture-specific formatting information.</param>
+    public JsonStringNode(float value, string format, IFormatProvider provider = null) : this(provider == null ? value.ToString(format) : value.ToString(format, provider))
+    {
+        ValueType = 3;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the JsonString class.
+    /// </summary>
+    /// <param name="value">The value.</param>
     public JsonStringNode(decimal value) : this(value.ToString("g", CultureInfo.InvariantCulture))
     {
         ValueType = 3;
@@ -288,7 +299,28 @@ public class JsonStringNode : IJsonStringNode, IJsonValueNode<string>, IJsonData
     /// Initializes a new instance of the JsonString class.
     /// </summary>
     /// <param name="value">The value.</param>
+    /// <param name="format">A standard or custom time span format string.</param>
+    /// <param name="provider">An object that supplies culture-specific formatting information.</param>
+    public JsonStringNode(decimal value, string format, IFormatProvider provider = null) : this(provider == null ? value.ToString(format) : value.ToString(format, provider))
+    {
+        ValueType = 3;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the JsonString class.
+    /// </summary>
+    /// <param name="value">The value.</param>
     public JsonStringNode(BigInteger value) : this(value.ToString("g", CultureInfo.InvariantCulture))
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the JsonString class.
+    /// </summary>
+    /// <param name="value">The value.</param>
+    /// <param name="format">A standard or custom time span format string.</param>
+    /// <param name="provider">An object that supplies culture-specific formatting information.</param>
+    public JsonStringNode(BigInteger value, string format, IFormatProvider provider = null) : this(provider == null ? value.ToString(format) : value.ToString(format, provider))
     {
     }
 

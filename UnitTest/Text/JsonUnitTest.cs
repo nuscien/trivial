@@ -124,7 +124,7 @@ public class JsonUnitTest
         Assert.IsTrue(json["props", "p1", "p3", "p2"].GetBoolean());
         Assert.IsTrue(json.TryGetObjectValue("props", "p1", "p3").GetBooleanValue("p2"));
         Assert.IsTrue(json.TryGetValue("props.p1.p3.p2", true).GetBoolean());
-        Assert.IsTrue(json.TryGetValue("props. 'p1'.'p3'.p2", true).GetBoolean());
+        Assert.IsTrue(json.TryGetValue("$.props. 'p1'.'p3'.p2", true).GetBoolean());
         Assert.IsTrue(json.TryGetValue("[props]['p1'][p3][ 'p2' ]", true).GetBoolean());
         Assert.IsTrue(json.GetValue<bool>("props", "p1", "p3", "p2"));
         try
