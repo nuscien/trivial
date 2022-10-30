@@ -887,7 +887,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
         AssertKey(key);
         var obj = GetJsonValue<JsonObjectNode>(key, JsonValueKind.Object, true);
         if (obj == null) return obj;
-        if (obj.Count == 1 && obj.TryGetStringValue("$ref") == "..") return this;
+        if (obj.Count == 1 && obj.TryGetStringValue("$ref") == JsonValues.SELF_REF) return this;
         return obj;
     }
 
@@ -1102,7 +1102,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
                 }
 
                 var jObjToken = jObj.TryGetValue(key);
-                if (jObjToken is JsonObjectNode jObj2 && jObj2.Count == 1 && jObj2.TryGetStringValue("$ref") == "..") continue;
+                if (jObjToken is JsonObjectNode jObj2 && jObj2.Count == 1 && jObj2.TryGetStringValue("$ref") == JsonValues.SELF_REF) continue;
                 json = jObjToken;
                 continue;
             }
@@ -2122,7 +2122,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     {
         if (string.IsNullOrEmpty(key)) return this;
         if (!TryGetJsonValue<JsonObjectNode>(key, out var p)) return null;
-        if (p.Count == 1 && p.TryGetStringValue("$ref") == "..") return this;
+        if (p.Count == 1 && p.TryGetStringValue("$ref") == JsonValues.SELF_REF) return this;
         return p;
     }
 
@@ -2590,7 +2590,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
                 }
 
                 var jObjToken = jObj.TryGetValue(key);
-                if (jObjToken is JsonObjectNode jObj2 && jObj2.Count == 1 && jObj2.TryGetStringValue("$ref") == "..") continue;
+                if (jObjToken is JsonObjectNode jObj2 && jObj2.Count == 1 && jObj2.TryGetStringValue("$ref") == JsonValues.SELF_REF) continue;
                 json = jObjToken;
                 continue;
             }
@@ -3263,7 +3263,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
         AssertKey(key);
         store[key] = (ReferenceEquals(value, this) ? new()
         {
-            { "$ref", ".."}
+            { "$ref", JsonValues.SELF_REF}
         }: value) ?? JsonValues.Null;
     }
 
@@ -4409,7 +4409,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     public void Add(string key, JsonObjectNode value)
         => store.Add(key, (ReferenceEquals(value, this) ? new()
         {
-            { "$ref", ".." }
+            { "$ref", JsonValues.SELF_REF }
         } : value) ?? JsonValues.Null);
 
     /// <summary>
@@ -5589,7 +5589,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     IEnumerable<string> IJsonContainerNode.GetKeys() => Keys;
 
     private JsonObjectNode ConvertObjectValueForProperty(JsonObjectNode json)
-        => json?.Count == 1 && json.TryGetStringValue("$ref", true, out var s) && s == ".." ? this : json;
+        => json?.Count == 1 && json.TryGetStringValue("$ref", true, out var s) && s == JsonValues.SELF_REF ? this : json;
 
     private T GetJsonValue<T>(string key, JsonValueKind? valueKind = null, bool ignoreNull = false) where T : IJsonValueNode
     {

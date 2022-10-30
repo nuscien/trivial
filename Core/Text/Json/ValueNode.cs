@@ -794,6 +794,8 @@ internal class JsonNullNode : IJsonValueNode, IJsonDataNode, IEquatable<JsonNull
 /// </summary>
 public static class JsonValues
 {
+    internal const string SELF_REF = "@";
+
     /// <summary>
     /// JSON null.
     /// </summary>

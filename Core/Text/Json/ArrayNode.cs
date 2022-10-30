@@ -259,7 +259,7 @@ public class JsonArrayNode : IJsonContainerNode, IJsonDataNode, IReadOnlyList<IJ
             var result = store[index];
             if (result is JsonObjectNode json)
             {
-                if (json.Count == 1 && json.TryGetStringValue("$ref") == "..")
+                if (json.Count == 1 && json.TryGetStringValue("$ref") == JsonValues.SELF_REF)
                 {
                     result = this;
                 }
@@ -691,7 +691,7 @@ public class JsonArrayNode : IJsonContainerNode, IJsonDataNode, IReadOnlyList<IJ
             try
             {
                 var obj = GetJsonValue<JsonObjectNode>(index);
-                if (obj.Count == 1 && obj.TryGetStringValue("$ref") == "..") return this;
+                if (obj.Count == 1 && obj.TryGetStringValue("$ref") == JsonValues.SELF_REF) return this;
                 throw;
             }
             catch (Exception)
@@ -1609,7 +1609,7 @@ public class JsonArrayNode : IJsonContainerNode, IJsonDataNode, IReadOnlyList<IJ
     public JsonArrayNode TryGetArrayValue(int index)
     {
         if (TryGetJsonValue<JsonArrayNode>(index, out var p)) return p;
-        if (TryGetJsonValue<JsonObjectNode>(index, out var obj) && obj.Count == 1 && obj.TryGetStringValue("ref") == "..") return this;
+        if (TryGetJsonValue<JsonObjectNode>(index, out var obj) && obj.Count == 1 && obj.TryGetStringValue("ref") == JsonValues.SELF_REF) return this;
         return null;
     }
 
