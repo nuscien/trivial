@@ -468,10 +468,10 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     }
 
     /// <summary>
-    /// Determines whether it contains an property value with the specific key.
+    /// Determines whether it contains a property with the specific key.
     /// </summary>
     /// <param name="key">The property key.</param>
-    /// <returns>true if there is no such key; otherwise, false.</returns>
+    /// <returns>true if it contains the property key; otherwise, false.</returns>
     /// <exception cref="ArgumentNullException">key was null, empty or consists only of white-space characters.</exception>
     public bool ContainsKey(string key)
     {
@@ -480,15 +480,97 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     }
 
     /// <summary>
-    /// Determines whether it contains an property value with the specific key.
+    /// Determines whether it contains a property with the specific key.
     /// </summary>
     /// <param name="key">The property key.</param>
-    /// <returns>true if there is no such key; otherwise, false.</returns>
+    /// <returns>true if it contains the property key; otherwise, false.</returns>
     /// <exception cref="ArgumentNullException">key was null, empty or consists only of white-space characters.</exception>
     public bool ContainsKey(ReadOnlySpan<char> key)
     {
         if (key == null) throw new ArgumentNullException(nameof(key), "key should not be null.");
         return ContainsKey(key.ToString());
+    }
+
+    /// <summary>
+    /// Determines whether it contains the property only with the specific key.
+    /// </summary>
+    /// <param name="key">The property key.</param>
+    /// <returns>true if it contains the property key only; otherwise, false.</returns>
+    /// <exception cref="ArgumentNullException">key was null, empty or consists only of white-space characters.</exception>
+    public bool ContainsOnlyKey(string key)
+    {
+        AssertKey(key);
+        return store.Count == 1 && store.ContainsKey(key);
+    }
+
+    /// <summary>
+    /// Determines whether it contains the property only with the specific key.
+    /// </summary>
+    /// <param name="key">The property key.</param>
+    /// <param name="value">The value of the property.</param>
+    /// <returns>true if it contains the property key only; otherwise, false.</returns>
+    /// <exception cref="ArgumentNullException">key was null, empty or consists only of white-space characters.</exception>
+    public bool ContainsOnlyKey(string key, out string value)
+    {
+        AssertKey(key);
+        value = TryGetStringValue(key);
+        return store.Count == 1 && store.ContainsKey(key);
+    }
+
+    /// <summary>
+    /// Determines whether it contains the property only with the specific key.
+    /// </summary>
+    /// <param name="key">The property key.</param>
+    /// <param name="value">The value of the property.</param>
+    /// <returns>true if it contains the property key only; otherwise, false.</returns>
+    /// <exception cref="ArgumentNullException">key was null, empty or consists only of white-space characters.</exception>
+    public bool ContainsOnlyKey(string key, out int value)
+    {
+        AssertKey(key);
+        value = TryGetInt32Value(key) ?? default;
+        return store.Count == 1 && store.ContainsKey(key);
+    }
+
+    /// <summary>
+    /// Determines whether it contains the property only with the specific key.
+    /// </summary>
+    /// <param name="key">The property key.</param>
+    /// <param name="value">The value of the property.</param>
+    /// <returns>true if it contains the property key only; otherwise, false.</returns>
+    /// <exception cref="ArgumentNullException">key was null, empty or consists only of white-space characters.</exception>
+    public bool ContainsOnlyKey(string key, out long value)
+    {
+        AssertKey(key);
+        value = TryGetInt64Value(key) ?? default;
+        return store.Count == 1 && store.ContainsKey(key);
+    }
+
+    /// <summary>
+    /// Determines whether it contains the property only with the specific key.
+    /// </summary>
+    /// <param name="key">The property key.</param>
+    /// <param name="value">The value of the property.</param>
+    /// <returns>true if it contains the property key only; otherwise, false.</returns>
+    /// <exception cref="ArgumentNullException">key was null, empty or consists only of white-space characters.</exception>
+    public bool ContainsOnlyKey(string key, out JsonObjectNode value)
+    {
+        AssertKey(key);
+        value = TryGetObjectValue(key);
+        return store.Count == 1 && store.ContainsKey(key);
+    }
+
+    /// <summary>
+    /// Determines whether it contains the property only with the specific key.
+    /// </summary>
+    /// <param name="key">The property key.</param>
+    /// <param name="value">The value of the property.</param>
+    /// <returns>true if it contains the property key only; otherwise, false.</returns>
+    /// <exception cref="ArgumentNullException">key was null, empty or consists only of white-space characters.</exception>
+    public bool ContainsOnlyKey(string key, out JsonArrayNode value)
+    {
+        AssertKey(key);
+        value = TryGetArrayValue(key);
+        return store.Count == 1 && store.ContainsKey(key);
     }
 
     /// <summary>
@@ -676,9 +758,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     /// <exception cref="FormatException">The value is not in a recognized format.</exception>
     /// <exception cref="InvalidOperationException">The value kind is not the expected one.</exception>
     public Guid GetGuidValue(string key)
-    {
-        return Guid.Parse(GetStringValue(key));
-    }
+        => Guid.Parse(GetStringValue(key));
 
     /// <summary>
     /// Gets the value of the specific property.
@@ -2982,6 +3062,18 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     /// Sets the value of the specific property.
     /// </summary>
     /// <param name="key">The property key.</param>
+    /// <param name="_">The value to set.</param>
+    /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+    public void SetValue(string key, DBNull _)
+    {
+        AssertKey(key);
+        store[key] = JsonValues.Null;
+    }
+
+    /// <summary>
+    /// Sets the value of the specific property.
+    /// </summary>
+    /// <param name="key">The property key.</param>
     /// <param name="value">The value to set.</param>
     /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
     public void SetValue(string key, string value)
@@ -3157,7 +3249,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     public void SetValue(string key, JsonArrayNode value)
     {
         AssertKey(key);
-        store[key] = value;
+        store[key] = value ?? JsonValues.Null;
     }
 
     /// <summary>
@@ -3169,10 +3261,10 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     public void SetValue(string key, JsonObjectNode value)
     {
         AssertKey(key);
-        store[key] = ReferenceEquals(value, this) ? new()
+        store[key] = (ReferenceEquals(value, this) ? new()
         {
             { "$ref", ".."}
-        }: value;
+        }: value) ?? JsonValues.Null;
     }
 
     /// <summary>
@@ -3196,7 +3288,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     public void SetValue(string key, JsonElement value)
     {
         AssertKey(key);
-        store[key] = JsonValues.ToJsonValue(value);
+        store[key] = JsonValues.ToJsonValue(value) ?? JsonValues.Null;
     }
 
     /// <summary>
@@ -3208,7 +3300,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     public void SetValue(string key, System.Text.Json.Nodes.JsonNode value)
     {
         AssertKey(key);
-        store[key] = JsonValues.ToJsonValue(value);
+        store[key] = JsonValues.ToJsonValue(value) ?? JsonValues.Null;
     }
 
     /// <summary>
@@ -4257,7 +4349,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     /// <exception cref="ArgumentNullException">key is null.</exception>
     /// <exception cref="ArgumentException">An element with the same key already exists in the JSON object.</exception>
     public void Add(KeyValuePair<string, JsonElement> item)
-        => store.Add(item.Key, JsonValues.ToJsonValue(item.Value));
+        => store.Add(item.Key, JsonValues.ToJsonValue(item.Value) ?? JsonValues.Null);
 
     /// <summary>
     /// Adds a property with the provided key and value to the JSON object.
@@ -4266,7 +4358,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     /// <exception cref="ArgumentNullException">key is null.</exception>
     /// <exception cref="ArgumentException">An element with the same key already exists in the JSON object.</exception>
     public void Add(KeyValuePair<string, System.Text.Json.Nodes.JsonArray> item)
-        => store.Add(item.Key, JsonValues.ToJsonValue(item.Value));
+        => store.Add(item.Key, JsonValues.ToJsonValue(item.Value) ?? JsonValues.Null);
 
     /// <summary>
     /// Adds a property with the provided key and value to the JSON object.
@@ -4275,7 +4367,17 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     /// <exception cref="ArgumentNullException">key is null.</exception>
     /// <exception cref="ArgumentException">An element with the same key already exists in the JSON object.</exception>
     public void Add(KeyValuePair<string, System.Text.Json.Nodes.JsonObject> item)
-        => store.Add(item.Key, JsonValues.ToJsonValue(item.Value));
+        => store.Add(item.Key, JsonValues.ToJsonValue(item.Value) ?? JsonValues.Null);
+
+    /// <summary>
+    /// Adds a property with the provided key and value to the JSON object.
+    /// </summary>
+    /// <param name="key">The property key.</param>
+    /// <param name="_">The value of the property.</param>
+    /// <exception cref="ArgumentNullException">key is null.</exception>
+    /// <exception cref="ArgumentException">An element with the same key already exists in the JSON object.</exception>
+    public void Add(string key, DBNull _)
+        => store.Add(key, JsonValues.Null);
 
     /// <summary>
     /// Adds a property with the provided key and value to the JSON object.
@@ -4305,10 +4407,10 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     /// <exception cref="ArgumentNullException">key is null.</exception>
     /// <exception cref="ArgumentException">An element with the same key already exists in the JSON object.</exception>
     public void Add(string key, JsonObjectNode value)
-        => store.Add(key, ReferenceEquals(value, this) ? new()
+        => store.Add(key, (ReferenceEquals(value, this) ? new()
         {
             { "$ref", ".." }
-        } : value);
+        } : value) ?? JsonValues.Null);
 
     /// <summary>
     /// Adds a property with the provided key and value to the JSON object.
@@ -4320,7 +4422,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     /// <exception cref="ArgumentException">An element with the same key already exists in the JSON object.</exception>
     public void Add(string key, JsonObjectNode value, bool clone)
     {
-        if (clone) store.Add(key, value?.Clone());
+        if (clone) store.Add(key, value?.Clone() ?? JsonValues.Null);
         else Add(key, value);
     }
 
@@ -5160,7 +5262,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     /// <returns>A dictionary of values of the specific keys.</returns>
     public IDictionary<string, IJsonDataNode> Where(JsonValueKind kind, Func<IJsonDataNode, string, int, bool> predicate = null)
     {
-        if (predicate == null) predicate = PassTrue;
+        predicate ??= PassTrue;
         var dict = new Dictionary<string, IJsonDataNode>();
         var i = -1;
         if (kind == JsonValueKind.Null || kind == JsonValueKind.Undefined)
