@@ -852,7 +852,7 @@ public class SynchronizedList<T> : IList<T>, ICloneable
     public int Replace(T oldItem, T newItem, Func<T, T, bool> compare = null)
     {
         if (ReferenceEquals(oldItem, newItem)) return 0;
-        var count = -1;
+        var count = 0;
         compare ??= ObjectRef<T>.ReferenceEquals;
         var args = new List<ChangeEventArgs<T>>();
         slim.EnterWriteLock();
@@ -897,7 +897,7 @@ public class SynchronizedList<T> : IList<T>, ICloneable
     public int Replace(T oldItem, T newItem, int maxCount, Func<T, T, bool> compare = null)
     {
         if (ReferenceEquals(oldItem, newItem)) return 0;
-        var count = -1;
+        var count = 0;
         compare ??= ObjectRef<T>.ReferenceEquals;
         var args = new List<ChangeEventArgs<T>>();
         slim.EnterWriteLock();
@@ -940,7 +940,7 @@ public class SynchronizedList<T> : IList<T>, ICloneable
     public int Replace(Func<T, int, T> replace)
     {
         if (replace == null) return 0;
-        var count = -1;
+        var count = 0;
         var args = new List<ChangeEventArgs<T>>();
         slim.EnterWriteLock();
         try

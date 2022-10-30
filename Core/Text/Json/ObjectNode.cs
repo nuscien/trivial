@@ -158,6 +158,24 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     public bool IsReadOnly => store.IsReadOnly;
 
     /// <summary>
+    /// Gets or sets the identifier of the JSON object.
+    /// </summary>
+    public string Id
+    {
+        get => TryGetStringValue("$id");
+        set => SetValue("$id", value);
+    }
+
+    /// <summary>
+    /// Gets or sets the schema URL of the JSON object.
+    /// </summary>
+    public string Schema
+    {
+        get => TryGetStringValue("$schema");
+        set => SetValue("$schema", value);
+    }
+
+    /// <summary>
     /// Gets or sets the value of the specific property.
     /// </summary>
     /// <param name="key">The property key.</param>
@@ -214,7 +232,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
             if (index < 0) throw new ArgumentOutOfRangeException(nameof(index), "index should be a natural number.");
             var result = GetValue(key);
             if (result is JsonArrayNode arr) return arr[index];
-            else if (result is JsonObjectNode json) return json[index.ToString("g")];
+            else if (result is JsonObjectNode json) return ConvertObjectValueForProperty(json)[index.ToString("g")];
             else if (result is IJsonStringNode str) return new JsonStringNode(str.StringValue[index].ToString());
             else if (index == 0) return result;
             throw new InvalidOperationException($"The property of {key} should be an array, but its kind is {result?.ValueKind ?? JsonValueKind.Null}.");
@@ -632,6 +650,23 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     }
 
     /// <summary>
+    /// Gets the substring of the specific property.
+    /// </summary>
+    /// <param name="key">The property key.</param>
+    /// <param name="startIndex">The zero-based starting character position of a substring in this instance.</param>
+    /// <param name="length">The number of characters in the substring.</param>
+    /// <returns>The substring.</returns>
+    /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+    /// <exception cref="ArgumentOutOfRangeException">The property does not exist; startIndex of length is less than 0; or startIndex plus length indicates a position not within this property string value.</exception>
+    /// <exception cref="InvalidOperationException">The value kind is not the expected one.</exception>
+    public string GetSubstringValue(string key, int startIndex, int? length = null)
+    {
+        var s = GetStringValue(key, true);
+        if (s == null) throw new InvalidOperationException($"The value of property {key} is null.");
+        return length.HasValue ? s.Substring(startIndex, length.Value) : s.Substring(startIndex);
+    }
+
+    /// <summary>
     /// Gets the value of the specific property.
     /// </summary>
     /// <param name="key">The property key.</param>
@@ -770,7 +805,10 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     public JsonObjectNode GetObjectValue(string key)
     {
         AssertKey(key);
-        return GetJsonValue<JsonObjectNode>(key, JsonValueKind.Object, true);
+        var obj = GetJsonValue<JsonObjectNode>(key, JsonValueKind.Object, true);
+        if (obj == null) return obj;
+        if (obj.Count == 1 && obj.TryGetStringValue("$ref") == "..") return this;
+        return obj;
     }
 
     /// <summary>
@@ -983,7 +1021,9 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
                         new ArgumentOutOfRangeException(nameof(keyPath), message));
                 }
 
-                json = jObj.TryGetValue(key);
+                var jObjToken = jObj.TryGetValue(key);
+                if (jObjToken is JsonObjectNode jObj2 && jObj2.Count == 1 && jObj2.TryGetStringValue("$ref") == "..") continue;
+                json = jObjToken;
                 continue;
             }
 
@@ -2001,8 +2041,9 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     public JsonObjectNode TryGetObjectValue(string key)
     {
         if (string.IsNullOrEmpty(key)) return this;
-        if (TryGetJsonValue<JsonObjectNode>(key, out var p)) return p;
-        return null;
+        if (!TryGetJsonValue<JsonObjectNode>(key, out var p)) return null;
+        if (p.Count == 1 && p.TryGetStringValue("$ref") == "..") return this;
+        return p;
     }
 
     /// <summary>
@@ -2468,7 +2509,9 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
                     return false;
                 }
 
-                json = jObj.TryGetValue(key);
+                var jObjToken = jObj.TryGetValue(key);
+                if (jObjToken is JsonObjectNode jObj2 && jObj2.Count == 1 && jObj2.TryGetStringValue("$ref") == "..") continue;
+                json = jObjToken;
                 continue;
             }
 
@@ -3126,7 +3169,10 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     public void SetValue(string key, JsonObjectNode value)
     {
         AssertKey(key);
-        store[key] = ReferenceEquals(value, this) ? value.Clone() : value;
+        store[key] = ReferenceEquals(value, this) ? new()
+        {
+            { "$ref", ".."}
+        }: value;
     }
 
     /// <summary>
@@ -3890,9 +3936,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     /// <exception cref="ArgumentNullException">key was null, empty, or consists only of white-space characters.</exception>
     /// <exception cref="InvalidOperationException">The property kind was not number.</exception>
     public void DecreaseValue(string key, int value = 1)
-    {
-        IncreaseValue(key, -value);
-    }
+        => IncreaseValue(key, -value);
 
     /// <summary>
     /// Decreases a number property.
@@ -3902,9 +3946,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     /// <exception cref="ArgumentNullException">key was null, empty, or consists only of white-space characters.</exception>
     /// <exception cref="InvalidOperationException">The property kind was not number.</exception>
     public void DecreaseValue(string key, long value)
-    {
-        IncreaseValue(key, -value);
-    }
+        => IncreaseValue(key, -value);
 
     /// <summary>
     /// Decreases a number property.
@@ -3914,9 +3956,57 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     /// <exception cref="ArgumentNullException">key was null, empty, or consists only of white-space characters.</exception>
     /// <exception cref="InvalidOperationException">The property kind was not number.</exception>
     public void DecreaseValue(string key, double value)
+        => IncreaseValue(key, -value);
+
+    /// <summary>
+    /// Initializes a value with an empty JSON object if the property does not exist.
+    /// </summary>
+    /// <param name="key">The key of the property.</param>
+    /// <param name="force">true if set a new one if the current is not JSON object; otherwise, false.</param>
+    /// <param name="oldValueKind">The value kind before initializing.</param>
+    /// <returns>true if the object is ready; otherwise, false.</returns>
+    public bool EnsureObjectValue(string key, bool force, out JsonValueKind oldValueKind)
     {
-        IncreaseValue(key, -value);
+        oldValueKind = GetValueKind(key);
+        if (oldValueKind == JsonValueKind.Object) return true;
+        if (!force && oldValueKind != JsonValueKind.Null && oldValueKind != JsonValueKind.Undefined) return false;
+        SetValue(key, new JsonObjectNode());
+        return true;
     }
+
+    /// <summary>
+    /// Initializes a value with an empty JSON object if the property does not exist.
+    /// </summary>
+    /// <param name="key">The key of the property.</param>
+    /// <param name="oldValueKind">The value kind before initializing.</param>
+    /// <returns>true if the object is ready; otherwise, false.</returns>
+    public bool EnsureObjectValue(string key, out JsonValueKind oldValueKind)
+        => EnsureObjectValue(key, false, out oldValueKind);
+
+    /// <summary>
+    /// Initializes a value with an empty JSON array if the property does not exist.
+    /// </summary>
+    /// <param name="key">The key of the property.</param>
+    /// <param name="force">true if set a new one if the current is not JSON array; otherwise, false.</param>
+    /// <param name="oldValueKind">The value kind before initializing.</param>
+    /// <returns>true if the object is ready; otherwise, false.</returns>
+    public bool EnsureArrayValue(string key, bool force, out JsonValueKind oldValueKind)
+    {
+        oldValueKind = GetValueKind(key);
+        if (oldValueKind == JsonValueKind.Array) return true;
+        if (!force && oldValueKind != JsonValueKind.Null && oldValueKind != JsonValueKind.Undefined) return false;
+        SetValue(key, new JsonArrayNode());
+        return true;
+    }
+
+    /// <summary>
+    /// Initializes a value with an empty JSON array if the property does not exist.
+    /// </summary>
+    /// <param name="key">The key of the property.</param>
+    /// <param name="oldValueKind">The value kind before initializing.</param>
+    /// <returns>true if the object is ready; otherwise, false.</returns>
+    public bool EnsureArrayValue(string key, out JsonValueKind oldValueKind)
+        => EnsureObjectValue(key, false, out oldValueKind);
 
     /// <summary>
     /// Appends a value into a string property.
@@ -4206,6 +4296,33 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     /// <exception cref="ArgumentException">An element with the same key already exists in the JSON object.</exception>
     public void Add(string key, IJsonValueNode value)
         => store.Add(key, JsonValues.ConvertValue(value, this));
+
+    /// <summary>
+    /// Adds a property with the provided key and value to the JSON object.
+    /// </summary>
+    /// <param name="key">The property key.</param>
+    /// <param name="value">The value of the property.</param>
+    /// <exception cref="ArgumentNullException">key is null.</exception>
+    /// <exception cref="ArgumentException">An element with the same key already exists in the JSON object.</exception>
+    public void Add(string key, JsonObjectNode value)
+        => store.Add(key, ReferenceEquals(value, this) ? new()
+        {
+            { "$ref", ".." }
+        } : value);
+
+    /// <summary>
+    /// Adds a property with the provided key and value to the JSON object.
+    /// </summary>
+    /// <param name="key">The property key.</param>
+    /// <param name="value">The value of the property.</param>
+    /// <param name="clone">true if clone the value before adding; otherwise, false.</param>
+    /// <exception cref="ArgumentNullException">key is null.</exception>
+    /// <exception cref="ArgumentException">An element with the same key already exists in the JSON object.</exception>
+    public void Add(string key, JsonObjectNode value, bool clone)
+    {
+        if (clone) store.Add(key, value?.Clone());
+        else Add(key, value);
+    }
 
     /// <summary>
     /// Adds a property with the provided key and value to the JSON object.
@@ -5368,6 +5485,9 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     /// </summary>
     /// <returns>The property keys.</returns>
     IEnumerable<string> IJsonContainerNode.GetKeys() => Keys;
+
+    private JsonObjectNode ConvertObjectValueForProperty(JsonObjectNode json)
+        => json?.Count == 1 && json.TryGetStringValue("$ref", true, out var s) && s == ".." ? this : json;
 
     private T GetJsonValue<T>(string key, JsonValueKind? valueKind = null, bool ignoreNull = false) where T : IJsonValueNode
     {

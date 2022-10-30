@@ -2513,27 +2513,7 @@ public class JsonArrayNode : IJsonContainerNode, IJsonDataNode, IReadOnlyList<IJ
     /// <param name="onlyFirst">true if replace first only; otherwise, false.</param>
     /// <returns>The count of item replaced.</returns>
     public int ReplaceValue(JsonObjectNode oldValue, JsonObjectNode newValue, bool onlyFirst = false)
-    {
-        if (store is SynchronizedList<IJsonDataNode> syncList) return onlyFirst ? syncList.Replace(oldValue, newValue, 1) : syncList.Replace(oldValue, newValue);
-        if (ReferenceEquals(oldValue, newValue)) return 0;
-        var count = -1;
-        try
-        {
-            for (var i = 0; i < store.Count; i++)
-            {
-                var test = store[i];
-                if (!ObjectRef<IJsonDataNode>.ReferenceEquals(test, oldValue)) continue;
-                store[i] = newValue;
-                count++;
-                if (onlyFirst) break;
-            }
-        }
-        catch (ArgumentOutOfRangeException)
-        {
-        }
-
-        return count;
-    }
+        => onlyFirst ? ListExtensions.Replace(store, oldValue, newValue, 1) : ListExtensions.Replace(store, oldValue, newValue);
 
     /// <summary>
     /// Projects each element of a sequence into a new form.

@@ -53,8 +53,16 @@ public class JsonUnitTest
         p1.SetValue("p2", true);
         p1.SetValue("p3", p1);
         props.SetValue("p1", p1);
-        props.SetValue("p4", "p5");
         Assert.AreEqual(props, json.GetValue<JsonObjectNode>("props"));
+        Assert.AreEqual("..", (json.GetValue<IJsonValueNode>("props") as JsonObjectNode).GetStringValue("$ref"));
+        props = props.Clone();
+        json.Remove("p1");
+        Assert.IsTrue(props.EnsureObjectValue("p4", out _));
+        Assert.AreEqual(JsonValueKind.Object, props.GetValueKind("p4"));
+        props.SetValue("p4", "p5");
+        Assert.IsFalse(props.EnsureArrayValue("p4", out _));
+        Assert.AreEqual(JsonValueKind.String, props.GetValueKind("p4"));
+        json.SetValue("props", props);
         Assert.AreEqual(props, json.GetValue<IJsonValueNode>("props"));
         Assert.AreNotEqual(json, p1);
         Assert.IsNotNull(json.GetObjectValue("props", "p1", "p3"));

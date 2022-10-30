@@ -1026,6 +1026,147 @@ public static class JsonValues
     }
 
     /// <summary>
+    /// Filters the JSON object collection by the property.
+    /// </summary>
+    /// <param name="col">The JSON object collection.</param>
+    /// <param name="key">The property key.</param>
+    /// <param name="value">The expected value of the property.</param>
+    /// <returns>The collection after filter.</returns>
+    public static IEnumerable<JsonObjectNode> WherePropertyEquals(this IEnumerable<JsonObjectNode> col, string key, string value)
+    {
+        if (col == null) yield break;
+        foreach (var item in col)
+        {
+            if (item?.TryGetStringValue(key, true, out var s) != true || value != s) continue;
+            yield return item;
+        }
+    }
+
+    /// <summary>
+    /// Filters the JSON object collection by the property.
+    /// </summary>
+    /// <param name="col">The JSON object collection.</param>
+    /// <param name="key">The property key.</param>
+    /// <param name="value">The expected value of the property.</param>
+    /// <param name="callback">The callback with item, original index and filtered index.</param>
+    /// <returns>The collection after filter.</returns>
+    public static IEnumerable<JsonObjectNode> WherePropertyEquals(this IEnumerable<JsonObjectNode> col, string key, string value, Action<JsonObjectNode, int, int> callback)
+    {
+        if (col == null) yield break;
+        var i = -1;
+        var j = -1;
+        foreach (var item in col)
+        {
+            i++;
+            if (item?.TryGetStringValue(key, true, out var s) != true || value != s) continue;
+            j++;
+            yield return item;
+            callback?.Invoke(item, i, j);
+        }
+    }
+
+    /// <summary>
+    /// Filters the JSON object collection by the property.
+    /// </summary>
+    /// <param name="col">The JSON object collection.</param>
+    /// <param name="key">The property key.</param>
+    /// <param name="value">The expected value of the property.</param>
+    /// <param name="comparisonType">One of the enumeration values that specifies how the strings will be compared.</param>
+    /// <returns>The collection after filter.</returns>
+    public static IEnumerable<JsonObjectNode> WherePropertyEquals(this IEnumerable<JsonObjectNode> col, string key, string value, StringComparison comparisonType)
+    {
+        if (col == null) yield break;
+        if (value == null)
+        {
+            foreach (var item in col)
+            {
+                if (!item.IsNullOrUndefined(key)) continue;
+                yield return item;
+            }
+
+            yield break;
+        }
+
+        foreach (var item in col)
+        {
+            if (item?.TryGetStringValue(key, true, out var s) != true || !value.Equals(s, comparisonType)) continue;
+            yield return item;
+        }
+    }
+
+    /// <summary>
+    /// Filters the JSON object collection by the property.
+    /// </summary>
+    /// <param name="col">The JSON object collection.</param>
+    /// <param name="key">The property key.</param>
+    /// <param name="value">The expected value of the property.</param>
+    /// <param name="comparisonType">One of the enumeration values that specifies how the strings will be compared.</param>
+    /// <param name="callback">The callback with item, original index and filtered index.</param>
+    /// <returns>The collection after filter.</returns>
+    public static IEnumerable<JsonObjectNode> WherePropertyEquals(this IEnumerable<JsonObjectNode> col, string key, string value, StringComparison comparisonType, Action<JsonObjectNode, int, int> callback)
+    {
+        if (col == null) yield break;
+        var i = -1;
+        var j = -1;
+        if (value == null)
+        {
+            foreach (var item in col)
+            {
+                i++;
+                if (!item.IsNullOrUndefined(key)) continue;
+                j++;
+                yield return item;
+                callback?.Invoke(item, i, j);
+            }
+
+            yield break;
+        }
+
+        foreach (var item in col)
+        {
+            i++;
+            if (item?.TryGetStringValue(key, true, out var s) != true || !value.Equals(s, comparisonType)) continue;
+            j++;
+            yield return item;
+            callback?.Invoke(item, i, j);
+        }
+    }
+
+    /// <summary>
+    /// Filters the JSON object collection by the property.
+    /// </summary>
+    /// <param name="col">The JSON object collection.</param>
+    /// <param name="key">The property key.</param>
+    /// <param name="value">The expected value of the property.</param>
+    /// <returns>The collection after filter.</returns>
+    public static IEnumerable<JsonObjectNode> WherePropertyEquals(this IEnumerable<JsonObjectNode> col, string key, int value)
+    {
+        if (col == null) yield break;
+        foreach (var item in col)
+        {
+            if (item?.TryGetInt32Value(key, out var s) != true || value != s) continue;
+            yield return item;
+        }
+    }
+
+    /// <summary>
+    /// Filters the JSON object collection by the property.
+    /// </summary>
+    /// <param name="col">The JSON object collection.</param>
+    /// <param name="key">The property key.</param>
+    /// <param name="value">The expected value of the property.</param>
+    /// <returns>The collection after filter.</returns>
+    public static IEnumerable<JsonObjectNode> WherePropertyEquals(this IEnumerable<JsonObjectNode> col, string key, long value)
+    {
+        if (col == null) yield break;
+        foreach (var item in col)
+        {
+            if (item?.TryGetInt64Value(key, out var s) != true || value != s) continue;
+            yield return item;
+        }
+    }
+
+    /// <summary>
     /// Compares two instances to indicate if they are same.
     /// leftValue == rightValue
     /// </summary>

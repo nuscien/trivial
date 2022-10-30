@@ -6,6 +6,8 @@ using System.Web;
 
 using Trivial.CommandLine;
 using Trivial.Data;
+using Trivial.Reflection;
+using Trivial.Text;
 
 namespace Trivial.Collection;
 
@@ -385,6 +387,72 @@ public static class ListExtensions
     }
 
     /// <summary>
+    /// Replaces an item to a new one for all.
+    /// </summary>
+    /// <param name="col">The list to replace items.</param>
+    /// <param name="oldItem">The old item to remove.</param>
+    /// <param name="newItem">The new item to update.</param>
+    /// <param name="maxCount">The maximum count of item to replace.</param>
+    /// <param name="compare">The optional compare handler. Or null to test by reference equaling.</param>
+    /// <returns>The count of item to replace.</returns>
+    public static int Replace<T>(IList<T> col, T oldItem, T newItem, int maxCount, Func<T, T, bool> compare = null)
+    {
+        if (col is null) return 0;
+        if (col is SynchronizedList<T> syncList) return syncList.Replace(oldItem, newItem, maxCount, compare);
+        if (ReferenceEquals(oldItem, newItem)) return 0;
+        compare ??= ObjectRef<T>.ReferenceEquals;
+        var count = 0;
+        try
+        {
+            for (var i = 0; i < col.Count; i++)
+            {
+                var test = col[i];
+                if (!compare(test, oldItem)) continue;
+                col[i] = newItem;
+                count++;
+                if (count >= maxCount) break;
+            }
+        }
+        catch (ArgumentOutOfRangeException)
+        {
+        }
+
+        return count;
+    }
+
+    /// <summary>
+    /// Replaces an item to a new one for all.
+    /// </summary>
+    /// <param name="col">The list to replace items.</param>
+    /// <param name="oldItem">The old item to remove.</param>
+    /// <param name="newItem">The new item to update.</param>
+    /// <param name="compare">The optional compare handler. Or null to test by reference equaling.</param>
+    /// <returns>The count of item to replace.</returns>
+    public static int Replace<T>(IList<T> col, T oldItem, T newItem, Func<T, T, bool> compare = null)
+    {
+        if (col is null) return 0;
+        if (col is SynchronizedList<T> syncList) return syncList.Replace(oldItem, newItem, compare);
+        if (ReferenceEquals(oldItem, newItem)) return 0;
+        compare ??= ObjectRef<T>.ReferenceEquals;
+        var count = 0;
+        try
+        {
+            for (var i = 0; i < col.Count; i++)
+            {
+                var test = col[i];
+                if (!compare(test, oldItem)) continue;
+                col[i] = newItem;
+                count++;
+            }
+        }
+        catch (ArgumentOutOfRangeException)
+        {
+        }
+
+        return count;
+    }
+
+    /// <summary>
     /// Groups the key value pairs.
     /// </summary>
     /// <param name="list">The key value pairs.</param>
@@ -455,9 +523,35 @@ public static class ListExtensions
     public static bool Equals<T>(T[] a, T[] b)
     {
         if (a.Length != b.Length) return false;
+        try
+        {
+            for (var i = 0; i < a.Length; i++)
+            {
+                if ((a[i] == null && b[i] != null) || !a[i].Equals(b[i])) return false;
+            }
+        }
+        catch (ArgumentOutOfRangeException)
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+    /// <summary>
+    /// Tests if they are same.
+    /// </summary>
+    /// <param name="a">Collection a.</param>
+    /// <param name="b">Collection b.</param>
+    /// <param name="compare">The equaling handler.</param>
+    /// <returns>true if they are same; otherwise, false.</returns>
+    public static bool Equals<T>(T[] a, T[] b, Func<T, T, bool> compare)
+    {
+        if (a.Length != b.Length) return false;
+        compare ??= ObjectRef<T>.ReferenceEquals;
         for (var i = 0; i < a.Length; i++)
         {
-            if ((a[i] == null && b[i] != null) || !a[i].Equals(b[i])) return false;
+            if (!compare(a[i], b[i])) return false;
         }
 
         return true;
@@ -472,9 +566,35 @@ public static class ListExtensions
     public static bool Equals<T>(IList<T> a, IList<T> b)
     {
         if (a.Count != b.Count) return false;
+        try
+        {
+            for (var i = 0; i < a.Count; i++)
+            {
+                if ((a[i] == null && b[i] != null) || !a[i].Equals(b[i])) return false;
+            }
+        }
+        catch (ArgumentOutOfRangeException)
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+    /// <summary>
+    /// Tests if they are same.
+    /// </summary>
+    /// <param name="a">Collection a.</param>
+    /// <param name="b">Collection b.</param>
+    /// <param name="compare">The equaling handler.</param>
+    /// <returns>true if they are same; otherwise, false.</returns>
+    public static bool Equals<T>(IList<T> a, IList<T> b, Func<T, T, bool> compare)
+    {
+        if (a.Count != b.Count) return false;
+        compare ??= ObjectRef<T>.ReferenceEquals;
         for (var i = 0; i < a.Count; i++)
         {
-            if ((a[i] == null && b[i] != null) || !a[i].Equals(b[i])) return false;
+            if (!compare(a[i], b[i])) return false;
         }
 
         return true;
