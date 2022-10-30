@@ -54,7 +54,7 @@ public class JsonUnitTest
         p1.SetValue("p3", p1);
         props.SetValue("p1", p1);
         Assert.AreEqual(props, json.GetValue<JsonObjectNode>("props"));
-        Assert.AreEqual("..", (json.GetValue<IJsonValueNode>("props") as JsonObjectNode).GetStringValue("$ref"));
+        Assert.AreEqual("@", (json.GetValue<IJsonValueNode>("props") as JsonObjectNode).GetStringValue("$ref"));
         props = props.Clone();
         json.Remove("p1");
         Assert.IsTrue(props.EnsureObjectValue("p4", out _));
@@ -72,6 +72,23 @@ public class JsonUnitTest
         Assert.AreEqual(2020, json.GetValue<DateTime>("props", "p1", "p9").Year);
         Assert.AreEqual(0, json.GetValue<DateTime>("props", "p1", "p9").Second);
         Assert.AreEqual(2020, json.TryGetValue<DateTime>("props", "p1", "p9").Year);
+        json.SetValue("dateObj", new JsonObjectNode
+        {
+            { "year", 2000 },
+            { "month", 12 },
+            { "day", 24 },
+            { "hour", 20 }
+        });
+        Assert.AreEqual(2000, json.TryGetDateTimeValue("dateObj").Value.Year);
+        Assert.AreEqual(20, json.TryGetDateTimeValue("dateObj").Value.Hour);
+        json.SetValue("dateObj", DateTime.Now);
+        Assert.AreEqual(JsonValueKind.Object, json.GetValueKind("dateObj"));
+        Assert.IsTrue(json.TryGetDateTimeValue("dateObj").HasValue);
+        json.SetValue("dateObj", DateTime.Now, null);
+        Assert.AreEqual(JsonValueKind.String, json.GetValueKind("dateObj"));
+        Assert.IsTrue(json.TryGetDateTimeValue("dateObj").HasValue);
+        json.Remove("dateObj");
+        Assert.IsFalse(json.TryGetDateTimeValue("dateObj").HasValue);
         Assert.IsNull(json.TryGetObjectValue("props", "p1", "p3", "p6"));
         Assert.AreEqual(4567, p1.GetInt32Value("p7"));
         Assert.AreEqual(4567, p1.GetValue<int>("p7"));

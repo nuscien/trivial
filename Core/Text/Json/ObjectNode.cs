@@ -2283,8 +2283,33 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
             return date;
         }
 
-        if (!TryGetJsonValue<JsonIntegerNode>(key, out var num)) return null;
-        return useUnixTimestampsFallback ? WebFormat.ParseUnixTimestamp(num.Value) : WebFormat.ParseDate(num.Value);
+        if (TryGetJsonValue<JsonIntegerNode>(key, out var num))
+            return useUnixTimestampsFallback ? WebFormat.ParseUnixTimestamp(num.Value) : WebFormat.ParseDate(num.Value);
+        if (!TryGetJsonValue<JsonObjectNode>(key, out var obj)) return null;
+        var jsTick = obj.TryGetInt64Value("value");
+        if (jsTick.HasValue) return WebFormat.ParseDate(jsTick.Value);
+        var year = obj.TryGetInt32Value("year");
+        var month = obj.TryGetInt32Value("month");
+        var day = obj.TryGetInt32Value("day");
+        if (!year.HasValue || !month.HasValue || !day.HasValue) return null;
+        var hour = obj.TryGetInt32Value("hour") ?? 0;
+        var minute = obj.TryGetInt32Value("minute") ?? 0;
+        var second = obj.TryGetInt32Value("second") ?? 0;
+        var millisecond = obj.TryGetInt32Value("millisecond") ?? 0;
+        var kind = obj.TryGetStringTrimmedValue("kind", true)?.ToLowerInvariant() ?? "utc";
+        if (kind == "utc" || kind == "z" || kind == "0" || kind == "0000" || kind == "+0000" || kind == "universal")
+            return new DateTime(year.Value, month.Value, day.Value, hour, minute, second, millisecond, DateTimeKind.Utc);
+        if (kind == "local" || kind == "server")
+            return new DateTime(year.Value, month.Value, day.Value, hour, minute, second, millisecond, DateTimeKind.Local);
+        if (kind.Length != 5) return null;
+        if ((kind.StartsWith('+') || kind.StartsWith('-')) && int.TryParse(kind, out var offset))
+        {
+            var span = new TimeSpan(offset / 100, Math.Abs(offset % 100), 0);
+            var dt = new DateTimeOffset(year.Value, month.Value, day.Value, hour, minute, second, millisecond, span);
+            return dt.ToUniversalTime().DateTime;
+        }
+
+        return null;
     }
 
 #if !NETOLDVER
@@ -3152,6 +3177,37 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     public void SetValue(string key, DateTime value)
     {
         AssertKey(key);
+        if (store.TryGetValue(key, out var data) && data is not null)
+        {
+            switch (data.ValueKind)
+            {
+                case JsonValueKind.Number:
+                    store[key] = new JsonIntegerNode(value);
+                    return;
+                case JsonValueKind.Object:
+                    if (data is JsonObjectNode json && (json.ContainsKey("day") || json.ContainsKey("hour")))
+                    {
+                        var utc = value.ToUniversalTime();
+                        store[key] = new JsonObjectNode
+                        {
+                            { "value", WebFormat.ParseDate(utc) },
+                            { "str", JsonStringNode.ToJson(value, true) },
+                            { "year", utc.Year },
+                            { "month", utc.Month },
+                            { "day", utc.Day },
+                            { "hour", utc.Hour },
+                            { "minute", utc.Minute },
+                            { "second", utc.Second },
+                            { "millisecond", utc.Millisecond },
+                            { "kind", "utc" }
+                        };
+                        return;
+                    }
+
+                    break;
+            }
+        }
+
         store[key] = new JsonStringNode(value);
     }
 
@@ -3160,7 +3216,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     /// </summary>
     /// <param name="key">The property key.</param>
     /// <param name="value">The value to set.</param>
-    /// <param name="format">A standard or custom date and time format string.</param>
+    /// <param name="format">A standard or custom date and time format string; or null, if force to use JavaScript date time string format..</param>
     /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
     public void SetValue(string key, DateTime value, string format)
     {
@@ -3197,11 +3253,39 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     /// </summary>
     /// <param name="key">The property key.</param>
     /// <param name="value">The value to set.</param>
+    /// <param name="format">A standard or custom time span format string.</param>
+    /// <param name="provider">An object that supplies culture-specific formatting information.</param>
+    /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+    public void SetValue(string key, int value, string format, IFormatProvider provider = null)
+    {
+        AssertKey(key);
+        store[key] = new JsonStringNode(value, format, provider);
+    }
+
+    /// <summary>
+    /// Sets the value of the specific property.
+    /// </summary>
+    /// <param name="key">The property key.</param>
+    /// <param name="value">The value to set.</param>
     /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
     public void SetValue(string key, long value)
     {
         AssertKey(key);
         store[key] = new JsonIntegerNode(value);
+    }
+
+    /// <summary>
+    /// Sets the value of the specific property.
+    /// </summary>
+    /// <param name="key">The property key.</param>
+    /// <param name="value">The value to set.</param>
+    /// <param name="format">A standard or custom time span format string.</param>
+    /// <param name="provider">An object that supplies culture-specific formatting information.</param>
+    /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+    public void SetValue(string key, long value, string format, IFormatProvider provider = null)
+    {
+        AssertKey(key);
+        store[key] = new JsonStringNode(value, format, provider);
     }
 
     /// <summary>
@@ -3226,6 +3310,20 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     {
         AssertKey(key);
         store[key] = new JsonDoubleNode(value);
+    }
+
+    /// <summary>
+    /// Sets the value of the specific property.
+    /// </summary>
+    /// <param name="key">The property key.</param>
+    /// <param name="value">The value to set.</param>
+    /// <param name="format">A standard or custom time span format string.</param>
+    /// <param name="provider">An object that supplies culture-specific formatting information.</param>
+    /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+    public void SetValue(string key, double value, string format, IFormatProvider provider = null)
+    {
+        AssertKey(key);
+        store[key] = new JsonStringNode(value, format, provider);
     }
 
     /// <summary>

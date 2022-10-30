@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Numerics;
+using System.Runtime.Serialization;
 using System.Text;
 using System.Text.Json;
 
@@ -68,7 +69,7 @@ public class JsonStringNode : IJsonStringNode, IJsonValueNode<string>, IJsonData
     /// <param name="format">A standard or custom date and time format string.</param>
     public JsonStringNode(DateTime value, string format)
     {
-        Value = value.ToString(format);
+        Value = format == null ? ToJson(value, true) : value.ToString(format);
         ValueKind = JsonValueKind.String;
         ValueType = 1;
     }
@@ -200,7 +201,29 @@ public class JsonStringNode : IJsonStringNode, IJsonValueNode<string>, IJsonData
     /// Initializes a new instance of the JsonString class.
     /// </summary>
     /// <param name="value">The value.</param>
+    /// <param name="format">A standard or custom time span format string.</param>
+    /// <param name="provider">An object that supplies culture-specific formatting information.</param>
+    public JsonStringNode(int value, string format, IFormatProvider provider = null) : this(provider == null ? value.ToString(format) : value.ToString(format, provider))
+    {
+        ValueType = 2;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the JsonString class.
+    /// </summary>
+    /// <param name="value">The value.</param>
     public JsonStringNode(long value) : this(value.ToString("g", CultureInfo.InvariantCulture))
+    {
+        ValueType = 2;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the JsonString class.
+    /// </summary>
+    /// <param name="value">The value.</param>
+    /// <param name="format">A standard or custom time span format string.</param>
+    /// <param name="provider">An object that supplies culture-specific formatting information.</param>
+    public JsonStringNode(long value, string format, IFormatProvider provider = null) : this(provider == null ? value.ToString(format) : value.ToString(format, provider))
     {
         ValueType = 2;
     }
@@ -228,6 +251,17 @@ public class JsonStringNode : IJsonStringNode, IJsonValueNode<string>, IJsonData
     /// </summary>
     /// <param name="value">The value.</param>
     public JsonStringNode(double value) : this(value.ToString("g", CultureInfo.InvariantCulture))
+    {
+        ValueType = 3;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the JsonString class.
+    /// </summary>
+    /// <param name="value">The value.</param>
+    /// <param name="format">A standard or custom time span format string.</param>
+    /// <param name="provider">An object that supplies culture-specific formatting information.</param>
+    public JsonStringNode(double value, string format, IFormatProvider provider = null) : this(provider == null ? value.ToString(format) : value.ToString(format, provider))
     {
         ValueType = 3;
     }
