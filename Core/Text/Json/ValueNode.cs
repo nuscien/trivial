@@ -1168,6 +1168,39 @@ public static class JsonValues
         }
     }
 
+    internal static DateTime? TryGetDateTime(JsonObjectNode json)
+    {
+        var jsTick = json.TryGetInt64Value("value");
+        if (jsTick.HasValue) return WebFormat.ParseDate(jsTick.Value);
+        var year = json.TryGetInt32Value("year");
+        var month = json.TryGetInt32Value("month");
+        var day = json.TryGetInt32Value("day");
+        if (!year.HasValue || !month.HasValue || !day.HasValue) return null;
+        var hour = json.TryGetInt32Value("hour") ?? 0;
+        var minute = json.TryGetInt32Value("minute") ?? 0;
+        var second = json.TryGetInt32Value("second") ?? 0;
+        var millisecond = json.TryGetInt32Value("millisecond") ?? 0;
+        var kind = json.TryGetStringTrimmedValue("kind", true)?.ToLowerInvariant() ?? "utc";
+        if (kind == "utc" || kind == "z" || kind == "0" || kind == "0000" || kind == "+00:00" || kind == "+0000" || kind == "universal")
+            return new DateTime(year.Value, month.Value, day.Value, hour, minute, second, millisecond, DateTimeKind.Utc);
+        if (kind == "local" || kind == "server")
+            return new DateTime(year.Value, month.Value, day.Value, hour, minute, second, millisecond, DateTimeKind.Local);
+        if (kind.Length != 5)
+        {
+            if (kind.Length == 6 && kind[3] == ':') kind = kind.Replace(":", string.Empty);
+            if (kind.Length != 5) return null;
+        }
+
+        if ((kind.StartsWith('+') || kind.StartsWith('-')) && int.TryParse(kind, out var offset))
+        {
+            var span = new TimeSpan(offset / 100, Math.Abs(offset % 100), 0);
+            var dt = new DateTimeOffset(year.Value, month.Value, day.Value, hour, minute, second, millisecond, span);
+            return dt.ToUniversalTime().DateTime;
+        }
+
+        return null;
+    }
+
     /// <summary>
     /// Compares two instances to indicate if they are same.
     /// leftValue == rightValue

@@ -16,6 +16,7 @@ using Trivial.Collection;
 using Trivial.Data;
 using Trivial.Maths;
 using Trivial.Reflection;
+using Trivial.Web;
 
 namespace Trivial.Text;
 
@@ -1653,8 +1654,10 @@ public class JsonArrayNode : IJsonContainerNode, IJsonDataNode, IReadOnlyList<IJ
             return date;
         }
 
-        if (!TryGetJsonValue<JsonIntegerNode>(index, out var num)) return null;
-        return useUnixTimestampsFallback ? Web.WebFormat.ParseUnixTimestamp(num.Value) : Web.WebFormat.ParseDate(num.Value);
+        if (TryGetJsonValue<JsonIntegerNode>(index, out var num))
+            return useUnixTimestampsFallback ? Web.WebFormat.ParseUnixTimestamp(num.Value) : Web.WebFormat.ParseDate(num.Value);
+        if (!TryGetJsonValue<JsonObjectNode>(index, out var obj)) return null;
+        return JsonValues.TryGetDateTime(obj);
     }
 
 #if !NETOLDVER

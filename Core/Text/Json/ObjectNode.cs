@@ -1508,6 +1508,41 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     /// Tries to get the value of the specific property.
     /// </summary>
     /// <param name="key">The property key.</param>
+    /// <param name="trueString">The string value of true.</param>
+    /// <param name="falseString">The string value of false.</param>
+    /// <param name="ignoreIfNotBoolean">true if return null if the kind of property is not boolean; otherwise, false, that means it will return the string value if it is a string or a number.</param>
+    /// <returns>true if has the property and the type is the one expected; otherwise, false.</returns>
+    public string TryGetBooleanStringValue(string key, string trueString, string falseString, bool ignoreIfNotBoolean = false)
+    {
+        if (TryGetBooleanValue(key, true, out var b)) return b ? trueString : falseString;
+        if (ignoreIfNotBoolean) return null;
+        return TryGetStringValue(key);
+    }
+
+    /// <summary>
+    /// Tries to get the value of the specific property.
+    /// </summary>
+    /// <param name="key">The property key.</param>
+    /// <param name="trueString">The string value of true.</param>
+    /// <param name="falseString">The string value of false.</param>
+    /// <param name="isBoolean">true if the kind is boolean; otherwise, false.</param>
+    /// <returns>true if has the property and the type is the one expected; otherwise, false.</returns>
+    public string TryGetBooleanStringValue(string key, string trueString, string falseString, out bool isBoolean)
+    {
+        if (TryGetBooleanValue(key, true, out var b))
+        {
+            isBoolean = true;
+            return b ? trueString : falseString;
+        }
+
+        isBoolean = false;
+        return TryGetStringValue(key);
+    }
+
+    /// <summary>
+    /// Tries to get the value of the specific property.
+    /// </summary>
+    /// <param name="key">The property key.</param>
     /// <param name="ignoreNotMatched">true if ignore any item which is not JSON string; otherwise, false.</param>
     /// <returns>The list; or null, if no such array property.</returns>
     public List<string> TryGetStringListValue(string key, bool ignoreNotMatched = false)
@@ -2308,35 +2343,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
         if (TryGetJsonValue<JsonIntegerNode>(key, out var num))
             return useUnixTimestampsFallback ? WebFormat.ParseUnixTimestamp(num.Value) : WebFormat.ParseDate(num.Value);
         if (!TryGetJsonValue<JsonObjectNode>(key, out var obj)) return null;
-        var jsTick = obj.TryGetInt64Value("value");
-        if (jsTick.HasValue) return WebFormat.ParseDate(jsTick.Value);
-        var year = obj.TryGetInt32Value("year");
-        var month = obj.TryGetInt32Value("month");
-        var day = obj.TryGetInt32Value("day");
-        if (!year.HasValue || !month.HasValue || !day.HasValue) return null;
-        var hour = obj.TryGetInt32Value("hour") ?? 0;
-        var minute = obj.TryGetInt32Value("minute") ?? 0;
-        var second = obj.TryGetInt32Value("second") ?? 0;
-        var millisecond = obj.TryGetInt32Value("millisecond") ?? 0;
-        var kind = obj.TryGetStringTrimmedValue("kind", true)?.ToLowerInvariant() ?? "utc";
-        if (kind == "utc" || kind == "z" || kind == "0" || kind == "0000" || kind == "+00:00" || kind == "+0000" || kind == "universal")
-            return new DateTime(year.Value, month.Value, day.Value, hour, minute, second, millisecond, DateTimeKind.Utc);
-        if (kind == "local" || kind == "server")
-            return new DateTime(year.Value, month.Value, day.Value, hour, minute, second, millisecond, DateTimeKind.Local);
-        if (kind.Length != 5)
-        {
-            if (kind.Length == 6 && kind[3] == ':') kind = kind.Replace(":", string.Empty);
-            if (kind.Length != 5) return null;
-        }
-
-        if ((kind.StartsWith('+') || kind.StartsWith('-')) && int.TryParse(kind, out var offset))
-        {
-            var span = new TimeSpan(offset / 100, Math.Abs(offset % 100), 0);
-            var dt = new DateTimeOffset(year.Value, month.Value, day.Value, hour, minute, second, millisecond, span);
-            return dt.ToUniversalTime().DateTime;
-        }
-
-        return null;
+        return JsonValues.TryGetDateTime(obj);
     }
 
 #if !NETOLDVER
