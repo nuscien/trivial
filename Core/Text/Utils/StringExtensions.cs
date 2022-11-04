@@ -448,11 +448,55 @@ public static class StringExtensions
     }
 
     /// <summary>
-    /// Gets the substring between two keywords.
+    /// Determines whether the beginning of the string matches the specified string.
+    /// </summary>
+    /// <param name="str">The input string.</param>
+    /// <param name="value">The string to compare.</param>
+    /// <param name="rest">The rest string after the value.</param>
+    /// <returns>true if value matches the beginning of this string; otherwise, false.</returns>
+    /// <exception cref="ArgumentNullException">value is null.</exception>
+    public static bool StartWith(string str, string value, out string rest)
+    {
+        if (value == null) throw new ArgumentNullException(nameof(value), "value is null.");
+        if (str?.StartsWith(value) != true)
+        {
+            rest = str;
+            return false;
+        }
+
+        rest = value.Substring(str.Length);
+        return true;
+    }
+
+    /// <summary>
+    /// Determines whether the beginning of the string matches the specified string.
+    /// </summary>
+    /// <param name="str">The input string.</param>
+    /// <param name="value">The string to compare.</param>
+    /// <param name="comparisonType">One of the enumeration values that determines how this string and value are compared.</param>
+    /// <param name="rest">The rest string after the value.</param>
+    /// <returns>true if value matches the beginning of this string; otherwise, false.</returns>
+    /// <exception cref="ArgumentException">comparisonType is not a System.StringComparison value.</exception>
+    /// <exception cref="ArgumentNullException">value is null.</exception>
+    public static bool StartWith(string str, string value, StringComparison comparisonType, out string rest)
+    {
+        if (value == null) throw new ArgumentNullException(nameof(value), "value is null.");
+        if (str?.StartsWith(value, comparisonType) != true)
+        {
+            rest = str;
+            return false;
+        }
+
+        rest = value.Substring(str.Length);
+        return true;
+    }
+
+    /// <summary>
+    /// Gets the first substring between two keywords.
     /// </summary>
     /// <param name="s">The input string.</param>
-    /// <param name="start">The start keyword.</param>
-    /// <param name="end">The end keword.</param>
+    /// <param name="start">The start keyword; or null, if start from begin.</param>
+    /// <param name="end">The end keword; or null, if end to last.</param>
     /// <param name="include">true if output includes the keywords; otherwise, false.</param>
     /// <param name="startIndex">The start index to search.</param>
     /// <returns>The substring.</returns>
@@ -472,6 +516,35 @@ public static class StringExtensions
         s = s.Substring(i + start.Length);
         if (string.IsNullOrEmpty(end)) return s;
         i = s.IndexOf(end);
+        return i < 0 ? s : s.Substring(0, i);
+    }
+
+    /// <summary>
+    /// Gets the first substring between two keywords.
+    /// </summary>
+    /// <param name="s">The input string.</param>
+    /// <param name="start">The start keyword; or null, if start from begin.</param>
+    /// <param name="end">The end keword; or null, if end to last.</param>
+    /// <param name="comparisonType">One of the enumeration values that determines how this string and value are compared.</param>
+    /// <param name="include">true if output includes the keywords; otherwise, false.</param>
+    /// <param name="startIndex">The start index to search.</param>
+    /// <returns>The substring.</returns>
+    public static string Between(string s, string start, string end, StringComparison comparisonType, bool include = false, int startIndex = 0)
+    {
+        if (string.IsNullOrEmpty(s)) return s;
+        var i = string.IsNullOrEmpty(start) ? startIndex : s.IndexOf(start, startIndex, comparisonType);
+        if (i < 0) return string.Empty;
+        if (include)
+        {
+            s = s.Substring(i);
+            if (string.IsNullOrEmpty(end)) return s;
+            i = s.IndexOf(end, start.Length, comparisonType);
+            return i < 0 ? s : s.Substring(0, i + end.Length);
+        }
+
+        s = s.Substring(i + start.Length);
+        if (string.IsNullOrEmpty(end)) return s;
+        i = s.IndexOf(end, comparisonType);
         return i < 0 ? s : s.Substring(0, i);
     }
 
