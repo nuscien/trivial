@@ -382,9 +382,7 @@ public class JsonHttpClient<T>
     /// <exception cref="InvalidOperationException">The task is cancelled.</exception>
     /// <exception cref="ObjectDisposedException">The inner HTTP web client instance has been disposed.</exception>
     public Task<T> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken = default)
-    {
-        return SendAsync(request, null, cancellationToken);
-    }
+        => SendAsync(request, null, cancellationToken);
 
     /// <summary>
     /// Sends an HTTP request and gets the result serialized by JSON.
@@ -398,9 +396,7 @@ public class JsonHttpClient<T>
     /// <exception cref="InvalidOperationException">The task is cancelled.</exception>
     /// <exception cref="ObjectDisposedException">The inner HTTP web client instance has been disposed.</exception>
     public Task<T> SendAsync(HttpMethod method, string requestUri, CancellationToken cancellationToken = default)
-    {
-        return SendAsync(new HttpRequestMessage(method, requestUri), cancellationToken);
-    }
+        => SendAsync(new HttpRequestMessage(method, requestUri), cancellationToken);
 
     /// <summary>
     /// Sends an HTTP request and gets the result serialized by JSON.
@@ -414,9 +410,7 @@ public class JsonHttpClient<T>
     /// <exception cref="InvalidOperationException">The task is cancelled.</exception>
     /// <exception cref="ObjectDisposedException">The inner HTTP web client instance has been disposed.</exception>
     public Task<T> SendAsync(HttpMethod method, Uri requestUri, CancellationToken cancellationToken = default)
-    {
-        return SendAsync(new HttpRequestMessage(method, requestUri), cancellationToken);
-    }
+        => SendAsync(new HttpRequestMessage(method, requestUri), cancellationToken);
 
     /// <summary>
     /// Sends an HTTP request and gets the result serialized by JSON.
@@ -431,12 +425,10 @@ public class JsonHttpClient<T>
     /// <exception cref="InvalidOperationException">The task is cancelled.</exception>
     /// <exception cref="ObjectDisposedException">The inner HTTP web client instance has been disposed.</exception>
     public Task<T> SendAsync(HttpMethod method, string requestUri, HttpContent content, CancellationToken cancellationToken = default)
-    {
-        return SendAsync(new HttpRequestMessage(method, requestUri)
+        => SendAsync(new HttpRequestMessage(method, requestUri)
         {
             Content = content
         }, cancellationToken);
-    }
 
     /// <summary>
     /// Sends an HTTP request and gets the result serialized by JSON.
@@ -451,12 +443,10 @@ public class JsonHttpClient<T>
     /// <exception cref="InvalidOperationException">The task is cancelled.</exception>
     /// <exception cref="ObjectDisposedException">The inner HTTP web client instance has been disposed.</exception>
     public Task<T> SendAsync(HttpMethod method, Uri requestUri, HttpContent content, CancellationToken cancellationToken = default)
-    {
-        return SendAsync(new HttpRequestMessage(method, requestUri)
+        => SendAsync(new HttpRequestMessage(method, requestUri)
         {
             Content = content
         }, cancellationToken);
-    }
 
     /// <summary>
     /// Sends an HTTP request and gets the result serialized by JSON.
@@ -471,12 +461,10 @@ public class JsonHttpClient<T>
     /// <exception cref="InvalidOperationException">The task is cancelled.</exception>
     /// <exception cref="ObjectDisposedException">The inner HTTP web client instance has been disposed.</exception>
     public Task<T> SendAsync(HttpMethod method, string requestUri, QueryData content, CancellationToken cancellationToken = default)
-    {
-        return SendAsync(new HttpRequestMessage(method, requestUri)
+        => SendAsync(new HttpRequestMessage(method, requestUri)
         {
             Content = new StringContent(content.ToString(), Encoding.UTF8, Web.WebFormat.FormUrlMIME)
         }, cancellationToken);
-    }
 
     /// <summary>
     /// Sends an HTTP request and gets the result serialized by JSON.
@@ -491,12 +479,10 @@ public class JsonHttpClient<T>
     /// <exception cref="InvalidOperationException">The task is cancelled.</exception>
     /// <exception cref="ObjectDisposedException">The inner HTTP web client instance has been disposed.</exception>
     public Task<T> SendAsync(HttpMethod method, Uri requestUri, QueryData content, CancellationToken cancellationToken = default)
-    {
-        return SendAsync(new HttpRequestMessage(method, requestUri)
+        => SendAsync(new HttpRequestMessage(method, requestUri)
         {
             Content = new StringContent(content.ToString(), Encoding.UTF8, Web.WebFormat.FormUrlMIME)
         }, cancellationToken);
-    }
 
     /// <summary>
     /// Sends an HTTP request and gets the result serialized by JSON.
@@ -601,9 +587,7 @@ public class JsonHttpClient<T>
     /// <exception cref="InvalidOperationException">The task is cancelled.</exception>
     /// <exception cref="ObjectDisposedException">The inner HTTP web client instance has been disposed.</exception>
     public Task<T> SendJsonAsync(HttpMethod method, string requestUri, object content, CancellationToken cancellationToken = default)
-    {
-        return SendJsonAsync(method, requestUri, content, null as JsonSerializerOptions, cancellationToken);
-    }
+        => SendJsonAsync(method, requestUri, content, null as JsonSerializerOptions, cancellationToken);
 
     /// <summary>
     /// Sends an HTTP request and gets the result serialized by JSON.
@@ -618,9 +602,7 @@ public class JsonHttpClient<T>
     /// <exception cref="InvalidOperationException">The task is cancelled.</exception>
     /// <exception cref="ObjectDisposedException">The inner HTTP web client instance has been disposed.</exception>
     public Task<T> SendJsonAsync(HttpMethod method, Uri requestUri, object content, CancellationToken cancellationToken = default)
-    {
-        return SendJsonAsync(method, requestUri, content, null as JsonSerializerOptions, cancellationToken);
-    }
+        => SendJsonAsync(method, requestUri, content, null as JsonSerializerOptions, cancellationToken);
 
     /// <summary>
     /// Sends an HTTP request and gets the result serialized by JSON.
@@ -637,12 +619,10 @@ public class JsonHttpClient<T>
     /// <exception cref="InvalidOperationException">The task is cancelled.</exception>
     /// <exception cref="ObjectDisposedException">The inner HTTP web client instance has been disposed.</exception>
     public Task<T> SendJsonAsync<TRequestBody>(HttpMethod method, string requestUri, TRequestBody content, Func<TRequestBody, string> deserializer, CancellationToken cancellationToken = default)
-    {
-        return deserializer != null ? SendAsync(new HttpRequestMessage(method, requestUri)
+        => deserializer != null ? SendAsync(new HttpRequestMessage(method, requestUri)
         {
-            Content = new StringContent(deserializer(content), Encoding.UTF8, Trivial.Web.WebFormat.JsonMIME)
+            Content = new StringContent(deserializer(content), Encoding.UTF8, WebFormat.JsonMIME)
         }, cancellationToken) : SendJsonAsync(method, requestUri, content, cancellationToken);
-    }
 
     /// <summary>
     /// Sends an HTTP request and gets the result serialized by JSON.
@@ -659,12 +639,10 @@ public class JsonHttpClient<T>
     /// <exception cref="InvalidOperationException">The task is cancelled.</exception>
     /// <exception cref="ObjectDisposedException">The inner HTTP web client instance has been disposed.</exception>
     public Task<T> SendJsonAsync<TRequestBody>(HttpMethod method, Uri requestUri, TRequestBody content, Func<TRequestBody, string> deserializer, CancellationToken cancellationToken = default)
-    {
-        return deserializer != null ? SendAsync(new HttpRequestMessage(method, requestUri)
+        => deserializer != null ? SendAsync(new HttpRequestMessage(method, requestUri)
         {
-            Content = new StringContent(deserializer(content), Encoding.UTF8, Trivial.Web.WebFormat.JsonMIME)
+            Content = new StringContent(deserializer(content), Encoding.UTF8, WebFormat.JsonMIME)
         }, cancellationToken) : SendJsonAsync(method, requestUri, content, cancellationToken);
-    }
 
     /// <summary>
     /// Sends an Internet Control Message Protocol (ICMP) echo message with the specified data buffer to the specified computer, and receive a corresponding ICMP echo reply message from that computer as an asynchronous operation.
@@ -703,9 +681,7 @@ public class JsonHttpClient<T>
     /// <exception cref="InvalidOperationException">The task is cancelled.</exception>
     /// <exception cref="ObjectDisposedException">The inner HTTP web client instance has been disposed.</exception>
     public Task<T> GetAsync(string requestUri, CancellationToken cancellationToken = default)
-    {
-        return SendAsync(new HttpRequestMessage(HttpMethod.Get, requestUri), cancellationToken);
-    }
+        => SendAsync(new HttpRequestMessage(HttpMethod.Get, requestUri), cancellationToken);
 
     /// <summary>
     /// Sends a GET request and gets the result serialized by JSON.
@@ -718,9 +694,7 @@ public class JsonHttpClient<T>
     /// <exception cref="InvalidOperationException">The task is cancelled.</exception>
     /// <exception cref="ObjectDisposedException">The inner HTTP web client instance has been disposed.</exception>
     public Task<T> GetAsync(Uri requestUri, CancellationToken cancellationToken = default)
-    {
-        return SendAsync(new HttpRequestMessage(HttpMethod.Get, requestUri), cancellationToken);
-    }
+        => SendAsync(new HttpRequestMessage(HttpMethod.Get, requestUri), cancellationToken);
 
     /// <summary>
     /// Sends a POST request and gets the result serialized by JSON.
@@ -731,10 +705,45 @@ public class JsonHttpClient<T>
     /// <returns>A result serialized.</returns>
     /// <exception cref="ObjectDisposedException">The inner HTTP web client instance has been disposed.</exception>
     public Task<T> PostAsync(string requestUri, HttpContent content, CancellationToken cancellationToken = default)
-    {
-        return SendAsync(new HttpRequestMessage(HttpMethod.Post, requestUri)
+        => SendAsync(new HttpRequestMessage(HttpMethod.Post, requestUri)
         {
             Content = content
+        }, cancellationToken);
+
+    /// <summary>
+    /// Sends a POST request and gets the result serialized by JSON.
+    /// </summary>
+    /// <param name="requestUri">The Uri the request is sent to.</param>
+    /// <param name="content">The HTTP request content sent to the server.</param>
+    /// <param name="cancellationToken">The optional cancellation token.</param>
+    /// <returns>A result serialized.</returns>
+    /// <exception cref="FailedHttpException">HTTP response contains failure status code.</exception>
+    /// <exception cref="HttpRequestException">The request failed due to an underlying issue such as network connectivity, DNS failure, server certificate validation or timeout.</exception>
+    /// <exception cref="InvalidOperationException">The task is cancelled.</exception>
+    /// <exception cref="ObjectDisposedException">The inner HTTP web client instance has been disposed.</exception>
+    public Task<T> PostAsync(Uri requestUri, HttpContent content, CancellationToken cancellationToken = default)
+        => SendAsync(new HttpRequestMessage(HttpMethod.Post, requestUri)
+        {
+            Content = content
+        }, cancellationToken);
+
+    /// <summary>
+    /// Sends a POST request and gets the result serialized by JSON.
+    /// </summary>
+    /// <param name="requestUri">The Uri the request is sent to.</param>
+    /// <param name="content">The HTTP request content sent to the server.</param>
+    /// <param name="cancellationToken">The optional cancellation token.</param>
+    /// <returns>A result serialized.</returns>
+    /// <exception cref="FailedHttpException">HTTP response contains failure status code.</exception>
+    /// <exception cref="HttpRequestException">The request failed due to an underlying issue such as network connectivity, DNS failure, server certificate validation or timeout.</exception>
+    /// <exception cref="InvalidOperationException">The task is cancelled.</exception>
+    /// <exception cref="ObjectDisposedException">The inner HTTP web client instance has been disposed.</exception>
+    public Task<T> PostAsync(string requestUri, Text.JsonObjectNode content, CancellationToken cancellationToken = default)
+    {
+        var body = HttpClientExtensions.CreateJsonContent(content);
+        return SendAsync(new HttpRequestMessage(HttpMethod.Post, requestUri)
+        {
+            Content = body
         }, cancellationToken);
     }
 
@@ -749,11 +758,12 @@ public class JsonHttpClient<T>
     /// <exception cref="HttpRequestException">The request failed due to an underlying issue such as network connectivity, DNS failure, server certificate validation or timeout.</exception>
     /// <exception cref="InvalidOperationException">The task is cancelled.</exception>
     /// <exception cref="ObjectDisposedException">The inner HTTP web client instance has been disposed.</exception>
-    public Task<T> PostAsync(Uri requestUri, HttpContent content, CancellationToken cancellationToken = default)
+    public Task<T> PostAsync(Uri requestUri, Text.JsonObjectNode content, CancellationToken cancellationToken = default)
     {
+        var body = HttpClientExtensions.CreateJsonContent(content);
         return SendAsync(new HttpRequestMessage(HttpMethod.Post, requestUri)
         {
-            Content = content
+            Content = body
         }, cancellationToken);
     }
 
@@ -769,10 +779,45 @@ public class JsonHttpClient<T>
     /// <exception cref="InvalidOperationException">The task is cancelled.</exception>
     /// <exception cref="ObjectDisposedException">The inner HTTP web client instance has been disposed.</exception>
     public Task<T> PutAsync(string requestUri, HttpContent content, CancellationToken cancellationToken = default)
-    {
-        return SendAsync(new HttpRequestMessage(HttpMethod.Put, requestUri)
+        => SendAsync(new HttpRequestMessage(HttpMethod.Put, requestUri)
         {
             Content = content
+        }, cancellationToken);
+
+    /// <summary>
+    /// Sends a PUT request and gets the result serialized by JSON.
+    /// </summary>
+    /// <param name="requestUri">The Uri the request is sent to.</param>
+    /// <param name="content">The HTTP request content sent to the server.</param>
+    /// <param name="cancellationToken">The optional cancellation token.</param>
+    /// <returns>A result serialized.</returns>
+    /// <exception cref="FailedHttpException">HTTP response contains failure status code.</exception>
+    /// <exception cref="HttpRequestException">The request failed due to an underlying issue such as network connectivity, DNS failure, server certificate validation or timeout.</exception>
+    /// <exception cref="InvalidOperationException">The task is cancelled.</exception>
+    /// <exception cref="ObjectDisposedException">The inner HTTP web client instance has been disposed.</exception>
+    public Task<T> PutAsync(Uri requestUri, HttpContent content, CancellationToken cancellationToken = default)
+        => SendAsync(new HttpRequestMessage(HttpMethod.Put, requestUri)
+        {
+            Content = content
+        }, cancellationToken);
+
+    /// <summary>
+    /// Sends a PUT request and gets the result serialized by JSON.
+    /// </summary>
+    /// <param name="requestUri">The Uri the request is sent to.</param>
+    /// <param name="content">The HTTP request content sent to the server.</param>
+    /// <param name="cancellationToken">The optional cancellation token.</param>
+    /// <returns>A result serialized.</returns>
+    /// <exception cref="FailedHttpException">HTTP response contains failure status code.</exception>
+    /// <exception cref="HttpRequestException">The request failed due to an underlying issue such as network connectivity, DNS failure, server certificate validation or timeout.</exception>
+    /// <exception cref="InvalidOperationException">The task is cancelled.</exception>
+    /// <exception cref="ObjectDisposedException">The inner HTTP web client instance has been disposed.</exception>
+    public Task<T> PutAsync(string requestUri, Text.JsonObjectNode content, CancellationToken cancellationToken = default)
+    {
+        var body = HttpClientExtensions.CreateJsonContent(content);
+        return SendAsync(new HttpRequestMessage(HttpMethod.Put, requestUri)
+        {
+            Content = body
         }, cancellationToken);
     }
 
@@ -787,11 +832,12 @@ public class JsonHttpClient<T>
     /// <exception cref="HttpRequestException">The request failed due to an underlying issue such as network connectivity, DNS failure, server certificate validation or timeout.</exception>
     /// <exception cref="InvalidOperationException">The task is cancelled.</exception>
     /// <exception cref="ObjectDisposedException">The inner HTTP web client instance has been disposed.</exception>
-    public Task<T> PutAsync(Uri requestUri, HttpContent content, CancellationToken cancellationToken = default)
+    public Task<T> PutAsync(Uri requestUri, Text.JsonObjectNode content, CancellationToken cancellationToken = default)
     {
+        var body = HttpClientExtensions.CreateJsonContent(content);
         return SendAsync(new HttpRequestMessage(HttpMethod.Put, requestUri)
         {
-            Content = content
+            Content = body
         }, cancellationToken);
     }
 
@@ -801,9 +847,7 @@ public class JsonHttpClient<T>
     /// <param name="exception">The exception thrown to test.</param>
     /// <returns>true if need retry; otherwise, false.</returns>
     protected virtual Exception GetException(Exception exception)
-    {
-        return exception;
-    }
+        => exception;
 
     /// <summary>
     /// Processes before sending the request message.
@@ -828,7 +872,5 @@ public class JsonHttpClient<T>
     /// <param name="exception">The exception thrown to test.</param>
     /// <returns>true if need retry; otherwise, false.</returns>
     private Exception GetExceptionInternal(Exception exception)
-    {
-        return GetExceptionHandler?.Invoke(exception) ?? GetException(exception);
-    }
+        => GetExceptionHandler?.Invoke(exception) ?? GetException(exception);
 }

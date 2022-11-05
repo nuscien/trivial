@@ -596,11 +596,9 @@ public static class StringExtensions
     }
 
     internal static bool IsLast(string s, char last, char except, bool moreThanOne)
-    {
-        return moreThanOne
+        => moreThanOne
             ? s.Length > 1 && s[s.Length - 1] == last && (s.Length - s.Substring(0, s.Length - 1).TrimEnd(except).Length) % 2 > 0
             : s.Length > 0 && s[s.Length - 1] == last && (s.Length == 1 || (s.Length - s.Substring(0, s.Length - 1).TrimEnd(except).Length) % 2 > 0);
-    }
 
     /// <summary>
     /// Serializes an object into JSON format.
@@ -609,12 +607,10 @@ public static class StringExtensions
     /// <param name="options">The optional serializer settings.</param>
     /// <returns>A JSON string.</returns>
     internal static string ToJson(object obj, JsonSerializerOptions options = null)
-    {
-        return ToJson(obj, (o, t) =>
+        => ToJson(obj, (o, t) =>
         {
             return JsonSerializer.Serialize(o, t, options);
         });
-    }
 
 #if NETOLDVER
     internal static StringBuilder Append(this StringBuilder sb, char value)
@@ -628,8 +624,7 @@ public static class StringExtensions
     /// <param name="options">The optional serializer settings.</param>
     /// <returns>A JSON string.</returns>
     internal static string ToJson(object obj, DataContractJsonSerializerSettings options)
-    {
-        return ToJson(obj, (o, t) =>
+        => ToJson(obj, (o, t) =>
         {
             var serializer = options != null ? new DataContractJsonSerializer(t, options) : new DataContractJsonSerializer(t);
             using var stream = new MemoryStream();
@@ -639,7 +634,6 @@ public static class StringExtensions
             stream.Read(bytes, 0, (int)stream.Length);
             return Encoding.UTF8.GetString(bytes);
         });
-    }
 
     /// <summary>
     /// Serializes an object into JSON format.
