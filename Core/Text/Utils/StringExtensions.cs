@@ -548,6 +548,74 @@ public static class StringExtensions
         return i < 0 ? s : s.Substring(0, i);
     }
 
+    /// <summary>
+    /// Gets the first item which is not empty.
+    /// </summary>
+    /// <param name="values">The string values.</param>
+    /// <returns>The first item which is not empty; or null if no match.</returns>
+    public static string GetIfNotEmpty(params string[] values)
+    {
+        if (values == null) return null;
+        foreach (var item in values)
+        {
+            if (!string.IsNullOrEmpty(item)) return item;
+        }
+
+        return null;
+    }
+
+    /// <summary>
+    /// Gets the first item which is not empty.
+    /// </summary>
+    /// <param name="values">The string values.</param>
+    /// <returns>The first item which is not empty; or null if no match.</returns>
+    public static string GetIfNotEmpty(IEnumerable<string> values)
+    {
+        if (values == null) return null;
+        foreach (var item in values)
+        {
+            if (!string.IsNullOrEmpty(item)) return item;
+        }
+
+        return null;
+    }
+
+    /// <summary>
+    /// Gets the first item which is not empty after trimming.
+    /// </summary>
+    /// <param name="values">The string values.</param>
+    /// <returns>The first item which is not empty after trimming; or null if no match.</returns>
+    public static string GetIfNotEmptyTrimmed(params string[] values)
+    {
+        if (values == null) return null;
+        string s = null;
+        foreach (var item in values)
+        {
+            s = item?.Trim();
+            if (!string.IsNullOrEmpty(s)) return s;
+        }
+
+        return null;
+    }
+
+    /// <summary>
+    /// Gets the first item which is not empty after trimming.
+    /// </summary>
+    /// <param name="values">The string values.</param>
+    /// <returns>The first item which is not empty after trimming; or null if no match.</returns>
+    public static string GetIfNotEmptyTrimmed(IEnumerable<string> values)
+    {
+        if (values == null) return null;
+        string s = null;
+        foreach (var item in values)
+        {
+            s = item?.Trim();
+            if (!string.IsNullOrEmpty(s)) return s;
+        }
+
+        return null;
+    }
+
     internal static StringBuilder Append(StringBuilder sb, StringBuilder value)
     {
         if (value != null)
