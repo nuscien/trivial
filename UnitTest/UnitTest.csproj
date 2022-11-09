@@ -2,14 +2,14 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFrameworks>net7.0;net6.0;netcoreapp3.1;net48</TargetFrameworks>
+    <TargetFrameworks>net7.0;net6.0;net48</TargetFrameworks>
     <IsPackable>false</IsPackable>
     <AssemblyName>Trivial.UnitTest</AssemblyName>
     <RootNamespace>Trivial</RootNamespace>
     <Product>Trivial</Product>
     <Authors>Kingcean Tuan</Authors>
     <Company>Nanchang Jinchen Software Co., Ltd.</Company>
-    <Version>6.6.0</Version>
+    <Version>7.0.0</Version>
     <Description>The sample of Trivial libraries.</Description>
     <Copyright>Copyright (c) 2018 Kingcean Tuan.</Copyright>
     <StartupObject>Trivial.CommandLine.Program</StartupObject>

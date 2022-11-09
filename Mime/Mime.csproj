@@ -1,16 +1,16 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFrameworks>net7.0;net6.0;net5.0;netcoreapp3.1;netstandard2.0;net481;net48;net461</TargetFrameworks>
+		<TargetFrameworks>net7.0;net6.0;netstandard2.0;net48;net461</TargetFrameworks>
 		<AssemblyName>Trivial.Mime</AssemblyName>
 		<RootNamespace>Trivial</RootNamespace>
 		<PackageId>Trivial.Mime</PackageId>
 		<Product>Trivial</Product>
 		<Authors>Kingcean Tuan</Authors>
 		<Company>Nanchang Jinchen Software Co., Ltd.</Company>
-		<Version>6.6.0</Version>
-		<AssemblyVersion>6.6.0.0</AssemblyVersion>
-		<FileVersion>6.6.0.0</FileVersion>
+		<Version>7.0.0</Version>
+		<AssemblyVersion>7.0.0.0</AssemblyVersion>
+		<FileVersion>7.0.0.0</FileVersion>
 		<Description>The MIME constants and the barcode generators.</Description>
 		<Copyright>Copyright (c) 2018 Kingcean Tuan.</Copyright>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
