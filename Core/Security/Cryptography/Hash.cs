@@ -185,10 +185,9 @@ public static class HashUtility
     /// <param name="encoding">The text encoding.</param>
     /// <returns>A hash string value of the given string; or null, if h or input is null.</returns>
     public static string ComputeHashString<T>(Func<T> h, SecureString secureString, Encoding encoding = null) where T : HashAlgorithm
-    {
-        return ComputeHashString(h, secureString.ToUnsecureString(), encoding);
-    }
+        => ComputeHashString(h, secureString.ToUnsecureString(), encoding);
 
+#if NETFRAMEWORK || NET6_0
     /// <summary>
     /// Computes a hash string value of a specific string instance.
     /// </summary>
@@ -246,6 +245,7 @@ public static class HashUtility
             _ => HashAlgorithm.Create(name.Name),
         };
     }
+#endif
 
     /// <summary>
     /// Computes a SHA-1 hash string value of a specific string instance.
@@ -406,6 +406,7 @@ public static class HashUtility
             StringComparer.OrdinalIgnoreCase.Equals(alg(plainText), hash) :
             (string.IsNullOrEmpty(hash) || StringComparer.OrdinalIgnoreCase.Equals(plainText, hash));
 
+#if NETFRAMEWORK || NET6_0
     /// <summary>
     /// Verifies a hash against a string.
     /// </summary>
@@ -427,6 +428,7 @@ public static class HashUtility
     /// <returns>true if hash is a hash value of input; otherwise, false.</returns>
     public static bool Verify(HashAlgorithmName name, SecureString secureString, string hash, Encoding encoding = null)
         => Verify(name, secureString.ToUnsecureString(), hash, encoding);
+#endif
 
     /// <summary>
     /// Verifies a SHA-1 hash against a string.

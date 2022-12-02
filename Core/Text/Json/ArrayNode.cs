@@ -1547,6 +1547,45 @@ public class JsonArrayNode : IJsonContainerNode, IJsonDataNode, IReadOnlyList<IJ
     /// </summary>
     /// <param name="index">The zero-based index of the element to get.</param>
     /// <returns>The value; or null if fail to resolve.</returns>
+    public decimal? TryGetDecimalValue(int index)
+    {
+        try
+        {
+            if (TryGetJsonValue<JsonDoubleNode>(index, out var p1)) return (decimal)p1.Value;
+            if (TryGetJsonValue<JsonIntegerNode>(index, out var p2)) return (decimal)p2.Value;
+        }
+        catch (InvalidCastException)
+        {
+            return null;
+        }
+        catch (OverflowException)
+        {
+            return null;
+        }
+
+        var str = TryGetStringValue(index);
+        if (string.IsNullOrWhiteSpace(str) || !decimal.TryParse(str, out var p3)) return null;
+        return p3;
+    }
+
+    /// <summary>
+    /// Tries to get the value at the specific index.
+    /// </summary>
+    /// <param name="index">The zero-based index of the element to get.</param>
+    /// <param name="result">The result.</param>
+    /// <returns>true if has the index and the type is the one expected; otherwise, false.</returns>
+    public bool TryGetDecimalValue(int index, out decimal result)
+    {
+        var v = TryGetDecimalValue(index);
+        result = v ?? default;
+        return v.HasValue;
+    }
+
+    /// <summary>
+    /// Tries to get the value at the specific index.
+    /// </summary>
+    /// <param name="index">The zero-based index of the element to get.</param>
+    /// <returns>The value; or null if fail to resolve.</returns>
     public bool? TryGetBooleanValue(int index)
     {
         if (TryGetJsonValue<JsonBooleanNode>(index, out var p)) return p.Value;
@@ -2453,6 +2492,18 @@ public class JsonArrayNode : IJsonContainerNode, IJsonDataNode, IReadOnlyList<IJ
     /// <param name="index">The zero-based index of the element to get.</param>
     /// <param name="value">The value to set.</param>
     /// <exception cref="ArgumentOutOfRangeException">The index is out of range.</exception>
+    public void SetValue(int index, decimal value)
+    {
+        if (store.Count == index) store.Add(JsonValues.Null);
+        store[index] = new JsonDoubleNode(value);
+    }
+
+    /// <summary>
+    /// Sets the value at the specific index.
+    /// </summary>
+    /// <param name="index">The zero-based index of the element to get.</param>
+    /// <param name="value">The value to set.</param>
+    /// <exception cref="ArgumentOutOfRangeException">The index is out of range.</exception>
     public void SetValue(int index, bool value)
     {
         if (store.Count == index) store.Add(JsonValues.Null);
@@ -2721,6 +2772,13 @@ public class JsonArrayNode : IJsonContainerNode, IJsonDataNode, IReadOnlyList<IJ
     /// <param name="value">The value to set.</param>
     public void Add(double value)
         => store.Add(double.IsNaN(value) ? JsonValues.Null : new JsonDoubleNode(value));
+
+    /// <summary>
+    /// Adds a value.
+    /// </summary>
+    /// <param name="value">The value to set.</param>
+    public void Add(decimal value)
+        => store.Add(new JsonDoubleNode(value));
 
     /// <summary>
     /// Adds a value.
@@ -3120,6 +3178,15 @@ public class JsonArrayNode : IJsonContainerNode, IJsonDataNode, IReadOnlyList<IJ
     /// <exception cref="ArgumentOutOfRangeException">The index was out of range.</exception>
     public void Insert(int index, double value)
         => store.Insert(index, double.IsNaN(value) ? JsonValues.Null : new JsonDoubleNode(value));
+
+    /// <summary>
+    /// Inserts the value at the specific index.
+    /// </summary>
+    /// <param name="index">The zero-based index of the element to get.</param>
+    /// <param name="value">The value to set.</param>
+    /// <exception cref="ArgumentOutOfRangeException">The index was out of range.</exception>
+    public void Insert(int index, decimal value)
+        => store.Insert(index, new JsonDoubleNode(value));
 
     /// <summary>
     /// Inserts the value at the specific index.

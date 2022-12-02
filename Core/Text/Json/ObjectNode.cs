@@ -2060,6 +2060,75 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     /// </summary>
     /// <param name="key">The property key.</param>
     /// <returns>The value; or null if fail to resolve.</returns>
+    public decimal? TryGetDecimalValue(string key)
+    {
+        try
+        {
+            if (TryGetJsonValue<JsonDoubleNode>(key, out var p1)) return (decimal)p1.Value;
+        }
+        catch (InvalidCastException)
+        {
+            return null;
+        }
+        catch (OverflowException)
+        {
+            return null;
+        }
+
+        if (TryGetJsonValue<JsonIntegerNode>(key, out var p2)) return (decimal)p2;
+        var str = TryGetStringValue(key);
+        if (string.IsNullOrWhiteSpace(str) || !decimal.TryParse(str, out var p3)) return null;
+        return p3;
+    }
+
+    /// <summary>
+    /// Tries to get the value of the specific property.
+    /// </summary>
+    /// <param name="key">The property key.</param>
+    /// <param name="result">The result.</param>
+    /// <returns>true if has the property and the type is the one expected; otherwise, false.</returns>
+    public bool TryGetDecimalValue(string key, out decimal result)
+    {
+        var v = TryGetDecimalValue(key);
+        result = v ?? default;
+        return v.HasValue;
+    }
+
+    /// <summary>
+    /// Tries to get the value of the specific property.
+    /// </summary>
+    /// <param name="keyPath">The path of property key.</param>
+    /// <returns>A string.</returns>
+    public decimal? TryGetDecimalValue(IEnumerable<string> keyPath)
+    {
+        var value = TryGetValue(keyPath);
+        if (value is null) return null;
+        return value.TryGetDecimal(out var s) ? s : null;
+    }
+
+    /// <summary>
+    /// Tries to get the value of the specific property.
+    /// </summary>
+    /// <param name="keyPath">The path of property key.</param>
+    /// <param name="result">The result.</param>
+    /// <returns>true if has the property and the type is the one expected; otherwise, false.</returns>
+    public bool TryGetDecimalValue(IEnumerable<string> keyPath, out decimal result)
+    {
+        var value = TryGetValue(keyPath);
+        if (value is null)
+        {
+            result = default;
+            return false;
+        }
+
+        return value.TryGetDecimal(out result);
+    }
+
+    /// <summary>
+    /// Tries to get the value of the specific property.
+    /// </summary>
+    /// <param name="key">The property key.</param>
+    /// <returns>The value; or null if fail to resolve.</returns>
     public bool? TryGetBooleanValue(string key)
     {
         if (TryGetJsonValue<JsonBooleanNode>(key, out var p)) return p.Value;
@@ -3340,6 +3409,18 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     {
         AssertKey(key);
         store[key] = double.IsNaN(value) ? JsonValues.Null : new JsonDoubleNode(value);
+    }
+
+    /// <summary>
+    /// Sets the value of the specific property.
+    /// </summary>
+    /// <param name="key">The property key.</param>
+    /// <param name="value">The value to set.</param>
+    /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+    public void SetValue(string key, decimal value)
+    {
+        AssertKey(key);
+        store[key] = new JsonDoubleNode(value);
     }
 
     /// <summary>
@@ -4693,6 +4774,16 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     /// <exception cref="ArgumentException">An element with the same key already exists in the JSON object.</exception>
     public void Add(string key, double value)
         => store.Add(key, double.IsNaN(value) ? JsonValues.Null : new JsonDoubleNode(value));
+
+    /// <summary>
+    /// Adds a property with the provided key and value to the JSON object.
+    /// </summary>
+    /// <param name="key">The property key.</param>
+    /// <param name="value">The value of the property.</param>
+    /// <exception cref="ArgumentNullException">key is null.</exception>
+    /// <exception cref="ArgumentException">An element with the same key already exists in the JSON object.</exception>
+    public void Add(string key, decimal value)
+        => store.Add(key, new JsonDoubleNode(value));
 
     /// <summary>
     /// Adds a property with the provided key and value to the JSON object.

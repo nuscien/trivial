@@ -588,7 +588,7 @@ public static class StringExtensions
     public static string GetIfNotEmptyTrimmed(params string[] values)
     {
         if (values == null) return null;
-        string s = null;
+        string s;
         foreach (var item in values)
         {
             s = item?.Trim();
@@ -606,11 +606,56 @@ public static class StringExtensions
     public static string GetIfNotEmptyTrimmed(IEnumerable<string> values)
     {
         if (values == null) return null;
-        string s = null;
+        string s;
         foreach (var item in values)
         {
             s = item?.Trim();
             if (!string.IsNullOrEmpty(s)) return s;
+        }
+
+        return null;
+    }
+
+    /// <summary>
+    /// Tries to parse a URI.
+    /// </summary>
+    /// <param name="url">The URL.</param>
+    /// <returns>The URI.</returns>
+    public static Uri TryCreateUri(string url)
+    {
+        if (string.IsNullOrWhiteSpace(url)) return null;
+        try
+        {
+            return new Uri(url);
+        }
+        catch (UriFormatException)
+        {
+        }
+        catch (ArgumentException)
+        {
+        }
+
+        return null;
+    }
+
+    /// <summary>
+    /// Tries to parse a URI.
+    /// </summary>
+    /// <param name="url">The URL.</param>
+    /// <param name="kind">Specifies whether the URI string is a relative URI, absolute URI, or is indeterminate.</param>
+    /// <returns>The URI.</returns>
+    public static Uri TryCreateUri(string url, UriKind kind)
+    {
+        if (string.IsNullOrWhiteSpace(url)) return null;
+        try
+        {
+            return new Uri(url, kind);
+        }
+        catch (UriFormatException)
+        {
+        }
+        catch (ArgumentException)
+        {
         }
 
         return null;
