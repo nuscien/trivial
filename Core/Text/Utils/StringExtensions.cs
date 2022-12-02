@@ -619,7 +619,7 @@ public static class StringExtensions
     internal static StringBuilder Append(StringBuilder sb, StringBuilder value)
     {
         if (value != null)
-#if NETFRAMEWORK || NETSTANDARD2_0_OR_GREATER
+#if NETFRAMEWORK
             sb.Append(value.ToString());
 #else
             sb.Append(value);
@@ -636,7 +636,7 @@ public static class StringExtensions
         return new string(list.ToArray());
     }
 
-#if NETOLDVER
+#if NETFRAMEWORK
     internal static bool StartsWith(this string s, char value)
         => s.StartsWith(value.ToString());
 
@@ -648,7 +648,7 @@ public static class StringExtensions
 #endif
 
     internal static string Join(char value, IEnumerable<string> col)
-#if NETOLDVER
+#if NETFRAMEWORK
         => string.Join(value.ToString(), col);
 #else
         => string.Join(value, col);
@@ -656,7 +656,7 @@ public static class StringExtensions
 
     internal static string SubRangeString(this string s, int start, int end, bool reverseEnd = false)
     {
-#if NETOLDVER
+#if NETFRAMEWORK
         return s.Substring(start, reverseEnd ? (s.Length - end - start) : (end - start));
 #else
         return reverseEnd ? s[start..^end] : s[start..end];
@@ -680,7 +680,7 @@ public static class StringExtensions
             return JsonSerializer.Serialize(o, t, options);
         });
 
-#if NETOLDVER
+#if NETFRAMEWORK
     internal static StringBuilder Append(this StringBuilder sb, char value)
         => sb.Append(value, 1);
 #endif
@@ -806,7 +806,7 @@ public static class StringExtensions
                 || t == typeof(ushort))
                 return obj.ToString();
 
-#if NET5_0_OR_GREATER
+#if NET6_0_OR_GREATER
             if (obj is Half ha)
                 return ha.ToString("g", CultureInfo.InvariantCulture);
 #endif

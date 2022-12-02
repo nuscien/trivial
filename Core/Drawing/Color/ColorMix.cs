@@ -142,7 +142,7 @@ public static partial class ColorCalculator
         if (bottom.A < 255) ratio += (255 - bottom.A) / 255f * (1 - ratio);
         if (ratio >= 1) return top;
         var negRatio = 1 - ratio;
-#if NETOLDVER
+#if NETFRAMEWORK
         var a = 255 - (int)Math.Round((255d - top.A) * (255d - bottom.A) * 255);
 #else
         var a = 255 - (int)MathF.Round((255f - top.A) * (255f - bottom.A) * 255);

@@ -364,7 +364,7 @@ public static partial class Arithmetic
     public static ulong Min(ulong a, ulong b, ulong c)
         => Math.Min(Math.Min(a, b), c);
 
-#if NET5_0_OR_GREATER
+#if NET6_0_OR_GREATER
     /// <summary>
     /// Returns the smaller of the specific numbers.
     /// </summary>
@@ -746,7 +746,7 @@ public static partial class Arithmetic
     public static ulong Max(ulong a, ulong b, ulong c)
         => Math.Max(Math.Max(a, b), c);
 
-#if NET5_0_OR_GREATER
+#if NET6_0_OR_GREATER
     /// <summary>
     /// Returns the larger of the specific numbers.
     /// </summary>

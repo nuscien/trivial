@@ -360,7 +360,7 @@ public class JsonBooleanNode : IJsonValueNode<bool>, IJsonDataNode
         return false;
     }
 
-#if !NETOLDVER
+#if !NETFRAMEWORK
     /// <summary>
     /// Gets the value at the specific index.
     /// </summary>

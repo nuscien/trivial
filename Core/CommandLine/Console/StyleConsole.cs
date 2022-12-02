@@ -743,19 +743,19 @@ public sealed partial class StyleConsole
     {
         if (Mode != 0 || Handler is not null)
             return;
-#if NET5_0_OR_GREATER
-        if (!OperatingSystem.IsWindows())
-        {
-            Mode = OperatingSystem.IsBrowser() ? Modes.Text : Modes.Ansi;
-            return;
-        }
-#elif NETCOREAPP || NETSTANDARD
+#if NETFRAMEWORK
         switch (Environment.OSVersion.Platform)
         {
             case PlatformID.Unix:
             case PlatformID.MacOSX:
                 Mode = Modes.Ansi;
                 return;
+        }
+#else
+        if (!OperatingSystem.IsWindows())
+        {
+            Mode = OperatingSystem.IsBrowser() ? Modes.Text : Modes.Ansi;
+            return;
         }
 #endif
         var left = -1;

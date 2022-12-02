@@ -157,28 +157,11 @@ public static partial class ColorCalculator
             return false;
         }
 
-#if NETSTANDARD2_0
-        try
-        {
-            result = Color.FromName(s);
-            return true;
-        }
-        catch (ArgumentException)
-        {
-        }
-        catch (InvalidOperationException)
-        {
-        }
-        catch (FormatException)
-        {
-        }
-#else
         if (Enum.TryParse<KnownColor>(s, true, out var kc))
         {
             result = Color.FromKnownColor(kc);
             return true;
         }
-#endif
 
         return TryParseHexColor(s, out result);
     }

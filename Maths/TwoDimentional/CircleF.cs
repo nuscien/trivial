@@ -124,10 +124,10 @@ public class CoordinateCircleF : IPixelOutline<float>, ICoordinateTuplePoint<flo
     public (float, float) GetY(float x)
     {
         var delta = x - CenterX;
-#if NETCOREAPP3_1_OR_GREATER
-        var r = delta == 0 ? Radius : MathF.Sqrt(Radius * Radius - delta * delta);
-#else
+#if NETFRAMEWORK
         var r = delta == 0 ? Radius : (float)Math.Sqrt(Radius * Radius - delta * delta);
+#else
+        var r = delta == 0 ? Radius : MathF.Sqrt(Radius * Radius - delta * delta);
 #endif
         if (float.IsNaN(r) || r > Radius) return (float.NaN, float.NaN);
         if (r == 0) return (CenterY, float.NaN);
@@ -142,10 +142,10 @@ public class CoordinateCircleF : IPixelOutline<float>, ICoordinateTuplePoint<flo
     public (float, float) GetX(float y)
     {
         var delta = y - CenterY;
-#if NETCOREAPP3_1_OR_GREATER
-        var r = delta == 0 ? Radius : MathF.Sqrt(Radius * Radius - delta * delta);
-#else
+#if NETFRAMEWORK
         var r = delta == 0 ? Radius : (float)Math.Sqrt(Radius * Radius - delta * delta);
+#else
+        var r = delta == 0 ? Radius : MathF.Sqrt(Radius * Radius - delta * delta);
 #endif
         if (float.IsNaN(r) || r > Radius) return (float.NaN, float.NaN);
         if (r == 0) return (CenterY, float.NaN);
@@ -549,30 +549,30 @@ public class CoordinateEllipseF : IPixelOutline<float>, ICoordinateTuplePoint<fl
     /// Gets the eccentricity.
     /// </summary>
     [JsonIgnore(Condition = JsonIgnoreCondition.Always)]
-#if NETCOREAPP3_1_OR_GREATER
-    public float Eccentricity => MathF.Sqrt(1 - MathF.Pow(B / A, 2));
-#else
+#if NETFRAMEWORK
     public float Eccentricity => (float)Math.Sqrt(1 - Math.Pow(B / A, 2));
+#else
+    public float Eccentricity => MathF.Sqrt(1 - MathF.Pow(B / A, 2));
 #endif
 
     /// <summary>
     /// Gets the middle value h.
     /// </summary>
     [JsonIgnore(Condition = JsonIgnoreCondition.Always)]
-#if NETCOREAPP3_1_OR_GREATER
-    public float H => MathF.Pow(A - B, 2) / MathF.Pow(A + B, 2);
-#else
+#if NETFRAMEWORK
     public float H => (float)Math.Pow(A - B, 2) / (float)Math.Pow(A + B, 2);
+#else
+    public float H => MathF.Pow(A - B, 2) / MathF.Pow(A + B, 2);
 #endif
 
     /// <summary>
     /// Gets the focal distance.
     /// </summary>
     [JsonIgnore(Condition = JsonIgnoreCondition.Always)]
-#if NETCOREAPP3_1_OR_GREATER
-    public float C => MathF.Sqrt(A * A - B * B);
-#else
+#if NETFRAMEWORK
     public float C => (float)Math.Sqrt(A * A - B * B);
+#else
+    public float C => MathF.Sqrt(A * A - B * B);
 #endif
 
     /// <summary>
@@ -581,10 +581,10 @@ public class CoordinateEllipseF : IPixelOutline<float>, ICoordinateTuplePoint<fl
     public float Perimeter()
     {
         var h3 = H * 3;
-#if NETCOREAPP3_1_OR_GREATER
-        return MathF.PI * (A + B) * (1 + h3 / (10 + MathF.Sqrt(4 - h3)));
-#else
+#if NETFRAMEWORK
         return (float)Math.PI * (A + B) * (1 + h3 / (10 + (float)Math.Sqrt(4 - h3)));
+#else
+        return MathF.PI * (A + B) * (1 + h3 / (10 + MathF.Sqrt(4 - h3)));
 #endif
     }
 
@@ -592,10 +592,10 @@ public class CoordinateEllipseF : IPixelOutline<float>, ICoordinateTuplePoint<fl
     /// Gets the area.
     /// </summary>
     public float Area()
-#if NETCOREAPP3_1_OR_GREATER
-        => MathF.PI * A * B;
-#else
+#if NETFRAMEWORK
         => (float)Math.PI * A * B;
+#else
+        => MathF.PI * A * B;
 #endif
 
     /// <summary>
@@ -623,10 +623,10 @@ public class CoordinateEllipseF : IPixelOutline<float>, ICoordinateTuplePoint<fl
     {
         x = Geometry.Rotate(new PointF(x, 0), center, Alpha).X;
         var width = x - CenterX;
-#if NETCOREAPP3_1_OR_GREATER
-        var y = MathF.Sqrt((1 - width * width / A * A) * B * B);
-#else
+#if NETFRAMEWORK
         var y = (float)Math.Sqrt((1 - width * width / A * A) * B * B);
+#else
+        var y = MathF.Sqrt((1 - width * width / A * A) * B * B);
 #endif
         if (float.IsNaN(y)) return (float.NaN, float.NaN);
         if (y == 0) return (y, float.NaN);
@@ -642,10 +642,10 @@ public class CoordinateEllipseF : IPixelOutline<float>, ICoordinateTuplePoint<fl
     {
         y = Geometry.Rotate(new PointF(0, y), center, Alpha).Y;
         var height = y - CenterY;
-#if NETCOREAPP3_1_OR_GREATER
-        var x = MathF.Sqrt((1 - height * height / B * B) * A * A);
-#else
+#if NETFRAMEWORK
         var x = (float)Math.Sqrt((1 - height * height / B * B) * A * A);
+#else
+        var x = MathF.Sqrt((1 - height * height / B * B) * A * A);
 #endif
         if (float.IsNaN(x)) return (float.NaN, float.NaN);
         if (x == 0) return (x, float.NaN);
@@ -1016,20 +1016,20 @@ public class CoordinateHyperbolaF : IPixelOutline<float>, ICoordinateTuplePoint<
     /// Gets the eccentricity.
     /// </summary>
     [JsonIgnore(Condition = JsonIgnoreCondition.Always)]
-#if NETCOREAPP3_1_OR_GREATER
-    public float Eccentricity => MathF.Sqrt(1 + MathF.Pow(B / A, 2));
-#else
+#if NETFRAMEWORK
     public float Eccentricity => (float)Math.Sqrt(1 + Math.Pow(B / A, 2));
+#else
+    public float Eccentricity => MathF.Sqrt(1 + MathF.Pow(B / A, 2));
 #endif
 
     /// <summary>
     /// Gets the focal distance.
     /// </summary>
     [JsonIgnore(Condition = JsonIgnoreCondition.Always)]
-#if NETCOREAPP3_1_OR_GREATER
-    public float C => MathF.Sqrt(A * A + B * B);
-#else
+#if NETFRAMEWORK
     public float C => (float)Math.Sqrt(A * A + B * B);
+#else
+    public float C => MathF.Sqrt(A * A + B * B);
 #endif
 
     /// <summary>
@@ -1057,10 +1057,10 @@ public class CoordinateHyperbolaF : IPixelOutline<float>, ICoordinateTuplePoint<
     {
         x = Geometry.Rotate(new PointF(x, 0), center, Alpha).X;
         var width = x - CenterX;
-#if NETCOREAPP3_1_OR_GREATER
-        var y = MathF.Sqrt((width * width / A * A - 1) * B * B);
-#else
+#if NETFRAMEWORK
         var y = (float)Math.Sqrt((width * width / A * A - 1) * B * B);
+#else
+        var y = MathF.Sqrt((width * width / A * A - 1) * B * B);
 #endif
         if (float.IsNaN(y)) return (float.NaN, float.NaN);
         if (y == 0) return (y, float.NaN);
@@ -1076,10 +1076,10 @@ public class CoordinateHyperbolaF : IPixelOutline<float>, ICoordinateTuplePoint<
     {
         y = Geometry.Rotate(new PointF(0, y), center, Alpha).Y;
         var height = y - CenterY;
-#if NETCOREAPP3_1_OR_GREATER
-        var x = MathF.Sqrt((height * height / B * B + 1) * A * A);
-#else
+#if NETFRAMEWORK
         var x = (float)Math.Sqrt((height * height / B * B + 1) * A * A);
+#else
+        var x = MathF.Sqrt((height * height / B * B + 1) * A * A);
 #endif
         if (float.IsNaN(x)) return (float.NaN, float.NaN);
         if (x == 0) return (x, float.NaN);

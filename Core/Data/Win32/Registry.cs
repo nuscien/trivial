@@ -9,7 +9,6 @@ using Microsoft.Win32;
 
 namespace Trivial.Data;
 
-#if NETFRAMEWORK || NET6_0_OR_GREATER
 /// <summary>
 /// The Windows Registry utility.
 /// </summary>
@@ -358,4 +357,3 @@ public static class RegistryUtility
         }
     }
 }
-#endif

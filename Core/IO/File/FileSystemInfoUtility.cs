@@ -193,7 +193,7 @@ public static class FileSystemInfoUtility
         return false;
     }
 
-#if NETCOREAPP || NET5_0_OR_GREATER
+#if !NETFRAMEWORK
     /// <summary>
     /// Tries to write the specific string to file. If the target file already exists, it is overwritten.
     /// </summary>

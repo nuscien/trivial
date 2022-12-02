@@ -638,7 +638,7 @@ public class CommandParameters
         return Items[index].Values;
     }
 
-#if !NETOLDVER
+#if !NETFRAMEWORK
     /// <summary>
     /// Gets the string value of a specific parameter matched the key.
     /// </summary>

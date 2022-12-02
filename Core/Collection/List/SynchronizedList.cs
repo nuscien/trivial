@@ -211,7 +211,7 @@ public class SynchronizedList<T> : IList<T>, ICloneable
         }
     }
 
-#if !NETOLDVER
+#if !NETFRAMEWORK
     /// <summary>
     /// Gets or sets the element at the specified index.
     /// </summary>

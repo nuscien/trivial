@@ -186,7 +186,7 @@ public class CsvUnitTest
     internal static string SubRangeString(int start, int end, bool reverseEnd = false)
     {
         var s = "0123456789";
-#if NETOLDVER
+#if NETFRAMEWORK
         return s.Substring(start, reverseEnd ? (s.Length - end - start) : (end - start));
 #else
         return reverseEnd ? s[start..^end] : s[start..end];

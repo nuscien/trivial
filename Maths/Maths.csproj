@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFrameworks>net7.0;net6.0;net5.0;netcoreapp3.1;netstandard2.0;net481;net48;net461</TargetFrameworks>
+		<TargetFrameworks>net7.0;net6.0;net48;net461</TargetFrameworks>
 		<AssemblyName>Trivial.Maths</AssemblyName>
 		<RootNamespace>Trivial.Maths</RootNamespace>
 		<PackageId>Trivial.Maths</PackageId>

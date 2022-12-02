@@ -359,7 +359,7 @@ public static class ObjectConvert
 
     internal static T ParseEnum<T>(string s) where T : struct
     {
-#if NETOLDVER
+#if NETFRAMEWORK
         return (T)Enum.Parse(typeof(T), s);
 #else
         return Enum.Parse<T>(s);
@@ -368,7 +368,7 @@ public static class ObjectConvert
 
     internal static T ParseEnum<T>(string s, bool ignoreCase) where T : struct
     {
-#if NETOLDVER
+#if NETFRAMEWORK
         return (T)Enum.Parse(typeof(T), s, ignoreCase);
 #else
         return Enum.Parse<T>(s, ignoreCase);

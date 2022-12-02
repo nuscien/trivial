@@ -154,7 +154,7 @@ public class JsonArrayNode : IJsonContainerNode, IJsonDataNode, IReadOnlyList<IJ
     /// <exception cref="InvalidOperationException">The value kind is not the expected one.</exception>
     IJsonValueNode IReadOnlyList<IJsonValueNode>.this[int index] => GetValue(index);
 
-#if !NETOLDVER
+#if !NETFRAMEWORK
     /// <summary>
     /// Gets the System.Char object at a specified position in the source value.
     /// </summary>
@@ -470,7 +470,7 @@ public class JsonArrayNode : IJsonContainerNode, IJsonDataNode, IReadOnlyList<IJ
         return data.ToString();
     }
 
-#if !NETOLDVER
+#if !NETFRAMEWORK
     /// <summary>
     /// Gets the raw value of the specific value.
     /// </summary>
@@ -515,7 +515,7 @@ public class JsonArrayNode : IJsonContainerNode, IJsonDataNode, IReadOnlyList<IJ
         return JsonValueKind.Undefined;
     }
 
-#if !NETOLDVER
+#if !NETFRAMEWORK
     /// <summary>
     /// Gets the value kind of the specific index.
     /// </summary>
@@ -814,7 +814,7 @@ public class JsonArrayNode : IJsonContainerNode, IJsonDataNode, IReadOnlyList<IJ
     public IJsonDataNode GetValue(int index)
         => store[index] ?? JsonValues.Null;
 
-#if !NETOLDVER
+#if !NETFRAMEWORK
     /// <summary>
     /// Gets the value at the specific index.
     /// </summary>
@@ -1660,7 +1660,7 @@ public class JsonArrayNode : IJsonContainerNode, IJsonDataNode, IReadOnlyList<IJ
         return JsonValues.TryGetDateTime(obj);
     }
 
-#if !NETOLDVER
+#if !NETFRAMEWORK
     /// <summary>
     /// Tries to get the value of the specific index.
     /// </summary>
@@ -1791,7 +1791,7 @@ public class JsonArrayNode : IJsonContainerNode, IJsonDataNode, IReadOnlyList<IJ
                 return true;
             }
 
-#if NETFRAMEWORK || NETSTANDARD2_0
+#if NETFRAMEWORK
             result = Enum.Parse(type, str);
             return true;
 #else
@@ -1837,7 +1837,7 @@ public class JsonArrayNode : IJsonContainerNode, IJsonDataNode, IReadOnlyList<IJ
                 return true;
             }
 
-#if NETFRAMEWORK || NETSTANDARD2_0
+#if NETFRAMEWORK
             result = Enum.Parse(type, str, ignoreCase);
             return true;
 #else
@@ -2008,7 +2008,7 @@ public class JsonArrayNode : IJsonContainerNode, IJsonDataNode, IReadOnlyList<IJ
     public void Remove(int index)
         => store.RemoveAt(index);
 
-#if !NETOLDVER
+#if !NETFRAMEWORK
     /// <summary>
     /// Tries to get the value at the specific index.
     /// </summary>
@@ -2354,7 +2354,7 @@ public class JsonArrayNode : IJsonContainerNode, IJsonDataNode, IReadOnlyList<IJ
     public void SetBase64(int index, Span<byte> bytes, Base64FormattingOptions options = Base64FormattingOptions.None)
     {
         if (store.Count == index) store.Add(JsonValues.Null);
-#if NETOLDVER
+#if NETFRAMEWORK
         if (bytes == null) throw new ArgumentNullException(nameof(bytes), "bytes should not be null.");
         store[index] = new JsonStringNode(Convert.ToBase64String(bytes.ToArray(), options));
 #else
@@ -2784,7 +2784,7 @@ public class JsonArrayNode : IJsonContainerNode, IJsonDataNode, IReadOnlyList<IJ
     /// <exception cref="ArgumentNullException">The bytes should not be null.</exception>
     public void AddBase64(Span<byte> bytes, Base64FormattingOptions options = Base64FormattingOptions.None)
     {
-#if NETOLDVER
+#if NETFRAMEWORK
         if (bytes == null) throw new ArgumentNullException(nameof(bytes), "bytes should not be null.");
         store.Add(new JsonStringNode(Convert.ToBase64String(bytes.ToArray(), options)));
 #else
@@ -3190,7 +3190,7 @@ public class JsonArrayNode : IJsonContainerNode, IJsonDataNode, IReadOnlyList<IJ
     /// <exception cref="ArgumentNullException">The bytes should not be null.</exception>
     public void InsertBase64(int index, Span<byte> bytes, Base64FormattingOptions options = Base64FormattingOptions.None)
     {
-#if NETOLDVER
+#if NETFRAMEWORK
         if (bytes == null) throw new ArgumentNullException(nameof(bytes), "bytes should not be null.");
         store.Insert(index, new JsonStringNode(Convert.ToBase64String(bytes.ToArray(), options)));
 #else
@@ -3416,7 +3416,7 @@ public class JsonArrayNode : IJsonContainerNode, IJsonDataNode, IReadOnlyList<IJ
     public void WriteTo(string path, IndentStyles style = IndentStyles.Minified)
         => File.WriteAllText(path, ToString(style) ?? "null", Encoding.UTF8);
 
-#if NETCOREAPP || NET5_0_OR_GREATER
+#if NET6_0_OR_GREATER
     /// <summary>
     /// Writes to file. If the target file already exists, it is overwritten.
     /// </summary>

@@ -1329,7 +1329,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
         return false;
     }
 
-#if !NETOLDVER
+#if !NETFRAMEWORK
     /// <summary>
     /// Gets the value at the specific index.
     /// </summary>
@@ -2346,7 +2346,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
         return JsonValues.TryGetDateTime(obj);
     }
 
-#if !NETOLDVER
+#if !NETFRAMEWORK
     /// <summary>
     /// Tries to get the value of the specific property.
     /// </summary>
@@ -2479,7 +2479,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
                 return true;
             }
 
-#if NETFRAMEWORK || NETSTANDARD2_0
+#if NETFRAMEWORK
             result = Enum.Parse(type, str);
             return true;
 #else
@@ -2525,7 +2525,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
                 return true;
             }
 
-#if NETFRAMEWORK || NETSTANDARD2_0
+#if NETFRAMEWORK
             result = Enum.Parse(type, str, ignoreCase);
             return true;
 #else
@@ -3518,7 +3518,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     /// <exception cref="ArgumentNullException">The property key and bytes should not be null, empty, or consists only of white-space characters.</exception>
     public void SetBase64(string key, Span<byte> bytes, Base64FormattingOptions options = Base64FormattingOptions.None)
     {
-#if NETOLDVER
+#if NETFRAMEWORK
         SetValue(key, Convert.ToBase64String(bytes.ToArray(), options));
 #else
         SetValue(key, Convert.ToBase64String(bytes, options));
@@ -5040,7 +5040,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     public void WriteTo(string path, IndentStyles style = IndentStyles.Minified)
         => File.WriteAllText(path, ToString(style) ?? "null", Encoding.UTF8);
 
-#if NETCOREAPP || NET5_0_OR_GREATER
+#if NET6_0_OR_GREATER
     /// <summary>
     /// Writes to file.
     /// </summary>

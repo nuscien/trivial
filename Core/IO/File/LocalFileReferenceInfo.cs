@@ -437,7 +437,7 @@ public class LocalFileReferenceInfo: BaseFileReferenceInfo<FileInfo>
         return file.Open(mode, access, share);
     }
 
-#if NET6_0_OR_GREATER
+#if !NETFRAMEWORK
     /// <summary>
     /// Opens a file in the specified mode and other options.
     /// </summary>

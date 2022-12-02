@@ -364,9 +364,7 @@ public class ZipArchiveEntryReferenceInfo : BaseFileReferenceInfo
         LastModification = file.LastWriteTime.DateTime;
         Size = file.Length;
         CompressedSize = file.CompressedLength;
-#if !NETSTANDARD
         Crc32 = file.Crc32;
-#endif
     }
 
     /// <summary>

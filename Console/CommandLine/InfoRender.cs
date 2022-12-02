@@ -263,7 +263,7 @@ public static partial class ConsoleRenderExtensions
         }
 
         sb.Clear();
-#if NETFRAMEWORK || NETSTANDARD2_0_OR_GREATER
+#if NETFRAMEWORK
         sb.Append(n.ToString());
 #else
         sb.Append(n);

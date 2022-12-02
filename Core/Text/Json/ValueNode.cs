@@ -270,7 +270,7 @@ public interface IJsonDataNode : IJsonValueNode
     /// <returns>true if the kind is the one expected; otherwise, false.</returns>
     bool TryGetValue(int index, out IJsonDataNode result);
 
-#if !NETOLDVER
+#if !NETFRAMEWORK
     /// <summary>
     /// Gets the value of the specific property.
     /// </summary>
@@ -731,7 +731,7 @@ internal class JsonNullNode : IJsonValueNode, IJsonDataNode, IEquatable<JsonNull
         return false;
     }
 
-#if !NETOLDVER
+#if !NETFRAMEWORK
     /// <summary>
     /// Gets the value at the specific index.
     /// </summary>

@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net7.0;net6.0;netstandard2.0;net48;net461</TargetFrameworks>
+    <TargetFrameworks>net7.0;net6.0;net48;net461</TargetFrameworks>
     <AssemblyName>Trivial.Chemistry</AssemblyName>
     <RootNamespace>Trivial</RootNamespace>
     <PackageId>Trivial.Chemistry</PackageId>
@@ -38,10 +38,6 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
     <OutputPath>..\bin\Release\</OutputPath>
     <DocumentationFile>..\bin\$(Configuration)\$(TargetFramework)\Trivial.Chemistry.xml</DocumentationFile>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(TargetFramework)' == 'netstandard2.0' OR '$(TargetFramework)' == 'net481' OR '$(TargetFramework)' == 'net48' OR '$(TargetFramework)' == 'net461'">
-    <DefineConstants>NETOLDVER</DefineConstants>
   </PropertyGroup>
 
   <ItemGroup>

@@ -56,7 +56,7 @@ public static class HttpClientExtensions
     {
         if (httpContent == null) throw new ArgumentNullException(nameof(httpContent));
         if (destination == null) throw new ArgumentNullException(nameof(destination));
-#if NET5_0_OR_GREATER
+#if NET6_0_OR_GREATER
         var downloadingStream = await httpContent.ReadAsStreamAsync(cancellationToken);
 #else
         var downloadingStream = await httpContent.ReadAsStreamAsync();
@@ -131,7 +131,7 @@ public static class HttpClientExtensions
         {
             Timeout = TimeSpan.FromDays(2)
         };
-#if NET5_0_OR_GREATER
+#if NET6_0_OR_GREATER
         using var content = await httpClient.GetStreamAsync(uri, cancellationToken);
 #else
         using var content = await httpClient.GetStreamAsync(uri);
@@ -152,7 +152,7 @@ public static class HttpClientExtensions
     public static async Task<T> DeserializeJsonAsync<T>(this HttpContent httpContent, SeekOrigin origin, CancellationToken cancellationToken = default)
     {
         if (httpContent == null) throw new ArgumentNullException(nameof(httpContent), "httpContent should not be null.");
-#if NET5_0_OR_GREATER
+#if NET6_0_OR_GREATER
         var stream = await httpContent.ReadAsStreamAsync(cancellationToken);
 #else
         var stream = await httpContent.ReadAsStreamAsync();
@@ -190,7 +190,7 @@ public static class HttpClientExtensions
     public static async Task<T> DeserializeJsonAsync<T>(this HttpContent httpContent, SeekOrigin origin, JsonSerializerOptions options, CancellationToken cancellationToken = default)
     {
         if (httpContent == null) throw new ArgumentNullException(nameof(httpContent), "httpContent should not be null.");
-#if NET5_0_OR_GREATER
+#if NET6_0_OR_GREATER
         var stream = await httpContent.ReadAsStreamAsync(cancellationToken);
 #else
         var stream = await httpContent.ReadAsStreamAsync();
@@ -289,7 +289,7 @@ public static class HttpClientExtensions
         return JsonSerializer.DeserializeAsync<T>(stream, options);
     }
 
-#if NET5_0_OR_GREATER
+#if NET6_0_OR_GREATER
     /// <summary>
     /// Deserializes the HTTP JSON content into an object as the specific type.
     /// </summary>

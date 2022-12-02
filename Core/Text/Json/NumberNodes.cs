@@ -964,7 +964,7 @@ public class JsonIntegerNode : IJsonValueNode<long>, IJsonDataNode, IJsonNumberN
         return false;
     }
 
-#if !NETOLDVER
+#if !NETFRAMEWORK
     /// <summary>
     /// Gets the value at the specific index.
     /// </summary>
@@ -2536,7 +2536,7 @@ public class JsonDoubleNode : IJsonValueNode<double>, IJsonDataNode, IJsonNumber
         return false;
     }
 
-#if !NETOLDVER
+#if !NETFRAMEWORK
     /// <summary>
     /// Gets the value at the specific index.
     /// </summary>

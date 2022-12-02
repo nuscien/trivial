@@ -119,10 +119,10 @@ public class LineSegmentF : IPixelOutline<float>, ICoordinateSinglePoint<float>,
     /// Gets the length.
     /// </summary>
     [JsonIgnore(Condition = JsonIgnoreCondition.Always)]
-#if NETCOREAPP3_1_OR_GREATER
-    public float Length => MathF.Sqrt(MathF.Pow(End.X - Start.X, 2) + MathF.Pow(End.Y - Start.Y, 2));
-#else
+#if NETFRAMEWORK
     public float Length => (float)Math.Sqrt((float)Math.Pow(End.X - Start.X, 2) + (float)Math.Pow(End.Y - Start.Y, 2));
+#else
+    public float Length => MathF.Sqrt(MathF.Pow(End.X - Start.X, 2) + MathF.Pow(End.Y - Start.Y, 2));
 #endif
 
     /// <summary>

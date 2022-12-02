@@ -461,7 +461,7 @@ public static partial class ColorCalculator
 
     private static int PlusChannel(ref float c, float delta)
     {
-#if NETOLDVER
+#if NETFRAMEWORK
         var r = (int)Math.Round(c + delta);
 #else
         var r = (int)MathF.Round(c + delta);
@@ -473,7 +473,7 @@ public static partial class ColorCalculator
 
     private static int ToChannel(float c)
     {
-#if NETOLDVER
+#if NETFRAMEWORK
         var r = (int)Math.Round(c);
 #else
         var r = (int)MathF.Round(c);

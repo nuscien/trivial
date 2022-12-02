@@ -237,7 +237,7 @@ public class KeyedDataMapping<T> : IDictionary<string, T>
         return mapping.Remove(key.Trim().ToLowerInvariant());
     }
 
-#if NETCOREAPP || NET5_0_OR_GREATER
+#if !NETFRAMEWORK
     /// <summary>
     /// Removes the value with the specified key from the mapping and copies the element to the value parameter..
     /// </summary>

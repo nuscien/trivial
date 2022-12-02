@@ -648,7 +648,7 @@ public class ChemistryVerb : BaseCommandVerb
         if (string.IsNullOrEmpty(q)) return null;
         return (ChemicalElement ele) =>
         {
-#if NETOLDVER
+#if NETFRAMEWORK
             if (string.IsNullOrEmpty(ele?.EnglishName)) return false;
             if (ele.EnglishName.Contains(q)) return true;
             var name = ele.Name;

@@ -37,10 +37,10 @@ public static partial class Geometry
     {
         var width = end.X - start.X;
         var height = end.Y - start.Y;
-#if NETCOREAPP3_1_OR_GREATER
-        return MathF.Sqrt(width * width + height * height);
-#else
+#if NETFRAMEWORK
         return (float)Math.Sqrt(width * width + height * height);
+#else
+        return MathF.Sqrt(width * width + height * height);
 #endif
     }
 
@@ -145,14 +145,14 @@ public static partial class Geometry
         var radian = (float)alpha.Radians;
         var x = origin.X - point.X;
         var y = origin.Y - point.Y;
-#if NETCOREAPP3_1_OR_GREATER
-        return new PointF(
-            x * MathF.Cos(radian) - y * MathF.Sin(radian) + x,
-            y * MathF.Cos(radian) + x * MathF.Sin(radian) + y);
-#else
+#if NETFRAMEWORK
         return new PointF(
             x * (float)Math.Cos(radian) - y * (float)Math.Sin(radian) + x,
             y * (float)Math.Cos(radian) + x * (float)Math.Sin(radian) + y);
+#else
+        return new PointF(
+            x * MathF.Cos(radian) - y * MathF.Sin(radian) + x,
+            y * MathF.Cos(radian) + x * MathF.Sin(radian) + y);
 #endif
     }
 

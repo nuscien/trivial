@@ -783,10 +783,10 @@ public static class IntervalUtility
 
             if (s.Length < 1) throw new FormatException("Expect it is an interval format string but it only contains operator.");
 
-#if !NETOLDVER
-            if (digits.Contains(s[0]))
-#else
+#if NETFRAMEWORK
             if (digits.Contains(s[0].ToString()))
+#else
+            if (digits.Contains(s[0]))
 #endif
             {
                 try

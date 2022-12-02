@@ -420,7 +420,7 @@ public class JsonStringNode : IJsonStringNode, IJsonValueNode<string>, IJsonData
         }
     }
 
-#if !NETOLDVER
+#if !NETFRAMEWORK
     /// <summary>
     /// Gets the System.Char object at a specified position in the source value.
     /// </summary>
@@ -577,7 +577,7 @@ public class JsonStringNode : IJsonStringNode, IJsonValueNode<string>, IJsonData
         if (type == null || !type.IsEnum) return null;
         try
         {
-#if NETOLDVER
+#if NETFRAMEWORK
             return Enum.Parse(type, Value);
 #else
             if (Enum.TryParse(type, Value, out var r)) return r;
@@ -611,7 +611,7 @@ public class JsonStringNode : IJsonStringNode, IJsonValueNode<string>, IJsonData
         if (type == null || !type.IsEnum) return null;
         try
         {
-#if NETOLDVER
+#if NETFRAMEWORK
             return Enum.Parse(type, Value, ignoreCase);
 #else
             if (Enum.TryParse(type, Value, ignoreCase, out var r)) return r;
@@ -1450,7 +1450,7 @@ public class JsonStringNode : IJsonStringNode, IJsonValueNode<string>, IJsonData
         return false;
     }
 
-#if !NETOLDVER
+#if !NETFRAMEWORK
     /// <summary>
     /// Gets the value at the specific index.
     /// </summary>
