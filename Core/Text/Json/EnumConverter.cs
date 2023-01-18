@@ -15,15 +15,11 @@ public class JsonIntegerEnumCompatibleConverter : JsonConverterFactory
 {
     /// <inheritdoc />
     public override bool CanConvert(Type typeToConvert)
-    {
-        return typeToConvert.IsEnum;
-    }
+        => typeToConvert.IsEnum;
 
     /// <inheritdoc />
     public override JsonConverter CreateConverter(Type typeToConvert, JsonSerializerOptions options)
-    {
-        return CreateConverter(typeof(JsonIntegerEnumCompatibleConverter<>), typeToConvert, options);
-    }
+        => CreateConverter(typeof(JsonIntegerEnumCompatibleConverter<>), typeToConvert, options);
 
     internal static JsonConverter CreateConverter(Type converterType, Type typeToConvert, JsonSerializerOptions options)
     {
@@ -57,15 +53,11 @@ public class JsonIntegerEnumCompatibleConverter<T> : JsonConverter<T>
 {
     /// <inheritdoc />
     public override T Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-    {
-        return Read(ref reader, typeToConvert);
-    }
+        => Read(ref reader, typeToConvert);
 
     /// <inheritdoc />
     public override void Write(Utf8JsonWriter writer, T value, JsonSerializerOptions options)
-    {
-        writer.WriteNumberValue(System.Runtime.CompilerServices.Unsafe.As<T, int>(ref value));
-    }
+        => writer.WriteNumberValue(System.Runtime.CompilerServices.Unsafe.As<T, int>(ref value));
 
     internal static T Read(ref Utf8JsonReader reader, Type typeToConvert)
     {
@@ -115,15 +107,11 @@ public class JsonStringEnumCompatibleConverter : JsonConverterFactory
 {
     /// <inheritdoc />
     public override bool CanConvert(Type typeToConvert)
-    {
-        return typeToConvert.IsEnum;
-    }
+        => typeToConvert.IsEnum;
 
     /// <inheritdoc />
     public override JsonConverter CreateConverter(Type typeToConvert, JsonSerializerOptions options)
-    {
-        return JsonIntegerEnumCompatibleConverter.CreateConverter(typeof(JsonStringEnumCompatibleConverter<>), typeToConvert, options);
-    }
+        => JsonIntegerEnumCompatibleConverter.CreateConverter(typeof(JsonStringEnumCompatibleConverter<>), typeToConvert, options);
 }
 
 /// <summary>
@@ -134,13 +122,9 @@ public class JsonStringEnumCompatibleConverter<T> : JsonConverter<T>
 {
     /// <inheritdoc />
     public override T Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-    {
-        return JsonIntegerEnumCompatibleConverter<T>.Read(ref reader, typeToConvert);
-    }
+        => JsonIntegerEnumCompatibleConverter<T>.Read(ref reader, typeToConvert);
 
     /// <inheritdoc />
     public override void Write(Utf8JsonWriter writer, T value, JsonSerializerOptions options)
-    {
-        writer.WriteStringValue(value.ToString());
-    }
+        => writer.WriteStringValue(value.ToString());
 }

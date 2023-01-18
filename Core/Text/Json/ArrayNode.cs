@@ -524,9 +524,7 @@ public class JsonArrayNode : IJsonContainerNode, IJsonDataNode, IReadOnlyList<IJ
     /// <returns>The value.</returns>
     /// <exception cref="ArgumentOutOfRangeException">The index does not exist.</exception>
     public JsonValueKind GetValueKind(Index index, bool strictMode = false)
-    {
-        return GetValueKind(index.IsFromEnd ? store.Count - index.Value : index.Value, strictMode);
-    }
+        => GetValueKind(index.IsFromEnd ? store.Count - index.Value : index.Value, strictMode);
 #endif
 
     /// <summary>
@@ -1613,10 +1611,7 @@ public class JsonArrayNode : IJsonContainerNode, IJsonDataNode, IReadOnlyList<IJ
     /// <param name="index">The zero-based index of the element to get.</param>
     /// <returns>The value.</returns>
     public JsonObjectNode TryGetObjectValue(int index)
-    {
-        if (TryGetJsonValue<JsonObjectNode>(index, out var p)) return p;
-        return null;
-    }
+        => TryGetJsonValue<JsonObjectNode>(index, out var p) ? p : null;
 
     /// <summary>
     /// Tries to get the value at the specific index.

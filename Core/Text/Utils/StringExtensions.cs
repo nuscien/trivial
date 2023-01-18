@@ -104,9 +104,7 @@ public static class StringExtensions
     /// <param name="options">The specific case.</param>
     /// <returns>The specific case equivalent of the current string.</returns>
     public static string ToSpecificCaseInvariant(this string source, Cases options)
-    {
-        return ToSpecificCase(source, options, CultureInfo.InvariantCulture);
-    }
+        => ToSpecificCase(source, options, CultureInfo.InvariantCulture);
 
     /// <summary>
     /// Breaks lines.
@@ -237,9 +235,7 @@ public static class StringExtensions
     /// <param name="options">System.StringSplitOptions.RemoveEmptyEntries to omit empty array elements from the array returned; or System.StringSplitOptions.None to include empty array elements in the array returned.</param>
     /// <returns>A string enumerable instance whose elements contain the substrings in the source string that are delimited by one or more characters in separator.</returns>
     public static IEnumerable<string> YieldSplit(this string source, char seperator, StringSplitOptions options = StringSplitOptions.None)
-    {
-        return YieldSplit(source, new[] { seperator }, options);
-    }
+        => YieldSplit(source, new[] { seperator }, options);
 
     /// <summary>
     /// Splits a string into a number of substrings based on the characters in an enumerable strings.
@@ -250,9 +246,7 @@ public static class StringExtensions
     /// <param name="options">System.StringSplitOptions.RemoveEmptyEntries to omit empty array elements from the array returned; or System.StringSplitOptions.None to include empty array elements in the array returned.</param>
     /// <returns>A string enumerable instance whose elements contain the substrings in the source string that are delimited by one or more characters in separator.</returns>
     public static IEnumerable<string> YieldSplit(this string source, char seperatorA, char seperatorB, StringSplitOptions options = StringSplitOptions.None)
-    {
-        return YieldSplit(source, new[] { seperatorA, seperatorB }, options);
-    }
+        => YieldSplit(source, new[] { seperatorA, seperatorB }, options);
 
     /// <summary>
     /// Splits a string into a number of substrings based on the characters in an enumerable strings.
@@ -264,9 +258,7 @@ public static class StringExtensions
     /// <param name="options">System.StringSplitOptions.RemoveEmptyEntries to omit empty array elements from the array returned; or System.StringSplitOptions.None to include empty array elements in the array returned.</param>
     /// <returns>A string enumerable instance whose elements contain the substrings in the source string that are delimited by one or more characters in separator.</returns>
     public static IEnumerable<string> YieldSplit(this string source, char seperatorA, char seperatorB, char seperatorC, StringSplitOptions options = StringSplitOptions.None)
-    {
-        return YieldSplit(source, new[] { seperatorA, seperatorB, seperatorC }, options);
-    }
+        => YieldSplit(source, new[] { seperatorA, seperatorB, seperatorC }, options);
 
     /// <summary>
     /// Splits a string into a number of substrings based on the characters in an enumerable strings.
@@ -279,9 +271,7 @@ public static class StringExtensions
     /// <param name="options">System.StringSplitOptions.RemoveEmptyEntries to omit empty array elements from the array returned; or System.StringSplitOptions.None to include empty array elements in the array returned.</param>
     /// <returns>A string enumerable instance whose elements contain the substrings in the source string that are delimited by one or more characters in separator.</returns>
     public static IEnumerable<string> YieldSplit(this string source, char seperatorA, char seperatorB, char seperatorC, char seperatorD, StringSplitOptions options = StringSplitOptions.None)
-    {
-        return YieldSplit(source, new[] { seperatorA, seperatorB, seperatorC, seperatorD }, options);
-    }
+        => YieldSplit(source, new[] { seperatorA, seperatorB, seperatorC, seperatorD }, options);
 
     /// <summary>
     /// Splits a string into a number of substrings based on the characters in an enumerable strings.
@@ -400,9 +390,7 @@ public static class StringExtensions
     /// <param name="removeEmptyLine">true if need remove the empty line; otherwise, false.</param>
     /// <returns>Lines from the specific string.</returns>
     public static IEnumerable<string> ReadLines(string source, bool removeEmptyLine = false)
-    {
-        return YieldSplit(source, new[] { "\r\n", "\n", "\r" }, removeEmptyLine ? StringSplitOptions.RemoveEmptyEntries : StringSplitOptions.None);
-    }
+        => YieldSplit(source, new[] { "\r\n", "\n", "\r" }, removeEmptyLine ? StringSplitOptions.RemoveEmptyEntries : StringSplitOptions.None);
 
     /// <summary>
     /// Reads lines from a specific stream reader.
@@ -414,9 +402,7 @@ public static class StringExtensions
     /// <exception cref="IOException">An I/O error occurs.</exception>
     /// <exception cref="ObjectDisposedException">The stream has disposed.</exception>
     public static IEnumerable<string> ReadLines(TextReader reader, bool removeEmptyLine = false)
-    {
-        return IO.CharsReader.ReadLines(reader, removeEmptyLine);
-    }
+        => IO.CharsReader.ReadLines(reader, removeEmptyLine);
 
     /// <summary>
     /// Gets the indent string.
@@ -794,7 +780,7 @@ public static class StringExtensions
             }
 
             str.Remove(str.Length - 1, 1);
-            str.Append("}");
+            str.Append('}');
             return str.ToString();
         }
 

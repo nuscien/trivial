@@ -203,18 +203,14 @@ public class JsonIntegerNode : IJsonValueNode<long>, IJsonDataNode, IJsonNumberN
     /// <param name="isUnixTimestamp">true if uses Unix timestamp; otherwise, false, to use JavaScript ticks, by default.</param>
     /// <returns>A date time.</returns>
     public DateTime ToDateTime(bool isUnixTimestamp = false)
-    {
-        return isUnixTimestamp ? Web.WebFormat.ParseUnixTimestamp(Value) : Web.WebFormat.ParseDate(Value);
-    }
+        => isUnixTimestamp ? WebFormat.ParseUnixTimestamp(Value) : WebFormat.ParseDate(Value);
 
     /// <summary>
     /// Gets the JSON format string of the value.
     /// </summary>
     /// <returns>The JSON format string of the integer.</returns>
     public override string ToString()
-    {
-        return Value.ToString("g", CultureInfo.InvariantCulture);
-    }
+        => Value.ToString("g", CultureInfo.InvariantCulture);
 
     /// <summary>
     /// Converts the numeric value of this instance to its equivalent string representation.
@@ -222,9 +218,7 @@ public class JsonIntegerNode : IJsonValueNode<long>, IJsonDataNode, IJsonNumberN
     /// <param name="provider">An object that supplies culture-specific formatting information about this instance.</param>
     /// <returns>The JSON format string of the integer.</returns>
     public string ToString(IFormatProvider provider)
-    {
-        return Value.ToString(provider);
-    }
+        => Value.ToString(provider);
 
     /// <summary>
     /// Converts the numeric value of this instance to its equivalent string representation.
@@ -233,9 +227,7 @@ public class JsonIntegerNode : IJsonValueNode<long>, IJsonDataNode, IJsonNumberN
     /// <param name="provider">An object that supplies culture-specific formatting information about this instance.</param>
     /// <returns>The JSON format string of the integer.</returns>
     public string ToString(string format, IFormatProvider provider = null)
-    {
-        return provider != null ? Value.ToString(format, provider) : Value.ToString(format);
-    }
+        => provider != null ? Value.ToString(format, provider) : Value.ToString(format);
 
     /// <summary>
     /// Converts to a specific positional notation format string.
@@ -244,9 +236,7 @@ public class JsonIntegerNode : IJsonValueNode<long>, IJsonDataNode, IJsonNumberN
     /// <returns>A string of the number in the specific positional notation.</returns>
     /// <exception cref="ArgumentOutOfRangeException">type should be in 2-36.</exception>
     public string ToPositionalNotationString(int type)
-    {
-        return Maths.Numbers.ToPositionalNotationString(Value, type);
-    }
+        => Maths.Numbers.ToPositionalNotationString(Value, type);
 
     /// <summary>
     /// Indicates whether this instance and a specified object are equal.
@@ -320,9 +310,7 @@ public class JsonIntegerNode : IJsonValueNode<long>, IJsonDataNode, IJsonNumberN
     /// <param name="other">The object to compare with the current instance.</param>
     /// <returns>true if obj and this instance represent the same value; otherwise, false.</returns>
     public bool Equals(double other)
-    {
-        return Value.Equals(other);
-    }
+        => Value.Equals(other);
 
     /// <summary>
     /// Indicates whether this instance and a specified object are equal.
@@ -330,9 +318,7 @@ public class JsonIntegerNode : IJsonValueNode<long>, IJsonDataNode, IJsonNumberN
     /// <param name="other">The object to compare with the current instance.</param>
     /// <returns>true if obj and this instance represent the same value; otherwise, false.</returns>
     public bool Equals(float other)
-    {
-        return Value.Equals(other);
-    }
+        => Value.Equals(other);
 
     /// <summary>
     /// Indicates whether this instance and a specified object are equal.
@@ -340,9 +326,7 @@ public class JsonIntegerNode : IJsonValueNode<long>, IJsonDataNode, IJsonNumberN
     /// <param name="other">The object to compare with the current instance.</param>
     /// <returns>true if obj and this instance represent the same value; otherwise, false.</returns>
     public bool Equals(long other)
-    {
-        return Value.Equals(other);
-    }
+        => Value.Equals(other);
 
     /// <summary>
     /// Indicates whether this instance and a specified object are equal.
@@ -350,9 +334,7 @@ public class JsonIntegerNode : IJsonValueNode<long>, IJsonDataNode, IJsonNumberN
     /// <param name="other">The object to compare with the current instance.</param>
     /// <returns>true if obj and this instance represent the same value; otherwise, false.</returns>
     public bool Equals(uint other)
-    {
-        return Value.Equals(other);
-    }
+        => Value.Equals(other);
 
     /// <summary>
     /// Indicates whether this instance and a specified object are equal.
@@ -360,9 +342,7 @@ public class JsonIntegerNode : IJsonValueNode<long>, IJsonDataNode, IJsonNumberN
     /// <param name="other">The object to compare with the current instance.</param>
     /// <returns>true if obj and this instance represent the same value; otherwise, false.</returns>
     public bool Equals(int other)
-    {
-        return Value.Equals(other);
-    }
+        => Value.Equals(other);
 
     /// <summary>
     /// Indicates whether this instance and a specified object are equal.
@@ -413,9 +393,7 @@ public class JsonIntegerNode : IJsonValueNode<long>, IJsonDataNode, IJsonNumberN
     /// </list>
     /// </returns>
     public int CompareTo(JsonIntegerNode other)
-    {
-        return Value.CompareTo(other.Value);
-    }
+        => Value.CompareTo(other.Value);
 
     /// <summary>
     /// Compares this instance to a specified number and returns an indication of their relative values.
@@ -433,9 +411,7 @@ public class JsonIntegerNode : IJsonValueNode<long>, IJsonDataNode, IJsonNumberN
     /// </list>
     /// </returns>
     public int CompareTo(JsonDoubleNode other)
-    {
-        return Value.CompareTo(other.Value);
-    }
+        => Value.CompareTo(other.Value);
 
     /// <summary>
     /// Compares this instance to a specified number and returns an indication of their relative values.
@@ -453,9 +429,7 @@ public class JsonIntegerNode : IJsonValueNode<long>, IJsonDataNode, IJsonNumberN
     /// </list>
     /// </returns>
     public int CompareTo(long other)
-    {
-        return Value.CompareTo(other);
-    }
+        => Value.CompareTo(other);
 
     /// <summary>
     /// Compares this instance to a specified number and returns an indication of their relative values.
@@ -473,9 +447,7 @@ public class JsonIntegerNode : IJsonValueNode<long>, IJsonDataNode, IJsonNumberN
     /// </list>
     /// </returns>
     public int CompareTo(int other)
-    {
-        return Value.CompareTo(other);
-    }
+        => Value.CompareTo(other);
 
     /// <summary>
     /// Compares this instance to a specified number and returns an indication of their relative values.
@@ -493,9 +465,7 @@ public class JsonIntegerNode : IJsonValueNode<long>, IJsonDataNode, IJsonNumberN
     /// </list>
     /// </returns>
     public int CompareTo(uint other)
-    {
-        return Value.CompareTo(other);
-    }
+        => Value.CompareTo(other);
 
     /// <summary>
     /// Compares this instance to a specified number and returns an indication of their relative values.
@@ -513,9 +483,7 @@ public class JsonIntegerNode : IJsonValueNode<long>, IJsonDataNode, IJsonNumberN
     /// </list>
     /// </returns>
     public int CompareTo(double other)
-    {
-        return Value.CompareTo(other);
-    }
+        => Value.CompareTo(other);
 
     /// <summary>
     /// Compares this instance to a specified number and returns an indication of their relative values.
@@ -533,9 +501,7 @@ public class JsonIntegerNode : IJsonValueNode<long>, IJsonDataNode, IJsonNumberN
     /// </list>
     /// </returns>
     public int CompareTo(float other)
-    {
-        return Value.CompareTo(other);
-    }
+        => Value.CompareTo(other);
 
     /// <summary>
     /// Gets the item value count.
@@ -567,9 +533,7 @@ public class JsonIntegerNode : IJsonValueNode<long>, IJsonDataNode, IJsonNumberN
     /// </summary>
     /// <returns>The value of the element as a date time.</returns>
     public DateTime GetDateTime()
-    {
-        return Web.WebFormat.ParseDate(Value);
-    }
+        => WebFormat.ParseDate(Value);
 
     /// <summary>
     /// Gets the value of the element as a date time.
@@ -577,9 +541,7 @@ public class JsonIntegerNode : IJsonValueNode<long>, IJsonDataNode, IJsonNumberN
     /// <param name="useUnixTimestamps">true if use Unix timestamp to convert; otherwise, false, to use JavaScript date ticks.</param>
     /// <returns>The value of the element as a date time.</returns>
     public DateTime GetDateTime(bool useUnixTimestamps)
-    {
-        return useUnixTimestamps ? Web.WebFormat.ParseUnixTimestamp(Value) : Web.WebFormat.ParseDate(Value);
-    }
+        => useUnixTimestamps ? WebFormat.ParseUnixTimestamp(Value) : WebFormat.ParseDate(Value);
 
     /// <summary>
     /// Gets the value of the element as a number.
@@ -999,7 +961,7 @@ public class JsonIntegerNode : IJsonValueNode<long>, IJsonDataNode, IJsonNumberN
     /// <param name="value">The source value.</param>
     /// <returns>A JSON value.</returns>
     public static implicit operator JsonIntegerNode(uint value)
-        => new JsonIntegerNode(value);
+        => new(value);
 
     /// <summary>
     /// Converts to JSON value.
@@ -1007,7 +969,7 @@ public class JsonIntegerNode : IJsonValueNode<long>, IJsonDataNode, IJsonNumberN
     /// <param name="value">The source value.</param>
     /// <returns>A JSON value.</returns>
     public static implicit operator JsonIntegerNode(int value)
-        => new JsonIntegerNode(value);
+        => new(value);
 
     /// <summary>
     /// Converts to JSON value.
@@ -1015,7 +977,7 @@ public class JsonIntegerNode : IJsonValueNode<long>, IJsonDataNode, IJsonNumberN
     /// <param name="value">The source value.</param>
     /// <returns>A JSON value.</returns>
     public static implicit operator JsonIntegerNode(long value)
-        => new JsonIntegerNode(value);
+        => new(value);
 
     /// <summary>
     /// Converts to JSON value.
@@ -1130,7 +1092,7 @@ public class JsonIntegerNode : IJsonValueNode<long>, IJsonDataNode, IJsonNumberN
     /// <param name="json">The JSON value.</param>
     /// <returns>A JSON string instance.</returns>
     public static explicit operator JsonStringNode(JsonIntegerNode json)
-        => new JsonStringNode(json.ToString());
+        => new(json.ToString());
 
     /// <summary>
     /// Converts to a JSON double object.
@@ -1138,7 +1100,7 @@ public class JsonIntegerNode : IJsonValueNode<long>, IJsonDataNode, IJsonNumberN
     /// <param name="json">The JSON value.</param>
     /// <returns>A JSON double instance.</returns>
     public static explicit operator JsonDoubleNode(JsonIntegerNode json)
-        => new JsonDoubleNode(json.Value);
+        => new(json.Value);
 
     /// <summary>
     /// Converts to JSON node.
@@ -1753,9 +1715,7 @@ public class JsonDoubleNode : IJsonValueNode<double>, IJsonDataNode, IJsonNumber
     /// </summary>
     /// <returns>The JSON format string of the float number.</returns>
     public override string ToString()
-    {
-        return Value.ToString("g", CultureInfo.InvariantCulture);
-    }
+        => Value.ToString("g", CultureInfo.InvariantCulture);
 
     /// <summary>
     /// Converts the numeric value of this instance to its equivalent string representation.
@@ -1763,9 +1723,7 @@ public class JsonDoubleNode : IJsonValueNode<double>, IJsonDataNode, IJsonNumber
     /// <param name="provider">An object that supplies culture-specific formatting information about this instance.</param>
     /// <returns>The JSON format string of the integer.</returns>
     public string ToString(IFormatProvider provider)
-    {
-        return Value.ToString(provider);
-    }
+        => Value.ToString(provider);
 
     /// <summary>
     /// Converts the numeric value of this instance to its equivalent string representation.
@@ -1774,9 +1732,7 @@ public class JsonDoubleNode : IJsonValueNode<double>, IJsonDataNode, IJsonNumber
     /// <param name="provider">An object that supplies culture-specific formatting information about this instance.</param>
     /// <returns>The JSON format string of the integer.</returns>
     public string ToString(string format, IFormatProvider provider = null)
-    {
-        return provider != null ? Value.ToString(format, provider) : Value.ToString(format);
-    }
+        => provider != null ? Value.ToString(format, provider) : Value.ToString(format);
 
     /// <summary>
     /// Converts to a specific positional notation format string.
@@ -1784,9 +1740,7 @@ public class JsonDoubleNode : IJsonValueNode<double>, IJsonDataNode, IJsonNumber
     /// <param name="type">The positional notation.</param>
     /// <returns>A string of the number in the specific positional notation.</returns>
     public string ToPositionalNotationString(int type)
-    {
-        return Maths.Numbers.ToPositionalNotationString(Value, type);
-    }
+        => Maths.Numbers.ToPositionalNotationString(Value, type);
 
     /// <summary>
     /// Indicates whether this instance and a specified object are equal.
@@ -1860,9 +1814,7 @@ public class JsonDoubleNode : IJsonValueNode<double>, IJsonDataNode, IJsonNumber
     /// <param name="other">The object to compare with the current instance.</param>
     /// <returns>true if obj and this instance represent the same value; otherwise, false.</returns>
     public bool Equals(double other)
-    {
-        return Value.Equals(other);
-    }
+        => Value.Equals(other);
 
     /// <summary>
     /// Indicates whether this instance and a specified object are equal.
@@ -1870,9 +1822,7 @@ public class JsonDoubleNode : IJsonValueNode<double>, IJsonDataNode, IJsonNumber
     /// <param name="other">The object to compare with the current instance.</param>
     /// <returns>true if obj and this instance represent the same value; otherwise, false.</returns>
     public bool Equals(float other)
-    {
-        return Value.Equals(other);
-    }
+        => Value.Equals(other);
 
     /// <summary>
     /// Indicates whether this instance and a specified object are equal.
@@ -1880,9 +1830,7 @@ public class JsonDoubleNode : IJsonValueNode<double>, IJsonDataNode, IJsonNumber
     /// <param name="other">The object to compare with the current instance.</param>
     /// <returns>true if obj and this instance represent the same value; otherwise, false.</returns>
     public bool Equals(long other)
-    {
-        return Value.Equals(other);
-    }
+        => Value.Equals(other);
 
     /// <summary>
     /// Indicates whether this instance and a specified object are equal.
@@ -1890,9 +1838,7 @@ public class JsonDoubleNode : IJsonValueNode<double>, IJsonDataNode, IJsonNumber
     /// <param name="other">The object to compare with the current instance.</param>
     /// <returns>true if obj and this instance represent the same value; otherwise, false.</returns>
     public bool Equals(uint other)
-    {
-        return Value.Equals(other);
-    }
+        => Value.Equals(other);
 
     /// <summary>
     /// Indicates whether this instance and a specified object are equal.
@@ -1900,9 +1846,7 @@ public class JsonDoubleNode : IJsonValueNode<double>, IJsonDataNode, IJsonNumber
     /// <param name="other">The object to compare with the current instance.</param>
     /// <returns>true if obj and this instance represent the same value; otherwise, false.</returns>
     public bool Equals(int other)
-    {
-        return Value.Equals(other);
-    }
+        => Value.Equals(other);
 
     /// <summary>
     /// Indicates whether this instance and a specified object are equal.
@@ -1951,9 +1895,7 @@ public class JsonDoubleNode : IJsonValueNode<double>, IJsonDataNode, IJsonNumber
     /// </list>
     /// </returns>
     public int CompareTo(JsonIntegerNode other)
-    {
-        return Value.CompareTo(other.Value);
-    }
+        => Value.CompareTo(other.Value);
 
     /// <summary>
     /// Compares this instance to a specified number and returns an indication of their relative values.
@@ -1971,9 +1913,7 @@ public class JsonDoubleNode : IJsonValueNode<double>, IJsonDataNode, IJsonNumber
     /// </list>
     /// </returns>
     public int CompareTo(JsonDoubleNode other)
-    {
-        return Value.CompareTo(other.Value);
-    }
+        => Value.CompareTo(other.Value);
 
     /// <summary>
     /// Compares this instance to a specified number and returns an indication of their relative values.
@@ -1991,9 +1931,7 @@ public class JsonDoubleNode : IJsonValueNode<double>, IJsonDataNode, IJsonNumber
     /// </list>
     /// </returns>
     public int CompareTo(long other)
-    {
-        return Value.CompareTo(other);
-    }
+        => Value.CompareTo(other);
 
     /// <summary>
     /// Compares this instance to a specified number and returns an indication of their relative values.
@@ -2011,9 +1949,7 @@ public class JsonDoubleNode : IJsonValueNode<double>, IJsonDataNode, IJsonNumber
     /// </list>
     /// </returns>
     public int CompareTo(int other)
-    {
-        return Value.CompareTo(other);
-    }
+        => Value.CompareTo(other);
 
     /// <summary>
     /// Compares this instance to a specified number and returns an indication of their relative values.
@@ -2031,9 +1967,7 @@ public class JsonDoubleNode : IJsonValueNode<double>, IJsonDataNode, IJsonNumber
     /// </list>
     /// </returns>
     public int CompareTo(uint other)
-    {
-        return Value.CompareTo(other);
-    }
+        => Value.CompareTo(other);
 
     /// <summary>
     /// Compares this instance to a specified number and returns an indication of their relative values.
@@ -2051,9 +1985,7 @@ public class JsonDoubleNode : IJsonValueNode<double>, IJsonDataNode, IJsonNumber
     /// </list>
     /// </returns>
     public int CompareTo(double other)
-    {
-        return Value.CompareTo(other);
-    }
+        => Value.CompareTo(other);
 
     /// <summary>
     /// Compares this instance to a specified number and returns an indication of their relative values.
@@ -2071,9 +2003,7 @@ public class JsonDoubleNode : IJsonValueNode<double>, IJsonDataNode, IJsonNumber
     /// </list>
     /// </returns>
     public int CompareTo(float other)
-    {
-        return Value.CompareTo(other);
-    }
+        => Value.CompareTo(other);
 
     /// <summary>
     /// Gets the item value count.
@@ -2106,9 +2036,7 @@ public class JsonDoubleNode : IJsonValueNode<double>, IJsonDataNode, IJsonNumber
     /// <returns>The value of the element as a date time.</returns>
     /// <exception cref="InvalidCastException">The value is an Double but expect a Int64.</exception>
     DateTime IJsonDataNode.GetDateTime()
-    {
-        return Web.WebFormat.ParseDate((long)Value);
-    }
+        => WebFormat.ParseDate((long)Value);
 
     /// <summary>
     /// Gets the value of the element as a number.

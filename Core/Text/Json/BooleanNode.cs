@@ -87,9 +87,7 @@ public class JsonBooleanNode : IJsonValueNode<bool>, IJsonDataNode
     /// <param name="other">The object to compare with the current instance.</param>
     /// <returns>true if obj and this instance represent the same value; otherwise, false.</returns>
     public bool Equals(bool other)
-    {
-        return Value.Equals(other);
-    }
+        => Value.Equals(other);
 
     /// <summary>
     /// Indicates whether this instance and a specified object are equal.

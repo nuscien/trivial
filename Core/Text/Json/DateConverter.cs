@@ -24,9 +24,7 @@ public sealed class JsonJavaScriptTicksConverter : JsonConverter<DateTime>
     {
         /// <inheritdoc />
         public override bool CanConvert(Type typeToConvert)
-        {
-            return base.CanConvert(typeToConvert) || typeToConvert == typeof(DateTime);
-        }
+            => base.CanConvert(typeToConvert) || typeToConvert == typeof(DateTime);
 
         /// <inheritdoc />
         public override DateTime? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
@@ -90,9 +88,7 @@ public sealed class JsonJavaScriptTicksConverter : JsonConverter<DateTime>
 
         /// <inheritdoc />
         public override void Write(Utf8JsonWriter writer, DateTime value, JsonSerializerOptions options)
-        {
-            writer.WriteStringValue(JsonStringNode.ToJson(value, true));
-        }
+            => writer.WriteStringValue(JsonStringNode.ToJson(value, true));
     }
 
     /// <inheritdoc />
@@ -185,9 +181,7 @@ public sealed class JsonUnixTimestampConverter : JsonConverter<DateTime>
 
         /// <inheritdoc />
         public override void Write(Utf8JsonWriter writer, DateTime value, JsonSerializerOptions options)
-        {
-            writer.WriteStringValue(JsonStringNode.ToJson(value, true));
-        }
+            => writer.WriteStringValue(JsonStringNode.ToJson(value, true));
     }
 
     /// <inheritdoc />
@@ -225,9 +219,7 @@ internal sealed class JsonTimeSpanSecondConverter : JsonConverter<TimeSpan>
 
         /// <inheritdoc />
         public override TimeSpan? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-        {
-            return ReadValue(ref reader);
-        }
+            => ReadValue(ref reader);
 
         /// <inheritdoc />
         public override void Write(Utf8JsonWriter writer, TimeSpan? value, JsonSerializerOptions options)

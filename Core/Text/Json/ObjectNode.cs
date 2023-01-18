@@ -4953,9 +4953,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     /// <exception cref="ArgumentOutOfRangeException">arrayIndex is less than 0.</exception>
     /// <exception cref="ArgumentException">The number of elements in the source  is greater than the available space from arrayIndex to the end of the destination array.</exception>
     public void CopyTo(KeyValuePair<string, IJsonDataNode>[] array, int arrayIndex)
-    {
-        store.CopyTo(array, arrayIndex);
-    }
+        => store.CopyTo(array, arrayIndex);
 
     /// <summary>
     /// Copies the elements of the JSON object to an System.Array, starting at a particular System.Array index.
@@ -5012,9 +5010,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     /// Removes all properties from the object.
     /// </summary>
     public void Clear()
-    {
-        store.Clear();
-    }
+        => store.Clear();
 
     /// <summary>
     /// Indicates whether this instance and a specified object are equal.
@@ -5065,7 +5061,8 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     /// Returns the hash code for this instance.
     /// </summary>
     /// <returns>A hash code for the current instance.</returns>
-    public override int GetHashCode() => store.GetHashCode();
+    public override int GetHashCode()
+        => store.GetHashCode();
 
     /// <summary>
     /// Writes this instance to the specified writer as a JSON value.
@@ -5364,9 +5361,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     /// <exception cref="ArgumentException">readerOptions contains unsupported options.</exception>
     /// <exception cref="JsonException">The JSON is invalid. -or- TValue is not compatible with the JSON.</exception>
     public T Deserialize<T>(JsonSerializerOptions options = default)
-    {
-        return JsonSerializer.Deserialize<T>(ToString(), options);
-    }
+        => JsonSerializer.Deserialize<T>(ToString(), options);
 
     /// <summary>
     /// Deserializes a property value.
@@ -5969,9 +5964,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     /// <exception cref="JsonException">json does not represent a valid single JSON object.</exception>
     /// <exception cref="ArgumentException">options contains unsupported options.</exception>
     public static JsonObjectNode Parse(string json, JsonDocumentOptions options = default)
-    {
-        return JsonDocument.Parse(json, options);
-    }
+        => JsonDocument.Parse(json, options);
 
     /// <summary>
     /// Parses JSON object.
@@ -5982,9 +5975,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     /// <exception cref="JsonException">json does not represent a valid single JSON object.</exception>
     /// <exception cref="ArgumentException">options contains unsupported options.</exception>
     public static JsonObjectNode Parse(System.Buffers.ReadOnlySequence<byte> json, JsonDocumentOptions options)
-    {
-        return JsonDocument.Parse(json, options);
-    }
+        => JsonDocument.Parse(json, options);
 
     /// <summary>
     /// Parses JSON object.
@@ -5995,9 +5986,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     /// <exception cref="JsonException">json does not represent a valid single JSON object.</exception>
     /// <exception cref="ArgumentException">options contains unsupported options.</exception>
     public static JsonObjectNode Parse(ReadOnlyMemory<byte> json, JsonDocumentOptions options = default)
-    {
-        return JsonDocument.Parse(json, options);
-    }
+        => JsonDocument.Parse(json, options);
 
     /// <summary>
     /// Parses JSON object.
