@@ -41,7 +41,7 @@ public static partial class ConsoleRenderExtensions
     public static void WriteLine(this StyleConsole cli, ConsoleTextStyle captionStyle, ConsoleTextStyle messageStyle, Exception ex, bool stackTrace = false)
     {
         if (ex == null) return;
-        if (cli == null) cli = StyleConsole.Default;
+        cli ??= StyleConsole.Default;
         var header = new ConsoleText(Resource.Error, captionStyle);
         if (!string.IsNullOrWhiteSpace(ex.Message)) header.Content.Append(ex.Message);
         var message = new ConsoleText(Environment.NewLine, messageStyle);
@@ -101,7 +101,7 @@ public static partial class ConsoleRenderExtensions
     public static void WriteLine(this StyleConsole cli, ConsoleTextStyle captionStyle, ConsoleTextStyle messageStyle, Data.ErrorMessageResult ex)
     {
         if (ex == null) return;
-        if (cli == null) cli = StyleConsole.Default;
+        cli ??= StyleConsole.Default;
         var header = new ConsoleText(Resource.Error, captionStyle);
         if (!string.IsNullOrWhiteSpace(ex.Message)) header.Content.Append(ex.Message);
         var message = new ConsoleText(Environment.NewLine, messageStyle);
@@ -190,7 +190,7 @@ public static partial class ConsoleRenderExtensions
     /// <param name="style">The style.</param>
     public static void PressAnyKeyToContinue(StyleConsole cli, ConsoleTextStyle style = null)
     {
-        if (cli == null) cli = StyleConsole.Default;
+        cli ??= StyleConsole.Default;
         cli.WriteLine(style, Resource.PressAnyKeyToCont);
         try
         {

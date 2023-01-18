@@ -14,7 +14,7 @@ variables:
     
 steps:
 - task: UseDotNet@2
-  displayName: 'Use .NET SDK 6.0'
+  displayName: 'Use .NET SDK 7.0'
   inputs:
     version: 7.0.x
     includePreviewVersions: true
@@ -24,16 +24,6 @@ steps:
   inputs:
     version: 6.0.x
     includePreviewVersions: true
-
-- task: UseDotNet@2
-  displayName: 'Use .NET SDK 5.0'
-  inputs:
-    version: 5.0.x
-
-- task: UseDotNet@2
-  displayName: 'Use .NET Core SDK 3.1'
-  inputs:
-    version: 3.1.x
 
 - script: dotnet build --configuration $(buildConfiguration)
   displayName: 'Build $(buildConfiguration)'
@@ -50,4 +40,4 @@ steps:
   displayName: 'Publish Code Coverage Result'
   inputs:
     codeCoverageTool: 'Cobertura'
-    summaryFileLocation: '$(Build.SourcesDirectory)/**/TestResults/coverage.net5.0.cobertura.xml'
+    summaryFileLocation: '$(Build.SourcesDirectory)/**/TestResults/coverage.net6.0.cobertura.xml'

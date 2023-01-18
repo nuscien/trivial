@@ -49,7 +49,7 @@ public static class ControllerExtensions
                 var s = ele.Trim();
                 if (s.Length == 0)
                 {
-                    if (str == null) str = string.Empty;
+                    str ??= string.Empty;
                     continue;
                 }
 
@@ -63,7 +63,7 @@ public static class ControllerExtensions
                 if (ele == null) continue;
                 if (ele.Length == 0)
                 {
-                    if (str == null) str = string.Empty;
+                    str ??= string.Empty;
                     continue;
                 }
 
@@ -108,7 +108,7 @@ public static class ControllerExtensions
                 var s = ele.Trim();
                 if (s.Length == 0)
                 {
-                    if (str == null) str = string.Empty;
+                    str ??= string.Empty;
                     continue;
                 }
 
@@ -122,7 +122,7 @@ public static class ControllerExtensions
                 if (ele == null) continue;
                 if (ele.Length == 0)
                 {
-                    if (str == null) str = string.Empty;
+                    str ??= string.Empty;
                     continue;
                 }
 
@@ -356,7 +356,7 @@ public static class ControllerExtensions
     public static async Task<QueryData> ReadBodyAsQueryDataAsync(this HttpRequest request, Encoding encoding = null)
     {
         if (request == null || request.Body == null) return null;
-        if (encoding == null) encoding = Encoding.UTF8;
+        encoding ??= Encoding.UTF8;
         using var reader = new StreamReader(request.Body, encoding);
         var query = await reader.ReadToEndAsync();
         var q = new QueryData();
@@ -706,8 +706,7 @@ public static class ControllerExtensions
     public static FileStreamResult FileResult(FileInfo source, EntityTagHeaderValue entityTag = null, string mime = null)
     {
         if (source == null || !source.Exists) return null;
-        if (mime == null)
-            mime = GetByFileExtension(source.Extension, WebFormat.StreamMIME);
+        mime ??= GetByFileExtension(source.Extension, WebFormat.StreamMIME);
         var result = new FileStreamResult(source.OpenRead(), mime)
         {
             LastModified = source.LastWriteTime,

@@ -91,7 +91,7 @@ public class Initialization
         {
             try
             {
-                if (semaphoreSlim != null) semaphoreSlim.Release();
+                semaphoreSlim?.Release();
             }
             catch (InvalidOperationException)
             {
@@ -109,9 +109,7 @@ public class Initialization
     /// </summary>
     /// <returns>The async task returned.</returns>
     protected virtual Task OnInitAsync()
-    {
-        return init != null ? init() : Task.Run(() => { });
-    }
+        => init != null ? init() : Task.Run(() => { });
 
     /// <summary>
     /// Processes on initialization has finished.
@@ -130,7 +128,7 @@ public class Initialization
         try
         {
             await semaphoreSlim.WaitAsync();
-            if (semaphoreSlim != null) semaphoreSlim.Release();
+            semaphoreSlim?.Release();
         }
         catch (InvalidOperationException)
         {

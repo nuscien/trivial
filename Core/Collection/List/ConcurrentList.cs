@@ -596,9 +596,7 @@ internal class ConcurrentList<T> : IList<T>, ICloneable
 
     /// <inheritdoc />
     IEnumerator IEnumerable.GetEnumerator()
-    {
-        return GetEnumerator();
-    }
+        => GetEnumerator();
 
     /// <summary>
     /// Creates a new concurrent list that is a copy of the current instance.
@@ -650,7 +648,5 @@ internal class ConcurrentList<T> : IList<T>, ICloneable
 
     /// <inheritdoc />
     object ICloneable.Clone()
-    {
-        return Clone();
-    }
+        => Clone();
 }

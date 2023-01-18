@@ -79,7 +79,7 @@ public class ExceptionHandler
         /// <param name="other">The given item.</param>
         /// <returns>true if the given item equals the current one; otherwise, false.</returns>
         public bool Equals(Item<T> other)
-            => !(other is null) && other.Handler == Handler;
+            => other is not null && other.Handler == Handler;
 
         /// <summary>
         /// Tests if the given item equals the current one.
