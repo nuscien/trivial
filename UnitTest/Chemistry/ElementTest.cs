@@ -93,7 +93,7 @@ namespace Trivial.Chemistry
             Assert.IsTrue(c.ToString().Contains(c.Symbol));
             Assert.AreEqual(6, ((JsonObjectNode)c).TryGetInt32Value("number"));
             var c12 = c.Isotope(12);
-            Assert.AreNotEqual(h, c12);
+            Assert.AreNotEqual(d, c12);
             Assert.AreEqual(3, c12.ToString().Length);
             Assert.IsTrue(c12.ToString().EndsWith("C"));
             Assert.AreEqual(c, c12.Element);
