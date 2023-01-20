@@ -85,7 +85,6 @@ namespace Trivial.Reflection
             var json = jsonFactory.Create("obj");
             Assert.AreEqual(JsonValueKind.Object, json.ValueKind);
             Assert.AreEqual(JsonValueKind.Array, jsonFactory.Create("arr").ValueKind);
-            Assert.AreNotEqual(json.ValueKind, jsonFactory.Create("obj").ValueKind);
         }
     }
 }
