@@ -3365,6 +3365,36 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     /// Sets the value of the specific property.
     /// </summary>
     /// <param name="key">The property key.</param>
+    /// <param name="setter">The handler of value setter.</param>
+    /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+    public void SetValue(string key, Func<int, bool, int> setter)
+    {
+        AssertKey(key);
+        if (setter is null) return;
+        var i = TryGetInt32Value(key);
+        var value = setter(i ?? 0, i.HasValue);
+        store[key] = new JsonIntegerNode(value);
+    }
+
+    /// <summary>
+    /// Sets the value of the specific property.
+    /// </summary>
+    /// <param name="key">The property key.</param>
+    /// <param name="setter">The handler of value setter.</param>
+    /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+    public void SetValue(string key, Func<int?, int?> setter)
+    {
+        AssertKey(key);
+        if (setter is null) return;
+        var value = TryGetInt32Value(key);
+        value = setter(value);
+        if (value.HasValue) store[key] = new JsonIntegerNode(value.Value);
+    }
+
+    /// <summary>
+    /// Sets the value of the specific property.
+    /// </summary>
+    /// <param name="key">The property key.</param>
     /// <param name="value">The value to set.</param>
     /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
     public void SetValue(string key, long value)
@@ -4265,7 +4295,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     /// <param name="key">The key of the property.</param>
     /// <param name="force">true if set a new one if the current is not JSON object; otherwise, false.</param>
     /// <param name="oldValueKind">The value kind before initializing.</param>
-    /// <returns>true if the object is ready; otherwise, false.</returns>
+    /// <returns>true if the object is ready, that means no value there before; otherwise, false.</returns>
     public bool EnsureObjectValue(string key, bool force, out JsonValueKind oldValueKind)
     {
         oldValueKind = GetValueKind(key);
@@ -4280,7 +4310,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     /// </summary>
     /// <param name="key">The key of the property.</param>
     /// <param name="oldValueKind">The value kind before initializing.</param>
-    /// <returns>true if the object is ready; otherwise, false.</returns>
+    /// <returns>true if the object is ready, that means no value there before; otherwise, false.</returns>
     public bool EnsureObjectValue(string key, out JsonValueKind oldValueKind)
         => EnsureObjectValue(key, false, out oldValueKind);
 
@@ -4290,7 +4320,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     /// <param name="key">The key of the property.</param>
     /// <param name="force">true if set a new one if the current is not JSON array; otherwise, false.</param>
     /// <param name="oldValueKind">The value kind before initializing.</param>
-    /// <returns>true if the object is ready; otherwise, false.</returns>
+    /// <returns>true if the object is ready, that means no value there before; otherwise, false.</returns>
     public bool EnsureArrayValue(string key, bool force, out JsonValueKind oldValueKind)
     {
         oldValueKind = GetValueKind(key);
@@ -4305,7 +4335,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     /// </summary>
     /// <param name="key">The key of the property.</param>
     /// <param name="oldValueKind">The value kind before initializing.</param>
-    /// <returns>true if the object is ready; otherwise, false.</returns>
+    /// <returns>true if the object is ready, that means no value there before; otherwise, false.</returns>
     public bool EnsureArrayValue(string key, out JsonValueKind oldValueKind)
         => EnsureObjectValue(key, false, out oldValueKind);
 

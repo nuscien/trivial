@@ -869,6 +869,8 @@ public class JsonStringNode : IJsonStringNode, IJsonValueNode<string>, IJsonData
         if (other is StringBuilder sb) return Value.Equals(sb.ToString());
         if (other is int i) return TryGetInt32(out var i2) && i == i2;
         if (other is long i3) return TryGetInt64(out var i4) && i3 == i4;
+        if (other is double d) return TryGetDouble(out var d2) && d == d2;
+        if (other is float d3) return TryGetSingle(out var d4) && d3 == d4;
         if (other is DateTime dt) return TryGetDateTime(out var dt2) && dt == dt2;
         if (other is bool b) return TryGetBoolean(out var b2) && b == b2;
         return Value.Equals(other);
