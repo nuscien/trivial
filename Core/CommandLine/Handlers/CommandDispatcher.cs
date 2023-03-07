@@ -632,9 +632,7 @@ public class CommandDispatcher : IEnumerable<CommandDispatcher.Route>
     /// </summary>
     /// <param name="args">The arguments.</param>
     public void GetHelp(string args)
-    {
-        GetHelp(args, null);
-    }
+        => GetHelp(args, null);
 
     /// <summary>
     /// Gets help.
@@ -663,9 +661,7 @@ public class CommandDispatcher : IEnumerable<CommandDispatcher.Route>
     /// <param name="args">The arguments.</param>
     /// <param name="removeFirstKey">true if need remove the first key; otherwise, false.</param>
     public void GetHelp(string args, bool removeFirstKey)
-    {
-        GetHelp(args, null, removeFirstKey);
-    }
+        => GetHelp(args, null, removeFirstKey);
 
     /// <summary>
     /// Gets help.
@@ -712,27 +708,21 @@ public class CommandDispatcher : IEnumerable<CommandDispatcher.Route>
     /// </summary>
     /// <returns>An enumerator object that can be used to iterate through this dispatcher.</returns>
     public IEnumerator<Route> GetEnumerator()
-    {
-        return list.GetEnumerator();
-    }
+        => list.GetEnumerator();
 
     /// <summary>
     /// Returns an enumerator about the route that iterates through this dispatcher.
     /// </summary>
     /// <returns>An enumerator object that can be used to iterate through this dispatcher.</returns>
     IEnumerator IEnumerable.GetEnumerator()
-    {
-        return list.GetEnumerator();
-    }
+        => list.GetEnumerator();
 
     private CommandConversationContext CreateContext()
-    {
-        return new CommandConversationContext
+        => new CommandConversationContext
         {
             Console = Console,
             ExitKeys = ExitKeys.AsReadOnly()
         };
-    }
 
     private void Update(CommandConversationContext context, ICommandHandler handler, CommandConversationModes? mode)
     {

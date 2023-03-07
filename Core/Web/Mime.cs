@@ -228,6 +228,7 @@ public static partial class WebFormat
             "3g2" or "3gp2" => "video/3gpp2",
             "av1" => "video/av1",
             "av2" => "video/av2",
+            "av3" => "video/av3",
             "jpgv" => "video/jpeg",
             "jpm" or "jpgm" => "video/jpm",
             "ogv" => "video/ogg",
@@ -248,6 +249,7 @@ public static partial class WebFormat
             "wvx" => "video/x-ms-wvx",
             "flv" => "video/x-flv",
             "rm" or "rmvb" => "application/vnd.rn-realmedia",
+            "vp9" => "video/vp9",
 
             // Text
             "txt" or "text" or "log" or "def" or "ini" or "gitignore" or "editorconfig" or "bas" or "cnf" or "xdr" or "asm" or "vcs" or "lrc" => Text.StringExtensions.PlainTextMIME,

@@ -79,9 +79,7 @@ public static class HttpClientExtensions
     /// <exception cref="DirectoryNotFoundException">The specified path is invalid, such as being on an unmapped drive.</exception>
     /// <exception cref="NotSupportedException">The path of the file refers to a non-file device, such as "con:", "com1:", "lpt1:".</exception>
     public static Task WriteFileAsync(this HttpContent httpContent, string fileName, IProgress<double> progress = null, CancellationToken cancellationToken = default)
-    {
-        return WriteFileAsync(httpContent, fileName, IO.StreamCopy.DefaultBufferSize, progress, cancellationToken);
-    }
+        => WriteFileAsync(httpContent, fileName, IO.StreamCopy.DefaultBufferSize, progress, cancellationToken);
 
     /// <summary>
     /// Loads the HTTP content into a stream of bytes and copies it to the file.
@@ -138,6 +136,120 @@ public static class HttpClientExtensions
 #endif
         using var resp = await httpClient.GetAsync(uri, cancellationToken);
         return await WriteFileAsync(resp.Content, fileName, DefaultBlockSize, progress, cancellationToken);
+    }
+
+    /// <summary>
+    /// Loads the HTTP content into a stream of bytes and copies it to the file.
+    /// </summary>
+    /// <param name="httpContent">The http response content.</param>
+    /// <param name="fileName">The file name.</param>
+    /// <param name="progress">The progress to report, from 0 to 1.</param>
+    /// <param name="cancellationToken">The optional cancellation token.</param>
+    /// <returns>The task object representing the asynchronous operation.</returns>
+    /// <exception cref="ArgumentNullException">The argument is null.</exception>
+    /// <exception cref="ArgumentException">The argument is invalid.</exception>
+    /// <exception cref="SecurityException">The caller does not have the required permission.</exception>
+    /// <exception cref="IOException">An I/O error.</exception>
+    /// <exception cref="DirectoryNotFoundException">The specified path is invalid, such as being on an unmapped drive.</exception>
+    /// <exception cref="NotSupportedException">The path of the file refers to a non-file device, such as "con:", "com1:", "lpt1:".</exception>
+    public static Task TryWriteFileAsync(HttpContent httpContent, string fileName, IProgress<double> progress = null, CancellationToken cancellationToken = default)
+        => TryWriteFileAsync(httpContent, fileName, IO.StreamCopy.DefaultBufferSize, progress, cancellationToken);
+
+    /// <summary>
+    /// Loads the HTTP content into a stream of bytes and copies it to the file.
+    /// </summary>
+    /// <param name="httpContent">The http response content.</param>
+    /// <param name="fileName">The file name.</param>
+    /// <param name="bufferSize">The size, in bytes, of the buffer. This value must be greater than zero.</param>
+    /// <param name="progress">The progress to report, from 0 to 1.</param>
+    /// <param name="cancellationToken">The optional cancellation token.</param>
+    /// <returns>The file info instance to write.</returns>
+    /// <exception cref="ArgumentNullException">The argument is null.</exception>
+    /// <exception cref="ArgumentException">The argument is invalid.</exception>
+    /// <exception cref="SecurityException">The caller does not have the required permission.</exception>
+    /// <exception cref="IOException">An I/O error.</exception>
+    /// <exception cref="DirectoryNotFoundException">The specified path is invalid, such as being on an unmapped drive.</exception>
+    /// <exception cref="NotSupportedException">The path of the file refers to a non-file device, such as "con:", "com1:", "lpt1:".</exception>
+    public static Task<FileInfo> TryWriteFileAsync(HttpContent httpContent, string fileName, int bufferSize, IProgress<double> progress = null, CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            return WriteFileAsync(httpContent, fileName, bufferSize, progress, cancellationToken);
+        }
+        catch (ArgumentException)
+        {
+        }
+        catch (InvalidOperationException)
+        {
+        }
+        catch (IOException)
+        {
+        }
+        catch (FormatException)
+        {
+        }
+        catch (SecurityException)
+        {
+        }
+        catch (UnauthorizedAccessException)
+        {
+        }
+        catch (NotSupportedException)
+        {
+        }
+        catch (ExternalException)
+        {
+        }
+
+        return Task.FromResult<FileInfo>(null);
+    }
+
+    /// <summary>
+    /// Loads the HTTP content into a stream of bytes and copies it to the file.
+    /// </summary>
+    /// <param name="uri">The URI to download file.</param>
+    /// <param name="fileName">The file name.</param>
+    /// <param name="progress">The progress to report, from 0 to 1.</param>
+    /// <param name="cancellationToken">The optional cancellation token.</param>
+    /// <returns>The file info instance to write; or null, if failed.</returns>
+    /// <exception cref="ArgumentNullException">The argument is null.</exception>
+    /// <exception cref="ArgumentException">The argument is invalid.</exception>
+    /// <exception cref="SecurityException">The caller does not have the required permission.</exception>
+    /// <exception cref="IOException">An I/O error.</exception>
+    /// <exception cref="DirectoryNotFoundException">The specified path is invalid, such as being on an unmapped drive.</exception>
+    /// <exception cref="NotSupportedException">The path of the file refers to a non-file device, such as "con:", "com1:", "lpt1:".</exception>
+    public static Task<FileInfo> TryWriteFileAsync(Uri uri, string fileName, IProgress<double> progress = null, CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            return WriteFileAsync(uri, fileName, progress, cancellationToken);
+        }
+        catch (ArgumentException)
+        {
+        }
+        catch (InvalidOperationException)
+        {
+        }
+        catch (IOException)
+        {
+        }
+        catch (FormatException)
+        {
+        }
+        catch (SecurityException)
+        {
+        }
+        catch (UnauthorizedAccessException)
+        {
+        }
+        catch (NotSupportedException)
+        {
+        }
+        catch (ExternalException)
+        {
+        }
+
+        return Task.FromResult<FileInfo>(null);
     }
 
     /// <summary>

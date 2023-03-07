@@ -214,16 +214,21 @@ public static class HashUtility
     /// <exception cref="NotSupportedException">The hash algorithm name is not supported.</exception>
     public static string ComputeHashString(HashAlgorithmName h, SecureString secureString, Encoding encoding = null)
         => ComputeHashString(h, secureString.ToUnsecureString(), encoding);
+#endif
 
     /// <summary>
     /// Creates a hash algorithm instance.
     /// </summary>
     /// <param name="name">The hash algorithm name,</param>
-    /// <returns>A hash algorithm instance.</returns>
+    /// <returns>A new instance of the specified hash algorithm, or null if hash name is not a valid hash algorithm..</returns>
     /// <exception cref="ArgumentNullException">name was null.</exception>
     /// <exception cref="ArgumentException">name.Name was null or empty.</exception>
     /// <exception cref="NotSupportedException">The hash algorithm name is not supported.</exception>
+#if NETFRAMEWORK || NET6_0
     public static HashAlgorithm Create(HashAlgorithmName name)
+#else
+    internal static HashAlgorithm Create(HashAlgorithmName name)
+#endif
     {
         if (name == HashAlgorithmName.SHA512) return SHA512.Create();
         if (name == HashAlgorithmName.MD5) return MD5.Create();
@@ -242,10 +247,13 @@ public static class HashUtility
             "SHA512" or "SHA2" => SHA512.Create(),
             "MD5" => MD5.Create(),
             "SHA1" => SHA1.Create(),
-            _ => HashAlgorithm.Create(name.Name),
+#if NETFRAMEWORK || NET6_0
+            _ => HashAlgorithm.Create(name.Name)
+#else
+            _ => null
+#endif
         };
     }
-#endif
 
     /// <summary>
     /// Computes a SHA-1 hash string value of a specific string instance.
