@@ -309,7 +309,7 @@ public class JsonHttpClient<T>
             {
                 resp = await client.SendAsync(request, cancellationToken);
                 if (!SerializeEvenIfFailed && !resp.IsSuccessStatusCode)
-                    throw FailedHttpException.Create(resp, "Failed to send JSON HTTP web request because of unsuccess status code.");
+                    throw FailedHttpException.Create(resp, "Failed to send JSON HTTP web request because of error status code.");
                 var obj = Deserializer != null
 #if NET6_0_OR_GREATER
                     ? await HttpClientExtensions.DeserializeAsync(resp.Content, Deserializer, cancellationToken)
