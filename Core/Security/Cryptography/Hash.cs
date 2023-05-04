@@ -266,6 +266,58 @@ public static class HashUtility
         => ComputeHashString(SHA1.Create, plainText, encoding);
 
     /// <summary>
+    /// Computes a SHA-256 (of SHA-2 family) hash string value of a specific string instance.
+    /// </summary>
+    /// <param name="plainText">The original input value to get hash.</param>
+    /// <returns>A hash string value of the given string.</returns>
+    public static string ComputeSHA256String(byte[] plainText)
+        => ComputeHashString(SHA256.Create, plainText);
+
+    /// <summary>
+    /// Computes a SHA-256 (of SHA-2 family) hash string value of a specific string instance.
+    /// </summary>
+    /// <param name="plainText">The original input value to get hash.</param>
+    /// <param name="encoding">The text encoding.</param>
+    /// <returns>A hash string value of the given string.</returns>
+    public static string ComputeSHA256String(string plainText, Encoding encoding = null)
+        => ComputeHashString(SHA256.Create, plainText, encoding);
+
+    /// <summary>
+    /// Computes a SHA-256 (of SHA-2 family) hash string value of a specific string instance.
+    /// </summary>
+    /// <param name="secureString">The original input value to get hash.</param>
+    /// <param name="encoding">The text encoding.</param>
+    /// <returns>A hash string value of the given string.</returns>
+    public static string ComputeSHA256String(SecureString secureString, Encoding encoding = null)
+        => ComputeHashString(SHA256.Create, secureString, encoding);
+
+    /// <summary>
+    /// Computes a SHA-384 (of SHA-2 family) hash string value of a specific string instance.
+    /// </summary>
+    /// <param name="plainText">The original input value to get hash.</param>
+    /// <returns>A hash string value of the given string.</returns>
+    public static string ComputeSHA384String(byte[] plainText)
+        => ComputeHashString(SHA384.Create, plainText);
+
+    /// <summary>
+    /// Computes a SHA-384 (of SHA-2 family) hash string value of a specific string instance.
+    /// </summary>
+    /// <param name="plainText">The original input value to get hash.</param>
+    /// <param name="encoding">The text encoding.</param>
+    /// <returns>A hash string value of the given string.</returns>
+    public static string ComputeSHA384String(string plainText, Encoding encoding = null)
+        => ComputeHashString(SHA384.Create, plainText, encoding);
+
+    /// <summary>
+    /// Computes a SHA-384 (of SHA-2 family) hash string value of a specific string instance.
+    /// </summary>
+    /// <param name="secureString">The original input value to get hash.</param>
+    /// <param name="encoding">The text encoding.</param>
+    /// <returns>A hash string value of the given string.</returns>
+    public static string ComputeSHA384String(SecureString secureString, Encoding encoding = null)
+        => ComputeHashString(SHA384.Create, secureString, encoding);
+
+    /// <summary>
     /// Computes a SHA-512 (of SHA-2 family) hash string value of a specific string instance.
     /// </summary>
     /// <param name="plainText">The original input value to get hash.</param>
@@ -290,6 +342,58 @@ public static class HashUtility
     /// <returns>A hash string value of the given string.</returns>
     public static string ComputeSHA512String(SecureString secureString, Encoding encoding = null)
         => ComputeHashString(SHA512.Create, secureString, encoding);
+
+    /// <summary>
+    /// Computes a SHA-3-256 hash string value of a specific string instance.
+    /// </summary>
+    /// <param name="plainText">The original input value to get hash.</param>
+    /// <param name="encoding">The text encoding.</param>
+    /// <returns>A hash string value of the given string.</returns>
+    public static string ComputeSHA3256String(string plainText, Encoding encoding = null)
+        => ComputeHashString(SHA3Managed.Create256, plainText, encoding);
+
+    /// <summary>
+    /// Computes a SHA-3-512 hash string value of a specific string instance.
+    /// </summary>
+    /// <param name="secureString">The original input value to get hash.</param>
+    /// <param name="encoding">The text encoding.</param>
+    /// <returns>A hash string value of the given string.</returns>
+    public static string ComputeSHA3256String(SecureString secureString, Encoding encoding = null)
+        => ComputeHashString(SHA3Managed.Create256, secureString, encoding);
+
+    /// <summary>
+    /// Computes a SHA-3-256 hash string value of a specific string instance.
+    /// </summary>
+    /// <param name="plainText">The original input value to get hash.</param>
+    /// <returns>A hash string value of the given string.</returns>
+    public static string ComputeSHA3256String(byte[] plainText)
+        => ComputeHashString(SHA3Managed.Create256, plainText);
+
+    /// <summary>
+    /// Computes a SHA-3-384 hash string value of a specific string instance.
+    /// </summary>
+    /// <param name="plainText">The original input value to get hash.</param>
+    /// <param name="encoding">The text encoding.</param>
+    /// <returns>A hash string value of the given string.</returns>
+    public static string ComputeSHA3384String(string plainText, Encoding encoding = null)
+        => ComputeHashString(SHA3Managed.Create384, plainText, encoding);
+
+    /// <summary>
+    /// Computes a SHA-3-384 hash string value of a specific string instance.
+    /// </summary>
+    /// <param name="secureString">The original input value to get hash.</param>
+    /// <param name="encoding">The text encoding.</param>
+    /// <returns>A hash string value of the given string.</returns>
+    public static string ComputeSHA3384String(SecureString secureString, Encoding encoding = null)
+        => ComputeHashString(SHA3Managed.Create384, secureString, encoding);
+
+    /// <summary>
+    /// Computes a SHA-3-384 hash string value of a specific string instance.
+    /// </summary>
+    /// <param name="plainText">The original input value to get hash.</param>
+    /// <returns>A hash string value of the given string.</returns>
+    public static string ComputeSHA3384String(byte[] plainText)
+        => ComputeHashString(SHA3Managed.Create384, plainText);
 
     /// <summary>
     /// Computes a SHA-3-512 hash string value of a specific string instance.
@@ -450,6 +554,64 @@ public static class HashUtility
         => StringComparer.OrdinalIgnoreCase.Equals(ComputeSHA1String(plainText, encoding), hash);
 
     /// <summary>
+    /// Verifies a SHA-256 (of SHA-2 family) hash against a string.
+    /// </summary>
+    /// <param name="plainText">The original input value to test.</param>
+    /// <param name="hash">A hash string for comparing.</param>
+    /// <param name="encoding">The text encoding.</param>
+    /// <returns>true if hash is a hash value of input; otherwise, false.</returns>
+    public static bool VerifySHA256(string plainText, string hash, Encoding encoding = null)
+        => StringComparer.OrdinalIgnoreCase.Equals(ComputeSHA256String(plainText, encoding), hash);
+
+    /// <summary>
+    /// Verifies a SHA-256 (of SHA-2 family) hash against a string.
+    /// </summary>
+    /// <param name="secureString">The original input value to test.</param>
+    /// <param name="hash">A hash string for comparing.</param>
+    /// <param name="encoding">The text encoding.</param>
+    /// <returns>true if hash is a hash value of input; otherwise, false.</returns>
+    public static bool VerifySHA256(SecureString secureString, string hash, Encoding encoding = null)
+        => StringComparer.OrdinalIgnoreCase.Equals(ComputeSHA256String(secureString, encoding), hash);
+
+    /// <summary>
+    /// Verifies a SHA-256 (of SHA-2 family) hash against a string.
+    /// </summary>
+    /// <param name="plainText">The original input value to test.</param>
+    /// <param name="hash">A hash string for comparing.</param>
+    /// <returns>true if hash is a hash value of input; otherwise, false.</returns>
+    public static bool VerifySHA256(byte[] plainText, string hash)
+        => StringComparer.OrdinalIgnoreCase.Equals(ComputeSHA256String(plainText), hash);
+
+    /// <summary>
+    /// Verifies a SHA-384 (of SHA-2 family) hash against a string.
+    /// </summary>
+    /// <param name="plainText">The original input value to test.</param>
+    /// <param name="hash">A hash string for comparing.</param>
+    /// <param name="encoding">The text encoding.</param>
+    /// <returns>true if hash is a hash value of input; otherwise, false.</returns>
+    public static bool VerifySHA384(string plainText, string hash, Encoding encoding = null)
+        => StringComparer.OrdinalIgnoreCase.Equals(ComputeSHA384String(plainText, encoding), hash);
+
+    /// <summary>
+    /// Verifies a SHA-384 (of SHA-2 family) hash against a string.
+    /// </summary>
+    /// <param name="secureString">The original input value to test.</param>
+    /// <param name="hash">A hash string for comparing.</param>
+    /// <param name="encoding">The text encoding.</param>
+    /// <returns>true if hash is a hash value of input; otherwise, false.</returns>
+    public static bool VerifySHA384(SecureString secureString, string hash, Encoding encoding = null)
+        => StringComparer.OrdinalIgnoreCase.Equals(ComputeSHA384String(secureString, encoding), hash);
+
+    /// <summary>
+    /// Verifies a SHA-384 (of SHA-2 family) hash against a string.
+    /// </summary>
+    /// <param name="plainText">The original input value to test.</param>
+    /// <param name="hash">A hash string for comparing.</param>
+    /// <returns>true if hash is a hash value of input; otherwise, false.</returns>
+    public static bool VerifySHA384(byte[] plainText, string hash)
+        => StringComparer.OrdinalIgnoreCase.Equals(ComputeSHA384String(plainText), hash);
+
+    /// <summary>
     /// Verifies a SHA-512 (of SHA-2 family) hash against a string.
     /// </summary>
     /// <param name="plainText">The original input value to test.</param>
@@ -477,6 +639,64 @@ public static class HashUtility
     /// <returns>true if hash is a hash value of input; otherwise, false.</returns>
     public static bool VerifySHA512(byte[] plainText, string hash)
         => StringComparer.OrdinalIgnoreCase.Equals(ComputeSHA512String(plainText), hash);
+
+    /// <summary>
+    /// Verifies a SHA-3-256 hash against a string.
+    /// </summary>
+    /// <param name="plainText">The original input value to test.</param>
+    /// <param name="hash">A hash string for comparing.</param>
+    /// <param name="encoding">The text encoding.</param>
+    /// <returns>true if hash is a hash value of input; otherwise, false.</returns>
+    public static bool VerifySHA3256(string plainText, string hash, Encoding encoding = null)
+        => StringComparer.OrdinalIgnoreCase.Equals(ComputeSHA3512String(plainText, encoding), hash);
+
+    /// <summary>
+    /// Verifies a SHA-3-256 hash against a string.
+    /// </summary>
+    /// <param name="secureString">The original input value to test.</param>
+    /// <param name="hash">A hash string for comparing.</param>
+    /// <param name="encoding">The text encoding.</param>
+    /// <returns>true if hash is a hash value of input; otherwise, false.</returns>
+    public static bool VerifySHA3256(SecureString secureString, string hash, Encoding encoding = null)
+        => StringComparer.OrdinalIgnoreCase.Equals(ComputeSHA3256String(secureString, encoding), hash);
+
+    /// <summary>
+    /// Verifies a SHA-3-256 hash against a string.
+    /// </summary>
+    /// <param name="plainText">The original input value to test.</param>
+    /// <param name="hash">A hash string for comparing.</param>
+    /// <returns>true if hash is a hash value of input; otherwise, false.</returns>
+    public static bool VerifySHA3256(byte[] plainText, string hash)
+        => StringComparer.OrdinalIgnoreCase.Equals(ComputeSHA3256String(plainText), hash);
+
+    /// <summary>
+    /// Verifies a SHA-3-384 hash against a string.
+    /// </summary>
+    /// <param name="plainText">The original input value to test.</param>
+    /// <param name="hash">A hash string for comparing.</param>
+    /// <param name="encoding">The text encoding.</param>
+    /// <returns>true if hash is a hash value of input; otherwise, false.</returns>
+    public static bool VerifySHA3384(string plainText, string hash, Encoding encoding = null)
+        => StringComparer.OrdinalIgnoreCase.Equals(ComputeSHA3384String(plainText, encoding), hash);
+
+    /// <summary>
+    /// Verifies a SHA-3-384 hash against a string.
+    /// </summary>
+    /// <param name="secureString">The original input value to test.</param>
+    /// <param name="hash">A hash string for comparing.</param>
+    /// <param name="encoding">The text encoding.</param>
+    /// <returns>true if hash is a hash value of input; otherwise, false.</returns>
+    public static bool VerifySHA3384(SecureString secureString, string hash, Encoding encoding = null)
+        => StringComparer.OrdinalIgnoreCase.Equals(ComputeSHA3384String(secureString, encoding), hash);
+
+    /// <summary>
+    /// Verifies a SHA-3-384 hash against a string.
+    /// </summary>
+    /// <param name="plainText">The original input value to test.</param>
+    /// <param name="hash">A hash string for comparing.</param>
+    /// <returns>true if hash is a hash value of input; otherwise, false.</returns>
+    public static bool VerifySHA3384(byte[] plainText, string hash)
+        => StringComparer.OrdinalIgnoreCase.Equals(ComputeSHA3384String(plainText), hash);
 
     /// <summary>
     /// Verifies a SHA-3-512 hash against a string.

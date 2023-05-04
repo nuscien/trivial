@@ -3461,7 +3461,35 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     /// <param name="format">A standard or custom time span format string.</param>
     /// <param name="provider">An object that supplies culture-specific formatting information.</param>
     /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+    public void SetValue(string key, float value, string format, IFormatProvider provider = null)
+    {
+        AssertKey(key);
+        store[key] = new JsonStringNode(value, format, provider);
+    }
+
+    /// <summary>
+    /// Sets the value of the specific property.
+    /// </summary>
+    /// <param name="key">The property key.</param>
+    /// <param name="value">The value to set.</param>
+    /// <param name="format">A standard or custom time span format string.</param>
+    /// <param name="provider">An object that supplies culture-specific formatting information.</param>
+    /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
     public void SetValue(string key, double value, string format, IFormatProvider provider = null)
+    {
+        AssertKey(key);
+        store[key] = new JsonStringNode(value, format, provider);
+    }
+
+    /// <summary>
+    /// Sets the value of the specific property.
+    /// </summary>
+    /// <param name="key">The property key.</param>
+    /// <param name="value">The value to set.</param>
+    /// <param name="format">A standard or custom time span format string.</param>
+    /// <param name="provider">An object that supplies culture-specific formatting information.</param>
+    /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+    public void SetValue(string key, decimal value, string format, IFormatProvider provider = null)
     {
         AssertKey(key);
         store[key] = new JsonStringNode(value, format, provider);
@@ -3573,6 +3601,20 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     /// <param name="value">The value to set.</param>
     /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
     public void SetValue(string key, IEnumerable<int> value)
+    {
+        AssertKey(key);
+        var arr = new JsonArrayNode();
+        arr.AddRange(value);
+        store[key] = arr;
+    }
+
+    /// <summary>
+    /// Sets the value of the specific property.
+    /// </summary>
+    /// <param name="key">The property key.</param>
+    /// <param name="value">The value to set.</param>
+    /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+    public void SetValue(string key, IEnumerable<long> value)
     {
         AssertKey(key);
         var arr = new JsonArrayNode();
@@ -4770,10 +4812,34 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     /// </summary>
     /// <param name="key">The property key.</param>
     /// <param name="value">The value of the property.</param>
+    /// <param name="format">A standard or custom time span format string.</param>
+    /// <param name="provider">An object that supplies culture-specific formatting information.</param>
+    /// <exception cref="ArgumentNullException">key is null.</exception>
+    /// <exception cref="ArgumentException">An element with the same key already exists in the JSON object.</exception>
+    public void Add(string key, int value, string format, IFormatProvider provider)
+        => store.Add(key, new JsonStringNode(value, format, provider));
+
+    /// <summary>
+    /// Adds a property with the provided key and value to the JSON object.
+    /// </summary>
+    /// <param name="key">The property key.</param>
+    /// <param name="value">The value of the property.</param>
     /// <exception cref="ArgumentNullException">key is null.</exception>
     /// <exception cref="ArgumentException">An element with the same key already exists in the JSON object.</exception>
     public void Add(string key, long value)
         => store.Add(key, new JsonIntegerNode(value));
+
+    /// <summary>
+    /// Adds a property with the provided key and value to the JSON object.
+    /// </summary>
+    /// <param name="key">The property key.</param>
+    /// <param name="value">The value of the property.</param>
+    /// <param name="format">A standard or custom time span format string.</param>
+    /// <param name="provider">An object that supplies culture-specific formatting information.</param>
+    /// <exception cref="ArgumentNullException">key is null.</exception>
+    /// <exception cref="ArgumentException">An element with the same key already exists in the JSON object.</exception>
+    public void Add(string key, long value, string format, IFormatProvider provider)
+        => store.Add(key, new JsonStringNode(value, format, provider));
 
     /// <summary>
     /// Adds a property with the provided key and value to the JSON object.
@@ -4800,6 +4866,18 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     /// </summary>
     /// <param name="key">The property key.</param>
     /// <param name="value">The value of the property.</param>
+    /// <param name="format">A standard or custom time span format string.</param>
+    /// <param name="provider">An object that supplies culture-specific formatting information.</param>
+    /// <exception cref="ArgumentNullException">key is null.</exception>
+    /// <exception cref="ArgumentException">An element with the same key already exists in the JSON object.</exception>
+    public void Add(string key, float value, string format, IFormatProvider provider)
+        => store.Add(key, float.IsNaN(value) ? JsonValues.Null : new JsonStringNode(value, format, provider));
+
+    /// <summary>
+    /// Adds a property with the provided key and value to the JSON object.
+    /// </summary>
+    /// <param name="key">The property key.</param>
+    /// <param name="value">The value of the property.</param>
     /// <exception cref="ArgumentNullException">key is null.</exception>
     /// <exception cref="ArgumentException">An element with the same key already exists in the JSON object.</exception>
     public void Add(string key, double value)
@@ -4810,10 +4888,34 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     /// </summary>
     /// <param name="key">The property key.</param>
     /// <param name="value">The value of the property.</param>
+    /// <param name="format">A standard or custom time span format string.</param>
+    /// <param name="provider">An object that supplies culture-specific formatting information.</param>
+    /// <exception cref="ArgumentNullException">key is null.</exception>
+    /// <exception cref="ArgumentException">An element with the same key already exists in the JSON object.</exception>
+    public void Add(string key, double value, string format, IFormatProvider provider)
+        => store.Add(key, double.IsNaN(value) ? JsonValues.Null : new JsonStringNode(value, format, provider));
+
+    /// <summary>
+    /// Adds a property with the provided key and value to the JSON object.
+    /// </summary>
+    /// <param name="key">The property key.</param>
+    /// <param name="value">The value of the property.</param>
     /// <exception cref="ArgumentNullException">key is null.</exception>
     /// <exception cref="ArgumentException">An element with the same key already exists in the JSON object.</exception>
     public void Add(string key, decimal value)
         => store.Add(key, new JsonDoubleNode(value));
+
+    /// <summary>
+    /// Adds a property with the provided key and value to the JSON object.
+    /// </summary>
+    /// <param name="key">The property key.</param>
+    /// <param name="value">The value of the property.</param>
+    /// <param name="format">A standard or custom time span format string.</param>
+    /// <param name="provider">An object that supplies culture-specific formatting information.</param>
+    /// <exception cref="ArgumentNullException">key is null.</exception>
+    /// <exception cref="ArgumentException">An element with the same key already exists in the JSON object.</exception>
+    public void Add(string key, decimal value, string format, IFormatProvider provider)
+        => store.Add(key, new JsonStringNode(value, format, provider));
 
     /// <summary>
     /// Adds a property with the provided key and value to the JSON object.
@@ -4909,6 +5011,20 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     /// <param name="value">The value of the property.</param>
     /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
     public void Add(string key, IEnumerable<int> value)
+    {
+        AssertKey(key);
+        var arr = new JsonArrayNode();
+        arr.AddRange(value);
+        store.Add(key, arr);
+    }
+
+    /// <summary>
+    /// Adds a property with the provided key and value to the JSON object.
+    /// </summary>
+    /// <param name="key">The property key.</param>
+    /// <param name="value">The value of the property.</param>
+    /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+    public void Add(string key, IEnumerable<long> value)
     {
         AssertKey(key);
         var arr = new JsonArrayNode();
