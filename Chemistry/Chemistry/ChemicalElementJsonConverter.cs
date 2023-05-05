@@ -65,14 +65,14 @@ sealed class ChemicalElementJsonConverter : JsonConverter<ChemicalElement>
         if (ele != null
             && (!z.HasValue || ele.AtomicNumber == z.Value)
             && (string.IsNullOrEmpty(s) || s.Equals(ele.Symbol, StringComparison.OrdinalIgnoreCase))
-            && (!w.HasValue || (!ele.HasAtomicWeight && double.IsNaN(w.Value)) || (ele.HasAtomicWeight && !double.IsNaN(w.Value) && Math.Abs(ele.AtomicWeight - w.Value) < 0.000000001)))
+            && (double.IsNaN(w) || (ele.HasAtomicWeight && !double.IsNaN(w) && Math.Abs(ele.AtomicWeight - w) < 0.000000001)))
             return ele;
 
         if (!z.HasValue || z.Value < 1 || string.IsNullOrEmpty(s))
             return null;
         return string.IsNullOrEmpty(n)
-            ? new ChemicalElement(z.Value, s, null, w.HasValue ? w.Value : double.NaN)
-            : new ChemicalElement(z.Value, s, n, true, w.HasValue ? w.Value : double.NaN);
+            ? new ChemicalElement(z.Value, s, null, w)
+            : new ChemicalElement(z.Value, s, n, true, w);
     }
 
     /// <inheritdoc />

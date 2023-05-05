@@ -8,6 +8,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.Serialization;
 using System.Security;
+using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
 using System.Threading;
@@ -547,7 +548,7 @@ public class JsonArrayNode : IJsonContainerNode, IJsonDataNode, IReadOnlyList<IJ
         if (convert) return data.ValueKind switch
         {
             JsonValueKind.True => JsonBooleanNode.TrueString,
-            JsonValueKind.False => JsonBooleanNode.TrueString,
+            JsonValueKind.False => JsonBooleanNode.FalseString,
             JsonValueKind.Number => data.ToString(),
             _ => throw new InvalidOperationException($"The type of item {index} should be string but it is {data.ValueKind.ToString().ToLowerInvariant()}.")
         };
@@ -1074,7 +1075,7 @@ public class JsonArrayNode : IJsonContainerNode, IJsonDataNode, IReadOnlyList<IJ
             return data.ValueKind switch
             {
                 JsonValueKind.True => JsonBooleanNode.TrueString,
-                JsonValueKind.False => JsonBooleanNode.TrueString,
+                JsonValueKind.False => JsonBooleanNode.FalseString,
                 JsonValueKind.Number => data.ToString(),
                 _ => null
             };
@@ -1093,6 +1094,59 @@ public class JsonArrayNode : IJsonContainerNode, IJsonDataNode, IReadOnlyList<IJ
     /// <param name="result">The result.</param>
     /// <returns>true if has the index and the type is the one expected; otherwise, false.</returns>
     public bool TryGetStringValue(int index, out string result)
+        => TryGetStringValue(index, null, out result);
+
+    /// <summary>
+    /// Gets the value as a string collection.
+    /// </summary>
+    /// <param name="index">The zero-based index of the element to get.</param>
+    /// <param name="converter">The converter.</param>
+    /// <returns>A string.</returns>
+    public string TryGetStringValue(int index, Func<JsonObjectNode, string> converter)
+    {
+        if (index < 0 || index >= store.Count)
+        {
+            return null;
+        }
+
+        try
+        {
+            var data = store[index];
+            if (data is null) return null;
+            if (data is JsonStringNode str) return str.Value;
+            if (data is JsonObjectNode json) return converter?.Invoke(json);
+            return data.ValueKind switch
+            {
+                JsonValueKind.True => JsonBooleanNode.TrueString,
+                JsonValueKind.False => JsonBooleanNode.FalseString,
+                JsonValueKind.Number => data.ToString(),
+                _ => null
+            };
+        }
+        catch (ArgumentException)
+        {
+        }
+
+        return null;
+    }
+
+    /// <summary>
+    /// Gets the value as a string collection.
+    /// </summary>
+    /// <param name="index">The zero-based index of the element to get.</param>
+    /// <param name="converter">The converter.</param>
+    /// <returns>A string.</returns>
+    public string TryGetStringValue(int index, IJsonPropertyResolver<string> converter)
+        => TryGetStringValue(index, converter, out var result) ? result : null;
+
+    /// <summary>
+    /// Gets the value as a string collection.
+    /// </summary>
+    /// <param name="index">The zero-based index of the element to get.</param>
+    /// <param name="converter">The converter.</param>
+    /// <param name="result">The result.</param>
+    /// <returns>true if has the property and the type is the one expected; otherwise, false.</returns>
+    public bool TryGetStringValue(int index, IJsonPropertyResolver<string> converter, out string result)
     {
         if (index < 0 || index >= store.Count)
         {
@@ -1109,16 +1163,21 @@ public class JsonArrayNode : IJsonContainerNode, IJsonDataNode, IReadOnlyList<IJ
                 return true;
             }
 
-            if (data is JsonStringNode str)
+            if (data is IJsonStringNode str)
             {
-                result = str.Value;
+                result = str.StringValue;
                 return true;
+            }
+
+            if (data is JsonObjectNode json && converter is not null)
+            {
+                return converter.TryGetValue(json, out result);
             }
 
             result = data.ValueKind switch
             {
                 JsonValueKind.True => JsonBooleanNode.TrueString,
-                JsonValueKind.False => JsonBooleanNode.TrueString,
+                JsonValueKind.False => JsonBooleanNode.FalseString,
                 JsonValueKind.Number => data.ToString(),
                 _ => null
             };
@@ -1451,7 +1510,7 @@ public class JsonArrayNode : IJsonContainerNode, IJsonDataNode, IReadOnlyList<IJ
         {
             return null;
         }
-        catch (ArgumentOutOfRangeException)
+        catch (ArgumentException)
         {
             return null;
         }
@@ -1478,8 +1537,8 @@ public class JsonArrayNode : IJsonContainerNode, IJsonDataNode, IReadOnlyList<IJ
     /// Tries to get the value at the specific index.
     /// </summary>
     /// <param name="index">The zero-based index of the element to get.</param>
-    /// <returns>The value; or null if fail to resolve.</returns>
-    public float? TryGetSingleValue(int index)
+    /// <returns>The value; or NaN if fail to resolve.</returns>
+    public float TryGetSingleValue(int index)
     {
         try
         {
@@ -1487,16 +1546,16 @@ public class JsonArrayNode : IJsonContainerNode, IJsonDataNode, IReadOnlyList<IJ
         }
         catch (InvalidCastException)
         {
-            return null;
+            return float.NaN;
         }
-        catch (ArgumentOutOfRangeException)
+        catch (ArgumentException)
         {
-            return null;
+            return float.NaN;
         }
 
         if (TryGetJsonValue<JsonIntegerNode>(index, out var p2)) return (float)p2;
         var str = TryGetStringValue(index);
-        if (string.IsNullOrWhiteSpace(str) || !float.TryParse(str, out var p3)) return null;
+        if (string.IsNullOrWhiteSpace(str) || !float.TryParse(str, out var p3)) return float.NaN;
         return p3;
     }
 
@@ -1508,22 +1567,21 @@ public class JsonArrayNode : IJsonContainerNode, IJsonDataNode, IReadOnlyList<IJ
     /// <returns>true if has the index and the type is the one expected; otherwise, false.</returns>
     public bool TryGetSingleValue(int index, out float result)
     {
-        var v = TryGetSingleValue(index);
-        result = v ?? default;
-        return v.HasValue;
+        result = TryGetSingleValue(index);
+        return float.IsNaN(result);
     }
 
     /// <summary>
     /// Tries to get the value at the specific index.
     /// </summary>
     /// <param name="index">The zero-based index of the element to get.</param>
-    /// <returns>The value; or null if fail to resolve.</returns>
-    public double? TryGetDoubleValue(int index)
+    /// <returns>The value; or NaN if fail to resolve.</returns>
+    public double TryGetDoubleValue(int index)
     {
         if (TryGetJsonValue<JsonDoubleNode>(index, out var p1)) return p1.Value;
         if (TryGetJsonValue<JsonIntegerNode>(index, out var p2)) return (double)p2;
         var str = TryGetStringValue(index);
-        if (string.IsNullOrWhiteSpace(str) || !double.TryParse(str, out var p3)) return null;
+        if (string.IsNullOrWhiteSpace(str) || !double.TryParse(str, out var p3)) return double.NaN;
         return p3;
     }
 
@@ -1535,9 +1593,8 @@ public class JsonArrayNode : IJsonContainerNode, IJsonDataNode, IReadOnlyList<IJ
     /// <returns>true if has the index and the type is the one expected; otherwise, false.</returns>
     public bool TryGetDoubleValue(int index, out double result)
     {
-        var v = TryGetDoubleValue(index);
-        result = v ?? default;
-        return v.HasValue;
+        result = TryGetDoubleValue(index);
+        return double.IsNaN(result);
     }
 
     /// <summary>

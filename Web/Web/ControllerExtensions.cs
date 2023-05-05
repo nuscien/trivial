@@ -314,7 +314,7 @@ public static class ControllerExtensions
     }
 
     /// <summary>
-    /// Tries get a property as boolean.
+    /// Tries to get a property as boolean.
     /// </summary>
     /// <param name="request">The query.</param>
     /// <param name="key">The property key.</param>
@@ -327,7 +327,7 @@ public static class ControllerExtensions
     }
 
     /// <summary>
-    /// Tries get a property as boolean.
+    /// Tries to get a property as boolean.
     /// </summary>
     /// <param name="request">The query.</param>
     /// <param name="key">The property key.</param>
@@ -652,7 +652,7 @@ public static class ControllerExtensions
                 return default;
             }
 
-            if (tokenMaker is null) tokenMaker = () => Activator.CreateInstance<TToken>();
+            tokenMaker ??= () => Activator.CreateInstance<TToken>();
             string input;
             using (var reader = new StreamReader(controller.Request.Body, Encoding.UTF8))
             {
