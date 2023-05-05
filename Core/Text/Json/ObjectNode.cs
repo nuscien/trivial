@@ -2048,6 +2048,19 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     /// Tries to get the value of the specific property.
     /// </summary>
     /// <param name="key">The property key.</param>
+    /// <param name="defaultValue">The default value.</param>
+    /// <returns>The value; or the default value if fail to resolve.</returns>
+    public float TryGetSingleValue(string key, float defaultValue)
+    {
+        var v = TryGetSingleValue(key);
+        if (!float.IsNaN(v)) return v;
+        return defaultValue;
+    }
+
+    /// <summary>
+    /// Tries to get the value of the specific property.
+    /// </summary>
+    /// <param name="key">The property key.</param>
     /// <param name="result">The result.</param>
     /// <returns>true if has the property and the type is the one expected; otherwise, false.</returns>
     public bool TryGetSingleValue(string key, out float result)
@@ -2066,6 +2079,19 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
         var value = TryGetValue(keyPath);
         if (value is null) return float.NaN;
         return value.TryGetSingle(out var s) ? s : float.NaN;
+    }
+
+    /// <summary>
+    /// Tries to get the value of the specific property.
+    /// </summary>
+    /// <param name="keyPath">The path of property key.</param>
+    /// <param name="defaultValue">The default value.</param>
+    /// <returns>The value; or the default value if fail to resolve.</returns>
+    public float TryGetSingleValue(IEnumerable<string> keyPath, float defaultValue)
+    {
+        var value = TryGetValue(keyPath);
+        if (value is null) return defaultValue;
+        return value.TryGetSingle(out var s) ? s : defaultValue;
     }
 
     /// <summary>
@@ -2104,6 +2130,19 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     /// Tries to get the value of the specific property.
     /// </summary>
     /// <param name="key">The property key.</param>
+    /// <param name="defaultValue">The default value.</param>
+    /// <returns>The value; or the default value if fail to resolve.</returns>
+    public double TryGetDoubleValue(string key, double defaultValue)
+    {
+        var v = TryGetDoubleValue(key);
+        if (!double.IsNaN(v)) return v;
+        return defaultValue;
+    }
+
+    /// <summary>
+    /// Tries to get the value of the specific property.
+    /// </summary>
+    /// <param name="key">The property key.</param>
     /// <param name="result">The result.</param>
     /// <returns>true if has the property and the type is the one expected; otherwise, false.</returns>
     public bool TryGetDoubleValue(string key, out double result)
@@ -2117,7 +2156,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     /// </summary>
     /// <param name="key">The property key.</param>
     /// <param name="converter">The converter.</param>
-    /// <returns>The value; or null if fail to resolve.</returns>
+    /// <returns>The value; or NaN if fail to resolve.</returns>
     public double TryGetDoubleValue(string key, IJsonPropertyResolver<double> converter)
         => TryGetDoubleValue(key, converter, out var result) ? result : double.NaN;
 
@@ -2150,12 +2189,25 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     /// Tries to get the value of the specific property.
     /// </summary>
     /// <param name="keyPath">The path of property key.</param>
-    /// <returns>A string.</returns>
+    /// <returns>The value; or NaN if fail to resolve.</returns>
     public double TryGetDoubleValue(IEnumerable<string> keyPath)
     {
         var value = TryGetValue(keyPath);
         if (value is null) return double.NaN;
         return value.TryGetDouble(out var s) ? s : double.NaN;
+    }
+
+    /// <summary>
+    /// Tries to get the value of the specific property.
+    /// </summary>
+    /// <param name="keyPath">The path of property key.</param>
+    /// <param name="defaultValue">The default value.</param>
+    /// <returns>The value; or the default value if fail to resolve.</returns>
+    public double TryGetDoubleValue(IEnumerable<string> keyPath, double defaultValue)
+    {
+        var value = TryGetValue(keyPath);
+        if (value is null) return defaultValue;
+        return value.TryGetDouble(out var s) ? s : defaultValue;
     }
 
     /// <summary>

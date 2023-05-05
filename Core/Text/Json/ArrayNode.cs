@@ -1575,6 +1575,18 @@ public class JsonArrayNode : IJsonContainerNode, IJsonDataNode, IReadOnlyList<IJ
     /// Tries to get the value at the specific index.
     /// </summary>
     /// <param name="index">The zero-based index of the element to get.</param>
+    /// <param name="defaultValue">The default value.</param>
+    /// <returns>The value; or the default value if fail to resolve.</returns>
+    public float TryGetSingleValue(int index, float defaultValue)
+    {
+        var v = TryGetSingleValue(index);
+        return float.IsNaN(v) ? defaultValue : v;
+    }
+
+    /// <summary>
+    /// Tries to get the value at the specific index.
+    /// </summary>
+    /// <param name="index">The zero-based index of the element to get.</param>
     /// <returns>The value; or NaN if fail to resolve.</returns>
     public double TryGetDoubleValue(int index)
     {
@@ -1583,6 +1595,18 @@ public class JsonArrayNode : IJsonContainerNode, IJsonDataNode, IReadOnlyList<IJ
         var str = TryGetStringValue(index);
         if (string.IsNullOrWhiteSpace(str) || !double.TryParse(str, out var p3)) return double.NaN;
         return p3;
+    }
+
+    /// <summary>
+    /// Tries to get the value at the specific index.
+    /// </summary>
+    /// <param name="index">The zero-based index of the element to get.</param>
+    /// <param name="defaultValue">The default value.</param>
+    /// <returns>The value; or the default value if fail to resolve.</returns>
+    public double TryGetDoubleValue(int index, double defaultValue)
+    {
+        var v = TryGetDoubleValue(index);
+        return double.IsNaN(v) ? defaultValue : v;
     }
 
     /// <summary>
