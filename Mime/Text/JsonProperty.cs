@@ -68,7 +68,9 @@ public class LocaleJsonPropertyResolver : IJsonPropertyResolver<string>
             }
 
             var i = mkt.LastIndexOf('-');
+            #pragma warning disable IDE0057
             if (i > 0) mkt = mkt.Substring(0, i);
+            #pragma warning restore IDE0057
             else break;
         }
 

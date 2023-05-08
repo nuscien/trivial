@@ -1563,6 +1563,17 @@ public class JsonArrayNode : IJsonContainerNode, IJsonDataNode, IReadOnlyList<IJ
     /// Tries to get the value at the specific index.
     /// </summary>
     /// <param name="index">The zero-based index of the element to get.</param>
+    /// <returns>The value; or null if fail to resolve.</returns>
+    public float? TryGetNullableSingleValue(int index)
+    {
+        var v = TryGetSingleValue(index);
+        return float.IsNaN(v) ? null : v;
+    }
+
+    /// <summary>
+    /// Tries to get the value at the specific index.
+    /// </summary>
+    /// <param name="index">The zero-based index of the element to get.</param>
     /// <param name="result">The result.</param>
     /// <returns>true if has the index and the type is the one expected; otherwise, false.</returns>
     public bool TryGetSingleValue(int index, out float result)
@@ -1595,6 +1606,17 @@ public class JsonArrayNode : IJsonContainerNode, IJsonDataNode, IReadOnlyList<IJ
         var str = TryGetStringValue(index);
         if (string.IsNullOrWhiteSpace(str) || !double.TryParse(str, out var p3)) return double.NaN;
         return p3;
+    }
+
+    /// <summary>
+    /// Tries to get the value at the specific index.
+    /// </summary>
+    /// <param name="index">The zero-based index of the element to get.</param>
+    /// <returns>The value; or null if fail to resolve.</returns>
+    public double? TryGetNullableDoubleValue(int index)
+    {
+        var v = TryGetDoubleValue(index);
+        return double.IsNaN(v) ? null : v;
     }
 
     /// <summary>
@@ -1722,7 +1744,9 @@ public class JsonArrayNode : IJsonContainerNode, IJsonDataNode, IReadOnlyList<IJ
         if (root is null || refPath == JsonValues.SELF_REF) return null;
         if (refPath.StartsWith("#/"))
         {
+#pragma warning disable IDE0057
             var path = refPath.Substring(2).Split('/');
+#pragma warning restore IDE0057
             return root.TryGetObjectValue(path);
         }
 
@@ -1765,12 +1789,11 @@ public class JsonArrayNode : IJsonContainerNode, IJsonDataNode, IReadOnlyList<IJ
     {
         if (TryGetJsonValue<JsonStringNode>(index, out var s))
         {
-            var date = Web.WebFormat.ParseDate(s.Value);
+            var date = WebFormat.ParseDate(s.Value);
             return date;
         }
 
-        if (TryGetJsonValue<JsonIntegerNode>(index, out var num))
-            return useUnixTimestampsFallback ? Web.WebFormat.ParseUnixTimestamp(num.Value) : Web.WebFormat.ParseDate(num.Value);
+        if (TryGetJsonValue<JsonIntegerNode>(index, out var num)) return useUnixTimestampsFallback ? WebFormat.ParseUnixTimestamp(num.Value) : WebFormat.ParseDate(num.Value);
         if (!TryGetJsonValue<JsonObjectNode>(index, out var obj)) return null;
         return JsonValues.TryGetDateTime(obj);
     }
@@ -3900,9 +3923,9 @@ public class JsonArrayNode : IJsonContainerNode, IJsonDataNode, IReadOnlyList<IJ
     public override int GetHashCode() => store.GetHashCode();
 
     /// <summary>
-    /// Gets the JSON format string of the value.
+    /// Gets the JSON array format string of the value.
     /// </summary>
-    /// <returns>A JSON format string.</returns>
+    /// <returns>A JSON array format string.</returns>
     public override string ToString()
     {
         var str = new StringBuilder("[");
@@ -3934,19 +3957,19 @@ public class JsonArrayNode : IJsonContainerNode, IJsonDataNode, IReadOnlyList<IJ
     }
 
     /// <summary>
-    /// Gets the JSON format string of the value.
+    /// Gets the JSON array format string of the value.
     /// </summary>
     /// <param name="indentStyle">The indent style.</param>
-    /// <returns>A JSON format string.</returns>
+    /// <returns>A JSON array format string.</returns>
     public string ToString(IndentStyles indentStyle)
         => ConvertToString(indentStyle, 0);
 
     /// <summary>
-    /// Gets the JSON format string of the value.
+    /// Gets the JSON array format string of the value.
     /// </summary>
     /// <param name="indentStyle">The indent style.</param>
     /// <param name="indentLevel">The current indent level.</param>
-    /// <returns>A JSON format string.</returns>
+    /// <returns>A JSON array format string.</returns>
     internal string ConvertToString(IndentStyles indentStyle, int indentLevel)
     {
         if (indentStyle == IndentStyles.Minified) return ToString();
@@ -3999,6 +4022,36 @@ public class JsonArrayNode : IJsonContainerNode, IJsonDataNode, IReadOnlyList<IJ
         str.AppendLine();
         str.Append(indentStr2);
         str.Append(']');
+        return str.ToString();
+    }
+
+    /// <summary>
+    /// Gets the JSON lines format string of the value.
+    /// </summary>
+    /// <returns>A JSON lines format string.</returns>
+    public string ToJsonlString()
+    {
+        var str = new StringBuilder();
+        foreach (var prop in store)
+        {
+            if (prop is null)
+            {
+                str.AppendLine("null");
+                continue;
+            }
+
+            switch (prop.ValueKind)
+            {
+                case JsonValueKind.Undefined:
+                case JsonValueKind.Null:
+                    str.AppendLine("null");
+                    break;
+                default:
+                    str.AppendLine(prop.ToString());
+                    break;
+            }
+        }
+
         return str.ToString();
     }
 
@@ -4400,14 +4453,14 @@ public class JsonArrayNode : IJsonContainerNode, IJsonDataNode, IReadOnlyList<IJ
     /// </summary>
     /// <returns>A sequence whose elements correspond to those of the input sequence in reverse order.</returns>
     public JsonArrayNode Reverse()
-        => new JsonArrayNode(store.Reverse().ToList());
+        => new(store.Reverse().ToList());
 
     /// <summary>
     /// Creates a new object that is a copy of the current instance.
     /// </summary>
     /// <returns>A new object that is a copy of this instance.</returns>
     public JsonArrayNode Clone()
-        => new JsonArrayNode(store, store is SynchronizedList<IJsonDataNode>);
+        => new(store, store is SynchronizedList<IJsonDataNode>);
 
     /// <summary>
     /// Creates a new object that is a copy of the current instance.
@@ -4469,13 +4522,8 @@ public class JsonArrayNode : IJsonContainerNode, IJsonDataNode, IReadOnlyList<IJ
 
     private T GetJsonValue<T>(int index, JsonValueKind? valueKind = null) where T : IJsonValueNode
     {
-        var data = store[index];
-        if (data is null) throw new InvalidOperationException($"The item {index} is null.");
-        if (data is T v)
-        {
-            return v;
-        }
-
+        var data = store[index] ?? throw new InvalidOperationException($"The item {index} is null.");
+        if (data is T v) return v;
         throw new InvalidOperationException(valueKind.HasValue
             ? $"The kind of item {index} should be {valueKind.Value.ToString().ToLowerInvariant()} but it is {data.ValueKind.ToString().ToLowerInvariant()}."
             : $"The kind of item {index} is {data.ValueKind.ToString().ToLowerInvariant()}, not expected.");

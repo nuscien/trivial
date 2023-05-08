@@ -738,8 +738,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     /// <exception cref="InvalidOperationException">The value kind is not the expected one.</exception>
     public string GetSubstringValue(string key, int startIndex, int? length = null)
     {
-        var s = GetStringValue(key, true);
-        if (s == null) throw new InvalidOperationException($"The value of property {key} is null.");
+        var s = GetStringValue(key, true) ?? throw new InvalidOperationException($"The value of property {key} is null.");
         return length.HasValue ? s.Substring(startIndex, length.Value) : s.Substring(startIndex);
     }
 
@@ -1296,8 +1295,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
 
         var k = path.LastOrDefault();
         path = path.Take(path.Count - 1).ToList();
-        var json = GetValue(path);
-        if (json == null) throw new InvalidOperationException($"Cannot get the leaf property {k} of null.", new NullReferenceException("There is a node that is null or undefined in the property path."));
+        var json = GetValue(path) ?? throw new InvalidOperationException($"Cannot get the leaf property {k} of null.", new NullReferenceException("There is a node that is null or undefined in the property path."));
         if (json is JsonObjectNode j) return j.GetValue<T>(k);
         else if (json is JsonArrayNode a && int.TryParse(k, out var i)) return a.GetValue<T>(i);
         throw new InvalidOperationException($"The property {string.Join(".", path)} was {json.ValueKind} so cannot get its property.");
@@ -1423,7 +1421,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
         if (data is null) return null;
         if (data is IJsonStringNode str) return str.StringValue;
         if (data is JsonObjectNode json) return converter?.Invoke(json);
-            return data.ValueKind switch
+        return data.ValueKind switch
         {
             JsonValueKind.True => JsonBooleanNode.TrueString,
             JsonValueKind.False => JsonBooleanNode.FalseString,
@@ -1621,11 +1619,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     /// <returns>The value; or null if fail to resolve.</returns>
     public Uri TryGetUriValue(string key)
     {
-        if (!TryGetStringValue(key, out var str) || string.IsNullOrWhiteSpace(str))
-        {
-            return null;
-        }
-
+        if (!TryGetStringValue(key, out var str) || string.IsNullOrWhiteSpace(str)) return null;
         try
         {
             return new Uri(str);
@@ -1648,11 +1642,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     /// <returns>The value; or null if fail to resolve.</returns>
     public Uri TryGetUriValue(string key, UriKind kind)
     {
-        if (!TryGetStringValue(key, out var str) || string.IsNullOrWhiteSpace(str))
-        {
-            return null;
-        }
-
+        if (!TryGetStringValue(key, out var str) || string.IsNullOrWhiteSpace(str)) return null;
         try
         {
             return new Uri(str, kind);
@@ -2048,6 +2038,17 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     /// Tries to get the value of the specific property.
     /// </summary>
     /// <param name="key">The property key.</param>
+    /// <returns>The value; or null if fail to resolve.</returns>
+    public float? TryGetNullableSingleValue(string key)
+    {
+        var v = TryGetSingleValue(key);
+        return float.IsNaN(v) ? null : v;
+    }
+
+    /// <summary>
+    /// Tries to get the value of the specific property.
+    /// </summary>
+    /// <param name="key">The property key.</param>
     /// <param name="defaultValue">The default value.</param>
     /// <returns>The value; or the default value if fail to resolve.</returns>
     public float TryGetSingleValue(string key, float defaultValue)
@@ -2068,6 +2069,49 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
         result = TryGetSingleValue(key);
         return float.IsNaN(result);
     }
+
+    /// <summary>
+    /// Tries to get the value of the specific property.
+    /// </summary>
+    /// <param name="key">The property key.</param>
+    /// <param name="converter">The converter.</param>
+    /// <param name="result">The result.</param>
+    /// <returns>true if has the property and the type is the one expected; otherwise, false.</returns>
+    public bool TryGetSingleValue(string key, IJsonPropertyResolver<float> converter, out float result)
+    {
+        var v = TryGetSingleValue(key);
+        if (!float.IsNaN(v))
+        {
+            result = v;
+            return true;
+        }
+
+        if (store.TryGetValue(key, out var data) && data is JsonObjectNode json && converter is not null)
+        {
+            return converter.TryGetValue(json, out result);
+        }
+
+        result = float.NaN;
+        return false;
+    }
+
+    /// <summary>
+    /// Tries to get the value of the specific property.
+    /// </summary>
+    /// <param name="key">The property key.</param>
+    /// <param name="converter">The converter.</param>
+    /// <returns>The value; or NaN if fail to resolve.</returns>
+    public float TryGetSingleValue(string key, IJsonPropertyResolver<float> converter)
+        => TryGetSingleValue(key, converter, out var result) ? result : float.NaN;
+
+    /// <summary>
+    /// Tries to get the value of the specific property.
+    /// </summary>
+    /// <param name="key">The property key.</param>
+    /// <param name="converter">The converter.</param>
+    /// <returns>The value; or null if fail to resolve.</returns>
+    public float? TryGetNullableSingleValue(string key, IJsonPropertyResolver<float> converter)
+        => TryGetSingleValue(key, converter, out var result) ? result : null;
 
     /// <summary>
     /// Tries to get the value of the specific property.
@@ -2115,6 +2159,17 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     /// <summary>
     /// Tries to get the value of the specific property.
     /// </summary>
+    /// <param name="keyPath">The path of property key.</param>
+    /// <returns>The value; or null if fail to resolve.</returns>
+    public float? TryGetNullableSingleValue(IEnumerable<string> keyPath)
+    {
+        var v = TryGetSingleValue(keyPath);
+        return float.IsNaN(v) ? null : v;
+    }
+
+    /// <summary>
+    /// Tries to get the value of the specific property.
+    /// </summary>
     /// <param name="key">The property key.</param>
     /// <returns>The value; or NaN if fail to resolve.</returns>
     public double TryGetDoubleValue(string key)
@@ -2124,6 +2179,17 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
         var str = TryGetStringValue(key);
         if (string.IsNullOrWhiteSpace(str) || !double.TryParse(str, out var p3)) return double.NaN;
         return p3;
+    }
+
+    /// <summary>
+    /// Tries to get the value of the specific property.
+    /// </summary>
+    /// <param name="key">The property key.</param>
+    /// <returns>The value; or null if fail to resolve.</returns>
+    public double? TryGetNullableDoubleValue(string key)
+    {
+        var v = TryGetDoubleValue(key);
+        return double.IsNaN(v) ? null : v;
     }
 
     /// <summary>
@@ -2156,15 +2222,6 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     /// </summary>
     /// <param name="key">The property key.</param>
     /// <param name="converter">The converter.</param>
-    /// <returns>The value; or NaN if fail to resolve.</returns>
-    public double TryGetDoubleValue(string key, IJsonPropertyResolver<double> converter)
-        => TryGetDoubleValue(key, converter, out var result) ? result : double.NaN;
-
-    /// <summary>
-    /// Tries to get the value of the specific property.
-    /// </summary>
-    /// <param name="key">The property key.</param>
-    /// <param name="converter">The converter.</param>
     /// <param name="result">The result.</param>
     /// <returns>true if has the property and the type is the one expected; otherwise, false.</returns>
     public bool TryGetDoubleValue(string key, IJsonPropertyResolver<double> converter, out double result)
@@ -2184,6 +2241,24 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
         result = double.NaN;
         return false;
     }
+
+    /// <summary>
+    /// Tries to get the value of the specific property.
+    /// </summary>
+    /// <param name="key">The property key.</param>
+    /// <param name="converter">The converter.</param>
+    /// <returns>The value; or NaN if fail to resolve.</returns>
+    public double TryGetDoubleValue(string key, IJsonPropertyResolver<double> converter)
+        => TryGetDoubleValue(key, converter, out var result) ? result : double.NaN;
+
+    /// <summary>
+    /// Tries to get the value of the specific property.
+    /// </summary>
+    /// <param name="key">The property key.</param>
+    /// <param name="converter">The converter.</param>
+    /// <returns>The value; or null if fail to resolve.</returns>
+    public double? TryGetNullableDoubleValue(string key, IJsonPropertyResolver<double> converter)
+        => TryGetDoubleValue(key, converter, out var result) ? result : null;
 
     /// <summary>
     /// Tries to get the value of the specific property.
@@ -2208,6 +2283,17 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
         var value = TryGetValue(keyPath);
         if (value is null) return defaultValue;
         return value.TryGetDouble(out var s) ? s : defaultValue;
+    }
+
+    /// <summary>
+    /// Tries to get the value of the specific property.
+    /// </summary>
+    /// <param name="keyPath">The path of property key.</param>
+    /// <returns>The value; or null if fail to resolve.</returns>
+    public double? TryGetNullableDoubleValue(IEnumerable<string> keyPath)
+    {
+        var v = TryGetDoubleValue(keyPath);
+        return double.IsNaN(v) ? null : v;
     }
 
     /// <summary>
@@ -2360,6 +2446,40 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
         result = b.Value;
         return true;
     }
+
+    /// <summary>
+    /// Tries to get the value of the specific property.
+    /// </summary>
+    /// <param name="key">The property key.</param>
+    /// <param name="converter">The converter.</param>
+    /// <param name="result">The result.</param>
+    /// <returns>true if has the property and the type is the one expected; otherwise, false.</returns>
+    public bool TryGetBooleanValue(string key, IJsonPropertyResolver<bool> converter, out bool result)
+    {
+        var v = TryGetBooleanValue(key);
+        if (v.HasValue)
+        {
+            result = v.Value;
+            return true;
+        }
+
+        if (store.TryGetValue(key, out var data) && data is JsonObjectNode json && converter is not null)
+        {
+            return converter.TryGetValue(json, out result);
+        }
+
+        result = default;
+        return false;
+    }
+
+    /// <summary>
+    /// Tries to get the value of the specific property.
+    /// </summary>
+    /// <param name="key">The property key.</param>
+    /// <param name="converter">The converter.</param>
+    /// <returns>The value; or null if fail to resolve.</returns>
+    public bool? TryGetBooleanValue(string key, IJsonPropertyResolver<bool> converter)
+        => TryGetBooleanValue(key, converter, out var result) ? result : null;
 
     /// <summary>
     /// Tries to get the value of the specific property.
@@ -2586,6 +2706,31 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
             return useUnixTimestampsFallback ? WebFormat.ParseUnixTimestamp(num.Value) : WebFormat.ParseDate(num.Value);
         if (!TryGetJsonValue<JsonObjectNode>(key, out var obj)) return null;
         return JsonValues.TryGetDateTime(obj);
+    }
+
+    /// <summary>
+    /// Tries to get the value of the specific property.
+    /// </summary>
+    /// <param name="key">The property key.</param>
+    /// <param name="parser">The parser.</param>
+    /// <returns>The value.</returns>
+    public DateTime? TryGetDateTimeValue(string key, Func<string, DateTime?> parser)
+    {
+        AssertKey(key);
+        if (TryGetJsonValue<JsonStringNode>(key, out var s))
+        {
+            if (parser is not null) return parser(s.Value);
+            var date = WebFormat.ParseDate(s.Value);
+            return date;
+        }
+
+        if (TryGetJsonValue<JsonIntegerNode>(key, out var num))
+        {
+            if (parser is not null) return parser(num.ToString());
+            return WebFormat.ParseDate(num.Value);
+        }
+
+        return null;
     }
 
 #if !NETFRAMEWORK
@@ -5714,11 +5859,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     {
         AssertKey(key);
         var item = store[key];
-        if (item is null || item.ValueKind == JsonValueKind.Null || item.ValueKind == JsonValueKind.Undefined)
-        {
-            return default;
-        }
-
+        if (item is null || item.ValueKind == JsonValueKind.Null || item.ValueKind == JsonValueKind.Undefined) return default;
         return JsonSerializer.Deserialize<T>(item.ToString(), options);
     }
 
@@ -5737,11 +5878,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     {
         AssertKey(key);
         var item = store[key];
-        if (item is null || item.ValueKind == JsonValueKind.Null || item.ValueKind == JsonValueKind.Undefined)
-        {
-            return default;
-        }
-
+        if (item is null || item.ValueKind == JsonValueKind.Null || item.ValueKind == JsonValueKind.Undefined) return default;
         if (parser != null && item is IJsonStringNode s) return parser(s.StringValue);
         return JsonSerializer.Deserialize<T>(item.ToString(), options);
     }
