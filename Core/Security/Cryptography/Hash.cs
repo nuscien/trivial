@@ -419,7 +419,7 @@ public static class HashUtility
     /// <returns>The hash value.</returns>
     /// <exception cref="UnauthorizedAccessException">Unauthorized to access the file.</exception>
     /// <exception cref="IOException">IO exception about the file.</exception>
-    public static string ComputeSHA2256String(FileInfo file)
+    public static string ComputeSHA3256String(FileInfo file)
         => ComputeHashString(SHA3Managed.Create256, file);
 
     /// <summary>
@@ -455,7 +455,7 @@ public static class HashUtility
     /// <returns>The hash value.</returns>
     /// <exception cref="UnauthorizedAccessException">Unauthorized to access the file.</exception>
     /// <exception cref="IOException">IO exception about the file.</exception>
-    public static string ComputeSHA2384String(FileInfo file)
+    public static string ComputeSHA3384String(FileInfo file)
         => ComputeHashString(SHA3Managed.Create384, file);
 
     /// <summary>
@@ -491,7 +491,7 @@ public static class HashUtility
     /// <returns>The hash value.</returns>
     /// <exception cref="UnauthorizedAccessException">Unauthorized to access the file.</exception>
     /// <exception cref="IOException">IO exception about the file.</exception>
-    public static string ComputeSHA2512String(FileInfo file)
+    public static string ComputeSHA3512String(FileInfo file)
         => ComputeHashString(SHA3Managed.Create512, file);
 
     /// <summary>
