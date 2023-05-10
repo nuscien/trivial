@@ -48,6 +48,19 @@ public static class HashUtility
         => ComputeHash(alg, secureString, encoding);
 
     /// <summary>
+    /// Computes a hash bytes of a specific string instance.
+    /// </summary>
+    /// <param name="alg">The hash algorithm instance.</param>
+    /// <param name="file">The file to hash.</param>
+    /// <returns>A hash string value of the given string; or null, if h or input is null.</returns>
+    public static byte[] ComputeHash(this HashAlgorithm alg, FileInfo file)
+    {
+        if (alg == null || file == null) return null;
+        using var stream = file.OpenRead();
+        return alg.ComputeHash(stream);
+    }
+
+    /// <summary>
     /// Computes a hash string value of a specific string instance.
     /// </summary>
     /// <param name="alg">The hash algorithm instance.</param>
@@ -111,16 +124,16 @@ public static class HashUtility
     public static string ComputeHashString(this HashAlgorithm alg, FileInfo file)
     {
         if (alg == null || file == null) return null;
-        byte[] retVal;
+        byte[] arr;
         using (var stream = file.OpenRead())
         {
-            retVal = alg.ComputeHash(stream);
+            arr = alg.ComputeHash(stream);
         }
 
         var sb = new StringBuilder();
-        for (int i = 0; i < retVal.Length; i++)
+        for (int i = 0; i < arr.Length; i++)
         {
-            sb.Append(retVal[i].ToString("x2"));
+            sb.Append(arr[i].ToString("x2"));
         }
 
         return sb.ToString();
@@ -292,6 +305,16 @@ public static class HashUtility
         => ComputeHashString(SHA256.Create, secureString, encoding);
 
     /// <summary>
+    /// Computes a SHA-256 (of SHA-2 family) hash string value of a specific string instance.
+    /// </summary>
+    /// <param name="file">The file to hash.</param>
+    /// <returns>The hash value.</returns>
+    /// <exception cref="UnauthorizedAccessException">Unauthorized to access the file.</exception>
+    /// <exception cref="IOException">IO exception about the file.</exception>
+    public static string ComputeSHA256String(FileInfo file)
+        => ComputeHashString(SHA256.Create, file);
+
+    /// <summary>
     /// Computes a SHA-384 (of SHA-2 family) hash string value of a specific string instance.
     /// </summary>
     /// <param name="plainText">The original input value to get hash.</param>
@@ -316,6 +339,16 @@ public static class HashUtility
     /// <returns>A hash string value of the given string.</returns>
     public static string ComputeSHA384String(SecureString secureString, Encoding encoding = null)
         => ComputeHashString(SHA384.Create, secureString, encoding);
+
+    /// <summary>
+    /// Computes a SHA-384 (of SHA-2 family) hash string value of a specific string instance.
+    /// </summary>
+    /// <param name="file">The file to hash.</param>
+    /// <returns>The hash value.</returns>
+    /// <exception cref="UnauthorizedAccessException">Unauthorized to access the file.</exception>
+    /// <exception cref="IOException">IO exception about the file.</exception>
+    public static string ComputeSHA384String(FileInfo file)
+        => ComputeHashString(SHA384.Create, file);
 
     /// <summary>
     /// Computes a SHA-512 (of SHA-2 family) hash string value of a specific string instance.
@@ -344,6 +377,16 @@ public static class HashUtility
         => ComputeHashString(SHA512.Create, secureString, encoding);
 
     /// <summary>
+    /// Computes a SHA-512 (of SHA-2 family) hash string value of a specific string instance.
+    /// </summary>
+    /// <param name="file">The file to hash.</param>
+    /// <returns>The hash value.</returns>
+    /// <exception cref="UnauthorizedAccessException">Unauthorized to access the file.</exception>
+    /// <exception cref="IOException">IO exception about the file.</exception>
+    public static string ComputeSHA512String(FileInfo file)
+        => ComputeHashString(SHA512.Create, file);
+
+    /// <summary>
     /// Computes a SHA-3-256 hash string value of a specific string instance.
     /// </summary>
     /// <param name="plainText">The original input value to get hash.</param>
@@ -368,6 +411,16 @@ public static class HashUtility
     /// <returns>A hash string value of the given string.</returns>
     public static string ComputeSHA3256String(byte[] plainText)
         => ComputeHashString(SHA3Managed.Create256, plainText);
+
+    /// <summary>
+    /// Computes a SHA-3-256 hash string value of a specific string instance.
+    /// </summary>
+    /// <param name="file">The file to hash.</param>
+    /// <returns>The hash value.</returns>
+    /// <exception cref="UnauthorizedAccessException">Unauthorized to access the file.</exception>
+    /// <exception cref="IOException">IO exception about the file.</exception>
+    public static string ComputeSHA2256String(FileInfo file)
+        => ComputeHashString(SHA3Managed.Create256, file);
 
     /// <summary>
     /// Computes a SHA-3-384 hash string value of a specific string instance.
@@ -396,6 +449,16 @@ public static class HashUtility
         => ComputeHashString(SHA3Managed.Create384, plainText);
 
     /// <summary>
+    /// Computes a SHA-3-384 hash string value of a specific string instance.
+    /// </summary>
+    /// <param name="file">The file to hash.</param>
+    /// <returns>The hash value.</returns>
+    /// <exception cref="UnauthorizedAccessException">Unauthorized to access the file.</exception>
+    /// <exception cref="IOException">IO exception about the file.</exception>
+    public static string ComputeSHA2384String(FileInfo file)
+        => ComputeHashString(SHA3Managed.Create384, file);
+
+    /// <summary>
     /// Computes a SHA-3-512 hash string value of a specific string instance.
     /// </summary>
     /// <param name="plainText">The original input value to get hash.</param>
@@ -420,6 +483,16 @@ public static class HashUtility
     /// <returns>A hash string value of the given string.</returns>
     public static string ComputeSHA3512String(byte[] plainText)
         => ComputeHashString(SHA3Managed.Create512, plainText);
+
+    /// <summary>
+    /// Computes a SHA-3-512 hash string value of a specific string instance.
+    /// </summary>
+    /// <param name="file">The file to hash.</param>
+    /// <returns>The hash value.</returns>
+    /// <exception cref="UnauthorizedAccessException">Unauthorized to access the file.</exception>
+    /// <exception cref="IOException">IO exception about the file.</exception>
+    public static string ComputeSHA2512String(FileInfo file)
+        => ComputeHashString(SHA3Managed.Create512, file);
 
     /// <summary>
     /// Verifies a hash against a string.
@@ -489,6 +562,30 @@ public static class HashUtility
     /// <param name="hash">A hash bytes for comparing.</param>
     /// <returns>true if hash is a hash value of input; otherwise, false.</returns>
     public static bool Verify(this HashAlgorithm alg, byte[] input, byte[] hash)
+        => alg != null ?
+            Collection.ListExtensions.Equals(alg.ComputeHash(input), hash) :
+            (hash == null || hash.Length == 0);
+
+    /// <summary>
+    /// Verifies a hash against a bytes.
+    /// </summary>
+    /// <param name="alg">The hash algorithm instance.</param>
+    /// <param name="input">The original input value to test.</param>
+    /// <param name="hash">A hash string for comparing.</param>
+    /// <returns>true if hash is a hash value of input; otherwise, false.</returns>
+    public static bool Verify(this HashAlgorithm alg, FileInfo input, string hash)
+        => alg != null ?
+            StringComparer.OrdinalIgnoreCase.Equals(ComputeHashString(alg, input), hash) :
+            string.IsNullOrEmpty(hash);
+
+    /// <summary>
+    /// Verifies a hash against a bytes.
+    /// </summary>
+    /// <param name="alg">The hash algorithm instance.</param>
+    /// <param name="input">The original input value to test.</param>
+    /// <param name="hash">A hash bytes for comparing.</param>
+    /// <returns>true if hash is a hash value of input; otherwise, false.</returns>
+    public static bool Verify(this HashAlgorithm alg, FileInfo input, byte[] hash)
         => alg != null ?
             Collection.ListExtensions.Equals(alg.ComputeHash(input), hash) :
             (hash == null || hash.Length == 0);
