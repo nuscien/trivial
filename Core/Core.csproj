@@ -8,9 +8,9 @@
     <Product>Trivial</Product>
     <Authors>Kingcean Tuan</Authors>
     <Company>Nanchang Jinchen Software Co., Ltd.</Company>
-    <Version>7.1.0</Version>
-    <AssemblyVersion>7.1.0.0</AssemblyVersion>
-    <FileVersion>7.1.0.0</FileVersion>
+    <Version>7.1.1</Version>
+    <AssemblyVersion>7.1.1.0</AssemblyVersion>
+    <FileVersion>7.1.1.0</FileVersion>
     <Description>A library providing lots of useful utilities, models and services, including interceptor, retry policy, writable JSON DOM, PEM, JWT, stream combination, JSON HTTP web client, JSON converters, CSV parser, numerals, coordinates, angle, arithmetic, sets, colors, etc.</Description>
     <Copyright>Copyright (c) 2018 Kingcean Tuan.</Copyright>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
