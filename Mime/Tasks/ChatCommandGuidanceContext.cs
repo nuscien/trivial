@@ -15,10 +15,10 @@ namespace Trivial.Tasks;
 /// </summary>
 public class ChatCommandGuidanceContext
 {
-    private readonly JsonObjectNode client;
     private readonly JsonObjectNode infos;
     private readonly Dictionary<string, JsonObjectNode> nextData = new();
     private readonly Dictionary<string, JsonObjectNode> nextInfo = new();
+    private readonly ChatCommandGuidanceRequest request;
 
     /// <summary>
     /// Initializes a new instance of the ChatCommandGuidanceContext class.
@@ -28,27 +28,12 @@ public class ChatCommandGuidanceContext
     {
         NextInfo = new();
         nextInfo["_"] = NextInfo;
-        if (request == null)
-        {
-            TrackingId = Guid.NewGuid();
-            History = new();
-            Info = new();
-            infos = new();
-            client = new();
-            return;
-        }
-
-        UserMessage = request.Message;
+        this.request = request ?? new(null, null, null, null);
         UserMessageData = request.Data;
-        TrackingId = request.TrackingId;
         var history = request.History;
         History = history == null ? new() : new(history);
-        UserNickname = request.UserNickname;
-        UserId = request.UserId;
-        Gender = request.Gender;
         Info = request.Info?.TryGetObjectValue("_");
         infos = request.Info;
-        client = request.ClientContextData;
     }
 
     /// <summary>
@@ -59,7 +44,7 @@ public class ChatCommandGuidanceContext
     /// <summary>
     /// Gets the tracking identifier.
     /// </summary>
-    public Guid TrackingId { get; }
+    public Guid TrackingId => request.TrackingId;
 
     /// <summary>
     /// Gets the creation date time.
@@ -74,7 +59,7 @@ public class ChatCommandGuidanceContext
     /// <summary>
     /// Gets the chat message from sender.
     /// </summary>
-    public string UserMessage { get; }
+    public string UserMessage => request.Message;
 
     /// <summary>
     /// Gets the chat message data from sender.
@@ -94,17 +79,22 @@ public class ChatCommandGuidanceContext
     /// <summary>
     /// Gets the user identifier.
     /// </summary>
-    public string UserId { get; }
+    public string UserId => request.User?.Id;
 
     /// <summary>
     /// Gets the user nickname.
     /// </summary>
-    public string UserNickname { get; }
+    public string UserNickname => request.User?.Nickname;
 
     /// <summary>
     /// Gets the user gender.
     /// </summary>
-    public Genders Gender { get; }
+    public Genders Gender => request.User?.Gender ?? Genders.Unknown;
+
+    /// <summary>
+    /// Gets the URI of the user avatar.
+    /// </summary>
+    public Uri UserAvatar => request.User?.AvatarUri;
 
     /// <summary>
     /// Gets the history.
@@ -153,15 +143,7 @@ public class ChatCommandGuidanceContext
     /// <returns>The response JSON object.</returns>
     public ChatCommandGuidanceResponse GetResponse()
     {
-        var resp = new ChatCommandGuidanceResponse()
-        {
-            Id = Id,
-            TrackingId = TrackingId,
-            Message = AnswerMessage,
-            Data = AnswerData,
-            Info = Info,
-            ClientContextData = client
-        };
+        var resp = new ChatCommandGuidanceResponse(AnswerMessage, AnswerData, Info, request);
         foreach (var item in nextData)
         {
             resp.Details[item.Key] = item.Value;
@@ -230,49 +212,84 @@ public class ChatCommandGuidanceContext
 public class ChatCommandGuidanceRequest
 {
     /// <summary>
-    /// Gets or sets the nickname of the sender.
+    /// Initializes a new instance of the ChatCommandGuidanceRequest class.
     /// </summary>
-    public string UserNickname { get; set; }
+    /// <param name="user">The user instance.</param>
+    /// <param name="message">The message text.</param>
+    /// <param name="data">The message data.</param>
+    /// <param name="history">The chat history.</param>
+    /// <param name="clientContextData">The context data from client.</param>
+    /// <param name="response">The latest response.</param>
+    public ChatCommandGuidanceRequest(UserItemInfo user, string message, JsonObjectNode data, IEnumerable<SimpleChatMessage> history, JsonObjectNode clientContextData = null, ChatCommandGuidanceResponse response = null)
+    {
+        User = user;
+        Message = message;
+        Data = data ?? new();
+        History = history ?? new List<SimpleChatMessage>();
+        ClientContextData = clientContextData ?? new();
+        TrackingId = response?.TrackingId ?? Guid.NewGuid();
+        Info = response?.Info ?? new();
+    }
 
     /// <summary>
-    /// Gets or sets the sender identifier.
+    /// Gets the user instance.
     /// </summary>
-    public string UserId { get; set; }
+    internal UserItemInfo User { get; }
 
     /// <summary>
-    /// Gets or sets the gender of the sender.
+    /// Gets the message identifier.
     /// </summary>
-    public Genders Gender { get; set; }
+    public Guid Id { get; } = Guid.NewGuid();
 
     /// <summary>
-    /// Gets or sets the tracking identifier.
+    /// Gets the nickname of the sender.
     /// </summary>
-    public Guid TrackingId { get; set; }
+    public string UserNickname => User.Nickname;
 
     /// <summary>
-    /// Gets or sets the message.
+    /// Gets the sender identifier.
     /// </summary>
-    public string Message { get; set; }
+    public string UserId => User.Id;
 
     /// <summary>
-    /// Gets or sets the data.
+    /// Gets the gender of the sender.
     /// </summary>
-    public JsonObjectNode Data { get; set; }
+    public Genders Gender => User.Gender;
 
     /// <summary>
-    /// Gets or sets the information.
+    /// Gets the URI of the sender avatar.
     /// </summary>
-    public JsonObjectNode Info { get; set; }
+    public Uri UserAvatar => User.AvatarUri;
 
     /// <summary>
-    /// Gets or sets the chat history.
+    /// Gets the tracking identifier.
     /// </summary>
-    public IEnumerable<SimpleChatMessage> History { get; set; }
+    public Guid TrackingId { get; private set; }
 
     /// <summary>
-    /// Gets or sets the context data from client.
+    /// Gets the message.
     /// </summary>
-    public JsonObjectNode ClientContextData { get; set; }
+    public string Message { get; }
+
+    /// <summary>
+    /// Gets the data.
+    /// </summary>
+    public JsonObjectNode Data { get; }
+
+    /// <summary>
+    /// Gets the information.
+    /// </summary>
+    public JsonObjectNode Info { get; private set; }
+
+    /// <summary>
+    /// Gets the chat history.
+    /// </summary>
+    public IEnumerable<SimpleChatMessage> History { get; }
+
+    /// <summary>
+    /// Gets the context data from client.
+    /// </summary>
+    public JsonObjectNode ClientContextData { get; }
 
     /// <summary>
     /// Converts the JSON raw back.
@@ -282,18 +299,10 @@ public class ChatCommandGuidanceRequest
     public static implicit operator ChatCommandGuidanceRequest(JsonObjectNode value)
     {
         if (value is null) return null;
-        var sender = value.TryGetObjectValue("sender");
-        return new()
+        return new(value.TryGetObjectValue("sender"), value.TryGetStringValue("text") ?? value.TryGetStringValue("message"), value.TryGetObjectValue("data"), ChatCommandGuidanceHelper.DeserializeChatMessages(value.TryGetArrayValue("history")), value.TryGetObjectValue("ref"))
         {
-            UserId = sender?.TryGetStringTrimmedValue("id", true) ?? value.TryGetStringTrimmedValue("senderId", true),
-            UserNickname = sender?.TryGetStringTrimmedValue("nickname", true) ?? value.TryGetStringTrimmedValue("senderName", true),
-            Gender = sender?.TryGetEnumValue<Genders>("gender") ?? value.TryGetEnumValue<Genders>("senderGender") ?? Genders.Unknown,
             TrackingId = value.TryGetGuidValue("tracking") ?? Guid.NewGuid(),
-            Message = value.TryGetStringValue("text") ?? value.TryGetStringValue("message"),
-            Data = value.TryGetObjectValue("data"),
             Info = value.TryGetObjectValue("info"),
-            History = ChatCommandGuidanceHelper.DeserializeChatMessages(value.TryGetArrayValue("history")),
-            ClientContextData = value.TryGetObjectValue("ref"),
         };
     }
 
@@ -307,12 +316,7 @@ public class ChatCommandGuidanceRequest
         if (value is null) return null;
         return new()
         {
-            { "sender", new JsonObjectNode
-            {
-                { "id", value.UserId },
-                { "nickname", value.UserNickname },
-                { "gender", value.Gender.ToString() },
-            } },
+            { "sender", (JsonObjectNode)value.User },
             { "trackig", value.TrackingId },
             { "text", value.Message },
             { "data", value.Data },
@@ -329,39 +333,62 @@ public class ChatCommandGuidanceRequest
 public class ChatCommandGuidanceResponse
 {
     /// <summary>
-    /// Gets or sets the message identifier.
+    /// Initializes a new instance of the ChatCommandGuidanceResponse class.
     /// </summary>
-    public Guid Id { get; set; }
+    /// <param name="message">The answer message text.</param>
+    /// <param name="data">The answer data.</param>
+    /// <param name="info">The information data for context.</param>
+    /// <param name="request">The request message.</param>
+    internal ChatCommandGuidanceResponse(string message, JsonObjectNode data, JsonObjectNode info = null, ChatCommandGuidanceRequest request = null)
+    {
+        Id = Guid.NewGuid();
+        RequestId = request?.Id ?? Guid.Empty;
+        TrackingId = request?.TrackingId ?? Guid.NewGuid();
+        Message = message;
+        Data = data;
+        Info = info;
+        ClientContextData = request?.ClientContextData;
+    }
 
     /// <summary>
-    /// Gets or sets the tracking identifier.
+    /// Gets the message identifier.
     /// </summary>
-    public Guid TrackingId { get; set; }
+    public Guid Id { get; private set; }
 
     /// <summary>
-    /// Gets or sets the message.
+    /// Gets the identifier of request message.
     /// </summary>
-    public string Message { get; set; }
+    public Guid RequestId { get; private set; }
 
     /// <summary>
-    /// Gets or sets the response data.
+    /// Gets the tracking identifier.
     /// </summary>
-    public JsonObjectNode Data { get; set; }
+    public Guid TrackingId { get; private set; }
 
     /// <summary>
-    /// Gets or sets the details.
+    /// Gets the message.
+    /// </summary>
+    public string Message { get; }
+
+    /// <summary>
+    /// Gets the response data.
+    /// </summary>
+    public JsonObjectNode Data { get; }
+
+    /// <summary>
+    /// Gets the details.
     /// </summary>
     public Dictionary<string, JsonObjectNode> Details { get; } = new();
 
     /// <summary>
-    /// Gets or sets the information.
+    /// Gets the information.
     /// </summary>
-    public JsonObjectNode Info { get; set; }
+    public JsonObjectNode Info { get; }
 
     /// <summary>
-    /// Gets or sets the context data from client.
+    /// Gets the context data from client.
     /// </summary>
-    public JsonObjectNode ClientContextData { get; set; }
+    public JsonObjectNode ClientContextData { get; private set; }
 
     /// <summary>
     /// Converts the JSON raw back.
@@ -371,14 +398,14 @@ public class ChatCommandGuidanceResponse
     public static implicit operator ChatCommandGuidanceResponse(JsonObjectNode value)
     {
         if (value is null) return null;
-        var result = new ChatCommandGuidanceResponse()
+        var result = new ChatCommandGuidanceResponse(
+            value.TryGetStringValue("text") ?? value.TryGetStringValue("message"),
+            value.TryGetObjectValue("data"),
+            value.TryGetObjectValue("info"))
         {
             Id = value.TryGetGuidValue("id") ?? Guid.NewGuid(),
-            TrackingId = value.TryGetGuidValue("tracking") ?? Guid.NewGuid(),
-            Message = value.TryGetStringValue("text") ?? value.TryGetStringValue("message"),
-            Data = value.TryGetObjectValue("data"),
-            Info = value.TryGetObjectValue("info"),
-            ClientContextData = value.TryGetObjectValue("ref"),
+            RequestId = value.TryGetGuidValue("request") ?? Guid.Empty,
+            ClientContextData = value.TryGetObjectValue("ref")
         };
         var detailsArr = value.TryGetObjectValue("details") ?? new();
         foreach (var item in detailsArr)
