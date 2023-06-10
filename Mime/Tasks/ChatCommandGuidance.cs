@@ -8,6 +8,7 @@ using Trivial.Collection;
 using Trivial.Data;
 using Trivial.Users;
 using Trivial.Text;
+using System.Threading;
 
 namespace Trivial.Tasks;
 
@@ -122,11 +123,13 @@ public abstract class BaseChatCommandGuidance
     /// </summary>
     /// <param name="command">The command key.</param>
     /// <param name="description">The command description.</param>
+    /// <param name="parameterDescription">The command parameter description.</param>
     /// <param name="type">The command type.</param>
-    protected BaseChatCommandGuidance(string command, string description, ChatCommandGuidanceTypes type)
+    protected BaseChatCommandGuidance(string command, string description, string parameterDescription, ChatCommandGuidanceTypes type)
     {
         Command = command;
         Description = description;
+        ParameterDescription = parameterDescription;
         Type = type;
     }
 
@@ -139,6 +142,11 @@ public abstract class BaseChatCommandGuidance
     /// Gets the command description.
     /// </summary>
     public virtual string Description { get; }
+
+    /// <summary>
+    /// Gets the command parameter description.
+    /// </summary>
+    public virtual string ParameterDescription { get; }
 
     /// <summary>
     /// Gets the type of the command.
@@ -172,6 +180,14 @@ public abstract class BaseChatCommandGuidance
     /// Post processes.
     /// </summary>
     /// <param name="args">The arguments.</param>
-    /// <returns></returns>
+    /// <returns>A Task that represents the work queued to execute in the ThreadPool.</returns>
     protected internal abstract Task PostProcessAsync(ChatCommandGuidanceArgs args);
+
+    /// <summary>
+    /// Runs empty logic.
+    /// </summary>
+    /// <param name="cancellationToken">The optional cancellation token.</param>
+    /// <returns>A Task that represents the work queued to execute in the ThreadPool.</returns>
+    protected static Task RunEmptyAsync(CancellationToken cancellationToken = default)
+        => Task.Run(ChatCommandGuidanceHelper.RunEmpty, cancellationToken);
 }

@@ -36,6 +36,29 @@ internal static class ChatCommandGuidanceHelper
     public static Task PostProcessAsync(this ChatCommandGuidanceTask instance)
         => instance.Command.PostProcessAsync(instance.Args);
 
+    public static IEnumerable<string> ParseCommands(string answer, IEnumerable<ChatCommandGuidanceTask> list, string funcPrefix)
+    {
+        if (answer == null || list == null) yield break;
+        var lines = answer.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries) ?? Array.Empty<string>();
+        foreach (var line in lines)
+        {
+            var s = line?.Trim() ?? string.Empty;
+            if (s.Length < 4 || !s.StartsWith(funcPrefix)) continue;
+            s = s.Substring(funcPrefix.Length).TrimStart();
+            var v = s.Split(new[] { '|' }, StringSplitOptions.None);
+            if (v == null || v.Length < 1) continue;
+            var key = v[0]?.Trim()?.ToLowerInvariant();
+            if (string.IsNullOrEmpty(key)) continue;
+            yield return s;
+            var parameters = v.Skip(1).ToList();
+            if (parameters.Count < 1) continue;
+            foreach (var command in list)
+            {
+                if (command.Args.Command == key) command.Args.Parameters = parameters.AsReadOnly();
+            }
+        }
+    }
+
     public static JsonObjectNode ToJson(Dictionary<string, JsonObjectNode> col)
     {
         if (col == null) return null;
@@ -68,6 +91,12 @@ internal static class ChatCommandGuidanceHelper
         }
 
         return col;
+    }
+    public static string FormatPromptName(string s)
+        => string.IsNullOrWhiteSpace(s) ? null : s.Trim().Replace(".", string.Empty).Replace(",", string.Empty).Replace(";", string.Empty).Replace("!", string.Empty).Replace("?", string.Empty).Replace("|", string.Empty).Replace("\"", string.Empty).Replace("\'", string.Empty).Replace("\t", string.Empty).Replace("\r", string.Empty).Replace("\n", string.Empty).Replace("…", string.Empty).Replace("。", string.Empty).Replace("，", string.Empty).Replace("！", string.Empty).Replace("？", string.Empty);
+
+    public static void RunEmpty()
+    {
     }
 }
 
