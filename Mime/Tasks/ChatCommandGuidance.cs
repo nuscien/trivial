@@ -15,7 +15,7 @@ namespace Trivial.Tasks;
 /// <summary>
 /// The types of command guidance for chat bot.
 /// </summary>
-public enum ChatCommandGuidanceTypes : byte
+public enum ChatCommandGuidanceKinds : byte
 {
     /// <summary>
     /// Invalid.
@@ -33,9 +33,14 @@ public enum ChatCommandGuidanceTypes : byte
     Assistance = 2,
 
     /// <summary>
-    /// The customized.
+    /// The recording operator.
     /// </summary>
-    Customized = 7
+    Recorder = 7,
+
+    /// <summary>
+    /// The others.
+    /// </summary>
+    Others = 15
 }
 
 /// <summary>
@@ -125,12 +130,12 @@ public abstract class BaseChatCommandGuidance
     /// <param name="description">The command description.</param>
     /// <param name="parameterDescription">The command parameter description.</param>
     /// <param name="type">The command type.</param>
-    protected BaseChatCommandGuidance(string command, string description, string parameterDescription, ChatCommandGuidanceTypes type)
+    protected BaseChatCommandGuidance(string command, string description, string parameterDescription, ChatCommandGuidanceKinds type)
     {
         Command = command;
         Description = description;
         ParameterDescription = parameterDescription;
-        Type = type;
+        Kind = type;
     }
 
     /// <summary>
@@ -149,9 +154,9 @@ public abstract class BaseChatCommandGuidance
     public virtual string ParameterDescription { get; }
 
     /// <summary>
-    /// Gets the type of the command.
+    /// Gets the kind of the command.
     /// </summary>
-    public virtual ChatCommandGuidanceTypes Type { get; }
+    public virtual ChatCommandGuidanceKinds Kind { get; }
 
     /// <summary>
     /// Occurs on initialized.

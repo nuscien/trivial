@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Trivial.Reflection;
+using Trivial.Tasks;
 
 namespace Trivial.Text;
 
@@ -18,19 +19,29 @@ public enum ChatMessageModificationKinds : byte
     Original = 0,
 
     /// <summary>
-    /// The message has been modified.
-    /// </summary>
-    Modified = 1,
-
-    /// <summary>
     /// The streaming message which means the message is transferring by continious updating.
     /// </summary>
-    Streaming = 2,
+    Streaming = 1,
+
+    /// <summary>
+    /// The message has been modified.
+    /// </summary>
+    Modified = 2,
+
+    /// <summary>
+    /// The message has been modified and is open to update by others.
+    /// </summary>
+    Collaborative = 3,
 
     /// <summary>
     /// The message has been removed.
     /// </summary>
-    Removed = 3
+    Removed = 5,
+
+    /// <summary>
+    /// The message is banned.
+    /// </summary>
+    Ban = 6,
 }
 
 /// <summary>
