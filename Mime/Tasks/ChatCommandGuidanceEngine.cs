@@ -17,7 +17,7 @@ namespace Trivial.Tasks;
 /// <summary>
 /// The engine to generate smart prompt for chat bot.
 /// </summary>
-public abstract class BaseChatPromptEngine
+public abstract class BaseChatCommandGuidanceEngine
 {
     private const string FuncPrefix = "⨍";
     private const string ParameterSeperator = "⫶";
