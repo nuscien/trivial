@@ -36,6 +36,27 @@ public class ChatCommandGuidanceRequest
     }
 
     /// <summary>
+    /// Initializes a new instance of the ChatCommandGuidanceRequest class.
+    /// </summary>
+    /// <param name="user">The user instance.</param>
+    /// <param name="message">The message text.</param>
+    /// <param name="data">The message data.</param>
+    /// <param name="history">The chat history.</param>
+    /// <param name="clientContextData">The context data from client.</param>
+    /// <param name="trackingId">The tracking identifier.</param>
+    /// <param name="info">The additional information from latest response.</param>
+    internal ChatCommandGuidanceRequest(UserItemInfo user, string message, JsonObjectNode data, IEnumerable<SimpleChatMessage> history, JsonObjectNode clientContextData, Guid trackingId, JsonObjectNode info)
+    {
+        User = user;
+        Message = message;
+        Data = data ?? new();
+        History = history ?? new List<SimpleChatMessage>();
+        ClientContextData = clientContextData ?? new();
+        TrackingId = trackingId ;
+        Info = info ?? new();
+    }
+
+    /// <summary>
     /// Gets the user instance.
     /// </summary>
     internal UserItemInfo User { get; }
@@ -132,7 +153,7 @@ public class ChatCommandGuidanceRequest
 }
 
 /// <summary>
-/// The request of chat command guidance.
+/// The response of chat command guidance.
 /// </summary>
 public class ChatCommandGuidanceResponse
 {
@@ -142,8 +163,9 @@ public class ChatCommandGuidanceResponse
     /// <param name="message">The answer message text.</param>
     /// <param name="data">The answer data.</param>
     /// <param name="info">The information data for context.</param>
+    /// <param name="kind">The message kind.</param>
     /// <param name="request">The request message.</param>
-    internal ChatCommandGuidanceResponse(string message, JsonObjectNode data, JsonObjectNode info = null, ChatCommandGuidanceRequest request = null)
+    internal ChatCommandGuidanceResponse(string message, JsonObjectNode data, JsonObjectNode info = null, string kind = null, ChatCommandGuidanceRequest request = null)
     {
         Id = Guid.NewGuid();
         RequestId = request?.Id ?? Guid.Empty;
@@ -151,6 +173,7 @@ public class ChatCommandGuidanceResponse
         Message = message;
         Data = data;
         Info = info;
+        Kind = kind;
         ClientContextData = request?.ClientContextData;
     }
 
@@ -190,6 +213,11 @@ public class ChatCommandGuidanceResponse
     public JsonObjectNode Info { get; }
 
     /// <summary>
+    /// Gets the message kind.
+    /// </summary>
+    public string Kind { get; }
+
+    /// <summary>
     /// Gets the context data from client.
     /// </summary>
     public JsonObjectNode ClientContextData { get; private set; }
@@ -205,7 +233,8 @@ public class ChatCommandGuidanceResponse
         var result = new ChatCommandGuidanceResponse(
             value.TryGetStringValue("text") ?? value.TryGetStringValue("message"),
             value.TryGetObjectValue("data"),
-            value.TryGetObjectValue("info"))
+            value.TryGetObjectValue("info"),
+            value.TryGetStringTrimmedValue("kind", true))
         {
             Id = value.TryGetGuidValue("id") ?? Guid.NewGuid(),
             RequestId = value.TryGetGuidValue("request") ?? Guid.Empty,
@@ -240,4 +269,38 @@ public class ChatCommandGuidanceResponse
             { "ref", value.ClientContextData }
         };
     }
+}
+
+/// <summary>
+/// The result of chat command guidance.
+/// </summary>
+public class ChatCommandGuidanceSourceResult
+{
+    /// <summary>
+    /// Initializes a new instance of the ChatCommandGuidanceSourceResult class.
+    /// </summary>
+    /// <param name="message">The message text.</param>
+    /// <param name="success">A flag indicating whether the result is successful.</param>
+    /// <param name="kind">The message kind.</param>
+    public ChatCommandGuidanceSourceResult(string message, bool success, string kind)
+    {
+        Message = message;
+        IsSuccessful = success;
+        Kind = ChatCommandGuidanceHelper.FormatPromptName(kind);
+    }
+
+    /// <summary>
+    /// Gets the message text.
+    /// </summary>
+    public string Message { get; }
+
+    /// <summary>
+    /// Gets a value indicating whether the result is successful.
+    /// </summary>
+    public bool IsSuccessful { get; }
+
+    /// <summary>
+    /// Gets the message kind.
+    /// </summary>
+    public string Kind { get; }
 }

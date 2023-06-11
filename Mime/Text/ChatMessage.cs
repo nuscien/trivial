@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Trivial.Collection;
 using Trivial.Reflection;
 using Trivial.Tasks;
+using Trivial.Users;
 
 namespace Trivial.Text;
 
@@ -55,23 +57,24 @@ public class SimpleChatMessage : ObservableProperties
     /// <param name="sender">The nickname of the sender.</param>
     /// <param name="message">The message text.</param>
     /// <param name="creation">The creation date time; or null if use now.</param>
-    /// <param name="type">The message type.</param>
+    /// <param name="kind">The message kind.</param>
     /// <param name="data">The additional data; or null if create a new one.</param>
-    public SimpleChatMessage(string sender, string message, DateTime? creation = null, string type = null, JsonObjectNode data = null)
+    public SimpleChatMessage(UserItemInfo sender, string message, DateTime? creation = null, string kind = null, JsonObjectNode data = null)
     {
         var time = creation ?? DateTime.Now;
-        SetProperty(nameof(SenderName), sender);
+        SetProperty(nameof(Sender), sender);
         SetProperty(nameof(Message), message);
-        if (type != null) SetProperty(nameof(Type), type);
+        if (kind != null) SetProperty(nameof(Kind), kind);
         SetProperty(nameof(CreationTime), time);
         SetProperty(nameof(LastModificationTime), time);
         if (data != null) Data = data;
     }
 
+
     /// <summary>
     /// Gets the sender.
     /// </summary>
-    public string SenderName => GetCurrentProperty<string>();
+    public UserItemInfo Sender => GetCurrentProperty<UserItemInfo>();
 
     /// <summary>
     /// Gets the message.
@@ -100,9 +103,9 @@ public class SimpleChatMessage : ObservableProperties
     }
 
     /// <summary>
-    /// Gets the type.
+    /// Gets the kind.
     /// </summary>
-    public string Type => GetCurrentProperty<string>();
+    public string Kind => GetCurrentProperty<string>();
 
     /// <summary>
     /// Gets the creation date time.
@@ -131,13 +134,12 @@ public class SimpleChatMessage : ObservableProperties
     public static implicit operator SimpleChatMessage(JsonObjectNode value)
     {
         if (value is null) return null;
-        var model = new SimpleChatMessage(
-            value.TryGetStringTrimmedValue("sender", true),
+        return new(
+            (UserItemInfo)value.TryGetObjectValue("sender"),
             value.TryGetStringValue("text") ?? value.TryGetStringValue("message"),
             value.TryGetDateTimeValue("created"),
             value.TryGetStringTrimmedValue("type", true),
             value.TryGetObjectValue("data"));
-        return model.SenderName == null ? null : model;
     }
 
     /// <summary>
@@ -150,10 +152,10 @@ public class SimpleChatMessage : ObservableProperties
         if (value is null) return null;
         return new JsonObjectNode
         {
-            { "sender", value.SenderName },
+            { "sender", (JsonObjectNode)value.Sender },
             { "text", value.Message },
             { "created", value.CreationTime },
-            { "type", value.Type },
+            { "type", value.Kind },
             { "data", value.Data },
         };
     }

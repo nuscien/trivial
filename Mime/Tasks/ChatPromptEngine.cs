@@ -21,7 +21,22 @@ public abstract class BaseChatPromptEngine
 {
     private const string FuncPrefix = "⨍";
     private const string ParameterSeperator = "⫶";
-    private readonly Dictionary<string, BaseChatCommandGuidance> commands = new();
+    private readonly Dictionary<string, BaseChatCommandGuidanceProvider> commands = new();
+
+    /// <summary>
+    /// Adds or removes the event on processing.
+    /// </summary>
+    public DataEventHandler<ChatCommandGuidanceContext> Processing;
+
+    /// <summary>
+    /// Adds or removes the event on process succeeded.
+    /// </summary>
+    public DataEventHandler<ChatCommandGuidanceContext> Processed;
+
+    /// <summary>
+    /// Adds or removes the event on process failed.
+    /// </summary>
+    public DataEventHandler<ChatCommandGuidanceContext> ProcessFailed;
 
     /// <summary>
     /// Gets the additional information data.
@@ -36,7 +51,7 @@ public abstract class BaseChatPromptEngine
     /// <summary>
     /// Gets the command collection.
     /// </summary>
-    public ICollection<BaseChatCommandGuidance> Commands => commands.Values;
+    public ICollection<BaseChatCommandGuidanceProvider> Commands => commands.Values;
 
     /// <summary>
     /// Gets the collection of all command key registered.
@@ -47,7 +62,7 @@ public abstract class BaseChatPromptEngine
     /// Registers a command.
     /// </summary>
     /// <typeparam name="T">The type of the command guidance.</typeparam>
-    public void Register<T>() where T : BaseChatCommandGuidance
+    public void Register<T>() where T : BaseChatCommandGuidanceProvider
         => Register(Activator.CreateInstance<T>());
 
     /// <summary>
@@ -55,14 +70,14 @@ public abstract class BaseChatPromptEngine
     /// </summary>
     /// <param name="key">The command key to use.</param>
     /// <typeparam name="T">The type of the command guidance.</typeparam>
-    public void Register<T>(string key) where T : BaseChatCommandGuidance
+    public void Register<T>(string key) where T : BaseChatCommandGuidanceProvider
         => Register(key, Activator.CreateInstance<T>());
 
     /// <summary>
     /// Registers a command.
     /// </summary>
     /// <param name="command">The command.</param>
-    public void Register(BaseChatCommandGuidance command)
+    public void Register(BaseChatCommandGuidanceProvider command)
         => Register(command.Command, command);
 
     /// <summary>
@@ -70,7 +85,7 @@ public abstract class BaseChatPromptEngine
     /// </summary>
     /// <param name="key">The command key to use.</param>
     /// <param name="command">The command.</param>
-    public void Register(string key, BaseChatCommandGuidance command)
+    public void Register(string key, BaseChatCommandGuidanceProvider command)
     {
         key ??= command?.Command;
         if (key == null) return;
@@ -91,7 +106,7 @@ public abstract class BaseChatPromptEngine
     /// </summary>
     /// <param name="key">The command key.</param>
     /// <returns>The command guidance</returns>
-    public BaseChatCommandGuidance GetCommand(string key)
+    public BaseChatCommandGuidanceProvider GetCommand(string key)
     {
         key = key?.Trim()?.ToLowerInvariant();
         if (string.IsNullOrEmpty(key)) return null;
@@ -112,7 +127,7 @@ public abstract class BaseChatPromptEngine
     /// <typeparam name="T">The type of the value returned by selector.</typeparam>
     /// <param name="select">A transform function to apply to each source element; the second parameter of the function represents the index of the source element.</param>
     /// <returns>A collection whose elements are the result of invoking the transform function on each element of source.</returns>
-    public IEnumerable<T> SelectCommand<T>(Func<string, BaseChatCommandGuidance, T> select)
+    public IEnumerable<T> SelectCommand<T>(Func<string, BaseChatCommandGuidanceProvider, T> select)
     {
         if (select == null) yield break;
         foreach (var kvp in commands)
@@ -129,7 +144,7 @@ public abstract class BaseChatPromptEngine
     /// <param name="kind">A filter by command guidance kind.</param>
     /// <param name="select">A transform function to apply to each source element; the second parameter of the function represents the index of the source element.</param>
     /// <returns>A collection whose elements are the result of invoking the transform function on each element of source.</returns>
-    public IEnumerable<T> SelectCommand<T>(ChatCommandGuidanceKinds kind, Func<string, BaseChatCommandGuidance, T> select)
+    public IEnumerable<T> SelectCommand<T>(ChatCommandGuidanceProviderKinds kind, Func<string, BaseChatCommandGuidanceProvider, T> select)
     {
         if (select == null) yield break;
         foreach (var kvp in commands)
@@ -150,14 +165,35 @@ public abstract class BaseChatPromptEngine
         if (request == null) return null;
         var context = new ChatCommandGuidanceContext(request);
         var list = ChatCommandGuidanceHelper.Create(commands, context);
+        var args = new DataEventArgs<ChatCommandGuidanceContext>(context);
+        Processing?.Invoke(this, args);
         Task.WaitAll(list.Select(ChatCommandGuidanceHelper.GeneratePromptAsync).ToArray(), cancellationToken);
         var prompt = GenerateDefaultPrompt(context);
         prompt = ChatCommandGuidanceHelper.JoinWithEmptyLine(prompt, context.PromptCollection.Where(ChatCommandGuidanceHelper.IsNotEmpty));
         var answer = await SendAsync(context, prompt, cancellationToken);
-        context.SetAnswerMessage(answer);
-        _ = ChatCommandGuidanceHelper.ParseCommands(answer, list, FuncPrefix).Count();
-        Task.WaitAll(list.Select(ChatCommandGuidanceHelper.PostProcessAsync).ToArray(), cancellationToken);
+        answer ??= new(null, false, null);
+        context.SetAnswerMessage(answer.Message, answer.Kind);
+        if (answer.IsSuccessful)
+        {
+            var result = ChatCommandGuidanceHelper.ParseCommands(answer.Message, list, FuncPrefix).ToList();
+            Task.WaitAll(result.Select(ChatCommandGuidanceHelper.PostProcessAsync).ToArray(), cancellationToken);
+            OnCommandProccessed(result.Select(ele => ele.Args).ToList());
+            Processed?.Invoke(this, args);
+        }
+        else
+        {
+            ProcessFailed?.Invoke(this, args);
+        }
+
         return context.GetResponse();
+    }
+
+    /// <summary>
+    /// Occurs on the command is processed.
+    /// </summary>
+    /// <param name="args">The arguments.</param>
+    protected virtual void OnCommandProccessed(IList<ChatCommandGuidanceArgs> args)
+    {
     }
 
     /// <summary>
@@ -227,5 +263,5 @@ public abstract class BaseChatPromptEngine
     /// <param name="prompt">The prompt.</param>
     /// <param name="cancellationToken">The optional cancellation token.</param>
     /// <returns>The answer text.</returns>
-    protected abstract Task<string> SendAsync(ChatCommandGuidanceContext context, string prompt, CancellationToken cancellationToken = default);
+    protected abstract Task<ChatCommandGuidanceSourceResult> SendAsync(ChatCommandGuidanceContext context, string prompt, CancellationToken cancellationToken = default);
 }

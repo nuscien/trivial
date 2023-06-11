@@ -77,6 +77,11 @@ public class ChatCommandGuidanceContext
     public string AnswerMessage { get; private set; }
 
     /// <summary>
+    /// Gets the message kind.
+    /// </summary>
+    public string MessageKind { get; private set; }
+
+    /// <summary>
     /// Gets the user identifier.
     /// </summary>
     public string UserId => request.User?.Id;
@@ -143,7 +148,7 @@ public class ChatCommandGuidanceContext
     /// <returns>The response JSON object.</returns>
     public ChatCommandGuidanceResponse GetResponse()
     {
-        var resp = new ChatCommandGuidanceResponse(AnswerMessage, AnswerData, Info, request);
+        var resp = new ChatCommandGuidanceResponse(AnswerMessage, AnswerData, Info, MessageKind, request);
         foreach (var item in nextData)
         {
             resp.Details[item.Key] = item.Value;
@@ -155,12 +160,14 @@ public class ChatCommandGuidanceContext
     /// <summary>
     /// Sets the answer message.
     /// </summary>
-    /// <param name="value">The message.</param>
-    internal void SetAnswerMessage(string value)
+    /// <param name="value">The message text.</param>
+    /// <param name="kind">The message kind.</param>
+    internal void SetAnswerMessage(string value, string kind)
     {
         RepliedTime = DateTime.Now;
         AnswerMessage = value;
         OriginalAnswerMessage = value;
+        MessageKind = kind;
     }
 
     /// <summary>

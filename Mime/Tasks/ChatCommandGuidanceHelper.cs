@@ -9,7 +9,7 @@ namespace Trivial.Tasks;
 
 internal static class ChatCommandGuidanceHelper
 {
-    public static IEnumerable<ChatCommandGuidanceTask> Create(IDictionary<string, BaseChatCommandGuidance> collection, ChatCommandGuidanceContext context)
+    public static IEnumerable<ChatCommandGuidanceTask> Create(IDictionary<string, BaseChatCommandGuidanceProvider> collection, ChatCommandGuidanceContext context)
     {
         if (collection == null || context == null) yield break;
         foreach (var kvp in collection)
@@ -36,7 +36,7 @@ internal static class ChatCommandGuidanceHelper
     public static Task PostProcessAsync(this ChatCommandGuidanceTask instance)
         => instance.Command.PostProcessAsync(instance.Args);
 
-    public static IEnumerable<string> ParseCommands(string answer, IEnumerable<ChatCommandGuidanceTask> list, string funcPrefix)
+    public static IEnumerable<ChatCommandGuidanceTask> ParseCommands(string answer, IEnumerable<ChatCommandGuidanceTask> list, string funcPrefix)
     {
         if (answer == null || list == null) yield break;
         var lines = answer.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries) ?? Array.Empty<string>();
@@ -49,12 +49,12 @@ internal static class ChatCommandGuidanceHelper
             if (v == null || v.Length < 1) continue;
             var key = v[0]?.Trim()?.ToLowerInvariant();
             if (string.IsNullOrEmpty(key)) continue;
-            yield return s;
             var parameters = v.Skip(1).ToList();
-            if (parameters.Count < 1) continue;
             foreach (var command in list)
             {
-                if (command.Args.Command == key) command.Args.Parameters = parameters.AsReadOnly();
+                if (command.Args.Command != key) continue;
+                command.Args.Parameters = parameters.AsReadOnly();
+                yield return command;
             }
         }
     }
@@ -117,12 +117,12 @@ internal static class ChatCommandGuidanceHelper
         return sb.ToString();
     }
 
-    public static bool IsSupportedCommand(KeyValuePair<string, BaseChatCommandGuidance> kvp)
+    public static bool IsSupportedCommand(KeyValuePair<string, BaseChatCommandGuidanceProvider> kvp)
     {
         if (kvp.Value == null) return false;
         return kvp.Value.Kind switch
         {
-            ChatCommandGuidanceKinds.Command or ChatCommandGuidanceKinds.Assistance or ChatCommandGuidanceKinds.Recorder or ChatCommandGuidanceKinds.Others => true,
+            ChatCommandGuidanceProviderKinds.Command or ChatCommandGuidanceProviderKinds.Assistance or ChatCommandGuidanceProviderKinds.Recorder or ChatCommandGuidanceProviderKinds.Others => true,
             _ => false
         };
     }
@@ -137,13 +137,13 @@ internal static class ChatCommandGuidanceHelper
 
 internal class ChatCommandGuidanceTask
 {
-    public ChatCommandGuidanceTask(string key, BaseChatCommandGuidance command, ChatCommandGuidanceContext context)
+    public ChatCommandGuidanceTask(string key, BaseChatCommandGuidanceProvider command, ChatCommandGuidanceContext context)
     {
         Command = command;
         Args = new ChatCommandGuidanceArgs(context, key);
     }
 
-    public BaseChatCommandGuidance Command { get; }
+    public BaseChatCommandGuidanceProvider Command { get; }
 
     public ChatCommandGuidanceArgs Args { get; }
 }
