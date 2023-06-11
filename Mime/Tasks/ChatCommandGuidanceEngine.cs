@@ -39,6 +39,21 @@ public abstract class BaseChatCommandGuidanceEngine
     public DataEventHandler<ChatCommandGuidanceContext> ProcessFailed;
 
     /// <summary>
+    /// Adds or removes the event on source message is sending.
+    /// </summary>
+    public event DataEventHandler<ChatCommandGuidanceContext> Sending;
+
+    /// <summary>
+    /// Adds or removes the event on source message is failed to send or no response.
+    /// </summary>
+    public event EventHandler<ChatCommandGuidanceErrorEventArgs<ChatCommandGuidanceContext>> SendFailed;
+
+    /// <summary>
+    /// Adds or removes the event on source message is received.
+    /// </summary>
+    public event EventHandler<ChatCommandGuidanceSourceEventArgs> Received;
+
+    /// <summary>
     /// Gets the additional information data.
     /// </summary>
     public JsonObjectNode Info { get; } = new();
@@ -170,8 +185,20 @@ public abstract class BaseChatCommandGuidanceEngine
         Task.WaitAll(list.Select(ChatCommandGuidanceHelper.GeneratePromptAsync).ToArray(), cancellationToken);
         var prompt = GenerateDefaultPrompt(context);
         prompt = ChatCommandGuidanceHelper.JoinWithEmptyLine(prompt, context.PromptCollection.Where(ChatCommandGuidanceHelper.IsNotEmpty));
-        var answer = await SendAsync(context, prompt, cancellationToken);
-        answer ??= new(null, false, null);
+        Sending?.Invoke(this, new DataEventArgs<ChatCommandGuidanceContext>(context));
+        ChatCommandGuidanceSourceResult answer;
+        try
+        {
+            answer = await SendAsync(context, prompt, cancellationToken);
+            answer ??= new(null, false, null);
+        }
+        catch (Exception ex)
+        {
+            SendFailed?.Invoke(this, new ChatCommandGuidanceErrorEventArgs<ChatCommandGuidanceContext>(ex, context));
+            throw;
+        }
+
+        Received?.Invoke(this, new ChatCommandGuidanceSourceEventArgs(context, answer));
         context.SetAnswerMessage(answer.Message, answer.Kind);
         if (answer.IsSuccessful)
         {

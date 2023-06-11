@@ -28,10 +28,16 @@ public delegate Task<ChatCommandGuidanceRequest> ChatCommandGuidanceRequestSend(
 /// </summary>
 public abstract class BaseChatCommandGuidanceClient
 {
+    private readonly Dictionary<string, BaseChatCommandGuidanceProvider> commands = new();
+
     /// <summary>
-    /// Adds or removes the event on message is received.
+    /// Initializes a new instance of the BaseChatCommandGuidanceClient class.
     /// </summary>
-    public event EventHandler<ChatCommandGuidanceMessageEventArgs> Received;
+    /// <param name="user">The user info.</param>
+    protected BaseChatCommandGuidanceClient(UserItemInfo user)
+    {
+        User = user ?? new();
+    }
 
     /// <summary>
     /// Adds or removes the event on message is sending.
@@ -39,9 +45,19 @@ public abstract class BaseChatCommandGuidanceClient
     public event EventHandler<ChatCommandGuidanceMessageEventArgs> Sending;
 
     /// <summary>
-    /// Adds or removes the event on message is sent.
+    /// Adds or removes the event on message is failed to send or get response.
     /// </summary>
-    public event EventHandler<ChatCommandGuidanceMessageEventArgs> Sent;
+    public event EventHandler<ChatCommandGuidanceErrorEventArgs<ChatCommandGuidanceMessageEventArgs>> SendFailed;
+
+    /// <summary>
+    /// Adds or removes the event on message is received.
+    /// </summary>
+    public event EventHandler<ChatCommandGuidanceMessageEventArgs> Received;
+
+    /// <summary>
+    /// Adds or removes the event on message is post processed.
+    /// </summary>
+    public event EventHandler<ChatCommandGuidanceMessageEventArgs> Processed;
 
     /// <summary>
     /// Adds or removes the event on the new topic is created.
@@ -56,12 +72,118 @@ public abstract class BaseChatCommandGuidanceClient
     /// <summary>
     /// Gets or sets the user info.
     /// </summary>
-    public UserItemInfo User { get; set; }
+    public UserItemInfo User { get; }
 
     /// <summary>
     /// Gets the default message kind of request.
     /// </summary>
     protected internal virtual string RequestMessageKind { get; } = "user";
+
+    /// <summary>
+    /// Gets the command collection.
+    /// </summary>
+    public ICollection<BaseChatCommandGuidanceProvider> Commands => commands.Values;
+
+    /// <summary>
+    /// Gets the collection of all command key registered.
+    /// </summary>
+    public ICollection<string> CommandKeys => commands.Keys;
+
+    /// <summary>
+    /// Registers a command.
+    /// </summary>
+    /// <typeparam name="T">The type of the command guidance.</typeparam>
+    public void Register<T>() where T : BaseChatCommandGuidanceProvider
+        => Register(Activator.CreateInstance<T>());
+
+    /// <summary>
+    /// Registers a command.
+    /// </summary>
+    /// <param name="key">The command key to use.</param>
+    /// <typeparam name="T">The type of the command guidance.</typeparam>
+    public void Register<T>(string key) where T : BaseChatCommandGuidanceProvider
+        => Register(key, Activator.CreateInstance<T>());
+
+    /// <summary>
+    /// Registers a command.
+    /// </summary>
+    /// <param name="command">The command.</param>
+    public void Register(BaseChatCommandGuidanceProvider command)
+        => Register(command.Command, command);
+
+    /// <summary>
+    /// Registers a command.
+    /// </summary>
+    /// <param name="key">The command key to use.</param>
+    /// <param name="command">The command.</param>
+    public void Register(string key, BaseChatCommandGuidanceProvider command)
+    {
+        key ??= command?.Command;
+        if (key == null) return;
+        key = key.Trim().ToLowerInvariant();
+        if (string.IsNullOrEmpty(key) || key.Length < 2) return;
+        if (command == null)
+        {
+            commands.Remove(key);
+            return;
+        }
+
+        commands[key] = command;
+        command.OnInit(this);
+    }
+
+    /// <summary>
+    /// Tries to get the specific command.
+    /// </summary>
+    /// <param name="key">The command key.</param>
+    /// <returns>The command guidance</returns>
+    public BaseChatCommandGuidanceProvider GetCommand(string key)
+    {
+        key = key?.Trim()?.ToLowerInvariant();
+        if (string.IsNullOrEmpty(key)) return null;
+        return commands.TryGetValue(key, out var result) ? result : null;
+    }
+
+    /// <summary>
+    /// Removes a specific command.
+    /// </summary>
+    /// <param name="key">The command key.</param>
+    /// <returns>true if remove succeeded; otherwise, false.</returns>
+    public bool RemoveCommand(string key)
+        => commands.Remove(key);
+
+    /// <summary>
+    /// Projects each element of a sequence into a new form by incorporating the element's key.
+    /// </summary>
+    /// <typeparam name="T">The type of the value returned by selector.</typeparam>
+    /// <param name="select">A transform function to apply to each source element; the second parameter of the function represents the index of the source element.</param>
+    /// <returns>A collection whose elements are the result of invoking the transform function on each element of source.</returns>
+    public IEnumerable<T> SelectCommand<T>(Func<string, BaseChatCommandGuidanceProvider, T> select)
+    {
+        if (select == null) yield break;
+        foreach (var kvp in commands)
+        {
+            if (kvp.Value == null) continue;
+            yield return select(kvp.Key, kvp.Value);
+        }
+    }
+
+    /// <summary>
+    /// Projects each element of a sequence into a new form by incorporating the element's key.
+    /// </summary>
+    /// <typeparam name="T">The type of the value returned by selector.</typeparam>
+    /// <param name="kind">A filter by command guidance kind.</param>
+    /// <param name="select">A transform function to apply to each source element; the second parameter of the function represents the index of the source element.</param>
+    /// <returns>A collection whose elements are the result of invoking the transform function on each element of source.</returns>
+    public IEnumerable<T> SelectCommand<T>(ChatCommandGuidanceProviderKinds kind, Func<string, BaseChatCommandGuidanceProvider, T> select)
+    {
+        if (select == null) yield break;
+        foreach (var kvp in commands)
+        {
+            if (kvp.Value?.Kind != kind) continue;
+            yield return select(kvp.Key, kvp.Value);
+        }
+    }
 
     /// <summary>
     /// Creates a new topic.
@@ -77,18 +199,32 @@ public abstract class BaseChatCommandGuidanceClient
     /// <summary>
     /// Occurs on request creates.
     /// </summary>
-    /// <param name="request">The request message.</param>
-    /// <param name="topic">The chat topic.</param>
-    protected internal virtual void OnRequestCreate(ChatCommandGuidanceRequest request, ChatCommandGuidanceTopic topic)
+    /// <param name="args">The arguments.</param>
+    protected internal virtual void OnRequestCreate(ChatCommandGuidanceMessageEventArgs args)
+    {
+    }
+
+    /// <summary>
+    /// Occurs on request is sending.
+    /// </summary>
+    /// <param name="args">The arguments.</param>
+    protected internal virtual void OnSend(ChatCommandGuidanceMessageEventArgs args)
     {
     }
 
     /// <summary>
     /// Occurs on response is received.
     /// </summary>
-    /// <param name="response">The response to reply.</param>
-    /// <param name="topic">The chat topic.</param>
-    protected internal virtual void OnReceive(ChatCommandGuidanceResponse response, ChatCommandGuidanceTopic topic)
+    /// <param name="args">The arguments.</param>
+    protected internal virtual void OnReceive(ChatCommandGuidanceMessageEventArgs args)
+    {
+    }
+
+    /// <summary>
+    /// Occurs on response is processed.
+    /// </summary>
+    /// <param name="args">The arguments.</param>
+    protected internal virtual void OnProcessed(ChatCommandGuidanceMessageEventArgs args)
     {
     }
 
@@ -100,14 +236,28 @@ public abstract class BaseChatCommandGuidanceClient
     /// <returns>The response message.</returns>
     protected internal abstract Task<ChatCommandGuidanceResponse> SendAsync(ChatCommandGuidanceRequest request, CancellationToken cancellationToken = default);
 
-    internal void NotifySending(ChatCommandGuidanceTopic topic, ChatCommandGuidanceRequest request, ChatCommandGuidanceResponse response)
-        => Sending?.Invoke(this, new ChatCommandGuidanceMessageEventArgs(topic, request, response));
+    internal void NotifySending(ChatCommandGuidanceMessageEventArgs args)
+        => Sending?.Invoke(this, args);
 
-    internal void NotifySent(ChatCommandGuidanceTopic topic, ChatCommandGuidanceRequest request, ChatCommandGuidanceResponse response)
-        => Sent?.Invoke(this, new ChatCommandGuidanceMessageEventArgs(topic, request, response));
+    internal void NotifySendFailed(ChatCommandGuidanceErrorEventArgs<ChatCommandGuidanceMessageEventArgs> args)
+        => SendFailed?.Invoke(this, args);
 
-    internal void NotifyReceive(ChatCommandGuidanceTopic topic, ChatCommandGuidanceRequest request, ChatCommandGuidanceResponse response)
-        => Received?.Invoke(this, new ChatCommandGuidanceMessageEventArgs(topic, request, response));
+    internal void NotifyReceived(ChatCommandGuidanceMessageEventArgs args)
+        => Received?.Invoke(this, args);
+
+    internal void NotifyProcessed(ChatCommandGuidanceMessageEventArgs args)
+        => Processed?.Invoke(this, args);
+
+    internal void ProcessCommands(ChatCommandGuidanceTopic topic, ChatCommandGuidanceResponse response)
+    {
+        var details = response?.Details;
+        if (details == null || topic == null) return;
+        foreach (var item in details)
+        {
+            if (string.IsNullOrWhiteSpace(item.Key) || item.Value == null || !commands.TryGetValue(item.Key, out var command)) continue;
+            command.ClientProcess(new ChatCommandGuidanceClientProcessingArgs(item.Key, item.Value, topic, response));
+        }
+    }
 }
 
 /// <summary>
@@ -119,13 +269,15 @@ public class ChatCommandGuidanceMessageEventArgs : EventArgs
     /// Initializes a new instance of the ChatCommandGuidanceMessageEventArgs class.
     /// </summary>
     /// <param name="topic">The topic.</param>
-    /// <param name="request">The request.</param>
-    /// <param name="response">The response.</param>
-    public ChatCommandGuidanceMessageEventArgs(ChatCommandGuidanceTopic topic, ChatCommandGuidanceRequest request, ChatCommandGuidanceResponse response)
+    /// <param name="response">The response message.</param>
+    /// <param name="request">The request message.</param>
+    /// <param name="reply">The response which the request is to reply.</param>
+    public ChatCommandGuidanceMessageEventArgs(ChatCommandGuidanceTopic topic, ChatCommandGuidanceResponse response, ChatCommandGuidanceRequest request, ChatCommandGuidanceResponse reply)
     {
         Topic = topic;
-        Request = request;
         Response = response;
+        Request = request;
+        Previous = reply;
     }
 
     /// <summary>
@@ -139,10 +291,14 @@ public class ChatCommandGuidanceMessageEventArgs : EventArgs
     public ChatCommandGuidanceRequest Request { get; }
 
     /// <summary>
-    /// Gets the response message.
-    /// If the event arguments is for sending, this is the response to reply.
+    /// The response which the request is to reply.
     /// </summary>
-    public ChatCommandGuidanceResponse Response { get; }
+    public ChatCommandGuidanceResponse Previous { get; }
+
+    /// <summary>
+    /// Gets the response message.
+    /// </summary>
+    public ChatCommandGuidanceResponse Response { get; internal set; }
 }
 
 /// <summary>
@@ -205,19 +361,24 @@ public class ChatCommandGuidanceTopic
     }
 
     /// <summary>
-    /// Adds or removes the event on message is received.
-    /// </summary>
-    public event DataEventHandler<ChatCommandGuidanceResponse> Received;
-
-    /// <summary>
     /// Adds or removes the event on message is sending.
     /// </summary>
     public event DataEventHandler<ChatCommandGuidanceRequest> Sending;
 
     /// <summary>
-    /// Adds or removes the event on message is sent.
+    /// Adds or removes the event on message is failed to send or no response.
     /// </summary>
-    public event DataEventHandler<ChatCommandGuidanceRequest> Sent;
+    public event EventHandler<ChatCommandGuidanceErrorEventArgs<ChatCommandGuidanceMessageEventArgs>> SendFailed;
+
+    /// <summary>
+    /// Adds or removes the event on message is received.
+    /// </summary>
+    public event DataEventHandler<ChatCommandGuidanceResponse> Received;
+
+    /// <summary>
+    /// Adds or removes the event on message is post processed.
+    /// </summary>
+    public event DataEventHandler<ChatCommandGuidanceResponse> Processed;
 
     /// <summary>
     /// Gets the additional information data.
@@ -266,21 +427,58 @@ public class ChatCommandGuidanceTopic
     public async Task<ChatCommandGuidanceResponse> SendAsync(string message, JsonObjectNode data, CancellationToken cancellationToken = default)
     {
         var user = client.User;
-        var response = LatestResponse;
-        var request = new ChatCommandGuidanceRequest(user, message, data, new List<SimpleChatMessage>(history), null, response);
-        client.OnRequestCreate(request, this);
+        var reply = LatestResponse;
+        var request = new ChatCommandGuidanceRequest(user, message, data, new List<SimpleChatMessage>(history), null, reply);
+        var args = new ChatCommandGuidanceMessageEventArgs(this, null, request, reply);
+        client.OnRequestCreate(args);
         Sending?.Invoke(this, new DataEventArgs<ChatCommandGuidanceRequest>(request));
-        client.NotifySending(this, request, response);
+        client.NotifySending(args);
         LatestRequest = request;
         history.Add(new SimpleChatMessage(user, message, DateTime.Now, client.RequestMessageKind, data));
-        response = await client.SendAsync(request, cancellationToken);
-        Sent?.Invoke(this, new DataEventArgs<ChatCommandGuidanceRequest>(request));
-        client.NotifySent(this, request, response);
-        client.OnReceive(response, this);
-        LatestResponse = response;
-        history.Add(new SimpleChatMessage(user, response.Message, DateTime.Now, "reply", response.Data));
+        client.OnSend(args);
+        ChatCommandGuidanceResponse response;
+        try
+        {
+            response = await client.SendAsync(request, cancellationToken);
+        }
+        catch (Exception ex)
+        {
+            var exArgs = new ChatCommandGuidanceErrorEventArgs<ChatCommandGuidanceMessageEventArgs>(ex, args);
+            SendFailed?.Invoke(this, exArgs);
+            client.NotifySendFailed(exArgs);
+            throw;
+        }
+
+        args.Response = response;
         Received?.Invoke(this, new DataEventArgs<ChatCommandGuidanceResponse>(response));
-        client.NotifyReceive(this, request, response);
+        client.NotifyReceived(args);
+        LatestResponse = response;
+        history.Add(new SimpleChatMessage(user, response.Message, DateTime.Now, response.Kind, response.Data));
+        client.OnReceive(args);
+        client.ProcessCommands(this, response);
+        client.OnProcessed(args);
+        Processed?.Invoke(this, new DataEventArgs<ChatCommandGuidanceResponse>(response));
+        client.NotifyProcessed(args);
         return response;
     }
+}
+
+internal class LocalChatCommandGuidanceClient : BaseChatCommandGuidanceClient
+{
+    /// <summary>
+    /// Initializes a new instance of the LocalChatCommandGuidanceClient class.
+    /// </summary>
+    /// <param name="user">The user.</param>
+    /// <param name="engine">The engine.</param>
+    public LocalChatCommandGuidanceClient(UserItemInfo user, BaseChatCommandGuidanceEngine engine)
+        : base(user)
+    {
+        Engine = engine;
+    }
+
+    public BaseChatCommandGuidanceEngine Engine { get; }
+
+    /// <inheritdoc />
+    protected internal override Task<ChatCommandGuidanceResponse> SendAsync(ChatCommandGuidanceRequest request, CancellationToken cancellationToken = default)
+        => Engine.ProcessAsync(request, cancellationToken);
 }

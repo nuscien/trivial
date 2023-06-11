@@ -166,6 +166,13 @@ public abstract class BaseChatCommandGuidanceProvider
     }
 
     /// <summary>
+    /// Occurs on initialized.
+    /// </summary>
+    protected internal virtual void OnInit(BaseChatCommandGuidanceClient engine)
+    {
+    }
+
+    /// <summary>
     /// Tests if the command guidance is available.
     /// </summary>
     /// <param name="args">The arguments.</param>
@@ -189,12 +196,12 @@ public abstract class BaseChatCommandGuidanceProvider
     protected internal abstract Task PostProcessAsync(ChatCommandGuidanceArgs args);
 
     /// <summary>
-    /// Processes on client side.
+    /// Post processes on client side.
     /// </summary>
     /// <param name="args">The arguments.</param>
-    /// <returns>A Task that represents the work queued to execute in the ThreadPool.</returns>
-    protected internal virtual Task ClientProcessAsync(ChatCommandGuidanceClientProcessingArgs args)
-        => RunEmptyAsync();
+    protected internal virtual void ClientProcess(ChatCommandGuidanceClientProcessingArgs args)
+    {
+    }
 
     /// <summary>
     /// Runs empty logic.

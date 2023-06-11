@@ -304,3 +304,69 @@ public class ChatCommandGuidanceSourceResult
     /// </summary>
     public string Kind { get; }
 }
+
+/// <summary>
+/// The event arguments of command guidance source request.
+/// </summary>
+public class ChatCommandGuidanceSourceEventArgs : EventArgs
+{
+    /// <summary>
+    /// Initializes a new instance of the ChatCommandGuidanceSourceEventArgs class.
+    /// </summary>
+    /// <param name="context">The context.</param>
+    /// <param name="result">The result.</param>
+    public ChatCommandGuidanceSourceEventArgs(ChatCommandGuidanceContext context, ChatCommandGuidanceSourceResult result)
+    {
+        Context = context;
+        Message = result?.Message;
+        IsSuccessful = result?.IsSuccessful ?? false;
+        Kind = result.Kind;
+    }
+
+    /// <summary>
+    /// Gets the context.
+    /// </summary>
+    public ChatCommandGuidanceContext Context { get; }
+
+    /// <summary>
+    /// Gets the message text.
+    /// </summary>
+    public string Message { get; }
+
+    /// <summary>
+    /// Gets a value indicating whether the result is successful.
+    /// </summary>
+    public bool IsSuccessful { get; }
+
+    /// <summary>
+    /// Gets the message kind.
+    /// </summary>
+    public string Kind { get; }
+}
+
+/// <summary>
+/// The error event arguments.
+/// </summary>
+public class ChatCommandGuidanceErrorEventArgs<T>
+{
+    /// <summary>
+    /// Initializes a new instance of the ChatCommandGuidanceErrorEventArgs class.
+    /// </summary>
+    /// <param name="ex">The exception.</param>
+    /// <param name="context">The context</param>
+    public ChatCommandGuidanceErrorEventArgs(Exception ex, T context)
+    {
+        Exception = ex;
+        Context = context;
+    }
+
+    /// <summary>
+    /// Gets the exception.
+    /// </summary>
+    public Exception Exception { get; }
+
+    /// <summary>
+    /// Gets the context.
+    /// </summary>
+    public T Context { get; }
+}
