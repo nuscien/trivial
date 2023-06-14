@@ -251,33 +251,32 @@ public abstract class BaseChatCommandGuidanceEngine
 
         sb.Append(" is using ");
         sb.Append(ChatCommandGuidanceHelper.FormatPromptName(ServiceFullName) ?? "the service");
+        var col = commands.Where(ChatCommandGuidanceHelper.IsSupportedCommand).ToList();
+        if (col.Count < 1)
+        {
+            sb.Append('.');
+            return sb.ToString();
+        }
+
         sb.Append(" which also supports following commands if user asks for or is talking about. The commands are only available for you by adding a new line at the end of answer with character prefix in ");
         sb.Append(FuncPrefix);
         sb.Append(", command key, a seperator character and additional parameter. Each parameters are separeted by the seperator character. The seperator character is ");
         sb.Append(ParameterSeperator);
         sb.Append(". Don't let user send command directly.");
-        var col = commands.Where(ChatCommandGuidanceHelper.IsSupportedCommand).ToList();
         sb.AppendLine("|Command key|Command description|Parameter description|Command kind|");
         sb.AppendLine("|----------|------------------------|------------------------|------|");
-        if (col.Count > 0)
+        foreach (var kvp in col)
         {
-            foreach (var kvp in col)
-            {
-                var command = kvp.Value;
-                sb.Append('|');
-                sb.Append(command.Command);
-                sb.Append('|');
-                sb.Append(command.Description);
-                sb.Append('|');
-                sb.Append(command.ParameterDescription);
-                sb.Append('|');
-                sb.Append(command.Kind);
-                sb.Append('|');
-            }
-        }
-        else
-        {
-            sb.Append("|help|Get help.|None.|Command|");
+            var command = kvp.Value;
+            sb.Append('|');
+            sb.Append(command.Command);
+            sb.Append('|');
+            sb.Append(command.Description);
+            sb.Append('|');
+            sb.Append(command.ParameterDescription);
+            sb.Append('|');
+            sb.Append(command.Kind);
+            sb.Append('|');
         }
 
         return sb.ToString();
