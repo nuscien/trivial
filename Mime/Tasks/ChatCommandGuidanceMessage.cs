@@ -33,6 +33,7 @@ public class ChatCommandGuidanceRequest
         ClientContextData = clientContextData ?? new();
         TrackingId = response?.TrackingId ?? Guid.NewGuid();
         Info = response?.Info ?? new();
+        ClientInfo = new();
     }
 
     /// <summary>
@@ -52,8 +53,9 @@ public class ChatCommandGuidanceRequest
         Data = data ?? new();
         History = history ?? new List<SimpleChatMessage>();
         ClientContextData = clientContextData ?? new();
-        TrackingId = trackingId ;
+        TrackingId = trackingId;
         Info = info ?? new();
+        ClientInfo = new();
     }
 
     /// <summary>
@@ -132,8 +134,8 @@ public class ChatCommandGuidanceRequest
         return new(value.TryGetObjectValue("sender"), value.TryGetStringValue("text") ?? value.TryGetStringValue("message"), value.TryGetObjectValue("data"), ChatCommandGuidanceHelper.DeserializeChatMessages(value.TryGetArrayValue("history")), value.TryGetObjectValue("ref"))
         {
             TrackingId = value.TryGetGuidValue("tracking") ?? Guid.NewGuid(),
-            Info = value.TryGetObjectValue("info"),
-            ClientInfo = value.TryGetObjectValue("client")
+            Info = value.TryGetObjectValue("info") ?? new(),
+            ClientInfo = value.TryGetObjectValue("client") ?? new()
         };
     }
 
