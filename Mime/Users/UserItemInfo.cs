@@ -52,6 +52,19 @@ public class UserItemInfo : ObservableProperties
     }
 
     /// <summary>
+    /// Converts to JSON object.
+    /// </summary>
+    /// <returns>A JSON object.</returns>
+    public virtual JsonObjectNode ToJson()
+        => new()
+        {
+            { "id", Id },
+            { "nickname", Nickname },
+            { "gender", Gender.ToString() },
+            { "avatar", AvatarUri?.OriginalString },
+        };
+
+    /// <summary>
     /// Converts the JSON raw back.
     /// </summary>
     /// <param name="value">The source value.</param>
@@ -76,14 +89,5 @@ public class UserItemInfo : ObservableProperties
     /// <param name="value">The JSON value.</param>
     /// <returns>A JSON object.</returns>
     public static explicit operator JsonObjectNode(UserItemInfo value)
-    {
-        if (value is null) return null;
-        return new()
-        {
-            { "id", value.Id },
-            { "nickname", value.Nickname },
-            { "gender", value.Gender.ToString() },
-            { "avatar", value.AvatarUri?.OriginalString },
-        };
-    }
+        => value?.ToJson();
 }

@@ -26,7 +26,7 @@ public class ChatCommandGuidanceRequest
     /// <param name="response">The latest response.</param>
     public ChatCommandGuidanceRequest(UserItemInfo user, string message, JsonObjectNode data, IEnumerable<SimpleChatMessage> history, JsonObjectNode clientContextData = null, ChatCommandGuidanceResponse response = null)
     {
-        User = user;
+        User = user ?? new();
         Message = message;
         Data = data ?? new();
         History = history ?? new List<SimpleChatMessage>();
@@ -48,7 +48,7 @@ public class ChatCommandGuidanceRequest
     /// <param name="info">The additional information from latest response.</param>
     internal ChatCommandGuidanceRequest(UserItemInfo user, string message, JsonObjectNode data, IEnumerable<SimpleChatMessage> history, JsonObjectNode clientContextData, Guid trackingId, JsonObjectNode info)
     {
-        User = user;
+        User = user ?? new();
         Message = message;
         Data = data ?? new();
         History = history ?? new List<SimpleChatMessage>();
@@ -124,20 +124,30 @@ public class ChatCommandGuidanceRequest
     public JsonObjectNode ClientContextData { get; }
 
     /// <summary>
-    /// Converts the JSON raw back.
+    /// Deserialize to the request message of chat command guidance.
     /// </summary>
     /// <param name="value">The source value.</param>
-    /// <returns>The request instance.</returns>
-    public static implicit operator ChatCommandGuidanceRequest(JsonObjectNode value)
+    /// <param name="user">The resolver of user instance to override.</param>
+    /// <returns>The request message instance.</returns>
+    public static ChatCommandGuidanceRequest Deserialize(JsonObjectNode value, Func<JsonObjectNode, UserItemInfo> user = null)
     {
         if (value is null) return null;
-        return new(value.TryGetObjectValue("sender"), value.TryGetStringValue("text") ?? value.TryGetStringValue("message"), value.TryGetObjectValue("data"), ChatCommandGuidanceHelper.DeserializeChatMessages(value.TryGetArrayValue("history")), value.TryGetObjectValue("ref"))
+        var u = value.TryGetObjectValue("sender");
+        return new(user?.Invoke(u) ?? (UserItemInfo)u, value.TryGetStringValue("text") ?? value.TryGetStringValue("message"), value.TryGetObjectValue("data"), ChatCommandGuidanceHelper.DeserializeChatMessages(value.TryGetArrayValue("history")), value.TryGetObjectValue("ref"))
         {
             TrackingId = value.TryGetGuidValue("tracking") ?? Guid.NewGuid(),
             Info = value.TryGetObjectValue("info") ?? new(),
             ClientInfo = value.TryGetObjectValue("client") ?? new()
         };
     }
+
+    /// <summary>
+    /// Converts the JSON raw back.
+    /// </summary>
+    /// <param name="value">The source value.</param>
+    /// <returns>The request instance.</returns>
+    public static implicit operator ChatCommandGuidanceRequest(JsonObjectNode value)
+        => Deserialize(value);
 
     /// <summary>
     /// Converts to JSON object.
@@ -154,6 +164,7 @@ public class ChatCommandGuidanceRequest
             { "text", value.Message },
             { "data", value.Data },
             { "info", value.Info},
+            { "client", value.ClientInfo },
             { "history", ChatCommandGuidanceHelper.Serizalize(value.History) },
             { "ref", value.ClientContextData }
         };

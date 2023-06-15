@@ -178,7 +178,8 @@ public abstract class BaseChatCommandGuidanceEngine
     public async Task<ChatCommandGuidanceResponse> ProcessAsync(ChatCommandGuidanceRequest request, CancellationToken cancellationToken = default)
     {
         if (request == null) return null;
-        var context = new ChatCommandGuidanceContext(request, GetAdditionalRequestInfo(request));
+        var reqInfo = GetAdditionalRequestInfo(request, request.User.GetProperty<JsonObjectNode>("_raw") ?? new JsonObjectNode());
+        var context = new ChatCommandGuidanceContext(request, reqInfo);
         OnRequest(context);
         var list = ChatCommandGuidanceHelper.Create(this, commands, context);
         var args = new DataEventArgs<ChatCommandGuidanceContext>(context);
@@ -223,8 +224,9 @@ public abstract class BaseChatCommandGuidanceEngine
     /// Gets the additional request information.
     /// </summary>
     /// <param name="request">The request.</param>
+    /// <param name="userDetails">The user information in details.</param>
     /// <returns>The object.</returns>
-    protected virtual object GetAdditionalRequestInfo(ChatCommandGuidanceRequest request)
+    protected virtual object GetAdditionalRequestInfo(ChatCommandGuidanceRequest request, JsonObjectNode userDetails)
         => null;
 
     /// <summary>
