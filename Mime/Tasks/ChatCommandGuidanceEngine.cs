@@ -178,14 +178,15 @@ public abstract class BaseChatCommandGuidanceEngine
     public async Task<ChatCommandGuidanceResponse> ProcessAsync(ChatCommandGuidanceRequest request, CancellationToken cancellationToken = default)
     {
         if (request == null) return null;
-        var context = new ChatCommandGuidanceContext(request);
-        var list = ChatCommandGuidanceHelper.Create(commands, context);
+        var context = new ChatCommandGuidanceContext(request, GetAdditionalRequestInfo(request));
+        OnRequest(context);
+        var list = ChatCommandGuidanceHelper.Create(this, commands, context);
         var args = new DataEventArgs<ChatCommandGuidanceContext>(context);
         Processing?.Invoke(this, args);
-        Task.WaitAll(list.Select(ChatCommandGuidanceHelper.GeneratePromptAsync).ToArray(), cancellationToken);
+        await list.GeneratePromptAsync(this, cancellationToken);
         var prompt = GenerateDefaultPrompt(context);
         prompt = ChatCommandGuidanceHelper.JoinWithEmptyLine(prompt, context.PromptCollection.Where(ChatCommandGuidanceHelper.IsNotEmpty));
-        Sending?.Invoke(this, new DataEventArgs<ChatCommandGuidanceContext>(context));
+        Sending?.Invoke(this, args);
         ChatCommandGuidanceSourceResult answer;
         try
         {
@@ -194,16 +195,18 @@ public abstract class BaseChatCommandGuidanceEngine
         }
         catch (Exception ex)
         {
+            OnSendError(context, ex);
             SendFailed?.Invoke(this, new ChatCommandGuidanceErrorEventArgs<ChatCommandGuidanceContext>(ex, context));
             throw;
         }
 
+        OnReceive(context, answer);
         Received?.Invoke(this, new ChatCommandGuidanceSourceEventArgs(context, answer));
         context.SetAnswerMessage(answer.Message, answer.Kind);
         if (answer.IsSuccessful)
         {
             var result = ChatCommandGuidanceHelper.ParseCommands(answer.Message, list, FuncPrefix).ToList();
-            Task.WaitAll(result.Select(ChatCommandGuidanceHelper.PostProcessAsync).ToArray(), cancellationToken);
+            await result.PostProcessAsync(this, cancellationToken);
             OnCommandProccessed(result.Select(ele => ele.Args).ToList());
             Processed?.Invoke(this, args);
         }
@@ -212,7 +215,50 @@ public abstract class BaseChatCommandGuidanceEngine
             ProcessFailed?.Invoke(this, args);
         }
 
+        OnResponse(context);
         return context.GetResponse();
+    }
+
+    /// <summary>
+    /// Gets the additional request information.
+    /// </summary>
+    /// <param name="request">The request.</param>
+    /// <returns>The object.</returns>
+    protected virtual object GetAdditionalRequestInfo(ChatCommandGuidanceRequest request)
+        => null;
+
+    /// <summary>
+    /// Occurs on the request is received.
+    /// </summary>
+    /// <param name="context">The context</param>
+    protected virtual void OnRequest(ChatCommandGuidanceContext context)
+    {
+    }
+
+    /// <summary>
+    /// Occurs on the response is ready to return.
+    /// </summary>
+    /// <param name="context">The context</param>
+    protected virtual void OnResponse(ChatCommandGuidanceContext context)
+    {
+    }
+
+    /// <summary>
+    /// Occurs on the response is ready to return.
+    /// </summary>
+    /// <param name="context">The context</param>
+    /// <param name="answer">The answer</param>
+    protected virtual void OnReceive(ChatCommandGuidanceContext context, ChatCommandGuidanceSourceResult answer)
+    {
+    }
+
+    /// <summary>
+    /// Occurs on the response is ready to return.
+    /// </summary>
+    /// <param name="context">The context</param>
+    /// <param name="ex">The exception</param>
+    protected virtual void OnSendError(ChatCommandGuidanceContext context, Exception ex)
+    {
     }
 
     /// <summary>

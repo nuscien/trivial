@@ -255,7 +255,7 @@ public abstract class BaseChatCommandGuidanceClient
         foreach (var item in details)
         {
             if (string.IsNullOrWhiteSpace(item.Key) || item.Value == null || !commands.TryGetValue(item.Key, out var command)) continue;
-            command.ClientProcess(new ChatCommandGuidanceClientProcessingArgs(item.Key, item.Value, topic, response));
+            command.ClientProcess(this, new ChatCommandGuidanceClientProcessingArgs(item.Key, item.Value, topic, response));
         }
     }
 }
@@ -363,7 +363,7 @@ public class ChatCommandGuidanceTopic
     /// <summary>
     /// Adds or removes the event on message is sending.
     /// </summary>
-    public event DataEventHandler<ChatCommandGuidanceRequest> Sending;
+    public event EventHandler<ChatCommandGuidanceMessageEventArgs> Sending;
 
     /// <summary>
     /// Adds or removes the event on message is failed to send or no response.
@@ -373,12 +373,12 @@ public class ChatCommandGuidanceTopic
     /// <summary>
     /// Adds or removes the event on message is received.
     /// </summary>
-    public event DataEventHandler<ChatCommandGuidanceResponse> Received;
+    public event EventHandler<ChatCommandGuidanceMessageEventArgs> Received;
 
     /// <summary>
     /// Adds or removes the event on message is post processed.
     /// </summary>
-    public event DataEventHandler<ChatCommandGuidanceResponse> Processed;
+    public event EventHandler<ChatCommandGuidanceMessageEventArgs> Processed;
 
     /// <summary>
     /// Gets the additional information data.
@@ -418,20 +418,48 @@ public class ChatCommandGuidanceTopic
         => client.NewTopic();
 
     /// <summary>
-    /// Creates a request.
+    /// Sends a request to get response.
     /// </summary>
     /// <param name="message">The message text.</param>
     /// <param name="data">The message data.</param>
     /// <param name="cancellationToken">The optional cancellation token.</param>
-    /// <returns>The request instance.</returns>
+    /// <returns>The response instance.</returns>
     public async Task<ChatCommandGuidanceResponse> SendAsync(string message, JsonObjectNode data, CancellationToken cancellationToken = default)
     {
+        var result = await SendAsync(message, data, LatestResponse, cancellationToken);
+        return result?.Response;
+    }
+
+    /// <summary>
+    /// Sends a request to get response.
+    /// </summary>
+    /// <param name="message">The message text.</param>
+    /// <param name="data">The message data.</param>
+    /// <param name="callback">The callback.</param>
+    /// <param name="cancellationToken">The optional cancellation token.</param>
+    /// <returns>The reply instance with response.</returns>
+    public async Task<ChatCommandGuidanceResponse> SendAsync(string message, JsonObjectNode data, Action<ChatCommandGuidanceReply> callback, CancellationToken cancellationToken = default)
+    {
+        var result = await SendAsync(message, data, LatestResponse, cancellationToken);
+        callback?.Invoke(result);
+        return result?.Response;
+    }
+
+    /// <summary>
+    /// Sends a request to get response.
+    /// </summary>
+    /// <param name="message">The message text.</param>
+    /// <param name="data">The message data.</param>
+    /// <param name="reply">The response message to reply; or null, if starts a new topic.</param>
+    /// <param name="cancellationToken">The optional cancellation token.</param>
+    /// <returns>The response instance.</returns>
+    internal async Task<ChatCommandGuidanceReply> SendAsync(string message, JsonObjectNode data, ChatCommandGuidanceResponse reply, CancellationToken cancellationToken = default)
+    {
         var user = client.User;
-        var reply = LatestResponse;
         var request = new ChatCommandGuidanceRequest(user, message, data, new List<SimpleChatMessage>(history), null, reply);
         var args = new ChatCommandGuidanceMessageEventArgs(this, null, request, reply);
         client.OnRequestCreate(args);
-        Sending?.Invoke(this, new DataEventArgs<ChatCommandGuidanceRequest>(request));
+        Sending?.Invoke(this, args);
         client.NotifySending(args);
         LatestRequest = request;
         history.Add(new SimpleChatMessage(user, message, DateTime.Now, client.RequestMessageKind, data));
@@ -450,16 +478,75 @@ public class ChatCommandGuidanceTopic
         }
 
         args.Response = response;
-        Received?.Invoke(this, new DataEventArgs<ChatCommandGuidanceResponse>(response));
+        Received?.Invoke(this, args);
         client.NotifyReceived(args);
         LatestResponse = response;
         history.Add(new SimpleChatMessage(user, response.Message, DateTime.Now, response.Kind, response.Data));
         client.OnReceive(args);
         client.ProcessCommands(this, response);
         client.OnProcessed(args);
-        Processed?.Invoke(this, new DataEventArgs<ChatCommandGuidanceResponse>(response));
+        Processed?.Invoke(this, args);
         client.NotifyProcessed(args);
-        return response;
+        return new(this, response);
+    }
+}
+
+/// <summary>
+/// The reply information for chat command guidance topic.
+/// </summary>
+public class ChatCommandGuidanceReply
+{
+    private readonly ChatCommandGuidanceTopic topic;
+
+    /// <summary>
+    /// Initializes a new instance of the ChatCommandGuidanceReply class.
+    /// </summary>
+    /// <param name="topic"></param>
+    /// <param name="response"></param>
+    internal ChatCommandGuidanceReply(ChatCommandGuidanceTopic topic, ChatCommandGuidanceResponse response)
+    {
+        this.topic = topic;
+        Response = response;
+    }
+
+    /// <summary>
+    /// Gets the response.
+    /// </summary>
+    public ChatCommandGuidanceResponse Response { get; }
+
+    /// <summary>
+    /// Gets a value indicating whether the response has replied.
+    /// </summary>
+    public bool HasReplied { get; private set; }
+
+    /// <summary>
+    /// Creates a request.
+    /// </summary>
+    /// <param name="message">The message text.</param>
+    /// <param name="data">The message data.</param>
+    /// <param name="cancellationToken">The optional cancellation token.</param>
+    /// <returns>The request instance.</returns>
+    public async Task<ChatCommandGuidanceResponse> SendAsync(string message, JsonObjectNode data, CancellationToken cancellationToken = default)
+    {
+        HasReplied = true;
+        var result = await topic.SendAsync(message, data, Response, cancellationToken);
+        return result.Response;
+    }
+
+    /// <summary>
+    /// Creates a request.
+    /// </summary>
+    /// <param name="message">The message text.</param>
+    /// <param name="data">The message data.</param>
+    /// <param name="callback">The callback.</param>
+    /// <param name="cancellationToken">The optional cancellation token.</param>
+    /// <returns>The request instance.</returns>
+    public async Task<ChatCommandGuidanceResponse> SendAsync(string message, JsonObjectNode data, Action<ChatCommandGuidanceReply> callback, CancellationToken cancellationToken = default)
+    {
+        HasReplied = true;
+        var result = await topic.SendAsync(message, data, Response, cancellationToken);
+        callback?.Invoke(result);
+        return result.Response;
     }
 }
 

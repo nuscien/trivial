@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Trivial.Text;
 using Trivial.Users;
@@ -37,7 +39,7 @@ public static class ChatCommandGuidanceHelper
         };
     }
 
-    internal static IEnumerable<ChatCommandGuidanceTask> Create(IDictionary<string, BaseChatCommandGuidanceProvider> collection, ChatCommandGuidanceContext context)
+    internal static IEnumerable<ChatCommandGuidanceTask> Create(BaseChatCommandGuidanceEngine engine, IDictionary<string, BaseChatCommandGuidanceProvider> collection, ChatCommandGuidanceContext context)
     {
         if (collection == null || context == null) yield break;
         foreach (var kvp in collection)
@@ -46,23 +48,47 @@ public static class ChatCommandGuidanceHelper
             var command = kvp.Value;
             if (string.IsNullOrEmpty(key) || command == null) continue;
             var task = new ChatCommandGuidanceTask(key, command, context);
-            if (task.IsAvailable()) yield return task;
+            if (task.IsAvailable(engine)) yield return task;
         }
     }
 
-    internal static bool IsAvailable(this ChatCommandGuidanceTask instance)
-        => instance.Command.IsAvailable(instance.Args);
+    internal static bool IsAvailable(this ChatCommandGuidanceTask instance, BaseChatCommandGuidanceEngine engine)
+        => instance.Command.IsAvailable(engine, instance.Args);
 
-    internal static async Task<string> GeneratePromptAsync(this ChatCommandGuidanceTask instance)
+    internal static async Task<string> GeneratePromptAsync(this ChatCommandGuidanceTask instance, BaseChatCommandGuidanceEngine engine, CancellationToken cancellationToken = default)
     {
-        var prompt = await instance.Command.GeneratePromptAsync(instance.Args);
+        var prompt = await instance.Command.GeneratePromptAsync(engine, instance.Args, cancellationToken);
         prompt = prompt?.Trim();
         if (!string.IsNullOrEmpty(prompt)) instance.Args.Context.PromptCollection.Add(prompt);
         return prompt;
     }
 
-    internal static Task PostProcessAsync(this ChatCommandGuidanceTask instance)
-        => instance.Command.PostProcessAsync(instance.Args);
+    internal static Task<string[]> GeneratePromptAsync(this IEnumerable<ChatCommandGuidanceTask> col, BaseChatCommandGuidanceEngine engine, CancellationToken cancellationToken = default)
+    {
+        var list = new List<Task<string>>();
+        foreach (var item in col)
+        {
+            var task = item.GeneratePromptAsync(engine, cancellationToken);
+            if (task != null) list.Add(task);
+        }
+
+        return Task.WhenAll(list.ToArray());
+    }
+
+    internal static Task PostProcessAsync(this ChatCommandGuidanceTask instance, BaseChatCommandGuidanceEngine engine, CancellationToken cancellationToken = default)
+        => instance.Command.PostProcessAsync(engine, instance.Args, cancellationToken);
+
+    internal static Task PostProcessAsync(this IEnumerable<ChatCommandGuidanceTask> col, BaseChatCommandGuidanceEngine engine, CancellationToken cancellationToken = default)
+    {
+        var list = new List<Task>();
+        foreach (var item in col)
+        {
+            var task = item.PostProcessAsync(engine, cancellationToken);
+            if (task != null) list.Add(task);
+        }
+
+        return Task.WhenAll(list.ToArray());
+    }
 
     internal static IEnumerable<ChatCommandGuidanceTask> ParseCommands(string answer, IEnumerable<ChatCommandGuidanceTask> list, string funcPrefix)
     {

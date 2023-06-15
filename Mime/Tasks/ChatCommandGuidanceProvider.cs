@@ -168,6 +168,7 @@ public abstract class BaseChatCommandGuidanceProvider
     /// <summary>
     /// Occurs on initialized.
     /// </summary>
+    /// <param name="engine">The engine.</param>
     protected internal virtual void OnInit(BaseChatCommandGuidanceClient engine)
     {
     }
@@ -175,31 +176,37 @@ public abstract class BaseChatCommandGuidanceProvider
     /// <summary>
     /// Tests if the command guidance is available.
     /// </summary>
+    /// <param name="engine">The engine.</param>
     /// <param name="args">The arguments.</param>
     /// <returns>true if the command guidance is available; otherwise, false.</returns>
-    protected internal virtual bool IsAvailable(ChatCommandGuidanceArgs args)
+    protected internal virtual bool IsAvailable(BaseChatCommandGuidanceEngine engine, ChatCommandGuidanceArgs args)
         => args != null;
 
     /// <summary>
     /// Generates the prompt.
     /// </summary>
+    /// <param name="engine">The engine.</param>
     /// <param name="args">The arguments.</param>
+    /// <param name="cancellationToken">The optional cancellation token.</param>
     /// <returns>The prompt segment to append.</returns>
-    protected internal virtual Task<string> GeneratePromptAsync(ChatCommandGuidanceArgs args)
+    protected internal virtual Task<string> GeneratePromptAsync(BaseChatCommandGuidanceEngine engine, ChatCommandGuidanceArgs args, CancellationToken cancellationToken = default)
         => Task.FromResult<string>(null);
 
     /// <summary>
     /// Post processes.
     /// </summary>
+    /// <param name="engine">The engine.</param>
     /// <param name="args">The arguments.</param>
+    /// <param name="cancellationToken">The optional cancellation token.</param>
     /// <returns>A Task that represents the work queued to execute in the ThreadPool.</returns>
-    protected internal abstract Task PostProcessAsync(ChatCommandGuidanceArgs args);
+    protected internal abstract Task PostProcessAsync(BaseChatCommandGuidanceEngine engine, ChatCommandGuidanceArgs args, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Post processes on client side.
     /// </summary>
+    /// <param name="client">The client.</param>
     /// <param name="args">The arguments.</param>
-    protected internal virtual void ClientProcess(ChatCommandGuidanceClientProcessingArgs args)
+    protected internal virtual void ClientProcess(BaseChatCommandGuidanceClient client, ChatCommandGuidanceClientProcessingArgs args)
     {
     }
 

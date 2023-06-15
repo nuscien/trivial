@@ -92,6 +92,11 @@ public class ChatCommandGuidanceRequest
     public Guid TrackingId { get; private set; }
 
     /// <summary>
+    /// Gets the additional client information.
+    /// </summary>
+    public JsonObjectNode ClientInfo { get; private set; }
+
+    /// <summary>
     /// Gets the message.
     /// </summary>
     public string Message { get; }
@@ -128,6 +133,7 @@ public class ChatCommandGuidanceRequest
         {
             TrackingId = value.TryGetGuidValue("tracking") ?? Guid.NewGuid(),
             Info = value.TryGetObjectValue("info"),
+            ClientInfo = value.TryGetObjectValue("client")
         };
     }
 

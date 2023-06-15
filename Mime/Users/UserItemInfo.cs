@@ -59,13 +59,15 @@ public class UserItemInfo : ObservableProperties
     public static implicit operator UserItemInfo(JsonObjectNode value)
     {
         if (value is null) return null;
-        return new()
+        var item = new UserItemInfo()
         {
-            Id = value.TryGetStringTrimmedValue("id", true),
+            Id = value.TryGetStringTrimmedValue("id", true) ?? value.Id,
             Nickname = value.TryGetStringTrimmedValue("nickname", true),
             Gender = value.TryGetEnumValue<Genders>("gender") ?? Genders.Unknown,
             AvatarUri = value.TryGetUriValue("avatar")
         };
+        if (value.TryGetBooleanValue("_raw") != false) item.SetProperty("_raw", value);
+        return item;
     }
 
     /// <summary>
