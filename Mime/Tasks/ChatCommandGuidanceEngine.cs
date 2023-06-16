@@ -22,6 +22,7 @@ public abstract class BaseChatCommandGuidanceEngine
     private const string FuncPrefix = "⨍";
     private const string ParameterSeperator = "⫶";
     private readonly Dictionary<string, BaseChatCommandGuidanceProvider> commands = new();
+    private readonly List<IChatCommandGuidanceEngineMonitor> monitors = new();
 
     /// <summary>
     /// Adds or removes the event on processing.
@@ -178,15 +179,19 @@ public abstract class BaseChatCommandGuidanceEngine
     public async Task<ChatCommandGuidanceResponse> ProcessAsync(ChatCommandGuidanceRequest request, CancellationToken cancellationToken = default)
     {
         if (request == null) return null;
-        var reqInfo = GetAdditionalRequestInfo(request, request.User.GetProperty<JsonObjectNode>("_raw") ?? new JsonObjectNode());
+        var userDetails = request.User.GetProperty<JsonObjectNode>("_raw") ?? new JsonObjectNode();
+        var reqInfo = GetAdditionalRequestInfo(request, userDetails);
         var context = new ChatCommandGuidanceContext(request, reqInfo);
         OnRequest(context);
-        var list = ChatCommandGuidanceHelper.Create(this, commands, context);
+        var monitors = ChatCommandGuidanceEngineMonitorTask.Create(this.monitors, this, context);
+        var list = ChatCommandGuidanceTask.Create(this, commands, context);
         var args = new DataEventArgs<ChatCommandGuidanceContext>(context);
         Processing?.Invoke(this, args);
-        await list.GeneratePromptAsync(this, cancellationToken);
+        monitors.OnRequest(this, userDetails);
+        context.AddPrompt(await list.GeneratePromptAsync(this, cancellationToken));
+        context.AddPrompt(await monitors.GeneratePromptAsync(this, cancellationToken));
         var prompt = GenerateDefaultPrompt(context);
-        prompt = ChatCommandGuidanceHelper.JoinWithEmptyLine(prompt, context.PromptCollection.Where(ChatCommandGuidanceHelper.IsNotEmpty));
+        prompt = ChatCommandGuidanceHelper.JoinWithEmptyLine(prompt, context.PromptCollection);
         Sending?.Invoke(this, args);
         ChatCommandGuidanceSourceResult answer;
         try
@@ -197,11 +202,13 @@ public abstract class BaseChatCommandGuidanceEngine
         catch (Exception ex)
         {
             OnSendError(context, ex);
+            monitors.OnSendError(this, ex);
             SendFailed?.Invoke(this, new ChatCommandGuidanceErrorEventArgs<ChatCommandGuidanceContext>(ex, context));
             throw;
         }
 
         OnReceive(context, answer);
+        monitors.OnReceive(this, answer);
         Received?.Invoke(this, new ChatCommandGuidanceSourceEventArgs(context, answer));
         context.SetAnswerMessage(answer.Message, answer.Kind);
         if (answer.IsSuccessful)
@@ -217,6 +224,7 @@ public abstract class BaseChatCommandGuidanceEngine
         }
 
         OnResponse(context);
+        monitors.OnResponse(this);
         return context.GetResponse();
     }
 
@@ -336,6 +344,21 @@ public abstract class BaseChatCommandGuidanceEngine
     /// <param name="context">The command guidance context.</param>
     /// <param name="prompt">The prompt.</param>
     /// <param name="cancellationToken">The optional cancellation token.</param>
-    /// <returns>The answer text.</returns>
+    /// <returns>The answer result.</returns>
     protected abstract Task<ChatCommandGuidanceSourceResult> SendAsync(ChatCommandGuidanceContext context, string prompt, CancellationToken cancellationToken = default);
+}
+
+/// <summary>
+/// The test engine for chat bot.
+/// </summary>
+internal class EmptyChatCommandGuidanceEngine : BaseChatCommandGuidanceEngine
+{
+    /// <summary>
+    /// Gets or sets the default answer result.
+    /// </summary>
+    public ChatCommandGuidanceSourceResult DefaultAnswerResult { get; set; }
+
+    /// <inheritdoc />
+    protected override Task<ChatCommandGuidanceSourceResult> SendAsync(ChatCommandGuidanceContext context, string prompt, CancellationToken cancellationToken = default)
+        => Task.FromResult(DefaultAnswerResult ?? new ChatCommandGuidanceSourceResult(null, false, "error"));
 }

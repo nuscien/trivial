@@ -8,7 +8,7 @@
 		<Product>Trivial</Product>
 		<Authors>Kingcean Tuan</Authors>
 		<Company>Nanchang Jinchen Software Co., Ltd.</Company>
-		<Version>7.2.0-alpha.4</Version>
+		<Version>7.2.0-beta.1</Version>
 		<AssemblyVersion>7.2.0.0</AssemblyVersion>
 		<FileVersion>7.2.0.0</FileVersion>
 		<Description>The MIME constants and the barcode generators.</Description>

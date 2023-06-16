@@ -51,6 +51,8 @@ public class ChatCommandGuidanceArgs : EventArgs
     /// <summary>
     /// Initializes a new instance of the ChatCommandGuidanceArgs class.
     /// </summary>
+    /// <param name="context">The context.</param>
+    /// <param name="command">The command key.</param>
     public ChatCommandGuidanceArgs(ChatCommandGuidanceContext context, string command)
     {
         Context = context;
@@ -59,6 +61,11 @@ public class ChatCommandGuidanceArgs : EventArgs
         Info = context?.GetInfo(command) ?? new();
         NextInfo = context?.GetNextInfo(command) ?? new();
     }
+
+    /// <summary>
+    /// Gets the additional object.
+    /// </summary>
+    public object AdditionalObject { get; internal set; }
 
     /// <summary>
     /// Gets the context.
@@ -116,6 +123,11 @@ public class ChatCommandGuidanceArgs : EventArgs
     /// Gets the chat message result.
     /// </summary>
     public string AnswerMessage => Context?.AnswerMessage;
+
+    /// <summary>
+    /// Gets the creation date and time.
+    /// </summary>
+    public DateTime CreationTime { get; } = DateTime.Now;
 }
 
 /// <summary>
@@ -168,10 +180,19 @@ public abstract class BaseChatCommandGuidanceProvider
     /// <summary>
     /// Occurs on initialized.
     /// </summary>
-    /// <param name="engine">The engine.</param>
-    protected internal virtual void OnInit(BaseChatCommandGuidanceClient engine)
+    /// <param name="client">The client.</param>
+    protected internal virtual void OnInit(BaseChatCommandGuidanceClient client)
     {
     }
+
+    /// <summary>
+    /// Creates an object used for following steps.
+    /// </summary>
+    /// <param name="engine">The engine.</param>
+    /// <param name="args">The arguments.</param>
+    /// <returns>The object.</returns>
+    protected internal virtual object InitializeObject(BaseChatCommandGuidanceEngine engine, ChatCommandGuidanceArgs args)
+        => null;
 
     /// <summary>
     /// Tests if the command guidance is available.
@@ -217,4 +238,34 @@ public abstract class BaseChatCommandGuidanceProvider
     /// <returns>A Task that represents the work queued to execute in the ThreadPool.</returns>
     protected static Task RunEmptyAsync(CancellationToken cancellationToken = default)
         => Task.Run(ChatCommandGuidanceHelper.RunEmpty, cancellationToken);
+}
+
+internal class ChatCommandGuidanceTask
+{
+    private ChatCommandGuidanceTask(BaseChatCommandGuidanceEngine engine, string key, BaseChatCommandGuidanceProvider command, ChatCommandGuidanceContext context)
+    {
+        Command = command;
+        Args = new ChatCommandGuidanceArgs(context, key);
+        Args.AdditionalObject = command.InitializeObject(engine, Args);
+        IsAvailable = command.IsAvailable(engine, Args);
+    }
+
+    public BaseChatCommandGuidanceProvider Command { get; }
+
+    public ChatCommandGuidanceArgs Args { get; }
+
+    public bool IsAvailable { get; }
+
+    public static IEnumerable<ChatCommandGuidanceTask> Create(BaseChatCommandGuidanceEngine engine, IDictionary<string, BaseChatCommandGuidanceProvider> collection, ChatCommandGuidanceContext context)
+    {
+        if (collection == null || context == null) yield break;
+        foreach (var kvp in collection)
+        {
+            var key = kvp.Key;
+            var command = kvp.Value;
+            if (string.IsNullOrEmpty(key) || command == null) continue;
+            var task = new ChatCommandGuidanceTask(engine, key, command, context);
+            if (task.IsAvailable) yield return task;
+        }
+    }
 }

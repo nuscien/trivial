@@ -13,23 +13,14 @@ namespace Trivial.Tasks;
 /// <summary>
 /// The helper of chat command guidance.
 /// </summary>
-public static class ChatCommandGuidanceHelper
+internal static class ChatCommandGuidanceHelper
 {
-    /// <summary>
-    /// Creates a client.
-    /// </summary>
-    /// <param name="user">The user instance.</param>
-    /// <param name="engine">The engine.</param>
-    /// <returns>The client.</returns>
-    public static BaseChatCommandGuidanceClient CreateClient(UserItemInfo user, BaseChatCommandGuidanceEngine engine)
-        => new LocalChatCommandGuidanceClient(user, engine);
-
     /// <summary>
     /// Tests if the command is valid.
     /// </summary>
     /// <param name="kvp">The key value pair.</param>
     /// <returns>true if it is supported; otherwise, false.</returns>
-    internal static bool IsSupportedCommand(KeyValuePair<string, BaseChatCommandGuidanceProvider> kvp)
+    public static bool IsSupportedCommand(KeyValuePair<string, BaseChatCommandGuidanceProvider> kvp)
     {
         if (kvp.Value == null) return false;
         return kvp.Value.Kind switch
@@ -39,23 +30,7 @@ public static class ChatCommandGuidanceHelper
         };
     }
 
-    internal static IEnumerable<ChatCommandGuidanceTask> Create(BaseChatCommandGuidanceEngine engine, IDictionary<string, BaseChatCommandGuidanceProvider> collection, ChatCommandGuidanceContext context)
-    {
-        if (collection == null || context == null) yield break;
-        foreach (var kvp in collection)
-        {
-            var key = kvp.Key;
-            var command = kvp.Value;
-            if (string.IsNullOrEmpty(key) || command == null) continue;
-            var task = new ChatCommandGuidanceTask(key, command, context);
-            if (task.IsAvailable(engine)) yield return task;
-        }
-    }
-
-    internal static bool IsAvailable(this ChatCommandGuidanceTask instance, BaseChatCommandGuidanceEngine engine)
-        => instance.Command.IsAvailable(engine, instance.Args);
-
-    internal static async Task<string> GeneratePromptAsync(this ChatCommandGuidanceTask instance, BaseChatCommandGuidanceEngine engine, CancellationToken cancellationToken = default)
+    public static async Task<string> GeneratePromptAsync(this ChatCommandGuidanceTask instance, BaseChatCommandGuidanceEngine engine, CancellationToken cancellationToken = default)
     {
         var prompt = await instance.Command.GeneratePromptAsync(engine, instance.Args, cancellationToken);
         prompt = prompt?.Trim();
@@ -63,7 +38,7 @@ public static class ChatCommandGuidanceHelper
         return prompt;
     }
 
-    internal static Task<string[]> GeneratePromptAsync(this IEnumerable<ChatCommandGuidanceTask> col, BaseChatCommandGuidanceEngine engine, CancellationToken cancellationToken = default)
+    public static Task<string[]> GeneratePromptAsync(this IEnumerable<ChatCommandGuidanceTask> col, BaseChatCommandGuidanceEngine engine, CancellationToken cancellationToken = default)
     {
         var list = new List<Task<string>>();
         foreach (var item in col)
@@ -75,10 +50,10 @@ public static class ChatCommandGuidanceHelper
         return Task.WhenAll(list.ToArray());
     }
 
-    internal static Task PostProcessAsync(this ChatCommandGuidanceTask instance, BaseChatCommandGuidanceEngine engine, CancellationToken cancellationToken = default)
+    public static Task PostProcessAsync(this ChatCommandGuidanceTask instance, BaseChatCommandGuidanceEngine engine, CancellationToken cancellationToken = default)
         => instance.Command.PostProcessAsync(engine, instance.Args, cancellationToken);
 
-    internal static Task PostProcessAsync(this IEnumerable<ChatCommandGuidanceTask> col, BaseChatCommandGuidanceEngine engine, CancellationToken cancellationToken = default)
+    public static Task PostProcessAsync(this IEnumerable<ChatCommandGuidanceTask> col, BaseChatCommandGuidanceEngine engine, CancellationToken cancellationToken = default)
     {
         var list = new List<Task>();
         foreach (var item in col)
@@ -90,7 +65,7 @@ public static class ChatCommandGuidanceHelper
         return Task.WhenAll(list.ToArray());
     }
 
-    internal static IEnumerable<ChatCommandGuidanceTask> ParseCommands(string answer, IEnumerable<ChatCommandGuidanceTask> list, string funcPrefix)
+    public static IEnumerable<ChatCommandGuidanceTask> ParseCommands(string answer, IEnumerable<ChatCommandGuidanceTask> list, string funcPrefix)
     {
         if (answer == null || list == null) yield break;
         var lines = answer.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries) ?? Array.Empty<string>();
@@ -113,7 +88,81 @@ public static class ChatCommandGuidanceHelper
         }
     }
 
-    internal static JsonObjectNode ToJson(Dictionary<string, JsonObjectNode> col)
+    /// <summary>
+    /// Occurs on request.
+    /// </summary>
+    /// <param name="col">The collection.</param>
+    /// <param name="engine">The engine.</param>
+    /// <param name="userDetails">The user information in details.</param>
+    public static void OnRequest(this IEnumerable<ChatCommandGuidanceEngineMonitorTask> col, BaseChatCommandGuidanceEngine engine, JsonObjectNode userDetails)
+    {
+        foreach (var item in col)
+        {
+            item.Monitor.OnRequest(engine, item.Context, userDetails, item.Ref);
+        }
+    }
+
+    /// <summary>
+    /// Generates the prompt.
+    /// </summary>
+    /// <param name="col">The collection.</param>
+    /// <param name="engine">The engine.</param>
+    /// <param name="cancellationToken">The optional cancellation token.</param>
+    /// <returns>The prompt segment to append.</returns>
+    public static async Task<List<string>> GeneratePromptAsync(this IEnumerable<ChatCommandGuidanceEngineMonitorTask> col, BaseChatCommandGuidanceEngine engine, CancellationToken cancellationToken = default)
+    {
+        var list = new List<string>();
+        foreach (var item in col)
+        {
+            var s = await item.Monitor.GeneratePromptAsync(engine, item.Context, item.Ref, cancellationToken);
+            list.Add(s);
+        }
+
+        return list;
+    }
+
+    /// <summary>
+    /// Occurs on sending failure.
+    /// </summary>
+    /// <param name="col">The collection.</param>
+    /// <param name="engine">The engine.</param>
+    /// <param name="ex">The exception.</param>
+    public static void OnSendError(this IEnumerable<ChatCommandGuidanceEngineMonitorTask> col, BaseChatCommandGuidanceEngine engine, Exception ex)
+    {
+        foreach (var item in col)
+        {
+            item.Monitor.OnSendError(engine, item.Context, ex, item.Ref);
+        }
+    }
+
+    /// <summary>
+    /// Occurs on answer receive.
+    /// </summary>
+    /// <param name="col">The collection.</param>
+    /// <param name="engine">The engine.</param>
+    /// <param name="answer">The answer.</param>
+    public static void OnReceive(this IEnumerable<ChatCommandGuidanceEngineMonitorTask> col, BaseChatCommandGuidanceEngine engine, ChatCommandGuidanceSourceResult answer)
+    {
+        foreach (var item in col)
+        {
+            item.Monitor.OnReceive(engine, item.Context, answer, item.Ref);
+        }
+    }
+
+    /// <summary>
+    /// Occurs on response returning.
+    /// </summary>
+    /// <param name="col">The collection.</param>
+    /// <param name="engine">The engine.</param>
+    public static void OnResponse(this IEnumerable<ChatCommandGuidanceEngineMonitorTask> col, BaseChatCommandGuidanceEngine engine)
+    {
+        foreach (var item in col)
+        {
+            item.Monitor.OnResponse(engine, item.Context, item.Ref);
+        }
+    }
+
+    public static JsonObjectNode ToJson(Dictionary<string, JsonObjectNode> col)
     {
         if (col == null) return null;
         var json = new JsonObjectNode();
@@ -125,7 +174,7 @@ public static class ChatCommandGuidanceHelper
         return json;
     }
 
-    internal static IEnumerable<SimpleChatMessage> DeserializeChatMessages(JsonArrayNode arr)
+    public static IEnumerable<SimpleChatMessage> DeserializeChatMessages(JsonArrayNode arr)
     {
         if (arr == null) yield break;
         foreach (var item in arr)
@@ -135,7 +184,7 @@ public static class ChatCommandGuidanceHelper
         }
     }
 
-    internal static JsonArrayNode Serizalize(IEnumerable<SimpleChatMessage> value)
+    public static JsonArrayNode Serizalize(IEnumerable<SimpleChatMessage> value)
     {
         if (value == null) return null;
         var col = new JsonArrayNode();
@@ -147,7 +196,7 @@ public static class ChatCommandGuidanceHelper
         return col;
     }
 
-    internal static bool IsNotEmpty(string s)
+    public static bool IsNotEmpty(string s)
         => !string.IsNullOrWhiteSpace(s);
 
     /// <summary>
@@ -156,7 +205,7 @@ public static class ChatCommandGuidanceHelper
     /// <param name="line">The default prompt.</param>
     /// <param name="lines">The prompt segment generated by each command guidance.</param>
     /// <returns>The prompt.</returns>
-    internal static string JoinWithEmptyLine(string line, IEnumerable<string> lines)
+    public static string JoinWithEmptyLine(string line, IEnumerable<string> lines)
     {
         var sb = new StringBuilder(line);
         sb.AppendLine();
@@ -171,23 +220,10 @@ public static class ChatCommandGuidanceHelper
         return sb.ToString();
     }
 
-    internal static string FormatPromptName(string s)
+    public static string FormatPromptName(string s)
         => string.IsNullOrWhiteSpace(s) ? null : s.Trim().Replace(".", string.Empty).Replace(",", string.Empty).Replace(";", string.Empty).Replace("!", string.Empty).Replace("?", string.Empty).Replace("|", string.Empty).Replace("\"", string.Empty).Replace("\'", string.Empty).Replace("\t", string.Empty).Replace("\r", string.Empty).Replace("\n", string.Empty).Replace("…", string.Empty).Replace("。", string.Empty).Replace("，", string.Empty).Replace("！", string.Empty).Replace("？", string.Empty);
 
-    internal static void RunEmpty()
+    public static void RunEmpty()
     {
     }
-}
-
-internal class ChatCommandGuidanceTask
-{
-    public ChatCommandGuidanceTask(string key, BaseChatCommandGuidanceProvider command, ChatCommandGuidanceContext context)
-    {
-        Command = command;
-        Args = new ChatCommandGuidanceArgs(context, key);
-    }
-
-    public BaseChatCommandGuidanceProvider Command { get; }
-
-    public ChatCommandGuidanceArgs Args { get; }
 }

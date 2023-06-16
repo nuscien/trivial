@@ -229,4 +229,14 @@ public class ChatCommandGuidanceContext
         nextData[command] = result;
         return result;
     }
+
+    /// <summary>
+    /// Adds prompt.
+    /// </summary>
+    /// <param name="col">The collection to add.</param>
+    internal void AddPrompt(IEnumerable<string> col)
+    {
+        if (col == null) return;
+        PromptCollection.AddRange(col);
+    }
 }
