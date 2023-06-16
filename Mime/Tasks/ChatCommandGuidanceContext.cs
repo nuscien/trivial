@@ -166,7 +166,7 @@ public class ChatCommandGuidanceContext
     /// <returns>The response JSON object.</returns>
     public ChatCommandGuidanceResponse GetResponse()
     {
-        var resp = new ChatCommandGuidanceResponse(AnswerMessage, AnswerData, Info, MessageKind, request);
+        var resp = new ChatCommandGuidanceResponse(AnswerMessage, AnswerData, NextInfo, MessageKind, request);
         foreach (var item in nextData)
         {
             resp.Details[item.Key] = item.Value;

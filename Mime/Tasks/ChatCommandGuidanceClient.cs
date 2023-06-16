@@ -358,7 +358,7 @@ public class LocalChatCommandGuidanceClient : BaseChatCommandGuidanceClient
     public LocalChatCommandGuidanceClient(UserItemInfo user, BaseChatCommandGuidanceEngine engine)
         : base(user)
     {
-        Engine = engine ?? new EmptyChatCommandGuidanceEngine();
+        Engine = engine ?? new StaticChatCommandGuidanceEngine();
     }
 
     /// <summary>

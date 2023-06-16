@@ -11,6 +11,8 @@ using System.Security.Cryptography.X509Certificates;
 using System.Threading;
 using System.ComponentModel.DataAnnotations;
 using System.Security.Principal;
+using Trivial.Security;
+using Trivial.Net;
 
 namespace Trivial.Tasks;
 
@@ -349,16 +351,238 @@ public abstract class BaseChatCommandGuidanceEngine
 }
 
 /// <summary>
+/// The engine to generate smart prompt for chat bot.
+/// </summary>
+public class OnlineChatCommandGuidanceEngine : BaseChatCommandGuidanceEngine
+{
+    /// <summary>
+    /// Initializes a new instance of the OnlineChatCommandGuidanceEngine class.
+    /// </summary>
+    /// <param name="uri">The URI of the web API.</param>
+    /// <param name="client">The web client.</param>
+    public OnlineChatCommandGuidanceEngine(Uri uri, OAuthClient client = null)
+    {
+        Uri = uri;
+        Client = client;
+    }
+
+    /// <summary>
+    /// Gets the web client.
+    /// </summary>
+    public OAuthClient Client { get; }
+
+    /// <summary>
+    /// Gets the URI of the web API.
+    /// </summary>
+    protected Uri Uri { get; }
+
+    /// <inheritdoc />
+    protected override async Task<ChatCommandGuidanceSourceResult> SendAsync(ChatCommandGuidanceContext context, string prompt, CancellationToken cancellationToken = default)
+    {
+        if (Uri == null) return null;
+        var client = CreateHttpClient<JsonObjectNode>();
+        var resp = await client.PostAsync(Uri, CreateSendBody(context, prompt), cancellationToken);
+        return GetAnswer(context, resp);
+    }
+
+    /// <summary>
+    /// Creates the JSON object to send as HTTP body.
+    /// </summary>
+    /// <param name="context">The context.</param>
+    /// <param name="prompt">The prompt.</param>
+    /// <returns>The request body.</returns>
+    protected virtual JsonObjectNode CreateSendBody(ChatCommandGuidanceContext context, string prompt)
+    {
+        var messages = new JsonArrayNode();
+        if (!string.IsNullOrEmpty(prompt)) messages.Add(new JsonObjectNode
+        {
+            { "role", "system" },
+            { "content", prompt }
+        });
+        foreach (var message in context.History)
+        {
+            var kind = message?.Kind?.Trim()?.ToLowerInvariant();
+            if (string.IsNullOrEmpty(kind)) continue;
+            var role = kind switch
+            {
+                "user" or "me" => "user",
+                "bot" or "ai" or "chatbot" or "assistant" => "assistant",
+                _ => null
+            };
+            if (role == null) continue;
+            messages.Add(new JsonObjectNode
+            {
+                { "role", role },
+                { "content", message.Message }
+            });
+        }
+
+        messages.Add(new JsonObjectNode
+        {
+            { "role", "user" },
+            { "content", context.UserMessage }
+        });
+        return new JsonObjectNode
+        {
+            { "messages", messages }
+        };
+    }
+
+    /// <summary>
+    /// Gets the source answer result.
+    /// </summary>
+    /// <param name="context">The context.</param>
+    /// <param name="json">The original JSON object.</param>
+    /// <returns>The source answer result.</returns>
+    protected virtual ChatCommandGuidanceSourceResult GetAnswer(ChatCommandGuidanceContext context, JsonObjectNode json)
+    {
+        if (json == null) return null;
+        context.Info.SetValue("response", json);
+        var data = json.TryGetArrayValue("choices")?.TryGetObjectValue(0)?.TryGetObjectValue("message");
+        if (data?.TryGetStringTrimmedValue("role", true)?.ToLowerInvariant() != "assistant")
+            return new(json.TryGetStringTrimmedValue("message") ?? json.TryGetStringTrimmedValue("msg"), false, "error");
+        return new(data.TryGetStringValue("content"), true, "bot");
+    }
+
+    /// <summary>
+    /// Creates a JSON HTTP client.
+    /// </summary>
+    /// <typeparam name="T">The type of response.</typeparam>
+    /// <param name="callback">An optional callback raised on data received.</param>
+    /// <returns>A new JSON HTTP client.</returns>
+    public virtual JsonHttpClient<T> CreateHttpClient<T>(Action<ReceivedEventArgs<T>> callback = null)
+    {
+        if (Client != null) return Client.Create(callback);
+        var client = new JsonHttpClient<T>();
+        if (callback != null) client.Received += (sender, ev) =>
+        {
+            callback(ev);
+        };
+        return client;
+    }
+}
+
+/// <summary>
+/// The engine to generate smart prompt for chat bot.
+/// </summary>
+public class ProxyChatCommandGuidanceEngine : BaseChatCommandGuidanceEngine
+{
+    /// <summary>
+    /// Initializes a new instance of the ProxyChatCommandGuidanceEngine class.
+    /// </summary>
+    /// <param name="topic">The chat topic.</param>
+    public ProxyChatCommandGuidanceEngine(ChatCommandGuidanceTopic topic)
+    {
+        Topic = topic;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the ProxyChatCommandGuidanceEngine class.
+    /// </summary>
+    /// <param name="client">The chat client.</param>
+    public ProxyChatCommandGuidanceEngine(BaseChatCommandGuidanceClient client)
+    {
+        Topic = client?.NewTopic();
+    }
+
+    /// <summary>
+    /// Gets the web client.
+    /// </summary>
+    protected ChatCommandGuidanceTopic Topic { get; }
+
+    /// <inheritdoc />
+    protected override async Task<ChatCommandGuidanceSourceResult> SendAsync(ChatCommandGuidanceContext context, string prompt, CancellationToken cancellationToken = default)
+    {
+        if (Topic == null) return null;
+        var resp = await Topic.SendAsync(context.UserMessage, context.UserMessageData, cancellationToken);
+        context.NextInfo.SetRange(resp.Info);
+        foreach (var details in resp.Details)
+        {
+            var json = context.GetAnswerData(details.Key, true);
+            json.SetRange(details.Value);
+        }
+
+        return new(resp.Message, true, resp.Kind);
+    }
+}
+
+/// <summary>
 /// The test engine for chat bot.
 /// </summary>
-internal class EmptyChatCommandGuidanceEngine : BaseChatCommandGuidanceEngine
+public class StaticChatCommandGuidanceEngine : BaseChatCommandGuidanceEngine
 {
+    private readonly List<ChatCommandGuidanceQnaItem> mock = new();
+
     /// <summary>
     /// Gets or sets the default answer result.
     /// </summary>
-    public ChatCommandGuidanceSourceResult DefaultAnswerResult { get; set; }
+    public ChatCommandGuidanceSourceResult DefaultAnswer { get; set; }
+
+    /// <summary>
+    /// Adds mock data.
+    /// </summary>
+    /// <param name="question">The question.</param>
+    /// <param name="answer">The answer.</param>
+    public void AddAnswer(string question, ChatCommandGuidanceSourceResult answer)
+        => mock.Add(new(question, answer));
+
+    /// <summary>
+    /// Adds mock data.
+    /// </summary>
+    /// <param name="question">The question.</param>
+    /// <param name="answer">The answer.</param>
+    public void AddAnswer(string question, string answer)
+        => mock.Add(new(question, new(answer, true, "mock")));
+
+    /// <summary>
+    /// Adds mock data.
+    /// </summary>
+    /// <param name="questions">The questions.</param>
+    /// <param name="answer">The answer.</param>
+    public void AddAnswer(IEnumerable<string> questions, ChatCommandGuidanceSourceResult answer)
+        => mock.Add(new(questions, answer));
+
+    /// <summary>
+    /// Adds mock data.
+    /// </summary>
+    /// <param name="questions">The questions.</param>
+    /// <param name="answer">The answer.</param>
+    public void AddAnswer(IEnumerable<string> questions, string answer)
+        => mock.Add(new(questions, new(answer, true, "mock")));
 
     /// <inheritdoc />
     protected override Task<ChatCommandGuidanceSourceResult> SendAsync(ChatCommandGuidanceContext context, string prompt, CancellationToken cancellationToken = default)
-        => Task.FromResult(DefaultAnswerResult ?? new ChatCommandGuidanceSourceResult(null, false, "error"));
+    {
+        ChatCommandGuidanceSourceResult answer = null;
+        foreach (var item in mock)
+        {
+            if (!item.Questions.Contains(context.UserMessage, StringComparer.CurrentCultureIgnoreCase)) continue;
+            answer = item.Answer;
+            break;
+        }
+
+        return Task.FromResult(answer ?? DefaultAnswer ?? new ChatCommandGuidanceSourceResult(null, false, "error"));
+    }
+}
+
+internal class ChatCommandGuidanceQnaItem
+{
+    public ChatCommandGuidanceQnaItem(string question, ChatCommandGuidanceSourceResult answer)
+    {
+        Questions = new()
+        {
+            question
+        };
+        Answer = answer;
+    }
+
+    public ChatCommandGuidanceQnaItem(IEnumerable<string> questions, ChatCommandGuidanceSourceResult answer)
+    {
+        Questions = questions.ToList();
+        Answer = answer;
+    }
+
+    public List<string> Questions { get; }
+
+    public ChatCommandGuidanceSourceResult Answer { get; }
 }
