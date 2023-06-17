@@ -26,7 +26,7 @@ public enum ChatMessageModificationKinds : byte
     Streaming = 1,
 
     /// <summary>
-    /// The message has been modified.
+    /// The message has been modified by sender.
     /// </summary>
     Modified = 2,
 
@@ -36,14 +36,19 @@ public enum ChatMessageModificationKinds : byte
     Collaborative = 3,
 
     /// <summary>
-    /// The message has been removed.
+    /// The message has been removed by sender.
     /// </summary>
     Removed = 5,
 
     /// <summary>
-    /// The message is banned.
+    /// The message is banned by system.
     /// </summary>
     Ban = 6,
+
+    /// <summary>
+    /// Others.
+    /// </summary>
+    Others = 15
 }
 
 /// <summary>

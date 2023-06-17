@@ -161,12 +161,12 @@ public class ChatCommandGuidanceContext
         => AnswerMessage = string.IsNullOrWhiteSpace(OriginalAnswerMessage) ? value : string.Concat(AnswerMessage, Environment.NewLine, additionalNewLine ? Environment.NewLine : string.Empty, value);
 
     /// <summary>
-    /// Gets the JSON object of response.
+    /// Gets the response message.
     /// </summary>
     /// <returns>The response JSON object.</returns>
     public ChatCommandGuidanceResponse GetResponse()
     {
-        var resp = new ChatCommandGuidanceResponse(AnswerMessage, AnswerData, NextInfo, MessageKind, request);
+        var resp = new ChatCommandGuidanceResponse(AnswerMessage, AnswerData, NextInfo, MessageKind, request, Id);
         foreach (var item in nextData)
         {
             resp.Details[item.Key] = item.Value;
@@ -174,6 +174,16 @@ public class ChatCommandGuidanceContext
 
         return resp;
     }
+
+    /// <summary>
+    /// Creates the response modification instance.
+    /// </summary>
+    /// <param name="message">The new message text.</param>
+    /// <param name="data">The additional data.</param>
+    /// <param name="kind">The modification kind.</param>
+    /// <returns>The response modification instance.</returns>
+    public ChatCommandGuidanceResponseModification CreateResponseModification(string message, JsonObjectNode data = null, ChatMessageModificationKinds kind = ChatMessageModificationKinds.Modified)
+        => new(Id, message, data, kind);
 
     /// <summary>
     /// Sets the answer message.

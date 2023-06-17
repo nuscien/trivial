@@ -32,6 +32,7 @@ public delegate Task<ChatCommandGuidanceRequest> ChatCommandGuidanceRequestSend(
 public abstract class BaseChatCommandGuidanceClient
 {
     private readonly Dictionary<string, BaseChatCommandGuidanceProvider> commands = new();
+    internal readonly List<SimpleChatMessage> history = new();
 
     /// <summary>
     /// Initializes a new instance of the BaseChatCommandGuidanceClient class.
@@ -40,6 +41,7 @@ public abstract class BaseChatCommandGuidanceClient
     protected BaseChatCommandGuidanceClient(UserItemInfo user)
     {
         User = user ?? new();
+        History = history.AsReadOnly();
     }
 
     /// <summary>
@@ -78,11 +80,6 @@ public abstract class BaseChatCommandGuidanceClient
     public UserItemInfo User { get; }
 
     /// <summary>
-    /// Gets the default message kind of request.
-    /// </summary>
-    protected internal virtual string RequestMessageKind { get; } = "user";
-
-    /// <summary>
     /// Gets the command collection.
     /// </summary>
     public ICollection<BaseChatCommandGuidanceProvider> Commands => commands.Values;
@@ -91,6 +88,16 @@ public abstract class BaseChatCommandGuidanceClient
     /// Gets the collection of all command key registered.
     /// </summary>
     public ICollection<string> CommandKeys => commands.Keys;
+
+    /// <summary>
+    /// Gets the chat history.
+    /// </summary>
+    public IList<SimpleChatMessage> History { get; }
+
+    /// <summary>
+    /// Gets the default message kind of request.
+    /// </summary>
+    protected internal virtual string RequestMessageKind { get; } = "user";
 
     /// <summary>
     /// Registers a command.
@@ -238,6 +245,9 @@ public abstract class BaseChatCommandGuidanceClient
     /// <param name="cancellationToken">The optional cancellation token.</param>
     /// <returns>The response message.</returns>
     protected internal abstract Task<ChatCommandGuidanceResponse> SendAsync(ChatCommandGuidanceRequest request, CancellationToken cancellationToken = default);
+
+    internal void AddHistory(SimpleChatMessage item)
+        => history.Add(item);
 
     internal void NotifySending(ChatCommandGuidanceMessageEventArgs args)
         => Sending?.Invoke(this, args);

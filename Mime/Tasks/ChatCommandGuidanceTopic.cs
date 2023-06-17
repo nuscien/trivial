@@ -133,7 +133,9 @@ public class ChatCommandGuidanceTopic
         Sending?.Invoke(this, args);
         client.NotifySending(args);
         LatestRequest = request;
-        history.Add(new SimpleChatMessage(user, message, DateTime.Now, client.RequestMessageKind, data));
+        var record = new SimpleChatMessage(user, message, DateTime.Now, client.RequestMessageKind, data);
+        history.Add(record);
+        client.AddHistory(record);
         client.OnSend(args);
         ChatCommandGuidanceResponse response;
         try
@@ -152,7 +154,9 @@ public class ChatCommandGuidanceTopic
         Received?.Invoke(this, args);
         client.NotifyReceived(args);
         LatestResponse = response;
-        history.Add(new SimpleChatMessage(user, response.Message, DateTime.Now, response.Kind, response.Data));
+        record = new SimpleChatMessage(user, response.Message, DateTime.Now, response.Kind, response.Data);
+        history.Add(record);
+        client.AddHistory(record);
         client.OnReceive(args);
         client.ProcessCommands(this, response);
         client.OnProcessed(args);

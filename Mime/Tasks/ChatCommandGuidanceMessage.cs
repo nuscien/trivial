@@ -160,7 +160,7 @@ public class ChatCommandGuidanceRequest
         return new()
         {
             { "sender", (JsonObjectNode)value.User },
-            { "trackig", value.TrackingId },
+            { "tracking", value.TrackingId },
             { "text", value.Message },
             { "data", value.Data },
             { "info", value.Info},
@@ -184,9 +184,10 @@ public class ChatCommandGuidanceResponse
     /// <param name="info">The information data for context.</param>
     /// <param name="kind">The message kind.</param>
     /// <param name="request">The request message.</param>
-    internal ChatCommandGuidanceResponse(string message, JsonObjectNode data, JsonObjectNode info = null, string kind = null, ChatCommandGuidanceRequest request = null)
+    /// <param name="id">The identifier.</param>
+    internal ChatCommandGuidanceResponse(string message, JsonObjectNode data, JsonObjectNode info = null, string kind = null, ChatCommandGuidanceRequest request = null, Guid? id = null)
     {
-        Id = Guid.NewGuid();
+        Id = id ?? Guid.NewGuid();
         RequestId = request?.Id ?? Guid.Empty;
         TrackingId = request?.TrackingId ?? Guid.NewGuid();
         Message = message;
@@ -199,7 +200,7 @@ public class ChatCommandGuidanceResponse
     /// <summary>
     /// Gets the message identifier.
     /// </summary>
-    public Guid Id { get; private set; }
+    public Guid Id { get; }
 
     /// <summary>
     /// Gets the identifier of request message.
@@ -253,9 +254,10 @@ public class ChatCommandGuidanceResponse
             value.TryGetStringValue("text") ?? value.TryGetStringValue("message"),
             value.TryGetObjectValue("data"),
             value.TryGetObjectValue("info"),
-            value.TryGetStringTrimmedValue("kind", true))
+            value.TryGetStringTrimmedValue("kind", true),
+            null,
+            value.TryGetGuidValue("id") ?? Guid.NewGuid())
         {
-            Id = value.TryGetGuidValue("id") ?? Guid.NewGuid(),
             RequestId = value.TryGetGuidValue("request") ?? Guid.Empty,
             ClientContextData = value.TryGetObjectValue("ref")
         };
@@ -280,12 +282,89 @@ public class ChatCommandGuidanceResponse
         return new()
         {
             { "id", value.Id },
-            { "trackig", value.TrackingId },
+            { "tracking", value.TrackingId },
             { "text", value.Message },
             { "data", value.Data },
             { "details", ChatCommandGuidanceHelper.ToJson(value.Details) },
             { "info", value.Info},
             { "ref", value.ClientContextData }
+        };
+    }
+}
+
+/// <summary>
+/// The response modification of chat command guidance.
+/// </summary>
+public class ChatCommandGuidanceResponseModification
+{
+    /// <summary>
+    /// Initializes a new instance of the ChatCommandGuidanceResponseModification class.
+    /// </summary>
+    /// <param name="response">The response message.</param>
+    /// <param name="message">The message text</param>
+    public ChatCommandGuidanceResponseModification(ChatCommandGuidanceResponse response, string message)
+    {
+        Id = response?.Id ?? Guid.NewGuid();
+        Data = response?.Data ?? new();
+        Message = message;
+        ModificationKind = message == null ? ChatMessageModificationKinds.Removed : ChatMessageModificationKinds.Modified;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the ChatCommandGuidanceResponseModification class.
+    /// </summary>
+    /// <param name="id">The identifier of the response message.</param>
+    /// <param name="message">The message text</param>
+    /// <param name="data">The message data.</param>
+    /// <param name="kind">The modification kind.</param>
+    public ChatCommandGuidanceResponseModification(Guid id, string message, JsonObjectNode data = null, ChatMessageModificationKinds kind = ChatMessageModificationKinds.Modified)
+    {
+        Id = id;
+        Data = data ?? new();
+        Message = message;
+        ModificationKind = kind;
+    }
+
+    /// <summary>
+    /// Gets the message identifier.
+    /// </summary>
+    public Guid Id { get; }
+
+    /// <summary>
+    /// Gets the creation data and time.
+    /// </summary>
+    public DateTime CreationTime { get; }
+
+    /// <summary>
+    /// Gets the message text.
+    /// </summary>
+    public string Message { get; }
+
+    /// <summary>
+    /// Gets the response data.
+    /// </summary>
+    public JsonObjectNode Data { get; }
+
+    /// <summary>
+    /// Gets the modification kind.
+    /// </summary>
+    public ChatMessageModificationKinds ModificationKind { get; }
+
+    /// <summary>
+    /// Converts to JSON object.
+    /// </summary>
+    /// <param name="value">The JSON value.</param>
+    /// <returns>A JSON object.</returns>
+    public static explicit operator JsonObjectNode(ChatCommandGuidanceResponseModification value)
+    {
+        if (value is null) return null;
+        return new()
+        {
+            { "id", value.Id },
+            { "text", value.Message },
+            { "data", value.Data },
+            { "created", value.CreationTime },
+            { "modify", value.ModificationKind.ToString() }
         };
     }
 }
