@@ -8,9 +8,9 @@
     <Product>Trivial</Product>
     <Authors>Kingcean Tuan</Authors>
     <Company>Nanchang Jinchen Software Co., Ltd.</Company>
-    <Version>7.1.0</Version>
-    <AssemblyVersion>7.1.0.0</AssemblyVersion>
-    <FileVersion>7.1.0.0</FileVersion>
+    <Version>7.2.0</Version>
+    <AssemblyVersion>7.2.0.0</AssemblyVersion>
+    <FileVersion>7.2.0.0</FileVersion>
     <Description>The rich user interface console controls and utilities.</Description>
     <Copyright>Copyright (c) 2018 Kingcean Tuan.</Copyright>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>

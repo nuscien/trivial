@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Security;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -333,9 +335,8 @@ public partial class ChemicalElement : IEquatable<ChemicalElement>
     {
         if (isotopes is null)
         {
-            var col = mass?.Select(ele => new Isotope(this, (int)Math.Round(ele), ele))?.ToList()
-                ?? new List<Isotope>();
-            if (isotopes is null) isotopes = col;
+            var col = mass?.Select(ele => new Isotope(this, (int)Math.Round(ele), ele))?.ToList() ?? new();
+            isotopes ??= col;
             mass = null;
         }
 
@@ -414,6 +415,22 @@ public partial class ChemicalElement : IEquatable<ChemicalElement>
     {
         var json = (JsonObjectNode)this;
         json.WriteTo(writer);
+    }
+
+    /// <summary>
+    /// Writes to file.
+    /// </summary>
+    /// <param name="file">The file to write.</param>
+    /// <param name="style">The indent style.</param>
+    /// <exception cref="IOException">IO exception.</exception>
+    /// <exception cref="SecurityException">Write failed because of security exception.</exception>
+    /// <exception cref="ArgumentNullException">The file path was null.</exception>
+    /// <exception cref="NotSupportedException">The file was not supported.</exception>
+    /// <exception cref="UnauthorizedAccessException">Write failed because of unauthorized access exception.</exception>
+    public void WriteTo(FileInfo file, IndentStyles style = IndentStyles.Minified)
+    {
+        var json = (JsonObjectNode)this;
+        json.WriteTo(file, style);
     }
 
     /// <summary>

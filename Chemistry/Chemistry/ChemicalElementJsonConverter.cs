@@ -29,13 +29,13 @@ sealed class ChemicalElementJsonConverter : JsonConverter<ChemicalElement>
         }
         catch (FormatException ex)
         {
-            throw new JsonException("Expect a valid element symbol or the atomic numbers.", ex);
+            throw new JsonException("Expect a valid chemical element symbol or the atomic numbers.", ex);
         }
 
         if (reader.TokenType == JsonTokenType.String)
             return ChemicalElement.Get(reader.GetString());
         if (reader.TokenType != JsonTokenType.StartObject) 
-            throw new JsonException("The format is not correct.", new FormatException("The value should be a date time JSON token format."));
+            throw new JsonException("The format is not correct. Expect a JSON object, a number or a string for the chemical element.", new FormatException("The value should be a JSON object token format."));
         var obj = new JsonObjectNode();
         obj.SetRange(ref reader);
         var z = obj.TryGetInt32Value("number") ?? obj.TryGetInt32Value("z");

@@ -68,6 +68,15 @@ public static class ChemistryExtensions
     }
 
     /// <summary>
+    /// Filters all elements in the specific period.
+    /// </summary>
+    /// <param name="source">The source collection.</param>
+    /// <param name="period">The period.</param>
+    /// <returns>A collection after filter.</returns>
+    public static IEnumerable<ChemicalElement> PeriodElements(this IEnumerable<ChemicalElement> source, int period)
+        => (source ?? new List<ChemicalElement>()).Where(ele => ele.Period == period);
+
+    /// <summary>
     /// Gets a value indicating whether an element is radioelement.
     /// </summary>
     /// <param name="element">The element to test</param>

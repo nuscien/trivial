@@ -1350,6 +1350,23 @@ public static class DefaultConsole
     /// It will flush immediately.
     /// </summary>
     /// <param name="json">The JSON instance.</param>
+    public static void WriteLine(IJsonObjectHost json)
+        => StyleConsole.Default.WriteLine(new JsonConsoleStyle().CreateTextCollection(json?.ToJson(), 0));
+
+    /// <summary>
+    /// Writes a JSON object, followed by the current line terminator, to the standard output stream.
+    /// It will flush immediately.
+    /// </summary>
+    /// <param name="style">The style.</param>
+    /// <param name="json">The JSON instance.</param>
+    public static void WriteLine(JsonConsoleStyle style, IJsonObjectHost json)
+        => StyleConsole.Default.WriteLine((style ?? new JsonConsoleStyle()).CreateTextCollection(json?.ToJson(), 0));
+
+    /// <summary>
+    /// Writes a JSON object, followed by the current line terminator, to the standard output stream.
+    /// It will flush immediately.
+    /// </summary>
+    /// <param name="json">The JSON instance.</param>
     public static void WriteLine(System.Text.Json.Nodes.JsonArray json)
         => StyleConsole.Default.WriteLine(new JsonConsoleStyle().CreateTextCollection(json == null ? null : (JsonArrayNode)json, 0));
 

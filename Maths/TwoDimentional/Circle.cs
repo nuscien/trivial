@@ -11,7 +11,7 @@ namespace Trivial.Maths;
 /// <summary>
 /// The relationship between 2 circles.
 /// </summary>
-public enum RelationshipBetweenCircles
+public enum RelationshipBetweenCircles : byte
 {
     /// <summary>
     /// Congruence.

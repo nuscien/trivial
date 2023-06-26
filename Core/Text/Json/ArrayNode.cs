@@ -2640,6 +2640,18 @@ public class JsonArrayNode : IJsonContainerNode, IJsonDataNode, IReadOnlyList<IJ
     /// <param name="index">The zero-based index of the element to get.</param>
     /// <param name="value">The value to set.</param>
     /// <exception cref="ArgumentOutOfRangeException">The index is out of range.</exception>
+    public void SetValue(int index, IJsonObjectHost value)
+    {
+        if (store.Count == index) store.Add(JsonValues.Null);
+        store[index] = value?.ToJson() ?? JsonValues.Null;
+    }
+
+    /// <summary>
+    /// Sets the value at the specific index.
+    /// </summary>
+    /// <param name="index">The zero-based index of the element to get.</param>
+    /// <param name="value">The value to set.</param>
+    /// <exception cref="ArgumentOutOfRangeException">The index is out of range.</exception>
     public void SetValue(int index, JsonElement value)
     {
         if (store.Count == index) store.Add(JsonValues.Null);
@@ -2902,6 +2914,13 @@ public class JsonArrayNode : IJsonContainerNode, IJsonDataNode, IReadOnlyList<IJ
     /// <param name="value">The value to set.</param>
     public void Add(JsonObjectNode value)
         => store.Add(value ?? JsonValues.Null);
+
+    /// <summary>
+    /// Adds a value.
+    /// </summary>
+    /// <param name="value">The value to set.</param>
+    public void Add(IJsonObjectHost value)
+        => store.Add(value?.ToJson() ?? JsonValues.Null);
 
     /// <summary>
     /// Adds a value.
@@ -3316,6 +3335,15 @@ public class JsonArrayNode : IJsonContainerNode, IJsonDataNode, IReadOnlyList<IJ
     /// <exception cref="ArgumentOutOfRangeException">The index was out of range.</exception>
     public void Insert(int index, JsonObjectNode value)
         => store.Insert(index, value ?? JsonValues.Null);
+
+    /// <summary>
+    /// Inserts the value at the specific index.
+    /// </summary>
+    /// <param name="index">The zero-based index of the element to get.</param>
+    /// <param name="value">The value to set.</param>
+    /// <exception cref="ArgumentOutOfRangeException">The index was out of range.</exception>
+    public void Insert(int index, IJsonObjectHost value)
+        => store.Insert(index, value?.ToJson() ?? JsonValues.Null);
 
     /// <summary>
     /// Inserts the value at the specific index.
@@ -3750,6 +3778,56 @@ public class JsonArrayNode : IJsonContainerNode, IJsonDataNode, IReadOnlyList<IJ
         if (predicate == null) return store.Select(ele => ele ?? JsonValues.Null);
         return store.Select(ele => ele ?? JsonValues.Null).Where(predicate);
     }
+
+    /// <summary>
+    /// Tries to get the first element of a sequence, or null if the sequence contains no elements.
+    /// </summary>
+    /// <param name="predicate">An optional function to test each source element for a condition; the second parameter of the function represents the index of the source element.</param>
+    /// <returns>the first element in the array; or null, if the array is empty.</returns>
+    public IJsonDataNode FirstOrDefault(Func<IJsonDataNode, bool> predicate = null)
+        => Where(predicate).FirstOrDefault();
+
+    /// <summary>
+    /// Tries to get the last element of a sequence, or null if the sequence contains no elements.
+    /// </summary>
+    /// <param name="predicate">An optional function to test each source element for a condition; the second parameter of the function represents the index of the source element.</param>
+    /// <returns>the last element in the array; or null, if the array is empty.</returns>
+    public IJsonDataNode LastOrDefault(Func<IJsonDataNode, bool> predicate = null)
+        => Where(predicate).LastOrDefault();
+
+    /// <summary>
+    /// Bypasses a specified number of elements in the array and then returns the remaining elements.
+    /// </summary>
+    /// <param name="count">The number of elements to skip before returning the remaining elements.</param>
+    /// <returns>A new enumerable collection that contains the elements that occur after the specified index in the array.</returns>
+    public IEnumerable<IJsonDataNode> Skip(int count)
+        => store.Select(ele => ele ?? JsonValues.Null).Skip(count);
+
+    /// <summary>
+    /// Gets a specified number of contiguous elements from the start of the array.
+    /// </summary>
+    /// <param name="count">The number of elements to return.</param>
+    /// <returns>A new enumerable collection that contains the specified number of elements from the start of the array.</returns>
+    public IEnumerable<IJsonDataNode> Take(int count)
+        => store.Select(ele => ele ?? JsonValues.Null).Take(count);
+
+#if NET6_0_OR_GREATER
+    /// <summary>
+    /// Gets a new enumerable collection that contains the elements from source with the last count elements of the array.
+    /// </summary>
+    /// <param name="count">The number of elements to omit from the end of the array.</param>
+    /// <returns>A new enumerable collection that contains the elements from source with the last count elements of the array.</returns>
+    public IEnumerable<IJsonDataNode> SkipLast(int count)
+        => store.Select(ele => ele ?? JsonValues.Null).SkipLast(count);
+
+    /// <summary>
+    /// Gets a new enumerable collection that contains the last count elements from the array.
+    /// </summary>
+    /// <param name="count">The number of elements to return.</param>
+    /// <returns>A new enumerable collection that contains the last count elements from the array.</returns>
+    public IEnumerable<IJsonDataNode> TakeLast(int count)
+        => store.Select(ele => ele ?? JsonValues.Null).TakeLast(count);
+#endif
 
     /// <summary>
     /// Filters the elements of the JSON array based on a specific type.

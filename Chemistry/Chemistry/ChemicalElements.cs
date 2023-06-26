@@ -246,6 +246,14 @@ public partial class ChemicalElement
         }
     }
 
+    /// <summary>
+    /// Filters all elements in the specific period.
+    /// </summary>
+    /// <param name="period">The period.</param>
+    /// <returns>A collection after filter.</returns>
+    public static IEnumerable<ChemicalElement> PeriodElements(int period)
+        => periodicTable.Where(ele => ele.Period == period);
+
     internal static bool Has(int number)
     {
         if (number < 1) return false;

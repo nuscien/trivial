@@ -96,6 +96,15 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     /// <summary>
     /// Initializes a new instance of the JsonObjectNode class.
     /// </summary>
+    /// <param name="reader">The UTF8 JSON reader to read from.</param>
+    internal JsonObjectNode(ref Utf8JsonReader reader)
+    {
+        SetRange(ref reader);
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the JsonObjectNode class.
+    /// </summary>
     /// <param name="copy">Properties to initialzie.</param>
     /// <param name="threadSafe">true if enable thread-safe; otherwise, false.</param>
     private JsonObjectNode(IDictionary<string, IJsonDataNode> copy, bool threadSafe = false)
@@ -3876,6 +3885,18 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     /// <param name="key">The property key.</param>
     /// <param name="value">The value to set.</param>
     /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+    public void SetValue(string key, IJsonObjectHost value)
+    {
+        AssertKey(key);
+        store[key] = value?.ToJson() ?? JsonValues.Null;
+    }
+
+    /// <summary>
+    /// Sets the value of the specific property.
+    /// </summary>
+    /// <param name="key">The property key.</param>
+    /// <param name="value">The value to set.</param>
+    /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
     public void SetValue(string key, JsonDocument value)
     {
         AssertKey(key);
@@ -5034,6 +5055,16 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     /// </summary>
     /// <param name="key">The property key.</param>
     /// <param name="value">The value of the property.</param>
+    /// <exception cref="ArgumentNullException">key is null.</exception>
+    /// <exception cref="ArgumentException">An element with the same key already exists in the JSON object.</exception>
+    public void Add(string key, IJsonObjectHost value)
+        => store.Add(key, value?.ToJson() ?? JsonValues.Null);
+
+    /// <summary>
+    /// Adds a property with the provided key and value to the JSON object.
+    /// </summary>
+    /// <param name="key">The property key.</param>
+    /// <param name="value">The value of the property.</param>
     /// <param name="clone">true if clone the value before adding; otherwise, false.</param>
     /// <exception cref="ArgumentNullException">key is null.</exception>
     /// <exception cref="ArgumentException">An element with the same key already exists in the JSON object.</exception>
@@ -5610,6 +5641,23 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     public void WriteTo(string path, IndentStyles style = IndentStyles.Minified)
         => File.WriteAllText(path, ToString(style) ?? "null", Encoding.UTF8);
 
+    /// <summary>
+    /// Writes to file.
+    /// </summary>
+    /// <param name="file">The file to write.</param>
+    /// <param name="style">The indent style.</param>
+    /// <exception cref="IOException">IO exception.</exception>
+    /// <exception cref="SecurityException">Write failed because of security exception.</exception>
+    /// <exception cref="ArgumentNullException">The file path was null.</exception>
+    /// <exception cref="NotSupportedException">The file was not supported.</exception>
+    /// <exception cref="UnauthorizedAccessException">Write failed because of unauthorized access exception.</exception>
+    public void WriteTo(FileInfo file, IndentStyles style = IndentStyles.Minified)
+    {
+        if (file == null) throw new ArgumentNullException(nameof(file), "file should not be null.");
+        File.WriteAllText(file.FullName, ToString(style) ?? "null", Encoding.UTF8);
+        file.Refresh();
+    }
+
 #if NET6_0_OR_GREATER
     /// <summary>
     /// Writes to file.
@@ -5627,6 +5675,100 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     public Task WriteToAsync(string path, IndentStyles style = IndentStyles.Minified, CancellationToken cancellationToken = default)
         => File.WriteAllTextAsync(path, ToString(style) ?? "null", Encoding.UTF8, cancellationToken);
 #endif
+
+    /// <summary>
+    /// Tries to write to a file.
+    /// </summary>
+    /// <param name="path">The path of the file. If the target file already exists, it is overwritten.</param>
+    /// <param name="style">The indent style.</param>
+    /// <returns>true if write succeeded; otherwise, false.</returns>
+    public bool TryWriteTo(string path, IndentStyles style = IndentStyles.Minified)
+    {
+        try
+        {
+            WriteTo(path, style);
+            return true;
+        }
+        catch (ArgumentException)
+        {
+        }
+        catch (InvalidOperationException)
+        {
+        }
+        catch (IOException)
+        {
+        }
+        catch (JsonException)
+        {
+        }
+        catch (NotSupportedException)
+        {
+        }
+        catch (NotImplementedException)
+        {
+        }
+        catch (UnauthorizedAccessException)
+        {
+        }
+        catch (SecurityException)
+        {
+        }
+        catch (ApplicationException)
+        {
+        }
+        catch (ExternalException)
+        {
+        }
+
+        return false;
+    }
+
+    /// <summary>
+    /// Tries to write to a file.
+    /// </summary>
+    /// <param name="file">The file to save.</param>
+    /// <param name="style">The indent style.</param>
+    /// <returns>true if write succeeded; otherwise, false.</returns>
+    public bool TryWriteTo(FileInfo file, IndentStyles style = IndentStyles.Minified)
+    {
+        try
+        {
+            WriteTo(file, style);
+            return true;
+        }
+        catch (ArgumentException)
+        {
+        }
+        catch (InvalidOperationException)
+        {
+        }
+        catch (IOException)
+        {
+        }
+        catch (JsonException)
+        {
+        }
+        catch (NotSupportedException)
+        {
+        }
+        catch (NotImplementedException)
+        {
+        }
+        catch (UnauthorizedAccessException)
+        {
+        }
+        catch (SecurityException)
+        {
+        }
+        catch (ApplicationException)
+        {
+        }
+        catch (ExternalException)
+        {
+        }
+
+        return false;
+    }
 
     /// <summary>
     /// Gets the JSON format string of the value.
@@ -6190,7 +6332,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     /// <returns>true if the kind is the one expected; otherwise, false.</returns>
     bool IJsonDataNode.TryGetSingle(out float result)
     {
-        result = 0;
+        result = float.NaN;
         return false;
     }
 
@@ -6201,7 +6343,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     /// <returns>true if the kind is the one expected; otherwise, false.</returns>
     bool IJsonDataNode.TryGetDouble(out double result)
     {
-        result = 0;
+        result = double.NaN;
         return false;
     }
 
@@ -6644,6 +6786,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     {
         try
         {
+            if (file == null || !file.Exists) return null;
             using var stream = file.OpenRead();
             return Parse(stream, options);
         }
@@ -6727,6 +6870,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
         if (obj is string str) return Parse(str);
         if (obj is StringBuilder sb) return Parse(sb.ToString());
         if (obj is System.Text.Json.Nodes.JsonObject jo) return jo;
+        if (obj is IJsonObjectHost jh) return jh.ToJson();
         if (obj is Stream stream) return Parse(stream);
         if (obj is IEnumerable<KeyValuePair<string, object>> dict)
         {

@@ -98,3 +98,37 @@ class JsonAttributeTestModel
 
     public Maths.Angle W { get; set; }
 }
+
+#if NET7_0_OR_GREATER
+[JsonConverter(typeof(JsonObjectHostConverter))]
+#endif
+class JsonHostTestModel : IJsonObjectHost
+{
+    public JsonHostTestModel()
+    {
+    }
+
+    public JsonHostTestModel(JsonObjectNode json)
+    {
+        if (json == null) return;
+        Name = json.TryGetStringValue("n");
+        Value = json.TryGetStringValue("v");
+    }
+
+    public JsonHostTestModel(string name, string value)
+    {
+        Name = name;
+        Value = value;
+    }
+
+    public string Name { get; set; }
+
+    public string Value { get; set; }
+
+    public JsonObjectNode ToJson()
+        => new()
+        {
+            { "n", Name },
+            { "v", Value }
+        };
+}

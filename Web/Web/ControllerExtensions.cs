@@ -28,6 +28,7 @@ namespace Trivial.Web;
 /// </summary>
 public static class ControllerExtensions
 {
+    private const string NullString = "null";
     private static MethodInfo method;
 
     /// <summary>
@@ -477,7 +478,7 @@ public static class ControllerExtensions
         {
             ContentType = WebFormat.JsonMIME,
             StatusCode = 200,
-            Content = value?.ToString() ?? "null"
+            Content = value?.ToString() ?? NullString
         };
 
     /// <summary>
@@ -490,7 +491,20 @@ public static class ControllerExtensions
         {
             ContentType = WebFormat.JsonMIME,
             StatusCode = 200,
-            Content = value?.ToString() ?? "null"
+            Content = value?.ToString() ?? NullString
+        };
+
+    /// <summary>
+    /// Convert to an action result.
+    /// </summary>
+    /// <param name="value">The value.</param>
+    /// <returns>The action result.</returns>
+    public static ContentResult ToActionResult(this IJsonObjectHost value)
+        => new()
+        {
+            ContentType = WebFormat.JsonMIME,
+            StatusCode = 200,
+            Content = value?.ToJson()?.ToString() ?? NullString
         };
 
     /// <summary>
@@ -503,7 +517,7 @@ public static class ControllerExtensions
         {
             ContentType = WebFormat.JsonMIME,
             StatusCode = 200,
-            Content = value?.ToJsonString() ?? "null"
+            Content = value?.ToJsonString() ?? NullString
         };
 
     /// <summary>
@@ -516,7 +530,7 @@ public static class ControllerExtensions
         {
             ContentType = WebFormat.JsonMIME,
             StatusCode = 200,
-            Content = value?.ToJsonString() ?? "null"
+            Content = value?.ToJsonString() ?? NullString
         };
 
     /// <summary>

@@ -288,9 +288,7 @@ public sealed class JsonObjectNodeConverter : JsonConverter<IJsonValueNode>
                 if (typeToConvert == typeof(IJsonValueNode)) return JsonValues.Null;
                 return null;
             case JsonTokenType.StartObject:
-                var obj = new JsonObjectNode();
-                obj.SetRange(ref reader);
-                return obj;
+                return new JsonObjectNode(ref reader);
             case JsonTokenType.StartArray:
                 var arr = JsonArrayNode.ParseValue(ref reader);
                 if (arr is null) return null;
@@ -371,3 +369,46 @@ public sealed class JsonObjectNodeConverter : JsonConverter<IJsonValueNode>
         else writer.WriteNullValue();
     }
 }
+
+#if NET7_0_OR_GREATER || NET462_OR_GREATER
+/// <summary>
+/// JSON object node and JSON array node converter.
+/// </summary>
+public sealed class JsonObjectHostConverter : JsonConverter<IJsonObjectHost>
+{
+    private readonly static JsonConverter<IJsonObjectHost> defaultConverter = (JsonConverter<IJsonObjectHost>)JsonSerializerOptions.Default.GetConverter(typeof(IJsonObjectHost));
+
+    /// <inheritdoc />
+    public override bool CanConvert(Type typeToConvert)
+    {
+        return typeof(IJsonObjectHost).IsAssignableFrom(typeToConvert);
+    }
+
+    /// <inheritdoc />
+    public override IJsonObjectHost Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    {
+        switch (reader.TokenType)
+        {
+            case JsonTokenType.Null:
+                return default;
+            case JsonTokenType.StartObject:
+                if (typeToConvert.IsInterface) throw new NotSupportedException();
+                var constructor = typeToConvert.GetConstructor(new[] { typeof(JsonObjectNode), typeof(JsonSerializerOptions) });
+                if (constructor != null) return (IJsonObjectHost)constructor.Invoke(new object[] { new JsonObjectNode(ref reader), options });
+                constructor = typeToConvert.GetConstructor(new[] { typeof(JsonObjectNode) });
+                if (constructor != null) return (IJsonObjectHost)constructor.Invoke(new[] { new JsonObjectNode(ref reader) });
+                return defaultConverter.Read(ref reader, typeToConvert, options);
+            default:
+                throw new JsonException($"The token type is {reader.TokenType} but expect JSON object or null for {typeToConvert}.");
+        }
+    }
+
+    /// <inheritdoc />
+    public override void Write(Utf8JsonWriter writer, IJsonObjectHost value, JsonSerializerOptions options)
+    {
+        var json = value?.ToJson();
+        if (json is null) writer.WriteNullValue();
+        json.WriteTo(writer);
+    }
+}
+#endif

@@ -347,6 +347,21 @@ public class JsonUnitTest
         Assert.AreEqual(2, j3.AsObject().Count);
         j3 = Serialize<System.Text.Json.Nodes.JsonNode>("[ 123, 456 ]");
         Assert.AreEqual(2, j3.AsArray().Count);
+
+        var host = new JsonHostTestModel("Test", "JSON");
+        json.SetValue("host", host);
+        Assert.AreEqual("Test", json.TryGetStringValue(new[] { "host", "n" }));
+#if NET7_0_OR_GREATER
+        host = JsonSerializer.Deserialize<JsonHostTestModel>(JsonSerializer.Serialize(host));
+        json.SetValue("host", host);
+        Assert.AreEqual("JSON", json.TryGetValue<string>("host", "v"));
+#endif
+        var hostService = new JsonObjectHostService(json);
+        host = hostService.TryGetValue<JsonHostTestModel>("host");
+        host.Name = "Right";
+        Assert.AreEqual("Test", json.GetObjectValue("host").TryGetStringTrimmedValue("n", true));
+        hostService.SyncToParent();
+        Assert.AreEqual("Right", json.GetObjectValue("host").TryGetStringTrimmedValue("n"));
     }
 
     /// <summary>
