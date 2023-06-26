@@ -229,6 +229,8 @@ public static partial class WebFormat
             "av1" => "video/av1",
             "av2" => "video/av2",
             "av3" => "video/av3",
+            "avs3" => "video/avs3",
+            "avs4" => "video/avs4",
             "jpgv" => "video/jpeg",
             "jpm" or "jpgm" => "video/jpm",
             "ogv" => "video/ogg",
@@ -270,6 +272,7 @@ public static partial class WebFormat
 
             // Web
             "json" or "map" => JsonMIME,
+            "jsonl" => "application/jsonl",
             "xml" or "xsl" or "xsf" or "xsd" or "config" or "xslt" or "mno" or "vml" or "wsdl" or "disco" => XmlMIME,
             "yaml" or "yml" => YamlMIME,
             "epub" => "application/epub+zip",

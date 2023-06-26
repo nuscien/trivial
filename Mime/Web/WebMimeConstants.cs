@@ -73,6 +73,11 @@ public static partial class MimeConstants
         public const string Json = "application/json";
 
         /// <summary>
+        /// The MIME content type of JSON lines.
+        /// </summary>
+        public const string Jsonl = "application/jsonl";
+
+        /// <summary>
         /// The MIME content type of YAML (YAML Ain't Markup Language).
         /// </summary>
         public const string Yaml = "application/x-yaml";

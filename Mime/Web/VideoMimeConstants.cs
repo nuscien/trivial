@@ -18,7 +18,12 @@ public static partial class MimeConstants
         public const string Avi = "video/x-msvideo";
 
         /// <summary>
-        /// The MIME content type of H.255 (High Efficiency Video Coding).
+        /// The MIME content type of H.264 (Advanced Video Coding).
+        /// </summary>
+        public const string Avc = "video/h264";
+
+        /// <summary>
+        /// The MIME content type of H.265 (High Efficiency Video Coding).
         /// </summary>
         public const string Hevc = "video/h265";
 
@@ -33,14 +38,34 @@ public static partial class MimeConstants
         public const string H267 = "video/h267";
 
         /// <summary>
-        /// The MIME content type of AV1.
+        /// The MIME content type of H.268.
+        /// </summary>
+        public const string H268 = "video/h268";
+
+        /// <summary>
+        /// The MIME content type of AV1, a video format by Alliance of Open Media.
         /// </summary>
         public const string Av1 = "video/av1";
 
         /// <summary>
-        /// The MIME content type of AV2.
+        /// The MIME content type of AV2, a video format by Alliance of Open Media.
         /// </summary>
         public const string Av2 = "video/av2";
+
+        /// <summary>
+        /// The MIME content type of AV3, a video format by Alliance of Open Media.
+        /// </summary>
+        public const string Av3 = "video/av3";
+
+        /// <summary>
+        /// The MIME content type of AVS3.
+        /// </summary>
+        public const string Avs3 = "video/avs3";
+
+        /// <summary>
+        /// The MIME content type of AVS4.
+        /// </summary>
+        public const string Avs4 = "video/avs4";
 
         /// <summary>
         /// The MIME content type of JPEG Video.
