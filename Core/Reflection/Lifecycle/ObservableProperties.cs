@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Runtime.Serialization;
+using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Trivial.Text;
@@ -282,6 +283,7 @@ public abstract class BaseObservableProperties : INotifyPropertyChanged
         if (v is JsonArrayNode arr) return options?.WriteIndented == true ? arr.ToString(IndentStyles.Compact) : arr.ToString();
         if (v is System.Text.Json.Nodes.JsonNode node) return node.ToJsonString(options);
         if (v is JsonDocument jDoc) return jDoc.RootElement.ToString();
+        if (v is IJsonObjectHost joh) return joh.ToJson()?.ToString();
         if (v is Net.QueryData q) return q.ToString();
         if (v is Uri u) return u.OriginalString;
         if (v.GetType().IsValueType)
@@ -289,8 +291,8 @@ public abstract class BaseObservableProperties : INotifyPropertyChanged
             if (v is bool b) return b ? JsonBooleanNode.TrueString : JsonBooleanNode.FalseString;
             if (v is int i) return i.ToString("g");
             if (v is long l) return l.ToString("g");
-            if (v is float f) return f.ToString("g");
-            if (v is double d) return d.ToString("g");
+            if (v is float f) return float.IsNaN(f) ? null : f.ToString("g");
+            if (v is double d) return double.IsNaN(d) ? null : d.ToString("g");
             if (v is decimal d2) return d2.ToString("g");
             if (v is Guid g) return g.ToString();
             if (v is DateTime dt) return JsonStringNode.ToJson(dt);
@@ -300,6 +302,7 @@ public abstract class BaseObservableProperties : INotifyPropertyChanged
             if (v is ulong ul) return ul.ToString("g");
         }
 
+        if (v is StringBuilder sb) return sb.ToString();
         return JsonSerializer.Serialize(v, options);
     }
 

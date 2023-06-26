@@ -9,7 +9,7 @@ namespace Trivial.Users;
 /// <summary>
 /// Genders.
 /// </summary>
-public enum Genders
+public enum Genders : byte
 {
     /// <summary>
     /// Unknown (or secret).
