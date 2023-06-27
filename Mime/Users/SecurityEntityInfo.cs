@@ -14,7 +14,7 @@ namespace Trivial.Users;
 /// <summary>
 /// The user item information.
 /// </summary>
-public abstract class BaseSecurityEntityInfo : ObservableProperties, IJsonObjectHost
+public abstract class BaseSecurityEntityInfo : BaseResourceObservableProperties, IJsonObjectHost
 {
     /// <summary>
     /// Initializes a new instance of the BaseSecurityEntityInfo class.
@@ -71,8 +71,8 @@ public abstract class BaseSecurityEntityInfo : ObservableProperties, IJsonObject
 
         SecurityEntityType = typeConverter?.Invoke(json) ?? defaultType;
         Id = json.TryGetStringTrimmedValue("id", true) ?? json.Id;
-        Nickname = json.TryGetStringTrimmedValue("nickname", true);
-        AvatarUri = json.TryGetUriValue("avatar");
+        Nickname = json.TryGetStringTrimmedValue("nickname", true) ?? json.TryGetStringTrimmedValue("name", true);
+        AvatarUri = json.TryGetUriValue("avatar") ?? json.TryGetUriValue("icon");
         if (json.TryGetBooleanValue("_raw") != false) SetProperty("_raw", json);
     }
 
@@ -80,15 +80,6 @@ public abstract class BaseSecurityEntityInfo : ObservableProperties, IJsonObject
     /// Gets the security entity type.
     /// </summary>
     public SecurityEntityTypes SecurityEntityType { get; }
-
-    /// <summary>
-    /// Gets or sets the identifier.
-    /// </summary>
-    public string Id
-    {
-        get => GetCurrentProperty<string>();
-        set => SetCurrentProperty(value);
-    }
 
     /// <summary>
     /// Gets or sets the nickname.
@@ -109,6 +100,12 @@ public abstract class BaseSecurityEntityInfo : ObservableProperties, IJsonObject
     }
 
     /// <summary>
+    /// Gets the raw JSON object for reference.
+    /// The value is null if no such data.
+    /// </summary>
+    protected JsonObjectNode RawJson => base.GetProperty<JsonObjectNode>("_raw");
+
+    /// <summary>
     /// Converts to JSON object.
     /// </summary>
     /// <returns>A JSON object.</returns>
@@ -119,6 +116,26 @@ public abstract class BaseSecurityEntityInfo : ObservableProperties, IJsonObject
             { "nickname", Nickname },
             { "avatar", AvatarUri?.OriginalString },
         };
+
+    /// <summary>
+    /// Gets a property value.
+    /// </summary>
+    /// <typeparam name="T">The type of the property value.</typeparam>
+    /// <param name="key">The key.</param>
+    /// <param name="defaultValue">The default value.</param>
+    /// <returns>A property value.</returns>
+    public new T GetProperty<T>(string key, T defaultValue = default)
+        => base.GetProperty(key, defaultValue);
+
+    /// <summary>
+    /// Gets a property value.
+    /// </summary>
+    /// <typeparam name="T">The type of the property value.</typeparam>
+    /// <param name="key">The key.</param>
+    /// <param name="result">The property value.</param>
+    /// <returns>true if contains; otherwise, false.</returns>
+    public new bool GetProperty<T>(string key, out T result)
+        => base.GetProperty(key, out result);
 
     /// <summary>
     /// Converts to JSON object.

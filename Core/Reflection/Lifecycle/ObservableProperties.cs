@@ -7,6 +7,7 @@ using System.Runtime.Serialization;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using System.Xml.Linq;
 using Trivial.Text;
 
 namespace Trivial.Reflection;
@@ -74,7 +75,7 @@ public abstract class BaseObservableProperties : INotifyPropertyChanged
     protected void InitializeProperty<T>(string key, Func<T> initializer)
     {
         if (initializer is null || cache.ContainsKey(key)) return;
-        cache[key] = initializer();
+        SetPropertyInternal(key, initializer());
     }
 
     /// <summary>
@@ -122,7 +123,7 @@ public abstract class BaseObservableProperties : INotifyPropertyChanged
         if (cache.TryGetValue(key, out var v) && v == value) return false;
         if (PropertiesSettingPolicy == PropertySettingPolicies.Allow)
         {
-            cache[key] = value;
+            if (!SetPropertyInternal(key, value)) return false;
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(key));
             return true;
         }
@@ -143,7 +144,10 @@ public abstract class BaseObservableProperties : INotifyPropertyChanged
         if (string.IsNullOrWhiteSpace(key)) return defaultValue;
         try
         {
-            return cache.TryGetValue(key, out var v) ? (T)v : defaultValue;
+            return cache.TryGetValue(key, out var v) && v is T t ? t : defaultValue;
+        }
+        catch (InvalidOperationException)
+        {
         }
         catch (InvalidCastException)
         {
@@ -169,11 +173,14 @@ public abstract class BaseObservableProperties : INotifyPropertyChanged
     {
         try
         {
-            if (!string.IsNullOrWhiteSpace(key) && cache.TryGetValue(key, out var v))
+            if (!string.IsNullOrWhiteSpace(key) && cache.TryGetValue(key, out var v) && v is T t)
             {
-                result = (T)v;
+                result = t;
                 return true;
             }
+        }
+        catch (InvalidOperationException)
+        {
         }
         catch (InvalidCastException)
         {
@@ -207,7 +214,7 @@ public abstract class BaseObservableProperties : INotifyPropertyChanged
         if (cache.TryGetValue(key, out var v) && v == value) return false;
         if (PropertiesSettingPolicy == PropertySettingPolicies.Allow)
         {
-            cache[key] = value;
+            if (!SetPropertyInternal(key, value)) return false;
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(key));
             return true;
         }
@@ -215,6 +222,15 @@ public abstract class BaseObservableProperties : INotifyPropertyChanged
         if (PropertiesSettingPolicy == PropertySettingPolicies.Skip) return false;
         throw new InvalidOperationException("Forbid to set property.");
     }
+
+    /// <summary>
+    /// Test whether the new property to set is valid.
+    /// </summary>
+    /// <param name="key">The property key.</param>
+    /// <param name="value">The value of the property to set.</param>
+    /// <returns>true if the property is valid; otherwise, false.</returns>
+    protected virtual bool IsPropertyValid(string key, object value)
+        => true;
 
     /// <summary>
     /// Removes a property.
@@ -333,6 +349,42 @@ public abstract class BaseObservableProperties : INotifyPropertyChanged
     /// <returns>An enumerator that can be used to iterate through the collection.</returns>
     protected IEnumerator<KeyValuePair<string, object>> EnumerateObject()
         => cache.GetEnumerator();
+
+    /// <summary>
+    /// Sets the property.
+    /// </summary>
+    /// <param name="key">The property key.</param>
+    /// <param name="value">The value of the property to set.</param>
+    /// <returns>true if set succeeded; otherwise, false.</returns>
+    private bool SetPropertyInternal(string key, object value)
+    {
+        try
+        {
+            if (!IsPropertyValid(key, value)) return false;
+            cache[key] = value;
+            return true;
+        }
+        catch (ArgumentException)
+        {
+        }
+        catch (InvalidOperationException)
+        {
+        }
+        catch (NotSupportedException)
+        {
+        }
+        catch (UnauthorizedAccessException)
+        {
+        }
+        catch (NullReferenceException)
+        {
+        }
+        catch (ApplicationException)
+        {
+        }
+
+        return false;
+    }
 }
 
 /// <summary>
@@ -425,9 +477,28 @@ public class ObservableProperties : BaseObservableProperties
 /// <summary>
 /// The model with observable name and value.
 /// </summary>
+/// <typeparam name="T">The type of the value.</typeparam>
 [DataContract]
 public class NameValueObservableProperties<T> : BaseObservableProperties
 {
+    /// <summary>
+    /// Initializes a new instance of the NameValueObservableProperties class.
+    /// </summary>
+    public NameValueObservableProperties()
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the NameValueObservableProperties class.
+    /// </summary>
+    /// <param name="name">The name.</param>
+    /// <param name="value">The value.</param>
+    public NameValueObservableProperties(string name, T value)
+    {
+        Name = name;
+        Value = value;
+    }
+
     /// <summary>
     /// Gets or sets the name.
     /// </summary>
@@ -447,6 +518,40 @@ public class NameValueObservableProperties<T> : BaseObservableProperties
     public T Value
     {
         get => GetCurrentProperty<T>();
+        set => SetCurrentProperty(value);
+    }
+}
+
+/// <summary>
+/// The model with observable identifier.
+/// </summary>
+[DataContract]
+public class BaseResourceObservableProperties : BaseObservableProperties
+{
+    /// <summary>
+    /// Initializes a new instance of the BaseResourceObservableProperties class.
+    /// </summary>
+    public BaseResourceObservableProperties()
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the BaseResourceObservableProperties class.
+    /// </summary>
+    /// <param name="id">The identifier.</param>
+    public BaseResourceObservableProperties(string id)
+    {
+        Id = id;
+    }
+
+    /// <summary>
+    /// Gets or sets the identifier.
+    /// </summary>
+    [DataMember(Name = "id")]
+    [JsonPropertyName("id")]
+    public string Id
+    {
+        get => GetCurrentProperty<string>();
         set => SetCurrentProperty(value);
     }
 }

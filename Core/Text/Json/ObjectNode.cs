@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -12,6 +13,7 @@ using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 
+using Trivial.Data;
 using Trivial.Maths;
 using Trivial.Reflection;
 using Trivial.Web;
@@ -90,6 +92,10 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
             {
                 SetValue(prop.Name, arr2);
             }
+            else if (prop.Value is IJsonObjectHost json3)
+            {
+                SetValue(prop.Name, json3.ToJson());
+            }
         }
     }
 
@@ -116,6 +122,11 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
             store[ele.Key] = ele.Value;
         }
     }
+
+    /// <summary>
+    /// Adds or removes the event handler raised on property changed.
+    /// </summary>
+    public event KeyValueEventHandler<string, IJsonDataNode> PropertyChanged;
 
     /// <summary>
     /// Gets the type of the current JSON value.
@@ -196,7 +207,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     public IJsonDataNode this[string key]
     {
         get => GetValue(key);
-        set => store[key] = JsonValues.ConvertValue(value, this);
+        set => SetProperty(key, JsonValues.ConvertValue(value, this));
     }
 
     /// <summary>
@@ -210,7 +221,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     IJsonValueNode IDictionary<string, IJsonValueNode>.this[string key]
     {
         get => GetValue(key);
-        set => store[key] = JsonValues.ConvertValue(value, this);
+        set => SetProperty(key, JsonValues.ConvertValue(value, this));
     }
 
     /// <summary>
@@ -3484,7 +3495,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     public bool Remove(string key)
     {
         AssertKey(key);
-        return store.Remove(key);
+        return RemoveProperty(key);
     }
 
     /// <summary>
@@ -3496,7 +3507,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     public bool Remove(ReadOnlySpan<char> key)
     {
         if (key == null) throw new ArgumentNullException(nameof(key), "key was null.");
-        return store.Remove(key.ToString());
+        return RemoveProperty(key.ToString());
     }
 
     /// <summary>
@@ -3510,7 +3521,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
         foreach (var key in keys)
         {
             if (string.IsNullOrEmpty(key)) continue;
-            if (store.Remove(key)) count++;
+            if (RemoveProperty(key)) count++;
         }
 
         return count;
@@ -3524,7 +3535,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     public void SetNullValue(string key)
     {
         AssertKey(key);
-        store[key] = JsonValues.Null;
+        SetProperty(key, JsonValues.Null);
     }
 
     /// <summary>
@@ -3536,7 +3547,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     public void SetValue(string key, DBNull _)
     {
         AssertKey(key);
-        store[key] = JsonValues.Null;
+        SetProperty(key, JsonValues.Null);
     }
 
     /// <summary>
@@ -3548,8 +3559,8 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     public void SetValue(string key, string value)
     {
         AssertKey(key);
-        if (value == null) store[key] = JsonValues.Null;
-        else store[key] = new JsonStringNode(value);
+        if (value == null) SetProperty(key, JsonValues.Null);
+        else SetProperty(key, new JsonStringNode(value));
     }
 
     /// <summary>
@@ -3561,8 +3572,8 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     public void SetValue(string key, char[] value)
     {
         AssertKey(key);
-        if (value == null) store[key] = JsonValues.Null;
-        else store[key] = new JsonStringNode(value);
+        if (value == null) SetProperty(key, JsonValues.Null);
+        else SetProperty(key, new JsonStringNode(value));
     }
 
     /// <summary>
@@ -3583,8 +3594,8 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     public void SetValue(string key, SecureString value)
     {
         AssertKey(key);
-        if (value == null) store[key] = JsonValues.Null;
-        else store[key] = new JsonStringNode(value);
+        if (value == null) SetProperty(key, JsonValues.Null);
+        else SetProperty(key, new JsonStringNode(value));
     }
 
     /// <summary>
@@ -3597,7 +3608,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     public void SetFormatValue(string key, string value, params object[] args)
     {
         AssertKey(key);
-        store[key] = new JsonStringNode(string.Format(value, args));
+        SetProperty(key, new JsonStringNode(string.Format(value, args)));
     }
 
     /// <summary>
@@ -3609,7 +3620,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     public void SetValue(string key, Guid value)
     {
         AssertKey(key);
-        store[key] = new JsonStringNode(value);
+        SetProperty(key, new JsonStringNode(value));
     }
 
     /// <summary>
@@ -3626,13 +3637,13 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
             switch (data.ValueKind)
             {
                 case JsonValueKind.Number:
-                    store[key] = new JsonIntegerNode(value);
+                    SetProperty(key, new JsonIntegerNode(value));
                     return;
                 case JsonValueKind.Object:
                     if (data is JsonObjectNode json && (json.ContainsKey("day") || json.ContainsKey("hour")))
                     {
                         var utc = value.ToUniversalTime();
-                        store[key] = new JsonObjectNode
+                        SetProperty(key, new JsonObjectNode
                         {
                             { "value", WebFormat.ParseDate(utc) },
                             { "str", JsonStringNode.ToJson(value, true) },
@@ -3644,7 +3655,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
                             { "second", utc.Second },
                             { "millisecond", utc.Millisecond },
                             { "kind", "utc" }
-                        };
+                        });
                         return;
                     }
 
@@ -3652,7 +3663,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
             }
         }
 
-        store[key] = new JsonStringNode(value);
+        SetProperty(key, new JsonStringNode(value));
     }
 
     /// <summary>
@@ -3665,7 +3676,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     public void SetValue(string key, DateTime value, string format)
     {
         AssertKey(key);
-        store[key] = new JsonStringNode(value, format);
+        SetProperty(key, new JsonStringNode(value, format));
     }
 
     /// <summary>
@@ -3677,7 +3688,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     public void SetValue(string key, uint value)
     {
         AssertKey(key);
-        store[key] = new JsonIntegerNode(value);
+        SetProperty(key, new JsonIntegerNode(value));
     }
 
     /// <summary>
@@ -3689,7 +3700,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     public void SetValue(string key, int value)
     {
         AssertKey(key);
-        store[key] = new JsonIntegerNode(value);
+        SetProperty(key, new JsonIntegerNode(value));
     }
 
     /// <summary>
@@ -3703,7 +3714,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     public void SetValue(string key, int value, string format, IFormatProvider provider = null)
     {
         AssertKey(key);
-        store[key] = new JsonStringNode(value, format, provider);
+        SetProperty(key, new JsonStringNode(value, format, provider));
     }
 
     /// <summary>
@@ -3718,7 +3729,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
         if (setter is null) return;
         var i = TryGetInt32Value(key);
         var value = setter(i ?? 0, i.HasValue);
-        store[key] = new JsonIntegerNode(value);
+        SetProperty(key, new JsonIntegerNode(value));
     }
 
     /// <summary>
@@ -3733,7 +3744,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
         if (setter is null) return;
         var value = TryGetInt32Value(key);
         value = setter(value);
-        if (value.HasValue) store[key] = new JsonIntegerNode(value.Value);
+        if (value.HasValue) SetProperty(key, new JsonIntegerNode(value.Value));
     }
 
     /// <summary>
@@ -3745,7 +3756,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     public void SetValue(string key, long value)
     {
         AssertKey(key);
-        store[key] = new JsonIntegerNode(value);
+        SetProperty(key, new JsonIntegerNode(value));
     }
 
     /// <summary>
@@ -3759,7 +3770,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     public void SetValue(string key, long value, string format, IFormatProvider provider = null)
     {
         AssertKey(key);
-        store[key] = new JsonStringNode(value, format, provider);
+        SetProperty(key, new JsonStringNode(value, format, provider));
     }
 
     /// <summary>
@@ -3771,7 +3782,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     public void SetValue(string key, float value)
     {
         AssertKey(key);
-        store[key] = float.IsNaN(value) ? JsonValues.Null : new JsonDoubleNode(value);
+        SetProperty(key, float.IsNaN(value) ? JsonValues.Null : new JsonDoubleNode(value));
     }
 
     /// <summary>
@@ -3783,7 +3794,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     public void SetValue(string key, double value)
     {
         AssertKey(key);
-        store[key] = double.IsNaN(value) ? JsonValues.Null : new JsonDoubleNode(value);
+        SetProperty(key, double.IsNaN(value) ? JsonValues.Null : new JsonDoubleNode(value));
     }
 
     /// <summary>
@@ -3795,7 +3806,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     public void SetValue(string key, decimal value)
     {
         AssertKey(key);
-        store[key] = new JsonDoubleNode(value);
+        SetProperty(key, new JsonDoubleNode(value));
     }
 
     /// <summary>
@@ -3809,7 +3820,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     public void SetValue(string key, float value, string format, IFormatProvider provider = null)
     {
         AssertKey(key);
-        store[key] = new JsonStringNode(value, format, provider);
+        SetProperty(key, new JsonStringNode(value, format, provider));
     }
 
     /// <summary>
@@ -3823,7 +3834,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     public void SetValue(string key, double value, string format, IFormatProvider provider = null)
     {
         AssertKey(key);
-        store[key] = new JsonStringNode(value, format, provider);
+        SetProperty(key, new JsonStringNode(value, format, provider));
     }
 
     /// <summary>
@@ -3837,7 +3848,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     public void SetValue(string key, decimal value, string format, IFormatProvider provider = null)
     {
         AssertKey(key);
-        store[key] = new JsonStringNode(value, format, provider);
+        SetProperty(key, new JsonStringNode(value, format, provider));
     }
 
     /// <summary>
@@ -3849,7 +3860,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     public void SetValue(string key, bool value)
     {
         AssertKey(key);
-        store[key] = value ? JsonBooleanNode.True : JsonBooleanNode.False;
+        SetProperty(key, value ? JsonBooleanNode.True : JsonBooleanNode.False);
     }
 
     /// <summary>
@@ -3861,7 +3872,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     public void SetValue(string key, JsonArrayNode value)
     {
         AssertKey(key);
-        store[key] = value ?? JsonValues.Null;
+        SetProperty(key, value ?? JsonValues.Null);
     }
 
     /// <summary>
@@ -3873,10 +3884,10 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     public void SetValue(string key, JsonObjectNode value)
     {
         AssertKey(key);
-        store[key] = (ReferenceEquals(value, this) ? new()
+        SetProperty(key, (ReferenceEquals(value, this) ? new()
         {
             { "$ref", JsonValues.SELF_REF}
-        }: value) ?? JsonValues.Null;
+        }: value) ?? JsonValues.Null);
     }
 
     /// <summary>
@@ -3888,7 +3899,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     public void SetValue(string key, IJsonObjectHost value)
     {
         AssertKey(key);
-        store[key] = value?.ToJson() ?? JsonValues.Null;
+        SetProperty(key, value?.ToJson() ?? JsonValues.Null);
     }
 
     /// <summary>
@@ -3900,7 +3911,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     public void SetValue(string key, JsonDocument value)
     {
         AssertKey(key);
-        store[key] = JsonValues.ToJsonValue(value) ?? JsonValues.Null;
+        SetProperty(key, JsonValues.ToJsonValue(value) ?? JsonValues.Null);
     }
 
     /// <summary>
@@ -3912,7 +3923,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     public void SetValue(string key, JsonElement value)
     {
         AssertKey(key);
-        store[key] = JsonValues.ToJsonValue(value) ?? JsonValues.Null;
+        SetProperty(key, JsonValues.ToJsonValue(value) ?? JsonValues.Null);
     }
 
     /// <summary>
@@ -3924,7 +3935,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     public void SetValue(string key, System.Text.Json.Nodes.JsonNode value)
     {
         AssertKey(key);
-        store[key] = JsonValues.ToJsonValue(value) ?? JsonValues.Null;
+        SetProperty(key, JsonValues.ToJsonValue(value) ?? JsonValues.Null);
     }
 
     /// <summary>
@@ -3948,7 +3959,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
         AssertKey(key);
         var arr = new JsonArrayNode();
         arr.AddRange(value);
-        store[key] = arr;
+        SetProperty(key, arr);
     }
 
     /// <summary>
@@ -3962,7 +3973,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
         AssertKey(key);
         var arr = new JsonArrayNode();
         arr.AddRange(value);
-        store[key] = arr;
+        SetProperty(key, arr);
     }
 
     /// <summary>
@@ -3976,7 +3987,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
         AssertKey(key);
         var arr = new JsonArrayNode();
         arr.AddRange(value);
-        store[key] = arr;
+        SetProperty(key, arr);
     }
 
     /// <summary>
@@ -3990,7 +4001,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
         AssertKey(key);
         var arr = new JsonArrayNode();
         arr.AddRange(value);
-        store[key] = arr;
+        SetProperty(key, arr);
     }
 
     /// <summary>
@@ -4004,7 +4015,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
         AssertKey(key);
         var arr = new JsonArrayNode();
         arr.AddRange(value);
-        store[key] = arr;
+        SetProperty(key, arr);
     }
 
     /// <summary>
@@ -4044,7 +4055,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     public void SetDateTimeStringValue(string key, DateTime value)
     {
         AssertKey(key);
-        store[key] = new JsonStringNode(value);
+        SetProperty(key, new JsonStringNode(value));
     }
 
     /// <summary>
@@ -4056,7 +4067,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     public void SetJavaScriptDateTicksValue(string key, DateTime value)
     {
         AssertKey(key);
-        store[key] = new JsonIntegerNode(WebFormat.ParseDate(value));
+        SetProperty(key, new JsonIntegerNode(WebFormat.ParseDate(value)));
     }
 
     /// <summary>
@@ -4068,7 +4079,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     public void SetUnixTimestampValue(string key, DateTime value)
     {
         AssertKey(key);
-        store[key] = new JsonIntegerNode(WebFormat.ParseUnixTimestamp(value));
+        SetProperty(key, new JsonIntegerNode(WebFormat.ParseUnixTimestamp(value)));
     }
 
     /// <summary>
@@ -4080,7 +4091,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     public void SetWindowsFileTimeUtcValue(string key, DateTime value)
     {
         AssertKey(key);
-        store[key] = new JsonIntegerNode(value.ToFileTimeUtc());
+        SetProperty(key, new JsonIntegerNode(value.ToFileTimeUtc()));
     }
 
     /// <summary>
@@ -4351,7 +4362,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
             {
                 var key = keys[i];
                 if (string.IsNullOrEmpty(key) || store.ContainsKey(key)) continue;
-                store[key] = array[i];
+                SetProperty(key, array[i]);
             }
 
             return count2;
@@ -4361,7 +4372,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
         {
             var key = keys[i];
             if (string.IsNullOrEmpty(key)) continue;
-            store[key] = array[i];
+            SetProperty(key, array[i]);
         }
 
         return count;
@@ -4530,7 +4541,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
         {
             if (s.Length == 0)
             {
-                store[key] = new JsonStringNode(value);
+                SetProperty(key, new JsonStringNode(value));
                 return;
             }
 
@@ -4584,7 +4595,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
         {
             if (s.Length == 0)
             {
-                store[key] = new JsonStringNode(value);
+                SetProperty(key, new JsonStringNode(value));
                 return;
             }
 
@@ -4638,7 +4649,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
         {
             if (s.Length == 0)
             {
-                store[key] = new JsonStringNode(value);
+                SetProperty(key, new JsonStringNode(value));
                 return;
             }
 
@@ -4798,7 +4809,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     /// <exception cref="ArgumentNullException">key is null.</exception>
     /// <exception cref="ArgumentException">An element with the same key already exists in the JSON object.</exception>
     public void Add(KeyValuePair<string, IJsonDataNode> item)
-        => store.Add(item.Key, JsonValues.ConvertValue(item.Value, this));
+        => AddProperty(item.Key, JsonValues.ConvertValue(item.Value, this));
 
     /// <summary>
     /// Adds a property with the provided key and value to the JSON object.
@@ -4807,7 +4818,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     /// <exception cref="ArgumentNullException">key is null.</exception>
     /// <exception cref="ArgumentException">An element with the same key already exists in the JSON object.</exception>
     public void Add(KeyValuePair<string, IJsonValueNode> item)
-        => store.Add(item.Key, JsonValues.ConvertValue(item.Value, this));
+        => AddProperty(item.Key, JsonValues.ConvertValue(item.Value, this));
 
     /// <summary>
     /// Adds a property with the provided key and value to the JSON object.
@@ -4816,7 +4827,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     /// <exception cref="ArgumentNullException">key is null.</exception>
     /// <exception cref="ArgumentException">An element with the same key already exists in the JSON object.</exception>
     public void Add(KeyValuePair<string, IJsonStringNode> item)
-        => store.Add(item.Key, JsonValues.ConvertValue(item.Value, this));
+        => AddProperty(item.Key, JsonValues.ConvertValue(item.Value, this));
 
     /// <summary>
     /// Adds a property with the provided key and value to the JSON object.
@@ -4825,7 +4836,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     /// <exception cref="ArgumentNullException">key is null.</exception>
     /// <exception cref="ArgumentException">An element with the same key already exists in the JSON object.</exception>
     public void Add(KeyValuePair<string, JsonStringNode> item)
-        => store.Add(item.Key, item.Value);
+        => AddProperty(item.Key, item.Value);
 
     /// <summary>
     /// Adds a property with the provided key and value to the JSON object.
@@ -4834,7 +4845,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     /// <exception cref="ArgumentNullException">key is null.</exception>
     /// <exception cref="ArgumentException">An element with the same key already exists in the JSON object.</exception>
     public void Add(KeyValuePair<string, JsonIntegerNode> item)
-        => store.Add(item.Key, item.Value);
+        => AddProperty(item.Key, item.Value);
 
     /// <summary>
     /// Adds a property with the provided key and value to the JSON object.
@@ -4843,7 +4854,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     /// <exception cref="ArgumentNullException">key is null.</exception>
     /// <exception cref="ArgumentException">An element with the same key already exists in the JSON object.</exception>
     public void Add(KeyValuePair<string, JsonDoubleNode> item)
-        => store.Add(item.Key, item.Value);
+        => AddProperty(item.Key, item.Value);
 
     /// <summary>
     /// Adds a property with the provided key and value to the JSON object.
@@ -4852,7 +4863,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     /// <exception cref="ArgumentNullException">key is null.</exception>
     /// <exception cref="ArgumentException">An element with the same key already exists in the JSON object.</exception>
     public void Add(KeyValuePair<string, JsonBooleanNode> item)
-        => store.Add(item.Key, item.Value);
+        => AddProperty(item.Key, item.Value);
 
     /// <summary>
     /// Adds a property with the provided key and value to the JSON object.
@@ -4861,7 +4872,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     /// <exception cref="ArgumentNullException">key is null.</exception>
     /// <exception cref="ArgumentException">An element with the same key already exists in the JSON object.</exception>
     public void Add(KeyValuePair<string, JsonArrayNode> item)
-        => store.Add(item.Key, JsonValues.ConvertValue(item.Value, this));
+        => AddProperty(item.Key, JsonValues.ConvertValue(item.Value, this));
 
     /// <summary>
     /// Adds a property with the provided key and value to the JSON object.
@@ -4870,7 +4881,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     /// <exception cref="ArgumentNullException">key is null.</exception>
     /// <exception cref="ArgumentException">An element with the same key already exists in the JSON object.</exception>
     public void Add(KeyValuePair<string, JsonObjectNode> item)
-        => store.Add(item.Key, JsonValues.ConvertValue(item.Value, this));
+        => AddProperty(item.Key, JsonValues.ConvertValue(item.Value, this));
 
     /// <summary>
     /// Adds a property with the provided key and value to the JSON object.
@@ -4978,7 +4989,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     /// <exception cref="ArgumentNullException">key is null.</exception>
     /// <exception cref="ArgumentException">An element with the same key already exists in the JSON object.</exception>
     public void Add(KeyValuePair<string, JsonDocument> item)
-        => store.Add(item.Key, JsonValues.ToJsonValue(item.Value) ?? JsonValues.Null);
+        => AddProperty(item.Key, JsonValues.ToJsonValue(item.Value) ?? JsonValues.Null);
 
     /// <summary>
     /// Adds a property with the provided key and value to the JSON object.
@@ -4987,7 +4998,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     /// <exception cref="ArgumentNullException">key is null.</exception>
     /// <exception cref="ArgumentException">An element with the same key already exists in the JSON object.</exception>
     public void Add(KeyValuePair<string, JsonElement> item)
-        => store.Add(item.Key, JsonValues.ToJsonValue(item.Value) ?? JsonValues.Null);
+        => AddProperty(item.Key, JsonValues.ToJsonValue(item.Value) ?? JsonValues.Null);
 
     /// <summary>
     /// Adds a property with the provided key and value to the JSON object.
@@ -4996,7 +5007,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     /// <exception cref="ArgumentNullException">key is null.</exception>
     /// <exception cref="ArgumentException">An element with the same key already exists in the JSON object.</exception>
     public void Add(KeyValuePair<string, System.Text.Json.Nodes.JsonArray> item)
-        => store.Add(item.Key, JsonValues.ToJsonValue(item.Value) ?? JsonValues.Null);
+        => AddProperty(item.Key, JsonValues.ToJsonValue(item.Value) ?? JsonValues.Null);
 
     /// <summary>
     /// Adds a property with the provided key and value to the JSON object.
@@ -5005,7 +5016,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     /// <exception cref="ArgumentNullException">key is null.</exception>
     /// <exception cref="ArgumentException">An element with the same key already exists in the JSON object.</exception>
     public void Add(KeyValuePair<string, System.Text.Json.Nodes.JsonObject> item)
-        => store.Add(item.Key, JsonValues.ToJsonValue(item.Value) ?? JsonValues.Null);
+        => AddProperty(item.Key, JsonValues.ToJsonValue(item.Value) ?? JsonValues.Null);
 
     /// <summary>
     /// Adds a property with the provided key and value to the JSON object.
@@ -5015,7 +5026,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     /// <exception cref="ArgumentNullException">key is null.</exception>
     /// <exception cref="ArgumentException">An element with the same key already exists in the JSON object.</exception>
     public void Add(string key, DBNull _)
-        => store.Add(key, JsonValues.Null);
+        => AddProperty(key, JsonValues.Null);
 
     /// <summary>
     /// Adds a property with the provided key and value to the JSON object.
@@ -5025,7 +5036,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     /// <exception cref="ArgumentNullException">key is null.</exception>
     /// <exception cref="ArgumentException">An element with the same key already exists in the JSON object.</exception>
     public void Add(string key, IJsonDataNode value)
-        => store.Add(key, JsonValues.ConvertValue(value, this));
+        => AddProperty(key, JsonValues.ConvertValue(value, this));
 
     /// <summary>
     /// Adds a property with the provided key and value to the JSON object.
@@ -5035,7 +5046,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     /// <exception cref="ArgumentNullException">key is null.</exception>
     /// <exception cref="ArgumentException">An element with the same key already exists in the JSON object.</exception>
     public void Add(string key, IJsonValueNode value)
-        => store.Add(key, JsonValues.ConvertValue(value, this));
+        => AddProperty(key, JsonValues.ConvertValue(value, this));
 
     /// <summary>
     /// Adds a property with the provided key and value to the JSON object.
@@ -5045,7 +5056,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     /// <exception cref="ArgumentNullException">key is null.</exception>
     /// <exception cref="ArgumentException">An element with the same key already exists in the JSON object.</exception>
     public void Add(string key, JsonObjectNode value)
-        => store.Add(key, (ReferenceEquals(value, this) ? new()
+        => AddProperty(key, (ReferenceEquals(value, this) ? new()
         {
             { "$ref", JsonValues.SELF_REF }
         } : value) ?? JsonValues.Null);
@@ -5058,7 +5069,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     /// <exception cref="ArgumentNullException">key is null.</exception>
     /// <exception cref="ArgumentException">An element with the same key already exists in the JSON object.</exception>
     public void Add(string key, IJsonObjectHost value)
-        => store.Add(key, value?.ToJson() ?? JsonValues.Null);
+        => AddProperty(key, value?.ToJson() ?? JsonValues.Null);
 
     /// <summary>
     /// Adds a property with the provided key and value to the JSON object.
@@ -5070,7 +5081,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     /// <exception cref="ArgumentException">An element with the same key already exists in the JSON object.</exception>
     public void Add(string key, JsonObjectNode value, bool clone)
     {
-        if (clone) store.Add(key, value?.Clone() ?? JsonValues.Null);
+        if (clone) AddProperty(key, value?.Clone() ?? JsonValues.Null);
         else Add(key, value);
     }
 
@@ -5082,7 +5093,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     /// <exception cref="ArgumentNullException">key is null.</exception>
     /// <exception cref="ArgumentException">An element with the same key already exists in the JSON object.</exception>
     public void Add(string key, JsonDocument value)
-        => store.Add(key, JsonValues.ToJsonValue(value) ?? JsonValues.Null);
+        => AddProperty(key, JsonValues.ToJsonValue(value) ?? JsonValues.Null);
 
     /// <summary>
     /// Adds a property with the provided key and value to the JSON object.
@@ -5092,7 +5103,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     /// <exception cref="ArgumentNullException">key is null.</exception>
     /// <exception cref="ArgumentException">An element with the same key already exists in the JSON object.</exception>
     public void Add(string key, JsonElement value)
-        => store.Add(key, JsonValues.ToJsonValue(value));
+        => AddProperty(key, JsonValues.ToJsonValue(value));
 
     /// <summary>
     /// Adds a property with the provided key and value to the JSON object.
@@ -5102,7 +5113,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     /// <exception cref="ArgumentNullException">key is null.</exception>
     /// <exception cref="ArgumentException">An element with the same key already exists in the JSON object.</exception>
     public void Add(string key, System.Text.Json.Nodes.JsonNode value)
-        => store.Add(key, JsonValues.ToJsonValue(value));
+        => AddProperty(key, JsonValues.ToJsonValue(value));
 
     /// <summary>
     /// Adds a property with the provided key and value to the JSON object.
@@ -5112,7 +5123,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     /// <exception cref="ArgumentNullException">key is null.</exception>
     /// <exception cref="ArgumentException">An element with the same key already exists in the JSON object.</exception>
     public void Add(string key, string value)
-        => store.Add(key, value != null ? new JsonStringNode(value) : JsonValues.Null);
+        => AddProperty(key, value != null ? new JsonStringNode(value) : JsonValues.Null);
 
     /// <summary>
     /// Adds a property with the provided key and value to the JSON object.
@@ -5122,7 +5133,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     /// <exception cref="ArgumentNullException">key is null.</exception>
     /// <exception cref="ArgumentException">An element with the same key already exists in the JSON object.</exception>
     public void Add(string key, char[] value)
-        => store.Add(key, value != null ? new JsonStringNode(value) : JsonValues.Null);
+        => AddProperty(key, value != null ? new JsonStringNode(value) : JsonValues.Null);
 
     /// <summary>
     /// Adds a property with the provided key and value to the JSON object.
@@ -5132,7 +5143,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     /// <exception cref="ArgumentNullException">key is null.</exception>
     /// <exception cref="ArgumentException">An element with the same key already exists in the JSON object.</exception>
     public void Add(string key, StringBuilder value)
-        => store.Add(key, value != null ? new JsonStringNode(value) : JsonValues.Null);
+        => AddProperty(key, value != null ? new JsonStringNode(value) : JsonValues.Null);
 
     /// <summary>
     /// Adds a property with the provided key and value to the JSON object.
@@ -5142,7 +5153,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     /// <exception cref="ArgumentNullException">key is null.</exception>
     /// <exception cref="ArgumentException">An element with the same key already exists in the JSON object.</exception>
     public void Add(string key, SecureString value)
-        => store.Add(key, value != null ? new JsonStringNode(value) : JsonValues.Null);
+        => AddProperty(key, value != null ? new JsonStringNode(value) : JsonValues.Null);
 
     /// <summary>
     /// Adds a property with the provided key and value to the JSON object.
@@ -5152,7 +5163,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     /// <exception cref="ArgumentNullException">key is null.</exception>
     /// <exception cref="ArgumentException">An element with the same key already exists in the JSON object.</exception>
     public void Add(string key, ReadOnlySpan<char> value)
-        => store.Add(key, new JsonStringNode(value.ToString()));
+        => AddProperty(key, new JsonStringNode(value.ToString()));
 
     /// <summary>
     /// Adds a property with the provided key and value to the JSON object.
@@ -5162,7 +5173,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     /// <exception cref="ArgumentNullException">key is null.</exception>
     /// <exception cref="ArgumentException">An element with the same key already exists in the JSON object.</exception>
     public void Add(string key, short value)
-        => store.Add(key, new JsonIntegerNode(value));
+        => AddProperty(key, new JsonIntegerNode(value));
 
     /// <summary>
     /// Adds a property with the provided key and value to the JSON object.
@@ -5172,7 +5183,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     /// <exception cref="ArgumentNullException">key is null.</exception>
     /// <exception cref="ArgumentException">An element with the same key already exists in the JSON object.</exception>
     public void Add(string key, int value)
-        => store.Add(key, new JsonIntegerNode(value));
+        => AddProperty(key, new JsonIntegerNode(value));
 
     /// <summary>
     /// Adds a property with the provided key and value to the JSON object.
@@ -5184,7 +5195,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     /// <exception cref="ArgumentNullException">key is null.</exception>
     /// <exception cref="ArgumentException">An element with the same key already exists in the JSON object.</exception>
     public void Add(string key, int value, string format, IFormatProvider provider)
-        => store.Add(key, new JsonStringNode(value, format, provider));
+        => AddProperty(key, new JsonStringNode(value, format, provider));
 
     /// <summary>
     /// Adds a property with the provided key and value to the JSON object.
@@ -5194,7 +5205,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     /// <exception cref="ArgumentNullException">key is null.</exception>
     /// <exception cref="ArgumentException">An element with the same key already exists in the JSON object.</exception>
     public void Add(string key, long value)
-        => store.Add(key, new JsonIntegerNode(value));
+        => AddProperty(key, new JsonIntegerNode(value));
 
     /// <summary>
     /// Adds a property with the provided key and value to the JSON object.
@@ -5206,7 +5217,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     /// <exception cref="ArgumentNullException">key is null.</exception>
     /// <exception cref="ArgumentException">An element with the same key already exists in the JSON object.</exception>
     public void Add(string key, long value, string format, IFormatProvider provider)
-        => store.Add(key, new JsonStringNode(value, format, provider));
+        => AddProperty(key, new JsonStringNode(value, format, provider));
 
     /// <summary>
     /// Adds a property with the provided key and value to the JSON object.
@@ -5216,7 +5227,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     /// <exception cref="ArgumentNullException">key is null.</exception>
     /// <exception cref="ArgumentException">An element with the same key already exists in the JSON object.</exception>
     public void Add(string key, uint value)
-        => store.Add(key, new JsonIntegerNode(value));
+        => AddProperty(key, new JsonIntegerNode(value));
 
     /// <summary>
     /// Adds a property with the provided key and value to the JSON object.
@@ -5226,7 +5237,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     /// <exception cref="ArgumentNullException">key is null.</exception>
     /// <exception cref="ArgumentException">An element with the same key already exists in the JSON object.</exception>
     public void Add(string key, float value)
-        => store.Add(key, float.IsNaN(value) ? JsonValues.Null : new JsonDoubleNode(value));
+        => AddProperty(key, float.IsNaN(value) ? JsonValues.Null : new JsonDoubleNode(value));
 
     /// <summary>
     /// Adds a property with the provided key and value to the JSON object.
@@ -5238,7 +5249,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     /// <exception cref="ArgumentNullException">key is null.</exception>
     /// <exception cref="ArgumentException">An element with the same key already exists in the JSON object.</exception>
     public void Add(string key, float value, string format, IFormatProvider provider)
-        => store.Add(key, float.IsNaN(value) ? JsonValues.Null : new JsonStringNode(value, format, provider));
+        => AddProperty(key, float.IsNaN(value) ? JsonValues.Null : new JsonStringNode(value, format, provider));
 
     /// <summary>
     /// Adds a property with the provided key and value to the JSON object.
@@ -5248,7 +5259,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     /// <exception cref="ArgumentNullException">key is null.</exception>
     /// <exception cref="ArgumentException">An element with the same key already exists in the JSON object.</exception>
     public void Add(string key, double value)
-        => store.Add(key, double.IsNaN(value) ? JsonValues.Null : new JsonDoubleNode(value));
+        => AddProperty(key, double.IsNaN(value) ? JsonValues.Null : new JsonDoubleNode(value));
 
     /// <summary>
     /// Adds a property with the provided key and value to the JSON object.
@@ -5260,7 +5271,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     /// <exception cref="ArgumentNullException">key is null.</exception>
     /// <exception cref="ArgumentException">An element with the same key already exists in the JSON object.</exception>
     public void Add(string key, double value, string format, IFormatProvider provider)
-        => store.Add(key, double.IsNaN(value) ? JsonValues.Null : new JsonStringNode(value, format, provider));
+        => AddProperty(key, double.IsNaN(value) ? JsonValues.Null : new JsonStringNode(value, format, provider));
 
     /// <summary>
     /// Adds a property with the provided key and value to the JSON object.
@@ -5270,7 +5281,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     /// <exception cref="ArgumentNullException">key is null.</exception>
     /// <exception cref="ArgumentException">An element with the same key already exists in the JSON object.</exception>
     public void Add(string key, decimal value)
-        => store.Add(key, new JsonDoubleNode(value));
+        => AddProperty(key, new JsonDoubleNode(value));
 
     /// <summary>
     /// Adds a property with the provided key and value to the JSON object.
@@ -5282,7 +5293,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     /// <exception cref="ArgumentNullException">key is null.</exception>
     /// <exception cref="ArgumentException">An element with the same key already exists in the JSON object.</exception>
     public void Add(string key, decimal value, string format, IFormatProvider provider)
-        => store.Add(key, new JsonStringNode(value, format, provider));
+        => AddProperty(key, new JsonStringNode(value, format, provider));
 
     /// <summary>
     /// Adds a property with the provided key and value to the JSON object.
@@ -5292,7 +5303,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     /// <exception cref="ArgumentNullException">key is null.</exception>
     /// <exception cref="ArgumentException">An element with the same key already exists in the JSON object.</exception>
     public void Add(string key, bool value)
-        => store.Add(key, value ? JsonBooleanNode.True : JsonBooleanNode.False);
+        => AddProperty(key, value ? JsonBooleanNode.True : JsonBooleanNode.False);
 
     /// <summary>
     /// Adds a property with the provided key and value to the JSON object.
@@ -5302,7 +5313,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     /// <exception cref="ArgumentNullException">key is null.</exception>
     /// <exception cref="ArgumentException">An element with the same key already exists in the JSON object.</exception>
     public void Add(string key, DateTime value)
-        => store.Add(key, new JsonStringNode(value));
+        => AddProperty(key, new JsonStringNode(value));
 
     /// <summary>
     /// Adds a property with the provided key and value to the JSON object.
@@ -5313,7 +5324,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     /// <exception cref="ArgumentNullException">key is null.</exception>
     /// <exception cref="ArgumentException">An element with the same key already exists in the JSON object.</exception>
     public void Add(string key, DateTime value, string format)
-        => store.Add(key, new JsonStringNode(value, format));
+        => AddProperty(key, new JsonStringNode(value, format));
 
     /// <summary>
     /// Adds a property with the provided key and value to the JSON object.
@@ -5323,7 +5334,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     /// <exception cref="ArgumentNullException">key is null.</exception>
     /// <exception cref="ArgumentException">An element with the same key already exists in the JSON object.</exception>
     public void Add(string key, DateTimeOffset value)
-        => store.Add(key, new JsonStringNode(value));
+        => AddProperty(key, new JsonStringNode(value));
 
     /// <summary>
     /// Adds a property with the provided key and value to the JSON object.
@@ -5334,7 +5345,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     /// <exception cref="ArgumentNullException">key is null.</exception>
     /// <exception cref="ArgumentException">An element with the same key already exists in the JSON object.</exception>
     public void Add(string key, DateTimeOffset value, string format)
-        => store.Add(key, new JsonStringNode(value, format));
+        => AddProperty(key, new JsonStringNode(value, format));
 
     /// <summary>
     /// Adds a property with the provided key and value to the JSON object.
@@ -5344,7 +5355,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     /// <exception cref="ArgumentNullException">key is null.</exception>
     /// <exception cref="ArgumentException">An element with the same key already exists in the JSON object.</exception>
     public void Add(string key, Guid value)
-        => store.Add(key, new JsonStringNode(value));
+        => AddProperty(key, new JsonStringNode(value));
 
     /// <summary>
     /// Adds a property with the provided key and value to the JSON object.
@@ -5355,7 +5366,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     /// <exception cref="ArgumentNullException">key is null.</exception>
     /// <exception cref="ArgumentException">An element with the same key already exists in the JSON object.</exception>
     public void Add(string key, Guid value, string format)
-        => store.Add(key, new JsonStringNode(value, format));
+        => AddProperty(key, new JsonStringNode(value, format));
 
     /// <summary>
     /// Adds a property with the provided key and value to the JSON object.
@@ -5368,7 +5379,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
         AssertKey(key);
         var arr = new JsonArrayNode();
         arr.AddRange(value);
-        store.Add(key, arr);
+        AddProperty(key, arr);
     }
 
     /// <summary>
@@ -5382,7 +5393,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
         AssertKey(key);
         var arr = new JsonArrayNode();
         arr.AddRange(value);
-        store.Add(key, arr);
+        AddProperty(key, arr);
     }
 
     /// <summary>
@@ -5396,7 +5407,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
         AssertKey(key);
         var arr = new JsonArrayNode();
         arr.AddRange(value);
-        store.Add(key, arr);
+        AddProperty(key, arr);
     }
 
     /// <summary>
@@ -5410,7 +5421,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
         AssertKey(key);
         var arr = new JsonArrayNode();
         arr.AddRange(value);
-        store.Add(key, arr);
+        AddProperty(key, arr);
     }
 
     /// <summary>
@@ -5424,7 +5435,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
         AssertKey(key);
         var arr = new JsonArrayNode();
         arr.AddRange(value);
-        store.Add(key, arr);
+        AddProperty(key, arr);
     }
 
     /// <summary>
@@ -5458,9 +5469,9 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     }
 
     /// <summary>
-    /// Copies the elements of the JSON object to an System.Array, starting at a particular System.Array index.
+    /// Copies the elements of the JSON object to an array, starting at a particular System.Array index.
     /// </summary>
-    /// <param name="array">The one-dimensional System.Array that is the destination of the elements copied from JSON object. The System.Array must have zero-based indexing.</param>
+    /// <param name="array">The one-dimensional array that is the destination of the elements copied from JSON object. The System.Array must have zero-based indexing.</param>
     /// <param name="arrayIndex">The zero-based index in array at which copying begins.</param>
     /// <exception cref="ArgumentNullException">array is null.</exception>
     /// <exception cref="ArgumentOutOfRangeException">arrayIndex is less than 0.</exception>
@@ -5469,9 +5480,9 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
         => store.CopyTo(array, arrayIndex);
 
     /// <summary>
-    /// Copies the elements of the JSON object to an System.Array, starting at a particular System.Array index.
+    /// Copies the elements of the JSON object to an array, starting at a particular System.Array index.
     /// </summary>
-    /// <param name="array">The one-dimensional System.Array that is the destination of the elements copied from JSON object. The System.Array must have zero-based indexing.</param>
+    /// <param name="array">The one-dimensional array that is the destination of the elements copied from JSON object. The System.Array must have zero-based indexing.</param>
     /// <param name="arrayIndex">The zero-based index in array at which copying begins.</param>
     /// <exception cref="ArgumentNullException">array is null.</exception>
     /// <exception cref="ArgumentOutOfRangeException">arrayIndex is less than 0.</exception>
@@ -5497,7 +5508,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
         }
 
         if (!kvp.HasValue) return false;
-        return store.Remove(kvp.Value);
+        return RemoveProperty(kvp.Value);
     }
 
     /// <summary>
@@ -5516,14 +5527,22 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
         }
 
         if (!kvp.HasValue) return false;
-        return store.Remove(kvp.Value);
+        return RemoveProperty(kvp.Value);
     }
 
     /// <summary>
     /// Removes all properties from the object.
     /// </summary>
     public void Clear()
-        => store.Clear();
+    {
+        var keys = store.Keys;
+        store.Clear();
+        if (PropertyChanged == null) return;
+        foreach (var key in keys)
+        {
+            PropertyChanged?.Invoke(this, new KeyValueEventArgs<string, IJsonDataNode>(key, JsonValues.Undefined));
+        }
+    }
 
     /// <summary>
     /// Indicates whether this instance and a specified object are equal.
@@ -6413,6 +6432,32 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     /// </summary>
     /// <returns>The property keys.</returns>
     IEnumerable<string> IJsonContainerNode.GetKeys() => Keys;
+
+    private void AddProperty(string key, IJsonDataNode value)
+    {
+        store.Add(key, value);
+        PropertyChanged?.Invoke(this, new KeyValueEventArgs<string, IJsonDataNode>(key, value));
+    }
+
+    private void SetProperty(string key, IJsonDataNode value)
+    {
+        store[key] = value;
+        PropertyChanged?.Invoke(this, new KeyValueEventArgs<string, IJsonDataNode>(key, value));
+    }
+
+    private bool RemoveProperty(string key)
+    {
+        var b = store.Remove(key);
+        if (b) PropertyChanged?.Invoke(this, new KeyValueEventArgs<string, IJsonDataNode>(key, JsonValues.Undefined));
+        return b;
+    }
+
+    private bool RemoveProperty(KeyValuePair<string, IJsonDataNode> kvp)
+    {
+        var b = store.Remove(kvp);
+        if (b) PropertyChanged?.Invoke(this, new KeyValueEventArgs<string, IJsonDataNode>(kvp.Key, JsonValues.Undefined));
+        return b;
+    }
 
     private JsonObjectNode ConvertObjectValueForProperty(JsonObjectNode json)
         => json?.Count == 1 && json.TryGetStringValue("$ref", true, out var s) && s == JsonValues.SELF_REF ? this : json;

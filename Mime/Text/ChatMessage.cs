@@ -54,7 +54,7 @@ public enum ChatMessageModificationKinds : byte
 /// <summary>
 /// The chat message record.
 /// </summary>
-public class SimpleChatMessage : ObservableProperties
+public class SimpleChatMessage : BaseResourceObservableProperties
 {
     /// <summary>
     /// Initializes a new instance of the SimpleChatMessage class.
@@ -65,6 +65,35 @@ public class SimpleChatMessage : ObservableProperties
     /// <param name="kind">The message kind.</param>
     /// <param name="data">The additional data; or null if create a new one.</param>
     public SimpleChatMessage(UserItemInfo sender, string message, DateTime? creation = null, string kind = null, JsonObjectNode data = null)
+        : this(Guid.NewGuid(), sender, message, creation, kind, data)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the SimpleChatMessage class.
+    /// </summary>
+    /// <param name="id">The message identifier.</param>
+    /// <param name="sender">The nickname of the sender.</param>
+    /// <param name="message">The message text.</param>
+    /// <param name="creation">The creation date time; or null if use now.</param>
+    /// <param name="kind">The message kind.</param>
+    /// <param name="data">The additional data; or null if create a new one.</param>
+    public SimpleChatMessage(Guid id, UserItemInfo sender, string message, DateTime? creation = null, string kind = null, JsonObjectNode data = null)
+        : this(id.ToString("N"), sender, message, creation, kind, data)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the SimpleChatMessage class.
+    /// </summary>
+    /// <param name="id">The message identifier.</param>
+    /// <param name="sender">The nickname of the sender.</param>
+    /// <param name="message">The message text.</param>
+    /// <param name="creation">The creation date time; or null if use now.</param>
+    /// <param name="kind">The message kind.</param>
+    /// <param name="data">The additional data; or null if create a new one.</param>
+    public SimpleChatMessage(string id, UserItemInfo sender, string message, DateTime? creation = null, string kind = null, JsonObjectNode data = null)
+        : base(id)
     {
         var time = creation ?? DateTime.Now;
         SetProperty(nameof(Sender), sender);
@@ -74,7 +103,6 @@ public class SimpleChatMessage : ObservableProperties
         SetProperty(nameof(LastModificationTime), time);
         if (data != null) Data = data;
     }
-
 
     /// <summary>
     /// Gets the sender.
@@ -140,6 +168,7 @@ public class SimpleChatMessage : ObservableProperties
     {
         if (value is null) return null;
         return new(
+            value.Id,
             (UserItemInfo)value.TryGetObjectValue("sender"),
             value.TryGetStringValue("text") ?? value.TryGetStringValue("message"),
             value.TryGetDateTimeValue("created"),

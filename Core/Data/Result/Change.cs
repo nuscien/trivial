@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Runtime.Serialization;
 using System.Text;
+using System.Text.Json;
 using System.Text.Json.Serialization;
 
 namespace Trivial.Data;
@@ -22,6 +24,15 @@ public delegate void ChangeEventHandler<T>(object sender, ChangeEventArgs<T> e);
 /// <param name="sender">The sender.</param>
 /// <param name="e">The event arguments.</param>
 public delegate void DataEventHandler<T>(object sender, DataEventArgs<T> e);
+
+/// <summary>
+/// The data event handler.
+/// </summary>
+/// <typeparam name="TKey">The type of the key.</typeparam>
+/// <typeparam name="TValue">The type of the value.</typeparam>
+/// <param name="sender">The sender.</param>
+/// <param name="e">The event arguments.</param>
+public delegate void KeyValueEventHandler<TKey, TValue>(object sender, KeyValueEventArgs<TKey, TValue> e);
 
 /// <summary>
 /// The method to change.
@@ -280,6 +291,52 @@ public class DataEventArgs<T> : EventArgs
     /// Gets the data.
     /// </summary>
     public T Data { get; }
+}
+
+/// <summary>
+/// The event arguments with key and value pair.
+/// </summary>
+/// <typeparam name="TKey">The type of the key.</typeparam>
+/// <typeparam name="TValue">The type of the value.</typeparam>
+public class KeyValueEventArgs<TKey, TValue> : EventArgs
+{
+    /// <summary>
+    /// Initializes a new instance of the KeyValueEventArgs class.
+    /// </summary>
+    /// <param name="key">The key.</param>
+    /// <param name="value">The value.</param>
+    public KeyValueEventArgs(TKey key, TValue value)
+    {
+        Key = key;
+        Value = value;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the KeyValueEventArgs class.
+    /// </summary>
+    /// <param name="kvp">The key value pair.</param>
+    public KeyValueEventArgs(KeyValuePair<TKey, TValue> kvp)
+        : this(kvp.Key, kvp.Value)
+    {
+    }
+
+    /// <summary>
+    /// Gets the key.
+    /// </summary>
+    public TKey Key { get; }
+
+    /// <summary>
+    /// Gets the value.
+    /// </summary>
+    public TValue Value { get; }
+
+    /// <summary>
+    /// Converts to key value pair.
+    /// </summary>
+    /// <param name="args">The arguments.</param>
+    /// <returns>The key value pair.</returns>
+    public static explicit operator KeyValuePair<TKey, TValue>(KeyValueEventArgs<TKey, TValue> args)
+        => args == null ? new() : new(args.Key, args.Value);
 }
 
 /// <summary>

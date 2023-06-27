@@ -8,6 +8,7 @@ using System.Security;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
+using Trivial.Data;
 using Trivial.IO;
 
 namespace Trivial.Text;
@@ -38,6 +39,7 @@ public class JsonObjectHostService : IJsonObjectHost, IReadOnlyDictionary<string
     public JsonObjectHostService(JsonObjectNode parent)
     {
         Parent = parent ?? new();
+        parent.PropertyChanged += OnPropertyChanged;
     }
 
     IJsonDataNode IReadOnlyDictionary<string, IJsonDataNode>.this[string key] => throw new NotImplementedException();
@@ -239,6 +241,7 @@ public class JsonObjectHostService : IJsonObjectHost, IReadOnlyDictionary<string
         {
             var json = JsonObjectNode.ConvertFrom(item.Value);
             Parent.SetValue(item.Key, json);
+            cache[item.Key] = item.Value;
         }
 
         return col.Count;
@@ -257,8 +260,19 @@ public class JsonObjectHostService : IJsonObjectHost, IReadOnlyDictionary<string
     /// <param name="keepCache">true if need keeping the cache; otherwise, false.</param>
     public void ResetParent(JsonObjectNode parent, bool keepCache = false)
     {
+        var oldParent = Parent;
+        if (ReferenceEquals(parent, oldParent))
+        {
+            if (keepCache) SyncToParent();
+            return;
+        }
+
+        if (oldParent != null) oldParent.PropertyChanged -= OnPropertyChanged;
+        parent ??= new();
         Parent = parent;
-        if (!keepCache) cache.Clear();
+        if (keepCache) SyncToParent();
+        else cache.Clear();
+        parent.PropertyChanged += OnPropertyChanged;
     }
 
     /// <summary>
@@ -271,8 +285,7 @@ public class JsonObjectHostService : IJsonObjectHost, IReadOnlyDictionary<string
     {
         var json = JsonObjectNode.TryParse(file, options);
         if (json == null) return false;
-        Parent = json;
-        cache.Clear();
+        ResetParent(json);
         return true;
     }
 
@@ -451,4 +464,11 @@ public class JsonObjectHostService : IJsonObjectHost, IReadOnlyDictionary<string
 
     bool IReadOnlyDictionary<string, IJsonDataNode>.TryGetValue(string key, out IJsonDataNode value)
         => Parent.TryGetValue(key, out value);
+
+    private void OnPropertyChanged(object sender, KeyValueEventArgs<string, IJsonDataNode> e)
+    {
+        var key = e.Key;
+        if (string.IsNullOrEmpty(key)) return;
+        cache.Remove(key);
+    }
 }
