@@ -1,18 +1,18 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
 		<TargetFrameworks>net7.0;net6.0;net48;net462;net461</TargetFrameworks>
-		<AssemblyName>Trivial.Mime</AssemblyName>
+		<AssemblyName>Trivial.Messages</AssemblyName>
 		<RootNamespace>Trivial</RootNamespace>
-		<PackageId>Trivial.Mime</PackageId>
+		<PackageId>Trivial.Messages</PackageId>
 		<Product>Trivial</Product>
 		<Authors>Kingcean Tuan</Authors>
 		<Company>Nanchang Jinchen Software Co., Ltd.</Company>
-		<Version>7.2.0</Version>
-		<AssemblyVersion>7.2.0.0</AssemblyVersion>
-		<FileVersion>7.2.0.0</FileVersion>
-		<Description>The MIME constants and the barcode generators.</Description>
-		<Copyright>Copyright (c) 2018 Kingcean Tuan.</Copyright>
+		<Version>0.1.0</Version>
+		<AssemblyVersion>0.1.0.0</AssemblyVersion>
+		<FileVersion>0.1.0.0</FileVersion>
+		<Description>The library with model of users and messages.</Description>
+		<Copyright>Copyright (c) 2023 Kingcean Tuan.</Copyright>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 		<PackageProjectUrl>https://github.com/nuscien/trivial/wiki/core</PackageProjectUrl>
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
@@ -23,7 +23,7 @@
 		<PublishRepositoryUrl>true</PublishRepositoryUrl>
 		<PackageIcon>mime.png</PackageIcon>
 		<PackageIconUrl>https://github.com/nuscien/trivial/raw/master/Materials/logo.png</PackageIconUrl>
-		<PackageTags>mime files barcode</PackageTags>
+		<PackageTags>users messages gpt</PackageTags>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<LangVersion>10.0</LangVersion>
 		<SignAssembly>True</SignAssembly>
@@ -32,12 +32,12 @@
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
 		<OutputPath>..\bin\Debug\</OutputPath>
-		<DocumentationFile>..\bin\$(Configuration)\$(TargetFramework)\Trivial.Mime.xml</DocumentationFile>
+		<DocumentationFile>..\bin\$(Configuration)\$(TargetFramework)\Trivial.Messages.xml</DocumentationFile>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
 		<OutputPath>..\bin\Release\</OutputPath>
-		<DocumentationFile>..\bin\$(Configuration)\$(TargetFramework)\Trivial.Mime.xml</DocumentationFile>
+		<DocumentationFile>..\bin\$(Configuration)\$(TargetFramework)\Trivial.Messages.xml</DocumentationFile>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(TargetFramework)' == 'netstandard2.0' OR '$(TargetFramework)' == 'net481' OR '$(TargetFramework)' == 'net48' OR '$(TargetFramework)' == 'net462' OR '$(TargetFramework)' == 'net461'">
@@ -55,11 +55,11 @@
 	<ItemGroup>
 		<None Include="README.md" Pack="true" PackagePath="README.md" />
 		<None Include="..\LICENSE" Pack="true" PackagePath="LICENSE" />
-		<None Include="..\Materials\mime.png" Pack="true" PackagePath="mime.png" />
+		<None Include="..\Materials\messages.png" Pack="true" PackagePath="mime.png" />
 	</ItemGroup>
 
 	<ItemGroup>
-	  <ProjectReference Include="..\Core\Core.csproj" />
+		<ProjectReference Include="..\Core\Core.csproj" />
 	</ItemGroup>
 
 </Project>

@@ -78,7 +78,7 @@ public static class HttpClientExtensions
     /// <exception cref="IOException">An I/O error.</exception>
     /// <exception cref="DirectoryNotFoundException">The specified path is invalid, such as being on an unmapped drive.</exception>
     /// <exception cref="NotSupportedException">The path of the file refers to a non-file device, such as "con:", "com1:", "lpt1:".</exception>
-    public static Task WriteFileAsync(this HttpContent httpContent, string fileName, IProgress<double> progress = null, CancellationToken cancellationToken = default)
+    public static Task<FileInfo> WriteFileAsync(this HttpContent httpContent, string fileName, IProgress<double> progress = null, CancellationToken cancellationToken = default)
         => WriteFileAsync(httpContent, fileName, IO.StreamCopy.DefaultBufferSize, progress, cancellationToken);
 
     /// <summary>

@@ -72,6 +72,14 @@ public class UserItemInfo : BaseSecurityEntityInfo
     public static implicit operator UserItemInfo(JsonObjectNode value)
         => value is null ? null : new(value);
 
+    /// <summary>
+    /// Converts to JSON object.
+    /// </summary>
+    /// <param name="value">The JSON value.</param>
+    /// <returns>A JSON object.</returns>
+    public static explicit operator JsonObjectNode(UserItemInfo value)
+        => value?.ToJson();
+
     private static SecurityEntityTypes GetSecurityEntityType(JsonObjectNode json)
     {
         var type = json?.TryGetStringTrimmedValue("gender", true)?.ToLowerInvariant();

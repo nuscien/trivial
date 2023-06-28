@@ -1230,23 +1230,8 @@ public class JsonArrayNode : IJsonContainerNode, IJsonDataNode, IReadOnlyList<IJ
     /// <returns>The value; or null if fail to resolve.</returns>
     public Uri TryGetUriValue(int index)
     {
-        if (!TryGetStringValue(index, out var str) || string.IsNullOrWhiteSpace(str))
-        {
-            return null;
-        }
-
-        try
-        {
-            return new Uri(str);
-        }
-        catch (FormatException)
-        {
-        }
-        catch (ArgumentException)
-        {
-        }
-
-        return null;
+        if (!TryGetStringValue(index, out var str) || string.IsNullOrWhiteSpace(str)) return null;
+        return StringExtensions.TryCreateUri(str);
     }
 
     /// <summary>
@@ -1257,23 +1242,8 @@ public class JsonArrayNode : IJsonContainerNode, IJsonDataNode, IReadOnlyList<IJ
     /// <returns>The value; or null if fail to resolve.</returns>
     public Uri TryGetUriValue(int index, UriKind kind)
     {
-        if (!TryGetStringValue(index, out var str) || string.IsNullOrWhiteSpace(str))
-        {
-            return null;
-        }
-
-        try
-        {
-            return new Uri(str, kind);
-        }
-        catch (FormatException)
-        {
-        }
-        catch (ArgumentException)
-        {
-        }
-
-        return null;
+        if (!TryGetStringValue(index, out var str) || string.IsNullOrWhiteSpace(str)) return null;
+        return StringExtensions.TryCreateUri(str, kind);
     }
 
     /// <summary>
@@ -1290,20 +1260,8 @@ public class JsonArrayNode : IJsonContainerNode, IJsonDataNode, IReadOnlyList<IJ
             return false;
         }
 
-        try
-        {
-            result = new Uri(str);
-            return true;
-        }
-        catch (FormatException)
-        {
-        }
-        catch (ArgumentException)
-        {
-        }
-
-        result = null;
-        return false;
+        result = StringExtensions.TryCreateUri(str);
+        return result != null;
     }
 
     /// <summary>

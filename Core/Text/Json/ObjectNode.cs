@@ -1640,18 +1640,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     public Uri TryGetUriValue(string key)
     {
         if (!TryGetStringValue(key, out var str) || string.IsNullOrWhiteSpace(str)) return null;
-        try
-        {
-            return new Uri(str);
-        }
-        catch (FormatException)
-        {
-        }
-        catch (ArgumentException)
-        {
-        }
-
-        return null;
+        return StringExtensions.TryCreateUri(str);
     }
 
     /// <summary>
@@ -1663,18 +1652,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     public Uri TryGetUriValue(string key, UriKind kind)
     {
         if (!TryGetStringValue(key, out var str) || string.IsNullOrWhiteSpace(str)) return null;
-        try
-        {
-            return new Uri(str, kind);
-        }
-        catch (FormatException)
-        {
-        }
-        catch (ArgumentException)
-        {
-        }
-
-        return null;
+        return StringExtensions.TryCreateUri(str, kind);
     }
 
     /// <summary>
@@ -1691,20 +1669,8 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
             return false;
         }
 
-        try
-        {
-            result = new Uri(str);
-            return true;
-        }
-        catch (FormatException)
-        {
-        }
-        catch (ArgumentException)
-        {
-        }
-
-        result = null;
-        return false;
+        result = StringExtensions.TryCreateUri(str);
+        return result != null;
     }
 
     /// <summary>
@@ -5378,6 +5344,27 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     /// <exception cref="ArgumentException">An element with the same key already exists in the JSON object.</exception>
     public void Add(string key, Guid value)
         => AddProperty(key, new JsonStringNode(value));
+
+    /// <summary>
+    /// Sets the value of the specific property.
+    /// </summary>
+    /// <param name="key">The property key.</param>
+    /// <param name="value">The value to set.</param>
+    /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+    public void Add(string key, Uri value)
+    {
+        AssertKey(key);
+        string url = null;
+        try
+        {
+            url = value?.OriginalString;
+        }
+        catch (InvalidOperationException)
+        {
+        }
+
+        AddProperty(key, string.IsNullOrEmpty(url) ? JsonValues.Null : new JsonStringNode(url));
+    }
 
     /// <summary>
     /// Adds a property with the provided key and value to the JSON object.

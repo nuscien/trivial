@@ -612,7 +612,7 @@ public static class StringExtensions
         if (string.IsNullOrWhiteSpace(url)) return null;
         try
         {
-            return new Uri(url);
+            return new Uri(url, UriKind.RelativeOrAbsolute);
         }
         catch (UriFormatException)
         {

@@ -231,18 +231,14 @@ public class HttpUri : IEquatable<HttpUri>, IEquatable<AppDeepLinkUri>, IEquatab
     /// </summary>
     /// <returns>The URI object.</returns>
     public Uri ToUri()
-    {
-        return new Uri(ToString());
-    }
+        => new(ToString());
 
     /// <summary>
     /// Serves as the default hash function.
     /// </summary>
     /// <returns>A hash code for the current object.</returns>
     public override int GetHashCode()
-    {
-        return ToString().GetHashCode();
-    }
+        => ToString().GetHashCode();
 
     /// <summary>
     /// Parses a URL to the HTTP URI.

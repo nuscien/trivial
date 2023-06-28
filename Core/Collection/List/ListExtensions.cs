@@ -797,4 +797,35 @@ public static class ListExtensions
 
         return str.ToString();
     }
+
+    /// <summary>
+    /// Converts to JSON object node collection.
+    /// </summary>
+    /// <param name="collection">The collection of the item to convert.</param>
+    /// <returns>A JSON object node collection converted.</returns>
+    public static IEnumerable<JsonObjectNode> ToJsonObjectNodes(this IEnumerable<IJsonObjectHost> collection)
+    {
+        if (collection == null) yield break;
+        foreach (var item in collection)
+        {
+            yield return item?.ToJson();
+        }
+    }
+
+    /// <summary>
+    /// Converts to JSON array.
+    /// </summary>
+    /// <param name="collection">The collection of the item to convert.</param>
+    /// <returns>A JSON array node converted.</returns>
+    public static JsonArrayNode ToJsonArrayNode(this IEnumerable<IJsonObjectHost> collection)
+    {
+        if (collection == null) return null;
+        var arr = new JsonArrayNode();
+        foreach (var item in collection)
+        {
+            arr.Add(item);
+        }
+
+        return arr;
+    }
 }

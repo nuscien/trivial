@@ -233,7 +233,7 @@ public class CommandParameter: IEquatable<CommandParameter>, IEquatable<CommandP
     /// </summary>
     /// <returns>The result value converted.</returns>
     public Uri ParseToUri()
-        => !string.IsNullOrWhiteSpace(Value) ? new Uri(Value) : null;
+        => !string.IsNullOrWhiteSpace(Value) ? new Uri(Value, UriKind.RelativeOrAbsolute) : null;
 
     /// <summary>
     /// Converts the value to its file information object equivalent.
@@ -760,7 +760,7 @@ public class CommandParameters
     {
         var v = Value(mode);
         if (string.IsNullOrWhiteSpace(v)) return null;
-        return new Uri(v);
+        return new Uri(v, UriKind.RelativeOrAbsolute);
     }
 
     /// <summary>

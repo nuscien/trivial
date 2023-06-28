@@ -176,9 +176,7 @@ public class ReceivedEventArgs<T> : ReceivedEventArgs
     /// <typeparam name="U">The type of result.</typeparam>
     /// <returns>A received data event arguments.</returns>
     public ReceivedEventArgs<U> ConvertTo<U>()
-    {
-        return new ReceivedEventArgs<U>(Result, this);
-    }
+        => new(Result, this);
 }
 
 /// <summary>

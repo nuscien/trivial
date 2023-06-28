@@ -769,7 +769,7 @@ public class CodeTokenRequestBody : TokenRequestBody
         var codeVerifier = q[CodeVerifierProperty];
         if (codeVerifier != null) CodeVerifier = codeVerifier;
         var redirectUri = q[RedirectUriProperty];
-        if (redirectUri != null) RedirectUri = redirectUri == string.Empty ? null : new Uri(redirectUri);
+        if (redirectUri != null) RedirectUri = redirectUri == string.Empty ? null : new Uri(redirectUri, UriKind.RelativeOrAbsolute);
         var provider = q[ServiceProviderProperty];
         if (provider != null) ServiceProvider = q[ServiceProviderProperty];
     }

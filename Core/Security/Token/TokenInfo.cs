@@ -259,7 +259,7 @@ public class TokenInfo
         {
             try
             {
-                ErrorUri = !string.IsNullOrWhiteSpace(value) ? new Uri(value) : null;
+                ErrorUri = !string.IsNullOrWhiteSpace(value) ? new Uri(value, UriKind.RelativeOrAbsolute) : null;
             }
             catch (FormatException)
             {
