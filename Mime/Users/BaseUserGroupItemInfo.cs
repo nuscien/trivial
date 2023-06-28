@@ -16,29 +16,29 @@ namespace Trivial.Users;
 /// <summary>
 /// The user group item information.
 /// </summary>
-public class UserGroupItemInfo : BaseSecurityEntityInfo
+public class BaseUserGroupItemInfo : BaseSecurityEntityInfo
 {
     /// <summary>
-    /// Initializes a new instance of the UserGroupItemInfo class.
+    /// Initializes a new instance of the BaseUserGroupItemInfo class.
     /// </summary>
-    public UserGroupItemInfo()
+    public BaseUserGroupItemInfo()
         : base(SecurityEntityTypes.Group)
     {
     }
 
     /// <summary>
-    /// Initializes a new instance of the UserGroupItemInfo class.
+    /// Initializes a new instance of the BaseUserGroupItemInfo class.
     /// </summary>
-    public UserGroupItemInfo(string id, string nickname, Uri avatar = null)
+    public BaseUserGroupItemInfo(string id, string nickname, Uri avatar = null)
         : base(SecurityEntityTypes.Group, id, nickname, avatar)
     {
     }
 
     /// <summary>
-    /// Initializes a new instance of the UserGroupItemInfo class.
+    /// Initializes a new instance of the BaseUserGroupItemInfo class.
     /// </summary>
     /// <param name="json">The JSON object to parse.</param>
-    public UserGroupItemInfo(JsonObjectNode json)
+    public BaseUserGroupItemInfo(JsonObjectNode json)
         : base(SecurityEntityTypes.Group, json)
     {
         if (json == null) return;
@@ -70,6 +70,6 @@ public class UserGroupItemInfo : BaseSecurityEntityInfo
     /// </summary>
     /// <param name="value">The source value.</param>
     /// <returns>The request instance.</returns>
-    public static implicit operator UserGroupItemInfo(JsonObjectNode value)
+    public static implicit operator BaseUserGroupItemInfo(JsonObjectNode value)
         => value is null ? null : new(value);
 }

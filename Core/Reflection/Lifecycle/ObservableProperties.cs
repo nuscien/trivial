@@ -521,37 +521,3 @@ public class NameValueObservableProperties<T> : BaseObservableProperties
         set => SetCurrentProperty(value);
     }
 }
-
-/// <summary>
-/// The model with observable identifier.
-/// </summary>
-[DataContract]
-public class BaseResourceObservableProperties : BaseObservableProperties
-{
-    /// <summary>
-    /// Initializes a new instance of the BaseResourceObservableProperties class.
-    /// </summary>
-    public BaseResourceObservableProperties()
-    {
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the BaseResourceObservableProperties class.
-    /// </summary>
-    /// <param name="id">The identifier.</param>
-    public BaseResourceObservableProperties(string id)
-    {
-        Id = id;
-    }
-
-    /// <summary>
-    /// Gets or sets the identifier.
-    /// </summary>
-    [DataMember(Name = "id")]
-    [JsonPropertyName("id")]
-    public string Id
-    {
-        get => GetCurrentProperty<string>();
-        set => SetCurrentProperty(value);
-    }
-}

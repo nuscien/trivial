@@ -32,7 +32,7 @@ public delegate Task<ChatCommandGuidanceRequest> ChatCommandGuidanceRequestSend(
 public abstract class BaseChatCommandGuidanceClient
 {
     private readonly Dictionary<string, BaseChatCommandGuidanceProvider> commands = new();
-    internal readonly List<SimpleChatMessage> history = new();
+    internal readonly List<ExtendedChatMessage> history = new();
 
     /// <summary>
     /// Initializes a new instance of the BaseChatCommandGuidanceClient class.
@@ -92,7 +92,7 @@ public abstract class BaseChatCommandGuidanceClient
     /// <summary>
     /// Gets the chat history.
     /// </summary>
-    public IList<SimpleChatMessage> History { get; }
+    public IList<ExtendedChatMessage> History { get; }
 
     /// <summary>
     /// Gets the default message kind of request.
@@ -246,7 +246,7 @@ public abstract class BaseChatCommandGuidanceClient
     /// <returns>The response message.</returns>
     protected internal abstract Task<ChatCommandGuidanceResponse> SendAsync(ChatCommandGuidanceRequest request, CancellationToken cancellationToken = default);
 
-    internal void AddHistory(SimpleChatMessage item)
+    internal void AddHistory(ExtendedChatMessage item)
         => history.Add(item);
 
     internal void NotifySending(ChatCommandGuidanceMessageEventArgs args)

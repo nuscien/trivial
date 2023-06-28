@@ -24,12 +24,12 @@ public class ChatCommandGuidanceRequest
     /// <param name="history">The chat history.</param>
     /// <param name="clientContextData">The context data from client.</param>
     /// <param name="response">The latest response.</param>
-    public ChatCommandGuidanceRequest(UserItemInfo user, string message, JsonObjectNode data, IEnumerable<SimpleChatMessage> history, JsonObjectNode clientContextData = null, ChatCommandGuidanceResponse response = null)
+    public ChatCommandGuidanceRequest(UserItemInfo user, string message, JsonObjectNode data, IEnumerable<ExtendedChatMessage> history, JsonObjectNode clientContextData = null, ChatCommandGuidanceResponse response = null)
     {
         User = user ?? new();
         Message = message;
         Data = data ?? new();
-        History = history ?? new List<SimpleChatMessage>();
+        History = history ?? new List<ExtendedChatMessage>();
         ClientContextData = clientContextData ?? new();
         TrackingId = response?.TrackingId ?? Guid.NewGuid();
         Info = response?.Info ?? new();
@@ -46,12 +46,12 @@ public class ChatCommandGuidanceRequest
     /// <param name="clientContextData">The context data from client.</param>
     /// <param name="trackingId">The tracking identifier.</param>
     /// <param name="info">The additional information from latest response.</param>
-    internal ChatCommandGuidanceRequest(UserItemInfo user, string message, JsonObjectNode data, IEnumerable<SimpleChatMessage> history, JsonObjectNode clientContextData, Guid trackingId, JsonObjectNode info)
+    internal ChatCommandGuidanceRequest(UserItemInfo user, string message, JsonObjectNode data, IEnumerable<ExtendedChatMessage> history, JsonObjectNode clientContextData, Guid trackingId, JsonObjectNode info)
     {
         User = user ?? new();
         Message = message;
         Data = data ?? new();
-        History = history ?? new List<SimpleChatMessage>();
+        History = history ?? new List<ExtendedChatMessage>();
         ClientContextData = clientContextData ?? new();
         TrackingId = trackingId;
         Info = info ?? new();
@@ -116,7 +116,7 @@ public class ChatCommandGuidanceRequest
     /// <summary>
     /// Gets the chat history.
     /// </summary>
-    public IEnumerable<SimpleChatMessage> History { get; }
+    public IEnumerable<ExtendedChatMessage> History { get; }
 
     /// <summary>
     /// Gets the context data from client.

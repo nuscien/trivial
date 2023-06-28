@@ -107,7 +107,7 @@ public class ChatCommandGuidanceContext
     /// <summary>
     /// Gets the history.
     /// </summary>
-    public List<SimpleChatMessage> History { get; }
+    public List<ExtendedChatMessage> History { get; }
 
     /// <summary>
     /// Gets the context information.

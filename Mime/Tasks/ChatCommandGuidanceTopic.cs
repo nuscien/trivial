@@ -19,7 +19,7 @@ namespace Trivial.Tasks;
 public class ChatCommandGuidanceTopic
 {
     private readonly BaseChatCommandGuidanceClient client;
-    internal readonly List<SimpleChatMessage> history = new();
+    internal readonly List<ExtendedChatMessage> history = new();
 
     /// <summary>
     /// Initializes a new instance of the ChatCommandGuidanceTopic class.
@@ -69,7 +69,7 @@ public class ChatCommandGuidanceTopic
     /// <summary>
     /// Gets the chat history.
     /// </summary>
-    public IList<SimpleChatMessage> History { get; }
+    public IList<ExtendedChatMessage> History { get; }
 
     /// <summary>
     /// Gets the latest request.
@@ -127,13 +127,13 @@ public class ChatCommandGuidanceTopic
     internal async Task<ChatCommandGuidanceReply> SendAsync(string message, JsonObjectNode data, ChatCommandGuidanceResponse reply, CancellationToken cancellationToken = default)
     {
         var user = client.User;
-        var request = new ChatCommandGuidanceRequest(user, message, data, new List<SimpleChatMessage>(history), null, reply);
+        var request = new ChatCommandGuidanceRequest(user, message, data, new List<ExtendedChatMessage>(history), null, reply);
         var args = new ChatCommandGuidanceMessageEventArgs(this, null, request, reply);
         client.OnRequestCreate(args);
         Sending?.Invoke(this, args);
         client.NotifySending(args);
         LatestRequest = request;
-        var record = new SimpleChatMessage(request.Id, user, message, DateTime.Now, client.RequestMessageKind, data);
+        var record = new ExtendedChatMessage(request.Id, user, message, DateTime.Now, client.RequestMessageKind, data);
         history.Add(record);
         client.AddHistory(record);
         client.OnSend(args);
@@ -154,7 +154,7 @@ public class ChatCommandGuidanceTopic
         Received?.Invoke(this, args);
         client.NotifyReceived(args);
         LatestResponse = response;
-        record = new SimpleChatMessage(response.Id, user, response.Message, DateTime.Now, response.Kind, response.Data);
+        record = new ExtendedChatMessage(response.Id, user, response.Message, DateTime.Now, response.Kind, response.Data);
         history.Add(record);
         client.AddHistory(record);
         client.OnReceive(args);

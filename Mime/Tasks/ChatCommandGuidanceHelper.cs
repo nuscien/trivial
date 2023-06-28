@@ -174,7 +174,7 @@ internal static class ChatCommandGuidanceHelper
         return json;
     }
 
-    public static IEnumerable<SimpleChatMessage> DeserializeChatMessages(JsonArrayNode arr)
+    public static IEnumerable<ExtendedChatMessage> DeserializeChatMessages(JsonArrayNode arr)
     {
         if (arr == null) yield break;
         foreach (var item in arr)
@@ -184,7 +184,7 @@ internal static class ChatCommandGuidanceHelper
         }
     }
 
-    public static JsonArrayNode Serizalize(IEnumerable<SimpleChatMessage> value)
+    public static JsonArrayNode Serizalize(IEnumerable<ExtendedChatMessage> value)
     {
         if (value == null) return null;
         var col = new JsonArrayNode();

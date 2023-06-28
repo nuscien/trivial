@@ -14,7 +14,7 @@ namespace Trivial.Users;
 /// <summary>
 /// The user item information.
 /// </summary>
-public abstract class BaseSecurityEntityInfo : BaseResourceObservableProperties, IJsonObjectHost
+public abstract class BaseSecurityEntityInfo : BaseResourceEntityInfo
 {
     /// <summary>
     /// Initializes a new instance of the BaseSecurityEntityInfo class.
@@ -109,13 +109,13 @@ public abstract class BaseSecurityEntityInfo : BaseResourceObservableProperties,
     /// Converts to JSON object.
     /// </summary>
     /// <returns>A JSON object.</returns>
-    public virtual JsonObjectNode ToJson()
-        => new()
-        {
-            { "id", Id },
-            { "nickname", Nickname },
-            { "avatar", AvatarUri?.OriginalString },
-        };
+    public override JsonObjectNode ToJson()
+    {
+        var json = base.ToJson();
+        json.SetValue("nickname", Nickname);
+        json.SetValue("avatar", AvatarUri);
+        return json;
+    }
 
     /// <summary>
     /// Gets a property value.

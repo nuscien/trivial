@@ -3629,6 +3629,28 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     /// <param name="key">The property key.</param>
     /// <param name="value">The value to set.</param>
     /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+    public void SetValue(string key, Uri value)
+    {
+        AssertKey(key);
+        string url = null;
+        try
+        {
+            url = value?.OriginalString;
+        }
+        catch (InvalidOperationException)
+        {
+        }
+
+        if (string.IsNullOrEmpty(url)) SetProperty(key, JsonValues.Null);
+        else SetProperty(key, new JsonStringNode(url));
+    }
+
+    /// <summary>
+    /// Sets the value of the specific property.
+    /// </summary>
+    /// <param name="key">The property key.</param>
+    /// <param name="value">The value to set.</param>
+    /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
     public void SetValue(string key, DateTime value)
     {
         AssertKey(key);
