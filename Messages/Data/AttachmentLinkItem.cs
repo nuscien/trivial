@@ -14,6 +14,7 @@ using Trivial.Collection;
 using Trivial.Net;
 using Trivial.Reflection;
 using Trivial.Text;
+using Trivial.Users;
 using Trivial.Web;
 
 namespace Trivial.Data;
@@ -129,6 +130,41 @@ public class AttachmentLinkItem : BaseObservableProperties, IJsonObjectHost
     }
 
     /// <summary>
+    /// Creates a chat message record.
+    /// </summary>
+    /// <param name="sender">The nickname of the sender.</param>
+    /// <param name="message">The message text.</param>
+    /// <param name="creation">The creation date time; or null if use now.</param>
+    /// <param name="info">The additional information; or null if create a new one.</param>
+    /// <returns>The chat message.</returns>
+    public ExtendedChatMessage<AttachmentLinkItem> CreateMessage(UserItemInfo sender, string message, DateTime? creation = null, JsonObjectNode info = null)
+        => CreateMessage(Guid.NewGuid(), sender, message, creation, info);
+
+    /// <summary>
+    /// Creates a chat message record.
+    /// </summary>
+    /// <param name="id">The message identifier.</param>
+    /// <param name="sender">The nickname of the sender.</param>
+    /// <param name="message">The message text.</param>
+    /// <param name="creation">The creation date time; or null if use now.</param>
+    /// <param name="info">The additional information; or null if create a new one.</param>
+    /// <returns>The chat message.</returns>
+    public ExtendedChatMessage<AttachmentLinkItem> CreateMessage(Guid id, UserItemInfo sender, string message, DateTime? creation = null, JsonObjectNode info = null)
+        => CreateMessage(ExtendedChatMessages.ToIdString(id), sender, message, creation, info);
+
+    /// <summary>
+    /// Creates a chat message record.
+    /// </summary>
+    /// <param name="id">The message identifier.</param>
+    /// <param name="sender">The nickname of the sender.</param>
+    /// <param name="message">The message text.</param>
+    /// <param name="creation">The creation date time; or null if use now.</param>
+    /// <param name="info">The additional information; or null if create a new one.</param>
+    /// <returns>The chat message.</returns>
+    public ExtendedChatMessage<AttachmentLinkItem> CreateMessage(string id, UserItemInfo sender, string message, DateTime? creation = null, JsonObjectNode info = null)
+        => new(ExtendedChatMessages.AttachmentLinkItemKey, id, sender, this, message, creation, info);
+
+    /// <summary>
     /// Pluses two angles.
     /// leftValue + rightValue
     /// </summary>
@@ -170,7 +206,7 @@ public class AttachmentLinkItem : BaseObservableProperties, IJsonObjectHost
 /// <summary>
 /// The attachment link item model.
 /// </summary>
-public class AttachmentLinkSet : BaseObservableProperties, IJsonObjectHost
+public class AttachmentLinkSet : IJsonObjectHost
 {
     /// <summary>
     /// Initializes a new instance of the AttachmentLinkSet class.
@@ -178,6 +214,7 @@ public class AttachmentLinkSet : BaseObservableProperties, IJsonObjectHost
     public AttachmentLinkSet()
     {
         Items = new();
+        Info = new();
     }
 
     /// <summary>
@@ -185,8 +222,8 @@ public class AttachmentLinkSet : BaseObservableProperties, IJsonObjectHost
     /// </summary>
     /// <param name="item">The attachment item.</param>
     public AttachmentLinkSet(AttachmentLinkItem item)
+        : this()
     {
-        Items = new();
         if (item.Link != null) Items.Add(item);
     }
 
@@ -195,8 +232,13 @@ public class AttachmentLinkSet : BaseObservableProperties, IJsonObjectHost
     /// </summary>
     /// <param name="items">The attachment items.</param>
     public AttachmentLinkSet(IEnumerable<AttachmentLinkItem> items)
+        : this()
     {
-        Items = items == null ? new() : new(items.Where(ele => ele?.Link != null));
+        if (items == null) return;
+        foreach (var item in items)
+        {
+            if (item?.Link != null) Items.Add(item);
+        }
     }
 
     /// <summary>
@@ -213,7 +255,7 @@ public class AttachmentLinkSet : BaseObservableProperties, IJsonObjectHost
             Items.Add(item);
         }
 
-        SetProperty(nameof(Info), json.TryGetObjectValue("info"));
+        Info = json.TryGetObjectValue("info") ?? new();
     }
 
     /// <summary>
@@ -229,7 +271,7 @@ public class AttachmentLinkSet : BaseObservableProperties, IJsonObjectHost
     /// <summary>
     /// Gets the additional information.
     /// </summary>
-    public JsonObjectNode Info { get; } = new();
+    public JsonObjectNode Info { get; }
 
     /// <summary>
     /// Gets or sets the item.
@@ -481,6 +523,41 @@ public class AttachmentLinkSet : BaseObservableProperties, IJsonObjectHost
         if (Info.Count > 0) json.SetValue("info", Info);
         return json;
     }
+
+    /// <summary>
+    /// Creates a chat message record.
+    /// </summary>
+    /// <param name="sender">The nickname of the sender.</param>
+    /// <param name="message">The message text.</param>
+    /// <param name="creation">The creation date time; or null if use now.</param>
+    /// <param name="info">The additional information; or null if create a new one.</param>
+    /// <returns>The chat message.</returns>
+    public ExtendedChatMessage<AttachmentLinkSet> CreateMessage(UserItemInfo sender, string message, DateTime? creation = null, JsonObjectNode info = null)
+        => CreateMessage(Guid.NewGuid(), sender, message, creation, info);
+
+    /// <summary>
+    /// Creates a chat message record.
+    /// </summary>
+    /// <param name="id">The message identifier.</param>
+    /// <param name="sender">The nickname of the sender.</param>
+    /// <param name="message">The message text.</param>
+    /// <param name="creation">The creation date time; or null if use now.</param>
+    /// <param name="info">The additional information; or null if create a new one.</param>
+    /// <returns>The chat message.</returns>
+    public ExtendedChatMessage<AttachmentLinkSet> CreateMessage(Guid id, UserItemInfo sender, string message, DateTime? creation = null, JsonObjectNode info = null)
+        => CreateMessage(ExtendedChatMessages.ToIdString(id), sender, message, creation, info);
+
+    /// <summary>
+    /// Creates a chat message record.
+    /// </summary>
+    /// <param name="id">The message identifier.</param>
+    /// <param name="sender">The nickname of the sender.</param>
+    /// <param name="message">The message text.</param>
+    /// <param name="creation">The creation date time; or null if use now.</param>
+    /// <param name="info">The additional information; or null if create a new one.</param>
+    /// <returns>The chat message.</returns>
+    public ExtendedChatMessage<AttachmentLinkSet> CreateMessage(string id, UserItemInfo sender, string message, DateTime? creation = null, JsonObjectNode info = null)
+        => new(ExtendedChatMessages.AttachmentLinkSetKey, id, sender, this, message, creation, info);
 
     /// <summary>
     /// Converts the JSON raw back.

@@ -401,7 +401,7 @@ public class OnlineChatCommandGuidanceEngine : BaseChatCommandGuidanceEngine
         });
         foreach (var message in context.History)
         {
-            var kind = message?.Kind?.Trim()?.ToLowerInvariant();
+            var kind = message?.Category?.Trim()?.ToLowerInvariant();
             if (string.IsNullOrEmpty(kind)) continue;
             var role = kind switch
             {

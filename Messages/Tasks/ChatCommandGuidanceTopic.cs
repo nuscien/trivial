@@ -133,7 +133,10 @@ public class ChatCommandGuidanceTopic
         Sending?.Invoke(this, args);
         client.NotifySending(args);
         LatestRequest = request;
-        var record = new ExtendedChatMessage(request.Id, user, message, DateTime.Now, client.RequestMessageKind, data);
+        var record = new ExtendedChatMessage(request.Id, user, message, DateTime.Now, data)
+        {
+            Category = client.RequestMessageKind
+        };
         history.Add(record);
         client.AddHistory(record);
         client.OnSend(args);
@@ -154,7 +157,10 @@ public class ChatCommandGuidanceTopic
         Received?.Invoke(this, args);
         client.NotifyReceived(args);
         LatestResponse = response;
-        record = new ExtendedChatMessage(response.Id, user, response.Message, DateTime.Now, response.Kind, response.Data);
+        record = new ExtendedChatMessage(response.Id, user, response.Message, DateTime.Now, response.Data)
+        {
+            Category = response.Kind
+        };
         history.Add(record);
         client.AddHistory(record);
         client.OnReceive(args);
