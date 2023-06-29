@@ -82,7 +82,7 @@ public class ExtendedChatMessage : BaseResourceEntityInfo
     /// <param name="kind">The message kind.</param>
     /// <param name="info">The additional information; or null if create a new one.</param>
     public ExtendedChatMessage(Guid id, UserItemInfo sender, string message, DateTime? creation = null, string kind = null, JsonObjectNode info = null)
-        : this(id.ToString("N"), sender, message, creation, kind, info)
+        : this(ExtendedChatMessages.ToIdString(id), sender, message, creation, kind, info)
     {
     }
 
@@ -246,7 +246,17 @@ public class ExtendedChatMessage : BaseResourceEntityInfo
     /// <param name="value">The source value.</param>
     /// <returns>A model of the message.</returns>
     public static implicit operator ExtendedChatMessage(JsonObjectNode value)
-        => value is null ? null : new(value);
+    {
+        if (value is null) return null;
+        var kind = value.TryGetStringTrimmedValue("kind", true)?.Trim();
+        if (kind == null) return new(value);
+        return kind switch
+        {
+            "attachment\\item" => new ExtendedChatMessage<AttachmentLinkItem>(value, json => new AttachmentLinkItem(json), kind),
+            "attachment\\list" => new ExtendedChatMessage<AttachmentLinkSet>(value, json => new AttachmentLinkSet(json), kind),
+            _ => new(value)
+        };
+    }
 
     /// <summary>
     /// Converts to JSON object.
@@ -260,7 +270,7 @@ public class ExtendedChatMessage : BaseResourceEntityInfo
 /// <summary>
 /// The chat message record.
 /// </summary>
-public abstract class ExtendedChatMessage<T> : ExtendedChatMessage where T : class
+public class ExtendedChatMessage<T> : ExtendedChatMessage where T : class
 {
     /// <summary>
     /// Initializes a new instance of the ExtendedChatMessage class.
@@ -287,7 +297,7 @@ public abstract class ExtendedChatMessage<T> : ExtendedChatMessage where T : cla
     /// <param name="creation">The creation date time; or null if use now.</param>
     /// <param name="info">The additional information; or null if create a new one.</param>
     protected ExtendedChatMessage(string kind, Guid id, UserItemInfo sender, T data, string message, DateTime? creation = null, JsonObjectNode info = null)
-        : this(kind, id.ToString("N"), sender, data, message, creation, info)
+        : this(kind, ExtendedChatMessages.ToIdString(id), sender, data, message, creation, info)
     {
     }
 
@@ -301,7 +311,7 @@ public abstract class ExtendedChatMessage<T> : ExtendedChatMessage where T : cla
     /// <param name="message">The message text.</param>
     /// <param name="creation">The creation date time; or null if use now.</param>
     /// <param name="info">The additional information; or null if create a new one.</param>
-    protected ExtendedChatMessage(string kind, string id, UserItemInfo sender, T data, string message, DateTime? creation = null, JsonObjectNode info = null)
+    protected internal ExtendedChatMessage(string kind, string id, UserItemInfo sender, T data, string message, DateTime? creation = null, JsonObjectNode info = null)
         : base(id, sender, message, creation, kind, info)
     {
         Data = data;
@@ -324,9 +334,28 @@ public abstract class ExtendedChatMessage<T> : ExtendedChatMessage where T : cla
     }
 
     /// <summary>
+    /// Initializes a new instance of the ExtendedChatMessage class.
+    /// </summary>
+    /// <param name="json">The JSON object to parse.</param>
+    /// <param name="dataConverter">The data converter.</param>
+    /// <param name="kind">The message kind to override; or null, if use the one in JSON input.</param>
+    protected internal ExtendedChatMessage(JsonObjectNode json, Func<JsonObjectNode, T> dataConverter, string kind = null)
+        : base(json)
+    {
+        if (!string.IsNullOrWhiteSpace(kind)) SetProperty(nameof(Kind), kind);
+        var data = json?.TryGetObjectValue("data");
+        if (data == null) return;
+        Data = dataConverter == null ? data.Deserialize<T>() : dataConverter(data);
+    }
+
+    /// <summary>
     /// Gets the data of customized message details.
     /// </summary>
-    public T Data { get; protected set; }
+    public T Data
+    {
+        get => GetCurrentProperty<T>();
+        protected set => SetCurrentProperty(value);
+    }
 
     /// <summary>
     /// Converts to JSON object.
@@ -338,171 +367,44 @@ public abstract class ExtendedChatMessage<T> : ExtendedChatMessage where T : cla
 }
 
 /// <summary>
-/// The chat message record with attachment.
+/// The factory of the extended chat message data.
 /// </summary>
-public class AttachmentExtendedChatMessage : ExtendedChatMessage<AttachmentLinkItem>
+/// <typeparam name="T">The type of data.</typeparam>
+public abstract class BaseExtendedChatMessageDataFactory<T> where T : class
 {
-    private const string DefaultKind = "attachment\\item";
+    /// <summary>
+    /// Gets the message kind.
+    /// </summary>
+    public string Kind { get; }
 
     /// <summary>
-    /// Initializes a new instance of the AttachmentExtendedChatMessage class.
+    /// Generates the data instance from a JSON object.
     /// </summary>
-    /// <param name="sender">The nickname of the sender.</param>
-    /// <param name="data">The message data.</param>
-    /// <param name="message">The message text.</param>
-    /// <param name="creation">The creation date time; or null if use now.</param>
-    /// <param name="info">The additional information; or null if create a new one.</param>
-    public AttachmentExtendedChatMessage(UserItemInfo sender, AttachmentLinkItem data, string message, DateTime? creation = null, JsonObjectNode info = null)
-        : base(DefaultKind, Guid.NewGuid(), sender, data, message, creation, info)
-    {
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the AttachmentExtendedChatMessage class.
-    /// </summary>
-    /// <param name="id">The message identifier.</param>
-    /// <param name="sender">The nickname of the sender.</param>
-    /// <param name="data">The message data.</param>
-    /// <param name="message">The message text.</param>
-    /// <param name="creation">The creation date time; or null if use now.</param>
-    /// <param name="info">The additional information; or null if create a new one.</param>
-    public AttachmentExtendedChatMessage(Guid id, UserItemInfo sender, AttachmentLinkItem data, string message, DateTime? creation = null, JsonObjectNode info = null)
-        : base(DefaultKind, id, sender, data, message, creation, info)
-    {
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the AttachmentExtendedChatMessage class.
-    /// </summary>
-    /// <param name="id">The message identifier.</param>
-    /// <param name="sender">The nickname of the sender.</param>
-    /// <param name="data">The message data.</param>
-    /// <param name="message">The message text.</param>
-    /// <param name="creation">The creation date time; or null if use now.</param>
-    /// <param name="info">The additional information; or null if create a new one.</param>
-    public AttachmentExtendedChatMessage(string id, UserItemInfo sender, AttachmentLinkItem data, string message, DateTime? creation = null, JsonObjectNode info = null)
-        : base(DefaultKind, id, sender, data, message, creation, info)
-    {
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the AttachmentExtendedChatMessage class.
-    /// </summary>
-    /// <param name="json">The JSON object to parse.</param>
-    public AttachmentExtendedChatMessage(JsonObjectNode json)
-        : this(json, false)
-    {
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the AttachmentExtendedChatMessage class.
-    /// </summary>
-    /// <param name="kind">The message kind.</param>
-    /// <param name="id">The message identifier.</param>
-    /// <param name="sender">The nickname of the sender.</param>
-    /// <param name="data">The message data.</param>
-    /// <param name="message">The message text.</param>
-    /// <param name="creation">The creation date time; or null if use now.</param>
-    /// <param name="info">The additional information; or null if create a new one.</param>
-    protected AttachmentExtendedChatMessage(string kind, string id, UserItemInfo sender, AttachmentLinkItem data, string message, DateTime? creation = null, JsonObjectNode info = null)
-        : base(kind, id, sender, data, message, creation, info)
-    {
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the AttachmentExtendedChatMessage class.
-    /// </summary>
-    /// <param name="kind">The message kind.</param>
-    /// <param name="id">The message identifier.</param>
-    /// <param name="sender">The nickname of the sender.</param>
-    /// <param name="data">The message data.</param>
-    /// <param name="message">The message text.</param>
-    /// <param name="creation">The creation date time; or null if use now.</param>
-    /// <param name="info">The additional information; or null if create a new one.</param>
-    protected AttachmentExtendedChatMessage(string kind, Guid id, UserItemInfo sender, AttachmentLinkItem data, string message, DateTime? creation = null, JsonObjectNode info = null)
-        : base(kind, id, sender, data, message, creation, info)
-    {
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the AttachmentExtendedChatMessage class.
-    /// </summary>
-    /// <param name="json">The JSON object to parse.</param>
-    /// <param name="ignoreDataDeserialize">true if skip to deserialize the data; otherwise, false.</param>
-    /// <param name="kind">The message kind to override; or null, if use the one in JSON input.</param>
-    protected AttachmentExtendedChatMessage(JsonObjectNode json, bool ignoreDataDeserialize = false, string kind = null)
-        : base(json, true, kind ?? DefaultKind)
-    {
-        if (ignoreDataDeserialize) return;
-        Data = new(json?.TryGetObjectValue("data"));
-    }
-
-    /// <summary>
-    /// Gets a value indicating whether contains an attachment item.
-    /// </summary>
-    public bool HasAttachment => Data?.Link != null;
-
-    /// <summary>
-    /// Gets the URI of the attachment.
-    /// </summary>
-    public Uri AttachmentLink => Data?.Link;
-
-    /// <summary>
-    /// Gets the MIME value of the attachment.
-    /// </summary>
-    public string AttachmentContentType => Data?.ContentType;
-
-    /// <summary>
-    /// Converts the JSON raw back.
-    /// </summary>
-    /// <param name="value">The source value.</param>
-    /// <returns>A model of the message.</returns>
-    public static implicit operator AttachmentExtendedChatMessage(JsonObjectNode value)
-        => value is null ? null : new(value);
-
-    /// <summary>
-    /// Converts to JSON object.
-    /// </summary>
-    /// <param name="value">The JSON value.</param>
-    /// <returns>A JSON object.</returns>
-    public static explicit operator JsonObjectNode(AttachmentExtendedChatMessage value)
-        => value?.ToJson();
-
-    /// <summary>
-    /// Converts to JSON object.
-    /// </summary>
-    /// <param name="value">The JSON value.</param>
-    /// <returns>A JSON object.</returns>
-    public static explicit operator AttachmentListExtendedChatMessage(AttachmentExtendedChatMessage value)
-        => value == null ? null : new(value.Id, value.Sender, new(value.Data), value.Message, value.CreationTime, value.Info)
-        {
-            LastModificationTime = value.LastModificationTime,
-            ModificationKind = value.ModificationKind
-        };
+    /// <param name="json">The JSON object node input.</param>
+    /// <returns>The instance of the data.</returns>
+    public virtual T Create(JsonObjectNode json)
+        => json == null ? default : json.Deserialize<T>();
 }
 
 /// <summary>
-/// The chat message record with attachment list.
+/// The helper of extended chat message.
 /// </summary>
-public class AttachmentListExtendedChatMessage : ExtendedChatMessage<AttachmentLinkSet>
+public static class ExtendedChatMessages
 {
-    private const string DefaultKind = "attachment\\list";
-
     /// <summary>
-    /// Initializes a new instance of the AttachmentListExtendedChatMessage class.
+    /// Creates a chat message record.
     /// </summary>
     /// <param name="sender">The nickname of the sender.</param>
     /// <param name="data">The message data.</param>
     /// <param name="message">The message text.</param>
     /// <param name="creation">The creation date time; or null if use now.</param>
     /// <param name="info">The additional information; or null if create a new one.</param>
-    public AttachmentListExtendedChatMessage(UserItemInfo sender, AttachmentLinkSet data, string message, DateTime? creation = null, JsonObjectNode info = null)
-        : base(DefaultKind, Guid.NewGuid(), sender, data ?? new(), message, creation, info)
-    {
-    }
+    /// <returns>The chat message.</returns>
+    public static ExtendedChatMessage<AttachmentLinkItem> Create(UserItemInfo sender, AttachmentLinkItem data, string message, DateTime? creation = null, JsonObjectNode info = null)
+        => Create(Guid.NewGuid(), sender, data, message, creation, info);
 
     /// <summary>
-    /// Initializes a new instance of the AttachmentListExtendedChatMessage class.
+    /// Creates a chat message record.
     /// </summary>
     /// <param name="id">The message identifier.</param>
     /// <param name="sender">The nickname of the sender.</param>
@@ -510,13 +412,12 @@ public class AttachmentListExtendedChatMessage : ExtendedChatMessage<AttachmentL
     /// <param name="message">The message text.</param>
     /// <param name="creation">The creation date time; or null if use now.</param>
     /// <param name="info">The additional information; or null if create a new one.</param>
-    public AttachmentListExtendedChatMessage(Guid id, UserItemInfo sender, AttachmentLinkSet data, string message, DateTime? creation = null, JsonObjectNode info = null)
-        : base(DefaultKind, id, sender, data ?? new(), message, creation, info)
-    {
-    }
+    /// <returns>The chat message.</returns>
+    public static ExtendedChatMessage<AttachmentLinkItem> Create(Guid id, UserItemInfo sender, AttachmentLinkItem data, string message, DateTime? creation = null, JsonObjectNode info = null)
+        => Create(ToIdString(id), sender, data, message, creation, info);
 
     /// <summary>
-    /// Initializes a new instance of the AttachmentListExtendedChatMessage class.
+    /// Creates a chat message record.
     /// </summary>
     /// <param name="id">The message identifier.</param>
     /// <param name="sender">The nickname of the sender.</param>
@@ -524,162 +425,251 @@ public class AttachmentListExtendedChatMessage : ExtendedChatMessage<AttachmentL
     /// <param name="message">The message text.</param>
     /// <param name="creation">The creation date time; or null if use now.</param>
     /// <param name="info">The additional information; or null if create a new one.</param>
-    public AttachmentListExtendedChatMessage(string id, UserItemInfo sender, AttachmentLinkSet data, string message, DateTime? creation = null, JsonObjectNode info = null)
-        : base(DefaultKind, id, sender, data ?? new(), message, creation, info)
-    {
-    }
+    /// <returns>The chat message.</returns>
+    public static ExtendedChatMessage<AttachmentLinkItem> Create(string id, UserItemInfo sender, AttachmentLinkItem data, string message, DateTime? creation = null, JsonObjectNode info = null)
+        => new("attachment\\item", id, sender, data, message, creation, info);
 
     /// <summary>
-    /// Initializes a new instance of the AttachmentListExtendedChatMessage class.
+    /// Creates a chat message record.
     /// </summary>
+    /// <param name="sender">The nickname of the sender.</param>
+    /// <param name="data">The message data.</param>
+    /// <param name="message">The message text.</param>
+    /// <param name="creation">The creation date time; or null if use now.</param>
+    /// <param name="info">The additional information; or null if create a new one.</param>
+    /// <returns>The chat message.</returns>
+    public static ExtendedChatMessage<AttachmentLinkSet> Create(UserItemInfo sender, AttachmentLinkSet data, string message, DateTime? creation = null, JsonObjectNode info = null)
+        => Create(Guid.NewGuid(), sender, data ?? new(), message, creation, info);
+
+    /// <summary>
+    /// Creates a chat message record.
+    /// </summary>
+    /// <param name="id">The message identifier.</param>
+    /// <param name="sender">The nickname of the sender.</param>
+    /// <param name="data">The message data.</param>
+    /// <param name="message">The message text.</param>
+    /// <param name="creation">The creation date time; or null if use now.</param>
+    /// <param name="info">The additional information; or null if create a new one.</param>
+    /// <returns>The chat message.</returns>
+    public static ExtendedChatMessage<AttachmentLinkSet> Create(Guid id, UserItemInfo sender, AttachmentLinkSet data, string message, DateTime? creation = null, JsonObjectNode info = null)
+        => Create(ToIdString(id), sender, data ?? new(), message, creation, info);
+
+    /// <summary>
+    /// Creates a chat message record.
+    /// </summary>
+    /// <param name="id">The message identifier.</param>
+    /// <param name="sender">The nickname of the sender.</param>
+    /// <param name="data">The message data.</param>
+    /// <param name="message">The message text.</param>
+    /// <param name="creation">The creation date time; or null if use now.</param>
+    /// <param name="info">The additional information; or null if create a new one.</param>
+    /// <returns>The chat message.</returns>
+    public static ExtendedChatMessage<AttachmentLinkSet> Create(string id, UserItemInfo sender, AttachmentLinkSet data, string message, DateTime? creation = null, JsonObjectNode info = null)
+        => new("attachment\\list", id, sender, data ?? new(), message, creation, info);
+
+    /// <summary>
+    /// Creates a chat message record.
+    /// </summary>
+    /// <param name="factory">The data factory.</param>
+    /// <param name="sender">The nickname of the sender.</param>
+    /// <param name="data">The message data.</param>
+    /// <param name="message">The message text.</param>
+    /// <param name="creation">The creation date time; or null if use now.</param>
+    /// <param name="info">The additional information; or null if create a new one.</param>
+    /// <returns>The chat message.</returns>
+    public static ExtendedChatMessage<T> Create<T>(BaseExtendedChatMessageDataFactory<T> factory, UserItemInfo sender, T data, string message, DateTime? creation = null, JsonObjectNode info = null) where T : class
+        => Create(factory, Guid.NewGuid(), sender, data, message, creation, info);
+
+    /// <summary>
+    /// Creates a chat message record.
+    /// </summary>
+    /// <param name="factory">The data factory.</param>
+    /// <param name="id">The message identifier.</param>
+    /// <param name="sender">The nickname of the sender.</param>
+    /// <param name="data">The message data.</param>
+    /// <param name="message">The message text.</param>
+    /// <param name="creation">The creation date time; or null if use now.</param>
+    /// <param name="info">The additional information; or null if create a new one.</param>
+    /// <returns>The chat message.</returns>
+    public static ExtendedChatMessage<T> Create<T>(BaseExtendedChatMessageDataFactory<T> factory, Guid id, UserItemInfo sender, T data, string message, DateTime? creation = null, JsonObjectNode info = null) where T : class
+        => Create(factory, ToIdString(id), sender, data, message, creation, info);
+
+    /// <summary>
+    /// Creates a chat message record.
+    /// </summary>
+    /// <param name="factory">The data factory.</param>
+    /// <param name="id">The message identifier.</param>
+    /// <param name="sender">The nickname of the sender.</param>
+    /// <param name="data">The message data.</param>
+    /// <param name="message">The message text.</param>
+    /// <param name="creation">The creation date time; or null if use now.</param>
+    /// <param name="info">The additional information; or null if create a new one.</param>
+    /// <returns>The chat message.</returns>
+    public static ExtendedChatMessage<T> Create<T>(BaseExtendedChatMessageDataFactory<T> factory, string id, UserItemInfo sender, T data, string message, DateTime? creation = null, JsonObjectNode info = null) where T : class
+        => string.IsNullOrWhiteSpace(factory?.Kind) ? null : new(factory.Kind, id, sender, data, message, creation, info);
+
+    /// <summary>
+    /// Creates a chat message record.
+    /// </summary>
+    /// <param name="factory">The data factory.</param>
     /// <param name="json">The JSON object to parse.</param>
-    public AttachmentListExtendedChatMessage(JsonObjectNode json)
-        : this(json, false)
-    {
-    }
+    /// <returns>The chat message.</returns>
+    public static ExtendedChatMessage<T> Create<T>(BaseExtendedChatMessageDataFactory<T> factory, JsonObjectNode json) where T : class
+        => string.IsNullOrWhiteSpace(factory?.Kind) ? null : new(json, factory.Create, factory.Kind);
 
     /// <summary>
-    /// Initializes a new instance of the AttachmentListExtendedChatMessage class.
+    /// Creates a chat message record.
     /// </summary>
-    /// <param name="kind">The message kind.</param>
-    /// <param name="id">The message identifier.</param>
+    /// <param name="languageName">The lowercase name of the programming language without whitespace.</param>
     /// <param name="sender">The nickname of the sender.</param>
-    /// <param name="data">The message data.</param>
-    /// <param name="message">The message text.</param>
+    /// <param name="codeSnippet">The code snippet.</param>
     /// <param name="creation">The creation date time; or null if use now.</param>
     /// <param name="info">The additional information; or null if create a new one.</param>
-    protected AttachmentListExtendedChatMessage(string kind, string id, UserItemInfo sender, AttachmentLinkSet data, string message, DateTime? creation = null, JsonObjectNode info = null)
-        : base(kind, id, sender, data ?? new(), message, creation, info)
-    {
-    }
+    /// <returns>The chat message.</returns>
+    public static ExtendedChatMessage CreateCodeSnippet(string languageName, UserItemInfo sender, string codeSnippet, DateTime? creation = null, JsonObjectNode info = null)
+        => new(sender, codeSnippet, creation, string.Concat("code\\", languageName), info);
 
     /// <summary>
-    /// Initializes a new instance of the AttachmentListExtendedChatMessage class.
+    /// Creates a chat message record.
     /// </summary>
-    /// <param name="json">The JSON object to parse.</param>
-    /// <param name="ignoreDataDeserialize">true if skip to deserialize the data; otherwise, false.</param>
-    /// <param name="kind">The message kind to override; or null, if use the one in JSON input.</param>
-    protected AttachmentListExtendedChatMessage(JsonObjectNode json, bool ignoreDataDeserialize = false, string kind = null)
-        : base(json, true, kind ?? DefaultKind)
-    {
-        if (ignoreDataDeserialize) return;
-        Data = new(json?.TryGetObjectValue("data"));
-    }
+    /// <param name="languageName">The lowercase name of the programming language without whitespace.</param>
+    /// <param name="id">The message identifier.</param>
+    /// <param name="sender">The nickname of the sender.</param>
+    /// <param name="codeSnippet">The code snippet.</param>
+    /// <param name="creation">The creation date time; or null if use now.</param>
+    /// <param name="info">The additional information; or null if create a new one.</param>
+    /// <returns>The chat message.</returns>
+    public static ExtendedChatMessage CreateCodeSnippet(string languageName, Guid id, UserItemInfo sender, string codeSnippet, DateTime? creation = null, JsonObjectNode info = null)
+        => new(id, sender, codeSnippet, creation, string.Concat("code\\", languageName), info);
 
     /// <summary>
-    /// Gets all attachment items.
+    /// Creates a chat message record.
     /// </summary>
-    public ObservableCollection<AttachmentLinkItem> Items => Data.Items;
+    /// <param name="languageName">The lowercase name of the programming language without whitespace.</param>
+    /// <param name="id">The message identifier.</param>
+    /// <param name="sender">The nickname of the sender.</param>
+    /// <param name="codeSnippet">The code snippet.</param>
+    /// <param name="creation">The creation date time; or null if use now.</param>
+    /// <param name="info">The additional information; or null if create a new one.</param>
+    /// <returns>The chat message.</returns>
+    public static ExtendedChatMessage CreateCodeSnippet(string languageName, string id, UserItemInfo sender, string codeSnippet, DateTime? creation = null, JsonObjectNode info = null)
+        => new(id, sender, codeSnippet, creation, string.Concat("code\\", languageName), info);
+
+    /// <summary>
+    /// Tests if the message contains an attachment item.
+    /// </summary>
+    /// <param name="message">The chat message.</param>
+    /// <returns>true if contains; otherwise, false.</returns>
+    public static bool HasAttachment(this ExtendedChatMessage<AttachmentLinkItem> message)
+        => message?.Data?.Link != null;
 
     /// <summary>
     /// Tests if contains the specific item.
     /// </summary>
+    /// <param name="message">The chat message.</param>
     /// <param name="item">The attachment item.</param>
     /// <returns>true if contains; otherwise, false.</returns>
-    public bool ContainsItem(AttachmentLinkItem item)
-        => Data.Contains(item);
+    public static bool ContainsItem(this ExtendedChatMessage<AttachmentLinkSet> message, AttachmentLinkItem item)
+        => message != null && message.Data.Contains(item);
 
     /// <summary>
     /// Tests if contains the specific item.
     /// </summary>
+    /// <param name="message">The chat message.</param>
     /// <param name="link">The attachment link.</param>
     /// <returns>true if contains; otherwise, false.</returns>
-    public bool ContainsItem(Uri link)
-        => Data.Contains(link);
+    public static bool ContainsItem(this ExtendedChatMessage<AttachmentLinkSet> message, Uri link)
+        => message != null && message.Data.Contains(link);
 
     /// <summary>
     /// Tries to get the specific item.
     /// </summary>
-    /// <param name="i">The zero-base index.</param>
+    /// <param name="message">The chat message.</param>
+    /// <param name="index">The zero-base index.</param>
     /// <returns>The attachment item; or null, if the index is not valid.</returns>
-    public AttachmentLinkItem TryGetItem(int i)
-        => Data.TryGet(i);
+    public static AttachmentLinkItem TryGetItem(this ExtendedChatMessage<AttachmentLinkSet> message, int index)
+        => message?.Data.TryGet(index);
 
     /// <summary>
     /// Adds an attachment.
     /// </summary>
+    /// <param name="message">The chat message.</param>
     /// <param name="item">The attachment to add.</param>
-    public void AddItem(AttachmentLinkItem item)
-        => Data.Add(item);
+    public static void AddItem(this ExtendedChatMessage<AttachmentLinkSet> message, AttachmentLinkItem item)
+        => message?.Data.Add(item);
 
     /// <summary>
     /// Adds an attachment.
     /// </summary>
+    /// <param name="message">The chat message.</param>
     /// <param name="link">The URI of the attachment.</param>
     /// <param name="mime">The MIME value of the attachment.</param>
-    public AttachmentLinkItem AddItem(Uri link, string mime)
-        => Data.Add(link, mime);
+    public static AttachmentLinkItem AddItem(this ExtendedChatMessage<AttachmentLinkSet> message, Uri link, string mime)
+        => message?.Data.Add(link, mime);
 
     /// <summary>
     /// Adds an attachment.
     /// </summary>
+    /// <param name="message">The chat message.</param>
     /// <param name="link">The URI of the attachment.</param>
     /// <param name="mime">The MIME value of the attachment.</param>
     /// <param name="name">The name of the attachment.</param>
     /// <param name="thumbnail">The thumbnail URI of the attachment.</param>
-    public AttachmentLinkItem AddItem(Uri link, string mime, string name, Uri thumbnail)
-        => Data.Add(link, mime, name, thumbnail);
+    public static AttachmentLinkItem AddItem(this ExtendedChatMessage<AttachmentLinkSet> message, Uri link, string mime, string name, Uri thumbnail)
+        => message?.Data.Add(link, mime, name, thumbnail);
 
     /// <summary>
     /// Adds an attachment.
     /// </summary>
+    /// <param name="message">The chat message.</param>
     /// <param name="items">The attachment items to add.</param>
     /// <returns>The count of the item added.</returns>
-    public int AddItems(IEnumerable<AttachmentLinkItem> items)
-        => Data.AddRange(items);
+    public static int AddItems(this ExtendedChatMessage<AttachmentLinkSet> message, IEnumerable<AttachmentLinkItem> items)
+        => message?.Data.AddRange(items) ?? 0;
 
     /// <summary>
     /// Adds an attachment.
     /// </summary>
+    /// <param name="message">The chat message.</param>
     /// <param name="index">The zero-based index to insert the specific item.</param>
     /// <param name="item">The attachment to add.</param>
     /// <exception cref="ArgumentOutOfRangeException">The index is not valid.</exception>
-    public void InsertItem(int index, AttachmentLinkItem item)
-        => Data.Insert(index, item);
+    public static void InsertItem(this ExtendedChatMessage<AttachmentLinkSet> message, int index, AttachmentLinkItem item)
+        => message?.Data.Insert(index, item);
 
     /// <summary>
     /// Adds an attachment.
     /// </summary>
+    /// <param name="message">The chat message.</param>
     /// <param name="index">The zero-based index to insert the specific item.</param>
     /// <param name="link">The URI of the attachment.</param>
     /// <param name="mime">The MIME value of the attachment.</param>
     /// <exception cref="ArgumentOutOfRangeException">The index is not valid.</exception>
-    public AttachmentLinkItem InsertItem(int index, Uri link, string mime)
-        => Data.Insert(index, link, mime);
+    public static AttachmentLinkItem InsertItem(this ExtendedChatMessage<AttachmentLinkSet> message, int index, Uri link, string mime)
+        => message?.Data.Insert(index, link, mime);
 
     /// <summary>
     /// Adds an attachment.
     /// </summary>
+    /// <param name="message">The chat message.</param>
     /// <param name="index">The zero-based index to insert the specific item.</param>
     /// <param name="link">The URI of the attachment.</param>
     /// <param name="mime">The MIME value of the attachment.</param>
     /// <param name="name">The name of the attachment.</param>
     /// <param name="thumbnail">The thumbnail URI of the attachment.</param>
     /// <exception cref="ArgumentOutOfRangeException">The index is not valid.</exception>
-    public AttachmentLinkItem InsertItem(int index, Uri link, string mime, string name, Uri thumbnail)
-        => Data.Insert(index, link, mime, name, thumbnail);
+    public static AttachmentLinkItem InsertItem(this ExtendedChatMessage<AttachmentLinkSet> message, int index, Uri link, string mime, string name, Uri thumbnail)
+        => message?.Data.Insert(index, link, mime, name, thumbnail);
 
     /// <summary>
     /// Removes a specific attachment.
     /// </summary>
+    /// <param name="message">The chat message.</param>
     /// <param name="item">The attachment to remove.</param>
     /// <returns>true if item is found and successfully removed; otherwise, false.</returns>
-    public bool RemoveItem(AttachmentLinkItem item)
-        => Data.Remove(item);
+    public static bool RemoveItem(this ExtendedChatMessage<AttachmentLinkSet> message, AttachmentLinkItem item)
+        => message != null && message.Data.Remove(item);
 
-    /// <summary>
-    /// Converts the JSON raw back.
-    /// </summary>
-    /// <param name="value">The source value.</param>
-    /// <returns>A model of the message.</returns>
-    public static implicit operator AttachmentListExtendedChatMessage(JsonObjectNode value)
-        => value is null ? null : new(value);
-
-    /// <summary>
-    /// Converts to JSON object.
-    /// </summary>
-    /// <param name="value">The JSON value.</param>
-    /// <returns>A JSON object.</returns>
-    public static explicit operator JsonObjectNode(AttachmentListExtendedChatMessage value)
-        => value?.ToJson();
+    internal static string ToIdString(Guid id)
+        => id.ToString("N");
 }
