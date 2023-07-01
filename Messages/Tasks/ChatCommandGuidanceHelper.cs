@@ -38,31 +38,51 @@ internal static class ChatCommandGuidanceHelper
         return prompt;
     }
 
-    public static Task<string[]> GeneratePromptAsync(this IEnumerable<ChatCommandGuidanceTask> col, BaseChatCommandGuidanceEngine engine, CancellationToken cancellationToken = default)
+    public static async Task<string[]> GeneratePromptAsync(this IEnumerable<ChatCommandGuidanceTask> col, BaseChatCommandGuidanceEngine engine, bool parallelProcessing, CancellationToken cancellationToken = default)
     {
-        var list = new List<Task<string>>();
-        foreach (var item in col)
+        if (parallelProcessing)
         {
-            var task = item.GeneratePromptAsync(engine, cancellationToken);
-            if (task != null) list.Add(task);
+            var list = new List<Task<string>>();
+            foreach (var item in col)
+            {
+                var task = item.GeneratePromptAsync(engine, cancellationToken);
+                if (task != null) list.Add(task);
+            }
+
+            return await Task.WhenAll(list.ToArray());
         }
 
-        return Task.WhenAll(list.ToArray());
+        var result = new List<string>();
+        foreach (var item in col)
+        {
+            result.Add(await item.GeneratePromptAsync(engine, cancellationToken));
+        }
+
+        return result.ToArray();
     }
 
     public static Task PostProcessAsync(this ChatCommandGuidanceTask instance, BaseChatCommandGuidanceEngine engine, CancellationToken cancellationToken = default)
         => instance.Command.PostProcessAsync(engine, instance.Args, cancellationToken);
 
-    public static Task PostProcessAsync(this IEnumerable<ChatCommandGuidanceTask> col, BaseChatCommandGuidanceEngine engine, CancellationToken cancellationToken = default)
+    public static async Task PostProcessAsync(this IEnumerable<ChatCommandGuidanceTask> col, BaseChatCommandGuidanceEngine engine, bool parallelProcessing, CancellationToken cancellationToken = default)
     {
-        var list = new List<Task>();
-        foreach (var item in col)
+        if (parallelProcessing)
         {
-            var task = item.PostProcessAsync(engine, cancellationToken);
-            if (task != null) list.Add(task);
+            var list = new List<Task>();
+            foreach (var item in col)
+            {
+                var task = item.PostProcessAsync(engine, cancellationToken);
+                if (task != null) list.Add(task);
+            }
+
+            await Task.WhenAll(list.ToArray());
+            return;
         }
 
-        return Task.WhenAll(list.ToArray());
+        foreach (var item in col)
+        {
+            await item.PostProcessAsync(engine, cancellationToken);
+        }
     }
 
     public static IEnumerable<ChatCommandGuidanceTask> ParseCommands(string answer, IEnumerable<ChatCommandGuidanceTask> list, string funcPrefix)

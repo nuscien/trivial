@@ -57,6 +57,11 @@ public abstract class BaseChatCommandGuidanceEngine
     public event EventHandler<ChatCommandGuidanceSourceEventArgs> Received;
 
     /// <summary>
+    /// Gets or sets a value indicating whether enable multiple threads per processing.
+    /// </summary>
+    public bool ParallelProcessing { get; set; }
+
+    /// <summary>
     /// Gets the additional information data.
     /// </summary>
     public JsonObjectNode Info { get; } = new();
@@ -190,7 +195,7 @@ public abstract class BaseChatCommandGuidanceEngine
         var args = new DataEventArgs<ChatCommandGuidanceContext>(context);
         Processing?.Invoke(this, args);
         monitors.OnRequest(this, userDetails);
-        context.AddPrompt(await list.GeneratePromptAsync(this, cancellationToken));
+        context.AddPrompt(await list.GeneratePromptAsync(this, ParallelProcessing, cancellationToken));
         context.AddPrompt(await monitors.GeneratePromptAsync(this, cancellationToken));
         var prompt = GenerateDefaultPrompt(context);
         prompt = ChatCommandGuidanceHelper.JoinWithEmptyLine(prompt, context.PromptCollection);
@@ -216,7 +221,7 @@ public abstract class BaseChatCommandGuidanceEngine
         if (answer.IsSuccessful)
         {
             var result = ChatCommandGuidanceHelper.ParseCommands(answer.Message, list, FuncPrefix).ToList();
-            await result.PostProcessAsync(this, cancellationToken);
+            await result.PostProcessAsync(this, ParallelProcessing, cancellationToken);
             OnCommandProccessed(result.Select(ele => ele.Args).ToList());
             Processed?.Invoke(this, args);
         }
