@@ -9,29 +9,35 @@ namespace Trivial.Maths;
 /// <summary>
 /// The item of Gaussian Mixture Model.
 /// </summary>
-public sealed class GaussianMixtureModelItem
+public struct GaussianMixtureModelItem
 {
     /// <summary>
     /// Initializes a new instance of the GaussianMixtureModelItem class.
     /// </summary>
-    private GaussianMixtureModelItem()
+    /// <param name="weight">The weight,</param>
+    /// <param name="mean">The mean.</param>
+    /// <param name="variance">The variance.</param>
+    public GaussianMixtureModelItem(double weight, double mean, double variance)
     {
+        Weight = weight;
+        Mean = mean;
+        Variance = variance;
     }
 
     /// <summary>
     /// Gets the weights.
     /// </summary>
-    public double Weight { get; private set; }
+    public double Weight { get; }
 
     /// <summary>
     /// Gets the mean.
     /// </summary>
-    public double Mean { get; private set; }
+    public double Mean { get; }
 
     /// <summary>
     /// Gets the variances.
     /// </summary>
-    public double Variance { get; private set; }
+    public double Variance { get; }
 
     /// <summary>
     /// Calculates the Gaussian Mixture Model.
@@ -117,12 +123,7 @@ public sealed class GaussianMixtureModelItem
         var list = new List<GaussianMixtureModelItem>();
         for (var i = 0; i < count; i++)
         {
-            list.Add(new()
-            {
-                Weight = weights[i],
-                Mean = means[i],
-                Variance = variances[i]
-            });
+            list.Add(new(weights[i], means[i], variances[i]));
         }
 
         return list;
