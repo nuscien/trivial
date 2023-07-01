@@ -15,13 +15,33 @@ public static partial class StatisticalMethod
     /// <returns>The output matrix.</returns>
     public static double[,] Transpose(double[,] matrix)
     {
-        int rows = matrix.GetLength(0);
-        int cols = matrix.GetLength(1);
-        double[,] result = new double[cols, rows];
-
-        for (int i = 0; i < rows; i++)
+        var rows = matrix.GetLength(0);
+        var cols = matrix.GetLength(1);
+        var result = new double[cols, rows];
+        for (var i = 0; i < rows; i++)
         {
-            for (int j = 0; j < cols; j++)
+            for (var j = 0; j < cols; j++)
+            {
+                result[j, i] = matrix[i, j];
+            }
+        }
+
+        return result;
+    }
+
+    /// <summary>
+    /// Transposes a matrix.
+    /// </summary>
+    /// <param name="matrix">The input matrix.</param>
+    /// <returns>The output matrix.</returns>
+    public static float[,] Transpose(float[,] matrix)
+    {
+        var rows = matrix.GetLength(0);
+        var cols = matrix.GetLength(1);
+        var result = new float[cols, rows];
+        for (var i = 0; i < rows; i++)
+        {
+            for (var j = 0; j < cols; j++)
             {
                 result[j, i] = matrix[i, j];
             }
@@ -38,23 +58,47 @@ public static partial class StatisticalMethod
     /// <returns>The output matrix.</returns>
     public static double[,] Multiply(double[,] a, double[,] b)
     {
-        int A_rows = a.GetLength(0);
-        int A_cols = a.GetLength(1);
-        int B_rows = b.GetLength(0);
-        int B_cols = b.GetLength(1);
+        var aRows = a.GetLength(0);
+        var aCols = a.GetLength(1);
+        var bRows = b.GetLength(0);
+        var bCols = b.GetLength(1);
+        if (aCols != bRows) throw new ArgumentException("Matrix dimensions do not match for multiplication.");
+        var result = new double[aRows, bCols];
 
-        if (A_cols != B_rows)
+        for (var i = 0; i < aRows; i++)
         {
-            throw new ArgumentException("Matrix dimensions do not match for multiplication.");
+            for (var j = 0; j < bCols; j++)
+            {
+                for (var k = 0; k < aCols; k++)
+                {
+                    result[i, j] += a[i, k] * b[k, j];
+                }
+            }
         }
 
-        double[,] result = new double[A_rows, B_cols];
+        return result;
+    }
 
-        for (int i = 0; i < A_rows; i++)
+    /// <summary>
+    /// Multiplies matrixes.
+    /// </summary>
+    /// <param name="a">The input matrix a.</param>
+    /// <param name="b">The input matrix b.</param>
+    /// <returns>The output matrix.</returns>
+    public static float[,] Multiply(float[,] a, float[,] b)
+    {
+        var aRows = a.GetLength(0);
+        var aCols = a.GetLength(1);
+        var bRows = b.GetLength(0);
+        var bCols = b.GetLength(1);
+        if (aCols != bRows) throw new ArgumentException("Matrix dimensions do not match for multiplication.");
+        var result = new float[aRows, bCols];
+
+        for (var i = 0; i < aRows; i++)
         {
-            for (int j = 0; j < B_cols; j++)
+            for (var j = 0; j < bCols; j++)
             {
-                for (int k = 0; k < A_cols; k++)
+                for (var k = 0; k < aCols; k++)
                 {
                     result[i, j] += a[i, k] * b[k, j];
                 }
@@ -72,20 +116,38 @@ public static partial class StatisticalMethod
     /// <returns>The output matrix.</returns>
     public static double[] Multiply(double[,] a, double[] b)
     {
-        int A_rows = a.GetLength(0);
-        int A_cols = a.GetLength(1);
-        int B_len = b.Length;
-
-        if (A_cols != B_len)
+        var aRows = a.GetLength(0);
+        var aCols = a.GetLength(1);
+        var bLen = b.Length;
+        if (aCols != bLen) throw new ArgumentException("Matrix and vector dimensions do not match for multiplication.");
+        var result = new double[aRows];
+        for (var i = 0; i < aRows; i++)
         {
-            throw new ArgumentException("Matrix and vector dimensions do not match for multiplication.");
+            for (var j = 0; j < aCols; j++)
+            {
+                result[i] += a[i, j] * b[j];
+            }
         }
 
-        double[] result = new double[A_rows];
+        return result;
+    }
 
-        for (int i = 0; i < A_rows; i++)
+    /// <summary>
+    /// Multiplies matrixes.
+    /// </summary>
+    /// <param name="a">The input matrix a.</param>
+    /// <param name="b">The input matrix b.</param>
+    /// <returns>The output matrix.</returns>
+    public static float[] Multiply(float[,] a, float[] b)
+    {
+        var aRows = a.GetLength(0);
+        var aCols = a.GetLength(1);
+        var bLen = b.Length;
+        if (aCols != bLen) throw new ArgumentException("Matrix and vector dimensions do not match for multiplication.");
+        var result = new float[aRows];
+        for (var i = 0; i < aRows; i++)
         {
-            for (int j = 0; j < A_cols; j++)
+            for (var j = 0; j < aCols; j++)
             {
                 result[i] += a[i, j] * b[j];
             }
@@ -101,33 +163,67 @@ public static partial class StatisticalMethod
     /// <returns>The output matrix.</returns>
     public static double[,] Inverse(double[,] matrix)
     {
-        int n = matrix.GetLength(0);
-        if (n != matrix.GetLength(1))
-        {
-            throw new ArgumentException("Matrix must be square.");
-        }
-
-        double[,] result = new double[n, n];
-        for (int i = 0; i < n; i++)
+        var n = matrix.GetLength(0);
+        if (n != matrix.GetLength(1)) throw new ArgumentException("Matrix must be square.");
+        var result = new double[n, n];
+        for (var i = 0; i < n; i++)
         {
             result[i, i] = 1;
         }
 
-        for (int i = 0; i < n; i++)
+        for (var i = 0; i < n; i++)
         {
-            double diag = matrix[i, i];
-            for (int j = 0; j < n; j++)
+            var diag = matrix[i, i];
+            for (var j = 0; j < n; j++)
             {
                 matrix[i, j] /= diag;
                 result[i, j] /= diag;
             }
 
-            for (int k = 0; k < n; k++)
+            for (var k = 0; k < n; k++)
             {
                 if (k == i) continue;
+                var factor = matrix[k, i];
+                for (var j = 0; j < n; j++)
+                {
+                    matrix[k, j] -= factor * matrix[i, j];
+                    result[k, j] -= factor * result[i, j];
+                }
+            }
+        }
 
-                double factor = matrix[k, i];
-                for (int j = 0; j < n; j++)
+        return result;
+    }
+
+    /// <summary>
+    /// Inverses a matrix.
+    /// </summary>
+    /// <param name="matrix">The input matrix.</param>
+    /// <returns>The output matrix.</returns>
+    public static float[,] Inverse(float[,] matrix)
+    {
+        var n = matrix.GetLength(0);
+        if (n != matrix.GetLength(1)) throw new ArgumentException("Matrix must be square.");
+        var result = new float[n, n];
+        for (var i = 0; i < n; i++)
+        {
+            result[i, i] = 1;
+        }
+
+        for (var i = 0; i < n; i++)
+        {
+            var diag = matrix[i, i];
+            for (var j = 0; j < n; j++)
+            {
+                matrix[i, j] /= diag;
+                result[i, j] /= diag;
+            }
+
+            for (var k = 0; k < n; k++)
+            {
+                if (k == i) continue;
+                var factor = matrix[k, i];
+                for (var j = 0; j < n; j++)
                 {
                     matrix[k, j] -= factor * matrix[i, j];
                     result[k, j] -= factor * result[i, j];

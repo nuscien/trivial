@@ -33,7 +33,7 @@ public static partial class StatisticalMethod
             wordProb[cls] = clsWordProb.Select(p => Math.Log(p / (clsWordProb.Sum() + xTrain.GetLength(1)))).ToArray();
         }
 
-        return Enumerable.Range(0, xTest.GetLength(0)).Select(i => PredictSingle(input, classProb, wordProb, xTest, i));
+        return Enumerable.Range(0, xTest.GetLength(0)).Select(i => PredictSingleByNaiveBayes(input, classProb, wordProb, xTest, i));
     }
 
     /// <summary>
@@ -79,7 +79,95 @@ public static partial class StatisticalMethod
         return Multiply(xExtended2, weights);
     }
 
-    private static string PredictSingle(List<string> input, Dictionary<string, double> classProb, Dictionary<string, double[]> wordProb, int[,] matrix, int row)
+    /// <summary>
+    /// Generates sample by Metropolis-Hastings algorithm.
+    /// </summary>
+    /// <param name="n">The sample count.</param>
+    /// <param name="mu">The means.</param>
+    /// <param name="sigma">Sigma.</param>
+    /// <param name="proposalSigma">Proposal sigma.</param>
+    /// <param name="burnIn">The count to burn in.</param>
+    /// <param name="random">An optional random object.</param>
+    /// <returns>The sample data set;</returns>
+    public static List<double> MetropolisHastings(int n, double mu, double sigma, double proposalSigma, int burnIn = 1000, Random random = null)
+    {
+        var samples = new List<double>();
+        var current = mu;
+        random ??= new();
+        for (var i = 0; i < n + burnIn; i++)
+        {
+            var proposal = current + proposalSigma * random.NextDouble();
+            var acceptanceRatio = Math.Exp((-0.5 * Math.Pow((proposal - mu) / sigma, 2)) + (0.5 * Math.Pow((current - mu) / sigma, 2)));
+            if (random.NextDouble() < acceptanceRatio)
+            {
+                current = proposal;
+            }
+
+            if (i >= burnIn)
+            {
+                samples.Add(current);
+            }
+        }
+
+        return samples;
+    }
+
+#if NET6_0_OR_GREATER
+    /// <summary>
+    /// Generates sample by Metropolis-Hastings algorithm.
+    /// </summary>
+    /// <param name="n">The sample count.</param>
+    /// <param name="mu">The mean.</param>
+    /// <param name="sigma">Sigma.</param>
+    /// <param name="proposalSigma">Proposal sigma.</param>
+    /// <param name="burnIn">The count to burn in.</param>
+    /// <param name="random">An optional random.</param>
+    /// <returns>The sample data set;</returns>
+    public static List<float> MetropolisHastings(int n, float mu, float sigma, float proposalSigma, int burnIn = 1000, Random random = null)
+    {
+        var samples = new List<float>();
+        var current = mu;
+        random ??= new Random();
+        for (var i = 0; i < n + burnIn; i++)
+        {
+            var proposal = current + proposalSigma * random.NextSingle();
+            var acceptanceRatio = MathF.Exp((-0.5f * MathF.Pow((proposal - mu) / sigma, 2)) + (0.5f * MathF.Pow((current - mu) / sigma, 2)));
+            if (random.NextSingle() < acceptanceRatio)
+            {
+                current = proposal;
+            }
+
+            if (i >= burnIn)
+            {
+                samples.Add(current);
+            }
+        }
+
+        return samples;
+    }
+
+    /// <summary>
+    /// Calculates by Gaussian Mixture algorithm.
+    /// </summary>
+    /// <param name="x">The input data.</param>
+    /// <param name="mean">The mean.</param>
+    /// <param name="variance">The variance.</param>
+    /// <returns>A number calculated by Gaussian Mixture algorithm.</returns>
+    public static float GaussianMixture(float x, float mean, float variance)
+        => MathF.Exp(-0.5f * MathF.Pow((x - mean) / MathF.Sqrt(variance), 2)) / MathF.Sqrt(2 * MathF.PI * variance);
+#endif
+
+    /// <summary>
+    /// Calculates by Gaussian Mixture algorithm.
+    /// </summary>
+    /// <param name="x">The input data.</param>
+    /// <param name="mean">The mean.</param>
+    /// <param name="variance">The variance.</param>
+    /// <returns>A number calculated by Gaussian Mixture algorithm.</returns>
+    public static double GaussianMixture(double x, double mean, double variance)
+        => Math.Exp(-0.5 * Math.Pow((x - mean) / Math.Sqrt(variance), 2)) / Math.Sqrt(2 * Math.PI * variance);
+
+    private static string PredictSingleByNaiveBayes(List<string> input, Dictionary<string, double> classProb, Dictionary<string, double[]> wordProb, int[,] matrix, int row)
     {
         var x = Enumerable.Range(0, matrix.GetLength(1)).Select(i => matrix[row, i]);
         return input.OrderByDescending(cls => classProb[cls] + x.Select((value, i) => value * wordProb[cls][i]).Sum()).First();
