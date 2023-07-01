@@ -16,9 +16,9 @@ using System.Text;
 namespace Trivial.Maths;
 
 /// <summary>
-/// The utility for arithmetic.
+/// The functions of probability theory and mathematical statistics.
 /// </summary>
-public static partial class Arithmetic
+public static partial class StatisticalMethod
 {
     /// <summary>
     /// Computes variance of a sequence of number.
