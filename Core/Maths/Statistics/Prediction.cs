@@ -57,12 +57,12 @@ public static partial class StatisticalMethod
             }
         }
 
-        double[,] Xt = Transpose(xExtended);
-        double[,] XtX = Multiply(Xt, xExtended);
-        double[,] XtX_inv = Inverse(XtX);
-        double[,] XtX_inv_Xt = Multiply(XtX_inv, Xt);
+        double[,] Xt = MatrixCalculation.Transpose(xExtended);
+        double[,] XtX = MatrixCalculation.Multiply(Xt, xExtended);
+        double[,] XtX_inv = MatrixCalculation.Inverse(XtX);
+        double[,] XtX_inv_Xt = MatrixCalculation.Multiply(XtX_inv, Xt);
 
-        var weights = Multiply(XtX_inv_Xt, yTrain);
+        var weights = MatrixCalculation.Multiply(XtX_inv_Xt, yTrain);
         int n2 = xTest.GetLength(0);
         int p2 = xTest.GetLength(1);
 
@@ -76,7 +76,7 @@ public static partial class StatisticalMethod
             }
         }
 
-        return Multiply(xExtended2, weights);
+        return MatrixCalculation.Multiply(xExtended2, weights);
     }
 
     /// <summary>
