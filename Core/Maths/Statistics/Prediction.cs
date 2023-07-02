@@ -57,16 +57,55 @@ public static partial class StatisticalMethod
             }
         }
 
-        double[,] Xt = MatrixCalculation.Transpose(xExtended);
-        double[,] XtX = MatrixCalculation.Multiply(Xt, xExtended);
-        double[,] XtX_inv = MatrixCalculation.Inverse(XtX);
-        double[,] XtX_inv_Xt = MatrixCalculation.Multiply(XtX_inv, Xt);
+        var xt = MatrixCalculation.Transpose(xExtended);
+        var xtx = MatrixCalculation.Multiply(xt, xExtended);
+        var xtxInv = MatrixCalculation.Inverse(xtx);
+        var xtxInvXt = MatrixCalculation.Multiply(xtxInv, xt);
+        var weights = MatrixCalculation.Multiply(xtxInvXt, yTrain);
+        var n2 = xTest.GetLength(0);
+        var p2 = xTest.GetLength(1);
+        var xExtended2 = new double[n2, p2 + 1];
+        for (int i = 0; i < n2; i++)
+        {
+            xExtended2[i, 0] = 1;
+            for (int j = 0; j < p2; j++)
+            {
+                xExtended2[i, j + 1] = xTest[i, j];
+            }
+        }
 
-        var weights = MatrixCalculation.Multiply(XtX_inv_Xt, yTrain);
-        int n2 = xTest.GetLength(0);
-        int p2 = xTest.GetLength(1);
+        return MatrixCalculation.Multiply(xExtended2, weights);
+    }
 
-        double[,] xExtended2 = new double[n2, p2 + 1];
+    /// <summary>
+    /// Predicts by linear regression.
+    /// </summary>
+    /// <param name="xTrain">The train data set x.</param>
+    /// <param name="yTrain">The train data set y.</param>
+    /// <param name="xTest">The test data set x.</param>
+    /// <returns>The data set predicted.</returns>
+    public static float[] LinearRegression(float[,] xTrain, float[] yTrain, float[,] xTest)
+    {
+        var n = xTrain.GetLength(0);
+        var p = xTrain.GetLength(1);
+        var xExtended = new float[n, p + 1];
+        for (var i = 0; i < n; i++)
+        {
+            xExtended[i, 0] = 1;
+            for (int j = 0; j < p; j++)
+            {
+                xExtended[i, j + 1] = xTrain[i, j];
+            }
+        }
+
+        var xt = MatrixCalculation.Transpose(xExtended);
+        var xtx = MatrixCalculation.Multiply(xt, xExtended);
+        var xtxInv = MatrixCalculation.Inverse(xtx);
+        var xtxInvXt = MatrixCalculation.Multiply(xtxInv, xt);
+        var weights = MatrixCalculation.Multiply(xtxInvXt, yTrain);
+        var n2 = xTest.GetLength(0);
+        var p2 = xTest.GetLength(1);
+        var xExtended2 = new float[n2, p2 + 1];
         for (int i = 0; i < n2; i++)
         {
             xExtended2[i, 0] = 1;
