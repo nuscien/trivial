@@ -37,6 +37,17 @@ public static partial class StatisticalMethod
     }
 
     /// <summary>
+    /// Predicts texts by Naive Bayes classification algorithm.
+    /// </summary>
+    /// <param name="classes">The clases.</param>
+    /// <param name="xTrain">The train data set x.</param>
+    /// <param name="yTrain">The train data set y.</param>
+    /// <param name="xTest">The test data set x.</param>
+    /// <returns>The data set predicted.</returns>
+    public static IEnumerable<string> NaiveBayes(string[] classes, int[,] xTrain, string[] yTrain, int[,] xTest)
+        => NaiveBayes(classes as IEnumerable<string>, xTrain, yTrain, xTest).ToArray();
+
+    /// <summary>
     /// Predicts by linear regression.
     /// </summary>
     /// <param name="xTrain">The train data set x.</param>

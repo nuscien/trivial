@@ -202,9 +202,19 @@ public static class ListExtensions
     public static List<int> CreateNumberRange(int start, int count, int step = 1)
     {
         var list = new List<int>();
-        for (var i = 0; i < count; i++)
+        if (step == 1)
         {
-            list.Add(i * step + start);
+            for (var i = 0; i < count; i++)
+            {
+                list.Add(i + start);
+            }
+        }
+        else
+        {
+            for (var i = 0; i < count; i++)
+            {
+                list.Add(i * step + start);
+            }
         }
 
         return list;
