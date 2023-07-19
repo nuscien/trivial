@@ -4,10 +4,40 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using Trivial.Collection;
 
 namespace Trivial.Text;
 
-internal class StringFinder
+/// <summary>
+/// The rules to match the string in a collection.
+/// </summary>
+public enum StringsMatchingRules : byte
+{
+    /// <summary>
+    /// In sequence of the given collection.
+    /// </summary>
+    Sequence = 0,
+
+    /// <summary>
+    /// The smallest index to match if has.
+    /// </summary>
+    Front = 1,
+
+    /// <summary>
+    /// The largest index to match if has.
+    /// </summary>
+    Rear = 2,
+
+    /// <summary>
+    /// None.
+    /// </summary>
+    None = 7,
+}
+
+/// <summary>
+/// The string finder.
+/// </summary>
+public class StringFinder
 {
 #pragma warning disable IDE0057
     /// <summary>
@@ -17,7 +47,7 @@ internal class StringFinder
     public StringFinder(string s)
     {
         Rest = Source = s ?? string.Empty;
-        Value = string.Empty;
+        Value = Previous = string.Empty;
     }
 
     /// <summary>
@@ -109,17 +139,62 @@ internal class StringFinder
     /// <summary>
     /// Gets the sub-string before a search string. The search string is in the rest string.
     /// </summary>
-    /// <param name="index">The zero-based index of the search string in the rest string.</param>
+    /// <param name="q">The search string.</param>
+    /// <param name="skip">true if skip the search string then; otherwise, false.</param>
+    /// <param name="offset">The zero-based offset.</param>
     /// <returns>The sub-string.</returns>
-    public string Before(int index)
+    public string Before(char q, bool skip, out int offset)
+        => Before(q.ToString(), skip, out offset);
+
+    /// <summary>
+    /// Gets the sub-string before a search string. The search string is in the rest string.
+    /// </summary>
+    /// <param name="q">The search string.</param>
+    /// <param name="offset">The zero-based offset.</param>
+    /// <returns>The sub-string.</returns>
+    public string Before(char q, out int offset)
+        => Before(q, false, out offset);
+
+    /// <summary>
+    /// Gets the sub-string before a search string. The search string is in the rest string.
+    /// </summary>
+    /// <param name="q">The search string.</param>
+    /// <param name="skip">true if skip the search string then; otherwise, false.</param>
+    /// <returns>The sub-string.</returns>
+    public string Before(char q, bool skip = false)
+        => Before(q, skip, out _);
+
+    /// <summary>
+    /// Gets the sub-string before a search string. The search string is in the rest string.
+    /// </summary>
+    /// <param name="index">The zero-based index of the search string in the rest string.</param>
+    /// <param name="skip">true if skip the search string then; otherwise, false.</param>
+    /// <returns>The sub-string.</returns>
+    public string Before(int index, bool skip = false)
     {
-        if (index == 0) return string.Empty;
-        Offset += index;
         Previous = Value;
+        if (index == 0)
+        {
+            if (skip && Rest.Length > 0)
+            {
+                Offset++;
+                Rest = Rest.Substring(1);
+            }
+
+            return Value = string.Empty;
+        }
+
+        Offset += index;
         if (index < 0)
         {
             if (Offset < 0) Offset = 0;
             Rest = Source.Substring(Offset);
+            if (skip && Rest.Length > 0)
+            {
+                Offset++;
+                Rest = Rest.Substring(1);
+            }
+
             return Value = string.Empty;
         }
 
@@ -132,6 +207,12 @@ internal class StringFinder
         }
 
         var value = Rest.Substring(0, index);
+        if (skip)
+        {
+            index++;
+            Offset++;
+        }
+
         Rest = Rest.Substring(index);
         return Value = value;
     }
@@ -171,10 +252,12 @@ internal class StringFinder
     /// Moves offsets before a specific search string. The search string is in the rest string.
     /// </summary>
     /// <param name="q">The search string collection.</param>
+    /// <param name="rule">The matching rule.</param>
     /// <param name="skip">true if skip the search string then; otherwise, false.</param>
     /// <param name="value">The sub-string.</param>
     /// <returns>true if the rest string contains the search string; otherwise, false.</returns>
-    public bool BeforeIfContains(IEnumerable<string> q, bool skip, out string value)
+    /// <exception cref="NotSupportedException">rule is not supported.</exception>
+    public bool BeforeIfContains(IEnumerable<string> q, StringsMatchingRules rule, bool skip, out string value)
     {
         if (q == null)
         {
@@ -182,9 +265,31 @@ internal class StringFinder
             return false;
         }
 
-        foreach (var item in q)
+        switch (rule)
         {
-            if (BeforeIfContains(item, skip, out value)) return true;
+            case StringsMatchingRules.Sequence:
+                foreach (var item in q)
+                {
+                    if (BeforeIfContains(item, skip, out value)) return true;
+                }
+
+                break;
+            case StringsMatchingRules.None:
+                break;
+            case StringsMatchingRules.Front:
+                {
+                    var col = IndexOf(q).Where(i => i >= 0).ToList();
+                    if (col.Count < 1) break;
+                    value = Before(col.Min(), skip);
+                    return true;
+                }
+            case StringsMatchingRules.Rear:
+                {
+                    var col = IndexOf(q).Where(i => i >= 0).ToList();
+                    if (col.Count < 1) break;
+                    value = Before(col.Max(), skip);
+                    return true;
+                }
         }
 
         value = null;
@@ -204,10 +309,12 @@ internal class StringFinder
     /// Moves offsets before a specific search string. The search string is in the rest string.
     /// </summary>
     /// <param name="q">The search string.</param>
+    /// <param name="rule">The matching rule.</param>
     /// <param name="value">The sub-string.</param>
     /// <returns>true if the rest string contains the search string; otherwise, false.</returns>
-    public bool BeforeIfContains(IEnumerable<string> q, out string value)
-        => BeforeIfContains(q, false, out value);
+    /// <exception cref="NotSupportedException">rule is not supported.</exception>
+    public bool BeforeIfContains(IEnumerable<string> q, StringsMatchingRules rule, out string value)
+        => BeforeIfContains(q, rule, false, out value);
 
     /// <summary>
     /// Moves offsets before a specific search string. The search string is in the rest string.
@@ -222,10 +329,12 @@ internal class StringFinder
     /// Moves offsets before a specific search string. The search string is in the rest string.
     /// </summary>
     /// <param name="q">The search string collection.</param>
+    /// <param name="rule">The matching rule.</param>
     /// <param name="skip">true if skip the search string then; otherwise, false.</param>
     /// <returns>true if the rest string contains the search string; otherwise, false.</returns>
-    public bool BeforeIfContains(IEnumerable<string> q, bool skip = false)
-        => BeforeIfContains(q, skip, out _);
+    /// <exception cref="NotSupportedException">rule is not supported.</exception>
+    public bool BeforeIfContains(IEnumerable<string> q, StringsMatchingRules rule = StringsMatchingRules.Sequence, bool skip = false)
+        => BeforeIfContains(q, rule, skip, out _);
 
     /// <summary>
     /// Gets the sub-string until that a search string appears. The search string is in the sub-string returned.
@@ -307,5 +416,52 @@ internal class StringFinder
     /// <returns>true if contains the search string in the rest string; otherwise, false.</returns>
     public bool Contains(string q)
         => Rest.Contains(q);
+
+    /// <summary>
+    /// Tests a value indicating whether a specific string occurs within the rest string.
+    /// </summary>
+    /// <param name="q">The search string.</param>
+    /// <returns>true if contains the search string in the rest string; otherwise, false.</returns>
+    public bool Contains(char q)
+        => Rest.Contains(q);
+
+    /// <summary>
+    /// Reports the zero-based index of the first occurrence of the specified string in the rest string.
+    /// </summary>
+    /// <param name="q">The string to seek.</param>
+    /// <returns>The zero-based index position of value if that string is found, or -1 if it is not. If value is System.String.Empty, the return value is 0.</returns>
+    public int IndexOf(string q)
+        => Rest.IndexOf(q);
+
+    /// <summary>
+    /// Reports the zero-based index of the first occurrence of the specified string in the rest string.
+    /// </summary>
+    /// <param name="q">The string to seek.</param>
+    /// <returns>The zero-based index position of value if that string is found, or -1 if it is not. If value is System.String.Empty, the return value is 0.</returns>
+    public int IndexOf(char q)
+        => Rest.IndexOf(q);
+
+    /// <summary>
+    /// Reports the zero-based index of the first occurrence of the specified string in the rest string.
+    /// </summary>
+    /// <param name="q">The string to seek.</param>
+    /// <returns>The zero-based index position of value if that string is found, or -1 if it is not. If value is System.String.Empty, the return value is 0.</returns>
+    public IEnumerable<int> IndexOf(IEnumerable<string> q)
+    {
+        foreach (var item in q)
+        {
+            yield return Rest.IndexOf(item);
+        }
+    }
+
+    /// <summary>
+    /// Resets the state.
+    /// </summary>
+    public void Reset()
+    {
+        Offset = 0;
+        Rest = Source;
+        Value = Previous = string.Empty;
+    }
 #pragma warning restore IDE0057
 }
