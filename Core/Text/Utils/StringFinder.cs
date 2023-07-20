@@ -51,6 +51,15 @@ public class StringFinder
     }
 
     /// <summary>
+    /// Initializes a new instance of the StringFinder class.
+    /// </summary>
+    /// <param name="s">The source string.</param>
+    public StringFinder(StringBuilder s)
+        : this(s?.ToString())
+    {
+    }
+
+    /// <summary>
     /// Gets the source string.
     /// </summary>
     public string Source { get; }
@@ -84,6 +93,34 @@ public class StringFinder
     /// Gets the length of rest string.
     /// </summary>
     public int RestLength => Rest.Length;
+
+    /// <summary>
+    /// Gets the sub-string before a search string.
+    /// </summary>
+    /// <param name="q">The search string.</param>
+    /// <param name="offset">The zero-based offset.</param>
+    /// <returns>The sub-string.</returns>
+    public string PreviewBefore(string q, out int offset)
+    {
+        if (string.IsNullOrEmpty(q))
+        {
+            offset = Offset;
+            return string.Empty;
+        }
+
+        var s = Rest;
+        var index = s.IndexOf(q);
+        if (index < 0)
+        {
+            Value = string.Empty;
+            offset = Source.Length;
+            return string.Empty;
+        }
+
+        var value = Rest.Substring(0, index);
+        offset = Offset + index;
+        return value;
+    }
 
     /// <summary>
     /// Gets the sub-string before a search string. The search string is in the rest string.

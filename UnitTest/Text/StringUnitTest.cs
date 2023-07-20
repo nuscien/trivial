@@ -47,6 +47,7 @@ public class StringUnitTest
             "."
         });
         Assert.IsFalse(finder.IsEnd);
+        Assert.AreEqual(TestString.Length - 1, finder.Offset);
         Assert.AreEqual("\"", finder.Before(1));
         Assert.AreEqual("\"", finder.Value);
         Assert.IsTrue(finder.IsEnd);
