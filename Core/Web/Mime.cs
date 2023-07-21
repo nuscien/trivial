@@ -271,7 +271,7 @@ public static partial class WebFormat
             "uls" => "text/iuls",
 
             // Web
-            "json" or "map" => JsonMIME,
+            "json" or "map" or "jsonc" => JsonMIME,
             "jsonl" => "application/jsonl",
             "xml" or "xsl" or "xsf" or "xsd" or "config" or "xslt" or "mno" or "vml" or "wsdl" or "disco" => XmlMIME,
             "yaml" or "yml" => YamlMIME,
