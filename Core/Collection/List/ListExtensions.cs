@@ -209,6 +209,13 @@ public static class ListExtensions
                 list.Add(i + start);
             }
         }
+        else if (step == 0)
+        {
+            for (var i = 0; i < count; i++)
+            {
+                list.Add(start);
+            }
+        }
         else
         {
             for (var i = 0; i < count; i++)
@@ -218,6 +225,161 @@ public static class ListExtensions
         }
 
         return list;
+    }
+
+    /// <summary>
+    /// Creates a range of number.
+    /// </summary>
+    /// <param name="start">A number to start.</param>
+    /// <param name="count">The length.</param>
+    /// <param name="step">The optional step.</param>
+    /// <returns>A list.</returns>
+    public static List<uint> CreateNumberRange(uint start, int count, uint step = 1)
+    {
+        var list = new List<uint>();
+        if (step == 1)
+        {
+            for (uint i = 0; i < count; i++)
+            {
+                list.Add(i + start);
+            }
+        }
+        else if (step == 0)
+        {
+            for (uint i = 0; i < count; i++)
+            {
+                list.Add(start);
+            }
+        }
+        else
+        {
+            for (uint i = 0; i < count; i++)
+            {
+                list.Add(i * step + start);
+            }
+        }
+
+        return list;
+    }
+
+    /// <summary>
+    /// Creates a range of number.
+    /// </summary>
+    /// <param name="start">A number to start.</param>
+    /// <param name="count">The length.</param>
+    /// <param name="step">The optional step.</param>
+    /// <returns>A list.</returns>
+    public static IEnumerable<long> CreateNumberRange(long start, int count, long step = 1)
+    {
+        if (step == 1)
+        {
+            for (var i = 0L; i < count; i++)
+            {
+                yield return i + start;
+            }
+        }
+        else if (step == 0)
+        {
+            for (var i = 0; i < count; i++)
+            {
+                yield return start;
+            }
+        }
+
+        for (var i = 0L; i < count; i++)
+        {
+            yield return i * step + start;
+        }
+    }
+
+    /// <summary>
+    /// Creates a range of number.
+    /// </summary>
+    /// <param name="start">A number to start.</param>
+    /// <param name="count">The length.</param>
+    /// <param name="step">The optional step.</param>
+    /// <returns>A list.</returns>
+    public static IEnumerable<float> CreateNumberRange(float start, int count, float step = 1)
+    {
+        if (step == 1)
+        {
+            for (var i = 0; i < count; i++)
+            {
+                yield return i + start;
+            }
+        }
+        else if (step == 0)
+        {
+            for (var i = 0; i < count; i++)
+            {
+                yield return start;
+            }
+        }
+
+        for (var i = 0; i < count; i++)
+        {
+            yield return i * step + start;
+        }
+    }
+
+    /// <summary>
+    /// Creates a range of number.
+    /// </summary>
+    /// <param name="start">A number to start.</param>
+    /// <param name="count">The length.</param>
+    /// <param name="step">The optional step.</param>
+    /// <returns>A list.</returns>
+    public static IEnumerable<double> CreateNumberRange(double start, int count, double step = 1)
+    {
+        if (step == 1)
+        {
+            for (var i = 0; i < count; i++)
+            {
+                yield return i + start;
+            }
+        }
+        else if (step == 0)
+        {
+            for (var i = 0; i < count; i++)
+            {
+                yield return start;
+            }
+        }
+
+        for (var i = 0; i < count; i++)
+        {
+            yield return i * step + start;
+        }
+    }
+
+    /// <summary>
+    /// Creates a range of number.
+    /// </summary>
+    /// <param name="start">A number to start.</param>
+    /// <param name="count">The length.</param>
+    /// <param name="step">The optional step.</param>
+    /// <returns>A list.</returns>
+    public static IEnumerable<decimal> CreateNumberRange(decimal start, decimal count, decimal step = 1)
+    {
+        if (step == 1)
+        {
+            for (var i = 0; i < count; i++)
+            {
+                yield return i + start;
+            }
+        }
+        else if (step == 0)
+        {
+            for (var i = 0; i < count; i++)
+            {
+                yield return start;
+            }
+        }
+
+        for (var i = 0; i < count; i++)
+        {
+            yield return i * step + start;
+        }
     }
 
     /// <summary>

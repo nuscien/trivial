@@ -159,6 +159,24 @@ public static partial class CollectionOperation
     /// </summary>
     /// <param name="op">The operator.</param>
     /// <param name="input">The input collection to compute.</param>
+    /// <param name="trueValue">The value for true.</param>
+    /// <param name="falseValue">The value for false.</param>
+    /// <param name="defaultValue">The default value for empty.</param>
+    /// <returns>The result.</returns>
+    /// <exception cref="NotSupportedException">The operator is not supported.</exception>
+    public static T Merge<T>(BooleanCollectionOperators op, IEnumerable<bool> input, T trueValue, T falseValue, T defaultValue = default)
+    {
+        var col = input?.ToList();
+        var b = Merge(op, col);
+        if (!b.HasValue) return defaultValue;
+        return b.Value ? trueValue : falseValue;
+    }
+
+    /// <summary>
+    /// Gets one item by specific operator.
+    /// </summary>
+    /// <param name="op">The operator.</param>
+    /// <param name="input">The input collection to compute.</param>
     /// <returns>The result.</returns>
     /// <exception cref="NotSupportedException">The operator is not supported.</exception>
     public static bool? Merge(BooleanCollectionOperators op, IEnumerable<bool> input)
