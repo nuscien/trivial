@@ -15,7 +15,7 @@ namespace Trivial.Collection;
 /// <summary>
 /// The list utility.
 /// </summary>
-public static class ListExtensions
+public static partial class ListExtensions
 {
     /// <summary>
     /// Adds a key and a value to the end of the key value pairs.
@@ -79,6 +79,41 @@ public static class ListExtensions
     {
         if (list == null) throw new ArgumentNullException(nameof(list), "list should not be null.");
         list.Insert(index, new KeyValuePair<TKey, TValue>(key, value));
+    }
+
+    /// <summary>
+    /// Converts a collection of boolean to strings.
+    /// </summary>
+    /// <param name="input">The input collection.</param>
+    /// <param name="trueValue">The value for true.</param>
+    /// <param name="falseValue">The value for false.</param>
+    /// <returns>The string collection converted.</returns>
+    public static IEnumerable<T> Select<T>(IEnumerable<bool> input, T trueValue, T falseValue)
+    {
+        if (input == null) yield break;
+        foreach (var item in input)
+        {
+            yield return item ? trueValue : falseValue;
+        }
+    }
+
+    /// <summary>
+    /// Converts a collection of boolean to strings.
+    /// </summary>
+    /// <param name="input">The input collection.</param>
+    /// <param name="trueValue">The value for true.</param>
+    /// <param name="falseValue">The value for false.</param>
+    /// <returns>The string collection converted.</returns>
+    public static T[] Select<T>(bool[] input, T trueValue, T falseValue)
+    {
+        if (input == null) return null;
+        var arr = new T[input.Length];
+        for (var i = 0; i < input.Length; i++)
+        {
+            arr[i] = input[i] ? trueValue : falseValue;
+        }
+
+        return arr;
     }
 
     /// <summary>

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Trivial.Maths;
 
-public static partial class CollectionOperation
+public static partial class Arithmetic
 {
     /// <summary>
     /// Pluses each item in 2 collections by index.
@@ -126,7 +126,7 @@ public static partial class CollectionOperation
     }
 
     /// <summary>
-    /// Minuss a number and each item in a collection.
+    /// Minuses.
     /// </summary>
     /// <param name="a">Left collection.</param>
     /// <param name="b">Right number.</param>
@@ -136,6 +136,20 @@ public static partial class CollectionOperation
         foreach (var item in a)
         {
             yield return item - b;
+        }
+    }
+
+    /// <summary>
+    /// Minuses.
+    /// </summary>
+    /// <param name="a">Left number.</param>
+    /// <param name="b">Right collection.</param>
+    /// <returns>A collection with items minused.</returns>
+    public static IEnumerable<int> Minus(int a, IEnumerable<int> b)
+    {
+        foreach (var item in b)
+        {
+            yield return a - item;
         }
     }
 
@@ -154,6 +168,35 @@ public static partial class CollectionOperation
             var numA = i >= a.Length ? 0 : a[i];
             var numB = i >= b.Length ? 0 : b[i];
             c[i] = numA - numB;
+        }
+
+        return c;
+    }
+
+    /// <summary>
+    /// Negates all items in the given collection.
+    /// </summary>
+    /// <param name="col">The number collection.</param>
+    /// <returns>A collection.</returns>
+    public static IEnumerable<int> Negate(IEnumerable<int> col)
+    {
+        foreach (var item in col)
+        {
+            yield return -item;
+        }
+    }
+
+    /// <summary>
+    /// Negates all items in the given array.
+    /// </summary>
+    /// <param name="col">The number array.</param>
+    /// <returns>An array.</returns>
+    public static int[] Negate(int[] col)
+    {
+        var c = new int[col.Length];
+        for (var i = 0; i < col.Length; i++)
+        {
+            c[i] = -col[i];
         }
 
         return c;
@@ -277,7 +320,7 @@ public static partial class CollectionOperation
     }
 
     /// <summary>
-    /// Minuss a number and each item in a collection.
+    /// Minuses.
     /// </summary>
     /// <param name="a">Left collection.</param>
     /// <param name="b">Right number.</param>
@@ -287,6 +330,20 @@ public static partial class CollectionOperation
         foreach (var item in a)
         {
             yield return item - b;
+        }
+    }
+
+    /// <summary>
+    /// Minuses.
+    /// </summary>
+    /// <param name="a">Left number.</param>
+    /// <param name="b">Right collection.</param>
+    /// <returns>A collection with items minused.</returns>
+    public static IEnumerable<long> Minus(long a, IEnumerable<long> b)
+    {
+        foreach (var item in b)
+        {
+            yield return a - item;
         }
     }
 
@@ -305,6 +362,35 @@ public static partial class CollectionOperation
             var numA = i >= a.Length ? 0 : a[i];
             var numB = i >= b.Length ? 0 : b[i];
             c[i] = numA - numB;
+        }
+
+        return c;
+    }
+
+    /// <summary>
+    /// Negates all items in the given collection.
+    /// </summary>
+    /// <param name="col">The number collection.</param>
+    /// <returns>A collection.</returns>
+    public static IEnumerable<long> Negate(IEnumerable<long> col)
+    {
+        foreach (var item in col)
+        {
+            yield return -item;
+        }
+    }
+
+    /// <summary>
+    /// Negates all items in the given array.
+    /// </summary>
+    /// <param name="col">The number array.</param>
+    /// <returns>An array.</returns>
+    public static long[] Negate(long[] col)
+    {
+        var c = new long[col.Length];
+        for (var i = 0; i < col.Length; i++)
+        {
+            c[i] = -col[i];
         }
 
         return c;
@@ -428,7 +514,7 @@ public static partial class CollectionOperation
     }
 
     /// <summary>
-    /// Minuss a number and each item in a collection.
+    /// Minuses.
     /// </summary>
     /// <param name="a">Left collection.</param>
     /// <param name="b">Right number.</param>
@@ -438,6 +524,20 @@ public static partial class CollectionOperation
         foreach (var item in a)
         {
             yield return item - b;
+        }
+    }
+
+    /// <summary>
+    /// Minuses.
+    /// </summary>
+    /// <param name="a">Left number.</param>
+    /// <param name="b">Right collection.</param>
+    /// <returns>A collection with items minused.</returns>
+    public static IEnumerable<float> Minus(float a, IEnumerable<float> b)
+    {
+        foreach (var item in b)
+        {
+            yield return a - item;
         }
     }
 
@@ -456,6 +556,35 @@ public static partial class CollectionOperation
             var numA = i >= a.Length ? 0f : a[i];
             var numB = i >= b.Length ? 0f : b[i];
             c[i] = numA - numB;
+        }
+
+        return c;
+    }
+
+    /// <summary>
+    /// Negates all items in the given collection.
+    /// </summary>
+    /// <param name="col">The number collection.</param>
+    /// <returns>A collection.</returns>
+    public static IEnumerable<float> Negate(IEnumerable<float> col)
+    {
+        foreach (var item in col)
+        {
+            yield return -item;
+        }
+    }
+
+    /// <summary>
+    /// Negates all items in the given array.
+    /// </summary>
+    /// <param name="col">The number array.</param>
+    /// <returns>An array.</returns>
+    public static float[] Negate(float[] col)
+    {
+        var c = new float[col.Length];
+        for (var i = 0; i < col.Length; i++)
+        {
+            c[i] = -col[i];
         }
 
         return c;
@@ -579,7 +708,7 @@ public static partial class CollectionOperation
     }
 
     /// <summary>
-    /// Minuss a number and each item in a collection.
+    /// Minuses.
     /// </summary>
     /// <param name="a">Left collection.</param>
     /// <param name="b">Right number.</param>
@@ -589,6 +718,20 @@ public static partial class CollectionOperation
         foreach (var item in a)
         {
             yield return item - b;
+        }
+    }
+
+    /// <summary>
+    /// Minuses.
+    /// </summary>
+    /// <param name="a">Left number.</param>
+    /// <param name="b">Right collection.</param>
+    /// <returns>A collection with items minused.</returns>
+    public static IEnumerable<double> Minus(double a, IEnumerable<double> b)
+    {
+        foreach (var item in b)
+        {
+            yield return a - item;
         }
     }
 
@@ -607,6 +750,35 @@ public static partial class CollectionOperation
             var numA = i >= a.Length ? 0d : a[i];
             var numB = i >= b.Length ? 0d : b[i];
             c[i] = numA - numB;
+        }
+
+        return c;
+    }
+
+    /// <summary>
+    /// Negates all items in the given collection.
+    /// </summary>
+    /// <param name="col">The number collection.</param>
+    /// <returns>A collection.</returns>
+    public static IEnumerable<double> Negate(IEnumerable<double> col)
+    {
+        foreach (var item in col)
+        {
+            yield return -item;
+        }
+    }
+
+    /// <summary>
+    /// Negates all items in the given array.
+    /// </summary>
+    /// <param name="col">The number array.</param>
+    /// <returns>An array.</returns>
+    public static double[] Negate(double[] col)
+    {
+        var c = new double[col.Length];
+        for (var i = 0; i < col.Length; i++)
+        {
+            c[i] = -col[i];
         }
 
         return c;
@@ -730,7 +902,7 @@ public static partial class CollectionOperation
     }
 
     /// <summary>
-    /// Minuss a number and each item in a collection.
+    /// Minuses.
     /// </summary>
     /// <param name="a">Left collection.</param>
     /// <param name="b">Right number.</param>
@@ -740,6 +912,20 @@ public static partial class CollectionOperation
         foreach (var item in a)
         {
             yield return item - b;
+        }
+    }
+
+    /// <summary>
+    /// Minuses.
+    /// </summary>
+    /// <param name="a">Left number.</param>
+    /// <param name="b">Right collection.</param>
+    /// <returns>A collection with items minused.</returns>
+    public static IEnumerable<decimal> Minus(decimal a, IEnumerable<decimal> b)
+    {
+        foreach (var item in b)
+        {
+            yield return a - item;
         }
     }
 
@@ -758,6 +944,35 @@ public static partial class CollectionOperation
             var numA = i >= a.Length ? 0 : a[i];
             var numB = i >= b.Length ? 0 : b[i];
             c[i] = numA - numB;
+        }
+
+        return c;
+    }
+
+    /// <summary>
+    /// Negates all items in the given collection.
+    /// </summary>
+    /// <param name="col">The number collection.</param>
+    /// <returns>A collection.</returns>
+    public static IEnumerable<decimal> Negate(IEnumerable<decimal> col)
+    {
+        foreach (var item in col)
+        {
+            yield return -item;
+        }
+    }
+
+    /// <summary>
+    /// Negates all items in the given array.
+    /// </summary>
+    /// <param name="col">The number array.</param>
+    /// <returns>An array.</returns>
+    public static decimal[] Negate(decimal[] col)
+    {
+        var c = new decimal[col.Length];
+        for (var i = 0; i < col.Length; i++)
+        {
+            c[i] = -col[i];
         }
 
         return c;
@@ -909,7 +1124,7 @@ public static partial class CollectionOperation
     }
 
     /// <summary>
-    /// Minuss a number and each item in a collection.
+    /// Minuses.
     /// </summary>
     /// <param name="a">Left collection.</param>
     /// <param name="b">Right number.</param>
@@ -919,6 +1134,20 @@ public static partial class CollectionOperation
         foreach (var item in a)
         {
             yield return item - b;
+        }
+    }
+
+    /// <summary>
+    /// Minuses.
+    /// </summary>
+    /// <param name="a">Left number.</param>
+    /// <param name="b">Right collection.</param>
+    /// <returns>A collection with items minused.</returns>
+    public static IEnumerable<TimeSpan> Minus(TimeSpan a, IEnumerable<TimeSpan> b)
+    {
+        foreach (var item in b)
+        {
+            yield return a - item;
         }
     }
 
@@ -943,7 +1172,36 @@ public static partial class CollectionOperation
     }
 
     /// <summary>
-    /// Minuss a number and each item in a collection.
+    /// Negates all items in the given collection.
+    /// </summary>
+    /// <param name="col">The number collection.</param>
+    /// <returns>A collection.</returns>
+    public static IEnumerable<TimeSpan> Negate(IEnumerable<TimeSpan> col)
+    {
+        foreach (var item in col)
+        {
+            yield return -item;
+        }
+    }
+
+    /// <summary>
+    /// Negates all items in the given array.
+    /// </summary>
+    /// <param name="col">The number array.</param>
+    /// <returns>An array.</returns>
+    public static TimeSpan[] Negate(TimeSpan[] col)
+    {
+        var c = new TimeSpan[col.Length];
+        for (var i = 0; i < col.Length; i++)
+        {
+            c[i] = -col[i];
+        }
+
+        return c;
+    }
+
+    /// <summary>
+    /// Minuses.
     /// </summary>
     /// <param name="a">Left collection.</param>
     /// <param name="b">Right number.</param>
@@ -957,7 +1215,7 @@ public static partial class CollectionOperation
     }
 
     /// <summary>
-    /// Minuss a number and each item in a collection.
+    /// Minuses.
     /// </summary>
     /// <param name="a">Left collection.</param>
     /// <param name="b">Right number.</param>

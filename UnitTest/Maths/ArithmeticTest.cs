@@ -210,4 +210,52 @@ public class ArithmeticTest
         Assert.IsTrue(f2.IsNaN);
         Assert.AreNotEqual(f1, f2);
     }
+
+    /// <summary>
+    /// Tests numerals.
+    /// </summary>
+    [TestMethod]
+    public void TestArray()
+    {
+        var a = new[] { 1, 2, 3, 4 };
+        var b = new[] { 5, 6, 7, 8, 9 };
+        var c = Arithmetic.Plus(a, b);
+        Assert.AreEqual(5, c.Length);
+        Assert.AreEqual(6, c[0]);
+        Assert.AreEqual(9, c[4]);
+        c = Arithmetic.Minus(a, b);
+        Assert.AreEqual(5, c.Length);
+        Assert.AreEqual(-4, c[0]);
+        Assert.AreEqual(-9, c[4]);
+    }
+
+    /// <summary>
+    /// Tests numerals.
+    /// </summary>
+    [TestMethod]
+    public void TestCollection()
+    {
+        var a = new List<int> { 1, 2, 3, 4 };
+        var b = new List<int> { 5, 6, 7 };
+        var c = Arithmetic.Plus(a, b).ToList();
+        Assert.AreEqual(4, c.Count);
+        Assert.AreEqual(6, c[0]);
+        Assert.AreEqual(4, c[3]);
+        c = Arithmetic.Plus(a, a, b).ToList();
+        Assert.AreEqual(4, c.Count);
+        Assert.AreEqual(7, c[0]);
+        Assert.AreEqual(8, c[3]);
+        c = Arithmetic.Plus(a, 8).ToList();
+        Assert.AreEqual(4, c.Count);
+        Assert.AreEqual(9, c[0]);
+        Assert.AreEqual(12, c[3]);
+        c = Arithmetic.Plus(a, b, 8).ToList();
+        Assert.AreEqual(4, c.Count);
+        Assert.AreEqual(14, c[0]);
+        Assert.AreEqual(12, c[3]);
+        c = Arithmetic.Minus(a, b).ToList();
+        Assert.AreEqual(4, c.Count);
+        Assert.AreEqual(-4, c[0]);
+        Assert.AreEqual(4, c[3]);
+    }
 }
