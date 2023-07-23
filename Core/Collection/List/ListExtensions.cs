@@ -538,6 +538,39 @@ public static partial class ListExtensions
     }
 
     /// <summary>
+    /// Creates a collection with a specific number of item.
+    /// </summary>
+    /// <typeparam name="T">The type of item.</typeparam>
+    /// <param name="count">The count.</param>
+    /// <param name="item">The default item.</param>
+    /// <returns>A sequence.</returns>
+    public static IEnumerable<T> Create<T>(int count, T item = default)
+    {
+        for (var i = 0; i < count; i++)
+        {
+            yield return item;
+        }
+    }
+
+    /// <summary>
+    /// Creates an array with a specific number of item.
+    /// </summary>
+    /// <typeparam name="T">The type of item.</typeparam>
+    /// <param name="count">The count.</param>
+    /// <param name="item">The default item.</param>
+    /// <returns>An array.</returns>
+    public static T[] CreateArray<T>(int count, T item = default)
+    {
+        var arr = new T[count];
+        for (var i = 0; i < count; i++)
+        {
+            arr[i] = item;
+        }
+
+        return arr;
+    }
+
+    /// <summary>
     /// Removes all the elements by the specific key.
     /// </summary>
     /// <param name="list">The key value pairs.</param>
