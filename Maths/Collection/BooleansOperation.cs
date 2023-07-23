@@ -186,7 +186,7 @@ public static partial class CollectionOperation
         {
             if (arr.Length < 1) return Merge(op);
         }
-        else if (input is List<bool> col)
+        else if (input is ICollection<bool> col)
         {
             if (col.Count < 1) return Merge(op);
         }

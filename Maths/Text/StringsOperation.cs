@@ -23,7 +23,7 @@ public static partial class CollectionOperation
         {
             if (arr.Length < 1) return null;
         }
-        else if (input is List<string> col)
+        else if (input is ICollection<string> col)
         {
             if (col.Count < 1) return null;
         }

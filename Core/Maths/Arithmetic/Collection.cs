@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Trivial.Text;
 
 namespace Trivial.Maths;
 
@@ -80,6 +81,7 @@ public static partial class Arithmetic
     /// <returns>A collection with items plused.</returns>
     public static IEnumerable<int> Plus(IEnumerable<int> a, int b)
     {
+        if (a == null) yield break;
         foreach (var item in a)
         {
             yield return item + b;
@@ -94,6 +96,8 @@ public static partial class Arithmetic
     /// <returns>An array with items plused.</returns>
     public static int[] Plus(int[] a, int[] b)
     {
+        a ??= Array.Empty<int>();
+        b ??= Array.Empty<int>();
         var count = Math.Max(a.Length, b.Length);
         var c = new int[count];
         for (var i = 0; i < count; i++)
@@ -133,6 +137,7 @@ public static partial class Arithmetic
     /// <returns>A collection with items minused.</returns>
     public static IEnumerable<int> Minus(IEnumerable<int> a, int b)
     {
+        if (a == null) yield break;
         foreach (var item in a)
         {
             yield return item - b;
@@ -147,6 +152,7 @@ public static partial class Arithmetic
     /// <returns>A collection with items minused.</returns>
     public static IEnumerable<int> Minus(int a, IEnumerable<int> b)
     {
+        if (b == null) yield break;
         foreach (var item in b)
         {
             yield return a - item;
@@ -161,6 +167,8 @@ public static partial class Arithmetic
     /// <returns>An array with items ,inused.</returns>
     public static int[] Minus(int[] a, int[] b)
     {
+        a ??= Array.Empty<int>();
+        b ??= Array.Empty<int>();
         var count = Math.Max(a.Length, b.Length);
         var c = new int[count];
         for (var i = 0; i < count; i++)
@@ -180,6 +188,7 @@ public static partial class Arithmetic
     /// <returns>A collection.</returns>
     public static IEnumerable<int> Negate(IEnumerable<int> col)
     {
+        if (col == null) yield break;
         foreach (var item in col)
         {
             yield return -item;
@@ -193,6 +202,7 @@ public static partial class Arithmetic
     /// <returns>An array.</returns>
     public static int[] Negate(int[] col)
     {
+        if (col == null) return null;
         var c = new int[col.Length];
         for (var i = 0; i < col.Length; i++)
         {
@@ -274,6 +284,7 @@ public static partial class Arithmetic
     /// <returns>A collection with items plused.</returns>
     public static IEnumerable<long> Plus(IEnumerable<long> a, long b)
     {
+        if (a == null) yield break;
         foreach (var item in a)
         {
             yield return item + b;
@@ -288,6 +299,8 @@ public static partial class Arithmetic
     /// <returns>An array with items plused.</returns>
     public static long[] Plus(long[] a, long[] b)
     {
+        a ??= Array.Empty<long>();
+        b ??= Array.Empty<long>();
         var count = Math.Max(a.Length, b.Length);
         var c = new long[count];
         for (var i = 0; i < count; i++)
@@ -327,6 +340,7 @@ public static partial class Arithmetic
     /// <returns>A collection with items minused.</returns>
     public static IEnumerable<long> Minus(IEnumerable<long> a, long b)
     {
+        if (a == null) yield break;
         foreach (var item in a)
         {
             yield return item - b;
@@ -341,6 +355,7 @@ public static partial class Arithmetic
     /// <returns>A collection with items minused.</returns>
     public static IEnumerable<long> Minus(long a, IEnumerable<long> b)
     {
+        if (b == null) yield break;
         foreach (var item in b)
         {
             yield return a - item;
@@ -355,6 +370,8 @@ public static partial class Arithmetic
     /// <returns>An array with items ,inused.</returns>
     public static long[] Minus(long[] a, long[] b)
     {
+        a ??= Array.Empty<long>();
+        b ??= Array.Empty<long>();
         var count = Math.Max(a.Length, b.Length);
         var c = new long[count];
         for (var i = 0; i < count; i++)
@@ -374,6 +391,7 @@ public static partial class Arithmetic
     /// <returns>A collection.</returns>
     public static IEnumerable<long> Negate(IEnumerable<long> col)
     {
+        if (col == null) yield break;
         foreach (var item in col)
         {
             yield return -item;
@@ -387,6 +405,7 @@ public static partial class Arithmetic
     /// <returns>An array.</returns>
     public static long[] Negate(long[] col)
     {
+        if (col == null) return null;
         var c = new long[col.Length];
         for (var i = 0; i < col.Length; i++)
         {
@@ -451,6 +470,7 @@ public static partial class Arithmetic
     {
         var colA = a?.ToList() ?? new();
         var colB = b?.ToList() ?? new();
+        if (float.IsNaN(c)) c = 0f;
         var count = Math.Max(colA.Count, colB.Count);
         for (var i = 0; i < count; i++)
         {
@@ -468,6 +488,8 @@ public static partial class Arithmetic
     /// <returns>A collection with items plused.</returns>
     public static IEnumerable<float> Plus(IEnumerable<float> a, float b)
     {
+        if (a == null) yield break;
+        if (float.IsNaN(b)) b = 0f;
         foreach (var item in a)
         {
             yield return item + b;
@@ -482,6 +504,8 @@ public static partial class Arithmetic
     /// <returns>An array with items plused.</returns>
     public static float[] Plus(float[] a, float[] b)
     {
+        a ??= Array.Empty<float>();
+        b ??= Array.Empty<float>();
         var count = Math.Max(a.Length, b.Length);
         var c = new float[count];
         for (var i = 0; i < count; i++)
@@ -521,6 +545,8 @@ public static partial class Arithmetic
     /// <returns>A collection with items minused.</returns>
     public static IEnumerable<float> Minus(IEnumerable<float> a, float b)
     {
+        if (a == null) yield break;
+        if (float.IsNaN(b)) b = 0f;
         foreach (var item in a)
         {
             yield return item - b;
@@ -535,6 +561,8 @@ public static partial class Arithmetic
     /// <returns>A collection with items minused.</returns>
     public static IEnumerable<float> Minus(float a, IEnumerable<float> b)
     {
+        if (b == null) yield break;
+        if (float.IsNaN(a)) a = 0f;
         foreach (var item in b)
         {
             yield return a - item;
@@ -549,6 +577,8 @@ public static partial class Arithmetic
     /// <returns>An array with items ,inused.</returns>
     public static float[] Minus(float[] a, float[] b)
     {
+        a ??= Array.Empty<float>();
+        b ??= Array.Empty<float>();
         var count = Math.Max(a.Length, b.Length);
         var c = new float[count];
         for (var i = 0; i < count; i++)
@@ -568,6 +598,7 @@ public static partial class Arithmetic
     /// <returns>A collection.</returns>
     public static IEnumerable<float> Negate(IEnumerable<float> col)
     {
+        if (col == null) yield break;
         foreach (var item in col)
         {
             yield return -item;
@@ -581,6 +612,7 @@ public static partial class Arithmetic
     /// <returns>An array.</returns>
     public static float[] Negate(float[] col)
     {
+        if (col == null) return null;
         var c = new float[col.Length];
         for (var i = 0; i < col.Length; i++)
         {
@@ -645,6 +677,7 @@ public static partial class Arithmetic
     {
         var colA = a?.ToList() ?? new();
         var colB = b?.ToList() ?? new();
+        if (double.IsNaN(c)) c = 0d;
         var count = Math.Max(colA.Count, colB.Count);
         for (var i = 0; i < count; i++)
         {
@@ -662,6 +695,8 @@ public static partial class Arithmetic
     /// <returns>A collection with items plused.</returns>
     public static IEnumerable<double> Plus(IEnumerable<double> a, double b)
     {
+        if (a == null) yield break;
+        if (double.IsNaN(b)) b = 0d;
         foreach (var item in a)
         {
             yield return item + b;
@@ -676,6 +711,8 @@ public static partial class Arithmetic
     /// <returns>An array with items plused.</returns>
     public static double[] Plus(double[] a, double[] b)
     {
+        a ??= Array.Empty<double>();
+        b ??= Array.Empty<double>();
         var count = Math.Max(a.Length, b.Length);
         var c = new double[count];
         for (var i = 0; i < count; i++)
@@ -715,6 +752,8 @@ public static partial class Arithmetic
     /// <returns>A collection with items minused.</returns>
     public static IEnumerable<double> Minus(IEnumerable<double> a, double b)
     {
+        if (a == null) yield break;
+        if (double.IsNaN(b)) b = 0d;
         foreach (var item in a)
         {
             yield return item - b;
@@ -729,6 +768,8 @@ public static partial class Arithmetic
     /// <returns>A collection with items minused.</returns>
     public static IEnumerable<double> Minus(double a, IEnumerable<double> b)
     {
+        if (b == null) yield break;
+        if (double.IsNaN(a)) a = 0d;
         foreach (var item in b)
         {
             yield return a - item;
@@ -743,6 +784,8 @@ public static partial class Arithmetic
     /// <returns>An array with items ,inused.</returns>
     public static double[] Minus(double[] a, double[] b)
     {
+        a ??= Array.Empty<double>();
+        b ??= Array.Empty<double>();
         var count = Math.Max(a.Length, b.Length);
         var c = new double[count];
         for (var i = 0; i < count; i++)
@@ -762,6 +805,7 @@ public static partial class Arithmetic
     /// <returns>A collection.</returns>
     public static IEnumerable<double> Negate(IEnumerable<double> col)
     {
+        if (col == null) yield break;
         foreach (var item in col)
         {
             yield return -item;
@@ -775,6 +819,7 @@ public static partial class Arithmetic
     /// <returns>An array.</returns>
     public static double[] Negate(double[] col)
     {
+        if (col == null) return null;
         var c = new double[col.Length];
         for (var i = 0; i < col.Length; i++)
         {
@@ -856,6 +901,7 @@ public static partial class Arithmetic
     /// <returns>A collection with items plused.</returns>
     public static IEnumerable<decimal> Plus(IEnumerable<decimal> a, decimal b)
     {
+        if (a == null) yield break;
         foreach (var item in a)
         {
             yield return item + b;
@@ -870,6 +916,8 @@ public static partial class Arithmetic
     /// <returns>An array with items plused.</returns>
     public static decimal[] Plus(decimal[] a, decimal[] b)
     {
+        a ??= Array.Empty<decimal>();
+        b ??= Array.Empty<decimal>();
         var count = Math.Max(a.Length, b.Length);
         var c = new decimal[count];
         for (var i = 0; i < count; i++)
@@ -909,6 +957,7 @@ public static partial class Arithmetic
     /// <returns>A collection with items minused.</returns>
     public static IEnumerable<decimal> Minus(IEnumerable<decimal> a, decimal b)
     {
+        if (a == null) yield break;
         foreach (var item in a)
         {
             yield return item - b;
@@ -923,6 +972,7 @@ public static partial class Arithmetic
     /// <returns>A collection with items minused.</returns>
     public static IEnumerable<decimal> Minus(decimal a, IEnumerable<decimal> b)
     {
+        if (b == null) yield break;
         foreach (var item in b)
         {
             yield return a - item;
@@ -937,6 +987,8 @@ public static partial class Arithmetic
     /// <returns>An array with items ,inused.</returns>
     public static decimal[] Minus(decimal[] a, decimal[] b)
     {
+        a ??= Array.Empty<decimal>();
+        b ??= Array.Empty<decimal>();
         var count = Math.Max(a.Length, b.Length);
         var c = new decimal[count];
         for (var i = 0; i < count; i++)
@@ -956,6 +1008,7 @@ public static partial class Arithmetic
     /// <returns>A collection.</returns>
     public static IEnumerable<decimal> Negate(IEnumerable<decimal> col)
     {
+        if (col == null) yield break;
         foreach (var item in col)
         {
             yield return -item;
@@ -969,6 +1022,7 @@ public static partial class Arithmetic
     /// <returns>An array.</returns>
     public static decimal[] Negate(decimal[] col)
     {
+        if (col == null) return null;
         var c = new decimal[col.Length];
         for (var i = 0; i < col.Length; i++)
         {
@@ -1050,6 +1104,7 @@ public static partial class Arithmetic
     /// <returns>A collection with items plused.</returns>
     public static IEnumerable<TimeSpan> Plus(IEnumerable<TimeSpan> a, TimeSpan b)
     {
+        if (a == null) yield break;
         foreach (var item in a)
         {
             yield return item + b;
@@ -1064,6 +1119,8 @@ public static partial class Arithmetic
     /// <returns>An array with items plused.</returns>
     public static TimeSpan[] Plus(TimeSpan[] a, TimeSpan[] b)
     {
+        a ??= Array.Empty<TimeSpan>();
+        b ??= Array.Empty<TimeSpan>();
         var count = Math.Max(a.Length, b.Length);
         var c = new TimeSpan[count];
         for (var i = 0; i < count; i++)
@@ -1084,6 +1141,7 @@ public static partial class Arithmetic
     /// <returns>A collection with items plused.</returns>
     public static IEnumerable<DateTime> Plus(IEnumerable<DateTime> a, TimeSpan b)
     {
+        if (a == null) yield break;
         foreach (var item in a)
         {
             yield return item + b;
@@ -1098,6 +1156,7 @@ public static partial class Arithmetic
     /// <returns>A collection with items plused.</returns>
     public static IEnumerable<DateTimeOffset> Plus(IEnumerable<DateTimeOffset> a, TimeSpan b)
     {
+        if (a == null) yield break;
         foreach (var item in a)
         {
             yield return item + b;
@@ -1131,6 +1190,7 @@ public static partial class Arithmetic
     /// <returns>A collection with items minused.</returns>
     public static IEnumerable<TimeSpan> Minus(IEnumerable<TimeSpan> a, TimeSpan b)
     {
+        if (a == null) yield break;
         foreach (var item in a)
         {
             yield return item - b;
@@ -1145,6 +1205,7 @@ public static partial class Arithmetic
     /// <returns>A collection with items minused.</returns>
     public static IEnumerable<TimeSpan> Minus(TimeSpan a, IEnumerable<TimeSpan> b)
     {
+        if (b == null) yield break;
         foreach (var item in b)
         {
             yield return a - item;
@@ -1159,6 +1220,8 @@ public static partial class Arithmetic
     /// <returns>An array with items ,inused.</returns>
     public static TimeSpan[] Minus(TimeSpan[] a, TimeSpan[] b)
     {
+        a ??= Array.Empty<TimeSpan>();
+        b ??= Array.Empty<TimeSpan>();
         var count = Math.Max(a.Length, b.Length);
         var c = new TimeSpan[count];
         for (var i = 0; i < count; i++)
@@ -1178,6 +1241,7 @@ public static partial class Arithmetic
     /// <returns>A collection.</returns>
     public static IEnumerable<TimeSpan> Negate(IEnumerable<TimeSpan> col)
     {
+        if (col == null) yield break;
         foreach (var item in col)
         {
             yield return -item;
@@ -1191,6 +1255,7 @@ public static partial class Arithmetic
     /// <returns>An array.</returns>
     public static TimeSpan[] Negate(TimeSpan[] col)
     {
+        if (col == null) return null;
         var c = new TimeSpan[col.Length];
         for (var i = 0; i < col.Length; i++)
         {
@@ -1208,6 +1273,7 @@ public static partial class Arithmetic
     /// <returns>A collection with items minused.</returns>
     public static IEnumerable<DateTime> Minus(IEnumerable<DateTime> a, TimeSpan b)
     {
+        if (a == null) yield break;
         foreach (var item in a)
         {
             yield return item - b;
@@ -1222,9 +1288,41 @@ public static partial class Arithmetic
     /// <returns>A collection with items minused.</returns>
     public static IEnumerable<DateTimeOffset> Minus(IEnumerable<DateTimeOffset> a, TimeSpan b)
     {
+        if (a == null) yield break;
         foreach (var item in a)
         {
             yield return item - b;
         }
+    }
+
+    /// <summary>
+    /// Negates all items in the given collection.
+    /// </summary>
+    /// <param name="col">The number collection.</param>
+    /// <returns>A collection.</returns>
+    public static IEnumerable<bool> Negate(IEnumerable<bool> col)
+    {
+        if (col == null) yield break;
+        foreach (var item in col)
+        {
+            yield return !item;
+        }
+    }
+
+    /// <summary>
+    /// Negates all items in the given array.
+    /// </summary>
+    /// <param name="col">The number array.</param>
+    /// <returns>An array.</returns>
+    public static bool[] Negate(bool[] col)
+    {
+        if (col == null) return null;
+        var c = new bool[col.Length];
+        for (var i = 0; i < col.Length; i++)
+        {
+            c[i] = !col[i];
+        }
+
+        return c;
     }
 }

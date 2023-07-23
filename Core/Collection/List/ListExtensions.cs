@@ -82,6 +82,126 @@ public static partial class ListExtensions
     }
 
     /// <summary>
+    /// Creates a new list to copy the input collection and insert a specific number of default value at beginning.
+    /// </summary>
+    /// <typeparam name="T">The type of the item.</typeparam>
+    /// <param name="col">The input collection.</param>
+    /// <param name="count">The count of padding item.</param>
+    /// <param name="value">The default value.</param>
+    /// <returns>A new list with padding and the input collection.</returns>
+    public static List<T> PadBegin<T>(IEnumerable<T> col, int count, T value = default)
+    {
+        var list = new List<T>();
+        if (count < 0)
+        {
+            if (col != null) list.AddRange(col.Skip(count));
+            return list;
+        }
+
+        for (var i = 0; i < count; i++)
+        {
+            list.Add(value);
+        }
+
+        if (col != null) list.AddRange(col);
+        return list;
+    }
+
+    /// <summary>
+    /// Creates a new list to copy the input collection and insert a specific number of default value at ending.
+    /// </summary>
+    /// <typeparam name="T">The type of the item.</typeparam>
+    /// <param name="col">The input collection.</param>
+    /// <param name="count">The count of padding item.</param>
+    /// <param name="value">The default value.</param>
+    /// <returns>A new list with padding and the input collection.</returns>
+    public static List<T> PadEnd<T>(IEnumerable<T> col, int count, T value = default)
+    {
+        var list = col == null ? new List<T>() : new List<T>(col);
+        if (count < 0)
+        {
+            if (col == null) return list;
+            list.AddRange(col);
+            for (var i = 0; i < count; i++)
+            {
+                var len = list.Count - 1;
+                if (len < 0) break;
+                list.RemoveAt(len);
+            }
+
+            return list;
+        }
+
+        for (var i = 0; i < count; i++)
+        {
+            list.Add(value);
+        }
+
+        return list;
+    }
+
+    /// <summary>
+    /// Insert a specific number of default value at beginning to the input collection.
+    /// </summary>
+    /// <typeparam name="T">The type of the item.</typeparam>
+    /// <param name="col">The input collection.</param>
+    /// <param name="count">The count of padding item.</param>
+    /// <param name="value">The default value.</param>
+    /// <returns>A new list with padding and the input collection.</returns>
+    /// <exception cref="ArgumentNullException">col is null.</exception>
+    public static void PadBeginTo<T>(IList<T> col, int count, T value = default)
+    {
+        if (col == null) throw new ArgumentNullException(nameof(col), "col should not be null.");
+        if (count < 0)
+        {
+            for (var i = 0; i < count; i++)
+            {
+                if (col.Count < 1) return;
+                col.RemoveAt(0);
+            }
+
+            return;
+        }
+
+        for (var i = 0; i < count; i++)
+        {
+            col.Insert(0, value);
+        }
+    }
+
+    /// <summary>
+    /// Insert a specific number of default value at ending to the input collection.
+    /// </summary>
+    /// <typeparam name="T">The type of the item.</typeparam>
+    /// <param name="col">The input collection.</param>
+    /// <param name="count">The count of padding item.</param>
+    /// <param name="value">The default value.</param>
+    /// <returns>A new list with padding and the input collection.</returns>
+    /// <exception cref="ArgumentNullException">col is null.</exception>
+    /// <exception cref="ArgumentOutOfRangeException">count is less than 0.</exception>
+    public static void PadEndTo<T>(ICollection<T> col, int count, T value = default)
+    {
+        if (col == null) throw new ArgumentNullException(nameof(col), "col should not be null.");
+        if (count < 0)
+        {
+            if (col is not IList<T> list) throw new ArgumentOutOfRangeException(nameof(count), "count should be a natural number.");
+            for (var i = 0; i < count; i++)
+            {
+                var len = col.Count - 1;
+                if (len < 0) break;
+                list.RemoveAt(len);
+            }
+
+            return;
+        }
+
+        for (var i = 0; i < count; i++)
+        {
+            col.Add(value);
+        }
+    }
+
+    /// <summary>
     /// Converts a collection of boolean to strings.
     /// </summary>
     /// <param name="input">The input collection.</param>
@@ -658,6 +778,79 @@ public static partial class ListExtensions
         }
 
         return count;
+    }
+
+    /// <summary>
+    /// Filters the source collection but keep the default value.
+    /// </summary>
+    /// <typeparam name="T">The type of the item.</typeparam>
+    /// <param name="source">The source collection.</param>
+    /// <param name="flags">The flags. It is a boolean collection that each item indicating whether need keep the source item by index.</param>
+    /// <param name="defaultValue">The default value for removing.</param>
+    /// <param name="callback">A callback.</param>
+    /// <returns>The new collection after filtering.</returns>
+    public static IEnumerable<T> KeepWithDefault<T>(IEnumerable<T> source, IEnumerable<bool> flags, T defaultValue = default, Action<T, bool, int> callback = null)
+    {
+        if (flags is not IList<bool> f) f = flags.ToList();
+        var i = -1;
+        foreach (var item in source)
+        {
+            i++;
+            if (i < f.Count)
+            {
+                var flag = f[i];
+                callback?.Invoke(item, flag, i);
+                if (flag) yield return item;
+                else yield return defaultValue;
+            }
+            else
+            {
+                callback?.Invoke(item, false, i);
+                yield return defaultValue;
+            }
+        }
+    }
+
+    /// <summary>
+    /// Filters the source collection and remove the ones no longer needed.
+    /// </summary>
+    /// <typeparam name="T">The type of the item.</typeparam>
+    /// <param name="source">The source collection.</param>
+    /// <param name="flags">The flags. It is a boolean collection that each item indicating whether need keep the source item by index.</param>
+    /// <param name="callback">A callback.</param>
+    /// <returns>The new collection after filtering.</returns>
+    public static IEnumerable<T> Keep<T>(IEnumerable<T> source, IEnumerable<bool> flags, Action<T, bool, int> callback = null)
+    {
+        if (flags is not IList<bool> f) f = flags.ToList();
+        var i = 0;
+        if (callback == null)
+        {
+            foreach (var item in source)
+            {
+                if (i >= f.Count) break;
+                i++;
+                var flag = f[i];
+                callback?.Invoke(item, flag, i);
+                if (flag) yield return item;
+            }
+        }
+        else
+        {
+            foreach (var item in source)
+            {
+                i++;
+                if (i >= f.Count)
+                {
+                    callback?.Invoke(item, false, i);
+                }
+                else
+                {
+                    var flag = f[i];
+                    callback?.Invoke(item, flag, i);
+                    if (flag) yield return item;
+                }
+            }
+        }
     }
 
     /// <summary>
