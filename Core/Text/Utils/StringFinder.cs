@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -37,6 +38,7 @@ public enum StringsMatchingRules : byte
 /// <summary>
 /// The string finder.
 /// </summary>
+[DebuggerDisplay("{Offset} → {Value} → {RestLength}")]
 public class StringFinder
 {
 #pragma warning disable IDE0057
@@ -374,6 +376,34 @@ public class StringFinder
         => BeforeIfContains(q, rule, skip, out _);
 
     /// <summary>
+    /// Read next character.
+    /// </summary>
+    /// <returns>The character; or \0 if at the end.</returns>
+    public char Read()
+        => Read(out var c) ? c : '\0';
+
+    /// <summary>
+    /// Read next character.
+    /// </summary>
+    /// <returns>The character; or \0 if at the end.</returns>
+    public bool Read(out char c)
+    {
+        var rest = Rest;
+        if (string.IsNullOrEmpty(rest))
+        {
+            c = '\0';
+            return false;
+        }
+
+        Previous = Value;
+        c = rest[0];
+        Value = c.ToString();
+        Offset++;
+        Rest = rest.Substring(1);
+        return true;
+    }
+
+    /// <summary>
     /// Gets the sub-string until that a search string appears. The search string is in the sub-string returned.
     /// </summary>
     /// <param name="q">The search string.</param>
@@ -490,6 +520,24 @@ public class StringFinder
             yield return Rest.IndexOf(item);
         }
     }
+
+    /// <summary>
+    /// Determines whether the beginning of this string instance matches the specified string.
+    /// </summary>
+    /// <param name="q">The string to compare.</param>
+    /// <returns>true if value matches the beginning of this string; otherwise, false.</returns>
+    /// <exception cref="ArgumentNullException">value is null.</exception>
+    public bool StartsWith(string q)
+        => Rest.StartsWith(q);
+
+    /// <summary>
+    /// Determines whether the beginning of this string instance matches the specified character.
+    /// </summary>
+    /// <param name="q">The character to compare.</param>
+    /// <returns>true if value matches the beginning of this string; otherwise, false.</returns>
+    /// <exception cref="ArgumentNullException">value is null.</exception>
+    public bool StartsWith(char q)
+        => Rest.StartsWith(q);
 
     /// <summary>
     /// Resets the state.

@@ -23,7 +23,8 @@ public class StringUnitTest
         var finder = new StringFinder(TestString);
         Assert.AreEqual("There was once a queen who had no children", finder.Before(',', true));
         finder.Before(1);
-        Assert.AreEqual("and it grieved her sorely. ", finder.Until(". "));
+        Assert.AreEqual("and it grieved her sorely.", finder.Until("."));
+        Assert.AreEqual(' ', finder.Read());
         finder.Until("\r\n");
         Assert.IsTrue(finder.Contains("\""));
         Assert.AreEqual(3, finder.IndexOf(','));
