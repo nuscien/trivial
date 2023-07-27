@@ -1620,7 +1620,12 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     /// <returns>The list; or null, if no such array property.</returns>
     public List<string> TryGetStringListValue(string key, bool ignoreNotMatched = false)
     {
-        if (!TryGetJsonValue<JsonArrayNode>(key, out var p)) return null;
+        if (!TryGetJsonValue<JsonArrayNode>(key, out var p))
+        {
+            var item = TryGetStringValue(key);
+            return string.IsNullOrEmpty(item) ? null : new() { item };
+        }
+
         var col = ignoreNotMatched ? p.Select(ele => ele is IJsonStringNode s ? s.StringValue : null).Where(ele => ele is not null) : p.Select(ele =>
         {
             if (ele is IJsonStringNode s) return s.StringValue;
@@ -6077,6 +6082,54 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
         }
 
         return dict;
+    }
+
+    /// <summary>
+    /// Projects each element into a new form by incorporation the key.
+    /// </summary>
+    /// <typeparam name="T">The type of element output.</typeparam>
+    /// <param name="selector">The transform function.</param>
+    /// <returns>A collectino whose elements are the result of invoking the transform function on each property.</returns>
+    /// <exception cref="ArgumentNullException"></exception>
+    public IEnumerable<T> Select<T>(Func<JsonValueKind, object, string, T> selector)
+    {
+        if (selector == null) throw new ArgumentNullException(nameof(selector), "selector was null.");
+        foreach (var item in store)
+        {
+            var value = item.Value;
+            if (value == null)
+            {
+                yield return selector(JsonValueKind.Null, null, item.Key);
+                continue;
+            }
+
+            switch (value.ValueKind)
+            {
+                case JsonValueKind.Null:
+                case JsonValueKind.Undefined:
+                    yield return selector(value.ValueKind, null, item.Key);
+                    break;
+                case JsonValueKind.String:
+                    if (value is IJsonStringNode s) yield return selector(value.ValueKind, s.StringValue, item.Key);
+                    else if (value is IJsonValueNode<string> s2) yield return selector(value.ValueKind, s2.Value, item.Key);
+                    break;
+                case JsonValueKind.True:
+                    yield return selector(value.ValueKind, true, item.Key);
+                    break;
+                case JsonValueKind.False:
+                    yield return selector(value.ValueKind, false, item.Key);
+                    break;
+                case JsonValueKind.Number:
+                    if (value is JsonIntegerNode i) yield return selector(value.ValueKind, i.Value, item.Key);
+                    else if (value is JsonDoubleNode d) yield return selector(value.ValueKind, d.Value, item.Key);
+                    else if (value is IJsonNumberNode n) yield return selector(value.ValueKind, n.IsInteger ? n.GetInt64() : n.GetDouble(), item.Key);
+                    break;
+                case JsonValueKind.Object:
+                case JsonValueKind.Array:
+                    yield return selector(value.ValueKind, value, item.Key);
+                    break;
+            }
+        }
     }
 
     /// <summary>

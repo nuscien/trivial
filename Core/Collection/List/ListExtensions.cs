@@ -237,6 +237,32 @@ public static partial class ListExtensions
     }
 
     /// <summary>
+    /// Unions the property values into the specific source collection.
+    /// </summary>
+    /// <param name="source">The source.</param>
+    /// <param name="json">The JSON object to get data.</param>
+    /// <param name="key">The property key.</param>
+    /// <param name="ignoreNotMatched">true if ignore any item which is not JSON string; otherwise, false.</param>
+    /// <returns>The list; or null, if no such array property.</returns>
+    public static IEnumerable<string> Union(IEnumerable<string> source, JsonObjectNode json, string key, bool ignoreNotMatched)
+    {
+        if (source != null)
+        {
+            foreach (var element in source)
+            {
+                yield return element;
+            }
+        }
+
+        var arr = json?.TryGetStringListValue(key, ignoreNotMatched);
+        if (arr == null) yield break;
+        foreach (var element in arr)
+        {
+            yield return element;
+        }
+    }
+
+    /// <summary>
     /// Gets the keys.
     /// </summary>
     /// <param name="list">The key value pairs.</param>
