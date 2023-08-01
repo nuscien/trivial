@@ -2724,7 +2724,7 @@ public class JsonArrayNode : IJsonContainerNode, IJsonDataNode, IReadOnlyList<IJ
     /// </summary>
     /// <typeparam name="T">The type of element output.</typeparam>
     /// <param name="selector">The transform function.</param>
-    /// <returns>A collectino whose elements are the result of invoking the transform function on each property.</returns>
+    /// <returns>A collection whose elements are the result of invoking the transform function on each property.</returns>
     /// <exception cref="ArgumentNullException"></exception>
     public IEnumerable<T> Select<T>(Func<JsonValueKind, object, int, T> selector)
     {
@@ -2733,38 +2733,7 @@ public class JsonArrayNode : IJsonContainerNode, IJsonDataNode, IReadOnlyList<IJ
         foreach (var value in store)
         {
             index++;
-            if (value == null)
-            {
-                yield return selector(JsonValueKind.Null, null, index);
-                continue;
-            }
-
-            switch (value.ValueKind)
-            {
-                case JsonValueKind.Null:
-                case JsonValueKind.Undefined:
-                    yield return selector(value.ValueKind, null, index);
-                    break;
-                case JsonValueKind.String:
-                    if (value is IJsonStringNode s) yield return selector(value.ValueKind, s.StringValue, index);
-                    else if (value is IJsonValueNode<string> s2) yield return selector(value.ValueKind, s2.Value, index);
-                    break;
-                case JsonValueKind.True:
-                    yield return selector(value.ValueKind, true, index);
-                    break;
-                case JsonValueKind.False:
-                    yield return selector(value.ValueKind, false, index);
-                    break;
-                case JsonValueKind.Number:
-                    if (value is JsonIntegerNode i) yield return selector(value.ValueKind, i.Value, index);
-                    else if (value is JsonDoubleNode d) yield return selector(value.ValueKind, d.Value, index);
-                    else if (value is IJsonNumberNode n) yield return selector(value.ValueKind, n.IsInteger ? n.GetInt64() : n.GetDouble(), index);
-                    break;
-                case JsonValueKind.Object:
-                case JsonValueKind.Array:
-                    yield return selector(value.ValueKind, value, index);
-                    break;
-            }
+            yield return selector(value.ValueKind, JsonValues.GetValue(value), index);
         }
     }
 
@@ -3761,6 +3730,22 @@ public class JsonArrayNode : IJsonContainerNode, IJsonDataNode, IReadOnlyList<IJ
                 j++;
                 if (predicate(item, i, j)) yield return item;
             }
+        }
+    }
+
+    /// <summary>
+    /// Filters a sequence of values based on a predicate.
+    /// </summary>
+    /// <param name="predicate">A function to test each source element for a condition.</param>
+    /// <returns>A collection that contains elements from the input sequence that satisfy the condition.</returns>
+    public IEnumerable<IJsonDataNode> Where(Func<JsonValueKind, object, int, bool> predicate)
+    {
+        if (predicate == null) throw new ArgumentNullException(nameof(predicate), "predicate was null.");
+        var index = -1;
+        foreach (var value in store)
+        {
+            index++;
+            if (predicate(value.ValueKind, JsonValues.GetValue(value), index)) yield return value;
         }
     }
 

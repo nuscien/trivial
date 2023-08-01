@@ -254,6 +254,20 @@ public static class JsonValues
     }
 
     /// <summary>
+    /// Appends a copy of the specified string to this instance.
+    /// </summary>
+    /// <param name="sb">The string builder.</param>
+    /// <param name="value">The string to append.</param>
+    /// <returns>A reference to this instance after the append operation has completed.</returns>
+    /// <exception cref="ArgumentOutOfRangeException">Enlarging the value of this instance would exceed System.Text.StringBuilder.MaxCapacity.</exception>
+    public static StringBuilder Append(this StringBuilder sb, IJsonStringNode value)
+    {
+        if (sb == null) return null;
+        sb.Append(value.StringValue);
+        return sb;
+    }
+
+    /// <summary>
     /// Filters the JSON object collection by the property.
     /// </summary>
     /// <param name="col">The JSON object collection.</param>
@@ -405,6 +419,35 @@ public static class JsonValues
         var json = value?.ToJson();
         if (json is null) return Null.ToString();
         return json.ToString(indent);
+    }
+
+    internal static object GetValue(IJsonDataNode value)
+    {
+        if (value == null) return null;
+        switch (value.ValueKind)
+        {
+            case JsonValueKind.Null:
+            case JsonValueKind.Undefined:
+                return null;
+            case JsonValueKind.String:
+                if (value is IJsonStringNode s) return s.StringValue;
+                else if (value is IJsonValueNode<string> s2) return s2.Value;
+                return null;
+            case JsonValueKind.True:
+                return true;
+            case JsonValueKind.False:
+                return false;
+            case JsonValueKind.Number:
+                if (value is JsonIntegerNode i) return i.Value;
+                else if (value is JsonDoubleNode d) return d.Value;
+                else if (value is IJsonNumberNode n) return n.IsInteger ? n.GetInt64() : n.GetDouble();
+                return 0;
+            case JsonValueKind.Object:
+            case JsonValueKind.Array:
+                return value;
+            default:
+                return value;
+        }
     }
 
     internal static DateTime? TryGetDateTime(JsonObjectNode json)

@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
 using System.Security;
@@ -6089,7 +6090,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     /// </summary>
     /// <typeparam name="T">The type of element output.</typeparam>
     /// <param name="selector">The transform function.</param>
-    /// <returns>A collectino whose elements are the result of invoking the transform function on each property.</returns>
+    /// <returns>A collection whose elements are the result of invoking the transform function on each property.</returns>
     /// <exception cref="ArgumentNullException"></exception>
     public IEnumerable<T> Select<T>(Func<JsonValueKind, object, string, T> selector)
     {
@@ -6097,50 +6098,41 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
         foreach (var item in store)
         {
             var value = item.Value;
-            if (value == null)
-            {
-                yield return selector(JsonValueKind.Null, null, item.Key);
-                continue;
-            }
-
-            switch (value.ValueKind)
-            {
-                case JsonValueKind.Null:
-                case JsonValueKind.Undefined:
-                    yield return selector(value.ValueKind, null, item.Key);
-                    break;
-                case JsonValueKind.String:
-                    if (value is IJsonStringNode s) yield return selector(value.ValueKind, s.StringValue, item.Key);
-                    else if (value is IJsonValueNode<string> s2) yield return selector(value.ValueKind, s2.Value, item.Key);
-                    break;
-                case JsonValueKind.True:
-                    yield return selector(value.ValueKind, true, item.Key);
-                    break;
-                case JsonValueKind.False:
-                    yield return selector(value.ValueKind, false, item.Key);
-                    break;
-                case JsonValueKind.Number:
-                    if (value is JsonIntegerNode i) yield return selector(value.ValueKind, i.Value, item.Key);
-                    else if (value is JsonDoubleNode d) yield return selector(value.ValueKind, d.Value, item.Key);
-                    else if (value is IJsonNumberNode n) yield return selector(value.ValueKind, n.IsInteger ? n.GetInt64() : n.GetDouble(), item.Key);
-                    break;
-                case JsonValueKind.Object:
-                case JsonValueKind.Array:
-                    yield return selector(value.ValueKind, value, item.Key);
-                    break;
-            }
+            yield return selector(value.ValueKind, JsonValues.GetValue(value), item.Key);
         }
     }
 
     /// <summary>
-    /// Gets a dictionary of specific keys.
+    /// Creates a new JSON object filtered by specific predication.
+    /// </summary>
+    /// <param name="predicate">An optional function to test each source element for a condition; the second parameter of the function represents the property key; the third is the index of the element after filter.</param>
+    /// <returns>A new JSON object after filter.</returns>
+    /// <exception cref="ArgumentNullException"></exception>
+    public JsonObjectNode Where(Func<JsonValueKind, object, string, int, bool> predicate)
+    {
+        if (predicate == null) throw new ArgumentNullException(nameof(predicate), "predicate was null.");
+        var json = new JsonObjectNode();
+        var i = -1;
+        foreach (var item in store)
+        {
+            var value = item.Value;
+            i++;
+            if (!predicate(value.ValueKind, JsonValues.GetValue(value), item.Key, i)) continue;
+            json[item.Key] = value;
+        }
+
+        return json;
+    }
+
+    /// <summary>
+    /// Creates a new JSON object of specific keys.
     /// </summary>
     /// <param name="keys">The properties keys.</param>
     /// <param name="removeNull">true if skip null values; otherwise, false.</param>
-    /// <returns>A dictionary of values of the specific keys.</returns>
-    public IDictionary<string, IJsonDataNode> Where(IEnumerable<string> keys, bool removeNull = false)
+    /// <returns>A new JSON object of the specific keys.</returns>
+    public JsonObjectNode Where(IEnumerable<string> keys, bool removeNull = false)
     {
-        var dict = new Dictionary<string, IJsonDataNode>();
+        var dict = new JsonObjectNode();
         if (removeNull)
         {
             foreach (var item in keys)
@@ -6162,15 +6154,15 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     }
 
     /// <summary>
-    /// Gets a dictionary of JSON value kind.
+    /// Creates a new JSON object filtered by specific predication.
     /// </summary>
     /// <param name="kind">The data type of JSON value to filter.</param>
     /// <param name="predicate">An optional function to test each source element for a condition; the second parameter of the function represents the property key; the third is the index of the element after filter.</param>
-    /// <returns>A dictionary of values of the specific keys.</returns>
-    public IDictionary<string, IJsonDataNode> Where(JsonValueKind kind, Func<IJsonDataNode, string, int, bool> predicate = null)
+    /// <returns>A new JSON object after filter.</returns>
+    public JsonObjectNode Where(JsonValueKind kind, Func<IJsonDataNode, string, int, bool> predicate = null)
     {
         predicate ??= PassTrue;
-        var dict = new Dictionary<string, IJsonDataNode>();
+        var dict = new JsonObjectNode();
         var i = -1;
         if (kind == JsonValueKind.Null || kind == JsonValueKind.Undefined)
         {
