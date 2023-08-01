@@ -3584,7 +3584,7 @@ public class JsonArrayNode : IJsonContainerNode, IJsonDataNode, IReadOnlyList<IJ
     /// <exception cref="NotSupportedException">path was not supported.</exception>
     /// <exception cref="UnauthorizedAccessException">Write failed because of unauthorized access exception.</exception>
     public void WriteTo(string path, IndentStyles style = IndentStyles.Minified)
-        => File.WriteAllText(path, ToString(style) ?? "null", Encoding.UTF8);
+        => File.WriteAllText(path, ToString(style) ?? "null");
 
 #if NET6_0_OR_GREATER
     /// <summary>
@@ -3601,7 +3601,7 @@ public class JsonArrayNode : IJsonContainerNode, IJsonDataNode, IReadOnlyList<IJ
     /// <exception cref="NotSupportedException">path was not supported.</exception>
     /// <exception cref="UnauthorizedAccessException">Write failed because of unauthorized access exception.</exception>
     public Task WriteToAsync(string path, IndentStyles style = IndentStyles.Minified, CancellationToken cancellationToken = default)
-        => File.WriteAllTextAsync(path, ToString(style) ?? "null", Encoding.UTF8, cancellationToken);
+        => File.WriteAllTextAsync(path, ToString(style) ?? "null", cancellationToken);
 #endif
 
     /// <summary>
