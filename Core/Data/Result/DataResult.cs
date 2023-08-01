@@ -381,9 +381,7 @@ public class CollectionResult<T> : MessageResult
     /// <param name="startFromOffset">true if the index is based on offset; otherwise, false.</param>
     /// <returns>The item.</returns>
     public T TryGet(int index, bool startFromOffset = false)
-    {
-        return TryGet(index, startFromOffset, out var result) ? result : default;
-    }
+        => TryGet(index, startFromOffset, out var result) ? result : default;
 
     /// <summary>
     /// Tries to get the specific one.
@@ -438,9 +436,7 @@ public class CollectionResult<T> : MessageResult
     /// <param name="result">The item to get.</param>
     /// <returns>true if has; otherwise, false.</returns>
     public bool TryGet(int index, out T result)
-    {
-        return TryGet(index, false, out result);
-    }
+        => TryGet(index, false, out result);
 
     /// <summary>
     /// Returns the first element of the sequence that satisfies a condition or a default value if no such element is found.
@@ -495,9 +491,7 @@ public class CollectionResult<T> : MessageResult
     /// </summary>
     /// <returns>An enumerator that can be used to iterate through the collection.</returns>
     public IEnumerator<T> EnumerateObject()
-    {
-        return (Value ?? new List<T>()).GetEnumerator();
-    }
+        => (Value ?? new List<T>()).GetEnumerator();
 }
 
 /// <summary>

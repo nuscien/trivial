@@ -340,23 +340,15 @@ public sealed class PropertyCriteria : ICriteria
     /// <param name="op">A basic compare operator to convert.</param>
     /// <returns>A database compare operator converted.</returns>
     public static DbCompareOperator ToOperator(BasicCompareOperator op)
-    {
-        switch (op)
+        => op switch
         {
-            case BasicCompareOperator.Greater:
-                return DbCompareOperator.Greater;
-            case BasicCompareOperator.GreaterOrEqual:
-                return DbCompareOperator.GreaterOrEqual;
-            case BasicCompareOperator.Less:
-                return DbCompareOperator.Less;
-            case BasicCompareOperator.LessOrEqual:
-                return DbCompareOperator.LessOrEqual;
-            case BasicCompareOperator.NotEqual:
-                return DbCompareOperator.NotEqual;
-            default:
-                return DbCompareOperator.Equal;
-        }
-    }
+            BasicCompareOperator.Greater => DbCompareOperator.Greater,
+            BasicCompareOperator.GreaterOrEqual => DbCompareOperator.GreaterOrEqual,
+            BasicCompareOperator.Less => DbCompareOperator.Less,
+            BasicCompareOperator.LessOrEqual => DbCompareOperator.LessOrEqual,
+            BasicCompareOperator.NotEqual => DbCompareOperator.NotEqual,
+            _ => DbCompareOperator.Equal,
+        };
 
     /// <summary>
     /// AND operator for criteria.
@@ -365,9 +357,7 @@ public sealed class PropertyCriteria : ICriteria
     /// <param name="y">Criteria y.</param>
     /// <returns>A collection of criteria.</returns>
     public static CollectionCriteria operator &(PropertyCriteria x, ICriteria y)
-    {
-        return CollectionCriteria.And(x, y);
-    }
+        => CollectionCriteria.And(x, y);
 
     /// <summary>
     /// AND operator for criteria.
@@ -376,9 +366,7 @@ public sealed class PropertyCriteria : ICriteria
     /// <param name="y">Criteria y.</param>
     /// <returns>A collection of criteria.</returns>
     public static CollectionCriteria operator &(ICriteria x, PropertyCriteria y)
-    {
-        return CollectionCriteria.And(x, y);
-    }
+        => CollectionCriteria.And(x, y);
 
     /// <summary>
     /// AND operator for criteria.
@@ -387,9 +375,7 @@ public sealed class PropertyCriteria : ICriteria
     /// <param name="y">Criteria y.</param>
     /// <returns>A collection of criteria.</returns>
     public static CollectionCriteria operator &(PropertyCriteria x, PropertyCriteria y)
-    {
-        return CollectionCriteria.And(x, y);
-    }
+        => CollectionCriteria.And(x, y);
 
     /// <summary>
     /// OR operator for criteria.
@@ -398,9 +384,7 @@ public sealed class PropertyCriteria : ICriteria
     /// <param name="y">Criteria y.</param>
     /// <returns>A collection of criteria.</returns>
     public static CollectionCriteria operator |(PropertyCriteria x, ICriteria y)
-    {
-        return CollectionCriteria.Or(x, y);
-    }
+        => CollectionCriteria.Or(x, y);
 
     /// <summary>
     /// OR operator for criteria.
@@ -409,9 +393,7 @@ public sealed class PropertyCriteria : ICriteria
     /// <param name="y">Criteria y.</param>
     /// <returns>A collection of criteria.</returns>
     public static CollectionCriteria operator |(ICriteria x, PropertyCriteria y)
-    {
-        return CollectionCriteria.Or(x, y);
-    }
+        => CollectionCriteria.Or(x, y);
 
     /// <summary>
     /// OR operator for criteria.
@@ -420,7 +402,5 @@ public sealed class PropertyCriteria : ICriteria
     /// <param name="y">Criteria y.</param>
     /// <returns>A collection of criteria.</returns>
     public static CollectionCriteria operator |(PropertyCriteria x, PropertyCriteria y)
-    {
-        return CollectionCriteria.Or(x, y);
-    }
+        => CollectionCriteria.Or(x, y);
 }
