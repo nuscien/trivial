@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net7.0;net6.0;net48;net462;net461</TargetFrameworks>
+    <TargetFrameworks>net8.0;net7.0;net6.0;net48;net462;net461</TargetFrameworks>
     <AssemblyName>Trivial</AssemblyName>
     <RootNamespace>Trivial</RootNamespace>
     <PackageId>Trivial</PackageId>
@@ -25,7 +25,7 @@
     <PackageIconUrl>https://github.com/nuscien/trivial/raw/main/Materials/logo.png</PackageIconUrl>
     <PackageTags>tasks interceptor numerals json oauth2-client jwt-token csv-parser stream pem coordinates uri</PackageTags>
     <PackageReadmeFile>README.md</PackageReadmeFile>
-    <LangVersion>10.0</LangVersion>
+    <LangVersion>12.0</LangVersion>
     <ApplicationIcon>..\Materials\Trivial.ico</ApplicationIcon>
     <SignAssembly>True</SignAssembly>
     <AssemblyOriginatorKeyFile>..\Trivial.snk</AssemblyOriginatorKeyFile>
@@ -46,10 +46,10 @@
     <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.3" PrivateAssets="All" />
   </ItemGroup>
   <ItemGroup Condition="'$(TargetFramework)' == 'net481' OR '$(TargetFramework)' == 'net48' OR '$(TargetFramework)' == 'net462'">
-    <PackageReference Include="System.Text.Json" Version="7.0.3" />
+    <PackageReference Include="System.Text.Json" Version="7.0.4" />
   </ItemGroup>
   <ItemGroup Condition="'$(TargetFramework)' == 'net461'">
-    <PackageReference Include="System.Text.Json" Version="6.0.8" />
+    <PackageReference Include="System.Text.Json" Version="6.0.9" />
   </ItemGroup>
 
   <ItemGroup>

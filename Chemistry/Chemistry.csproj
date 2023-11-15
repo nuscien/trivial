@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net7.0;net6.0;net48;net462;net461</TargetFrameworks>
+    <TargetFrameworks>net8.0;net7.0;net6.0;net48;net462;net461</TargetFrameworks>
     <AssemblyName>Trivial.Chemistry</AssemblyName>
     <RootNamespace>Trivial</RootNamespace>
     <PackageId>Trivial.Chemistry</PackageId>
@@ -25,7 +25,7 @@
     <PackageIconUrl>https://github.com/nuscien/trivial/raw/master/Materials/logo.png</PackageIconUrl>
     <PackageTags>chemistry chemical-element periodic-table molecular</PackageTags>
     <PackageReadmeFile>README.md</PackageReadmeFile>
-    <LangVersion>10.0</LangVersion>
+    <LangVersion>12.0</LangVersion>
     <SignAssembly>True</SignAssembly>
     <AssemblyOriginatorKeyFile>..\Trivial.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>

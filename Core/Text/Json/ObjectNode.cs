@@ -3553,9 +3553,33 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     /// <param name="key">The property key.</param>
     /// <param name="value">The value to set.</param>
     /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+    public void SetValueIfNotNull(string key, StringBuilder value)
+    {
+        if (value == null) return;
+        SetValue(key, value);
+    }
+
+    /// <summary>
+    /// Sets the value of the specific property.
+    /// </summary>
+    /// <param name="key">The property key.</param>
+    /// <param name="value">The value to set.</param>
+    /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
     public void SetValueIfNotEmpty(string key, string value)
     {
         if (string.IsNullOrEmpty(value)) return;
+        SetValue(key, value);
+    }
+
+    /// <summary>
+    /// Sets the value of the specific property.
+    /// </summary>
+    /// <param name="key">The property key.</param>
+    /// <param name="value">The value to set.</param>
+    /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+    public void SetValueIfNotEmpty(string key, StringBuilder value)
+    {
+        if (value == null || value.Length < 1) return;
         SetValue(key, value);
     }
 
@@ -3683,6 +3707,18 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
         }
 
         SetProperty(key, new JsonStringNode(value));
+    }
+
+    /// <summary>
+    /// Sets the value of the specific property.
+    /// </summary>
+    /// <param name="key">The property key.</param>
+    /// <param name="value">The value to set.</param>
+    /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+    public void SetValueIfNotEmpty(string key, Uri value)
+    {
+        if (value == null) return;
+        SetValue(key, value);
     }
 
     /// <summary>
