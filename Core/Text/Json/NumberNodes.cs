@@ -15,7 +15,7 @@ namespace Trivial.Text;
 public interface IJsonNumberNode : IJsonValueNode, IEquatable<IJsonNumberNode>, IEquatable<long>, IEquatable<int>, IEquatable<double>, IEquatable<float>
 {
     /// <summary>
-    /// Gets a value indicating whether the number value is an whole number.
+    /// Gets a value indicating whether the number value is an whole number (integer).
     /// </summary>
     public bool IsInteger { get; }
 

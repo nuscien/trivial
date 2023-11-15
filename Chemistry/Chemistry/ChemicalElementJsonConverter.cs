@@ -13,7 +13,7 @@ using Trivial.Text;
 namespace Trivial.Chemistry;
 
 /// <summary>
-/// Javascript ticks JSON number converter.
+/// Chemical element JSON converter.
 /// </summary>
 sealed class ChemicalElementJsonConverter : JsonConverter<ChemicalElement>
 {
