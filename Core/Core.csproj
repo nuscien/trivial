@@ -1,16 +1,16 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net8.0;net7.0;net6.0;net48;net462;net461</TargetFrameworks>
+    <TargetFrameworks>net8.0;net6.0;net48;net462;net461</TargetFrameworks>
     <AssemblyName>Trivial</AssemblyName>
     <RootNamespace>Trivial</RootNamespace>
     <PackageId>Trivial</PackageId>
     <Product>Trivial</Product>
     <Authors>Kingcean Tuan</Authors>
     <Company>Nanchang Jinchen Software Co., Ltd.</Company>
-    <Version>7.2.0</Version>
-    <AssemblyVersion>7.2.0.0</AssemblyVersion>
-    <FileVersion>7.2.0.0</FileVersion>
+    <Version>8.0.0</Version>
+    <AssemblyVersion>8.0.0.0</AssemblyVersion>
+    <FileVersion>8.0.0.0</FileVersion>
     <Description>A library providing lots of useful utilities, models and services, including interceptor, retry policy, writable JSON DOM, PEM, JWT, stream combination, JSON HTTP web client, JSON converters, CSV parser, numerals, coordinates, angle, arithmetic, sets, colors, etc.</Description>
     <Copyright>Copyright (c) 2018 Kingcean Tuan.</Copyright>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>

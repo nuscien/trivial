@@ -13,7 +13,6 @@ including interceptor, retry policy, writable JSON DOM, PEM, JWT, stream combina
 [![NuGet package](https://img.shields.io/nuget/dt/Trivial?label=nuget+downloads)](https://www.nuget.org/packages/Trivial)
 
 ![.NET 8](./docs/assets/badge_NET_8.svg)
-![.NET 7](./docs/assets/badge_NET_7.svg)
 ![.NET 6](./docs/assets/badge_NET_6.svg)
 ![.NET Framework 4.8](./docs/assets/badge_NET_Fx_4_8.svg)
 ![.NET Framework 4.6.1](./docs/assets/badge_NET_Fx_4_6_1.svg)
@@ -38,7 +37,6 @@ Including the periodic table and basic chemistry models, e.g. chemical element, 
 [![NuGet package](https://img.shields.io/nuget/dt/Trivial.Chemistry?label=nuget+downloads)](https://www.nuget.org/packages/Trivial.Chemistry)
 
 ![.NET 8](./docs/assets/badge_NET_8.svg)
-![.NET 7](./docs/assets/badge_NET_7.svg)
 ![.NET 6](./docs/assets/badge_NET_6.svg)
 ![.NET Framework 4.8](./docs/assets/badge_NET_Fx_4_8.svg)
 ![.NET Framework 4.6.1](./docs/assets/badge_NET_Fx_4_6_1.svg)
@@ -52,7 +50,6 @@ The MIME constants and its mapping of file extension part.
 [![NuGet package](https://img.shields.io/nuget/dt/Trivial.Mime?label=nuget+downloads)](https://www.nuget.org/packages/Trivial.Mime)
 
 ![.NET 8](./docs/assets/badge_NET_8.svg)
-![.NET 7](./docs/assets/badge_NET_7.svg)
 ![.NET 6](./docs/assets/badge_NET_6.svg)
 ![.NET Framework 4.8](./docs/assets/badge_NET_Fx_4_8.svg)
 ![.NET Framework 4.6.1](./docs/assets/badge_NET_Fx_4_6_1.svg)
@@ -85,7 +82,6 @@ The rich UX CLI controls.
 [![NuGet package](https://img.shields.io/nuget/dt/Trivial.Console?label=nuget+downloads)](https://www.nuget.org/packages/Trivial.Console)
 
 ![.NET 8](./docs/assets/badge_NET_8.svg)
-![.NET 7](./docs/assets/badge_NET_7.svg)
 ![.NET 6](./docs/assets/badge_NET_6.svg)
 ![.NET Framework 4.8](./docs/assets/badge_NET_Fx_4_8.svg)
 ![.NET Framework 4.6.1](./docs/assets/badge_NET_Fx_4_6_1.svg)
