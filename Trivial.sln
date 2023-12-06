@@ -20,8 +20,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UnitTest", "UnitTest\UnitTe
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mime", "Mime\Mime.csproj", "{8C8EAF77-6182-4F04-87AA-1700FC00100D}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Messages", "Messages\Messages.csproj", "{424341F2-7CE8-4BF7-B788-0B2C52D31D94}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -40,10 +38,6 @@ Global
 		{8C8EAF77-6182-4F04-87AA-1700FC00100D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8C8EAF77-6182-4F04-87AA-1700FC00100D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8C8EAF77-6182-4F04-87AA-1700FC00100D}.Release|Any CPU.Build.0 = Release|Any CPU
-		{424341F2-7CE8-4BF7-B788-0B2C52D31D94}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{424341F2-7CE8-4BF7-B788-0B2C52D31D94}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{424341F2-7CE8-4BF7-B788-0B2C52D31D94}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{424341F2-7CE8-4BF7-B788-0B2C52D31D94}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
