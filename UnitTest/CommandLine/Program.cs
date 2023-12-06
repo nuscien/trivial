@@ -23,9 +23,6 @@ class Program
         dispatcher.Register<Net.HttpClientVerb>("http");
         dispatcher.Register<Tasks.RetryVerb>("retry");
         dispatcher.Register<Text.CsvVerb>("csv");
-        dispatcher.Register<ChemistryVerb>("chemistry");
-        dispatcher.Register<SelectionVerb>("select");
-        dispatcher.Register<Data.BarcodeVerb>("barcode");
         return dispatcher.ProcessAsync();
     }
 

@@ -1,65 +1,32 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
+	<Import Project="..\Basic.props" />
+
 	<PropertyGroup>
 		<TargetFrameworks>net8.0;net6.0;net48;net462;net461</TargetFrameworks>
 		<AssemblyName>Trivial.Messages</AssemblyName>
 		<RootNamespace>Trivial</RootNamespace>
 		<PackageId>Trivial.Messages</PackageId>
-		<Product>Trivial</Product>
-		<Authors>Kingcean Tuan</Authors>
-		<Company>Nanchang Jinchen Software Co., Ltd.</Company>
-		<Version>8.0.0</Version>
-		<AssemblyVersion>8.0.0.0</AssemblyVersion>
-		<FileVersion>8.0.0.0</FileVersion>
 		<Description>The library with model of users and messages.</Description>
-		<Copyright>Copyright (c) 2023 Kingcean Tuan.</Copyright>
-		<PackageLicenseExpression>MIT</PackageLicenseExpression>
-		<PackageProjectUrl>https://github.com/nuscien/trivial/wiki/core</PackageProjectUrl>
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 		<IncludeSymbols>true</IncludeSymbols>
 		<SymbolPackageFormat>snupkg</SymbolPackageFormat>
-		<RepositoryUrl>https://github.com/nuscien/trivial</RepositoryUrl>
-		<RepositoryType>git</RepositoryType>
-		<PublishRepositoryUrl>true</PublishRepositoryUrl>
-		<PackageIcon>mime.png</PackageIcon>
+		<PackageIcon>messages.png</PackageIcon>
 		<PackageIconUrl>https://github.com/nuscien/trivial/raw/master/Materials/logo.png</PackageIconUrl>
 		<PackageTags>users messages gpt</PackageTags>
-		<PackageReadmeFile>README.md</PackageReadmeFile>
-		<LangVersion>12.0</LangVersion>
-		<SignAssembly>True</SignAssembly>
-		<AssemblyOriginatorKeyFile>..\Trivial.snk</AssemblyOriginatorKeyFile>
 	</PropertyGroup>
-
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-		<OutputPath>..\bin\Debug\</OutputPath>
-		<DocumentationFile>..\bin\$(Configuration)\$(TargetFramework)\Trivial.Messages.xml</DocumentationFile>
-	</PropertyGroup>
-
-	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-		<OutputPath>..\bin\Release\</OutputPath>
-		<DocumentationFile>..\bin\$(Configuration)\$(TargetFramework)\Trivial.Messages.xml</DocumentationFile>
-	</PropertyGroup>
-
-	<PropertyGroup Condition="'$(TargetFramework)' == 'netstandard2.0' OR '$(TargetFramework)' == 'net481' OR '$(TargetFramework)' == 'net48' OR '$(TargetFramework)' == 'net462' OR '$(TargetFramework)' == 'net461'">
-		<DefineConstants>NETOLDVER</DefineConstants>
-	</PropertyGroup>
-
-	<ItemGroup Condition="'$(TargetFramework)' == 'net481' OR '$(TargetFramework)' == 'net48' OR '$(TargetFramework)' == 'net462' OR '$(TargetFramework)' == 'net461'">
-		<PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.3" PrivateAssets="All" />
-	</ItemGroup>
-
-	<ItemGroup Condition="'$(TargetFramework)' != 'net8.0' AND '$(TargetFramework)' != 'net9.0'">
-		<PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" PrivateAssets="All" />
-	</ItemGroup>
-
-	<ItemGroup>
-		<None Include="README.md" Pack="true" PackagePath="README.md" />
-		<None Include="..\LICENSE" Pack="true" PackagePath="LICENSE" />
-		<None Include="..\Materials\messages.png" Pack="true" PackagePath="mime.png" />
-	</ItemGroup>
 
 	<ItemGroup>
 		<ProjectReference Include="..\Core\Core.csproj" />
+	</ItemGroup>
+
+	<PropertyGroup>
+		<OutputPath>..\bin\$(Configuration)\</OutputPath>
+		<DocumentationFile>..\bin\$(Configuration)\$(TargetFramework)\Trivial.Messages.xml</DocumentationFile>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<None Include="..\Materials\messages.png" Pack="true" PackagePath="messages.png" />
 	</ItemGroup>
 
 </Project>

@@ -20,12 +20,6 @@ steps:
     includePreviewVersions: true
 
 - task: UseDotNet@2
-  displayName: 'Use .NET SDK 7.0'
-  inputs:
-    version: 7.0.x
-    includePreviewVersions: true
-
-- task: UseDotNet@2
   displayName: 'Use .NET SDK 6.0'
   inputs:
     version: 6.0.x

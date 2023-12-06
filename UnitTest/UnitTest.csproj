@@ -1,37 +1,28 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
+  <Import Project="..\Basic.props" />
+
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFrameworks>net8.0;net6.0;net48</TargetFrameworks>
     <IsPackable>false</IsPackable>
     <AssemblyName>Trivial.UnitTest</AssemblyName>
     <RootNamespace>Trivial</RootNamespace>
-    <Product>Trivial</Product>
-    <Authors>Kingcean Tuan</Authors>
-    <Company>Nanchang Jinchen Software Co., Ltd.</Company>
-    <Version>8.0.0</Version>
     <Description>The sample of Trivial libraries.</Description>
-    <Copyright>Copyright (c) 2018 Kingcean Tuan.</Copyright>
     <StartupObject>Trivial.CommandLine.Program</StartupObject>
-    <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <PackageIconUrl>https://github.com/nuscien/trivial/raw/master/Materials/logo.png</PackageIconUrl>
-    <RepositoryUrl>https://github.com/nuscien/trivial</RepositoryUrl>
-    <LangVersion>12.0</LangVersion>
-    <SignAssembly>True</SignAssembly>
-    <AssemblyOriginatorKeyFile>..\Trivial.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <DocumentationFile>..\bin\Debug\netcoreapp3.1\Trivial.UnitTest.xml</DocumentationFile>
-    <OutputPath>..\bin\Debug\</OutputPath>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <OutputPath>..\bin\Release\</OutputPath>
-    <DocumentationFile>..\bin\Release\netcoreapp3.1\Trivial.UnitTest.xml</DocumentationFile>
+  <PropertyGroup>
+    <OutputPath>..\bin\$(Configuration)\</OutputPath>
+    <DocumentationFile>..\bin\$(Configuration)\$(TargetFramework)\Trivial.UnitTest.xml</DocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Core\Core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Trivial.Console" Version="7.2.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.8.0" />
     <PackageReference Include="MSTest.TestAdapter" Version="3.1.1" />
     <PackageReference Include="MSTest.TestFramework" Version="3.1.1" />
@@ -39,18 +30,6 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-  </ItemGroup>
-
-  <ItemGroup Condition="'$(TargetFramework)' == 'net48'">
-    <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.3" PrivateAssets="All" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\Chemistry\Chemistry.csproj" />
-    <ProjectReference Include="..\Console\Console.csproj" />
-    <ProjectReference Include="..\Core\Core.csproj" />
-    <ProjectReference Include="..\Maths\Maths.csproj" />
-    <ProjectReference Include="..\Mime\Mime.csproj" />
   </ItemGroup>
 
 </Project>
