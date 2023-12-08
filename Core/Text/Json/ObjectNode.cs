@@ -4071,6 +4071,32 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     /// <param name="key">The property key.</param>
     /// <param name="value">The value to set.</param>
     /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+    public void SetValue(string key, IEnumerable<bool> value)
+    {
+        AssertKey(key);
+        var arr = new JsonArrayNode();
+        arr.AddRange(value);
+        SetProperty(key, arr);
+    }
+
+    /// <summary>
+    /// Sets the value of the specific property.
+    /// </summary>
+    /// <param name="key">The property key.</param>
+    /// <param name="value">The value to set.</param>
+    /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+    public void SetValueIfNotNull(string key, IEnumerable<bool> value)
+    {
+        if (value == null) return;
+        SetValue(key, value);
+    }
+
+    /// <summary>
+    /// Sets the value of the specific property.
+    /// </summary>
+    /// <param name="key">The property key.</param>
+    /// <param name="value">The value to set.</param>
+    /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
     public void SetValue(string key, IEnumerable<int> value)
     {
         AssertKey(key);
@@ -4112,6 +4138,32 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     /// <param name="value">The value to set.</param>
     /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
     public void SetValueIfNotNull(string key, IEnumerable<long> value)
+    {
+        if (value == null) return;
+        SetValue(key, value);
+    }
+
+    /// <summary>
+    /// Sets the value of the specific property.
+    /// </summary>
+    /// <param name="key">The property key.</param>
+    /// <param name="value">The value to set.</param>
+    /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+    public void SetValue(string key, IEnumerable<float> value)
+    {
+        AssertKey(key);
+        var arr = new JsonArrayNode();
+        arr.AddRange(value);
+        SetProperty(key, arr);
+    }
+
+    /// <summary>
+    /// Sets the value of the specific property.
+    /// </summary>
+    /// <param name="key">The property key.</param>
+    /// <param name="value">The value to set.</param>
+    /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+    public void SetValueIfNotNull(string key, IEnumerable<float> value)
     {
         if (value == null) return;
         SetValue(key, value);
@@ -5730,6 +5782,13 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     }
 
     /// <summary>
+    /// Determines whether a sequence contains any elements.
+    /// </summary>
+    /// <returns>true if the source sequence contains any elements; otherwise, false.</returns>
+    public bool Any()
+        => store.Any();
+
+    /// <summary>
     /// Indicates whether this instance and a specified object are equal.
     /// </summary>
     /// <param name="other">The object to compare with the current instance.</param>
@@ -6932,6 +6991,26 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     /// Parses a stream as UTF-8-encoded data representing a JSON object.
     /// The stream is read to completion.
     /// </summary>
+    /// <param name="file">A file with JSON object string content to parse.</param>
+    /// <param name="options">Options to control the reader behavior during parsing.</param>
+    /// <returns>A JSON object instance.</returns>
+    /// <exception cref="JsonException">json does not represent a valid single JSON object.</exception>
+    /// <exception cref="ArgumentException">options contains unsupported options.</exception>
+    /// <exception cref="IOException">The entry is already currently open for writing, or the entry has been deleted from the archive.</exception>
+    /// <exception cref="ObjectDisposedException">The zip archive has been disposed.</exception>
+    /// <exception cref="NotSupportedException">The zip archive does not support reading.</exception>
+    /// <exception cref="InvalidDataException">The zip archive is corrupt, and the entry cannot be retrieved.</exception>
+    public static JsonObjectNode Parse(FileInfo file, JsonDocumentOptions options = default)
+    {
+        if (file == null || !file.Exists) return null;
+        using var stream = file.OpenRead();
+        return Parse(stream, options);
+    }
+
+    /// <summary>
+    /// Parses a stream as UTF-8-encoded data representing a JSON object.
+    /// The stream is read to completion.
+    /// </summary>
     /// <param name="utf8Json">The JSON data to parse.</param>
     /// <param name="options">Options to control the reader behavior during parsing.</param>
     /// <param name="cancellationToken">The token to monitor for cancellation requests.</param>
@@ -6952,6 +7031,27 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     /// <exception cref="ArgumentException">options contains unsupported options.</exception>
     public static async Task<JsonObjectNode> ParseAsync(Stream utf8Json, CancellationToken cancellationToken = default)
         => await JsonDocument.ParseAsync(utf8Json, default, cancellationToken);
+
+    /// <summary>
+    /// Parses a stream as UTF-8-encoded data representing a JSON object.
+    /// The stream is read to completion.
+    /// </summary>
+    /// <param name="file">A file with JSON object string content to parse.</param>
+    /// <param name="options">Options to control the reader behavior during parsing.</param>
+    /// <param name="cancellationToken">The token to monitor for cancellation requests.</param>
+    /// <returns>A JSON object instance.</returns>
+    /// <exception cref="JsonException">json does not represent a valid single JSON object.</exception>
+    /// <exception cref="ArgumentException">options contains unsupported options.</exception>
+    /// <exception cref="IOException">The entry is already currently open for writing, or the entry has been deleted from the archive.</exception>
+    /// <exception cref="ObjectDisposedException">The zip archive has been disposed.</exception>
+    /// <exception cref="NotSupportedException">The zip archive does not support reading.</exception>
+    /// <exception cref="InvalidDataException">The zip archive is corrupt, and the entry cannot be retrieved.</exception>
+    public static async Task<JsonObjectNode> ParseAsync(FileInfo file, JsonDocumentOptions options = default, CancellationToken cancellationToken = default)
+    {
+        if (file == null || !file.Exists) return null;
+        using var stream = file.OpenRead();
+        return await ParseAsync(stream, options, cancellationToken);
+    }
 
 #if !NETFRAMEWORK
     /// <summary>
@@ -7131,7 +7231,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
                 case JsonValueKind.False:
                     return null;
                 case JsonValueKind.True:
-                    return new JsonObjectNode();
+                    return new();
             }
         }
 
@@ -7153,6 +7253,8 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
             return r;
         }
 
+        if (obj is DBNull) return null;
+        if (obj is FileInfo file) return TryParse(file);
         var s = JsonSerializer.Serialize(obj, obj.GetType(), options);
         return Parse(s);
     }

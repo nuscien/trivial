@@ -940,7 +940,6 @@ public class JsonArrayNode : IJsonContainerNode, IJsonDataNode, IReadOnlyList<IJ
         return (this as IJsonDataNode).GetValue(key.ToString());
     }
 
-
     /// <summary>
     /// Gets the value as a string collection.
     /// </summary>
