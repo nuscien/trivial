@@ -18,6 +18,34 @@ namespace Trivial.Collection;
 public static partial class ListExtensions
 {
     /// <summary>
+    /// Tries to get the string value.
+    /// </summary>
+    /// <param name="dict">The source dictionary.</param>
+    /// <param name="key">The key.</param>
+    /// <param name="value">The value output.</param>
+    /// <returns>true if exist and not empty; otherwise, false.</returns>
+    /// <exception cref="ArgumentNullException">dict or key was null.</exception>
+    public static bool TryGetNotEmptyValue(this IDictionary<string, string> dict, string key, out string value)
+    {
+        if (dict == null) throw new ArgumentNullException(nameof(dict), "dict should not be null.");
+        value = dict.TryGetValue(key, out var v) && !string.IsNullOrEmpty(v) ? v : null;
+        return v != null;
+    }
+
+    /// <summary>
+    /// Tries to get the string value.
+    /// </summary>
+    /// <param name="dict">The source dictionary.</param>
+    /// <param name="key">The key.</param>
+    /// <returns>The value; or null if not exist or empty.</returns>
+    /// <exception cref="ArgumentNullException">dict or key was null.</exception>
+    public static string TryGetNotEmptyValue(this IDictionary<string, string> dict, string key)
+    {
+        if (dict == null) throw new ArgumentNullException(nameof(dict), "dict should not be null.");
+        return dict.TryGetValue(key, out var v) && !string.IsNullOrEmpty(v) ? v : null;
+    }
+
+    /// <summary>
     /// Adds a key and a value to the end of the key value pairs.
     /// </summary>
     /// <param name="list">The key value pairs.</param>

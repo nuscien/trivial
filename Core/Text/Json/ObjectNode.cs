@@ -1083,6 +1083,21 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     /// <summary>
     /// Gets the value of the specific property.
     /// </summary>
+    /// <param name="key">The property key.</param>
+    /// <param name="undefined">true if return undefined when the property does not exist; otherwise, false.</param>
+    /// <returns>The value.</returns>
+    /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+    /// <exception cref="ArgumentOutOfRangeException">The property does not exist and argument undefined is false.</exception>
+    public IJsonDataNode GetValue(string key, bool undefined)
+    {
+        AssertKey(key);
+        if (!undefined) return store[key] ?? JsonValues.Null;
+        return store.TryGetValue(key, out var v) ? (v ?? JsonValues.Null) : JsonValues.Undefined;
+    }
+
+    /// <summary>
+    /// Gets the value of the specific property.
+    /// </summary>
     /// <param name="keyPath">The property key path.</param>
     /// <returns>The value.</returns>
     /// <exception cref="InvalidOperationException">Cannot get the property value.</exception>
