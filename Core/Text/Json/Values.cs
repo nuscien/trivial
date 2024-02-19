@@ -572,4 +572,19 @@ public static class JsonValues
 
         return Null;
     }
+
+    internal static JsonObjectNode ToJson(JsonNodeSchemaDescription schema)
+        => schema?.ToJson();
+
+    internal static JsonObjectNode ToJson(Dictionary<string, JsonNodeSchemaDescription> schema)
+    {
+        if (schema == null) return null;
+        var json = new JsonObjectNode();
+        foreach (var prop in schema)
+        {
+            json.SetValue(prop.Key, prop.Value);
+        }
+
+        return json;
+    }
 }
