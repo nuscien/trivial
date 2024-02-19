@@ -24,12 +24,14 @@ public class JsonObjectSchemaDescription : JsonNodeSchemaDescription
     public JsonObjectNode DefaultValue { get; set; }
 
     /// <summary>
-    /// Gets the properties.
+    /// Gets the description of properties.
+    /// The dictionary keys are the property names.
     /// </summary>
     public Dictionary<string, JsonNodeSchemaDescription> Properties { get; } = new();
 
     /// <summary>
-    /// Gets the properties.
+    /// Gets the pattern description properties.
+    /// The dictionary keys are the property name patterns.
     /// </summary>
     public Dictionary<string, JsonNodeSchemaDescription> PatternProperties { get; } = new();
     
@@ -70,6 +72,7 @@ public class JsonObjectSchemaDescription : JsonNodeSchemaDescription
 
     /// <summary>
     /// Gets the policy of dependent required property.
+    /// The dictionary keys are the property names.
     /// </summary>
     public Dictionary<string, JsonObjectSchemaDescription> DependentPropertyPolicy { get; } = new();
 
@@ -88,10 +91,7 @@ public class JsonObjectSchemaDescription : JsonNodeSchemaDescription
     /// </summary>
     public JsonObjectSchemaDescription ElsePolicy { get; set; }
 
-    /// <summary>
-    /// Fills the properties.
-    /// </summary>
-    /// <param name="node">The JSON object node.</param>
+    /// <inheritdoc />
     protected override void FillProperties(JsonObjectNode node)
     {
         node.SetValueIfNotNull("default", DefaultValue);

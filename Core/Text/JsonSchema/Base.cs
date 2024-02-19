@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace Trivial.Text;
@@ -10,13 +11,23 @@ namespace Trivial.Text;
 /// <summary>
 /// The base description for JSON schema node.
 /// </summary>
-public class JsonNodeSchemaDescription : IJsonObjectHost
+public abstract class BaseJsonNodeSchemaDescription : IJsonObjectHost
 {
+    private readonly IJsonNodeSchemaDescriptionHandler handler;
+
     /// <summary>
-    /// Initializes a new instance of the BaseJsonSchemaDescription class.
+    /// Initializes a new instance of the BaseJsonNodeSchemaDescription class.
     /// </summary>
-    public JsonNodeSchemaDescription()
+    public BaseJsonNodeSchemaDescription()
     {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the BaseJsonNodeSchemaDescription class.
+    /// </summary>
+    public BaseJsonNodeSchemaDescription(IJsonNodeSchemaDescriptionHandler handler)
+    {
+        this.handler = handler ?? InternalEmptyJsonNodeSchemaDescriptionHandler.Instance;
     }
 
     /// <summary>
@@ -28,6 +39,81 @@ public class JsonNodeSchemaDescription : IJsonObjectHost
     /// Gets or sets the schema URI.
     /// </summary>
     public string Schema { get; set; }
+
+    /// <summary>
+    /// Gets or sets the description.
+    /// </summary>
+    public string Description { get; set; }
+
+    /// <summary>
+    /// Gets or sets the comment.
+    /// </summary>
+    public string Comment { get; set; }
+
+    /// <summary>
+    /// Gets the examples.
+    /// </summary>
+    public JsonArrayNode Examples { get; } = new();
+
+    /// <summary>
+    /// Gets the extended properties.
+    /// </summary>
+    public JsonObjectNode ExtendedProperties { get; } = new();
+
+    /// <summary>
+    /// Gets or sets a value indicating whether need skip overriding the existed properties by the extended.
+    /// </summary>
+    public bool SkipDuplicatedExtendedProperties { get; set; }
+
+    /// <summary>
+    /// Fills the properties.
+    /// </summary>
+    /// <param name="node">The JSON object node to fill properties.</param>
+    protected abstract void FillProperties(JsonObjectNode node);
+
+    /// <summary>
+    /// Gets the type defined.
+    /// </summary>
+    /// <returns>The type string.</returns>
+    public abstract string GetValueType();
+
+    /// <summary>
+    /// Converts to YAML format string.
+    /// </summary>
+    public string ToYamlString()
+        => ToJson().ToYamlString();
+
+    /// <summary>
+    /// The host for JSON object node.
+    /// </summary>
+    public JsonObjectNode ToJson()
+    {
+        var node = new JsonObjectNode();
+        if (!string.IsNullOrEmpty(Id)) node.Id = Id;
+        if (!string.IsNullOrEmpty(Schema)) node.Schema = Schema;
+        node.SetValueIfNotNull("type", GetValueType());
+        node.SetValueIfNotNull("description", Description);
+        node.SetValueIfNotNull("examples", Examples);
+        node.SetValueIfNotEmpty("$comment", Comment);
+        handler.OnPropertiesFilling(this, node);
+        FillProperties(node);
+        node.SetRange(ExtendedProperties, SkipDuplicatedExtendedProperties);
+        handler.OnPropertiesFilled(this, node);
+        return node;
+    }
+}
+
+/// <summary>
+/// The base description for JSON schema node.
+/// </summary>
+public class JsonNodeSchemaDescription : BaseJsonNodeSchemaDescription
+{
+    /// <summary>
+    /// Initializes a new instance of the BaseJsonSchemaDescription class.
+    /// </summary>
+    public JsonNodeSchemaDescription() : base(InternalJsonNodeSchemaDescriptionHandler.Instance)
+    {
+    }
 
     /// <summary>
     /// Gets or sets the reference path or identifier.
@@ -43,11 +129,6 @@ public class JsonNodeSchemaDescription : IJsonObjectHost
     /// Gets or sets the title.
     /// </summary>
     public string Title { get; set; }
-
-    /// <summary>
-    /// Gets or sets the description.
-    /// </summary>
-    public string Description { get; set; }
 
     /// <summary>
     /// Gets or sets a value indicating whether the value is read-only.
@@ -67,19 +148,9 @@ public class JsonNodeSchemaDescription : IJsonObjectHost
     public bool IsDeprecated { get; set; }
 
     /// <summary>
-    /// Gets or sets the comment.
-    /// </summary>
-    public string Comment { get; set; }
-
-    /// <summary>
     /// Gets the enum items.
     /// </summary>
     public JsonArrayNode EnumItems { get; } = new();
-
-    /// <summary>
-    /// Gets the examples.
-    /// </summary>
-    public JsonArrayNode Examples { get; } = new();
 
     /// <summary>
     /// Gets the list that the expected matches all of.
@@ -102,25 +173,12 @@ public class JsonNodeSchemaDescription : IJsonObjectHost
     public JsonNodeSchemaDescription NotMatch { get; set; }
 
     /// <summary>
-    /// Gets the extended properties.
-    /// </summary>
-    public JsonObjectNode ExtendedProperties { get; } = new();
-
-    /// <summary>
     /// Gets the definitions.
     /// </summary>
-    public Dictionary<string, JsonNodeSchemaDescription> Definitions { get; } = new();
+    public Dictionary<string, JsonNodeSchemaDescription> DefinitionsNode { get; } = new();
 
-    /// <summary>
-    /// Gets or sets a value indicating whether need skip overriding the existed properties by the extended.
-    /// </summary>
-    public bool SkipDuplicatedExtendedProperties { get; set; }
-
-    /// <summary>
-    /// Fills the properties.
-    /// </summary>
-    /// <param name="node">The JSON object node.</param>
-    protected virtual void FillProperties(JsonObjectNode node)
+    /// <inheritdoc />
+    protected override void FillProperties(JsonObjectNode node)
     {
     }
 
@@ -128,7 +186,7 @@ public class JsonNodeSchemaDescription : IJsonObjectHost
     /// Gets the type defined.
     /// </summary>
     /// <returns>The type string.</returns>
-    public string GetValueType()
+    public override string GetValueType()
     {
         if (this is JsonObjectSchemaDescription) return "object";
         if (this is JsonStringSchemaDescription) return "string";
@@ -143,35 +201,11 @@ public class JsonNodeSchemaDescription : IJsonObjectHost
     /// <summary>
     /// The host for JSON object node.
     /// </summary>
-    public JsonObjectNode ToJson()
-        => ToJsonInternal(true);
-
-    /// <summary>
-    /// The host for JSON object node.
-    /// </summary>
     internal JsonObjectNode ToJsonInternal(bool exportType)
     {
-        var node = new JsonObjectNode();
-        if (!string.IsNullOrEmpty(Id)) node.Id = Id;
-        if (!string.IsNullOrEmpty(Schema)) node.Schema = Schema;
-        if (!string.IsNullOrEmpty(ReferencePath)) node.SetValue("$ref", ReferencePath);
-        if (Subschemas.Count > 0) node.SetValueIfNotNull("$defs", JsonValues.ToJson(Subschemas));
-        if (exportType) node.SetValueIfNotNull("type", GetValueType());
-        node.SetValueIfNotNull("title", Title);
-        node.SetValueIfNotNull("description", Description);
-        if (IsDeprecated) node.SetValue("deprecated", IsDeprecated);
-        if (ReadOnly) node.SetValue("readOnly", ReadOnly);
-        if (WriteOnly) node.SetValue("writeOnly", WriteOnly);
-        node.SetValueIfNotEmpty("$comment", Comment);
-        node.SetValueIfNotEmpty("allOf", MatchAllOf, JsonValues.ToJson);
-        node.SetValueIfNotEmpty("anyOf", MatchAnyOf, JsonValues.ToJson);
-        node.SetValueIfNotEmpty("oneOf", MatchOneOf, JsonValues.ToJson);
-        node.SetValueIfNotNull("not", NotMatch);
-        node.SetValueIfNotNull("enum", EnumItems);
-        node.SetValueIfNotNull("examples", Examples);
-        if (Definitions.Count > 0) node.SetValueIfNotNull("definitions", JsonValues.ToJson(Definitions));
-        FillProperties(node);
-        node.SetRange(ExtendedProperties, SkipDuplicatedExtendedProperties);
+        var node = ToJson();
+        if (exportType) return node;
+        node.Remove("type");
         return node;
     }
 }
@@ -198,10 +232,7 @@ public class JsonBooleanSchemaDescription : JsonNodeSchemaDescription
     /// </summary>
     public bool? ConstantValue { get; set; }
 
-    /// <summary>
-    /// Fills the properties.
-    /// </summary>
-    /// <param name="node">The JSON object node.</param>
+    /// <inheritdoc />
     protected override void FillProperties(JsonObjectNode node)
     {
         node.SetValueIfNotNull("default", DefaultValue);
@@ -221,10 +252,7 @@ public class JsonNullSchemaDescription : JsonNodeSchemaDescription
     {
     }
 
-    /// <summary>
-    /// Fills the properties.
-    /// </summary>
-    /// <param name="node">The JSON object node.</param>
+    /// <inheritdoc />
     protected override void FillProperties(JsonObjectNode node)
     {
     }

@@ -114,10 +114,7 @@ public class JsonIntegerSchemaDescription : JsonNodeSchemaDescription
     /// </summary>
     public bool IsMaxExcluded { get; set; }
 
-    /// <summary>
-    /// Fills the properties.
-    /// </summary>
-    /// <param name="node">The JSON object node.</param>
+    /// <inheritdoc />
     protected override void FillProperties(JsonObjectNode node)
     {
         node.SetValueIfNotNull("default", DefaultValue);

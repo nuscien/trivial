@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -8,6 +9,7 @@ using System.Runtime.Serialization.Json;
 using System.Security;
 using System.Text;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace Trivial.Text;
 
@@ -641,6 +643,50 @@ public static class StringExtensions
         {
         }
         catch (ArgumentException)
+        {
+        }
+
+        return null;
+    }
+
+    /// <summary>
+    /// Gets the description.
+    /// </summary>
+    /// <param name="memberInfo">The member information.</param>
+    /// <returns>The description.</returns>
+    public static string GetDescription(MemberInfo memberInfo)
+    {
+        try
+        {
+            var attr = memberInfo.GetCustomAttributes<DescriptionAttribute>()?.FirstOrDefault();
+            if (!string.IsNullOrWhiteSpace(attr.Description)) return attr.Description;
+        }
+        catch (NotSupportedException)
+        {
+        }
+        catch (TypeLoadException)
+        {
+        }
+
+        return null;
+    }
+
+    /// <summary>
+    /// Gets the description.
+    /// </summary>
+    /// <param name="parameterInfo">The parameter information.</param>
+    /// <returns>The description.</returns>
+    public static string GetDescription(ParameterInfo parameterInfo)
+    {
+        try
+        {
+            var attr = parameterInfo.GetCustomAttributes<DescriptionAttribute>()?.FirstOrDefault();
+            if (!string.IsNullOrWhiteSpace(attr.Description)) return attr.Description;
+        }
+        catch (NotSupportedException)
+        {
+        }
+        catch (TypeLoadException)
         {
         }
 

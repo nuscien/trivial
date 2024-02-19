@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
+using System.Linq;
 using System.Text;
 using System.Text.Json;
 
@@ -12,6 +13,8 @@ using SystemJsonObject = System.Text.Json.Nodes.JsonObject;
 using SystemJsonArray = System.Text.Json.Nodes.JsonArray;
 using SystemJsonValue = System.Text.Json.Nodes.JsonValue;
 using SystemJsonNode = System.Text.Json.Nodes.JsonNode;
+using System.Reflection;
+using System.Text.Json.Serialization;
 
 namespace Trivial.Text;
 
@@ -419,6 +422,28 @@ public static class JsonValues
         var json = value?.ToJson();
         if (json is null) return Null.ToString();
         return json.ToString(indent);
+    }
+
+    /// <summary>
+    /// Gets JSON property name.
+    /// </summary>
+    /// <param name="property">The property name.</param>
+    /// <returns>The JSON property name.</returns>
+    public static string GetPropertyName(PropertyInfo property)
+    {
+        try
+        {
+            var attr = property.GetCustomAttributes<JsonPropertyNameAttribute>()?.FirstOrDefault();
+            if (!string.IsNullOrWhiteSpace(attr.Name)) return attr.Name;
+        }
+        catch (NotSupportedException)
+        {
+        }
+        catch (TypeLoadException)
+        {
+        }
+
+        return property.Name;
     }
 
     internal static object GetValue(IJsonDataNode value)
