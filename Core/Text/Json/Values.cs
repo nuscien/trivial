@@ -467,7 +467,7 @@ public static class JsonValues
     /// <param name="desc">The description.</param>
     /// <param name="handler">The additional handler to control the creation.</param>
     /// <returns>The JSON schema description instance; or null, if not supported.</returns>
-    public static JsonNodeSchemaDescription CreateSchema(JsonObjectNode json, string desc = null, IJsonObjectSchemaCreationHandler<IJsonDataNode> handler = null)
+    public static JsonNodeSchemaDescription CreateSchema(JsonObjectNode json, string desc = null, IJsonNodeSchemaCreationHandler<IJsonDataNode> handler = null)
         => CreateSchema(json, 2, desc, handler);
 
     /// <summary>
@@ -672,7 +672,8 @@ public static class JsonValues
             var name = GetPropertyName(prop);
             if (string.IsNullOrEmpty(name)) continue;
             desc = StringExtensions.GetDescription(prop);
-            jsonSchema.Properties[name] = CreateSchema(prop.PropertyType, level, desc, handler, new(prop.PropertyType, breadcrumb, name));
+            var propSchema = CreateSchema(prop.PropertyType, level, desc, handler, new(prop.PropertyType, breadcrumb, name));
+            if (propSchema != null) jsonSchema.Properties[name] = propSchema;
         }
 
         return handler.Convert(type, jsonSchema, breadcrumb);
@@ -687,7 +688,7 @@ public static class JsonValues
     /// <param name="handler">The additional handler to control the creation.</param>
     /// <param name="breadcrumb">The path breadcrumb.</param>
     /// <returns>The JSON schema description instance; or null, if not supported.</returns>
-    private static JsonObjectSchemaDescription CreateSchema(JsonObjectNode json, int level, string desc = null, IJsonObjectSchemaCreationHandler<IJsonDataNode> handler = null, NodePathBreadcrumb<IJsonDataNode> breadcrumb = null)
+    private static JsonObjectSchemaDescription CreateSchema(JsonObjectNode json, int level, string desc = null, IJsonNodeSchemaCreationHandler<IJsonDataNode> handler = null, NodePathBreadcrumb<IJsonDataNode> breadcrumb = null)
     {
         handler ??= EmptyJsonNodeSchemaCreationHandler<IJsonDataNode>.Instance;
         breadcrumb ??= new(json, null);
@@ -699,34 +700,34 @@ public static class JsonValues
         foreach (var prop in json)
         {
             var value = prop.Value;
-            if (prop.Key == "$ref") continue;
+            var bc = new NodePathBreadcrumb<IJsonDataNode>(value, breadcrumb, prop.Key);
             switch (value.ValueKind)
             {
                 case JsonValueKind.Null:
                 case JsonValueKind.Undefined:
                     continue;
                 case JsonValueKind.String:
-                    schema.Properties[prop.Key] = new JsonStringSchemaDescription();
+                    schema.Properties[prop.Key] = handler.Convert(value, new JsonStringSchemaDescription(), bc);
                     break;
                 case JsonValueKind.True:
                 case JsonValueKind.False:
-                    schema.Properties[prop.Key] = new JsonBooleanSchemaDescription();
+                    schema.Properties[prop.Key] = handler.Convert(value, new JsonBooleanSchemaDescription(), bc);
                     break;
                 case JsonValueKind.Number:
-                    schema.Properties[prop.Key] = new JsonNumberSchemaDescription();
+                    schema.Properties[prop.Key] = handler.Convert(value, new JsonNumberSchemaDescription(), bc);
                     break;
                 case JsonValueKind.Object:
                     if (level < 0 && value is JsonObjectNode obj) schema.Properties[prop.Key] = level < 1
-                        ? new JsonObjectSchemaDescription()
-                        : CreateSchema(obj, level, null, handler, new(obj, breadcrumb, prop.Key));
+                        ? handler.Convert(value, new JsonObjectSchemaDescription(), bc)
+                        : CreateSchema(obj, level, null, handler, bc);
                     break;
                 case JsonValueKind.Array:
-                    schema.Properties[prop.Key] = new JsonArraySchemaDescription();
+                    schema.Properties[prop.Key] = handler.Convert(value, new JsonArraySchemaDescription(), bc);
                     break;
             }
         }
 
-        return handler.Convert(json, schema, breadcrumb);
+        return handler.Convert(json, schema, breadcrumb) as JsonObjectSchemaDescription;
     }
 
     internal static object GetValue(IJsonDataNode value)
@@ -895,4 +896,7 @@ public static class JsonValues
 
         return json;
     }
+
+    internal static double? ToDouble(int? value)
+        => value.HasValue ? value.Value : null;
 }

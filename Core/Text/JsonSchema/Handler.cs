@@ -43,22 +43,6 @@ public interface IJsonNodeSchemaCreationHandler<T>
     JsonNodeSchemaDescription Convert(T type, JsonNodeSchemaDescription result, NodePathBreadcrumb<T> breadcrumb);
 }
 
-/// <summary>
-/// The interface for JSON schema creation.
-/// </summary>
-/// <typeparam name="T">The type of the source.</typeparam>
-public interface IJsonObjectSchemaCreationHandler<T>
-{
-    /// <summary>
-    /// Formats or converts the schema instance by customization.
-    /// </summary>
-    /// <param name="type">The source type.</param>
-    /// <param name="result">The JSON schema created to convert or format.</param>
-    /// <param name="breadcrumb">The path breadcrumb.</param>
-    /// <returns>The JSON schema of final result.</returns>
-    JsonObjectSchemaDescription Convert(T type, JsonObjectSchemaDescription result, NodePathBreadcrumb<T> breadcrumb);
-}
-
 internal class InternalEmptyJsonNodeSchemaDescriptionHandler : IJsonNodeSchemaDescriptionHandler
 {
     public static IJsonNodeSchemaDescriptionHandler Instance { get; } = new InternalEmptyJsonNodeSchemaDescriptionHandler();
@@ -98,14 +82,11 @@ internal class InternalJsonNodeSchemaDescriptionHandler : IJsonNodeSchemaDescrip
     }
 }
 
-internal class EmptyJsonNodeSchemaCreationHandler<T> : IJsonNodeSchemaCreationHandler<T>, IJsonObjectSchemaCreationHandler<T>
+internal class EmptyJsonNodeSchemaCreationHandler<T> : IJsonNodeSchemaCreationHandler<T>
 {
     public static EmptyJsonNodeSchemaCreationHandler<T> Instance { get; } = new();
 
     JsonNodeSchemaDescription IJsonNodeSchemaCreationHandler<T>.Convert(T type, JsonNodeSchemaDescription result, NodePathBreadcrumb<T> breadcrumb)
-        => result;
-
-    JsonObjectSchemaDescription IJsonObjectSchemaCreationHandler<T>.Convert(T type, JsonObjectSchemaDescription result, NodePathBreadcrumb<T> breadcrumb)
         => result;
 }
 

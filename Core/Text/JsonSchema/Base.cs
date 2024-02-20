@@ -31,6 +31,21 @@ public abstract class BaseJsonNodeSchemaDescription : IJsonObjectHost
     }
 
     /// <summary>
+    /// Initializes a new instance of the BaseJsonNodeSchemaDescription class.
+    /// </summary>
+    /// <param name="copy">The schema to copy.</param>
+    public BaseJsonNodeSchemaDescription(BaseJsonNodeSchemaDescription copy)
+    {
+        if (copy == null) return;
+        Id = copy.Id;
+        Schema = copy.Schema;
+        Description = copy.Description;
+        Examples = copy.Examples;
+        ExtendedProperties = copy.ExtendedProperties?.Clone();
+        SkipDuplicatedExtendedProperties = copy.SkipDuplicatedExtendedProperties;
+    }
+
+    /// <summary>
     /// Gets or sets the identifier.
     /// </summary>
     public string Id { get; set; }
@@ -113,6 +128,27 @@ public class JsonNodeSchemaDescription : BaseJsonNodeSchemaDescription
     /// </summary>
     public JsonNodeSchemaDescription() : base(InternalJsonNodeSchemaDescriptionHandler.Instance)
     {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the BaseJsonSchemaDescription class.
+    /// </summary>
+    /// <param name="copy">The schema to copy.</param>
+    public JsonNodeSchemaDescription(JsonNodeSchemaDescription copy) : base(InternalJsonNodeSchemaDescriptionHandler.Instance)
+    {
+        if (copy == null) return;
+        ReferencePath = copy.ReferencePath;
+        Subschemas = new(copy.Subschemas);
+        Title = copy.Title;
+        ReadOnly = copy.ReadOnly;
+        WriteOnly = copy.WriteOnly;
+        IsDeprecated = copy.IsDeprecated;
+        EnumItems = copy.EnumItems?.Clone();
+        MatchAllOf = new(copy.MatchAllOf);
+        MatchAnyOf = new(copy.MatchAnyOf);
+        MatchOneOf = new(copy.MatchOneOf);
+        NotMatch = copy.NotMatch;
+        DefinitionsNode = new(copy.DefinitionsNode);
     }
 
     /// <summary>
@@ -220,6 +256,17 @@ public class JsonBooleanSchemaDescription : JsonNodeSchemaDescription
     /// </summary>
     public JsonBooleanSchemaDescription()
     {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the JsonBooleanSchemaDescription class.
+    /// </summary>
+    /// <param name="copy">The schema to copy.</param>
+    public JsonBooleanSchemaDescription(JsonBooleanSchemaDescription copy) : base(copy)
+    {
+        if (copy == null) return;
+        DefaultValue = copy.DefaultValue;
+        ConstantValue = copy.ConstantValue;
     }
 
     /// <summary>

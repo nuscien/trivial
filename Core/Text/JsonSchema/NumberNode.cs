@@ -19,6 +19,36 @@ public class JsonNumberSchemaDescription : JsonNodeSchemaDescription
     }
 
     /// <summary>
+    /// Initializes a new instance of the JsonNumberSchemaDescription class.
+    /// </summary>
+    /// <param name="copy">The schema to copy.</param>
+    public JsonNumberSchemaDescription(JsonIntegerSchemaDescription copy) : base(copy)
+    {
+        DefaultValue = JsonValues.ToDouble(copy.DefaultValue);
+        ConstantValue = JsonValues.ToDouble(copy.ConstantValue);
+        MultipleOf = JsonValues.ToDouble(copy.MultipleOf);
+        Min = copy.Min;
+        Max = copy.Max;
+        IsMinExcluded = copy.IsMinExcluded;
+        IsMaxExcluded = copy.IsMaxExcluded;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the JsonNumberSchemaDescription class.
+    /// </summary>
+    /// <param name="copy">The schema to copy.</param>
+    public JsonNumberSchemaDescription(JsonNumberSchemaDescription copy) : base(copy)
+    {
+        DefaultValue = copy.DefaultValue;
+        ConstantValue = copy.ConstantValue;
+        MultipleOf = copy.MultipleOf;
+        Min = copy.Min;
+        Max = copy.Max;
+        IsMinExcluded = copy.IsMinExcluded;
+        IsMaxExcluded = copy.IsMaxExcluded;
+    }
+
+    /// <summary>
     /// Gets or sets the default value.
     /// </summary>
     public double? DefaultValue { get; set; }
@@ -77,6 +107,21 @@ public class JsonIntegerSchemaDescription : JsonNodeSchemaDescription
     /// </summary>
     public JsonIntegerSchemaDescription()
     {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the JsonIntegerSchemaDescription class.
+    /// </summary>
+    /// <param name="copy">The schema to copy.</param>
+    public JsonIntegerSchemaDescription(JsonIntegerSchemaDescription copy) : base(copy)
+    {
+        DefaultValue = copy.DefaultValue;
+        ConstantValue = copy.ConstantValue;
+        MultipleOf = copy.MultipleOf;
+        Min = copy.Min;
+        Max = copy.Max;
+        IsMinExcluded = copy.IsMinExcluded;
+        IsMaxExcluded = copy.IsMaxExcluded;
     }
 
     /// <summary>
