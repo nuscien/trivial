@@ -4044,6 +4044,18 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     }
 
     /// <summary>
+    /// Sets the value of the specific property.
+    /// </summary>
+    /// <param name="key">The property key.</param>
+    /// <param name="value">The JSON object node created.</param>
+    /// <exception cref="ArgumentNullException">key is null.</exception>
+    public void SetValue(string key, out JsonArrayNode value)
+    {
+        value = new();
+        SetValue(key, value);
+    }
+
+    /// <summary>
     /// Sets the value of the specific property; or removes the property if the value is null.
     /// </summary>
     /// <param name="key">The property key.</param>
@@ -4069,6 +4081,36 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
         {
             { "$ref", JsonValues.SELF_REF}
         }: value) ?? JsonValues.Null);
+    }
+
+    /// <summary>
+    /// Sets the value of the specific property.
+    /// </summary>
+    /// <param name="key">The property key.</param>
+    /// <param name="value">The JSON object node created.</param>
+    /// <exception cref="ArgumentNullException">key is null.</exception>
+    public void SetValue(string key, out JsonObjectNode value)
+    {
+        value = new();
+        SetValue(key, value);
+    }
+
+    /// <summary>
+    /// Sets the value of the specific property.
+    /// </summary>
+    /// <param name="key">The property key.</param>
+    /// <param name="subKey">The sub property key.</param>
+    /// <param name="value">The JSON object node created.</param>
+    /// <exception cref="ArgumentNullException">key is null.</exception>
+    public void SetValue(string key, string subKey, out JsonObjectNode value)
+    {
+        value = new();
+        var obj = TryGetObjectValue(key);
+        if (obj == null) SetValue(key, new JsonObjectNode
+        {
+            { subKey, value }
+        });
+        else obj.SetValue(subKey, value);
     }
 
     /// <summary>

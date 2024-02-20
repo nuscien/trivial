@@ -25,6 +25,7 @@ public abstract class BaseJsonNodeSchemaDescription : IJsonObjectHost
     /// <summary>
     /// Initializes a new instance of the BaseJsonNodeSchemaDescription class.
     /// </summary>
+    /// <param name="handler">The handler to monitor the JSON schema convertion.</param>
     public BaseJsonNodeSchemaDescription(IJsonNodeSchemaDescriptionHandler handler)
     {
         this.handler = handler ?? InternalEmptyJsonNodeSchemaDescriptionHandler.Instance;
