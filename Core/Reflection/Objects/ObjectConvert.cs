@@ -357,6 +357,49 @@ public static class ObjectConvert
         return false;
     }
 
+    /// <summary>
+    /// Tests if the given type is from a generic enumerable interface.
+    /// </summary>
+    /// <param name="type">The type to test.</param>
+    /// <returns>true if the type is from a generic enumerable interface.</returns>
+    public static bool IsGenericEnumerable(Type type)
+        => typeof(IEnumerable<>).IsAssignableFrom(type) || (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(IEnumerable<>));
+
+    /// <summary>
+    /// Tests if the given type is a nullable value type.
+    /// </summary>
+    /// <param name="type">The type to test.</param>
+    /// <returns>true if the type is a nullable value type.</returns>
+    public static bool IsNullableValueType(Type type)
+        => type.IsValueType && type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>);
+
+    /// <summary>
+    /// Tests if the given type is a nullable value type.
+    /// </summary>
+    /// <param name="type">The type to test.</param>
+    /// <param name="value">The type of the value type.</param>
+    /// <returns>true if the type is a nullable value type.</returns>
+    public static bool IsNullableValueType(Type type, out Type value)
+    {
+        if (!IsNullableValueType(type))
+        {
+            value = default;
+            return false;
+        }
+
+        try
+        {
+            value = type.GetGenericArguments().FirstOrDefault();
+            return value != null;
+        }
+        catch (InvalidOperationException)
+        {
+        }
+
+        value = default;
+        return false;
+    }
+
     internal static T ParseEnum<T>(string s) where T : struct
     {
 #if NETFRAMEWORK
@@ -373,10 +416,5 @@ public static class ObjectConvert
 #else
         return Enum.Parse<T>(s, ignoreCase);
 #endif
-    }
-
-    private static bool IsNullableValueType(Type type)
-    {
-        return type.IsValueType && type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>);
     }
 }

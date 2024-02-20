@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Runtime.Serialization;
 using System.Text;
 using System.Text.Json;
@@ -10,10 +11,12 @@ namespace Trivial.Text;
 [DataContract]
 class JsonModel
 {
+    [Description("Property A.")]
     [DataMember(Name = "str-a")]
     [JsonPropertyName("str-a")]
     public string A { get; set; }
 
+    [Description("Property B.")]
     [DataMember(Name = "str-b")]
     [JsonPropertyName("str-b")]
     public string B { get; set; }
@@ -22,10 +25,12 @@ class JsonModel
     [JsonPropertyName("str-c")]
     public string C { get; set; }
 
+    [Description("Property Number.")]
     [DataMember(Name = "num")]
     [JsonPropertyName("num")]
     public int Num { get; set; }
 
+    [Description("Property Collection.")]
     [DataMember(Name = "arr")]
     [JsonPropertyName("arr")]
     public IEnumerable<int> Col { get; set; }

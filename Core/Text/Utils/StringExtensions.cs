@@ -659,7 +659,7 @@ public static class StringExtensions
         try
         {
             var attr = memberInfo.GetCustomAttributes<DescriptionAttribute>()?.FirstOrDefault();
-            if (!string.IsNullOrWhiteSpace(attr.Description)) return attr.Description;
+            if (!string.IsNullOrWhiteSpace(attr?.Description)) return attr.Description;
         }
         catch (NotSupportedException)
         {

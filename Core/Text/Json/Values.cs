@@ -15,6 +15,8 @@ using SystemJsonValue = System.Text.Json.Nodes.JsonValue;
 using SystemJsonNode = System.Text.Json.Nodes.JsonNode;
 using System.Reflection;
 using System.Text.Json.Serialization;
+using System.Security.Cryptography;
+using Trivial.Reflection;
 
 namespace Trivial.Text;
 
@@ -428,13 +430,25 @@ public static class JsonValues
     /// Gets JSON property name.
     /// </summary>
     /// <param name="property">The property name.</param>
-    /// <returns>The JSON property name.</returns>
+    /// <returns>The JSON property name; or null, if ignore JSON serialization.</returns>
     public static string GetPropertyName(PropertyInfo property)
     {
         try
         {
+            var attr = property.GetCustomAttributes<JsonIgnoreAttribute>()?.FirstOrDefault();
+            if (attr != null && attr.Condition == JsonIgnoreCondition.Always) return null;
+        }
+        catch (NotSupportedException)
+        {
+        }
+        catch (TypeLoadException)
+        {
+        }
+
+        try
+        {
             var attr = property.GetCustomAttributes<JsonPropertyNameAttribute>()?.FirstOrDefault();
-            if (!string.IsNullOrWhiteSpace(attr.Name)) return attr.Name;
+            if (!string.IsNullOrWhiteSpace(attr?.Name)) return attr.Name;
         }
         catch (NotSupportedException)
         {
@@ -444,6 +458,275 @@ public static class JsonValues
         }
 
         return property.Name;
+    }
+
+    /// <summary>
+    /// Creates a JSON schema of a type.
+    /// </summary>
+    /// <param name="json">The JSON object to create schema.</param>
+    /// <param name="desc">The description.</param>
+    /// <param name="handler">The additional handler to control the creation.</param>
+    /// <returns>The JSON schema description instance; or null, if not supported.</returns>
+    public static JsonNodeSchemaDescription CreateSchema(JsonObjectNode json, string desc = null, IJsonObjectSchemaCreationHandler<IJsonDataNode> handler = null)
+        => CreateSchema(json, 2, desc, handler);
+
+    /// <summary>
+    /// Creates a JSON schema of a type.
+    /// </summary>
+    /// <typeparam name="T">The type to create JSON schema.</typeparam>
+    /// <param name="desc">The description.</param>
+    /// <param name="handler">The additional handler to control the creation.</param>
+    /// <returns>The JSON schema description instance; or null, if not supported.</returns>
+    public static JsonNodeSchemaDescription CreateSchema<T>(string desc = null, IJsonNodeSchemaCreationHandler<Type> handler = null)
+        => CreateSchema(typeof(T), 2, desc, handler);
+
+    /// <summary>
+    /// Creates a JSON schema of a type.
+    /// </summary>
+    /// <param name="type">The type to create JSON schema.</param>
+    /// <param name="desc">The description.</param>
+    /// <param name="handler">The additional handler to control the creation.</param>
+    /// <returns>The JSON schema description instance; or null, if not supported.</returns>
+    public static JsonNodeSchemaDescription CreateSchema(Type type, string desc = null, IJsonNodeSchemaCreationHandler<Type> handler = null)
+        => CreateSchema(type, 2, desc, handler);
+
+    /// <summary>
+    /// Creates a JSON schema of a type.
+    /// </summary>
+    /// <param name="type">The type to create JSON schema.</param>
+    /// <param name="level">The maximum level to create schema for JSON object.</param>
+    /// <param name="desc">The description.</param>
+    /// <param name="handler">The additional handler to control the creation.</param>
+    /// <param name="breadcrumb">The path breadcrumb.</param>
+    /// <returns>The JSON schema description instance; or null, if not supported.</returns>
+    private static JsonNodeSchemaDescription CreateSchema(Type type, int level, string desc = null, IJsonNodeSchemaCreationHandler<Type> handler = null, NodePathBreadcrumb<Type> breadcrumb = null)
+    {
+        handler ??= EmptyJsonNodeSchemaCreationHandler<Type>.Instance;
+        breadcrumb ??= new(type, null);
+        level--;
+        if (string.IsNullOrWhiteSpace(desc)) desc = StringExtensions.GetDescription(type);
+        if (ObjectConvert.IsNullableValueType(type, out var valueType)) type = valueType;
+        if (type == typeof(object))
+        {
+            return handler.Convert(type, null, breadcrumb);
+        }
+        else if (type == typeof(string))
+        {
+            return handler.Convert(type, new JsonStringSchemaDescription
+            {
+                Description = desc,
+            }, breadcrumb);
+        }
+        else if (type == typeof(JsonObjectNode) || type == typeof(System.Text.Json.Nodes.JsonObject))
+        {
+            return handler.Convert(type, new JsonObjectSchemaDescription
+            {
+                Description = desc,
+            }, breadcrumb);
+        }
+        else if (type == typeof(JsonArrayNode) || type == typeof(System.Text.Json.Nodes.JsonArray))
+        {
+            return handler.Convert(type, new JsonArraySchemaDescription
+            {
+                Description = desc,
+            }, breadcrumb);
+        }
+        else if (type.IsEnum)
+        {
+            var d = new JsonStringSchemaDescription
+            {
+                Description = desc
+            };
+            try
+            {
+                d.EnumItems.AddRange(Enum.GetNames(type));
+            }
+            catch (InvalidOperationException)
+            {
+            }
+
+            return handler.Convert(type, d, breadcrumb);
+        }
+        else if (ObjectConvert.IsGenericEnumerable(type))
+        {
+            var d = new JsonArraySchemaDescription
+            {
+                Description = desc
+            };
+            if (level < 0) return handler.Convert(type, d, breadcrumb);
+            if (type.IsGenericType)
+            {
+                var genericType = type.GetGenericTypeDefinition();
+                if (genericType == typeof(List<>) || genericType == typeof(IEnumerable<>) || genericType == typeof(ICollection<>) || genericType == typeof(IList<>))
+                {
+                    var genericParamType = type.GetGenericArguments().FirstOrDefault();
+                    if (genericParamType == null) return handler.Convert(type, d, breadcrumb);
+                    d.DefaultItems = CreateSchema(genericParamType, level, null, handler);
+                }
+            }
+
+            return handler.Convert(type, d, breadcrumb);
+        }
+        else if (type.IsValueType)
+        {
+            if (type == typeof(int) || type == typeof(long) || type == typeof(uint) || type == typeof(short) || type == typeof(byte))
+            {
+                return handler.Convert(type, new JsonIntegerSchemaDescription
+                {
+                    Description = desc
+                }, breadcrumb);
+            }
+            else if (type == typeof(float) || type == typeof(double) || type == typeof(decimal))
+            {
+                return handler.Convert(type, new JsonNumberSchemaDescription
+                {
+                    Description = desc
+                }, breadcrumb);
+            }
+            else if (type == typeof(bool))
+            {
+                return handler.Convert(type, new JsonBooleanSchemaDescription
+                {
+                    Description = desc
+                }, breadcrumb);
+            }
+            else if (type == typeof(Guid))
+            {
+                return handler.Convert(type, new JsonStringSchemaDescription
+                {
+                    Description = desc
+                }, breadcrumb);
+            }
+            else if (type == typeof(DateTime))
+            {
+                return handler.Convert(type, new JsonStringSchemaDescription
+                {
+                    Description = desc,
+                    Format = "date-time"
+                }, breadcrumb);
+            }
+#if NET6_0_OR_GREATER
+            else if (type == typeof(Half))
+            {
+                return handler.Convert(type, new JsonNumberSchemaDescription
+                {
+                    Description = desc
+                }, breadcrumb);
+            }
+            else if (type == typeof(DateOnly))
+            {
+                return handler.Convert(type, new JsonStringSchemaDescription
+                {
+                    Description = desc,
+                    Format = "date"
+                }, breadcrumb);
+            }
+            else if (type == typeof(TimeOnly))
+            {
+                return handler.Convert(type, new JsonStringSchemaDescription
+                {
+                    Description = desc,
+                    Format = "time"
+                }, breadcrumb);
+            }
+#endif
+
+            return handler.Convert(type, null, breadcrumb);
+        }
+        else if (type == typeof(StringBuilder))
+        {
+            return handler.Convert(type, new JsonStringSchemaDescription
+            {
+                Description = desc,
+            }, breadcrumb);
+        }
+        else if (type == typeof(Uri))
+        {
+            return handler.Convert(type, new JsonStringSchemaDescription
+            {
+                Description = desc,
+                Format = "uri-reference"
+            }, breadcrumb);
+        }
+
+        var jsonSchema = new JsonObjectSchemaDescription
+        {
+            Description = desc
+        };
+        if (level < 0 || type.IsInterface) return handler.Convert(type, jsonSchema, breadcrumb);
+        try
+        {
+            var jsonSerializer = type.GetCustomAttributes<JsonConverterAttribute>()?.FirstOrDefault();
+            if (jsonSerializer != null) return handler.Convert(type, jsonSchema, breadcrumb);
+        }
+        catch (NotSupportedException)
+        {
+        }
+        catch (TypeLoadException)
+        {
+        }
+
+        var props = type.GetProperties();
+        foreach (var prop in props)
+        {
+            var name = GetPropertyName(prop);
+            if (string.IsNullOrEmpty(name)) continue;
+            desc = StringExtensions.GetDescription(prop);
+            jsonSchema.Properties[name] = CreateSchema(prop.PropertyType, level, desc, handler, new(prop.PropertyType, breadcrumb, name));
+        }
+
+        return handler.Convert(type, jsonSchema, breadcrumb);
+    }
+
+    /// <summary>
+    /// Creates a JSON schema of a type.
+    /// </summary>
+    /// <param name="json">The JSON object to create schema.</param>
+    /// <param name="level">The maximum level to create schema for JSON object.</param>
+    /// <param name="desc">The description.</param>
+    /// <param name="handler">The additional handler to control the creation.</param>
+    /// <param name="breadcrumb">The path breadcrumb.</param>
+    /// <returns>The JSON schema description instance; or null, if not supported.</returns>
+    private static JsonObjectSchemaDescription CreateSchema(JsonObjectNode json, int level, string desc = null, IJsonObjectSchemaCreationHandler<IJsonDataNode> handler = null, NodePathBreadcrumb<IJsonDataNode> breadcrumb = null)
+    {
+        handler ??= EmptyJsonNodeSchemaCreationHandler<IJsonDataNode>.Instance;
+        breadcrumb ??= new(json, null);
+        var schema = new JsonObjectSchemaDescription
+        {
+            Description = desc
+        };
+        level--;
+        foreach (var prop in json)
+        {
+            var value = prop.Value;
+            if (prop.Key == "$ref") continue;
+            switch (value.ValueKind)
+            {
+                case JsonValueKind.Null:
+                case JsonValueKind.Undefined:
+                    continue;
+                case JsonValueKind.String:
+                    schema.Properties[prop.Key] = new JsonStringSchemaDescription();
+                    break;
+                case JsonValueKind.True:
+                case JsonValueKind.False:
+                    schema.Properties[prop.Key] = new JsonBooleanSchemaDescription();
+                    break;
+                case JsonValueKind.Number:
+                    schema.Properties[prop.Key] = new JsonNumberSchemaDescription();
+                    break;
+                case JsonValueKind.Object:
+                    if (level < 0 && value is JsonObjectNode obj) schema.Properties[prop.Key] = level < 1
+                        ? new JsonObjectSchemaDescription()
+                        : CreateSchema(obj, level, null, handler, new(obj, breadcrumb, prop.Key));
+                    break;
+                case JsonValueKind.Array:
+                    schema.Properties[prop.Key] = new JsonArraySchemaDescription();
+                    break;
+            }
+        }
+
+        return handler.Convert(json, schema, breadcrumb);
     }
 
     internal static object GetValue(IJsonDataNode value)

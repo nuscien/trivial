@@ -185,7 +185,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     public string Id
     {
         get => TryGetStringValue("$id");
-        set => SetValue("$id", value);
+        set => SetValueOrRemove("$id", value);
     }
 
     /// <summary>
@@ -194,7 +194,25 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     public string Schema
     {
         get => TryGetStringValue("$schema");
-        set => SetValue("$schema", value);
+        set => SetValueOrRemove("$schema", value);
+    }
+
+    /// <summary>
+    /// Gets or sets the subschema/definitions of the JSON object.
+    /// </summary>
+    public JsonObjectNode LocalDefinitions
+    {
+        get => TryGetObjectValue("$defs");
+        set => SetValueOrRemove("$defs", value);
+    }
+
+    /// <summary>
+    /// Gets or sets the comment of the JSON object.
+    /// </summary>
+    public string CommentValue
+    {
+        get => TryGetStringValue("$comment");
+        set => SetValueOrRemove("$comment", string.IsNullOrWhiteSpace(value) ? null : value);
     }
 
     /// <summary>
@@ -3551,6 +3569,19 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     }
 
     /// <summary>
+    /// Sets the value of the specific property; or removes the property if the value is null.
+    /// </summary>
+    /// <param name="key">The property key.</param>
+    /// <param name="value">The value to set.</param>
+    /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+    public void SetValueOrRemove(string key, string value)
+    {
+        AssertKey(key);
+        if (value == null) RemoveProperty(key);
+        else SetProperty(key, new JsonStringNode(value));
+    }
+
+    /// <summary>
     /// Sets the value of the specific property.
     /// </summary>
     /// <param name="key">The property key.</param>
@@ -4013,6 +4044,19 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     }
 
     /// <summary>
+    /// Sets the value of the specific property; or removes the property if the value is null.
+    /// </summary>
+    /// <param name="key">The property key.</param>
+    /// <param name="value">The value to set.</param>
+    /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+    public void SetValueOrRemove(string key, JsonArrayNode value)
+    {
+        AssertKey(key);
+        if (value == null) RemoveProperty(key);
+        else SetValue(key, value);
+    }
+
+    /// <summary>
     /// Sets the value of the specific property.
     /// </summary>
     /// <param name="key">The property key.</param>
@@ -4040,6 +4084,19 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     }
 
     /// <summary>
+    /// Sets the value of the specific property; or removes the property if the value is null.
+    /// </summary>
+    /// <param name="key">The property key.</param>
+    /// <param name="value">The value to set.</param>
+    /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+    public void SetValueOrRemove(string key, JsonObjectNode value)
+    {
+        AssertKey(key);
+        if (value == null) RemoveProperty(key);
+        else SetValue(key, value);
+    }
+
+    /// <summary>
     /// Sets the value of the specific property.
     /// </summary>
     /// <param name="key">The property key.</param>
@@ -4061,6 +4118,19 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     {
         if (value is null) return;
         SetValue(key, value);
+    }
+
+    /// <summary>
+    /// Sets the value of the specific property; or removes the property if the value is null.
+    /// </summary>
+    /// <param name="key">The property key.</param>
+    /// <param name="value">The value to set.</param>
+    /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+    public void SetValueOrRemove(string key, IJsonObjectHost value)
+    {
+        AssertKey(key);
+        if (value is null) RemoveProperty(key);
+        else SetValue(key, value);
     }
 
     /// <summary>
@@ -4706,6 +4776,38 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     /// <param name="skipDuplicate">true if skip the duplicate properties; otherwise, false.</param>
     /// <returns>The count to set.</returns>
     public int SetRange(IEnumerable<KeyValuePair<string, System.Text.Json.Nodes.JsonNode>> data, bool skipDuplicate = false)
+    {
+        var count = 0;
+        if (data == null) return count;
+        if (skipDuplicate)
+        {
+            foreach (var props in data)
+            {
+                if (string.IsNullOrWhiteSpace(props.Key) || store.ContainsKey(props.Key)) continue;
+                count++;
+                SetValue(props.Key, props.Value);
+            }
+        }
+        else
+        {
+            foreach (var props in data)
+            {
+                if (string.IsNullOrWhiteSpace(props.Key)) continue;
+                count++;
+                SetValue(props.Key, props.Value);
+            }
+        }
+
+        return count;
+    }
+
+    /// <summary>
+    /// Sets properties.
+    /// </summary>
+    /// <param name="data">Key value pairs to set.</param>
+    /// <param name="skipDuplicate">true if skip the duplicate properties; otherwise, false.</param>
+    /// <returns>The count to set.</returns>
+    public int SetRange(IEnumerable<KeyValuePair<string, IJsonObjectHost>> data, bool skipDuplicate = false)
     {
         var count = 0;
         if (data == null) return count;

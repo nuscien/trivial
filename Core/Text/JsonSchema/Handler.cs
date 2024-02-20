@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Trivial.Reflection;
 
 namespace Trivial.Text;
 
@@ -24,6 +25,38 @@ public interface IJsonNodeSchemaDescriptionHandler
     /// <param name="description">The JSON schema description.</param>
     /// <param name="node">The JSON object to fill properties.</param>
     void OnPropertiesFilled(BaseJsonNodeSchemaDescription description, JsonObjectNode node);
+}
+
+/// <summary>
+/// The interface for JSON schema creation.
+/// </summary>
+/// <typeparam name="T">The type of the source.</typeparam>
+public interface IJsonNodeSchemaCreationHandler<T>
+{
+    /// <summary>
+    /// Formats or converts the schema instance by customization.
+    /// </summary>
+    /// <param name="type">The source type.</param>
+    /// <param name="result">The JSON schema created to convert or format.</param>
+    /// <param name="breadcrumb">The path breadcrumb.</param>
+    /// <returns>The JSON schema of final result.</returns>
+    JsonNodeSchemaDescription Convert(T type, JsonNodeSchemaDescription result, NodePathBreadcrumb<T> breadcrumb);
+}
+
+/// <summary>
+/// The interface for JSON schema creation.
+/// </summary>
+/// <typeparam name="T">The type of the source.</typeparam>
+public interface IJsonObjectSchemaCreationHandler<T>
+{
+    /// <summary>
+    /// Formats or converts the schema instance by customization.
+    /// </summary>
+    /// <param name="type">The source type.</param>
+    /// <param name="result">The JSON schema created to convert or format.</param>
+    /// <param name="breadcrumb">The path breadcrumb.</param>
+    /// <returns>The JSON schema of final result.</returns>
+    JsonObjectSchemaDescription Convert(T type, JsonObjectSchemaDescription result, NodePathBreadcrumb<T> breadcrumb);
 }
 
 internal class InternalEmptyJsonNodeSchemaDescriptionHandler : IJsonNodeSchemaDescriptionHandler
@@ -63,6 +96,17 @@ internal class InternalJsonNodeSchemaDescriptionHandler : IJsonNodeSchemaDescrip
     void IJsonNodeSchemaDescriptionHandler.OnPropertiesFilled(BaseJsonNodeSchemaDescription description, JsonObjectNode node)
     {
     }
+}
+
+internal class EmptyJsonNodeSchemaCreationHandler<T> : IJsonNodeSchemaCreationHandler<T>, IJsonObjectSchemaCreationHandler<T>
+{
+    public static EmptyJsonNodeSchemaCreationHandler<T> Instance { get; } = new();
+
+    JsonNodeSchemaDescription IJsonNodeSchemaCreationHandler<T>.Convert(T type, JsonNodeSchemaDescription result, NodePathBreadcrumb<T> breadcrumb)
+        => result;
+
+    JsonObjectSchemaDescription IJsonObjectSchemaCreationHandler<T>.Convert(T type, JsonObjectSchemaDescription result, NodePathBreadcrumb<T> breadcrumb)
+        => result;
 }
 
 /// <summary>
