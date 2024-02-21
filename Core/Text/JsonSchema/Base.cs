@@ -47,6 +47,25 @@ public abstract class BaseJsonNodeSchemaDescription : IJsonObjectHost
     }
 
     /// <summary>
+    /// Initializes a new instance of the BaseJsonNodeSchemaDescription class.
+    /// </summary>
+    /// <param name="json">The JSON object to load.</param>
+    /// <param name="skipExtendedProperties">true if only fill the properties without extended; otherwise, false.</param>
+    protected BaseJsonNodeSchemaDescription(JsonObjectNode json, bool skipExtendedProperties)
+    {
+        if (json == null) return;
+        Id = json.Id;
+        Schema = json.Schema;
+        ReferencePath = json.TryGetStringTrimmedValue("$ref", true);
+        Description = json.TryGetStringValue("description");
+        Comment = json.CommentValue;
+        Examples.AddRange(json.TryGetArrayValue("examples"));
+        if (skipExtendedProperties) return;
+        ExtendedProperties.SetRange(json);
+        JsonValues.RemoveJsonNodeSchemaDescriptionExtendedProperties(ExtendedProperties, true);
+    }
+
+    /// <summary>
     /// Gets or sets the identifier.
     /// </summary>
     public string Id { get; set; }
@@ -55,6 +74,11 @@ public abstract class BaseJsonNodeSchemaDescription : IJsonObjectHost
     /// Gets or sets the schema URI.
     /// </summary>
     public string Schema { get; set; }
+
+    /// <summary>
+    /// Gets or sets the reference path or identifier.
+    /// </summary>
+    public string ReferencePath { get; set; }
 
     /// <summary>
     /// Gets or sets the description.
@@ -107,10 +131,11 @@ public abstract class BaseJsonNodeSchemaDescription : IJsonObjectHost
         var node = new JsonObjectNode();
         if (!string.IsNullOrEmpty(Id)) node.Id = Id;
         if (!string.IsNullOrEmpty(Schema)) node.Schema = Schema;
+        if (!string.IsNullOrEmpty(ReferencePath)) node.SetValue("$ref", ReferencePath);
         node.SetValueIfNotNull("type", GetValueType());
         node.SetValueIfNotNull("description", Description);
         node.SetValueIfNotNull("examples", Examples);
-        node.SetValueIfNotEmpty("$comment", Comment);
+        node.CommentValue = Comment;
         handler.OnPropertiesFilling(this, node);
         FillProperties(node);
         node.SetRange(ExtendedProperties, SkipDuplicatedExtendedProperties);
@@ -153,9 +178,28 @@ public class JsonNodeSchemaDescription : BaseJsonNodeSchemaDescription
     }
 
     /// <summary>
-    /// Gets or sets the reference path or identifier.
+    /// Initializes a new instance of the JsonNodeSchemaDescription class.
     /// </summary>
-    public string ReferencePath { get; set; }
+    /// <param name="json">The JSON object to load.</param>
+    /// <param name="skipExtendedProperties">true if only fill the properties without extended; otherwise, false.</param>
+    protected JsonNodeSchemaDescription(JsonObjectNode json, bool skipExtendedProperties)
+        : base (json, true)
+    {
+        if (json == null) return;
+        Title = json.TryGetStringTrimmedValue("title", true);
+        IsDeprecated = json.TryGetBooleanValue("deprecated") ?? false;
+        ReadOnly = json.TryGetBooleanValue("readOnly") ?? false;
+        WriteOnly = json.TryGetBooleanValue("writeOnly") ?? false;
+        //MatchAllOf.Add("allOf");
+        //MatchAnyOf.Add("anyOf");
+        //MatchOneOf.Add("oneOf");
+        //NotMatch = ("not");
+        EnumItems.AddRange(json.TryGetArrayValue("enum"));
+        //DefinitionsNode.Add("definitions");
+        if (skipExtendedProperties) return;
+        ExtendedProperties.SetRange(json);
+        JsonValues.RemoveJsonNodeSchemaDescriptionExtendedProperties(ExtendedProperties, false);
+    }
 
     /// <summary>
     /// Gets the definitions.

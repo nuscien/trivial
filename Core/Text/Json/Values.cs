@@ -899,4 +899,14 @@ public static class JsonValues
 
     internal static double? ToDouble(int? value)
         => value.HasValue ? value.Value : null;
+
+    internal static void RemoveJsonNodeSchemaDescriptionExtendedProperties(JsonObjectNode json, bool onlyBase)
+    {
+        json.SetRange(json);
+        json.Id = null;
+        json.Schema = null;
+        json.Remove(new[] { "$ref", "description", "examples" });
+        if (onlyBase) return;
+        json.Remove(new[] { "title", "deprecated", "readOnly", "writeOnly", "allOf", "anyOf", "oneOf", "not", "enum", "definitions" });
+    }
 }

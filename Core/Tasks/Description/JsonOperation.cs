@@ -36,9 +36,14 @@ public class JsonOperationDescription
     public JsonNodeSchemaDescription ArgumentSchema { get; set; }
 
     /// <summary>
-    /// Gets or sets the schema for request argument.
+    /// Gets or sets the schema for response data.
     /// </summary>
     public JsonNodeSchemaDescription ResultSchema { get; set; }
+
+    /// <summary>
+    /// Gets or sets the schema for error data.
+    /// </summary>
+    public JsonNodeSchemaDescription ErrorSchema { get; set; }
 
     /// <summary>
     /// Gets or sets the tag.

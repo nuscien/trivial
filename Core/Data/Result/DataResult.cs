@@ -10,6 +10,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime;
 using System.Runtime.Serialization;
 using System.Text;
 using System.Text.Json.Serialization;
@@ -48,7 +49,6 @@ public class MessageResult
     [JsonPropertyName("message")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public string Message { get; set; }
-
 
     /// <summary>
     /// Gets or sets the tracking identifier.
@@ -196,6 +196,14 @@ public class JsonDataResult : MessageResult
     [JsonPropertyName("data")]
     [JsonConverter(typeof(JsonObjectNodeConverter))]
     public JsonObjectNode Data { get; set; }
+
+    /// <summary>
+    /// Gets or sets the additional info.
+    /// </summary>
+    [DataMember(Name = "info")]
+    [JsonPropertyName("info")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public JsonObjectNode AdditionalInfo { get; set; }
 
     /// <summary>
     /// Gets a value indicating whether the data is null.
@@ -350,7 +358,7 @@ public class CollectionResult<T> : MessageResult
     /// </summary>
     [DataMember(Name = "offset", EmitDefaultValue = false)]
     [JsonPropertyName("offset")]
-     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
    public int? Offset { get; set; }
 
     /// <summary>
@@ -373,6 +381,14 @@ public class CollectionResult<T> : MessageResult
     [DataMember(Name = "col")]
     [JsonPropertyName("col")]
     public IEnumerable<T> Value { get; set; }
+
+    /// <summary>
+    /// Gets or sets the additional info.
+    /// </summary>
+    [DataMember(Name = "info")]
+    [JsonPropertyName("info")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public JsonObjectNode AdditionalInfo { get; set; }
 
     /// <summary>
     /// Tries to get the specific one.
@@ -584,4 +600,12 @@ public class ErrorMessageResult : MessageResult
     [JsonPropertyName("details")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public List<string> Details { get; set; }
+
+    /// <summary>
+    /// Gets or sets the additional info.
+    /// </summary>
+    [DataMember(Name = "info")]
+    [JsonPropertyName("info")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public JsonObjectNode AdditionalInfo { get; set; }
 }

@@ -63,8 +63,6 @@ internal class InternalJsonNodeSchemaDescriptionHandler : IJsonNodeSchemaDescrip
     void IJsonNodeSchemaDescriptionHandler.OnPropertiesFilling(BaseJsonNodeSchemaDescription description, JsonObjectNode node)
     {
         if (description is not JsonNodeSchemaDescription d) return;
-        if (!string.IsNullOrEmpty(d.ReferencePath)) node.SetValue("$ref", d.ReferencePath);
-        if (d.Subschemas.Count > 0) node.SetValueIfNotNull("$defs", JsonValues.ToJson(d.Subschemas));
         node.SetValueIfNotNull("title", d.Title);
         if (d.IsDeprecated) node.SetValue("deprecated", d.IsDeprecated);
         if (d.ReadOnly) node.SetValue("readOnly", d.ReadOnly);

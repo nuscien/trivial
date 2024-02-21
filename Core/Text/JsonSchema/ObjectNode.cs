@@ -91,6 +91,71 @@ public class JsonObjectSchemaDescription : JsonNodeSchemaDescription
     /// </summary>
     public JsonObjectSchemaDescription ElsePolicy { get; set; }
 
+    /// <summary>
+    /// Gets the schema.
+    /// </summary>
+    /// <param name="propertyName">The property name.</param>
+    /// <returns>The property schema; or null, if non-exist.</returns>
+    public JsonNodeSchemaDescription GetProperty(string propertyName)
+        => Properties.TryGetValue(propertyName, out var value) ? value : null;
+
+    /// <summary>
+    /// Adds a property.
+    /// </summary>
+    /// <param name="propertyName">The property name.</param>
+    /// <param name="value">The property schema.</param>
+    public void SetProperty(string propertyName, JsonNodeSchemaDescription value)
+        => Properties[propertyName] = value;
+
+    /// <summary>
+    /// Adds a property.
+    /// </summary>
+    /// <param name="propertyName">The property name.</param>
+    /// <param name="description">The description.</param>
+    /// <param name="pattern">The pattern.</param>
+    public JsonStringSchemaDescription SetStringProperty(string propertyName, string description, string pattern = null)
+        => SetPropertyInternal(propertyName, new JsonStringSchemaDescription
+        {
+            Description = description,
+            Pattern = pattern
+        });
+
+    /// <summary>
+    /// Adds a property.
+    /// </summary>
+    /// <param name="propertyName">The property name.</param>
+    /// <param name="description">The description.</param>
+    /// <param name="min">The minimum value.</param>
+    /// <param name="max">The maximum value.</param>
+    public JsonNumberSchemaDescription SetNumberProperty(string propertyName, string description, double? min = null, double? max = null)
+        => SetPropertyInternal(propertyName, new JsonNumberSchemaDescription
+        {
+            Description = description,
+            Min = min,
+            Max = max
+        });
+
+    /// <summary>
+    /// Adds a property.
+    /// </summary>
+    /// <param name="propertyName">The property name.</param>
+    /// <param name="description">The description.</param>
+    /// <param name="min">The minimum value.</param>
+    /// <param name="max">The maximum value.</param>
+    public JsonBooleanSchemaDescription SetBooleanProperty(string propertyName, string description, double? min = null, double? max = null)
+        => SetPropertyInternal(propertyName, new JsonBooleanSchemaDescription
+        {
+            Description = description
+        });
+
+    /// <summary>
+    /// Removes the value with the specified key from the properties.
+    /// </summary>
+    /// <param name="propertyName">The property name.</param>
+    /// <returns>true if the element is successfully found and removed; otherwise, false. This method returns false if key is not found in the mapping.</returns>
+    public bool RemoveProperty(string propertyName)
+        => Properties.Remove(propertyName);
+
     /// <inheritdoc />
     protected override void FillProperties(JsonObjectNode node)
     {
@@ -128,5 +193,11 @@ public class JsonObjectSchemaDescription : JsonNodeSchemaDescription
         node.SetValueIfNotNull("if", IfPolicy?.ToJsonInternal(false));
         node.SetValueIfNotNull("then", ThenPolicy?.ToJsonInternal(false));
         node.SetValueIfNotNull("else", ElsePolicy?.ToJsonInternal(false));
+    }
+
+    private T SetPropertyInternal<T>(string propertyName, T value) where T : JsonNodeSchemaDescription
+    {
+        Properties[propertyName] = value;
+        return value;
     }
 }
