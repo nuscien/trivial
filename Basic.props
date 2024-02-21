@@ -11,6 +11,8 @@
     <RepositoryUrl>https://github.com/nuscien/trivial</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <LangVersion>12.0</LangVersion>
     <SignAssembly>True</SignAssembly>

@@ -10,8 +10,6 @@
 		<Description>The MIME constants and the barcode generators.</Description>
 		<PackageProjectUrl>https://github.com/nuscien/trivial/wiki/core</PackageProjectUrl>
 		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-		<IncludeSymbols>true</IncludeSymbols>
-		<SymbolPackageFormat>snupkg</SymbolPackageFormat>
 		<PackageIcon>mime.png</PackageIcon>
 		<PackageIconUrl>https://github.com/nuscien/trivial/raw/master/Materials/logo.png</PackageIconUrl>
 		<PackageTags>mime files barcode</PackageTags>
