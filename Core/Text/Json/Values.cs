@@ -4,19 +4,24 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Linq;
+using System.Reflection;
+using System.Security.Cryptography;
+using System.Text.Json.Serialization;
 using System.Text;
 using System.Text.Json;
 
+using Trivial.Collection;
+using Trivial.Data;
+using Trivial.Reflection;
+using Trivial.Tasks;
 using Trivial.Web;
 
 using SystemJsonObject = System.Text.Json.Nodes.JsonObject;
 using SystemJsonArray = System.Text.Json.Nodes.JsonArray;
 using SystemJsonValue = System.Text.Json.Nodes.JsonValue;
 using SystemJsonNode = System.Text.Json.Nodes.JsonNode;
-using System.Reflection;
-using System.Text.Json.Serialization;
-using System.Security.Cryptography;
-using Trivial.Reflection;
+using System.Threading.Tasks;
+using System.Security;
 
 namespace Trivial.Text;
 
@@ -490,6 +495,25 @@ public static class JsonValues
     public static JsonNodeSchemaDescription CreateSchema(Type type, string desc = null, IJsonNodeSchemaCreationHandler<Type> handler = null)
         => CreateSchema(type, 2, desc, handler);
 
+    internal static JsonOperationDescription CreateDescriptionByAttribute(MemberInfo member)
+    {
+        var attr = member?.GetCustomAttributes<JsonOperationDescriptiveAttribute>()?.FirstOrDefault();
+        if (attr?.DescriptiveType == null || !attr.DescriptiveType.IsClass) return null;
+        if (member is PropertyInfo prop)
+        {
+            if (ObjectConvert.TryCreateInstance<IJsonOperationDescriptive<PropertyInfo>>(attr.DescriptiveType, out var d))
+                return d.CreateDescription(attr.Id, prop);
+        }
+
+        if (member is MethodInfo method)
+        {
+            if (ObjectConvert.TryCreateInstance<IJsonOperationDescriptive<MethodInfo>>(attr.DescriptiveType, out var d))
+                return d.CreateDescription(attr.Id, method);
+        }
+
+        return ObjectConvert.TryCreateInstance<IJsonOperationDescriptive>(attr.DescriptiveType, out var desc) ? desc.CreateDescription() : null;
+    }
+
     /// <summary>
     /// Creates a JSON schema of a type.
     /// </summary>
@@ -502,6 +526,16 @@ public static class JsonValues
     private static JsonNodeSchemaDescription CreateSchema(Type type, int level, string desc = null, IJsonNodeSchemaCreationHandler<Type> handler = null, NodePathBreadcrumb<Type> breadcrumb = null)
     {
         handler ??= EmptyJsonNodeSchemaCreationHandler<Type>.Instance;
+        if (type.IsGenericType)
+        {
+            var genericType = type.GetGenericTypeDefinition();
+            if (genericType == typeof(ValueTask<>) || genericType == typeof(Task<>) || genericType == typeof(Lazy<>))
+            {
+                type = type.GetGenericArguments().FirstOrDefault();
+                if (type == null) return null;
+            }
+        }
+
         breadcrumb ??= new(type, null);
         level--;
         if (string.IsNullOrWhiteSpace(desc)) desc = StringExtensions.GetDescription(type);

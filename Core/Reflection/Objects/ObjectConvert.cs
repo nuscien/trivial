@@ -4,6 +4,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Text;
 
 namespace Trivial.Reflection;
@@ -397,6 +398,88 @@ public static class ObjectConvert
         }
 
         value = default;
+        return false;
+    }
+
+    /// <summary>
+    /// Tries to create an instance of the specific type.
+    /// </summary>
+    /// <typeparam name="T">The type to create.</typeparam>
+    /// <param name="result">The instance result.</param>
+    /// <returns>true if create succeeded; otherwise, false.</returns>
+    public static bool TryCreateInstance<T>(out T result)
+    {
+        try
+        {
+            result = Activator.CreateInstance<T>();
+            return true;
+        }
+        catch (ArgumentException)
+        {
+        }
+        catch (NotSupportedException)
+        {
+        }
+        catch (TargetInvocationException)
+        {
+        }
+        catch (MemberAccessException)
+        {
+        }
+        catch (TypeLoadException)
+        {
+        }
+        catch (InvalidComObjectException)
+        {
+        }
+        catch (ExternalException)
+        {
+        }
+
+        result = default;
+        return false;
+    }
+
+    /// <summary>
+    /// Tries to create an instance of the specific type.
+    /// </summary>
+    /// <typeparam name="T">The type to create.</typeparam>
+    /// <param name="baseType">The base type.</param>
+    /// <param name="result">The instance result.</param>
+    /// <returns>true if create succeeded; otherwise, false.</returns>
+    public static bool TryCreateInstance<T>(Type baseType, out T result)
+    {
+        try
+        {
+            if (baseType != null && typeof(T).IsAssignableFrom(baseType) && Activator.CreateInstance(baseType) is T r)
+            {
+                result = r;
+                return true;
+            }
+        }
+        catch (ArgumentException)
+        {
+        }
+        catch (NotSupportedException)
+        {
+        }
+        catch (TargetInvocationException)
+        {
+        }
+        catch (MemberAccessException)
+        {
+        }
+        catch (TypeLoadException)
+        {
+        }
+        catch (InvalidComObjectException)
+        {
+        }
+        catch (ExternalException)
+        {
+        }
+
+        result = default;
         return false;
     }
 

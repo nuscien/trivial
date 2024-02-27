@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Trivial.Data;
+using Trivial.Tasks;
 
 namespace Trivial.Text;
 
@@ -29,5 +31,13 @@ public class SchemaUnitTest
         var arrSchema = schema.Properties["arr"] as JsonArraySchemaDescription;
         Assert.IsNotNull(arrSchema?.DefaultItems);
         Assert.AreEqual(typeof(JsonIntegerSchemaDescription), arrSchema.DefaultItems.GetType());
+        var desc = JsonOperationDescription.Create(typeof(JsonModel), "Create", new[] { typeof(JsonAttributeTestModel) });
+        Assert.IsNotNull(desc);
+        Assert.AreEqual("Create a new instance.", desc.Description);
+        Assert.AreEqual("A test model.", desc.ArgumentSchema.Description);
+        desc = JsonOperationDescription.Create(typeof(JsonModel), "Create", new[] { typeof(string), typeof(string) });
+        Assert.IsNotNull(desc);
+        Assert.AreEqual("Create a new instance.", desc.Description);
+        Assert.AreEqual("test", desc.Tag);
     }
 }

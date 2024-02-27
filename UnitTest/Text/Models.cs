@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Reflection;
 using System.Runtime.Serialization;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using Trivial.Data;
+using Trivial.Tasks;
 
 namespace Trivial.Text;
 
@@ -34,8 +37,32 @@ class JsonModel
     [DataMember(Name = "arr")]
     [JsonPropertyName("arr")]
     public IEnumerable<int> Col { get; set; }
+
+    [Description("Create a new instance.")]
+    public static JsonModel Create(JsonAttributeTestModel m)
+        => new();
+
+    [Description("Create a new instance.")]
+    [JsonOperationDescriptive(typeof(JsonOperationDescriptiveHandler), "test")]
+    public static JsonModel Create(string a, string b)
+        => new()
+        {
+            A = a,
+            B = b
+        };
 }
 
+class JsonOperationDescriptiveHandler : IJsonOperationDescriptive<MethodInfo>
+{
+    public JsonOperationDescription CreateDescription(string id, MethodInfo info)
+        => new JsonOperationDescription
+        {
+            Description = info.Name,
+            Tag = id
+        };
+}
+
+[Description("A test model.")]
 class JsonAttributeTestModel
 {
     [JsonConverter(typeof(JsonNumberConverter))]
