@@ -542,7 +542,7 @@ public static class ObjectConvert
     /// <param name="prop">The property info.</param>
     /// <param name="result">The result.</param>
     /// <returns>true if get succeeded; otherwise, false.</returns>
-    internal static bool TryGetProperty<T>(object obj, PropertyInfo prop, out T result)
+    public static bool TryGetProperty<T>(object obj, PropertyInfo prop, out T result)
     {
         try
         {

@@ -85,11 +85,19 @@ public class JsonOperationDescription : BaseObservableProperties
     /// <param name="obj">The target object.</param>
     /// <param name="propertyName">The property name.</param>
     /// <param name="id">The identifier.</param>
-    /// <param name="handler">The additional handler to control the creation.</param>
     /// <returns>A description instance; or null, if the property does not exist or is not supported.</returns>
-    public static JsonOperationDescription CreateByProperty(object obj, string propertyName, string id = null, IJsonNodeSchemaCreationHandler<Type> handler = null)
+    public static JsonOperationDescription CreateFromProperty(object obj, string propertyName, string id = null)
+        => CreateFromProperty(obj, obj?.GetType()?.GetProperty(propertyName), id);
+
+    /// <summary>
+    /// Tries to create a description from a property. The property should be an IJsonOperationDescriptive object.
+    /// </summary>
+    /// <param name="obj">The target object.</param>
+    /// <param name="prop">The property info.</param>
+    /// <param name="id">The identifier.</param>
+    /// <returns>A description instance; or null, if the property does not exist or is not supported.</returns>
+    public static JsonOperationDescription CreateFromProperty(object obj, PropertyInfo prop, string id = null)
     {
-        var prop = obj?.GetType()?.GetProperty(propertyName);
         if (prop == null) return null;
         var desc = StringExtensions.GetDescription(prop);
         var info = JsonValues.CreateDescriptionByAttribute(prop);
@@ -102,9 +110,14 @@ public class JsonOperationDescription : BaseObservableProperties
         if (info != null)
         {
             if (!string.IsNullOrWhiteSpace(desc)) info.Description = desc;
+            if (string.IsNullOrWhiteSpace(info.Description))
+            {
+                desc = StringExtensions.GetDescription(prop.PropertyType);
+                if (!string.IsNullOrWhiteSpace(desc)) info.Description = desc;
+            }
+
             if (!string.IsNullOrWhiteSpace(id)) info.Id = id;
             if (string.IsNullOrWhiteSpace(info.Id)) info.Id = $"{prop.ReflectedType?.Name ?? "global-"}-{prop.Name}";
-            return info;
         }
 
         return info;
