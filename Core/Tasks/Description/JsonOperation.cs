@@ -80,6 +80,37 @@ public class JsonOperationDescription : BaseObservableProperties
     public JsonObjectNode Data { get; } = new();
 
     /// <summary>
+    /// Tries to create a description from a property. The property should be an IJsonOperationDescriptive object.
+    /// </summary>
+    /// <param name="obj">The target object.</param>
+    /// <param name="propertyName">The property name.</param>
+    /// <param name="id">The identifier.</param>
+    /// <param name="handler">The additional handler to control the creation.</param>
+    /// <returns>A description instance; or null, if the property does not exist or is not supported.</returns>
+    public static JsonOperationDescription CreateByProperty(object obj, string propertyName, string id = null, IJsonNodeSchemaCreationHandler<Type> handler = null)
+    {
+        var prop = obj?.GetType()?.GetProperty(propertyName);
+        if (prop == null) return null;
+        var desc = StringExtensions.GetDescription(prop);
+        var info = JsonValues.CreateDescriptionByAttribute(prop);
+        if (info == null)
+        {
+            if (ObjectConvert.TryGetProperty(obj, prop, out IJsonOperationDescriptive d) && d != null)
+                info = d.CreateDescription();
+        }
+
+        if (info != null)
+        {
+            if (!string.IsNullOrWhiteSpace(desc)) info.Description = desc;
+            if (!string.IsNullOrWhiteSpace(id)) info.Id = id;
+            if (string.IsNullOrWhiteSpace(info.Id)) info.Id = $"{prop.ReflectedType?.Name ?? "global-"}-{prop.Name}";
+            return info;
+        }
+
+        return info;
+    }
+
+    /// <summary>
     /// Tries to create a description.
     /// </summary>
     /// <param name="method">The method info to search.</param>
@@ -93,6 +124,8 @@ public class JsonOperationDescription : BaseObservableProperties
         if (info != null)
         {
             if (!string.IsNullOrWhiteSpace(desc)) info.Description = desc;
+            if (!string.IsNullOrWhiteSpace(id)) info.Id = id;
+            if (string.IsNullOrWhiteSpace(info.Id)) info.Id = $"{method.ReflectedType?.Name ?? "global-"}-{method.Name}";
             return info;
         }
 

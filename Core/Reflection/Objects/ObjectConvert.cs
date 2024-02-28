@@ -483,6 +483,107 @@ public static class ObjectConvert
         return false;
     }
 
+    /// <summary>
+    /// Tries to get a specific property value.
+    /// </summary>
+    /// <typeparam name="T">The type of the property value.</typeparam>
+    /// <param name="obj">The target object.</param>
+    /// <param name="propertyName">The property name.</param>
+    /// <param name="result">The result.</param>
+    /// <returns>true if get succeeded; otherwise, false.</returns>
+    public static bool TryGetProperty<T>(object obj, string propertyName, out T result)
+    {
+        try
+        {
+            var prop = obj?.GetType()?.GetProperty(propertyName);
+            if (prop != null && prop.CanRead && typeof(T).IsAssignableFrom(prop.PropertyType) && prop.GetValue(obj, null) is T r)
+            {
+                result = r;
+                return true;
+            }
+        }
+        catch (ArgumentException)
+        {
+        }
+        catch (AmbiguousMatchException)
+        {
+        }
+        catch (TargetException)
+        {
+        }
+        catch (TargetInvocationException)
+        {
+        }
+        catch (TargetParameterCountException)
+        {
+        }
+        catch (MemberAccessException)
+        {
+        }
+        catch (InvalidOperationException)
+        {
+        }
+        catch (NullReferenceException)
+        {
+        }
+        catch (ExternalException)
+        {
+        }
+
+        result = default;
+        return false;
+    }
+
+    /// <summary>
+    /// Tries to get a specific property value.
+    /// </summary>
+    /// <typeparam name="T">The type of the property value.</typeparam>
+    /// <param name="obj">The target object.</param>
+    /// <param name="prop">The property info.</param>
+    /// <param name="result">The result.</param>
+    /// <returns>true if get succeeded; otherwise, false.</returns>
+    internal static bool TryGetProperty<T>(object obj, PropertyInfo prop, out T result)
+    {
+        try
+        {
+            if (prop != null && prop.CanRead && typeof(T).IsAssignableFrom(prop.PropertyType) && prop.GetValue(obj, null) is T r)
+            {
+                result = r;
+                return true;
+            }
+        }
+        catch (ArgumentException)
+        {
+        }
+        catch (AmbiguousMatchException)
+        {
+        }
+        catch (TargetException)
+        {
+        }
+        catch (TargetInvocationException)
+        {
+        }
+        catch (TargetParameterCountException)
+        {
+        }
+        catch (MemberAccessException)
+        {
+        }
+        catch (InvalidOperationException)
+        {
+        }
+        catch (NullReferenceException)
+        {
+        }
+        catch (ExternalException)
+        {
+        }
+
+        result = default;
+        return false;
+    }
+
     internal static T ParseEnum<T>(string s) where T : struct
     {
 #if NETFRAMEWORK
