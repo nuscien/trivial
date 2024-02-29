@@ -797,7 +797,7 @@ public static class JsonValues
     {
         if (json == null) return null;
         var type = json.TryGetStringTrimmedValue("type") ?? string.Empty;
-        return type switch
+        return type.Trim().ToLowerInvariant() switch
         {
             "object" => new JsonObjectSchemaDescription(json),
             "string" => new JsonStringSchemaDescription(json),

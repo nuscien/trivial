@@ -187,6 +187,8 @@ public class JsonNodeSchemaDescription : BaseJsonNodeSchemaDescription
     internal JsonNodeSchemaDescription(JsonObjectNode json)
         : this(json, false)
     {
+        if (json == null) return;
+        ExtendedProperties.SetValueIfNotEmpty("type", json.TryGetStringValue("type"));
     }
 
     /// <summary>
