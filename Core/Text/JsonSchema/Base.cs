@@ -134,9 +134,9 @@ public abstract class BaseJsonNodeSchemaDescription : IJsonObjectHost
         if (!string.IsNullOrEmpty(Id)) node.Id = Id;
         if (!string.IsNullOrEmpty(Schema)) node.Schema = Schema;
         if (!string.IsNullOrEmpty(ReferencePath)) node.SetValue("$ref", ReferencePath);
-        node.SetValueIfNotNull("type", GetValueType());
-        node.SetValueIfNotNull("description", Description);
-        node.SetValueIfNotNull("examples", Examples);
+        node.SetValueIfNotEmpty("type", GetValueType());
+        node.SetValueIfNotEmpty("description", Description);
+        node.SetValueIfNotEmpty("examples", Examples);
         node.CommentValue = Comment;
         handler.OnPropertiesFilling(this, node);
         FillProperties(node);
@@ -206,7 +206,8 @@ public class JsonNodeSchemaDescription : BaseJsonNodeSchemaDescription
         JsonValues.FillObjectSchema(MatchAnyOf, json, "anyOf");
         JsonValues.FillObjectSchema(MatchOneOf, json, "oneOf");
         NotMatch = JsonValues.ConvertToObjectSchema(json.TryGetObjectValue("not"));
-        EnumItems.AddRange(json.TryGetArrayValue("enum"));
+        var arr = json.TryGetArrayValue("enum");
+        if (arr != null) EnumItems.AddRange(arr);
         JsonValues.FillObjectSchema(DefinitionsNode, json, "definitions");
         if (skipExtendedProperties) return;
         ExtendedProperties.SetRange(json);

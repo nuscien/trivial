@@ -71,7 +71,7 @@ internal class InternalJsonNodeSchemaDescriptionHandler : IJsonNodeSchemaDescrip
         node.SetValueIfNotEmpty("anyOf", d.MatchAnyOf, JsonValues.ToJson);
         node.SetValueIfNotEmpty("oneOf", d.MatchOneOf, JsonValues.ToJson);
         node.SetValueIfNotNull("not", d.NotMatch);
-        node.SetValueIfNotNull("enum", d.EnumItems);
+        node.SetValueIfNotEmpty("enum", d.EnumItems);
         if (d.DefinitionsNode.Count > 0) node.SetValueIfNotNull("definitions", JsonValues.ToJson(d.DefinitionsNode));
     }
 

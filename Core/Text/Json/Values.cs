@@ -796,7 +796,7 @@ public static class JsonValues
     internal static JsonNodeSchemaDescription ConvertToObjectSchema(JsonObjectNode json)
     {
         if (json == null) return null;
-        var type = json.TryGetStringTrimmedValue("type");
+        var type = json.TryGetStringTrimmedValue("type") ?? string.Empty;
         return type switch
         {
             "object" => new JsonObjectSchemaDescription(json),
