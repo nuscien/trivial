@@ -31,13 +31,18 @@ public class SchemaUnitTest
         var arrSchema = schema.Properties["arr"] as JsonArraySchemaDescription;
         Assert.IsNotNull(arrSchema?.DefaultItems);
         Assert.AreEqual(typeof(JsonIntegerSchemaDescription), arrSchema.DefaultItems.GetType());
-        var desc = JsonOperationDescription.Create(typeof(JsonModel), "Create", new[] { typeof(JsonAttributeTestModel) });
+        var desc = JsonOperationDescription.Create(typeof(JsonModel), nameof(JsonModel.Create), new[] { typeof(JsonAttributeTestModel) });
         Assert.IsNotNull(desc);
         Assert.AreEqual("Create a new instance.", desc.Description);
         Assert.AreEqual("A test model.", desc.ArgumentSchema.Description);
-        desc = JsonOperationDescription.Create(typeof(JsonModel), "Create", new[] { typeof(string), typeof(string) });
+        desc = JsonOperationDescription.Create(typeof(JsonModel), nameof(JsonModel.Create), new[] { typeof(string), typeof(string) });
         Assert.IsNotNull(desc);
         Assert.AreEqual("Create a new instance.", desc.Description);
         Assert.AreEqual("test", desc.Tag);
+        var json = schema.ToJson();
+        schema = (JsonNodeSchemaDescription)json as JsonObjectSchemaDescription;
+        Assert.IsNotNull(schema);
+        Assert.AreEqual("Unit test.", schema.Description);
+        Assert.AreEqual(5, schema.Properties.Count);
     }
 }
