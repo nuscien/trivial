@@ -1,6 +1,8 @@
-﻿using System;
+﻿using Microsoft.SqlServer.Server;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Mime;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -147,6 +149,7 @@ public abstract class BaseJsonNodeSchemaDescription : IJsonObjectHost
 /// <summary>
 /// The base description for JSON schema node.
 /// </summary>
+[JsonConverter(typeof(JsonNodeSchemaConverter))]
 public class JsonNodeSchemaDescription : BaseJsonNodeSchemaDescription
 {
     /// <summary>
@@ -181,6 +184,15 @@ public class JsonNodeSchemaDescription : BaseJsonNodeSchemaDescription
     /// Initializes a new instance of the JsonNodeSchemaDescription class.
     /// </summary>
     /// <param name="json">The JSON object to load.</param>
+    internal JsonNodeSchemaDescription(JsonObjectNode json)
+        : this(json, false)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the JsonNodeSchemaDescription class.
+    /// </summary>
+    /// <param name="json">The JSON object to load.</param>
     /// <param name="skipExtendedProperties">true if only fill the properties without extended; otherwise, false.</param>
     protected JsonNodeSchemaDescription(JsonObjectNode json, bool skipExtendedProperties)
         : base (json, true)
@@ -190,12 +202,12 @@ public class JsonNodeSchemaDescription : BaseJsonNodeSchemaDescription
         IsDeprecated = json.TryGetBooleanValue("deprecated") ?? false;
         ReadOnly = json.TryGetBooleanValue("readOnly") ?? false;
         WriteOnly = json.TryGetBooleanValue("writeOnly") ?? false;
-        //MatchAllOf.Add("allOf");
-        //MatchAnyOf.Add("anyOf");
-        //MatchOneOf.Add("oneOf");
-        //NotMatch = ("not");
+        JsonValues.FillObjectSchema(MatchAllOf, json, "allOf");
+        JsonValues.FillObjectSchema(MatchAnyOf, json, "anyOf");
+        JsonValues.FillObjectSchema(MatchOneOf, json, "oneOf");
+        NotMatch = JsonValues.ConvertToObjectSchema(json.TryGetObjectValue("not"));
         EnumItems.AddRange(json.TryGetArrayValue("enum"));
-        //DefinitionsNode.Add("definitions");
+        JsonValues.FillObjectSchema(DefinitionsNode, json, "definitions");
         if (skipExtendedProperties) return;
         ExtendedProperties.SetRange(json);
         JsonValues.RemoveJsonNodeSchemaDescriptionExtendedProperties(ExtendedProperties, false);
@@ -258,6 +270,14 @@ public class JsonNodeSchemaDescription : BaseJsonNodeSchemaDescription
     /// </summary>
     public Dictionary<string, JsonNodeSchemaDescription> DefinitionsNode { get; } = new();
 
+    /// <summary>
+    /// Converts a JSON schema.
+    /// </summary>
+    /// <param name="value">The JSON object.</param>
+    /// <returns>The JSON schema description.</returns>
+    public static implicit operator JsonNodeSchemaDescription(JsonObjectNode value)
+        => JsonValues.ConvertToObjectSchema(value);
+
     /// <inheritdoc />
     protected override void FillProperties(JsonObjectNode node)
     {
@@ -315,6 +335,33 @@ public class JsonBooleanSchemaDescription : JsonNodeSchemaDescription
     }
 
     /// <summary>
+    /// Initializes a new instance of the JsonBooleanSchemaDescription class.
+    /// </summary>
+    /// <param name="json">The JSON object to load.</param>
+    public JsonBooleanSchemaDescription(JsonObjectNode json)
+        : this(json, false)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the JsonBooleanSchemaDescription class.
+    /// </summary>
+    /// <param name="json">The JSON object to load.</param>
+    /// <param name="skipExtendedProperties">true if only fill the properties without extended; otherwise, false.</param>
+    protected JsonBooleanSchemaDescription(JsonObjectNode json, bool skipExtendedProperties)
+        : base(json, true)
+    {
+        if (json == null) return;
+        DefaultValue = json.TryGetBooleanValue("default");
+        ConstantValue = json.TryGetBooleanValue("const");
+        if (skipExtendedProperties) return;
+        ExtendedProperties.SetRange(json);
+        JsonValues.RemoveJsonNodeSchemaDescriptionExtendedProperties(ExtendedProperties, false);
+        ExtendedProperties.Remove("default");
+        ExtendedProperties.Remove("const");
+    }
+
+    /// <summary>
     /// Gets or sets the default value.
     /// </summary>
     public bool? DefaultValue { get; set; }
@@ -341,6 +388,15 @@ public class JsonNullSchemaDescription : JsonNodeSchemaDescription
     /// Initializes a new instance of the JsonNullSchemaDescription class.
     /// </summary>
     public JsonNullSchemaDescription()
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the JsonNullSchemaDescription class.
+    /// </summary>
+    /// <param name="json">The JSON object to load.</param>
+    internal JsonNullSchemaDescription(JsonObjectNode json)
+        : base(json, false)
     {
     }
 

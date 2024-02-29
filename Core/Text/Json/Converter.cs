@@ -370,9 +370,38 @@ public sealed class JsonObjectNodeConverter : JsonConverter<IJsonValueNode>
     }
 }
 
+/// <summary>
+/// JSON object node schema description converter.
+/// </summary>
+public sealed class JsonNodeSchemaConverter : JsonConverter<JsonNodeSchemaDescription>
+{
+    /// <inheritdoc />
+    public override JsonNodeSchemaDescription Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    {
+        switch (reader.TokenType)
+        {
+            case JsonTokenType.Null:
+                return default;
+            case JsonTokenType.StartObject:
+                var json = JsonObjectNode.ParseValue(ref reader);
+                return JsonValues.ConvertToObjectSchema(json);
+            default:
+                throw new JsonException($"The token type is {reader.TokenType} but expect JSON object or null for {typeToConvert}.");
+        }
+    }
+
+    /// <inheritdoc />
+    public override void Write(Utf8JsonWriter writer, JsonNodeSchemaDescription value, JsonSerializerOptions options)
+    {
+        var json = value?.ToJson();
+        if (json is null) writer.WriteNullValue();
+        json.WriteTo(writer);
+    }
+}
+
 #if NET7_0_OR_GREATER || NET462_OR_GREATER
 /// <summary>
-/// JSON object node and JSON array node converter.
+/// JSON object node host converter.
 /// </summary>
 public sealed class JsonObjectHostConverter : JsonConverter<IJsonObjectHost>
 {

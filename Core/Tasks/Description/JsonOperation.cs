@@ -86,6 +86,7 @@ public class JsonOperationDescription : BaseObservableProperties
     /// <param name="propertyName">The property name.</param>
     /// <param name="id">The identifier.</param>
     /// <returns>A description instance; or null, if the property does not exist or is not supported.</returns>
+    /// <exception cref="ArgumentNullException">The property name should not be null.</exception>
     public static JsonOperationDescription CreateFromProperty(object obj, string propertyName, string id = null)
         => CreateFromProperty(obj, obj?.GetType()?.GetProperty(propertyName), id);
 
@@ -96,6 +97,7 @@ public class JsonOperationDescription : BaseObservableProperties
     /// <param name="prop">The property info.</param>
     /// <param name="id">The identifier.</param>
     /// <returns>A description instance; or null, if the property does not exist or is not supported.</returns>
+    /// <exception cref="ArgumentNullException">The property name should not be null.</exception>
     public static JsonOperationDescription CreateFromProperty(object obj, PropertyInfo prop, string id = null)
     {
         if (prop == null) return null;
@@ -130,8 +132,10 @@ public class JsonOperationDescription : BaseObservableProperties
     /// <param name="id">The identifier.</param>
     /// <param name="handler">The additional handler to control the creation.</param>
     /// <returns>A description instance.</returns>
+    /// <exception cref="ArgumentNullException">method should not be null.</exception>
     public static JsonOperationDescription Create(MethodInfo method, string id = null, IJsonNodeSchemaCreationHandler<Type> handler = null)
     {
+        if (method == null) throw new ArgumentNullException(nameof(method), "method was null.");
         var desc = StringExtensions.GetDescription(method);
         var info = JsonValues.CreateDescriptionByAttribute(method);
         if (info != null)

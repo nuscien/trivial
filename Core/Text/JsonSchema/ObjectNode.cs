@@ -19,6 +19,81 @@ public class JsonObjectSchemaDescription : JsonNodeSchemaDescription
     }
 
     /// <summary>
+    /// Initializes a new instance of the JsonObjectSchemaDescription class.
+    /// </summary>
+    /// <param name="json">The JSON object to load.</param>
+    public JsonObjectSchemaDescription(JsonObjectNode json)
+        : this(json, false)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the JsonObjectSchemaDescription class.
+    /// </summary>
+    /// <param name="json">The JSON object to load.</param>
+    /// <param name="skipExtendedProperties">true if only fill the properties without extended; otherwise, false.</param>
+    protected JsonObjectSchemaDescription(JsonObjectNode json, bool skipExtendedProperties)
+        : base(json, true)
+    {
+        if (json == null) return;
+        DefaultValue = json.TryGetObjectValue("default");
+        JsonValues.FillObjectSchema(Properties, json, "properties");
+        JsonValues.FillObjectSchema(PatternProperties, json, "patternProperties");
+        var strArr = json.TryGetStringListValue("required", true);
+        if (strArr != null) RequiredPropertyNames.AddRange(strArr);
+        var obj = json.TryGetObjectValue("dependentRequired");
+        if (obj != null)
+        {
+            foreach (var key in obj.Keys)
+            {
+                strArr = obj.TryGetStringListValue(key, true);
+                if (strArr != null) DependentRequiredPropertyNames[key] = strArr;
+            }
+        }
+
+        obj = json.TryGetObjectValue("dependentSchemas");
+        if (obj != null)
+        {
+            foreach (var prop in obj)
+            {
+                if (prop.Value is not JsonObjectNode item) continue;
+                DependentPropertyPolicy[prop.Key] = new JsonObjectSchemaDescription(item);
+            }
+        }
+
+        obj = json.TryGetObjectValue("propertyNames");
+        if (obj != null) PropertyNamePolicy = new JsonStringSchemaDescription(obj);
+        MinProperties = json.TryGetInt32Value("minProperties");
+        MaxProperties = json.TryGetInt32Value("maxProperties");
+        var hasAdditionalProperties = json.TryGetBooleanValue("additionalProperties");
+        if (hasAdditionalProperties.HasValue) DisableAdditionalProperties = !hasAdditionalProperties.Value;
+        else AdditionalProperties = JsonValues.ConvertToObjectSchema(json.TryGetObjectValue("additionalProperties"));
+        obj = json.TryGetObjectValue("if");
+        if (obj != null) IfPolicy = new JsonObjectSchemaDescription(obj);
+        obj = json.TryGetObjectValue("then");
+        if (obj != null) ThenPolicy = new JsonObjectSchemaDescription(obj);
+        obj = json.TryGetObjectValue("else");
+        if (obj != null) ElsePolicy = new JsonObjectSchemaDescription(obj);
+
+        if (skipExtendedProperties) return;
+        ExtendedProperties.SetRange(json);
+        JsonValues.RemoveJsonNodeSchemaDescriptionExtendedProperties(ExtendedProperties, false);
+        ExtendedProperties.Remove("default");
+        ExtendedProperties.Remove("properties");
+        ExtendedProperties.Remove("patternProperties");
+        ExtendedProperties.Remove("required");
+        ExtendedProperties.Remove("dependentRequired");
+        ExtendedProperties.Remove("dependentSchemas");
+        ExtendedProperties.Remove("propertyNames");
+        ExtendedProperties.Remove("minProperties");
+        ExtendedProperties.Remove("maxProperties");
+        ExtendedProperties.Remove("additionalProperties");
+        ExtendedProperties.Remove("if");
+        ExtendedProperties.Remove("then");
+        ExtendedProperties.Remove("else");
+    }
+
+    /// <summary>
     /// Gets or sets the default value.
     /// </summary>
     public JsonObjectNode DefaultValue { get; set; }
@@ -131,8 +206,8 @@ public class JsonObjectSchemaDescription : JsonNodeSchemaDescription
         => SetPropertyInternal(propertyName, new JsonNumberSchemaDescription
         {
             Description = description,
-            Min = min,
-            Max = max
+            Min = min ?? double.NaN,
+            Max = max ?? double.NaN
         });
 
     /// <summary>

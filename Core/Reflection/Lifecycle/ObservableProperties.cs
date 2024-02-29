@@ -44,19 +44,21 @@ public abstract class BaseObservableProperties : INotifyPropertyChanged
     private readonly Dictionary<string, object> cache = new();
 
     /// <summary>
+    /// Adds or removes the event handler raised on property changed.
+    /// </summary>
+    public event PropertyChangedEventHandler PropertyChanged;
+
+    /// <summary>
     /// Gets an enumerable collection that contains the keys in this instance.
     /// </summary>
+    [JsonIgnore]
     protected IEnumerable<string> Keys => cache.Keys;
 
     /// <summary>
     /// Gets or sets the policy used to set property value.
     /// </summary>
+    [JsonIgnore]
     protected PropertySettingPolicies PropertiesSettingPolicy { get; set; } = PropertySettingPolicies.Allow;
-
-    /// <summary>
-    /// Adds or removes the event handler raised on property changed.
-    /// </summary>
-    public event PropertyChangedEventHandler PropertyChanged;
 
     /// <summary>
     /// Determines whether this instance contains an element that has the specified key.
@@ -395,11 +397,13 @@ public class ObservableProperties : BaseObservableProperties
     /// <summary>
     /// Gets an enumerable collection that contains the keys in this instance.
     /// </summary>
+    [JsonIgnore]
     public new IEnumerable<string> Keys => base.Keys;
 
     /// <summary>
     /// Gets or sets the policy used to set property value.
     /// </summary>
+    [JsonIgnore]
     public new PropertySettingPolicies PropertiesSettingPolicy
     {
         get => base.PropertiesSettingPolicy;

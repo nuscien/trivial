@@ -793,6 +793,50 @@ public static class JsonValues
         }
     }
 
+    internal static JsonNodeSchemaDescription ConvertToObjectSchema(JsonObjectNode json)
+    {
+        if (json == null) return null;
+        var type = json.TryGetStringTrimmedValue("type");
+        return type switch
+        {
+            "object" => new JsonObjectSchemaDescription(json),
+            "string" => new JsonStringSchemaDescription(json),
+            "number" => new JsonNumberSchemaDescription(json),
+            "integer" => new JsonIntegerSchemaDescription(json),
+            "boolean" => new JsonBooleanSchemaDescription(json),
+            "array" => new JsonArraySchemaDescription(json),
+            "null" => new JsonNullSchemaDescription(json),
+            _ => new(json)
+        };
+    }
+
+    internal static IEnumerable<JsonNodeSchemaDescription> ConvertToObjectSchema(IEnumerable<JsonObjectNode> col)
+    {
+        if (col == null) yield break;
+        foreach (var item in col)
+        {
+            var desc = ConvertToObjectSchema(item);
+            if (desc != null) yield return desc;
+        }
+    }
+
+    internal static void FillObjectSchema(List<JsonNodeSchemaDescription> list, JsonObjectNode source, string propertyName)
+    {
+        var col = ConvertToObjectSchema(source?.TryGetObjectListValue(propertyName, true));
+        if (col != null) list.AddRange(col);
+    }
+
+    internal static void FillObjectSchema(Dictionary<string, JsonNodeSchemaDescription> dict, JsonObjectNode source, string propertyName)
+    {
+        var json = source?.TryGetObjectValue(propertyName);
+        if (json == null || dict == null) return;
+        foreach (var prop in json)
+        {
+            var obj = ConvertToObjectSchema(prop.Value as JsonObjectNode);
+            if (obj != null) dict[prop.Key] = obj;
+        }
+    }
+
     internal static DateTime? TryGetDateTime(JsonObjectNode json)
     {
         var jsTick = json.TryGetInt64Value("value");
@@ -931,8 +975,8 @@ public static class JsonValues
         return json;
     }
 
-    internal static double? ToDouble(int? value)
-        => value.HasValue ? value.Value : null;
+    internal static double ToDouble(int? value)
+        => value.HasValue ? value.Value : double.NaN;
 
     internal static void RemoveJsonNodeSchemaDescriptionExtendedProperties(JsonObjectNode json, bool onlyBase)
     {
@@ -941,6 +985,6 @@ public static class JsonValues
         json.Schema = null;
         json.Remove(new[] { "$ref", "description", "examples" });
         if (onlyBase) return;
-        json.Remove(new[] { "title", "deprecated", "readOnly", "writeOnly", "allOf", "anyOf", "oneOf", "not", "enum", "definitions" });
+        json.Remove(new[] { "type", "title", "deprecated", "readOnly", "writeOnly", "allOf", "anyOf", "oneOf", "not", "enum", "definitions" });
     }
 }

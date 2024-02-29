@@ -22,6 +22,57 @@ public class JsonArraySchemaDescription : JsonNodeSchemaDescription
     }
 
     /// <summary>
+    /// Initializes a new instance of the JsonArraySchemaDescription class.
+    /// </summary>
+    /// <param name="json">The JSON object to load.</param>
+    public JsonArraySchemaDescription(JsonObjectNode json)
+        : this(json, false)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the JsonArraySchemaDescription class.
+    /// </summary>
+    /// <param name="json">The JSON object to load.</param>
+    /// <param name="skipExtendedProperties">true if only fill the properties without extended; otherwise, false.</param>
+    protected JsonArraySchemaDescription(JsonObjectNode json, bool skipExtendedProperties)
+        : base(json, true)
+    {
+        if (json == null) return;
+        DefaultValue = json.TryGetArrayValue("default");
+        MinLength = json.TryGetInt32Value("minItems");
+        MaxLength = json.TryGetInt32Value("maxItems");
+        var enableAdditionalItems = json.TryGetBooleanValue("additionalItems");
+        if (enableAdditionalItems.HasValue)
+        {
+            DisableAdditionalItems = !enableAdditionalItems.Value;
+            DefaultItems = JsonValues.ConvertToObjectSchema(json.TryGetObjectValue("items"));
+        }
+        else if (json.IsValueKind("items", System.Text.Json.JsonValueKind.Array))
+        {
+            JsonValues.FillObjectSchema(FixedItems, json, "items");
+            DefaultItems = JsonValues.ConvertToObjectSchema(json.TryGetObjectValue("additionalItems"));
+        }
+        else
+        {
+            DefaultItems = JsonValues.ConvertToObjectSchema(json.TryGetObjectValue("items"));
+        }
+
+        ContainItem = JsonValues.ConvertToObjectSchema(json.TryGetObjectValue("contains"));
+        UniqueItems = json.TryGetBooleanValue("uniqueItems") ?? false;
+        if (skipExtendedProperties) return;
+        ExtendedProperties.SetRange(json);
+        JsonValues.RemoveJsonNodeSchemaDescriptionExtendedProperties(ExtendedProperties, false);
+        ExtendedProperties.Remove("default");
+        ExtendedProperties.Remove("minItems");
+        ExtendedProperties.Remove("maxItems");
+        ExtendedProperties.Remove("items");
+        ExtendedProperties.Remove("additionalItems");
+        ExtendedProperties.Remove("contains");
+        ExtendedProperties.Remove("uniqueItems");
+    }
+
+    /// <summary>
     /// Gets or sets the default value.
     /// </summary>
     public JsonArrayNode DefaultValue { get; set; }
