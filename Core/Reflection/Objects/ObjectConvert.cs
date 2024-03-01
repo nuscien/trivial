@@ -523,6 +523,9 @@ public static class ObjectConvert
         catch (InvalidOperationException)
         {
         }
+        catch (NotSupportedException)
+        {
+        }
         catch (NullReferenceException)
         {
         }
@@ -571,6 +574,9 @@ public static class ObjectConvert
         {
         }
         catch (InvalidOperationException)
+        {
+        }
+        catch (NotSupportedException)
         {
         }
         catch (NullReferenceException)

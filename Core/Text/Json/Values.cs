@@ -5,10 +5,13 @@ using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.InteropServices;
+using System.Security;
 using System.Security.Cryptography;
 using System.Text.Json.Serialization;
 using System.Text;
 using System.Text.Json;
+using System.Threading.Tasks;
 
 using Trivial.Collection;
 using Trivial.Data;
@@ -20,8 +23,6 @@ using SystemJsonObject = System.Text.Json.Nodes.JsonObject;
 using SystemJsonArray = System.Text.Json.Nodes.JsonArray;
 using SystemJsonValue = System.Text.Json.Nodes.JsonValue;
 using SystemJsonNode = System.Text.Json.Nodes.JsonNode;
-using System.Threading.Tasks;
-using System.Security;
 
 namespace Trivial.Text;
 
@@ -473,7 +474,7 @@ public static class JsonValues
     /// <param name="handler">The additional handler to control the creation.</param>
     /// <returns>The JSON schema description instance; or null, if not supported.</returns>
     public static JsonNodeSchemaDescription CreateSchema(JsonObjectNode json, string desc = null, IJsonNodeSchemaCreationHandler<IJsonDataNode> handler = null)
-        => CreateSchema(json, 2, desc, handler);
+        => CreateSchema(json, 10, desc, handler);
 
     /// <summary>
     /// Creates a JSON schema of a type.
@@ -483,7 +484,7 @@ public static class JsonValues
     /// <param name="handler">The additional handler to control the creation.</param>
     /// <returns>The JSON schema description instance; or null, if not supported.</returns>
     public static JsonNodeSchemaDescription CreateSchema<T>(string desc = null, IJsonNodeSchemaCreationHandler<Type> handler = null)
-        => CreateSchema(typeof(T), 2, desc, handler);
+        => CreateSchema(typeof(T), 10, desc, handler);
 
     /// <summary>
     /// Creates a JSON schema of a type.
@@ -493,7 +494,7 @@ public static class JsonValues
     /// <param name="handler">The additional handler to control the creation.</param>
     /// <returns>The JSON schema description instance; or null, if not supported.</returns>
     public static JsonNodeSchemaDescription CreateSchema(Type type, string desc = null, IJsonNodeSchemaCreationHandler<Type> handler = null)
-        => CreateSchema(type, 2, desc, handler);
+        => CreateSchema(type, 10, desc, handler);
 
     internal static JsonOperationDescription CreateDescriptionByAttribute(MemberInfo member)
     {
@@ -691,7 +692,7 @@ public static class JsonValues
         try
         {
             var jsonSerializer = type.GetCustomAttributes<JsonConverterAttribute>()?.FirstOrDefault();
-            if (jsonSerializer != null) return handler.Convert(type, jsonSchema, breadcrumb);
+            if (jsonSerializer?.ConverterType != null) return handler.Convert(type, CreateSchema(jsonSerializer, type, jsonSchema) ?? jsonSchema, breadcrumb);
         }
         catch (NotSupportedException)
         {
@@ -706,6 +707,28 @@ public static class JsonValues
             var name = GetPropertyName(prop);
             if (string.IsNullOrEmpty(name)) continue;
             desc = StringExtensions.GetDescription(prop);
+            try
+            {
+                var jsonSerializer = prop.GetCustomAttributes<JsonConverterAttribute>()?.FirstOrDefault();
+                var converter = GetSchemaCreationHandler(jsonSerializer);
+                if (converter != null)
+                {
+                    var propJsonSchema = new JsonObjectSchemaDescription
+                    {
+                        Description = desc
+                    };
+                    var propDesc = converter.Convert(type, propJsonSchema, new(type, null));
+                    if (propDesc != null) jsonSchema.Properties[name] = handler.Convert(type, propDesc, breadcrumb);
+                    continue;
+                }
+            }
+            catch (NotSupportedException)
+            {
+            }
+            catch (TypeLoadException)
+            {
+            }
+
             var propSchema = CreateSchema(prop.PropertyType, level, desc, handler, new(prop.PropertyType, breadcrumb, name));
             if (propSchema != null) jsonSchema.Properties[name] = propSchema;
         }
@@ -986,5 +1009,52 @@ public static class JsonValues
         json.Remove(new[] { "$ref", "description", "examples" });
         if (onlyBase) return;
         json.Remove(new[] { "type", "title", "deprecated", "readOnly", "writeOnly", "allOf", "anyOf", "oneOf", "not", "enum", "definitions" });
+    }
+
+    private static JsonNodeSchemaDescription CreateSchema(JsonConverterAttribute jsonSerializer, Type type, JsonObjectSchemaDescription jsonSchema)
+    {
+        var converter = GetSchemaCreationHandler(jsonSerializer);
+        return converter == null ? jsonSchema : converter.Convert(type, jsonSchema, new(type, null));
+    }
+
+    private static IJsonNodeSchemaCreationHandler<Type> GetSchemaCreationHandler(JsonConverterAttribute jsonSerializer)
+    {
+        if (jsonSerializer?.ConverterType == null || !typeof(IJsonNodeSchemaCreationHandler<Type>).IsAssignableFrom(jsonSerializer.ConverterType)) return null;
+        try
+        {
+            return Activator.CreateInstance(jsonSerializer.ConverterType) as IJsonNodeSchemaCreationHandler<Type>;
+        }
+        catch (ArgumentException)
+        {
+        }
+        catch (AmbiguousMatchException)
+        {
+        }
+        catch (TargetException)
+        {
+        }
+        catch (TargetInvocationException)
+        {
+        }
+        catch (TargetParameterCountException)
+        {
+        }
+        catch (MemberAccessException)
+        {
+        }
+        catch (InvalidOperationException)
+        {
+        }
+        catch (NotSupportedException)
+        {
+        }
+        catch (NullReferenceException)
+        {
+        }
+        catch (ExternalException)
+        {
+        }
+
+        return null;
     }
 }

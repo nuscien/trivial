@@ -9,6 +9,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Runtime;
 using System.Runtime.Serialization;
@@ -44,18 +45,21 @@ public class MessageResult
 
     /// <summary>
     /// Gets or sets the message.
+    /// It could be an error message, a status description or a notice text. This can be null if no more such information.
     /// </summary>
     [DataMember(Name = "message", EmitDefaultValue = false)]
     [JsonPropertyName("message")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    [Description("The additional message for this operation. It could be an error message, a status description or a notice text. This can be null if no more such information.")]
     public string Message { get; set; }
 
     /// <summary>
-    /// Gets or sets the tracking identifier.
+    /// Gets or sets the tracking identifier which is used to mark a transaction of operation process..
     /// </summary>
     [DataMember(Name = "track", EmitDefaultValue = false)]
     [JsonPropertyName("track")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    [Description("A tracking ID to mark the transaction of operation process.")]
     public string TrackingId { get; set; }
 }
 
@@ -93,10 +97,11 @@ public class DataResult<T> : MessageResult
     }
 
     /// <summary>
-    /// Gets or sets the data.
+    /// Gets or sets the data content.
     /// </summary>
     [DataMember(Name = "data")]
     [JsonPropertyName("data")]
+    [Description("The data content of the result.")]
     public T Data { get; set; }
 
     /// <summary>
@@ -153,6 +158,7 @@ public class DataResult<TData, TInfo> : DataResult<TData>
     /// </summary>
     [DataMember(Name = "info")]
     [JsonPropertyName("info")]
+    [Description("The additional information of the result.")]
     public TInfo AdditionalInfo { get; set; }
 }
 
@@ -195,6 +201,7 @@ public class JsonDataResult : MessageResult
     [DataMember(Name = "data")]
     [JsonPropertyName("data")]
     [JsonConverter(typeof(JsonObjectNodeConverter))]
+    [Description("The data content of the result.")]
     public JsonObjectNode Data { get; set; }
 
     /// <summary>
@@ -203,6 +210,7 @@ public class JsonDataResult : MessageResult
     [DataMember(Name = "info")]
     [JsonPropertyName("info")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    [Description("The additional information of the result.")]
     public JsonObjectNode AdditionalInfo { get; set; }
 
     /// <summary>
@@ -359,7 +367,8 @@ public class CollectionResult<T> : MessageResult
     [DataMember(Name = "offset", EmitDefaultValue = false)]
     [JsonPropertyName("offset")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
-   public int? Offset { get; set; }
+    [Description("The record offset of the result collection.")]
+    public int? Offset { get; set; }
 
     /// <summary>
     /// Gets or sets the total count.
@@ -367,6 +376,7 @@ public class CollectionResult<T> : MessageResult
     [DataMember(Name = "count", EmitDefaultValue = false)]
     [JsonPropertyName("count")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+    [Description("The count of the result collection.")]
     public int? TotalCount { get; set; }
 
     /// <summary>
@@ -380,6 +390,7 @@ public class CollectionResult<T> : MessageResult
     /// </summary>
     [DataMember(Name = "col")]
     [JsonPropertyName("col")]
+    [Description("The data collection of the result.")]
     public IEnumerable<T> Value { get; set; }
 
     /// <summary>
@@ -388,6 +399,7 @@ public class CollectionResult<T> : MessageResult
     [DataMember(Name = "info")]
     [JsonPropertyName("info")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    [Description("The addition information of the result.")]
     public JsonObjectNode AdditionalInfo { get; set; }
 
     /// <summary>
@@ -591,6 +603,7 @@ public class ErrorMessageResult : MessageResult
     [DataMember(Name = TokenInfo.ErrorCodeProperty, EmitDefaultValue = false)]
     [JsonPropertyName(TokenInfo.ErrorCodeProperty)]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    [Description("The error code.")]
     public string ErrorCode { get; set; }
 
     /// <summary>
@@ -599,6 +612,7 @@ public class ErrorMessageResult : MessageResult
     [DataMember(Name = "details", EmitDefaultValue = false)]
     [JsonPropertyName("details")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    [Description("The error details.")]
     public List<string> Details { get; set; }
 
     /// <summary>
@@ -607,5 +621,6 @@ public class ErrorMessageResult : MessageResult
     [DataMember(Name = "info")]
     [JsonPropertyName("info")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    [Description("The additional information of the result.")]
     public JsonObjectNode AdditionalInfo { get; set; }
 }
