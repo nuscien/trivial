@@ -9,6 +9,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 
 using Trivial.Maths;
+using Trivial.Reflection;
 using Trivial.Web;
 
 namespace Trivial.Text;
@@ -16,7 +17,7 @@ namespace Trivial.Text;
 /// <summary>
 /// Json number converter with number string fallback.
 /// </summary>
-public sealed class JsonNumberConverter : JsonConverterFactory
+public sealed class JsonNumberConverter : JsonConverterFactory, IJsonNodeSchemaCreationHandler<Type>
 {
     delegate bool TryParseNumberHandler<T>(string s, int radix, out T number);
 
@@ -1378,9 +1379,10 @@ public sealed class JsonNumberConverter : JsonConverterFactory
 
     /// <inheritdoc />
     public override bool CanConvert(Type typeToConvert)
-    {
-        return CanConvertType(typeToConvert);
-    }
+        => CanConvertType(typeToConvert);
+
+    JsonNodeSchemaDescription IJsonNodeSchemaCreationHandler<Type>.Convert(Type type, JsonNodeSchemaDescription result, NodePathBreadcrumb<Type> breadcrumb)
+        => result is JsonNumberSchemaDescription desc ? desc : new JsonNumberSchemaDescription();
 
     /// <summary>
     /// Tests if the specific type can convert.

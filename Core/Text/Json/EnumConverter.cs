@@ -5,13 +5,15 @@ using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
+using Trivial.Reflection;
+using Trivial.Tasks;
 
 namespace Trivial.Text;
 
 /// <summary>
 /// The JSON converter for enum. The output will be an integer value.
 /// </summary>
-public class JsonIntegerEnumCompatibleConverter : JsonConverterFactory
+public class JsonIntegerEnumCompatibleConverter : JsonConverterFactory, IJsonNodeSchemaCreationHandler<Type>
 {
     /// <inheritdoc />
     public override bool CanConvert(Type typeToConvert)
@@ -43,12 +45,15 @@ public class JsonIntegerEnumCompatibleConverter : JsonConverterFactory
 
         throw new JsonException("Only integer enum supported.");
     }
+
+    JsonNodeSchemaDescription IJsonNodeSchemaCreationHandler<Type>.Convert(Type type, JsonNodeSchemaDescription result, NodePathBreadcrumb<Type> breadcrumb)
+        => result is JsonIntegerSchemaDescription desc ? desc : new JsonIntegerSchemaDescription();
 }
 
 /// <summary>
 /// The JSON converter for enum. The output will be an integer value.
 /// </summary>
-public class JsonIntegerEnumCompatibleConverter<T> : JsonConverter<T>
+public class JsonIntegerEnumCompatibleConverter<T> : JsonConverter<T>, IJsonNodeSchemaCreationHandler<Type>
     where T : struct, Enum
 {
     /// <inheritdoc />
@@ -98,12 +103,15 @@ public class JsonIntegerEnumCompatibleConverter<T> : JsonConverter<T>
                 throw new JsonException("Expect an integer or a string.");
         }
     }
+
+    JsonNodeSchemaDescription IJsonNodeSchemaCreationHandler<Type>.Convert(Type type, JsonNodeSchemaDescription result, NodePathBreadcrumb<Type> breadcrumb)
+        => result is JsonIntegerSchemaDescription desc ? desc : new JsonIntegerSchemaDescription();
 }
 
 /// <summary>
 /// The JSON converter for enum. The output will be a string value.
 /// </summary>
-public class JsonStringEnumCompatibleConverter : JsonConverterFactory
+public class JsonStringEnumCompatibleConverter : JsonConverterFactory, IJsonNodeSchemaCreationHandler<Type>
 {
     /// <inheritdoc />
     public override bool CanConvert(Type typeToConvert)
@@ -112,12 +120,15 @@ public class JsonStringEnumCompatibleConverter : JsonConverterFactory
     /// <inheritdoc />
     public override JsonConverter CreateConverter(Type typeToConvert, JsonSerializerOptions options)
         => JsonIntegerEnumCompatibleConverter.CreateConverter(typeof(JsonStringEnumCompatibleConverter<>), typeToConvert, options);
+
+    JsonNodeSchemaDescription IJsonNodeSchemaCreationHandler<Type>.Convert(Type type, JsonNodeSchemaDescription result, NodePathBreadcrumb<Type> breadcrumb)
+        => result is JsonStringSchemaDescription desc ? desc : new JsonStringSchemaDescription();
 }
 
 /// <summary>
 /// The JSON converter for enum. The output will be a string value.
 /// </summary>
-public class JsonStringEnumCompatibleConverter<T> : JsonConverter<T>
+public class JsonStringEnumCompatibleConverter<T> : JsonConverter<T>, IJsonNodeSchemaCreationHandler<Type>
     where T : struct, Enum
 {
     /// <inheritdoc />
@@ -127,4 +138,7 @@ public class JsonStringEnumCompatibleConverter<T> : JsonConverter<T>
     /// <inheritdoc />
     public override void Write(Utf8JsonWriter writer, T value, JsonSerializerOptions options)
         => writer.WriteStringValue(value.ToString());
+
+    JsonNodeSchemaDescription IJsonNodeSchemaCreationHandler<Type>.Convert(Type type, JsonNodeSchemaDescription result, NodePathBreadcrumb<Type> breadcrumb)
+        => result is JsonStringSchemaDescription desc ? desc : new JsonStringSchemaDescription();
 }

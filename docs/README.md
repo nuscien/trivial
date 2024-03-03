@@ -10,7 +10,7 @@ Trivial libraries contain a lot of utilities, models and components, which are t
 
 [![NuGet package](https://img.shields.io/nuget/dt/Trivial?label=nuget+downloads)](https://www.nuget.org/packages/Trivial)
 
-![.NET 7](./assets/badge_NET_7.svg)
+![.NET 8](./assets/badge_NET_8.svg)
 ![.NET 6](./assets/badge_NET_6.svg)
 ![.NET Framework 4.8](./assets/badge_NET_Fx_4_8.svg)
 ![.NET Framework 4.6.1](./assets/badge_NET_Fx_4_6_1.svg)
@@ -33,7 +33,7 @@ This library includes utilities and services for tasks, security, JSON, etc.
 
 [![NuGet package](https://img.shields.io/nuget/dt/Trivial.Chemistry?label=nuget+downloads)](https://www.nuget.org/packages/Trivial.Chemistry)
 
-![.NET 7](./assets/badge_NET_7.svg)
+![.NET 8](./assets/badge_NET_8.svg)
 ![.NET 6](./assets/badge_NET_6.svg)
 ![.NET Framework 4.8](./assets/badge_NET_Fx_4_8.svg)
 ![.NET Framework 4.6.1](./assets/badge_NET_Fx_4_6_1.svg)
@@ -42,17 +42,18 @@ Including the periodic table and basic chemistry models, e.g. chemical element, 
 
 - [Chemistry](./chemistry)
 
-### Trivial.Mime
-
-The MIME constants and its mapping of file extension part.
-Also provide Code-128 and EAN parser supports.
+### Trivial.Messages
 
 [![NuGet package](https://img.shields.io/nuget/dt/Trivial.Mime?label=nuget+downloads)](https://www.nuget.org/packages/Trivial.Mime)
 
-![.NET 7](./assets/badge_NET_7.svg)
+![.NET 8](./assets/badge_NET_8.svg)
 ![.NET 6](./assets/badge_NET_6.svg)
 ![.NET Framework 4.8](./assets/badge_NET_Fx_4_8.svg)
 ![.NET Framework 4.6.1](./assets/badge_NET_Fx_4_6_1.svg)
+
+Chat message and accessories.
+The MIME constants and its mapping of file extension part.
+Also provide Code-128 and EAN parser supports.
 
 - [MIME constants](./web/mime)
 - [EAN](./data/ean)
@@ -62,7 +63,7 @@ Also provide Code-128 and EAN parser supports.
 
 [![NuGet package](https://img.shields.io/nuget/dt/Trivial.Web?label=nuget+downloads)](https://www.nuget.org/packages/Trivial.Web)
 
-![.NET 7](./assets/badge_NET_7.svg)
+![.NET 8](./assets/badge_NET_8.svg)
 ![.NET 6](./assets/badge_NET_6.svg)
 
 The useful utilities for ASP.NET application.
@@ -73,7 +74,7 @@ The useful utilities for ASP.NET application.
 
 [![NuGet package](https://img.shields.io/nuget/dt/Trivial.Console?label=nuget+downloads)](https://www.nuget.org/packages/Trivial.Console)
 
-![.NET 7](./assets/badge_NET_7.svg)
+![.NET 8](./assets/badge_NET_8.svg)
 ![.NET 6](./assets/badge_NET_6.svg)
 ![.NET Framework 4.8](./assets/badge_NET_Fx_4_8.svg)
 ![.NET Framework 4.6.1](./assets/badge_NET_Fx_4_6_1.svg)

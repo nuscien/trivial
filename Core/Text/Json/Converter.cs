@@ -8,12 +8,14 @@ using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
+using Trivial.Reflection;
+
 namespace Trivial.Text;
 
 /// <summary>
 /// JSON string collection and json array converter.
 /// </summary>
-public class JsonStringListConverter : JsonConverter<IEnumerable<string>>
+public class JsonStringListConverter : JsonConverter<IEnumerable<string>>, IJsonNodeSchemaCreationHandler<Type>
 {
     private readonly char[] chars;
     private readonly bool trim;
@@ -192,6 +194,12 @@ public class JsonStringListConverter : JsonConverter<IEnumerable<string>>
 
         writer.WriteEndArray();
     }
+
+    JsonNodeSchemaDescription IJsonNodeSchemaCreationHandler<Type>.Convert(Type type, JsonNodeSchemaDescription result, NodePathBreadcrumb<Type> breadcrumb)
+        => result is JsonArraySchemaDescription desc ? desc : new JsonArraySchemaDescription
+        {
+            DefaultItems = new JsonStringSchemaDescription()
+        };
 
     private static IEnumerable<string> ToList(List<string> col, Type typeToConvert)
     {
