@@ -580,27 +580,6 @@ public static class JsonValues
             CreateEnumSchema(type, d);
             return handler.Convert(type, d, breadcrumb);
         }
-        else if (ObjectConvert.IsGenericEnumerable(type))
-        {
-            var d = new JsonArraySchemaDescription
-            {
-                Description = desc,
-                Tag = guid,
-            };
-            if (level < 0) return handler.Convert(type, d, breadcrumb);
-            if (type.IsGenericType)
-            {
-                var genericType = type.GetGenericTypeDefinition();
-                if (genericType == typeof(List<>) || genericType == typeof(IEnumerable<>) || genericType == typeof(ICollection<>) || genericType == typeof(IList<>))
-                {
-                    var genericParamType = type.GetGenericArguments().FirstOrDefault();
-                    if (genericParamType == null) return handler.Convert(type, d, breadcrumb);
-                    d.DefaultItems = CreateSchema(genericParamType, level, null, handler);
-                }
-            }
-
-            return handler.Convert(type, d, breadcrumb);
-        }
         else if (type.IsValueType)
         {
             if (type == typeof(int) || type == typeof(long) || type == typeof(uint) || type == typeof(short) || type == typeof(byte))
@@ -691,6 +670,44 @@ public static class JsonValues
                 Format = "uri-reference",
                 Tag = guid,
             }, breadcrumb);
+        }
+        else if (ObjectConvert.IsGenericEnumerable(type, out var genericParamType))
+        {
+            var d = new JsonArraySchemaDescription
+            {
+                Description = desc,
+                Tag = guid,
+            };
+            if (level < 0) return handler.Convert(type, d, breadcrumb);
+            try
+            {
+                var jsonSerializer = type.GetCustomAttributes<JsonConverterAttribute>()?.FirstOrDefault();
+                if (jsonSerializer?.ConverterType != null)
+                {
+                    var jsonSchema2 = new JsonObjectSchemaDescription
+                    {
+                        Description = desc,
+                        Tag = guid,
+                    };
+                    return handler.Convert(type, CreateSchema(jsonSerializer, type, jsonSchema2) ?? jsonSchema2, breadcrumb);
+                }
+            }
+            catch (NotSupportedException)
+            {
+            }
+            catch (TypeLoadException)
+            {
+            }
+
+            if (genericParamType == null) return handler.Convert(type, d, breadcrumb);
+            var itemSchema = CreateSchema(genericParamType, level, null, handler);
+            if (itemSchema != null)
+            {
+                itemSchema.Description ??= "The item of the list.";
+                d.DefaultItems = itemSchema;
+            }
+
+            return handler.Convert(type, d, breadcrumb);
         }
 
         var jsonSchema = new JsonObjectSchemaDescription

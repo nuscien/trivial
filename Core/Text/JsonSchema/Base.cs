@@ -22,6 +22,7 @@ public abstract class BaseJsonNodeSchemaDescription : IJsonObjectHost
     /// </summary>
     public BaseJsonNodeSchemaDescription()
     {
+        handler = InternalEmptyJsonNodeSchemaDescriptionHandler.Instance;
     }
 
     /// <summary>
@@ -37,8 +38,10 @@ public abstract class BaseJsonNodeSchemaDescription : IJsonObjectHost
     /// Initializes a new instance of the BaseJsonNodeSchemaDescription class.
     /// </summary>
     /// <param name="copy">The schema to copy.</param>
-    public BaseJsonNodeSchemaDescription(BaseJsonNodeSchemaDescription copy)
+    /// <param name="handler">The handler to monitor the JSON schema convertion.</param>
+    public BaseJsonNodeSchemaDescription(BaseJsonNodeSchemaDescription copy, IJsonNodeSchemaDescriptionHandler handler = null)
     {
+        this.handler = handler ?? InternalEmptyJsonNodeSchemaDescriptionHandler.Instance;
         if (copy == null) return;
         Id = copy.Id;
         Schema = copy.Schema;
@@ -53,8 +56,10 @@ public abstract class BaseJsonNodeSchemaDescription : IJsonObjectHost
     /// </summary>
     /// <param name="json">The JSON object to load.</param>
     /// <param name="skipExtendedProperties">true if only fill the properties without extended; otherwise, false.</param>
-    protected BaseJsonNodeSchemaDescription(JsonObjectNode json, bool skipExtendedProperties)
+    /// <param name="handler">The handler to monitor the JSON schema convertion.</param>
+    protected BaseJsonNodeSchemaDescription(JsonObjectNode json, bool skipExtendedProperties, IJsonNodeSchemaDescriptionHandler handler = null)
     {
+        this.handler = handler ?? InternalEmptyJsonNodeSchemaDescriptionHandler.Instance;
         if (json == null) return;
         Id = json.Id;
         Schema = json.Schema;

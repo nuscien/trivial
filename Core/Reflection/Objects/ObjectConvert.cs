@@ -363,9 +363,42 @@ public static class ObjectConvert
     /// Tests if the given type is from a generic enumerable interface.
     /// </summary>
     /// <param name="type">The type to test.</param>
+    /// <param name="genericType">The generic type.</param>
+    /// <returns>true if the type is from a generic enumerable interface.</returns>
+    public static bool IsGenericEnumerable(Type type, out Type genericType)
+    {
+        try
+        {
+            var generic = type?.IsGenericType == true ? type.GetGenericTypeDefinition() : null;
+            if (generic == null)
+            {
+                genericType = default;
+                return false;
+            }
+
+            genericType = type.GetGenericArguments().FirstOrDefault();
+            if (genericType == null) return false;
+            var baseType = typeof(IEnumerable<>).MakeGenericType(new[] { genericType });
+            return baseType.IsAssignableFrom(type);
+        }
+        catch (InvalidOperationException)
+        {
+        }
+        catch (NotSupportedException)
+        {
+        }
+
+        genericType = default;
+        return false;
+    }
+
+    /// <summary>
+    /// Tests if the given type is from a generic enumerable interface.
+    /// </summary>
+    /// <param name="type">The type to test.</param>
     /// <returns>true if the type is from a generic enumerable interface.</returns>
     public static bool IsGenericEnumerable(Type type)
-        => typeof(IEnumerable<>).IsAssignableFrom(type) || (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(IEnumerable<>));
+        => IsGenericEnumerable(type, out _);
 
     /// <summary>
     /// Tests if the given type is a nullable value type.
