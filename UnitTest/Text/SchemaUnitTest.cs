@@ -23,6 +23,7 @@ public class SchemaUnitTest
     {
         var schema = JsonValues.CreateSchema<JsonModel>("Unit test.") as JsonObjectSchemaDescription;
         Assert.IsNotNull(schema);
+        Assert.AreEqual(Guid.Parse("DD4F9F4E-D127-424A-B04A-696C5071EC7D"), schema.Tag);
         Assert.AreEqual("Unit test.", schema.Description);
         Assert.AreEqual(5, schema.Properties.Count);
         Assert.AreEqual("Property A.", schema.Properties["str-a"].Description);

@@ -540,6 +540,7 @@ public static class JsonValues
         breadcrumb ??= new(type, null);
         level--;
         if (string.IsNullOrWhiteSpace(desc)) desc = StringExtensions.GetDescription(type);
+        var guid = ObjectConvert.GetGuid(type);
         if (ObjectConvert.IsNullableValueType(type, out var valueType)) type = valueType;
         if (type == typeof(object))
         {
@@ -550,6 +551,7 @@ public static class JsonValues
             return handler.Convert(type, new JsonStringSchemaDescription
             {
                 Description = desc,
+                Tag = guid,
             }, breadcrumb);
         }
         else if (type == typeof(JsonObjectNode) || type == typeof(System.Text.Json.Nodes.JsonObject))
@@ -557,6 +559,7 @@ public static class JsonValues
             return handler.Convert(type, new JsonObjectSchemaDescription
             {
                 Description = desc,
+                Tag = guid,
             }, breadcrumb);
         }
         else if (type == typeof(JsonArrayNode) || type == typeof(System.Text.Json.Nodes.JsonArray))
@@ -564,29 +567,25 @@ public static class JsonValues
             return handler.Convert(type, new JsonArraySchemaDescription
             {
                 Description = desc,
+                Tag = guid,
             }, breadcrumb);
         }
         else if (type.IsEnum)
         {
             var d = new JsonStringSchemaDescription
             {
-                Description = desc
+                Description = desc,
+                Tag = guid,
             };
-            try
-            {
-                d.EnumItems.AddRange(Enum.GetNames(type));
-            }
-            catch (InvalidOperationException)
-            {
-            }
-
+            CreateEnumSchema(type, d);
             return handler.Convert(type, d, breadcrumb);
         }
         else if (ObjectConvert.IsGenericEnumerable(type))
         {
             var d = new JsonArraySchemaDescription
             {
-                Description = desc
+                Description = desc,
+                Tag = guid,
             };
             if (level < 0) return handler.Convert(type, d, breadcrumb);
             if (type.IsGenericType)
@@ -608,28 +607,32 @@ public static class JsonValues
             {
                 return handler.Convert(type, new JsonIntegerSchemaDescription
                 {
-                    Description = desc
+                    Description = desc,
+                    Tag = guid,
                 }, breadcrumb);
             }
             else if (type == typeof(float) || type == typeof(double) || type == typeof(decimal))
             {
                 return handler.Convert(type, new JsonNumberSchemaDescription
                 {
-                    Description = desc
+                    Description = desc,
+                    Tag = guid,
                 }, breadcrumb);
             }
             else if (type == typeof(bool))
             {
                 return handler.Convert(type, new JsonBooleanSchemaDescription
                 {
-                    Description = desc
+                    Description = desc,
+                    Tag = guid,
                 }, breadcrumb);
             }
             else if (type == typeof(Guid))
             {
                 return handler.Convert(type, new JsonStringSchemaDescription
                 {
-                    Description = desc
+                    Description = desc,
+                    Tag = guid,
                 }, breadcrumb);
             }
             else if (type == typeof(DateTime))
@@ -637,7 +640,8 @@ public static class JsonValues
                 return handler.Convert(type, new JsonStringSchemaDescription
                 {
                     Description = desc,
-                    Format = "date-time"
+                    Format = "date-time",
+                    Tag = guid,
                 }, breadcrumb);
             }
 #if NET6_0_OR_GREATER
@@ -645,7 +649,8 @@ public static class JsonValues
             {
                 return handler.Convert(type, new JsonNumberSchemaDescription
                 {
-                    Description = desc
+                    Description = desc,
+                    Tag = guid,
                 }, breadcrumb);
             }
             else if (type == typeof(DateOnly))
@@ -653,7 +658,8 @@ public static class JsonValues
                 return handler.Convert(type, new JsonStringSchemaDescription
                 {
                     Description = desc,
-                    Format = "date"
+                    Format = "date",
+                    Tag = guid,
                 }, breadcrumb);
             }
             else if (type == typeof(TimeOnly))
@@ -661,7 +667,8 @@ public static class JsonValues
                 return handler.Convert(type, new JsonStringSchemaDescription
                 {
                     Description = desc,
-                    Format = "time"
+                    Format = "time",
+                    Tag = guid,
                 }, breadcrumb);
             }
 #endif
@@ -673,6 +680,7 @@ public static class JsonValues
             return handler.Convert(type, new JsonStringSchemaDescription
             {
                 Description = desc,
+                Tag = guid,
             }, breadcrumb);
         }
         else if (type == typeof(Uri))
@@ -680,13 +688,15 @@ public static class JsonValues
             return handler.Convert(type, new JsonStringSchemaDescription
             {
                 Description = desc,
-                Format = "uri-reference"
+                Format = "uri-reference",
+                Tag = guid,
             }, breadcrumb);
         }
 
         var jsonSchema = new JsonObjectSchemaDescription
         {
-            Description = desc
+            Description = desc,
+            Tag = guid,
         };
         if (level < 0 || type.IsInterface) return handler.Convert(type, jsonSchema, breadcrumb);
         try
@@ -715,10 +725,11 @@ public static class JsonValues
                 {
                     var propJsonSchema = new JsonObjectSchemaDescription
                     {
-                        Description = desc
+                        Description = desc,
+                        Tag = guid,
                     };
-                    var propDesc = converter.Convert(type, propJsonSchema, new(type, null));
-                    if (propDesc != null) jsonSchema.Properties[name] = handler.Convert(type, propDesc, breadcrumb);
+                    var propDesc = converter.Convert(prop.PropertyType, propJsonSchema, new(type, null));
+                    if (propDesc != null) jsonSchema.Properties[name] = handler.Convert(prop.PropertyType, propDesc, breadcrumb);
                     continue;
                 }
             }
@@ -747,11 +758,13 @@ public static class JsonValues
     /// <returns>The JSON schema description instance; or null, if not supported.</returns>
     private static JsonObjectSchemaDescription CreateSchema(JsonObjectNode json, int level, string desc = null, IJsonNodeSchemaCreationHandler<IJsonDataNode> handler = null, NodePathBreadcrumb<IJsonDataNode> breadcrumb = null)
     {
+        if (json is null) return null;
         handler ??= EmptyJsonNodeSchemaCreationHandler<IJsonDataNode>.Instance;
         breadcrumb ??= new(json, null);
         var schema = new JsonObjectSchemaDescription
         {
-            Description = desc
+            Description = desc,
+            Tag = StringExtensions.TryCreateUri(json.Schema)
         };
         level--;
         foreach (var prop in json)
@@ -1000,6 +1013,25 @@ public static class JsonValues
 
     internal static double ToDouble(int? value)
         => value.HasValue ? value.Value : double.NaN;
+
+    internal static JsonNodeSchemaDescription CreateEnumSchema(Type type, JsonNodeSchemaDescription result = null)
+    {
+        if (result is not JsonStringSchemaDescription desc) desc = new JsonStringSchemaDescription();
+        try
+        {
+            desc.EnumItems.Clear();
+            desc.EnumItems.AddRange(Enum.GetNames(type));
+        }
+        catch (ArgumentException)
+        {
+        }
+        catch (InvalidOperationException)
+        {
+        }
+
+        return desc;
+    }
+
 
     internal static void RemoveJsonNodeSchemaDescriptionExtendedProperties(JsonObjectNode json, bool onlyBase)
     {

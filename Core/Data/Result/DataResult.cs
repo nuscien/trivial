@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime;
+using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
 using System.Text;
 using System.Text.Json.Serialization;
@@ -25,6 +26,7 @@ namespace Trivial.Data;
 /// The collection result.
 /// </summary>
 [DataContract]
+[Guid("FFF9B1F6-12E5-44B1-BAC4-3CB9C78F02BF")]
 public class MessageResult
 {
     /// <summary>
@@ -67,6 +69,7 @@ public class MessageResult
 /// The data result.
 /// </summary>
 [DataContract]
+[Guid("151653E9-0220-447D-919C-4F5A7732CAE4")]
 public class DataResult<T> : MessageResult
 {
     /// <summary>
@@ -121,6 +124,7 @@ public class DataResult<T> : MessageResult
 /// The data result.
 /// </summary>
 [DataContract]
+[Guid("151653E9-0220-447D-919C-4F5A7732CAE4")]
 public class DataResult<TData, TInfo> : DataResult<TData>
 {
     /// <summary>
@@ -166,6 +170,7 @@ public class DataResult<TData, TInfo> : DataResult<TData>
 /// The data result.
 /// </summary>
 [DataContract]
+[Guid("53843D30-66F1-4AC8-A7DD-509ED7E50FD8")]
 public class JsonDataResult : MessageResult
 {
     /// <summary>
@@ -324,12 +329,22 @@ public class JsonDataResult : MessageResult
 /// The collection result.
 /// </summary>
 [DataContract]
+[Guid("382B9940-024E-4493-B166-B49B6045AA38")]
 public class CollectionResult<T> : MessageResult
 {
     /// <summary>
     /// Initializes a new instance of the CollectionResult class.
     /// </summary>
     public CollectionResult()
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the CollectionResult class.
+    /// </summary>
+    /// <param name="message">The message.</param>
+    public CollectionResult(string message)
+        : base(message)
     {
     }
 
@@ -526,6 +541,7 @@ public class CollectionResult<T> : MessageResult
 /// The collection result.
 /// </summary>
 [DataContract]
+[Guid("ED51EAB1-B281-46EF-9AFD-7B4E75EF9F4D")]
 public class ErrorMessageResult : MessageResult
 {
     /// <summary>
@@ -605,6 +621,15 @@ public class ErrorMessageResult : MessageResult
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [Description("The error code.")]
     public string ErrorCode { get; set; }
+
+    /// <summary>
+    /// Gets or sets the URL of help link.
+    /// </summary>
+    [DataMember(Name = "link", EmitDefaultValue = false)]
+    [JsonPropertyName("link")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    [Description("The help link URL for the error details.")]
+    public string LinkUrl { get; set; }
 
     /// <summary>
     /// Gets or sets the offset of the result.

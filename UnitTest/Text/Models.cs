@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
 using System.Text;
 using System.Text.Json;
@@ -11,6 +12,7 @@ using Trivial.Tasks;
 
 namespace Trivial.Text;
 
+[Guid("DD4F9F4E-D127-424A-B04A-696C5071EC7D")]
 [DataContract]
 class JsonModel
 {

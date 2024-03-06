@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -588,6 +589,29 @@ public static class ObjectConvert
 
         result = default;
         return false;
+    }
+
+    /// <summary>
+    /// Gets the description.
+    /// </summary>
+    /// <param name="memberInfo">The member information.</param>
+    /// <returns>The description.</returns>
+    public static Guid? GetGuid(MemberInfo memberInfo)
+    {
+        try
+        {
+            var attr = memberInfo.GetCustomAttributes<GuidAttribute>()?.FirstOrDefault();
+            var str = attr?.Value;
+            if (!string.IsNullOrWhiteSpace(str) && Guid.TryParse(str, out var id)) return id;
+        }
+        catch (NotSupportedException)
+        {
+        }
+        catch (TypeLoadException)
+        {
+        }
+
+        return null;
     }
 
     internal static T ParseEnum<T>(string s) where T : struct

@@ -108,6 +108,11 @@ public abstract class BaseJsonNodeSchemaDescription : IJsonObjectHost
     public bool SkipDuplicatedExtendedProperties { get; set; }
 
     /// <summary>
+    /// Gets or sets an additional tag object.
+    /// </summary>
+    public object Tag { get; set; }
+
+    /// <summary>
     /// Fills the properties.
     /// </summary>
     /// <param name="node">The JSON object node to fill properties.</param>

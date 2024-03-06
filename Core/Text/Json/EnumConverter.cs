@@ -122,7 +122,7 @@ public class JsonStringEnumCompatibleConverter : JsonConverterFactory, IJsonNode
         => JsonIntegerEnumCompatibleConverter.CreateConverter(typeof(JsonStringEnumCompatibleConverter<>), typeToConvert, options);
 
     JsonNodeSchemaDescription IJsonNodeSchemaCreationHandler<Type>.Convert(Type type, JsonNodeSchemaDescription result, NodePathBreadcrumb<Type> breadcrumb)
-        => result is JsonStringSchemaDescription desc ? desc : new JsonStringSchemaDescription();
+        => JsonValues.CreateEnumSchema(type, result);
 }
 
 /// <summary>
@@ -140,5 +140,5 @@ public class JsonStringEnumCompatibleConverter<T> : JsonConverter<T>, IJsonNodeS
         => writer.WriteStringValue(value.ToString());
 
     JsonNodeSchemaDescription IJsonNodeSchemaCreationHandler<Type>.Convert(Type type, JsonNodeSchemaDescription result, NodePathBreadcrumb<Type> breadcrumb)
-        => result is JsonStringSchemaDescription desc ? desc : new JsonStringSchemaDescription();
+        => JsonValues.CreateEnumSchema(type, result);
 }
