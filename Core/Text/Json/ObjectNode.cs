@@ -6644,9 +6644,20 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     /// <param name="options">Options to control the behavior during parsing.</param>
     /// <returns>A JSON object instance.</returns>
     /// <exception cref="ArgumentException">readerOptions contains unsupported options.</exception>
-    /// <exception cref="JsonException">The JSON is invalid. -or- TValue is not compatible with the JSON.</exception>
+    /// <exception cref="JsonException">The JSON is invalid. -or- The value type is not compatible with the JSON.</exception>
     public T Deserialize<T>(JsonSerializerOptions options = default)
         => JsonSerializer.Deserialize<T>(ToString(), options);
+
+    /// <summary>
+    /// Deserializes.
+    /// </summary>
+    /// <param name="returnType">The type of the object to convert to and return.</param>
+    /// <param name="options">Options to control the behavior during parsing.</param>
+    /// <returns>A JSON object instance.</returns>
+    /// <exception cref="ArgumentException">readerOptions contains unsupported options.</exception>
+    /// <exception cref="JsonException">The JSON is invalid. -or- The value is type not compatible with the JSON.</exception>
+    public object Deserialize(Type returnType, JsonSerializerOptions options = default)
+        => JsonSerializer.Deserialize(ToString(), returnType, options);
 
     /// <summary>
     /// Deserializes a property value.
@@ -6657,13 +6668,31 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     /// <returns>A JSON object instance.</returns>
     /// <exception cref="ArgumentException">readerOptions contains unsupported options.</exception>
     /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
-    /// <exception cref="JsonException">The JSON is invalid. -or- TValue is not compatible with the JSON.</exception>
+    /// <exception cref="JsonException">The JSON is invalid. -or- The value type is not compatible with the JSON.</exception>
     public T DeserializeValue<T>(string key, JsonSerializerOptions options = default)
     {
         AssertKey(key);
         var item = store[key];
         if (item is null || item.ValueKind == JsonValueKind.Null || item.ValueKind == JsonValueKind.Undefined) return default;
         return JsonSerializer.Deserialize<T>(item.ToString(), options);
+    }
+
+    /// <summary>
+    /// Deserializes a property value.
+    /// </summary>
+    /// <param name="key">The property key.</param>
+    /// <param name="returnType">The type of the object to convert to and return.</param>
+    /// <param name="options">Options to control the behavior during parsing.</param>
+    /// <returns>A JSON object instance.</returns>
+    /// <exception cref="ArgumentException">readerOptions contains unsupported options.</exception>
+    /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+    /// <exception cref="JsonException">The JSON is invalid. -or- The value type is not compatible with the JSON.</exception>
+    public object DeserializeValue(string key, Type returnType, JsonSerializerOptions options = default)
+    {
+        AssertKey(key);
+        var item = store[key];
+        if (item is null || item.ValueKind == JsonValueKind.Null || item.ValueKind == JsonValueKind.Undefined) return default;
+        return JsonSerializer.Deserialize(item.ToString(), returnType, options);
     }
 
     /// <summary>
