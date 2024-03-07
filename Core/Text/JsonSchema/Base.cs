@@ -173,7 +173,7 @@ public class JsonNodeSchemaDescription : BaseJsonNodeSchemaDescription
     /// Initializes a new instance of the BaseJsonSchemaDescription class.
     /// </summary>
     /// <param name="copy">The schema to copy.</param>
-    public JsonNodeSchemaDescription(JsonNodeSchemaDescription copy) : base(InternalJsonNodeSchemaDescriptionHandler.Instance)
+    public JsonNodeSchemaDescription(JsonNodeSchemaDescription copy) : base(copy, InternalJsonNodeSchemaDescriptionHandler.Instance)
     {
         if (copy == null) return;
         ReferencePath = copy.ReferencePath;
@@ -207,7 +207,7 @@ public class JsonNodeSchemaDescription : BaseJsonNodeSchemaDescription
     /// <param name="json">The JSON object to load.</param>
     /// <param name="skipExtendedProperties">true if only fill the properties without extended; otherwise, false.</param>
     protected JsonNodeSchemaDescription(JsonObjectNode json, bool skipExtendedProperties)
-        : base (json, true)
+        : base(json, true, InternalJsonNodeSchemaDescriptionHandler.Instance)
     {
         if (json == null) return;
         Title = json.TryGetStringTrimmedValue("title", true);
