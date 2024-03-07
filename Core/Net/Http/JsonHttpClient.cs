@@ -394,7 +394,7 @@ public class JsonHttpClient<T>
     /// <exception cref="InvalidOperationException">The task is cancelled.</exception>
     /// <exception cref="ObjectDisposedException">The inner HTTP web client instance has been disposed.</exception>
     public Task<T> SendAsync(HttpMethod method, string requestUri, CancellationToken cancellationToken = default)
-        => SendAsync(new HttpRequestMessage(method, requestUri), cancellationToken);
+        => SendAsync(new HttpRequestMessage(method ?? HttpMethod.Get, requestUri), cancellationToken);
 
     /// <summary>
     /// Sends an HTTP request and gets the result serialized by JSON.
@@ -408,7 +408,7 @@ public class JsonHttpClient<T>
     /// <exception cref="InvalidOperationException">The task is cancelled.</exception>
     /// <exception cref="ObjectDisposedException">The inner HTTP web client instance has been disposed.</exception>
     public Task<T> SendAsync(HttpMethod method, Uri requestUri, CancellationToken cancellationToken = default)
-        => SendAsync(new HttpRequestMessage(method, requestUri), cancellationToken);
+        => SendAsync(new HttpRequestMessage(method ?? HttpMethod.Get, requestUri), cancellationToken);
 
     /// <summary>
     /// Sends an HTTP request and gets the result serialized by JSON.
@@ -423,7 +423,7 @@ public class JsonHttpClient<T>
     /// <exception cref="InvalidOperationException">The task is cancelled.</exception>
     /// <exception cref="ObjectDisposedException">The inner HTTP web client instance has been disposed.</exception>
     public Task<T> SendAsync(HttpMethod method, string requestUri, HttpContent content, CancellationToken cancellationToken = default)
-        => SendAsync(new HttpRequestMessage(method, requestUri)
+        => SendAsync(new HttpRequestMessage(method ?? HttpMethod.Post, requestUri)
         {
             Content = content
         }, cancellationToken);
@@ -441,7 +441,7 @@ public class JsonHttpClient<T>
     /// <exception cref="InvalidOperationException">The task is cancelled.</exception>
     /// <exception cref="ObjectDisposedException">The inner HTTP web client instance has been disposed.</exception>
     public Task<T> SendAsync(HttpMethod method, Uri requestUri, HttpContent content, CancellationToken cancellationToken = default)
-        => SendAsync(new HttpRequestMessage(method, requestUri)
+        => SendAsync(new HttpRequestMessage(method ?? HttpMethod.Post, requestUri)
         {
             Content = content
         }, cancellationToken);
@@ -459,7 +459,7 @@ public class JsonHttpClient<T>
     /// <exception cref="InvalidOperationException">The task is cancelled.</exception>
     /// <exception cref="ObjectDisposedException">The inner HTTP web client instance has been disposed.</exception>
     public Task<T> SendAsync(HttpMethod method, string requestUri, QueryData content, CancellationToken cancellationToken = default)
-        => SendAsync(new HttpRequestMessage(method, requestUri)
+        => SendAsync(new HttpRequestMessage(method ?? HttpMethod.Post, requestUri)
         {
             Content = new StringContent(content.ToString(), Encoding.UTF8, Web.WebFormat.FormUrlMIME)
         }, cancellationToken);
@@ -477,7 +477,7 @@ public class JsonHttpClient<T>
     /// <exception cref="InvalidOperationException">The task is cancelled.</exception>
     /// <exception cref="ObjectDisposedException">The inner HTTP web client instance has been disposed.</exception>
     public Task<T> SendAsync(HttpMethod method, Uri requestUri, QueryData content, CancellationToken cancellationToken = default)
-        => SendAsync(new HttpRequestMessage(method, requestUri)
+        => SendAsync(new HttpRequestMessage(method ?? HttpMethod.Post, requestUri)
         {
             Content = new StringContent(content.ToString(), Encoding.UTF8, Web.WebFormat.FormUrlMIME)
         }, cancellationToken);
@@ -498,7 +498,7 @@ public class JsonHttpClient<T>
     public async Task<T> SendJsonAsync(HttpMethod method, string requestUri, object content, JsonSerializerOptions options, CancellationToken cancellationToken = default)
     {
         using var body = HttpClientExtensions.CreateJsonContent(content, options);
-        return await SendAsync(new HttpRequestMessage(method, requestUri)
+        return await SendAsync(new HttpRequestMessage(method ?? HttpMethod.Post, requestUri)
         {
             Content = body
         }, cancellationToken);
@@ -520,7 +520,7 @@ public class JsonHttpClient<T>
     public async Task<T> SendJsonAsync(HttpMethod method, Uri requestUri, object content, JsonSerializerOptions options, CancellationToken cancellationToken = default)
     {
         using var body = HttpClientExtensions.CreateJsonContent(content, options);
-        return await SendAsync(new HttpRequestMessage(method, requestUri)
+        return await SendAsync(new HttpRequestMessage(method ?? HttpMethod.Post, requestUri)
         {
             Content = body
         }, cancellationToken);
@@ -543,7 +543,7 @@ public class JsonHttpClient<T>
     {
         var json = Text.StringExtensions.ToJson(content, options) ?? string.Empty;
         using var str = new StringContent(json, Encoding.UTF8, WebFormat.JsonMIME);
-        return await SendAsync(new HttpRequestMessage(method, requestUri)
+        return await SendAsync(new HttpRequestMessage(method ?? HttpMethod.Post, requestUri)
         {
             Content = str
         }, cancellationToken);
@@ -566,7 +566,7 @@ public class JsonHttpClient<T>
     {
         var json = Text.StringExtensions.ToJson(content, options) ?? string.Empty;
         using var str = new StringContent(json, Encoding.UTF8, WebFormat.JsonMIME);
-        return await SendAsync(new HttpRequestMessage(method, requestUri)
+        return await SendAsync(new HttpRequestMessage(method ?? HttpMethod.Post, requestUri)
         {
             Content = str
         }, cancellationToken);
@@ -617,7 +617,7 @@ public class JsonHttpClient<T>
     /// <exception cref="InvalidOperationException">The task is cancelled.</exception>
     /// <exception cref="ObjectDisposedException">The inner HTTP web client instance has been disposed.</exception>
     public Task<T> SendJsonAsync<TRequestBody>(HttpMethod method, string requestUri, TRequestBody content, Func<TRequestBody, string> deserializer, CancellationToken cancellationToken = default)
-        => deserializer != null ? SendAsync(new HttpRequestMessage(method, requestUri)
+        => deserializer != null ? SendAsync(new HttpRequestMessage(method ?? HttpMethod.Post, requestUri)
         {
             Content = new StringContent(deserializer(content), Encoding.UTF8, WebFormat.JsonMIME)
         }, cancellationToken) : SendJsonAsync(method, requestUri, content, cancellationToken);
@@ -637,7 +637,7 @@ public class JsonHttpClient<T>
     /// <exception cref="InvalidOperationException">The task is cancelled.</exception>
     /// <exception cref="ObjectDisposedException">The inner HTTP web client instance has been disposed.</exception>
     public Task<T> SendJsonAsync<TRequestBody>(HttpMethod method, Uri requestUri, TRequestBody content, Func<TRequestBody, string> deserializer, CancellationToken cancellationToken = default)
-        => deserializer != null ? SendAsync(new HttpRequestMessage(method, requestUri)
+        => deserializer != null ? SendAsync(new HttpRequestMessage(method ?? HttpMethod.Post, requestUri)
         {
             Content = new StringContent(deserializer(content), Encoding.UTF8, WebFormat.JsonMIME)
         }, cancellationToken) : SendJsonAsync(method, requestUri, content, cancellationToken);

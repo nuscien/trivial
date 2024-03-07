@@ -88,7 +88,19 @@ public class JsonOperationDescription : BaseObservableProperties
     /// <returns>A description instance; or null, if the property does not exist or is not supported.</returns>
     /// <exception cref="ArgumentNullException">The property name should not be null.</exception>
     public static JsonOperationDescription CreateFromProperty(object obj, string propertyName, string id = null)
-        => CreateFromProperty(obj, obj?.GetType()?.GetProperty(propertyName), id);
+        => CreateFromProperty(obj, obj?.GetType()?.GetProperty(propertyName), null, id);
+
+    /// <summary>
+    /// Tries to create a description from a property. The property should be an IJsonOperationDescriptive object.
+    /// </summary>
+    /// <param name="obj">The target object.</param>
+    /// <param name="propertyName">The property name.</param>
+    /// <param name="creation">The optional customized creation handler.</param>
+    /// <param name="id">The identifier.</param>
+    /// <returns>A description instance; or null, if the property does not exist or is not supported.</returns>
+    /// <exception cref="ArgumentNullException">The property name should not be null.</exception>
+    public static JsonOperationDescription CreateFromProperty(object obj, string propertyName, Func<IJsonOperationDescriptive, JsonOperationDescription> creation, string id = null)
+        => CreateFromProperty(obj, obj?.GetType()?.GetProperty(propertyName), creation, id);
 
     /// <summary>
     /// Tries to create a description from a property. The property should be an IJsonOperationDescriptive object.
@@ -99,6 +111,18 @@ public class JsonOperationDescription : BaseObservableProperties
     /// <returns>A description instance; or null, if the property does not exist or is not supported.</returns>
     /// <exception cref="ArgumentNullException">The property name should not be null.</exception>
     public static JsonOperationDescription CreateFromProperty(object obj, PropertyInfo prop, string id = null)
+        => CreateFromProperty(obj, prop, null, id);
+
+    /// <summary>
+    /// Tries to create a description from a property. The property should be an IJsonOperationDescriptive object.
+    /// </summary>
+    /// <param name="obj">The target object.</param>
+    /// <param name="prop">The property info.</param>
+    /// <param name="creation">The optional customized creation handler.</param>
+    /// <param name="id">The identifier.</param>
+    /// <returns>A description instance; or null, if the property does not exist or is not supported.</returns>
+    /// <exception cref="ArgumentNullException">The property name should not be null.</exception>
+    public static JsonOperationDescription CreateFromProperty(object obj, PropertyInfo prop, Func<IJsonOperationDescriptive, JsonOperationDescription> creation, string id = null)
     {
         if (prop == null) return null;
         var desc = StringExtensions.GetDescription(prop);
@@ -106,7 +130,7 @@ public class JsonOperationDescription : BaseObservableProperties
         if (info == null)
         {
             if (ObjectConvert.TryGetProperty(obj, prop, out IJsonOperationDescriptive d) && d != null)
-                info = d.CreateDescription();
+                info = creation == null ? d.CreateDescription() : creation(d);
         }
 
         if (info != null)
