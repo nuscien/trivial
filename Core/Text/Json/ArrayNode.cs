@@ -4172,7 +4172,7 @@ public class JsonArrayNode : IJsonContainerNode, IJsonDataNode, IReadOnlyList<IJ
             str.Append("- ");
             if (item is null)
             {
-                str.AppendLine("!!null null");
+                str.AppendLine("~");
                 continue;
             }
 
@@ -4180,7 +4180,7 @@ public class JsonArrayNode : IJsonContainerNode, IJsonDataNode, IReadOnlyList<IJ
             {
                 case JsonValueKind.Undefined:
                 case JsonValueKind.Null:
-                    str.AppendLine("!!null null");
+                    str.AppendLine("~");
                     break;
                 case JsonValueKind.Array:
                     if (item is not JsonArrayNode jArr)
@@ -4211,7 +4211,7 @@ public class JsonArrayNode : IJsonContainerNode, IJsonDataNode, IReadOnlyList<IJ
                     var text = jStr.StringValue;
                     if (text == null)
                     {
-                        str.AppendLine("!!null null");
+                        str.AppendLine("~");
                         break;
                     }
 

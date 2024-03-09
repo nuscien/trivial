@@ -6568,7 +6568,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
             str.Append(": ");
             if (prop.Value is null)
             {
-                str.AppendLine("!!null null");
+                str.AppendLine("~");
                 continue;
             }
 
@@ -6576,7 +6576,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
             {
                 case JsonValueKind.Undefined:
                 case JsonValueKind.Null:
-                    str.AppendLine("!!null null");
+                    str.AppendLine("~");
                     break;
                 case JsonValueKind.Array:
                     if (prop.Value is not JsonArrayNode jArr)
@@ -6608,7 +6608,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
                     var text = jStr.StringValue;
                     if (text == null)
                     {
-                        str.AppendLine("!!null null");
+                        str.AppendLine("~");
                         break;
                     }
 
@@ -6621,7 +6621,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
                             str.AppendLine(text);
                             break;
                         default:
-                            str.AppendLine(text.Length == 0 || text.Length > 100 || text.IndexOfAny(StringExtensions.YamlSpecialChars) >= 0
+                            str.AppendLine(text.Length < 2 || text.Length > 100 || text.Equals("null", StringComparison.OrdinalIgnoreCase) || text.IndexOfAny(StringExtensions.YamlSpecialChars) >= 0
                                 ? JsonStringNode.ToJson(text)
                                 : text);
                             break;
