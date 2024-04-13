@@ -62,6 +62,32 @@ public class JsonStringListConverter : JsonConverter<IEnumerable<string>>, IJson
     }
 
     /// <summary>
+    /// JSON string collection with enumeration comma separated.
+    /// </summary>
+    public sealed class EnumerationCommaSeparatedConverter : JsonStringListConverter
+    {
+        /// <summary>
+        /// Initializes a new instance of the EnumerationCommaSeparatedConverter class.
+        /// </summary>
+        public EnumerationCommaSeparatedConverter() : base('、')
+        {
+        }
+    }
+
+    /// <summary>
+    /// JSON string collection with semicolon separated.
+    /// </summary>
+    public sealed class ChineseSemicolonSeparatedConverter : JsonStringListConverter
+    {
+        /// <summary>
+        /// Initializes a new instance of the SemicolonSeparatedConverter class.
+        /// </summary>
+        public ChineseSemicolonSeparatedConverter() : base('；')
+        {
+        }
+    }
+
+    /// <summary>
     /// JSON string collection with vertical bar separated.
     /// </summary>
     public sealed class VerticalBarSeparatedConverter : JsonStringListConverter
@@ -126,7 +152,7 @@ public class JsonStringListConverter : JsonConverter<IEnumerable<string>>, IJson
                 {
                     IEnumerable<string> arr = str.Split(chars, StringSplitOptions.RemoveEmptyEntries);
                     if (trim) arr = arr.Select(ele => ele.Trim()).Where(ele => ele.Length > 0);
-                    else col.AddRange(arr);
+                    col.AddRange(arr);
                 }
                 else
                 {

@@ -7,6 +7,7 @@ using System.Text.Json;
 using System.Threading.Tasks;
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Trivial.Data;
 using Trivial.Text;
 
 namespace Trivial.Reflection
@@ -44,7 +45,7 @@ namespace Trivial.Reflection
         public void TestObservableProperties()
         {
             var i = 0;
-            var obs = new NameValueObservableProperties<string>();
+            var obs = new NameValueObservableModel<string>();
             obs.PropertyChanged += (sender, obj) =>
             {
                 if (obj.PropertyName == "Value") i++;
@@ -57,8 +58,18 @@ namespace Trivial.Reflection
             Assert.AreEqual(1, i);
             obs.Value = "uvwxyz";
             Assert.AreEqual(2, i);
+            var m = JsonSerializer.Deserialize<ConciseModel>("{ \"id\": \"9876543210\", \"keywords\": \"test;another\" }");
+            Assert.AreEqual("9876543210", m.Id);
+            Assert.IsNull(m.Title);
+            Assert.IsNotNull(m.Keywords);
+            Assert.AreEqual(2, m.Keywords.Count);
+            m = JsonSerializer.Deserialize<ConciseModel>("{ \"id\": \"9876543210\", \"keywords\": [\"test\", \"another\"] }");
+            Assert.AreEqual("9876543210", m.Id);
+            Assert.IsNull(m.Title);
+            Assert.IsNotNull(m.Keywords);
+            Assert.AreEqual(2, m.Keywords.Count);
         }
-        
+
         /// <summary>
         /// Tests factory.
         /// </summary>

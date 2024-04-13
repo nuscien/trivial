@@ -59,7 +59,7 @@ public class ConciseModel : BaseObservableProperties
     /// Gets or sets the identifier.
     /// </summary>
     [JsonPropertyName("id")]
-    [Description("The identifier of the model.")]
+    [Description("The identifier of the item.")]
     public string Id
     {
         get => GetCurrentProperty<string>();
@@ -70,7 +70,7 @@ public class ConciseModel : BaseObservableProperties
     /// Gets or sets the title.
     /// </summary>
     [JsonPropertyName("title")]
-    [Description("The title of the model.")]
+    [Description("The title of the item.")]
     public string Title
     {
         get => GetCurrentProperty<string>();
@@ -82,7 +82,7 @@ public class ConciseModel : BaseObservableProperties
     /// </summary>
     [JsonPropertyName("desc")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [Description("The short description of the model.")]
+    [Description("The short description of the item.")]
     public string Description
     {
         get => GetCurrentProperty<string>();
@@ -102,9 +102,9 @@ public class ConciseModel : BaseObservableProperties
     /// <summary>
     /// Gets or sets the image URI (thumbnail or avatar).
     /// </summary>
-    [JsonPropertyName("id")]
+    [JsonPropertyName("image")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [Description("The thumbnail or avatar URL of the model.")]
+    [Description("The thumbnail or avatar URL of the item.")]
     public string ImageUrl
     {
         get => ImageUri?.OriginalString;
@@ -116,7 +116,7 @@ public class ConciseModel : BaseObservableProperties
     /// </summary>
     [JsonPropertyName("url")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [Description("The URL to details page of the model.")]
+    [Description("The URL to details page of the item.")]
     public string Link
     {
         get => GetCurrentProperty<string>();
@@ -128,7 +128,8 @@ public class ConciseModel : BaseObservableProperties
     /// </summary>
     [JsonPropertyName("keywords")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [Description("The keywords of the model.")]
+    [Description("The keywords of the item.")]
+    [JsonConverter(typeof(JsonStringListConverter.SemicolonSeparatedConverter))]
     public ObservableCollection<string> Keywords
     {
         get => GetCurrentProperty<ObservableCollection<string>>();
@@ -216,7 +217,7 @@ public class ConciseModel : BaseObservableProperties
 }
 
 /// <summary>
-/// The model with observable name and value.
+/// The model with observable key and value.
 /// </summary>
 /// <typeparam name="T">The type of the value.</typeparam>
 [DataContract]
@@ -232,21 +233,82 @@ public class KeyValueObservableModel<T> : BaseObservableProperties
     /// <summary>
     /// Initializes a new instance of the KeyValueObservableModel class.
     /// </summary>
+    /// <param name="key">The key.</param>
+    /// <param name="value">The value.</param>
+    public KeyValueObservableModel(string key, T value)
+    {
+        Key = key;
+        Value = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the key.
+    /// </summary>
+    [DataMember(Name = "key")]
+    [JsonPropertyName("key")]
+    [Description("The property key.")]
+    public string Key
+
+    {
+        get => GetCurrentProperty<string>();
+        set => SetCurrentProperty(value);
+    }
+
+    /// <summary>
+    /// Gets or sets the value.
+    /// </summary>
+    [DataMember(Name = "value")]
+    [JsonPropertyName("value")]
+    [Description("The value.")]
+    public T Value
+    {
+        get => GetCurrentProperty<T>();
+        set => SetCurrentProperty(value);
+    }
+
+    /// <summary>
+    /// Gets or sets the optional additional object.
+    /// </summary>
+    [JsonIgnore]
+    public object Tag
+    {
+        get => GetCurrentProperty<object>();
+        set => SetCurrentProperty(value);
+    }
+}
+
+/// <summary>
+/// The model with observable name and value.
+/// </summary>
+/// <typeparam name="T">The type of the value.</typeparam>
+[DataContract]
+public class NameValueObservableModel<T> : BaseObservableProperties
+{
+    /// <summary>
+    /// Initializes a new instance of the NameValueObservableModel class.
+    /// </summary>
+    public NameValueObservableModel()
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the NameValueObservableModel class.
+    /// </summary>
     /// <param name="name">The name.</param>
     /// <param name="value">The value.</param>
-    public KeyValueObservableModel(string name, T value)
+    public NameValueObservableModel(string name, T value)
     {
-        Key = name;
+        Name = name;
         Value = value;
     }
 
     /// <summary>
     /// Gets or sets the name.
     /// </summary>
-    [DataMember(Name = "key")]
-    [JsonPropertyName("key")]
-    [Description("The property key.")]
-    public string Key
+    [DataMember(Name = "name")]
+    [JsonPropertyName("name")]
+    [Description("The item name.")]
+    public string Name
 
     {
         get => GetCurrentProperty<string>();

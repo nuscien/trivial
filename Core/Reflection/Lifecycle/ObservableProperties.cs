@@ -92,7 +92,7 @@ public abstract class BaseObservableProperties : INotifyPropertyChanged
         if (string.IsNullOrWhiteSpace(key)) return defaultValue;
         try
         {
-            return cache.TryGetValue(key, out var v) ? (T)v : defaultValue;
+            return TryGetPropertyInternal(key, out var v) ? (T)v : defaultValue;
         }
         catch (InvalidCastException)
         {
@@ -146,7 +146,7 @@ public abstract class BaseObservableProperties : INotifyPropertyChanged
         if (string.IsNullOrWhiteSpace(key)) return defaultValue;
         try
         {
-            return cache.TryGetValue(key, out var v) && v is T t ? t : defaultValue;
+            return TryGetPropertyInternal(key, out var v) && v is T t ? t : defaultValue;
         }
         catch (InvalidOperationException)
         {
@@ -175,7 +175,7 @@ public abstract class BaseObservableProperties : INotifyPropertyChanged
     {
         try
         {
-            if (!string.IsNullOrWhiteSpace(key) && cache.TryGetValue(key, out var v) && v is T t)
+            if (!string.IsNullOrWhiteSpace(key) && TryGetPropertyInternal(key, out var v) && v is T t)
             {
                 result = t;
                 return true;
@@ -226,13 +226,25 @@ public abstract class BaseObservableProperties : INotifyPropertyChanged
     }
 
     /// <summary>
-    /// Test whether the new property to set is valid.
+    /// Tests whether the new property to set is valid.
     /// </summary>
     /// <param name="key">The property key.</param>
     /// <param name="value">The value of the property to set.</param>
     /// <returns>true if the property is valid; otherwise, false.</returns>
     protected virtual bool IsPropertyValid(string key, object value)
         => true;
+
+    /// <summary>
+    /// Occurs on request to get a specific value. This can be used to fill a default value.
+    /// </summary>
+    /// <param name="key">The property key.</param>
+    /// <param name="value">When this method returns, contains the value associated with the specified key, if the key is found; otherwise, the default value for the type of the value parameter. This parameter is passed uninitialized.</param>
+    /// <returns>true if need to set a default value; otherwise, false.</returns>
+    protected virtual bool FillNonExistProperty(string key, out object value)
+    {
+        value = default;
+        return false;
+    }
 
     /// <summary>
     /// Removes a property.
@@ -269,7 +281,7 @@ public abstract class BaseObservableProperties : INotifyPropertyChanged
         if (string.IsNullOrWhiteSpace(key)) return null;
         try
         {
-            return cache.TryGetValue(key, out var v) ? v?.GetType() : null;
+            return TryGetPropertyInternal(key, out var v) ? v?.GetType() : null;
         }
         catch (ArgumentException)
         {
@@ -351,6 +363,21 @@ public abstract class BaseObservableProperties : INotifyPropertyChanged
     /// <returns>An enumerator that can be used to iterate through the collection.</returns>
     protected IEnumerator<KeyValuePair<string, object>> EnumerateObject()
         => cache.GetEnumerator();
+
+    /// <summary>
+    /// Tries to get property.
+    /// </summary>
+    /// <param name="key">The property key.</param>
+    /// <param name="value">When this method returns, contains the value associated with the specified key, if the key is found; otherwise, the default value for the type of the value parameter. This parameter is passed uninitialized.</param>
+    /// <returns>true if the cache contains an element with the specified key; otherwise, false.</returns>
+    private bool TryGetPropertyInternal(string key, out object value)
+    {
+        if (cache.TryGetValue(key, out value)) return true;
+        if (!FillNonExistProperty(key, out value)) return false;
+        cache[key] = value;
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(key));
+        return true;
+    }
 
     /// <summary>
     /// Sets the property.
