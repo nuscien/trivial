@@ -15,6 +15,42 @@ using Trivial.Text;
 namespace Trivial.Data;
 
 /// <summary>
+/// The concise model interface.
+/// </summary>
+public interface IConciseModel
+{
+    /// <summary>
+    /// Gets or sets the identifier.
+    /// </summary>
+    string Id { get; }
+
+    /// <summary>
+    /// Gets or sets the title.
+    /// </summary>
+    string Title { get; }
+
+    /// <summary>
+    /// Gets or sets the description.
+    /// </summary>
+    string Description { get; }
+
+    /// <summary>
+    /// Gets or sets the image URI (thumbnail or avatar).
+    /// </summary>
+    Uri ImageUri { get; }
+
+    /// <summary>
+    /// Gets or sets the link.
+    /// </summary>
+    string Link { get; }
+
+    /// <summary>
+    /// Gets or sets the keywords.
+    /// </summary>
+    public IReadOnlyList<string> Keywords { get; }
+}
+
+/// <summary>
 /// The interface to convert the current object to consise model.
 /// </summary>
 public interface IConciseModelDescriptive
@@ -29,7 +65,7 @@ public interface IConciseModelDescriptive
 /// <summary>
 /// The concise model content.
 /// </summary>
-public class ConciseModel : BaseObservableProperties
+public class ConciseModel : BaseObservableProperties, IConciseModel
 {
     /// <summary>
     /// Initializes a new instance of the ConciseModel class.
@@ -137,6 +173,12 @@ public class ConciseModel : BaseObservableProperties
     }
 
     /// <summary>
+    /// Gets or sets the keywords.
+    /// </summary>
+    [JsonIgnore]
+    IReadOnlyList<string> IConciseModel.Keywords => Keywords;
+
+    /// <summary>
     /// Gets or sets the raw data.
     /// </summary>
     [JsonPropertyName("raw")]
@@ -213,127 +255,5 @@ public class ConciseModel : BaseObservableProperties
         if (!string.IsNullOrWhiteSpace(Description)) col.Add(Description);
         if (!string.IsNullOrWhiteSpace(Link)) col.Add(Description);
         return col.Count < 1 ? (Id ?? string.Concat('(', GetType().Name, ')')) : string.Join(Environment.NewLine, col);
-    }
-}
-
-/// <summary>
-/// The model with observable key and value.
-/// </summary>
-/// <typeparam name="T">The type of the value.</typeparam>
-[DataContract]
-public class KeyValueObservableModel<T> : BaseObservableProperties
-{
-    /// <summary>
-    /// Initializes a new instance of the KeyValueObservableModel class.
-    /// </summary>
-    public KeyValueObservableModel()
-    {
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the KeyValueObservableModel class.
-    /// </summary>
-    /// <param name="key">The key.</param>
-    /// <param name="value">The value.</param>
-    public KeyValueObservableModel(string key, T value)
-    {
-        Key = key;
-        Value = value;
-    }
-
-    /// <summary>
-    /// Gets or sets the key.
-    /// </summary>
-    [DataMember(Name = "key")]
-    [JsonPropertyName("key")]
-    [Description("The property key.")]
-    public string Key
-
-    {
-        get => GetCurrentProperty<string>();
-        set => SetCurrentProperty(value);
-    }
-
-    /// <summary>
-    /// Gets or sets the value.
-    /// </summary>
-    [DataMember(Name = "value")]
-    [JsonPropertyName("value")]
-    [Description("The value.")]
-    public T Value
-    {
-        get => GetCurrentProperty<T>();
-        set => SetCurrentProperty(value);
-    }
-
-    /// <summary>
-    /// Gets or sets the optional additional object.
-    /// </summary>
-    [JsonIgnore]
-    public object Tag
-    {
-        get => GetCurrentProperty<object>();
-        set => SetCurrentProperty(value);
-    }
-}
-
-/// <summary>
-/// The model with observable name and value.
-/// </summary>
-/// <typeparam name="T">The type of the value.</typeparam>
-[DataContract]
-public class NameValueObservableModel<T> : BaseObservableProperties
-{
-    /// <summary>
-    /// Initializes a new instance of the NameValueObservableModel class.
-    /// </summary>
-    public NameValueObservableModel()
-    {
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the NameValueObservableModel class.
-    /// </summary>
-    /// <param name="name">The name.</param>
-    /// <param name="value">The value.</param>
-    public NameValueObservableModel(string name, T value)
-    {
-        Name = name;
-        Value = value;
-    }
-
-    /// <summary>
-    /// Gets or sets the name.
-    /// </summary>
-    [DataMember(Name = "name")]
-    [JsonPropertyName("name")]
-    [Description("The item name.")]
-    public string Name
-
-    {
-        get => GetCurrentProperty<string>();
-        set => SetCurrentProperty(value);
-    }
-
-    /// <summary>
-    /// Gets or sets the value.
-    /// </summary>
-    [DataMember(Name = "value")]
-    [JsonPropertyName("value")]
-    [Description("The value.")]
-    public T Value
-    {
-        get => GetCurrentProperty<T>();
-        set => SetCurrentProperty(value);
-    }
-
-    /// <summary>
-    /// Gets or sets the optional additional object.
-    /// </summary>
-    [JsonIgnore]
-    public object Tag
-    {
-        get => GetCurrentProperty<object>();
-        set => SetCurrentProperty(value);
     }
 }

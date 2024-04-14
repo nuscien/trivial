@@ -394,6 +394,7 @@ public class FailedChangeException : Exception
         Kind = kind;
     }
 
+#if !NET8_0_OR_GREATER
     /// <summary>
     /// Initializes a new instance of the FailedChangeException class.
     /// </summary>
@@ -407,12 +408,14 @@ public class FailedChangeException : Exception
         if (kind < 0) return;
         Kind = (ChangeErrorKinds)kind;
     }
+#endif
 
     /// <summary>
     /// Gets the error kind.
     /// </summary>
     public ChangeErrorKinds Kind { get; }
 
+#if !NET8_0_OR_GREATER
     /// <summary>
     /// When overridden in a derived class, sets the System.Runtime.Serialization.SerializationInfo with information about the exception.
     /// </summary>
@@ -423,6 +426,7 @@ public class FailedChangeException : Exception
         base.GetObjectData(info, context);
         info.AddValue(nameof(Kind), (int)Kind, typeof(int));
     }
+#endif
 }
 
 /// <summary>

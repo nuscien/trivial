@@ -32,6 +32,7 @@ public class PreviousTaskException : Exception
         SourceObject = source;
     }
 
+#if !NET8_0_OR_GREATER
     /// <summary>
     /// Initializes a new instance of the PreviousTaskException class.
     /// </summary>
@@ -41,6 +42,7 @@ public class PreviousTaskException : Exception
     {
         if (info == null) return;
     }
+#endif
 
     /// <summary>
     /// Gets the source object that throws the inner exception.

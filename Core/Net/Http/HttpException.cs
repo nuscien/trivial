@@ -29,6 +29,7 @@ public class FailedHttpException : Exception
         Header = response.Headers;
     }
 
+#if !NET8_0_OR_GREATER
     /// <summary>
     /// Initializes a new instance of the FailedHttpException class.
     /// </summary>
@@ -42,6 +43,7 @@ public class FailedHttpException : Exception
         if (statusCode < 0) return;
         StatusCode = (HttpStatusCode)statusCode;
     }
+#endif
 
     /// <summary>
     /// Gets the HTTP response message.
@@ -78,6 +80,7 @@ public class FailedHttpException : Exception
     /// </summary>
     public HttpRequestMessage RequestMessage => Response?.RequestMessage;
 
+#if !NET8_0_OR_GREATER
     /// <summary>
     /// When overridden in a derived class, sets the System.Runtime.Serialization.SerializationInfo with information about the exception.
     /// </summary>
@@ -91,6 +94,7 @@ public class FailedHttpException : Exception
         if (StatusCode.HasValue) statusCode = (int)StatusCode.Value;
         info.AddValue(nameof(StatusCode), statusCode, typeof(int));
     }
+#endif
 
     internal static FailedHttpException Create(HttpResponseMessage response, string message)
     {

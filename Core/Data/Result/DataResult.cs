@@ -15,6 +15,7 @@ using System.Runtime;
 using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
 using System.Text;
+using System.Text.Json;
 using System.Text.Json.Serialization;
 
 using Trivial.Security;
@@ -63,6 +64,18 @@ public class MessageResult
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [Description("A tracking ID to mark the transaction of operation process.")]
     public string TrackingId { get; set; }
+
+    /// <summary>
+    /// Creates a new tracking ID to use.
+    /// </summary>
+    public void CreateNewTrackingId()
+        => TrackingId = Guid.NewGuid().ToString("N");
+
+    /// <summary>
+    /// Creates a new tracking ID to use.
+    /// </summary>
+    public void CreateNewTrackingId(Guid id)
+        => TrackingId = id.ToString("N");
 }
 
 /// <summary>
@@ -118,6 +131,15 @@ public class DataResult<T> : MessageResult
     /// </summary>
     /// <returns>The type of the data.</returns>
     public Type GetDataType() => Data?.GetType() ?? typeof(T);
+
+    /// <summary>
+    /// Serializes the data to JSON format string.
+    /// </summary>
+    /// <param name="options">Options to control the conversion behavior.</param>
+    /// <returns>A string representation of the value.</returns>
+    /// <exception cref="NotSupportedException">There is no compatible JSON converter for the data or its serializable members.</exception>
+    public string SerializeData(JsonSerializerOptions options = null)
+        => JsonSerializer.Serialize(Data, options);
 }
 
 /// <summary>
@@ -381,7 +403,7 @@ public class CollectionResult<T> : MessageResult
     /// </summary>
     [DataMember(Name = "offset", EmitDefaultValue = false)]
     [JsonPropertyName("offset")]
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     [Description("The record offset of the result collection.")]
     public int? Offset { get; set; }
 
@@ -390,8 +412,8 @@ public class CollectionResult<T> : MessageResult
     /// </summary>
     [DataMember(Name = "count", EmitDefaultValue = false)]
     [JsonPropertyName("count")]
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
-    [Description("The count of the result collection.")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    [Description("The count of the result collection. It can be null if no such information.")]
     public int? TotalCount { get; set; }
 
     /// <summary>
@@ -414,7 +436,7 @@ public class CollectionResult<T> : MessageResult
     [DataMember(Name = "info")]
     [JsonPropertyName("info")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [Description("The addition information of the result.")]
+    [Description("The additional information of the result.")]
     public JsonObjectNode AdditionalInfo { get; set; }
 
     /// <summary>

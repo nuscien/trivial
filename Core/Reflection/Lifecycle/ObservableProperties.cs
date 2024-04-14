@@ -135,6 +135,36 @@ public abstract class BaseObservableProperties : INotifyPropertyChanged
     }
 
     /// <summary>
+    /// Sets a property.
+    /// </summary>
+    /// <param name="value">The value.</param>
+    /// <param name="notify">The notification function.</param>
+    /// <param name="key">The additional key.</param>
+    /// <returns>true if set succeeded; otherwise, false.</returns>
+    protected bool SetCurrentProperty(object value, Action<string, object, bool, object> notify, [CallerMemberName] string key = null)
+    {
+        if (string.IsNullOrWhiteSpace(key))
+        {
+            if (PropertiesSettingPolicy == PropertySettingPolicies.Forbidden)
+                throw new ArgumentNullException(nameof(key), "The property key should not be null, empty, or consists only of white-space characters.");
+            return false;
+        }
+
+        var exist = cache.TryGetValue(key, out var v);
+        if (exist && v == value) return false;
+        if (PropertiesSettingPolicy == PropertySettingPolicies.Allow)
+        {
+            if (!SetPropertyInternal(key, value)) return false;
+            notify?.Invoke(key, value, exist, v);
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(key));
+            return true;
+        }
+
+        if (PropertiesSettingPolicy == PropertySettingPolicies.Skip) return false;
+        throw new InvalidOperationException("Forbid to set property.");
+    }
+
+    /// <summary>
     /// Gets a property value.
     /// </summary>
     /// <typeparam name="T">The type of the property value.</typeparam>
