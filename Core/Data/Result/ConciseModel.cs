@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.Serialization;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
@@ -20,32 +21,32 @@ namespace Trivial.Data;
 public interface IConciseModel
 {
     /// <summary>
-    /// Gets or sets the identifier.
+    /// Gets the identifier.
     /// </summary>
     string Id { get; }
 
     /// <summary>
-    /// Gets or sets the title.
+    /// Gets the title.
     /// </summary>
     string Title { get; }
 
     /// <summary>
-    /// Gets or sets the description.
+    /// Gets the description.
     /// </summary>
     string Description { get; }
 
     /// <summary>
-    /// Gets or sets the image URI (thumbnail or avatar).
+    /// Gets the image URI (thumbnail or avatar).
     /// </summary>
     Uri ImageUri { get; }
 
     /// <summary>
-    /// Gets or sets the link.
+    /// Gets the link.
     /// </summary>
     string Link { get; }
 
     /// <summary>
-    /// Gets or sets the keywords.
+    /// Gets the keywords.
     /// </summary>
     public IReadOnlyList<string> Keywords { get; }
 }
@@ -88,7 +89,71 @@ public class ConciseModel : BaseObservableProperties, IConciseModel
         Title = title;
         Link = link;
         Description = description;
-        Keywords = keywords as ObservableCollection<string> ?? new(keywords);
+        if (keywords != null) Keywords = keywords as ObservableCollection<string> ?? new(keywords);
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the ConciseModel class.
+    /// </summary>
+    /// <param name="id">The identifier of the video.</param>
+    /// <param name="title">The title of the video.</param>
+    /// <param name="link">The URL of the video to play.</param>
+    /// <param name="description">The video description.</param>
+    /// <param name="keywords">The keywords of the video.</param>
+    public ConciseModel(Guid id, string title, string link = null, string description = null, IEnumerable<string> keywords = null)
+        : this(id.ToString("N"), title, link, description, keywords)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the ConciseModel class.
+    /// </summary>
+    /// <param name="id">The identifier of the video.</param>
+    /// <param name="title">The title of the video.</param>
+    /// <param name="keywords">The keywords of the video.</param>
+    /// <param name="link">The URL of the video to play.</param>
+    public ConciseModel(string id, string title, IEnumerable<string> keywords, string link = null)
+        : this(id, title, link, null, keywords)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the ConciseModel class.
+    /// </summary>
+    /// <param name="id">The identifier of the video.</param>
+    /// <param name="title">The title of the video.</param>
+    /// <param name="keywords">The keywords of the video.</param>
+    /// <param name="link">The URL of the video to play.</param>
+    public ConciseModel(Guid id, string title, IEnumerable<string> keywords, string link = null)
+        : this(id.ToString("N"), title, link, null, keywords)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the ConciseModel class.
+    /// </summary>
+    /// <param name="copy">The model to copy.</param>
+    public ConciseModel(IConciseModel copy)
+    {
+        if (copy == null) return;
+        Id = copy.Id;
+        Title = copy.Title;
+        Link = copy.Link;
+        Description = copy.Description;
+        ImageUri = copy.ImageUri;
+        var keywords = copy.Keywords;
+        if (keywords != null)
+        {
+            Keywords = new();
+            foreach (var keyword in keywords)
+            {
+                Keywords.Add(keyword);
+            }
+        }
+
+        if (copy is not ConciseModel model) return;
+        Raw = model.Raw;
+        Tag = model.Tag;
     }
 
     /// <summary>
@@ -179,6 +244,19 @@ public class ConciseModel : BaseObservableProperties, IConciseModel
     IReadOnlyList<string> IConciseModel.Keywords => Keywords;
 
     /// <summary>
+    /// Gets the count of keywords.
+    /// </summary>
+    [JsonIgnore]
+    public int KeywordCount
+    {
+        get
+        {
+            var keywords = Keywords;
+            return keywords == null ? 0 : keywords.Count;
+        }
+    }
+
+    /// <summary>
     /// Gets or sets the raw data.
     /// </summary>
     [JsonPropertyName("raw")]
@@ -242,6 +320,47 @@ public class ConciseModel : BaseObservableProperties, IConciseModel
         var keywords = Keywords;
         if (keywords == null) return false;
         return keywords.Remove(value);
+    }
+
+    /// <summary>
+    /// Tests if contains the specific keyword.
+    /// </summary>
+    /// <param name="value">The keyword to test.</param>
+    /// <param name="comparison">One of the enumeration values that specifies how the strings will be compared.</param>
+    /// <returns>true if contains; otherwise, false.</returns>
+    public bool ContainKeyword(string value, StringComparison comparison)
+    {
+        var keywords = Keywords;
+        if (keywords == null || string.IsNullOrEmpty(value)) return false;
+        value = value.Trim();
+        foreach (var keyword in keywords)
+        {
+            if (string.IsNullOrEmpty(keyword)) continue;
+            if (keyword.Trim().Equals(value, comparison)) return true;
+        }
+
+        return false;
+    }
+
+    /// <summary>
+    /// Tests if contains the specific keyword.
+    /// </summary>
+    /// <param name="value">The keyword to test.</param>
+    /// <param name="ignoreCase">true if case insensitve; otherwise, false.</param>
+    /// <returns>true if contains; otherwise, false.</returns>
+    public bool ContainKeyword(string value, bool ignoreCase = false)
+    {
+        var keywords = Keywords;
+        if (keywords == null || string.IsNullOrEmpty(value)) return false;
+        if (!ignoreCase) return keywords.Contains(value);
+        value = value.Trim();
+        foreach (var keyword in keywords)
+        {
+            if (string.IsNullOrEmpty(keyword)) continue;
+            if (keyword.Trim().Equals(value, StringComparison.OrdinalIgnoreCase)) return true;
+        }
+
+        return false;
     }
 
     /// <summary>
