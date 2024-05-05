@@ -6,6 +6,7 @@ using System.Linq;
 using System.Runtime.Serialization;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
+using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
@@ -362,6 +363,15 @@ public class ConciseModel : BaseObservableProperties, IConciseModel
 
         return false;
     }
+
+    /// <summary>
+    /// Converts to JSON object.
+    /// </summary>
+    /// <param name="options">Options to control the reader behavior during parsing.</param>
+    /// <returns>A JSON object instance.</returns>
+    /// <exception cref="JsonException">Its property does not represent a valid single JSON object.</exception>
+    public virtual JsonObjectNode ToJson(JsonSerializerOptions options = default)
+        => JsonObjectNode.ConvertFrom(this, options);
 
     /// <summary>
     /// Returns a string that represents the current model.

@@ -25,6 +25,20 @@ using Trivial.Web;
 namespace Trivial.Net;
 
 /// <summary>
+/// The maker to create JSON HTTP client.
+/// </summary>
+public interface IJsonHttpClientMaker
+{
+    /// <summary>
+    /// Creates a JSON HTTP client.
+    /// </summary>
+    /// <typeparam name="T">The type of response.</typeparam>
+    /// <param name="callback">An optional callback raised on data received.</param>
+    /// <returns>A new JSON HTTP client.</returns>
+    JsonHttpClient<T> Create<T>(Action<ReceivedEventArgs<T>> callback = null);
+}
+
+/// <summary>
 /// The event arguments on sending.
 /// </summary>
 public class SendingEventArgs : EventArgs

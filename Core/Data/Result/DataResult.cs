@@ -241,6 +241,14 @@ public class JsonDataResult : MessageResult
     public JsonObjectNode AdditionalInfo { get; set; }
 
     /// <summary>
+    /// Gets or sets the components.
+    /// </summary>
+    [DataMember(Name = "components")]
+    [JsonPropertyName("components")]
+    [Description("The components for reference.")]
+    public JsonObjectNode Components { get; set; }
+
+    /// <summary>
     /// Gets a value indicating whether the data is null.
     /// </summary>
     [JsonIgnore]
@@ -345,6 +353,57 @@ public class JsonDataResult : MessageResult
     /// <exception cref="ArgumentOutOfRangeException">The property does not exist.</exception>
     public IJsonDataNode TryGetValue(ReadOnlySpan<char> key)
         => Data?.TryGetValue(key);
+
+    /// <summary>
+    /// Gets schema.
+    /// </summary>
+    /// <param name="key">The schema key.</param>
+    /// <returns>The schema information.</returns>
+    public JsonObjectNode GetSchema(string key)
+        => string.IsNullOrWhiteSpace(key) ? null : GetComponent("schemas")?.TryGetObjectValue(key);
+
+    /// <summary>
+    /// Gets reference object.
+    /// </summary>
+    /// <param name="type">The type or group key of the resource.</param>
+    /// <param name="id">The identifier of the object.</param>
+    /// <returns>The reference object.</returns>
+    public JsonObjectNode GetReferenceObject(string type, string id)
+    {
+        if (string.IsNullOrWhiteSpace(id)) return null;
+        var components = GetComponents();
+        if (components == null) return null;
+        var valueKind = components.GetValueKind(type);
+        var json = valueKind switch
+        {
+            JsonValueKind.Object => components.TryGetObjectValue(type)?.TryGetObjectValue(id),
+            JsonValueKind.Array => components.TryGetArrayValue(type)?.TryGetObjectValueById(id),
+            _ => null,
+        };
+        if (json == null) return null;
+        var refPath = json.TryGetStringValue("$ref");
+        if (refPath == null || json.Count != 1) return json;
+        return JsonObjectNode.TryGetRefObjectValue(Data, json, ToJson());
+    }
+
+    internal JsonObjectNode GetComponents()
+        => Components ?? Data?.TryGetObjectValue("components");
+
+    internal JsonObjectNode GetComponent(string key)
+    {
+        var dict = GetComponents();
+        return string.IsNullOrWhiteSpace(key) ? dict : dict?.TryGetObjectValue(key);
+    }
+
+    internal JsonObjectNode ToJson()
+        => new()
+        {
+            { "track", TrackingId },
+            { "message", Message },
+            { "data", Data },
+            { "info", AdditionalInfo },
+            { "components", Components }
+        };
 }
 
 /// <summary>

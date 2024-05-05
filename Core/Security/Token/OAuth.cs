@@ -23,7 +23,7 @@ namespace Trivial.Security;
 /// <para>The OAuth HTTP web client (for RFC-6749).</para>
 /// <para>You can use this to login and then create the JSON HTTP web clients with the authentication information.</para>
 /// </summary>
-public class OAuthClient : TokenContainer
+public class OAuthClient : TokenContainer, IJsonHttpClientMaker
 {
     /// <summary>
     /// The app accessing key instance.
@@ -699,7 +699,7 @@ public class OAuthClient : TokenContainer
 /// <summary>
 /// The OAuth based JSON HTTP web client.
 /// </summary>
-public abstract class OAuthBasedClient : TokenContainer
+public abstract class OAuthBasedClient : TokenContainer, IJsonHttpClientMaker
 {
     /// <summary>
     /// The OAuth client.

@@ -6,11 +6,13 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
 using System.Security;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
+using System.Text.Json.Nodes;
 using System.Threading;
 using System.Threading.Tasks;
 using Trivial.Collection;
@@ -1689,26 +1691,163 @@ public class JsonArrayNode : IJsonContainerNode, IJsonDataNode, IReadOnlyList<IJ
     /// <summary>
     /// Tries to get the value at the specific index.
     /// </summary>
+    /// <param name="id">The identifier of the object.</param>
+    /// <returns>The value.</returns>
+    public JsonObjectNode TryGetObjectValueById(string id)
+        => TryGetObjectValueById(id, out var p) ? p : null;
+
+    /// <summary>
+    /// Tries to get the value at the specific index.
+    /// </summary>
+    /// <param name="id">The identifier of the object.</param>
+    /// <param name="result">The result.</param>
+    /// <returns>true if has the object; otherwise, false.</returns>
+    public bool TryGetObjectValueById(string id, out JsonObjectNode result)
+    {
+        id = id?.Trim();
+        if (string.IsNullOrEmpty(id))
+        {
+            result = null;
+            return false;
+        }
+
+        foreach (var item in store)
+        {
+            if (item is not JsonObjectNode json) continue;
+            if (json.Id?.Trim() != id && json.TryGetStringTrimmedValue("id") != id) continue;
+            result = json;
+            return true;
+        }
+
+        result = null;
+        return false;
+    }
+
+    /// <summary>
+    /// Tries to get the value at the specific index.
+    /// </summary>
     /// <param name="index">The zero-based index of the element to get.</param>
     /// <param name="root">The root node.</param>
     /// <returns>The value.</returns>
     public JsonObjectNode TryGetRefObjectValue(int index, JsonObjectNode root)
+        => JsonObjectNode.TryGetRefObjectValue(null, TryGetObjectValue(index), root);
+
+    /// <summary>
+    /// Tries to get the value at the specific index.
+    /// </summary>
+    /// <param name="index">The zero-based index of the element to get.</param>
+    /// <param name="root">The root node.</param>
+    /// <returns>The value.</returns>
+    public JsonObjectNode TryGetRefObjectValue(int index, JsonDataResult root)
+        => root == null ? null : TryGetRefObjectValue(index, root.ToJson());
+
+    /// <summary>
+    /// Filters by the given property.
+    /// </summary>
+    /// <param name="key">The property key.</param>
+    /// <returns>A list of value matched.</returns>
+    public IList<JsonObjectNode> WithProperty(string key)
     {
-        var json = TryGetObjectValue(index);
-        if (json == null) return null;
-        var refPath = json.TryGetStringValue("$ref");
-        if (string.IsNullOrWhiteSpace(refPath)) return json;
-        if (root is null || refPath == JsonValues.SELF_REF) return null;
-        if (refPath.StartsWith("#/"))
+        var list = new List<JsonObjectNode>();
+        var col = SelectObjects();
+        foreach (var item in col)
         {
-#pragma warning disable IDE0057
-            var path = refPath.Substring(2).Split('/');
-#pragma warning restore IDE0057
-            return root.TryGetObjectValue(path);
+            if (item.ContainsKey(key)) list.Add(item);
         }
 
-        if (refPath == "$") return root;
-        return root.TryGetValue(refPath, true) as JsonObjectNode;
+        return list;
+    }
+
+    /// <summary>
+    /// Filters by the given property.
+    /// </summary>
+    /// <param name="key">The property key.</param>
+    /// <param name="kind">The value kind of the property.</param>
+    /// <returns>A list of value matched.</returns>
+    public IList<JsonObjectNode> WithProperty(string key, JsonValueKind kind)
+    {
+        var list = new List<JsonObjectNode>();
+        var col = SelectObjects();
+        foreach (var item in col)
+        {
+            if (item.GetValueKind(key) == kind) list.Add(item);
+        }
+
+        return list;
+    }
+
+    /// <summary>
+    /// Filters by the given property.
+    /// </summary>
+    /// <param name="key">The property key.</param>
+    /// <param name="value">The value of the property.</param>
+    /// <returns>A list of value matched.</returns>
+    public IList<JsonObjectNode> WithProperty(string key, string value)
+    {
+        var list = new List<JsonObjectNode>();
+        var col = SelectObjects();
+        foreach (var item in col)
+        {
+            if (item.TryGetStringValue(key) == value) list.Add(item);
+        }
+
+        return list;
+    }
+
+    /// <summary>
+    /// Filters by the given property.
+    /// </summary>
+    /// <param name="key">The property key.</param>
+    /// <param name="value">The value of the property.</param>
+    /// <param name="comparisonType">One of the enumeration values that specifies how the strings will be compared.</param>
+    /// <returns>A list of value matched.</returns>
+    public IList<JsonObjectNode> WithProperty(string key, string value, StringComparison comparisonType)
+    {
+        if (value == null) return WithProperty(key, value);
+        var list = new List<JsonObjectNode>();
+        var col = SelectObjects();
+        foreach (var item in col)
+        {
+            if (value.Equals(item.TryGetStringValue(key), comparisonType)) list.Add(item);
+        }
+
+        return list;
+    }
+
+    /// <summary>
+    /// Filters by the given property.
+    /// </summary>
+    /// <param name="key">The property key.</param>
+    /// <param name="value">The value of the property.</param>
+    /// <returns>A list of value matched.</returns>
+    public IList<JsonObjectNode> WithProperty(string key, int value)
+    {
+        var list = new List<JsonObjectNode>();
+        var col = SelectObjects();
+        foreach (var item in col)
+        {
+            if (item.TryGetInt32Value(key) == value) list.Add(item);
+        }
+
+        return list;
+    }
+
+    /// <summary>
+    /// Filters by the given property.
+    /// </summary>
+    /// <param name="key">The property key.</param>
+    /// <param name="value">The value of the property.</param>
+    /// <returns>A list of value matched.</returns>
+    public IList<JsonObjectNode> WithProperty(string key, bool value)
+    {
+        var list = new List<JsonObjectNode>();
+        var col = SelectObjects();
+        foreach (var item in col)
+        {
+            if (item.TryGetBooleanValue(key) == value) list.Add(item);
+        }
+
+        return list;
     }
 
     /// <summary>
@@ -4051,6 +4190,13 @@ public class JsonArrayNode : IJsonContainerNode, IJsonDataNode, IReadOnlyList<IJ
         => ConvertToString(indentStyle, 0);
 
     /// <summary>
+    /// Filters by getting JSON object list only.
+    /// </summary>
+    /// <returns>A list of value matched.</returns>
+    internal IList<JsonObjectNode> SelectObjects()
+        => store.OfType<JsonObjectNode>().ToList();
+
+    /// <summary>
     /// Gets the JSON array format string of the value.
     /// </summary>
     /// <param name="indentStyle">The indent style.</param>
@@ -4946,6 +5092,57 @@ public class JsonArrayNode : IJsonContainerNode, IJsonDataNode, IReadOnlyList<IJ
         {
         }
         catch (AggregateException)
+        {
+        }
+
+        return null;
+    }
+
+    /// <summary>
+    /// Tries to parse a string to a JSON array.
+    /// </summary>
+    /// <param name="file">A file with JSON array string content to parse.</param>
+    /// <param name="options">Options to control the reader behavior during parsing.</param>
+    /// <returns>A JSON array instance; or null, if error format.</returns>
+    public static JsonArrayNode TryParse(FileInfo file, JsonDocumentOptions options = default)
+    {
+        try
+        {
+            if (file == null || !file.Exists) return null;
+            using var stream = file.OpenRead();
+            return Parse(stream, options);
+        }
+        catch (ArgumentException)
+        {
+        }
+        catch (InvalidOperationException)
+        {
+        }
+        catch (JsonException)
+        {
+        }
+        catch (FormatException)
+        {
+        }
+        catch (InvalidCastException)
+        {
+        }
+        catch (IOException)
+        {
+        }
+        catch (SecurityException)
+        {
+        }
+        catch (UnauthorizedAccessException)
+        {
+        }
+        catch (NullReferenceException)
+        {
+        }
+        catch (AggregateException)
+        {
+        }
+        catch (ExternalException)
         {
         }
 

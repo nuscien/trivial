@@ -16,6 +16,7 @@ using System.Threading.Tasks;
 
 using Trivial.Data;
 using Trivial.Maths;
+using Trivial.Net;
 using Trivial.Reflection;
 using Trivial.Web;
 
@@ -184,7 +185,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     /// </summary>
     public string Id
     {
-        get => TryGetStringValue("$id");
+        get => TryGetStringValue("$id")?.Trim();
         set => SetValueOrRemove("$id", value);
     }
 
@@ -2650,22 +2651,16 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     /// <param name="root">The root node.</param>
     /// <returns>The value.</returns>
     public JsonObjectNode TryGetRefObjectValue(string key, JsonObjectNode root)
-    {
-        root ??= this;
-        var json = TryGetObjectValue(key);
-        if (json == null) return null;
-        var refPath = json.TryGetStringValue("$ref");
-        if (string.IsNullOrWhiteSpace(refPath)) return json;
-        if (refPath == JsonValues.SELF_REF) return this;
-        if (refPath.StartsWith("#/"))
-        {
-            var path = refPath.Substring(2).Split('/');
-            return root.TryGetObjectValue(path);
-        }
+        => TryGetRefObjectValue(this, TryGetObjectValue(key), root);
 
-        if (refPath == "$") return root;
-        return root.TryGetValue(refPath, true) as JsonObjectNode;
-    }
+    /// <summary>
+    /// Tries to get the value of the specific property.
+    /// </summary>
+    /// <param name="key">The property key.</param>
+    /// <param name="root">The root node.</param>
+    /// <returns>The value.</returns>
+    public JsonObjectNode TryGetRefObjectValue(string key, JsonDataResult root)
+        => root == null ? null : TryGetRefObjectValue(key, root.ToJson());
 
     /// <summary>
     /// Tries to get the value of the specific property.
@@ -7629,7 +7624,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     /// <param name="obj">The object to convert.</param>
     /// <param name="options">Options to control the reader behavior during parsing.</param>
     /// <returns>A JSON object instance.</returns>
-    /// <exception cref="JsonException">json does not represent a valid single JSON object.</exception>
+    /// <exception cref="JsonException">obj or its property does not represent a valid single JSON object.</exception>
     public static JsonObjectNode ConvertFrom(object obj, JsonSerializerOptions options = default)
     {
         if (obj is null) return null;
@@ -7712,6 +7707,78 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
         if (ReferenceEquals(leftValue, rightValue)) return false;
         if (rightValue is null || leftValue is null) return true;
         return !leftValue.Equals(rightValue);
+    }
+
+    /// <summary>
+    /// Tries to get the value of the specific property.
+    /// </summary>
+    /// <param name="source">The source.</param>
+    /// <param name="property">The property.</param>
+    /// <param name="root">The root node.</param>
+    /// <returns>The value.</returns>
+    internal static JsonObjectNode TryGetRefObjectValue(JsonObjectNode source, JsonObjectNode property, JsonObjectNode root)
+    {
+        root ??= source;
+        if (property == null) return null;
+        var refPath = property.TryGetStringValue("$ref");
+        if (refPath == null) return property;
+        if (string.IsNullOrWhiteSpace(refPath) || refPath == "#") return root;
+        if (refPath == JsonValues.SELF_REF) return source;
+        if (refPath.StartsWith("#/"))
+        {
+            var path = refPath.Substring(2).Split('/');
+            return root?.TryGetObjectValue(path);
+        }
+
+        if (refPath == "$") return root;
+        if (refPath.StartsWith("./"))
+        {
+            try
+            {
+                var file = new FileInfo(refPath);
+                return TryParse(file);
+            }
+            catch (ArgumentException)
+            {
+            }
+            catch (UnauthorizedAccessException)
+            {
+            }
+            catch (SecurityException)
+            {
+            }
+            catch (NotSupportedException)
+            {
+            }
+            catch (IOException)
+            {
+            }
+            catch (ExternalException)
+            {
+            }
+
+            return property;
+        }
+
+        if (refPath.StartsWith("http") && refPath.Contains("://"))
+        {
+            property = new JsonObjectNode
+            {
+                { "$ref", refPath }
+            };
+            _ = TryParse(null, refPath, property);
+            return property;
+        }
+
+        return root?.TryGetValue(refPath, true) as JsonObjectNode;
+    }
+
+    internal static async Task TryParse(JsonHttpClient<JsonObjectNode> http, string url, JsonObjectNode json)
+    {
+        var resp = await (http ?? new()).GetAsync(url);
+        if (json == null) json = new();
+        else json.Clear();
+        json.SetRange(resp);
     }
 
     private static JsonObjectNode TryGetObjectValueByProperty(JsonObjectNode json, string key)
