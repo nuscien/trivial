@@ -66,6 +66,12 @@ public class MessageResult
     public string TrackingId { get; set; }
 
     /// <summary>
+    /// Gets or sets the additional optional tag.
+    /// </summary>
+    [JsonIgnore]
+    public object Tag { get; set; }
+
+    /// <summary>
     /// Creates a new tracking ID to use.
     /// </summary>
     public void CreateNewTrackingId()
@@ -382,7 +388,7 @@ public class JsonDataResult : MessageResult
         };
         if (json == null) return null;
         var refPath = json.TryGetStringValue("$ref");
-        if (refPath == null || json.Count != 1) return json;
+        if (refPath == null) return json;
         return JsonObjectNode.TryGetRefObjectValue(Data, json, ToJson());
     }
 

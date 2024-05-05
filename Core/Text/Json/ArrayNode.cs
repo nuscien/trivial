@@ -1742,115 +1742,6 @@ public class JsonArrayNode : IJsonContainerNode, IJsonDataNode, IReadOnlyList<IJ
         => root == null ? null : TryGetRefObjectValue(index, root.ToJson());
 
     /// <summary>
-    /// Filters by the given property.
-    /// </summary>
-    /// <param name="key">The property key.</param>
-    /// <returns>A list of value matched.</returns>
-    public IList<JsonObjectNode> WithProperty(string key)
-    {
-        var list = new List<JsonObjectNode>();
-        var col = SelectObjects();
-        foreach (var item in col)
-        {
-            if (item.ContainsKey(key)) list.Add(item);
-        }
-
-        return list;
-    }
-
-    /// <summary>
-    /// Filters by the given property.
-    /// </summary>
-    /// <param name="key">The property key.</param>
-    /// <param name="kind">The value kind of the property.</param>
-    /// <returns>A list of value matched.</returns>
-    public IList<JsonObjectNode> WithProperty(string key, JsonValueKind kind)
-    {
-        var list = new List<JsonObjectNode>();
-        var col = SelectObjects();
-        foreach (var item in col)
-        {
-            if (item.GetValueKind(key) == kind) list.Add(item);
-        }
-
-        return list;
-    }
-
-    /// <summary>
-    /// Filters by the given property.
-    /// </summary>
-    /// <param name="key">The property key.</param>
-    /// <param name="value">The value of the property.</param>
-    /// <returns>A list of value matched.</returns>
-    public IList<JsonObjectNode> WithProperty(string key, string value)
-    {
-        var list = new List<JsonObjectNode>();
-        var col = SelectObjects();
-        foreach (var item in col)
-        {
-            if (item.TryGetStringValue(key) == value) list.Add(item);
-        }
-
-        return list;
-    }
-
-    /// <summary>
-    /// Filters by the given property.
-    /// </summary>
-    /// <param name="key">The property key.</param>
-    /// <param name="value">The value of the property.</param>
-    /// <param name="comparisonType">One of the enumeration values that specifies how the strings will be compared.</param>
-    /// <returns>A list of value matched.</returns>
-    public IList<JsonObjectNode> WithProperty(string key, string value, StringComparison comparisonType)
-    {
-        if (value == null) return WithProperty(key, value);
-        var list = new List<JsonObjectNode>();
-        var col = SelectObjects();
-        foreach (var item in col)
-        {
-            if (value.Equals(item.TryGetStringValue(key), comparisonType)) list.Add(item);
-        }
-
-        return list;
-    }
-
-    /// <summary>
-    /// Filters by the given property.
-    /// </summary>
-    /// <param name="key">The property key.</param>
-    /// <param name="value">The value of the property.</param>
-    /// <returns>A list of value matched.</returns>
-    public IList<JsonObjectNode> WithProperty(string key, int value)
-    {
-        var list = new List<JsonObjectNode>();
-        var col = SelectObjects();
-        foreach (var item in col)
-        {
-            if (item.TryGetInt32Value(key) == value) list.Add(item);
-        }
-
-        return list;
-    }
-
-    /// <summary>
-    /// Filters by the given property.
-    /// </summary>
-    /// <param name="key">The property key.</param>
-    /// <param name="value">The value of the property.</param>
-    /// <returns>A list of value matched.</returns>
-    public IList<JsonObjectNode> WithProperty(string key, bool value)
-    {
-        var list = new List<JsonObjectNode>();
-        var col = SelectObjects();
-        foreach (var item in col)
-        {
-            if (item.TryGetBooleanValue(key) == value) list.Add(item);
-        }
-
-        return list;
-    }
-
-    /// <summary>
     /// Tries to get the value at the specific index.
     /// </summary>
     /// <param name="index">The zero-based index of the element to get.</param>
@@ -3970,98 +3861,128 @@ public class JsonArrayNode : IJsonContainerNode, IJsonDataNode, IReadOnlyList<IJ
     public IEnumerable<T> OfType<T>()
     {
         var type = typeof(T);
-        var col = store.Where(ele => ele != null && ele.ValueKind != JsonValueKind.Null && ele.ValueKind != JsonValueKind.Undefined).ToList();
-        var list = new List<T>();
+        List<IJsonDataNode> col;
+        try
+        {
+            col = store.Where(ele => ele != null && ele.ValueKind != JsonValueKind.Null && ele.ValueKind != JsonValueKind.Undefined).ToList();
+        }
+        catch (InvalidOperationException)
+        {
+            col = store.Where(ele => ele != null && ele.ValueKind != JsonValueKind.Null && ele.ValueKind != JsonValueKind.Undefined).ToList();
+        }
+
         if (type == typeof(string))
         {
             foreach (var item in col)
             {
-                if (item.TryGetString(out var r)) list.Add((T)(object)r);
+                if (item.TryGetString(out var r)) yield return (T)(object)r;
             }
         }
         else if (type == typeof(int))
         {
             foreach (var item in col)
             {
-                if (item.ValueKind != JsonValueKind.True && item.ValueKind != JsonValueKind.False && item.TryGetInt32(out var r)) list.Add((T)(object)r);
+                if (item.ValueKind != JsonValueKind.True && item.ValueKind != JsonValueKind.False && item.TryGetInt32(out var r)) yield return (T)(object)r;
             }
         }
         else if (type == typeof(long))
         {
             foreach (var item in col)
             {
-                if (item.ValueKind != JsonValueKind.True && item.ValueKind != JsonValueKind.False && item.TryGetInt64(out var r)) list.Add((T)(object)r);
+                if (item.ValueKind != JsonValueKind.True && item.ValueKind != JsonValueKind.False && item.TryGetInt64(out var r)) yield return (T)(object)r;
             }
         }
         else if (type == typeof(float))
         {
             foreach (var item in col)
             {
-                if (item.ValueKind != JsonValueKind.True && item.ValueKind != JsonValueKind.False && item.TryGetSingle(out var r)) list.Add((T)(object)r);
+                if (item.ValueKind != JsonValueKind.True && item.ValueKind != JsonValueKind.False && item.TryGetSingle(out var r)) yield return (T)(object)r;
             }
         }
         else if (type == typeof(double))
         {
             foreach (var item in col)
             {
-                if (item.ValueKind != JsonValueKind.True && item.ValueKind != JsonValueKind.False && item.TryGetDouble(out var r)) list.Add((T)(object)r);
+                if (item.ValueKind != JsonValueKind.True && item.ValueKind != JsonValueKind.False && item.TryGetDouble(out var r)) yield return (T)(object)r;
             }
         }
         else if (type == typeof(decimal))
         {
             foreach (var item in col)
             {
-                if (item.ValueKind != JsonValueKind.True && item.ValueKind != JsonValueKind.False && item.TryGetDecimal(out var r)) list.Add((T)(object)r);
+                if (item.ValueKind != JsonValueKind.True && item.ValueKind != JsonValueKind.False && item.TryGetDecimal(out var r)) yield return (T)(object)r;
             }
         }
         else if (type == typeof(bool))
         {
             foreach (var item in col)
             {
-                if (item.TryGetBoolean(out var r)) list.Add((T)(object)r);
+                if (item.TryGetBoolean(out var r)) yield return (T)(object)r;
             }
         }
         else if (type == typeof(uint))
         {
             foreach (var item in col)
             {
-                if (item.TryGetUInt32(out var r)) list.Add((T)(object)r);
+                if (item.TryGetUInt32(out var r)) yield return (T)(object)r;
             }
         }
         else if (type == typeof(Guid))
         {
             foreach (var item in col)
             {
-                if (item.TryGetGuid(out var r)) list.Add((T)(object)r);
+                if (item.TryGetGuid(out var r)) yield return (T)(object)r;
             }
         }
         else if (type == typeof(DateTime))
         {
             foreach (var item in col)
             {
-                if (item.TryGetDateTime(out var r)) list.Add((T)(object)r);
+                if (item.TryGetDateTime(out var r)) yield return (T)(object)r;
             }
         }
         else if (type == typeof(JsonValueKind))
         {
             foreach (var item in store)
             {
-                list.Add((T)(object)(item != null ? item.ValueKind : JsonValueKind.Undefined));
+                yield return (T)(object)(item != null ? item.ValueKind : JsonValueKind.Undefined);
             }
         }
         else if (type == typeof(StringBuilder))
         {
             foreach (var item in col)
             {
-                if (item.TryGetString(out var r)) list.Add((T)(object)new StringBuilder(r));
+                if (item.TryGetString(out var r)) yield return (T)(object)new StringBuilder(r);
+            }
+        }
+        else if (type == typeof(Uri))
+        {
+            foreach (var item in col)
+            {
+                if (item.TryGetString(out var r))
+                {
+                    var uri = StringExtensions.TryCreateUri(r);
+                    if (uri != null) yield return (T)(object)uri;
+                }
             }
         }
         else
         {
-            return store.OfType<T>();
-        }
+            List<T> list;
+            try
+            {
+                list = store.OfType<T>().ToList();
+            }
+            catch (InvalidOperationException)
+            {
+                list = store.OfType<T>().ToList();
+            }
 
-        return list;
+            foreach (var item in list)
+            {
+                yield return item;
+            }
+        }
     }
 
     /// <summary>
@@ -4069,14 +3990,32 @@ public class JsonArrayNode : IJsonContainerNode, IJsonDataNode, IReadOnlyList<IJ
     /// </summary>
     /// <returns>A list that contains elements from this sequence.</returns>
     public List<IJsonDataNode> ToList()
-        => store.Select(ele => ele ?? JsonValues.Null).ToList();
+    {
+        try
+        {
+            return store.Select(ele => ele ?? JsonValues.Null).ToList();
+        }
+        catch (InvalidOperationException)
+        {
+            return store.Select(ele => ele ?? JsonValues.Null).ToList();
+        }
+    }
 
     /// <summary>
     /// Creates an array from this instance.
     /// </summary>
     /// <returns>An array that contains elements from this sequence.</returns>
     public IJsonDataNode[] ToArray()
-        => store.Select(ele => ele ?? JsonValues.Null).ToArray();
+    {
+        try
+        {
+            return store.Select(ele => ele ?? JsonValues.Null).ToArray();
+        }
+        catch (InvalidOperationException)
+        {
+            return store.Select(ele => ele ?? JsonValues.Null).ToArray();
+        }
+    }
 
     /// <summary>
     /// Creates a dictionary from this instance.
@@ -4084,15 +4023,30 @@ public class JsonArrayNode : IJsonContainerNode, IJsonDataNode, IReadOnlyList<IJ
     /// <returns>A dictionary that contains elements from this sequence.</returns>
     public Dictionary<int, IJsonDataNode> ToDictionary()
     {
-        var d = new Dictionary<int, IJsonDataNode>();
-        var i = 0;
-        foreach (var item in store)
+        try
         {
-            d[i] = item ?? JsonValues.Null;
-            i++;
-        }
+            var d = new Dictionary<int, IJsonDataNode>();
+            var i = 0;
+            foreach (var item in store)
+            {
+                d[i] = item ?? JsonValues.Null;
+                i++;
+            }
 
-        return d;
+            return d;
+        }
+        catch (InvalidOperationException)
+        {
+            var d = new Dictionary<int, IJsonDataNode>();
+            var i = 0;
+            foreach (var item in store)
+            {
+                d[i] = item ?? JsonValues.Null;
+                i++;
+            }
+
+            return d;
+        }
     }
 
     /// <summary>
@@ -4194,7 +4148,16 @@ public class JsonArrayNode : IJsonContainerNode, IJsonDataNode, IReadOnlyList<IJ
     /// </summary>
     /// <returns>A list of value matched.</returns>
     internal IList<JsonObjectNode> SelectObjects()
-        => store.OfType<JsonObjectNode>().ToList();
+    {
+        try
+        {
+            return store.OfType<JsonObjectNode>().ToList();
+        }
+        catch (InvalidOperationException)
+        {
+            return store.OfType<JsonObjectNode>().ToList();
+        }
+    }
 
     /// <summary>
     /// Gets the JSON array format string of the value.
@@ -5057,9 +5020,7 @@ public class JsonArrayNode : IJsonContainerNode, IJsonDataNode, IReadOnlyList<IJ
     /// <exception cref="JsonException">json does not represent a valid single JSON array.</exception>
     /// <exception cref="ArgumentException">readerOptions contains unsupported options.</exception>
     public static JsonArrayNode ParseValue(ref Utf8JsonReader reader)
-    {
-        return JsonDocument.ParseValue(ref reader);
-    }
+        => JsonDocument.ParseValue(ref reader);
 
     /// <summary>
     /// Tries to parse a string to a JSON array.

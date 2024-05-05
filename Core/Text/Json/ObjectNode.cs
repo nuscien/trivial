@@ -1087,6 +1087,14 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     }
 
     /// <summary>
+    /// Gets local definition.
+    /// </summary>
+    /// <param name="id">The definition identifier or key.</param>
+    /// <returns>The definition description; or null, if non-exists.</returns>
+    public JsonObjectNode GetLocalDefinition(string id)
+        => LocalDefinitions?.TryGetObjectValue(id);
+
+    /// <summary>
     /// Gets the value of the specific property.
     /// </summary>
     /// <param name="key">The property key.</param>
@@ -5410,6 +5418,24 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
         => AppendValue(key, string.Format(format, args));
 
     /// <summary>
+    /// Sets local definition.
+    /// </summary>
+    /// <param name="id">The definition identifier or key.</param>
+    /// <param name="value">The JSON object of definition.</param>
+    public void SetLocalDefinition(string id, JsonObjectNode value)
+    {
+        if (string.IsNullOrWhiteSpace(id)) return;
+        var json = LocalDefinitions;
+        if (json == null)
+        {
+            json = new();
+            LocalDefinitions = json;
+        }
+
+        json.SetValue(id, value);
+    }
+
+    /// <summary>
     /// Adds a property with the provided key and value to the JSON object.
     /// </summary>
     /// <param name="item">The property to add to the JSON object.</param>
@@ -7718,8 +7744,8 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     /// <returns>The value.</returns>
     internal static JsonObjectNode TryGetRefObjectValue(JsonObjectNode source, JsonObjectNode property, JsonObjectNode root)
     {
-        root ??= source;
         if (property == null) return null;
+        root ??= source;
         var refPath = property.TryGetStringValue("$ref");
         if (refPath == null) return property;
         if (string.IsNullOrWhiteSpace(refPath) || refPath == "#") return root;

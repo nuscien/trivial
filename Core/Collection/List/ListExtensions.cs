@@ -1167,7 +1167,7 @@ public static partial class ListExtensions
     /// <param name="key">The property key required.</param>
     /// <param name="value">The value of the property.</param>
     /// <returns>A collection of the JSON object node.</returns>
-    public static IEnumerable<JsonObjectNode> ListByProperty(this IEnumerable<JsonObjectNode> col, string key, string value)
+    public static IEnumerable<JsonObjectNode> WithProperty(this IEnumerable<JsonObjectNode> col, string key, string value)
     {
         if (col == null) yield break;
         foreach (var item in col)
@@ -1182,8 +1182,35 @@ public static partial class ListExtensions
     /// <param name="col">The input collection.</param>
     /// <param name="key">The property key required.</param>
     /// <param name="value">The value of the property.</param>
+    /// <param name="comparisonType">One of the enumeration values that specifies how the strings will be compared.</param>
     /// <returns>A collection of the JSON object node.</returns>
-    public static IEnumerable<JsonObjectNode> ListByProperty(this IEnumerable<JsonObjectNode> col, string key, int value)
+    public static IEnumerable<JsonObjectNode> WithProperty(this IEnumerable<JsonObjectNode> col, string key, string value, StringComparison comparisonType)
+    {
+        if (col == null) yield break;
+        if (value == null)
+        {
+            foreach (var item in col)
+            {
+                if (item is not null && item.IsNullOrUndefined(key)) yield return item;
+            }
+        }
+        else
+        {
+            foreach (var item in col)
+            {
+                if (item is not null && value.Equals(item.TryGetStringValue(key), comparisonType)) yield return item;
+            }
+        }
+    }
+
+    /// <summary>
+    /// Gets the all JSON object items which contains the specific property from the collection.
+    /// </summary>
+    /// <param name="col">The input collection.</param>
+    /// <param name="key">The property key required.</param>
+    /// <param name="value">The value of the property.</param>
+    /// <returns>A collection of the JSON object node.</returns>
+    public static IEnumerable<JsonObjectNode> WithProperty(this IEnumerable<JsonObjectNode> col, string key, int value)
     {
         if (col == null) yield break;
         foreach (var item in col)
@@ -1197,9 +1224,25 @@ public static partial class ListExtensions
     /// </summary>
     /// <param name="col">The input collection.</param>
     /// <param name="key">The property key required.</param>
+    /// <param name="value">The value of the property.</param>
+    /// <returns>A collection of the JSON object node.</returns>
+    public static IEnumerable<JsonObjectNode> WithProperty(this IEnumerable<JsonObjectNode> col, string key, bool value)
+    {
+        if (col == null) yield break;
+        foreach (var item in col)
+        {
+            if (item is not null && item.TryGetBooleanValue(key) == value) yield return item;
+        }
+    }
+
+    /// <summary>
+    /// Gets the all JSON object items which contains the specific property from the collection.
+    /// </summary>
+    /// <param name="col">The input collection.</param>
+    /// <param name="key">The property key required.</param>
     /// <param name="kind">The kind of the property.</param>
     /// <returns>A collection of the JSON object node.</returns>
-    public static IEnumerable<JsonObjectNode> ListByProperty(this IEnumerable<JsonObjectNode> col, string key, JsonValueKind kind)
+    public static IEnumerable<JsonObjectNode> WithProperty(this IEnumerable<JsonObjectNode> col, string key, JsonValueKind kind)
     {
         if (col == null) yield break;
         foreach (var item in col)
@@ -1214,7 +1257,7 @@ public static partial class ListExtensions
     /// <param name="col">The input collection.</param>
     /// <param name="key">The property key required.</param>
     /// <returns>A collection of the JSON object node.</returns>
-    public static IEnumerable<JsonObjectNode> ListByProperty(this IEnumerable<JsonObjectNode> col, string key)
+    public static IEnumerable<JsonObjectNode> WithProperty(this IEnumerable<JsonObjectNode> col, string key)
     {
         if (col == null) yield break;
         foreach (var item in col)
@@ -1230,8 +1273,19 @@ public static partial class ListExtensions
     /// <param name="key">The property key required.</param>
     /// <param name="value">The value of the property.</param>
     /// <returns>A collection of the JSON object node.</returns>
-    public static IEnumerable<JsonObjectNode> ListByProperty(this JsonArrayNode array, string key, string value)
-        => ListByProperty(array?.OfType<JsonObjectNode>(), key, value);
+    public static IEnumerable<JsonObjectNode> WithProperty(this JsonArrayNode array, string key, string value)
+        => WithProperty(array?.SelectObjects(), key, value);
+
+    /// <summary>
+    /// Gets the all JSON object items which contains the specific property from the array.
+    /// </summary>
+    /// <param name="array">The input JSON array node.</param>
+    /// <param name="key">The property key required.</param>
+    /// <param name="value">The value of the property.</param>
+    /// <param name="comparisonType">One of the enumeration values that specifies how the strings will be compared.</param>
+    /// <returns>A collection of the JSON object node.</returns>
+    public static IEnumerable<JsonObjectNode> WithProperty(this JsonArrayNode array, string key, string value, StringComparison comparisonType)
+        => WithProperty(array?.SelectObjects(), key, value, comparisonType);
 
     /// <summary>
     /// Gets the all JSON object items which contains the specific property from the array.
@@ -1240,8 +1294,18 @@ public static partial class ListExtensions
     /// <param name="key">The property key required.</param>
     /// <param name="value">The value of the property.</param>
     /// <returns>A collection of the JSON object node.</returns>
-    public static IEnumerable<JsonObjectNode> ListByProperty(this JsonArrayNode array, string key, int value)
-        => ListByProperty(array?.OfType<JsonObjectNode>(), key, value);
+    public static IEnumerable<JsonObjectNode> WithProperty(this JsonArrayNode array, string key, int value)
+        => WithProperty(array?.SelectObjects(), key, value);
+
+    /// <summary>
+    /// Gets the all JSON object items which contains the specific property from the array.
+    /// </summary>
+    /// <param name="array">The input JSON array node.</param>
+    /// <param name="key">The property key required.</param>
+    /// <param name="value">The value of the property.</param>
+    /// <returns>A collection of the JSON object node.</returns>
+    public static IEnumerable<JsonObjectNode> WithProperty(this JsonArrayNode array, string key, bool value)
+        => WithProperty(array?.SelectObjects(), key, value);
 
     /// <summary>
     /// Gets the all JSON object items which contains the specific property from the array.
@@ -1250,8 +1314,8 @@ public static partial class ListExtensions
     /// <param name="key">The property key required.</param>
     /// <param name="kind">The kind of the property.</param>
     /// <returns>A collection of the JSON object node.</returns>
-    public static IEnumerable<JsonObjectNode> ListByProperty(this JsonArrayNode array, string key, JsonValueKind kind)
-        => ListByProperty(array?.OfType<JsonObjectNode>(), key, kind);
+    public static IEnumerable<JsonObjectNode> WithProperty(this JsonArrayNode array, string key, JsonValueKind kind)
+        => WithProperty(array?.SelectObjects(), key, kind);
 
     /// <summary>
     /// Gets the all JSON object items which contains the specific property from the array.
@@ -1259,8 +1323,8 @@ public static partial class ListExtensions
     /// <param name="array">The input JSON array node.</param>
     /// <param name="key">The property key required.</param>
     /// <returns>A collection of the JSON object node.</returns>
-    public static IEnumerable<JsonObjectNode> ListByProperty(this JsonArrayNode array, string key)
-        => ListByProperty(array?.OfType<JsonObjectNode>(), key);
+    public static IEnumerable<JsonObjectNode> WithProperty(this JsonArrayNode array, string key)
+        => WithProperty(array?.SelectObjects(), key);
 
     /// <summary>
     /// Gets the JSON lines format string of the value.
