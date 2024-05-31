@@ -1538,7 +1538,7 @@ public class JsonArrayNode : IJsonContainerNode, IJsonDataNode, IReadOnlyList<IJ
     public bool TryGetSingleValue(int index, out float result)
     {
         result = TryGetSingleValue(index);
-        return float.IsNaN(result);
+        return !float.IsNaN(result);
     }
 
     /// <summary>
@@ -1599,7 +1599,7 @@ public class JsonArrayNode : IJsonContainerNode, IJsonDataNode, IReadOnlyList<IJ
     public bool TryGetDoubleValue(int index, out double result)
     {
         result = TryGetDoubleValue(index);
-        return double.IsNaN(result);
+        return !double.IsNaN(result);
     }
 
     /// <summary>
@@ -2595,6 +2595,19 @@ public class JsonArrayNode : IJsonContainerNode, IJsonDataNode, IReadOnlyList<IJ
     {
         if (store.Count == index) store.Add(JsonValues.Null);
         store[index] = value ? JsonBooleanNode.True : JsonBooleanNode.False;
+    }
+
+    /// <summary>
+    /// Sets the value at the specific index.
+    /// </summary>
+    /// <param name="index">The zero-based index of the element to get.</param>
+    /// <param name="value">The value to set.</param>
+    /// <exception cref="ArgumentOutOfRangeException">The index is out of range.</exception>
+    public void SetValue(int index, bool? value)
+    {
+        if (store.Count == index) store.Add(JsonValues.Null);
+        if (value.HasValue) store[index] = value.Value ? JsonBooleanNode.True : JsonBooleanNode.False;
+        else SetNullValue(index);
     }
 
     /// <summary>

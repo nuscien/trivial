@@ -2101,7 +2101,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     public bool TryGetSingleValue(string key, out float result)
     {
         result = TryGetSingleValue(key);
-        return float.IsNaN(result);
+        return !float.IsNaN(result);
     }
 
     /// <summary>
@@ -2327,7 +2327,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     public double? TryGetNullableDoubleValue(IEnumerable<string> keyPath)
     {
         var v = TryGetDoubleValue(keyPath);
-        return double.IsNaN(v) ? null : v;
+        return !double.IsNaN(v) ? null : v;
     }
 
     /// <summary>
@@ -3189,13 +3189,33 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     /// <param name="result">The result.</param>
     /// <returns>true if has the property and the type is the one expected; otherwise, false.</returns>
     public bool TryGetValue<T>(IEnumerable<string> keyPath, out T result)
+        => TryGetValue<T>(keyPath, out result, out _);
+
+    /// <summary>
+    /// Tries to get the value of the specific property.
+    /// </summary>
+    /// <typeparam name="T">The type of value. Should be one of IJsonDataNode (or its sub-class), String, Int32, Int64, Boolean, Single, Double, Decimal or StringBuilder.</typeparam>
+    /// <param name="keyPath">The additional property key path.</param>
+    /// <param name="result">The result.</param>
+    /// <param name="kind">The value kind.</param>
+    /// <returns>true if has the property and the type is the one expected; otherwise, false.</returns>
+    public bool TryGetValue<T>(IEnumerable<string> keyPath, out T result, out JsonValueKind kind)
     {
         if (!TryGetValue(keyPath, out var r))
         {
             result = default;
+            kind = JsonValueKind.Undefined;
             return false;
         }
 
+        if (r == null)
+        {
+            result = default;
+            kind = JsonValueKind.Null;
+            return false;
+        }
+
+        kind = r.ValueKind;
         if (r is T v)
         {
             result = v;
@@ -4009,6 +4029,19 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     {
         AssertKey(key);
         SetProperty(key, value ? JsonBooleanNode.True : JsonBooleanNode.False);
+    }
+
+    /// <summary>
+    /// Sets the value of the specific property.
+    /// </summary>
+    /// <param name="key">The property key.</param>
+    /// <param name="value">The value to set.</param>
+    /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+    public void SetValue(string key, bool? value)
+    {
+        AssertKey(key);
+        if (value.HasValue) SetProperty(key, value.Value ? JsonBooleanNode.True : JsonBooleanNode.False);
+        else SetNullValue(key);
     }
 
     /// <summary>
