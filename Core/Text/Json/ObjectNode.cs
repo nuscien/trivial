@@ -3592,6 +3592,19 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     }
 
     /// <summary>
+    /// Sets the value of the specific property.
+    /// </summary>
+    /// <param name="key">The property key.</param>
+    /// <param name="value">The value to set.</param>
+    /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+    public void SetValue(string key, IJsonStringNode value)
+    {
+        AssertKey(key);
+        if (value == null) SetProperty(key, JsonValues.Null);
+        else SetProperty(key, value != null ? new JsonStringNode(value) : JsonValues.Null);
+    }
+
+    /// <summary>
     /// Sets the value of the specific property; or removes the property if the value is null.
     /// </summary>
     /// <param name="key">The property key.</param>
@@ -4042,6 +4055,18 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
         AssertKey(key);
         if (value.HasValue) SetProperty(key, value.Value ? JsonBooleanNode.True : JsonBooleanNode.False);
         else SetNullValue(key);
+    }
+
+    /// <summary>
+    /// Sets the value of the specific property.
+    /// </summary>
+    /// <param name="key">The property key.</param>
+    /// <param name="value">The value to set.</param>
+    /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+    public void SetValue(string key, JsonBooleanNode value)
+    {
+        AssertKey(key);
+        SetProperty(key, value ?? JsonValues.Null);
     }
 
     /// <summary>

@@ -55,6 +55,15 @@ public class JsonStringNode : IJsonStringNode, IJsonValueNode<string>, IJsonData
     /// Initializes a new instance of the JsonString class.
     /// </summary>
     /// <param name="value">The value.</param>
+    public JsonStringNode(IJsonStringNode value)
+        : this(value?.StringValue)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the JsonString class.
+    /// </summary>
+    /// <param name="value">The value.</param>
     public JsonStringNode(DateTime value)
     {
         Value = ToJson(value, true);

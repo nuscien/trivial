@@ -2436,6 +2436,18 @@ public class JsonArrayNode : IJsonContainerNode, IJsonDataNode, IReadOnlyList<IJ
     /// <param name="index">The zero-based index of the element to get.</param>
     /// <param name="value">The value to set.</param>
     /// <exception cref="ArgumentOutOfRangeException">The index is out of range.</exception>
+    public void SetValue(int index, IJsonStringNode value)
+    {
+        if (store.Count == index) store.Add(JsonValues.Null);
+        store[index] = value != null ? new JsonStringNode(value) : JsonValues.Null;
+    }
+
+    /// <summary>
+    /// Sets the value at the specific index.
+    /// </summary>
+    /// <param name="index">The zero-based index of the element to get.</param>
+    /// <param name="value">The value to set.</param>
+    /// <exception cref="ArgumentOutOfRangeException">The index is out of range.</exception>
     /// <exception cref="InvalidOperationException">The secure string is disposed.</exception>
     public void SetValue(int index, SecureString value)
     {
@@ -2608,6 +2620,18 @@ public class JsonArrayNode : IJsonContainerNode, IJsonDataNode, IReadOnlyList<IJ
         if (store.Count == index) store.Add(JsonValues.Null);
         if (value.HasValue) store[index] = value.Value ? JsonBooleanNode.True : JsonBooleanNode.False;
         else SetNullValue(index);
+    }
+
+    /// <summary>
+    /// Sets the value at the specific index.
+    /// </summary>
+    /// <param name="index">The zero-based index of the element to get.</param>
+    /// <param name="value">The value to set.</param>
+    /// <exception cref="ArgumentOutOfRangeException">The index is out of range.</exception>
+    public void SetValue(int index, JsonBooleanNode value)
+    {
+        if (store.Count == index) store.Add(JsonValues.Null);
+        store[index] = value ?? JsonValues.Null;
     }
 
     /// <summary>
@@ -2836,6 +2860,13 @@ public class JsonArrayNode : IJsonContainerNode, IJsonDataNode, IReadOnlyList<IJ
     /// Adds a value.
     /// </summary>
     /// <param name="value">The value to set.</param>
+    public void Add(IJsonStringNode value)
+        => store.Add(value != null ? new JsonStringNode(value) : JsonValues.Null);
+
+    /// <summary>
+    /// Adds a value.
+    /// </summary>
+    /// <param name="value">The value to set.</param>
     /// <exception cref="InvalidOperationException">The secure string is disposed.</exception>
     public void Add(SecureString value)
         => store.Add(new JsonStringNode(value));
@@ -2917,6 +2948,13 @@ public class JsonArrayNode : IJsonContainerNode, IJsonDataNode, IReadOnlyList<IJ
     /// <param name="value">The value to set.</param>
     public void Add(bool value)
         => store.Add(value ? JsonBooleanNode.True : JsonBooleanNode.False);
+
+    /// <summary>
+    /// Adds a value.
+    /// </summary>
+    /// <param name="value">The value to set.</param>
+    public void Add(JsonBooleanNode value)
+        => store.Add(value ?? JsonValues.Null);
 
     /// <summary>
     /// Adds a value.
@@ -3241,6 +3279,15 @@ public class JsonArrayNode : IJsonContainerNode, IJsonDataNode, IReadOnlyList<IJ
     /// <param name="index">The zero-based index of the element to get.</param>
     /// <param name="value">The value to set.</param>
     /// <exception cref="ArgumentOutOfRangeException">The index was out of range.</exception>
+    public void Insert(int index, IJsonStringNode value)
+        => store.Insert(index, value != null ? new JsonStringNode(value) : JsonValues.Null);
+
+    /// <summary>
+    /// Inserts the value at the specific index.
+    /// </summary>
+    /// <param name="index">The zero-based index of the element to get.</param>
+    /// <param name="value">The value to set.</param>
+    /// <exception cref="ArgumentOutOfRangeException">The index was out of range.</exception>
     /// <exception cref="InvalidOperationException">The secure string is disposed.</exception>
     public void Insert(int index, SecureString value)
         => store.Insert(index, new JsonStringNode(value));
@@ -3335,6 +3382,15 @@ public class JsonArrayNode : IJsonContainerNode, IJsonDataNode, IReadOnlyList<IJ
     /// <exception cref="ArgumentOutOfRangeException">The index was out of range.</exception>
     public void Insert(int index, bool value)
         => store.Insert(index, value ? JsonBooleanNode.True : JsonBooleanNode.False);
+
+    /// <summary>
+    /// Inserts the value at the specific index.
+    /// </summary>
+    /// <param name="index">The zero-based index of the element to get.</param>
+    /// <param name="value">The value to set.</param>
+    /// <exception cref="ArgumentOutOfRangeException">The index was out of range.</exception>
+    public void Insert(int index, JsonBooleanNode value)
+        => store.Insert(index, value ?? JsonValues.Null);
 
     /// <summary>
     /// Inserts the value at the specific index.
