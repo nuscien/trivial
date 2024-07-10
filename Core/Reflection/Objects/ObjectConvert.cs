@@ -7,6 +7,7 @@ using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
+using Trivial.Data;
 
 namespace Trivial.Reflection;
 
@@ -113,9 +114,7 @@ public static class ObjectConvert
     /// <exception cref="ArgumentException">value is not the one in the type or content format supported.</exception>
     /// <exception cref="OverflowException">value is outside the range of the underlying type of the specific type to convert.</exception>
     public static T Invoke<T>(object value)
-    {
-        return (T)Invoke(typeof(T), value);
-    }
+        => (T)Invoke(typeof(T), value);
 
     /// <summary>
     /// Tries to convert the given object to a specific struct.
@@ -313,6 +312,90 @@ public static class ObjectConvert
         }
 
         return instance;
+    }
+
+    /// <summary>
+    /// Occurs the event handler.
+    /// </summary>
+    /// <typeparam name="T">The type of the data.</typeparam>
+    /// <param name="handler">The handler.</param>
+    /// <param name="sender">The sender.</param>
+    /// <param name="data">The data.</param>
+    /// <param name="message">The additional message.</param>
+    public static void Invoke<T>(this DataEventHandler<T> handler, object sender, T data, string message = null)
+    {
+        if (handler == null) return;
+        var args = new DataEventArgs<T>(data, message);
+        handler(sender, args);
+    }
+
+    /// <summary>
+    /// Occurs the event handler.
+    /// </summary>
+    /// <typeparam name="T">The type of the data.</typeparam>
+    /// <param name="handler">The handler.</param>
+    /// <param name="sender">The sender.</param>
+    /// <param name="oldValue">The old value.</param>
+    /// <param name="newValue">The new value.</param>
+    /// <param name="method">The method to change.</param>
+    /// <param name="key">The property key of the value changed.</param>
+    public static void Invoke<T>(this ChangeEventHandler<T> handler, object sender, T oldValue, T newValue, ChangeMethods method, string key = null)
+    {
+        if (handler == null) return;
+        var args = new ChangeEventArgs<T>(oldValue, newValue, method, key);
+        handler(sender, args);
+    }
+
+    /// <summary>
+    /// Occurs the event handler.
+    /// </summary>
+    /// <typeparam name="T">The type of the data.</typeparam>
+    /// <param name="handler">The handler.</param>
+    /// <param name="sender">The sender.</param>
+    /// <param name="oldValue">The old value.</param>
+    /// <param name="newValue">The new value.</param>
+    /// <param name="method">The method to change.</param>
+    /// <param name="triggerType">The type identifier of the trigger.</param>
+    /// <param name="key">The property key of the value changed.</param>
+    public static void Invoke<T>(this ChangeEventHandler<T> handler, object sender, T oldValue, T newValue, ChangeMethods method, Guid triggerType, string key = null)
+    {
+        if (handler == null) return;
+        var args = new ChangeEventArgs<T>(oldValue, newValue, method, triggerType, key);
+        handler(sender, args);
+    }
+
+    /// <summary>
+    /// Occurs the event handler.
+    /// </summary>
+    /// <typeparam name="T">The type of the data.</typeparam>
+    /// <param name="handler">The handler.</param>
+    /// <param name="sender">The sender.</param>
+    /// <param name="oldValue">The old value.</param>
+    /// <param name="newValue">The new value.</param>
+    /// <param name="key">The property key of the value changed.</param>
+    /// <param name="autoMethod">true if set method automatically by value parameters; otherwise, false.</param>
+    public static void Invoke<T>(this ChangeEventHandler<T> handler, object sender, T oldValue, T newValue, string key = null, bool autoMethod = false)
+    {
+        if (handler == null) return;
+        var args = new ChangeEventArgs<T>(oldValue, newValue, key, autoMethod);
+        handler(sender, args);
+    }
+
+    /// <summary>
+    /// Occurs the event handler.
+    /// </summary>
+    /// <typeparam name="T">The type of the data.</typeparam>
+    /// <param name="handler">The handler.</param>
+    /// <param name="sender">The sender.</param>
+    /// <param name="oldValue">The old value.</param>
+    /// <param name="newValue">The new value.</param>
+    /// <param name="triggerType">The type identifier of the trigger.</param>
+    /// <param name="key">The property key of the value changed.</param>
+    public static void Invoke<T>(this ChangeEventHandler<T> handler, object sender, T oldValue, T newValue, Guid triggerType, string key = null)
+    {
+        if (handler == null) return;
+        var args = new ChangeEventArgs<T>(oldValue, newValue, triggerType, key);
+        handler(sender, args);
     }
 
     /// <summary>

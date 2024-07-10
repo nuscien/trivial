@@ -288,9 +288,24 @@ public class DataEventArgs<T> : EventArgs
     }
 
     /// <summary>
+    /// Initializes a new instance of the DataEventArgs class.
+    /// </summary>
+    /// <param name="data">The data.</param>
+    /// <param name="message">The additional message.</param>
+    public DataEventArgs(T data, string message) : this(data)
+    {
+        Message = message;
+    }
+
+    /// <summary>
     /// Gets the data.
     /// </summary>
     public T Data { get; }
+
+    /// <summary>
+    /// Gets the additional message.
+    /// </summary>
+    public string Message { get; }
 }
 
 /// <summary>
