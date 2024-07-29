@@ -190,6 +190,7 @@ public class TokenInfo
     /// </summary>
     [DataMember(Name = ExpiresInProperty, EmitDefaultValue = false)]
     [JsonPropertyName(ExpiresInProperty)]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public int? ExpiredInSecond {
         get
         {
@@ -216,6 +217,7 @@ public class TokenInfo
     /// </summary>
     [DataMember(Name = RefreshTokenProperty, EmitDefaultValue = false)]
     [JsonPropertyName(RefreshTokenProperty)]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public string RefreshToken { get; set; }
 
     /// <summary>
@@ -223,6 +225,7 @@ public class TokenInfo
     /// </summary>
     [DataMember(Name = ErrorCodeProperty, EmitDefaultValue = false)]
     [JsonPropertyName(ErrorCodeProperty)]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public string ErrorCode { get; set; }
 
     /// <summary>
@@ -232,6 +235,7 @@ public class TokenInfo
     /// </summary>
     [DataMember(Name = ErrorDescriptionProperty, EmitDefaultValue = false)]
     [JsonPropertyName(ErrorDescriptionProperty)]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public string ErrorDescription { get; set; }
 
     /// <summary>
@@ -241,6 +245,7 @@ public class TokenInfo
     /// </summary>
     [DataMember(Name = ErrorUriProperty, EmitDefaultValue = false)]
     [JsonPropertyName(ErrorUriProperty)]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public string ErrorUrl
     {
         get
@@ -305,6 +310,7 @@ public class TokenInfo
     /// </summary>
     [DataMember(Name = StateProperty, EmitDefaultValue = false)]
     [JsonPropertyName(StateProperty)]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public virtual string State { get; set; }
 
     /// <summary>
@@ -312,6 +318,7 @@ public class TokenInfo
     /// </summary>
     [DataMember(Name = ResourceIdProperty, EmitDefaultValue = false)]
     [JsonPropertyName(ResourceIdProperty)]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public virtual string ResourceId { get; set; }
 
     /// <summary>
@@ -319,6 +326,7 @@ public class TokenInfo
     /// </summary>
     [DataMember(Name = UserIdProperty, EmitDefaultValue = false)]
     [JsonPropertyName(UserIdProperty)]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public virtual string UserId { get; set; }
 
     /// <summary>
@@ -332,6 +340,7 @@ public class TokenInfo
     /// </summary>
     [DataMember(Name = ScopeProperty, EmitDefaultValue = false)]
     [JsonPropertyName(ScopeProperty)]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public string ScopeString
     {
         get
@@ -369,18 +378,14 @@ public class TokenInfo
     /// <param name="key">The property key.</param>
     /// <returns>A string value of additional data; or null, if no such property.</returns>
     public string TryGetAdditionalValue(string key)
-    {
-        return AdditionalData.TryGetValue(key, out string resultStr) ? resultStr : null;
-    }
+        => AdditionalData.TryGetValue(key, out string resultStr) ? resultStr : null;
 
     /// <summary>
     /// Returns a System.String that represents the current TokenInfo.
     /// </summary>
     /// <returns>A System.String that represents the current TokenInfo.</returns>
     public override string ToString()
-    {
-        return $"{TokenType} {AccessToken}".Trim();
-    }
+        => $"{TokenType} {AccessToken}".Trim();
 
     /// <summary>
     /// Returns a System.Net.Http.Headers.AuthenticationHeaderValue that represents the current TokenInfo.
@@ -389,14 +394,12 @@ public class TokenInfo
     /// <param name="parameterCase">The parameter case.</param>
     /// <returns>A System.Net.Http.Headers.AuthenticationHeaderValue that represents the current TokenInfo.</returns>
     public AuthenticationHeaderValue ToAuthenticationHeaderValue(Cases schemeCase = Cases.Original, Cases parameterCase = Cases.Original)
-    {
-        return AccessToken != null
+        => AccessToken != null
             ? new AuthenticationHeaderValue(
                 StringExtensions.ToSpecificCaseInvariant(TokenType, schemeCase),
                 StringExtensions.ToSpecificCaseInvariant(AccessToken, parameterCase))
             : new AuthenticationHeaderValue(
                 StringExtensions.ToSpecificCaseInvariant(TokenType, schemeCase));
-    }
 
     /// <summary>
     /// Returns a System.Net.Http.Headers.AuthenticationHeaderValue that represents the current TokenInfo.
@@ -405,13 +408,11 @@ public class TokenInfo
     /// <param name="parameterCase">The parameter case.</param>
     /// <returns>A System.Net.Http.Headers.AuthenticationHeaderValue that represents the current TokenInfo.</returns>
     public AuthenticationHeaderValue ToAuthenticationHeaderValue(string scheme, Cases parameterCase = Cases.Original)
-    {
-        return AccessToken != null
+        => AccessToken != null
             ? new AuthenticationHeaderValue(
                 scheme ?? TokenType,
                 StringExtensions.ToSpecificCaseInvariant(AccessToken, parameterCase))
             : new AuthenticationHeaderValue(scheme ?? TokenType);
-    }
 }
 
 /// <summary>
@@ -438,8 +439,14 @@ public class TokenContainer
     }
 
     /// <summary>
+    /// Adds or removes the event raised after token changed.
+    /// </summary>
+    public event ChangeEventHandler<TokenInfo> TokenChanged;
+
+    /// <summary>
     /// Gets the token information instance saved in this container.
     /// </summary>
+    [JsonIgnore]
     public TokenInfo Token
     {
         get
@@ -457,28 +464,33 @@ public class TokenContainer
     }
 
     /// <summary>
-    /// Adds or removes the event raised after token changed.
+    /// Gets or sets an additional tag object.
     /// </summary>
-    public event ChangeEventHandler<TokenInfo> TokenChanged;
+    [JsonIgnore]
+    public object Tag { get; set; }
 
     /// <summary>
     /// Gets the access token saved in this container.
     /// </summary>
+    [JsonIgnore]
     public string AccessToken => Token?.AccessToken;
 
     /// <summary>
     /// Gets a value indicating whether the access token is null, empty or consists only of white-space characters.
     /// </summary>
+    [JsonIgnore]
     public bool IsTokenNullOrEmpty => Token?.IsEmpty ?? true;
 
     /// <summary>
     /// Gets or sets the case of authenticiation scheme.
     /// </summary>
+    [JsonIgnore]
     public virtual Cases AuthenticationSchemeCase { get; set; } = Cases.Original;
 
     /// <summary>
     /// Gets or sets the converter of authentication header value.
     /// </summary>
+    [JsonIgnore]
     public virtual Func<TokenInfo, Cases, AuthenticationHeaderValue> ConvertToAuthenticationHeaderValue { get; set; }
 
     /// <summary>
@@ -486,18 +498,14 @@ public class TokenContainer
     /// </summary>
     /// <returns>A System.String that represents the current token container instance.</returns>
     public override string ToString()
-    {
-        return Token?.ToString() ?? string.Empty;
-    }
+        => Token?.ToString() ?? string.Empty;
 
     /// <summary>
     /// Returns a System.Net.Http.Headers.AuthenticationHeaderValue that represents the current token container instance.
     /// </summary>
     /// <returns>A System.Net.Http.Headers.AuthenticationHeaderValue that represents the current token container instance.</returns>
     public virtual AuthenticationHeaderValue ToAuthenticationHeaderValue()
-    {
-        return Token?.ToAuthenticationHeaderValue(AuthenticationSchemeCase);
-    }
+        => Token?.ToAuthenticationHeaderValue(AuthenticationSchemeCase);
 
     /// <summary>
     /// Sets the headers with current authorization information.

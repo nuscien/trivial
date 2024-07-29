@@ -1,14 +1,102 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Trivial.Net;
 using Trivial.Text;
 
 namespace Trivial.Collection;
 
 public static partial class ListExtensions
 {
+    /// <summary>
+    /// Gets the server-sent event format string.
+    /// </summary>
+    /// <param name="col">The input collection.</param>
+    /// <param name="newLineN">true if use \n instead of new line.</param>
+    /// <returns>A server-sent event format string.</returns>
+    public static string ToResponseString(this IEnumerable<ServerSentEventRecord> col, bool newLineN)
+    {
+        if (col == null) return null;
+        var sb = new StringBuilder();
+        foreach (var item in col)
+        {
+            if (item == null) continue;
+            item.ToResponseString(sb, newLineN);
+        }
+
+        return sb.ToString();
+    }
+
+    /// <summary>
+    /// Gets the server-sent event format string.
+    /// </summary>
+    /// <param name="col">The input collection.</param>
+    /// <param name="stream">The stream.</param>
+    /// <returns>A server-sent event format string.</returns>
+    public static void ToResponseString(this IEnumerable<ServerSentEventRecord> col, Stream stream)
+    {
+        if (col == null) return;
+        var writer = new StreamWriter(stream, Encoding.UTF8);
+        foreach (var item in col)
+        {
+            if (item == null) continue;
+            writer.Write(item.ToResponseString(true));
+            writer.Write('\n');
+            writer.Flush();
+        }
+    }
+
+    /// <summary>
+    /// Gets the JSON array format string of the value.
+    /// </summary>
+    /// <param name="col">The input collection.</param>
+    /// <returns>A JSON array format string.</returns>
+    public static string ToJsonArrayString(this IEnumerable<JsonObjectNode> col)
+    {
+        var arr = new JsonArrayNode();
+        arr.AddRange(col);
+        return arr.ToString();
+    }
+
+    /// <summary>
+    /// Gets the JSON array format string of the value.
+    /// </summary>
+    /// <param name="col">The input collection.</param>
+    /// <param name="indentStyle">The indent style.</param>
+    /// <returns>A JSON array format string.</returns>
+    public static string ToJsonArrayString(this IEnumerable<JsonObjectNode> col, IndentStyles indentStyle)
+    {
+        var arr = new JsonArrayNode();
+        arr.AddRange(col);
+        return arr.ToString(indentStyle);
+    }
+
+    /// <summary>
+    /// Gets the JSON lines format string of the value.
+    /// </summary>
+    /// <param name="col">The input collection.</param>
+    /// <returns>A JSON lines format string.</returns>
+    public static string ToJsonlString(this IEnumerable<JsonObjectNode> col)
+    {
+        if (col == null) return null;
+        var str = new StringBuilder();
+        foreach (var prop in col)
+        {
+            if (prop is null)
+            {
+                str.AppendLine("null");
+                continue;
+            }
+
+            str.AppendLine(prop.ToString());
+        }
+
+        return str.ToString();
+    }
+
     /// <summary>
     /// Generates a string collection.
     /// </summary>

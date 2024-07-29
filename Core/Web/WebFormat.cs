@@ -9,7 +9,7 @@ using System.Security;
 using System.Text;
 using System.Text.Json;
 using System.Web;
-
+using Trivial.Net;
 using Trivial.Text;
 
 namespace Trivial.Web;
@@ -451,6 +451,7 @@ public static partial class WebFormat
     /// Gets the JSON deserializer.
     /// </summary>
     /// <typeparam name="T">The type of the instance.</typeparam>
+    /// <param name="ignoreJsonDoc">true if need return null for JSON format; otherwise, false.</param>
     /// <returns>A function for deserialization.</returns>
     internal static Func<string, T> GetJsonDeserializer<T>(bool ignoreJsonDoc = false)
     {
@@ -522,6 +523,12 @@ public static partial class WebFormat
         if (t == typeof(string))
         {
             return str => (T)(object)str;
+        }
+
+        if (t == typeof(IEnumerable<ServerSentEventRecord>))
+        {
+            if (ignoreJsonDoc) return null;
+            return str => (T)(object)ServerSentEventRecord.Parse(str);
         }
 
         return null;

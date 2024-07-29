@@ -34,7 +34,7 @@ public static class HttpClientExtensions
     /// <param name="httpContent">The http response content.</param>
     /// <param name="destination">The destination stream to write.</param>
     /// <param name="progress">The progress to report. The value is the length of the stream.</param>
-    /// <param name="cancellationToken">The optional cancellation token.</param>
+    /// <param name="cancellationToken">A cancellation token that can be used to cancel the work if it has not yet started.</param>
     /// <returns>The task object representing the asynchronous operation.</returns>
     /// <exception cref="ArgumentNullException">The argument is null.</exception>
     public static Task CopyToAsync(this HttpContent httpContent, Stream destination, IProgress<long> progress = null, CancellationToken cancellationToken = default)
@@ -49,7 +49,7 @@ public static class HttpClientExtensions
     /// <param name="destination">The destination stream to write.</param>
     /// <param name="bufferSize">The size, in bytes, of the buffer. This value must be greater than zero.</param>
     /// <param name="progress">The progress to report. The value is the length of the stream.</param>
-    /// <param name="cancellationToken">The optional cancellation token.</param>
+    /// <param name="cancellationToken">A cancellation token that can be used to cancel the work if it has not yet started.</param>
     /// <returns>The task object representing the asynchronous operation.</returns>
     /// <exception cref="ArgumentNullException">The argument is null.</exception>
     public static async Task CopyToAsync(this HttpContent httpContent, Stream destination, int bufferSize, IProgress<long> progress = null, CancellationToken cancellationToken = default)
@@ -70,7 +70,7 @@ public static class HttpClientExtensions
     /// <param name="httpContent">The http response content.</param>
     /// <param name="fileName">The file name.</param>
     /// <param name="progress">The progress to report, from 0 to 1.</param>
-    /// <param name="cancellationToken">The optional cancellation token.</param>
+    /// <param name="cancellationToken">A cancellation token that can be used to cancel the work if it has not yet started.</param>
     /// <returns>The task object representing the asynchronous operation.</returns>
     /// <exception cref="ArgumentNullException">The argument is null.</exception>
     /// <exception cref="ArgumentException">The argument is invalid.</exception>
@@ -88,7 +88,7 @@ public static class HttpClientExtensions
     /// <param name="fileName">The file name.</param>
     /// <param name="bufferSize">The size, in bytes, of the buffer. This value must be greater than zero.</param>
     /// <param name="progress">The progress to report, from 0 to 1.</param>
-    /// <param name="cancellationToken">The optional cancellation token.</param>
+    /// <param name="cancellationToken">A cancellation token that can be used to cancel the work if it has not yet started.</param>
     /// <returns>The file info instance to write.</returns>
     /// <exception cref="ArgumentNullException">The argument is null.</exception>
     /// <exception cref="ArgumentException">The argument is invalid.</exception>
@@ -114,7 +114,7 @@ public static class HttpClientExtensions
     /// <param name="uri">The URI to download file.</param>
     /// <param name="fileName">The file name.</param>
     /// <param name="progress">The progress to report, from 0 to 1.</param>
-    /// <param name="cancellationToken">The optional cancellation token.</param>
+    /// <param name="cancellationToken">A cancellation token that can be used to cancel the work if it has not yet started.</param>
     /// <returns>The file info instance to write.</returns>
     /// <exception cref="ArgumentNullException">The argument is null.</exception>
     /// <exception cref="ArgumentException">The argument is invalid.</exception>
@@ -144,7 +144,7 @@ public static class HttpClientExtensions
     /// <param name="httpContent">The http response content.</param>
     /// <param name="fileName">The file name.</param>
     /// <param name="progress">The progress to report, from 0 to 1.</param>
-    /// <param name="cancellationToken">The optional cancellation token.</param>
+    /// <param name="cancellationToken">A cancellation token that can be used to cancel the work if it has not yet started.</param>
     /// <returns>The task object representing the asynchronous operation.</returns>
     /// <exception cref="ArgumentNullException">The argument is null.</exception>
     /// <exception cref="ArgumentException">The argument is invalid.</exception>
@@ -162,7 +162,7 @@ public static class HttpClientExtensions
     /// <param name="fileName">The file name.</param>
     /// <param name="bufferSize">The size, in bytes, of the buffer. This value must be greater than zero.</param>
     /// <param name="progress">The progress to report, from 0 to 1.</param>
-    /// <param name="cancellationToken">The optional cancellation token.</param>
+    /// <param name="cancellationToken">A cancellation token that can be used to cancel the work if it has not yet started.</param>
     /// <returns>The file info instance to write.</returns>
     /// <exception cref="ArgumentNullException">The argument is null.</exception>
     /// <exception cref="ArgumentException">The argument is invalid.</exception>
@@ -210,7 +210,7 @@ public static class HttpClientExtensions
     /// <param name="uri">The URI to download file.</param>
     /// <param name="fileName">The file name.</param>
     /// <param name="progress">The progress to report, from 0 to 1.</param>
-    /// <param name="cancellationToken">The optional cancellation token.</param>
+    /// <param name="cancellationToken">A cancellation token that can be used to cancel the work if it has not yet started.</param>
     /// <returns>The file info instance to write; or null, if failed.</returns>
     /// <exception cref="ArgumentNullException">The argument is null.</exception>
     /// <exception cref="ArgumentException">The argument is invalid.</exception>
@@ -258,23 +258,27 @@ public static class HttpClientExtensions
     /// <typeparam name="T">The type of the result expected.</typeparam>
     /// <param name="httpContent">The http response content.</param>
     /// <param name="origin">A value of type seek origin indicating the reference point used to obtain the new position before deserialziation.</param>
-    /// <param name="cancellationToken">The optional cancellation token.</param>
+    /// <param name="cancellationToken">A cancellation token that can be used to cancel the work if it has not yet started.</param>
     /// <returns>The result serialized.</returns>
     /// <exception cref="ArgumentNullException">The argument is null.</exception>
     public static async Task<T> DeserializeJsonAsync<T>(this HttpContent httpContent, SeekOrigin origin, CancellationToken cancellationToken = default)
     {
         if (httpContent == null) throw new ArgumentNullException(nameof(httpContent), "httpContent should not be null.");
+        var type = typeof(T);
 #if NET6_0_OR_GREATER
+        if (type == typeof(string)) return (T)(object)await httpContent.ReadAsStringAsync(cancellationToken);
         var stream = await httpContent.ReadAsStreamAsync(cancellationToken);
 #else
+        if (type == typeof(string)) return (T)(object)await httpContent.ReadAsStringAsync();
         var stream = await httpContent.ReadAsStreamAsync();
 #endif
         IO.StreamCopy.TrySeek(stream, origin);
-        var type = typeof(T);
         if (type == typeof(JsonObjectNode)) return (T)(object)await JsonObjectNode.ParseAsync(stream, default, cancellationToken);
         if (type == typeof(JsonArrayNode)) return (T)(object)await JsonArrayNode.ParseAsync(stream, default, cancellationToken);
         if (type == typeof(JsonDocument)) return (T)(object)await JsonDocument.ParseAsync(stream, default, cancellationToken);
         if (type == typeof(System.Text.Json.Nodes.JsonNode) || type.IsSubclassOf(typeof(System.Text.Json.Nodes.JsonNode))) return (T)(object)System.Text.Json.Nodes.JsonNode.Parse(stream);
+        if (type == typeof(IEnumerable<ServerSentEventRecord>)) return (T)(object)ServerSentEventRecord.Parse(stream);
+        if (type == typeof(Stream)) return (T)(object)stream;
         return await JsonSerializer.DeserializeAsync<T>(stream, default(JsonSerializerOptions), cancellationToken);
     }
 
@@ -283,7 +287,7 @@ public static class HttpClientExtensions
     /// </summary>
     /// <typeparam name="T">The type of the result expected.</typeparam>
     /// <param name="httpContent">The http response content.</param>
-    /// <param name="cancellationToken">The optional cancellation token.</param>
+    /// <param name="cancellationToken">A cancellation token that can be used to cancel the work if it has not yet started.</param>
     /// <returns>The result serialized.</returns>
     /// <exception cref="ArgumentNullException">The argument is null.</exception>
     public static Task<T> DeserializeJsonAsync<T>(this HttpContent httpContent, CancellationToken cancellationToken = default)
@@ -296,7 +300,7 @@ public static class HttpClientExtensions
     /// <param name="httpContent">The http response content.</param>
     /// <param name="origin">A value of type seek origin indicating the reference point used to obtain the new position before deserialziation.</param>
     /// <param name="options">The options for serialization.</param>
-    /// <param name="cancellationToken">The optional cancellation token.</param>
+    /// <param name="cancellationToken">A cancellation token that can be used to cancel the work if it has not yet started.</param>
     /// <returns>The result serialized.</returns>
     /// <exception cref="ArgumentNullException">The argument is null.</exception>
     public static async Task<T> DeserializeJsonAsync<T>(this HttpContent httpContent, SeekOrigin origin, JsonSerializerOptions options, CancellationToken cancellationToken = default)
@@ -317,7 +321,7 @@ public static class HttpClientExtensions
     /// <typeparam name="T">The type of the result expected.</typeparam>
     /// <param name="httpContent">The http response content.</param>
     /// <param name="options">The options for serialization.</param>
-    /// <param name="cancellationToken">The optional cancellation token.</param>
+    /// <param name="cancellationToken">A cancellation token that can be used to cancel the work if it has not yet started.</param>
     /// <returns>The result serialized.</returns>
     /// <exception cref="ArgumentNullException">The argument is null.</exception>
     public static Task<T> DeserializeJsonAsync<T>(this HttpContent httpContent, JsonSerializerOptions options, CancellationToken cancellationToken = default)
@@ -408,7 +412,7 @@ public static class HttpClientExtensions
     /// <typeparam name="T">The type of the result expected.</typeparam>
     /// <param name="httpContent">The http response content.</param>
     /// <param name="options">The options for serialization.</param>
-    /// <param name="cancellationToken">The optional cancellation token.</param>
+    /// <param name="cancellationToken">A cancellation token that can be used to cancel the work if it has not yet started.</param>
     /// <returns>The result serialized.</returns>
     /// <exception cref="ArgumentNullException">The argument is null.</exception>
     public static async Task<T> DeserializeJsonAsync<T>(this HttpContent httpContent, DataContractJsonSerializerSettings options, CancellationToken cancellationToken)
@@ -425,7 +429,7 @@ public static class HttpClientExtensions
     /// <typeparam name="T">The type of the result expected.</typeparam>
     /// <param name="httpContent">The http response content.</param>
     /// <param name="options">The options for serialization.</param>
-    /// <param name="cancellationToken">The optional cancellation token.</param>
+    /// <param name="cancellationToken">A cancellation token that can be used to cancel the work if it has not yet started.</param>
     /// <returns>The result serialized.</returns>
     /// <exception cref="ArgumentNullException">The argument is null.</exception>
     public static async Task<T> DeserializeXmlAsync<T>(this HttpContent httpContent, DataContractSerializerSettings options, CancellationToken cancellationToken)
@@ -441,7 +445,7 @@ public static class HttpClientExtensions
     /// </summary>
     /// <param name="httpContent">The http response content.</param>
     /// <param name="deserializer">The XML serializer to read the object from the stream downloaded.</param>
-    /// <param name="cancellationToken">The optional cancellation token.</param>
+    /// <param name="cancellationToken">A cancellation token that can be used to cancel the work if it has not yet started.</param>
     /// <returns>The result serialized.</returns>
     /// <exception cref="ArgumentNullException">The argument is null.</exception>
     public static async Task<object> DeserializeAsync(this HttpContent httpContent, XmlObjectSerializer deserializer, CancellationToken cancellationToken)
@@ -458,7 +462,7 @@ public static class HttpClientExtensions
     /// <typeparam name="T">The type of the result expected.</typeparam>
     /// <param name="httpContent">The http response content.</param>
     /// <param name="deserializer">The JSON deserializer.</param>
-    /// <param name="cancellationToken">The optional cancellation token.</param>
+    /// <param name="cancellationToken">A cancellation token that can be used to cancel the work if it has not yet started.</param>
     /// <returns>The result serialized.</returns>
     /// <exception cref="ArgumentNullException">The argument is null.</exception>
     public static async Task<T> DeserializeAsync<T>(this HttpContent httpContent, Func<string, T> deserializer, CancellationToken cancellationToken)
@@ -475,7 +479,7 @@ public static class HttpClientExtensions
     /// <typeparam name="T">The type of the result expected.</typeparam>
     /// <param name="webResponse">The web response.</param>
     /// <param name="options">The options for serialization.</param>
-    /// <param name="cancellationToken">The optional cancellation token.</param>
+    /// <param name="cancellationToken">A cancellation token that can be used to cancel the work if it has not yet started.</param>
     /// <returns>The result serialized.</returns>
     /// <exception cref="ArgumentNullException">The argument is null.</exception>
     public static ValueTask<T> DeserializeJsonAsync<T>(this WebResponse webResponse, JsonSerializerOptions options, CancellationToken cancellationToken)

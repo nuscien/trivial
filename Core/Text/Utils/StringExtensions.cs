@@ -10,6 +10,8 @@ using System.Security;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Trivial.Text;
 
@@ -693,15 +695,55 @@ public static class StringExtensions
         return null;
     }
 
-    internal static StringBuilder Append(StringBuilder sb, StringBuilder value)
+    /// <summary>
+    /// Converts to string.
+    /// </summary>
+    /// <param name="stream">The input stream.</param>
+    /// <param name="encoding">The encoding.</param>
+    /// <returns>A string converted from the stream.</returns>
+    public async static Task<string> ToStringAsync(Stream stream, Encoding encoding = null)
     {
-        if (value != null)
-#if NETFRAMEWORK
-            sb.Append(value.ToString());
-#else
-            sb.Append(value);
+        using var reader = new StreamReader(stream, encoding ?? Encoding.UTF8);
+        return await reader.ReadToEndAsync();
+    }
+
+#if NET8_0_OR_GREATER
+    /// <summary>
+    /// Converts to string.
+    /// </summary>
+    /// <param name="stream">The input stream.</param>
+    /// <param name="cancellationToken">A cancellation token that can be used to cancel the work if it has not yet started.</param>
+    /// <returns>A string converted from the stream.</returns>
+    public async static Task<string> ToStringAsync(Stream stream, CancellationToken cancellationToken)
+    {
+        using var reader = new StreamReader(stream, Encoding.UTF8);
+        return await reader.ReadToEndAsync(cancellationToken);
+    }
+
+    /// <summary>
+    /// Converts to string.
+    /// </summary>
+    /// <param name="stream">The input stream.</param>
+    /// <param name="encoding">The encoding.</param>
+    /// <param name="cancellationToken">A cancellation token that can be used to cancel the work if it has not yet started.</param>
+    /// <returns>A string converted from the stream.</returns>
+    public async static Task<string> ToStringAsync(Stream stream, Encoding encoding, CancellationToken cancellationToken)
+    {
+        using var reader = new StreamReader(stream, encoding ?? Encoding.UTF8);
+        return await reader.ReadToEndAsync(cancellationToken);
+    }
 #endif
-        return sb;
+
+    /// <summary>
+    /// Converts to string.
+    /// </summary>
+    /// <param name="stream">The input stream.</param>
+    /// <param name="encoding">The encoding.</param>
+    /// <returns>A string converted from the stream.</returns>
+    public static string ToString(Stream stream, Encoding encoding = null)
+    {
+        using var reader = new StreamReader(stream, encoding ?? Encoding.UTF8);
+        return reader.ReadToEnd();
     }
 
     internal static string ToString(char[] value, int start = 0, int? count = null)
@@ -711,6 +753,17 @@ public static class StringExtensions
         var list = value.Skip(start);
         if (count.HasValue) list = list.Take(count.Value);
         return new string(list.ToArray());
+    }
+
+    internal static StringBuilder Append(StringBuilder sb, StringBuilder value)
+    {
+        if (value != null)
+#if NETFRAMEWORK
+            sb.Append(value.ToString());
+#else
+            sb.Append(value);
+#endif
+        return sb;
     }
 
 #if NETFRAMEWORK

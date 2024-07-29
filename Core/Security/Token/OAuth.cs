@@ -9,6 +9,7 @@ using System.Runtime.Serialization;
 using System.Security;
 using System.Security.Cryptography;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
@@ -133,7 +134,7 @@ public class OAuthClient : TokenContainer, IJsonHttpClientMaker
     {
         try
         {
-            if (slim != null) slim.Dispose();
+            slim?.Dispose();
         }
         catch (InvalidOperationException)
         {
@@ -161,21 +162,25 @@ public class OAuthClient : TokenContainer, IJsonHttpClientMaker
     /// <summary>
     /// Gets the app identifier.
     /// </summary>
-    public string AppId => appInfo.Id;
+    [JsonIgnore]
+    public string AppId => appInfo?.Id;
 
     /// <summary>
     /// Gets or sets the token resolver URI.
     /// </summary>
+    [JsonIgnore]
     public Uri TokenResolverUri { get; set; }
 
     /// <summary>
     /// Gets the scope to use.
     /// </summary>
+    [JsonIgnore]
     public IList<string> Scope { get; private set; } = new List<string>();
 
     /// <summary>
     /// Gets the scope string.
     /// </summary>
+    [JsonIgnore]
     public string ScopeString
     {
         get
@@ -198,33 +203,39 @@ public class OAuthClient : TokenContainer, IJsonHttpClientMaker
     /// <summary>
     /// Gets or sets the JSON deserializer.
     /// </summary>
+    [JsonIgnore]
     public Func<string, Type, object> Deserializer { get; set; }
 
     /// <summary>
     /// Gets or sets a handler to indicate whether the token request is valid and fill additional information if needed.
     /// </summary>
+    [JsonIgnore]
     public Func<QueryData, bool> TokenRequestInfoValidator { get; set; }
 
     /// <summary>
     /// Gets or sets the HTTP web client handler for sending message.
     /// But token resolving will not use this.
     /// </summary>
+    [JsonIgnore]
     public HttpClientHandler HttpClientHandler { get; set; }
 
     /// <summary>
     /// Gets or sets the timespan to wait before the request times out.
     /// </summary>
+    [JsonIgnore]
     public TimeSpan? Timeout { get; set; }
 
     /// <summary>
     /// Gets or sets the maximum number of bytes to buffer when reading the response content.
     /// The default value for this property is 2 gigabytes.
     /// </summary>
+    [JsonIgnore]
     public long? MaxResponseContentBufferSize { get; set; }
 
     /// <summary>
     /// Gets the date and time of token resolved.
     /// </summary>
+    [JsonIgnore]
     public DateTime TokenResolvedTime { get; private set; } = DateTime.Now;
 
     /// <summary>
@@ -261,9 +272,7 @@ public class OAuthClient : TokenContainer, IJsonHttpClientMaker
     /// <param name="scope">The additional scope.</param>
     /// <returns>A token request instance with given body and the current app secret information.</returns>
     public TokenRequest<T> CreateTokenRequest<T>(T body, IEnumerable<string> scope = null) where T : TokenRequestBody
-    {
-        return new TokenRequest<T>(body, appInfo, scope);
-    }
+        => new TokenRequest<T>(body, appInfo, scope);
 
     /// <summary>
     /// Send an HTTP request as an asynchronous operation.
@@ -816,6 +825,7 @@ public abstract class OAuthBasedClient : TokenContainer, IJsonHttpClientMaker
     /// <summary>
     /// Gets or sets the timespan to wait before the request times out.
     /// </summary>
+    [JsonIgnore]
     public TimeSpan? Timeout
     {
         get => oauth.Timeout;
@@ -826,6 +836,7 @@ public abstract class OAuthBasedClient : TokenContainer, IJsonHttpClientMaker
     /// Gets or sets the maximum number of bytes to buffer when reading the response content.
     /// The default value for this property is 2 gigabytes.
     /// </summary>
+    [JsonIgnore]
     public long? MaxResponseContentBufferSize
     {
         get => oauth.MaxResponseContentBufferSize;
@@ -835,6 +846,7 @@ public abstract class OAuthBasedClient : TokenContainer, IJsonHttpClientMaker
     /// <summary>
     /// Gets or sets the token resolver URI.
     /// </summary>
+    [JsonIgnore]
     protected Uri TokenResolverUri
     {
         get => oauth.TokenResolverUri;
@@ -844,11 +856,13 @@ public abstract class OAuthBasedClient : TokenContainer, IJsonHttpClientMaker
     /// <summary>
     /// Gets the scope to use.
     /// </summary>
+    [JsonIgnore]
     protected IList<string> Scope => oauth.Scope;
 
     /// <summary>
     /// Gets the scope string.
     /// </summary>
+    [JsonIgnore]
     protected string ScopeString
     {
         get => oauth.ScopeString;
@@ -858,6 +872,7 @@ public abstract class OAuthBasedClient : TokenContainer, IJsonHttpClientMaker
     /// <summary>
     /// Gets or sets a handler to indicate whether the token request is valid and fill additional information if needed.
     /// </summary>
+    [JsonIgnore]
     public Func<QueryData, bool> TokenRequestInfoValidator
     {
         get => oauth.TokenRequestInfoValidator;
@@ -867,6 +882,7 @@ public abstract class OAuthBasedClient : TokenContainer, IJsonHttpClientMaker
     /// <summary>
     /// Gets or sets the case of authenticiation scheme.
     /// </summary>
+    [JsonIgnore]
     public override Cases AuthenticationSchemeCase
     {
         get => oauth.AuthenticationSchemeCase;
@@ -876,6 +892,7 @@ public abstract class OAuthBasedClient : TokenContainer, IJsonHttpClientMaker
     /// <summary>
     /// Gets or sets the converter of authentication header value.
     /// </summary>
+    [JsonIgnore]
     public override Func<TokenInfo, Cases, AuthenticationHeaderValue> ConvertToAuthenticationHeaderValue
     {
         get => oauth.ConvertToAuthenticationHeaderValue;
@@ -885,15 +902,27 @@ public abstract class OAuthBasedClient : TokenContainer, IJsonHttpClientMaker
     /// <summary>
     /// Gets the app identifier.
     /// </summary>
+    [JsonIgnore]
     public string AppId => oauth.AppId;
 
     /// <summary>
     /// Gets or sets the JSON deserializer.
     /// </summary>
+    [JsonIgnore]
     public Func<string, Type, object> Deserializer
     {
         get => oauth.Deserializer;
         set => oauth.Deserializer = value;
+    }
+
+    /// <summary>
+    /// Gets or sets an additional tag object.
+    /// </summary>
+    [JsonIgnore]
+    public object Tag
+    {
+        get => oauth.Tag;
+        set => oauth.Tag = value;
     }
 
     /// <summary>
@@ -902,9 +931,7 @@ public abstract class OAuthBasedClient : TokenContainer, IJsonHttpClientMaker
     /// <typeparam name="T">The type of response.</typeparam>
     /// <returns>A new JSON HTTP client.</returns>
     public virtual JsonHttpClient<T> Create<T>(Action<ReceivedEventArgs<T>> callback = null)
-    {
-        return oauth.Create(callback);
-    }
+        => oauth.Create(callback);
 
     /// <summary>
     /// Send an HTTP request as an asynchronous operation.
@@ -915,9 +942,7 @@ public abstract class OAuthBasedClient : TokenContainer, IJsonHttpClientMaker
     /// <exception cref="ArgumentNullException">The request was null.</exception>
     /// <exception cref="HttpRequestException">The request failed due to an underlying issue such as network connectivity, DNS failure, server certificate validation or timeout.</exception>
     public virtual Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken = default)
-    {
-        return oauth.SendAsync(request, cancellationToken);
-    }
+        => oauth.SendAsync(request, cancellationToken);
 
     /// <summary>
     /// Send an HTTP request as an asynchronous operation.
@@ -929,9 +954,7 @@ public abstract class OAuthBasedClient : TokenContainer, IJsonHttpClientMaker
     /// <exception cref="ArgumentNullException">The request was null.</exception>
     /// <exception cref="HttpRequestException">The request failed due to an underlying issue such as network connectivity, DNS failure, server certificate validation or timeout.</exception>
     public virtual Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, HttpCompletionOption completionOption, CancellationToken cancellationToken = default)
-    {
-        return oauth.SendAsync(request, completionOption, cancellationToken);
-    }
+        => oauth.SendAsync(request, completionOption, cancellationToken);
 
     /// <summary>
     /// Send an HTTP request as an asynchronous operation.
@@ -942,9 +965,7 @@ public abstract class OAuthBasedClient : TokenContainer, IJsonHttpClientMaker
     /// <exception cref="ArgumentNullException">The request was null.</exception>
     /// <exception cref="HttpRequestException">The request failed due to an underlying issue such as network connectivity, DNS failure, server certificate validation or timeout.</exception>
     public Task<T> SendAsync<T>(HttpRequestMessage request, CancellationToken cancellationToken = default)
-    {
-        return Create<T>().SendAsync(request, cancellationToken);
-    }
+        => Create<T>().SendAsync(request, cancellationToken);
 
     /// <summary>
     /// Send an HTTP request as an asynchronous operation.
@@ -956,9 +977,7 @@ public abstract class OAuthBasedClient : TokenContainer, IJsonHttpClientMaker
     /// <exception cref="ArgumentNullException">The request was null.</exception>
     /// <exception cref="HttpRequestException">The request failed due to an underlying issue such as network connectivity, DNS failure, server certificate validation or timeout.</exception>
     public Task<T> SendAsync<T>(HttpRequestMessage request, Action<ReceivedEventArgs<T>> callback, CancellationToken cancellationToken = default)
-    {
-        return Create<T>().SendAsync(request, callback, cancellationToken);
-    }
+        => Create<T>().SendAsync(request, callback, cancellationToken);
 
     /// <summary>
     /// Creates a token request instance by a specific body.
@@ -969,9 +988,7 @@ public abstract class OAuthBasedClient : TokenContainer, IJsonHttpClientMaker
     /// <param name="scope">The additional scope.</param>
     /// <returns>A token request instance with given body and the current app secret information.</returns>
     protected TokenRequest<T> CreateTokenRequest<T>(T body, IEnumerable<string> scope = null) where T : TokenRequestBody
-    {
-        return oauth?.CreateTokenRequest(body, scope) ?? new TokenRequest<T>(body, new AppAccessingKey(), scope);
-    }
+        => oauth?.CreateTokenRequest(body, scope) ?? new TokenRequest<T>(body, new AppAccessingKey(), scope);
 
     /// <summary>
     /// Sends a POST request and gets the result serialized by JSON.
@@ -985,9 +1002,7 @@ public abstract class OAuthBasedClient : TokenContainer, IJsonHttpClientMaker
     /// <exception cref="HttpRequestException">The request failed due to an underlying issue such as network connectivity, DNS failure, server certificate validation or timeout.</exception>
     /// <exception cref="OperationCanceledException">The task is cancelled.</exception>
     protected Task<TokenInfo> ResolveTokenAsync(TokenRequestBody content, CancellationToken cancellationToken = default)
-    {
-        return oauth.ResolveTokenAsync(content, cancellationToken);
-    }
+        => oauth.ResolveTokenAsync(content, cancellationToken);
 
     /// <summary>
     /// Sends a POST request and gets the result serialized by JSON.
@@ -1002,9 +1017,7 @@ public abstract class OAuthBasedClient : TokenContainer, IJsonHttpClientMaker
     /// <exception cref="HttpRequestException">The request failed due to an underlying issue such as network connectivity, DNS failure, server certificate validation or timeout.</exception>
     /// <exception cref="OperationCanceledException">The task is cancelled.</exception>
     protected Task<TokenInfo> ResolveTokenAsync(TokenRequestBody content, Func<TokenInfo, bool> oldTokenValidation, CancellationToken cancellationToken = default)
-    {
-        return oauth.ResolveTokenAsync(content, oldTokenValidation, cancellationToken);
-    }
+        => oauth.ResolveTokenAsync(content, oldTokenValidation, cancellationToken);
 
     /// <summary>
     /// Sends a POST request and gets the result serialized by JSON.
@@ -1019,9 +1032,7 @@ public abstract class OAuthBasedClient : TokenContainer, IJsonHttpClientMaker
     /// <exception cref="HttpRequestException">The request failed due to an underlying issue such as network connectivity, DNS failure, server certificate validation or timeout.</exception>
     /// <exception cref="OperationCanceledException">The task is cancelled.</exception>
     protected Task<TokenInfo> ResolveTokenAsync(Uri requestUri, TokenRequestBody content, CancellationToken cancellationToken = default)
-    {
-        return oauth.ResolveTokenAsync(requestUri, content, cancellationToken);
-    }
+        => oauth.ResolveTokenAsync(requestUri, content, cancellationToken);
 
     /// <summary>
     /// Sends a POST request and gets the result serialized by JSON.
@@ -1036,14 +1047,13 @@ public abstract class OAuthBasedClient : TokenContainer, IJsonHttpClientMaker
     /// <exception cref="HttpRequestException">The request failed due to an underlying issue such as network connectivity, DNS failure, server certificate validation or timeout.</exception>
     /// <exception cref="OperationCanceledException">The task is cancelled.</exception>
     protected Task<TokenInfo> ResolveTokenAsync(string requestUri, TokenRequestBody content, CancellationToken cancellationToken = default)
-    {
-        return oauth.ResolveTokenAsync(requestUri, content, cancellationToken);
-    }
+        => oauth.ResolveTokenAsync(requestUri, content, cancellationToken);
 }
 
 /// <summary>
 /// The OAuth based JSON HTTP web client.
 /// </summary>
+/// <typeparam name="T">The type of token info.</typeparam>
 public abstract class OAuthBasedClient<T> : OAuthBasedClient where T : TokenInfo
 {
     /// <summary>
@@ -1097,6 +1107,13 @@ public abstract class OAuthBasedClient<T> : OAuthBasedClient where T : TokenInfo
     protected new event EventHandler<ReceivedEventArgs<T>> TokenResolved;
 
     /// <summary>
+    /// Gets the type of token info.
+    /// </summary>
+    /// <returns>The type of token info.</returns>
+    public Type GetTokenInfoType()
+        => Token?.GetType() ?? typeof(T);
+
+    /// <summary>
     /// Gets or sets the converter of authentication header value.
     /// </summary>
     protected new Func<T, Cases, AuthenticationHeaderValue> ConvertToAuthenticationHeaderValue
@@ -1131,6 +1148,7 @@ public abstract class OAuthBasedClient<T> : OAuthBasedClient where T : TokenInfo
     /// <summary>
     /// Gets the token information instance saved in this container.
     /// </summary>
+    [JsonIgnore]
     public new T Token
     {
         get
@@ -1156,9 +1174,7 @@ public abstract class OAuthBasedClient<T> : OAuthBasedClient where T : TokenInfo
     /// <exception cref="HttpRequestException">The request failed due to an underlying issue such as network connectivity, DNS failure, server certificate validation or timeout.</exception>
     /// <exception cref="OperationCanceledException">The task is cancelled.</exception>
     protected new Task<T> ResolveTokenAsync(TokenRequestBody content, CancellationToken cancellationToken = default)
-    {
-        return oauth.ResolveTokenAsync<T>(content, cancellationToken);
-    }
+        => oauth.ResolveTokenAsync<T>(content, cancellationToken);
 
     /// <summary>
     /// Sends a POST request and gets the result serialized by JSON.
@@ -1173,9 +1189,7 @@ public abstract class OAuthBasedClient<T> : OAuthBasedClient where T : TokenInfo
     /// <exception cref="HttpRequestException">The request failed due to an underlying issue such as network connectivity, DNS failure, server certificate validation or timeout.</exception>
     /// <exception cref="OperationCanceledException">The task is cancelled.</exception>
     protected new Task<T> ResolveTokenAsync(TokenRequestBody content, Func<TokenInfo, bool> oldTokenValidation, CancellationToken cancellationToken = default)
-    {
-        return oauth.ResolveTokenAsync<T>(content, oldTokenValidation, cancellationToken);
-    }
+        => oauth.ResolveTokenAsync<T>(content, oldTokenValidation, cancellationToken);
 
     /// <summary>
     /// Sends a POST request and gets the result serialized by JSON.
@@ -1190,9 +1204,7 @@ public abstract class OAuthBasedClient<T> : OAuthBasedClient where T : TokenInfo
     /// <exception cref="HttpRequestException">The request failed due to an underlying issue such as network connectivity, DNS failure, server certificate validation or timeout.</exception>
     /// <exception cref="OperationCanceledException">The task is cancelled.</exception>
     protected new Task<T> ResolveTokenAsync(Uri requestUri, TokenRequestBody content, CancellationToken cancellationToken = default)
-    {
-        return oauth.ResolveTokenAsync<T>(requestUri, content, cancellationToken);
-    }
+        => oauth.ResolveTokenAsync<T>(requestUri, content, cancellationToken);
 
     /// <summary>
     /// Sends a POST request and gets the result serialized by JSON.
@@ -1207,7 +1219,5 @@ public abstract class OAuthBasedClient<T> : OAuthBasedClient where T : TokenInfo
     /// <exception cref="HttpRequestException">The request failed due to an underlying issue such as network connectivity, DNS failure, server certificate validation or timeout.</exception>
     /// <exception cref="OperationCanceledException">The task is cancelled.</exception>
     protected new Task<T> ResolveTokenAsync(string requestUri, TokenRequestBody content, CancellationToken cancellationToken = default)
-    {
-        return oauth.ResolveTokenAsync<T>(requestUri, content, cancellationToken);
-    }
+        => oauth.ResolveTokenAsync<T>(requestUri, content, cancellationToken);
 }

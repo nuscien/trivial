@@ -1327,29 +1327,6 @@ public static partial class ListExtensions
         => WithProperty(array?.SelectObjects(), key);
 
     /// <summary>
-    /// Gets the JSON lines format string of the value.
-    /// </summary>
-    /// <param name="col">The input collection.</param>
-    /// <returns>A JSON lines format string.</returns>
-    public static string ToJsonlString(this IEnumerable<JsonObjectNode> col)
-    {
-        if (col == null) return null;
-        var str = new StringBuilder();
-        foreach (var prop in col)
-        {
-            if (prop is null)
-            {
-                str.AppendLine("null");
-                continue;
-            }
-
-            str.AppendLine(prop.ToString());
-        }
-
-        return str.ToString();
-    }
-
-    /// <summary>
     /// Converts to JSON object node collection.
     /// </summary>
     /// <param name="collection">The collection of the item to convert.</param>
