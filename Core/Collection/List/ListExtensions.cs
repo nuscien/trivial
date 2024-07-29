@@ -7,6 +7,7 @@ using System.Web;
 
 using Trivial.CommandLine;
 using Trivial.Data;
+using Trivial.Net;
 using Trivial.Reflection;
 using Trivial.Text;
 
@@ -1341,6 +1342,21 @@ public static partial class ListExtensions
     }
 
     /// <summary>
+    /// Converts to JSON object node collection.
+    /// </summary>
+    /// <param name="collection">The collection of the item to convert.</param>
+    /// <returns>A JSON object node collection converted.</returns>
+    public static IEnumerable<JsonObjectNode> ToJsonObjectNodes(this IEnumerable<ServerSentEventInfo> collection)
+    {
+        if (collection == null) yield break;
+        foreach (var item in collection)
+        {
+            if (item == null) yield return null;
+            yield return (JsonObjectNode)item;
+        }
+    }
+
+    /// <summary>
     /// Converts to JSON array.
     /// </summary>
     /// <param name="collection">The collection of the item to convert.</param>
@@ -1354,6 +1370,20 @@ public static partial class ListExtensions
             arr.Add(item);
         }
 
+        return arr;
+    }
+
+    /// <summary>
+    /// Converts to JSON array.
+    /// </summary>
+    /// <param name="collection">The collection of the item to convert.</param>
+    /// <returns>A JSON array node converted.</returns>
+    public static JsonArrayNode ToJsonArrayNode(this IEnumerable<ServerSentEventInfo> collection)
+    {
+        if (collection == null) return null;
+        var list = ToJsonObjectNodes(collection);
+        var arr = new JsonArrayNode();
+        arr.AddRange(list);
         return arr;
     }
 }

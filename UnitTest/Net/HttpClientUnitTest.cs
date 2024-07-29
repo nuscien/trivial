@@ -48,7 +48,7 @@ namespace Trivial.Net
         [TestMethod]
         public void TestServerSentEvent()
         {
-            var sse = new List<ServerSentEventRecord>
+            var sse = new List<ServerSentEventInfo>
             {
                 new(new JsonObjectNode
                 {
@@ -79,12 +79,12 @@ namespace Trivial.Net
                 })
             };
             var s = sse.ToResponseString(true);
-            sse = ServerSentEventRecord.Parse(s).ToList();
+            sse = ServerSentEventInfo.Parse(s).ToList();
             Assert.AreEqual(3, sse.Count);
             using var stream = new MemoryStream();
             sse.ToResponseString(stream);
             stream.Seek(0, SeekOrigin.Begin);
-            sse = ServerSentEventRecord.Parse(stream).ToList();
+            sse = ServerSentEventInfo.Parse(stream).ToList();
             Assert.AreEqual(3, sse.Count);
             Assert.AreEqual("1", sse[0].Id);
             var json = sse[2].GetJsonData();

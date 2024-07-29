@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Text;
+using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
@@ -15,14 +16,14 @@ namespace Trivial.Net;
 /// <summary>
 /// The record item of Server-Sent Events response.
 /// </summary>
-public class ServerSentEventRecord
+public class ServerSentEventInfo
 {
     private readonly Dictionary<string, string> dict = new();
 
     /// <summary>
     /// Initializes a new instance of the ServerSentEventRecord class.
     /// </summary>
-    public ServerSentEventRecord()
+    public ServerSentEventInfo()
     {
     }
 
@@ -33,10 +34,10 @@ public class ServerSentEventRecord
     /// <param name="eventName">The event name.</param>
     /// <param name="data">he data.</param>
     /// <param name="retry">The duration for timeout retry.</param>
-    public ServerSentEventRecord(string id, string eventName, string data, TimeSpan? retry = null)
+    public ServerSentEventInfo(string id, string eventName, string data, TimeSpan? retry = null)
     {
         Id = id;
-        EventName = eventName;
+        OriginalEventName = eventName;
         DataString = data;
         RetryDuration = retry;
     }
@@ -48,7 +49,7 @@ public class ServerSentEventRecord
     /// <param name="eventName">The event name.</param>
     /// <param name="data">he data.</param>
     /// <param name="retry">The duration for timeout retry.</param>
-    public ServerSentEventRecord(string id, string eventName, JsonObjectNode data, TimeSpan? retry = null)
+    public ServerSentEventInfo(string id, string eventName, JsonObjectNode data, TimeSpan? retry = null)
         : this(id, eventName, data?.ToString(), retry)
     {
     }
@@ -57,7 +58,7 @@ public class ServerSentEventRecord
     /// Initializes a new instance of the ServerSentEventRecord class.
     /// </summary>
     /// <param name="value">The dictionary value.</param>
-    public ServerSentEventRecord(IDictionary<string, string> value)
+    public ServerSentEventInfo(IDictionary<string, string> value)
     {
         if (value == null) return;
         foreach (var kvp in value)
@@ -71,7 +72,7 @@ public class ServerSentEventRecord
     /// </summary>
     /// <param name="data">The data.</param>
     /// <param name="value">The dictionary value.</param>
-    public ServerSentEventRecord(string data, IDictionary<string, string> value)
+    public ServerSentEventInfo(string data, IDictionary<string, string> value)
         : this(value)
     {
         DataString = data;
@@ -82,7 +83,7 @@ public class ServerSentEventRecord
     /// </summary>
     /// <param name="data">The data.</param>
     /// <param name="value">The dictionary value.</param>
-    public ServerSentEventRecord(JsonObjectNode data, IDictionary<string, string> value)
+    public ServerSentEventInfo(JsonObjectNode data, IDictionary<string, string> value)
         : this(data?.ToString(), value)
     {
     }
@@ -97,9 +98,22 @@ public class ServerSentEventRecord
     /// <summary>
     /// Gets the event name.
     /// </summary>
+    [JsonIgnore]
+    public string EventName
+    {
+        get
+        {
+            var s = OriginalEventName;
+            return string.IsNullOrWhiteSpace(s) ? "message" : s.Trim();
+        }
+    }
+
+    /// <summary>
+    /// Gets the original event name.
+    /// </summary>
     [JsonPropertyName("event")]
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public string EventName { get; private set; }
+    public string OriginalEventName { get; private set; }
 
     /// <summary>
     /// Gets the data.
@@ -149,6 +163,18 @@ public class ServerSentEventRecord
     public string Comment { get; set; }
 
     /// <summary>
+    /// Tests if the specific value is the event name.
+    /// </summary>
+    /// <param name="value">The event name to test.</param>
+    /// <returns>true if they are the same event name; otherwise, false.</returns>
+    public bool IsEventName(string value)
+    {
+        if (string.IsNullOrWhiteSpace(value)) value = "message";
+        else value = value.Trim().ToLowerInvariant();
+        return value == EventName;
+    }
+
+    /// <summary>
     /// Tries to get value.
     /// </summary>
     /// <param name="key">The property key.</param>
@@ -168,7 +194,7 @@ public class ServerSentEventRecord
                 value = Id;
                 break;
             case "event":
-                value = EventName;
+                value = OriginalEventName;
                 break;
             case "data":
                 value = DataString;
@@ -220,7 +246,7 @@ public class ServerSentEventRecord
         if (sb == null) return;
         if (sb.Length > 1) sb.Append(newLineN ? "\n" : Environment.NewLine);
         AppendProperty(sb, "id", Id, newLineN);
-        AppendProperty(sb, "event", EventName, newLineN);
+        AppendProperty(sb, "event", OriginalEventName, newLineN);
         AppendProperty(sb, "data", DataString, newLineN);
         if (RetryDuration.HasValue)
         {
@@ -244,7 +270,7 @@ public class ServerSentEventRecord
                 Id = value;
                 break;
             case "event":
-                EventName = value;
+                OriginalEventName = value;
                 break;
             case "data":
                 DataString = value;
@@ -275,11 +301,37 @@ public class ServerSentEventRecord
     }
 
     /// <summary>
+    /// Converts to JSON document.
+    /// </summary>
+    /// <param name="info">The Server-Sent Event record item.</param>
+    /// <returns>An instance of the JSON object node.</returns>
+    public static explicit operator JsonObjectNode(ServerSentEventInfo info)
+    {
+        if (info == null) return null;
+        var json = new JsonObjectNode
+        {
+            { "id", info.Id },
+            { "event", info.OriginalEventName },
+            { "data", info.DataString },
+            { "retry", info.RetryDurationInMillisecond }
+        };
+        if (!string.IsNullOrWhiteSpace(info.DataString) && info.DataString.StartsWith('{') && info.DataString.EndsWith('}'))
+        {
+            var obj = JsonObjectNode.TryParse(info.DataString);
+            if (obj != null) json.SetValue("data", obj);
+        }
+
+        json.CommentValue = info.Comment;
+        json.SetRange(info.dict, true);
+        return json;
+    }
+
+    /// <summary>
     /// Parses server-sent event record.
     /// </summary>
     /// <param name="stream">The input stream.</param>
     /// <returns>A collection of server-sent event record.</returns>
-    public static IEnumerable<ServerSentEventRecord> Parse(Stream stream)
+    public static IEnumerable<ServerSentEventInfo> Parse(Stream stream)
     {
         var lines = stream.ReadLines(Encoding.UTF8);
         return Parse(lines);
@@ -290,7 +342,7 @@ public class ServerSentEventRecord
     /// </summary>
     /// <param name="s">The input string.</param>
     /// <returns>A collection of server-sent event record.</returns>
-    public static IEnumerable<ServerSentEventRecord> Parse(string s)
+    public static IEnumerable<ServerSentEventInfo> Parse(string s)
     {
         if (string.IsNullOrEmpty(s)) Parse(null as IEnumerable<string>);
         var newLineStr = s.Contains('\r') ? Environment.NewLine : "\n";
@@ -303,10 +355,10 @@ public class ServerSentEventRecord
     /// </summary>
     /// <param name="lines">The input lines.</param>
     /// <returns>A collection of server-sent event record.</returns>
-    public static IEnumerable<ServerSentEventRecord> Parse(IEnumerable<string> lines)
+    public static IEnumerable<ServerSentEventInfo> Parse(IEnumerable<string> lines)
     {
         if (lines == null) yield break;
-        ServerSentEventRecord record = null;
+        ServerSentEventInfo record = null;
         string key = null;
         foreach (var line in lines)
         {
@@ -368,7 +420,7 @@ public class ServerSentEventRecord
     /// </summary>
     /// <param name="response">The HTTP response message.</param>
     /// <returns>A collection of server-sent event record.</returns>
-    public static async Task<IEnumerable<ServerSentEventRecord>> ParseAsync(HttpResponseMessage response)
+    public static async Task<IEnumerable<ServerSentEventInfo>> ParseAsync(HttpResponseMessage response)
     {
         var content = response?.Content;
         var resp = content == null ? null : await content.ReadAsStreamAsync();
@@ -382,7 +434,7 @@ public class ServerSentEventRecord
     /// <param name="response">The HTTP response message.</param>
     /// <param name="cancellationToken">A cancellation token that can be used to cancel the work if it has not yet started.</param>
     /// <returns>A collection of server-sent event record.</returns>
-    public static async Task<IEnumerable<ServerSentEventRecord>> ParseAsync(HttpResponseMessage response, CancellationToken cancellationToken)
+    public static async Task<IEnumerable<ServerSentEventInfo>> ParseAsync(HttpResponseMessage response, CancellationToken cancellationToken)
     {
         var content = response?.Content;
         var resp = content == null ? null : await content.ReadAsStreamAsync(cancellationToken);
@@ -395,7 +447,7 @@ public class ServerSentEventRecord
     /// <param name="response">The HTTP response message.</param>
     /// <param name="cancellationToken">A cancellation token that can be used to cancel the work if it has not yet started.</param>
     /// <returns>A collection of server-sent event record.</returns>
-    public static IEnumerable<ServerSentEventRecord> Parse(HttpResponseMessage response, CancellationToken cancellationToken = default)
+    public static IEnumerable<ServerSentEventInfo> Parse(HttpResponseMessage response, CancellationToken cancellationToken = default)
     {
         var resp = response?.Content?.ReadAsStream(cancellationToken);
         return Parse(resp);

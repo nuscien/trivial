@@ -17,7 +17,7 @@ public static partial class ListExtensions
     /// <param name="col">The input collection.</param>
     /// <param name="newLineN">true if use \n instead of new line.</param>
     /// <returns>A server-sent event format string.</returns>
-    public static string ToResponseString(this IEnumerable<ServerSentEventRecord> col, bool newLineN)
+    public static string ToResponseString(this IEnumerable<ServerSentEventInfo> col, bool newLineN)
     {
         if (col == null) return null;
         var sb = new StringBuilder();
@@ -36,7 +36,7 @@ public static partial class ListExtensions
     /// <param name="col">The input collection.</param>
     /// <param name="stream">The stream.</param>
     /// <returns>A server-sent event format string.</returns>
-    public static void ToResponseString(this IEnumerable<ServerSentEventRecord> col, Stream stream)
+    public static void ToResponseString(this IEnumerable<ServerSentEventInfo> col, Stream stream)
     {
         if (col == null) return;
         var writer = new StreamWriter(stream, Encoding.UTF8);

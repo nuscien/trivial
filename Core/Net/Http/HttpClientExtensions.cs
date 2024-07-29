@@ -277,7 +277,7 @@ public static class HttpClientExtensions
         if (type == typeof(JsonArrayNode)) return (T)(object)await JsonArrayNode.ParseAsync(stream, default, cancellationToken);
         if (type == typeof(JsonDocument)) return (T)(object)await JsonDocument.ParseAsync(stream, default, cancellationToken);
         if (type == typeof(System.Text.Json.Nodes.JsonNode) || type.IsSubclassOf(typeof(System.Text.Json.Nodes.JsonNode))) return (T)(object)System.Text.Json.Nodes.JsonNode.Parse(stream);
-        if (type == typeof(IEnumerable<ServerSentEventRecord>)) return (T)(object)ServerSentEventRecord.Parse(stream);
+        if (type == typeof(IEnumerable<ServerSentEventInfo>)) return (T)(object)ServerSentEventInfo.Parse(stream);
         if (type == typeof(Stream)) return (T)(object)stream;
         return await JsonSerializer.DeserializeAsync<T>(stream, default(JsonSerializerOptions), cancellationToken);
     }

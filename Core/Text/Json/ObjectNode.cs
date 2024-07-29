@@ -2566,7 +2566,12 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     /// <returns>The list; or null, if no such array property.</returns>
     public List<JsonObjectNode> TryGetObjectListValue(string key, bool ignoreNotMatched = false)
     {
-        if (!TryGetJsonValue<JsonArrayNode>(key, out var p)) return null;
+        if (!TryGetJsonValue<JsonArrayNode>(key, out var p))
+        {
+            if (!TryGetJsonValue<JsonObjectNode>(key, out var obj)) return null;
+            return new() { obj };
+        }
+
         return ignoreNotMatched ? p.OfType<JsonObjectNode>().ToList() : p.Select(ele => ele is JsonObjectNode json ? json : null).ToList();
     }
 

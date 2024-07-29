@@ -916,16 +916,6 @@ public abstract class OAuthBasedClient : TokenContainer, IJsonHttpClientMaker
     }
 
     /// <summary>
-    /// Gets or sets an additional tag object.
-    /// </summary>
-    [JsonIgnore]
-    public object Tag
-    {
-        get => oauth.Tag;
-        set => oauth.Tag = value;
-    }
-
-    /// <summary>
     /// Creates a JSON HTTP client.
     /// </summary>
     /// <typeparam name="T">The type of response.</typeparam>
