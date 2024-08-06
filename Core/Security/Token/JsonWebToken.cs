@@ -103,9 +103,7 @@ public class JsonWebToken<T>
         /// </summary>
         /// <returns>A signature bytes.</returns>
         public byte[] GetSignature()
-        {
-            return WebFormat.Base64UrlDecode(SignatureBase64Url);
-        }
+            => WebFormat.Base64UrlDecode(SignatureBase64Url);
 
         /// <summary>
         /// Verifies the JSON web token.
@@ -198,18 +196,14 @@ public class JsonWebToken<T>
         /// </summary>
         /// <returns>A System.Net.Http.Headers.AuthenticationHeaderValue that represents the current TokenInfo.</returns>
         public AuthenticationHeaderValue ToAuthenticationHeaderValue()
-        {
-            return new AuthenticationHeaderValue(TokenInfo.BearerTokenType, ToString());
-        }
+            => new(TokenInfo.BearerTokenType, ToString());
 
         /// <summary>
         /// Returns the JWT string.
         /// </summary>
         /// <returns>A JWT string.</returns>
         public override string ToString()
-        {
-            return $"{HeaderBase64Url}.{PayloadBase64Url}.{SignatureBase64Url}";
-        }
+            => $"{HeaderBase64Url}.{PayloadBase64Url}.{SignatureBase64Url}";
 
         /// <summary>
         /// Determines whether the specified object is equal to the current object.
@@ -424,7 +418,7 @@ public class JsonWebToken<T>
         {
             var msg = string.IsNullOrWhiteSpace(ex.Message) || ex.Message.Length < 7 || ex.Message.IndexOf("jwt ") != 0
                 ? "The access token is incorrect."
-                : ("The access token" + ex.Message.Substring(3));
+                : string.Concat("The access token ", ex.Message.Substring(3), " is incorrect.");
             throw new ArgumentException(msg, nameof(token), ex);
         }
     }
@@ -501,9 +495,7 @@ public class JsonWebToken<T>
     /// </summary>
     /// <returns>A string encoded of payload.</returns>
     public string ToPayloadBase64Url()
-    {
-        return GetBase64UrlEncode(Payload);
-    }
+        => GetBase64UrlEncode(Payload);
 
     /// <summary>
     /// Gets the Base64Url of header.
@@ -531,28 +523,21 @@ public class JsonWebToken<T>
     /// </summary>
     /// <returns>A string encoded.</returns>
     public string ToEncodedString()
-    {
-        return $"{ToHeaderBase64Url()}.{ToPayloadBase64Url()}.{ToSigntureBase64Url()}";
-    }
+        => $"{ToHeaderBase64Url()}.{ToPayloadBase64Url()}.{ToSigntureBase64Url()}";
 
     /// <summary>
     /// Returns a System.Net.Http.Headers.AuthenticationHeaderValue that represents the current TokenInfo.
     /// </summary>
     /// <returns>A System.Net.Http.Headers.AuthenticationHeaderValue that represents the current TokenInfo.</returns>
     public AuthenticationHeaderValue ToAuthenticationHeaderValue()
-    {
-        return new AuthenticationHeaderValue(TokenInfo.BearerTokenType, ToEncodedString());
-    }
+        => new(TokenInfo.BearerTokenType, ToEncodedString());
 
     /// <summary>
     /// Returns a string that represents the current object.
     /// </summary>
     /// <returns>A string that represents the current object.</returns>
     public override string ToString()
-    {
-        if (Payload == null) return string.Empty;
-        return Payload.ToString();
-    }
+        => Payload?.ToString() ?? string.Empty;
 
     /// <summary>
     /// Creates a new JSON web token with new signature provider.
@@ -609,13 +594,7 @@ public class JsonWebTokenHeader
     /// <summary>
     /// Gets the JSON web token header without signature algorithm.
     /// </summary>
-    public static JsonWebTokenHeader NoAlgorithm
-    {
-        get
-        {
-            return new JsonWebTokenHeader { AlgorithmName = "none" };
-        }
-    }
+    public static JsonWebTokenHeader NoAlgorithm => new() { AlgorithmName = "none" };
 }
 
 /// <summary>
@@ -627,11 +606,9 @@ public class JsonWebTokenPayload
     /// <summary>
     /// Gets or sets the optional JWT ID.
     /// This claim provides a unique identifier for the JWT.
-    /// The identifier value MUST be assigned in a manner that ensures that
-    /// there is a negligible probability that the same value will be
-    /// accidentally assigned to a different data object; if the application
-    /// uses multiple issuers, collisions MUST be prevented among values
-    /// produced by different issuers as well.
+    /// The identifier value MUST be assigned in a manner that ensures that there is a negligible probability that
+    /// the same value will be accidentally assigned to a different data object;
+    /// if the application uses multiple issuers, collisions MUST be prevented among values produced by different issuers as well.
     /// This claim can be used to prevent the JWT from being replayed.
     /// Its value is a case-sensitive string.
     /// </summary>
@@ -642,8 +619,8 @@ public class JsonWebTokenPayload
 
     /// <summary>
     /// Gets or sets the optional issuer identifier.
-    /// This claim identifies the principal that issued the
-    /// JWT.The processing of this claim is generally application specific.
+    /// This claim identifies the principal that issued the JWT.
+    /// The processing of this claim is generally application specific.
     /// Its value is a case-sensitive string containing a string or a URI.
     /// </summary>
     [DataMember(Name = "iss", EmitDefaultValue = false)]
@@ -653,11 +630,8 @@ public class JsonWebTokenPayload
 
     /// <summary>
     /// Gets or sets the optional subject.
-    /// This claim identifies the principal that is the
-    /// subject of the JWT.The claims in a JWT are normally statements
-    /// about the subject.
-    /// The subject value MUST either be scoped to be locally unique
-    /// in the context of the issuer or be globally unique.
+    /// This claim identifies the principal that is the subject of the JWT.The claims in a JWT are normally statements about the subject.
+    /// The subject value MUST either be scoped to be locally unique in the context of the issuer or be globally unique.
     /// The processing of this claim is generally application specific.
     /// Its value is a case-sensitive string containing a string or a URI.
     /// </summary>
@@ -668,16 +642,11 @@ public class JsonWebTokenPayload
 
     /// <summary>
     /// Gets or sets the optional audience identifier.
-    /// This claim identifies the recipients that the JWT is
-    /// intended for.  Each principal intended to process the JWT MUST
-    /// identify itself with a value in the audience claim.If the principal
-    /// processing the claim does not identify itself with a value in the
-    /// this claim when this claim is present, then the JWT MUST be
-    /// rejected.
-    /// In the general case, its value is an array of case-sensitive strings,
-    /// each containing a string or a URI.
-    /// In the special case when the JWT has one audience, its value MAY be a
-    /// single case-sensitive string containing a string or a URI. The
+    /// This claim identifies the recipients that the JWT is intended for.
+    /// Each principal intended to process the JWT MUST identify itself with a value in the audience claim.
+    /// If the principal processing the claim does not identify itself with a value in the this claim when this claim is present, then the JWT MUST be rejected.
+    /// In the general case, its value is an array of case-sensitive strings, each containing a string or a URI.
+    /// In the special case when the JWT has one audience, its value MAY be a single case-sensitive string containing a string or a URI. The
     /// interpretation of audience values is generally application specific
     /// </summary>
     [DataMember(Name = "aud", EmitDefaultValue = false)]
@@ -688,12 +657,9 @@ public class JsonWebTokenPayload
 
     /// <summary>
     /// Gets or sets an optional expiration date time.
-    /// This claim identifies the expiration time on or after
-    /// which the JWT MUST NOT be accepted for processing.
-    /// The processing of this claim requires that the current date time
-    /// MUST be before the expiration date time listed in this claim.
-    /// Implementers MAY provide for some small leeway,
-    /// usually no more than a few minutes, to account for clock skew.
+    /// This claim identifies the expiration time on or after which the JWT MUST NOT be accepted for processing.
+    /// The processing of this claim requires that the current date time MUST be before the expiration date time listed in this claim.
+    /// Implementers MAY provide for some small leeway, usually no more than a few minutes, to account for clock skew.
     /// </summary>
     [JsonIgnore]
     public DateTime? Expiration { get; set; }
@@ -713,12 +679,9 @@ public class JsonWebTokenPayload
 
     /// <summary>
     /// Gets or sets an optional available start date time.
-    /// This claim identifies the time before which the JWT
-    /// MUST NOT be accepted for processing.
-    /// The processing of this claim requires that the current date time
-    /// MUST be after or equal to the not-before date time listed in this claim.
-    /// Implementers MAY provide for some small leeway,
-    /// usually no more than a few minutes, to account for clock skew.
+    /// This claim identifies the time before which the JWT MUST NOT be accepted for processing.
+    /// The processing of this claim requires that the current date time MUST be after or equal to the not-before date time listed in this claim.
+    /// Implementers MAY provide for some small leeway, usually no more than a few minutes, to account for clock skew.
     /// </summary>
     [JsonIgnore]
     public DateTime? NotBefore { get; set; }

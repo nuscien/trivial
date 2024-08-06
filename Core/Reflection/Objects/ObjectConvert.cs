@@ -730,6 +730,177 @@ public static class ObjectConvert
         return null;
     }
 
+    /// <summary>
+    /// Converts a specific number to the hex string.
+    /// </summary>
+    /// <param name="number">The input number.</param>
+    /// <returns>A hex string converted.</returns>
+    public static string ToHexString(short number)
+        => Maths.Numbers.ToPositionalNotationString(number, 16);
+
+    /// <summary>
+    /// Converts a specific number to the hex string.
+    /// </summary>
+    /// <param name="number">The input number.</param>
+    /// <returns>A hex string converted.</returns>
+    public static string ToHexString(int number)
+        => Maths.Numbers.ToPositionalNotationString(number, 16);
+
+    /// <summary>
+    /// Converts a specific number to the hex string.
+    /// </summary>
+    /// <param name="number">The input number.</param>
+    /// <returns>A hex string converted.</returns>
+    public static string ToHexString(long number)
+        => Maths.Numbers.ToPositionalNotationString(number, 16);
+
+    /// <summary>
+    /// Converts a specific number to the hex string.
+    /// </summary>
+    /// <param name="number">The input number.</param>
+    /// <returns>A hex string converted.</returns>
+    public static string ToHexString(float number)
+        => Maths.Numbers.ToPositionalNotationString(number, 16);
+
+    /// <summary>
+    /// Converts a specific number to the hex string.
+    /// </summary>
+    /// <param name="number">The input number.</param>
+    /// <returns>A hex string converted.</returns>
+    /// <exception cref="ArgumentOutOfRangeException">radix was less than 2 or greater than 36.</exception>
+    public static string ToHexString(double number)
+        => Maths.Numbers.ToPositionalNotationString(number, 16);
+
+    /// <summary>
+    /// Converts a specific GUID to the hex string.
+    /// </summary>
+    /// <param name="id">The input GUID.</param>
+    /// <returns>A hex string converted.</returns>
+    /// <exception cref="ArgumentOutOfRangeException">radix was less than 2 or greater than 36.</exception>
+    public static string ToHexString(Guid id)
+        => id.ToString("N");
+
+    /// <summary>
+    /// Converts a specific byte collection to the hex string.
+    /// </summary>
+    /// <param name="bytes">The input byte collection.</param>
+    /// <returns>A hex string converted.</returns>
+    /// <exception cref="ArgumentOutOfRangeException">radix was less than 2 or greater than 36.</exception>
+    public static string ToHexString(IEnumerable<byte> bytes)
+    {
+        if (bytes == null) return null;
+        var str = new StringBuilder();
+        foreach (var b in bytes)
+        {
+            str.Append(b.ToString("x2"));
+        }
+
+        return str.ToString();
+    }
+
+    /// <summary>
+    /// Converts a specific hex string to byte collection.
+    /// </summary>
+    /// <param name="hex">The input hex string.</param>
+    /// <returns>A byte collection.</returns>
+    public static byte[] FromHexString(string hex)
+    {
+        if (hex == null) return Array.Empty<byte>();
+        var count = hex.Length / 2;
+        var bytes = new byte[count];
+        for (int i = 0; i < count; i++)
+        {
+            var j = i * 2;
+            var c = hex.Substring(j, 2);
+            bytes[i] = int.TryParse(c, NumberStyles.HexNumber, null, out var val)
+                ? (byte)val
+                : throw new ArgumentException(nameof(hex), "hex should be a hex string.", new ArgumentOutOfRangeException(nameof(hex), string.Concat("Index ", j, ' ', c, " is not a hex digit.")));
+        }
+
+        return bytes;
+    }
+
+    /// <summary>
+    /// Converts a specific hex string to byte collection.
+    /// </summary>
+    /// <param name="hex">The input hex string.</param>
+    /// <returns>A byte collection.</returns>
+    public static IEnumerable<byte> ReadHexString(string hex)
+    {
+        if (hex == null) yield break;
+        var count = hex.Length / 2;
+        for (int i = 0; i < count; i++)
+        {
+            var j = i * 2;
+            var c = hex.Substring(j, 2);
+            yield return int.TryParse(c, NumberStyles.HexNumber, null, out var val)
+                ? (byte)val
+                : throw new ArgumentException(nameof(hex), "hex should be a hex string.", new ArgumentOutOfRangeException(nameof(hex), string.Concat("Index ", j, ' ', c, " is not a hex digit.")));
+        }
+    }
+
+    /// <summary>
+    /// Converts a specific hex string to byte collection.
+    /// </summary>
+    /// <param name="hex">The input hex string.</param>
+    /// <param name="bytes">A byte collection output.</param>
+    /// <returns>true if convert succeeded; otherwise, false.</returns>
+    public static bool TryFromHexString(string hex, out byte[] bytes)
+    {
+        if (hex == null)
+        {
+            bytes = Array.Empty<byte>();
+            return false;
+        }
+
+        var count = hex.Length / 2;
+        bytes = new byte[count];
+        for (int i = 0; i < count; i++)
+        {
+            var j = i * 2;
+            var c = hex.Substring(j, 2);
+            if (int.TryParse(c, NumberStyles.HexNumber, null, out var val))
+                bytes[i] = (byte)val;
+            else
+                return false;
+        }
+
+        return true;
+    }
+
+    /// <summary>
+    /// Converts a specific hex string to byte collection.
+    /// </summary>
+    /// <param name="hex">The input hex string.</param>
+    /// <returns>A byte collection.</returns>
+    public static byte[] TryFromHexString(string hex)
+    {
+        if (hex == null) return Array.Empty<byte>();
+        var count = hex.Length / 2;
+        var bytes = new byte[count];
+        for (int i = 0; i < count; i++)
+        {
+            bytes[i] = int.TryParse(hex.Substring(i * 2, 2), NumberStyles.HexNumber, null, out var val) ? (byte)val : byte.MinValue;
+        }
+
+        return bytes;
+    }
+
+    /// <summary>
+    /// Converts a specific hex string to byte collection.
+    /// </summary>
+    /// <param name="hex">The input hex string.</param>
+    /// <returns>A byte collection.</returns>
+    public static IEnumerable<byte> TryReadHexString(string hex)
+    {
+        if (hex == null) yield break;
+        var count = hex.Length / 2;
+        for (int i = 0; i < count; i++)
+        {
+            yield return int.TryParse(hex.Substring(i * 2, 2), NumberStyles.HexNumber, null, out var val) ? (byte)val : byte.MinValue;
+        }
+    }
+
     internal static T ParseEnum<T>(string s) where T : struct
     {
 #if NETFRAMEWORK
