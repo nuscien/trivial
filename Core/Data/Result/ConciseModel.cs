@@ -143,15 +143,7 @@ public class ConciseModel : BaseObservableProperties, IConciseModel
         Description = copy.Description;
         ImageUri = copy.ImageUri;
         var keywords = copy.Keywords;
-        if (keywords != null)
-        {
-            Keywords = new();
-            foreach (var keyword in keywords)
-            {
-                Keywords.Add(keyword);
-            }
-        }
-
+        if (keywords != null) Keywords = [.. keywords];
         if (copy is not ConciseModel model) return;
         Raw = model.Raw;
         Tag = model.Tag;

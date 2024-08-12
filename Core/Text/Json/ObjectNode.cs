@@ -2579,7 +2579,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     /// Tries to get the value of the specific property.
     /// </summary>
     /// <param name="key">The property key.</param>
-    /// <param name="subKey">The sub-key of the previous property.</param>
+    /// <param name="subKey">The sub-key of the parent property.</param>
     /// <param name="keyPath">The additional property key path.</param>
     /// <returns>The value.</returns>
     public JsonObjectNode TryGetObjectValue(string key, string subKey, params string[] keyPath)
@@ -2587,6 +2587,28 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
         var json = TryGetObjectValueByProperty(this, key);
         if (json is null) return null;
         if (!string.IsNullOrWhiteSpace(subKey)) json = TryGetObjectValueByProperty(json, subKey);
+        foreach (var k in keyPath)
+        {
+            if (json is null) return null;
+            json = TryGetObjectValueByProperty(json, k);
+        }
+
+        return json;
+    }
+
+    /// <summary>
+    /// Tries to get the value of the specific property.
+    /// </summary>
+    /// <param name="key">The property key.</param>
+    /// <param name="subKey">The sub-index of the parent property.</param>
+    /// <param name="keyPath">The additional property key path.</param>
+    /// <returns>The value.</returns>
+    public JsonObjectNode TryGetObjectValue(string key, int subKey, params string[] keyPath)
+    {
+        var arr = TryGetArrayValue(key);
+        var json = arr is null
+            ? TryGetObjectValue(key)?.TryGetObjectValue(subKey.ToString("g"))
+            : arr.TryGetObjectValue(subKey);
         foreach (var k in keyPath)
         {
             if (json is null) return null;
@@ -6254,7 +6276,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     /// </summary>
     public void Clear()
     {
-        var keys = store.Keys;
+        var keys = store.Keys.ToList();
         store.Clear();
         if (PropertyChanged == null) return;
         foreach (var key in keys)
@@ -7040,7 +7062,8 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     /// </summary>
     /// <returns>The value of the element as a date time.</returns>
     /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
-    DateTime IJsonDataNode.GetDateTime() => throw new InvalidOperationException("Expect a date time but it is an object.");
+    DateTime IJsonDataNode.GetDateTime()
+        => TryGetDateTime() ?? throw new InvalidOperationException("Expect a date time but it is an object.");
 
     /// <summary>
     /// Gets the value of the element as a number.
@@ -7123,8 +7146,9 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     /// <returns>true if the kind is the one expected; otherwise, false.</returns>
     bool IJsonDataNode.TryGetDateTime(out DateTime result)
     {
-        result = WebFormat.ParseDate(0);
-        return false;
+        var t = TryGetDateTime();
+        result = t ?? WebFormat.ParseDate(0);
+        return t.HasValue;
     }
 
     /// <summary>
@@ -7226,6 +7250,37 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     /// </summary>
     /// <returns>The property keys.</returns>
     IEnumerable<string> IJsonContainerNode.GetKeys() => Keys;
+
+    /// <summary>
+    /// Tries to get the value of the element as a date time.
+    /// </summary>
+    /// <returns>The result.</returns>
+    private DateTime? TryGetDateTime()
+    {
+        var year = TryGetInt32Value("year");
+        if (!year.HasValue) return null;
+        var month = TryGetInt32Value("month") ?? 0;
+        if (month < 1 || month > 12) return null;
+        var day = TryGetInt32Value("day") ?? 0;
+        if (day < 1 || day > 31) return null;
+        var hour = TryGetInt32Value("hour") ?? 0;
+        if (hour < 0 || hour > 23) return null;
+        var minute = TryGetInt32Value("minute") ?? 0;
+        if (minute < 0 || minute > 59) return null;
+        var second = TryGetInt32Value("second") ?? 0;
+        if (second < 0 || second > 59) return null;
+        var millisecond = TryGetInt32Value("millisecond") ?? 0;
+        if (millisecond < 0 || millisecond > 1000) return null;
+        var offset = TryGetStringTrimmedValue("offset")?.ToLowerInvariant() ?? string.Empty;
+        var kind = offset switch
+        {
+            "" or "utc" or "false" or "z" or "0" or "0:00" or "00:00" => DateTimeKind.Utc,
+            "local" => DateTimeKind.Local,
+            _ => DateTimeKind.Unspecified
+        };
+        if (kind == DateTimeKind.Unspecified) return null;
+        return new(year.Value, month, day, hour, minute, second, millisecond, kind);
+    }
 
     private void AddProperty(string key, IJsonDataNode value)
     {

@@ -22,12 +22,12 @@ public static class RSAParametersConvert
     /// <summary>
     /// Encoded OID sequence for PKCS #1 RSA encryption szOID_RSA_RSA = "1.2.840.113549.1.1.1".
     /// </summary>
-    private static readonly byte[] seqOID = new byte[] { 0x30, 0x0D, 0x06, 0x09, 0x2A, 0x86, 0x48, 0x86, 0xF7, 0x0D, 0x01, 0x01, 0x01, 0x05, 0x00 };
+    private static readonly byte[] seqOID = [0x30, 0x0D, 0x06, 0x09, 0x2A, 0x86, 0x48, 0x86, 0xF7, 0x0D, 0x01, 0x01, 0x01, 0x05, 0x00];
 
     /// <summary>
     /// PEM versions.
     /// </summary>
-    private static readonly byte[] verPem = new byte[] { 0x02, 0x01, 0x00 };
+    private static readonly byte[] verPem = [0x02, 0x01, 0x00];
 
     /// <summary>
     /// Parses the parameters from OpenSSL RSA key (PEM Base64) or the RSA parameters XML string.
@@ -108,130 +108,126 @@ public static class RSAParametersConvert
             key = string.Join(string.Empty, lines.Skip(1).Take(lines.Length - 2));
         }
 
-        using (var stream = new MemoryStream(Convert.FromBase64String(key)))
+        using var stream = new MemoryStream(Convert.FromBase64String(key));
+        using var reader = new BinaryReader(stream);
+        if (isPrivate)
         {
-            using (var reader = new BinaryReader(stream))
+            var twoBytes = reader.ReadUInt16();
+            if (twoBytes == 0x8130) reader.ReadByte();
+            else if (twoBytes == 0x8230) reader.ReadInt16();
+            else return null;
+            if (!AreSame(reader, verPem)) return null;
+
+            // For PKCS8.
+            if (reader.BaseStream.Position + seqOID.Length < reader.BaseStream.Length)
             {
-                if (isPrivate)
+                var isPkcs8 = true;
+                var i = 0;
+                for (; i < seqOID.Length; i++)
                 {
-                    var twoBytes = reader.ReadUInt16();
-                    if (twoBytes == 0x8130) reader.ReadByte();
-                    else if (twoBytes == 0x8230) reader.ReadInt16();
-                    else return null;
+                    if (seqOID[i] == reader.ReadByte()) continue;
+                    isPkcs8 = false;
+                    break;
+                }
+
+                if (isPkcs8)
+                {
+                    GetIntegerSize(reader, 0x04);
+                    GetIntegerSize(reader, 0x30);
                     if (!AreSame(reader, verPem)) return null;
-
-                    // For PKCS8.
-                    if (reader.BaseStream.Position + seqOID.Length < reader.BaseStream.Length)
-                    {
-                        var isPkcs8 = true;
-                        var i = 0;
-                        for (; i < seqOID.Length; i++)
-                        {
-                            if (seqOID[i] == reader.ReadByte()) continue;
-                            isPkcs8 = false;
-                            break;
-                        }
-
-                        if (isPkcs8)
-                        {
-                            GetIntegerSize(reader, 0x04);
-                            GetIntegerSize(reader, 0x30);
-                            if (!AreSame(reader, verPem)) return null;
-                        }
-                        else
-                        {
-                            i++;
-                            reader.BaseStream.Seek(-i, SeekOrigin.Current);
-                        }
-                    }
-
-                    return new RSAParameters
-                    {
-                        Modulus = reader.ReadBytes(GetIntegerSize(reader)),
-                        Exponent = reader.ReadBytes(GetIntegerSize(reader)),
-                        D = reader.ReadBytes(GetIntegerSize(reader)),
-                        P = reader.ReadBytes(GetIntegerSize(reader)),
-                        Q = reader.ReadBytes(GetIntegerSize(reader)),
-                        DP = reader.ReadBytes(GetIntegerSize(reader)),
-                        DQ = reader.ReadBytes(GetIntegerSize(reader)),
-                        InverseQ = reader.ReadBytes(GetIntegerSize(reader))
-                    };
                 }
                 else
                 {
-                    var twoBytes = reader.ReadUInt16();
-                    if (twoBytes == 0x8130) // Data read as little endian order (actual data order for Sequence is 30 81).
-                        reader.ReadByte();  // Advance 1 byte.
-                    else if (twoBytes == 0x8230)
-                        reader.ReadInt16(); // Advance 2 bytes.
-                    else
-                        return null;
-
-                    var seq = reader.ReadBytes(15); // Read the Sequence OID.
-                    if (!ListExtensions.Equals(seq, seqOID))   // Make sure Sequence for OID is correct.
-                        return null;
-
-                    twoBytes = reader.ReadUInt16();
-                    if (twoBytes == 0x8103) // Data read as little endian order (actual data order for Bit String is 03 81).
-                        reader.ReadByte();  // Advance 1 byte.
-                    else if (twoBytes == 0x8203)
-                        reader.ReadInt16(); // Advance 2 bytes.
-                    else
-                        return null;
-
-                    var testByte = reader.ReadByte();
-                    if (testByte != 0x00) // Expect null byte next.
-                        return null;
-
-                    twoBytes = reader.ReadUInt16();
-                    if (twoBytes == 0x8130) // Data read as little endian order (actual data order for Sequence is 30 81).
-                        reader.ReadByte();  // Advance 1 byte.
-                    else if (twoBytes == 0x8230)
-                        reader.ReadInt16(); // Advance 2 bytes.
-                    else
-                        return null;
-
-                    twoBytes = reader.ReadUInt16();
-                    byte lowByte = 0x00;
-                    byte highByte = 0x00;
-
-                    if (twoBytes == 0x8102) // Data read as little endian order (actual data order for Integer is 02 81).
-                    {
-                        lowByte = reader.ReadByte();    // Read next bytes which is bytes in modulus.
-                    }
-                    else if (twoBytes == 0x8202)
-                    {
-                        highByte = reader.ReadByte();   // Advance 2 bytes.
-                        lowByte = reader.ReadByte();
-                    }
-                    else
-                    {
-                        return null;
-                    }
-
-                    byte[] modInt = { lowByte, highByte, 0x00, 0x00 };   // Reverse byte order since asn.1 key uses big endian order.
-                    var modsize = BitConverter.ToInt32(modInt, 0);
-                    var firstByte = reader.PeekChar();
-                    if (firstByte == 0x00)
-                    {   // Don't include it if the first byte (highest order) of modulus is zero.
-                        reader.ReadByte();  // Skip this null byte.
-                        modsize -= 1;   // Reduce modulus buffer size by 1.
-                    }
-
-                    var modulus = reader.ReadBytes(modsize);    // Read the modulus bytes.
-                    if (reader.ReadByte() != 0x02)  // Expect an Integer for the exponent data.
-                        return null;
-                    var expBytes = (int)reader.ReadByte();  // Should only need one byte for actual exponent data (for all useful values).
-                    var exponent = reader.ReadBytes(expBytes);
-
-                    // Create RSACryptoServiceProvider instance and initialize with public key.
-                    return new RSAParameters
-                    {
-                        Modulus = modulus,
-                        Exponent = exponent
-                    };
+                    i++;
+                    reader.BaseStream.Seek(-i, SeekOrigin.Current);
                 }
             }
+
+            return new RSAParameters
+            {
+                Modulus = reader.ReadBytes(GetIntegerSize(reader)),
+                Exponent = reader.ReadBytes(GetIntegerSize(reader)),
+                D = reader.ReadBytes(GetIntegerSize(reader)),
+                P = reader.ReadBytes(GetIntegerSize(reader)),
+                Q = reader.ReadBytes(GetIntegerSize(reader)),
+                DP = reader.ReadBytes(GetIntegerSize(reader)),
+                DQ = reader.ReadBytes(GetIntegerSize(reader)),
+                InverseQ = reader.ReadBytes(GetIntegerSize(reader))
+            };
+        }
+        else
+        {
+            var twoBytes = reader.ReadUInt16();
+            if (twoBytes == 0x8130) // Data read as little endian order (actual data order for Sequence is 30 81).
+                reader.ReadByte();  // Advance 1 byte.
+            else if (twoBytes == 0x8230)
+                reader.ReadInt16(); // Advance 2 bytes.
+            else
+                return null;
+
+            var seq = reader.ReadBytes(15); // Read the Sequence OID.
+            if (!ListExtensions.Equals(seq, seqOID))   // Make sure Sequence for OID is correct.
+                return null;
+
+            twoBytes = reader.ReadUInt16();
+            if (twoBytes == 0x8103) // Data read as little endian order (actual data order for Bit String is 03 81).
+                reader.ReadByte();  // Advance 1 byte.
+            else if (twoBytes == 0x8203)
+                reader.ReadInt16(); // Advance 2 bytes.
+            else
+                return null;
+
+            var testByte = reader.ReadByte();
+            if (testByte != 0x00) // Expect null byte next.
+                return null;
+
+            twoBytes = reader.ReadUInt16();
+            if (twoBytes == 0x8130) // Data read as little endian order (actual data order for Sequence is 30 81).
+                reader.ReadByte();  // Advance 1 byte.
+            else if (twoBytes == 0x8230)
+                reader.ReadInt16(); // Advance 2 bytes.
+            else
+                return null;
+
+            twoBytes = reader.ReadUInt16();
+            byte lowByte = 0x00;
+            byte highByte = 0x00;
+
+            if (twoBytes == 0x8102) // Data read as little endian order (actual data order for Integer is 02 81).
+            {
+                lowByte = reader.ReadByte();    // Read next bytes which is bytes in modulus.
+            }
+            else if (twoBytes == 0x8202)
+            {
+                highByte = reader.ReadByte();   // Advance 2 bytes.
+                lowByte = reader.ReadByte();
+            }
+            else
+            {
+                return null;
+            }
+
+            byte[] modInt = { lowByte, highByte, 0x00, 0x00 };   // Reverse byte order since asn.1 key uses big endian order.
+            var modsize = BitConverter.ToInt32(modInt, 0);
+            var firstByte = reader.PeekChar();
+            if (firstByte == 0x00)
+            {   // Don't include it if the first byte (highest order) of modulus is zero.
+                reader.ReadByte();  // Skip this null byte.
+                modsize -= 1;   // Reduce modulus buffer size by 1.
+            }
+
+            var modulus = reader.ReadBytes(modsize);    // Read the modulus bytes.
+            if (reader.ReadByte() != 0x02)  // Expect an Integer for the exponent data.
+                return null;
+            var expBytes = (int)reader.ReadByte();  // Should only need one byte for actual exponent data (for all useful values).
+            var exponent = reader.ReadBytes(expBytes);
+
+            // Create RSACryptoServiceProvider instance and initialize with public key.
+            return new RSAParameters
+            {
+                Modulus = modulus,
+                Exponent = exponent
+            };
         }
     }
 
@@ -532,7 +528,5 @@ public static class RSAParametersConvert
     }
 
     private static XmlElement AppendChildWithBase64(XmlDocument doc, string name, byte[] value)
-    {
-        return AppendChildWithText(doc, name, value != null ? Convert.ToBase64String(value) : null);
-    }
+        => AppendChildWithText(doc, name, value != null ? Convert.ToBase64String(value) : null);
 }
