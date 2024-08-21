@@ -404,10 +404,28 @@ public class ServerSentEventInfo
     /// Parses server-sent event record.
     /// </summary>
     /// <param name="stream">The input stream.</param>
+    /// <param name="encoding">The optional encoding.</param>
     /// <returns>A collection of server-sent event record.</returns>
-    public static IEnumerable<ServerSentEventInfo> Parse(Stream stream)
+    /// <exception cref="NotSupportedException">Cannot read the information to the stream.</exception>
+    /// <exception cref="IOException">An I/O error occured.</exception>
+    /// <exception cref="ObjectDisposedException">The stream was closed.</exception>
+    public static IEnumerable<ServerSentEventInfo> Parse(Stream stream, Encoding encoding = null)
     {
-        var lines = stream.ReadLines(Encoding.UTF8);
+        var lines = stream.ReadLines(encoding ?? Encoding.UTF8);
+        return Parse(lines);
+    }
+
+    /// <summary>
+    /// Parses server-sent event record.
+    /// </summary>
+    /// <param name="reader">The input stream.</param>
+    /// <returns>A collection of server-sent event record.</returns>
+    /// <exception cref="NotSupportedException">Cannot write the information to the stream writer.</exception>
+    /// <exception cref="IOException">An I/O error occured.</exception>
+    /// <exception cref="ObjectDisposedException">The stream writer was closed.</exception>
+    public static IEnumerable<ServerSentEventInfo> Parse(StreamReader reader)
+    {
+        var lines = reader.ReadLines();
         return Parse(lines);
     }
 
