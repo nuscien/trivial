@@ -1386,4 +1386,42 @@ public static partial class ListExtensions
         arr.AddRange(list);
         return arr;
     }
+
+    /// <summary>
+    /// Raises on the specific key.
+    /// </summary>
+    /// <param name="collection">The source collection.</param>
+    /// <param name="eventName">The event name.</param>
+    /// <param name="callback">The callback on item matched.</param>
+    /// <returns>The collection.</returns>
+    public static IEnumerable<ServerSentEventInfo> On(IEnumerable<ServerSentEventInfo> collection, string eventName, Action<ServerSentEventInfo> callback)
+    {
+        if (collection == null || callback == null) yield break;
+        foreach (var item in collection)
+        {
+            if (item == null) continue;
+            if (item.EventName == eventName) callback(item);
+            yield return item;
+        }
+    }
+
+    /// <summary>
+    /// Raises on the specific key.
+    /// </summary>
+    /// <param name="collection">The source collection.</param>
+    /// <param name="eventName">The event name.</param>
+    /// <param name="callback">The callback on item matched.</param>
+    /// <returns>The collection.</returns>
+    public static IEnumerable<ServerSentEventInfo> On(IEnumerable<ServerSentEventInfo> collection, string eventName, Action<ServerSentEventInfo, int> callback)
+    {
+        if (collection == null || callback == null) yield break;
+        var i = -1;
+        foreach (var item in collection)
+        {
+            i++;
+            if (item == null) continue;
+            if (item.EventName == eventName) callback(item, i);
+            yield return item;
+        }
+    }
 }

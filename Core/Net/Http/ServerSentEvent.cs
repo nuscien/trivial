@@ -512,11 +512,29 @@ public class ServerSentEventInfo
     /// </summary>
     /// <param name="response">The HTTP response message.</param>
     /// <returns>A collection of server-sent event record.</returns>
+    /// <exception cref="NotSupportedException">Cannot read the information to the stream.</exception>
+    /// <exception cref="IOException">An I/O error occured.</exception>
+    /// <exception cref="ObjectDisposedException">The response was closed.</exception>
     public static async Task<IEnumerable<ServerSentEventInfo>> ParseAsync(HttpResponseMessage response)
     {
         var content = response?.Content;
         var resp = content == null ? null : await content.ReadAsStreamAsync();
         return Parse(resp);
+    }
+
+    /// <summary>
+    /// Parses server-sent event record.
+    /// </summary>
+    /// <param name="request">The HTTP request message.</param>
+    /// <param name="http">The HTTP client.</param>
+    /// <returns>A collection of server-sent event record.</returns>
+    /// <exception cref="InvalidOperationException">The request message was already sent by the HTTP client instance.</exception>
+    /// <exception cref="HttpRequestException">The request failed due to an underlying issue such as network connectivity, DNS failure, server certificate validation or timeout.</exception>
+    /// <exception cref="IOException">An I/O error occured.</exception>
+    public static async Task<IEnumerable<ServerSentEventInfo>> ParseAsync(HttpRequestMessage request, HttpClient http = null)
+    {
+        var resp = await (http ?? new HttpClient()).SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
+        return await ParseAsync(resp);
     }
 
 #if NET6_0_OR_GREATER
