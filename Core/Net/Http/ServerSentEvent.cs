@@ -229,11 +229,70 @@ public class ServerSentEventInfo
     }
 
     /// <summary>
+    /// Writes the event information into a stream.
+    /// </summary>
+    /// <param name="stream">The stream to write.</param>
+    /// <param name="encoding">The optional encoding.</param>
+    /// <exception cref="ArgumentNullException">The stream should not be null.</exception>
+    /// <exception cref="NotSupportedException">The stream does not support writing.</exception>
+    /// <exception cref="IOException">An I/O error occured, such as the specified file cannot be found.</exception>
+    /// <exception cref="ObjectDisposedException">The stream was closed.</exception>
+    public void WriteTo(Stream stream, Encoding encoding = null)
+    {
+        if (stream == null) throw new ArgumentNullException(nameof(stream), "stream should not be null.");
+        if (!stream.CanWrite) throw new NotSupportedException("The stream does not support writing.");
+        var s = ToResponseString(true);
+        encoding ??= Encoding.UTF8;
+        try
+        {
+            if (stream.Position > 0)
+            {
+                var prefix = encoding.GetBytes("\n");
+                stream.Write(prefix, 0, prefix.Length);
+            }
+        }
+        catch (EncoderFallbackException)
+        {
+        }
+        catch (IOException)
+        {
+        }
+
+        var bytes = encoding.GetBytes(s);
+        stream.Write(bytes, 0, bytes.Length);
+    }
+
+    /// <summary>
+    /// Writes the event information into a stream.
+    /// </summary>
+    /// <param name="writer">The stream writer.</param>
+    /// <exception cref="ArgumentNullException">The stream writer should not be null.</exception>
+    /// <exception cref="NotSupportedException">Cannot write the information to the stream writer.</exception>
+    /// <exception cref="IOException">An I/O error occured.</exception>
+    /// <exception cref="ObjectDisposedException">The stream writer was closed.</exception>
+    public void WriteTo(StreamWriter writer)
+    {
+        if (writer == null) throw new ArgumentNullException(nameof(writer), "writer should not be null.");
+        writer.Write(ToResponseString(true));
+    }
+
+    /// <summary>
     /// Gets a JSON object parsed from data string.
     /// </summary>
+    /// <param name="options">Options to control the reader behavior during parsing.</param>
     /// <returns>A JSON object of data.</returns>
-    public JsonObjectNode GetJsonData()
-        => JsonObjectNode.Parse(DataString);
+    /// <exception cref="JsonException">json does not represent a valid single JSON object.</exception>
+    /// <exception cref="ArgumentException">options contains unsupported options.</exception>
+    public JsonObjectNode GetJsonData(JsonDocumentOptions options = default)
+        => JsonObjectNode.Parse(DataString, options);
+
+    /// <summary>
+    /// Tries to get a JSON object parsed from data string.
+    /// </summary>
+    /// <param name="options">Options to control the reader behavior during parsing.</param>
+    /// <returns>A JSON object of data.</returns>
+    public JsonObjectNode TryGetJsonData(JsonDocumentOptions options = default)
+        => JsonObjectNode.TryParse(DataString, options);
 
     /// <summary>
     /// Converts the record to string.
@@ -245,6 +304,7 @@ public class ServerSentEventInfo
     {
         if (sb == null) return;
         if (sb.Length > 1) sb.Append(newLineN ? "\n" : Environment.NewLine);
+        AppendProperty(sb, string.Empty, Comment, newLineN);
         AppendProperty(sb, "id", Id, newLineN);
         AppendProperty(sb, "event", OriginalEventName, newLineN);
         AppendProperty(sb, "data", DataString, newLineN);
@@ -254,7 +314,21 @@ public class ServerSentEventInfo
             if (!double.IsNaN(ms) && ms > 0 && !double.IsInfinity(ms)) AppendProperty(sb, "retry", ms.ToString("g"), newLineN);
         }
 
-        AppendProperty(sb, string.Empty, Comment, newLineN);
+        foreach (var prop in dict)
+        {
+            if (string.IsNullOrWhiteSpace(prop.Key)) continue;
+            switch (prop.Key.Trim().TrimEnd(':').ToLowerInvariant())
+            {
+                case "id":
+                case "event":
+                case "data":
+                case "retry":
+                    break;
+                default:
+                    AppendProperty(sb, prop.Key, prop.Value, newLineN);
+                    break;
+            }
+        }
     }
 
     internal void SetValue(string key, string value)
@@ -295,7 +369,7 @@ public class ServerSentEventInfo
         {
             sb.Append(key);
             sb.Append(": ");
-            sb.Append(value);
+            sb.Append(line);
             sb.Append(newLineN ? "\n" : Environment.NewLine);
         }
     }
