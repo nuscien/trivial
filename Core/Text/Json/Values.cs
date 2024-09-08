@@ -218,15 +218,28 @@ public static class JsonValues
     /// </summary>
     /// <param name="col">The JSON object collection.</param>
     /// <param name="key">The property key.</param>
+    /// <param name="ignoreNotMatched">true if ignore any item which is not JSON object; otherwise, false.</param>
     /// <returns>The property list.</returns>
-    public static List<IJsonDataNode> TryGetValues(this IEnumerable<JsonObjectNode> col, string key)
+    public static List<IJsonDataNode> TryGetValues(this IEnumerable<JsonObjectNode> col, string key, bool ignoreNotMatched = false)
     {
         var list = new List<IJsonDataNode>();
         if (col == null) return list;
-        foreach (var item in col)
+        if (ignoreNotMatched)
         {
-            var json = item?.TryGetObjectValue(key);
-            list.Add(json ?? Undefined);
+            foreach (var item in col)
+            {
+                var json = item?.TryGetValue(key);
+                if (json == null || json.ValueKind == JsonValueKind.Undefined) continue;
+                list.Add(json);
+            }
+        }
+        else
+        {
+            foreach (var item in col)
+            {
+                var json = item?.TryGetValue(key);
+                list.Add(json ?? Undefined);
+            }
         }
 
         return list;
@@ -276,6 +289,18 @@ public static class JsonValues
         if (sb == null) return null;
         sb.Append(value.StringValue);
         return sb;
+    }
+
+    /// <summary>
+    /// Filters a sequence of values based on a condition.
+    /// </summary>
+    /// <param name="source">A string collection to filter.</param>
+    /// <param name="kind">The kind to filter.</param>
+    /// <returns>A string collection that contains elements from the input sequence that satisfy the condition.</returns>
+    public static IEnumerable<IJsonValueNode> Where(this IEnumerable<IJsonValueNode> source, JsonValueKind kind)
+    {
+        if (source == null) return null;
+        return source.Where(ele => ele.ValueKind == kind);
     }
 
     /// <summary>
@@ -417,6 +442,228 @@ public static class JsonValues
             if (item?.TryGetInt64Value(key, out var s) != true || value != s) continue;
             yield return item;
         }
+    }
+
+    /// <summary>
+    /// Gets the all JSON object items which contains the specific property from the collection.
+    /// </summary>
+    /// <param name="col">The input collection.</param>
+    /// <param name="key">The property key required.</param>
+    /// <param name="value">The value of the property.</param>
+    /// <returns>A collection of the JSON object node.</returns>
+    public static IEnumerable<JsonObjectNode> WithProperty(this IEnumerable<JsonObjectNode> col, string key, string value)
+    {
+        if (col == null) yield break;
+        foreach (var item in col)
+        {
+            if (item is not null && item.TryGetStringValue(key) == value) yield return item;
+        }
+    }
+
+    /// <summary>
+    /// Gets the all JSON object items which contains the specific property from the collection.
+    /// </summary>
+    /// <param name="col">The input collection.</param>
+    /// <param name="key">The property key required.</param>
+    /// <param name="value">The value of the property.</param>
+    /// <param name="comparisonType">One of the enumeration values that specifies how the strings will be compared.</param>
+    /// <returns>A collection of the JSON object node.</returns>
+    public static IEnumerable<JsonObjectNode> WithProperty(this IEnumerable<JsonObjectNode> col, string key, string value, StringComparison comparisonType)
+    {
+        if (col == null) yield break;
+        if (value == null)
+        {
+            foreach (var item in col)
+            {
+                if (item is not null && item.IsNullOrUndefined(key)) yield return item;
+            }
+        }
+        else
+        {
+            foreach (var item in col)
+            {
+                if (item is not null && value.Equals(item.TryGetStringValue(key), comparisonType)) yield return item;
+            }
+        }
+    }
+
+    /// <summary>
+    /// Gets the all JSON object items which contains the specific property from the collection.
+    /// </summary>
+    /// <param name="col">The input collection.</param>
+    /// <param name="key">The property key required.</param>
+    /// <param name="value">The value of the property.</param>
+    /// <returns>A collection of the JSON object node.</returns>
+    public static IEnumerable<JsonObjectNode> WithProperty(this IEnumerable<JsonObjectNode> col, string key, int value)
+    {
+        if (col == null) yield break;
+        foreach (var item in col)
+        {
+            if (item is not null && item.TryGetInt32Value(key) == value) yield return item;
+        }
+    }
+
+    /// <summary>
+    /// Gets the all JSON object items which contains the specific property from the collection.
+    /// </summary>
+    /// <param name="col">The input collection.</param>
+    /// <param name="key">The property key required.</param>
+    /// <param name="value">The value of the property.</param>
+    /// <returns>A collection of the JSON object node.</returns>
+    public static IEnumerable<JsonObjectNode> WithProperty(this IEnumerable<JsonObjectNode> col, string key, bool value)
+    {
+        if (col == null) yield break;
+        foreach (var item in col)
+        {
+            if (item is not null && item.TryGetBooleanValue(key) == value) yield return item;
+        }
+    }
+
+    /// <summary>
+    /// Gets the all JSON object items which contains the specific property from the collection.
+    /// </summary>
+    /// <param name="col">The input collection.</param>
+    /// <param name="key">The property key required.</param>
+    /// <param name="kind">The kind of the property.</param>
+    /// <returns>A collection of the JSON object node.</returns>
+    public static IEnumerable<JsonObjectNode> WithProperty(this IEnumerable<JsonObjectNode> col, string key, JsonValueKind kind)
+    {
+        if (col == null) yield break;
+        foreach (var item in col)
+        {
+            if (item is not null && item.GetValueKind(key) == kind) yield return item;
+        }
+    }
+
+    /// <summary>
+    /// Gets the all JSON object items which contains the specific property from the collection.
+    /// </summary>
+    /// <param name="col">The input collection.</param>
+    /// <param name="key">The property key required.</param>
+    /// <returns>A collection of the JSON object node.</returns>
+    public static IEnumerable<JsonObjectNode> WithProperty(this IEnumerable<JsonObjectNode> col, string key)
+    {
+        if (col == null) yield break;
+        foreach (var item in col)
+        {
+            if (item is not null && item.ContainsKey(key)) yield return item;
+        }
+    }
+
+    /// <summary>
+    /// Gets the all JSON object items which contains the specific property from the array.
+    /// </summary>
+    /// <param name="array">The input JSON array node.</param>
+    /// <param name="key">The property key required.</param>
+    /// <param name="value">The value of the property.</param>
+    /// <returns>A collection of the JSON object node.</returns>
+    public static IEnumerable<JsonObjectNode> WithProperty(this JsonArrayNode array, string key, string value)
+        => WithProperty(array?.SelectObjects(), key, value);
+
+    /// <summary>
+    /// Gets the all JSON object items which contains the specific property from the array.
+    /// </summary>
+    /// <param name="array">The input JSON array node.</param>
+    /// <param name="key">The property key required.</param>
+    /// <param name="value">The value of the property.</param>
+    /// <param name="comparisonType">One of the enumeration values that specifies how the strings will be compared.</param>
+    /// <returns>A collection of the JSON object node.</returns>
+    public static IEnumerable<JsonObjectNode> WithProperty(this JsonArrayNode array, string key, string value, StringComparison comparisonType)
+        => WithProperty(array?.SelectObjects(), key, value, comparisonType);
+
+    /// <summary>
+    /// Gets the all JSON object items which contains the specific property from the array.
+    /// </summary>
+    /// <param name="array">The input JSON array node.</param>
+    /// <param name="key">The property key required.</param>
+    /// <param name="value">The value of the property.</param>
+    /// <returns>A collection of the JSON object node.</returns>
+    public static IEnumerable<JsonObjectNode> WithProperty(this JsonArrayNode array, string key, int value)
+        => WithProperty(array?.SelectObjects(), key, value);
+
+    /// <summary>
+    /// Gets the all JSON object items which contains the specific property from the array.
+    /// </summary>
+    /// <param name="array">The input JSON array node.</param>
+    /// <param name="key">The property key required.</param>
+    /// <param name="value">The value of the property.</param>
+    /// <returns>A collection of the JSON object node.</returns>
+    public static IEnumerable<JsonObjectNode> WithProperty(this JsonArrayNode array, string key, bool value)
+        => WithProperty(array?.SelectObjects(), key, value);
+
+    /// <summary>
+    /// Gets the all JSON object items which contains the specific property from the array.
+    /// </summary>
+    /// <param name="array">The input JSON array node.</param>
+    /// <param name="key">The property key required.</param>
+    /// <param name="kind">The kind of the property.</param>
+    /// <returns>A collection of the JSON object node.</returns>
+    public static IEnumerable<JsonObjectNode> WithProperty(this JsonArrayNode array, string key, JsonValueKind kind)
+        => WithProperty(array?.SelectObjects(), key, kind);
+
+    /// <summary>
+    /// Gets the all JSON object items which contains the specific property from the array.
+    /// </summary>
+    /// <param name="array">The input JSON array node.</param>
+    /// <param name="key">The property key required.</param>
+    /// <returns>A collection of the JSON object node.</returns>
+    public static IEnumerable<JsonObjectNode> WithProperty(this JsonArrayNode array, string key)
+        => WithProperty(array?.SelectObjects(), key);
+
+    /// <summary>
+    /// Converts to JSON object node collection.
+    /// </summary>
+    /// <param name="collection">The collection of the item to convert.</param>
+    /// <param name="ignoreNotMatched">true if ignore any item which is not JSON object; otherwise, false.</param>
+    /// <returns>A JSON object node collection converted.</returns>
+    public static IEnumerable<JsonObjectNode> ToJsonObjectNodes(this IEnumerable<IJsonValueNode> collection, bool ignoreNotMatched = false)
+    {
+        if (collection == null) yield break;
+        if (ignoreNotMatched)
+        {
+            foreach (var item in collection)
+            {
+                if (item is JsonObjectNode json) yield return json;
+            }
+        }
+        else
+        {
+            foreach (var item in collection)
+            {
+                yield return item as JsonObjectNode;
+            }
+        }
+    }
+
+    /// <summary>
+    /// Converts to JSON object node collection.
+    /// </summary>
+    /// <param name="collection">The collection of the item to convert.</param>
+    /// <returns>A JSON object node collection converted.</returns>
+    public static IEnumerable<JsonObjectNode> ToJsonObjectNodes(this IEnumerable<IJsonObjectHost> collection)
+    {
+        if (collection == null) yield break;
+        foreach (var item in collection)
+        {
+            yield return item?.ToJson();
+        }
+    }
+
+    /// <summary>
+    /// Converts to JSON array.
+    /// </summary>
+    /// <param name="collection">The collection of the item to convert.</param>
+    /// <returns>A JSON array node converted.</returns>
+    public static JsonArrayNode ToJsonArrayNode(this IEnumerable<IJsonObjectHost> collection)
+    {
+        if (collection == null) return null;
+        var arr = new JsonArrayNode();
+        foreach (var item in collection)
+        {
+            arr.Add(item);
+        }
+
+        return arr;
     }
 
     /// <summary>

@@ -1413,16 +1413,56 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     /// <returns>A string.</returns>
     public string TryGetStringValue(string key)
     {
-        if (!store.TryGetValue(key, out var data)) return null;
-        if (data is null) return null;
+        if (!store.TryGetValue(key, out var data) || data is null) return null;
         if (data is IJsonStringNode str) return str.StringValue;
         return data.ValueKind switch
         {
             JsonValueKind.True => JsonBooleanNode.TrueString,
-            JsonValueKind.False => JsonBooleanNode.TrueString,
+            JsonValueKind.False => JsonBooleanNode.FalseString,
             JsonValueKind.Number => data.ToString(),
             _ => null
         };
+    }
+
+    /// <summary>
+    /// Tries to get the value of the specific property.
+    /// </summary>
+    /// <param name="key">The property key.</param>
+    /// <param name="value">The value of the property.</param>
+    /// <param name="kind">The value kind.</param>
+    /// <returns>true if has the property and the type is the one expected; otherwise, false.</returns>
+    public bool TryGetStringValue(string key, out string value, out JsonValueKind kind)
+    {
+        if (!store.TryGetValue(key, out var data))
+        {
+            kind = JsonValueKind.Undefined;
+            value = null;
+            return false;
+        }
+
+        if (data is null)
+        {
+            kind = JsonValueKind.Undefined;
+            value = null;
+            return true;
+        }
+
+        if (data is IJsonStringNode str)
+        {
+            kind = JsonValueKind.String;
+            value = str.StringValue;
+            return true;
+        }
+
+        kind = data.ValueKind;
+        value = data.ValueKind switch
+        {
+            JsonValueKind.True => JsonBooleanNode.TrueString,
+            JsonValueKind.False => JsonBooleanNode.FalseString,
+            JsonValueKind.Number => data.ToString(),
+            _ => null
+        };
+        return value != null;
     }
 
     /// <summary>
