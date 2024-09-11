@@ -318,6 +318,62 @@ public static class Numbers
     }
 
     /// <summary>
+    /// Converts a number to a specific positional notation format string.
+    /// </summary>
+    /// <param name="value">The number to convert.</param>
+    /// <param name="radix">The positional notation. Should be an integer in 2-36.</param>
+    /// <returns>A string of the number in the specific positional notation.</returns>
+    /// <exception cref="ArgumentOutOfRangeException">radix was less than 2 or greater than 36.</exception>
+    public static string ToPositionalNotationString(decimal value, int radix)
+    {
+        if (radix < 2 || radix > 36) throw new ArgumentOutOfRangeException(nameof(radix), "radix should be in 2-36.");
+        var str = new StringBuilder();
+        var fractionalStr = string.Empty;
+        var integerPart = Math.Abs((long)value);
+        var fractionalPart = Math.Abs(value) - integerPart;
+        if (integerPart == 0)
+        {
+            str.Append('0');
+        }
+
+        while (integerPart != 0)
+        {
+            str.Insert(0, num36[(int)(integerPart % radix)]);
+            integerPart /= radix;
+        }
+
+        for (int i = 0; i < 10; i++)
+        {
+            if (fractionalPart == 0)
+            {
+                break;
+            }
+
+            var pos = (int)(fractionalPart * radix);
+            if (pos < 35 && Math.Abs(pos + 1 - fractionalPart * radix) < 0.00000000001M)
+            {
+                fractionalStr += num36[pos + 1];
+                break;
+            }
+
+            fractionalStr += num36[pos];
+            fractionalPart = fractionalPart * radix - pos;
+        }
+
+        while (fractionalStr.Length > 0 && fractionalStr.LastIndexOf('0') == (fractionalStr.Length - 1))
+            fractionalStr = fractionalStr.Remove(fractionalStr.Length - 1);
+
+        if (value < 0) str.Insert(0, '-');
+        if (!string.IsNullOrEmpty(fractionalStr))
+        {
+            str.Append('.');
+            str.Append(fractionalStr);
+        }
+
+        return str.ToString();
+    }
+
+    /// <summary>
     /// Parses a string to a number.
     /// </summary>
     /// <param name="s">The input string.</param>

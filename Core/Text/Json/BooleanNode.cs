@@ -661,6 +661,18 @@ public class JsonBooleanNode : IJsonValueNode<bool>, IJsonDataNode
     /// <param name="leftValue">The left value.</param>
     /// <param name="rightValue">The right value.</param>
     /// <returns>A number.</returns>
+    public static JsonIntegerNode operator |(JsonBooleanNode leftValue, JsonDecimalNode rightValue)
+    {
+        if (rightValue is null) return new JsonIntegerNode(leftValue?.Value == true ? 1 : 0);
+        return new JsonIntegerNode(leftValue?.Value == true ? ((long)Math.Floor(rightValue.Value) + 1) : (long)Math.Floor(rightValue.Value));
+    }
+
+    /// <summary>
+    /// Or operation.
+    /// </summary>
+    /// <param name="leftValue">The left value.</param>
+    /// <param name="rightValue">The right value.</param>
+    /// <returns>A number.</returns>
     public static JsonIntegerNode operator |(JsonBooleanNode leftValue, string rightValue)
         => leftValue?.Value == true ? 1 : 0;
 

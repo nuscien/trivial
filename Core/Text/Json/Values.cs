@@ -115,7 +115,7 @@ public static class JsonValues
         if (token.TryGetValue(out float f))
             return new JsonDoubleNode(f);
         if (token.TryGetValue(out decimal de))
-            return new JsonDoubleNode(de);
+            return new JsonDecimalNode(de);
         if (token.TryGetValue(out Guid g))
             return new JsonStringNode(g);
         if (token.TryGetValue(out DateTime dt))
@@ -1083,6 +1083,7 @@ public static class JsonValues
             case JsonValueKind.Number:
                 if (value is JsonIntegerNode i) return i.Value;
                 else if (value is JsonDoubleNode d) return d.Value;
+                else if (value is JsonDecimalNode m) return m.Value;
                 else if (value is IJsonNumberNode n) return n.IsInteger ? n.GetInt64() : n.GetDouble();
                 return 0;
             case JsonValueKind.Object:
@@ -1207,6 +1208,8 @@ public static class JsonValues
             return (SystemJsonValue)i;
         if (json is JsonDoubleNode f)
             return (SystemJsonValue)f;
+        if (json is JsonDecimalNode m)
+            return (SystemJsonValue)m;
         if (json is JsonBooleanNode b)
             return (SystemJsonValue)b;
         return null;
@@ -1227,7 +1230,7 @@ public static class JsonValues
             return arr;
         }
 
-        if (value is JsonStringNode || value is JsonIntegerNode || value is JsonDoubleNode || value is JsonBooleanNode) return value as IJsonDataNode;
+        if (value is JsonStringNode || value is JsonIntegerNode || value is JsonDoubleNode || value is JsonDecimalNode || value is JsonBooleanNode) return value as IJsonDataNode;
         if (value.ValueKind == JsonValueKind.True) return JsonBooleanNode.True;
         if (value.ValueKind == JsonValueKind.False) return JsonBooleanNode.False;
         if (value.ValueKind == JsonValueKind.String)
@@ -1245,7 +1248,7 @@ public static class JsonValues
             if (value is IJsonValueNode<short> int16) return new JsonIntegerNode(int16.Value);
             if (value is IJsonValueNode<double> d) return new JsonDoubleNode(d.Value);
             if (value is IJsonValueNode<float> f) return new JsonDoubleNode(f.Value);
-            if (value is IJsonValueNode<decimal> fd) return new JsonDoubleNode((double)fd.Value);
+            if (value is IJsonValueNode<decimal> m) return new JsonDecimalNode(m.Value);
             if (value is IJsonValueNode<bool> b) return b.Value ? JsonBooleanNode.True : JsonBooleanNode.False;
             if (value is IJsonValueNode<uint> uint32) return new JsonIntegerNode(uint32.Value);
             if (value is IJsonValueNode<ulong> uint64) return new JsonDoubleNode(uint64.Value);
@@ -1254,6 +1257,7 @@ public static class JsonValues
             var s = value.ToString();
             if (long.TryParse(s, out var l)) return new JsonIntegerNode(l);
             if (double.TryParse(s, out var db)) return new JsonDoubleNode(db);
+            if (decimal.TryParse(s, out var dm)) return new JsonDecimalNode(dm);
             return Null;
         }
 

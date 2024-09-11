@@ -847,6 +847,40 @@ public sealed class JsonNumberConverter : JsonConverterFactory, IJsonNodeSchemaC
     }
 
     /// <summary>
+    /// Json number converter with number string fallback.
+    /// </summary>
+    sealed class JsonDecimalConverter : JsonConverter<JsonDecimalNode>
+    {
+        /// <summary>
+        /// Gets or sets a value indicating whether need also write to a string.
+        /// </summary>
+        public bool NeedWriteAsString { get; set; }
+
+        /// <inheritdoc />
+        public override JsonDecimalNode Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+        {
+            var num = reader.TokenType switch
+            {
+                JsonTokenType.Null => null,
+                JsonTokenType.Number => reader.GetDouble(),
+                JsonTokenType.String => ParseNullableNumber(ref reader, double.Parse),
+                JsonTokenType.False => 0,
+                JsonTokenType.True => 1,
+                _ => throw new JsonException($"The token type is {reader.TokenType} but expect number.")
+            };
+            return num.HasValue ? new JsonDecimalNode(num.Value) : null;
+        }
+
+        /// <inheritdoc />
+        public override void Write(Utf8JsonWriter writer, JsonDecimalNode value, JsonSerializerOptions options)
+        {
+            if (value is null) writer.WriteNullValue();
+            else if (NeedWriteAsString) writer.WriteStringValue(value.ToString());
+            else writer.WriteNumberValue(value.Value);
+        }
+    }
+
+    /// <summary>
     /// Json hex color string value converter.
     /// </summary>
     sealed class HexColorConverter : JsonConverter<System.Drawing.Color>
@@ -1265,6 +1299,7 @@ public sealed class JsonNumberConverter : JsonConverterFactory, IJsonNodeSchemaC
             if (typeToConvert == typeof(TimeSpan?)) return new JsonTimeSpanSecondConverter.NullableConverter { NeedWriteAsString = true };
             if (typeToConvert == typeof(JsonIntegerNode)) return new JsonIntegerConverter { NeedWriteAsString = true };
             if (typeToConvert == typeof(JsonDoubleNode)) return new JsonDoubleConverter { NeedWriteAsString = true };
+            if (typeToConvert == typeof(JsonDecimalNode)) return new JsonDecimalConverter { NeedWriteAsString = true };
             if (typeToConvert == typeof(IJsonNumberNode)) return new JsonNumberInterfaceConverter { NeedWriteAsString = true };
             if (typeToConvert == typeof(string)) return new StringConverter { NeedWriteAsString = true };
             if (typeToConvert == typeof(StructValueSimpleInterval<int>)) return new Int32IntervalConverter();
@@ -1317,6 +1352,7 @@ public sealed class JsonNumberConverter : JsonConverterFactory, IJsonNodeSchemaC
             if (typeToConvert == typeof(TimeSpan?)) return new JsonTimeSpanSecondConverter.NullableConverter();
             if (typeToConvert == typeof(JsonIntegerNode)) return new JsonIntegerConverter();
             if (typeToConvert == typeof(JsonDoubleNode)) return new JsonDoubleConverter();
+            if (typeToConvert == typeof(JsonDecimalNode)) return new JsonDecimalConverter();
             if (typeToConvert == typeof(IJsonNumberNode)) return new JsonNumberInterfaceConverter();
             if (typeToConvert == typeof(string)) return new StringConverter();
             if (typeToConvert == typeof(StructValueSimpleInterval<int>)) return new Int32IntervalConverter();
@@ -1364,6 +1400,7 @@ public sealed class JsonNumberConverter : JsonConverterFactory, IJsonNodeSchemaC
         if (typeToConvert == typeof(TimeSpan?)) return new JsonTimeSpanSecondConverter.NullableConverter();
         if (typeToConvert == typeof(JsonIntegerNode)) return new JsonIntegerConverter();
         if (typeToConvert == typeof(JsonDoubleNode)) return new JsonDoubleConverter();
+        if (typeToConvert == typeof(JsonDecimalNode)) return new JsonDecimalConverter();
         if (typeToConvert == typeof(IJsonNumberNode)) return new JsonNumberInterfaceConverter();
         if (typeToConvert == typeof(string)) return new StringConverter();
         if (typeToConvert == typeof(StructValueSimpleInterval<int>)) return new Int32IntervalConverter();
@@ -1415,6 +1452,7 @@ public sealed class JsonNumberConverter : JsonConverterFactory, IJsonNodeSchemaC
             || typeToConvert == typeof(TimeSpan?)
             || typeToConvert == typeof(JsonIntegerNode)
             || typeToConvert == typeof(JsonDoubleNode)
+            || typeToConvert == typeof(JsonDecimalNode)
             || typeToConvert == typeof(IJsonNumberNode)
             || typeToConvert == typeof(string)
             || typeToConvert == typeof(StructValueSimpleInterval<int>)

@@ -454,6 +454,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
                 case JsonValueKind.Number:
                     if (prop.Value is JsonIntegerNode intJson) info.AddValue(prop.Key, intJson.Value);
                     else if (prop.Value is JsonDoubleNode floatJson) info.AddValue(prop.Key, floatJson.Value);
+                    else if (prop.Value is JsonDecimalNode decimalJson) info.AddValue(prop.Key, decimalJson.Value);
                     break;
                 case JsonValueKind.True:
                     info.AddValue(prop.Key, true);
@@ -809,6 +810,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
         AssertKey(key);
         if (TryGetJsonValue<JsonIntegerNode>(key, out var v)) return (uint)v;
         if (TryGetJsonValue<JsonDoubleNode>(key, out var f)) return (uint)f;
+        if (TryGetJsonValue<JsonDecimalNode>(key, out var m)) return (uint)m;
         var p = GetJsonValue<JsonStringNode>(key, JsonValueKind.Number);
         return uint.Parse(p.Value);
     }
@@ -828,6 +830,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
         AssertKey(key);
         if (TryGetJsonValue<JsonIntegerNode>(key, out var v)) return (int)v;
         if (TryGetJsonValue<JsonDoubleNode>(key, out var f)) return (int)f;
+        if (TryGetJsonValue<JsonDecimalNode>(key, out var m)) return (int)m;
         var p = GetJsonValue<JsonStringNode>(key, JsonValueKind.Number);
         return int.Parse(p.Value);
     }
@@ -847,6 +850,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
         AssertKey(key);
         if (TryGetJsonValue<JsonIntegerNode>(key, out var v)) return v.Value;
         if (TryGetJsonValue<JsonDoubleNode>(key, out var f)) return (long)f;
+        if (TryGetJsonValue<JsonDecimalNode>(key, out var m)) return (long)m;
         var p = GetJsonValue<JsonStringNode>(key, JsonValueKind.Number);
         return long.Parse(p.Value);
     }
@@ -866,6 +870,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
         AssertKey(key);
         if (TryGetJsonValue<JsonDoubleNode>(key, out var v)) return (float)v;
         if (TryGetJsonValue<JsonIntegerNode>(key, out var f)) return (float)f;
+        if (TryGetJsonValue<JsonDecimalNode>(key, out var m)) return (float)m;
         var p = GetJsonValue<JsonStringNode>(key, JsonValueKind.Number);
         return float.Parse(p.Value);
     }
@@ -883,8 +888,27 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
         AssertKey(key);
         if (TryGetJsonValue<JsonDoubleNode>(key, out var v)) return v.Value;
         if (TryGetJsonValue<JsonIntegerNode>(key, out var f)) return (float)f;
+        if (TryGetJsonValue<JsonDecimalNode>(key, out var m)) return (double)m;
         var p = GetJsonValue<JsonStringNode>(key, JsonValueKind.Number);
         return double.Parse(p.Value);
+    }
+
+    /// <summary>
+    /// Gets the value of the specific property.
+    /// </summary>
+    /// <param name="key">The property key.</param>
+    /// <returns>The value.</returns>
+    /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+    /// <exception cref="ArgumentOutOfRangeException">The property does not exist.</exception>
+    /// <exception cref="InvalidOperationException">The value kind is not the expected one.</exception>
+    public decimal GetDecimalValue(string key)
+    {
+        AssertKey(key);
+        if (TryGetJsonValue<JsonDecimalNode>(key, out var m)) return m.Value;
+        if (TryGetJsonValue<JsonDoubleNode>(key, out var v)) return (decimal)v;
+        if (TryGetJsonValue<JsonIntegerNode>(key, out var f)) return (decimal)f;
+        var p = GetJsonValue<JsonStringNode>(key, JsonValueKind.Number);
+        return decimal.Parse(p.Value);
     }
 
     /// <summary>
@@ -1261,7 +1285,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
             if (type == typeof(bool)) return GetBooleanValue(key);
             if (type == typeof(double)) return GetDoubleValue(key);
             if (type == typeof(float)) return GetSingleValue(key);
-            if (type == typeof(decimal)) return (decimal)GetDoubleValue(key);
+            if (type == typeof(decimal)) return GetDecimalValue(key);
             if (type == typeof(uint)) return GetUInt32Value(key);
             if (type == typeof(ulong)) return (ulong)GetInt64Value(key);
             if (type == typeof(short)) return (short)GetInt32Value(key);
@@ -1275,7 +1299,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
         if (type == typeof(System.Text.Json.Nodes.JsonObject)) return (System.Text.Json.Nodes.JsonObject)GetObjectValue(key);
         if (type == typeof(System.Text.Json.Nodes.JsonArray)) return (System.Text.Json.Nodes.JsonArray)GetArrayValue(key);
         if (type == typeof(Type)) return GetValue(key).GetType();
-        if (type == typeof(IJsonDataNode) || type == typeof(IJsonValueNode) || type == typeof(JsonStringNode) || type == typeof(IJsonStringNode) || type == typeof(JsonIntegerNode) || type == typeof(JsonDoubleNode) || type == typeof(JsonBooleanNode) || type == typeof(IJsonNumberNode))
+        if (type == typeof(IJsonDataNode) || type == typeof(IJsonValueNode) || type == typeof(JsonStringNode) || type == typeof(IJsonStringNode) || type == typeof(JsonIntegerNode) || type == typeof(JsonDoubleNode) || type == typeof(JsonDecimalNode) || type == typeof(JsonBooleanNode) || type == typeof(IJsonNumberNode))
             return GetValue(key);
 
         if (type.IsClass)
@@ -1714,6 +1738,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
             if (ele is IJsonStringNode s) return s.StringValue;
             if (ele is JsonIntegerNode i) return i.ToString();
             if (ele is JsonDoubleNode f) return f.ToString();
+            if (ele is JsonDecimalNode m) return m.ToString();
             if (ele is JsonBooleanNode b) return b.ToString();
             return null;
         });
@@ -1804,6 +1829,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
         {
             if (TryGetJsonValue<JsonIntegerNode>(key, out var p1)) return (ushort)p1;
             if (TryGetJsonValue<JsonDoubleNode>(key, out var p2)) return (ushort)Math.Round(p2.Value);
+            if (TryGetJsonValue<JsonDecimalNode>(key, out var p3)) return (ushort)Math.Round(p3.Value);
         }
         catch (InvalidCastException)
         {
@@ -1815,8 +1841,8 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
         }
 
         var str = TryGetStringValue(key);
-        if (string.IsNullOrWhiteSpace(str) || !Numbers.TryParseToUInt16(str, 10, out var p3)) return null;
-        return p3;
+        if (string.IsNullOrWhiteSpace(str) || !Numbers.TryParseToUInt16(str, 10, out var p4)) return null;
+        return p4;
     }
 
     /// <summary>
@@ -1843,6 +1869,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
         {
             if (TryGetJsonValue<JsonIntegerNode>(key, out var p1)) return (uint)p1;
             if (TryGetJsonValue<JsonDoubleNode>(key, out var p2)) return (uint)Math.Round(p2.Value);
+            if (TryGetJsonValue<JsonDecimalNode>(key, out var p3)) return (uint)Math.Round(p3.Value);
         }
         catch (InvalidCastException)
         {
@@ -1854,8 +1881,8 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
         }
 
         var str = TryGetStringValue(key);
-        if (string.IsNullOrWhiteSpace(str) || !Numbers.TryParseToUInt32(str, 10, out var p3)) return null;
-        return p3;
+        if (string.IsNullOrWhiteSpace(str) || !Numbers.TryParseToUInt32(str, 10, out var p4)) return null;
+        return p4;
     }
 
     /// <summary>
@@ -1882,6 +1909,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
         {
             if (TryGetJsonValue<JsonIntegerNode>(key, out var p1)) return (short)p1;
             if (TryGetJsonValue<JsonDoubleNode>(key, out var p2)) return (short)Math.Round(p2.Value);
+            if (TryGetJsonValue<JsonDecimalNode>(key, out var p3)) return (short)Math.Round(p3.Value);
         }
         catch (InvalidCastException)
         {
@@ -1893,8 +1921,8 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
         }
 
         var str = TryGetStringValue(key);
-        if (string.IsNullOrWhiteSpace(str) || !Numbers.TryParseToInt16(str, 10, out var p3)) return null;
-        return p3;
+        if (string.IsNullOrWhiteSpace(str) || !Numbers.TryParseToInt16(str, 10, out var p4)) return null;
+        return p4;
     }
 
     /// <summary>
@@ -1921,6 +1949,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
         try
         {
             if (TryGetJsonValue<JsonDoubleNode>(key, out var p2)) return (int)Math.Round(p2.Value);
+            if (TryGetJsonValue<JsonDecimalNode>(key, out var p3)) return (int)Math.Round(p3.Value);
         }
         catch (InvalidCastException)
         {
@@ -1932,8 +1961,8 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
         }
 
         var str = TryGetStringValue(key);
-        if (string.IsNullOrWhiteSpace(str) || !Numbers.TryParseToInt32(str, 10, out var p3)) return null;
-        return p3;
+        if (string.IsNullOrWhiteSpace(str) || !Numbers.TryParseToInt32(str, 10, out var p4)) return null;
+        return p4;
     }
 
     /// <summary>
@@ -2024,6 +2053,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
         try
         {
             if (TryGetJsonValue<JsonDoubleNode>(key, out var p2)) return (long)Math.Round(p2.Value);
+            if (TryGetJsonValue<JsonDecimalNode>(key, out var p3)) return (long)Math.Round(p3.Value);
         }
         catch (InvalidCastException)
         {
@@ -2035,8 +2065,8 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
         }
 
         var str = TryGetStringValue(key);
-        if (string.IsNullOrWhiteSpace(str) || !Numbers.TryParseToInt64(str, 10, out var p3)) return null;
-        return p3;
+        if (string.IsNullOrWhiteSpace(str) || !Numbers.TryParseToInt64(str, 10, out var p4)) return null;
+        return p4;
     }
 
     /// <summary>
@@ -2092,6 +2122,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
         try
         {
             if (TryGetJsonValue<JsonDoubleNode>(key, out var p1)) return (float)p1;
+            if (TryGetJsonValue<JsonDecimalNode>(key, out var p3)) return (float)p3;
         }
         catch (InvalidCastException)
         {
@@ -2104,8 +2135,8 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
 
         if (TryGetJsonValue<JsonIntegerNode>(key, out var p2)) return (float)p2;
         var str = TryGetStringValue(key);
-        if (string.IsNullOrWhiteSpace(str) || !float.TryParse(str, out var p3)) return float.NaN;
-        return p3;
+        if (string.IsNullOrWhiteSpace(str) || !float.TryParse(str, out var p4)) return float.NaN;
+        return p4;
     }
 
     /// <summary>
@@ -2250,9 +2281,10 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     {
         if (TryGetJsonValue<JsonDoubleNode>(key, out var p1)) return p1.Value;
         if (TryGetJsonValue<JsonIntegerNode>(key, out var p2)) return (double)p2;
+        if (TryGetJsonValue<JsonDecimalNode>(key, out var p3)) return (double)p3;
         var str = TryGetStringValue(key);
-        if (string.IsNullOrWhiteSpace(str) || !double.TryParse(str, out var p3)) return double.NaN;
-        return p3;
+        if (string.IsNullOrWhiteSpace(str) || !double.TryParse(str, out var p4)) return double.NaN;
+        return p4;
     }
 
     /// <summary>
@@ -2397,7 +2429,8 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     {
         try
         {
-            if (TryGetJsonValue<JsonDoubleNode>(key, out var p1)) return (decimal)p1.Value;
+            if (TryGetJsonValue<JsonDecimalNode>(key, out var p1)) return p1.Value;
+            if (TryGetJsonValue<JsonDoubleNode>(key, out var p2)) return (decimal)p2.Value;
         }
         catch (InvalidCastException)
         {
@@ -2408,10 +2441,10 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
             return null;
         }
 
-        if (TryGetJsonValue<JsonIntegerNode>(key, out var p2)) return (decimal)p2;
+        if (TryGetJsonValue<JsonIntegerNode>(key, out var p3)) return (decimal)p3;
         var str = TryGetStringValue(key);
-        if (string.IsNullOrWhiteSpace(str) || !decimal.TryParse(str, out var p3)) return null;
-        return p3;
+        if (string.IsNullOrWhiteSpace(str) || !decimal.TryParse(str, out var p4)) return null;
+        return p4;
     }
 
     /// <summary>
@@ -4054,7 +4087,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     public void SetValue(string key, decimal value)
     {
         AssertKey(key);
-        SetProperty(key, new JsonDoubleNode(value));
+        SetProperty(key, new JsonDecimalNode(value));
     }
 
     /// <summary>
@@ -4683,6 +4716,44 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     /// <param name="key">The property key.</param>
     /// <param name="value">The value to set.</param>
     /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+    public void SetValue(string key, IEnumerable<decimal> value)
+    {
+        AssertKey(key);
+        var arr = new JsonArrayNode();
+        arr.AddRange(value);
+        SetProperty(key, arr);
+    }
+
+    /// <summary>
+    /// Sets the value of the specific property.
+    /// </summary>
+    /// <param name="key">The property key.</param>
+    /// <param name="value">The value to set.</param>
+    /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+    public void SetValueIfNotNull(string key, IEnumerable<decimal> value)
+    {
+        if (value == null) return;
+        SetValue(key, value);
+    }
+
+    /// <summary>
+    /// Sets the value of the specific property.
+    /// </summary>
+    /// <param name="key">The property key.</param>
+    /// <param name="value">The value to set.</param>
+    /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+    public void SetValueIfNotEmpty(string key, ICollection<decimal> value)
+    {
+        if (value == null || value.Count < 1) return;
+        SetValue(key, value);
+    }
+
+    /// <summary>
+    /// Sets the value of the specific property.
+    /// </summary>
+    /// <param name="key">The property key.</param>
+    /// <param name="value">The value to set.</param>
+    /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
     public void SetValue(string key, IEnumerable<JsonObjectNode> value)
     {
         AssertKey(key);
@@ -5266,6 +5337,12 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
             return;
         }
 
+        if (v is JsonDecimalNode k)
+        {
+            SetValue(key, k.Value + value);
+            return;
+        }
+
         if (v is JsonStringNode s)
         {
             if (s.Length == 0)
@@ -5320,6 +5397,12 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
             return;
         }
 
+        if (v is JsonDecimalNode k)
+        {
+            SetValue(key, k.Value + value);
+            return;
+        }
+
         if (v is JsonStringNode s)
         {
             if (s.Length == 0)
@@ -5371,6 +5454,12 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
         if (v is JsonDoubleNode j)
         {
             SetValue(key, j.Value + value);
+            return;
+        }
+
+        if (v is JsonDecimalNode k)
+        {
+            SetValue(key, (double)k.Value + value);
             return;
         }
 
@@ -5620,6 +5709,15 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     /// <param name="item">The property to add to the JSON object.</param>
     /// <exception cref="ArgumentNullException">key is null.</exception>
     /// <exception cref="ArgumentException">An element with the same key already exists in the JSON object.</exception>
+    public void Add(KeyValuePair<string, JsonDecimalNode> item)
+        => AddProperty(item.Key, item.Value);
+
+    /// <summary>
+    /// Adds a property with the provided key and value to the JSON object.
+    /// </summary>
+    /// <param name="item">The property to add to the JSON object.</param>
+    /// <exception cref="ArgumentNullException">key is null.</exception>
+    /// <exception cref="ArgumentException">An element with the same key already exists in the JSON object.</exception>
     public void Add(KeyValuePair<string, JsonBooleanNode> item)
         => AddProperty(item.Key, item.Value);
 
@@ -5730,6 +5828,15 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     /// <exception cref="ArgumentNullException">key is null.</exception>
     /// <exception cref="ArgumentException">An element with the same key already exists in the JSON object.</exception>
     public void Add(KeyValuePair<string, double> item)
+        => Add(item.Key, item.Value);
+
+    /// <summary>
+    /// Adds a property with the provided key and value to the JSON object.
+    /// </summary>
+    /// <param name="item">The property to add to the JSON object.</param>
+    /// <exception cref="ArgumentNullException">key is null.</exception>
+    /// <exception cref="ArgumentException">An element with the same key already exists in the JSON object.</exception>
+    public void Add(KeyValuePair<string, decimal> item)
         => Add(item.Key, item.Value);
 
     /// <summary>
@@ -6041,7 +6148,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     /// <exception cref="ArgumentNullException">key is null.</exception>
     /// <exception cref="ArgumentException">An element with the same key already exists in the JSON object.</exception>
     public void Add(string key, decimal value)
-        => AddProperty(key, new JsonDoubleNode(value));
+        => AddProperty(key, new JsonDecimalNode(value));
 
     /// <summary>
     /// Adds a property with the provided key and value to the JSON object.
@@ -6197,7 +6304,35 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     /// <param name="key">The property key.</param>
     /// <param name="value">The value of the property.</param>
     /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+    public void Add(string key, IEnumerable<float> value)
+    {
+        AssertKey(key);
+        var arr = new JsonArrayNode();
+        arr.AddRange(value);
+        AddProperty(key, arr);
+    }
+
+    /// <summary>
+    /// Adds a property with the provided key and value to the JSON object.
+    /// </summary>
+    /// <param name="key">The property key.</param>
+    /// <param name="value">The value of the property.</param>
+    /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
     public void Add(string key, IEnumerable<double> value)
+    {
+        AssertKey(key);
+        var arr = new JsonArrayNode();
+        arr.AddRange(value);
+        AddProperty(key, arr);
+    }
+
+    /// <summary>
+    /// Adds a property with the provided key and value to the JSON object.
+    /// </summary>
+    /// <param name="key">The property key.</param>
+    /// <param name="value">The value of the property.</param>
+    /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
+    public void Add(string key, IEnumerable<decimal> value)
     {
         AssertKey(key);
         var arr = new JsonArrayNode();
@@ -6413,6 +6548,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
                 case JsonValueKind.Number:
                     if (prop.Value is JsonIntegerNode intJson) writer.WriteNumber(prop.Key, (long)intJson);
                     else if (prop.Value is JsonDoubleNode floatJson) writer.WriteNumber(prop.Key, (double)floatJson);
+                    else if (prop.Value is JsonDecimalNode decimalJson) writer.WriteNumber(prop.Key, (decimal)decimalJson);
                     break;
                 case JsonValueKind.True:
                     writer.WriteBoolean(prop.Key, true);
@@ -7198,7 +7334,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     /// <returns>true if the kind is the one expected; otherwise, false.</returns>
     bool IJsonDataNode.TryGetDecimal(out decimal result)
     {
-        result = 0;
+        result = 0m;
         return false;
     }
 

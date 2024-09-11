@@ -1075,6 +1075,14 @@ public class JsonIntegerNode : IJsonValueNode<long>, IJsonDataNode, IJsonNumberN
     /// </summary>
     /// <param name="json">The JSON value.</param>
     /// <returns>A number.</returns>
+    public static explicit operator decimal(JsonIntegerNode json)
+        => json.Value;
+
+    /// <summary>
+    /// Converts the JSON raw back.
+    /// </summary>
+    /// <param name="json">The JSON value.</param>
+    /// <returns>A number.</returns>
     public static explicit operator System.Numerics.BigInteger(JsonIntegerNode json)
         => json.Value;
 
@@ -1100,6 +1108,14 @@ public class JsonIntegerNode : IJsonValueNode<long>, IJsonDataNode, IJsonNumberN
     /// <param name="json">The JSON value.</param>
     /// <returns>A JSON double instance.</returns>
     public static explicit operator JsonDoubleNode(JsonIntegerNode json)
+        => new(json.Value);
+
+    /// <summary>
+    /// Converts to a JSON double object.
+    /// </summary>
+    /// <param name="json">The JSON value.</param>
+    /// <returns>A JSON double instance.</returns>
+    public static explicit operator JsonDecimalNode(JsonIntegerNode json)
         => new(json.Value);
 
     /// <summary>
@@ -1563,7 +1579,7 @@ public class JsonIntegerNode : IJsonValueNode<long>, IJsonDataNode, IJsonNumberN
 /// Represents a specific JSON double float number value.
 /// </summary>
 [System.Text.Json.Serialization.JsonConverter(typeof(JsonObjectNodeConverter))]
-public class JsonDoubleNode : IJsonValueNode<double>, IJsonDataNode, IJsonNumberNode, IComparable<JsonIntegerNode>, IComparable<JsonDoubleNode>, IComparable<uint>, IComparable<int>, IComparable<long>, IComparable<double>, IComparable<float>, IEquatable<IJsonValueNode<uint>>, IEquatable<IJsonValueNode<int>>, IEquatable<IJsonValueNode<long>>, IEquatable<IJsonValueNode<float>>, IEquatable<uint>, IEquatable<int>, IEquatable<long>, IEquatable<float>, IFormattable
+public class JsonDoubleNode : IJsonValueNode<double>, IJsonDataNode, IJsonNumberNode, IComparable<JsonIntegerNode>, IComparable<JsonDoubleNode>, IComparable<JsonDecimalNode>, IComparable<uint>, IComparable<int>, IComparable<long>, IComparable<double>, IComparable<float>, IComparable<decimal>, IEquatable<IJsonValueNode<uint>>, IEquatable<IJsonValueNode<int>>, IEquatable<IJsonValueNode<long>>, IEquatable<IJsonValueNode<float>>, IEquatable<IJsonValueNode<decimal>>, IEquatable<uint>, IEquatable<int>, IEquatable<long>, IEquatable<float>, IEquatable<decimal>, IFormattable
 {
     /// <summary>
     /// Initializes a new instance of the JsonDoubleNode class.
@@ -1769,6 +1785,17 @@ public class JsonDoubleNode : IJsonValueNode<double>, IJsonDataNode, IJsonNumber
     /// </summary>
     /// <param name="other">The object to compare with the current instance.</param>
     /// <returns>true if obj and this instance represent the same value; otherwise, false.</returns>
+    public bool Equals(IJsonValueNode<decimal> other)
+    {
+        if (other is null) return false;
+        return Value.Equals(other.Value);
+    }
+
+    /// <summary>
+    /// Indicates whether this instance and a specified object are equal.
+    /// </summary>
+    /// <param name="other">The object to compare with the current instance.</param>
+    /// <returns>true if obj and this instance represent the same value; otherwise, false.</returns>
     public bool Equals(IJsonValueNode<long> other)
     {
         if (other is null) return false;
@@ -1822,6 +1849,14 @@ public class JsonDoubleNode : IJsonValueNode<double>, IJsonDataNode, IJsonNumber
     /// <param name="other">The object to compare with the current instance.</param>
     /// <returns>true if obj and this instance represent the same value; otherwise, false.</returns>
     public bool Equals(float other)
+        => Value.Equals(other);
+
+    /// <summary>
+    /// Indicates whether this instance and a specified object are equal.
+    /// </summary>
+    /// <param name="other">The object to compare with the current instance.</param>
+    /// <returns>true if obj and this instance represent the same value; otherwise, false.</returns>
+    public bool Equals(decimal other)
         => Value.Equals(other);
 
     /// <summary>
@@ -1930,6 +1965,24 @@ public class JsonDoubleNode : IJsonValueNode<double>, IJsonDataNode, IJsonNumber
     /// <item>Greater than zero This instance is greater than value.</item>
     /// </list>
     /// </returns>
+    public int CompareTo(JsonDecimalNode other)
+        => Value.CompareTo(other.Value);
+
+    /// <summary>
+    /// Compares this instance to a specified number and returns an indication of their relative values.
+    /// </summary>
+    /// <param name="other">A number to compare.</param>
+    /// <returns>
+    /// <para>
+    /// A signed number indicating the relative values of this instance and value.
+    /// </para>
+    /// <list type="bullet">
+    /// <listheader>Return Value Description:</listheader>
+    /// <item>Less than zero This instance is less than value;</item>
+    /// <item>Zero This instance is equal to value;</item>
+    /// <item>Greater than zero This instance is greater than value.</item>
+    /// </list>
+    /// </returns>
     public int CompareTo(long other)
         => Value.CompareTo(other);
 
@@ -2006,6 +2059,24 @@ public class JsonDoubleNode : IJsonValueNode<double>, IJsonDataNode, IJsonNumber
         => Value.CompareTo(other);
 
     /// <summary>
+    /// Compares this instance to a specified number and returns an indication of their relative values.
+    /// </summary>
+    /// <param name="other">A number to compare.</param>
+    /// <returns>
+    /// <para>
+    /// A signed number indicating the relative values of this instance and value.
+    /// </para>
+    /// <list type="bullet">
+    /// <listheader>Return Value Description:</listheader>
+    /// <item>Less than zero This instance is less than value;</item>
+    /// <item>Zero This instance is equal to value;</item>
+    /// <item>Greater than zero This instance is greater than value.</item>
+    /// </list>
+    /// </returns>
+    public int CompareTo(decimal other)
+        => Value.CompareTo(other);
+
+    /// <summary>
     /// Gets the item value count.
     /// It always return 0 because it is not an array or object.
     /// </summary>
@@ -2034,7 +2105,7 @@ public class JsonDoubleNode : IJsonValueNode<double>, IJsonDataNode, IJsonNumber
     /// Gets the value of the element as a date time.
     /// </summary>
     /// <returns>The value of the element as a date time.</returns>
-    /// <exception cref="InvalidCastException">The value is an Double but expect a Int64.</exception>
+    /// <exception cref="InvalidCastException">The value is a Double but expect an Int64.</exception>
     DateTime IJsonDataNode.GetDateTime()
         => WebFormat.ParseDate((long)Value);
 
@@ -2042,14 +2113,14 @@ public class JsonDoubleNode : IJsonValueNode<double>, IJsonDataNode, IJsonNumber
     /// Gets the value of the element as a number.
     /// </summary>
     /// <returns>The value of the element as a number.</returns>
-    /// <exception cref="InvalidCastException">The value is an Double.</exception>
+    /// <exception cref="InvalidCastException">The value is a Double.</exception>
     decimal IJsonDataNode.GetDecimal() => (decimal)Value;
 
     /// <summary>
     /// Gets the value of the element as a number.
     /// </summary>
     /// <returns>The value of the element as a number.</returns>
-    /// <exception cref="InvalidCastException">The value is an Double.</exception>
+    /// <exception cref="InvalidCastException">The value is a Double.</exception>
     /// <exception cref="OverflowException">The value is greater than the most maximum value or less than the most minimum value defined of the number type.</exception>
     float IJsonDataNode.GetSingle() => (float)Value;
 
@@ -2063,7 +2134,7 @@ public class JsonDoubleNode : IJsonValueNode<double>, IJsonDataNode, IJsonNumber
     /// Gets the value of the element as a number.
     /// </summary>
     /// <returns>The value of the element as a number.</returns>
-    /// <exception cref="InvalidCastException">The value is an Double.</exception>
+    /// <exception cref="InvalidCastException">The value is a Double.</exception>
     /// <exception cref="OverflowException">The value is greater than the most maximum value or less than the most minimum value defined of the number type.</exception>
     short IJsonDataNode.GetInt16() => (short)Value;
 
@@ -2071,7 +2142,7 @@ public class JsonDoubleNode : IJsonValueNode<double>, IJsonDataNode, IJsonNumber
     /// Gets the value of the element as a number.
     /// </summary>
     /// <returns>The value of the element as a number.</returns>
-    /// <exception cref="InvalidCastException">The value is an Double.</exception>
+    /// <exception cref="InvalidCastException">The value is a Double.</exception>
     /// <exception cref="OverflowException">The value is greater than the most maximum value or less than the most minimum value defined of the number type.</exception>
     uint IJsonDataNode.GetUInt32() => (uint)Value;
 
@@ -2079,7 +2150,7 @@ public class JsonDoubleNode : IJsonValueNode<double>, IJsonDataNode, IJsonNumber
     /// Gets the value of the element as a number.
     /// </summary>
     /// <returns>The value of the element as a number.</returns>
-    /// <exception cref="InvalidCastException">The value is an Double.</exception>
+    /// <exception cref="InvalidCastException">The value is a Double.</exception>
     /// <exception cref="OverflowException">The value is greater than the most maximum value or less than the most minimum value defined of the number type.</exception>
     int IJsonDataNode.GetInt32() => (int)Value;
 
@@ -2087,7 +2158,7 @@ public class JsonDoubleNode : IJsonValueNode<double>, IJsonDataNode, IJsonNumber
     /// Gets the value of the element as a number.
     /// </summary>
     /// <returns>The value of the element as a number.</returns>
-    /// <exception cref="InvalidCastException">The value is an Double.</exception>
+    /// <exception cref="InvalidCastException">The value is a Double.</exception>
     /// <exception cref="OverflowException">The value is greater than the most maximum value or less than the most minimum value defined of the number type.</exception>
     long IJsonDataNode.GetInt64() => (long)Value;
 
@@ -2095,7 +2166,7 @@ public class JsonDoubleNode : IJsonValueNode<double>, IJsonDataNode, IJsonNumber
     /// Gets the value of the element as a number.
     /// </summary>
     /// <returns>The value of the element as a number.</returns>
-    /// <exception cref="InvalidCastException">The value is an Double.</exception>
+    /// <exception cref="InvalidCastException">The value is a Double.</exception>
     /// <exception cref="OverflowException">The value is greater than the most maximum value or less than the most minimum value defined of the number type.</exception>
     decimal IJsonNumberNode.GetDecimal() => (decimal)Value;
 
@@ -2103,7 +2174,7 @@ public class JsonDoubleNode : IJsonValueNode<double>, IJsonDataNode, IJsonNumber
     /// Gets the value of the element as a number.
     /// </summary>
     /// <returns>The value of the element as a number.</returns>
-    /// <exception cref="InvalidCastException">The value is an Double.</exception>
+    /// <exception cref="InvalidCastException">The value is a Double.</exception>
     /// <exception cref="OverflowException">The value is greater than the most maximum value or less than the most minimum value defined of the number type.</exception>
     float IJsonNumberNode.GetSingle() => (float)Value;
 
@@ -2117,7 +2188,7 @@ public class JsonDoubleNode : IJsonValueNode<double>, IJsonDataNode, IJsonNumber
     /// Gets the value of the element as a number.
     /// </summary>
     /// <returns>The value of the element as a number.</returns>
-    /// <exception cref="InvalidCastException">The value is an Double.</exception>
+    /// <exception cref="InvalidCastException">The value is a Double.</exception>
     /// <exception cref="OverflowException">The value is greater than the most maximum value or less than the most minimum value defined of the number type.</exception>
     ushort IJsonNumberNode.GetUInt16() => (ushort)Value;
 
@@ -2125,7 +2196,7 @@ public class JsonDoubleNode : IJsonValueNode<double>, IJsonDataNode, IJsonNumber
     /// Gets the value of the element as a number.
     /// </summary>
     /// <returns>The value of the element as a number.</returns>
-    /// <exception cref="InvalidCastException">The value is an Double.</exception>
+    /// <exception cref="InvalidCastException">The value is a Double.</exception>
     /// <exception cref="OverflowException">The value is greater than the most maximum value or less than the most minimum value defined of the number type.</exception>
     short IJsonNumberNode.GetInt16() => (short)Value;
 
@@ -2133,14 +2204,14 @@ public class JsonDoubleNode : IJsonValueNode<double>, IJsonDataNode, IJsonNumber
     /// Gets the value of the element as a number.
     /// </summary>
     /// <returns>The value of the element as a number.</returns>
-    /// <exception cref="InvalidCastException">The value is an Double.</exception>
+    /// <exception cref="InvalidCastException">The value is a Double.</exception>
     uint IJsonNumberNode.GetUInt32() => (uint)Value;
 
     /// <summary>
     /// Gets the value of the element as a number.
     /// </summary>
     /// <returns>The value of the element as a number.</returns>
-    /// <exception cref="InvalidCastException">The value is an Double.</exception>
+    /// <exception cref="InvalidCastException">The value is a Double.</exception>
     /// <exception cref="OverflowException">The value is greater than the most maximum value or less than the most minimum value defined of the number type.</exception>
     int IJsonNumberNode.GetInt32() => (int)Value;
 
@@ -2148,7 +2219,7 @@ public class JsonDoubleNode : IJsonValueNode<double>, IJsonDataNode, IJsonNumber
     /// Gets the value of the element as a number.
     /// </summary>
     /// <returns>The value of the element as a number.</returns>
-    /// <exception cref="InvalidCastException">The value is an Double.</exception>
+    /// <exception cref="InvalidCastException">The value is a Double.</exception>
     /// <exception cref="OverflowException">The value is greater than the most maximum value or less than the most minimum value defined of the number type.</exception>
     long IJsonNumberNode.GetInt64() => (long)Value;
 
@@ -2514,6 +2585,14 @@ public class JsonDoubleNode : IJsonValueNode<double>, IJsonDataNode, IJsonNumber
     /// </summary>
     /// <param name="value">The source value.</param>
     /// <returns>A JSON value.</returns>
+    public static implicit operator JsonDoubleNode(decimal value)
+        => new(value);
+
+    /// <summary>
+    /// Converts to JSON value.
+    /// </summary>
+    /// <param name="value">The source value.</param>
+    /// <returns>A JSON value.</returns>
     public static implicit operator JsonDoubleNode(System.Text.Json.Nodes.JsonValue value)
     {
         if (value is null) return null;
@@ -2565,6 +2644,14 @@ public class JsonDoubleNode : IJsonValueNode<double>, IJsonDataNode, IJsonNumber
     /// <returns>A number.</returns>
     public static explicit operator float(JsonDoubleNode json)
         => (float)json.Value;
+
+    /// <summary>
+    /// Converts the JSON raw back.
+    /// </summary>
+    /// <param name="json">The JSON value.</param>
+    /// <returns>A number.</returns>
+    public static explicit operator decimal(JsonDoubleNode json)
+        => (decimal)json.Value;
 
     /// <summary>
     /// Converts the JSON raw back.
@@ -2637,6 +2724,14 @@ public class JsonDoubleNode : IJsonValueNode<double>, IJsonDataNode, IJsonNumber
     /// <returns>A JSON integer instance.</returns>
     public static explicit operator JsonIntegerNode(JsonDoubleNode json)
         => new((long)json.Value);
+
+    /// <summary>
+    /// Converts to a JSON integer object.
+    /// </summary>
+    /// <param name="json">The JSON value.</param>
+    /// <returns>A JSON integer instance.</returns>
+    public static explicit operator JsonDecimalNode(JsonDoubleNode json)
+        => new(json.Value);
 
     /// <summary>
     /// Converts to JSON node.
@@ -3092,5 +3187,1737 @@ public class JsonDoubleNode : IJsonValueNode<double>, IJsonDataNode, IJsonNumber
     /// <param name="rightValue">The right value to compare.</param>
     /// <returns>true if the left one is greater than or equals to the right one; otherwise, false.</returns>
     public static bool operator >=(JsonDoubleNode leftValue, uint rightValue)
+        => leftValue.Value >= rightValue;
+}
+
+/// <summary>
+/// Represents a specific JSON decimal float number value.
+/// </summary>
+[System.Text.Json.Serialization.JsonConverter(typeof(JsonObjectNodeConverter))]
+public class JsonDecimalNode : IJsonValueNode<decimal>, IJsonDataNode, IJsonNumberNode, IComparable<JsonIntegerNode>, IComparable<JsonDoubleNode>, IComparable<JsonDecimalNode>, IComparable<uint>, IComparable<int>, IComparable<long>, IComparable<double>, IComparable<float>, IComparable<decimal>, IEquatable<IJsonValueNode<uint>>, IEquatable<IJsonValueNode<int>>, IEquatable<IJsonValueNode<long>>, IEquatable<IJsonValueNode<float>>, IEquatable<IJsonValueNode<double>>, IEquatable<uint>, IEquatable<int>, IEquatable<long>, IEquatable<double>, IEquatable<float>, IFormattable
+{
+    /// <summary>
+    /// Initializes a new instance of the JsonDecimalNode class.
+    /// </summary>
+    /// <param name="value">The value.</param>
+    public JsonDecimalNode(int value)
+    {
+        Value = value;
+        ValueKind = JsonValueKind.Number;
+        IsInteger = true;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the JsonDecimalNode class.
+    /// </summary>
+    /// <param name="value">The value.</param>
+    public JsonDecimalNode(long value)
+    {
+        Value = value;
+        ValueKind = JsonValueKind.Number;
+        IsInteger = true;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the JsonDecimalNode class.
+    /// </summary>
+    /// <param name="value">The value.</param>
+    public JsonDecimalNode(uint value)
+    {
+        Value = value;
+        ValueKind = JsonValueKind.Number;
+        IsInteger = true;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the JsonDecimalNode class.
+    /// </summary>
+    /// <param name="value">The value.</param>
+    public JsonDecimalNode(ulong value)
+    {
+        Value = value;
+        ValueKind = JsonValueKind.Number;
+        IsInteger = true;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the JsonDecimalNode class.
+    /// </summary>
+    /// <param name="value">The value.</param>
+    public JsonDecimalNode(float value)
+    {
+        Value = (decimal)value;
+        if (float.IsNaN(value) || float.IsInfinity(value))
+        {
+            ValueKind = JsonValueKind.Null;
+            return;
+        }
+
+        ValueKind = JsonValueKind.Number;
+        try
+        {
+            if (value > long.MaxValue || value < long.MinValue) return;
+            IsInteger = (long)value == value;
+        }
+        catch (InvalidCastException)
+        {
+        }
+        catch (OverflowException)
+        {
+        }
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the JsonDecimalNode class.
+    /// </summary>
+    /// <param name="value">The value.</param>
+    public JsonDecimalNode(double value)
+    {
+        try
+        {
+            Value = (decimal)value;
+        }
+        catch (InvalidCastException)
+        {
+        }
+        catch (ArgumentException)
+        {
+        }
+
+        if (double.IsNaN(value) || double.IsInfinity(value))
+        {
+            ValueKind = JsonValueKind.Null;
+            return;
+        }
+
+        ValueKind = JsonValueKind.Number;
+        try
+        {
+            if (value > long.MaxValue || value < long.MinValue) return;
+            IsInteger = (long)value == value;
+        }
+        catch (InvalidCastException)
+        {
+        }
+        catch (OverflowException)
+        {
+        }
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the JsonDecimalNode class.
+    /// </summary>
+    /// <param name="value">The value.</param>
+    public JsonDecimalNode(decimal value)
+    {
+        Value = value;
+        ValueKind = JsonValueKind.Number;
+        try
+        {
+            if (value > long.MaxValue || value < long.MinValue) return;
+            IsInteger = (long)value == value;
+        }
+        catch (InvalidCastException)
+        {
+        }
+        catch (OverflowException)
+        {
+        }
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the JsonDecimalNode class.
+    /// </summary>
+    /// <param name="value">The value.</param>
+    public JsonDecimalNode(TimeSpan value)
+    {
+        Value = (decimal)value.TotalSeconds;
+        ValueKind = JsonValueKind.Number;
+        IsInteger = value.Milliseconds == 0;
+    }
+
+    /// <summary>
+    /// Gets a value indicating whether the number value is an whole number.
+    /// </summary>
+    public bool IsInteger { get; }
+
+    /// <summary>
+    /// Gets the value.
+    /// </summary>
+    public decimal Value { get; }
+
+    /// <summary>
+    /// Gets the type of the current JSON value.
+    /// </summary>
+    public JsonValueKind ValueKind { get; }
+
+    /// <summary>
+    /// Gets the JSON format string of the value.
+    /// </summary>
+    /// <returns>The JSON format string of the float number.</returns>
+    public override string ToString()
+        => Value.ToString("g", CultureInfo.InvariantCulture);
+
+    /// <summary>
+    /// Converts the numeric value of this instance to its equivalent string representation.
+    /// </summary>
+    /// <param name="provider">An object that supplies culture-specific formatting information about this instance.</param>
+    /// <returns>The JSON format string of the integer.</returns>
+    public string ToString(IFormatProvider provider)
+        => Value.ToString(provider);
+
+    /// <summary>
+    /// Converts the numeric value of this instance to its equivalent string representation.
+    /// </summary>
+    /// <param name="format">A numeric format string.</param>
+    /// <param name="provider">An object that supplies culture-specific formatting information about this instance.</param>
+    /// <returns>The JSON format string of the integer.</returns>
+    public string ToString(string format, IFormatProvider provider = null)
+        => provider != null ? Value.ToString(format, provider) : Value.ToString(format);
+
+    /// <summary>
+    /// Converts to a specific positional notation format string.
+    /// </summary>
+    /// <param name="type">The positional notation.</param>
+    /// <returns>A string of the number in the specific positional notation.</returns>
+    public string ToPositionalNotationString(int type)
+        => Maths.Numbers.ToPositionalNotationString(Value, type);
+
+    /// <summary>
+    /// Indicates whether this instance and a specified object are equal.
+    /// </summary>
+    /// <param name="other">The object to compare with the current instance.</param>
+    /// <returns>true if obj and this instance represent the same value; otherwise, false.</returns>
+    public bool Equals(IJsonValueNode<double> other)
+    {
+        if (other is null) return false;
+        return Value.Equals(other.Value);
+    }
+
+    /// <summary>
+    /// Indicates whether this instance and a specified object are equal.
+    /// </summary>
+    /// <param name="other">The object to compare with the current instance.</param>
+    /// <returns>true if obj and this instance represent the same value; otherwise, false.</returns>
+    public bool Equals(IJsonValueNode<float> other)
+    {
+        if (other is null) return false;
+        return Value.Equals(other.Value);
+    }
+
+    /// <summary>
+    /// Indicates whether this instance and a specified object are equal.
+    /// </summary>
+    /// <param name="other">The object to compare with the current instance.</param>
+    /// <returns>true if obj and this instance represent the same value; otherwise, false.</returns>
+    public bool Equals(IJsonValueNode<decimal> other)
+    {
+        if (other is null) return false;
+        return Value.Equals(other.Value);
+    }
+
+    /// <summary>
+    /// Indicates whether this instance and a specified object are equal.
+    /// </summary>
+    /// <param name="other">The object to compare with the current instance.</param>
+    /// <returns>true if obj and this instance represent the same value; otherwise, false.</returns>
+    public bool Equals(IJsonValueNode<long> other)
+    {
+        if (other is null) return false;
+        return Value.Equals(other.Value);
+    }
+
+    /// <summary>
+    /// Indicates whether this instance and a specified object are equal.
+    /// </summary>
+    /// <param name="other">The object to compare with the current instance.</param>
+    /// <returns>true if obj and this instance represent the same value; otherwise, false.</returns>
+    public bool Equals(IJsonValueNode<int> other)
+    {
+        if (other is null) return false;
+        return Value.Equals(other.Value);
+    }
+
+    /// <summary>
+    /// Indicates whether this instance and a specified object are equal.
+    /// </summary>
+    /// <param name="other">The object to compare with the current instance.</param>
+    /// <returns>true if obj and this instance represent the same value; otherwise, false.</returns>
+    public bool Equals(IJsonValueNode<uint> other)
+    {
+        if (other is null) return false;
+        return Value.Equals(other.Value);
+    }
+
+    /// <summary>
+    /// Indicates whether this instance and a specified object are equal.
+    /// </summary>
+    /// <param name="other">The object to compare with the current instance.</param>
+    /// <returns>true if obj and this instance represent the same value; otherwise, false.</returns>
+    public bool Equals(IJsonNumberNode other)
+    {
+        if (other is null) return false;
+        return Value.Equals(other.GetDouble());
+    }
+
+    /// <summary>
+    /// Indicates whether this instance and a specified object are equal.
+    /// </summary>
+    /// <param name="other">The object to compare with the current instance.</param>
+    /// <returns>true if obj and this instance represent the same value; otherwise, false.</returns>
+    public bool Equals(double other)
+        => Value.Equals(other);
+
+    /// <summary>
+    /// Indicates whether this instance and a specified object are equal.
+    /// </summary>
+    /// <param name="other">The object to compare with the current instance.</param>
+    /// <returns>true if obj and this instance represent the same value; otherwise, false.</returns>
+    public bool Equals(float other)
+        => Value.Equals(other);
+
+    /// <summary>
+    /// Indicates whether this instance and a specified object are equal.
+    /// </summary>
+    /// <param name="other">The object to compare with the current instance.</param>
+    /// <returns>true if obj and this instance represent the same value; otherwise, false.</returns>
+    public bool Equals(decimal other)
+        => Value.Equals(other);
+
+    /// <summary>
+    /// Indicates whether this instance and a specified object are equal.
+    /// </summary>
+    /// <param name="other">The object to compare with the current instance.</param>
+    /// <returns>true if obj and this instance represent the same value; otherwise, false.</returns>
+    public bool Equals(long other)
+        => Value.Equals(other);
+
+    /// <summary>
+    /// Indicates whether this instance and a specified object are equal.
+    /// </summary>
+    /// <param name="other">The object to compare with the current instance.</param>
+    /// <returns>true if obj and this instance represent the same value; otherwise, false.</returns>
+    public bool Equals(uint other)
+        => Value.Equals(other);
+
+    /// <summary>
+    /// Indicates whether this instance and a specified object are equal.
+    /// </summary>
+    /// <param name="other">The object to compare with the current instance.</param>
+    /// <returns>true if obj and this instance represent the same value; otherwise, false.</returns>
+    public bool Equals(int other)
+        => Value.Equals(other);
+
+    /// <summary>
+    /// Indicates whether this instance and a specified object are equal.
+    /// </summary>
+    /// <param name="other">The object to compare with the current instance.</param>
+    /// <returns>true if obj and this instance represent the same value; otherwise, false.</returns>
+    public override bool Equals(object other)
+    {
+        if (other is null) return false;
+        if (other is IJsonValueNode<double> dJson) return Value.Equals(dJson.Value);
+        if (other is IJsonValueNode<long> lJson) return Value.Equals(lJson.Value);
+        if (other is IJsonValueNode nJson && nJson.ValueKind == JsonValueKind.Number)
+        {
+            if (other is IJsonValueNode<float> fJson) return Value.Equals(fJson.Value);
+            if (other is IJsonValueNode<int> iJson) return Value.Equals(iJson.Value);
+            if (other is IJsonValueNode<uint> uiJson) return Value.Equals(uiJson.Value);
+            if (other is IJsonValueNode<short> sJson) return Value.Equals(sJson.Value);
+            if (other is IJsonValueNode<ulong> ulJson) return Value.Equals(ulJson.Value);
+            if (other is IJsonValueNode<decimal> dcmJson) return Value.Equals(dcmJson.Value);
+            if (other is IJsonValueNode<ushort> usJson) return Value.Equals(usJson.Value);
+            return ToString().Equals(other.ToString(), StringComparison.InvariantCultureIgnoreCase);
+        }
+
+        return Value.Equals(other);
+    }
+
+    /// <summary>
+    /// Returns the hash code for this instance.
+    /// </summary>
+    /// <returns>A hash code for the current instance.</returns>
+    public override int GetHashCode() => Value.GetHashCode();
+
+    /// <summary>
+    /// Compares this instance to a specified number and returns an indication of their relative values.
+    /// </summary>
+    /// <param name="other">A number to compare.</param>
+    /// <returns>
+    /// <para>
+    /// A signed number indicating the relative values of this instance and value.
+    /// </para>
+    /// <list type="bullet">
+    /// <listheader>Return Value Description:</listheader>
+    /// <item>Less than zero This instance is less than value;</item>
+    /// <item>Zero This instance is equal to value;</item>
+    /// <item>Greater than zero This instance is greater than value.</item>
+    /// </list>
+    /// </returns>
+    public int CompareTo(JsonIntegerNode other)
+        => Value.CompareTo(other.Value);
+
+    /// <summary>
+    /// Compares this instance to a specified number and returns an indication of their relative values.
+    /// </summary>
+    /// <param name="other">A number to compare.</param>
+    /// <returns>
+    /// <para>
+    /// A signed number indicating the relative values of this instance and value.
+    /// </para>
+    /// <list type="bullet">
+    /// <listheader>Return Value Description:</listheader>
+    /// <item>Less than zero This instance is less than value;</item>
+    /// <item>Zero This instance is equal to value;</item>
+    /// <item>Greater than zero This instance is greater than value.</item>
+    /// </list>
+    /// </returns>
+    public int CompareTo(JsonDoubleNode other)
+        => Value.CompareTo(other.Value);
+
+    /// <summary>
+    /// Compares this instance to a specified number and returns an indication of their relative values.
+    /// </summary>
+    /// <param name="other">A number to compare.</param>
+    /// <returns>
+    /// <para>
+    /// A signed number indicating the relative values of this instance and value.
+    /// </para>
+    /// <list type="bullet">
+    /// <listheader>Return Value Description:</listheader>
+    /// <item>Less than zero This instance is less than value;</item>
+    /// <item>Zero This instance is equal to value;</item>
+    /// <item>Greater than zero This instance is greater than value.</item>
+    /// </list>
+    /// </returns>
+    public int CompareTo(JsonDecimalNode other)
+        => Value.CompareTo(other.Value);
+
+    /// <summary>
+    /// Compares this instance to a specified number and returns an indication of their relative values.
+    /// </summary>
+    /// <param name="other">A number to compare.</param>
+    /// <returns>
+    /// <para>
+    /// A signed number indicating the relative values of this instance and value.
+    /// </para>
+    /// <list type="bullet">
+    /// <listheader>Return Value Description:</listheader>
+    /// <item>Less than zero This instance is less than value;</item>
+    /// <item>Zero This instance is equal to value;</item>
+    /// <item>Greater than zero This instance is greater than value.</item>
+    /// </list>
+    /// </returns>
+    public int CompareTo(long other)
+        => Value.CompareTo(other);
+
+    /// <summary>
+    /// Compares this instance to a specified number and returns an indication of their relative values.
+    /// </summary>
+    /// <param name="other">A number to compare.</param>
+    /// <returns>
+    /// <para>
+    /// A signed number indicating the relative values of this instance and value.
+    /// </para>
+    /// <list type="bullet">
+    /// <listheader>Return Value Description:</listheader>
+    /// <item>Less than zero This instance is less than value;</item>
+    /// <item>Zero This instance is equal to value;</item>
+    /// <item>Greater than zero This instance is greater than value.</item>
+    /// </list>
+    /// </returns>
+    public int CompareTo(int other)
+        => Value.CompareTo(other);
+
+    /// <summary>
+    /// Compares this instance to a specified number and returns an indication of their relative values.
+    /// </summary>
+    /// <param name="other">A number to compare.</param>
+    /// <returns>
+    /// <para>
+    /// A signed number indicating the relative values of this instance and value.
+    /// </para>
+    /// <list type="bullet">
+    /// <listheader>Return Value Description:</listheader>
+    /// <item>Less than zero This instance is less than value;</item>
+    /// <item>Zero This instance is equal to value;</item>
+    /// <item>Greater than zero This instance is greater than value.</item>
+    /// </list>
+    /// </returns>
+    public int CompareTo(uint other)
+        => Value.CompareTo(other);
+
+    /// <summary>
+    /// Compares this instance to a specified number and returns an indication of their relative values.
+    /// </summary>
+    /// <param name="other">A number to compare.</param>
+    /// <returns>
+    /// <para>
+    /// A signed number indicating the relative values of this instance and value.
+    /// </para>
+    /// <list type="bullet">
+    /// <listheader>Return Value Description:</listheader>
+    /// <item>Less than zero This instance is less than value;</item>
+    /// <item>Zero This instance is equal to value;</item>
+    /// <item>Greater than zero This instance is greater than value.</item>
+    /// </list>
+    /// </returns>
+    public int CompareTo(double other)
+        => Value.CompareTo(other);
+
+    /// <summary>
+    /// Compares this instance to a specified number and returns an indication of their relative values.
+    /// </summary>
+    /// <param name="other">A number to compare.</param>
+    /// <returns>
+    /// <para>
+    /// A signed number indicating the relative values of this instance and value.
+    /// </para>
+    /// <list type="bullet">
+    /// <listheader>Return Value Description:</listheader>
+    /// <item>Less than zero This instance is less than value;</item>
+    /// <item>Zero This instance is equal to value;</item>
+    /// <item>Greater than zero This instance is greater than value.</item>
+    /// </list>
+    /// </returns>
+    public int CompareTo(float other)
+        => Value.CompareTo(other);
+
+    /// <summary>
+    /// Compares this instance to a specified number and returns an indication of their relative values.
+    /// </summary>
+    /// <param name="other">A number to compare.</param>
+    /// <returns>
+    /// <para>
+    /// A signed number indicating the relative values of this instance and value.
+    /// </para>
+    /// <list type="bullet">
+    /// <listheader>Return Value Description:</listheader>
+    /// <item>Less than zero This instance is less than value;</item>
+    /// <item>Zero This instance is equal to value;</item>
+    /// <item>Greater than zero This instance is greater than value.</item>
+    /// </list>
+    /// </returns>
+    public int CompareTo(decimal other)
+        => Value.CompareTo(other);
+
+    /// <summary>
+    /// Gets the item value count.
+    /// It always return 0 because it is not an array or object.
+    /// </summary>
+    public int Count => 0;
+
+    /// <summary>
+    /// Gets the value of the element as a boolean.
+    /// </summary>
+    /// <returns>The value of the element as a boolean.</returns>
+    /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
+    bool IJsonDataNode.GetBoolean()
+    {
+        if (Value == 0) return false;
+        if (Value == 1) return true;
+        throw new InvalidOperationException("Expect a boolean but it is a number.");
+    }
+
+    /// <summary>
+    /// Gets the value of the element as a byte array.
+    /// </summary>
+    /// <returns>The value decoded as a byte array.</returns>
+    /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
+    byte[] IJsonDataNode.GetBytesFromBase64() => throw new InvalidOperationException("Expect a string but it is a number.");
+
+    /// <summary>
+    /// Gets the value of the element as a date time.
+    /// </summary>
+    /// <returns>The value of the element as a date time.</returns>
+    /// <exception cref="InvalidCastException">The value is a Decimal but expect a Int64.</exception>
+    DateTime IJsonDataNode.GetDateTime()
+        => WebFormat.ParseDate((long)Value);
+
+    /// <summary>
+    /// Gets the value of the element as a number.
+    /// </summary>
+    /// <returns>The value of the element as a number.</returns>
+    /// <exception cref="InvalidCastException">The value is a Decimal.</exception>
+    decimal IJsonDataNode.GetDecimal() => Value;
+
+    /// <summary>
+    /// Gets the value of the element as a number.
+    /// </summary>
+    /// <returns>The value of the element as a number.</returns>
+    /// <exception cref="InvalidCastException">The value is a Decimal.</exception>
+    /// <exception cref="OverflowException">The value is greater than the most maximum value or less than the most minimum value defined of the number type.</exception>
+    float IJsonDataNode.GetSingle() => (float)Value;
+
+    /// <summary>
+    /// Gets the value of the element as a number.
+    /// </summary>
+    /// <returns>The value of the element as a number.</returns>
+    double IJsonDataNode.GetDouble() => (double)Value;
+
+    /// <summary>
+    /// Gets the value of the element as a number.
+    /// </summary>
+    /// <returns>The value of the element as a number.</returns>
+    /// <exception cref="InvalidCastException">The value is a Decimal.</exception>
+    /// <exception cref="OverflowException">The value is greater than the most maximum value or less than the most minimum value defined of the number type.</exception>
+    short IJsonDataNode.GetInt16() => (short)Value;
+
+    /// <summary>
+    /// Gets the value of the element as a number.
+    /// </summary>
+    /// <returns>The value of the element as a number.</returns>
+    /// <exception cref="InvalidCastException">The value is a Decimal.</exception>
+    /// <exception cref="OverflowException">The value is greater than the most maximum value or less than the most minimum value defined of the number type.</exception>
+    uint IJsonDataNode.GetUInt32() => (uint)Value;
+
+    /// <summary>
+    /// Gets the value of the element as a number.
+    /// </summary>
+    /// <returns>The value of the element as a number.</returns>
+    /// <exception cref="InvalidCastException">The value is a Decimal.</exception>
+    /// <exception cref="OverflowException">The value is greater than the most maximum value or less than the most minimum value defined of the number type.</exception>
+    int IJsonDataNode.GetInt32() => (int)Value;
+
+    /// <summary>
+    /// Gets the value of the element as a number.
+    /// </summary>
+    /// <returns>The value of the element as a number.</returns>
+    /// <exception cref="InvalidCastException">The value is a Decimal.</exception>
+    /// <exception cref="OverflowException">The value is greater than the most maximum value or less than the most minimum value defined of the number type.</exception>
+    long IJsonDataNode.GetInt64() => (long)Value;
+
+    /// <summary>
+    /// Gets the value of the element as a number.
+    /// </summary>
+    /// <returns>The value of the element as a number.</returns>
+    /// <exception cref="InvalidCastException">The value is a Decimal.</exception>
+    /// <exception cref="OverflowException">The value is greater than the most maximum value or less than the most minimum value defined of the number type.</exception>
+    decimal IJsonNumberNode.GetDecimal() => (decimal)Value;
+
+    /// <summary>
+    /// Gets the value of the element as a number.
+    /// </summary>
+    /// <returns>The value of the element as a number.</returns>
+    /// <exception cref="InvalidCastException">The value is a Decimal.</exception>
+    /// <exception cref="OverflowException">The value is greater than the most maximum value or less than the most minimum value defined of the number type.</exception>
+    float IJsonNumberNode.GetSingle() => (float)Value;
+
+    /// <summary>
+    /// Gets the value of the element as a number.
+    /// </summary>
+    /// <returns>The value of the element as a number.</returns>
+    double IJsonNumberNode.GetDouble() => (double)Value;
+
+    /// <summary>
+    /// Gets the value of the element as a number.
+    /// </summary>
+    /// <returns>The value of the element as a number.</returns>
+    /// <exception cref="InvalidCastException">The value is a Decimal.</exception>
+    /// <exception cref="OverflowException">The value is greater than the most maximum value or less than the most minimum value defined of the number type.</exception>
+    ushort IJsonNumberNode.GetUInt16() => (ushort)Value;
+
+    /// <summary>
+    /// Gets the value of the element as a number.
+    /// </summary>
+    /// <returns>The value of the element as a number.</returns>
+    /// <exception cref="InvalidCastException">The value is a Decimal.</exception>
+    /// <exception cref="OverflowException">The value is greater than the most maximum value or less than the most minimum value defined of the number type.</exception>
+    short IJsonNumberNode.GetInt16() => (short)Value;
+
+    /// <summary>
+    /// Gets the value of the element as a number.
+    /// </summary>
+    /// <returns>The value of the element as a number.</returns>
+    /// <exception cref="InvalidCastException">The value is a Decimal.</exception>
+    uint IJsonNumberNode.GetUInt32() => (uint)Value;
+
+    /// <summary>
+    /// Gets the value of the element as a number.
+    /// </summary>
+    /// <returns>The value of the element as a number.</returns>
+    /// <exception cref="InvalidCastException">The value is a Decimal.</exception>
+    /// <exception cref="OverflowException">The value is greater than the most maximum value or less than the most minimum value defined of the number type.</exception>
+    int IJsonNumberNode.GetInt32() => (int)Value;
+
+    /// <summary>
+    /// Gets the value of the element as a number.
+    /// </summary>
+    /// <returns>The value of the element as a number.</returns>
+    /// <exception cref="InvalidCastException">The value is a Decimal.</exception>
+    /// <exception cref="OverflowException">The value is greater than the most maximum value or less than the most minimum value defined of the number type.</exception>
+    long IJsonNumberNode.GetInt64() => (long)Value;
+
+    /// <summary>
+    /// Gets the value of the element as a number.
+    /// </summary>
+    /// <returns>The value of the element as a number.</returns>
+    /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
+    string IJsonDataNode.GetString() => ToString();
+
+    /// <summary>
+    /// Gets the value of the element as a GUID.
+    /// </summary>
+    /// <returns>The value of the element as a GUID.</returns>
+    /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
+    Guid IJsonDataNode.GetGuid() => throw new InvalidOperationException("Expect a string but it is a number.");
+
+    /// <summary>
+    /// Tries to get the value of the element as a boolean.
+    /// </summary>
+    /// <param name="result">The result.</param>
+    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+    public bool TryGetBoolean(out bool result)
+    {
+        if (Value == 0)
+        {
+            result = false;
+            return true;
+        }
+
+        if (Value == 1)
+        {
+            result = true;
+            return true;
+        }
+
+        result = false;
+        return false;
+    }
+
+    /// <summary>
+    /// Tries to get the value of the element as a date time.
+    /// </summary>
+    /// <param name="result">The result.</param>
+    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+    public bool TryGetDateTime(out DateTime result)
+    {
+        try
+        {
+            result = WebFormat.ParseDate((long)Value);
+            return true;
+        }
+        catch (OverflowException)
+        {
+        }
+        catch (InvalidCastException)
+        {
+        }
+
+        result = WebFormat.ParseDate(0);
+        return false;
+    }
+
+    /// <summary>
+    /// Tries to get the value of the element as a number.
+    /// </summary>
+    /// <param name="result">The result.</param>
+    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+    public bool TryGetDecimal(out decimal result)
+    {
+        try
+        {
+            result = Value;
+            return true;
+        }
+        catch (OverflowException)
+        {
+        }
+        catch (InvalidCastException)
+        {
+        }
+
+        result = 0;
+        return false;
+    }
+
+    /// <summary>
+    /// Tries to get the value of the element as a number.
+    /// </summary>
+    /// <param name="result">The result.</param>
+    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+    public bool TryGetSingle(out float result)
+    {
+        try
+        {
+            result = (float)Value;
+            return true;
+        }
+        catch (OverflowException)
+        {
+        }
+        catch (InvalidCastException)
+        {
+        }
+
+        result = 0;
+        return false;
+    }
+
+    /// <summary>
+    /// Tries to get the value of the element as a number.
+    /// </summary>
+    /// <param name="result">The result.</param>
+    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+    bool IJsonDataNode.TryGetDouble(out double result)
+    {
+        result = (double)Value;
+        return true;
+    }
+
+    /// <summary>
+    /// Tries to get the value of the element as a number.
+    /// </summary>
+    /// <param name="result">The result.</param>
+    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+    public bool TryGetUInt32(out uint result)
+    {
+        try
+        {
+            result = (uint)Value;
+            return true;
+        }
+        catch (OverflowException)
+        {
+        }
+        catch (InvalidCastException)
+        {
+        }
+
+        result = 0;
+        return false;
+    }
+
+    /// <summary>
+    /// Tries to get the value of the element as a number.
+    /// </summary>
+    /// <param name="result">The result.</param>
+    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+    public bool TryGetInt32(out int result)
+    {
+        try
+        {
+            result = (int)Value;
+            return true;
+        }
+        catch (OverflowException)
+        {
+        }
+        catch (InvalidCastException)
+        {
+        }
+
+        result = 0;
+        return false;
+    }
+
+    /// <summary>
+    /// Tries to get the value of the element as a number.
+    /// </summary>
+    /// <param name="result">The result.</param>
+    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+    public bool TryGetInt64(out long result)
+    {
+        try
+        {
+            result = (long)Value;
+            return true;
+        }
+        catch (OverflowException)
+        {
+        }
+        catch (InvalidCastException)
+        {
+        }
+
+        result = 0;
+        return false;
+    }
+
+    /// <summary>
+    /// Tries to get the value of the element as a number.
+    /// </summary>
+    /// <param name="result">The result.</param>
+    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+    public bool TryGetUInt64(out ulong result)
+    {
+        try
+        {
+            result = (ulong)Value;
+            return true;
+        }
+        catch (OverflowException)
+        {
+        }
+        catch (InvalidCastException)
+        {
+        }
+
+        result = 0;
+        return false;
+    }
+
+    /// <summary>
+    /// Tries to get the value of the element as a number.
+    /// </summary>
+    /// <param name="result">The result.</param>
+    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+    bool IJsonDataNode.TryGetString(out string result)
+    {
+        result = ToString();
+        return true;
+    }
+
+    /// <summary>
+    /// Tries to get the value of the element as a GUID.
+    /// </summary>
+    /// <param name="result">The result.</param>
+    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+    bool IJsonDataNode.TryGetGuid(out Guid result)
+    {
+        result = Guid.Empty;
+        return false;
+    }
+
+    /// <summary>
+    /// Gets the value of the specific property.
+    /// </summary>
+    /// <param name="key">The property key.</param>
+    /// <returns>The value.</returns>
+    /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
+    IJsonDataNode IJsonDataNode.GetValue(string key) => throw new InvalidOperationException("Expect an object but it is a number.");
+
+    /// <summary>
+    /// Gets the value of the specific property.
+    /// </summary>
+    /// <param name="key">The property key.</param>
+    /// <returns>The value.</returns>
+    /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
+    IJsonDataNode IJsonDataNode.GetValue(ReadOnlySpan<char> key) => throw new InvalidOperationException("Expect an object but it is a number.");
+
+    /// <summary>
+    /// Tries to get the value of the specific property.
+    /// </summary>
+    /// <param name="key">The property key.</param>
+    /// <param name="result">The result.</param>
+    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+    bool IJsonDataNode.TryGetValue(string key, out IJsonDataNode result)
+    {
+        result = default;
+        return false;
+    }
+
+    /// <summary>
+    /// Tries to get the value of the specific property.
+    /// </summary>
+    /// <param name="key">The property key.</param>
+    /// <param name="result">The result.</param>
+    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+    bool IJsonDataNode.TryGetValue(ReadOnlySpan<char> key, out IJsonDataNode result)
+    {
+        result = default;
+        return false;
+    }
+
+    /// <summary>
+    /// Gets the value at the specific index.
+    /// </summary>
+    /// <param name="index">The zero-based index of the element to get.</param>
+    /// <returns>The value.</returns>
+    /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
+    IJsonDataNode IJsonDataNode.GetValue(int index) => throw new InvalidOperationException("Expect an array but it is a number.");
+
+    /// <summary>
+    /// Tries to get the value of the specific property.
+    /// </summary>
+    /// <param name="index">The zero-based index of the element to get.</param>
+    /// <param name="result">The result.</param>
+    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+    bool IJsonDataNode.TryGetValue(int index, out IJsonDataNode result)
+    {
+        result = default;
+        return false;
+    }
+
+#if !NETFRAMEWORK
+    /// <summary>
+    /// Gets the value at the specific index.
+    /// </summary>
+    /// <param name="index">The zero-based index of the element to get.</param>
+    /// <returns>The value.</returns>
+    /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
+    IJsonDataNode IJsonDataNode.GetValue(Index index) => throw new InvalidOperationException("Expect an array but it is a number.");
+
+    /// <summary>
+    /// Tries to get the value of the specific property.
+    /// </summary>
+    /// <param name="index">The zero-based index of the element to get.</param>
+    /// <param name="result">The result.</param>
+    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+    bool IJsonDataNode.TryGetValue(Index index, out IJsonDataNode result)
+    {
+        result = default;
+        return false;
+    }
+#endif
+
+    /// <summary>
+    /// Gets all property keys.
+    /// </summary>
+    /// <returns>The property keys.</returns>
+    /// <exception cref="InvalidOperationException">The value kind is not an object.</exception>
+    IEnumerable<string> IJsonDataNode.GetKeys() => throw new InvalidOperationException("Expect an object but it is a number.");
+
+    /// <summary>
+    /// Converts to JSON value.
+    /// </summary>
+    /// <param name="value">The source value.</param>
+    /// <returns>A JSON value.</returns>
+    public static implicit operator JsonDecimalNode(float value)
+        => new(value);
+
+    /// <summary>
+    /// Converts to JSON value.
+    /// </summary>
+    /// <param name="value">The source value.</param>
+    /// <returns>A JSON value.</returns>
+    public static implicit operator JsonDecimalNode(double value)
+        => new(value);
+
+    /// <summary>
+    /// Converts to JSON value.
+    /// </summary>
+    /// <param name="value">The source value.</param>
+    /// <returns>A JSON value.</returns>
+    public static implicit operator JsonDecimalNode(decimal value)
+        => new(value);
+
+    /// <summary>
+    /// Converts to JSON value.
+    /// </summary>
+    /// <param name="value">The source value.</param>
+    /// <returns>A JSON value.</returns>
+    public static implicit operator JsonDecimalNode(System.Text.Json.Nodes.JsonValue value)
+    {
+        if (value is null) return null;
+        if (value.TryGetValue(out double d))
+            return new(d);
+        if (value.TryGetValue(out float f))
+            return new(f);
+        if (value.TryGetValue(out decimal de))
+            return new(de);
+        if (value.TryGetValue(out int i))
+            return new(i);
+        if (value.TryGetValue(out uint ui))
+            return new(ui);
+        if (value.TryGetValue(out long l))
+            return new(l);
+        if (value.TryGetValue(out ulong ul))
+            return new(ul);
+        if (value.TryGetValue(out bool b))
+            return new(b ? 1 : 0);
+        if (value.TryGetValue(out string s) && double.TryParse(s, out var d2))
+            return new(d2);
+        throw new InvalidCastException("Expect an float number to convert.");
+    }
+
+    /// <summary>
+    /// Converts to JSON value.
+    /// </summary>
+    /// <param name="value">The source value.</param>
+    /// <returns>A JSON value.</returns>
+    public static implicit operator JsonDecimalNode(System.Text.Json.Nodes.JsonNode value)
+    {
+        if (value is null) return null;
+        if (value is System.Text.Json.Nodes.JsonValue v) return v;
+        throw new InvalidCastException($"Only supports JsonValue but its type is {value.GetType().Name}.");
+    }
+
+    /// <summary>
+    /// Converts the JSON raw back.
+    /// </summary>
+    /// <param name="json">The JSON value.</param>
+    /// <returns>A number.</returns>
+    public static explicit operator double(JsonDecimalNode json)
+        => (double)json.Value;
+
+    /// <summary>
+    /// Converts the JSON raw back.
+    /// </summary>
+    /// <param name="json">The JSON value.</param>
+    /// <returns>A number.</returns>
+    public static explicit operator float(JsonDecimalNode json)
+        => (float)json.Value;
+
+    /// <summary>
+    /// Converts the JSON raw back.
+    /// </summary>
+    /// <param name="json">The JSON value.</param>
+    /// <returns>A number.</returns>
+    public static explicit operator decimal(JsonDecimalNode json)
+        => json.Value;
+
+    /// <summary>
+    /// Converts the JSON raw back.
+    /// </summary>
+    /// <param name="json">The JSON value.</param>
+    /// <returns>A number.</returns>
+    public static explicit operator ushort(JsonDecimalNode json)
+        => (ushort)json.Value;
+
+    /// <summary>
+    /// Converts the JSON raw back.
+    /// </summary>
+    /// <param name="json">The JSON value.</param>
+    /// <returns>A number.</returns>
+    public static explicit operator short(JsonDecimalNode json)
+        => (short)json.Value;
+
+    /// <summary>
+    /// Converts the JSON raw back.
+    /// </summary>
+    /// <param name="json">The JSON value.</param>
+    /// <returns>A number.</returns>
+    public static explicit operator uint(JsonDecimalNode json)
+        => (uint)json.Value;
+
+    /// <summary>
+    /// Converts the JSON raw back.
+    /// </summary>
+    /// <param name="json">The JSON value.</param>
+    /// <returns>A number.</returns>
+    public static explicit operator int(JsonDecimalNode json)
+        => (int)json.Value;
+
+    /// <summary>
+    /// Converts the JSON raw back.
+    /// </summary>
+    /// <param name="json">The JSON value.</param>
+    /// <returns>A number.</returns>
+    public static explicit operator ulong(JsonDecimalNode json)
+        => (ulong)json.Value;
+
+    /// <summary>
+    /// Converts the JSON raw back.
+    /// </summary>
+    /// <param name="json">The JSON value.</param>
+    /// <returns>A number.</returns>
+    public static explicit operator long(JsonDecimalNode json)
+        => (long)json.Value;
+
+    /// <summary>
+    /// Converts the JSON raw back.
+    /// </summary>
+    /// <param name="json">The JSON value.</param>
+    /// <returns>A string.</returns>
+    public static explicit operator string(JsonDecimalNode json)
+        => json.ToString();
+
+    /// <summary>
+    /// Converts to a JSON string.
+    /// </summary>
+    /// <param name="json">The JSON value.</param>
+    /// <returns>A JSON string instance.</returns>
+    public static explicit operator JsonStringNode(JsonDecimalNode json)
+        => new(json.ToString());
+
+    /// <summary>
+    /// Converts to a JSON integer object.
+    /// </summary>
+    /// <param name="json">The JSON value.</param>
+    /// <returns>A JSON integer instance.</returns>
+    public static explicit operator JsonIntegerNode(JsonDecimalNode json)
+        => new((long)json.Value);
+
+    /// <summary>
+    /// Converts to JSON node.
+    /// </summary>
+    /// <param name="json">The JSON value.</param>
+    /// <returns>An instance of the JsonNode class.</returns>
+    public static explicit operator System.Text.Json.Nodes.JsonNode(JsonDecimalNode json)
+        => System.Text.Json.Nodes.JsonValue.Create(json.Value);
+
+    /// <summary>
+    /// Converts to JSON node.
+    /// </summary>
+    /// <param name="json">The JSON value.</param>
+    /// <returns>An instance of the JsonNode class.</returns>
+    public static explicit operator System.Text.Json.Nodes.JsonValue(JsonDecimalNode json)
+        => System.Text.Json.Nodes.JsonValue.Create(json.Value);
+
+    /// <summary>
+    /// Compares two instances to indicate if they are same.
+    /// leftValue == rightValue
+    /// </summary>
+    /// <param name="leftValue">The left value to compare.</param>
+    /// <param name="rightValue">The right value to compare.</param>
+    /// <returns>true if they are same; otherwise, false.</returns>
+    public static bool operator ==(JsonDecimalNode leftValue, IJsonValueNode<double> rightValue)
+    {
+        if (ReferenceEquals(leftValue, rightValue)) return true;
+        if (rightValue is null) return false;
+        return (double)leftValue.Value == rightValue.Value;
+    }
+
+    /// <summary>
+    /// Compares two instances to indicate if they are different.
+    /// leftValue != rightValue
+    /// </summary>
+    /// <param name="leftValue">The left value to compare.</param>
+    /// <param name="rightValue">The right value to compare.</param>
+    /// <returns>true if they are different; otherwise, false.</returns>
+    public static bool operator !=(JsonDecimalNode leftValue, IJsonValueNode<double> rightValue)
+    {
+        if (ReferenceEquals(leftValue, rightValue)) return false;
+        if (rightValue is null) return true;
+        return (double)leftValue.Value != rightValue.Value;
+    }
+
+    /// <summary>
+    /// Compares if left is smaller than right.
+    /// </summary>
+    /// <param name="leftValue">The left value to compare.</param>
+    /// <param name="rightValue">The right value to compare.</param>
+    /// <returns>true if the left one is smaller than the right one; otherwise, false.</returns>
+    public static bool operator <(JsonDecimalNode leftValue, IJsonValueNode<double> rightValue)
+    {
+        if (ReferenceEquals(leftValue, rightValue)) return false;
+        if (rightValue is null) return true;
+        return (double)leftValue.Value < rightValue.Value;
+    }
+
+    /// <summary>
+    /// Compares if left is greater than right.
+    /// </summary>
+    /// <param name="leftValue">The left value to compare.</param>
+    /// <param name="rightValue">The right value to compare.</param>
+    /// <returns>true if the left one is greater than the right one; otherwise, false.</returns>
+    public static bool operator >(JsonDecimalNode leftValue, IJsonValueNode<double> rightValue)
+    {
+        if (ReferenceEquals(leftValue, rightValue)) return false;
+        if (rightValue is null) return false;
+        return (double)leftValue.Value > rightValue.Value;
+    }
+
+    /// <summary>
+    /// Compares if left is smaller than or equals to right.
+    /// </summary>
+    /// <param name="leftValue">The left value to compare.</param>
+    /// <param name="rightValue">The right value to compare.</param>
+    /// <returns>true if the left one is smaller than or equals to the right one; otherwise, false.</returns>
+    public static bool operator <=(JsonDecimalNode leftValue, IJsonValueNode<double> rightValue)
+    {
+        if (ReferenceEquals(leftValue, rightValue)) return true;
+        if (rightValue is null) return true;
+        return (double)leftValue.Value <= rightValue.Value;
+    }
+
+    /// <summary>
+    /// Compares if left is greater than or equals to right.
+    /// </summary>
+    /// <param name="leftValue">The left value to compare.</param>
+    /// <param name="rightValue">The right value to compare.</param>
+    /// <returns>true if the left one is greater than or equals to the right one; otherwise, false.</returns>
+    public static bool operator >=(JsonDecimalNode leftValue, IJsonValueNode<double> rightValue)
+    {
+        if (ReferenceEquals(leftValue, rightValue)) return true;
+        if (rightValue is null) return false;
+        return (double)leftValue.Value >= rightValue.Value;
+    }
+
+    /// <summary>
+    /// Compares two instances to indicate if they are same.
+    /// leftValue == rightValue
+    /// </summary>
+    /// <param name="leftValue">The left value to compare.</param>
+    /// <param name="rightValue">The right value to compare.</param>
+    /// <returns>true if they are same; otherwise, false.</returns>
+    public static bool operator ==(JsonDecimalNode leftValue, IJsonValueNode<decimal> rightValue)
+    {
+        if (ReferenceEquals(leftValue, rightValue)) return true;
+        if (rightValue is null) return false;
+        return leftValue.Value == rightValue.Value;
+    }
+
+    /// <summary>
+    /// Compares two instances to indicate if they are different.
+    /// leftValue != rightValue
+    /// </summary>
+    /// <param name="leftValue">The left value to compare.</param>
+    /// <param name="rightValue">The right value to compare.</param>
+    /// <returns>true if they are different; otherwise, false.</returns>
+    public static bool operator !=(JsonDecimalNode leftValue, IJsonValueNode<decimal> rightValue)
+    {
+        if (ReferenceEquals(leftValue, rightValue)) return false;
+        if (rightValue is null) return true;
+        return leftValue.Value != rightValue.Value;
+    }
+
+    /// <summary>
+    /// Compares if left is smaller than right.
+    /// </summary>
+    /// <param name="leftValue">The left value to compare.</param>
+    /// <param name="rightValue">The right value to compare.</param>
+    /// <returns>true if the left one is smaller than the right one; otherwise, false.</returns>
+    public static bool operator <(JsonDecimalNode leftValue, IJsonValueNode<decimal> rightValue)
+    {
+        if (ReferenceEquals(leftValue, rightValue)) return false;
+        if (rightValue is null) return true;
+        return leftValue.Value < rightValue.Value;
+    }
+
+    /// <summary>
+    /// Compares if left is greater than right.
+    /// </summary>
+    /// <param name="leftValue">The left value to compare.</param>
+    /// <param name="rightValue">The right value to compare.</param>
+    /// <returns>true if the left one is greater than the right one; otherwise, false.</returns>
+    public static bool operator >(JsonDecimalNode leftValue, IJsonValueNode<decimal> rightValue)
+    {
+        if (ReferenceEquals(leftValue, rightValue)) return false;
+        if (rightValue is null) return false;
+        return leftValue.Value > rightValue.Value;
+    }
+
+    /// <summary>
+    /// Compares if left is smaller than or equals to right.
+    /// </summary>
+    /// <param name="leftValue">The left value to compare.</param>
+    /// <param name="rightValue">The right value to compare.</param>
+    /// <returns>true if the left one is smaller than or equals to the right one; otherwise, false.</returns>
+    public static bool operator <=(JsonDecimalNode leftValue, IJsonValueNode<decimal> rightValue)
+    {
+        if (ReferenceEquals(leftValue, rightValue)) return true;
+        if (rightValue is null) return true;
+        return leftValue.Value <= rightValue.Value;
+    }
+
+    /// <summary>
+    /// Compares if left is greater than or equals to right.
+    /// </summary>
+    /// <param name="leftValue">The left value to compare.</param>
+    /// <param name="rightValue">The right value to compare.</param>
+    /// <returns>true if the left one is greater than or equals to the right one; otherwise, false.</returns>
+    public static bool operator >=(JsonDecimalNode leftValue, IJsonValueNode<decimal> rightValue)
+    {
+        if (ReferenceEquals(leftValue, rightValue)) return true;
+        if (rightValue is null) return false;
+        return leftValue.Value >= rightValue.Value;
+    }
+
+    /// <summary>
+    /// Compares two instances to indicate if they are same.
+    /// leftValue == rightValue
+    /// </summary>
+    /// <param name="leftValue">The left value to compare.</param>
+    /// <param name="rightValue">The right value to compare.</param>
+    /// <returns>true if they are same; otherwise, false.</returns>
+    public static bool operator ==(JsonDecimalNode leftValue, IJsonValueNode<long> rightValue)
+    {
+        if (ReferenceEquals(leftValue, rightValue)) return true;
+        if (rightValue is null) return false;
+        return leftValue.Value == rightValue.Value;
+    }
+
+    /// <summary>
+    /// Compares two instances to indicate if they are different.
+    /// leftValue != rightValue
+    /// </summary>
+    /// <param name="leftValue">The left value to compare.</param>
+    /// <param name="rightValue">The right value to compare.</param>
+    /// <returns>true if they are different; otherwise, false.</returns>
+    public static bool operator !=(JsonDecimalNode leftValue, IJsonValueNode<long> rightValue)
+    {
+        if (ReferenceEquals(leftValue, rightValue)) return false;
+        if (rightValue is null) return true;
+        return leftValue.Value != rightValue.Value;
+    }
+
+    /// <summary>
+    /// Compares if left is smaller than right.
+    /// </summary>
+    /// <param name="leftValue">The left value to compare.</param>
+    /// <param name="rightValue">The right value to compare.</param>
+    /// <returns>true if the left one is smaller than the right one; otherwise, false.</returns>
+    public static bool operator <(JsonDecimalNode leftValue, IJsonValueNode<long> rightValue)
+    {
+        if (ReferenceEquals(leftValue, rightValue)) return false;
+        if (rightValue is null) return true;
+        return leftValue.Value < rightValue.Value;
+    }
+
+    /// <summary>
+    /// Compares if left is greater than right.
+    /// </summary>
+    /// <param name="leftValue">The left value to compare.</param>
+    /// <param name="rightValue">The right value to compare.</param>
+    /// <returns>true if the left one is greater than the right one; otherwise, false.</returns>
+    public static bool operator >(JsonDecimalNode leftValue, IJsonValueNode<long> rightValue)
+    {
+        if (ReferenceEquals(leftValue, rightValue)) return false;
+        if (rightValue is null) return false;
+        return leftValue.Value > rightValue.Value;
+    }
+
+    /// <summary>
+    /// Compares if left is smaller than or equals to right.
+    /// </summary>
+    /// <param name="leftValue">The left value to compare.</param>
+    /// <param name="rightValue">The right value to compare.</param>
+    /// <returns>true if the left one is smaller than or equals to the right one; otherwise, false.</returns>
+    public static bool operator <=(JsonDecimalNode leftValue, IJsonValueNode<long> rightValue)
+    {
+        if (ReferenceEquals(leftValue, rightValue)) return true;
+        if (rightValue is null) return true;
+        return leftValue.Value <= rightValue.Value;
+    }
+
+    /// <summary>
+    /// Compares if left is greater than or equals to right.
+    /// </summary>
+    /// <param name="leftValue">The left value to compare.</param>
+    /// <param name="rightValue">The right value to compare.</param>
+    /// <returns>true if the left one is greater than or equals to the right one; otherwise, false.</returns>
+    public static bool operator >=(JsonDecimalNode leftValue, IJsonValueNode<long> rightValue)
+    {
+        if (ReferenceEquals(leftValue, rightValue)) return true;
+        if (rightValue is null) return false;
+        return leftValue.Value >= rightValue.Value;
+    }
+
+    /// <summary>
+    /// Compares two instances to indicate if they are same.
+    /// leftValue == rightValue
+    /// </summary>
+    /// <param name="leftValue">The left value to compare.</param>
+    /// <param name="rightValue">The right value to compare.</param>
+    /// <returns>true if they are same; otherwise, false.</returns>
+    public static bool operator ==(JsonDecimalNode leftValue, double rightValue)
+        => (double)leftValue.Value == rightValue;
+
+    /// <summary>
+    /// Compares two instances to indicate if they are different.
+    /// leftValue != rightValue
+    /// </summary>
+    /// <param name="leftValue">The left value to compare.</param>
+    /// <param name="rightValue">The right value to compare.</param>
+    /// <returns>true if they are different; otherwise, false.</returns>
+    public static bool operator !=(JsonDecimalNode leftValue, double rightValue)
+        => (double)leftValue.Value != rightValue;
+
+    /// <summary>
+    /// Compares if left is smaller than right.
+    /// </summary>
+    /// <param name="leftValue">The left value to compare.</param>
+    /// <param name="rightValue">The right value to compare.</param>
+    /// <returns>true if the left one is smaller than the right one; otherwise, false.</returns>
+    public static bool operator <(JsonDecimalNode leftValue, double rightValue)
+        => (double)leftValue.Value < rightValue;
+
+    /// <summary>
+    /// Compares if left is greater than right.
+    /// </summary>
+    /// <param name="leftValue">The left value to compare.</param>
+    /// <param name="rightValue">The right value to compare.</param>
+    /// <returns>true if the left one is greater than the right one; otherwise, false.</returns>
+    public static bool operator >(JsonDecimalNode leftValue, double rightValue)
+        => (double)leftValue.Value > rightValue;
+
+    /// <summary>
+    /// Compares if left is smaller than or equals to right.
+    /// </summary>
+    /// <param name="leftValue">The left value to compare.</param>
+    /// <param name="rightValue">The right value to compare.</param>
+    /// <returns>true if the left one is smaller than or equals to the right one; otherwise, false.</returns>
+    public static bool operator <=(JsonDecimalNode leftValue, double rightValue)
+        => (double)leftValue.Value <= rightValue;
+
+    /// <summary>
+    /// Compares if left is greater than or equals to right.
+    /// </summary>
+    /// <param name="leftValue">The left value to compare.</param>
+    /// <param name="rightValue">The right value to compare.</param>
+    /// <returns>true if the left one is greater than or equals to the right one; otherwise, false.</returns>
+    public static bool operator >=(JsonDecimalNode leftValue, double rightValue)
+        => (double)leftValue.Value >= rightValue;
+
+    /// <summary>
+    /// Compares two instances to indicate if they are same.
+    /// leftValue == rightValue
+    /// </summary>
+    /// <param name="leftValue">The left value to compare.</param>
+    /// <param name="rightValue">The right value to compare.</param>
+    /// <returns>true if they are same; otherwise, false.</returns>
+    public static bool operator ==(JsonDecimalNode leftValue, float rightValue)
+        => (float)leftValue.Value == rightValue;
+
+    /// <summary>
+    /// Compares two instances to indicate if they are different.
+    /// leftValue != rightValue
+    /// </summary>
+    /// <param name="leftValue">The left value to compare.</param>
+    /// <param name="rightValue">The right value to compare.</param>
+    /// <returns>true if they are different; otherwise, false.</returns>
+    public static bool operator !=(JsonDecimalNode leftValue, float rightValue)
+        => (float)leftValue.Value != rightValue;
+
+    /// <summary>
+    /// Compares if left is smaller than right.
+    /// </summary>
+    /// <param name="leftValue">The left value to compare.</param>
+    /// <param name="rightValue">The right value to compare.</param>
+    /// <returns>true if the left one is smaller than the right one; otherwise, false.</returns>
+    public static bool operator <(JsonDecimalNode leftValue, float rightValue)
+        => (float)leftValue.Value < rightValue;
+
+    /// <summary>
+    /// Compares if left is greater than right.
+    /// </summary>
+    /// <param name="leftValue">The left value to compare.</param>
+    /// <param name="rightValue">The right value to compare.</param>
+    /// <returns>true if the left one is greater than the right one; otherwise, false.</returns>
+    public static bool operator >(JsonDecimalNode leftValue, float rightValue)
+        => (float)leftValue.Value > rightValue;
+
+    /// <summary>
+    /// Compares if left is smaller than or equals to right.
+    /// </summary>
+    /// <param name="leftValue">The left value to compare.</param>
+    /// <param name="rightValue">The right value to compare.</param>
+    /// <returns>true if the left one is smaller than or equals to the right one; otherwise, false.</returns>
+    public static bool operator <=(JsonDecimalNode leftValue, float rightValue)
+        => (float)leftValue.Value <= rightValue;
+
+    /// <summary>
+    /// Compares if left is greater than or equals to right.
+    /// </summary>
+    /// <param name="leftValue">The left value to compare.</param>
+    /// <param name="rightValue">The right value to compare.</param>
+    /// <returns>true if the left one is greater than or equals to the right one; otherwise, false.</returns>
+    public static bool operator >=(JsonDecimalNode leftValue, float rightValue)
+        => (float)leftValue.Value >= rightValue;
+
+    /// <summary>
+    /// Compares two instances to indicate if they are same.
+    /// leftValue == rightValue
+    /// </summary>
+    /// <param name="leftValue">The left value to compare.</param>
+    /// <param name="rightValue">The right value to compare.</param>
+    /// <returns>true if they are same; otherwise, false.</returns>
+    public static bool operator ==(JsonDecimalNode leftValue, decimal rightValue)
+        => leftValue.Value == rightValue;
+
+    /// <summary>
+    /// Compares two instances to indicate if they are different.
+    /// leftValue != rightValue
+    /// </summary>
+    /// <param name="leftValue">The left value to compare.</param>
+    /// <param name="rightValue">The right value to compare.</param>
+    /// <returns>true if they are different; otherwise, false.</returns>
+    public static bool operator !=(JsonDecimalNode leftValue, decimal rightValue)
+        => leftValue.Value != rightValue;
+
+    /// <summary>
+    /// Compares if left is smaller than right.
+    /// </summary>
+    /// <param name="leftValue">The left value to compare.</param>
+    /// <param name="rightValue">The right value to compare.</param>
+    /// <returns>true if the left one is smaller than the right one; otherwise, false.</returns>
+    public static bool operator <(JsonDecimalNode leftValue, decimal rightValue)
+        => leftValue.Value < rightValue;
+
+    /// <summary>
+    /// Compares if left is greater than right.
+    /// </summary>
+    /// <param name="leftValue">The left value to compare.</param>
+    /// <param name="rightValue">The right value to compare.</param>
+    /// <returns>true if the left one is greater than the right one; otherwise, false.</returns>
+    public static bool operator >(JsonDecimalNode leftValue, decimal rightValue)
+        => leftValue.Value > rightValue;
+
+    /// <summary>
+    /// Compares if left is smaller than or equals to right.
+    /// </summary>
+    /// <param name="leftValue">The left value to compare.</param>
+    /// <param name="rightValue">The right value to compare.</param>
+    /// <returns>true if the left one is smaller than or equals to the right one; otherwise, false.</returns>
+    public static bool operator <=(JsonDecimalNode leftValue, decimal rightValue)
+        => leftValue.Value <= rightValue;
+
+    /// <summary>
+    /// Compares if left is greater than or equals to right.
+    /// </summary>
+    /// <param name="leftValue">The left value to compare.</param>
+    /// <param name="rightValue">The right value to compare.</param>
+    /// <returns>true if the left one is greater than or equals to the right one; otherwise, false.</returns>
+    public static bool operator >=(JsonDecimalNode leftValue, decimal rightValue)
+        => leftValue.Value >= rightValue;
+
+    /// <summary>
+    /// Compares two instances to indicate if they are same.
+    /// leftValue == rightValue
+    /// </summary>
+    /// <param name="leftValue">The left value to compare.</param>
+    /// <param name="rightValue">The right value to compare.</param>
+    /// <returns>true if they are same; otherwise, false.</returns>
+    public static bool operator ==(JsonDecimalNode leftValue, long rightValue)
+        => leftValue.Value == rightValue;
+
+    /// <summary>
+    /// Compares two instances to indicate if they are different.
+    /// leftValue != rightValue
+    /// </summary>
+    /// <param name="leftValue">The left value to compare.</param>
+    /// <param name="rightValue">The right value to compare.</param>
+    /// <returns>true if they are different; otherwise, false.</returns>
+    public static bool operator !=(JsonDecimalNode leftValue, long rightValue)
+        => leftValue.Value != rightValue;
+
+    /// <summary>
+    /// Compares if left is smaller than right.
+    /// </summary>
+    /// <param name="leftValue">The left value to compare.</param>
+    /// <param name="rightValue">The right value to compare.</param>
+    /// <returns>true if the left one is smaller than the right one; otherwise, false.</returns>
+    public static bool operator <(JsonDecimalNode leftValue, long rightValue)
+        => leftValue.Value < rightValue;
+
+    /// <summary>
+    /// Compares if left is greater than right.
+    /// </summary>
+    /// <param name="leftValue">The left value to compare.</param>
+    /// <param name="rightValue">The right value to compare.</param>
+    /// <returns>true if the left one is greater than the right one; otherwise, false.</returns>
+    public static bool operator >(JsonDecimalNode leftValue, long rightValue)
+        => leftValue.Value > rightValue;
+
+    /// <summary>
+    /// Compares if left is smaller than or equals to right.
+    /// </summary>
+    /// <param name="leftValue">The left value to compare.</param>
+    /// <param name="rightValue">The right value to compare.</param>
+    /// <returns>true if the left one is smaller than or equals to the right one; otherwise, false.</returns>
+    public static bool operator <=(JsonDecimalNode leftValue, long rightValue)
+        => leftValue.Value <= rightValue;
+
+    /// <summary>
+    /// Compares if left is greater than or equals to right.
+    /// </summary>
+    /// <param name="leftValue">The left value to compare.</param>
+    /// <param name="rightValue">The right value to compare.</param>
+    /// <returns>true if the left one is greater than or equals to the right one; otherwise, false.</returns>
+    public static bool operator >=(JsonDecimalNode leftValue, long rightValue)
+        => leftValue.Value >= rightValue;
+
+    /// <summary>
+    /// Compares two instances to indicate if they are same.
+    /// leftValue == rightValue
+    /// </summary>
+    /// <param name="leftValue">The left value to compare.</param>
+    /// <param name="rightValue">The right value to compare.</param>
+    /// <returns>true if they are same; otherwise, false.</returns>
+    public static bool operator ==(JsonDecimalNode leftValue, int rightValue)
+        => leftValue.Value == rightValue;
+
+    /// <summary>
+    /// Compares two instances to indicate if they are different.
+    /// leftValue != rightValue
+    /// </summary>
+    /// <param name="leftValue">The left value to compare.</param>
+    /// <param name="rightValue">The right value to compare.</param>
+    /// <returns>true if they are different; otherwise, false.</returns>
+    public static bool operator !=(JsonDecimalNode leftValue, int rightValue)
+        => leftValue.Value != rightValue;
+
+    /// <summary>
+    /// Compares if left is smaller than right.
+    /// </summary>
+    /// <param name="leftValue">The left value to compare.</param>
+    /// <param name="rightValue">The right value to compare.</param>
+    /// <returns>true if the left one is smaller than the right one; otherwise, false.</returns>
+    public static bool operator <(JsonDecimalNode leftValue, int rightValue)
+        => leftValue.Value < rightValue;
+
+    /// <summary>
+    /// Compares if left is greater than right.
+    /// </summary>
+    /// <param name="leftValue">The left value to compare.</param>
+    /// <param name="rightValue">The right value to compare.</param>
+    /// <returns>true if the left one is greater than the right one; otherwise, false.</returns>
+    public static bool operator >(JsonDecimalNode leftValue, int rightValue)
+        => leftValue.Value > rightValue;
+
+    /// <summary>
+    /// Compares if left is smaller than or equals to right.
+    /// </summary>
+    /// <param name="leftValue">The left value to compare.</param>
+    /// <param name="rightValue">The right value to compare.</param>
+    /// <returns>true if the left one is smaller than or equals to the right one; otherwise, false.</returns>
+    public static bool operator <=(JsonDecimalNode leftValue, int rightValue)
+        => leftValue.Value <= rightValue;
+
+    /// <summary>
+    /// Compares if left is greater than or equals to right.
+    /// </summary>
+    /// <param name="leftValue">The left value to compare.</param>
+    /// <param name="rightValue">The right value to compare.</param>
+    /// <returns>true if the left one is greater than or equals to the right one; otherwise, false.</returns>
+    public static bool operator >=(JsonDecimalNode leftValue, int rightValue)
+        => leftValue.Value >= rightValue;
+
+    /// <summary>
+    /// Compares two instances to indicate if they are same.
+    /// leftValue == rightValue
+    /// </summary>
+    /// <param name="leftValue">The left value to compare.</param>
+    /// <param name="rightValue">The right value to compare.</param>
+    /// <returns>true if they are same; otherwise, false.</returns>
+    public static bool operator ==(JsonDecimalNode leftValue, uint rightValue)
+        => leftValue.Value == rightValue;
+
+    /// <summary>
+    /// Compares two instances to indicate if they are different.
+    /// leftValue != rightValue
+    /// </summary>
+    /// <param name="leftValue">The left value to compare.</param>
+    /// <param name="rightValue">The right value to compare.</param>
+    /// <returns>true if they are different; otherwise, false.</returns>
+    public static bool operator !=(JsonDecimalNode leftValue, uint rightValue)
+        => leftValue.Value != rightValue;
+
+    /// <summary>
+    /// Compares if left is smaller than right.
+    /// </summary>
+    /// <param name="leftValue">The left value to compare.</param>
+    /// <param name="rightValue">The right value to compare.</param>
+    /// <returns>true if the left one is smaller than the right one; otherwise, false.</returns>
+    public static bool operator <(JsonDecimalNode leftValue, uint rightValue)
+        => leftValue.Value < rightValue;
+
+    /// <summary>
+    /// Compares if left is greater than right.
+    /// </summary>
+    /// <param name="leftValue">The left value to compare.</param>
+    /// <param name="rightValue">The right value to compare.</param>
+    /// <returns>true if the left one is greater than the right one; otherwise, false.</returns>
+    public static bool operator >(JsonDecimalNode leftValue, uint rightValue)
+        => leftValue.Value > rightValue;
+
+    /// <summary>
+    /// Compares if left is smaller than or equals to right.
+    /// </summary>
+    /// <param name="leftValue">The left value to compare.</param>
+    /// <param name="rightValue">The right value to compare.</param>
+    /// <returns>true if the left one is smaller than or equals to the right one; otherwise, false.</returns>
+    public static bool operator <=(JsonDecimalNode leftValue, uint rightValue)
+        => leftValue.Value <= rightValue;
+
+    /// <summary>
+    /// Compares if left is greater than or equals to right.
+    /// </summary>
+    /// <param name="leftValue">The left value to compare.</param>
+    /// <param name="rightValue">The right value to compare.</param>
+    /// <returns>true if the left one is greater than or equals to the right one; otherwise, false.</returns>
+    public static bool operator >=(JsonDecimalNode leftValue, uint rightValue)
         => leftValue.Value >= rightValue;
 }

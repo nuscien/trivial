@@ -383,6 +383,7 @@ public class JsonArrayNode : IJsonContainerNode, IJsonDataNode, IReadOnlyList<IJ
                 case JsonValueKind.Number:
                     if (prop is JsonIntegerNode intJson) info.AddValue(i.ToString("g", CultureInfo.InvariantCulture), intJson.Value);
                     else if (prop is JsonDoubleNode floatJson) info.AddValue(i.ToString("g", CultureInfo.InvariantCulture), floatJson.Value);
+                    else if (prop is JsonDecimalNode decimalJson) info.AddValue(i.ToString("g", CultureInfo.InvariantCulture), decimalJson.Value);
                     break;
                 case JsonValueKind.True:
                     info.AddValue(i.ToString("g", CultureInfo.InvariantCulture), true);
@@ -579,6 +580,7 @@ public class JsonArrayNode : IJsonContainerNode, IJsonDataNode, IReadOnlyList<IJ
     {
         if (TryGetJsonValue<JsonIntegerNode>(index, out var v)) return (uint)v;
         if (TryGetJsonValue<JsonDoubleNode>(index, out var f)) return (uint)f;
+        if (TryGetJsonValue<JsonDecimalNode>(index, out var m)) return (uint)m;
         var p = GetJsonValue<JsonStringNode>(index, JsonValueKind.Number);
         return uint.Parse(p.Value);
     }
@@ -593,6 +595,7 @@ public class JsonArrayNode : IJsonContainerNode, IJsonDataNode, IReadOnlyList<IJ
     {
         if (TryGetJsonValue<JsonIntegerNode>(index, out var v)) return (int)v;
         if (TryGetJsonValue<JsonDoubleNode>(index, out var f)) return (int)f;
+        if (TryGetJsonValue<JsonDecimalNode>(index, out var m)) return (int)m;
         var p = GetJsonValue<JsonStringNode>(index, JsonValueKind.Number);
         return int.Parse(p.Value);
     }
@@ -608,6 +611,7 @@ public class JsonArrayNode : IJsonContainerNode, IJsonDataNode, IReadOnlyList<IJ
     {
         if (TryGetJsonValue<JsonIntegerNode>(index, out var v)) return v.Value;
         if (TryGetJsonValue<JsonDoubleNode>(index, out var f)) return (long)f;
+        if (TryGetJsonValue<JsonDecimalNode>(index, out var m)) return (long)m;
         var p = GetJsonValue<JsonStringNode>(index, JsonValueKind.Number);
         return long.Parse(p.Value);
     }
@@ -623,6 +627,7 @@ public class JsonArrayNode : IJsonContainerNode, IJsonDataNode, IReadOnlyList<IJ
     {
         if (TryGetJsonValue<JsonDoubleNode>(index, out var v)) return (float)v;
         if (TryGetJsonValue<JsonIntegerNode>(index, out var f)) return (float)f;
+        if (TryGetJsonValue<JsonDecimalNode>(index, out var m)) return (float)m;
         var p = GetJsonValue<JsonStringNode>(index, JsonValueKind.Number);
         return float.Parse(p.Value);
     }
@@ -638,8 +643,25 @@ public class JsonArrayNode : IJsonContainerNode, IJsonDataNode, IReadOnlyList<IJ
     {
         if (TryGetJsonValue<JsonDoubleNode>(index, out var v)) return v.Value;
         if (TryGetJsonValue<JsonIntegerNode>(index, out var f)) return (double)f;
+        if (TryGetJsonValue<JsonDecimalNode>(index, out var m)) return (double)m.Value;
         var p = GetJsonValue<JsonStringNode>(index, JsonValueKind.Number);
         return double.Parse(p.Value);
+    }
+
+    /// <summary>
+    /// Gets the value at the specific index.
+    /// </summary>
+    /// <param name="index">The zero-based index of the element to get.</param>
+    /// <returns>The value.</returns>
+    /// <exception cref="ArgumentOutOfRangeException">The index is out of range.</exception>
+    /// <exception cref="InvalidOperationException">The value kind is not the expected one.</exception>
+    public decimal GetDecimalValue(int index)
+    {
+        if (TryGetJsonValue<JsonDoubleNode>(index, out var v)) return (decimal)v.Value;
+        if (TryGetJsonValue<JsonIntegerNode>(index, out var f)) return (decimal)f;
+        if (TryGetJsonValue<JsonDecimalNode>(index, out var m)) return m.Value;
+        var p = GetJsonValue<JsonStringNode>(index, JsonValueKind.Number);
+        return decimal.Parse(p.Value);
     }
 
     /// <summary>
@@ -867,7 +889,7 @@ public class JsonArrayNode : IJsonContainerNode, IJsonDataNode, IReadOnlyList<IJ
         if (type == typeof(System.Text.Json.Nodes.JsonObject)) return (System.Text.Json.Nodes.JsonObject)GetObjectValue(index);
         if (type == typeof(System.Text.Json.Nodes.JsonArray)) return (System.Text.Json.Nodes.JsonArray)GetArrayValue(index);
         if (type == typeof(Type)) return GetValue(index).GetType();
-        if (type == typeof(IJsonDataNode) || type == typeof(IJsonValueNode) || type == typeof(JsonStringNode) || type == typeof(IJsonStringNode) || type == typeof(JsonIntegerNode) || type == typeof(JsonDoubleNode) || type == typeof(JsonBooleanNode) || type == typeof(IJsonNumberNode))
+        if (type == typeof(IJsonDataNode) || type == typeof(IJsonValueNode) || type == typeof(JsonStringNode) || type == typeof(IJsonStringNode) || type == typeof(JsonIntegerNode) || type == typeof(JsonDoubleNode) || type == typeof(JsonDecimalNode) || type == typeof(JsonBooleanNode) || type == typeof(IJsonNumberNode))
             return GetValue(index);
 
         if (type.IsClass)
@@ -1023,6 +1045,14 @@ public class JsonArrayNode : IJsonContainerNode, IJsonDataNode, IReadOnlyList<IJ
     /// <returns>The JSON double float number value collection.</returns>
     public IEnumerable<JsonDoubleNode> GetDoubleValues(bool nullForOtherKinds = false)
         => GetSpecificKindValues<JsonDoubleNode>(nullForOtherKinds);
+
+    /// <summary>
+    /// Gets all decimal number values.
+    /// </summary>
+    /// <param name="nullForOtherKinds">true if set null in the result for other kinds; otherwise, false, to skip.</param>
+    /// <returns>The JSON decimal number value collection.</returns>
+    public IEnumerable<JsonDecimalNode> GetDecimalValues(bool nullForOtherKinds = false)
+        => GetSpecificKindValues<JsonDecimalNode>(nullForOtherKinds);
 
     /// <summary>
     /// Gets all boolean values.
@@ -1308,6 +1338,7 @@ public class JsonArrayNode : IJsonContainerNode, IJsonDataNode, IReadOnlyList<IJ
         {
             if (TryGetJsonValue<JsonIntegerNode>(index, out var p1)) return (ushort)p1;
             if (TryGetJsonValue<JsonDoubleNode>(index, out var p2)) return (ushort)Math.Round(p2.Value);
+            if (TryGetJsonValue<JsonDecimalNode>(index, out var p3)) return (ushort)Math.Round(p3.Value);
         }
         catch (InvalidCastException)
         {
@@ -1319,8 +1350,8 @@ public class JsonArrayNode : IJsonContainerNode, IJsonDataNode, IReadOnlyList<IJ
         }
 
         var str = TryGetStringValue(index);
-        if (string.IsNullOrWhiteSpace(str) || !Numbers.TryParseToUInt16(str, 10, out var p3)) return null;
-        return p3;
+        if (string.IsNullOrWhiteSpace(str) || !Numbers.TryParseToUInt16(str, 10, out var p4)) return null;
+        return p4;
     }
 
     /// <summary>
@@ -1347,6 +1378,7 @@ public class JsonArrayNode : IJsonContainerNode, IJsonDataNode, IReadOnlyList<IJ
         {
             if (TryGetJsonValue<JsonIntegerNode>(index, out var p1)) return (uint)p1;
             if (TryGetJsonValue<JsonDoubleNode>(index, out var p2)) return (uint)Math.Round(p2.Value);
+            if (TryGetJsonValue<JsonDecimalNode>(index, out var p3)) return (uint)Math.Round(p3.Value);
         }
         catch (InvalidCastException)
         {
@@ -1358,8 +1390,8 @@ public class JsonArrayNode : IJsonContainerNode, IJsonDataNode, IReadOnlyList<IJ
         }
 
         var str = TryGetStringValue(index);
-        if (string.IsNullOrWhiteSpace(str) || !Numbers.TryParseToUInt32(str, 10, out var p3)) return null;
-        return p3;
+        if (string.IsNullOrWhiteSpace(str) || !Numbers.TryParseToUInt32(str, 10, out var p4)) return null;
+        return p4;
     }
 
     /// <summary>
@@ -1386,6 +1418,7 @@ public class JsonArrayNode : IJsonContainerNode, IJsonDataNode, IReadOnlyList<IJ
         {
             if (TryGetJsonValue<JsonIntegerNode>(index, out var p1)) return (short)p1;
             if (TryGetJsonValue<JsonDoubleNode>(index, out var p2)) return (short)Math.Round(p2.Value);
+            if (TryGetJsonValue<JsonDecimalNode>(index, out var p3)) return (short)Math.Round(p3.Value);
         }
         catch (InvalidCastException)
         {
@@ -1397,8 +1430,8 @@ public class JsonArrayNode : IJsonContainerNode, IJsonDataNode, IReadOnlyList<IJ
         }
 
         var str = TryGetStringValue(index);
-        if (string.IsNullOrWhiteSpace(str) || !Numbers.TryParseToInt16(str, 10, out var p3)) return null;
-        return p3;
+        if (string.IsNullOrWhiteSpace(str) || !Numbers.TryParseToInt16(str, 10, out var p4)) return null;
+        return p4;
     }
 
     /// <summary>
@@ -1425,6 +1458,7 @@ public class JsonArrayNode : IJsonContainerNode, IJsonDataNode, IReadOnlyList<IJ
         {
             if (TryGetJsonValue<JsonIntegerNode>(index, out var p1)) return (int)p1;
             if (TryGetJsonValue<JsonDoubleNode>(index, out var p2)) return (int)Math.Round(p2.Value);
+            if (TryGetJsonValue<JsonDecimalNode>(index, out var p3)) return (int)Math.Round(p3.Value);
         }
         catch (InvalidCastException)
         {
@@ -1436,8 +1470,8 @@ public class JsonArrayNode : IJsonContainerNode, IJsonDataNode, IReadOnlyList<IJ
         }
 
         var str = TryGetStringValue(index);
-        if (string.IsNullOrWhiteSpace(str) || !Numbers.TryParseToInt32(str, 10, out var p3)) return null;
-        return p3;
+        if (string.IsNullOrWhiteSpace(str) || !Numbers.TryParseToInt32(str, 10, out var p4)) return null;
+        return p4;
     }
 
     /// <summary>
@@ -1464,6 +1498,7 @@ public class JsonArrayNode : IJsonContainerNode, IJsonDataNode, IReadOnlyList<IJ
         try
         {
             if (TryGetJsonValue<JsonDoubleNode>(index, out var p2)) return (long)Math.Round(p2.Value);
+            if (TryGetJsonValue<JsonDecimalNode>(index, out var p3)) return (long)Math.Round(p3.Value);
         }
         catch (InvalidCastException)
         {
@@ -1475,8 +1510,8 @@ public class JsonArrayNode : IJsonContainerNode, IJsonDataNode, IReadOnlyList<IJ
         }
 
         var str = TryGetStringValue(index);
-        if (string.IsNullOrWhiteSpace(str) || !Numbers.TryParseToInt64(str, 10, out var p3)) return null;
-        return p3;
+        if (string.IsNullOrWhiteSpace(str) || !Numbers.TryParseToInt64(str, 10, out var p4)) return null;
+        return p4;
     }
 
     /// <summary>
@@ -1502,6 +1537,7 @@ public class JsonArrayNode : IJsonContainerNode, IJsonDataNode, IReadOnlyList<IJ
         try
         {
             if (TryGetJsonValue<JsonDoubleNode>(index, out var p1)) return (float)p1;
+            if (TryGetJsonValue<JsonDecimalNode>(index, out var p2)) return (float)p2;
         }
         catch (InvalidCastException)
         {
@@ -1512,10 +1548,10 @@ public class JsonArrayNode : IJsonContainerNode, IJsonDataNode, IReadOnlyList<IJ
             return float.NaN;
         }
 
-        if (TryGetJsonValue<JsonIntegerNode>(index, out var p2)) return (float)p2;
+        if (TryGetJsonValue<JsonIntegerNode>(index, out var p3)) return (float)p3;
         var str = TryGetStringValue(index);
-        if (string.IsNullOrWhiteSpace(str) || !float.TryParse(str, out var p3)) return float.NaN;
-        return p3;
+        if (string.IsNullOrWhiteSpace(str) || !float.TryParse(str, out var p4)) return float.NaN;
+        return p4;
     }
 
     /// <summary>
@@ -1562,9 +1598,10 @@ public class JsonArrayNode : IJsonContainerNode, IJsonDataNode, IReadOnlyList<IJ
     {
         if (TryGetJsonValue<JsonDoubleNode>(index, out var p1)) return p1.Value;
         if (TryGetJsonValue<JsonIntegerNode>(index, out var p2)) return (double)p2;
+        if (TryGetJsonValue<JsonDecimalNode>(index, out var p3)) return (double)p3;
         var str = TryGetStringValue(index);
-        if (string.IsNullOrWhiteSpace(str) || !double.TryParse(str, out var p3)) return double.NaN;
-        return p3;
+        if (string.IsNullOrWhiteSpace(str) || !double.TryParse(str, out var p4)) return double.NaN;
+        return p4;
     }
 
     /// <summary>
@@ -1611,8 +1648,9 @@ public class JsonArrayNode : IJsonContainerNode, IJsonDataNode, IReadOnlyList<IJ
     {
         try
         {
+            if (TryGetJsonValue<JsonDecimalNode>(index, out var p3)) return p3.Value;
             if (TryGetJsonValue<JsonDoubleNode>(index, out var p1)) return (decimal)p1.Value;
-            if (TryGetJsonValue<JsonIntegerNode>(index, out var p2)) return (decimal)p2.Value;
+            if (TryGetJsonValue<JsonIntegerNode>(index, out var p2)) return p2.Value;
         }
         catch (InvalidCastException)
         {
@@ -1624,8 +1662,8 @@ public class JsonArrayNode : IJsonContainerNode, IJsonDataNode, IReadOnlyList<IJ
         }
 
         var str = TryGetStringValue(index);
-        if (string.IsNullOrWhiteSpace(str) || !decimal.TryParse(str, out var p3)) return null;
-        return p3;
+        if (string.IsNullOrWhiteSpace(str) || !decimal.TryParse(str, out var p4)) return null;
+        return p4;
     }
 
     /// <summary>
@@ -2259,6 +2297,10 @@ public class JsonArrayNode : IJsonContainerNode, IJsonDataNode, IReadOnlyList<IJ
             {
                 if (value == d.Value) list.Add(ele);
             }
+            else if (ele is JsonDecimalNode m)
+            {
+                if (value == m.Value) list.Add(ele);
+            }
         }
 
         foreach (var ele in list)
@@ -2288,6 +2330,10 @@ public class JsonArrayNode : IJsonContainerNode, IJsonDataNode, IReadOnlyList<IJ
             {
                 if (value == d.Value) list.Add(ele);
             }
+            else if (ele is JsonDecimalNode m)
+            {
+                if (value == m.Value) list.Add(ele);
+            }
         }
 
         foreach (var ele in list)
@@ -2316,6 +2362,10 @@ public class JsonArrayNode : IJsonContainerNode, IJsonDataNode, IReadOnlyList<IJ
             else if (ele is JsonIntegerNode s)
             {
                 if (value == s.Value) list.Add(ele);
+            }
+            else if (ele is JsonDecimalNode m)
+            {
+                if (value == (double)m.Value) list.Add(ele);
             }
         }
 
@@ -2594,7 +2644,7 @@ public class JsonArrayNode : IJsonContainerNode, IJsonDataNode, IReadOnlyList<IJ
     public void SetValue(int index, decimal value)
     {
         if (store.Count == index) store.Add(JsonValues.Null);
-        store[index] = new JsonDoubleNode(value);
+        store[index] = new JsonDecimalNode(value);
     }
 
     /// <summary>
@@ -2940,7 +2990,7 @@ public class JsonArrayNode : IJsonContainerNode, IJsonDataNode, IReadOnlyList<IJ
     /// </summary>
     /// <param name="value">The value to set.</param>
     public void Add(decimal value)
-        => store.Add(new JsonDoubleNode(value));
+        => store.Add(new JsonDecimalNode(value));
 
     /// <summary>
     /// Adds a value.
@@ -3131,6 +3181,24 @@ public class JsonArrayNode : IJsonContainerNode, IJsonDataNode, IReadOnlyList<IJ
         foreach (var item in values)
         {
             store.Add(new JsonDoubleNode(item));
+            count++;
+        }
+
+        return count;
+    }
+
+    /// <summary>
+    /// Adds a collection of floating number.
+    /// </summary>
+    /// <param name="values">An floating number collection to add.</param>
+    /// <returns>The count of item added.</returns>
+    public int AddRange(IEnumerable<decimal> values)
+    {
+        var count = 0;
+        if (values == null) return count;
+        foreach (var item in values)
+        {
+            store.Add(new JsonDecimalNode(item));
             count++;
         }
 
@@ -3372,7 +3440,7 @@ public class JsonArrayNode : IJsonContainerNode, IJsonDataNode, IReadOnlyList<IJ
     /// <param name="value">The value to set.</param>
     /// <exception cref="ArgumentOutOfRangeException">The index was out of range.</exception>
     public void Insert(int index, decimal value)
-        => store.Insert(index, new JsonDoubleNode(value));
+        => store.Insert(index, new JsonDecimalNode(value));
 
     /// <summary>
     /// Inserts the value at the specific index.
@@ -3543,6 +3611,26 @@ public class JsonArrayNode : IJsonContainerNode, IJsonDataNode, IReadOnlyList<IJ
     /// <param name="values">A string collection to add.</param>
     /// <returns>The count of item added.</returns>
     /// <exception cref="ArgumentOutOfRangeException">The index was out of range.</exception>
+    public int InsertRange(int index, IEnumerable<long> values)
+    {
+        var count = 0;
+        if (values == null) return count;
+        foreach (var item in values)
+        {
+            store.Insert(index + count, new JsonIntegerNode(item));
+            count++;
+        }
+
+        return count;
+    }
+
+    /// <summary>
+    /// Adds a JSON array.
+    /// </summary>
+    /// <param name="index">The zero-based index of the element to get.</param>
+    /// <param name="values">A string collection to add.</param>
+    /// <returns>The count of item added.</returns>
+    /// <exception cref="ArgumentOutOfRangeException">The index was out of range.</exception>
     public int InsertRange(int index, IEnumerable<double> values)
     {
         var count = 0;
@@ -3550,6 +3638,46 @@ public class JsonArrayNode : IJsonContainerNode, IJsonDataNode, IReadOnlyList<IJ
         foreach (var item in values)
         {
             store.Insert(index + count, new JsonDoubleNode(item));
+            count++;
+        }
+
+        return count;
+    }
+
+    /// <summary>
+    /// Adds a JSON array.
+    /// </summary>
+    /// <param name="index">The zero-based index of the element to get.</param>
+    /// <param name="values">A string collection to add.</param>
+    /// <returns>The count of item added.</returns>
+    /// <exception cref="ArgumentOutOfRangeException">The index was out of range.</exception>
+    public int InsertRange(int index, IEnumerable<float> values)
+    {
+        var count = 0;
+        if (values == null) return count;
+        foreach (var item in values)
+        {
+            store.Insert(index + count, new JsonDoubleNode(item));
+            count++;
+        }
+
+        return count;
+    }
+
+    /// <summary>
+    /// Adds a JSON array.
+    /// </summary>
+    /// <param name="index">The zero-based index of the element to get.</param>
+    /// <param name="values">A string collection to add.</param>
+    /// <returns>The count of item added.</returns>
+    /// <exception cref="ArgumentOutOfRangeException">The index was out of range.</exception>
+    public int InsertRange(int index, IEnumerable<decimal> values)
+    {
+        var count = 0;
+        if (values == null) return count;
+        foreach (var item in values)
+        {
+            store.Insert(index + count, new JsonDecimalNode(item));
             count++;
         }
 
@@ -3654,6 +3782,7 @@ public class JsonArrayNode : IJsonContainerNode, IJsonDataNode, IReadOnlyList<IJ
                 case JsonValueKind.Number:
                     if (prop is JsonIntegerNode intJson) writer.WriteNumberValue((long)intJson);
                     else if (prop is JsonDoubleNode floatJson) writer.WriteNumberValue((double)floatJson);
+                    else if (prop is JsonDecimalNode decimalJson) writer.WriteNumberValue((decimal)decimalJson);
                     break;
                 case JsonValueKind.True:
                     writer.WriteBooleanValue(true);
