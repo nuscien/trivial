@@ -121,11 +121,11 @@ public class JsonUnitTest
 
         json.EnableThreadSafeMode(3);
         Assert.IsTrue(json.GetObjectValue("props", "p1", "p3").GetBooleanValue("p2"));
-        Assert.IsTrue(json["props", "p1", "p3", "p2"].GetBoolean());
+        Assert.IsTrue(json["props", "p1", "p3", "p2"].As<bool>());
         Assert.IsTrue(json.TryGetObjectValue("props", "p1", "p3").GetBooleanValue("p2"));
-        Assert.IsTrue(json.TryGetValue("props.p1.p3.p2", true).GetBoolean());
-        Assert.IsTrue(json.TryGetValue("$.props. 'p1'.'p3'.p2", true).GetBoolean());
-        Assert.IsTrue(json.TryGetValue("[props]['p1'][p3][ 'p2' ]", true).GetBoolean());
+        Assert.IsTrue(json.TryGetValue("props.p1.p3.p2", true).As<bool>());
+        Assert.IsTrue(json.TryGetValue("$.props. 'p1'.'p3'.p2", true).As<bool>());
+        Assert.IsTrue(json.TryGetValue("[props]['p1'][p3][ 'p2' ]", true).As<bool>());
         Assert.IsTrue(json.GetValue<bool>("props", "p1", "p3", "p2"));
         try
         {
@@ -162,10 +162,10 @@ public class JsonUnitTest
         };
         Assert.AreEqual(4567, p1.GetInt32Value("p7"));
         Assert.IsTrue(json.ContainsKey("dot.net"));
-        Assert.AreEqual("Text", json["dot.net", 0].GetString());
+        Assert.AreEqual("Text", json["dot.net", 0].As<string>());
         Assert.AreEqual(JsonValueKind.Array, json["dot.net"].ValueKind);
-        Assert.AreEqual("e", json.TryGetValue("[dot.net][1]['.[][][]....\\\"\\\'\\\\.'][1]", true).GetString());
-        Assert.AreEqual(4, json.TryGetValue("'dot.net'.1.\".[][][]....\\\"\\\'\\\\.\".length", true).GetInt32());
+        Assert.AreEqual("e", json.TryGetValue("[dot.net][1]['.[][][]....\\\"\\\'\\\\.'][1]", true).As<string>());
+        Assert.AreEqual(4, json.TryGetValue("'dot.net'.1.\".[][][]....\\\"\\\'\\\\.\".length", true).As<int>());
         json.GetArrayValue("dot.net").ReplaceValue(json.GetArrayValue("dot.net").GetObjectValue(1), new JsonObjectNode
         {
             { "then", "true" }
@@ -199,8 +199,8 @@ public class JsonUnitTest
         Assert.AreNotEqual(jsonArray.GetInt32Value(0), jsonArray.GetInt32Value(1));
         Assert.IsTrue(json.TryGetValue(new List<string> { "arr" }, out _));
         Assert.IsFalse(json.TryGetValue(new List<string> { "arr", "some" }, out _));
-        Assert.AreEqual(7, json.GetValue("arr", "0").GetInt32());
-        Assert.AreEqual(7, json.GetValue("arr", null, null, "0", string.Empty).GetInt32());
+        Assert.AreEqual(7, json.GetValue("arr", "0").As<int>());
+        Assert.AreEqual(7, json.GetValue("arr", null, null, "0", string.Empty).As<int>());
         Assert.IsNull(json.TryGetValue(new[] { "arr", "0", "x" }));
         Assert.AreEqual(9, jsonArray.GetStringCollection().ToList().Count);
 
@@ -382,14 +382,14 @@ public class JsonUnitTest
         Assert.AreEqual("true", jArr.OfType<string>().ToList()[1]);
         Assert.AreEqual(1, jArr.OfType<long>().Count());
         Assert.AreEqual(0, jArr.OfType<JsonObjectNode>().Count());
-        Assert.AreEqual(2, jArr.OfType<IJsonStringNode>().Count());
-        Assert.AreEqual("defg", jArr.OfType<IJsonStringNode>().ToList()[1].StringValue);
+        Assert.AreEqual(2, jArr.OfType<IJsonValueNode<string>>().Count());
+        Assert.AreEqual("defg", jArr.OfType<JsonStringNode>().ToList()[1].Value);
         var jObj = new JsonObjectNode();
         jObj.SetValue("hijk", jArr);
         jObj.SetValue("lmn", "opq");
         jObj.SetValue("rst", "56789K");
         Assert.AreEqual(56789000, jObj.TryGetInt32Value("rst"));
-        Assert.AreEqual(56789000, jObj["rst"].GetInt64());
+        Assert.AreEqual(56789000L, jObj["rst"].As<long>());
         jObj.SetValue("rst", 56789);
         jObj.SetValue("uvw", false);
         jObj.SetNullValue("x");

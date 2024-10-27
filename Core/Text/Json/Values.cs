@@ -34,21 +34,26 @@ public static class JsonValues
     internal const string SELF_REF = "@";
 
     /// <summary>
+    /// The string of null.
+    /// </summary>
+    public const string NullString = "null";
+
+    /// <summary>
     /// JSON null.
     /// </summary>
-    public static readonly IJsonDataNode Null = new JsonNullNode(JsonValueKind.Null);
+    public static readonly BaseJsonValueNode Null = new JsonNullNode(JsonValueKind.Null);
 
     /// <summary>
     /// JSON undefined.
     /// </summary>
-    public static readonly IJsonDataNode Undefined = new JsonNullNode(JsonValueKind.Undefined);
+    public static readonly BaseJsonValueNode Undefined = new JsonNullNode(JsonValueKind.Undefined);
 
     /// <summary>
     /// Converts from JSON document.
     /// </summary>
     /// <param name="json">The JSON value.</param>
     /// <returns>The JSON value.</returns>
-    public static IJsonDataNode ToJsonValue(JsonDocument json)
+    public static BaseJsonValueNode ToJsonValue(JsonDocument json)
     {
         if (json is null) return null;
         return ToJsonValue(json.RootElement);
@@ -58,8 +63,8 @@ public static class JsonValues
     /// Converts from JSON element.
     /// </summary>
     /// <param name="json">The JSON value.</param>
-    /// <returns>The JSON value.</returns>
-    public static IJsonDataNode ToJsonValue(JsonElement json)
+    /// <returns>The JSON value; or null, if not supported.</returns>
+    public static BaseJsonValueNode ToJsonValue(JsonElement json)
     {
         return json.ValueKind switch
         {
@@ -81,51 +86,26 @@ public static class JsonValues
     /// Converts from JSON element.
     /// </summary>
     /// <param name="json">The JSON value.</param>
-    /// <returns>The JSON value.</returns>
-    public static IJsonDataNode ToJsonValue(SystemJsonNode json)
+    /// <returns>The JSON value; or null, if failed.</returns>
+    public static BaseJsonValueNode ToJsonValue(SystemJsonNode json)
     {
-        if (json is null)
-            return Null;
-        if (json is SystemJsonObject obj)
-            return (JsonObjectNode)obj;
-        if (json is SystemJsonArray arr)
-            return (JsonArrayNode)arr;
-        if (json is not SystemJsonValue token)
-            return null;
-        if (token.TryGetValue(out string s))
-            return new JsonStringNode(s);
-        if (token.TryGetValue(out bool b))
-            return b ? JsonBooleanNode.True : JsonBooleanNode.False;
-        if (token.TryGetValue(out long l))
-            return new JsonIntegerNode(l);
-        if (token.TryGetValue(out int i))
-            return new JsonIntegerNode(i);
-        if (token.TryGetValue(out uint ui))
-            return new JsonIntegerNode(ui);
-        if (token.TryGetValue(out short sh))
-            return new JsonIntegerNode(sh);
-        if (token.TryGetValue(out ushort ush))
-            return new JsonIntegerNode(ush);
-        if (token.TryGetValue(out sbyte sb))
-            return new JsonIntegerNode(sb);
-        if (token.TryGetValue(out byte by))
-            return new JsonIntegerNode(by);
-        if (token.TryGetValue(out double d))
-            return new JsonDoubleNode(d);
-        if (token.TryGetValue(out float f))
-            return new JsonDoubleNode(f);
-        if (token.TryGetValue(out decimal de))
-            return new JsonDecimalNode(de);
-        if (token.TryGetValue(out Guid g))
-            return new JsonStringNode(g);
-        if (token.TryGetValue(out DateTime dt))
-            return new JsonStringNode(dt);
-        if (token.TryGetValue(out DateTimeOffset dto))
-            return new JsonStringNode(dto);
-        if (token.TryGetValue(out char c))
-            return new JsonStringNode(c);
-        if (token.TryGetValue(out JsonElement e))
-            return ToJsonValue(e);
+        try
+        {
+            return (BaseJsonValueNode)json;
+        }
+        catch (InvalidCastException)
+        {
+        }
+        catch (InvalidOperationException)
+        {
+        }
+        catch (OverflowException)
+        {
+        }
+        catch (ArgumentException)
+        {
+        }
+
         return null;
     }
 
@@ -175,7 +155,7 @@ public static class JsonValues
                 return true;
             case JsonValueKind.Number:
                 if (!json.TryGetInt64(out long tick)) break;
-                value = Web.WebFormat.ParseUnixTimestamp(tick);
+                value = WebFormat.ParseUnixTimestamp(tick);
                 return true;
             default:
                 throw new InvalidOperationException("The value kind should be string or number.");
@@ -214,15 +194,267 @@ public static class JsonValues
     }
 
     /// <summary>
+    /// Tries to convert a JSON value node to a string.
+    /// </summary>
+    /// <param name="node">The JSON value node.</param>
+    /// <param name="result">The result.</param>
+    /// <returns>true if convert succeeded; otherwise, false.</returns>
+    public static bool TryGetString(IJsonValueNode node, out string result)
+    {
+        if (node != null) return node.TryConvert(false, out result);
+        result = default;
+        return false;
+    }
+
+    /// <summary>
+    /// Tries to convert a JSON value node to a string.
+    /// </summary>
+    /// <param name="node">The JSON value node.</param>
+    /// <returns>The result converted; or null, if not supported.</returns>
+    public static string TryGetString(IJsonValueNode node)
+        => node != null && node.TryConvert(false, out string result) ? result : null;
+
+    /// <summary>
+    /// Tries to convert a JSON value node to an integer.
+    /// </summary>
+    /// <param name="node">The JSON value node.</param>
+    /// <param name="result">The result.</param>
+    /// <returns>true if convert succeeded; otherwise, false.</returns>
+    public static bool TryGetInt16(IJsonValueNode node, out short result)
+    {
+        if (node != null) return node.TryConvert(false, out result);
+        result = default;
+        return false;
+    }
+
+    /// <summary>
+    /// Tries to convert a JSON value node to an integer.
+    /// </summary>
+    /// <param name="node">The JSON value node.</param>
+    /// <returns>The result converted; or null, if not supported.</returns>
+    public static short? TryGetInt16(IJsonValueNode node)
+        => node != null && node.TryConvert(false, out short result) ? result : null;
+
+    /// <summary>
+    /// Tries to convert a JSON value node to an integer.
+    /// </summary>
+    /// <param name="node">The JSON value node.</param>
+    /// <param name="result">The result.</param>
+    /// <returns>true if convert succeeded; otherwise, false.</returns>
+    public static bool TryGetUInt32(IJsonValueNode node, out uint result)
+    {
+        if (node != null) return node.TryConvert(false, out result);
+        result = default;
+        return false;
+    }
+
+    /// <summary>
+    /// Tries to convert a JSON value node to an integer.
+    /// </summary>
+    /// <param name="node">The JSON value node.</param>
+    /// <returns>The result converted; or null, if not supported.</returns>
+    public static uint? TryGetUInt32(IJsonValueNode node)
+        => node != null && node.TryConvert(false, out uint result) ? result : null;
+
+    /// <summary>
+    /// Tries to convert a JSON value node to an integer.
+    /// </summary>
+    /// <param name="node">The JSON value node.</param>
+    /// <param name="result">The result.</param>
+    /// <returns>true if convert succeeded; otherwise, false.</returns>
+    public static bool TryGetInt32(IJsonValueNode node, out int result)
+    {
+        if (node != null) return node.TryConvert(false, out result);
+        result = default;
+        return false;
+    }
+
+    /// <summary>
+    /// Tries to convert a JSON value node to an integer.
+    /// </summary>
+    /// <param name="node">The JSON value node.</param>
+    /// <returns>The result converted; or null, if not supported.</returns>
+    public static int? TryGetInt32(IJsonValueNode node)
+        => node != null && node.TryConvert(false, out int result) ? result : null;
+
+    /// <summary>
+    /// Tries to convert a JSON value node to an integer.
+    /// </summary>
+    /// <param name="node">The JSON value node.</param>
+    /// <param name="result">The result.</param>
+    /// <returns>true if convert succeeded; otherwise, false.</returns>
+    public static bool TryGetUInt64(IJsonValueNode node, out ulong result)
+    {
+        if (node != null) return node.TryConvert(false, out result);
+        result = default;
+        return false;
+    }
+
+    /// <summary>
+    /// Tries to convert a JSON value node to an integer.
+    /// </summary>
+    /// <param name="node">The JSON value node.</param>
+    /// <returns>The result converted; or null, if not supported.</returns>
+    public static ulong? TryGetUInt64(IJsonValueNode node)
+        => node != null && node.TryConvert(false, out ulong result) ? result : null;
+
+    /// <summary>
+    /// Tries to convert a JSON value node to an integer.
+    /// </summary>
+    /// <param name="node">The JSON value node.</param>
+    /// <param name="result">The result.</param>
+    /// <returns>true if convert succeeded; otherwise, false.</returns>
+    public static bool TryGetInt64(IJsonValueNode node, out long result)
+    {
+        if (node != null) return node.TryConvert(false, out result);
+        result = default;
+        return false;
+    }
+
+    /// <summary>
+    /// Tries to convert a JSON value node to an integer.
+    /// </summary>
+    /// <param name="node">The JSON value node.</param>
+    /// <returns>The result converted; or null, if not supported.</returns>
+    public static long? TryGetInt64(IJsonValueNode node)
+        => node != null && node.TryConvert(false, out long result) ? result : null;
+
+    /// <summary>
+    /// Tries to convert a JSON value node to an floating number.
+    /// </summary>
+    /// <param name="node">The JSON value node.</param>
+    /// <param name="result">The result.</param>
+    /// <returns>true if convert succeeded; otherwise, false.</returns>
+    public static bool TryGetSingle(IJsonValueNode node, out float result)
+    {
+        if (node != null) return node.TryConvert(false, out result);
+        result = float.NaN;
+        return false;
+    }
+
+    /// <summary>
+    /// Tries to convert a JSON value node to an floating number.
+    /// </summary>
+    /// <param name="node">The JSON value node.</param>
+    /// <returns>The result converted; or null, if not supported.</returns>
+    public static float TryGetSingle(IJsonValueNode node)
+        => node != null && node.TryConvert(false, out float result) ? result : float.NaN;
+
+    /// <summary>
+    /// Tries to convert a JSON value node to an floating number.
+    /// </summary>
+    /// <param name="node">The JSON value node.</param>
+    /// <param name="result">The result.</param>
+    /// <returns>true if convert succeeded; otherwise, false.</returns>
+    public static bool TryGetDouble(IJsonValueNode node, out double result)
+    {
+        if (node != null) return node.TryConvert(false, out result);
+        result = double.NaN;
+        return false;
+    }
+
+    /// <summary>
+    /// Tries to convert a JSON value node to an floating number.
+    /// </summary>
+    /// <param name="node">The JSON value node.</param>
+    /// <returns>The result converted; or null, if not supported.</returns>
+    public static double TryGetDouble(IJsonValueNode node)
+        => node != null && node.TryConvert(false, out double result) ? result : double.NaN;
+
+    /// <summary>
+    /// Tries to convert a JSON value node to an floating number.
+    /// </summary>
+    /// <param name="node">The JSON value node.</param>
+    /// <param name="result">The result.</param>
+    /// <returns>true if convert succeeded; otherwise, false.</returns>
+    public static bool TryGetDecimal(IJsonValueNode node, out decimal result)
+    {
+        if (node != null) return node.TryConvert(false, out result);
+        result = default;
+        return false;
+    }
+
+    /// <summary>
+    /// Tries to convert a JSON value node to an floating number.
+    /// </summary>
+    /// <param name="node">The JSON value node.</param>
+    /// <returns>The result converted; or null, if not supported.</returns>
+    public static decimal? TryGetDecimal(IJsonValueNode node)
+        => node != null && node.TryConvert(false, out decimal result) ? result : null;
+
+    /// <summary>
+    /// Tries to convert a JSON value node to a boolean.
+    /// </summary>
+    /// <param name="node">The JSON value node.</param>
+    /// <param name="result">The result.</param>
+    /// <returns>true if convert succeeded; otherwise, false.</returns>
+    public static bool TryGetBoolean(IJsonValueNode node, out bool result)
+    {
+        if (node != null) return node.TryConvert(false, out result);
+        result = default;
+        return false;
+    }
+
+    /// <summary>
+    /// Tries to convert a JSON value node to a boolean.
+    /// </summary>
+    /// <param name="node">The JSON value node.</param>
+    /// <returns>The result converted; or null, if not supported.</returns>
+    public static bool? TryGetBoolean(IJsonValueNode node)
+        => node != null && node.TryConvert(false, out bool result) ? result : null;
+
+    /// <summary>
+    /// Tries to convert a JSON value node to a date time.
+    /// </summary>
+    /// <param name="node">The JSON value node.</param>
+    /// <param name="result">The result.</param>
+    /// <returns>true if convert succeeded; otherwise, false.</returns>
+    public static bool TryGetDateTime(IJsonValueNode node, out DateTime result)
+    {
+        if (node != null) return node.TryConvert(out result);
+        result = default;
+        return false;
+    }
+
+    /// <summary>
+    /// Tries to convert a JSON value node to a date time.
+    /// </summary>
+    /// <param name="node">The JSON value node.</param>
+    /// <returns>The result converted; or null, if not supported.</returns>
+    public static DateTime? TryGetDateTime(IJsonValueNode node)
+        => node != null && node.TryConvert(out DateTime result) ? result : WebFormat.ZeroTick;
+
+    /// <summary>
+    /// Tries to convert a JSON value node to a GUID.
+    /// </summary>
+    /// <param name="node">The JSON value node.</param>
+    /// <param name="result">The result.</param>
+    /// <returns>true if convert succeeded; otherwise, false.</returns>
+    public static bool TryGetGuid(IJsonValueNode node, out Guid result)
+    {
+        if (node != null) return node.TryConvert(out result);
+        result = default;
+        return false;
+    }
+
+    /// <summary>
+    /// Tries to convert a JSON value node to a GUID.
+    /// </summary>
+    /// <param name="node">The JSON value node.</param>
+    /// <returns>The result converted; or null, if not supported.</returns>
+    public static Guid? TryGetGuid(IJsonValueNode node)
+        => node != null && node.TryConvert(out Guid result) ? result : Guid.Empty;
+
+    /// <summary>
     /// Tries to get the value of the specific property for each object.
     /// </summary>
     /// <param name="col">The JSON object collection.</param>
     /// <param name="key">The property key.</param>
     /// <param name="ignoreNotMatched">true if ignore any item which is not JSON object; otherwise, false.</param>
     /// <returns>The property list.</returns>
-    public static List<IJsonDataNode> TryGetValues(this IEnumerable<JsonObjectNode> col, string key, bool ignoreNotMatched = false)
+    public static List<BaseJsonValueNode> TryGetValues(this IEnumerable<JsonObjectNode> col, string key, bool ignoreNotMatched = false)
     {
-        var list = new List<IJsonDataNode>();
+        var list = new List<BaseJsonValueNode>();
         if (col == null) return list;
         if (ignoreNotMatched)
         {
@@ -284,10 +516,10 @@ public static class JsonValues
     /// <param name="value">The string to append.</param>
     /// <returns>A reference to this instance after the append operation has completed.</returns>
     /// <exception cref="ArgumentOutOfRangeException">Enlarging the value of this instance would exceed System.Text.StringBuilder.MaxCapacity.</exception>
-    public static StringBuilder Append(this StringBuilder sb, IJsonStringNode value)
+    public static StringBuilder Append(this StringBuilder sb, IJsonValueNode<string> value)
     {
         if (sb == null) return null;
-        sb.Append(value.StringValue);
+        sb.Append(value.Value);
         return sb;
     }
 
@@ -720,7 +952,7 @@ public static class JsonValues
     /// <param name="desc">The description.</param>
     /// <param name="handler">The additional handler to control the creation.</param>
     /// <returns>The JSON schema description instance; or null, if not supported.</returns>
-    public static JsonNodeSchemaDescription CreateSchema(JsonObjectNode json, string desc = null, IJsonNodeSchemaCreationHandler<IJsonDataNode> handler = null)
+    public static JsonNodeSchemaDescription CreateSchema(JsonObjectNode json, string desc = null, IJsonNodeSchemaCreationHandler<IJsonValueNode> handler = null)
         => CreateSchema(json, 10, desc, handler);
 
     /// <summary>
@@ -1020,10 +1252,10 @@ public static class JsonValues
     /// <param name="handler">The additional handler to control the creation.</param>
     /// <param name="breadcrumb">The path breadcrumb.</param>
     /// <returns>The JSON schema description instance; or null, if not supported.</returns>
-    private static JsonObjectSchemaDescription CreateSchema(JsonObjectNode json, int level, string desc = null, IJsonNodeSchemaCreationHandler<IJsonDataNode> handler = null, NodePathBreadcrumb<IJsonDataNode> breadcrumb = null)
+    private static JsonObjectSchemaDescription CreateSchema(JsonObjectNode json, int level, string desc = null, IJsonNodeSchemaCreationHandler<IJsonValueNode> handler = null, NodePathBreadcrumb<IJsonValueNode> breadcrumb = null)
     {
         if (json is null) return null;
-        handler ??= EmptyJsonNodeSchemaCreationHandler<IJsonDataNode>.Instance;
+        handler ??= EmptyJsonNodeSchemaCreationHandler<IJsonValueNode>.Instance;
         breadcrumb ??= new(json, null);
         var schema = new JsonObjectSchemaDescription
         {
@@ -1034,7 +1266,7 @@ public static class JsonValues
         foreach (var prop in json)
         {
             var value = prop.Value;
-            var bc = new NodePathBreadcrumb<IJsonDataNode>(value, breadcrumb, prop.Key);
+            var bc = new NodePathBreadcrumb<IJsonValueNode>(value, breadcrumb, prop.Key);
             switch (value.ValueKind)
             {
                 case JsonValueKind.Null:
@@ -1064,7 +1296,7 @@ public static class JsonValues
         return handler.Convert(json, schema, breadcrumb) as JsonObjectSchemaDescription;
     }
 
-    internal static object GetValue(IJsonDataNode value)
+    internal static object GetValue(BaseJsonValueNode value)
     {
         if (value == null) return null;
         switch (value.ValueKind)
@@ -1073,8 +1305,7 @@ public static class JsonValues
             case JsonValueKind.Undefined:
                 return null;
             case JsonValueKind.String:
-                if (value is IJsonStringNode s) return s.StringValue;
-                else if (value is IJsonValueNode<string> s2) return s2.Value;
+                if (value is IJsonValueNode<string> s) return s.Value;
                 return null;
             case JsonValueKind.True:
                 return true;
@@ -1106,7 +1337,7 @@ public static class JsonValues
             "integer" => new JsonIntegerSchemaDescription(json),
             "boolean" => new JsonBooleanSchemaDescription(json),
             "array" => new JsonArraySchemaDescription(json),
-            "null" => new JsonNullSchemaDescription(json),
+            NullString => new JsonNullSchemaDescription(json),
             _ => new(json)
         };
     }
@@ -1189,35 +1420,10 @@ public static class JsonValues
         return leftValue.Equals(rightValue);
     }
 
-    /// <summary>
-    /// Converts to JSON node.
-    /// </summary>
-    /// <param name="json">The JSON value.</param>
-    /// <returns>The JSON node.</returns>
-    internal static SystemJsonNode ToJsonNode(IJsonDataNode json)
+    internal static BaseJsonValueNode ConvertValue(IJsonValueNode value, IJsonValueNode thisInstance = null)
     {
-        if (json is null)
-            return null;
-        if (json is JsonObjectNode obj)
-            return (SystemJsonObject)obj;
-        if (json is JsonArrayNode arr)
-            return (SystemJsonArray)arr;
-        if (json is JsonStringNode s)
-            return (SystemJsonValue)s;
-        if (json is JsonIntegerNode i)
-            return (SystemJsonValue)i;
-        if (json is JsonDoubleNode f)
-            return (SystemJsonValue)f;
-        if (json is JsonDecimalNode m)
-            return (SystemJsonValue)m;
-        if (json is JsonBooleanNode b)
-            return (SystemJsonValue)b;
-        return null;
-    }
-
-    internal static IJsonDataNode ConvertValue(IJsonValueNode value, IJsonValueNode thisInstance = null)
-    {
-        if (value is null || value.ValueKind == JsonValueKind.Null || value.ValueKind == JsonValueKind.Undefined) return Null;
+        if (value is null || value.ValueKind == JsonValueKind.Null) return Null;
+        if (value.ValueKind == JsonValueKind.Undefined) return Undefined;
         if (value is JsonObjectNode obj)
         {
             if (ReferenceEquals(obj, thisInstance)) return obj.Clone();
@@ -1230,7 +1436,7 @@ public static class JsonValues
             return arr;
         }
 
-        if (value is JsonStringNode || value is JsonIntegerNode || value is JsonDoubleNode || value is JsonDecimalNode || value is JsonBooleanNode) return value as IJsonDataNode;
+        if (value is JsonStringNode || value is JsonIntegerNode || value is JsonDoubleNode || value is JsonDecimalNode) return value as BaseJsonValueNode;
         if (value.ValueKind == JsonValueKind.True) return JsonBooleanNode.True;
         if (value.ValueKind == JsonValueKind.False) return JsonBooleanNode.False;
         if (value.ValueKind == JsonValueKind.String)
@@ -1238,7 +1444,6 @@ public static class JsonValues
             if (value is IJsonValueNode<string> str) return new JsonStringNode(str.Value);
             if (value is IJsonValueNode<DateTime> date) return new JsonStringNode(date.Value);
             if (value is IJsonValueNode<Guid> guid) return new JsonStringNode(guid.Value);
-            if (value is IJsonStringNode js) return new JsonStringNode(js.StringValue);
         }
 
         if (value.ValueKind == JsonValueKind.Number)

@@ -335,7 +335,7 @@ public sealed class JsonObjectNodeConverter : JsonConverter<IJsonValueNode>
                 return arr;
             case JsonTokenType.String:
                 var str = reader.GetString();
-                if (typeToConvert == typeof(JsonStringNode) || typeToConvert == typeof(IJsonStringNode) || typeToConvert == typeof(IJsonValueNode<string>)) return new JsonStringNode(str);
+                if (typeToConvert == typeof(JsonStringNode) || typeToConvert == typeof(IJsonValueNode<string>)) return new JsonStringNode(str);
                 if (typeToConvert == typeof(JsonIntegerNode) || typeToConvert == typeof(IJsonValueNode<int>)) return new JsonIntegerNode(long.Parse(str.Trim()));
                 if (typeToConvert == typeof(JsonDoubleNode) || typeToConvert == typeof(IJsonValueNode<double>)) return new JsonDoubleNode(double.Parse(str.Trim()));
                 if (typeToConvert == typeof(IJsonNumberNode))

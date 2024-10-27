@@ -96,7 +96,7 @@ public class FailedHttpException : Exception
     }
 #endif
 
-    internal static FailedHttpException Create(HttpResponseMessage response, string message)
+    internal static FailedHttpException Create(HttpResponseMessage response)
     {
         if (response == null || response.IsSuccessStatusCode) return null;
         Exception innerEx = null;
@@ -135,6 +135,6 @@ public class FailedHttpException : Exception
 
         var reqEx = $"Response status code does not indicate success: {(int)response.StatusCode} ({response.ReasonPhrase}).";
         var ex = innerEx != null ? new HttpRequestException(reqEx, innerEx) : new HttpRequestException(reqEx);
-        return new FailedHttpException(response, message, ex);
+        return new FailedHttpException(response, reqEx, ex);
     }
 }

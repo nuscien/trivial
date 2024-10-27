@@ -22,6 +22,11 @@ public static partial class WebFormat
     private const long ticksOffset = 621355968000000000;
 
     /// <summary>
+    /// Gets the JavaScript date of tick zero.
+    /// </summary>
+    public static DateTime ZeroTick { get; } = ParseDate(0);
+
+    /// <summary>
     /// Parses JavaScript date tick to date and time.
     /// </summary>
     /// <param name="ticks">The JavaScript date ticks.</param>

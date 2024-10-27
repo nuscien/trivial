@@ -4,7 +4,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Text;
 using System.Text.Json;
-
+using System.Text.Json.Nodes;
 using Trivial.Web;
 
 namespace Trivial.Text;
@@ -18,83 +18,13 @@ public interface IJsonNumberNode : IJsonValueNode, IEquatable<IJsonNumberNode>, 
     /// Gets a value indicating whether the number value is an whole number (integer).
     /// </summary>
     public bool IsInteger { get; }
-
-    /// <summary>
-    /// Gets the value of the element as a number.
-    /// </summary>
-    /// <returns>The value of the element as a number.</returns>
-    /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
-    /// <exception cref="InvalidCastException">The bit of value is more than the one need to convert.</exception>
-    /// <exception cref="OverflowException">The value is greater than the most maximum value or less than the most minimum value defined of the number type.</exception>
-    public decimal GetDecimal();
-
-    /// <summary>
-    /// Gets the value of the element as a number.
-    /// </summary>
-    /// <returns>The value of the element as a number.</returns>
-    /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
-    /// <exception cref="InvalidCastException">The bit of value is more than the one need to convert.</exception>
-    /// <exception cref="OverflowException">The value is greater than the most maximum value or less than the most minimum value defined of the number type.</exception>
-    public float GetSingle();
-
-    /// <summary>
-    /// Gets the value of the element as a number.
-    /// </summary>
-    /// <returns>The value of the element as a number.</returns>
-    /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
-    public double GetDouble();
-
-    /// <summary>
-    /// Gets the value of the element as a number.
-    /// </summary>
-    /// <returns>The value of the element as a number.</returns>
-    /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
-    /// <exception cref="InvalidCastException">The bit of value is more than the one need to convert.</exception>
-    /// <exception cref="OverflowException">The value is greater than the most maximum value or less than the most minimum value defined of the number type.</exception>
-    public ushort GetUInt16();
-
-    /// <summary>
-    /// Gets the value of the element as a number.
-    /// </summary>
-    /// <returns>The value of the element as a number.</returns>
-    /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
-    /// <exception cref="InvalidCastException">The bit of value is more than the one need to convert.</exception>
-    /// <exception cref="OverflowException">The value is greater than the most maximum value or less than the most minimum value defined of the number type.</exception>
-    public short GetInt16();
-
-    /// <summary>
-    /// Gets the value of the element as a number.
-    /// </summary>
-    /// <returns>The value of the element as a number.</returns>
-    /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
-    /// <exception cref="InvalidCastException">The bit of value is more than the one need to convert.</exception>
-    /// <exception cref="OverflowException">The value is greater than the most maximum value or less than the most minimum value defined of the number type.</exception>
-    public uint GetUInt32();
-
-    /// <summary>
-    /// Gets the value of the element as a number.
-    /// </summary>
-    /// <returns>The value of the element as a number.</returns>
-    /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
-    /// <exception cref="InvalidCastException">The bit of value is more than the one need to convert.</exception>
-    /// <exception cref="OverflowException">The value is greater than the most maximum value or less than the most minimum value defined of the number type.</exception>
-    public int GetInt32();
-
-    /// <summary>
-    /// Gets the value of the element as a number.
-    /// </summary>
-    /// <returns>The value of the element as a number.</returns>
-    /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
-    /// <exception cref="InvalidCastException">The bit of value is more than the one need to convert.</exception>
-    /// <exception cref="OverflowException">The value is greater than the most maximum value or less than the most minimum value defined of the number type.</exception>
-    public long GetInt64();
 }
 
 /// <summary>
 /// Represents a specific JSON integer number value.
 /// </summary>
 [System.Text.Json.Serialization.JsonConverter(typeof(JsonObjectNodeConverter))]
-public class JsonIntegerNode : IJsonValueNode<long>, IJsonDataNode, IJsonNumberNode, IComparable<JsonIntegerNode>, IComparable<JsonDoubleNode>, IComparable<uint>, IComparable<int>, IComparable<long>, IComparable<double>, IComparable<float>, IEquatable<IJsonValueNode<uint>>, IEquatable<IJsonValueNode<int>>, IEquatable<IJsonValueNode<float>>, IEquatable<IJsonValueNode<double>>, IEquatable<uint>, IEquatable<int>, IEquatable<float>, IEquatable<double>, IFormattable
+public class JsonIntegerNode : BaseJsonValueNode<long>, IJsonNumberNode, IComparable<JsonIntegerNode>, IComparable<JsonDoubleNode>, IComparable<uint>, IComparable<int>, IComparable<long>, IComparable<double>, IComparable<float>, IEquatable<uint>, IEquatable<int>, IEquatable<float>, IEquatable<double>, IFormattable
 {
     /// <summary>
     /// Maximum safe integer in JavaScript and JSON.
@@ -111,8 +41,8 @@ public class JsonIntegerNode : IJsonValueNode<long>, IJsonDataNode, IJsonNumberN
     /// </summary>
     /// <param name="value">The value.</param>
     public JsonIntegerNode(int value)
+        : base(JsonValueKind.Number, value)
     {
-        Value = value;
         IsSafe = true;
     }
 
@@ -121,8 +51,8 @@ public class JsonIntegerNode : IJsonValueNode<long>, IJsonDataNode, IJsonNumberN
     /// </summary>
     /// <param name="value">The value.</param>
     public JsonIntegerNode(uint value)
+        : base(JsonValueKind.Number, value)
     {
-        Value = value;
         IsSafe = true;
     }
 
@@ -131,8 +61,8 @@ public class JsonIntegerNode : IJsonValueNode<long>, IJsonDataNode, IJsonNumberN
     /// </summary>
     /// <param name="value">The value.</param>
     public JsonIntegerNode(long value)
+        : base(JsonValueKind.Number, value)
     {
-        Value = value;
         IsSafe = value <= MaxSafeInteger && value >= MinSafeInteger;
     }
 
@@ -141,8 +71,8 @@ public class JsonIntegerNode : IJsonValueNode<long>, IJsonDataNode, IJsonNumberN
     /// </summary>
     /// <param name="value">The value.</param>
     public JsonIntegerNode(short value)
+        : base(JsonValueKind.Number, value)
     {
-        Value = value;
         IsSafe = true;
     }
 
@@ -151,8 +81,8 @@ public class JsonIntegerNode : IJsonValueNode<long>, IJsonDataNode, IJsonNumberN
     /// </summary>
     /// <param name="value">The value.</param>
     public JsonIntegerNode(double value)
+        : base(JsonValueKind.Number, (long)Math.Round(value))
     {
-        Value = (long)Math.Round(value);
         IsSafe = value <= MaxSafeInteger && value >= MinSafeInteger;
     }
 
@@ -162,8 +92,8 @@ public class JsonIntegerNode : IJsonValueNode<long>, IJsonDataNode, IJsonNumberN
     /// <param name="value">The value.</param>
     /// <param name="isUnixTimestamp">true if uses Unix timestamp; otherwise, false, to use JavaScript ticks, by default.</param>
     public JsonIntegerNode(DateTime value, bool isUnixTimestamp = false)
+        : base(JsonValueKind.Number, isUnixTimestamp ? Web.WebFormat.ParseUnixTimestamp(value) : Web.WebFormat.ParseDate(value))
     {
-        Value = isUnixTimestamp ? Web.WebFormat.ParseUnixTimestamp(value) : Web.WebFormat.ParseDate(value);
         IsSafe = true;
     }
 
@@ -172,15 +102,10 @@ public class JsonIntegerNode : IJsonValueNode<long>, IJsonDataNode, IJsonNumberN
     /// </summary>
     /// <param name="value">The value.</param>
     public JsonIntegerNode(TimeSpan value)
+        : base(JsonValueKind.Number, (long)value.TotalSeconds)
     {
-        Value = (long)value.TotalSeconds;
         IsSafe = true;
     }
-
-    /// <summary>
-    /// Gets the value.
-    /// </summary>
-    public long Value { get; }
 
     /// <summary>
     /// Gets a value indicating whether the number value is an whole number.
@@ -191,19 +116,6 @@ public class JsonIntegerNode : IJsonValueNode<long>, IJsonDataNode, IJsonNumberN
     /// Gets a value indicating whether the integer is safe.
     /// </summary>
     public bool IsSafe { get; }
-
-    /// <summary>
-    /// Gets the type of the current JSON value.
-    /// </summary>
-    public JsonValueKind ValueKind => JsonValueKind.Number;
-
-    /// <summary>
-    /// Converts to a date time instance.
-    /// </summary>
-    /// <param name="isUnixTimestamp">true if uses Unix timestamp; otherwise, false, to use JavaScript ticks, by default.</param>
-    /// <returns>A date time.</returns>
-    public DateTime ToDateTime(bool isUnixTimestamp = false)
-        => isUnixTimestamp ? WebFormat.ParseUnixTimestamp(Value) : WebFormat.ParseDate(Value);
 
     /// <summary>
     /// Gets the JSON format string of the value.
@@ -243,51 +155,7 @@ public class JsonIntegerNode : IJsonValueNode<long>, IJsonDataNode, IJsonNumberN
     /// </summary>
     /// <param name="other">The object to compare with the current instance.</param>
     /// <returns>true if obj and this instance represent the same value; otherwise, false.</returns>
-    public bool Equals(IJsonValueNode<double> other)
-    {
-        if (other is null) return false;
-        return Value.Equals(other.Value);
-    }
-
-    /// <summary>
-    /// Indicates whether this instance and a specified object are equal.
-    /// </summary>
-    /// <param name="other">The object to compare with the current instance.</param>
-    /// <returns>true if obj and this instance represent the same value; otherwise, false.</returns>
-    public bool Equals(IJsonValueNode<float> other)
-    {
-        if (other is null) return false;
-        return Value.Equals(other.Value);
-    }
-
-    /// <summary>
-    /// Indicates whether this instance and a specified object are equal.
-    /// </summary>
-    /// <param name="other">The object to compare with the current instance.</param>
-    /// <returns>true if obj and this instance represent the same value; otherwise, false.</returns>
-    public bool Equals(IJsonValueNode<long> other)
-    {
-        if (other is null) return false;
-        return Value.Equals(other.Value);
-    }
-
-    /// <summary>
-    /// Indicates whether this instance and a specified object are equal.
-    /// </summary>
-    /// <param name="other">The object to compare with the current instance.</param>
-    /// <returns>true if obj and this instance represent the same value; otherwise, false.</returns>
-    public bool Equals(IJsonValueNode<int> other)
-    {
-        if (other is null) return false;
-        return Value.Equals(other.Value);
-    }
-
-    /// <summary>
-    /// Indicates whether this instance and a specified object are equal.
-    /// </summary>
-    /// <param name="other">The object to compare with the current instance.</param>
-    /// <returns>true if obj and this instance represent the same value; otherwise, false.</returns>
-    public bool Equals(IJsonValueNode<uint> other)
+    public override bool Equals(IJsonValueNode<long> other)
     {
         if (other is null) return false;
         return Value.Equals(other.Value);
@@ -301,7 +169,39 @@ public class JsonIntegerNode : IJsonValueNode<long>, IJsonDataNode, IJsonNumberN
     public bool Equals(IJsonNumberNode other)
     {
         if (other is null || !other.IsInteger) return false;
+        if (other is IJsonValueNode<long> n) return Value.Equals(n.Value);
         return Value.Equals(other.GetInt64());
+    }
+
+    /// <summary>
+    /// Indicates whether this instance and a specified object are equal.
+    /// </summary>
+    /// <param name="other">The object to compare with the current instance.</param>
+    /// <returns>true if obj and this instance represent the same value; otherwise, false.</returns>
+    public override bool Equals(IJsonValueNode other)
+    {
+        if (ReferenceEquals(this, other)) return true;
+        if (other is null) return ValueKind == JsonValueKind.Null || ValueKind == JsonValueKind.Undefined;
+        if (other is IJsonNumberNode num) return Equals(num);
+        if (other is IJsonValueNode<int> i1) return Value.Equals(i1.Value);
+        if (other is IJsonValueNode<long> i2) return Value.Equals(i2.Value);
+        if (other is IJsonValueNode<short> i3) return Value.Equals(i3.Value);
+        if (other is IJsonValueNode<byte> i5) return Value.Equals(i5.Value);
+        if (other is IJsonValueNode<uint> i6) return Value.Equals(i6.Value);
+        if (other is IJsonValueNode<ulong> i7) return Value.Equals(i7.Value);
+        if (other is IJsonValueNode<ushort> i8) return Value.Equals(i8.Value);
+        if (other is IJsonValueNode<float> f1) return Value.Equals(f1.Value);
+        if (other is IJsonValueNode<double> f2) return Value.Equals(f2.Value);
+        if (other is IJsonValueNode<decimal> f3) return Value.Equals(f3.Value);
+#if NET6_0_OR_GREATER
+        if (other is IJsonValueNode<Half> f4) return Value.Equals(f4.Value);
+#endif
+#if NET8_0_OR_GREATER
+        if (other is IJsonValueNode<Int128> i4) return Value.Equals(i4.Value);
+        if (other is IJsonValueNode<UInt128> i9) return Value.Equals(i9.Value);
+#endif
+        if (other is IJsonValueNode<string> s) return !string.IsNullOrEmpty(s.Value) && Maths.Numbers.TryParseToInt64(s.Value, 10, out var intParsed) && intParsed == Value;
+        return false;
     }
 
     /// <summary>
@@ -325,7 +225,7 @@ public class JsonIntegerNode : IJsonValueNode<long>, IJsonDataNode, IJsonNumberN
     /// </summary>
     /// <param name="other">The object to compare with the current instance.</param>
     /// <returns>true if obj and this instance represent the same value; otherwise, false.</returns>
-    public bool Equals(long other)
+    public override bool Equals(long other)
         => Value.Equals(other);
 
     /// <summary>
@@ -344,38 +244,13 @@ public class JsonIntegerNode : IJsonValueNode<long>, IJsonDataNode, IJsonNumberN
     public bool Equals(int other)
         => Value.Equals(other);
 
-    /// <summary>
-    /// Indicates whether this instance and a specified object are equal.
-    /// </summary>
-    /// <param name="other">The object to compare with the current instance.</param>
-    /// <returns>true if obj and this instance represent the same value; otherwise, false.</returns>
+    /// <inheritdoc />
     public override bool Equals(object other)
-    {
-        if (other is null) return false;
-        if (other is IJsonValueNode<double> dJson) return Value.Equals(dJson.Value);
-        if (other is IJsonValueNode<long> lJson) return Value.Equals(lJson.Value);
-        if (other is IJsonValueNode nJson && nJson.ValueKind == JsonValueKind.Number)
-        {
-            if (other is IJsonValueNode<float> fJson) return Value.Equals(fJson.Value);
-            if (other is IJsonValueNode<int> iJson) return Value.Equals(iJson.Value);
-            if (other is IJsonValueNode<uint> uiJson) return Value.Equals(uiJson.Value);
-            if (other is IJsonValueNode<short> sJson) return Value.Equals(sJson.Value);
-            if (other is IJsonValueNode<ulong> ulJson) return Value.Equals(ulJson.Value);
-            if (other is IJsonValueNode<decimal> dcmJson) return Value.Equals(dcmJson.Value);
-            if (other is IJsonValueNode<ushort> usJson) return Value.Equals(usJson.Value);
-            return ToString().Equals(other.ToString(), StringComparison.InvariantCultureIgnoreCase);
-        }
+        => base.Equals(other);
 
-        if (other is string s) return Maths.Numbers.TryParseToInt64(s, 10, out var i) && Value == i;
-        if (other is DateTime dt) return WebFormat.ParseDate(Value) == dt;
-        return Value.Equals(other);
-    }
-
-    /// <summary>
-    /// Returns the hash code for this instance.
-    /// </summary>
-    /// <returns>A hash code for the current instance.</returns>
-    public override int GetHashCode() => Value.GetHashCode();
+    /// <inheritdoc />
+    public override int GetHashCode()
+        => base.GetHashCode();
 
     /// <summary>
     /// Compares this instance to a specified number and returns an indication of their relative values.
@@ -504,29 +379,17 @@ public class JsonIntegerNode : IJsonValueNode<long>, IJsonDataNode, IJsonNumberN
         => Value.CompareTo(other);
 
     /// <summary>
-    /// Gets the item value count.
-    /// It always return 0 because it is not an array or object.
+    /// Tries to get the value of the element as a boolean.
     /// </summary>
-    public int Count => 0;
-
-    /// <summary>
-    /// Gets the value of the element as a boolean.
-    /// </summary>
-    /// <returns>The value of the element as a boolean.</returns>
-    /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
-    bool IJsonDataNode.GetBoolean()
+    /// <param name="strict">true if enable strict mode that compare the value kind firstly; otherwise, false, to convert in compatible mode.</param>
+    /// <param name="result">The result.</param>
+    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+    protected override bool TryConvert(bool strict, out bool result)
     {
-        if (Value == 0) return false;
-        if (Value == 1) return true;
-        throw new InvalidOperationException("Expect a boolean but it is a number.");
+        if (strict) return base.TryConvert(strict, out result);
+        result = Value > 0;
+        return Value == 0 || Value == 1;
     }
-
-    /// <summary>
-    /// Gets the value of the element as a byte array.
-    /// </summary>
-    /// <returns>The value decoded as a byte array.</returns>
-    /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
-    byte[] IJsonDataNode.GetBytesFromBase64() => throw new InvalidOperationException("Expect a string but it is a number.");
 
     /// <summary>
     /// Gets the value of the element as a date time.
@@ -544,163 +407,23 @@ public class JsonIntegerNode : IJsonValueNode<long>, IJsonDataNode, IJsonNumberN
         => useUnixTimestamps ? WebFormat.ParseUnixTimestamp(Value) : WebFormat.ParseDate(Value);
 
     /// <summary>
-    /// Gets the value of the element as a number.
-    /// </summary>
-    /// <returns>The value of the element as a number.</returns>
-    decimal IJsonDataNode.GetDecimal() => Value;
-
-    /// <summary>
-    /// Gets the value of the element as a number.
-    /// </summary>
-    /// <returns>The value of the element as a number.</returns>
-    float IJsonDataNode.GetSingle() => Value;
-
-    /// <summary>
-    /// Gets the value of the element as a number.
-    /// </summary>
-    /// <returns>The value of the element as a number.</returns>
-    double IJsonDataNode.GetDouble() => Value;
-
-    /// <summary>
-    /// Gets the value of the element as a number.
-    /// </summary>
-    /// <returns>The value of the element as a number.</returns>
-    /// <exception cref="InvalidCastException">The value is an Int64.</exception>
-    /// <exception cref="OverflowException">The value is greater than the most maximum value or less than the most minimum value defined of the number type.</exception>
-    short IJsonDataNode.GetInt16() => (short)Value;
-
-    /// <summary>
-    /// Gets the value of the element as a number.
-    /// </summary>
-    /// <returns>The value of the element as a number.</returns>
-    /// <exception cref="InvalidCastException">The value is an Int64.</exception>
-    /// <exception cref="OverflowException">The value is greater than the most maximum value or less than the most minimum value defined of the number type.</exception>
-    uint IJsonDataNode.GetUInt32() => (uint)Value;
-
-    /// <summary>
-    /// Gets the value of the element as a number.
-    /// </summary>
-    /// <returns>The value of the element as a number.</returns>
-    /// <exception cref="InvalidCastException">The value is an Int64.</exception>
-    /// <exception cref="OverflowException">The value is greater than the most maximum value or less than the most minimum value defined of the number type.</exception>
-    int IJsonDataNode.GetInt32() => (int)Value;
-
-    /// <summary>
-    /// Gets the value of the element as a number.
-    /// </summary>
-    /// <returns>The value of the element as a number.</returns>
-    long IJsonDataNode.GetInt64() => Value;
-
-    /// <summary>
-    /// Gets the value of the element as a number.
-    /// </summary>
-    /// <returns>The value of the element as a number.</returns>
-    decimal IJsonNumberNode.GetDecimal() => Value;
-
-    /// <summary>
-    /// Gets the value of the element as a number.
-    /// </summary>
-    /// <returns>The value of the element as a number.</returns>
-    float IJsonNumberNode.GetSingle() => Value;
-
-    /// <summary>
-    /// Gets the value of the element as a number.
-    /// </summary>
-    /// <returns>The value of the element as a number.</returns>
-    double IJsonNumberNode.GetDouble() => Value;
-
-    /// <summary>
-    /// Gets the value of the element as a number.
-    /// </summary>
-    /// <returns>The value of the element as a number.</returns>
-    /// <exception cref="InvalidCastException">The value is an Int64.</exception>
-    /// <exception cref="OverflowException">The value is greater than the most maximum value or less than the most minimum value defined of the number type.</exception>
-    ushort IJsonNumberNode.GetUInt16() => (ushort)Value;
-
-    /// <summary>
-    /// Gets the value of the element as a number.
-    /// </summary>
-    /// <returns>The value of the element as a number.</returns>
-    /// <exception cref="InvalidCastException">The value is an Int64.</exception>
-    /// <exception cref="OverflowException">The value is greater than the most maximum value or less than the most minimum value defined of the number type.</exception>
-    short IJsonNumberNode.GetInt16() => (short)Value;
-
-    /// <summary>
-    /// Gets the value of the element as a number.
-    /// </summary>
-    /// <returns>The value of the element as a number.</returns>
-    /// <exception cref="InvalidCastException">The value is an Int64.</exception>
-    /// <exception cref="OverflowException">The value is greater than the most maximum value or less than the most minimum value defined of the number type.</exception>
-    uint IJsonNumberNode.GetUInt32() => (uint)Value;
-
-    /// <summary>
-    /// Gets the value of the element as a number.
-    /// </summary>
-    /// <returns>The value of the element as a number.</returns>
-    /// <exception cref="InvalidCastException">The value is an Int64.</exception>
-    /// <exception cref="OverflowException">The value is greater than the most maximum value or less than the most minimum value defined of the number type.</exception>
-    int IJsonNumberNode.GetInt32() => (int)Value;
-
-    /// <summary>
-    /// Gets the value of the element as a number.
-    /// </summary>
-    /// <returns>The value of the element as a number.</returns>
-    long IJsonNumberNode.GetInt64() => Value;
-
-    /// <summary>
-    /// Gets the value of the element as a number.
-    /// </summary>
-    /// <returns>The value of the element as a number.</returns>
-    /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
-    string IJsonDataNode.GetString() => ToString();
-
-    /// <summary>
-    /// Gets the value of the element as a GUID.
-    /// </summary>
-    /// <returns>The value of the element as a GUID.</returns>
-    /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
-    Guid IJsonDataNode.GetGuid() => throw new InvalidOperationException("Expect a string but it is a number.");
-
-    /// <summary>
-    /// Tries to get the value of the element as a boolean.
-    /// </summary>
-    /// <param name="result">The result.</param>
-    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
-    bool IJsonDataNode.TryGetBoolean(out bool result)
-    {
-        if (Value == 0)
-        {
-            result = false;
-            return true;
-        }
-
-        if (Value == 1)
-        {
-            result = true;
-            return true;
-        }
-
-        result = false;
-        return false;
-    }
-
-    /// <summary>
     /// Tries to get the value of the element as a date time.
     /// </summary>
     /// <param name="result">The result.</param>
     /// <returns>true if the kind is the one expected; otherwise, false.</returns>
-    bool IJsonDataNode.TryGetDateTime(out DateTime result)
+    protected override bool TryConvert(out DateTime result)
     {
         result = WebFormat.ParseDate(Value);
         return true;
     }
 
     /// <summary>
-    /// Tries to get the value of the element as a number.
+    /// Tries to get the value of the element as a floating number.
     /// </summary>
+    /// <param name="strict">true if enable strict mode that compare the value kind firstly; otherwise, false, to convert in compatible mode.</param>
     /// <param name="result">The result.</param>
     /// <returns>true if the kind is the one expected; otherwise, false.</returns>
-    bool IJsonDataNode.TryGetDecimal(out decimal result)
+    protected override bool TryConvert(bool strict, out decimal result)
     {
         try
         {
@@ -719,11 +442,12 @@ public class JsonIntegerNode : IJsonValueNode<long>, IJsonDataNode, IJsonNumberN
     }
 
     /// <summary>
-    /// Tries to get the value of the element as a number.
+    /// Tries to get the value of the element as a floating number.
     /// </summary>
+    /// <param name="strict">true if enable strict mode that compare the value kind firstly; otherwise, false, to convert in compatible mode.</param>
     /// <param name="result">The result.</param>
     /// <returns>true if the kind is the one expected; otherwise, false.</returns>
-    bool IJsonDataNode.TryGetSingle(out float result)
+    protected override bool TryConvert(bool strict, out float result)
     {
         try
         {
@@ -742,11 +466,12 @@ public class JsonIntegerNode : IJsonValueNode<long>, IJsonDataNode, IJsonNumberN
     }
 
     /// <summary>
-    /// Tries to get the value of the element as a number.
+    /// Tries to get the value of the element as a floating number.
     /// </summary>
+    /// <param name="strict">true if enable strict mode that compare the value kind firstly; otherwise, false, to convert in compatible mode.</param>
     /// <param name="result">The result.</param>
     /// <returns>true if the kind is the one expected; otherwise, false.</returns>
-    bool IJsonDataNode.TryGetDouble(out double result)
+    protected override bool TryConvert(bool strict, out double result)
     {
         try
         {
@@ -765,11 +490,26 @@ public class JsonIntegerNode : IJsonValueNode<long>, IJsonDataNode, IJsonNumberN
     }
 
     /// <summary>
-    /// Tries to get the value of the element as a number.
+    /// Tries to get the value of the element as an integer.
+    /// </summary>
+    /// <returns>The result; or null, if overflow.</returns>
+    public ushort? TryToUInt16()
+        => TryConvert(out ushort result) ? result : null;
+
+    /// <summary>
+    /// Tries to get the value of the element as an integer.
+    /// </summary>
+    /// <param name="defaultValue">The fallback default value.</param>
+    /// <returns>The result.</returns>
+    public ushort TryConvert(ushort defaultValue)
+        => TryConvert(out ushort result) ? result : defaultValue;
+
+    /// <summary>
+    /// Tries to get the value of the element as an integer.
     /// </summary>
     /// <param name="result">The result.</param>
     /// <returns>true if the kind is the one expected; otherwise, false.</returns>
-    public bool TryGetUInt16(out ushort result)
+    public bool TryConvert(out ushort result)
     {
         try
         {
@@ -788,12 +528,89 @@ public class JsonIntegerNode : IJsonValueNode<long>, IJsonDataNode, IJsonNumberN
     }
 
     /// <summary>
-    /// Tries to get the value of the element as a number.
+    /// Tries to get the value of the element as an integer.
+    /// </summary>
+    /// <returns>The result; or null, if overflow.</returns>
+    public short? TryToInt16()
+        => TryConvert(false, out short result) ? result : null;
+
+    /// <summary>
+    /// Tries to get the value of the element as an integer.
+    /// </summary>
+    /// <param name="defaultValue">The fallback default value.</param>
+    /// <returns>The result.</returns>
+    public short TryConvert(short defaultValue)
+        => TryConvert(false, out short result) ? result : defaultValue;
+
+    /// <summary>
+    /// Tries to get the value of the element as an integer.
     /// </summary>
     /// <param name="result">The result.</param>
     /// <returns>true if the kind is the one expected; otherwise, false.</returns>
-    public bool TryGetUInt32(out uint result)
+    public bool TryConvert(out short result)
+        => TryConvert(false, out result);
+
+    /// <summary>
+    /// Tries to get the value of the element as an integer.
+    /// </summary>
+    /// <param name="strict">true if enable strict mode that compare the value kind firstly; otherwise, false, to convert in compatible mode.</param>
+    /// <param name="result">The result.</param>
+    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+    protected override bool TryConvert(bool strict, out short result)
     {
+        try
+        {
+            result = (short)Value;
+            return true;
+        }
+        catch (OverflowException)
+        {
+        }
+        catch (InvalidCastException)
+        {
+        }
+
+        result = 0;
+        return false;
+    }
+
+    /// <summary>
+    /// Tries to get the value of the element as an integer.
+    /// </summary>
+    /// <returns>The result; or null, if overflow.</returns>
+    public uint? TryToUInt32()
+        => TryConvert(false, out uint result) ? result : null;
+
+    /// <summary>
+    /// Tries to get the value of the element as an integer.
+    /// </summary>
+    /// <param name="defaultValue">The fallback default value.</param>
+    /// <returns>The result.</returns>
+    public uint TryConvert(uint defaultValue)
+        => TryConvert(false, out uint result) ? result : defaultValue;
+
+    /// <summary>
+    /// Tries to get the value of the element as an integer.
+    /// </summary>
+    /// <param name="result">The result.</param>
+    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+    public bool TryConvert(out uint result)
+        => TryConvert(false, out result);
+
+    /// <summary>
+    /// Tries to get the value of the element as an integer.
+    /// </summary>
+    /// <param name="strict">true if enable strict mode that compare the value kind firstly; otherwise, false, to convert in compatible mode.</param>
+    /// <param name="result">The result.</param>
+    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+    protected override bool TryConvert(bool strict, out uint result)
+    {
+        if (Value < 0)
+        {
+            result = default;
+            return false;
+        }
+
         try
         {
             result = (uint)Value;
@@ -811,11 +628,35 @@ public class JsonIntegerNode : IJsonValueNode<long>, IJsonDataNode, IJsonNumberN
     }
 
     /// <summary>
-    /// Tries to get the value of the element as a number.
+    /// Tries to get the value of the element as an integer.
+    /// </summary>
+    /// <returns>The result; or null, if overflow.</returns>
+    public int? TryToInt32()
+        => TryConvert(false, out int result) ? result : null;
+
+    /// <summary>
+    /// Tries to get the value of the element as an integer.
+    /// </summary>
+    /// <param name="defaultValue">The fallback default value.</param>
+    /// <returns>The result.</returns>
+    public int TryConvert(int defaultValue)
+        => TryConvert(false, out int result) ? result : defaultValue;
+
+    /// <summary>
+    /// Tries to get the value of the element as an integer.
     /// </summary>
     /// <param name="result">The result.</param>
     /// <returns>true if the kind is the one expected; otherwise, false.</returns>
-    public bool TryGetInt32(out int result)
+    public bool TryConvert(out int result)
+        => TryConvert(false, out result);
+
+    /// <summary>
+    /// Tries to get the value of the element as an integer.
+    /// </summary>
+    /// <param name="strict">true if enable strict mode that compare the value kind firstly; otherwise, false, to convert in compatible mode.</param>
+    /// <param name="result">The result.</param>
+    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+    protected override bool TryConvert(bool strict, out int result)
     {
         try
         {
@@ -834,126 +675,50 @@ public class JsonIntegerNode : IJsonValueNode<long>, IJsonDataNode, IJsonNumberN
     }
 
     /// <summary>
-    /// Tries to get the value of the element as a number.
+    /// Tries to get the value of the element as an integer.
     /// </summary>
+    /// <param name="strict">true if enable strict mode that compare the value kind firstly; otherwise, false, to convert in compatible mode.</param>
     /// <param name="result">The result.</param>
     /// <returns>true if the kind is the one expected; otherwise, false.</returns>
-    bool IJsonDataNode.TryGetInt64(out long result)
+    protected override bool TryConvert(bool strict, out long result)
     {
         result = Value;
         return true;
     }
 
     /// <summary>
-    /// Tries to get the value of the element as a number.
+    /// Tries to get the value of the element as an integer.
     /// </summary>
+    /// <param name="strict">true if enable strict mode that compare the value kind firstly; otherwise, false, to convert in compatible mode.</param>
     /// <param name="result">The result.</param>
     /// <returns>true if the kind is the one expected; otherwise, false.</returns>
-    bool IJsonDataNode.TryGetString(out string result)
+    protected override bool TryConvert(bool strict, out ulong result)
     {
-        result = ToString();
+        if (Value < 0)
+        {
+            result = default;
+            return false;
+        }
+
+        result = (ulong)Value;
         return true;
     }
 
+    /// <inheritdoc />
+    public override JsonValue ToJsonValue()
+        => JsonValue.Create(Value);
+
     /// <summary>
-    /// Tries to get the value of the element as a GUID.
+    /// Tries to get the value of the element as an integer.
     /// </summary>
+    /// <param name="strict">true if enable strict mode that compare the value kind firstly; otherwise, false, to convert in compatible mode.</param>
     /// <param name="result">The result.</param>
     /// <returns>true if the kind is the one expected; otherwise, false.</returns>
-    bool IJsonDataNode.TryGetGuid(out Guid result)
+    protected override bool TryConvert(bool strict, out string result)
     {
-        result = Guid.Empty;
-        return false;
+        result = ToString();
+        return !strict;
     }
-
-    /// <summary>
-    /// Gets the value of the specific property.
-    /// </summary>
-    /// <param name="key">The property key.</param>
-    /// <returns>The value.</returns>
-    /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
-    IJsonDataNode IJsonDataNode.GetValue(string key) => throw new InvalidOperationException("Expect an object but it is a number.");
-
-    /// <summary>
-    /// Gets the value of the specific property.
-    /// </summary>
-    /// <param name="key">The property key.</param>
-    /// <returns>The value.</returns>
-    /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
-    IJsonDataNode IJsonDataNode.GetValue(ReadOnlySpan<char> key) => throw new InvalidOperationException("Expect an object but it is a number.");
-
-    /// <summary>
-    /// Tries to get the value of the specific property.
-    /// </summary>
-    /// <param name="key">The property key.</param>
-    /// <param name="result">The result.</param>
-    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
-    bool IJsonDataNode.TryGetValue(string key, out IJsonDataNode result)
-    {
-        result = default;
-        return false;
-    }
-
-    /// <summary>
-    /// Tries to get the value of the specific property.
-    /// </summary>
-    /// <param name="key">The property key.</param>
-    /// <param name="result">The result.</param>
-    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
-    bool IJsonDataNode.TryGetValue(ReadOnlySpan<char> key, out IJsonDataNode result)
-    {
-        result = default;
-        return false;
-    }
-
-    /// <summary>
-    /// Gets the value at the specific index.
-    /// </summary>
-    /// <param name="index">The zero-based index of the element to get.</param>
-    /// <returns>The value.</returns>
-    /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
-    IJsonDataNode IJsonDataNode.GetValue(int index) => throw new InvalidOperationException("Expect an array but it is a number.");
-
-    /// <summary>
-    /// Tries to get the value of the specific property.
-    /// </summary>
-    /// <param name="index">The zero-based index of the element to get.</param>
-    /// <param name="result">The result.</param>
-    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
-    bool IJsonDataNode.TryGetValue(int index, out IJsonDataNode result)
-    {
-        result = default;
-        return false;
-    }
-
-#if !NETFRAMEWORK
-    /// <summary>
-    /// Gets the value at the specific index.
-    /// </summary>
-    /// <param name="index">The zero-based index of the element to get.</param>
-    /// <returns>The value.</returns>
-    /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
-    IJsonDataNode IJsonDataNode.GetValue(Index index) => throw new InvalidOperationException("Expect an array but it is a number.");
-
-    /// <summary>
-    /// Tries to get the value of the specific property.
-    /// </summary>
-    /// <param name="index">The zero-based index of the element to get.</param>
-    /// <param name="result">The result.</param>
-    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
-    bool IJsonDataNode.TryGetValue(Index index, out IJsonDataNode result)
-    {
-        result = default;
-        return false;
-    }
-#endif
-
-    /// <summary>
-    /// Gets all property keys.
-    /// </summary>
-    /// <returns>The property keys.</returns>
-    /// <exception cref="InvalidOperationException">The value kind is not an object.</exception>
-    IEnumerable<string> IJsonDataNode.GetKeys() => throw new InvalidOperationException("Expect an object but it is a number.");
 
     /// <summary>
     /// Converts to JSON value.
@@ -984,7 +749,7 @@ public class JsonIntegerNode : IJsonValueNode<long>, IJsonDataNode, IJsonNumberN
     /// </summary>
     /// <param name="value">The source value.</param>
     /// <returns>A JSON value.</returns>
-    public static implicit operator JsonIntegerNode(System.Text.Json.Nodes.JsonValue value)
+    public static implicit operator JsonIntegerNode(JsonValue value)
     {
         if (value is null) return null;
         if (value.TryGetValue(out int i))
@@ -1007,10 +772,10 @@ public class JsonIntegerNode : IJsonValueNode<long>, IJsonDataNode, IJsonNumberN
     /// </summary>
     /// <param name="value">The source value.</param>
     /// <returns>A JSON value.</returns>
-    public static implicit operator JsonIntegerNode(System.Text.Json.Nodes.JsonNode value)
+    public static implicit operator JsonIntegerNode(JsonNode value)
     {
         if (value is null) return null;
-        if (value is System.Text.Json.Nodes.JsonValue v) return v;
+        if (value is JsonValue v) return v;
         throw new InvalidCastException($"Only supports JsonValue but its type is {value.GetType().Name}.");
     }
 
@@ -1019,80 +784,8 @@ public class JsonIntegerNode : IJsonValueNode<long>, IJsonDataNode, IJsonNumberN
     /// </summary>
     /// <param name="json">The JSON value.</param>
     /// <returns>A number.</returns>
-    public static explicit operator long(JsonIntegerNode json)
-        => json.Value;
-
-    /// <summary>
-    /// Converts the JSON raw back.
-    /// </summary>
-    /// <param name="json">The JSON value.</param>
-    /// <returns>A number.</returns>
-    public static explicit operator int(JsonIntegerNode json)
-        => (int)json.Value;
-
-    /// <summary>
-    /// Converts the JSON raw back.
-    /// </summary>
-    /// <param name="json">The JSON value.</param>
-    /// <returns>A number.</returns>
-    public static explicit operator ushort(JsonIntegerNode json)
-        => (ushort)json.Value;
-
-    /// <summary>
-    /// Converts the JSON raw back.
-    /// </summary>
-    /// <param name="json">The JSON value.</param>
-    /// <returns>A number.</returns>
-    public static explicit operator short(JsonIntegerNode json)
-        => (short)json.Value;
-
-    /// <summary>
-    /// Converts the JSON raw back.
-    /// </summary>
-    /// <param name="json">The JSON value.</param>
-    /// <returns>A number.</returns>
-    public static explicit operator uint(JsonIntegerNode json)
-        => (uint)json.Value;
-
-    /// <summary>
-    /// Converts the JSON raw back.
-    /// </summary>
-    /// <param name="json">The JSON value.</param>
-    /// <returns>A number.</returns>
-    public static explicit operator float(JsonIntegerNode json)
-        => json.Value;
-
-    /// <summary>
-    /// Converts the JSON raw back.
-    /// </summary>
-    /// <param name="json">The JSON value.</param>
-    /// <returns>A number.</returns>
-    public static explicit operator double(JsonIntegerNode json)
-        => json.Value;
-
-    /// <summary>
-    /// Converts the JSON raw back.
-    /// </summary>
-    /// <param name="json">The JSON value.</param>
-    /// <returns>A number.</returns>
-    public static explicit operator decimal(JsonIntegerNode json)
-        => json.Value;
-
-    /// <summary>
-    /// Converts the JSON raw back.
-    /// </summary>
-    /// <param name="json">The JSON value.</param>
-    /// <returns>A number.</returns>
     public static explicit operator System.Numerics.BigInteger(JsonIntegerNode json)
         => json.Value;
-
-    /// <summary>
-    /// Converts the JSON raw back.
-    /// </summary>
-    /// <param name="json">The JSON value.</param>
-    /// <returns>A string.</returns>
-    public static explicit operator string(JsonIntegerNode json)
-        => json.ToString();
 
     /// <summary>
     /// Converts to a JSON string.
@@ -1117,50 +810,6 @@ public class JsonIntegerNode : IJsonValueNode<long>, IJsonDataNode, IJsonNumberN
     /// <returns>A JSON double instance.</returns>
     public static explicit operator JsonDecimalNode(JsonIntegerNode json)
         => new(json.Value);
-
-    /// <summary>
-    /// Converts to JSON node.
-    /// </summary>
-    /// <param name="json">The JSON value.</param>
-    /// <returns>An instance of the JsonNode class.</returns>
-    public static explicit operator System.Text.Json.Nodes.JsonNode(JsonIntegerNode json)
-        => System.Text.Json.Nodes.JsonValue.Create(json.Value);
-
-    /// <summary>
-    /// Converts to JSON node.
-    /// </summary>
-    /// <param name="json">The JSON value.</param>
-    /// <returns>An instance of the JsonNode class.</returns>
-    public static explicit operator System.Text.Json.Nodes.JsonValue(JsonIntegerNode json)
-        => System.Text.Json.Nodes.JsonValue.Create(json.Value);
-
-    /// <summary>
-    /// Compares two instances to indicate if they are same.
-    /// leftValue == rightValue
-    /// </summary>
-    /// <param name="leftValue">The left value to compare.</param>
-    /// <param name="rightValue">The right value to compare.</param>
-    /// <returns>true if they are same; otherwise, false.</returns>
-    public static bool operator ==(JsonIntegerNode leftValue, IJsonValueNode<long> rightValue)
-    {
-        if (ReferenceEquals(leftValue, rightValue)) return true;
-        if (rightValue is null) return false;
-        return leftValue.Value == rightValue.Value;
-    }
-
-    /// <summary>
-    /// Compares two instances to indicate if they are different.
-    /// leftValue != rightValue
-    /// </summary>
-    /// <param name="leftValue">The left value to compare.</param>
-    /// <param name="rightValue">The right value to compare.</param>
-    /// <returns>true if they are different; otherwise, false.</returns>
-    public static bool operator !=(JsonIntegerNode leftValue, IJsonValueNode<long> rightValue)
-    {
-        if (ReferenceEquals(leftValue, rightValue)) return false;
-        if (rightValue is null) return true;
-        return leftValue.Value != rightValue.Value;
-    }
 
     /// <summary>
     /// Compares if left is smaller than right.
@@ -1212,34 +861,6 @@ public class JsonIntegerNode : IJsonValueNode<long>, IJsonDataNode, IJsonNumberN
         if (ReferenceEquals(leftValue, rightValue)) return true;
         if (rightValue is null) return false;
         return leftValue.Value >= rightValue.Value;
-    }
-
-    /// <summary>
-    /// Compares two instances to indicate if they are same.
-    /// leftValue == rightValue
-    /// </summary>
-    /// <param name="leftValue">The left value to compare.</param>
-    /// <param name="rightValue">The right value to compare.</param>
-    /// <returns>true if they are same; otherwise, false.</returns>
-    public static bool operator ==(JsonIntegerNode leftValue, IJsonValueNode<double> rightValue)
-    {
-        if (ReferenceEquals(leftValue, rightValue)) return true;
-        if (rightValue is null) return false;
-        return leftValue.Value == rightValue.Value;
-    }
-
-    /// <summary>
-    /// Compares two instances to indicate if they are different.
-    /// leftValue != rightValue
-    /// </summary>
-    /// <param name="leftValue">The left value to compare.</param>
-    /// <param name="rightValue">The right value to compare.</param>
-    /// <returns>true if they are different; otherwise, false.</returns>
-    public static bool operator !=(JsonIntegerNode leftValue, IJsonValueNode<double> rightValue)
-    {
-        if (ReferenceEquals(leftValue, rightValue)) return false;
-        if (rightValue is null) return true;
-        return leftValue.Value != rightValue.Value;
     }
 
     /// <summary>
@@ -1579,16 +1200,15 @@ public class JsonIntegerNode : IJsonValueNode<long>, IJsonDataNode, IJsonNumberN
 /// Represents a specific JSON double float number value.
 /// </summary>
 [System.Text.Json.Serialization.JsonConverter(typeof(JsonObjectNodeConverter))]
-public class JsonDoubleNode : IJsonValueNode<double>, IJsonDataNode, IJsonNumberNode, IComparable<JsonIntegerNode>, IComparable<JsonDoubleNode>, IComparable<JsonDecimalNode>, IComparable<uint>, IComparable<int>, IComparable<long>, IComparable<double>, IComparable<float>, IComparable<decimal>, IEquatable<IJsonValueNode<uint>>, IEquatable<IJsonValueNode<int>>, IEquatable<IJsonValueNode<long>>, IEquatable<IJsonValueNode<float>>, IEquatable<IJsonValueNode<decimal>>, IEquatable<uint>, IEquatable<int>, IEquatable<long>, IEquatable<float>, IEquatable<decimal>, IFormattable
+public class JsonDoubleNode : BaseJsonValueNode<double>, IJsonNumberNode, IComparable<JsonIntegerNode>, IComparable<JsonDoubleNode>, IComparable<JsonDecimalNode>, IComparable<uint>, IComparable<int>, IComparable<long>, IComparable<double>, IComparable<float>, IComparable<decimal>, IEquatable<uint>, IEquatable<int>, IEquatable<long>, IEquatable<float>, IEquatable<decimal>, IFormattable
 {
     /// <summary>
     /// Initializes a new instance of the JsonDoubleNode class.
     /// </summary>
     /// <param name="value">The value.</param>
     public JsonDoubleNode(int value)
+        : base(JsonValueKind.Number, value)
     {
-        Value = value;
-        ValueKind = JsonValueKind.Number;
         IsInteger = true;
     }
 
@@ -1597,9 +1217,8 @@ public class JsonDoubleNode : IJsonValueNode<double>, IJsonDataNode, IJsonNumber
     /// </summary>
     /// <param name="value">The value.</param>
     public JsonDoubleNode(long value)
+        : base(JsonValueKind.Number, value)
     {
-        Value = value;
-        ValueKind = JsonValueKind.Number;
         IsInteger = true;
     }
 
@@ -1608,9 +1227,8 @@ public class JsonDoubleNode : IJsonValueNode<double>, IJsonDataNode, IJsonNumber
     /// </summary>
     /// <param name="value">The value.</param>
     public JsonDoubleNode(uint value)
+        : base(JsonValueKind.Number, value)
     {
-        Value = value;
-        ValueKind = JsonValueKind.Number;
         IsInteger = true;
     }
 
@@ -1619,9 +1237,8 @@ public class JsonDoubleNode : IJsonValueNode<double>, IJsonDataNode, IJsonNumber
     /// </summary>
     /// <param name="value">The value.</param>
     public JsonDoubleNode(ulong value)
+        : base(JsonValueKind.Number, value)
     {
-        Value = value;
-        ValueKind = JsonValueKind.Number;
         IsInteger = true;
     }
 
@@ -1630,15 +1247,9 @@ public class JsonDoubleNode : IJsonValueNode<double>, IJsonDataNode, IJsonNumber
     /// </summary>
     /// <param name="value">The value.</param>
     public JsonDoubleNode(float value)
+        : base(float.IsNaN(value) || float.IsInfinity(value) ? JsonValueKind.Null : JsonValueKind.Number, value)
     {
-        Value = value;
-        if (float.IsNaN(value) || float.IsInfinity(value))
-        {
-            ValueKind = JsonValueKind.Null;
-            return;
-        }
-
-        ValueKind = JsonValueKind.Number;
+        if (float.IsNaN(value) || float.IsInfinity(value)) return;
         try
         {
             if (value > long.MaxValue || value < long.MinValue) return;
@@ -1657,15 +1268,9 @@ public class JsonDoubleNode : IJsonValueNode<double>, IJsonDataNode, IJsonNumber
     /// </summary>
     /// <param name="value">The value.</param>
     public JsonDoubleNode(double value)
+        : base(double.IsNaN(value) || double.IsInfinity(value) ? JsonValueKind.Null : JsonValueKind.Number, value)
     {
-        Value = value;
-        if (double.IsNaN(value) || double.IsInfinity(value))
-        {
-            ValueKind = JsonValueKind.Null;
-            return;
-        }
-
-        ValueKind = JsonValueKind.Number;
+        if (double.IsNaN(value) || double.IsInfinity(value)) return;
         try
         {
             if (value > long.MaxValue || value < long.MinValue) return;
@@ -1684,9 +1289,8 @@ public class JsonDoubleNode : IJsonValueNode<double>, IJsonDataNode, IJsonNumber
     /// </summary>
     /// <param name="value">The value.</param>
     public JsonDoubleNode(decimal value)
+        : base(JsonValueKind.Number, (double)value)
     {
-        Value = (double)value;
-        ValueKind = JsonValueKind.Number;
         try
         {
             if (value > long.MaxValue || value < long.MinValue) return;
@@ -1705,9 +1309,8 @@ public class JsonDoubleNode : IJsonValueNode<double>, IJsonDataNode, IJsonNumber
     /// </summary>
     /// <param name="value">The value.</param>
     public JsonDoubleNode(TimeSpan value)
+        : base(JsonValueKind.Number, value.TotalSeconds)
     {
-        Value = value.TotalSeconds;
-        ValueKind = JsonValueKind.Number;
         IsInteger = value.Milliseconds == 0;
     }
 
@@ -1717,21 +1320,11 @@ public class JsonDoubleNode : IJsonValueNode<double>, IJsonDataNode, IJsonNumber
     public bool IsInteger { get; }
 
     /// <summary>
-    /// Gets the value.
-    /// </summary>
-    public double Value { get; }
-
-    /// <summary>
-    /// Gets the type of the current JSON value.
-    /// </summary>
-    public JsonValueKind ValueKind { get; }
-
-    /// <summary>
     /// Gets the JSON format string of the value.
     /// </summary>
     /// <returns>The JSON format string of the float number.</returns>
     public override string ToString()
-        => Value.ToString("g", CultureInfo.InvariantCulture);
+        => double.IsNaN(Value) ? JsonValues.NullString : Value.ToString("g", CultureInfo.InvariantCulture);
 
     /// <summary>
     /// Converts the numeric value of this instance to its equivalent string representation.
@@ -1763,62 +1356,7 @@ public class JsonDoubleNode : IJsonValueNode<double>, IJsonDataNode, IJsonNumber
     /// </summary>
     /// <param name="other">The object to compare with the current instance.</param>
     /// <returns>true if obj and this instance represent the same value; otherwise, false.</returns>
-    public bool Equals(IJsonValueNode<double> other)
-    {
-        if (other is null) return false;
-        return Value.Equals(other.Value);
-    }
-
-    /// <summary>
-    /// Indicates whether this instance and a specified object are equal.
-    /// </summary>
-    /// <param name="other">The object to compare with the current instance.</param>
-    /// <returns>true if obj and this instance represent the same value; otherwise, false.</returns>
-    public bool Equals(IJsonValueNode<float> other)
-    {
-        if (other is null) return false;
-        return Value.Equals(other.Value);
-    }
-
-    /// <summary>
-    /// Indicates whether this instance and a specified object are equal.
-    /// </summary>
-    /// <param name="other">The object to compare with the current instance.</param>
-    /// <returns>true if obj and this instance represent the same value; otherwise, false.</returns>
-    public bool Equals(IJsonValueNode<decimal> other)
-    {
-        if (other is null) return false;
-        return Value.Equals(other.Value);
-    }
-
-    /// <summary>
-    /// Indicates whether this instance and a specified object are equal.
-    /// </summary>
-    /// <param name="other">The object to compare with the current instance.</param>
-    /// <returns>true if obj and this instance represent the same value; otherwise, false.</returns>
-    public bool Equals(IJsonValueNode<long> other)
-    {
-        if (other is null) return false;
-        return Value.Equals(other.Value);
-    }
-
-    /// <summary>
-    /// Indicates whether this instance and a specified object are equal.
-    /// </summary>
-    /// <param name="other">The object to compare with the current instance.</param>
-    /// <returns>true if obj and this instance represent the same value; otherwise, false.</returns>
-    public bool Equals(IJsonValueNode<int> other)
-    {
-        if (other is null) return false;
-        return Value.Equals(other.Value);
-    }
-
-    /// <summary>
-    /// Indicates whether this instance and a specified object are equal.
-    /// </summary>
-    /// <param name="other">The object to compare with the current instance.</param>
-    /// <returns>true if obj and this instance represent the same value; otherwise, false.</returns>
-    public bool Equals(IJsonValueNode<uint> other)
+    public override bool Equals(IJsonValueNode<double> other)
     {
         if (other is null) return false;
         return Value.Equals(other.Value);
@@ -1832,6 +1370,7 @@ public class JsonDoubleNode : IJsonValueNode<double>, IJsonDataNode, IJsonNumber
     public bool Equals(IJsonNumberNode other)
     {
         if (other is null) return false;
+        if (other is IJsonValueNode<double> n) return Value.Equals(n.Value);
         return Value.Equals(other.GetDouble());
     }
 
@@ -1840,7 +1379,38 @@ public class JsonDoubleNode : IJsonValueNode<double>, IJsonDataNode, IJsonNumber
     /// </summary>
     /// <param name="other">The object to compare with the current instance.</param>
     /// <returns>true if obj and this instance represent the same value; otherwise, false.</returns>
-    public bool Equals(double other)
+    public override bool Equals(IJsonValueNode other)
+    {
+        if (ReferenceEquals(this, other)) return true;
+        if (other is null) return ValueKind == JsonValueKind.Null || ValueKind == JsonValueKind.Undefined;
+        if (other is IJsonNumberNode num) return Equals(num);
+        if (other is IJsonValueNode<int> i1) return Value.Equals(i1.Value);
+        if (other is IJsonValueNode<long> i2) return Value.Equals(i2.Value);
+        if (other is IJsonValueNode<short> i3) return Value.Equals(i3.Value);
+        if (other is IJsonValueNode<byte> i5) return Value.Equals(i5.Value);
+        if (other is IJsonValueNode<uint> i6) return Value.Equals(i6.Value);
+        if (other is IJsonValueNode<ulong> i7) return Value.Equals(i7.Value);
+        if (other is IJsonValueNode<ushort> i8) return Value.Equals(i8.Value);
+        if (other is IJsonValueNode<float> f1) return Value.Equals(f1.Value);
+        if (other is IJsonValueNode<double> f2) return Value.Equals(f2.Value);
+        if (other is IJsonValueNode<decimal> f3) return Value.Equals(f3.Value);
+#if NET6_0_OR_GREATER
+        if (other is IJsonValueNode<Half> f4) return Value.Equals(f4.Value);
+#endif
+#if NET8_0_OR_GREATER
+        if (other is IJsonValueNode<Int128> i4) return Value.Equals(i4.Value);
+        if (other is IJsonValueNode<UInt128> i9) return Value.Equals(i9.Value);
+#endif
+        if (other is IJsonValueNode<string> s) return !string.IsNullOrEmpty(s.Value) && double.TryParse(s.Value, out var parsed) && parsed == Value;
+        return false;
+    }
+
+    /// <summary>
+    /// Indicates whether this instance and a specified object are equal.
+    /// </summary>
+    /// <param name="other">The object to compare with the current instance.</param>
+    /// <returns>true if obj and this instance represent the same value; otherwise, false.</returns>
+    public override bool Equals(double other)
         => Value.Equals(other);
 
     /// <summary>
@@ -1883,36 +1453,14 @@ public class JsonDoubleNode : IJsonValueNode<double>, IJsonDataNode, IJsonNumber
     public bool Equals(int other)
         => Value.Equals(other);
 
-    /// <summary>
-    /// Indicates whether this instance and a specified object are equal.
-    /// </summary>
-    /// <param name="other">The object to compare with the current instance.</param>
-    /// <returns>true if obj and this instance represent the same value; otherwise, false.</returns>
+
+    /// <inheritdoc />
     public override bool Equals(object other)
-    {
-        if (other is null) return false;
-        if (other is IJsonValueNode<double> dJson) return Value.Equals(dJson.Value);
-        if (other is IJsonValueNode<long> lJson) return Value.Equals(lJson.Value);
-        if (other is IJsonValueNode nJson && nJson.ValueKind == JsonValueKind.Number)
-        {
-            if (other is IJsonValueNode<float> fJson) return Value.Equals(fJson.Value);
-            if (other is IJsonValueNode<int> iJson) return Value.Equals(iJson.Value);
-            if (other is IJsonValueNode<uint> uiJson) return Value.Equals(uiJson.Value);
-            if (other is IJsonValueNode<short> sJson) return Value.Equals(sJson.Value);
-            if (other is IJsonValueNode<ulong> ulJson) return Value.Equals(ulJson.Value);
-            if (other is IJsonValueNode<decimal> dcmJson) return Value.Equals(dcmJson.Value);
-            if (other is IJsonValueNode<ushort> usJson) return Value.Equals(usJson.Value);
-            return ToString().Equals(other.ToString(), StringComparison.InvariantCultureIgnoreCase);
-        }
+        => base.Equals(other);
 
-        return Value.Equals(other);
-    }
-
-    /// <summary>
-    /// Returns the hash code for this instance.
-    /// </summary>
-    /// <returns>A hash code for the current instance.</returns>
-    public override int GetHashCode() => Value.GetHashCode();
+    /// <inheritdoc />
+    public override int GetHashCode()
+        => base.GetHashCode();
 
     /// <summary>
     /// Compares this instance to a specified number and returns an indication of their relative values.
@@ -2077,17 +1625,11 @@ public class JsonDoubleNode : IJsonValueNode<double>, IJsonDataNode, IJsonNumber
         => Value.CompareTo(other);
 
     /// <summary>
-    /// Gets the item value count.
-    /// It always return 0 because it is not an array or object.
-    /// </summary>
-    public int Count => 0;
-
-    /// <summary>
     /// Gets the value of the element as a boolean.
     /// </summary>
     /// <returns>The value of the element as a boolean.</returns>
     /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
-    bool IJsonDataNode.GetBoolean()
+    public bool GetBoolean(bool strict)
     {
         if (Value == 0) return false;
         if (Value == 1) return true;
@@ -2095,186 +1637,49 @@ public class JsonDoubleNode : IJsonValueNode<double>, IJsonDataNode, IJsonNumber
     }
 
     /// <summary>
-    /// Gets the value of the element as a byte array.
+    /// Tries to get the value of the element as a boolean.
     /// </summary>
-    /// <returns>The value decoded as a byte array.</returns>
-    /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
-    byte[] IJsonDataNode.GetBytesFromBase64() => throw new InvalidOperationException("Expect a string but it is a number.");
+    /// <param name="strict">true if enable strict mode that compare the value kind firstly; otherwise, false, to convert in compatible mode.</param>
+    /// <param name="result">The result.</param>
+    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+    protected override bool TryConvert(bool strict, out bool result)
+    {
+        if (strict) return base.TryConvert(strict, out result);
+        result = Value > 0;
+        return Value == 0 || Value == 1;
+    }
+
+    /// <summary>
+    /// Gets the value of the element as a date time.
+    /// </summary>
+    /// <param name="useUnixTimestamps">true if use Unix timestamp to convert; otherwise, false, to use JavaScript date ticks.</param>
+    /// <returns>The value of the element as a date time.</returns>
+    /// <exception cref="OverflowException">The value is out of safe integer range.</exception>
+    public DateTime GetDateTime(bool useUnixTimestamps)
+    {
+        if (Value > JsonIntegerNode.MaxSafeInteger) throw new OverflowException("The value is greater than safe number.");
+        if (Value < JsonIntegerNode.MinSafeInteger) throw new OverflowException("The value is less than safe number.");
+        return useUnixTimestamps ? WebFormat.ParseUnixTimestamp((long)Value) : WebFormat.ParseDate((long)Value);
+    }
 
     /// <summary>
     /// Gets the value of the element as a date time.
     /// </summary>
     /// <returns>The value of the element as a date time.</returns>
-    /// <exception cref="InvalidCastException">The value is a Double but expect an Int64.</exception>
-    DateTime IJsonDataNode.GetDateTime()
-        => WebFormat.ParseDate((long)Value);
-
-    /// <summary>
-    /// Gets the value of the element as a number.
-    /// </summary>
-    /// <returns>The value of the element as a number.</returns>
-    /// <exception cref="InvalidCastException">The value is a Double.</exception>
-    decimal IJsonDataNode.GetDecimal() => (decimal)Value;
-
-    /// <summary>
-    /// Gets the value of the element as a number.
-    /// </summary>
-    /// <returns>The value of the element as a number.</returns>
-    /// <exception cref="InvalidCastException">The value is a Double.</exception>
-    /// <exception cref="OverflowException">The value is greater than the most maximum value or less than the most minimum value defined of the number type.</exception>
-    float IJsonDataNode.GetSingle() => (float)Value;
-
-    /// <summary>
-    /// Gets the value of the element as a number.
-    /// </summary>
-    /// <returns>The value of the element as a number.</returns>
-    double IJsonDataNode.GetDouble() => Value;
-
-    /// <summary>
-    /// Gets the value of the element as a number.
-    /// </summary>
-    /// <returns>The value of the element as a number.</returns>
-    /// <exception cref="InvalidCastException">The value is a Double.</exception>
-    /// <exception cref="OverflowException">The value is greater than the most maximum value or less than the most minimum value defined of the number type.</exception>
-    short IJsonDataNode.GetInt16() => (short)Value;
-
-    /// <summary>
-    /// Gets the value of the element as a number.
-    /// </summary>
-    /// <returns>The value of the element as a number.</returns>
-    /// <exception cref="InvalidCastException">The value is a Double.</exception>
-    /// <exception cref="OverflowException">The value is greater than the most maximum value or less than the most minimum value defined of the number type.</exception>
-    uint IJsonDataNode.GetUInt32() => (uint)Value;
-
-    /// <summary>
-    /// Gets the value of the element as a number.
-    /// </summary>
-    /// <returns>The value of the element as a number.</returns>
-    /// <exception cref="InvalidCastException">The value is a Double.</exception>
-    /// <exception cref="OverflowException">The value is greater than the most maximum value or less than the most minimum value defined of the number type.</exception>
-    int IJsonDataNode.GetInt32() => (int)Value;
-
-    /// <summary>
-    /// Gets the value of the element as a number.
-    /// </summary>
-    /// <returns>The value of the element as a number.</returns>
-    /// <exception cref="InvalidCastException">The value is a Double.</exception>
-    /// <exception cref="OverflowException">The value is greater than the most maximum value or less than the most minimum value defined of the number type.</exception>
-    long IJsonDataNode.GetInt64() => (long)Value;
-
-    /// <summary>
-    /// Gets the value of the element as a number.
-    /// </summary>
-    /// <returns>The value of the element as a number.</returns>
-    /// <exception cref="InvalidCastException">The value is a Double.</exception>
-    /// <exception cref="OverflowException">The value is greater than the most maximum value or less than the most minimum value defined of the number type.</exception>
-    decimal IJsonNumberNode.GetDecimal() => (decimal)Value;
-
-    /// <summary>
-    /// Gets the value of the element as a number.
-    /// </summary>
-    /// <returns>The value of the element as a number.</returns>
-    /// <exception cref="InvalidCastException">The value is a Double.</exception>
-    /// <exception cref="OverflowException">The value is greater than the most maximum value or less than the most minimum value defined of the number type.</exception>
-    float IJsonNumberNode.GetSingle() => (float)Value;
-
-    /// <summary>
-    /// Gets the value of the element as a number.
-    /// </summary>
-    /// <returns>The value of the element as a number.</returns>
-    double IJsonNumberNode.GetDouble() => Value;
-
-    /// <summary>
-    /// Gets the value of the element as a number.
-    /// </summary>
-    /// <returns>The value of the element as a number.</returns>
-    /// <exception cref="InvalidCastException">The value is a Double.</exception>
-    /// <exception cref="OverflowException">The value is greater than the most maximum value or less than the most minimum value defined of the number type.</exception>
-    ushort IJsonNumberNode.GetUInt16() => (ushort)Value;
-
-    /// <summary>
-    /// Gets the value of the element as a number.
-    /// </summary>
-    /// <returns>The value of the element as a number.</returns>
-    /// <exception cref="InvalidCastException">The value is a Double.</exception>
-    /// <exception cref="OverflowException">The value is greater than the most maximum value or less than the most minimum value defined of the number type.</exception>
-    short IJsonNumberNode.GetInt16() => (short)Value;
-
-    /// <summary>
-    /// Gets the value of the element as a number.
-    /// </summary>
-    /// <returns>The value of the element as a number.</returns>
-    /// <exception cref="InvalidCastException">The value is a Double.</exception>
-    uint IJsonNumberNode.GetUInt32() => (uint)Value;
-
-    /// <summary>
-    /// Gets the value of the element as a number.
-    /// </summary>
-    /// <returns>The value of the element as a number.</returns>
-    /// <exception cref="InvalidCastException">The value is a Double.</exception>
-    /// <exception cref="OverflowException">The value is greater than the most maximum value or less than the most minimum value defined of the number type.</exception>
-    int IJsonNumberNode.GetInt32() => (int)Value;
-
-    /// <summary>
-    /// Gets the value of the element as a number.
-    /// </summary>
-    /// <returns>The value of the element as a number.</returns>
-    /// <exception cref="InvalidCastException">The value is a Double.</exception>
-    /// <exception cref="OverflowException">The value is greater than the most maximum value or less than the most minimum value defined of the number type.</exception>
-    long IJsonNumberNode.GetInt64() => (long)Value;
-
-    /// <summary>
-    /// Gets the value of the element as a number.
-    /// </summary>
-    /// <returns>The value of the element as a number.</returns>
-    /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
-    string IJsonDataNode.GetString() => ToString();
-
-    /// <summary>
-    /// Gets the value of the element as a GUID.
-    /// </summary>
-    /// <returns>The value of the element as a GUID.</returns>
-    /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
-    Guid IJsonDataNode.GetGuid() => throw new InvalidOperationException("Expect a string but it is a number.");
-
-    /// <summary>
-    /// Tries to get the value of the element as a boolean.
-    /// </summary>
-    /// <param name="result">The result.</param>
-    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
-    public bool TryGetBoolean(out bool result)
-    {
-        if (Value == 0)
-        {
-            result = false;
-            return true;
-        }
-
-        if (Value == 1)
-        {
-            result = true;
-            return true;
-        }
-
-        result = false;
-        return false;
-    }
+    /// <exception cref="OverflowException">The value is out of safe integer range.</exception>
+    public DateTime GetDateTime()
+        => GetDateTime(false);
 
     /// <summary>
     /// Tries to get the value of the element as a date time.
     /// </summary>
     /// <param name="result">The result.</param>
     /// <returns>true if the kind is the one expected; otherwise, false.</returns>
-    public bool TryGetDateTime(out DateTime result)
+    protected override bool TryConvert(out DateTime result)
     {
+        if (Value > long.MaxValue || Value < long.MinValue) return base.TryConvert(out result);
         try
         {
-            if (double.IsNaN(Value))
-            {
-                result = WebFormat.ParseDate(0);
-                return false;
-            }
-
             result = WebFormat.ParseDate((long)Value);
             return true;
         }
@@ -2285,23 +1690,37 @@ public class JsonDoubleNode : IJsonValueNode<double>, IJsonDataNode, IJsonNumber
         {
         }
 
-        result = WebFormat.ParseDate(0);
+        result = default;
         return false;
     }
 
     /// <summary>
-    /// Tries to get the value of the element as a number.
+    /// Gets the value of the element as a floating number.
     /// </summary>
+    /// <returns>The value of the element as a floating number.</returns>
+    /// <exception cref="OverflowException">The value is out of range.</exception>
+    /// <exception cref="InvalidCastException">The value is out of range.</exception>
+    public decimal GetDecimal() => (decimal)Value;
+
+    /// <summary>
+    /// Gets the value of the element as a floating number.
+    /// </summary>
+    /// <returns>The value of the element as a floating number.</returns>
+    /// <exception cref="OverflowException">The value is out of range.</exception>
+    /// <exception cref="InvalidCastException">The value is out of range.</exception>
+    public decimal GetDecimal(bool strict) => (decimal)Value;
+
+    /// <summary>
+    /// Tries to get the value of the element as a boolean.
+    /// </summary>
+    /// <param name="strict">true if enable strict mode that compare the value kind firstly; otherwise, false, to convert in compatible mode.</param>
     /// <param name="result">The result.</param>
     /// <returns>true if the kind is the one expected; otherwise, false.</returns>
-    public bool TryGetDecimal(out decimal result)
+    protected override bool TryConvert(bool strict, out decimal result)
     {
         try
         {
-            if (double.IsNaN(Value))
-                result = 0;
-            else
-                result = (decimal)Value;
+            result = (decimal)Value;
             return true;
         }
         catch (OverflowException)
@@ -2316,11 +1735,28 @@ public class JsonDoubleNode : IJsonValueNode<double>, IJsonDataNode, IJsonNumber
     }
 
     /// <summary>
-    /// Tries to get the value of the element as a number.
+    /// Gets the value of the element as a floating number.
     /// </summary>
+    /// <returns>The value of the element as a number.</returns>
+    /// <exception cref="OverflowException">The value is out of range.</exception>
+    /// <exception cref="InvalidCastException">The value is out of range.</exception>
+    public float GetSingle() => (float)Value;
+
+    /// <summary>
+    /// Gets the value of the element as a floating number.
+    /// </summary>
+    /// <returns>The value of the element as a floating number.</returns>
+    /// <exception cref="OverflowException">The value is out of range.</exception>
+    /// <exception cref="InvalidCastException">The value is out of range.</exception>
+    public float GetSingle(bool strict) => (float)Value;
+
+    /// <summary>
+    /// Tries to get the value of the element as a boolean.
+    /// </summary>
+    /// <param name="strict">true if enable strict mode that compare the value kind firstly; otherwise, false, to convert in compatible mode.</param>
     /// <param name="result">The result.</param>
     /// <returns>true if the kind is the one expected; otherwise, false.</returns>
-    public bool TryGetSingle(out float result)
+    protected override bool TryConvert(bool strict, out float result)
     {
         try
         {
@@ -2339,29 +1775,56 @@ public class JsonDoubleNode : IJsonValueNode<double>, IJsonDataNode, IJsonNumber
     }
 
     /// <summary>
-    /// Tries to get the value of the element as a number.
+    /// Gets the value of the element as a floating number.
     /// </summary>
+    /// <returns>The value of the element as a floating number.</returns>
+    public double GetDouble() => Value;
+
+    /// <summary>
+    /// Gets the value of the element as a floating number.
+    /// </summary>
+    /// <returns>The value of the element as a floating number.</returns>
+    public double GetDouble(bool strict) => Value;
+
+    /// <summary>
+    /// Tries to get the value of the element as a boolean.
+    /// </summary>
+    /// <param name="strict">true if enable strict mode that compare the value kind firstly; otherwise, false, to convert in compatible mode.</param>
     /// <param name="result">The result.</param>
     /// <returns>true if the kind is the one expected; otherwise, false.</returns>
-    bool IJsonDataNode.TryGetDouble(out double result)
+    protected override bool TryConvert(bool strict, out double result)
     {
         result = Value;
         return true;
     }
 
     /// <summary>
-    /// Tries to get the value of the element as a number.
+    /// Gets the value of the element as an integer.
     /// </summary>
+    /// <returns>The value of the element as an integer.</returns>
+    /// <exception cref="OverflowException">The value is out of range.</exception>
+    /// <exception cref="InvalidCastException">The value is out of range.</exception>
+    public short GetInt16() => (short)Value;
+
+    /// <summary>
+    /// Gets the value of the element as an integer.
+    /// </summary>
+    /// <returns>The value of the element as an integer.</returns>
+    /// <exception cref="OverflowException">The value is out of range.</exception>
+    /// <exception cref="InvalidCastException">The value is out of range.</exception>
+    public short GetInt16(bool strict) => (short)Value;
+
+    /// <summary>
+    /// Tries to get the value of the element as a boolean.
+    /// </summary>
+    /// <param name="strict">true if enable strict mode that compare the value kind firstly; otherwise, false, to convert in compatible mode.</param>
     /// <param name="result">The result.</param>
     /// <returns>true if the kind is the one expected; otherwise, false.</returns>
-    public bool TryGetUInt32(out uint result)
+    protected override bool TryConvert(bool strict, out short result)
     {
         try
         {
-            if (double.IsNaN(Value))
-                result = 0;
-            else
-                result = (uint)Value;
+            result = (short)Value;
             return true;
         }
         catch (OverflowException)
@@ -2376,18 +1839,32 @@ public class JsonDoubleNode : IJsonValueNode<double>, IJsonDataNode, IJsonNumber
     }
 
     /// <summary>
-    /// Tries to get the value of the element as a number.
+    /// Gets the value of the element as an integer.
     /// </summary>
+    /// <returns>The value of the element as an integer.</returns>
+    /// <exception cref="OverflowException">The value is out of range.</exception>
+    /// <exception cref="InvalidCastException">The value is out of range.</exception>
+    public uint GetUInt32() => (uint)Value;
+
+    /// <summary>
+    /// Gets the value of the element as an integer.
+    /// </summary>
+    /// <returns>The value of the element as an integer.</returns>
+    /// <exception cref="OverflowException">The value is out of range.</exception>
+    /// <exception cref="InvalidCastException">The value is out of range.</exception>
+    public uint GetUInt32(bool strict) => (uint)Value;
+
+    /// <summary>
+    /// Tries to get the value of the element as a boolean.
+    /// </summary>
+    /// <param name="strict">true if enable strict mode that compare the value kind firstly; otherwise, false, to convert in compatible mode.</param>
     /// <param name="result">The result.</param>
     /// <returns>true if the kind is the one expected; otherwise, false.</returns>
-    public bool TryGetInt32(out int result)
+    protected override bool TryConvert(bool strict, out uint result)
     {
         try
         {
-            if (double.IsNaN(Value))
-                result = 0;
-            else
-                result = (int)Value;
+            result = (uint)Value;
             return true;
         }
         catch (OverflowException)
@@ -2402,18 +1879,32 @@ public class JsonDoubleNode : IJsonValueNode<double>, IJsonDataNode, IJsonNumber
     }
 
     /// <summary>
-    /// Tries to get the value of the element as a number.
+    /// Gets the value of the element as an integer.
     /// </summary>
+    /// <returns>The value of the element as an integer.</returns>
+    /// <exception cref="OverflowException">The value is out of range.</exception>
+    /// <exception cref="InvalidCastException">The value is out of range.</exception>
+    public int GetInt32() => (int)Value;
+
+    /// <summary>
+    /// Gets the value of the element as an integer.
+    /// </summary>
+    /// <returns>The value of the element as an integer.</returns>
+    /// <exception cref="OverflowException">The value is out of range.</exception>
+    /// <exception cref="InvalidCastException">The value is out of range.</exception>
+    public int GetInt32(bool strict) => (int)Value;
+
+    /// <summary>
+    /// Tries to get the value of the element as a boolean.
+    /// </summary>
+    /// <param name="strict">true if enable strict mode that compare the value kind firstly; otherwise, false, to convert in compatible mode.</param>
     /// <param name="result">The result.</param>
     /// <returns>true if the kind is the one expected; otherwise, false.</returns>
-    public bool TryGetInt64(out long result)
+    protected override bool TryConvert(bool strict, out int result)
     {
         try
         {
-            if (double.IsNaN(Value))
-                result = 0;
-            else
-                result = (long)Value;
+            result = (int)Value;
             return true;
         }
         catch (OverflowException)
@@ -2428,18 +1919,32 @@ public class JsonDoubleNode : IJsonValueNode<double>, IJsonDataNode, IJsonNumber
     }
 
     /// <summary>
-    /// Tries to get the value of the element as a number.
+    /// Gets the value of the element as an integer.
     /// </summary>
+    /// <returns>The value of the element as an integer.</returns>
+    /// <exception cref="OverflowException">The value is out of range.</exception>
+    /// <exception cref="InvalidCastException">The value is out of range.</exception>
+    public long GetInt64() => (long)Value;
+
+    /// <summary>
+    /// Gets the value of the element as an integer.
+    /// </summary>
+    /// <returns>The value of the element as an integer.</returns>
+    /// <exception cref="OverflowException">The value is out of range.</exception>
+    /// <exception cref="InvalidCastException">The value is out of range.</exception>
+    public long GetInt64(bool strict) => (long)Value;
+
+    /// <summary>
+    /// Tries to get the value of the element as a boolean.
+    /// </summary>
+    /// <param name="strict">true if enable strict mode that compare the value kind firstly; otherwise, false, to convert in compatible mode.</param>
     /// <param name="result">The result.</param>
     /// <returns>true if the kind is the one expected; otherwise, false.</returns>
-    public bool TryGetUInt64(out ulong result)
+    protected override bool TryConvert(bool strict, out long result)
     {
         try
         {
-            if (double.IsNaN(Value))
-                result = 0;
-            else
-                result = (ulong)Value;
+            result = (long)Value;
             return true;
         }
         catch (OverflowException)
@@ -2454,115 +1959,60 @@ public class JsonDoubleNode : IJsonValueNode<double>, IJsonDataNode, IJsonNumber
     }
 
     /// <summary>
-    /// Tries to get the value of the element as a number.
+    /// Gets the value of the element as an integer.
     /// </summary>
+    /// <returns>The value of the element as an integer.</returns>
+    /// <exception cref="OverflowException">The value is out of range.</exception>
+    /// <exception cref="InvalidCastException">The value is out of range.</exception>
+    public ulong GetUInt64() => (ulong)Value;
+
+    /// <summary>
+    /// Gets the value of the element as an integer.
+    /// </summary>
+    /// <returns>The value of the element as an integer.</returns>
+    /// <exception cref="OverflowException">The value is out of range.</exception>
+    /// <exception cref="InvalidCastException">The value is out of range.</exception>
+    public ulong GetUInt64(bool strict) => (ulong)Value;
+
+    /// <summary>
+    /// Tries to get the value of the element as a boolean.
+    /// </summary>
+    /// <param name="strict">true if enable strict mode that compare the value kind firstly; otherwise, false, to convert in compatible mode.</param>
     /// <param name="result">The result.</param>
     /// <returns>true if the kind is the one expected; otherwise, false.</returns>
-    bool IJsonDataNode.TryGetString(out string result)
+    protected override bool TryConvert(bool strict, out ulong result)
+    {
+        try
+        {
+            result = (ulong)Value;
+            return true;
+        }
+        catch (OverflowException)
+        {
+        }
+        catch (InvalidCastException)
+        {
+        }
+
+        result = 0;
+        return false;
+    }
+
+    /// <summary>
+    /// Tries to get the value of the element as a boolean.
+    /// </summary>
+    /// <param name="strict">true if enable strict mode that compare the value kind firstly; otherwise, false, to convert in compatible mode.</param>
+    /// <param name="result">The result.</param>
+    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+    protected override bool TryConvert(bool strict, out string result)
     {
         result = ToString();
-        return true;
+        return !strict;
     }
 
-    /// <summary>
-    /// Tries to get the value of the element as a GUID.
-    /// </summary>
-    /// <param name="result">The result.</param>
-    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
-    bool IJsonDataNode.TryGetGuid(out Guid result)
-    {
-        result = Guid.Empty;
-        return false;
-    }
-
-    /// <summary>
-    /// Gets the value of the specific property.
-    /// </summary>
-    /// <param name="key">The property key.</param>
-    /// <returns>The value.</returns>
-    /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
-    IJsonDataNode IJsonDataNode.GetValue(string key) => throw new InvalidOperationException("Expect an object but it is a number.");
-
-    /// <summary>
-    /// Gets the value of the specific property.
-    /// </summary>
-    /// <param name="key">The property key.</param>
-    /// <returns>The value.</returns>
-    /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
-    IJsonDataNode IJsonDataNode.GetValue(ReadOnlySpan<char> key) => throw new InvalidOperationException("Expect an object but it is a number.");
-
-    /// <summary>
-    /// Tries to get the value of the specific property.
-    /// </summary>
-    /// <param name="key">The property key.</param>
-    /// <param name="result">The result.</param>
-    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
-    bool IJsonDataNode.TryGetValue(string key, out IJsonDataNode result)
-    {
-        result = default;
-        return false;
-    }
-
-    /// <summary>
-    /// Tries to get the value of the specific property.
-    /// </summary>
-    /// <param name="key">The property key.</param>
-    /// <param name="result">The result.</param>
-    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
-    bool IJsonDataNode.TryGetValue(ReadOnlySpan<char> key, out IJsonDataNode result)
-    {
-        result = default;
-        return false;
-    }
-
-    /// <summary>
-    /// Gets the value at the specific index.
-    /// </summary>
-    /// <param name="index">The zero-based index of the element to get.</param>
-    /// <returns>The value.</returns>
-    /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
-    IJsonDataNode IJsonDataNode.GetValue(int index) => throw new InvalidOperationException("Expect an array but it is a number.");
-
-    /// <summary>
-    /// Tries to get the value of the specific property.
-    /// </summary>
-    /// <param name="index">The zero-based index of the element to get.</param>
-    /// <param name="result">The result.</param>
-    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
-    bool IJsonDataNode.TryGetValue(int index, out IJsonDataNode result)
-    {
-        result = default;
-        return false;
-    }
-
-#if !NETFRAMEWORK
-    /// <summary>
-    /// Gets the value at the specific index.
-    /// </summary>
-    /// <param name="index">The zero-based index of the element to get.</param>
-    /// <returns>The value.</returns>
-    /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
-    IJsonDataNode IJsonDataNode.GetValue(Index index) => throw new InvalidOperationException("Expect an array but it is a number.");
-
-    /// <summary>
-    /// Tries to get the value of the specific property.
-    /// </summary>
-    /// <param name="index">The zero-based index of the element to get.</param>
-    /// <param name="result">The result.</param>
-    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
-    bool IJsonDataNode.TryGetValue(Index index, out IJsonDataNode result)
-    {
-        result = default;
-        return false;
-    }
-#endif
-
-    /// <summary>
-    /// Gets all property keys.
-    /// </summary>
-    /// <returns>The property keys.</returns>
-    /// <exception cref="InvalidOperationException">The value kind is not an object.</exception>
-    IEnumerable<string> IJsonDataNode.GetKeys() => throw new InvalidOperationException("Expect an object but it is a number.");
+    /// <inheritdoc />
+    public override JsonValue ToJsonValue()
+        => JsonValue.Create(Value);
 
     /// <summary>
     /// Converts to JSON value.
@@ -2593,7 +2043,7 @@ public class JsonDoubleNode : IJsonValueNode<double>, IJsonDataNode, IJsonNumber
     /// </summary>
     /// <param name="value">The source value.</param>
     /// <returns>A JSON value.</returns>
-    public static implicit operator JsonDoubleNode(System.Text.Json.Nodes.JsonValue value)
+    public static implicit operator JsonDoubleNode(JsonValue value)
     {
         if (value is null) return null;
         if (value.TryGetValue(out double d))
@@ -2622,92 +2072,12 @@ public class JsonDoubleNode : IJsonValueNode<double>, IJsonDataNode, IJsonNumber
     /// </summary>
     /// <param name="value">The source value.</param>
     /// <returns>A JSON value.</returns>
-    public static implicit operator JsonDoubleNode(System.Text.Json.Nodes.JsonNode value)
+    public static implicit operator JsonDoubleNode(JsonNode value)
     {
         if (value is null) return null;
-        if (value is System.Text.Json.Nodes.JsonValue v) return v;
+        if (value is JsonValue v) return v;
         throw new InvalidCastException($"Only supports JsonValue but its type is {value.GetType().Name}.");
     }
-
-    /// <summary>
-    /// Converts the JSON raw back.
-    /// </summary>
-    /// <param name="json">The JSON value.</param>
-    /// <returns>A number.</returns>
-    public static explicit operator double(JsonDoubleNode json)
-        => json.Value;
-
-    /// <summary>
-    /// Converts the JSON raw back.
-    /// </summary>
-    /// <param name="json">The JSON value.</param>
-    /// <returns>A number.</returns>
-    public static explicit operator float(JsonDoubleNode json)
-        => (float)json.Value;
-
-    /// <summary>
-    /// Converts the JSON raw back.
-    /// </summary>
-    /// <param name="json">The JSON value.</param>
-    /// <returns>A number.</returns>
-    public static explicit operator decimal(JsonDoubleNode json)
-        => (decimal)json.Value;
-
-    /// <summary>
-    /// Converts the JSON raw back.
-    /// </summary>
-    /// <param name="json">The JSON value.</param>
-    /// <returns>A number.</returns>
-    public static explicit operator ushort(JsonDoubleNode json)
-        => (ushort)json.Value;
-
-    /// <summary>
-    /// Converts the JSON raw back.
-    /// </summary>
-    /// <param name="json">The JSON value.</param>
-    /// <returns>A number.</returns>
-    public static explicit operator short(JsonDoubleNode json)
-        => (short)json.Value;
-
-    /// <summary>
-    /// Converts the JSON raw back.
-    /// </summary>
-    /// <param name="json">The JSON value.</param>
-    /// <returns>A number.</returns>
-    public static explicit operator uint(JsonDoubleNode json)
-        => (uint)json.Value;
-
-    /// <summary>
-    /// Converts the JSON raw back.
-    /// </summary>
-    /// <param name="json">The JSON value.</param>
-    /// <returns>A number.</returns>
-    public static explicit operator int(JsonDoubleNode json)
-        => (int)json.Value;
-
-    /// <summary>
-    /// Converts the JSON raw back.
-    /// </summary>
-    /// <param name="json">The JSON value.</param>
-    /// <returns>A number.</returns>
-    public static explicit operator ulong(JsonDoubleNode json)
-        => (ulong)json.Value;
-
-    /// <summary>
-    /// Converts the JSON raw back.
-    /// </summary>
-    /// <param name="json">The JSON value.</param>
-    /// <returns>A number.</returns>
-    public static explicit operator long(JsonDoubleNode json)
-        => (long)json.Value;
-
-    /// <summary>
-    /// Converts the JSON raw back.
-    /// </summary>
-    /// <param name="json">The JSON value.</param>
-    /// <returns>A string.</returns>
-    public static explicit operator string(JsonDoubleNode json)
-        => json.ToString();
 
     /// <summary>
     /// Converts to a JSON string.
@@ -2732,22 +2102,6 @@ public class JsonDoubleNode : IJsonValueNode<double>, IJsonDataNode, IJsonNumber
     /// <returns>A JSON integer instance.</returns>
     public static explicit operator JsonDecimalNode(JsonDoubleNode json)
         => new(json.Value);
-
-    /// <summary>
-    /// Converts to JSON node.
-    /// </summary>
-    /// <param name="json">The JSON value.</param>
-    /// <returns>An instance of the JsonNode class.</returns>
-    public static explicit operator System.Text.Json.Nodes.JsonNode(JsonDoubleNode json)
-        => System.Text.Json.Nodes.JsonValue.Create(json.Value);
-
-    /// <summary>
-    /// Converts to JSON node.
-    /// </summary>
-    /// <param name="json">The JSON value.</param>
-    /// <returns>An instance of the JsonNode class.</returns>
-    public static explicit operator System.Text.Json.Nodes.JsonValue(JsonDoubleNode json)
-        => System.Text.Json.Nodes.JsonValue.Create(json.Value);
 
     /// <summary>
     /// Compares two instances to indicate if they are same.
@@ -3194,16 +2548,15 @@ public class JsonDoubleNode : IJsonValueNode<double>, IJsonDataNode, IJsonNumber
 /// Represents a specific JSON decimal float number value.
 /// </summary>
 [System.Text.Json.Serialization.JsonConverter(typeof(JsonObjectNodeConverter))]
-public class JsonDecimalNode : IJsonValueNode<decimal>, IJsonDataNode, IJsonNumberNode, IComparable<JsonIntegerNode>, IComparable<JsonDoubleNode>, IComparable<JsonDecimalNode>, IComparable<uint>, IComparable<int>, IComparable<long>, IComparable<double>, IComparable<float>, IComparable<decimal>, IEquatable<IJsonValueNode<uint>>, IEquatable<IJsonValueNode<int>>, IEquatable<IJsonValueNode<long>>, IEquatable<IJsonValueNode<float>>, IEquatable<IJsonValueNode<double>>, IEquatable<uint>, IEquatable<int>, IEquatable<long>, IEquatable<double>, IEquatable<float>, IFormattable
+public class JsonDecimalNode : BaseJsonValueNode<decimal>, IJsonNumberNode, IComparable<JsonIntegerNode>, IComparable<JsonDoubleNode>, IComparable<JsonDecimalNode>, IComparable<uint>, IComparable<int>, IComparable<long>, IComparable<double>, IComparable<float>, IComparable<decimal>, IEquatable<uint>, IEquatable<int>, IEquatable<long>, IEquatable<double>, IEquatable<float>, IFormattable
 {
     /// <summary>
     /// Initializes a new instance of the JsonDecimalNode class.
     /// </summary>
     /// <param name="value">The value.</param>
     public JsonDecimalNode(int value)
+        : base(JsonValueKind.Number, value)
     {
-        Value = value;
-        ValueKind = JsonValueKind.Number;
         IsInteger = true;
     }
 
@@ -3212,9 +2565,8 @@ public class JsonDecimalNode : IJsonValueNode<decimal>, IJsonDataNode, IJsonNumb
     /// </summary>
     /// <param name="value">The value.</param>
     public JsonDecimalNode(long value)
+        : base(JsonValueKind.Number, value)
     {
-        Value = value;
-        ValueKind = JsonValueKind.Number;
         IsInteger = true;
     }
 
@@ -3223,9 +2575,8 @@ public class JsonDecimalNode : IJsonValueNode<decimal>, IJsonDataNode, IJsonNumb
     /// </summary>
     /// <param name="value">The value.</param>
     public JsonDecimalNode(uint value)
+        : base(JsonValueKind.Number, value)
     {
-        Value = value;
-        ValueKind = JsonValueKind.Number;
         IsInteger = true;
     }
 
@@ -3234,9 +2585,8 @@ public class JsonDecimalNode : IJsonValueNode<decimal>, IJsonDataNode, IJsonNumb
     /// </summary>
     /// <param name="value">The value.</param>
     public JsonDecimalNode(ulong value)
+        : base(JsonValueKind.Number, value)
     {
-        Value = value;
-        ValueKind = JsonValueKind.Number;
         IsInteger = true;
     }
 
@@ -3245,15 +2595,9 @@ public class JsonDecimalNode : IJsonValueNode<decimal>, IJsonDataNode, IJsonNumb
     /// </summary>
     /// <param name="value">The value.</param>
     public JsonDecimalNode(float value)
+        : base(float.IsNaN(value) || float.IsInfinity(value) ? JsonValueKind.Null : JsonValueKind.Number, (decimal)value)
     {
-        Value = (decimal)value;
-        if (float.IsNaN(value) || float.IsInfinity(value))
-        {
-            ValueKind = JsonValueKind.Null;
-            return;
-        }
-
-        ValueKind = JsonValueKind.Number;
+        if (float.IsNaN(value) || float.IsInfinity(value)) return;
         try
         {
             if (value > long.MaxValue || value < long.MinValue) return;
@@ -3272,25 +2616,9 @@ public class JsonDecimalNode : IJsonValueNode<decimal>, IJsonDataNode, IJsonNumb
     /// </summary>
     /// <param name="value">The value.</param>
     public JsonDecimalNode(double value)
+        : base(double.IsNaN(value) || double.IsInfinity(value) ? JsonValueKind.Null : JsonValueKind.Number, (decimal)value)
     {
-        try
-        {
-            Value = (decimal)value;
-        }
-        catch (InvalidCastException)
-        {
-        }
-        catch (ArgumentException)
-        {
-        }
-
-        if (double.IsNaN(value) || double.IsInfinity(value))
-        {
-            ValueKind = JsonValueKind.Null;
-            return;
-        }
-
-        ValueKind = JsonValueKind.Number;
+        if (double.IsNaN(value) || double.IsInfinity(value)) return;
         try
         {
             if (value > long.MaxValue || value < long.MinValue) return;
@@ -3309,9 +2637,8 @@ public class JsonDecimalNode : IJsonValueNode<decimal>, IJsonDataNode, IJsonNumb
     /// </summary>
     /// <param name="value">The value.</param>
     public JsonDecimalNode(decimal value)
+        : base(JsonValueKind.Number, value)
     {
-        Value = value;
-        ValueKind = JsonValueKind.Number;
         try
         {
             if (value > long.MaxValue || value < long.MinValue) return;
@@ -3330,9 +2657,8 @@ public class JsonDecimalNode : IJsonValueNode<decimal>, IJsonDataNode, IJsonNumb
     /// </summary>
     /// <param name="value">The value.</param>
     public JsonDecimalNode(TimeSpan value)
+        : base(JsonValueKind.Number, (decimal)value.TotalSeconds)
     {
-        Value = (decimal)value.TotalSeconds;
-        ValueKind = JsonValueKind.Number;
         IsInteger = value.Milliseconds == 0;
     }
 
@@ -3340,16 +2666,6 @@ public class JsonDecimalNode : IJsonValueNode<decimal>, IJsonDataNode, IJsonNumb
     /// Gets a value indicating whether the number value is an whole number.
     /// </summary>
     public bool IsInteger { get; }
-
-    /// <summary>
-    /// Gets the value.
-    /// </summary>
-    public decimal Value { get; }
-
-    /// <summary>
-    /// Gets the type of the current JSON value.
-    /// </summary>
-    public JsonValueKind ValueKind { get; }
 
     /// <summary>
     /// Gets the JSON format string of the value.
@@ -3388,62 +2704,7 @@ public class JsonDecimalNode : IJsonValueNode<decimal>, IJsonDataNode, IJsonNumb
     /// </summary>
     /// <param name="other">The object to compare with the current instance.</param>
     /// <returns>true if obj and this instance represent the same value; otherwise, false.</returns>
-    public bool Equals(IJsonValueNode<double> other)
-    {
-        if (other is null) return false;
-        return Value.Equals(other.Value);
-    }
-
-    /// <summary>
-    /// Indicates whether this instance and a specified object are equal.
-    /// </summary>
-    /// <param name="other">The object to compare with the current instance.</param>
-    /// <returns>true if obj and this instance represent the same value; otherwise, false.</returns>
-    public bool Equals(IJsonValueNode<float> other)
-    {
-        if (other is null) return false;
-        return Value.Equals(other.Value);
-    }
-
-    /// <summary>
-    /// Indicates whether this instance and a specified object are equal.
-    /// </summary>
-    /// <param name="other">The object to compare with the current instance.</param>
-    /// <returns>true if obj and this instance represent the same value; otherwise, false.</returns>
-    public bool Equals(IJsonValueNode<decimal> other)
-    {
-        if (other is null) return false;
-        return Value.Equals(other.Value);
-    }
-
-    /// <summary>
-    /// Indicates whether this instance and a specified object are equal.
-    /// </summary>
-    /// <param name="other">The object to compare with the current instance.</param>
-    /// <returns>true if obj and this instance represent the same value; otherwise, false.</returns>
-    public bool Equals(IJsonValueNode<long> other)
-    {
-        if (other is null) return false;
-        return Value.Equals(other.Value);
-    }
-
-    /// <summary>
-    /// Indicates whether this instance and a specified object are equal.
-    /// </summary>
-    /// <param name="other">The object to compare with the current instance.</param>
-    /// <returns>true if obj and this instance represent the same value; otherwise, false.</returns>
-    public bool Equals(IJsonValueNode<int> other)
-    {
-        if (other is null) return false;
-        return Value.Equals(other.Value);
-    }
-
-    /// <summary>
-    /// Indicates whether this instance and a specified object are equal.
-    /// </summary>
-    /// <param name="other">The object to compare with the current instance.</param>
-    /// <returns>true if obj and this instance represent the same value; otherwise, false.</returns>
-    public bool Equals(IJsonValueNode<uint> other)
+    public override bool Equals(IJsonValueNode<decimal> other)
     {
         if (other is null) return false;
         return Value.Equals(other.Value);
@@ -3457,7 +2718,39 @@ public class JsonDecimalNode : IJsonValueNode<decimal>, IJsonDataNode, IJsonNumb
     public bool Equals(IJsonNumberNode other)
     {
         if (other is null) return false;
+        if (other is IJsonValueNode<decimal> n) return Value.Equals(n.Value);
         return Value.Equals(other.GetDouble());
+    }
+
+    /// <summary>
+    /// Indicates whether this instance and a specified object are equal.
+    /// </summary>
+    /// <param name="other">The object to compare with the current instance.</param>
+    /// <returns>true if obj and this instance represent the same value; otherwise, false.</returns>
+    public override bool Equals(IJsonValueNode other)
+    {
+        if (ReferenceEquals(this, other)) return true;
+        if (other is null) return ValueKind == JsonValueKind.Null || ValueKind == JsonValueKind.Undefined;
+        if (other is IJsonNumberNode num) return Equals(num);
+        if (other is IJsonValueNode<int> i1) return Value.Equals(i1.Value);
+        if (other is IJsonValueNode<long> i2) return Value.Equals(i2.Value);
+        if (other is IJsonValueNode<short> i3) return Value.Equals(i3.Value);
+        if (other is IJsonValueNode<byte> i5) return Value.Equals(i5.Value);
+        if (other is IJsonValueNode<uint> i6) return Value.Equals(i6.Value);
+        if (other is IJsonValueNode<ulong> i7) return Value.Equals(i7.Value);
+        if (other is IJsonValueNode<ushort> i8) return Value.Equals(i8.Value);
+        if (other is IJsonValueNode<float> f1) return Value.Equals(f1.Value);
+        if (other is IJsonValueNode<double> f2) return Value.Equals(f2.Value);
+        if (other is IJsonValueNode<decimal> f3) return Value.Equals(f3.Value);
+#if NET6_0_OR_GREATER
+        if (other is IJsonValueNode<Half> f4) return Value.Equals(f4.Value);
+#endif
+#if NET8_0_OR_GREATER
+        if (other is IJsonValueNode<Int128> i4) return Value.Equals(i4.Value);
+        if (other is IJsonValueNode<UInt128> i9) return Value.Equals(i9.Value);
+#endif
+        if (other is IJsonValueNode<string> s) return !string.IsNullOrEmpty(s.Value) && decimal.TryParse(s.Value, out var parsed) && parsed == Value;
+        return false;
     }
 
     /// <summary>
@@ -3481,7 +2774,7 @@ public class JsonDecimalNode : IJsonValueNode<decimal>, IJsonDataNode, IJsonNumb
     /// </summary>
     /// <param name="other">The object to compare with the current instance.</param>
     /// <returns>true if obj and this instance represent the same value; otherwise, false.</returns>
-    public bool Equals(decimal other)
+    public override bool Equals(decimal other)
         => Value.Equals(other);
 
     /// <summary>
@@ -3508,36 +2801,13 @@ public class JsonDecimalNode : IJsonValueNode<decimal>, IJsonDataNode, IJsonNumb
     public bool Equals(int other)
         => Value.Equals(other);
 
-    /// <summary>
-    /// Indicates whether this instance and a specified object are equal.
-    /// </summary>
-    /// <param name="other">The object to compare with the current instance.</param>
-    /// <returns>true if obj and this instance represent the same value; otherwise, false.</returns>
+    /// <inheritdoc />
     public override bool Equals(object other)
-    {
-        if (other is null) return false;
-        if (other is IJsonValueNode<double> dJson) return Value.Equals(dJson.Value);
-        if (other is IJsonValueNode<long> lJson) return Value.Equals(lJson.Value);
-        if (other is IJsonValueNode nJson && nJson.ValueKind == JsonValueKind.Number)
-        {
-            if (other is IJsonValueNode<float> fJson) return Value.Equals(fJson.Value);
-            if (other is IJsonValueNode<int> iJson) return Value.Equals(iJson.Value);
-            if (other is IJsonValueNode<uint> uiJson) return Value.Equals(uiJson.Value);
-            if (other is IJsonValueNode<short> sJson) return Value.Equals(sJson.Value);
-            if (other is IJsonValueNode<ulong> ulJson) return Value.Equals(ulJson.Value);
-            if (other is IJsonValueNode<decimal> dcmJson) return Value.Equals(dcmJson.Value);
-            if (other is IJsonValueNode<ushort> usJson) return Value.Equals(usJson.Value);
-            return ToString().Equals(other.ToString(), StringComparison.InvariantCultureIgnoreCase);
-        }
+        => base.Equals(other);
 
-        return Value.Equals(other);
-    }
-
-    /// <summary>
-    /// Returns the hash code for this instance.
-    /// </summary>
-    /// <returns>A hash code for the current instance.</returns>
-    public override int GetHashCode() => Value.GetHashCode();
+    /// <inheritdoc />
+    public override int GetHashCode()
+        => base.GetHashCode();
 
     /// <summary>
     /// Compares this instance to a specified number and returns an indication of their relative values.
@@ -3701,18 +2971,13 @@ public class JsonDecimalNode : IJsonValueNode<decimal>, IJsonDataNode, IJsonNumb
     public int CompareTo(decimal other)
         => Value.CompareTo(other);
 
-    /// <summary>
-    /// Gets the item value count.
-    /// It always return 0 because it is not an array or object.
-    /// </summary>
-    public int Count => 0;
 
     /// <summary>
     /// Gets the value of the element as a boolean.
     /// </summary>
     /// <returns>The value of the element as a boolean.</returns>
     /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
-    bool IJsonDataNode.GetBoolean()
+    public bool GetBoolean(bool strict)
     {
         if (Value == 0) return false;
         if (Value == 1) return true;
@@ -3720,178 +2985,47 @@ public class JsonDecimalNode : IJsonValueNode<decimal>, IJsonDataNode, IJsonNumb
     }
 
     /// <summary>
-    /// Gets the value of the element as a byte array.
+    /// Tries to get the value of the element as a boolean.
     /// </summary>
-    /// <returns>The value decoded as a byte array.</returns>
-    /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
-    byte[] IJsonDataNode.GetBytesFromBase64() => throw new InvalidOperationException("Expect a string but it is a number.");
+    /// <param name="strict">true if enable strict mode that compare the value kind firstly; otherwise, false, to convert in compatible mode.</param>
+    /// <param name="result">The result.</param>
+    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+    protected override bool TryConvert(bool strict, out bool result)
+    {
+        if (strict) return base.TryConvert(strict, out result);
+        result = Value > 0;
+        return Value == 0 || Value == 1;
+    }
+
+    /// <summary>
+    /// Gets the value of the element as a date time.
+    /// </summary>
+    /// <param name="useUnixTimestamps">true if use Unix timestamp to convert; otherwise, false, to use JavaScript date ticks.</param>
+    /// <returns>The value of the element as a date time.</returns>
+    /// <exception cref="OverflowException">The value is out of safe integer range.</exception>
+    public DateTime GetDateTime(bool useUnixTimestamps)
+    {
+        if (Value > JsonIntegerNode.MaxSafeInteger) throw new OverflowException("The value is greater than safe number.");
+        if (Value < JsonIntegerNode.MinSafeInteger) throw new OverflowException("The value is less than safe number.");
+        return useUnixTimestamps ? WebFormat.ParseUnixTimestamp((long)Value) : WebFormat.ParseDate((long)Value);
+    }
 
     /// <summary>
     /// Gets the value of the element as a date time.
     /// </summary>
     /// <returns>The value of the element as a date time.</returns>
-    /// <exception cref="InvalidCastException">The value is a Decimal but expect a Int64.</exception>
-    DateTime IJsonDataNode.GetDateTime()
-        => WebFormat.ParseDate((long)Value);
-
-    /// <summary>
-    /// Gets the value of the element as a number.
-    /// </summary>
-    /// <returns>The value of the element as a number.</returns>
-    /// <exception cref="InvalidCastException">The value is a Decimal.</exception>
-    decimal IJsonDataNode.GetDecimal() => Value;
-
-    /// <summary>
-    /// Gets the value of the element as a number.
-    /// </summary>
-    /// <returns>The value of the element as a number.</returns>
-    /// <exception cref="InvalidCastException">The value is a Decimal.</exception>
-    /// <exception cref="OverflowException">The value is greater than the most maximum value or less than the most minimum value defined of the number type.</exception>
-    float IJsonDataNode.GetSingle() => (float)Value;
-
-    /// <summary>
-    /// Gets the value of the element as a number.
-    /// </summary>
-    /// <returns>The value of the element as a number.</returns>
-    double IJsonDataNode.GetDouble() => (double)Value;
-
-    /// <summary>
-    /// Gets the value of the element as a number.
-    /// </summary>
-    /// <returns>The value of the element as a number.</returns>
-    /// <exception cref="InvalidCastException">The value is a Decimal.</exception>
-    /// <exception cref="OverflowException">The value is greater than the most maximum value or less than the most minimum value defined of the number type.</exception>
-    short IJsonDataNode.GetInt16() => (short)Value;
-
-    /// <summary>
-    /// Gets the value of the element as a number.
-    /// </summary>
-    /// <returns>The value of the element as a number.</returns>
-    /// <exception cref="InvalidCastException">The value is a Decimal.</exception>
-    /// <exception cref="OverflowException">The value is greater than the most maximum value or less than the most minimum value defined of the number type.</exception>
-    uint IJsonDataNode.GetUInt32() => (uint)Value;
-
-    /// <summary>
-    /// Gets the value of the element as a number.
-    /// </summary>
-    /// <returns>The value of the element as a number.</returns>
-    /// <exception cref="InvalidCastException">The value is a Decimal.</exception>
-    /// <exception cref="OverflowException">The value is greater than the most maximum value or less than the most minimum value defined of the number type.</exception>
-    int IJsonDataNode.GetInt32() => (int)Value;
-
-    /// <summary>
-    /// Gets the value of the element as a number.
-    /// </summary>
-    /// <returns>The value of the element as a number.</returns>
-    /// <exception cref="InvalidCastException">The value is a Decimal.</exception>
-    /// <exception cref="OverflowException">The value is greater than the most maximum value or less than the most minimum value defined of the number type.</exception>
-    long IJsonDataNode.GetInt64() => (long)Value;
-
-    /// <summary>
-    /// Gets the value of the element as a number.
-    /// </summary>
-    /// <returns>The value of the element as a number.</returns>
-    /// <exception cref="InvalidCastException">The value is a Decimal.</exception>
-    /// <exception cref="OverflowException">The value is greater than the most maximum value or less than the most minimum value defined of the number type.</exception>
-    decimal IJsonNumberNode.GetDecimal() => (decimal)Value;
-
-    /// <summary>
-    /// Gets the value of the element as a number.
-    /// </summary>
-    /// <returns>The value of the element as a number.</returns>
-    /// <exception cref="InvalidCastException">The value is a Decimal.</exception>
-    /// <exception cref="OverflowException">The value is greater than the most maximum value or less than the most minimum value defined of the number type.</exception>
-    float IJsonNumberNode.GetSingle() => (float)Value;
-
-    /// <summary>
-    /// Gets the value of the element as a number.
-    /// </summary>
-    /// <returns>The value of the element as a number.</returns>
-    double IJsonNumberNode.GetDouble() => (double)Value;
-
-    /// <summary>
-    /// Gets the value of the element as a number.
-    /// </summary>
-    /// <returns>The value of the element as a number.</returns>
-    /// <exception cref="InvalidCastException">The value is a Decimal.</exception>
-    /// <exception cref="OverflowException">The value is greater than the most maximum value or less than the most minimum value defined of the number type.</exception>
-    ushort IJsonNumberNode.GetUInt16() => (ushort)Value;
-
-    /// <summary>
-    /// Gets the value of the element as a number.
-    /// </summary>
-    /// <returns>The value of the element as a number.</returns>
-    /// <exception cref="InvalidCastException">The value is a Decimal.</exception>
-    /// <exception cref="OverflowException">The value is greater than the most maximum value or less than the most minimum value defined of the number type.</exception>
-    short IJsonNumberNode.GetInt16() => (short)Value;
-
-    /// <summary>
-    /// Gets the value of the element as a number.
-    /// </summary>
-    /// <returns>The value of the element as a number.</returns>
-    /// <exception cref="InvalidCastException">The value is a Decimal.</exception>
-    uint IJsonNumberNode.GetUInt32() => (uint)Value;
-
-    /// <summary>
-    /// Gets the value of the element as a number.
-    /// </summary>
-    /// <returns>The value of the element as a number.</returns>
-    /// <exception cref="InvalidCastException">The value is a Decimal.</exception>
-    /// <exception cref="OverflowException">The value is greater than the most maximum value or less than the most minimum value defined of the number type.</exception>
-    int IJsonNumberNode.GetInt32() => (int)Value;
-
-    /// <summary>
-    /// Gets the value of the element as a number.
-    /// </summary>
-    /// <returns>The value of the element as a number.</returns>
-    /// <exception cref="InvalidCastException">The value is a Decimal.</exception>
-    /// <exception cref="OverflowException">The value is greater than the most maximum value or less than the most minimum value defined of the number type.</exception>
-    long IJsonNumberNode.GetInt64() => (long)Value;
-
-    /// <summary>
-    /// Gets the value of the element as a number.
-    /// </summary>
-    /// <returns>The value of the element as a number.</returns>
-    /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
-    string IJsonDataNode.GetString() => ToString();
-
-    /// <summary>
-    /// Gets the value of the element as a GUID.
-    /// </summary>
-    /// <returns>The value of the element as a GUID.</returns>
-    /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
-    Guid IJsonDataNode.GetGuid() => throw new InvalidOperationException("Expect a string but it is a number.");
-
-    /// <summary>
-    /// Tries to get the value of the element as a boolean.
-    /// </summary>
-    /// <param name="result">The result.</param>
-    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
-    public bool TryGetBoolean(out bool result)
-    {
-        if (Value == 0)
-        {
-            result = false;
-            return true;
-        }
-
-        if (Value == 1)
-        {
-            result = true;
-            return true;
-        }
-
-        result = false;
-        return false;
-    }
+    /// <exception cref="OverflowException">The value is out of safe integer range.</exception>
+    public DateTime GetDateTime()
+        => GetDateTime(false);
 
     /// <summary>
     /// Tries to get the value of the element as a date time.
     /// </summary>
     /// <param name="result">The result.</param>
     /// <returns>true if the kind is the one expected; otherwise, false.</returns>
-    public bool TryGetDateTime(out DateTime result)
+    protected override bool TryConvert(out DateTime result)
     {
+        if (Value > long.MaxValue || Value < long.MinValue) return base.TryConvert(out result);
         try
         {
             result = WebFormat.ParseDate((long)Value);
@@ -3904,16 +3038,33 @@ public class JsonDecimalNode : IJsonValueNode<decimal>, IJsonDataNode, IJsonNumb
         {
         }
 
-        result = WebFormat.ParseDate(0);
+        result = default;
         return false;
     }
 
     /// <summary>
-    /// Tries to get the value of the element as a number.
+    /// Gets the value of the element as a floating number.
     /// </summary>
+    /// <returns>The value of the element as a floating number.</returns>
+    /// <exception cref="OverflowException">The value is out of range.</exception>
+    /// <exception cref="InvalidCastException">The value is out of range.</exception>
+    public decimal GetDecimal() => Value;
+
+    /// <summary>
+    /// Gets the value of the element as a floating number.
+    /// </summary>
+    /// <returns>The value of the element as a floating number.</returns>
+    /// <exception cref="OverflowException">The value is out of range.</exception>
+    /// <exception cref="InvalidCastException">The value is out of range.</exception>
+    public decimal GetDecimal(bool strict) => Value;
+
+    /// <summary>
+    /// Tries to get the value of the element as a boolean.
+    /// </summary>
+    /// <param name="strict">true if enable strict mode that compare the value kind firstly; otherwise, false, to convert in compatible mode.</param>
     /// <param name="result">The result.</param>
     /// <returns>true if the kind is the one expected; otherwise, false.</returns>
-    public bool TryGetDecimal(out decimal result)
+    protected override bool TryConvert(bool strict, out decimal result)
     {
         try
         {
@@ -3932,11 +3083,28 @@ public class JsonDecimalNode : IJsonValueNode<decimal>, IJsonDataNode, IJsonNumb
     }
 
     /// <summary>
-    /// Tries to get the value of the element as a number.
+    /// Gets the value of the element as a floating number.
     /// </summary>
+    /// <returns>The value of the element as a number.</returns>
+    /// <exception cref="OverflowException">The value is out of range.</exception>
+    /// <exception cref="InvalidCastException">The value is out of range.</exception>
+    public float GetSingle() => (float)Value;
+
+    /// <summary>
+    /// Gets the value of the element as a floating number.
+    /// </summary>
+    /// <returns>The value of the element as a floating number.</returns>
+    /// <exception cref="OverflowException">The value is out of range.</exception>
+    /// <exception cref="InvalidCastException">The value is out of range.</exception>
+    public float GetSingle(bool strict) => (float)Value;
+
+    /// <summary>
+    /// Tries to get the value of the element as a boolean.
+    /// </summary>
+    /// <param name="strict">true if enable strict mode that compare the value kind firstly; otherwise, false, to convert in compatible mode.</param>
     /// <param name="result">The result.</param>
     /// <returns>true if the kind is the one expected; otherwise, false.</returns>
-    public bool TryGetSingle(out float result)
+    protected override bool TryConvert(bool strict, out float result)
     {
         try
         {
@@ -3955,22 +3123,92 @@ public class JsonDecimalNode : IJsonValueNode<decimal>, IJsonDataNode, IJsonNumb
     }
 
     /// <summary>
-    /// Tries to get the value of the element as a number.
+    /// Gets the value of the element as a floating number.
     /// </summary>
+    /// <returns>The value of the element as a floating number.</returns>
+    public double GetDouble() => (double)Value;
+
+    /// <summary>
+    /// Gets the value of the element as a floating number.
+    /// </summary>
+    /// <returns>The value of the element as a floating number.</returns>
+    public double GetDouble(bool strict) => (double)Value;
+
+    /// <summary>
+    /// Tries to get the value of the element as a boolean.
+    /// </summary>
+    /// <param name="strict">true if enable strict mode that compare the value kind firstly; otherwise, false, to convert in compatible mode.</param>
     /// <param name="result">The result.</param>
     /// <returns>true if the kind is the one expected; otherwise, false.</returns>
-    bool IJsonDataNode.TryGetDouble(out double result)
+    protected override bool TryConvert(bool strict, out double result)
     {
         result = (double)Value;
         return true;
     }
 
     /// <summary>
-    /// Tries to get the value of the element as a number.
+    /// Gets the value of the element as an integer.
     /// </summary>
+    /// <returns>The value of the element as an integer.</returns>
+    /// <exception cref="OverflowException">The value is out of range.</exception>
+    /// <exception cref="InvalidCastException">The value is out of range.</exception>
+    public short GetInt16() => (short)Value;
+
+    /// <summary>
+    /// Gets the value of the element as an integer.
+    /// </summary>
+    /// <returns>The value of the element as an integer.</returns>
+    /// <exception cref="OverflowException">The value is out of range.</exception>
+    /// <exception cref="InvalidCastException">The value is out of range.</exception>
+    public short GetInt16(bool strict) => (short)Value;
+
+    /// <summary>
+    /// Tries to get the value of the element as a boolean.
+    /// </summary>
+    /// <param name="strict">true if enable strict mode that compare the value kind firstly; otherwise, false, to convert in compatible mode.</param>
     /// <param name="result">The result.</param>
     /// <returns>true if the kind is the one expected; otherwise, false.</returns>
-    public bool TryGetUInt32(out uint result)
+    protected override bool TryConvert(bool strict, out short result)
+    {
+        try
+        {
+            result = (short)Value;
+            return true;
+        }
+        catch (OverflowException)
+        {
+        }
+        catch (InvalidCastException)
+        {
+        }
+
+        result = 0;
+        return false;
+    }
+
+    /// <summary>
+    /// Gets the value of the element as an integer.
+    /// </summary>
+    /// <returns>The value of the element as an integer.</returns>
+    /// <exception cref="OverflowException">The value is out of range.</exception>
+    /// <exception cref="InvalidCastException">The value is out of range.</exception>
+    public uint GetUInt32() => (uint)Value;
+
+    /// <summary>
+    /// Gets the value of the element as an integer.
+    /// </summary>
+    /// <returns>The value of the element as an integer.</returns>
+    /// <exception cref="OverflowException">The value is out of range.</exception>
+    /// <exception cref="InvalidCastException">The value is out of range.</exception>
+    public uint GetUInt32(bool strict) => (uint)Value;
+
+    /// <summary>
+    /// Tries to get the value of the element as a boolean.
+    /// </summary>
+    /// <param name="strict">true if enable strict mode that compare the value kind firstly; otherwise, false, to convert in compatible mode.</param>
+    /// <param name="result">The result.</param>
+    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+    protected override bool TryConvert(bool strict, out uint result)
     {
         try
         {
@@ -3989,11 +3227,28 @@ public class JsonDecimalNode : IJsonValueNode<decimal>, IJsonDataNode, IJsonNumb
     }
 
     /// <summary>
-    /// Tries to get the value of the element as a number.
+    /// Gets the value of the element as an integer.
     /// </summary>
+    /// <returns>The value of the element as an integer.</returns>
+    /// <exception cref="OverflowException">The value is out of range.</exception>
+    /// <exception cref="InvalidCastException">The value is out of range.</exception>
+    public int GetInt32() => (int)Value;
+
+    /// <summary>
+    /// Gets the value of the element as an integer.
+    /// </summary>
+    /// <returns>The value of the element as an integer.</returns>
+    /// <exception cref="OverflowException">The value is out of range.</exception>
+    /// <exception cref="InvalidCastException">The value is out of range.</exception>
+    public int GetInt32(bool strict) => (int)Value;
+
+    /// <summary>
+    /// Tries to get the value of the element as a boolean.
+    /// </summary>
+    /// <param name="strict">true if enable strict mode that compare the value kind firstly; otherwise, false, to convert in compatible mode.</param>
     /// <param name="result">The result.</param>
     /// <returns>true if the kind is the one expected; otherwise, false.</returns>
-    public bool TryGetInt32(out int result)
+    protected override bool TryConvert(bool strict, out int result)
     {
         try
         {
@@ -4012,11 +3267,28 @@ public class JsonDecimalNode : IJsonValueNode<decimal>, IJsonDataNode, IJsonNumb
     }
 
     /// <summary>
-    /// Tries to get the value of the element as a number.
+    /// Gets the value of the element as an integer.
     /// </summary>
+    /// <returns>The value of the element as an integer.</returns>
+    /// <exception cref="OverflowException">The value is out of range.</exception>
+    /// <exception cref="InvalidCastException">The value is out of range.</exception>
+    public long GetInt64() => (long)Value;
+
+    /// <summary>
+    /// Gets the value of the element as an integer.
+    /// </summary>
+    /// <returns>The value of the element as an integer.</returns>
+    /// <exception cref="OverflowException">The value is out of range.</exception>
+    /// <exception cref="InvalidCastException">The value is out of range.</exception>
+    public long GetInt64(bool strict) => (long)Value;
+
+    /// <summary>
+    /// Tries to get the value of the element as a boolean.
+    /// </summary>
+    /// <param name="strict">true if enable strict mode that compare the value kind firstly; otherwise, false, to convert in compatible mode.</param>
     /// <param name="result">The result.</param>
     /// <returns>true if the kind is the one expected; otherwise, false.</returns>
-    public bool TryGetInt64(out long result)
+    protected override bool TryConvert(bool strict, out long result)
     {
         try
         {
@@ -4035,11 +3307,28 @@ public class JsonDecimalNode : IJsonValueNode<decimal>, IJsonDataNode, IJsonNumb
     }
 
     /// <summary>
-    /// Tries to get the value of the element as a number.
+    /// Gets the value of the element as an integer.
     /// </summary>
+    /// <returns>The value of the element as an integer.</returns>
+    /// <exception cref="OverflowException">The value is out of range.</exception>
+    /// <exception cref="InvalidCastException">The value is out of range.</exception>
+    public ulong GetUInt64() => (ulong)Value;
+
+    /// <summary>
+    /// Gets the value of the element as an integer.
+    /// </summary>
+    /// <returns>The value of the element as an integer.</returns>
+    /// <exception cref="OverflowException">The value is out of range.</exception>
+    /// <exception cref="InvalidCastException">The value is out of range.</exception>
+    public ulong GetUInt64(bool strict) => (ulong)Value;
+
+    /// <summary>
+    /// Tries to get the value of the element as a boolean.
+    /// </summary>
+    /// <param name="strict">true if enable strict mode that compare the value kind firstly; otherwise, false, to convert in compatible mode.</param>
     /// <param name="result">The result.</param>
     /// <returns>true if the kind is the one expected; otherwise, false.</returns>
-    public bool TryGetUInt64(out ulong result)
+    protected override bool TryConvert(bool strict, out ulong result)
     {
         try
         {
@@ -4057,116 +3346,21 @@ public class JsonDecimalNode : IJsonValueNode<decimal>, IJsonDataNode, IJsonNumb
         return false;
     }
 
+    /// <inheritdoc />
+    public override JsonValue ToJsonValue()
+        => JsonValue.Create(Value);
+
     /// <summary>
-    /// Tries to get the value of the element as a number.
+    /// Tries to get the value of the element as a boolean.
     /// </summary>
+    /// <param name="strict">true if enable strict mode that compare the value kind firstly; otherwise, false, to convert in compatible mode.</param>
     /// <param name="result">The result.</param>
     /// <returns>true if the kind is the one expected; otherwise, false.</returns>
-    bool IJsonDataNode.TryGetString(out string result)
+    protected override bool TryConvert(bool strict, out string result)
     {
         result = ToString();
-        return true;
+        return !strict;
     }
-
-    /// <summary>
-    /// Tries to get the value of the element as a GUID.
-    /// </summary>
-    /// <param name="result">The result.</param>
-    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
-    bool IJsonDataNode.TryGetGuid(out Guid result)
-    {
-        result = Guid.Empty;
-        return false;
-    }
-
-    /// <summary>
-    /// Gets the value of the specific property.
-    /// </summary>
-    /// <param name="key">The property key.</param>
-    /// <returns>The value.</returns>
-    /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
-    IJsonDataNode IJsonDataNode.GetValue(string key) => throw new InvalidOperationException("Expect an object but it is a number.");
-
-    /// <summary>
-    /// Gets the value of the specific property.
-    /// </summary>
-    /// <param name="key">The property key.</param>
-    /// <returns>The value.</returns>
-    /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
-    IJsonDataNode IJsonDataNode.GetValue(ReadOnlySpan<char> key) => throw new InvalidOperationException("Expect an object but it is a number.");
-
-    /// <summary>
-    /// Tries to get the value of the specific property.
-    /// </summary>
-    /// <param name="key">The property key.</param>
-    /// <param name="result">The result.</param>
-    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
-    bool IJsonDataNode.TryGetValue(string key, out IJsonDataNode result)
-    {
-        result = default;
-        return false;
-    }
-
-    /// <summary>
-    /// Tries to get the value of the specific property.
-    /// </summary>
-    /// <param name="key">The property key.</param>
-    /// <param name="result">The result.</param>
-    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
-    bool IJsonDataNode.TryGetValue(ReadOnlySpan<char> key, out IJsonDataNode result)
-    {
-        result = default;
-        return false;
-    }
-
-    /// <summary>
-    /// Gets the value at the specific index.
-    /// </summary>
-    /// <param name="index">The zero-based index of the element to get.</param>
-    /// <returns>The value.</returns>
-    /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
-    IJsonDataNode IJsonDataNode.GetValue(int index) => throw new InvalidOperationException("Expect an array but it is a number.");
-
-    /// <summary>
-    /// Tries to get the value of the specific property.
-    /// </summary>
-    /// <param name="index">The zero-based index of the element to get.</param>
-    /// <param name="result">The result.</param>
-    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
-    bool IJsonDataNode.TryGetValue(int index, out IJsonDataNode result)
-    {
-        result = default;
-        return false;
-    }
-
-#if !NETFRAMEWORK
-    /// <summary>
-    /// Gets the value at the specific index.
-    /// </summary>
-    /// <param name="index">The zero-based index of the element to get.</param>
-    /// <returns>The value.</returns>
-    /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
-    IJsonDataNode IJsonDataNode.GetValue(Index index) => throw new InvalidOperationException("Expect an array but it is a number.");
-
-    /// <summary>
-    /// Tries to get the value of the specific property.
-    /// </summary>
-    /// <param name="index">The zero-based index of the element to get.</param>
-    /// <param name="result">The result.</param>
-    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
-    bool IJsonDataNode.TryGetValue(Index index, out IJsonDataNode result)
-    {
-        result = default;
-        return false;
-    }
-#endif
-
-    /// <summary>
-    /// Gets all property keys.
-    /// </summary>
-    /// <returns>The property keys.</returns>
-    /// <exception cref="InvalidOperationException">The value kind is not an object.</exception>
-    IEnumerable<string> IJsonDataNode.GetKeys() => throw new InvalidOperationException("Expect an object but it is a number.");
 
     /// <summary>
     /// Converts to JSON value.
@@ -4197,7 +3391,7 @@ public class JsonDecimalNode : IJsonValueNode<decimal>, IJsonDataNode, IJsonNumb
     /// </summary>
     /// <param name="value">The source value.</param>
     /// <returns>A JSON value.</returns>
-    public static implicit operator JsonDecimalNode(System.Text.Json.Nodes.JsonValue value)
+    public static implicit operator JsonDecimalNode(JsonValue value)
     {
         if (value is null) return null;
         if (value.TryGetValue(out double d))
@@ -4226,92 +3420,12 @@ public class JsonDecimalNode : IJsonValueNode<decimal>, IJsonDataNode, IJsonNumb
     /// </summary>
     /// <param name="value">The source value.</param>
     /// <returns>A JSON value.</returns>
-    public static implicit operator JsonDecimalNode(System.Text.Json.Nodes.JsonNode value)
+    public static implicit operator JsonDecimalNode(JsonNode value)
     {
         if (value is null) return null;
-        if (value is System.Text.Json.Nodes.JsonValue v) return v;
+        if (value is JsonValue v) return v;
         throw new InvalidCastException($"Only supports JsonValue but its type is {value.GetType().Name}.");
     }
-
-    /// <summary>
-    /// Converts the JSON raw back.
-    /// </summary>
-    /// <param name="json">The JSON value.</param>
-    /// <returns>A number.</returns>
-    public static explicit operator double(JsonDecimalNode json)
-        => (double)json.Value;
-
-    /// <summary>
-    /// Converts the JSON raw back.
-    /// </summary>
-    /// <param name="json">The JSON value.</param>
-    /// <returns>A number.</returns>
-    public static explicit operator float(JsonDecimalNode json)
-        => (float)json.Value;
-
-    /// <summary>
-    /// Converts the JSON raw back.
-    /// </summary>
-    /// <param name="json">The JSON value.</param>
-    /// <returns>A number.</returns>
-    public static explicit operator decimal(JsonDecimalNode json)
-        => json.Value;
-
-    /// <summary>
-    /// Converts the JSON raw back.
-    /// </summary>
-    /// <param name="json">The JSON value.</param>
-    /// <returns>A number.</returns>
-    public static explicit operator ushort(JsonDecimalNode json)
-        => (ushort)json.Value;
-
-    /// <summary>
-    /// Converts the JSON raw back.
-    /// </summary>
-    /// <param name="json">The JSON value.</param>
-    /// <returns>A number.</returns>
-    public static explicit operator short(JsonDecimalNode json)
-        => (short)json.Value;
-
-    /// <summary>
-    /// Converts the JSON raw back.
-    /// </summary>
-    /// <param name="json">The JSON value.</param>
-    /// <returns>A number.</returns>
-    public static explicit operator uint(JsonDecimalNode json)
-        => (uint)json.Value;
-
-    /// <summary>
-    /// Converts the JSON raw back.
-    /// </summary>
-    /// <param name="json">The JSON value.</param>
-    /// <returns>A number.</returns>
-    public static explicit operator int(JsonDecimalNode json)
-        => (int)json.Value;
-
-    /// <summary>
-    /// Converts the JSON raw back.
-    /// </summary>
-    /// <param name="json">The JSON value.</param>
-    /// <returns>A number.</returns>
-    public static explicit operator ulong(JsonDecimalNode json)
-        => (ulong)json.Value;
-
-    /// <summary>
-    /// Converts the JSON raw back.
-    /// </summary>
-    /// <param name="json">The JSON value.</param>
-    /// <returns>A number.</returns>
-    public static explicit operator long(JsonDecimalNode json)
-        => (long)json.Value;
-
-    /// <summary>
-    /// Converts the JSON raw back.
-    /// </summary>
-    /// <param name="json">The JSON value.</param>
-    /// <returns>A string.</returns>
-    public static explicit operator string(JsonDecimalNode json)
-        => json.ToString();
 
     /// <summary>
     /// Converts to a JSON string.
@@ -4328,22 +3442,6 @@ public class JsonDecimalNode : IJsonValueNode<decimal>, IJsonDataNode, IJsonNumb
     /// <returns>A JSON integer instance.</returns>
     public static explicit operator JsonIntegerNode(JsonDecimalNode json)
         => new((long)json.Value);
-
-    /// <summary>
-    /// Converts to JSON node.
-    /// </summary>
-    /// <param name="json">The JSON value.</param>
-    /// <returns>An instance of the JsonNode class.</returns>
-    public static explicit operator System.Text.Json.Nodes.JsonNode(JsonDecimalNode json)
-        => System.Text.Json.Nodes.JsonValue.Create(json.Value);
-
-    /// <summary>
-    /// Converts to JSON node.
-    /// </summary>
-    /// <param name="json">The JSON value.</param>
-    /// <returns>An instance of the JsonNode class.</returns>
-    public static explicit operator System.Text.Json.Nodes.JsonValue(JsonDecimalNode json)
-        => System.Text.Json.Nodes.JsonValue.Create(json.Value);
 
     /// <summary>
     /// Compares two instances to indicate if they are same.

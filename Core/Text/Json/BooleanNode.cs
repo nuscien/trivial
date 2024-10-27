@@ -5,11 +5,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Text;
 using System.Text.Json;
-
-using Trivial.Web;
-
-using SystemJsonValue = System.Text.Json.Nodes.JsonValue;
-using SystemJsonNode = System.Text.Json.Nodes.JsonNode;
+using System.Text.Json.Nodes;
 
 namespace Trivial.Text;
 
@@ -17,7 +13,7 @@ namespace Trivial.Text;
 /// Represents a specific JSON boolean value.
 /// </summary>
 [System.Text.Json.Serialization.JsonConverter(typeof(JsonObjectNodeConverter))]
-public class JsonBooleanNode : IJsonValueNode<bool>, IJsonDataNode
+public sealed class JsonBooleanNode : BaseJsonValueNode<bool>
 {
     /// <summary>
     /// Represents the Boolean value true of JSON as a string.
@@ -47,21 +43,10 @@ public class JsonBooleanNode : IJsonValueNode<bool>, IJsonDataNode
     /// Initializes a new instance of the JsonBooleanNode class.
     /// </summary>
     /// <param name="value">The value.</param>
-    public JsonBooleanNode(bool value)
+    private JsonBooleanNode(bool value)
+        : base(value ? JsonValueKind.True : JsonValueKind.False, value)
     {
-        Value = value;
-        ValueKind = value ? JsonValueKind.True : JsonValueKind.False;
     }
-
-    /// <summary>
-    /// Gets the value.
-    /// </summary>
-    public bool Value { get; }
-
-    /// <summary>
-    /// Gets the type of the current JSON value.
-    /// </summary>
-    public JsonValueKind ValueKind { get; }
 
     /// <summary>
     /// Gets the JSON format string of the value.
@@ -75,19 +60,16 @@ public class JsonBooleanNode : IJsonValueNode<bool>, IJsonDataNode
     /// </summary>
     /// <param name="other">The object to compare with the current instance.</param>
     /// <returns>true if obj and this instance represent the same value; otherwise, false.</returns>
-    public bool Equals(IJsonValueNode<bool> other)
+    public override bool Equals(IJsonValueNode other)
     {
-        if (other is null) return false;
-        return Value.Equals(other.Value);
+        if (ReferenceEquals(this, other)) return true;
+        if (other is null) return ValueKind == JsonValueKind.Null || ValueKind == JsonValueKind.Undefined;
+        if (other is IJsonValueNode<bool> b0) return Value == b0.Value;
+        if (other is IJsonNumberNode num && num.IsInteger && num.TryConvert(false, out bool b1)) return Value == b1;
+        if (other is IJsonValueNode<string> && other.TryConvert(false, out bool b2)) return Value == b2;
+        if ((other is IJsonValueNode<int> || other is IJsonValueNode<short> || other is IJsonValueNode<long> || other is IJsonValueNode<uint> || other is IJsonValueNode<ushort> || other is IJsonValueNode<ulong> || other is IJsonValueNode<byte>) && other.TryConvert(false, out bool b3)) return Value == b3;
+        return false;
     }
-
-    /// <summary>
-    /// Indicates whether this instance and a specified object are equal.
-    /// </summary>
-    /// <param name="other">The object to compare with the current instance.</param>
-    /// <returns>true if obj and this instance represent the same value; otherwise, false.</returns>
-    public bool Equals(bool other)
-        => Value.Equals(other);
 
     /// <summary>
     /// Indicates whether this instance and a specified object are equal.
@@ -95,298 +77,152 @@ public class JsonBooleanNode : IJsonValueNode<bool>, IJsonDataNode
     /// <param name="other">The object to compare with the current instance.</param>
     /// <returns>true if obj and this instance represent the same value; otherwise, false.</returns>
     public override bool Equals(object other)
-    {
-        if (other is null) return false;
-        if (other is IJsonValueNode<bool> bJson) return Value.Equals(bJson.Value);
-        return Value.Equals(other);
-    }
+        => base.Equals(other);
 
     /// <summary>
     /// Returns the hash code for this instance.
     /// </summary>
     /// <returns>A hash code for the current instance.</returns>
-    public override int GetHashCode() => Value.GetHashCode();
-
-    /// <summary>
-    /// Gets the item value count.
-    /// It always return 0 because it is not an array or object.
-    /// </summary>
-    public int Count => 0;
-
-    /// <summary>
-    /// Gets the value of the element as a boolean.
-    /// </summary>
-    /// <returns>The value of the element as a boolean.</returns>
-    bool IJsonDataNode.GetBoolean() => Value;
-
-    /// <summary>
-    /// Gets the value of the element as a byte array.
-    /// </summary>
-    /// <returns>The value decoded as a byte array.</returns>
-    /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
-    byte[] IJsonDataNode.GetBytesFromBase64() => throw new InvalidOperationException("Expect a string but it is a boolean value.");
-
-    /// <summary>
-    /// Gets the value of the element as a date time.
-    /// </summary>
-    /// <returns>The value of the element as a date time.</returns>
-    /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
-    DateTime IJsonDataNode.GetDateTime() => throw new InvalidOperationException("Expect a date time but it is a boolean value.");
-
-    /// <summary>
-    /// Gets the value of the element as a number.
-    /// </summary>
-    /// <returns>The value of the element as a number.</returns>
-    decimal IJsonDataNode.GetDecimal() => Value ? 1 : 0;
-
-    /// <summary>
-    /// Gets the value of the element as a number.
-    /// </summary>
-    /// <returns>The value of the element as a number.</returns>
-    float IJsonDataNode.GetSingle() => Value ? 1 : 0;
-
-    /// <summary>
-    /// Gets the value of the element as a number.
-    /// </summary>
-    /// <returns>The value of the element as a number.</returns>
-    double IJsonDataNode.GetDouble() => Value ? 1 : 0;
-
-    /// <summary>
-    /// Gets the value of the element as a number.
-    /// </summary>
-    /// <returns>The value of the element as a number.</returns>
-    short IJsonDataNode.GetInt16() => (short)(Value ? 1 : 0);
-
-    /// <summary>
-    /// Gets the value of the element as a number.
-    /// </summary>
-    /// <returns>The value of the element as a number.</returns>
-    uint IJsonDataNode.GetUInt32() => (uint)(Value ? 1 : 0);
-
-    /// <summary>
-    /// Gets the value of the element as a number.
-    /// </summary>
-    /// <returns>The value of the element as a number.</returns>
-    int IJsonDataNode.GetInt32() => Value ? 1 : 0;
-
-    /// <summary>
-    /// Gets the value of the element as a number.
-    /// </summary>
-    /// <returns>The value of the element as a number.</returns>
-    long IJsonDataNode.GetInt64() => Value ? 1 : 0;
-
-    /// <summary>
-    /// Gets the value of the element as a number.
-    /// </summary>
-    /// <returns>The value of the element as a number.</returns>
-    string IJsonDataNode.GetString() => ToString();
-
-    /// <summary>
-    /// Gets the value of the element as a GUID.
-    /// </summary>
-    /// <returns>The value of the element as a GUID.</returns>
-    /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
-    Guid IJsonDataNode.GetGuid() => throw new InvalidOperationException("Expect a string but it is a boolean value.");
+    public override int GetHashCode()
+        => base.GetHashCode();
 
     /// <summary>
     /// Tries to get the value of the element as a boolean.
     /// </summary>
+    /// <param name="strict">true if enable strict mode that compare the value kind firstly; otherwise, false, to convert in compatible mode.</param>
     /// <param name="result">The result.</param>
     /// <returns>true if the kind is the one expected; otherwise, false.</returns>
-    bool IJsonDataNode.TryGetBoolean(out bool result)
+    protected override bool TryConvert(bool strict, out bool result)
     {
         result = Value;
         return true;
     }
 
     /// <summary>
-    /// Tries to get the value of the element as a date time.
+    /// Tries to get the value of the element as a boolean.
     /// </summary>
+    /// <param name="strict">true if enable strict mode that compare the value kind firstly; otherwise, false, to convert in compatible mode.</param>
     /// <param name="result">The result.</param>
     /// <returns>true if the kind is the one expected; otherwise, false.</returns>
-    bool IJsonDataNode.TryGetDateTime(out DateTime result)
+    protected override bool TryConvert(bool strict, out decimal result)
     {
-        result = WebFormat.ParseDate(0);
-        return false;
-    }
-
-    /// <summary>
-    /// Tries to get the value of the element as a number.
-    /// </summary>
-    /// <param name="result">The result.</param>
-    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
-    bool IJsonDataNode.TryGetDecimal(out decimal result)
-    {
-        result = Value ? 1 : 0;
+        if (strict) return base.TryConvert(strict, out result);
+        result = Value ? decimal.One : decimal.Zero;
         return true;
     }
 
     /// <summary>
-    /// Tries to get the value of the element as a number.
+    /// Tries to get the value of the element as a boolean.
     /// </summary>
+    /// <param name="strict">true if enable strict mode that compare the value kind firstly; otherwise, false, to convert in compatible mode.</param>
     /// <param name="result">The result.</param>
     /// <returns>true if the kind is the one expected; otherwise, false.</returns>
-    bool IJsonDataNode.TryGetSingle(out float result)
+    protected override bool TryConvert(bool strict, out float result)
     {
-        result = Value ? 1 : 0;
+        if (strict) return base.TryConvert(strict, out result);
+        result = Value ? 0f : 1f;
         return true;
     }
 
     /// <summary>
-    /// Tries to get the value of the element as a number.
+    /// Tries to get the value of the element as a boolean.
     /// </summary>
+    /// <param name="strict">true if enable strict mode that compare the value kind firstly; otherwise, false, to convert in compatible mode.</param>
     /// <param name="result">The result.</param>
     /// <returns>true if the kind is the one expected; otherwise, false.</returns>
-    bool IJsonDataNode.TryGetDouble(out double result)
+    protected override bool TryConvert(bool strict, out double result)
     {
-        result = Value ? 1 : 0;
+        if (strict) return base.TryConvert(strict, out result);
+        result = Value ? 0d : 1d;
         return true;
     }
 
     /// <summary>
-    /// Tries to get the value of the element as a number.
+    /// Tries to get the value of the element as a boolean.
     /// </summary>
+    /// <param name="strict">true if enable strict mode that compare the value kind firstly; otherwise, false, to convert in compatible mode.</param>
     /// <param name="result">The result.</param>
     /// <returns>true if the kind is the one expected; otherwise, false.</returns>
-    bool IJsonDataNode.TryGetUInt32(out uint result)
+    protected override bool TryConvert(bool strict, out short result)
     {
-        result = (uint)(Value ? 1 : 0);
+        if (strict) return base.TryConvert(strict, out result);
+        result = (short)(Value ? 0 : 1);
         return true;
     }
 
     /// <summary>
-    /// Tries to get the value of the element as a number.
+    /// Tries to get the value of the element as a boolean.
     /// </summary>
+    /// <param name="strict">true if enable strict mode that compare the value kind firstly; otherwise, false, to convert in compatible mode.</param>
     /// <param name="result">The result.</param>
     /// <returns>true if the kind is the one expected; otherwise, false.</returns>
-    bool IJsonDataNode.TryGetInt32(out int result)
+    protected override bool TryConvert(bool strict, out uint result)
     {
-        result = Value ? 1 : 0;
+        if (strict) return base.TryConvert(strict, out result);
+        result = (uint)(Value ? 0 : 1);
         return true;
     }
 
     /// <summary>
-    /// Tries to get the value of the element as a number.
+    /// Tries to get the value of the element as a boolean.
     /// </summary>
+    /// <param name="strict">true if enable strict mode that compare the value kind firstly; otherwise, false, to convert in compatible mode.</param>
     /// <param name="result">The result.</param>
     /// <returns>true if the kind is the one expected; otherwise, false.</returns>
-    bool IJsonDataNode.TryGetInt64(out long result)
+    protected override bool TryConvert(bool strict, out int result)
     {
-        result = Value ? 1 : 0;
+        if (strict) return base.TryConvert(strict, out result);
+        result = Value ? 0 : 1;
         return true;
     }
 
     /// <summary>
-    /// Tries to get the value of the element as a number.
+    /// Tries to get the value of the element as a boolean.
     /// </summary>
+    /// <param name="strict">true if enable strict mode that compare the value kind firstly; otherwise, false, to convert in compatible mode.</param>
     /// <param name="result">The result.</param>
     /// <returns>true if the kind is the one expected; otherwise, false.</returns>
-    bool IJsonDataNode.TryGetString(out string result)
+    protected override bool TryConvert(bool strict, out long result)
     {
-        result = ToString();
+        if (strict) return base.TryConvert(strict, out result);
+        result = Value ? 0L : 1L;
         return true;
     }
 
     /// <summary>
-    /// Tries to get the value of the element as a GUID.
+    /// Tries to get the value of the element as a boolean.
     /// </summary>
+    /// <param name="strict">true if enable strict mode that compare the value kind firstly; otherwise, false, to convert in compatible mode.</param>
     /// <param name="result">The result.</param>
     /// <returns>true if the kind is the one expected; otherwise, false.</returns>
-    bool IJsonDataNode.TryGetGuid(out Guid result)
+    protected override bool TryConvert(bool strict, out ulong result)
     {
-        result = Guid.Empty;
-        return false;
+        if (strict) return base.TryConvert(strict, out result);
+        result = (ulong)(Value ? 0 : 1);
+        return true;
     }
 
     /// <summary>
-    /// Gets the value of the specific property.
+    /// Tries to get the value of the element as a boolean.
     /// </summary>
-    /// <param name="key">The property key.</param>
-    /// <returns>The value.</returns>
-    /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
-    IJsonDataNode IJsonDataNode.GetValue(string key) => throw new InvalidOperationException("Expect an object but it is a boolean value.");
-
-    /// <summary>
-    /// Gets the value of the specific property.
-    /// </summary>
-    /// <param name="key">The property key.</param>
-    /// <returns>The value.</returns>
-    /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
-    IJsonDataNode IJsonDataNode.GetValue(ReadOnlySpan<char> key) => throw new InvalidOperationException("Expect an object but it is a boolean value.");
-
-    /// <summary>
-    /// Tries to get the value of the specific property.
-    /// </summary>
-    /// <param name="key">The property key.</param>
+    /// <param name="strict">true if enable strict mode that compare the value kind firstly; otherwise, false, to convert in compatible mode.</param>
     /// <param name="result">The result.</param>
     /// <returns>true if the kind is the one expected; otherwise, false.</returns>
-    bool IJsonDataNode.TryGetValue(string key, out IJsonDataNode result)
+    protected override bool TryConvert(bool strict, out string result)
     {
-        result = default;
-        return false;
+        if (strict)
+        {
+            result = default;
+            return false;
+        }
+
+        result = Value ? TrueString : FalseString;
+        return true;
     }
 
-    /// <summary>
-    /// Tries to get the value of the specific property.
-    /// </summary>
-    /// <param name="key">The property key.</param>
-    /// <param name="result">The result.</param>
-    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
-    bool IJsonDataNode.TryGetValue(ReadOnlySpan<char> key, out IJsonDataNode result)
-    {
-        result = default;
-        return false;
-    }
-
-    /// <summary>
-    /// Gets the value at the specific index.
-    /// </summary>
-    /// <param name="index">The zero-based index of the element to get.</param>
-    /// <returns>The value.</returns>
-    /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
-    IJsonDataNode IJsonDataNode.GetValue(int index) => throw new InvalidOperationException("Expect an array but it is a boolean value.");
-
-    /// <summary>
-    /// Tries to get the value of the specific property.
-    /// </summary>
-    /// <param name="index">The zero-based index of the element to get.</param>
-    /// <param name="result">The result.</param>
-    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
-    bool IJsonDataNode.TryGetValue(int index, out IJsonDataNode result)
-    {
-        result = default;
-        return false;
-    }
-
-#if !NETFRAMEWORK
-    /// <summary>
-    /// Gets the value at the specific index.
-    /// </summary>
-    /// <param name="index">The zero-based index of the element to get.</param>
-    /// <returns>The value.</returns>
-    /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
-    IJsonDataNode IJsonDataNode.GetValue(Index index) => throw new InvalidOperationException("Expect an array but it is a boolean value.");
-
-    /// <summary>
-    /// Tries to get the value of the specific property.
-    /// </summary>
-    /// <param name="index">The zero-based index of the element to get.</param>
-    /// <param name="result">The result.</param>
-    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
-    bool IJsonDataNode.TryGetValue(Index index, out IJsonDataNode result)
-    {
-        result = default;
-        return false;
-    }
-#endif
-
-    /// <summary>
-    /// Gets all property keys.
-    /// </summary>
-    /// <returns>The property keys.</returns>
-    /// <exception cref="InvalidOperationException">The value kind is not an object.</exception>
-    IEnumerable<string> IJsonDataNode.GetKeys()
-        => throw new InvalidOperationException("Expect an object but it is a boolean value.");
+    /// <inheritdoc />
+    public override JsonValue ToJsonValue()
+        => JsonValue.Create(Value);
 
     /// <summary>
     /// Converts to JSON value.
@@ -401,7 +237,7 @@ public class JsonBooleanNode : IJsonValueNode<bool>, IJsonDataNode
     /// </summary>
     /// <param name="value">The source value.</param>
     /// <returns>A JSON value.</returns>
-    public static implicit operator JsonBooleanNode(SystemJsonValue value)
+    public static implicit operator JsonBooleanNode(JsonValue value)
     {
         if (value is null) return null;
         if (value.TryGetValue(out bool b))
@@ -424,10 +260,10 @@ public class JsonBooleanNode : IJsonValueNode<bool>, IJsonDataNode
     /// </summary>
     /// <param name="value">The source value.</param>
     /// <returns>A JSON value.</returns>
-    public static implicit operator JsonBooleanNode(SystemJsonNode value)
+    public static implicit operator JsonBooleanNode(JsonNode value)
     {
         if (value is null) return null;
-        if (value is SystemJsonValue v) return v;
+        if (value is JsonValue v) return v;
         throw new InvalidCastException($"Only supports JsonValue but its type is {value.GetType().Name}.");
     }
 
@@ -485,44 +321,16 @@ public class JsonBooleanNode : IJsonValueNode<bool>, IJsonDataNode
     /// </summary>
     /// <param name="json">The JSON value.</param>
     /// <returns>An instance of the JsonNode class.</returns>
-    public static explicit operator SystemJsonNode(JsonBooleanNode json)
-        => SystemJsonValue.Create(json.Value);
+    public static explicit operator JsonNode(JsonBooleanNode json)
+        => JsonValue.Create(json.Value);
 
     /// <summary>
     /// Converts to JSON node.
     /// </summary>
     /// <param name="json">The JSON value.</param>
     /// <returns>An instance of the JsonNode class.</returns>
-    public static explicit operator SystemJsonValue(JsonBooleanNode json)
-        => SystemJsonValue.Create(json.Value);
-
-    /// <summary>
-    /// Compares two instances to indicate if they are same.
-    /// leftValue == rightValue
-    /// </summary>
-    /// <param name="leftValue">The left value to compare.</param>
-    /// <param name="rightValue">The right value to compare.</param>
-    /// <returns>true if they are same; otherwise, false.</returns>
-    public static bool operator ==(JsonBooleanNode leftValue, IJsonValueNode<bool> rightValue)
-    {
-        if (ReferenceEquals(leftValue, rightValue)) return true;
-        if (rightValue is null || leftValue is null) return false;
-        return leftValue.Value == rightValue.Value;
-    }
-
-    /// <summary>
-    /// Compares two instances to indicate if they are different.
-    /// leftValue != rightValue
-    /// </summary>
-    /// <param name="leftValue">The left value to compare.</param>
-    /// <param name="rightValue">The right value to compare.</param>
-    /// <returns>true if they are different; otherwise, false.</returns>
-    public static bool operator !=(JsonBooleanNode leftValue, IJsonValueNode<bool> rightValue)
-    {
-        if (ReferenceEquals(leftValue, rightValue)) return false;
-        if (rightValue is null || leftValue is null) return true;
-        return leftValue.Value != rightValue.Value;
-    }
+    public static explicit operator JsonValue(JsonBooleanNode json)
+        => JsonValue.Create(json.Value);
 
     /// <summary>
     /// Compares two instances to indicate if they are same.

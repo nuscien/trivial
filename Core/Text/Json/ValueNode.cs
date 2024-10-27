@@ -1,436 +1,280 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Data;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
+using System.Numerics;
+using System.Reflection;
+using System.Runtime.CompilerServices;
+using System.Security;
 using System.Text;
 using System.Text.Json;
-
+using Trivial.Reflection;
+using Trivial.Security;
 using Trivial.Web;
 
 namespace Trivial.Text;
 
 /// <summary>
-/// Represents a specific JSON value.
+/// The JSON value node base.
 /// </summary>
-public interface IJsonValueNode
+/// <typeparam name="T">The type of the value.</typeparam>
+public abstract class BaseJsonValueNode<T> : BaseJsonValueNode, IJsonValueNode<T>
 {
     /// <summary>
-    /// Gets the type of the current JSON value.
+    /// Initializes a new instance of the JsonNull class.
     /// </summary>
-    JsonValueKind ValueKind { get; }
-}
+    /// <param name="valueKind">The JSON value kind.</param>
+    /// <param name="value">The source value.</param>
+    internal BaseJsonValueNode(JsonValueKind valueKind, T value)
+        : base(valueKind)
+    {
+        Value = value;
+    }
 
-/// <summary>
-/// Represents a specific JSON value with source.
-/// </summary>
-/// <typeparam name="T">The type of source value.</typeparam>
-public interface IJsonValueNode<T> : IJsonValueNode, IEquatable<IJsonValueNode<T>>, IEquatable<T>
-{
-    /// <summary>
-    /// Gets the source value.
-    /// </summary>
-    T Value { get; }
-}
-
-/// <summary>
-/// Represents a specific JSON value with source.
-/// </summary>
-public interface IJsonDataNode : IJsonValueNode
-{
-    /// <summary>
-    /// Gets the item value count; or 0, if the value kind is not expected.
-    /// </summary>
-    int Count { get; }
+    /// <inheritdoc />
+    protected override object RawValue => Value;
 
     /// <summary>
-    /// Gets the value of the element as a boolean.
+    /// Gets the value.
     /// </summary>
-    /// <returns>The value of the element as a boolean.</returns>
-    /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
-    bool GetBoolean();
+    public T Value { get; }
 
     /// <summary>
-    /// Gets the value of the element as a byte array.
+    /// Indicates whether this instance and a specified object are equal.
     /// </summary>
-    /// <returns>The value decoded as a byte array.</returns>
-    /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
-    /// <exception cref="FormatException">The value is not encoded as Base64 text and hence cannot be decoded to bytes.</exception>
-    byte[] GetBytesFromBase64();
+    /// <param name="other">The object to compare with the current instance.</param>
+    /// <returns>true if obj and this instance represent the same value; otherwise, false.</returns>
+    public virtual bool Equals(T other)
+        => Value is null ? other is null : Value.Equals(other);
 
     /// <summary>
-    /// Gets the value of the element as a date time.
+    /// Indicates whether this instance and a specified object are equal.
     /// </summary>
-    /// <returns>The value of the element as a date time.</returns>
-    /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
-    /// <exception cref="FormatException">The value is not formatted for a date time.</exception>
-    DateTime GetDateTime();
-
-    /// <summary>
-    /// Gets the value of the element as a number.
-    /// </summary>
-    /// <returns>The value of the element as a number.</returns>
-    /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
-    /// <exception cref="InvalidCastException">The bit of value is more than the one need to convert.</exception>
-    /// <exception cref="OverflowException">The value is greater than the most maximum value or less than the most minimum value defined of the number type.</exception>
-    decimal GetDecimal();
-
-    /// <summary>
-    /// Gets the value of the element as a number.
-    /// </summary>
-    /// <returns>The value of the element as a number.</returns>
-    /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
-    /// <exception cref="InvalidCastException">The bit of value is more than the one need to convert.</exception>
-    /// <exception cref="OverflowException">The value is greater than the most maximum value or less than the most minimum value defined of the number type.</exception>
-    float GetSingle();
-
-    /// <summary>
-    /// Gets the value of the element as a number.
-    /// </summary>
-    /// <returns>The value of the element as a number.</returns>
-    /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
-    double GetDouble();
-
-    /// <summary>
-    /// Gets the value of the element as a number.
-    /// </summary>
-    /// <returns>The value of the element as a number.</returns>
-    /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
-    /// <exception cref="InvalidCastException">The bit of value is more than the one need to convert.</exception>
-    /// <exception cref="OverflowException">The value is greater than the most maximum value or less than the most minimum value defined of the number type.</exception>
-    short GetInt16();
-
-    /// <summary>
-    /// Gets the value of the element as a number.
-    /// </summary>
-    /// <returns>The value of the element as a number.</returns>
-    /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
-    /// <exception cref="InvalidCastException">The bit of value is more than the one need to convert.</exception>
-    /// <exception cref="OverflowException">The value is greater than the most maximum value or less than the most minimum value defined of the number type.</exception>
-    uint GetUInt32();
-
-    /// <summary>
-    /// Gets the value of the element as a number.
-    /// </summary>
-    /// <returns>The value of the element as a number.</returns>
-    /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
-    /// <exception cref="InvalidCastException">The bit of value is more than the one need to convert.</exception>
-    /// <exception cref="OverflowException">The value is greater than the most maximum value or less than the most minimum value defined of the number type.</exception>
-    int GetInt32();
-
-    /// <summary>
-    /// Gets the value of the element as a number.
-    /// </summary>
-    /// <returns>The value of the element as a number.</returns>
-    /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
-    /// <exception cref="InvalidCastException">The bit of value is more than the one need to convert.</exception>
-    /// <exception cref="OverflowException">The value is greater than the most maximum value or less than the most minimum value defined of the number type.</exception>
-    long GetInt64();
-
-    /// <summary>
-    /// Gets the value of the element as a string.
-    /// </summary>
-    /// <returns>The value of the element as a number.</returns>
-    /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
-    string GetString();
-
-    /// <summary>
-    /// Gets the value of the element as a GUID.
-    /// </summary>
-    /// <returns>The value of the element as a GUID.</returns>
-    /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
-    /// <exception cref="FormatException">The value is not formatted for a GUID.</exception>
-    Guid GetGuid();
-
-    /// <summary>
-    /// Tries to get the value of the element as a boolean.
-    /// </summary>
-    /// <param name="result">The result.</param>
-    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
-    bool TryGetBoolean(out bool result);
-
-    /// <summary>
-    /// Tries to get the value of the element as a date time.
-    /// </summary>
-    /// <param name="result">The result.</param>
-    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
-    bool TryGetDateTime(out DateTime result);
-
-    /// <summary>
-    /// Tries to get the value of the element as a number.
-    /// </summary>
-    /// <param name="result">The result.</param>
-    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
-    bool TryGetDecimal(out decimal result);
-
-    /// <summary>
-    /// Tries to get the value of the element as a number.
-    /// </summary>
-    /// <param name="result">The result.</param>
-    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
-    bool TryGetSingle(out float result);
-
-    /// <summary>
-    /// Tries to get the value of the element as a number.
-    /// </summary>
-    /// <param name="result">The result.</param>
-    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
-    bool TryGetDouble(out double result);
-
-    /// <summary>
-    /// Tries to get the value of the element as a number.
-    /// </summary>
-    /// <param name="result">The result.</param>
-    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
-    bool TryGetUInt32(out uint result);
-
-    /// <summary>
-    /// Tries to get the value of the element as a number.
-    /// </summary>
-    /// <param name="result">The result.</param>
-    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
-    bool TryGetInt32(out int result);
-
-    /// <summary>
-    /// Tries to get the value of the element as a number.
-    /// </summary>
-    /// <param name="result">The result.</param>
-    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
-    bool TryGetInt64(out long result);
-
-    /// <summary>
-    /// Tries to get the value of the element as a string.
-    /// </summary>
-    /// <param name="result">The result.</param>
-    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
-    bool TryGetString(out string result);
-
-    /// <summary>
-    /// Tries to get the value of the element as a GUID.
-    /// </summary>
-    /// <param name="result">The result.</param>
-    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
-    bool TryGetGuid(out Guid result);
-
-    /// <summary>
-    /// Gets the value of the specific property.
-    /// </summary>
-    /// <param name="key">The property key.</param>
-    /// <returns>The value.</returns>
-    /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
-    /// <exception cref="ArgumentOutOfRangeException">The property does not exist.</exception>
-    /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
-    IJsonDataNode GetValue(string key);
-
-    /// <summary>
-    /// Gets the value of the specific property.
-    /// </summary>
-    /// <param name="key">The property key.</param>
-    /// <returns>The value.</returns>
-    /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
-    /// <exception cref="ArgumentOutOfRangeException">The property does not exist.</exception>
-    /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
-    IJsonDataNode GetValue(ReadOnlySpan<char> key);
-
-    /// <summary>
-    /// Tries to get the value of the specific property.
-    /// </summary>
-    /// <param name="key">The property key.</param>
-    /// <param name="result">The result.</param>
-    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
-    bool TryGetValue(string key, out IJsonDataNode result);
-
-    /// <summary>
-    /// Tries to get the value of the specific property.
-    /// </summary>
-    /// <param name="key">The property key.</param>
-    /// <param name="result">The result.</param>
-    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
-    bool TryGetValue(ReadOnlySpan<char> key, out IJsonDataNode result);
-
-    /// <summary>
-    /// Gets the value of the specific property.
-    /// </summary>
-    /// <param name="index">The zero-based index of the element to get.</param>
-    /// <returns>The value.</returns>
-    /// <exception cref="ArgumentOutOfRangeException">The index is out of range.</exception>
-    /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
-    IJsonDataNode GetValue(int index);
-
-    /// <summary>
-    /// Tries to get the value of the specific property.
-    /// </summary>
-    /// <param name="index">The zero-based index of the element to get.</param>
-    /// <param name="result">The result.</param>
-    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
-    bool TryGetValue(int index, out IJsonDataNode result);
-
-#if !NETFRAMEWORK
-    /// <summary>
-    /// Gets the value of the specific property.
-    /// </summary>
-    /// <param name="index">The zero-based index of the element to get.</param>
-    /// <returns>The value.</returns>
-    /// <exception cref="ArgumentOutOfRangeException">The index is out of range.</exception>
-    /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
-    IJsonDataNode GetValue(Index index);
-
-    /// <summary>
-    /// Tries to get the value of the specific property.
-    /// </summary>
-    /// <param name="index">The zero-based index of the element to get.</param>
-    /// <param name="result">The result.</param>
-    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
-    bool TryGetValue(Index index, out IJsonDataNode result);
-#endif
-
-    /// <summary>
-    /// Gets all property keys.
-    /// </summary>
-    /// <returns>The property keys.</returns>
-    /// <exception cref="InvalidOperationException">The value kind is not an object.</exception>
-    IEnumerable<string> GetKeys();
-}
-
-/// <summary>
-/// Represents a JSON container.
-/// </summary>
-public interface IJsonContainerNode : IJsonValueNode, ICloneable, IEnumerable
-{
-    /// <summary>
-    /// Gets the number of elements contained in JSON container.
-    /// </summary>
-    int Count { get; }
-
-    /// <summary>
-    /// Gets the value of the specific property.
-    /// </summary>
-    /// <param name="key">The property key.</param>
-    /// <returns>The value.</returns>
-    /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
-    /// <exception cref="ArgumentOutOfRangeException">The property does not exist.</exception>
-    /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
-    IJsonDataNode GetValue(string key);
-
-    /// <summary>
-    /// Gets the value of the specific property.
-    /// </summary>
-    /// <param name="key">The property key.</param>
-    /// <returns>The value.</returns>
-    /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
-    /// <exception cref="ArgumentOutOfRangeException">The property does not exist.</exception>
-    /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
-    IJsonDataNode GetValue(ReadOnlySpan<char> key);
-
-    /// <summary>
-    /// Tries to get the value of the specific property.
-    /// </summary>
-    /// <param name="key">The property key.</param>
-    /// <param name="result">The result.</param>
-    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
-    bool TryGetValue(string key, out IJsonDataNode result);
-
-    /// <summary>
-    /// Tries to get the value of the specific property.
-    /// </summary>
-    /// <param name="key">The property key.</param>
-    /// <param name="result">The result.</param>
-    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
-    bool TryGetValue(ReadOnlySpan<char> key, out IJsonDataNode result);
-
-    /// <summary>
-    /// Gets all property keys.
-    /// </summary>
-    /// <returns>The property keys.</returns>
-    /// <exception cref="InvalidOperationException">The value kind is not an object.</exception>
-    IEnumerable<string> GetKeys();
-
-    /// <summary>
-    /// Removes all items from the array.
-    /// </summary>
-    void Clear();
-
-    /// <summary>
-    /// Deserializes.
-    /// </summary>
-    /// <param name="options">Options to control the behavior during parsing.</param>
-    /// <returns>A JSON object instance.</returns>
-    /// <exception cref="ArgumentException">readerOptions contains unsupported options.</exception>
-    T Deserialize<T>(JsonSerializerOptions options = default);
-
-    /// <summary>
-    /// Writes this instance to the specified writer as a JSON value.
-    /// </summary>
-    /// <param name="writer">The writer to which to write this instance.</param>
-    void WriteTo(Utf8JsonWriter writer);
+    /// <param name="other">The object to compare with the current instance.</param>
+    /// <returns>true if obj and this instance represent the same value; otherwise, false.</returns>
+    public virtual bool Equals(IJsonValueNode<T> other)
+        => Value is null ? other is null : Value.Equals(other.Value);
 
     /// <summary>
     /// Gets the JSON format string of the value.
     /// </summary>
-    /// <param name="indentStyle">The indent style.</param>
-    /// <returns>A JSON format string.</returns>
-    string ToString(IndentStyles indentStyle);
-}
-
-/// <summary>
-/// The indent styles.
-/// </summary>
-public enum IndentStyles : byte
-{
-    /// <summary>
-    /// Minified format. Without any extra white space.
-    /// </summary>
-    Minified = 0,
+    /// <returns>A string that represents the value.</returns>
+    public override string ToString()
+        => Value.ToString();
 
     /// <summary>
-    /// Without any extra white space.
+    /// Tries to get the value of the element as a boolean.
     /// </summary>
-    Empty = 1,
+    /// <returns>A boolean; or null, if not supported.</returns>
+    public bool? TryGetBoolean()
+        => TryConvert(false, out bool v) ? v : null;
 
     /// <summary>
-    /// Tab indent style.
+    /// Tries to get the value of the element as a boolean.
     /// </summary>
-    Tab = 2,
+    /// <param name="value">The value.</param>
+    /// <returns>true if get succeeded; otherwise, false.</returns>
+    public bool TryGetBoolean(out bool value)
+        => TryConvert(false, out value);
 
     /// <summary>
-    /// 4 white spaces indent style.
+    /// Tries to get the value of the element as a date time.
     /// </summary>
-    Normal = 3,
+    /// <returns>A date time; or null, if not supported.</returns>
+    public DateTime? TryGetDateTime()
+        => TryConvert(out DateTime v) ? v : null;
 
     /// <summary>
-    /// 2 white spaces indent style.
+    /// Tries to get the value of the element as a date time.
     /// </summary>
-    Compact = 4,
+    /// <param name="value">The value.</param>
+    /// <returns>true if get succeeded; otherwise, false.</returns>
+    public bool TryGetDateTime(out DateTime value)
+        => TryConvert(out value);
 
     /// <summary>
-    /// 8 white spaces indent style.
+    /// Tries to get the value of the element as an integer.
     /// </summary>
-    Wide = 5,
+    /// <returns>An integer; or null, if not supported.</returns>
+    public short? TryGetInt16()
+        => TryConvert(false, out short v) ? v : null;
 
     /// <summary>
-    /// 1 white space indent style.
+    /// Tries to get the value of the element as an integer.
     /// </summary>
-    Space = 6
+    /// <param name="value">The value.</param>
+    /// <returns>true if get succeeded; otherwise, false.</returns>
+    public bool TryGetInt16(out short value)
+        => TryConvert(false, out value);
+
+    /// <summary>
+    /// Tries to get the value of the element as an integer.
+    /// </summary>
+    /// <returns>An integer; or null, if not supported.</returns>
+    public int? TryGetInt32()
+        => TryConvert(false, out int v) ? v : null;
+
+    /// <summary>
+    /// Tries to get the value of the element as an integer.
+    /// </summary>
+    /// <param name="value">The value.</param>
+    /// <returns>true if get succeeded; otherwise, false.</returns>
+    public bool TryGetInt32(out int value)
+        => TryConvert(false, out value);
+
+    /// <summary>
+    /// Tries to get the value of the element as an integer.
+    /// </summary>
+    /// <returns>An integer; or null, if not supported.</returns>
+    public uint? TryGetUInt32()
+        => TryConvert(false, out uint v) ? v : null;
+
+    /// <summary>
+    /// Tries to get the value of the element as an integer.
+    /// </summary>
+    /// <param name="value">The value.</param>
+    /// <returns>true if get succeeded; otherwise, false.</returns>
+    public bool TryGetUInt32(out uint value)
+        => TryConvert(false, out value);
+
+    /// <summary>
+    /// Tries to get the value of the element as an integer.
+    /// </summary>
+    /// <returns>An integer; or null, if not supported.</returns>
+    public long? TryGetInt64()
+        => TryConvert(false, out long v) ? v : null;
+
+    /// <summary>
+    /// Tries to get the value of the element as an integer.
+    /// </summary>
+    /// <param name="value">The value.</param>
+    /// <returns>true if get succeeded; otherwise, false.</returns>
+    public bool TryGetInt64(out long value)
+        => TryConvert(false, out value);
+
+    /// <summary>
+    /// Tries to get the value of the element as an integer.
+    /// </summary>
+    /// <returns>An integer; or null, if not supported.</returns>
+    public ulong? TryGetUInt64()
+        => TryConvert(false, out ulong v) ? v : null;
+
+    /// <summary>
+    /// Tries to get the value of the element as an integer.
+    /// </summary>
+    /// <param name="value">The value.</param>
+    /// <returns>true if get succeeded; otherwise, false.</returns>
+    public bool TryGetUInt64(out ulong value)
+        => TryConvert(false, out value);
+
+    /// <summary>
+    /// Tries to get the value of the element as a floating number.
+    /// </summary>
+    /// <returns>A floating number. Returns Single.NaN if not supported.</returns>
+    public float TryGetSingle()
+        => TryConvert(false, out float v) ? v : float.NaN;
+
+    /// <summary>
+    /// Tries to get the value of the element as a floating number.
+    /// </summary>
+    /// <param name="defaultValue">The default value.</param>
+    /// <returns>A floating number.</returns>
+    public float TryGetSingle(float defaultValue)
+        => TryConvert(false, out float v) ? v : defaultValue;
+
+    /// <summary>
+    /// Tries to get the value of the element as a floating number.
+    /// </summary>
+    /// <param name="value">The value.</param>
+    /// <returns>true if get succeeded; otherwise, false.</returns>
+    public bool TryGetSingle(out float value)
+        => TryConvert(false, out value);
+
+    /// <summary>
+    /// Tries to get the value of the element as a floating number.
+    /// </summary>
+    /// <returns>A floating number. Returns Double.NaN if not supported.</returns>
+    public double TryGetDouble()
+        => TryConvert(false, out double v) ? v : double.NaN;
+
+    /// <summary>
+    /// Tries to get the value of the element as a floating number.
+    /// </summary>
+    /// <param name="defaultValue">The default value.</param>
+    /// <returns>A floating number.</returns>
+    public double TryGetDouble(double defaultValue)
+        => TryConvert(false, out double v) ? v : defaultValue;
+
+    /// <summary>
+    /// Tries to get the value of the element as a floating number.
+    /// </summary>
+    /// <param name="value">The value.</param>
+    /// <returns>true if get succeeded; otherwise, false.</returns>
+    public bool TryGetDouble(out double value)
+        => TryConvert(false, out value);
+
+    /// <summary>
+    /// Tries to get the value of the element as a floating number.
+    /// </summary>
+    /// <returns>A floating number; or null, if not supported.</returns>
+    public decimal? TryGetDecimal()
+        => TryConvert(false, out decimal v) ? v : null;
+
+    /// <summary>
+    /// Tries to get the value of the element as a floating number.
+    /// </summary>
+    /// <param name="value">The value.</param>
+    /// <returns>true if get succeeded; otherwise, false.</returns>
+    public bool TryGetDeciaml(out decimal value)
+        => TryConvert(false, out value);
+
+    /// <summary>
+    /// Tries to get the value of the element as a string.
+    /// </summary>
+    /// <returns>A string.</returns>
+    public string TryGetString()
+        => TryConvert(false, out string v) ? v : null;
+
+    /// <summary>
+    /// Converts to JSON node.
+    /// </summary>
+    /// <returns>An instance of the JSON node.</returns>
+    public override System.Text.Json.Nodes.JsonNode ToJsonNode()
+        => ToJsonValue();
+
+    /// <summary>
+    /// Converts to JSON value.
+    /// </summary>
+    /// <returns>An instance of the JSON value.</returns>
+    public abstract System.Text.Json.Nodes.JsonValue ToJsonValue();
+
+    /// <summary>
+    /// Converts to JSON node.
+    /// </summary>
+    /// <param name="json">The JSON value.</param>
+    /// <returns>An instance of the JsonNode class.</returns>
+    public static explicit operator System.Text.Json.Nodes.JsonValue(BaseJsonValueNode<T> json)
+        => json?.ToJsonValue();
 }
 
 /// <summary>
 /// Json null.
 /// </summary>
-internal class JsonNullNode : IJsonValueNode, IJsonDataNode, IEquatable<JsonNullNode>
+internal sealed class JsonNullNode : BaseJsonValueNode
 {
     /// <summary>
     /// Initializes a new instance of the JsonNull class.
     /// </summary>
     /// <param name="valueKind">The JSON value kind.</param>
     public JsonNullNode(JsonValueKind valueKind)
+        : base(valueKind)
     {
-        ValueKind = valueKind;
     }
 
-    /// <summary>
-    /// Gets the type of the current JSON value.
-    /// </summary>
-    public JsonValueKind ValueKind { get; }
+    /// <inheritdoc />
+    protected override object RawValue => DBNull.Value;
 
     /// <summary>
     /// Gets the JSON format string of the value.
@@ -452,20 +296,24 @@ internal class JsonNullNode : IJsonValueNode, IJsonDataNode, IEquatable<JsonNull
     /// </summary>
     /// <param name="other">The object to compare with the current instance.</param>
     /// <returns>true if obj and this instance represent the same value; otherwise, false.</returns>
+    public override bool Equals(IJsonValueNode other)
+        => other is null || ValueKind switch
+        {
+            JsonValueKind.Null or JsonValueKind.Undefined => other.ValueKind == JsonValueKind.Null || other.ValueKind == JsonValueKind.Undefined,
+            JsonValueKind.True => other.ValueKind == JsonValueKind.True,
+            JsonValueKind.False => other.ValueKind == JsonValueKind.False,
+            _ => false,
+        };
+
+    /// <summary>
+    /// Indicates whether this instance and a specified object are equal.
+    /// </summary>
+    /// <param name="other">The object to compare with the current instance.</param>
+    /// <returns>true if obj and this instance represent the same value; otherwise, false.</returns>
     public override bool Equals(object other)
     {
         if (other is null) return true;
-        if (other is IJsonValueNode json)
-        {
-            return ValueKind switch
-            {
-                JsonValueKind.Null or JsonValueKind.Undefined => json.ValueKind == JsonValueKind.Null || json.ValueKind == JsonValueKind.Undefined,
-                JsonValueKind.True => json.ValueKind == JsonValueKind.True,
-                JsonValueKind.False => json.ValueKind == JsonValueKind.False,
-                _ => false,
-            };
-        }
-
+        if (other is IJsonValueNode json) return Equals(json);
         return false;
     }
 
@@ -476,284 +324,140 @@ internal class JsonNullNode : IJsonValueNode, IJsonDataNode, IEquatable<JsonNull
     public override int GetHashCode() => ValueKind.GetHashCode();
 
     /// <summary>
-    /// Gets the item value count.
-    /// It always return 0 because it is not an array or object.
-    /// </summary>
-    public int Count => 0;
-
-    /// <summary>
-    /// Gets the value of the element as a boolean.
-    /// </summary>
-    /// <returns>The value of the element as a boolean.</returns>
-    bool IJsonDataNode.GetBoolean() => false;
-
-    /// <summary>
-    /// Gets the value of the element as a byte array.
-    /// </summary>
-    /// <returns>The value decoded as a byte array.</returns>
-    /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
-    byte[] IJsonDataNode.GetBytesFromBase64() => throw new InvalidOperationException("Expect a string but it is null.");
-
-    /// <summary>
-    /// Gets the value of the element as a date time.
-    /// </summary>
-    /// <returns>The value of the element as a date time.</returns>
-    /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
-    DateTime IJsonDataNode.GetDateTime() => throw new InvalidOperationException("Expect a date time but it is null.");
-
-    /// <summary>
-    /// Gets the value of the element as a number.
-    /// </summary>
-    /// <returns>The value of the element as a number.</returns>
-    decimal IJsonDataNode.GetDecimal() => 0;
-
-    /// <summary>
-    /// Gets the value of the element as a number.
-    /// </summary>
-    /// <returns>The value of the element as a number.</returns>
-    float IJsonDataNode.GetSingle() => 0;
-
-    /// <summary>
-    /// Gets the value of the element as a number.
-    /// </summary>
-    /// <returns>The value of the element as a number.</returns>
-    double IJsonDataNode.GetDouble() => 0;
-
-    /// <summary>
-    /// Gets the value of the element as a number.
-    /// </summary>
-    /// <returns>The value of the element as a number.</returns>
-    short IJsonDataNode.GetInt16() => 0;
-
-    /// <summary>
-    /// Gets the value of the element as a number.
-    /// </summary>
-    /// <returns>The value of the element as a number.</returns>
-    uint IJsonDataNode.GetUInt32() => 0;
-
-    /// <summary>
-    /// Gets the value of the element as a number.
-    /// </summary>
-    /// <returns>The value of the element as a number.</returns>
-    int IJsonDataNode.GetInt32() => 0;
-
-    /// <summary>
-    /// Gets the value of the element as a number.
-    /// </summary>
-    /// <returns>The value of the element as a number.</returns>
-    long IJsonDataNode.GetInt64() => 0;
-
-    /// <summary>
-    /// Gets the value of the element as a number.
-    /// </summary>
-    /// <returns>The value of the element as a number.</returns>
-    string IJsonDataNode.GetString() => null;
-
-    /// <summary>
-    /// Gets the value of the element as a GUID.
-    /// </summary>
-    /// <returns>The value of the element as a GUID.</returns>
-    /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
-    Guid IJsonDataNode.GetGuid() => throw new InvalidOperationException("Expect a string but it is null.");
-
-    /// <summary>
     /// Tries to get the value of the element as a boolean.
     /// </summary>
+    /// <param name="strict">true if enable strict mode that compare the value kind firstly; otherwise, false, to convert in compatible mode.</param>
     /// <param name="result">The result.</param>
     /// <returns>true if the kind is the one expected; otherwise, false.</returns>
-    bool IJsonDataNode.TryGetBoolean(out bool result)
+    protected override bool TryConvert(bool strict, out bool result)
     {
+        if (strict) return base.TryConvert(strict, out result);
         result = false;
-        return false;
+        return true;
     }
 
     /// <summary>
-    /// Tries to get the value of the element as a date time.
+    /// Tries to get the value of the element as a floating number.
     /// </summary>
+    /// <param name="strict">true if enable strict mode that compare the value kind firstly; otherwise, false, to convert in compatible mode.</param>
     /// <param name="result">The result.</param>
     /// <returns>true if the kind is the one expected; otherwise, false.</returns>
-    bool IJsonDataNode.TryGetDateTime(out DateTime result)
+    protected override bool TryConvert(bool strict, out decimal result)
     {
-        result = WebFormat.ParseDate(0);
-        return false;
+        if (strict) return base.TryConvert(strict, out result);
+        result = decimal.Zero;
+        return true;
     }
 
     /// <summary>
-    /// Tries to get the value of the element as a number.
+    /// Tries to get the value of the element as a floating number.
     /// </summary>
+    /// <param name="strict">true if enable strict mode that compare the value kind firstly; otherwise, false, to convert in compatible mode.</param>
     /// <param name="result">The result.</param>
     /// <returns>true if the kind is the one expected; otherwise, false.</returns>
-    bool IJsonDataNode.TryGetDecimal(out decimal result)
+    protected override bool TryConvert(bool strict, out float result)
     {
+        if (strict) return base.TryConvert(strict, out result);
+        result = 0f;
+        return true;
+    }
+
+    /// <summary>
+    /// Tries to get the value of the element as a floating number.
+    /// </summary>
+    /// <param name="strict">true if enable strict mode that compare the value kind firstly; otherwise, false, to convert in compatible mode.</param>
+    /// <param name="result">The result.</param>
+    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+    protected override bool TryConvert(bool strict, out double result)
+    {
+        if (strict) return base.TryConvert(strict, out result);
+        result = 0d;
+        return true;
+    }
+
+    /// <summary>
+    /// Tries to get the value of the element as an integer.
+    /// </summary>
+    /// <param name="strict">true if enable strict mode that compare the value kind firstly; otherwise, false, to convert in compatible mode.</param>
+    /// <param name="result">The result.</param>
+    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+    protected override bool TryConvert(bool strict, out short result)
+    {
+        if (strict) return base.TryConvert(strict, out result);
         result = 0;
         return true;
     }
 
     /// <summary>
-    /// Tries to get the value of the element as a number.
+    /// Tries to get the value of the element as an integer.
     /// </summary>
+    /// <param name="strict">true if enable strict mode that compare the value kind firstly; otherwise, false, to convert in compatible mode.</param>
     /// <param name="result">The result.</param>
     /// <returns>true if the kind is the one expected; otherwise, false.</returns>
-    bool IJsonDataNode.TryGetSingle(out float result)
+    protected override bool TryConvert(bool strict, out uint result)
     {
+        if (strict) return base.TryConvert(strict, out result);
         result = 0;
         return true;
     }
 
     /// <summary>
-    /// Tries to get the value of the element as a number.
+    /// Tries to get the value of the element as an integer.
     /// </summary>
+    /// <param name="strict">true if enable strict mode that compare the value kind firstly; otherwise, false, to convert in compatible mode.</param>
     /// <param name="result">The result.</param>
     /// <returns>true if the kind is the one expected; otherwise, false.</returns>
-    bool IJsonDataNode.TryGetDouble(out double result)
+    protected override bool TryConvert(bool strict, out int result)
     {
+        if (strict) return base.TryConvert(strict, out result);
         result = 0;
         return true;
     }
 
     /// <summary>
-    /// Tries to get the value of the element as a number.
+    /// Tries to get the value of the element as an integer.
     /// </summary>
+    /// <param name="strict">true if enable strict mode that compare the value kind firstly; otherwise, false, to convert in compatible mode.</param>
     /// <param name="result">The result.</param>
     /// <returns>true if the kind is the one expected; otherwise, false.</returns>
-    bool IJsonDataNode.TryGetUInt32(out uint result)
+    protected override bool TryConvert(bool strict, out long result)
     {
+        if (strict) return base.TryConvert(strict, out result);
+        result = 0L;
+        return true;
+    }
+
+    /// <summary>
+    /// Tries to get the value of the element as an integer.
+    /// </summary>
+    /// <param name="strict">true if enable strict mode that compare the value kind firstly; otherwise, false, to convert in compatible mode.</param>
+    /// <param name="result">The result.</param>
+    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+    protected override bool TryConvert(bool strict, out ulong result)
+    {
+        if (strict) return base.TryConvert(strict, out result);
         result = 0;
         return true;
     }
 
     /// <summary>
-    /// Tries to get the value of the element as a number.
+    /// Tries to get the value of the element as an integer.
     /// </summary>
+    /// <param name="strict">true if enable strict mode that compare the value kind firstly; otherwise, false, to convert in compatible mode.</param>
     /// <param name="result">The result.</param>
     /// <returns>true if the kind is the one expected; otherwise, false.</returns>
-    bool IJsonDataNode.TryGetInt32(out int result)
-    {
-        result = 0;
-        return true;
-    }
-
-    /// <summary>
-    /// Tries to get the value of the element as a number.
-    /// </summary>
-    /// <param name="result">The result.</param>
-    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
-    bool IJsonDataNode.TryGetInt64(out long result)
-    {
-        result = 0;
-        return true;
-    }
-
-    /// <summary>
-    /// Tries to get the value of the element as a number.
-    /// </summary>
-    /// <param name="result">The result.</param>
-    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
-    bool IJsonDataNode.TryGetString(out string result)
+    protected override bool TryConvert(bool strict, out string result)
     {
         result = null;
-        return true;
+        return !strict;
     }
 
     /// <summary>
-    /// Tries to get the value of the element as a GUID.
+    /// Converts to JSON node.
     /// </summary>
-    /// <param name="result">The result.</param>
-    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
-    bool IJsonDataNode.TryGetGuid(out Guid result)
-    {
-        result = Guid.Empty;
-        return false;
-    }
-
-    /// <summary>
-    /// Gets the value of the specific property.
-    /// </summary>
-    /// <param name="key">The property key.</param>
-    /// <returns>The value.</returns>
-    /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
-    IJsonDataNode IJsonDataNode.GetValue(string key) => throw new InvalidOperationException("Expect an object but it is null.");
-
-    /// <summary>
-    /// Gets the value of the specific property.
-    /// </summary>
-    /// <param name="key">The property key.</param>
-    /// <returns>The value.</returns>
-    /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
-    IJsonDataNode IJsonDataNode.GetValue(ReadOnlySpan<char> key) => throw new InvalidOperationException("Expect an object but it is null.");
-
-    /// <summary>
-    /// Tries to get the value of the specific property.
-    /// </summary>
-    /// <param name="key">The property key.</param>
-    /// <param name="result">The result.</param>
-    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
-    bool IJsonDataNode.TryGetValue(string key, out IJsonDataNode result)
-    {
-        result = default;
-        return false;
-    }
-
-    /// <summary>
-    /// Tries to get the value of the specific property.
-    /// </summary>
-    /// <param name="key">The property key.</param>
-    /// <param name="result">The result.</param>
-    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
-    bool IJsonDataNode.TryGetValue(ReadOnlySpan<char> key, out IJsonDataNode result)
-    {
-        result = default;
-        return false;
-    }
-
-    /// <summary>
-    /// Gets the value at the specific index.
-    /// </summary>
-    /// <param name="index">The zero-based index of the element to get.</param>
-    /// <returns>The value.</returns>
-    /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
-    IJsonDataNode IJsonDataNode.GetValue(int index) => throw new InvalidOperationException("Expect an array but it is null.");
-
-    /// <summary>
-    /// Tries to get the value of the specific property.
-    /// </summary>
-    /// <param name="index">The zero-based index of the element to get.</param>
-    /// <param name="result">The result.</param>
-    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
-    bool IJsonDataNode.TryGetValue(int index, out IJsonDataNode result)
-    {
-        result = default;
-        return false;
-    }
-
-#if !NETFRAMEWORK
-    /// <summary>
-    /// Gets the value at the specific index.
-    /// </summary>
-    /// <param name="index">The zero-based index of the element to get.</param>
-    /// <returns>The value.</returns>
-    /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
-    IJsonDataNode IJsonDataNode.GetValue(Index index) => throw new InvalidOperationException("Expect an array but it is null.");
-
-    /// <summary>
-    /// Tries to get the value of the specific property.
-    /// </summary>
-    /// <param name="index">The zero-based index of the element to get.</param>
-    /// <param name="result">The result.</param>
-    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
-    bool IJsonDataNode.TryGetValue(Index index, out IJsonDataNode result)
-    {
-        result = default;
-        return false;
-    }
-#endif
-
-    /// <summary>
-    /// Gets all property keys.
-    /// </summary>
-    /// <returns>The property keys.</returns>
-    /// <exception cref="InvalidOperationException">The value kind is not an object.</exception>
-    IEnumerable<string> IJsonDataNode.GetKeys() => throw new InvalidOperationException("Expect an object but it is null.");
+    /// <returns>An instance of the JSON node.</returns>
+    public override System.Text.Json.Nodes.JsonNode ToJsonNode()
+        => null;
 
     /// <summary>
     /// Compares two instances to indicate if they are same.
@@ -764,9 +468,7 @@ internal class JsonNullNode : IJsonValueNode, IJsonDataNode, IEquatable<JsonNull
     /// <returns>true if they are same; otherwise, false.</returns>
     public static bool operator ==(JsonNullNode leftValue, JsonNullNode rightValue)
     {
-        if (ReferenceEquals(leftValue, rightValue)) return true;
-        if (leftValue is null || rightValue is null) return false;
-        return leftValue.Equals(rightValue);
+        return true;
     }
 
     /// <summary>
@@ -778,8 +480,6 @@ internal class JsonNullNode : IJsonValueNode, IJsonDataNode, IEquatable<JsonNull
     /// <returns>true if they are different; otherwise, false.</returns>
     public static bool operator !=(JsonNullNode leftValue, JsonNullNode rightValue)
     {
-        if (ReferenceEquals(leftValue, rightValue)) return false;
-        if (leftValue is null || rightValue is null) return false;
-        return leftValue.Equals(rightValue);
+        return false;
     }
 }

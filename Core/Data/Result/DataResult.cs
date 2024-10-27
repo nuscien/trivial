@@ -327,7 +327,7 @@ public class JsonDataResult : MessageResult
     /// <returns>The value.</returns>
     /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
     /// <exception cref="ArgumentOutOfRangeException">The property does not exist.</exception>
-    public IJsonDataNode TryGetValue(string key)
+    public BaseJsonValueNode TryGetValue(string key)
         => Data?.TryGetValue(key);
 
     /// <summary>
@@ -336,7 +336,7 @@ public class JsonDataResult : MessageResult
     /// <param name="keyPath">The property key path.</param>
     /// <returns>The value.</returns>
     /// <exception cref="InvalidOperationException">Cannot get the property value.</exception>
-    public IJsonDataNode TryGetValue(IEnumerable<string> keyPath)
+    public BaseJsonValueNode TryGetValue(IEnumerable<string> keyPath)
         => Data?.TryGetValue(keyPath);
 
     /// <summary>
@@ -347,7 +347,7 @@ public class JsonDataResult : MessageResult
     /// <param name="keyPath">The additional property key path.</param>
     /// <returns>The value.</returns>
     /// <exception cref="InvalidOperationException">Cannot get the property value.</exception>
-    public IJsonDataNode TryGetValue(string key, string subKey, params string[] keyPath)
+    public BaseJsonValueNode TryGetValue(string key, string subKey, params string[] keyPath)
         => Data?.TryGetValue(key, subKey, keyPath);
 
     /// <summary>
@@ -357,7 +357,7 @@ public class JsonDataResult : MessageResult
     /// <returns>The value.</returns>
     /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
     /// <exception cref="ArgumentOutOfRangeException">The property does not exist.</exception>
-    public IJsonDataNode TryGetValue(ReadOnlySpan<char> key)
+    public BaseJsonValueNode TryGetValue(ReadOnlySpan<char> key)
         => Data?.TryGetValue(key);
 
     /// <summary>

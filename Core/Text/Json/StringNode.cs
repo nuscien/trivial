@@ -14,49 +14,26 @@ using Trivial.Web;
 namespace Trivial.Text;
 
 /// <summary>
-/// Represents a specific string JSON value with source.
-/// </summary>
-public interface IJsonStringNode : IJsonValueNode, IEquatable<IJsonValueNode<string>>, IEquatable<IJsonStringNode>, IEquatable<string>
-{
-    /// <summary>
-    /// Gets the source value.
-    /// </summary>
-    public string StringValue { get; }
-
-    /// <summary>
-    /// Gets the number of characters in the source value; or 0, if it is null.
-    /// </summary>
-    public int Length { get; }
-
-    /// <summary>
-    /// Indicates whether the specified string is null or an empty string ("").
-    /// </summary>
-    /// <returns>true if the source value is null or an empty string (""); otherwise, false.</returns>
-    public bool IsNullOrEmpty();
-}
-
-/// <summary>
 /// Represents a specific JSON string value.
 /// </summary>
 [System.Text.Json.Serialization.JsonConverter(typeof(JsonObjectNodeConverter))]
-public class JsonStringNode : IJsonStringNode, IJsonValueNode<string>, IJsonDataNode, IComparable<IJsonValueNode<string>>, IComparable<string>, IEquatable<IJsonValueNode<string>>, IEquatable<string>, IEquatable<StringBuilder>, IReadOnlyList<char>
+public class JsonStringNode : BaseJsonValueNode<string>, IComparable<IJsonValueNode<string>>, IComparable<string>, IEquatable<string>, IEquatable<StringBuilder>, IReadOnlyList<char>
 {
     /// <summary>
     /// Initializes a new instance of the JsonString class.
     /// </summary>
     /// <param name="value">The value.</param>
     public JsonStringNode(string value)
+        : base(value != null ? JsonValueKind.String : JsonValueKind.Null, value)
     {
-        Value = value;
-        ValueKind = value != null ? JsonValueKind.String : JsonValueKind.Null;
     }
 
     /// <summary>
     /// Initializes a new instance of the JsonString class.
     /// </summary>
     /// <param name="value">The value.</param>
-    public JsonStringNode(IJsonStringNode value)
-        : this(value?.StringValue)
+    public JsonStringNode(IJsonValueNode<string> value)
+        : this(value?.Value)
     {
     }
 
@@ -65,9 +42,8 @@ public class JsonStringNode : IJsonStringNode, IJsonValueNode<string>, IJsonData
     /// </summary>
     /// <param name="value">The value.</param>
     public JsonStringNode(DateTime value)
+        : base(JsonValueKind.String, ToJson(value, true))
     {
-        Value = ToJson(value, true);
-        ValueKind = JsonValueKind.String;
         ValueType = 1;
     }
 
@@ -77,9 +53,8 @@ public class JsonStringNode : IJsonStringNode, IJsonValueNode<string>, IJsonData
     /// <param name="value">The value.</param>
     /// <param name="format">A standard or custom date and time format string.</param>
     public JsonStringNode(DateTime value, string format)
+        : base(JsonValueKind.String, format == null ? ToJson(value, true) : value.ToString(format))
     {
-        Value = format == null ? ToJson(value, true) : value.ToString(format);
-        ValueKind = JsonValueKind.String;
         ValueType = 1;
     }
 
@@ -88,9 +63,8 @@ public class JsonStringNode : IJsonStringNode, IJsonValueNode<string>, IJsonData
     /// </summary>
     /// <param name="value">The value.</param>
     public JsonStringNode(DateTimeOffset value)
+        : base(JsonValueKind.String, value.ToString("yyyy-MM-ddTHH:mm:ss.fffzzz"))
     {
-        Value = value.ToString("yyyy-MM-ddTHH:mm:ss.fffzzz");
-        ValueKind = JsonValueKind.String;
         ValueType = 1;
     }
 
@@ -100,9 +74,8 @@ public class JsonStringNode : IJsonStringNode, IJsonValueNode<string>, IJsonData
     /// <param name="value">The value.</param>
     /// <param name="format">A standard or custom date and time format string.</param>
     public JsonStringNode(DateTimeOffset value, string format)
+        : base(JsonValueKind.String, value.ToString(format))
     {
-        Value = value.ToString(format);
-        ValueKind = JsonValueKind.String;
         ValueType = 1;
     }
 
@@ -111,9 +84,8 @@ public class JsonStringNode : IJsonStringNode, IJsonValueNode<string>, IJsonData
     /// </summary>
     /// <param name="value">The value.</param>
     public JsonStringNode(Guid value)
+        : base(JsonValueKind.String, value.ToString())
     {
-        Value = value.ToString();
-        ValueKind = JsonValueKind.String;
         ValueType = 4;
     }
 
@@ -123,9 +95,8 @@ public class JsonStringNode : IJsonStringNode, IJsonValueNode<string>, IJsonData
     /// <param name="value">The value.</param>
     /// <param name="format">A standard or custom GUID format string.</param>
     public JsonStringNode(Guid value, string format)
+        : base(JsonValueKind.String, value.ToString(format))
     {
-        Value = value.ToString(format);
-        ValueKind = JsonValueKind.String;
         ValueType = 4;
     }
 
@@ -134,16 +105,7 @@ public class JsonStringNode : IJsonStringNode, IJsonValueNode<string>, IJsonData
     /// </summary>
     /// <param name="value">The value.</param>
     public JsonStringNode(Uri value)
-    {
-        Value = value.OriginalString;
-        ValueKind = JsonValueKind.String;
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the JsonString class.
-    /// </summary>
-    /// <param name="value">The value.</param>
-    public JsonStringNode(System.Security.SecureString value) : this(Security.SecureStringExtensions.ToUnsecureString(value))
+        : base(JsonValueKind.String, value.OriginalString)
     {
     }
 
@@ -151,7 +113,8 @@ public class JsonStringNode : IJsonStringNode, IJsonValueNode<string>, IJsonData
     /// Initializes a new instance of the JsonString class.
     /// </summary>
     /// <param name="value">The value.</param>
-    public JsonStringNode(StringBuilder value) : this(value?.ToString())
+    public JsonStringNode(System.Security.SecureString value)
+        : this(Security.SecureStringExtensions.ToUnsecureString(value))
     {
     }
 
@@ -159,7 +122,8 @@ public class JsonStringNode : IJsonStringNode, IJsonValueNode<string>, IJsonData
     /// Initializes a new instance of the JsonString class.
     /// </summary>
     /// <param name="value">The value.</param>
-    public JsonStringNode(char[] value) : this(value != null ? new string(value) : null)
+    public JsonStringNode(StringBuilder value)
+        : this(value?.ToString())
     {
     }
 
@@ -167,7 +131,8 @@ public class JsonStringNode : IJsonStringNode, IJsonValueNode<string>, IJsonData
     /// Initializes a new instance of the JsonString class.
     /// </summary>
     /// <param name="value">The value.</param>
-    public JsonStringNode(ReadOnlySpan<char> value) : this(value != null ? value.ToString() : null)
+    public JsonStringNode(char[] value)
+        : this(value != null ? new string(value) : null)
     {
     }
 
@@ -175,7 +140,17 @@ public class JsonStringNode : IJsonStringNode, IJsonValueNode<string>, IJsonData
     /// Initializes a new instance of the JsonString class.
     /// </summary>
     /// <param name="value">The value.</param>
-    public JsonStringNode(TimeSpan value) : this(value.ToString("c"))
+    public JsonStringNode(ReadOnlySpan<char> value)
+        : this(value != null ? value.ToString() : null)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the JsonString class.
+    /// </summary>
+    /// <param name="value">The value.</param>
+    public JsonStringNode(TimeSpan value)
+        : this(value.ToString("c"))
     {
     }
 
@@ -184,7 +159,8 @@ public class JsonStringNode : IJsonStringNode, IJsonValueNode<string>, IJsonData
     /// </summary>
     /// <param name="value">The value.</param>
     /// <param name="format">A standard or custom time span format string.</param>
-    public JsonStringNode(TimeSpan value, string format) : this(value.ToString(format))
+    public JsonStringNode(TimeSpan value, string format)
+        : this(value.ToString(format))
     {
     }
 
@@ -192,16 +168,8 @@ public class JsonStringNode : IJsonStringNode, IJsonValueNode<string>, IJsonData
     /// Initializes a new instance of the JsonString class.
     /// </summary>
     /// <param name="value">The value.</param>
-    public JsonStringNode(short value) : this(value.ToString("g", CultureInfo.InvariantCulture))
-    {
-        ValueType = 2;
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the JsonString class.
-    /// </summary>
-    /// <param name="value">The value.</param>
-    public JsonStringNode(int value) : this(value.ToString("g", CultureInfo.InvariantCulture))
+    public JsonStringNode(short value)
+        : this(value.ToString("g", CultureInfo.InvariantCulture))
     {
         ValueType = 2;
     }
@@ -210,18 +178,8 @@ public class JsonStringNode : IJsonStringNode, IJsonValueNode<string>, IJsonData
     /// Initializes a new instance of the JsonString class.
     /// </summary>
     /// <param name="value">The value.</param>
-    /// <param name="format">A standard or custom time span format string.</param>
-    /// <param name="provider">An object that supplies culture-specific formatting information.</param>
-    public JsonStringNode(int value, string format, IFormatProvider provider = null) : this(provider == null ? value.ToString(format) : value.ToString(format, provider))
-    {
-        ValueType = 2;
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the JsonString class.
-    /// </summary>
-    /// <param name="value">The value.</param>
-    public JsonStringNode(long value) : this(value.ToString("g", CultureInfo.InvariantCulture))
+    public JsonStringNode(int value)
+        : this(value.ToString("g", CultureInfo.InvariantCulture))
     {
         ValueType = 2;
     }
@@ -232,7 +190,8 @@ public class JsonStringNode : IJsonStringNode, IJsonValueNode<string>, IJsonData
     /// <param name="value">The value.</param>
     /// <param name="format">A standard or custom time span format string.</param>
     /// <param name="provider">An object that supplies culture-specific formatting information.</param>
-    public JsonStringNode(long value, string format, IFormatProvider provider = null) : this(provider == null ? value.ToString(format) : value.ToString(format, provider))
+    public JsonStringNode(int value, string format, IFormatProvider provider = null)
+        : this(provider == null ? value.ToString(format) : value.ToString(format, provider))
     {
         ValueType = 2;
     }
@@ -241,7 +200,8 @@ public class JsonStringNode : IJsonStringNode, IJsonValueNode<string>, IJsonData
     /// Initializes a new instance of the JsonString class.
     /// </summary>
     /// <param name="value">The value.</param>
-    public JsonStringNode(uint value) : this(value.ToString("g", CultureInfo.InvariantCulture))
+    public JsonStringNode(long value)
+        : this(value.ToString("g", CultureInfo.InvariantCulture))
     {
         ValueType = 2;
     }
@@ -250,7 +210,10 @@ public class JsonStringNode : IJsonStringNode, IJsonValueNode<string>, IJsonData
     /// Initializes a new instance of the JsonString class.
     /// </summary>
     /// <param name="value">The value.</param>
-    public JsonStringNode(ulong value) : this(value.ToString("g", CultureInfo.InvariantCulture))
+    /// <param name="format">A standard or custom time span format string.</param>
+    /// <param name="provider">An object that supplies culture-specific formatting information.</param>
+    public JsonStringNode(long value, string format, IFormatProvider provider = null)
+        : this(provider == null ? value.ToString(format) : value.ToString(format, provider))
     {
         ValueType = 2;
     }
@@ -259,7 +222,28 @@ public class JsonStringNode : IJsonStringNode, IJsonValueNode<string>, IJsonData
     /// Initializes a new instance of the JsonString class.
     /// </summary>
     /// <param name="value">The value.</param>
-    public JsonStringNode(double value) : this(value.ToString("g", CultureInfo.InvariantCulture))
+    public JsonStringNode(uint value)
+        : this(value.ToString("g", CultureInfo.InvariantCulture))
+    {
+        ValueType = 2;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the JsonString class.
+    /// </summary>
+    /// <param name="value">The value.</param>
+    public JsonStringNode(ulong value)
+        : this(value.ToString("g", CultureInfo.InvariantCulture))
+    {
+        ValueType = 2;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the JsonString class.
+    /// </summary>
+    /// <param name="value">The value.</param>
+    public JsonStringNode(double value)
+        : this(value.ToString("g", CultureInfo.InvariantCulture))
     {
         ValueType = 3;
     }
@@ -270,7 +254,8 @@ public class JsonStringNode : IJsonStringNode, IJsonValueNode<string>, IJsonData
     /// <param name="value">The value.</param>
     /// <param name="format">A standard or custom time span format string.</param>
     /// <param name="provider">An object that supplies culture-specific formatting information.</param>
-    public JsonStringNode(double value, string format, IFormatProvider provider = null) : this(provider == null ? value.ToString(format) : value.ToString(format, provider))
+    public JsonStringNode(double value, string format, IFormatProvider provider = null)
+        : this(provider == null ? value.ToString(format) : value.ToString(format, provider))
     {
         ValueType = 3;
     }
@@ -279,27 +264,8 @@ public class JsonStringNode : IJsonStringNode, IJsonValueNode<string>, IJsonData
     /// Initializes a new instance of the JsonString class.
     /// </summary>
     /// <param name="value">The value.</param>
-    public JsonStringNode(float value) : this(value.ToString("g", CultureInfo.InvariantCulture))
-    {
-        ValueType = 3;
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the JsonString class.
-    /// </summary>
-    /// <param name="value">The value.</param>
-    /// <param name="format">A standard or custom time span format string.</param>
-    /// <param name="provider">An object that supplies culture-specific formatting information.</param>
-    public JsonStringNode(float value, string format, IFormatProvider provider = null) : this(provider == null ? value.ToString(format) : value.ToString(format, provider))
-    {
-        ValueType = 3;
-    }
-
-    /// <summary>
-    /// Initializes a new instance of the JsonString class.
-    /// </summary>
-    /// <param name="value">The value.</param>
-    public JsonStringNode(decimal value) : this(value.ToString("g", CultureInfo.InvariantCulture))
+    public JsonStringNode(float value)
+        : this(value.ToString("g", CultureInfo.InvariantCulture))
     {
         ValueType = 3;
     }
@@ -310,7 +276,8 @@ public class JsonStringNode : IJsonStringNode, IJsonValueNode<string>, IJsonData
     /// <param name="value">The value.</param>
     /// <param name="format">A standard or custom time span format string.</param>
     /// <param name="provider">An object that supplies culture-specific formatting information.</param>
-    public JsonStringNode(decimal value, string format, IFormatProvider provider = null) : this(provider == null ? value.ToString(format) : value.ToString(format, provider))
+    public JsonStringNode(float value, string format, IFormatProvider provider = null)
+        : this(provider == null ? value.ToString(format) : value.ToString(format, provider))
     {
         ValueType = 3;
     }
@@ -319,7 +286,30 @@ public class JsonStringNode : IJsonStringNode, IJsonValueNode<string>, IJsonData
     /// Initializes a new instance of the JsonString class.
     /// </summary>
     /// <param name="value">The value.</param>
-    public JsonStringNode(BigInteger value) : this(value.ToString("g", CultureInfo.InvariantCulture))
+    public JsonStringNode(decimal value)
+        : this(value.ToString("g", CultureInfo.InvariantCulture))
+    {
+        ValueType = 3;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the JsonString class.
+    /// </summary>
+    /// <param name="value">The value.</param>
+    /// <param name="format">A standard or custom time span format string.</param>
+    /// <param name="provider">An object that supplies culture-specific formatting information.</param>
+    public JsonStringNode(decimal value, string format, IFormatProvider provider = null)
+        : this(provider == null ? value.ToString(format) : value.ToString(format, provider))
+    {
+        ValueType = 3;
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the JsonString class.
+    /// </summary>
+    /// <param name="value">The value.</param>
+    public JsonStringNode(BigInteger value)
+        : this(value.ToString("g", CultureInfo.InvariantCulture))
     {
     }
 
@@ -329,7 +319,8 @@ public class JsonStringNode : IJsonStringNode, IJsonValueNode<string>, IJsonData
     /// <param name="value">The value.</param>
     /// <param name="format">A standard or custom time span format string.</param>
     /// <param name="provider">An object that supplies culture-specific formatting information.</param>
-    public JsonStringNode(BigInteger value, string format, IFormatProvider provider = null) : this(provider == null ? value.ToString(format) : value.ToString(format, provider))
+    public JsonStringNode(BigInteger value, string format, IFormatProvider provider = null)
+        : this(provider == null ? value.ToString(format) : value.ToString(format, provider))
     {
     }
 
@@ -337,7 +328,8 @@ public class JsonStringNode : IJsonStringNode, IJsonValueNode<string>, IJsonData
     /// Initializes a new instance of the JsonString class.
     /// </summary>
     /// <param name="value">The value.</param>
-    public JsonStringNode(bool value) : this(value ? JsonBooleanNode.TrueString : JsonBooleanNode.FalseString)
+    public JsonStringNode(bool value)
+        : this(value ? JsonBooleanNode.TrueString : JsonBooleanNode.FalseString)
     {
         ValueType = 5;
     }
@@ -346,7 +338,8 @@ public class JsonStringNode : IJsonStringNode, IJsonValueNode<string>, IJsonData
     /// Initializes a new instance of the JsonString class.
     /// </summary>
     /// <param name="value">The value.</param>
-    public JsonStringNode(Net.QueryData value) : this(value?.ToString())
+    public JsonStringNode(Net.QueryData value)
+        : this(value?.ToString())
     {
     }
 
@@ -354,7 +347,8 @@ public class JsonStringNode : IJsonStringNode, IJsonValueNode<string>, IJsonData
     /// Initializes a new instance of the JsonString class.
     /// </summary>
     /// <param name="value">The value.</param>
-    public JsonStringNode(Net.HttpUri value) : this(value?.ToString())
+    public JsonStringNode(Net.HttpUri value)
+        : this(value?.ToString())
     {
     }
 
@@ -362,7 +356,8 @@ public class JsonStringNode : IJsonStringNode, IJsonValueNode<string>, IJsonData
     /// Initializes a new instance of the JsonString class.
     /// </summary>
     /// <param name="value">The value.</param>
-    public JsonStringNode(Net.AppDeepLinkUri value) : this(value?.ToString())
+    public JsonStringNode(Net.AppDeepLinkUri value)
+        : this(value?.ToString())
     {
     }
 
@@ -370,35 +365,15 @@ public class JsonStringNode : IJsonStringNode, IJsonValueNode<string>, IJsonData
     /// Initializes a new instance of the JsonString class.
     /// </summary>
     /// <param name="value">The value.</param>
-    public JsonStringNode(Fraction value) : this(value.ToString())
+    public JsonStringNode(Fraction value)
+        : this(value.ToString())
     {
     }
-
-    /// <summary>
-    /// Gets the value.
-    /// </summary>
-    public string Value { get; }
-
-    /// <summary>
-    /// Gets the string value.
-    /// </summary>
-    public string StringValue => Value;
 
     /// <summary>
     /// Gets the number of characters in the source value.
     /// </summary>
     public int Length => Value?.Length ?? 0;
-
-    /// <summary>
-    /// Gets the item value count.
-    /// It always return 0 because it is not an array or object.
-    /// </summary>
-    public int Count => 0;
-
-    /// <summary>
-    /// Gets the type of the current JSON value.
-    /// </summary>
-    public JsonValueKind ValueKind { get; }
 
     /// <summary>
     /// Gets or sets the internal type mark.
@@ -424,8 +399,7 @@ public class JsonStringNode : IJsonStringNode, IJsonValueNode<string>, IJsonData
         get
         {
             var s = Value;
-            if (s == null) throw new ArgumentOutOfRangeException("s is null", new InvalidOperationException("s is null"));
-            return s[index];
+            return s == null ? throw new ArgumentOutOfRangeException("s is null", new InvalidOperationException("s is null")) : s[index];
         }
     }
 
@@ -441,8 +415,9 @@ public class JsonStringNode : IJsonStringNode, IJsonValueNode<string>, IJsonData
         get
         {
             var s = Value;
-            if (s == null) throw new ArgumentOutOfRangeException("s is null", new InvalidOperationException("s is null"));
-            return s[index.IsFromEnd ? s.Length - index.Value : index.Value];
+            return s == null
+                ? throw new ArgumentOutOfRangeException("s is null", new InvalidOperationException("s is null"))
+                : s[index.IsFromEnd ? s.Length - index.Value : index.Value];
         }
     }
 
@@ -457,8 +432,7 @@ public class JsonStringNode : IJsonStringNode, IJsonValueNode<string>, IJsonData
         get
         {
             var s = Value;
-            if (s == null) throw new ArgumentOutOfRangeException("s is null", new InvalidOperationException("s is null"));
-            return s[range];
+            return s == null ? throw new ArgumentOutOfRangeException("s is null", new InvalidOperationException("s is null")) : s[range];
         }
     }
 #endif
@@ -468,65 +442,21 @@ public class JsonStringNode : IJsonStringNode, IJsonValueNode<string>, IJsonData
     /// </summary>
     /// <returns>true if the source value is null or an empty string (""); otherwise, false.</returns>
     public bool IsNullOrEmpty()
-    {
-        return string.IsNullOrEmpty(Value);
-    }
+        => string.IsNullOrEmpty(Value);
 
     /// <summary>
     /// Indicates whether the specified string is null, empty, or consists only of white-space characters.
     /// </summary>
     /// <returns>true if the source value is null or System.String.Empty, or if value consists exclusively of white-space characters; otherwise, false.</returns>
     public bool IsNullOrWhiteSpace()
-    {
-        return string.IsNullOrWhiteSpace(Value);
-    }
-
-    /// <summary>
-    /// Converts to a date time instance.
-    /// </summary>
-    /// <returns>A date time.</returns>
-    public DateTime? TryGetDateTime()
-    {
-        var s = Value;
-        if (s == null) return null;
-        switch (ValueType)
-        {
-            case 2:
-                if (long.TryParse(s, out var l)) return Web.WebFormat.ParseDate(l);
-                break;
-            default:
-                break;
-        }
-
-        return WebFormat.ParseDate(s);
-    }
-
-    /// <summary>
-    /// Tries to get the value of the element as a date time.
-    /// </summary>
-    /// <param name="result">The result.</param>
-    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
-    public bool TryGetDateTime(out DateTime result)
-    {
-        var date = TryGetDateTime();
-        if (date.HasValue)
-        {
-            result = date.Value;
-            return true;
-        }
-
-        result = WebFormat.ParseDate(0);
-        return false;
-    }
+        => string.IsNullOrWhiteSpace(Value);
 
     /// <summary>
     /// Gets the JSON format string of the value.
     /// </summary>
     /// <returns>The JSON format string.</returns>
     public override string ToString()
-    {
-        return Value != null ? ToJson(Value) : "null";
-    }
+        => Value != null ? ToJson(Value) : "null";
 
     /// <summary>
     /// Gets the JSON format string of the value.
@@ -534,9 +464,7 @@ public class JsonStringNode : IJsonStringNode, IJsonValueNode<string>, IJsonData
     /// <param name="removeQuotes">true if remove the quotes; otherwise, false.</param>
     /// <returns>The JSON format string.</returns>
     public string ToString(bool removeQuotes)
-    {
-        return Value != null ? ToJson(Value, removeQuotes) : (removeQuotes ? null : "null");
-    }
+        => Value != null ? ToJson(Value, removeQuotes) : (removeQuotes ? null : "null");
 
     /// <summary>
     /// Parses the value to an enum.
@@ -793,32 +721,58 @@ public class JsonStringNode : IJsonStringNode, IJsonValueNode<string>, IJsonData
     /// </summary>
     /// <param name="other">The object to compare with the current instance.</param>
     /// <returns>true if obj and this instance represent the same value; otherwise, false.</returns>
-    public bool Equals(IJsonStringNode other)
+    public override bool Equals(IJsonValueNode other)
     {
-        if (Value is null) return other is null || other.StringValue is null;
-        return Value.Equals(other.StringValue);
+        if (ReferenceEquals(this, other)) return true;
+        if (other is null) return ValueKind == JsonValueKind.Null || ValueKind == JsonValueKind.Undefined;
+        if (other is JsonStringNode n) return n.Value == Value;
+        if (other is JsonArrayNode arr)
+        {
+            switch (arr.Count)
+            {
+                case 0:
+                    return string.IsNullOrEmpty(Value);
+                case 1:
+                    var first = arr.FirstOrDefault();
+                    if (first is JsonArrayNode arr2 && arr2.Count < 2) first = arr2.FirstOrDefault();
+                    if (first.ValueKind == JsonValueKind.Array) return false;
+                    return Equals(first);
+            }
+        }
+
+        if (other.ValueKind == JsonValueKind.Object || other.ValueKind == JsonValueKind.Array) return false;
+        if (!other.TryConvert(false, out string s)) return false;
+        return s == Value;
     }
 
     /// <summary>
     /// Indicates whether this instance and a specified object are equal.
     /// </summary>
     /// <param name="other">The object to compare with the current instance.</param>
+    /// <param name="comparisonType">One of the enumeration values that specifies how the strings will be compared.</param>
     /// <returns>true if obj and this instance represent the same value; otherwise, false.</returns>
-    public bool Equals(IJsonValueNode<string> other)
+    public bool Equals(IJsonValueNode other, StringComparison comparisonType)
     {
-        if (Value is null) return other is null || other.Value is null;
-        return Value.Equals(other.Value);
-    }
+        if (ReferenceEquals(this, other)) return true;
+        if (other is null) return ValueKind == JsonValueKind.Null || ValueKind == JsonValueKind.Undefined;
+        if (other is JsonStringNode n) return string.Equals(n.Value, Value, comparisonType);
+        if (other is JsonArrayNode arr)
+        {
+            switch (arr.Count)
+            {
+                case 0:
+                    return string.IsNullOrEmpty(Value);
+                case 1:
+                    var first = arr.FirstOrDefault();
+                    if (first is JsonArrayNode arr2 && arr2.Count < 2) first = arr2.FirstOrDefault();
+                    if (first.ValueKind == JsonValueKind.Array) return false;
+                    return Equals(first, comparisonType);
+            }
+        }
 
-    /// <summary>
-    /// Indicates whether this instance and a specified object are equal.
-    /// </summary>
-    /// <param name="other">The object to compare with the current instance.</param>
-    /// <returns>true if obj and this instance represent the same value; otherwise, false.</returns>
-    public bool Equals(string other)
-    {
-        if (Value is null) return other is null;
-        return Value.Equals(other);
+        if (other.ValueKind == JsonValueKind.Object || other.ValueKind == JsonValueKind.Array) return false;
+        if (!other.TryConvert(false, out string s)) return false;
+        return string.Equals(s, Value, comparisonType);
     }
 
     /// <summary>
@@ -862,34 +816,14 @@ public class JsonStringNode : IJsonStringNode, IJsonValueNode<string>, IJsonData
     /// <param name="other">The object to compare with the current instance.</param>
     /// <returns>true if obj and this instance represent the same value; otherwise, false.</returns>
     public override bool Equals(object other)
-    {
-        if (Value is null)
-        {
-            if (other is null) return true;
-            if (other is IJsonValueNode<string> nJson) return nJson.Value is null;
-            if (other is IJsonValueNode gJson) return gJson.ValueKind == JsonValueKind.Null || gJson.ValueKind == JsonValueKind.Undefined;
-            return false;
-        }
-
-        if (other is null) return false;
-        if (other is IJsonValueNode<string> sJson) return Value.Equals(sJson.Value);
-        if (other is IJsonStringNode strJson) return Value.Equals(strJson.StringValue);
-        if (other is IJsonValueNode vJson) return ToString().Equals(vJson.ToString(), StringComparison.InvariantCulture);
-        if (other is StringBuilder sb) return Value.Equals(sb.ToString());
-        if (other is int i) return TryGetInt32(out var i2) && i == i2;
-        if (other is long i3) return TryGetInt64(out var i4) && i3 == i4;
-        if (other is double d) return TryGetDouble(out var d2) && d == d2;
-        if (other is float d3) return TryGetSingle(out var d4) && d3 == d4;
-        if (other is DateTime dt) return TryGetDateTime(out var dt2) && dt == dt2;
-        if (other is bool b) return TryGetBoolean(out var b2) && b == b2;
-        return Value.Equals(other);
-    }
+        => base.Equals(other);
 
     /// <summary>
     /// Returns the hash code for this instance.
     /// </summary>
     /// <returns>A hash code for the current instance.</returns>
-    public override int GetHashCode() => Value == null ? (-1).GetHashCode() : Value.GetHashCode();
+    public override int GetHashCode()
+        => base.GetHashCode();
 
     /// <summary>
     /// Compares this instance to a specified number and returns an indication of their relative values.
@@ -938,37 +872,14 @@ public class JsonStringNode : IJsonStringNode, IJsonValueNode<string>, IJsonData
     /// </summary>
     /// <returns>An enumerator that can be used to iterate through the string.</returns>
     public IEnumerator<char> GetEnumerator()
-    {
-        return (Value ?? string.Empty).GetEnumerator();
-    }
+        => (Value ?? string.Empty).GetEnumerator();
 
     /// <summary>
     /// Returns an enumerator that iterates through the string.
     /// </summary>
     /// <returns>An enumerator that can be used to iterate through the string.</returns>
     IEnumerator IEnumerable.GetEnumerator()
-    {
-        return (Value ?? string.Empty).GetEnumerator();
-    }
-
-    /// <summary>
-    /// Gets the value of the element as a boolean.
-    /// </summary>
-    /// <returns>The value of the element as a boolean.</returns>
-    /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
-    bool IJsonDataNode.GetBoolean()
-    {
-        if (string.IsNullOrEmpty(Value)) return false;
-        var v = Value.ToLower();
-        return v switch
-        {
-            JsonBooleanNode.TrueString => true,
-            JsonBooleanNode.FalseString => false,
-            "0" => false,
-            "1" => true,
-            _ => throw new InvalidOperationException("Expect a boolean but it is a string.")
-        };
-    }
+        => (Value ?? string.Empty).GetEnumerator();
 
     /// <summary>
     /// Gets the value of the element as a byte array.
@@ -983,285 +894,334 @@ public class JsonStringNode : IJsonStringNode, IJsonValueNode<string>, IJsonData
     }
 
     /// <summary>
-    /// Gets the value of the element as a date time.
+    /// Tries to get the value of the element as a boolean.
     /// </summary>
-    /// <returns>The value of the element as a date time.</returns>
-    /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
-    /// <exception cref="FormatException">The value is not formatted for a date time.</exception>
-    public DateTime GetDateTime()
+    /// <returns>The result.</returns>
+    public bool? TryToBoolean()
+        => TryConvert(false, out bool result) ? result : null;
+
+    /// <summary>
+    /// Tries to get the value of the element as a boolean.
+    /// </summary>
+    /// <returns>The result.</returns>
+    public bool TryToBoolean(bool defaultValue)
+        => TryConvert(false, out bool result) ? result : defaultValue;
+
+    /// <summary>
+    /// Tries to get the value of the element as a boolean.
+    /// </summary>
+    /// <param name="strict">true if enable strict mode that compare the value kind firstly; otherwise, false, to convert in compatible mode.</param>
+    /// <param name="result">The result.</param>
+    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+    protected override bool TryConvert(bool strict, out bool result)
+    {
+        if (strict || string.IsNullOrEmpty(Value)) return base.TryConvert(strict, out result);
+        var b = JsonBooleanNode.TryParse(Value);
+        if (b == null) return base.TryConvert(strict, out result);
+        result = b.Value;
+        return true;
+    }
+
+    /// <summary>
+    /// Tries to get the value of the element as a date time.
+    /// </summary>
+    /// <returns>The result.</returns>
+    public DateTime? TryToDateTime()
+        => TryConvert(out DateTime result) ? result : null;
+
+    /// <summary>
+    /// Tries to get the value of the element as a date time.
+    /// </summary>
+    /// <param name="result">The result.</param>
+    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+    protected override bool TryConvert(out DateTime result)
+    {
+        var date = TryGetDateTimeOrNull();
+        if (date.HasValue)
+        {
+            result = date.Value;
+            return true;
+        }
+
+        result = WebFormat.ZeroTick;
+        return false;
+    }
+
+    /// <summary>
+    /// Converts to a date time instance.
+    /// </summary>
+    /// <returns>A date time.</returns>
+    private DateTime? TryGetDateTimeOrNull()
     {
         var s = Value;
+        if (s == null) return null;
         switch (ValueType)
         {
             case 2:
-                if (long.TryParse(s, out var l)) return WebFormat.ParseDate(l);
+                if (long.TryParse(s, out var l)) return Web.WebFormat.ParseDate(l);
                 break;
             default:
                 break;
         }
 
-        var date = WebFormat.ParseDate(s);
-        if (date.HasValue) return date.Value;
-        throw new FormatException("The string is not JSON date format.");
+        return WebFormat.ParseDate(s);
     }
 
     /// <summary>
-    /// Gets the value of the element as a number.
+    /// Tries to get the value of the element as a floating number.
     /// </summary>
-    /// <returns>The value of the element as a number.</returns>
-    /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
-    public decimal GetDecimal()
-    {
-        if (string.IsNullOrEmpty(Value)) return 0;
-        if (decimal.TryParse(Value, out var num)) return num;
-        throw new InvalidOperationException("Expect a number but it is a string.");
-    }
+    /// <returns>The result.</returns>
+    public decimal? TryToDecimal()
+        => TryConvert(false, out decimal result) ? result : null;
 
     /// <summary>
-    /// Gets the value of the element as a number.
+    /// Tries to get the value of the element as a floating number.
     /// </summary>
-    /// <returns>The value of the element as a number.</returns>
-    /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
-    public float GetSingle()
-    {
-        if (string.IsNullOrEmpty(Value)) return 0;
-        if (float.TryParse(Value, out var num)) return num;
-        throw new InvalidOperationException("Expect a number but it is a string.");
-    }
+    /// <returns>The result.</returns>
+    public decimal TryToDecimal(decimal defaultValue)
+        => TryConvert(false, out decimal result) ? result : defaultValue;
 
     /// <summary>
-    /// Gets the value of the element as a number.
+    /// Tries to get the value of the element as a floating number.
     /// </summary>
-    /// <returns>The value of the element as a number.</returns>
-    /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
-    public double GetDouble()
-    {
-        if (string.IsNullOrEmpty(Value)) return 0;
-        if (double.TryParse(Value, out var num)) return num;
-        if (ValueType == 1)
-        {
-            var date = TryGetDateTime();
-            if (date.HasValue) return WebFormat.ParseDate(date.Value);
-        }
-
-        throw new InvalidOperationException("Expect a number but it is a string.");
-    }
-
-    /// <summary>
-    /// Gets the value of the element as a number.
-    /// </summary>
-    /// <returns>The value of the element as a number.</returns>
-    /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
-    public short GetInt16()
-    {
-        if (string.IsNullOrEmpty(Value)) return 0;
-        if (Numbers.TryParseToInt16(Value, 10, out var num)) return num;
-        throw new InvalidOperationException("Expect a number but it is a string.");
-    }
-
-    /// <summary>
-    /// Gets the value of the element as a number.
-    /// </summary>
-    /// <returns>The value of the element as a number.</returns>
-    /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
-    public uint GetUInt32()
-    {
-        if (string.IsNullOrEmpty(Value)) return 0;
-        if (Numbers.TryParseToUInt32(Value, 10, out var num)) return num;
-        throw new InvalidOperationException("Expect a number but it is a string.");
-    }
-
-    /// <summary>
-    /// Gets the value of the element as a number.
-    /// </summary>
-    /// <returns>The value of the element as a number.</returns>
-    /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
-    public int GetInt32()
-    {
-        if (string.IsNullOrEmpty(Value)) return 0;
-        if (Numbers.TryParseToInt32(Value, 10, out var num)) return num;
-        throw new InvalidOperationException("Expect a number but it is a string.");
-    }
-
-    /// <summary>
-    /// Gets the value of the element as a number.
-    /// </summary>
-    /// <returns>The value of the element as a number.</returns>
-    /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
-    public long GetInt64()
-    {
-        if (string.IsNullOrEmpty(Value)) return 0;
-        if (Numbers.TryParseToInt64(Value, 10, out var num)) return num;
-        if (ValueType == 1)
-        {
-            var date = TryGetDateTime();
-            if (date.HasValue) return WebFormat.ParseDate(date.Value);
-        }
-
-        throw new InvalidOperationException("Expect a number but it is a string.");
-    }
-
-    /// <summary>
-    /// Gets the value of the element as a number.
-    /// </summary>
-    /// <returns>The value of the element as a number.</returns>
-    /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
-    string IJsonDataNode.GetString() => Value;
-
-    /// <summary>
-    /// Gets the value of the element as a GUID.
-    /// </summary>
-    /// <returns>The value of the element as a GUID.</returns>
-    /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
-    /// <exception cref="FormatException">The value is not formatted for a Guid.</exception>
-    public Guid GetGuid()
-    {
-        if (string.IsNullOrEmpty(Value)) return Guid.Empty;
-        return Guid.Parse(Value);
-    }
-
-    /// <summary>
-    /// Tries to get the value of the element as a boolean.
-    /// </summary>
+    /// <param name="strict">true if enable strict mode that compare the value kind firstly; otherwise, false, to convert in compatible mode.</param>
     /// <param name="result">The result.</param>
     /// <returns>true if the kind is the one expected; otherwise, false.</returns>
-    public bool TryGetBoolean(out bool result)
+    protected override bool TryConvert(bool strict, out decimal result)
     {
-        if (string.IsNullOrEmpty(Value))
-        {
-            result = false;
-            return true;
-        }
-
-        var r = JsonBooleanNode.TryParse(Value);
-        if (r == null)
-        {
-            result = false;
-            return false;
-        }
-
-        result = r.Value;
+        if (strict) return base.TryConvert(strict, out result);
+        if (!string.IsNullOrEmpty(Value)) return decimal.TryParse(Value, out result);
+        result = decimal.Zero;
         return true;
     }
 
     /// <summary>
-    /// Tries to get the value of the element as a number.
+    /// Tries to get the value of the element as a floating number.
     /// </summary>
+    /// <returns>The result.</returns>
+    public float? TryToSingle()
+        => TryConvert(false, out float result) ? result : null;
+
+    /// <summary>
+    /// Tries to get the value of the element as a floating number.
+    /// </summary>
+    /// <returns>The result.</returns>
+    public float TryToSingle(float defaultValue)
+        => TryConvert(false, out float result) ? result : defaultValue;
+
+    /// <summary>
+    /// Tries to get the value of the element as a floating number.
+    /// </summary>
+    /// <returns>The result.</returns>
+    public float TryToSingle(bool zeroAsDefault)
+        => TryConvert(false, out float result) ? result : (zeroAsDefault ? 0f : float.NaN);
+
+    /// <summary>
+    /// Tries to get the value of the element as a floating number.
+    /// </summary>
+    /// <param name="strict">true if enable strict mode that compare the value kind firstly; otherwise, false, to convert in compatible mode.</param>
     /// <param name="result">The result.</param>
     /// <returns>true if the kind is the one expected; otherwise, false.</returns>
-    public bool TryGetDecimal(out decimal result)
+    protected override bool TryConvert(bool strict, out float result)
     {
-        if (string.IsNullOrEmpty(Value))
-        {
-            result = 0;
-            return true;
-        }
-
-        return decimal.TryParse(Value, out result);
+        if (strict) return base.TryConvert(strict, out result);
+        if (!string.IsNullOrEmpty(Value)) return float.TryParse(Value, out result);
+        result = float.NaN;
+        return true;
     }
 
     /// <summary>
-    /// Tries to get the value of the element as a number.
+    /// Tries to get the value of the element as a floating number.
     /// </summary>
+    /// <returns>The result.</returns>
+    public double? TryToDouble()
+        => TryConvert(false, out double result) ? result : null;
+
+    /// <summary>
+    /// Tries to get the value of the element as a boolean.
+    /// </summary>
+    /// <returns>The result.</returns>
+    public double TryToDouble(double defaultValue)
+        => TryConvert(false, out double result) ? result : defaultValue;
+
+    /// <summary>
+    /// Tries to get the value of the element as a floating number.
+    /// </summary>
+    /// <returns>The result.</returns>
+    public double TryToDouble(bool zeroAsDefault)
+        => TryConvert(false, out double result) ? result : (zeroAsDefault ? 0d : double.NaN);
+
+    /// <summary>
+    /// Tries to get the value of the element as a floating number.
+    /// </summary>
+    /// <param name="strict">true if enable strict mode that compare the value kind firstly; otherwise, false, to convert in compatible mode.</param>
     /// <param name="result">The result.</param>
     /// <returns>true if the kind is the one expected; otherwise, false.</returns>
-    public bool TryGetSingle(out float result)
+    protected override bool TryConvert(bool strict, out double result)
     {
-        if (string.IsNullOrEmpty(Value))
+        if (strict) return base.TryConvert(strict, out result);
+        if (!string.IsNullOrEmpty(Value)) return double.TryParse(Value, out result);
+        if (ValueType == 1)
         {
-            result = 0;
-            return true;
+            var date = TryGetDateTimeOrNull();
+            if (date.HasValue)
+            {
+                result = WebFormat.ParseDate(date.Value);
+                return true;
+            }
         }
 
-        return float.TryParse(Value, out result);
+        result = double.NaN;
+        return true;
     }
 
     /// <summary>
-    /// Tries to get the value of the element as a number.
+    /// Tries to get the value of the element as an integer.
     /// </summary>
+    /// <returns>The result.</returns>
+    public short? TryToInt16()
+        => TryConvert(false, out short result) ? result : null;
+
+    /// <summary>
+    /// Tries to get the value of the element as an integer.
+    /// </summary>
+    /// <returns>The result.</returns>
+    public short TryToInt16(short defaultValue)
+        => TryConvert(false, out short result) ? result : defaultValue;
+
+    /// <summary>
+    /// Tries to get the value of the element as an integer.
+    /// </summary>
+    /// <param name="strict">true if enable strict mode that compare the value kind firstly; otherwise, false, to convert in compatible mode.</param>
     /// <param name="result">The result.</param>
     /// <returns>true if the kind is the one expected; otherwise, false.</returns>
-    public bool TryGetDouble(out double result)
+    protected override bool TryConvert(bool strict, out short result)
     {
-        if (string.IsNullOrEmpty(Value))
-        {
-            result = 0;
-            return true;
-        }
-
-        return double.TryParse(Value, out result);
+        if (strict) return base.TryConvert(strict, out result);
+        if (!string.IsNullOrEmpty(Value)) return Numbers.TryParseToInt16(Value, 10, out result);
+        result = 0;
+        return true;
     }
 
     /// <summary>
-    /// Tries to get the value of the element as a number.
+    /// Tries to get the value of the element as an integer.
     /// </summary>
+    /// <returns>The result.</returns>
+    public uint? TryToUInt32()
+        => TryConvert(false, out uint result) ? result : null;
+
+    /// <summary>
+    /// Tries to get the value of the element as an integer.
+    /// </summary>
+    /// <returns>The result.</returns>
+    public uint TryToUInt32(uint defaultValue)
+        => TryConvert(false, out uint result) ? result : defaultValue;
+
+    /// <summary>
+    /// Tries to get the value of the element as an integer.
+    /// </summary>
+    /// <param name="strict">true if enable strict mode that compare the value kind firstly; otherwise, false, to convert in compatible mode.</param>
     /// <param name="result">The result.</param>
     /// <returns>true if the kind is the one expected; otherwise, false.</returns>
-    public bool TryGetUInt16(out ushort result)
+    protected override bool TryConvert(bool strict, out uint result)
     {
-        if (string.IsNullOrEmpty(Value))
-        {
-            result = 0;
-            return true;
-        }
-
-        return Numbers.TryParseToUInt16(Value, 10, out result);
+        if (strict) return base.TryConvert(strict, out result);
+        if (!string.IsNullOrEmpty(Value)) return Numbers.TryParseToUInt32(Value, 10, out result);
+        result = 0;
+        return true;
     }
 
     /// <summary>
-    /// Tries to get the value of the element as a number.
+    /// Tries to get the value of the element as an integer.
     /// </summary>
+    /// <returns>The result.</returns>
+    public int? TryToInt32()
+        => TryConvert(false, out int result) ? result : null;
+
+    /// <summary>
+    /// Tries to get the value of the element as an integer.
+    /// </summary>
+    /// <returns>The result.</returns>
+    public int TryToInt32(int defaultValue)
+        => TryConvert(false, out int result) ? result : defaultValue;
+
+    /// <summary>
+    /// Tries to get the value of the element as an integer.
+    /// </summary>
+    /// <param name="strict">true if enable strict mode that compare the value kind firstly; otherwise, false, to convert in compatible mode.</param>
     /// <param name="result">The result.</param>
     /// <returns>true if the kind is the one expected; otherwise, false.</returns>
-    public bool TryGetUInt32(out uint result)
+    protected override bool TryConvert(bool strict, out int result)
     {
-        if (string.IsNullOrEmpty(Value))
-        {
-            result = 0;
-            return true;
-        }
-
-        return Numbers.TryParseToUInt32(Value, 10, out result);
+        if (strict) return base.TryConvert(strict, out result);
+        if (!string.IsNullOrEmpty(Value)) return Numbers.TryParseToInt32(Value, 10, out result);
+        result = 0;
+        return true;
     }
 
     /// <summary>
-    /// Tries to get the value of the element as a number.
+    /// Tries to get the value of the element as an integer.
     /// </summary>
+    /// <returns>The result.</returns>
+    public long? TryToInt64()
+        => TryConvert(false, out long result) ? result : null;
+
+    /// <summary>
+    /// Tries to get the value of the element as an integer.
+    /// </summary>
+    /// <returns>The result.</returns>
+    public long TryToInt64(long defaultValue)
+        => TryConvert(false, out long result) ? result : defaultValue;
+
+    /// <summary>
+    /// Tries to get the value of the element as an integer.
+    /// </summary>
+    /// <param name="strict">true if enable strict mode that compare the value kind firstly; otherwise, false, to convert in compatible mode.</param>
     /// <param name="result">The result.</param>
     /// <returns>true if the kind is the one expected; otherwise, false.</returns>
-    public bool TryGetInt32(out int result)
+    protected override bool TryConvert(bool strict, out long result)
     {
-        if (string.IsNullOrEmpty(Value))
-        {
-            result = 0;
-            return true;
-        }
-
-        return Numbers.TryParseToInt32(Value, 10, out result);
+        if (strict) return base.TryConvert(strict, out result);
+        if (!string.IsNullOrEmpty(Value)) return Numbers.TryParseToInt64(Value, 10, out result);
+        result = 0L;
+        return true;
     }
 
     /// <summary>
-    /// Tries to get the value of the element as a number.
+    /// Tries to get the value of the element as an integer.
     /// </summary>
+    /// <returns>The result.</returns>
+    public ulong? TryToUInt64()
+        => TryConvert(false, out ulong result) ? result : null;
+
+    /// <summary>
+    /// Tries to get the value of the element as an integer.
+    /// </summary>
+    /// <returns>The result.</returns>
+    public ulong TryToUInt64(ulong defaultValue)
+        => TryConvert(false, out ulong result) ? result : defaultValue;
+
+    /// <summary>
+    /// Tries to get the value of the element as an integer.
+    /// </summary>
+    /// <param name="strict">true if enable strict mode that compare the value kind firstly; otherwise, false, to convert in compatible mode.</param>
     /// <param name="result">The result.</param>
     /// <returns>true if the kind is the one expected; otherwise, false.</returns>
-    public bool TryGetInt64(out long result)
+    protected override bool TryConvert(bool strict, out ulong result)
     {
-        if (string.IsNullOrEmpty(Value))
-        {
-            result = 0;
-            return true;
-        }
-
-        return Numbers.TryParseToInt64(Value, 10, out result);
+        if (strict) return base.TryConvert(strict, out result);
+        if (!string.IsNullOrEmpty(Value)) return ulong.TryParse(Value, out result);
+        result = 0;
+        return true;
     }
 
     /// <summary>
-    /// Tries to get the value of the element as a number.
+    /// Tries to get the value of the element as a string.
     /// </summary>
+    /// <param name="strict">true if enable strict mode that compare the value kind firstly; otherwise, false, to convert in compatible mode.</param>
     /// <param name="result">The result.</param>
     /// <returns>true if the kind is the one expected; otherwise, false.</returns>
-    bool IJsonDataNode.TryGetString(out string result)
+    protected override bool TryConvert(bool strict, out string result)
     {
         result = Value;
         return true;
@@ -1272,155 +1232,113 @@ public class JsonStringNode : IJsonStringNode, IJsonValueNode<string>, IJsonData
     /// </summary>
     /// <param name="result">The result.</param>
     /// <returns>true if the kind is the one expected; otherwise, false.</returns>
-    public bool TryGetGuid(out Guid result)
+    public bool TryConvert(out Guid result)
+        => ((IJsonValueNode)this).TryConvert(out result);
+
+    /// <summary>
+    /// Tries to get the value of the element as a URI.
+    /// </summary>
+    /// <param name="result">The result.</param>
+    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+    public bool TryConvert(out Uri result)
+        => TryConvert(UriKind.RelativeOrAbsolute, out result);
+
+    /// <summary>
+    /// Tries to get the value of the element as a URI.
+    /// </summary>
+    /// <param name="kind">The type of the URI.</param>
+    /// <param name="result">The result.</param>
+    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
+    public bool TryConvert(UriKind kind, out Uri result)
     {
         if (string.IsNullOrEmpty(Value))
         {
-            result = Guid.Empty;
-            return true;
+            result = null;
+            return false;
         }
 
-        return Guid.TryParse(Value, out result);
+        return Uri.TryCreate(Value, kind, out result);
     }
-
-    /// <summary>
-    /// Gets the value of the specific property.
-    /// </summary>
-    /// <param name="key">The property key.</param>
-    /// <returns>The value.</returns>
-    /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
-    IJsonDataNode IJsonDataNode.GetValue(string key) => throw new InvalidOperationException("Expect an object but it is a string.");
-
-    /// <summary>
-    /// Gets the value of the specific property.
-    /// </summary>
-    /// <param name="key">The property key.</param>
-    /// <returns>The value.</returns>
-    /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
-    IJsonDataNode IJsonDataNode.GetValue(ReadOnlySpan<char> key) => throw new InvalidOperationException("Expect an object but it is a string.");
 
     /// <summary>
     /// Tries to get the value of the specific property.
     /// </summary>
     /// <param name="key">The property key.</param>
-    /// <param name="result">The result.</param>
     /// <returns>true if the kind is the one expected; otherwise, false.</returns>
-    bool IJsonDataNode.TryGetValue(string key, out IJsonDataNode result)
+    protected override BaseJsonValueNode TryGetValueOrNull(string key)
     {
-        if (key == null)
-        {
-            result = default;
-            return false;
-        }
-
+        if (key == null) return null;
         var s = Value?.Trim();
-        if (string.IsNullOrEmpty(s))
-        {
-            result = default;
-            return false;
-        }
-
+        if (string.IsNullOrEmpty(s)) return null;
+        BaseJsonValueNode result;
         if (s.StartsWith("{") && s.EndsWith("}"))
         {
             var json = JsonObjectNode.TryParse(s);
-            if (json is null)
-            {
-                result = default;
-                return false;
-            }
-
-            return json.TryGetValue(key, out result);
+            if (json is null) return null;
+            return json.TryGetValue(key, out result) ? result : null;
         }
 
         if (s.StartsWith("[") && s.EndsWith("]"))
         {
             var jArr = JsonArrayNode.TryParse(s);
-            if (jArr is null)
-            {
-                result = default;
-                return false;
-            }
-
-            return jArr.TryGetValue(key, out result);
+            if (jArr is null) return null;
+            return jArr.TryGetValue(key, out result) ? result : null;
         }
 
         switch (key.ToLowerInvariant())
         {
             case "len":
             case "length":
-                result = new JsonIntegerNode(Length);
-                return true;
+                return new JsonIntegerNode(Length);
             case "*":
             case "all":
             case "":
-                result = this;
-                return true;
+                return this;
         }
 
         if (int.TryParse(key.Trim(), out var i) && i >= 0 && i < Length)
         {
             try
             {
-                result = new JsonStringNode(Value[i].ToString());
-                return true;
+                return new JsonStringNode(Value[i].ToString());
             }
             catch (ArgumentException)
             {
             }
         }
 
-        result = default;
-        return false;
+        return null;
     }
 
     /// <summary>
     /// Tries to get the value of the specific property.
     /// </summary>
     /// <param name="key">The property key.</param>
-    /// <param name="result">The result.</param>
-    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
-    bool IJsonDataNode.TryGetValue(ReadOnlySpan<char> key, out IJsonDataNode result)
+    /// <param name="result">The value of property.</param>
+    /// <returns>true if get succeeded; otherwise, false..</returns>
+    public bool TryGetValue(string key, out BaseJsonValueNode result)
     {
-        if (key != null) return (this as IJsonDataNode).TryGetValue(key.ToString(), out result);
-        result = default;
-        return false;
+        result = TryGetValueOrNull(key);
+        return result != null;
     }
-
-    /// <summary>
-    /// Gets the value at the specific index.
-    /// </summary>
-    /// <param name="index">The zero-based index of the element to get.</param>
-    /// <returns>The value.</returns>
-    /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
-    IJsonDataNode IJsonDataNode.GetValue(int index) => throw new InvalidOperationException("Expect an array but it is a string.");
 
     /// <summary>
     /// Tries to get the value of the specific property.
     /// </summary>
     /// <param name="index">The zero-based index of the element to get.</param>
-    /// <param name="result">The result.</param>
     /// <returns>true if the kind is the one expected; otherwise, false.</returns>
-    bool IJsonDataNode.TryGetValue(int index, out IJsonDataNode result)
+    protected override BaseJsonValueNode TryGetValueOrNull(int index)
     {
-        if (index < 0)
-        {
-            result = default;
-            return false;
-        }
-
+        if (index < 0) return null;
         var s = Value?.Trim();
-        if (string.IsNullOrEmpty(s))
-        {
-            result = default;
-            return false;
-        }
-
+        if (string.IsNullOrEmpty(s)) return null;
+        BaseJsonValueNode result;
         if (Value.StartsWith("[") && Value.EndsWith("]"))
         {
             try
             {
                 var arr = JsonArrayNode.Parse(Value);
-                return arr.TryGetValue(index, out result);
+                return arr.TryGetValue(index, out result) ? result : null;
             }
             catch (ArgumentException)
             {
@@ -1449,41 +1367,42 @@ public class JsonStringNode : IJsonStringNode, IJsonValueNode<string>, IJsonData
         {
             try
             {
-                result = new JsonStringNode(Value[index].ToString());
-                return true;
+                return new JsonStringNode(Value[index].ToString());
             }
             catch (ArgumentException)
             {
             }
         }
 
-        result = default;
-        return false;
+        return null;
     }
-
-#if !NETFRAMEWORK
-    /// <summary>
-    /// Gets the value at the specific index.
-    /// </summary>
-    /// <param name="index">The zero-based index of the element to get.</param>
-    /// <returns>The value.</returns>
-    /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
-    IJsonDataNode IJsonDataNode.GetValue(Index index) => throw new InvalidOperationException("Expect an array but it is a string.");
 
     /// <summary>
     /// Tries to get the value of the specific property.
     /// </summary>
     /// <param name="index">The zero-based index of the element to get.</param>
-    /// <param name="result">The result.</param>
+    /// <param name="result">The value of property.</param>
+    /// <returns>true if get succeeded; otherwise, false..</returns>
+    public bool TryGetValue(int index, out BaseJsonValueNode result)
+    {
+        result = TryGetValueOrNull(index);
+        return result != null;
+    }
+
+#if !NETFRAMEWORK
+    /// <summary>
+    /// Tries to get the value of the specific property.
+    /// </summary>
+    /// <param name="index">The zero-based index of the element to get.</param>
     /// <returns>true if the kind is the one expected; otherwise, false.</returns>
-    bool IJsonDataNode.TryGetValue(Index index, out IJsonDataNode result)
+    public BaseJsonValueNode TryGetValue(Index index)
     {
         if (!string.IsNullOrWhiteSpace(Value) && Value.StartsWith("[") && Value.EndsWith("]"))
         {
             try
             {
                 var arr = JsonArrayNode.Parse(Value);
-                return arr.TryGetValue(index, out result);
+                return arr.TryGetValue(index, out var result) ? result : null;
             }
             catch (ArgumentException)
             {
@@ -1508,17 +1427,33 @@ public class JsonStringNode : IJsonStringNode, IJsonValueNode<string>, IJsonData
             }
         }
 
-        result = default;
-        return false;
+        try
+        {
+            return new JsonStringNode(Value[index].ToString());
+        }
+        catch (ArgumentException)
+        {
+        }
+
+        return null;
+    }
+
+    /// <summary>
+    /// Tries to get the value of the specific property.
+    /// </summary>
+    /// <param name="index">The zero-based index of the element to get.</param>
+    /// <param name="result">The value of property.</param>
+    /// <returns>true if get succeeded; otherwise, false..</returns>
+    public bool TryGetValue(Index index, out BaseJsonValueNode result)
+    {
+        result = TryGetValue(index);
+        return result != null;
     }
 #endif
 
-    /// <summary>
-    /// Gets all property keys.
-    /// </summary>
-    /// <returns>The property keys.</returns>
-    /// <exception cref="InvalidOperationException">The value kind is not an object.</exception>
-    IEnumerable<string> IJsonDataNode.GetKeys() => throw new InvalidOperationException("Expect an object but it is a string.");
+    /// <inheritdoc />
+    public override System.Text.Json.Nodes.JsonValue ToJsonValue()
+        => System.Text.Json.Nodes.JsonValue.Create(Value);
 
     /// <summary>
     /// Converts to JSON value.

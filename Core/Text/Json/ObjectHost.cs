@@ -28,7 +28,7 @@ public interface IJsonObjectHost
 /// <summary>
 /// The host service for JSON object node to provide a way to access its JSON properties.
 /// </summary>
-public class JsonObjectHostService : IJsonObjectHost, IReadOnlyDictionary<string, IJsonDataNode>
+public class JsonObjectHostService : IJsonObjectHost, IReadOnlyDictionary<string, BaseJsonValueNode>
 {
     private readonly Dictionary<string, object> cache = new();
 
@@ -42,18 +42,18 @@ public class JsonObjectHostService : IJsonObjectHost, IReadOnlyDictionary<string
         parent.PropertyChanged += OnPropertyChanged;
     }
 
-    IJsonDataNode IReadOnlyDictionary<string, IJsonDataNode>.this[string key] => throw new NotImplementedException();
+    BaseJsonValueNode IReadOnlyDictionary<string, BaseJsonValueNode>.this[string key] => throw new NotImplementedException();
 
     /// <summary>
     /// Gets the parent JSON object.
     /// </summary>
     public JsonObjectNode Parent { get; private set; }
 
-    IEnumerable<string> IReadOnlyDictionary<string, IJsonDataNode>.Keys => Parent.Keys;
+    IEnumerable<string> IReadOnlyDictionary<string, BaseJsonValueNode>.Keys => Parent.Keys;
 
-    IEnumerable<IJsonDataNode> IReadOnlyDictionary<string, IJsonDataNode>.Values => Parent.Values;
+    IEnumerable<BaseJsonValueNode> IReadOnlyDictionary<string, BaseJsonValueNode>.Values => Parent.Values;
 
-    int IReadOnlyCollection<KeyValuePair<string, IJsonDataNode>>.Count => Parent.Count;
+    int IReadOnlyCollection<KeyValuePair<string, BaseJsonValueNode>>.Count => Parent.Count;
 
     /// <summary>
     /// Tries to get the specific value.
@@ -447,10 +447,10 @@ public class JsonObjectHostService : IJsonObjectHost, IReadOnlyDictionary<string
         return json.Deserialize<T>();
     }
 
-    bool IReadOnlyDictionary<string, IJsonDataNode>.ContainsKey(string key)
+    bool IReadOnlyDictionary<string, BaseJsonValueNode>.ContainsKey(string key)
         => Parent.ContainsKey(key);
 
-    IEnumerator<KeyValuePair<string, IJsonDataNode>> IEnumerable<KeyValuePair<string, IJsonDataNode>>.GetEnumerator()
+    IEnumerator<KeyValuePair<string, BaseJsonValueNode>> IEnumerable<KeyValuePair<string, BaseJsonValueNode>>.GetEnumerator()
         => Parent.GetEnumerator();
 
     IEnumerator IEnumerable.GetEnumerator()
@@ -462,10 +462,10 @@ public class JsonObjectHostService : IJsonObjectHost, IReadOnlyDictionary<string
     JsonObjectNode IJsonObjectHost.ToJson()
         => Parent;
 
-    bool IReadOnlyDictionary<string, IJsonDataNode>.TryGetValue(string key, out IJsonDataNode value)
+    bool IReadOnlyDictionary<string, BaseJsonValueNode>.TryGetValue(string key, out BaseJsonValueNode value)
         => Parent.TryGetValue(key, out value);
 
-    private void OnPropertyChanged(object sender, KeyValueEventArgs<string, IJsonDataNode> e)
+    private void OnPropertyChanged(object sender, KeyValueEventArgs<string, BaseJsonValueNode> e)
     {
         var key = e.Key;
         if (string.IsNullOrEmpty(key)) return;

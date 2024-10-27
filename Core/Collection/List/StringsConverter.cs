@@ -123,7 +123,7 @@ public static partial class ListExtensions
     {
         foreach (var item in input)
         {
-            yield return item?.StringValue;
+            yield return item?.Value;
         }
     }
 

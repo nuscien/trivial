@@ -11,6 +11,7 @@ using System.Runtime.Serialization;
 using System.Security;
 using System.Text;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -26,16 +27,17 @@ namespace Trivial.Text;
 /// Represents a specific JSON object.
 /// </summary>
 [Serializable]
-[System.Text.Json.Serialization.JsonConverter(typeof(JsonObjectNodeConverter))]
-public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<string, IJsonValueNode>, IDictionary<string, IJsonDataNode>, IReadOnlyDictionary<string, IJsonValueNode>, IReadOnlyDictionary<string, IJsonDataNode>, IEquatable<JsonObjectNode>, IEquatable<IJsonValueNode>, ISerializable
+[JsonConverter(typeof(JsonObjectNodeConverter))]
+public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary<string, IJsonValueNode>, IDictionary<string, BaseJsonValueNode>, IReadOnlyDictionary<string, IJsonValueNode>, IReadOnlyDictionary<string, BaseJsonValueNode>, IEquatable<JsonObjectNode>, ISerializable
 {
 #pragma warning disable IDE0056,IDE0057
-    private IDictionary<string, IJsonDataNode> store = new Dictionary<string, IJsonDataNode>();
+    private IDictionary<string, BaseJsonValueNode> store = new Dictionary<string, BaseJsonValueNode>();
 
     /// <summary>
     /// Initializes a new instance of the JsonObjectNode class.
     /// </summary>
     public JsonObjectNode()
+        : base(JsonValueKind.Object)
     {
     }
 
@@ -45,6 +47,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     /// <param name="info">The System.Runtime.Serialization.SerializationInfo that holds the serialized object data about the exception being thrown.</param>
     /// <param name="context">The System.Runtime.Serialization.StreamingContext that contains contextual information about the source or destination.</param>
     protected JsonObjectNode(SerializationInfo info, StreamingContext context)
+        : base(JsonValueKind.Object)
     {
         if (info is null) return;
         foreach (var prop in info)
@@ -106,6 +109,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     /// </summary>
     /// <param name="reader">The UTF8 JSON reader to read from.</param>
     internal JsonObjectNode(ref Utf8JsonReader reader)
+        : base(JsonValueKind.Object)
     {
         SetRange(ref reader);
     }
@@ -115,9 +119,10 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     /// </summary>
     /// <param name="copy">Properties to initialzie.</param>
     /// <param name="threadSafe">true if enable thread-safe; otherwise, false.</param>
-    private JsonObjectNode(IDictionary<string, IJsonDataNode> copy, bool threadSafe = false)
+    private JsonObjectNode(IDictionary<string, BaseJsonValueNode> copy, bool threadSafe = false)
+        : base(JsonValueKind.Object)
     {
-        if (threadSafe) store = new ConcurrentDictionary<string, IJsonDataNode>();
+        if (threadSafe) store = new ConcurrentDictionary<string, BaseJsonValueNode>();
         if (copy == null) return;
         foreach (var ele in copy)
         {
@@ -125,20 +130,18 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
         }
     }
 
+    /// <inheritdoc />
+    protected override object RawValue => store.GetHashCode();
+
     /// <summary>
     /// Adds or removes the event handler raised on property changed.
     /// </summary>
-    public event KeyValueEventHandler<string, IJsonDataNode> PropertyChanged;
-
-    /// <summary>
-    /// Gets the type of the current JSON value.
-    /// </summary>
-    public JsonValueKind ValueKind => JsonValueKind.Object;
+    public event KeyValueEventHandler<string, BaseJsonValueNode> PropertyChanged;
 
     /// <summary>
     /// Gets the number of elements contained in the System.Collections.Generic.ICollection`1
     /// </summary>
-    public int Count => store.Count;
+    public override int Count => store.Count;
 
     /// <summary>
     /// Gets a collection containing the property keys of the object.
@@ -153,12 +156,12 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     /// <summary>
     /// Gets a collection containing the property keys of the object.
     /// </summary>
-    IEnumerable<string> IReadOnlyDictionary<string, IJsonDataNode>.Keys => store.Keys;
+    IEnumerable<string> IReadOnlyDictionary<string, BaseJsonValueNode>.Keys => store.Keys;
 
     /// <summary>
     /// Gets a collection containing the property values of the object.
     /// </summary>
-    public ICollection<IJsonDataNode> Values => store.Values;
+    public ICollection<BaseJsonValueNode> Values => store.Values;
 
     /// <summary>
     /// Gets a collection containing the property values of the object.
@@ -173,7 +176,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     /// <summary>
     /// Gets a collection containing the property values of the object.
     /// </summary>
-    IEnumerable<IJsonDataNode> IReadOnlyDictionary<string, IJsonDataNode>.Values => store.Values;
+    IEnumerable<BaseJsonValueNode> IReadOnlyDictionary<string, BaseJsonValueNode>.Values => store.Values;
 
     /// <summary>
     /// Gets a value indicating whether the JSON object is read-only.
@@ -196,6 +199,15 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     {
         get => TryGetStringValue("$schema");
         set => SetValueOrRemove("$schema", value);
+    }
+
+    /// <summary>
+    /// Gets or sets the type discriminator.
+    /// </summary>
+    public string TypeDiscriminator
+    {
+        get => TryGetStringValue("$type");
+        set => SetValueOrRemove("$type", value);
     }
 
     /// <summary>
@@ -224,7 +236,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
     /// <exception cref="ArgumentOutOfRangeException">The property does not exist.</exception>
     /// <exception cref="InvalidOperationException">The value kind is not the expected one.</exception>
-    public IJsonDataNode this[string key]
+    public BaseJsonValueNode this[string key]
     {
         get => GetValue(key);
         set => SetProperty(key, JsonValues.ConvertValue(value, this));
@@ -266,7 +278,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
     /// <exception cref="ArgumentOutOfRangeException">The property does not exist; or the index is less than zero.</exception>
     /// <exception cref="InvalidOperationException">The value kind is not the expected one.</exception>
-    public IJsonDataNode this[string key, int index]
+    public BaseJsonValueNode this[string key, int index]
     {
         get
         {
@@ -274,7 +286,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
             var result = GetValue(key);
             if (result is JsonArrayNode arr) return arr[index];
             else if (result is JsonObjectNode json) return ConvertObjectValueForProperty(json)[index.ToString("g")];
-            else if (result is IJsonStringNode str) return new JsonStringNode(str.StringValue[index].ToString());
+            else if (result is IJsonValueNode<string> str) return new JsonStringNode(str.Value[index].ToString());
             else if (index == 0) return result;
             throw new InvalidOperationException($"The property of {key} should be an array, but its kind is {result?.ValueKind ?? JsonValueKind.Null}.");
         }
@@ -290,7 +302,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
     /// <exception cref="ArgumentOutOfRangeException">The property does not exist; or the index is less than zero.</exception>
     /// <exception cref="InvalidOperationException">The value kind is not the expected one.</exception>
-    public IJsonDataNode this[string key, int index, int subIndex]
+    public BaseJsonValueNode this[string key, int index, int subIndex]
     {
         get
         {
@@ -300,7 +312,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
             {
                 if (result is JsonArrayNode arr) return arr[subIndex];
                 else if (result is JsonObjectNode json) return json[subIndex.ToString("g")];
-                else if (result is IJsonStringNode str) return new JsonStringNode(str.StringValue[subIndex].ToString());
+                else if (result is IJsonValueNode<string> str) return new JsonStringNode(str.Value[subIndex].ToString());
             }
             catch (ArgumentOutOfRangeException ex)
             {
@@ -321,7 +333,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
     /// <exception cref="ArgumentOutOfRangeException">The property does not exist; or the index is less than zero.</exception>
     /// <exception cref="InvalidOperationException">The value kind is not the expected one.</exception>
-    public IJsonDataNode this[string key, int index, params string[] keyPath]
+    public BaseJsonValueNode this[string key, int index, params string[] keyPath]
     {
         get
         {
@@ -360,7 +372,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
     /// <exception cref="ArgumentOutOfRangeException">The property does not exist.</exception>
     /// <exception cref="InvalidOperationException">The value kind is not the expected one.</exception>
-    public IJsonDataNode this[string key, string subKey, params string[] keyPath]
+    public BaseJsonValueNode this[string key, string subKey, params string[] keyPath]
     {
         get
         {
@@ -390,7 +402,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     /// <param name="skipIfEnabled">true if skip if this instance is in thread-safe (concurrent) mode; otherwise, false.</param>
     public void EnableThreadSafeMode(int depth, bool skipIfEnabled = false)
     {
-        if (store is ConcurrentDictionary<string, IJsonDataNode>)
+        if (store is ConcurrentDictionary<string, BaseJsonValueNode>)
         {
             if (skipIfEnabled) return;
         }
@@ -402,7 +414,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
             {
                 try
                 {
-                    store = new ConcurrentDictionary<string, IJsonDataNode>(store);
+                    store = new ConcurrentDictionary<string, BaseJsonValueNode>(store);
                     break;
                 }
                 catch (ArgumentException)
@@ -1125,7 +1137,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     /// <returns>The value.</returns>
     /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
     /// <exception cref="ArgumentOutOfRangeException">The property does not exist.</exception>
-    public IJsonDataNode GetValue(string key)
+    public BaseJsonValueNode GetValue(string key)
     {
         AssertKey(key);
         return store[key] ?? JsonValues.Null;
@@ -1139,7 +1151,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     /// <returns>The value.</returns>
     /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
     /// <exception cref="ArgumentOutOfRangeException">The property does not exist and argument undefined is false.</exception>
-    public IJsonDataNode GetValue(string key, bool undefined)
+    public BaseJsonValueNode GetValue(string key, bool undefined)
     {
         AssertKey(key);
         if (!undefined) return store[key] ?? JsonValues.Null;
@@ -1152,10 +1164,10 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     /// <param name="keyPath">The property key path.</param>
     /// <returns>The value.</returns>
     /// <exception cref="InvalidOperationException">Cannot get the property value.</exception>
-    public IJsonDataNode GetValue(IEnumerable<string> keyPath)
+    public BaseJsonValueNode GetValue(IEnumerable<string> keyPath)
     {
         if (keyPath == null) return this;
-        IJsonDataNode json = this;
+        BaseJsonValueNode json = this;
         var path = new StringBuilder();
         foreach (var key in keyPath)
         {
@@ -1182,7 +1194,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
                         new ArgumentOutOfRangeException(nameof(keyPath), message));
                 }
 
-                var jObjToken = jObj.TryGetValue(key);
+                var jObjToken = jObj.TryGetValueOrNull(key);
                 if (jObjToken is JsonObjectNode jObj2 && jObj2.Count == 1 && jObj2.TryGetStringValue("$ref") == JsonValues.SELF_REF) continue;
                 json = jObjToken;
                 continue;
@@ -1204,9 +1216,9 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
                 continue;
             }
                 
-            if (json is JsonStringNode)
+            if (json is JsonStringNode s)
             {
-                if (json.TryGetValue(key, out var jValue))
+                if (s.TryGetValue(key, out var jValue))
                 {
                     json = jValue;
                     continue;
@@ -1233,7 +1245,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     /// <param name="keyPath">The additional property key path.</param>
     /// <returns>The value.</returns>
     /// <exception cref="InvalidOperationException">Cannot get the property value.</exception>
-    public IJsonDataNode GetValue(string key, string subKey, params string[] keyPath)
+    public BaseJsonValueNode GetValue(string key, string subKey, params string[] keyPath)
     {
         var path = new List<string>
         {
@@ -1251,7 +1263,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     /// <returns>The value.</returns>
     /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
     /// <exception cref="ArgumentOutOfRangeException">The property does not exist.</exception>
-    public IJsonDataNode GetValue(ReadOnlySpan<char> key)
+    public BaseJsonValueNode GetValue(ReadOnlySpan<char> key)
     {
         if (key == null) throw new ArgumentNullException(nameof(key), "key should not be null.");
         return GetValue(key.ToString());
@@ -1299,7 +1311,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
         if (type == typeof(System.Text.Json.Nodes.JsonObject)) return (System.Text.Json.Nodes.JsonObject)GetObjectValue(key);
         if (type == typeof(System.Text.Json.Nodes.JsonArray)) return (System.Text.Json.Nodes.JsonArray)GetArrayValue(key);
         if (type == typeof(Type)) return GetValue(key).GetType();
-        if (type == typeof(IJsonDataNode) || type == typeof(IJsonValueNode) || type == typeof(JsonStringNode) || type == typeof(IJsonStringNode) || type == typeof(JsonIntegerNode) || type == typeof(JsonDoubleNode) || type == typeof(JsonDecimalNode) || type == typeof(JsonBooleanNode) || type == typeof(IJsonNumberNode))
+        if (type == typeof(BaseJsonValueNode) || type == typeof(IJsonValueNode) || type == typeof(JsonStringNode) || type == typeof(IJsonValueNode<string>) || type == typeof(JsonIntegerNode) || type == typeof(JsonDoubleNode) || type == typeof(JsonDecimalNode) || type == typeof(JsonBooleanNode) || type == typeof(IJsonNumberNode))
             return GetValue(key);
 
         if (type.IsClass)
@@ -1373,7 +1385,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
         var t = typeof(T);
         if (path == null || path.Count == 0)
         {
-            if (t == typeof(JsonObjectNode) || t == typeof(IJsonDataNode) || t == typeof(IJsonValueNode)) return (T)(object)this;
+            if (t == typeof(JsonObjectNode) || t == typeof(BaseJsonValueNode) || t == typeof(IJsonValueNode)) return (T)(object)this;
             if (t == typeof(JsonDocument)) return (T)(object)(JsonDocument)this;
             if (t == typeof(System.Text.Json.Nodes.JsonObject)) return (T)(object)(System.Text.Json.Nodes.JsonObject)this;
             if (t == typeof(string)) return (T)(object)ToString();
@@ -1389,48 +1401,6 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     }
 
     /// <summary>
-    /// Gets the value at the specific index.
-    /// </summary>
-    /// <param name="index">The zero-based index of the element to get.</param>
-    /// <returns>The value.</returns>
-    /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
-    IJsonDataNode IJsonDataNode.GetValue(int index) => throw new InvalidOperationException("Expect an array but it is an object.");
-
-    /// <summary>
-    /// Tries to get the value of the specific property.
-    /// </summary>
-    /// <param name="index">The zero-based index of the element to get.</param>
-    /// <param name="result">The result.</param>
-    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
-    bool IJsonDataNode.TryGetValue(int index, out IJsonDataNode result)
-    {
-        result = default;
-        return false;
-    }
-
-#if !NETFRAMEWORK
-    /// <summary>
-    /// Gets the value at the specific index.
-    /// </summary>
-    /// <param name="index">The zero-based index of the element to get.</param>
-    /// <returns>The value.</returns>
-    /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
-    IJsonDataNode IJsonDataNode.GetValue(Index index) => throw new InvalidOperationException("Expect an array but it is an object.");
-
-    /// <summary>
-    /// Tries to get the value of the specific property.
-    /// </summary>
-    /// <param name="index">The zero-based index of the element to get.</param>
-    /// <param name="result">The result.</param>
-    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
-    bool IJsonDataNode.TryGetValue(Index index, out IJsonDataNode result)
-    {
-        result = default;
-        return false;
-    }
-#endif
-
-    /// <summary>
     /// Tries to get the value of the specific property.
     /// </summary>
     /// <param name="key">The property key.</param>
@@ -1438,7 +1408,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     public string TryGetStringValue(string key)
     {
         if (!store.TryGetValue(key, out var data) || data is null) return null;
-        if (data is IJsonStringNode str) return str.StringValue;
+        if (data is IJsonValueNode<string> str) return str.Value;
         return data.ValueKind switch
         {
             JsonValueKind.True => JsonBooleanNode.TrueString,
@@ -1471,10 +1441,10 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
             return true;
         }
 
-        if (data is IJsonStringNode str)
+        if (data is IJsonValueNode<string> str)
         {
             kind = JsonValueKind.String;
-            value = str.StringValue;
+            value = str.Value;
             return true;
         }
 
@@ -1510,9 +1480,9 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
             return true;
         }
 
-        if (data is IJsonStringNode str)
+        if (data is IJsonValueNode<string> str)
         {
-            result = str.StringValue;
+            result = str.Value;
             return true;
         }
 
@@ -1546,7 +1516,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     {
         if (!store.TryGetValue(key, out var data)) return null;
         if (data is null) return null;
-        if (data is IJsonStringNode str) return str.StringValue;
+        if (data is IJsonValueNode<string> str) return str.Value;
         if (data is JsonObjectNode json) return converter?.Invoke(json);
         return data.ValueKind switch
         {
@@ -1587,9 +1557,9 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
             return false;
         }
 
-        if (data is IJsonStringNode str)
+        if (data is IJsonValueNode<string> str)
         {
-            result = str.StringValue;
+            result = str.Value;
             return true;
         }
 
@@ -1618,7 +1588,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     {
         var value = TryGetValue(keyPath);
         if (value is null) return null;
-        return value.TryGetString(out var s) ? s : null;
+        return JsonValues.TryGetString(value, out var s) ? s : null;
     }
 
     /// <summary>
@@ -1636,7 +1606,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
             return false;
         }
 
-        return value.TryGetString(out result);
+        return JsonValues.TryGetString(value, out result);
     }
 
     /// <summary>
@@ -1733,9 +1703,9 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
             return string.IsNullOrEmpty(item) ? null : new() { item };
         }
 
-        var col = ignoreNotMatched ? p.Select(ele => ele is IJsonStringNode s ? s.StringValue : null).Where(ele => ele is not null) : p.Select(ele =>
+        var col = ignoreNotMatched ? p.Select(ele => ele is IJsonValueNode<string> s ? s.Value : null).Where(ele => ele is not null) : p.Select(ele =>
         {
-            if (ele is IJsonStringNode s) return s.StringValue;
+            if (ele is IJsonValueNode<string> s) return s.Value;
             if (ele is JsonIntegerNode i) return i.ToString();
             if (ele is JsonDoubleNode f) return f.ToString();
             if (ele is JsonDecimalNode m) return m.ToString();
@@ -2021,7 +1991,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     {
         var value = TryGetValue(keyPath);
         if (value is null) return null;
-        return value.TryGetInt32(out var s) ? s : null;
+        return JsonValues.TryGetInt32(value, out var s) ? s : null;
     }
 
     /// <summary>
@@ -2039,7 +2009,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
             return false;
         }
 
-        return value.TryGetInt32(out result);
+        return JsonValues.TryGetInt32(value, out result);
     }
 
     /// <summary>
@@ -2091,7 +2061,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     {
         var value = TryGetValue(keyPath);
         if (value is null) return null;
-        return value.TryGetInt64(out var s) ? s : null;
+        return JsonValues.TryGetInt64(value, out var s) ? s : null;
     }
 
     /// <summary>
@@ -2109,7 +2079,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
             return false;
         }
 
-        return value.TryGetInt64(out result);
+        return JsonValues.TryGetInt64(value, out result);
     }
 
     /// <summary>
@@ -2227,7 +2197,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     {
         var value = TryGetValue(keyPath);
         if (value is null) return float.NaN;
-        return value.TryGetSingle(out var s) ? s : float.NaN;
+        return JsonValues.TryGetSingle(value, out var s) ? s : float.NaN;
     }
 
     /// <summary>
@@ -2240,7 +2210,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     {
         var value = TryGetValue(keyPath);
         if (value is null) return defaultValue;
-        return value.TryGetSingle(out var s) ? s : defaultValue;
+        return JsonValues.TryGetSingle(value, out var s) ? s : defaultValue;
     }
 
     /// <summary>
@@ -2258,7 +2228,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
             return false;
         }
 
-        return value.TryGetSingle(out result);
+        return JsonValues.TryGetSingle(value, out result);
     }
 
     /// <summary>
@@ -2375,7 +2345,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     {
         var value = TryGetValue(keyPath);
         if (value is null) return double.NaN;
-        return value.TryGetDouble(out var s) ? s : double.NaN;
+        return JsonValues.TryGetDouble(value, out var s) ? s : double.NaN;
     }
 
     /// <summary>
@@ -2388,7 +2358,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     {
         var value = TryGetValue(keyPath);
         if (value is null) return defaultValue;
-        return value.TryGetDouble(out var s) ? s : defaultValue;
+        return JsonValues.TryGetDouble(value, out var s) ? s : defaultValue;
     }
 
     /// <summary>
@@ -2417,7 +2387,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
             return false;
         }
 
-        return value.TryGetDouble(out result);
+        return JsonValues.TryGetDouble(value, out result);
     }
 
     /// <summary>
@@ -2469,7 +2439,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     {
         var value = TryGetValue(keyPath);
         if (value is null) return null;
-        return value.TryGetDecimal(out var s) ? s : null;
+        return JsonValues.TryGetDecimal(value, out var s) ? s : null;
     }
 
     /// <summary>
@@ -2487,7 +2457,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
             return false;
         }
 
-        return value.TryGetDecimal(out result);
+        return JsonValues.TryGetDecimal(value, out result);
     }
 
     /// <summary>
@@ -2597,7 +2567,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     {
         var value = TryGetValue(keyPath);
         if (value is null) return null;
-        return value.TryGetBoolean(out var s) ? s : null;
+        return JsonValues.TryGetBoolean(value, out var s) ? s : null;
     }
 
     /// <summary>
@@ -2615,7 +2585,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
             return false;
         }
 
-        return value.TryGetBoolean(out result);
+        return JsonValues.TryGetBoolean(value, out result);
     }
 
     /// <summary>
@@ -3062,11 +3032,35 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     }
 
     /// <summary>
+    /// Gets all property keys.
+    /// </summary>
+    /// <returns>The property keys.</returns>
+    /// <exception cref="InvalidOperationException">The value kind is not an object.</exception>
+    protected override IEnumerable<string> GetPropertyKeys()
+        => Keys;
+
+    /// <summary>
     /// Tries to get the value of the specific property.
     /// </summary>
     /// <param name="key">The property key.</param>
     /// <returns>The value.</returns>
-    public IJsonDataNode TryGetValue(string key)
+    public BaseJsonValueNode TryGetValue(string key)
+        => TryGetValueOrNull(key);
+
+    /// <summary>
+    /// Tries to get the value of the specific property.
+    /// </summary>
+    /// <param name="key">The property key.</param>
+    /// <returns>The value.</returns>
+    public BaseJsonValueNode TryGetValue(ReadOnlySpan<char> key)
+        => TryGetValueOrNull(key);
+
+    /// <summary>
+    /// Tries to get the value of the specific property.
+    /// </summary>
+    /// <param name="key">The property key.</param>
+    /// <returns>The value.</returns>
+    protected override BaseJsonValueNode TryGetValueOrNull(string key)
     {
         try
         {
@@ -3075,8 +3069,11 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
         catch (ArgumentException)
         {
         }
+        catch (InvalidOperationException)
+        {
+        }
 
-        return default;
+        return null;
     }
 
     /// <summary>
@@ -3084,11 +3081,8 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     /// </summary>
     /// <param name="key">The property key.</param>
     /// <returns>The value.</returns>
-    public IJsonDataNode TryGetValue(ReadOnlySpan<char> key)
-    {
-        if (key == null) return null;
-        return TryGetValue(key.ToString());
-    }
+    protected override BaseJsonValueNode TryGetValueOrNull(ReadOnlySpan<char> key)
+        => TryGetValueOrNull(key.ToString());
 
     /// <summary>
     /// Tries to get the value of the specific property.
@@ -3096,7 +3090,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     /// <param name="key">The property key.</param>
     /// <param name="result">The result.</param>
     /// <returns>true if the kind is the one expected; otherwise, false.</returns>
-    public bool TryGetValue(string key, out IJsonDataNode result)
+    public bool TryGetValue(string key, out BaseJsonValueNode result)
     {
         try
         {
@@ -3107,6 +3101,9 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
             }
         }
         catch (ArgumentException)
+        {
+        }
+        catch (InvalidOperationException)
         {
         }
 
@@ -3120,7 +3117,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     /// <param name="key">The property key.</param>
     /// <param name="result">The result.</param>
     /// <returns>true if the kind is the one expected; otherwise, false.</returns>
-    public bool TryGetValue(ReadOnlySpan<char> key, out IJsonDataNode result)
+    public bool TryGetValue(ReadOnlySpan<char> key, out BaseJsonValueNode result)
     {
         if (key == null)
         {
@@ -3134,10 +3131,26 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     /// <summary>
     /// Tries to get the value of the specific property.
     /// </summary>
+    /// <param name="index">The zero-based index of the element to get.</param>
+    /// <returns>The value.</returns>
+    public BaseJsonValueNode TryGetValue(int index)
+        => TryGetValueOrNull(index.ToString("g"));
+
+    /// <summary>
+    /// Tries to get the value of the specific property.
+    /// </summary>
+    /// <param name="index">The zero-based index of the element to get.</param>
+    /// <returns>The item; or null, if non-exist.</returns>
+    protected override BaseJsonValueNode TryGetValueOrNull(int index)
+        => TryGetValueOrNull(index.ToString("g"));
+
+    /// <summary>
+    /// Tries to get the value of the specific property.
+    /// </summary>
     /// <param name="keyPath">The property key path.</param>
     /// <param name="result">The result.</param>
     /// <returns>true if has the property and the type is the one expected; otherwise, false.</returns>
-    public bool TryGetValue(IEnumerable<string> keyPath, out IJsonDataNode result)
+    public bool TryGetValue(IEnumerable<string> keyPath, out BaseJsonValueNode result)
     {
         if (keyPath == null)
         {
@@ -3145,7 +3158,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
             return true;
         }
 
-        IJsonDataNode json = this;
+        BaseJsonValueNode json = this;
         foreach (var key in keyPath)
         {
             if (string.IsNullOrEmpty(key)) continue;
@@ -3163,7 +3176,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
                     return false;
                 }
 
-                var jObjToken = jObj.TryGetValue(key);
+                var jObjToken = jObj.TryGetValueOrNull(key);
                 if (jObjToken is JsonObjectNode jObj2 && jObj2.Count == 1 && jObj2.TryGetStringValue("$ref") == JsonValues.SELF_REF) continue;
                 json = jObjToken;
                 continue;
@@ -3172,7 +3185,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
             if (json is JsonArrayNode jArr)
             {
                 var jValue = jArr.TryGetValue(key);
-                if (jValue is null)
+                if (jValue is null || jValue.ValueKind == JsonValueKind.Undefined)
                 {
                     result = null;
                     return false;
@@ -3182,9 +3195,9 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
                 continue;
             }
 
-            if (json is JsonStringNode)
+            if (json is JsonStringNode str)
             {
-                if (json.TryGetValue(key, out var jValue))
+                if (str.TryGetValue(key, out var jValue))
                 {
                     json = jValue;
                     continue;
@@ -3204,7 +3217,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     /// </summary>
     /// <param name="keyPath">The property key path.</param>
     /// <returns>The value.</returns>
-    public IJsonDataNode TryGetValue(IEnumerable<string> keyPath)
+    public BaseJsonValueNode TryGetValue(IEnumerable<string> keyPath)
     {
         if (TryGetValue(keyPath, out var result)) return result;
         return default;
@@ -3218,7 +3231,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     /// <returns>true if has the property and the type is the one expected; otherwise, false.</returns>
     bool IDictionary<string, IJsonValueNode>.TryGetValue(string key, out IJsonValueNode result)
     {
-        var v = TryGetValue(key);
+        var v = TryGetValueOrNull(key);
         result = v;
         return v is not null;
     }
@@ -3231,7 +3244,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     /// <returns>true if has the property and the type is the one expected; otherwise, false.</returns>
     bool IReadOnlyDictionary<string, IJsonValueNode>.TryGetValue(string key, out IJsonValueNode result)
     {
-        var v = TryGetValue(key);
+        var v = TryGetValueOrNull(key);
         result = v;
         return v is not null;
     }
@@ -3261,7 +3274,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     /// <param name="subKey">The sub-key of the previous property.</param>
     /// <param name="keyPath">The additional property key path.</param>
     /// <returns>The value.</returns>
-    public IJsonDataNode TryGetValue(string key, string subKey, params string[] keyPath)
+    public BaseJsonValueNode TryGetValue(string key, string subKey, params string[] keyPath)
     {
         var path = new List<string>
         {
@@ -3275,7 +3288,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     /// <summary>
     /// Tries to get the value of the specific property.
     /// </summary>
-    /// <typeparam name="T">The type of value. Should be one of IJsonDataNode (or its sub-class), String, Int32, Int64, Boolean, Single, Double, Decimal or StringBuilder.</typeparam>
+    /// <typeparam name="T">The type of value. Should be one of BaseJsonValueNode (or its sub-class), String, Int32, Int64, Boolean, Single, Double, Decimal or StringBuilder.</typeparam>
     /// <param name="keyPath">The property key path.</param>
     /// <returns>The value.</returns>
     public T TryGetValue<T>(params string[] keyPath)
@@ -3284,7 +3297,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     /// <summary>
     /// Tries to get the value of the specific property.
     /// </summary>
-    /// <typeparam name="T">The type of value. Should be one of IJsonDataNode (or its sub-class), String, Int32, Int64, Boolean, Single, Double, Decimal or StringBuilder.</typeparam>
+    /// <typeparam name="T">The type of value. Should be one of BaseJsonValueNode (or its sub-class), String, Int32, Int64, Boolean, Single, Double, Decimal or StringBuilder.</typeparam>
     /// <param name="keyPath">The additional property key path.</param>
     /// <param name="result">The result.</param>
     /// <returns>true if has the property and the type is the one expected; otherwise, false.</returns>
@@ -3294,7 +3307,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     /// <summary>
     /// Tries to get the value of the specific property.
     /// </summary>
-    /// <typeparam name="T">The type of value. Should be one of IJsonDataNode (or its sub-class), String, Int32, Int64, Boolean, Single, Double, Decimal or StringBuilder.</typeparam>
+    /// <typeparam name="T">The type of value. Should be one of BaseJsonValueNode (or its sub-class), String, Int32, Int64, Boolean, Single, Double, Decimal or StringBuilder.</typeparam>
     /// <param name="keyPath">The additional property key path.</param>
     /// <param name="result">The result.</param>
     /// <param name="kind">The value kind.</param>
@@ -3327,7 +3340,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
         {
             if (type == typeof(string))
             {
-                if (r.TryGetString(out var s))
+                if (JsonValues.TryGetString(r, out var s))
                 {
                     result = (T)(object)s;
                     return true;
@@ -3353,7 +3366,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
                 }
                 else if (type == typeof(int))
                 {
-                    if (r.TryGetInt32(out var i))
+                    if (JsonValues.TryGetInt32(r, out var i))
                     {
                         result = (T)(object)i;
                         return true;
@@ -3361,7 +3374,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
                 }
                 else if (type == typeof(long))
                 {
-                    if (r.TryGetInt64(out var l))
+                    if (JsonValues.TryGetInt64(r, out var l))
                     {
                         result = (T)(object)l;
                         return true;
@@ -3369,7 +3382,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
                 }
                 else if (type == typeof(double))
                 {
-                    if (r.TryGetDouble(out var d))
+                    if (JsonValues.TryGetDouble(r, out var d))
                     {
                         result = (T)(object)d;
                         return true;
@@ -3377,7 +3390,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
                 }
                 else if (type == typeof(float))
                 {
-                    if (r.TryGetSingle(out var f))
+                    if (JsonValues.TryGetSingle(r, out var f))
                     {
                         result = (T)(object)f;
                         return true;
@@ -3385,7 +3398,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
                 }
                 else if (type == typeof(decimal))
                 {
-                    if (r.TryGetDecimal(out var d))
+                    if (JsonValues.TryGetDecimal(r, out var d))
                     {
                         result = (T)(object)d;
                         return true;
@@ -3393,7 +3406,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
                 }
                 else if (type == typeof(bool))
                 {
-                    if (r.TryGetBoolean(out var b))
+                    if (JsonValues.TryGetBoolean(r, out var b))
                     {
                         result = (T)(object)b;
                         return true;
@@ -3401,7 +3414,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
                 }
                 else if (type == typeof(DateTime))
                 {
-                    if (r.TryGetDateTime(out var d))
+                    if (JsonValues.TryGetDateTime(r, out var d))
                     {
                         result = (T)(object)d;
                         return true;
@@ -3409,7 +3422,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
                 }
                 else if (type == typeof(Guid))
                 {
-                    if (r.TryGetGuid(out var g))
+                    if (JsonValues.TryGetGuid(r, out var g))
                     {
                         result = (T)(object)g;
                         return true;
@@ -3417,7 +3430,15 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
                 }
                 else if (type == typeof(uint))
                 {
-                    if (r.TryGetUInt32(out var i))
+                    if (JsonValues.TryGetUInt32(r, out var i))
+                    {
+                        result = (T)(object)i;
+                        return true;
+                    }
+                }
+                else if (type == typeof(short))
+                {
+                    if (JsonValues.TryGetInt16(r, out var i))
                     {
                         result = (T)(object)i;
                         return true;
@@ -3425,7 +3446,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
                 }
                 else if (type == typeof(Uri))
                 {
-                    if (r.TryGetString(out var s) && Uri.TryCreate(s, UriKind.RelativeOrAbsolute, out var u))
+                    if (JsonValues.TryGetString(r, out var s) && Uri.TryCreate(s, UriKind.RelativeOrAbsolute, out var u))
                     {
                         result = (T)(object)u;
                         return true;
@@ -3434,7 +3455,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
             }
             else if (type == typeof(StringBuilder))
             {
-                if (r.TryGetString(out var s))
+                if (JsonValues.TryGetString(r, out var s))
                 {
                     result = (T)(object)new StringBuilder(s);
                     return true;
@@ -3498,9 +3519,9 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     /// <param name="key">The property key or key path.</param>
     /// <param name="isPath">true if the key is a path; otherwise, false.</param>
     /// <returns>The value.</returns>
-    public IJsonDataNode TryGetValue(string key, bool isPath)
+    public BaseJsonValueNode TryGetValue(string key, bool isPath)
     {
-        if (!isPath) return TryGetValue(key);
+        if (!isPath) return TryGetValueOrNull(key);
         if (key == null) return this;
         if (key.StartsWith("$.")) key = key.Substring(2);
         else if (key.StartsWith("$[")) key = key.Substring(1);
@@ -3697,11 +3718,11 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     /// <param name="key">The property key.</param>
     /// <param name="value">The value to set.</param>
     /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
-    public void SetValue(string key, IJsonStringNode value)
+    public void SetValue(string key, IJsonValueNode<string> value)
     {
         AssertKey(key);
-        if (value == null) SetProperty(key, JsonValues.Null);
-        else SetProperty(key, value != null ? new JsonStringNode(value) : JsonValues.Null);
+        if (value?.Value == null) SetProperty(key, JsonValues.Null);
+        else SetProperty(key, value is JsonStringNode s ? s : new JsonStringNode(value));
     }
 
     /// <summary>
@@ -4163,10 +4184,16 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     /// <param name="key">The property key.</param>
     /// <param name="value">The value to set.</param>
     /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
-    public void SetValue(string key, JsonBooleanNode value)
+    public void SetValue(string key, IJsonValueNode<bool> value)
     {
         AssertKey(key);
-        SetProperty(key, value ?? JsonValues.Null);
+        if (value is null)
+        {
+            SetProperty(key, JsonValues.Null);
+            return;
+        }
+
+        SetProperty(key, value.Value ? JsonBooleanNode.True : JsonBooleanNode.False);
     }
 
     /// <summary>
@@ -4895,6 +4922,87 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     }
 
     /// <summary>
+    /// Sets propertis.
+    /// </summary>
+    /// <param name="keyA">The key of property A to set.</param>
+    /// <param name="valueA">The value of property A to set.</param>
+    /// <param name="keyB">The key of property B to set.</param>
+    /// <param name="valueB">The value of property B to set.</param>
+    /// <param name="keyC">The key of property C to set.</param>
+    /// <param name="valueC">The value of property C to set.</param>
+    /// <param name="keyD">The key of property D to set.</param>
+    /// <param name="valueD">The value of property D to set.</param>
+    /// <param name="keyE">The key of property E to set.</param>
+    /// <param name="valueE">The value of property E to set.</param>
+    /// <returns>The count to set.</returns>
+    public int SetRange(string keyA, string valueA, string keyB, string valueB, string keyC = null, string valueC = null, string keyD = null, string valueD = null, string keyE = null, string valueE = null)
+    {
+        var i = 0;
+        if (!string.IsNullOrWhiteSpace(keyA))
+        {
+            SetValue(keyA, valueA);
+            i++;
+        }
+
+        if (!string.IsNullOrWhiteSpace(keyB))
+        {
+            SetValue(keyB, valueB);
+            i++;
+        }
+
+        if (!string.IsNullOrWhiteSpace(keyC))
+        {
+            SetValue(keyC, valueC);
+            i++;
+        }
+
+        if (!string.IsNullOrWhiteSpace(keyD))
+        {
+            SetValue(keyD, valueD);
+            i++;
+        }
+
+        if (!string.IsNullOrWhiteSpace(keyE))
+        {
+            SetValue(keyE, valueE);
+            i++;
+        }
+
+        return i;
+    }
+
+    /// <summary>
+    /// Sets propertis.
+    /// </summary>
+    /// <param name="keyA">The key of property A to set.</param>
+    /// <param name="valueA">The value of property A to set.</param>
+    /// <param name="keyB">The key of property B to set.</param>
+    /// <param name="valueB">The value of property B to set.</param>
+    /// <param name="keyC">The key of property C to set.</param>
+    /// <param name="valueC">The value of property C to set.</param>
+    /// <param name="keyD">The key of property D to set.</param>
+    /// <param name="valueD">The value of property D to set.</param>
+    /// <param name="keyE">The key of property E to set.</param>
+    /// <param name="valueE">The value of property E to set.</param>
+    /// <param name="keyF">The key of property F to set.</param>
+    /// <param name="valueF">The value of property F to set.</param>
+    /// <param name="keyG">The key of property G to set.</param>
+    /// <param name="valueG">The value of property G to set.</param>
+    /// <param name="keyH">The key of property H to set.</param>
+    /// <param name="valueH">The value of property H to set.</param>
+    /// <param name="keyI">The key of property I to set.</param>
+    /// <param name="valueI">The value of property I to set.</param>
+    /// <param name="keyJ">The key of property J to set.</param>
+    /// <param name="valueJ">The value of property J to set.</param>
+    /// <returns>The count to set.</returns>
+    public int SetRange(string keyA, string valueA, string keyB, string valueB, string keyC, string valueC, string keyD, string valueD, string keyE, string valueE, string keyF, string valueF, string keyG = null, string valueG = null, string keyH = null, string valueH = null, string keyI = null, string valueI = null, string keyJ = null, string valueJ = null)
+    {
+        var i = SetRange(keyA, valueA, keyB, valueB, keyC, valueC, keyD, valueD, keyE, valueE);
+        i += SetRange(keyF, valueF, keyG, valueG, keyH, valueH, keyI, valueI, keyJ, valueJ);
+        return i;
+    }
+
+    /// <summary>
     /// Sets properties.
     /// </summary>
     /// <param name="data">Key value pairs to set.</param>
@@ -4927,6 +5035,489 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     }
 
     /// <summary>
+    /// Sets propertis.
+    /// </summary>
+    /// <param name="keyA">The key of property A to set.</param>
+    /// <param name="valueA">The value of property A to set.</param>
+    /// <param name="keyB">The key of property B to set.</param>
+    /// <param name="valueB">The value of property B to set.</param>
+    /// <param name="keyC">The key of property C to set.</param>
+    /// <param name="valueC">The value of property C to set.</param>
+    /// <param name="keyD">The key of property D to set.</param>
+    /// <param name="valueD">The value of property D to set.</param>
+    /// <param name="keyE">The key of property E to set.</param>
+    /// <param name="valueE">The value of property E to set.</param>
+    /// <param name="keyF">The key of property F to set.</param>
+    /// <param name="valueF">The value of property F to set.</param>
+    /// <param name="keyG">The key of property G to set.</param>
+    /// <param name="valueG">The value of property G to set.</param>
+    /// <returns>The count to set.</returns>
+    public int SetRange(string keyA, int valueA, string keyB, int valueB, string keyC = null, int? valueC = null, string keyD = null, int? valueD = null, string keyE = null, int? valueE = null, string keyF = null, int? valueF = null, string keyG = null, int? valueG = null)
+    {
+        var i = 0;
+        if (!string.IsNullOrWhiteSpace(keyA))
+        {
+            SetValue(keyA, valueA);
+            i++;
+        }
+
+        if (!string.IsNullOrWhiteSpace(keyB))
+        {
+            SetValue(keyB, valueB);
+            i++;
+        }
+
+        if (!string.IsNullOrWhiteSpace(keyC))
+        {
+            if (valueC.HasValue) SetValue(keyC, valueC.Value);
+            else RemoveProperty(keyC);
+            i++;
+        }
+
+        if (!string.IsNullOrWhiteSpace(keyD))
+        {
+            if (valueD.HasValue) SetValue(keyD, valueD.Value);
+            else RemoveProperty(keyD);
+            i++;
+        }
+
+        if (!string.IsNullOrWhiteSpace(keyE))
+        {
+            if (valueE.HasValue) SetValue(keyE, valueE.Value);
+            else RemoveProperty(keyE);
+            i++;
+        }
+
+        if (!string.IsNullOrWhiteSpace(keyF))
+        {
+            if (valueF.HasValue) SetValue(keyF, valueF.Value);
+            else RemoveProperty(keyF);
+            i++;
+        }
+
+        if (!string.IsNullOrWhiteSpace(keyG))
+        {
+            if (valueG.HasValue) SetValue(keyG, valueG.Value);
+            else RemoveProperty(keyG);
+            i++;
+        }
+
+        return i;
+    }
+
+    /// <summary>
+    /// Sets properties.
+    /// </summary>
+    /// <param name="data">Key value pairs to set.</param>
+    /// <param name="skipDuplicate">true if skip the duplicate properties; otherwise, false.</param>
+    /// <returns>The count to set.</returns>
+    public int SetRange(IEnumerable<KeyValuePair<string, float>> data, bool skipDuplicate = false)
+    {
+        var count = 0;
+        if (data == null) return count;
+        if (skipDuplicate)
+        {
+            foreach (var props in data)
+            {
+                if (string.IsNullOrWhiteSpace(props.Key) || store.ContainsKey(props.Key)) continue;
+                count++;
+                SetValue(props.Key, props.Value);
+            }
+        }
+        else
+        {
+            foreach (var props in data)
+            {
+                if (string.IsNullOrWhiteSpace(props.Key)) continue;
+                count++;
+                SetValue(props.Key, props.Value);
+            }
+        }
+
+        return count;
+    }
+
+    /// <summary>
+    /// Sets propertis.
+    /// </summary>
+    /// <param name="keyA">The key of property A to set.</param>
+    /// <param name="valueA">The value of property A to set.</param>
+    /// <param name="keyB">The key of property B to set.</param>
+    /// <param name="valueB">The value of property B to set.</param>
+    /// <param name="keyC">The key of property C to set.</param>
+    /// <param name="valueC">The value of property C to set.</param>
+    /// <param name="keyD">The key of property D to set.</param>
+    /// <param name="valueD">The value of property D to set.</param>
+    /// <param name="keyE">The key of property E to set.</param>
+    /// <param name="valueE">The value of property E to set.</param>
+    /// <param name="keyF">The key of property F to set.</param>
+    /// <param name="valueF">The value of property F to set.</param>
+    /// <param name="keyG">The key of property G to set.</param>
+    /// <param name="valueG">The value of property G to set.</param>
+    /// <returns>The count to set.</returns>
+    public int SetRange(string keyA, float valueA, string keyB, float valueB, string keyC = null, float? valueC = null, string keyD = null, float? valueD = null, string keyE = null, float? valueE = null, string keyF = null, float? valueF = null, string keyG = null, float? valueG = null)
+    {
+        var i = 0;
+        if (!string.IsNullOrWhiteSpace(keyA))
+        {
+            SetValue(keyA, valueA);
+            i++;
+        }
+
+        if (!string.IsNullOrWhiteSpace(keyB))
+        {
+            SetValue(keyB, valueB);
+            i++;
+        }
+
+        if (!string.IsNullOrWhiteSpace(keyC))
+        {
+            if (valueC.HasValue) SetValue(keyC, valueC.Value);
+            else RemoveProperty(keyC);
+            i++;
+        }
+
+        if (!string.IsNullOrWhiteSpace(keyD))
+        {
+            if (valueD.HasValue) SetValue(keyD, valueD.Value);
+            else RemoveProperty(keyD);
+            i++;
+        }
+
+        if (!string.IsNullOrWhiteSpace(keyE))
+        {
+            if (valueE.HasValue) SetValue(keyE, valueE.Value);
+            else RemoveProperty(keyE);
+            i++;
+        }
+
+        if (!string.IsNullOrWhiteSpace(keyF))
+        {
+            if (valueF.HasValue) SetValue(keyF, valueF.Value);
+            else RemoveProperty(keyF);
+            i++;
+        }
+
+        if (!string.IsNullOrWhiteSpace(keyG))
+        {
+            if (valueG.HasValue) SetValue(keyG, valueG.Value);
+            else RemoveProperty(keyG);
+            i++;
+        }
+
+        return i;
+    }
+
+    /// <summary>
+    /// Sets properties.
+    /// </summary>
+    /// <param name="data">Key value pairs to set.</param>
+    /// <param name="skipDuplicate">true if skip the duplicate properties; otherwise, false.</param>
+    /// <returns>The count to set.</returns>
+    public int SetRange(IEnumerable<KeyValuePair<string, double>> data, bool skipDuplicate = false)
+    {
+        var count = 0;
+        if (data == null) return count;
+        if (skipDuplicate)
+        {
+            foreach (var props in data)
+            {
+                if (string.IsNullOrWhiteSpace(props.Key) || store.ContainsKey(props.Key)) continue;
+                count++;
+                SetValue(props.Key, props.Value);
+            }
+        }
+        else
+        {
+            foreach (var props in data)
+            {
+                if (string.IsNullOrWhiteSpace(props.Key)) continue;
+                count++;
+                SetValue(props.Key, props.Value);
+            }
+        }
+
+        return count;
+    }
+
+    /// <summary>
+    /// Sets propertis.
+    /// </summary>
+    /// <param name="keyA">The key of property A to set.</param>
+    /// <param name="valueA">The value of property A to set.</param>
+    /// <param name="keyB">The key of property B to set.</param>
+    /// <param name="valueB">The value of property B to set.</param>
+    /// <param name="keyC">The key of property C to set.</param>
+    /// <param name="valueC">The value of property C to set.</param>
+    /// <param name="keyD">The key of property D to set.</param>
+    /// <param name="valueD">The value of property D to set.</param>
+    /// <param name="keyE">The key of property E to set.</param>
+    /// <param name="valueE">The value of property E to set.</param>
+    /// <param name="keyF">The key of property F to set.</param>
+    /// <param name="valueF">The value of property F to set.</param>
+    /// <param name="keyG">The key of property G to set.</param>
+    /// <param name="valueG">The value of property G to set.</param>
+    /// <returns>The count to set.</returns>
+    public int SetRange(string keyA, double valueA, string keyB, double valueB, string keyC = null, double? valueC = null, string keyD = null, double? valueD = null, string keyE = null, double? valueE = null, string keyF = null, double? valueF = null, string keyG = null, double? valueG = null)
+    {
+        var i = 0;
+        if (!string.IsNullOrWhiteSpace(keyA))
+        {
+            SetValue(keyA, valueA);
+            i++;
+        }
+
+        if (!string.IsNullOrWhiteSpace(keyB))
+        {
+            SetValue(keyB, valueB);
+            i++;
+        }
+
+        if (!string.IsNullOrWhiteSpace(keyC))
+        {
+            if (valueC.HasValue) SetValue(keyC, valueC.Value);
+            else RemoveProperty(keyC);
+            i++;
+        }
+
+        if (!string.IsNullOrWhiteSpace(keyD))
+        {
+            if (valueD.HasValue) SetValue(keyD, valueD.Value);
+            else RemoveProperty(keyD);
+            i++;
+        }
+
+        if (!string.IsNullOrWhiteSpace(keyE))
+        {
+            if (valueE.HasValue) SetValue(keyE, valueE.Value);
+            else RemoveProperty(keyE);
+            i++;
+        }
+
+        if (!string.IsNullOrWhiteSpace(keyF))
+        {
+            if (valueF.HasValue) SetValue(keyF, valueF.Value);
+            else RemoveProperty(keyF);
+            i++;
+        }
+
+        if (!string.IsNullOrWhiteSpace(keyG))
+        {
+            if (valueG.HasValue) SetValue(keyG, valueG.Value);
+            else RemoveProperty(keyG);
+            i++;
+        }
+
+        return i;
+    }
+
+    /// <summary>
+    /// Sets properties.
+    /// </summary>
+    /// <param name="data">Key value pairs to set.</param>
+    /// <param name="skipDuplicate">true if skip the duplicate properties; otherwise, false.</param>
+    /// <returns>The count to set.</returns>
+    public int SetRange(IEnumerable<KeyValuePair<string, decimal>> data, bool skipDuplicate = false)
+    {
+        var count = 0;
+        if (data == null) return count;
+        if (skipDuplicate)
+        {
+            foreach (var props in data)
+            {
+                if (string.IsNullOrWhiteSpace(props.Key) || store.ContainsKey(props.Key)) continue;
+                count++;
+                SetValue(props.Key, props.Value);
+            }
+        }
+        else
+        {
+            foreach (var props in data)
+            {
+                if (string.IsNullOrWhiteSpace(props.Key)) continue;
+                count++;
+                SetValue(props.Key, props.Value);
+            }
+        }
+
+        return count;
+    }
+
+    /// <summary>
+    /// Sets propertis.
+    /// </summary>
+    /// <param name="keyA">The key of property A to set.</param>
+    /// <param name="valueA">The value of property A to set.</param>
+    /// <param name="keyB">The key of property B to set.</param>
+    /// <param name="valueB">The value of property B to set.</param>
+    /// <param name="keyC">The key of property C to set.</param>
+    /// <param name="valueC">The value of property C to set.</param>
+    /// <param name="keyD">The key of property D to set.</param>
+    /// <param name="valueD">The value of property D to set.</param>
+    /// <param name="keyE">The key of property E to set.</param>
+    /// <param name="valueE">The value of property E to set.</param>
+    /// <param name="keyF">The key of property F to set.</param>
+    /// <param name="valueF">The value of property F to set.</param>
+    /// <param name="keyG">The key of property G to set.</param>
+    /// <param name="valueG">The value of property G to set.</param>
+    /// <returns>The count to set.</returns>
+    public int SetRange(string keyA, decimal valueA, string keyB, decimal valueB, string keyC = null, decimal? valueC = null, string keyD = null, decimal? valueD = null, string keyE = null, decimal? valueE = null, string keyF = null, decimal? valueF = null, string keyG = null, decimal? valueG = null)
+    {
+        var i = 0;
+        if (!string.IsNullOrWhiteSpace(keyA))
+        {
+            SetValue(keyA, valueA);
+            i++;
+        }
+
+        if (!string.IsNullOrWhiteSpace(keyB))
+        {
+            SetValue(keyB, valueB);
+            i++;
+        }
+
+        if (!string.IsNullOrWhiteSpace(keyC))
+        {
+            if (valueC.HasValue) SetValue(keyC, valueC.Value);
+            else RemoveProperty(keyC);
+            i++;
+        }
+
+        if (!string.IsNullOrWhiteSpace(keyD))
+        {
+            if (valueD.HasValue) SetValue(keyD, valueD.Value);
+            else RemoveProperty(keyD);
+            i++;
+        }
+
+        if (!string.IsNullOrWhiteSpace(keyE))
+        {
+            if (valueE.HasValue) SetValue(keyE, valueE.Value);
+            else RemoveProperty(keyE);
+            i++;
+        }
+
+        if (!string.IsNullOrWhiteSpace(keyF))
+        {
+            if (valueF.HasValue) SetValue(keyF, valueF.Value);
+            else RemoveProperty(keyF);
+            i++;
+        }
+
+        if (!string.IsNullOrWhiteSpace(keyG))
+        {
+            if (valueG.HasValue) SetValue(keyG, valueG.Value);
+            else RemoveProperty(keyG);
+            i++;
+        }
+
+        return i;
+    }
+
+    /// <summary>
+    /// Sets properties.
+    /// </summary>
+    /// <param name="data">Key value pairs to set.</param>
+    /// <param name="skipDuplicate">true if skip the duplicate properties; otherwise, false.</param>
+    /// <returns>The count to set.</returns>
+    public int SetRange(IEnumerable<KeyValuePair<string, bool>> data, bool skipDuplicate = false)
+    {
+        var count = 0;
+        if (data == null) return count;
+        if (skipDuplicate)
+        {
+            foreach (var props in data)
+            {
+                if (string.IsNullOrWhiteSpace(props.Key) || store.ContainsKey(props.Key)) continue;
+                count++;
+                SetValue(props.Key, props.Value);
+            }
+        }
+        else
+        {
+            foreach (var props in data)
+            {
+                if (string.IsNullOrWhiteSpace(props.Key)) continue;
+                count++;
+                SetValue(props.Key, props.Value);
+            }
+        }
+
+        return count;
+    }
+
+    /// <summary>
+    /// Sets propertis.
+    /// </summary>
+    /// <param name="keyA">The key of property A to set.</param>
+    /// <param name="valueA">The value of property A to set.</param>
+    /// <param name="keyB">The key of property B to set.</param>
+    /// <param name="valueB">The value of property B to set.</param>
+    /// <param name="keyC">The key of property C to set.</param>
+    /// <param name="valueC">The value of property C to set.</param>
+    /// <param name="keyD">The key of property D to set.</param>
+    /// <param name="valueD">The value of property D to set.</param>
+    /// <param name="keyE">The key of property E to set.</param>
+    /// <param name="valueE">The value of property E to set.</param>
+    /// <param name="keyF">The key of property F to set.</param>
+    /// <param name="valueF">The value of property F to set.</param>
+    /// <param name="keyG">The key of property G to set.</param>
+    /// <param name="valueG">The value of property G to set.</param>
+    /// <returns>The count to set.</returns>
+    public int SetRange(string keyA, bool valueA, string keyB, bool valueB, string keyC = null, bool? valueC = null, string keyD = null, bool? valueD = null, string keyE = null, bool? valueE = null, string keyF = null, bool? valueF = null, string keyG = null, bool? valueG = null)
+    {
+        var i = 0;
+        if (!string.IsNullOrWhiteSpace(keyA))
+        {
+            SetValue(keyA, valueA);
+            i++;
+        }
+
+        if (!string.IsNullOrWhiteSpace(keyB))
+        {
+            SetValue(keyB, valueB);
+            i++;
+        }
+
+        if (!string.IsNullOrWhiteSpace(keyC))
+        {
+            if (valueC.HasValue) SetValue(keyC, valueC.Value);
+            else RemoveProperty(keyC);
+            i++;
+        }
+
+        if (!string.IsNullOrWhiteSpace(keyD))
+        {
+            if (valueD.HasValue) SetValue(keyD, valueD.Value);
+            else RemoveProperty(keyD);
+            i++;
+        }
+
+        if (!string.IsNullOrWhiteSpace(keyE))
+        {
+            if (valueE.HasValue) SetValue(keyE, valueE.Value);
+            else RemoveProperty(keyE);
+            i++;
+        }
+
+        if (!string.IsNullOrWhiteSpace(keyF))
+        {
+            if (valueF.HasValue) SetValue(keyF, valueF.Value);
+            else RemoveProperty(keyF);
+            i++;
+        }
+
+        if (!string.IsNullOrWhiteSpace(keyG))
+        {
+            if (valueG.HasValue) SetValue(keyG, valueG.Value);
+            else RemoveProperty(keyG);
+            i++;
+        }
+
+        return i;
+    }
+
+    /// <summary>
     /// Sets properties.
     /// </summary>
     /// <param name="data">Key value pairs to set.</param>
@@ -4956,6 +5547,87 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
         }
 
         return count;
+    }
+
+    /// <summary>
+    /// Sets propertis.
+    /// </summary>
+    /// <param name="keyA">The key of property A to set.</param>
+    /// <param name="valueA">The value of property A to set.</param>
+    /// <param name="keyB">The key of property B to set.</param>
+    /// <param name="valueB">The value of property B to set.</param>
+    /// <param name="keyC">The key of property C to set.</param>
+    /// <param name="valueC">The value of property C to set.</param>
+    /// <param name="keyD">The key of property D to set.</param>
+    /// <param name="valueD">The value of property D to set.</param>
+    /// <param name="keyE">The key of property E to set.</param>
+    /// <param name="valueE">The value of property E to set.</param>
+    /// <returns>The count to set.</returns>
+    public int SetRange(string keyA, JsonObjectNode valueA, string keyB, JsonObjectNode valueB, string keyC = null, JsonObjectNode valueC = null, string keyD = null, JsonObjectNode valueD = null, string keyE = null, JsonObjectNode valueE = null)
+    {
+        var i = 0;
+        if (!string.IsNullOrWhiteSpace(keyA))
+        {
+            SetValue(keyA, valueA);
+            i++;
+        }
+
+        if (!string.IsNullOrWhiteSpace(keyB))
+        {
+            SetValue(keyB, valueB);
+            i++;
+        }
+
+        if (!string.IsNullOrWhiteSpace(keyC))
+        {
+            SetValue(keyC, valueC);
+            i++;
+        }
+
+        if (!string.IsNullOrWhiteSpace(keyD))
+        {
+            SetValue(keyD, valueD);
+            i++;
+        }
+
+        if (!string.IsNullOrWhiteSpace(keyE))
+        {
+            SetValue(keyE, valueE);
+            i++;
+        }
+
+        return i;
+    }
+
+    /// <summary>
+    /// Sets propertis.
+    /// </summary>
+    /// <param name="keyA">The key of property A to set.</param>
+    /// <param name="valueA">The value of property A to set.</param>
+    /// <param name="keyB">The key of property B to set.</param>
+    /// <param name="valueB">The value of property B to set.</param>
+    /// <param name="keyC">The key of property C to set.</param>
+    /// <param name="valueC">The value of property C to set.</param>
+    /// <param name="keyD">The key of property D to set.</param>
+    /// <param name="valueD">The value of property D to set.</param>
+    /// <param name="keyE">The key of property E to set.</param>
+    /// <param name="valueE">The value of property E to set.</param>
+    /// <param name="keyF">The key of property F to set.</param>
+    /// <param name="valueF">The value of property F to set.</param>
+    /// <param name="keyG">The key of property G to set.</param>
+    /// <param name="valueG">The value of property G to set.</param>
+    /// <param name="keyH">The key of property H to set.</param>
+    /// <param name="valueH">The value of property H to set.</param>
+    /// <param name="keyI">The key of property I to set.</param>
+    /// <param name="valueI">The value of property I to set.</param>
+    /// <param name="keyJ">The key of property J to set.</param>
+    /// <param name="valueJ">The value of property J to set.</param>
+    /// <returns>The count to set.</returns>
+    public int SetRange(string keyA, JsonObjectNode valueA, string keyB, JsonObjectNode valueB, string keyC, JsonObjectNode valueC, string keyD, JsonObjectNode valueD, string keyE, JsonObjectNode valueE, string keyF, JsonObjectNode valueF, string keyG = null, JsonObjectNode valueG = null, string keyH = null, JsonObjectNode valueH = null, string keyI = null, JsonObjectNode valueI = null, string keyJ = null, JsonObjectNode valueJ = null)
+    {
+        var i = SetRange(keyA, valueA, keyB, valueB, keyC, valueC, keyD, valueD, keyE, valueE);
+        i += SetRange(keyF, valueF, keyG, valueG, keyH, valueH, keyI, valueI, keyJ, valueJ);
+        return i;
     }
 
     /// <summary>
@@ -5318,7 +5990,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     public void IncreaseValue(string key, int value = 1)
     {
         AssertKey(key);
-        var v = TryGetValue(key);
+        var v = TryGetValueOrNull(key);
         if (v is null || v.ValueKind == JsonValueKind.Null || v.ValueKind == JsonValueKind.Undefined)
         {
             SetValue(key, value);
@@ -5378,7 +6050,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     public void IncreaseValue(string key, long value)
     {
         AssertKey(key);
-        var v = TryGetValue(key);
+        var v = TryGetValueOrNull(key);
         if (v is null || v.ValueKind == JsonValueKind.Null || v.ValueKind == JsonValueKind.Undefined)
         {
             SetValue(key, value);
@@ -5438,7 +6110,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     public void IncreaseValue(string key, double value)
     {
         AssertKey(key);
-        var v = TryGetValue(key);
+        var v = TryGetValueOrNull(key);
         if (v is null || v.ValueKind == JsonValueKind.Null || v.ValueKind == JsonValueKind.Undefined)
         {
             SetValue(key, value);
@@ -5578,7 +6250,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     public string AppendValue(string key, string value)
     {
         AssertKey(key);
-        var v = TryGetValue(key);
+        var v = TryGetValueOrNull(key);
         if (v is null || v.ValueKind == JsonValueKind.Null || v.ValueKind == JsonValueKind.Undefined)
         {
             SetValue(key, value);
@@ -5655,7 +6327,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     /// <param name="item">The property to add to the JSON object.</param>
     /// <exception cref="ArgumentNullException">key is null.</exception>
     /// <exception cref="ArgumentException">An element with the same key already exists in the JSON object.</exception>
-    public void Add(KeyValuePair<string, IJsonDataNode> item)
+    public void Add(KeyValuePair<string, BaseJsonValueNode> item)
         => AddProperty(item.Key, JsonValues.ConvertValue(item.Value, this));
 
     /// <summary>
@@ -5673,7 +6345,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     /// <param name="item">The property to add to the JSON object.</param>
     /// <exception cref="ArgumentNullException">key is null.</exception>
     /// <exception cref="ArgumentException">An element with the same key already exists in the JSON object.</exception>
-    public void Add(KeyValuePair<string, IJsonStringNode> item)
+    public void Add(KeyValuePair<string, IJsonValueNode<string>> item)
         => AddProperty(item.Key, JsonValues.ConvertValue(item.Value, this));
 
     /// <summary>
@@ -5901,7 +6573,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     /// <param name="value">The value of the property.</param>
     /// <exception cref="ArgumentNullException">key is null.</exception>
     /// <exception cref="ArgumentException">An element with the same key already exists in the JSON object.</exception>
-    public void Add(string key, IJsonDataNode value)
+    public void Add(string key, BaseJsonValueNode value)
         => AddProperty(key, JsonValues.ConvertValue(value, this));
 
     /// <summary>
@@ -6359,7 +7031,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     /// </summary>
     /// <param name="item">The property to locate in the JSON object.</param>
     /// <returns>true if property is found in the JSON object; otherwise, false.</returns>
-    public bool Contains(KeyValuePair<string, IJsonDataNode> item)
+    public bool Contains(KeyValuePair<string, BaseJsonValueNode> item)
     {
         foreach (var ele in store)
         {
@@ -6392,7 +7064,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     /// <exception cref="ArgumentNullException">array is null.</exception>
     /// <exception cref="ArgumentOutOfRangeException">arrayIndex is less than 0.</exception>
     /// <exception cref="ArgumentException">The number of elements in the source  is greater than the available space from arrayIndex to the end of the destination array.</exception>
-    public void CopyTo(KeyValuePair<string, IJsonDataNode>[] array, int arrayIndex)
+    public void CopyTo(KeyValuePair<string, BaseJsonValueNode>[] array, int arrayIndex)
         => store.CopyTo(array, arrayIndex);
 
     /// <summary>
@@ -6413,9 +7085,9 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     /// </summary>
     /// <param name="item">The property to remove from the JSON object.</param>
     /// <returns>true if property was successfully removed from the JSON object; otherwise, false. This method also returns false if property is not found in the original JSON object.</returns>
-    public bool Remove(KeyValuePair<string, IJsonDataNode> item)
+    public bool Remove(KeyValuePair<string, BaseJsonValueNode> item)
     {
-        KeyValuePair<string, IJsonDataNode>? kvp = null;
+        KeyValuePair<string, BaseJsonValueNode>? kvp = null;
         foreach (var ele in store)
         {
             if (!JsonValues.Equals(ele.Value, item.Value)) continue;
@@ -6434,7 +7106,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     /// <returns>true if property was successfully removed from the JSON object; otherwise, false. This method also returns false if property is not found in the original JSON object.</returns>
     public bool Remove(KeyValuePair<string, IJsonValueNode> item)
     {
-        KeyValuePair<string, IJsonDataNode>? kvp = null;
+        KeyValuePair<string, BaseJsonValueNode>? kvp = null;
         foreach (var ele in store)
         {
             if (!JsonValues.Equals(ele.Value, item.Value)) continue;
@@ -6456,7 +7128,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
         if (PropertyChanged == null) return;
         foreach (var key in keys)
         {
-            PropertyChanged?.Invoke(this, new KeyValueEventArgs<string, IJsonDataNode>(key, JsonValues.Undefined));
+            PropertyChanged?.Invoke(this, new KeyValueEventArgs<string, BaseJsonValueNode>(key, JsonValues.Undefined));
         }
     }
 
@@ -6475,7 +7147,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     public bool Equals(JsonObjectNode other)
     {
         if (other is null) return false;
-        if (base.Equals(other)) return true;
+        if (ReferenceEquals(this, other)) return true;
         if (other.Count != Count) return false;
         foreach (var prop in store)
         {
@@ -6493,7 +7165,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     /// </summary>
     /// <param name="other">The object to compare with the current instance.</param>
     /// <returns>true if obj and this instance represent the same value; otherwise, false.</returns>
-    public bool Equals(IJsonValueNode other)
+    public override bool Equals(IJsonValueNode other)
     {
         if (other is null) return false;
         if (other is JsonObjectNode json) return Equals(json);
@@ -6506,11 +7178,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     /// <param name="other">The object to compare with the current instance.</param>
     /// <returns>true if obj and this instance represent the same value; otherwise, false.</returns>
     public override bool Equals(object other)
-    {
-        if (other is null) return false;
-        if (other is JsonObjectNode json) return Equals(json);
-        return false;
-    }
+        => base.Equals(other);
 
     /// <summary>
     /// Returns the hash code for this instance.
@@ -6887,7 +7555,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
                         break;
                     }
 
-                    var text = jStr.StringValue;
+                    var text = jStr.Value;
                     if (text == null)
                     {
                         str.AppendLine("~");
@@ -6993,7 +7661,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
         AssertKey(key);
         var item = store[key];
         if (item is null || item.ValueKind == JsonValueKind.Null || item.ValueKind == JsonValueKind.Undefined) return default;
-        if (parser != null && item is IJsonStringNode s) return parser(s.StringValue);
+        if (parser != null && item is IJsonValueNode<string> s) return parser(s.Value);
         return JsonSerializer.Deserialize<T>(item.ToString(), options);
     }
 
@@ -7097,7 +7765,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     /// <param name="kind">The data type of JSON value to filter.</param>
     /// <param name="predicate">An optional function to test each source element for a condition; the second parameter of the function represents the property key; the third is the index of the element after filter.</param>
     /// <returns>A new JSON object after filter.</returns>
-    public JsonObjectNode Where(JsonValueKind kind, Func<IJsonDataNode, string, int, bool> predicate = null)
+    public JsonObjectNode Where(JsonValueKind kind, Func<BaseJsonValueNode, string, int, bool> predicate = null)
     {
         predicate ??= PassTrue;
         var dict = new JsonObjectNode();
@@ -7142,10 +7810,10 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     /// </summary>
     /// <param name="predicate">A function to test each source element for a condition.</param>
     /// <returns>A collection that contains elements from the input sequence that satisfy the condition.</returns>
-    public IEnumerable<KeyValuePair<string, IJsonDataNode>> Where(Func<KeyValuePair<string, IJsonDataNode>, bool> predicate)
+    public IEnumerable<KeyValuePair<string, BaseJsonValueNode>> Where(Func<KeyValuePair<string, BaseJsonValueNode>, bool> predicate)
     {
-        if (predicate == null) return store.Select(ele => ele.Value is null ? new KeyValuePair<string, IJsonDataNode>(ele.Key, JsonValues.Null) : ele);
-        return store.Select(ele => ele.Value is null ? new KeyValuePair<string, IJsonDataNode>(ele.Key, JsonValues.Null) : ele).Where(predicate);
+        if (predicate == null) return store.Select(ele => ele.Value is null ? new KeyValuePair<string, BaseJsonValueNode>(ele.Key, JsonValues.Null) : ele);
+        return store.Select(ele => ele.Value is null ? new KeyValuePair<string, BaseJsonValueNode>(ele.Key, JsonValues.Null) : ele).Where(predicate);
     }
 
     /// <summary>
@@ -7153,17 +7821,17 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     /// </summary>
     /// <param name="predicate">A function to test each source element for a condition; the second parameter of the function represents the index of the source element.</param>
     /// <returns>A collection that contains elements from the input sequence that satisfy the condition.</returns>
-    public IEnumerable<KeyValuePair<string, IJsonDataNode>> Where(Func<KeyValuePair<string, IJsonDataNode>, int, bool> predicate)
+    public IEnumerable<KeyValuePair<string, BaseJsonValueNode>> Where(Func<KeyValuePair<string, BaseJsonValueNode>, int, bool> predicate)
     {
-        if (predicate == null) return store.Select(ele => ele.Value is null ? new KeyValuePair<string, IJsonDataNode>(ele.Key, JsonValues.Null) : ele);
-        return store.Select(ele => ele.Value is null ? new KeyValuePair<string, IJsonDataNode>(ele.Key, JsonValues.Null) : ele).Where(predicate);
+        if (predicate == null) return store.Select(ele => ele.Value is null ? new KeyValuePair<string, BaseJsonValueNode>(ele.Key, JsonValues.Null) : ele);
+        return store.Select(ele => ele.Value is null ? new KeyValuePair<string, BaseJsonValueNode>(ele.Key, JsonValues.Null) : ele).Where(predicate);
     }
 
     /// <summary>
     /// Creates a dictionary from this instance.
     /// </summary>
     /// <returns>A dictionary that contains the key value pairs from this instance.</returns>
-    public Dictionary<string, IJsonDataNode> ToDictionary()
+    public Dictionary<string, BaseJsonValueNode> ToDictionary()
         => new(store);
 
     /// <summary>
@@ -7171,7 +7839,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     /// </summary>
     /// <returns>A new object that is a copy of this instance.</returns>
     public JsonObjectNode Clone()
-        => new(store, store is ConcurrentDictionary<string, IJsonDataNode>);
+        => new(store, store is ConcurrentDictionary<string, BaseJsonValueNode>);
 
     /// <summary>
     /// Creates a new object that is a copy of the current instance.
@@ -7180,9 +7848,9 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     /// <returns>A new object that is a copy of this instance.</returns>
     public JsonObjectNode Clone(IEnumerable<string> keys)
     {
-        if (keys == null) return new JsonObjectNode(store, store is ConcurrentDictionary<string, IJsonDataNode>);
+        if (keys == null) return new JsonObjectNode(store, store is ConcurrentDictionary<string, BaseJsonValueNode>);
         var json = new JsonObjectNode();
-        if (store is ConcurrentDictionary<string, IJsonDataNode>) json.EnableThreadSafeMode();
+        if (store is ConcurrentDictionary<string, BaseJsonValueNode>) json.EnableThreadSafeMode();
         foreach (var key in keys)
         {
             if (store.TryGetValue(key, out var v)) json.store.Add(key, v);
@@ -7202,7 +7870,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     /// Returns an enumerator that iterates through the properties collection.
     /// </summary>
     /// <returns>An enumerator that can be used to iterate through the properties collection.</returns>
-    public IEnumerator<KeyValuePair<string, IJsonDataNode>> GetEnumerator()
+    public IEnumerator<KeyValuePair<string, BaseJsonValueNode>> GetEnumerator()
         => store.GetEnumerator();
 
     /// <summary>
@@ -7219,213 +7887,20 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     IEnumerator IEnumerable.GetEnumerator()
         => store.GetEnumerator();
 
-    /// <summary>
-    /// Gets the value of the element as a boolean.
-    /// </summary>
-    /// <returns>The value of the element as a boolean.</returns>
-    /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
-    bool IJsonDataNode.GetBoolean() => throw new InvalidOperationException("Expect a boolean but it is an object.");
-
-    /// <summary>
-    /// Gets the value of the element as a byte array.
-    /// </summary>
-    /// <returns>The value decoded as a byte array.</returns>
-    /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
-    byte[] IJsonDataNode.GetBytesFromBase64() => throw new InvalidOperationException("Expect a string but it is an object.");
-
-    /// <summary>
-    /// Gets the value of the element as a date time.
-    /// </summary>
-    /// <returns>The value of the element as a date time.</returns>
-    /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
-    DateTime IJsonDataNode.GetDateTime()
-        => TryGetDateTime() ?? throw new InvalidOperationException("Expect a date time but it is an object.");
-
-    /// <summary>
-    /// Gets the value of the element as a number.
-    /// </summary>
-    /// <returns>The value of the element as a number.</returns>
-    /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
-    decimal IJsonDataNode.GetDecimal() => throw new InvalidOperationException("Expect a number but it is an object.");
-
-    /// <summary>
-    /// Gets the value of the element as a number.
-    /// </summary>
-    /// <returns>The value of the element as a number.</returns>
-    /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
-    float IJsonDataNode.GetSingle() => throw new InvalidOperationException("Expect a number but it is an object.");
-
-    /// <summary>
-    /// Gets the value of the element as a number.
-    /// </summary>
-    /// <returns>The value of the element as a number.</returns>
-    /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
-    double IJsonDataNode.GetDouble() => throw new InvalidOperationException("Expect a number but it is an object.");
-
-    /// <summary>
-    /// Gets the value of the element as a number.
-    /// </summary>
-    /// <returns>The value of the element as a number.</returns>
-    /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
-    short IJsonDataNode.GetInt16() => throw new InvalidOperationException("Expect a number but it is an object.");
-
-    /// <summary>
-    /// Gets the value of the element as a number.
-    /// </summary>
-    /// <returns>The value of the element as a number.</returns>
-    /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
-    uint IJsonDataNode.GetUInt32() => throw new InvalidOperationException("Expect a number but it is an object.");
-
-    /// <summary>
-    /// Gets the value of the element as a number.
-    /// </summary>
-    /// <returns>The value of the element as a number.</returns>
-    /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
-    int IJsonDataNode.GetInt32() => throw new InvalidOperationException("Expect a number but it is an object.");
-
-    /// <summary>
-    /// Gets the value of the element as a number.
-    /// </summary>
-    /// <returns>The value of the element as a number.</returns>
-    /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
-    long IJsonDataNode.GetInt64() => throw new InvalidOperationException("Expect a number but it is an object.");
-
-    /// <summary>
-    /// Gets the value of the element as a number.
-    /// </summary>
-    /// <returns>The value of the element as a number.</returns>
-    /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
-    string IJsonDataNode.GetString() => throw new InvalidOperationException("Expect a string but it is an object.");
-
-    /// <summary>
-    /// Gets the value of the element as a GUID.
-    /// </summary>
-    /// <returns>The value of the element as a GUID.</returns>
-    /// <exception cref="InvalidOperationException">The value kind is not expected.</exception>
-    Guid IJsonDataNode.GetGuid() => throw new InvalidOperationException("Expect a string but it is an object.");
-
-    /// <summary>
-    /// Tries to get the value of the element as a boolean.
-    /// </summary>
-    /// <param name="result">The result.</param>
-    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
-    bool IJsonDataNode.TryGetBoolean(out bool result)
+    /// <inheritdoc />
+    protected override bool TryConvert(out DateTime result)
     {
-        result = false;
-        return false;
+        var v = TryGetDateTime();
+        result = v ?? WebFormat.ZeroTick;
+        return v.HasValue;
     }
 
-    /// <summary>
-    /// Tries to get the value of the element as a date time.
-    /// </summary>
-    /// <param name="result">The result.</param>
-    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
-    bool IJsonDataNode.TryGetDateTime(out DateTime result)
-    {
-        var t = TryGetDateTime();
-        result = t ?? WebFormat.ParseDate(0);
-        return t.HasValue;
-    }
-
-    /// <summary>
-    /// Tries to get the value of the element as a number.
-    /// </summary>
-    /// <param name="result">The result.</param>
-    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
-    bool IJsonDataNode.TryGetDecimal(out decimal result)
-    {
-        result = 0m;
-        return false;
-    }
-
-    /// <summary>
-    /// Tries to get the value of the element as a number.
-    /// </summary>
-    /// <param name="result">The result.</param>
-    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
-    bool IJsonDataNode.TryGetSingle(out float result)
-    {
-        result = float.NaN;
-        return false;
-    }
-
-    /// <summary>
-    /// Tries to get the value of the element as a number.
-    /// </summary>
-    /// <param name="result">The result.</param>
-    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
-    bool IJsonDataNode.TryGetDouble(out double result)
-    {
-        result = double.NaN;
-        return false;
-    }
-
-    /// <summary>
-    /// Tries to get the value of the element as a number.
-    /// </summary>
-    /// <param name="result">The result.</param>
-    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
-    bool IJsonDataNode.TryGetUInt32(out uint result)
-    {
-        result = 0;
-        return false;
-    }
-
-    /// <summary>
-    /// Tries to get the value of the element as a number.
-    /// </summary>
-    /// <param name="result">The result.</param>
-    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
-    bool IJsonDataNode.TryGetInt32(out int result)
-    {
-        result = 0;
-        return false;
-    }
-
-    /// <summary>
-    /// Tries to get the value of the element as a number.
-    /// </summary>
-    /// <param name="result">The result.</param>
-    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
-    bool IJsonDataNode.TryGetInt64(out long result)
-    {
-        result = 0;
-        return false;
-    }
-
-    /// <summary>
-    /// Tries to get the value of the element as a number.
-    /// </summary>
-    /// <param name="result">The result.</param>
-    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
-    bool IJsonDataNode.TryGetString(out string result)
+    /// <inheritdoc />
+    protected override bool TryConvert(bool strict, out string result)
     {
         result = null;
         return false;
     }
-
-    /// <summary>
-    /// Tries to get the value of the element as a GUID.
-    /// </summary>
-    /// <param name="result">The result.</param>
-    /// <returns>true if the kind is the one expected; otherwise, false.</returns>
-    bool IJsonDataNode.TryGetGuid(out Guid result)
-    {
-        result = Guid.Empty;
-        return false;
-    }
-
-    /// <summary>
-    /// Gets all property keys.
-    /// </summary>
-    /// <returns>The property keys.</returns>
-    IEnumerable<string> IJsonDataNode.GetKeys() => Keys;
-
-    /// <summary>
-    /// Gets all property keys.
-    /// </summary>
-    /// <returns>The property keys.</returns>
-    IEnumerable<string> IJsonContainerNode.GetKeys() => Keys;
 
     /// <summary>
     /// Tries to get the value of the element as a date time.
@@ -7458,29 +7933,49 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
         return new(year.Value, month, day, hour, minute, second, millisecond, kind);
     }
 
-    private void AddProperty(string key, IJsonDataNode value)
+    /// <inheritdoc />
+    public override System.Text.Json.Nodes.JsonNode ToJsonNode()
+        => ToJsonObject();
+
+    /// <summary>
+    /// Converts to JSON object.
+    /// </summary>
+    /// <returns>An instance of the JSON object.</returns>
+    public System.Text.Json.Nodes.JsonObject ToJsonObject()
     {
-        store.Add(key, value);
-        PropertyChanged?.Invoke(this, new KeyValueEventArgs<string, IJsonDataNode>(key, value));
+        var node = new System.Text.Json.Nodes.JsonObject();
+        foreach (var prop in store)
+        {
+            var v = (System.Text.Json.Nodes.JsonNode)prop.Value;
+            node[prop.Key] = v;
+        }
+
+        return node;
     }
 
-    private void SetProperty(string key, IJsonDataNode value)
+    private void AddProperty(string key, BaseJsonValueNode value)
+    {
+        store.Add(key, value);
+        PropertyChanged?.Invoke(this, new KeyValueEventArgs<string, BaseJsonValueNode>(key, value));
+    }
+
+    private void SetProperty(string key, BaseJsonValueNode value)
     {
         store[key] = value;
-        PropertyChanged?.Invoke(this, new KeyValueEventArgs<string, IJsonDataNode>(key, value));
+        PropertyChanged?.Invoke(this, new KeyValueEventArgs<string, BaseJsonValueNode>(key, value));
     }
 
     private bool RemoveProperty(string key)
     {
         var b = store.Remove(key);
-        if (b) PropertyChanged?.Invoke(this, new KeyValueEventArgs<string, IJsonDataNode>(key, JsonValues.Undefined));
+        if (b) PropertyChanged?.Invoke(this, new KeyValueEventArgs<string, BaseJsonValueNode>(key, JsonValues.Undefined));
         return b;
     }
 
-    private bool RemoveProperty(KeyValuePair<string, IJsonDataNode> kvp)
+    private bool RemoveProperty(KeyValuePair<string, BaseJsonValueNode> kvp)
     {
         var b = store.Remove(kvp);
-        if (b) PropertyChanged?.Invoke(this, new KeyValueEventArgs<string, IJsonDataNode>(kvp.Key, JsonValues.Undefined));
+        if (b) PropertyChanged?.Invoke(this, new KeyValueEventArgs<string, BaseJsonValueNode>(kvp.Key, JsonValues.Undefined));
         return b;
     }
 
@@ -7551,17 +8046,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     /// <param name="json">The JSON value.</param>
     /// <returns>An instance of the JsonObjectNode class.</returns>
     public static explicit operator System.Text.Json.Nodes.JsonObject(JsonObjectNode json)
-    {
-        if (json == null) return null;
-        var node = new System.Text.Json.Nodes.JsonObject();
-        foreach (var prop in json.store)
-        {
-            var v = JsonValues.ToJsonNode(prop.Value);
-            node[prop.Key] = v;
-        }
-
-        return node;
-    }
+        => json?.ToJsonObject();
 
     /// <summary>
     /// Converts to JSON node.
@@ -7569,7 +8054,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
     /// <param name="json">The JSON value.</param>
     /// <returns>An instance of the JsonNode class.</returns>
     public static explicit operator System.Text.Json.Nodes.JsonNode(JsonObjectNode json)
-        => (System.Text.Json.Nodes.JsonObject)json;
+        => json?.ToJsonObject();
 
     /// <summary>
     /// Converts from JSON document.
@@ -8112,7 +8597,7 @@ public class JsonObjectNode : IJsonContainerNode, IJsonDataNode, IDictionary<str
         return json.TryGetObjectValue(key);
     }
 
-    private static bool PassTrue(IJsonDataNode data, string key, int index)
+    private static bool PassTrue(BaseJsonValueNode data, string key, int index)
     {
         return true;
     }
