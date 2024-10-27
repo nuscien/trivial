@@ -17,7 +17,7 @@ namespace Trivial.Text;
 /// Represents a specific JSON string value.
 /// </summary>
 [System.Text.Json.Serialization.JsonConverter(typeof(JsonObjectNodeConverter))]
-public class JsonStringNode : BaseJsonValueNode<string>, IComparable<IJsonValueNode<string>>, IComparable<string>, IEquatable<string>, IEquatable<StringBuilder>, IReadOnlyList<char>
+public class JsonStringNode : BaseJsonValueNode<string>, IComparable<IJsonValueNode<string>>, IComparable<string>, IEquatable<string>, IEquatable<StringBuilder>, IEquatable<char>, IReadOnlyList<char>
 {
     /// <summary>
     /// Initializes a new instance of the JsonString class.
@@ -808,6 +808,28 @@ public class JsonStringNode : BaseJsonValueNode<string>, IComparable<IJsonValueN
     {
         if (Value is null) return other is null;
         return Value.Equals(other.ToString(), comparisonType);
+    }
+
+    /// <summary>
+    /// Indicates whether this instance and a specified object are equal.
+    /// </summary>
+    /// <param name="other">The object to compare with the current instance.</param>
+    /// <returns>true if obj and this instance represent the same value; otherwise, false.</returns>
+    public bool Equals(ReadOnlySpan<char> other)
+    {
+        if (Value is null) return false;
+        return Value.Equals(other.ToString());
+    }
+
+    /// <summary>
+    /// Indicates whether this instance and a specified object are equal.
+    /// </summary>
+    /// <param name="other">The object to compare with the current instance.</param>
+    /// <returns>true if obj and this instance represent the same value; otherwise, false.</returns>
+    public bool Equals(char other)
+    {
+        if (Value is null || Value.Length != 1) return false;
+        return Value[0].Equals(other);
     }
 
     /// <summary>

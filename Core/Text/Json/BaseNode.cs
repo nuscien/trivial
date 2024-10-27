@@ -1292,7 +1292,7 @@ public abstract class BaseJsonValueNode : IJsonValueNode, IEquatable<IJsonValueN
         if (value is JsonArray a) return (JsonArrayNode)a;
         if (value is not JsonValue token)
             throw new InvalidCastException($"Only supports JsonValue, JsonObject and JsonArray but its type is {value.GetType().Name}.");
-#if !NET461
+#if !NET461 && !NET6_0
         switch (token.GetValueKind())
         {
             case JsonValueKind.Null:
