@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.Specialized;
+using System.ComponentModel;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading;
 
@@ -14,7 +17,7 @@ namespace Trivial.Collection;
 /// Represents a thread-safe list of objects.
 /// </summary>
 /// <typeparam name="T">The type of the elements to be stored in the list.</typeparam>
-public class SynchronizedList<T> : IList<T>, ICloneable
+public class SynchronizedList<T> : IList<T>, ICloneable, INotifyPropertyChanged, INotifyCollectionChanged
 {
     private readonly List<T> list;
     private readonly ReaderWriterLockSlim slim;
@@ -168,6 +171,25 @@ public class SynchronizedList<T> : IList<T>, ICloneable
     }
 
     /// <summary>
+    /// Occurs when an item is added, removed, changed, moved, or the entire JSON array is refreshed.
+    /// </summary>
+    public event NotifyCollectionChangedEventHandler CollectionChanged;
+
+    private PropertyChangedEventHandler notifyPropertyChanged;
+    event PropertyChangedEventHandler INotifyPropertyChanged.PropertyChanged
+    {
+        add
+        {
+            notifyPropertyChanged += value;
+        }
+
+        remove
+        {
+            notifyPropertyChanged -= value;
+        }
+    }
+
+    /// <summary>
     /// Adds or removes the event handler raised on item is added or removed.
     /// </summary>
     public event ChangeEventHandler<T> Changed;
@@ -207,7 +229,9 @@ public class SynchronizedList<T> : IList<T>, ICloneable
                 slim.ExitWriteLock();
             }
 
-            Changed?.Invoke(this, new ChangeEventArgs<T>(old, value, ChangeMethods.Update, index));
+            OnPropertyChanged(true);
+            Changed?.Invoke(this, new(old, value, ChangeMethods.Update, index));
+            CollectionChanged?.Invoke(this, new(NotifyCollectionChangedAction.Replace, value, old, index));
         }
     }
 
@@ -249,7 +273,9 @@ public class SynchronizedList<T> : IList<T>, ICloneable
                 slim.ExitWriteLock();
             }
 
-            Changed?.Invoke(this, new ChangeEventArgs<T>(old, value, ChangeMethods.Update, i));
+            OnPropertyChanged(true);
+            Changed?.Invoke(this, new(old, value, ChangeMethods.Update, i));
+            CollectionChanged?.Invoke(this, new(NotifyCollectionChangedAction.Replace, value, old, i));
         }
     }
 #endif
@@ -471,7 +497,9 @@ public class SynchronizedList<T> : IList<T>, ICloneable
             slim.ExitWriteLock();
         }
 
-        Changed?.Invoke(this, new ChangeEventArgs<T>(default, item, ChangeMethods.Add, count));
+        OnPropertyChanged();
+        Changed?.Invoke(this, new(default, item, ChangeMethods.Add, count));
+        CollectionChanged?.Invoke(this, new(NotifyCollectionChangedAction.Add, item, count));
     }
 
     /// <summary>
@@ -481,7 +509,7 @@ public class SynchronizedList<T> : IList<T>, ICloneable
     public void AddRange(IEnumerable<T> collection)
     {
         if (collection is null) return;
-        if (Changed == null)
+        if (Changed == null && CollectionChanged == null)
         {
             slim.EnterWriteLock();
             try
@@ -493,6 +521,7 @@ public class SynchronizedList<T> : IList<T>, ICloneable
                 slim.ExitWriteLock();
             }
 
+            OnPropertyChanged();
             return;
         }
 
@@ -509,9 +538,12 @@ public class SynchronizedList<T> : IList<T>, ICloneable
             slim.ExitWriteLock();
         }
 
+        OnPropertyChanged();
         for (var i = 0; i < copied.Count; i++)
         {
-            Changed?.Invoke(this, new ChangeEventArgs<T>(default, copied[i], ChangeMethods.Add, i + count));
+            var j = i + count;
+            Changed?.Invoke(this, new(default, copied[i], ChangeMethods.Add, j));
+            CollectionChanged?.Invoke(this, new(NotifyCollectionChangedAction.Add, copied[i], j));
         }
     }
 
@@ -530,10 +562,12 @@ public class SynchronizedList<T> : IList<T>, ICloneable
             slim.ExitWriteLock();
         }
 
+        OnPropertyChanged();
+        CollectionChanged?.Invoke(this, new(NotifyCollectionChangedAction.Reset));
         if (copied == null || Changed == null) return;
         for (var i = 0; i < copied.Count; i++)
         {
-            Changed?.Invoke(this, new ChangeEventArgs<T>(copied[i], default, ChangeMethods.Remove, i));
+            Changed?.Invoke(this, new(copied[i], default, ChangeMethods.Remove, i));
         }
     }
 
@@ -709,7 +743,9 @@ public class SynchronizedList<T> : IList<T>, ICloneable
             slim.ExitWriteLock();
         }
 
-        Changed?.Invoke(this, new ChangeEventArgs<T>(default, item, ChangeMethods.Add, index));
+        OnPropertyChanged();
+        Changed?.Invoke(this, new(default, item, ChangeMethods.Add, index));
+        CollectionChanged?.Invoke(this, new(NotifyCollectionChangedAction.Add, item, index));
     }
 
     /// <summary>
@@ -731,11 +767,13 @@ public class SynchronizedList<T> : IList<T>, ICloneable
             slim.ExitWriteLock();
         }
 
-        if (Changed == null) return;
+        OnPropertyChanged();
+        if (Changed == null && CollectionChanged == null) return;
         var copied = new List<T>(collection);
         foreach (var item in copied)
         {
-            Changed?.Invoke(this, new ChangeEventArgs<T>(default, item, ChangeMethods.Add, index));
+            Changed?.Invoke(this, new(default, item, ChangeMethods.Add, index));
+            CollectionChanged?.Invoke(this, new(NotifyCollectionChangedAction.Add, item, index));
         }
     }
 
@@ -759,7 +797,9 @@ public class SynchronizedList<T> : IList<T>, ICloneable
             slim.ExitWriteLock();
         }
 
-        Changed?.Invoke(this, new ChangeEventArgs<T>(old, value, ChangeMethods.Update, index));
+        OnPropertyChanged(true);
+        Changed?.Invoke(this, new(old, value, ChangeMethods.Update, index));
+        CollectionChanged?.Invoke(this, new(NotifyCollectionChangedAction.Replace, value, old, index));
     }
 
     /// <summary>
@@ -784,7 +824,9 @@ public class SynchronizedList<T> : IList<T>, ICloneable
             slim.ExitWriteLock();
         }
 
-        Changed?.Invoke(this, new ChangeEventArgs<T>(old, value, ChangeMethods.Update, index));
+        OnPropertyChanged(true);
+        Changed?.Invoke(this, new(old, value, ChangeMethods.Update, index));
+        CollectionChanged?.Invoke(this, new(NotifyCollectionChangedAction.Replace, value, old, index));
     }
 
     /// <summary>
@@ -809,7 +851,9 @@ public class SynchronizedList<T> : IList<T>, ICloneable
             slim.ExitWriteLock();
         }
 
-        Changed?.Invoke(this, new ChangeEventArgs<T>(old, value, ChangeMethods.Update, index));
+        OnPropertyChanged(true);
+        Changed?.Invoke(this, new(old, value, ChangeMethods.Update, index));
+        CollectionChanged?.Invoke(this, new(NotifyCollectionChangedAction.Replace, value, old, index));
     }
 
     /// <summary>
@@ -825,7 +869,7 @@ public class SynchronizedList<T> : IList<T>, ICloneable
         slim.EnterWriteLock();
         try
         {
-            if (Changed != null) i = list.IndexOf(oldItem);
+            if (Changed != null || CollectionChanged != null) i = list.IndexOf(oldItem);
             if (!list.Remove(oldItem)) return false;
             list.Insert(i, newItem);
         }
@@ -838,7 +882,13 @@ public class SynchronizedList<T> : IList<T>, ICloneable
             slim.ExitWriteLock();
         }
 
-        if (i >= 0) Changed?.Invoke(this, new ChangeEventArgs<T>(oldItem, newItem, ChangeMethods.Update, i));
+        OnPropertyChanged(true);
+        if (i >= 0)
+        {
+            Changed?.Invoke(this, new(oldItem, newItem, ChangeMethods.Update, i));
+            CollectionChanged?.Invoke(this, new(NotifyCollectionChangedAction.Replace, newItem, oldItem, i));
+        }
+
         return true;
     }
 
@@ -875,11 +925,13 @@ public class SynchronizedList<T> : IList<T>, ICloneable
             slim.ExitWriteLock();
         }
 
-        if (Changed != null)
+        OnPropertyChanged(true);
+        if (Changed != null || CollectionChanged != null)
         {
             foreach (var argsItem in args)
             {
                 Changed?.Invoke(this, argsItem);
+                if (int.TryParse(argsItem.Key, out var i)) CollectionChanged?.Invoke(this, new(NotifyCollectionChangedAction.Remove, argsItem.NewValue, argsItem.OldValue, i));
             }
         }
 
@@ -921,11 +973,13 @@ public class SynchronizedList<T> : IList<T>, ICloneable
             slim.ExitWriteLock();
         }
 
-        if (Changed != null)
+        OnPropertyChanged(true);
+        if (Changed != null || CollectionChanged != null)
         {
             foreach (var argsItem in args)
             {
                 Changed?.Invoke(this, argsItem);
+                if (int.TryParse(argsItem.Key, out var i)) CollectionChanged?.Invoke(this, new(NotifyCollectionChangedAction.Remove, argsItem.NewValue, argsItem.OldValue, i));
             }
         }
 
@@ -963,11 +1017,13 @@ public class SynchronizedList<T> : IList<T>, ICloneable
             slim.ExitWriteLock();
         }
 
-        if (Changed != null)
+        OnPropertyChanged(true);
+        if (Changed != null || CollectionChanged != null)
         {
             foreach (var argsItem in args)
             {
                 Changed?.Invoke(this, argsItem);
+                if (int.TryParse(argsItem.Key, out var i)) CollectionChanged?.Invoke(this, new(NotifyCollectionChangedAction.Remove, argsItem.NewValue, argsItem.OldValue, i));
             }
         }
 
@@ -981,7 +1037,7 @@ public class SynchronizedList<T> : IList<T>, ICloneable
         slim.EnterWriteLock();
         try
         {
-            if (Changed != null) i = list.IndexOf(item);
+            if (Changed != null && CollectionChanged != null) i = list.IndexOf(item);
             if (!list.Remove(item)) return false;
         }
         finally
@@ -989,14 +1045,20 @@ public class SynchronizedList<T> : IList<T>, ICloneable
             slim.ExitWriteLock();
         }
 
-        if (i >= 0) Changed?.Invoke(this, new ChangeEventArgs<T>(item, default, ChangeMethods.Remove, i));
+        OnPropertyChanged();
+        if (i >= 0)
+        {
+            Changed?.Invoke(this, new(item, default, ChangeMethods.Remove, i));
+            CollectionChanged?.Invoke(this, new(NotifyCollectionChangedAction.Remove, item, i));
+        }
+
         return true;
     }
 
     /// <inheritdoc />
     public void RemoveAt(int index)
     {
-        if (Changed == null)
+        if (Changed == null && CollectionChanged == null)
         {
             slim.EnterWriteLock();
             try
@@ -1008,6 +1070,7 @@ public class SynchronizedList<T> : IList<T>, ICloneable
                 slim.ExitWriteLock();
             }
 
+            OnPropertyChanged();
             return;
         }
 
@@ -1023,7 +1086,9 @@ public class SynchronizedList<T> : IList<T>, ICloneable
             slim.ExitWriteLock();
         }
 
-        Changed?.Invoke(this, new ChangeEventArgs<T>(item, default, ChangeMethods.Remove, index));
+        OnPropertyChanged();
+        Changed?.Invoke(this, new(item, default, ChangeMethods.Remove, index));
+        CollectionChanged?.Invoke(this, new(NotifyCollectionChangedAction.Remove, item, index));
     }
 
     /// <summary>
@@ -1045,7 +1110,9 @@ public class SynchronizedList<T> : IList<T>, ICloneable
             slim.ExitWriteLock();
         }
 
-        Changed?.Invoke(this, new ChangeEventArgs<T>(itemRemoved, default, ChangeMethods.Remove, index));
+        OnPropertyChanged();
+        Changed?.Invoke(this, new(itemRemoved, default, ChangeMethods.Remove, index));
+        CollectionChanged?.Invoke(this, new(NotifyCollectionChangedAction.Remove, itemRemoved, index));
     }
 
     /// <summary>
@@ -1061,7 +1128,7 @@ public class SynchronizedList<T> : IList<T>, ICloneable
         slim.EnterWriteLock();
         try
         {
-            if (Changed != null) copied = list.Where(ele => match(ele)).ToList();
+            if (Changed != null || CollectionChanged != null) copied = list.Where(ele => match(ele)).ToList();
             result = list.RemoveAll(match);
         }
         finally
@@ -1069,11 +1136,13 @@ public class SynchronizedList<T> : IList<T>, ICloneable
             slim.ExitWriteLock();
         }
 
-        if (Changed != null && copied != null)
+        OnPropertyChanged();
+        if ((Changed != null || CollectionChanged != null) && copied != null)
         {
             for (var i = 0; i < copied.Count; i++)
             {
-                Changed?.Invoke(this, new ChangeEventArgs<T>(copied[i], default, ChangeMethods.Remove, i));
+                Changed?.Invoke(this, new(copied[i], default, ChangeMethods.Remove, i));
+                CollectionChanged?.Invoke(this, new(NotifyCollectionChangedAction.Remove, copied[i], i));
             }
         }
 
@@ -1106,11 +1175,13 @@ public class SynchronizedList<T> : IList<T>, ICloneable
             slim.ExitWriteLock();
         }
 
+        OnPropertyChanged();
         itemsRemoved = copied;
-        if (Changed == null || copied == null) return;
+        if ((Changed == null && CollectionChanged == null) || copied == null) return;
         for (var i = 0; i < copied.Count; i++)
         {
-            Changed?.Invoke(this, new ChangeEventArgs<T>(copied[i], default, ChangeMethods.Remove, i));
+            Changed?.Invoke(this, new(copied[i], default, ChangeMethods.Remove, i));
+            CollectionChanged?.Invoke(this, new(NotifyCollectionChangedAction.Remove, copied[i], i));
         }
     }
 
@@ -1127,7 +1198,7 @@ public class SynchronizedList<T> : IList<T>, ICloneable
         slim.EnterWriteLock();
         try
         {
-            if (Changed != null) copied = list.Skip(index).Take(count).ToList();
+            if (Changed != null || CollectionChanged != null) copied = list.Skip(index).Take(count).ToList();
             list.RemoveRange(index, count);
         }
         finally
@@ -1135,10 +1206,12 @@ public class SynchronizedList<T> : IList<T>, ICloneable
             slim.ExitWriteLock();
         }
 
-        if (Changed == null || copied == null) return;
+        OnPropertyChanged();
+        if ((Changed == null && CollectionChanged == null) || copied == null) return;
         for (var i = 0; i < copied.Count; i++)
         {
-            Changed?.Invoke(this, new ChangeEventArgs<T>(copied[i], default, ChangeMethods.Remove, i));
+            Changed?.Invoke(this, new(copied[i], default, ChangeMethods.Remove, i));
+            CollectionChanged?.Invoke(this, new(NotifyCollectionChangedAction.Remove, copied[i], i));
         }
     }
 
@@ -1164,11 +1237,13 @@ public class SynchronizedList<T> : IList<T>, ICloneable
             slim.ExitWriteLock();
         }
 
+        OnPropertyChanged();
         itemsRemoved = copied;
-        if (Changed == null || copied == null) return;
+        if ((Changed == null && CollectionChanged == null) || copied == null) return;
         for (var i = 0; i < copied.Count; i++)
         {
-            Changed?.Invoke(this, new ChangeEventArgs<T>(copied[i], default, ChangeMethods.Remove, i));
+            Changed?.Invoke(this, new(copied[i], default, ChangeMethods.Remove, i));
+            CollectionChanged?.Invoke(this, new(NotifyCollectionChangedAction.Remove, copied[i], i));
         }
     }
 
@@ -1283,5 +1358,11 @@ public class SynchronizedList<T> : IList<T>, ICloneable
     object ICloneable.Clone()
     {
         return Clone();
+    }
+
+    private void OnPropertyChanged(bool onlyItemUpdate = false)
+    {
+        if (!onlyItemUpdate) notifyPropertyChanged?.Invoke(this, new(nameof(Count)));
+        notifyPropertyChanged?.Invoke(this, new("Item[]"));
     }
 }

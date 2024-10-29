@@ -23,7 +23,7 @@ public sealed partial class StyleConsole
     /// Note it may not flush immediately.
     /// </summary>
     /// <param name="content">The text content.</param>
-    public void Write(ConsoleText content)
+    public void Append(ConsoleText content)
     {
         if (content == null) return;
         col.Add(content);
@@ -37,7 +37,7 @@ public sealed partial class StyleConsole
     /// <param name="content1">The text content 1.</param>
     /// <param name="content2">The text content 2.</param>
     /// <param name="additionalContext">The additional text content collection.</param>
-    public void Write(ConsoleText content1, ConsoleText content2, params ConsoleText[] additionalContext)
+    public void Append(ConsoleText content1, ConsoleText content2, params ConsoleText[] additionalContext)
     {
         if (content1 != null) col.Add(content1);
         if (content2 != null) col.Add(content2);
@@ -54,7 +54,7 @@ public sealed partial class StyleConsole
     /// Note it may not flush immediately.
     /// </summary>
     /// <param name="content">The text content collection.</param>
-    public void Write(IEnumerable<ConsoleText> content)
+    public void Append(IEnumerable<ConsoleText> content)
     {
         if (content == null) return;
         foreach (var item in content)
@@ -72,7 +72,7 @@ public sealed partial class StyleConsole
     /// <param name="s">A composite format string to output.</param>
     /// <param name="args">An object array that contains zero or more objects to format.</param>
     /// <exception cref="FormatException">format is invalid. -or- The index of a format item is less than zero, or greater than or equal to the length of the args array.</exception>
-    public void Write(string s, params object[] args)
+    public void Append(string s, params object[] args)
     {
         if (s == null) return;
         col.Add(new ConsoleText(args == null || args.Length == 0 ? s : string.Format(s, args)));
@@ -87,7 +87,7 @@ public sealed partial class StyleConsole
     /// <param name="s">A composite format string to output.</param>
     /// <param name="args">An object array that contains zero or more objects to format.</param>
     /// <exception cref="FormatException">format is invalid. -or- The index of a format item is less than zero, or greater than or equal to the length of the args array.</exception>
-    public void Write(ConsoleTextStyle style, string s, params object[] args)
+    public void Append(ConsoleTextStyle style, string s, params object[] args)
     {
         if (s == null) return;
         col.Add(new ConsoleText(args == null || args.Length == 0 ? s : string.Format(s, args), style));
@@ -102,7 +102,7 @@ public sealed partial class StyleConsole
     /// <param name="s">A composite format string to output.</param>
     /// <param name="args">An object array that contains zero or more objects to format.</param>
     /// <exception cref="FormatException">format is invalid. -or- The index of a format item is less than zero, or greater than or equal to the length of the args array.</exception>
-    public void Write(ConsoleColor foreground, string s, params object[] args)
+    public void Append(ConsoleColor foreground, string s, params object[] args)
     {
         if (s == null) return;
         col.Add(new ConsoleText(args == null || args.Length == 0 ? s : string.Format(s, args), foreground));
@@ -118,7 +118,7 @@ public sealed partial class StyleConsole
     /// <param name="s">A composite format string to output.</param>
     /// <param name="args">An object array that contains zero or more objects to format.</param>
     /// <exception cref="FormatException">format is invalid. -or- The index of a format item is less than zero, or greater than or equal to the length of the args array.</exception>
-    public void Write(ConsoleColor? foreground, ConsoleColor? background, string s, params object[] args)
+    public void Append(ConsoleColor? foreground, ConsoleColor? background, string s, params object[] args)
     {
         if (s == null) return;
         col.Add(new ConsoleText(args == null || args.Length == 0 ? s : string.Format(s, args), foreground, background));
@@ -133,7 +133,7 @@ public sealed partial class StyleConsole
     /// <param name="s">A composite format string to output.</param>
     /// <param name="args">An object array that contains zero or more objects to format.</param>
     /// <exception cref="FormatException">format is invalid. -or- The index of a format item is less than zero, or greater than or equal to the length of the args array.</exception>
-    public void Write(Color foreground, string s, params object[] args)
+    public void Append(Color foreground, string s, params object[] args)
     {
         if (s == null) return;
         col.Add(new ConsoleText(args == null || args.Length == 0 ? s : string.Format(s, args), foreground));
@@ -149,7 +149,7 @@ public sealed partial class StyleConsole
     /// <param name="s">A composite format string to output.</param>
     /// <param name="args">An object array that contains zero or more objects to format.</param>
     /// <exception cref="FormatException">format is invalid. -or- The index of a format item is less than zero, or greater than or equal to the length of the args array.</exception>
-    public void Write(Color foreground, Color background, string s, params object[] args)
+    public void Append(Color foreground, Color background, string s, params object[] args)
     {
         if (s == null) return;
         col.Add(new ConsoleText(args == null || args.Length == 0 ? s : string.Format(s, args), foreground, background));
@@ -164,12 +164,12 @@ public sealed partial class StyleConsole
     /// <param name="s">A composite format string to output.</param>
     /// <param name="args">An object array that contains zero or more objects to format.</param>
     /// <exception cref="FormatException">format is invalid. -or- The index of a format item is less than zero, or greater than or equal to the length of the args array.</exception>
-    public void Write(IConsoleTextPrettier style, string s, params object[] args)
+    public void Append(IConsoleTextPrettier style, string s, params object[] args)
     {
         if (s == null) return;
         if (style == null)
         {
-            Write(s, args);
+            Append(s, args);
             return;
         }
 
@@ -184,7 +184,7 @@ public sealed partial class StyleConsole
     /// Note it may not flush immediately.
     /// </summary>
     /// <param name="s">A composite format string to output.</param>
-    public void Write(StringBuilder s)
+    public void Append(StringBuilder s)
     {
         if (s == null) return;
         col.Add(new ConsoleText(s));
@@ -197,7 +197,7 @@ public sealed partial class StyleConsole
     /// </summary>
     /// <param name="style">The content style.</param>
     /// <param name="s">A composite format string to output.</param>
-    public void Write(ConsoleTextStyle style, StringBuilder s)
+    public void Append(ConsoleTextStyle style, StringBuilder s)
     {
         if (s == null) return;
         col.Add(new ConsoleText(s, style));
@@ -210,7 +210,7 @@ public sealed partial class StyleConsole
     /// </summary>
     /// <param name="foreground">The foreground color.</param>
     /// <param name="s">A composite format string to output.</param>
-    public void Write(ConsoleColor foreground, StringBuilder s)
+    public void Append(ConsoleColor foreground, StringBuilder s)
     {
         if (s == null) return;
         col.Add(new ConsoleText(s, foreground));
@@ -224,7 +224,7 @@ public sealed partial class StyleConsole
     /// <param name="foreground">The foreground color.</param>
     /// <param name="background">The background color.</param>
     /// <param name="s">A composite format string to output.</param>
-    public void Write(ConsoleColor? foreground, ConsoleColor? background, StringBuilder s)
+    public void Append(ConsoleColor? foreground, ConsoleColor? background, StringBuilder s)
     {
         if (s == null) return;
         col.Add(new ConsoleText(s, foreground, background));
@@ -237,7 +237,7 @@ public sealed partial class StyleConsole
     /// </summary>
     /// <param name="foreground">The foreground color.</param>
     /// <param name="s">A composite format string to output.</param>
-    public void Write(Color foreground, StringBuilder s)
+    public void Append(Color foreground, StringBuilder s)
     {
         if (s == null) return;
         col.Add(new ConsoleText(s, foreground));
@@ -251,7 +251,7 @@ public sealed partial class StyleConsole
     /// <param name="foreground">The foreground color.</param>
     /// <param name="background">The background color.</param>
     /// <param name="s">A composite format string to output.</param>
-    public void Write(Color foreground, Color background, StringBuilder s)
+    public void Append(Color foreground, Color background, StringBuilder s)
     {
         if (s == null) return;
         col.Add(new ConsoleText(s, foreground, background));
@@ -264,12 +264,12 @@ public sealed partial class StyleConsole
     /// </summary>
     /// <param name="style">The style.</param>
     /// <param name="s">A composite format string to output.</param>
-    public void Write(IConsoleTextPrettier style, StringBuilder s)
+    public void Append(IConsoleTextPrettier style, StringBuilder s)
     {
         if (s == null) return;
         if (style == null)
         {
-            Write(s);
+            Append(s);
             return;
         }
 
@@ -284,7 +284,7 @@ public sealed partial class StyleConsole
     /// Note it may not flush immediately.
     /// </summary>
     /// <param name="number">A number to output.</param>
-    public void Write(int number)
+    public void Append(int number)
     {
         col.Add(new ConsoleText(number.ToString("g")));
         OnAppend();
@@ -297,7 +297,7 @@ public sealed partial class StyleConsole
     /// <param name="number">A number to output.</param>
     /// <param name="format">A standard or custom numeric format string.</param>
     /// <exception cref="FormatException">format is invalid or not supported.</exception>
-    public void Write(int number, string format)
+    public void Append(int number, string format)
     {
         col.Add(new ConsoleText(number.ToString(format)));
         OnAppend();
@@ -309,7 +309,7 @@ public sealed partial class StyleConsole
     /// </summary>
     /// <param name="style">The content style.</param>
     /// <param name="number">A number to output.</param>
-    public void Write(ConsoleTextStyle style, int number)
+    public void Append(ConsoleTextStyle style, int number)
     {
         col.Add(new ConsoleText(number.ToString("g"), style));
         OnAppend();
@@ -323,7 +323,7 @@ public sealed partial class StyleConsole
     /// <param name="number">A number to output.</param>
     /// <param name="format">A standard or custom numeric format string.</param>
     /// <exception cref="FormatException">format is invalid or not supported.</exception>
-    public void Write(ConsoleTextStyle style, int number, string format)
+    public void Append(ConsoleTextStyle style, int number, string format)
     {
         col.Add(new ConsoleText(number.ToString(format), style));
         OnAppend();
@@ -335,7 +335,7 @@ public sealed partial class StyleConsole
     /// </summary>
     /// <param name="foreground">The foreground color.</param>
     /// <param name="number">A number to output.</param>
-    public void Write(ConsoleColor foreground, int number)
+    public void Append(ConsoleColor foreground, int number)
     {
         col.Add(new ConsoleText(number.ToString("g"), foreground));
         OnAppend();
@@ -349,7 +349,7 @@ public sealed partial class StyleConsole
     /// <param name="number">A number to output.</param>
     /// <param name="format">A standard or custom numeric format string.</param>
     /// <exception cref="FormatException">format is invalid or not supported.</exception>
-    public void Write(ConsoleColor foreground, int number, string format)
+    public void Append(ConsoleColor foreground, int number, string format)
     {
         if (string.IsNullOrEmpty(format)) format = "g";
         col.Add(new ConsoleText(number.ToString(format), foreground));
@@ -363,7 +363,7 @@ public sealed partial class StyleConsole
     /// <param name="foreground">The foreground color.</param>
     /// <param name="background">The background color.</param>
     /// <param name="number">A number to output.</param>
-    public void Write(ConsoleColor? foreground, ConsoleColor? background, int number)
+    public void Append(ConsoleColor? foreground, ConsoleColor? background, int number)
     {
         col.Add(new ConsoleText(number.ToString("g"), foreground, background));
         OnAppend();
@@ -378,7 +378,7 @@ public sealed partial class StyleConsole
     /// <param name="number">A number to output.</param>
     /// <param name="format">A standard or custom numeric format string.</param>
     /// <exception cref="FormatException">format is invalid or not supported.</exception>
-    public void Write(ConsoleColor? foreground, ConsoleColor? background, int number, string format)
+    public void Append(ConsoleColor? foreground, ConsoleColor? background, int number, string format)
     {
         col.Add(new ConsoleText(number.ToString(format), foreground, background));
         OnAppend();
@@ -389,7 +389,7 @@ public sealed partial class StyleConsole
     /// Note it may not flush immediately.
     /// </summary>
     /// <param name="number">A number to output.</param>
-    public void Write(long number)
+    public void Append(long number)
     {
         col.Add(new ConsoleText(number.ToString("g")));
         OnAppend();
@@ -401,7 +401,7 @@ public sealed partial class StyleConsole
     /// </summary>
     /// <param name="style">The content style.</param>
     /// <param name="number">A number to output.</param>
-    public void Write(ConsoleTextStyle style, long number)
+    public void Append(ConsoleTextStyle style, long number)
     {
         col.Add(new ConsoleText(number.ToString("g"), style));
         OnAppend();
@@ -413,7 +413,7 @@ public sealed partial class StyleConsole
     /// </summary>
     /// <param name="foreground">The foreground color.</param>
     /// <param name="number">A number to output.</param>
-    public void Write(ConsoleColor foreground, long number)
+    public void Append(ConsoleColor foreground, long number)
     {
         col.Add(new ConsoleText(number.ToString("g"), foreground));
         OnAppend();
@@ -426,7 +426,7 @@ public sealed partial class StyleConsole
     /// <param name="foreground">The foreground color.</param>
     /// <param name="background">The background color.</param>
     /// <param name="number">A number to output.</param>
-    public void Write(ConsoleColor? foreground, ConsoleColor? background, long number)
+    public void Append(ConsoleColor? foreground, ConsoleColor? background, long number)
     {
         col.Add(new ConsoleText(number.ToString("g"), foreground, background));
         OnAppend();
@@ -437,7 +437,7 @@ public sealed partial class StyleConsole
     /// Note it may not flush immediately.
     /// </summary>
     /// <param name="number">A number to output.</param>
-    public void Write(ulong number)
+    public void Append(ulong number)
     {
         col.Add(new ConsoleText(number.ToString("g")));
         OnAppend();
@@ -449,7 +449,7 @@ public sealed partial class StyleConsole
     /// </summary>
     /// <param name="style">The content style.</param>
     /// <param name="number">A number to output.</param>
-    public void Write(ConsoleTextStyle style, ulong number)
+    public void Append(ConsoleTextStyle style, ulong number)
     {
         col.Add(new ConsoleText(number.ToString("g"), style));
         OnAppend();
@@ -461,7 +461,7 @@ public sealed partial class StyleConsole
     /// </summary>
     /// <param name="foreground">The foreground color.</param>
     /// <param name="number">A number to output.</param>
-    public void Write(ConsoleColor foreground, ulong number)
+    public void Append(ConsoleColor foreground, ulong number)
     {
         col.Add(new ConsoleText(number.ToString("g"), foreground));
         OnAppend();
@@ -474,7 +474,7 @@ public sealed partial class StyleConsole
     /// <param name="foreground">The foreground color.</param>
     /// <param name="background">The background color.</param>
     /// <param name="number">A number to output.</param>
-    public void Write(ConsoleColor? foreground, ConsoleColor? background, ulong number)
+    public void Append(ConsoleColor? foreground, ConsoleColor? background, ulong number)
     {
         col.Add(new ConsoleText(number.ToString("g"), foreground, background));
         OnAppend();
@@ -485,7 +485,7 @@ public sealed partial class StyleConsole
     /// Note it may not flush immediately.
     /// </summary>
     /// <param name="number">A number to output.</param>
-    public void Write(float number)
+    public void Append(float number)
     {
         col.Add(new ConsoleText(number.ToString("g")));
         OnAppend();
@@ -497,7 +497,7 @@ public sealed partial class StyleConsole
     /// </summary>
     /// <param name="style">The content style.</param>
     /// <param name="number">A number to output.</param>
-    public void Write(ConsoleTextStyle style, float number)
+    public void Append(ConsoleTextStyle style, float number)
     {
         col.Add(new ConsoleText(number.ToString("g"), style));
         OnAppend();
@@ -509,7 +509,7 @@ public sealed partial class StyleConsole
     /// </summary>
     /// <param name="foreground">The foreground color.</param>
     /// <param name="number">A number to output.</param>
-    public void Write(ConsoleColor foreground, float number)
+    public void Append(ConsoleColor foreground, float number)
     {
         col.Add(new ConsoleText(number.ToString("g"), foreground));
         OnAppend();
@@ -522,7 +522,7 @@ public sealed partial class StyleConsole
     /// <param name="foreground">The foreground color.</param>
     /// <param name="background">The background color.</param>
     /// <param name="number">A number to output.</param>
-    public void Write(ConsoleColor? foreground, ConsoleColor? background, float number)
+    public void Append(ConsoleColor? foreground, ConsoleColor? background, float number)
     {
         col.Add(new ConsoleText(number.ToString("g"), foreground, background));
         OnAppend();
@@ -533,7 +533,7 @@ public sealed partial class StyleConsole
     /// Note it may not flush immediately.
     /// </summary>
     /// <param name="number">A number to output.</param>
-    public void Write(decimal number)
+    public void Append(decimal number)
     {
         col.Add(new ConsoleText(number.ToString("g")));
         OnAppend();
@@ -545,7 +545,7 @@ public sealed partial class StyleConsole
     /// </summary>
     /// <param name="style">The content style.</param>
     /// <param name="number">A number to output.</param>
-    public void Write(ConsoleTextStyle style, decimal number)
+    public void Append(ConsoleTextStyle style, decimal number)
     {
         col.Add(new ConsoleText(number.ToString("g"), style));
         OnAppend();
@@ -557,7 +557,7 @@ public sealed partial class StyleConsole
     /// </summary>
     /// <param name="foreground">The foreground color.</param>
     /// <param name="number">A number to output.</param>
-    public void Write(ConsoleColor foreground, decimal number)
+    public void Append(ConsoleColor foreground, decimal number)
     {
         col.Add(new ConsoleText(number.ToString("g"), foreground));
         OnAppend();
@@ -570,7 +570,7 @@ public sealed partial class StyleConsole
     /// <param name="foreground">The foreground color.</param>
     /// <param name="background">The background color.</param>
     /// <param name="number">A number to output.</param>
-    public void Write(ConsoleColor? foreground, ConsoleColor? background, decimal number)
+    public void Append(ConsoleColor? foreground, ConsoleColor? background, decimal number)
     {
         col.Add(new ConsoleText(number.ToString("g"), foreground, background));
         OnAppend();
@@ -581,7 +581,7 @@ public sealed partial class StyleConsole
     /// Note it may not flush immediately.
     /// </summary>
     /// <param name="number">A number to output.</param>
-    public void Write(double number)
+    public void Append(double number)
     {
         col.Add(new ConsoleText(number.ToString("g")));
         OnAppend();
@@ -594,7 +594,7 @@ public sealed partial class StyleConsole
     /// <param name="number">A number to output.</param>
     /// <param name="format">A standard or custom numeric format string.</param>
     /// <exception cref="FormatException">format is invalid or not supported.</exception>
-    public void Write(double number, string format)
+    public void Append(double number, string format)
     {
         col.Add(new ConsoleText(number.ToString(format)));
         OnAppend();
@@ -606,7 +606,7 @@ public sealed partial class StyleConsole
     /// </summary>
     /// <param name="style">The content style.</param>
     /// <param name="number">A number to output.</param>
-    public void Write(ConsoleTextStyle style, double number)
+    public void Append(ConsoleTextStyle style, double number)
     {
         col.Add(new ConsoleText(number.ToString("g"), style));
         OnAppend();
@@ -620,7 +620,7 @@ public sealed partial class StyleConsole
     /// <param name="number">A number to output.</param>
     /// <param name="format">A standard or custom numeric format string.</param>
     /// <exception cref="FormatException">format is invalid or not supported.</exception>
-    public void Write(ConsoleTextStyle style, double number, string format)
+    public void Append(ConsoleTextStyle style, double number, string format)
     {
         col.Add(new ConsoleText(number.ToString(format), style));
         OnAppend();
@@ -632,7 +632,7 @@ public sealed partial class StyleConsole
     /// </summary>
     /// <param name="foreground">The foreground color.</param>
     /// <param name="number">A number to output.</param>
-    public void Write(ConsoleColor foreground, double number)
+    public void Append(ConsoleColor foreground, double number)
     {
         col.Add(new ConsoleText(number.ToString("g"), foreground));
         OnAppend();
@@ -646,7 +646,7 @@ public sealed partial class StyleConsole
     /// <param name="number">A number to output.</param>
     /// <param name="format">A standard or custom numeric format string.</param>
     /// <exception cref="FormatException">format is invalid or not supported.</exception>
-    public void Write(ConsoleColor foreground, double number, string format)
+    public void Append(ConsoleColor foreground, double number, string format)
     {
         col.Add(new ConsoleText(number.ToString(format), foreground));
         OnAppend();
@@ -659,7 +659,7 @@ public sealed partial class StyleConsole
     /// <param name="foreground">The foreground color.</param>
     /// <param name="background">The background color.</param>
     /// <param name="number">A number to output.</param>
-    public void Write(ConsoleColor? foreground, ConsoleColor? background, double number)
+    public void Append(ConsoleColor? foreground, ConsoleColor? background, double number)
     {
         col.Add(new ConsoleText(number.ToString("g"), foreground, background));
         OnAppend();
@@ -674,7 +674,7 @@ public sealed partial class StyleConsole
     /// <param name="number">A number to output.</param>
     /// <param name="format">A standard or custom numeric format string.</param>
     /// <exception cref="FormatException">format is invalid or not supported.</exception>
-    public void Write(ConsoleColor? foreground, ConsoleColor? background, double number, string format)
+    public void Append(ConsoleColor? foreground, ConsoleColor? background, double number, string format)
     {
         col.Add(new ConsoleText(number.ToString(format), foreground, background));
         OnAppend();
@@ -687,7 +687,7 @@ public sealed partial class StyleConsole
     /// <param name="value">The value to write.</param>
     /// <param name="start">The starting position in value.</param>
     /// <param name="count">The number of characters to write.</param>
-    public void Write(char[] value, int start = 0, int? count = null)
+    public void Append(char[] value, int start = 0, int? count = null)
     {
         col.Add(new ConsoleText(StringExtensions.ToString(value, start, count)));
         OnAppend();
@@ -701,7 +701,7 @@ public sealed partial class StyleConsole
     /// <param name="value">The value to write.</param>
     /// <param name="start">The starting position in value.</param>
     /// <param name="count">The number of characters to write.</param>
-    public void Write(ConsoleTextStyle style, char[] value, int start = 0, int? count = null)
+    public void Append(ConsoleTextStyle style, char[] value, int start = 0, int? count = null)
     {
         col.Add(new ConsoleText(StringExtensions.ToString(value, start, count), style));
         OnAppend();
@@ -715,7 +715,7 @@ public sealed partial class StyleConsole
     /// <param name="value">The value to write.</param>
     /// <param name="start">The starting position in value.</param>
     /// <param name="count">The number of characters to write.</param>
-    public void Write(ConsoleColor foreground, char[] value, int start = 0, int? count = null)
+    public void Append(ConsoleColor foreground, char[] value, int start = 0, int? count = null)
     {
         col.Add(new ConsoleText(StringExtensions.ToString(value, start, count), foreground));
         OnAppend();
@@ -730,7 +730,7 @@ public sealed partial class StyleConsole
     /// <param name="value">The value to write.</param>
     /// <param name="start">The starting position in value.</param>
     /// <param name="count">The number of characters to write.</param>
-    public void Write(ConsoleColor? foreground, ConsoleColor? background, char[] value, int start = 0, int? count = null)
+    public void Append(ConsoleColor? foreground, ConsoleColor? background, char[] value, int start = 0, int? count = null)
     {
         col.Add(new ConsoleText(StringExtensions.ToString(value, start, count), foreground, background));
         OnAppend();
@@ -744,11 +744,11 @@ public sealed partial class StyleConsole
     /// <param name="value">The value to write.</param>
     /// <param name="start">The starting position in value.</param>
     /// <param name="count">The number of characters to write.</param>
-    public void Write(IConsoleTextPrettier style, char[] value, int start = 0, int? count = null)
+    public void Append(IConsoleTextPrettier style, char[] value, int start = 0, int? count = null)
     {
         if (style == null)
         {
-            Write(value, start, count);
+            Append(value, start, count);
             return;
         }
 
@@ -764,7 +764,7 @@ public sealed partial class StyleConsole
     /// </summary>
     /// <param name="value">The value to write.</param>
     /// <param name="repeatCount">The number of times to append value.</param>
-    public void Write(char value, int repeatCount = 1)
+    public void Append(char value, int repeatCount = 1)
     {
         col.Add(new ConsoleText(value, repeatCount));
         OnAppend();
@@ -777,7 +777,7 @@ public sealed partial class StyleConsole
     /// <param name="style">The content style.</param>
     /// <param name="value">The value to write.</param>
     /// <param name="repeatCount">The number of times to append value.</param>
-    public void Write(ConsoleTextStyle style, char value, int repeatCount = 1)
+    public void Append(ConsoleTextStyle style, char value, int repeatCount = 1)
     {
         col.Add(new ConsoleText(value, repeatCount, style));
         OnAppend();
@@ -790,7 +790,7 @@ public sealed partial class StyleConsole
     /// <param name="foreground">The foreground color.</param>
     /// <param name="value">The value to write.</param>
     /// <param name="repeatCount">The number of times to append value.</param>
-    public void Write(ConsoleColor foreground, char value, int repeatCount = 1)
+    public void Append(ConsoleColor foreground, char value, int repeatCount = 1)
     {
         col.Add(new ConsoleText(value, repeatCount, new ConsoleTextStyle(foreground)));
         OnAppend();
@@ -803,11 +803,11 @@ public sealed partial class StyleConsole
     /// <param name="style">The style.</param>
     /// <param name="value">The value to write.</param>
     /// <param name="repeatCount">The number of times to append value.</param>
-    public void Write(IConsoleTextPrettier style, char value, int repeatCount = 1)
+    public void Append(IConsoleTextPrettier style, char value, int repeatCount = 1)
     {
         if (style == null || repeatCount < 1)
         {
-            Write(value, repeatCount);
+            Append(value, repeatCount);
             return;
         }
 
@@ -825,7 +825,7 @@ public sealed partial class StyleConsole
     /// <param name="background">The background color.</param>
     /// <param name="value">The value to write.</param>
     /// <param name="repeatCount">The number of times to append value.</param>
-    public void Write(ConsoleColor? foreground, ConsoleColor? background, char value, int repeatCount = 1)
+    public void Append(ConsoleColor? foreground, ConsoleColor? background, char value, int repeatCount = 1)
     {
         col.Add(new ConsoleText(value, repeatCount, new ConsoleTextStyle(foreground, background)));
         OnAppend();
@@ -836,7 +836,7 @@ public sealed partial class StyleConsole
     /// Note it may not flush immediately.
     /// </summary>
     /// <param name="model">A representation model.</param>
-    public void Write(IConsoleTextCreator model)
+    public void Append(IConsoleTextCreator model)
     {
         if (model == null) return;
         var list = model.CreateTextCollection();
@@ -852,7 +852,7 @@ public sealed partial class StyleConsole
     /// <typeparam name="T">The type of data model.</typeparam>
     /// <param name="style">The style.</param>
     /// <param name="data">A data model.</param>
-    public void Write<T>(IConsoleTextCreator<T> style, T data)
+    public void Append<T>(IConsoleTextCreator<T> style, T data)
     {
         if (style == null) return;
         var list = style.CreateTextCollection(data);
@@ -870,7 +870,7 @@ public sealed partial class StyleConsole
     /// <param name="style">The style.</param>
     /// <param name="data">A data model.</param>
     /// <param name="options">The additional options.</param>
-    public void Write<TData, TOptions>(IConsoleTextCreator<TData, TOptions> style, TData data, TOptions options)
+    public void Append<TData, TOptions>(IConsoleTextCreator<TData, TOptions> style, TData data, TOptions options)
     {
         if (style == null) return;
         var list = style.CreateTextCollection(data, options);
@@ -884,7 +884,7 @@ public sealed partial class StyleConsole
     /// It will flush immediately.
     /// </summary>
     /// <param name="content">The text content.</param>
-    public void WriteImmediately(ConsoleText content)
+    public void Write(ConsoleText content)
     {
         if (content != null) col.Add(content);
         Flush();
@@ -897,7 +897,7 @@ public sealed partial class StyleConsole
     /// <param name="content1">The text content 1.</param>
     /// <param name="content2">The text content 2.</param>
     /// <param name="additionalContext">The additional text content collection.</param>
-    public void WriteImmediately(ConsoleText content1, ConsoleText content2, params ConsoleText[] additionalContext)
+    public void Write(ConsoleText content1, ConsoleText content2, params ConsoleText[] additionalContext)
     {
         if (content1 != null) col.Add(content1);
         if (content2 != null) col.Add(content2);
@@ -914,7 +914,7 @@ public sealed partial class StyleConsole
     /// It will flush immediately.
     /// </summary>
     /// <param name="content">The text content collection.</param>
-    public void WriteImmediately(IEnumerable<ConsoleText> content)
+    public void Write(IEnumerable<ConsoleText> content)
     {
         if (content == null) return;
         foreach (var item in content)
@@ -932,7 +932,7 @@ public sealed partial class StyleConsole
     /// <param name="s">A composite format string to output.</param>
     /// <param name="args">An object array that contains zero or more objects to format.</param>
     /// <exception cref="FormatException">format is invalid. -or- The index of a format item is less than zero, or greater than or equal to the length of the args array.</exception>
-    public void WriteImmediately(string s, params object[] args)
+    public void Write(string s, params object[] args)
     {
         if (s == null) return;
         col.Add(new ConsoleText(args == null || args.Length == 0 ? s : string.Format(s, args)));
@@ -947,7 +947,7 @@ public sealed partial class StyleConsole
     /// <param name="s">A composite format string to output.</param>
     /// <param name="args">An object array that contains zero or more objects to format.</param>
     /// <exception cref="FormatException">format is invalid. -or- The index of a format item is less than zero, or greater than or equal to the length of the args array.</exception>
-    public void WriteImmediately(ConsoleTextStyle style, string s, params object[] args)
+    public void Write(ConsoleTextStyle style, string s, params object[] args)
     {
         if (s == null) return;
         col.Add(new ConsoleText(args == null || args.Length == 0 ? s : string.Format(s, args), style));
@@ -962,7 +962,7 @@ public sealed partial class StyleConsole
     /// <param name="s">A composite format string to output.</param>
     /// <param name="args">An object array that contains zero or more objects to format.</param>
     /// <exception cref="FormatException">format is invalid. -or- The index of a format item is less than zero, or greater than or equal to the length of the args array.</exception>
-    public void WriteImmediately(ConsoleColor foreground, string s, params object[] args)
+    public void Write(ConsoleColor foreground, string s, params object[] args)
     {
         if (s == null) return;
         col.Add(new ConsoleText(args == null || args.Length == 0 ? s : string.Format(s, args), foreground));
@@ -978,7 +978,7 @@ public sealed partial class StyleConsole
     /// <param name="s">A composite format string to output.</param>
     /// <param name="args">An object array that contains zero or more objects to format.</param>
     /// <exception cref="FormatException">format is invalid. -or- The index of a format item is less than zero, or greater than or equal to the length of the args array.</exception>
-    public void WriteImmediately(ConsoleColor? foreground, ConsoleColor? background, string s, params object[] args)
+    public void Write(ConsoleColor? foreground, ConsoleColor? background, string s, params object[] args)
     {
         if (s == null) return;
         col.Add(new ConsoleText(args == null || args.Length == 0 ? s : string.Format(s, args), foreground, background));
@@ -993,12 +993,12 @@ public sealed partial class StyleConsole
     /// <param name="s">A composite format string to output.</param>
     /// <param name="args">An object array that contains zero or more objects to format.</param>
     /// <exception cref="FormatException">format is invalid. -or- The index of a format item is less than zero, or greater than or equal to the length of the args array.</exception>
-    public void WriteImmediately(IConsoleTextPrettier style, string s, params object[] args)
+    public void Write(IConsoleTextPrettier style, string s, params object[] args)
     {
         if (s == null) return;
         if (style == null)
         {
-            WriteImmediately(s, args);
+            Write(s, args);
             return;
         }
 
@@ -1013,7 +1013,7 @@ public sealed partial class StyleConsole
     /// It will flush immediately.
     /// </summary>
     /// <param name="s">A composite format string to output.</param>
-    public void WriteImmediately(StringBuilder s)
+    public void Write(StringBuilder s)
     {
         if (s == null) return;
         col.Add(new ConsoleText(s));
@@ -1026,7 +1026,7 @@ public sealed partial class StyleConsole
     /// </summary>
     /// <param name="style">The content style.</param>
     /// <param name="s">A composite format string to output.</param>
-    public void WriteImmediately(ConsoleTextStyle style, StringBuilder s)
+    public void Write(ConsoleTextStyle style, StringBuilder s)
     {
         if (s == null) return;
         col.Add(new ConsoleText(s, style));
@@ -1039,7 +1039,7 @@ public sealed partial class StyleConsole
     /// </summary>
     /// <param name="foreground">The foreground color.</param>
     /// <param name="s">A composite format string to output.</param>
-    public void WriteImmediately(ConsoleColor foreground, StringBuilder s)
+    public void Write(ConsoleColor foreground, StringBuilder s)
     {
         if (s == null) return;
         col.Add(new ConsoleText(s, foreground));
@@ -1053,7 +1053,7 @@ public sealed partial class StyleConsole
     /// <param name="foreground">The foreground color.</param>
     /// <param name="background">The background color.</param>
     /// <param name="s">A composite format string to output.</param>
-    public void WriteImmediately(ConsoleColor? foreground, ConsoleColor? background, StringBuilder s)
+    public void Write(ConsoleColor? foreground, ConsoleColor? background, StringBuilder s)
     {
         if (s == null) return;
         col.Add(new ConsoleText(s, foreground, background));
@@ -1066,12 +1066,12 @@ public sealed partial class StyleConsole
     /// </summary>
     /// <param name="style">The style.</param>
     /// <param name="s">A composite format string to output.</param>
-    public void WriteImmediately(IConsoleTextPrettier style, StringBuilder s)
+    public void Write(IConsoleTextPrettier style, StringBuilder s)
     {
         if (s == null) return;
         if (style == null)
         {
-            WriteImmediately(s);
+            Write(s);
             return;
         }
 
@@ -1086,7 +1086,7 @@ public sealed partial class StyleConsole
     /// It will flush immediately.
     /// </summary>
     /// <param name="number">A number to output.</param>
-    public void WriteImmediately(int number)
+    public void Write(int number)
     {
         col.Add(new ConsoleText(number.ToString("g")));
         Flush();
@@ -1098,7 +1098,7 @@ public sealed partial class StyleConsole
     /// </summary>
     /// <param name="style">The content style.</param>
     /// <param name="number">A number to output.</param>
-    public void WriteImmediately(ConsoleTextStyle style, int number)
+    public void Write(ConsoleTextStyle style, int number)
     {
         col.Add(new ConsoleText(number.ToString("g"), style));
         Flush();
@@ -1110,7 +1110,7 @@ public sealed partial class StyleConsole
     /// </summary>
     /// <param name="foreground">The foreground color.</param>
     /// <param name="number">A number to output.</param>
-    public void WriteImmediately(ConsoleColor foreground, int number)
+    public void Write(ConsoleColor foreground, int number)
     {
         col.Add(new ConsoleText(number.ToString("g"), foreground));
         Flush();
@@ -1123,7 +1123,7 @@ public sealed partial class StyleConsole
     /// <param name="foreground">The foreground color.</param>
     /// <param name="background">The background color.</param>
     /// <param name="number">A number to output.</param>
-    public void WriteImmediately(ConsoleColor? foreground, ConsoleColor? background, int number)
+    public void Write(ConsoleColor? foreground, ConsoleColor? background, int number)
     {
         col.Add(new ConsoleText(number.ToString("g"), foreground, background));
         Flush();
@@ -1134,7 +1134,7 @@ public sealed partial class StyleConsole
     /// It will flush immediately.
     /// </summary>
     /// <param name="number">A number to output.</param>
-    public void WriteImmediately(long number)
+    public void Write(long number)
     {
         col.Add(new ConsoleText(number.ToString("g")));
         Flush();
@@ -1146,7 +1146,7 @@ public sealed partial class StyleConsole
     /// </summary>
     /// <param name="style">The content style.</param>
     /// <param name="number">A number to output.</param>
-    public void WriteImmediately(ConsoleTextStyle style, long number)
+    public void Write(ConsoleTextStyle style, long number)
     {
         col.Add(new ConsoleText(number.ToString("g"), style));
         Flush();
@@ -1158,7 +1158,7 @@ public sealed partial class StyleConsole
     /// </summary>
     /// <param name="foreground">The foreground color.</param>
     /// <param name="number">A number to output.</param>
-    public void WriteImmediately(ConsoleColor foreground, long number)
+    public void Write(ConsoleColor foreground, long number)
     {
         col.Add(new ConsoleText(number.ToString("g"), foreground));
         Flush();
@@ -1171,7 +1171,7 @@ public sealed partial class StyleConsole
     /// <param name="foreground">The foreground color.</param>
     /// <param name="background">The background color.</param>
     /// <param name="number">A number to output.</param>
-    public void WriteImmediately(ConsoleColor? foreground, ConsoleColor? background, long number)
+    public void Write(ConsoleColor? foreground, ConsoleColor? background, long number)
     {
         col.Add(new ConsoleText(number.ToString("g"), foreground, background));
         Flush();
@@ -1182,7 +1182,7 @@ public sealed partial class StyleConsole
     /// It will flush immediately.
     /// </summary>
     /// <param name="number">A number to output.</param>
-    public void WriteImmediately(ulong number)
+    public void Write(ulong number)
     {
         col.Add(new ConsoleText(number.ToString("g")));
         Flush();
@@ -1194,7 +1194,7 @@ public sealed partial class StyleConsole
     /// </summary>
     /// <param name="style">The content style.</param>
     /// <param name="number">A number to output.</param>
-    public void WriteImmediately(ConsoleTextStyle style, ulong number)
+    public void Write(ConsoleTextStyle style, ulong number)
     {
         col.Add(new ConsoleText(number.ToString("g"), style));
         Flush();
@@ -1206,7 +1206,7 @@ public sealed partial class StyleConsole
     /// </summary>
     /// <param name="foreground">The foreground color.</param>
     /// <param name="number">A number to output.</param>
-    public void WriteImmediately(ConsoleColor foreground, ulong number)
+    public void Write(ConsoleColor foreground, ulong number)
     {
         col.Add(new ConsoleText(number.ToString("g"), foreground));
         Flush();
@@ -1219,7 +1219,7 @@ public sealed partial class StyleConsole
     /// <param name="foreground">The foreground color.</param>
     /// <param name="background">The background color.</param>
     /// <param name="number">A number to output.</param>
-    public void WriteImmediately(ConsoleColor? foreground, ConsoleColor? background, ulong number)
+    public void Write(ConsoleColor? foreground, ConsoleColor? background, ulong number)
     {
         col.Add(new ConsoleText(number.ToString("g"), foreground, background));
         Flush();
@@ -1230,7 +1230,7 @@ public sealed partial class StyleConsole
     /// It will flush immediately.
     /// </summary>
     /// <param name="number">A number to output.</param>
-    public void WriteImmediately(float number)
+    public void Write(float number)
     {
         col.Add(new ConsoleText(number.ToString("g")));
         Flush();
@@ -1242,7 +1242,7 @@ public sealed partial class StyleConsole
     /// </summary>
     /// <param name="style">The content style.</param>
     /// <param name="number">A number to output.</param>
-    public void WriteImmediately(ConsoleTextStyle style, float number)
+    public void Write(ConsoleTextStyle style, float number)
     {
         col.Add(new ConsoleText(number.ToString("g"), style));
         Flush();
@@ -1254,7 +1254,7 @@ public sealed partial class StyleConsole
     /// </summary>
     /// <param name="foreground">The foreground color.</param>
     /// <param name="number">A number to output.</param>
-    public void WriteImmediately(ConsoleColor foreground, float number)
+    public void Write(ConsoleColor foreground, float number)
     {
         col.Add(new ConsoleText(number.ToString("g"), foreground));
         Flush();
@@ -1267,7 +1267,7 @@ public sealed partial class StyleConsole
     /// <param name="foreground">The foreground color.</param>
     /// <param name="background">The background color.</param>
     /// <param name="number">A number to output.</param>
-    public void WriteImmediately(ConsoleColor? foreground, ConsoleColor? background, float number)
+    public void Write(ConsoleColor? foreground, ConsoleColor? background, float number)
     {
         col.Add(new ConsoleText(number.ToString("g"), foreground, background));
         Flush();
@@ -1278,7 +1278,7 @@ public sealed partial class StyleConsole
     /// It will flush immediately.
     /// </summary>
     /// <param name="number">A number to output.</param>
-    public void WriteImmediately(decimal number)
+    public void Write(decimal number)
     {
         col.Add(new ConsoleText(number.ToString("g")));
         Flush();
@@ -1290,7 +1290,7 @@ public sealed partial class StyleConsole
     /// </summary>
     /// <param name="style">The content style.</param>
     /// <param name="number">A number to output.</param>
-    public void WriteImmediately(ConsoleTextStyle style, decimal number)
+    public void Write(ConsoleTextStyle style, decimal number)
     {
         col.Add(new ConsoleText(number.ToString("g"), style));
         Flush();
@@ -1302,7 +1302,7 @@ public sealed partial class StyleConsole
     /// </summary>
     /// <param name="foreground">The foreground color.</param>
     /// <param name="number">A number to output.</param>
-    public void WriteImmediately(ConsoleColor foreground, decimal number)
+    public void Write(ConsoleColor foreground, decimal number)
     {
         col.Add(new ConsoleText(number.ToString("g"), foreground));
         Flush();
@@ -1315,7 +1315,7 @@ public sealed partial class StyleConsole
     /// <param name="foreground">The foreground color.</param>
     /// <param name="background">The background color.</param>
     /// <param name="number">A number to output.</param>
-    public void WriteImmediately(ConsoleColor? foreground, ConsoleColor? background, decimal number)
+    public void Write(ConsoleColor? foreground, ConsoleColor? background, decimal number)
     {
         col.Add(new ConsoleText(number.ToString("g"), foreground, background));
         Flush();
@@ -1326,7 +1326,7 @@ public sealed partial class StyleConsole
     /// It will flush immediately.
     /// </summary>
     /// <param name="number">A number to output.</param>
-    public void WriteImmediately(double number)
+    public void Write(double number)
     {
         col.Add(new ConsoleText(number.ToString("g")));
         Flush();
@@ -1338,7 +1338,7 @@ public sealed partial class StyleConsole
     /// </summary>
     /// <param name="style">The content style.</param>
     /// <param name="number">A number to output.</param>
-    public void WriteImmediately(ConsoleTextStyle style, double number)
+    public void Write(ConsoleTextStyle style, double number)
     {
         col.Add(new ConsoleText(number.ToString("g"), style));
         Flush();
@@ -1350,7 +1350,7 @@ public sealed partial class StyleConsole
     /// </summary>
     /// <param name="foreground">The foreground color.</param>
     /// <param name="number">A number to output.</param>
-    public void WriteImmediately(ConsoleColor foreground, double number)
+    public void Write(ConsoleColor foreground, double number)
     {
         col.Add(new ConsoleText(number.ToString("g"), foreground));
         Flush();
@@ -1363,7 +1363,7 @@ public sealed partial class StyleConsole
     /// <param name="foreground">The foreground color.</param>
     /// <param name="background">The background color.</param>
     /// <param name="number">A number to output.</param>
-    public void WriteImmediately(ConsoleColor? foreground, ConsoleColor? background, double number)
+    public void Write(ConsoleColor? foreground, ConsoleColor? background, double number)
     {
         col.Add(new ConsoleText(number.ToString("g"), foreground, background));
         Flush();
@@ -1376,7 +1376,7 @@ public sealed partial class StyleConsole
     /// <param name="value">The value to write.</param>
     /// <param name="start">The starting position in value.</param>
     /// <param name="count">The number of characters to write.</param>
-    public void WriteImmediately(char[] value, int start = 0, int? count = null)
+    public void Write(char[] value, int start = 0, int? count = null)
     {
         col.Add(new ConsoleText(StringExtensions.ToString(value, start, count)));
         Flush();
@@ -1390,7 +1390,7 @@ public sealed partial class StyleConsole
     /// <param name="value">The value to write.</param>
     /// <param name="start">The starting position in value.</param>
     /// <param name="count">The number of characters to write.</param>
-    public void WriteImmediately(ConsoleTextStyle style, char[] value, int start = 0, int? count = null)
+    public void Write(ConsoleTextStyle style, char[] value, int start = 0, int? count = null)
     {
         col.Add(new ConsoleText(StringExtensions.ToString(value, start, count), style));
         Flush();
@@ -1404,7 +1404,7 @@ public sealed partial class StyleConsole
     /// <param name="value">The value to write.</param>
     /// <param name="start">The starting position in value.</param>
     /// <param name="count">The number of characters to write.</param>
-    public void WriteImmediately(ConsoleColor foreground, char[] value, int start = 0, int? count = null)
+    public void Write(ConsoleColor foreground, char[] value, int start = 0, int? count = null)
     {
         col.Add(new ConsoleText(StringExtensions.ToString(value, start, count), foreground));
         Flush();
@@ -1419,7 +1419,7 @@ public sealed partial class StyleConsole
     /// <param name="value">The value to write.</param>
     /// <param name="start">The starting position in value.</param>
     /// <param name="count">The number of characters to write.</param>
-    public void WriteImmediately(ConsoleColor? foreground, ConsoleColor? background, char[] value, int start = 0, int? count = null)
+    public void Write(ConsoleColor? foreground, ConsoleColor? background, char[] value, int start = 0, int? count = null)
     {
         col.Add(new ConsoleText(StringExtensions.ToString(value, start, count), foreground, background));
         Flush();
@@ -1431,7 +1431,7 @@ public sealed partial class StyleConsole
     /// </summary>
     /// <param name="value">The value to write.</param>
     /// <param name="repeatCount">The number of times to append value.</param>
-    public void WriteImmediately(char value, int repeatCount = 1)
+    public void Write(char value, int repeatCount = 1)
     {
         col.Add(new ConsoleText(value, repeatCount));
         Flush();
@@ -1444,7 +1444,7 @@ public sealed partial class StyleConsole
     /// <param name="style">The content style.</param>
     /// <param name="value">The value to write.</param>
     /// <param name="repeatCount">The number of times to append value.</param>
-    public void WriteImmediately(ConsoleTextStyle style, char value, int repeatCount = 1)
+    public void Write(ConsoleTextStyle style, char value, int repeatCount = 1)
     {
         col.Add(new ConsoleText(value, repeatCount, style));
         Flush();
@@ -1457,7 +1457,7 @@ public sealed partial class StyleConsole
     /// <param name="foreground">The foreground color.</param>
     /// <param name="value">The value to write.</param>
     /// <param name="repeatCount">The number of times to append value.</param>
-    public void WriteImmediately(ConsoleColor foreground, char value, int repeatCount = 1)
+    public void Write(ConsoleColor foreground, char value, int repeatCount = 1)
     {
         col.Add(new ConsoleText(value, repeatCount, new ConsoleTextStyle(foreground)));
         Flush();
@@ -1471,7 +1471,7 @@ public sealed partial class StyleConsole
     /// <param name="background">The background color.</param>
     /// <param name="value">The value to write.</param>
     /// <param name="repeatCount">The number of times to append value.</param>
-    public void WriteImmediately(ConsoleColor? foreground, ConsoleColor? background, char value, int repeatCount = 1)
+    public void Write(ConsoleColor? foreground, ConsoleColor? background, char value, int repeatCount = 1)
     {
         col.Add(new ConsoleText(value, repeatCount, new ConsoleTextStyle(foreground, background)));
         Flush();
@@ -1482,7 +1482,7 @@ public sealed partial class StyleConsole
     /// It will flush immediately.
     /// </summary>
     /// <param name="model">A representation model.</param>
-    public void WriteImmediately(IConsoleTextCreator model)
+    public void Write(IConsoleTextCreator model)
     {
         if (model == null) return;
         var list = model.CreateTextCollection();
@@ -1498,7 +1498,7 @@ public sealed partial class StyleConsole
     /// <typeparam name="T">The type of data model.</typeparam>
     /// <param name="style">The style.</param>
     /// <param name="data">A data model.</param>
-    public void WriteImmediately<T>(IConsoleTextCreator<T> style, T data)
+    public void Write<T>(IConsoleTextCreator<T> style, T data)
     {
         if (style == null) return;
         var list = style.CreateTextCollection(data);
@@ -1516,7 +1516,7 @@ public sealed partial class StyleConsole
     /// <param name="style">The style.</param>
     /// <param name="data">A data model.</param>
     /// <param name="options">The additional options.</param>
-    public void WriteImmediately<TData, TOptions>(IConsoleTextCreator<TData, TOptions> style, TData data, TOptions options)
+    public void Write<TData, TOptions>(IConsoleTextCreator<TData, TOptions> style, TData data, TOptions options)
     {
         if (style == null) return;
         var list = style.CreateTextCollection(data, options);
@@ -2444,7 +2444,7 @@ public sealed partial class StyleConsole
             sb.AppendLine();
         }
 
-        WriteImmediately(sb.ToString());
+        Write(sb.ToString());
     }
 
     /// <summary>

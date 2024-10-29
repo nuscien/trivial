@@ -2,10 +2,14 @@
 using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Collections.Specialized;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
 using System.Security;
@@ -28,7 +32,7 @@ namespace Trivial.Text;
 /// </summary>
 [Serializable]
 [System.Text.Json.Serialization.JsonConverter(typeof(JsonObjectNodeConverter))]
-public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyList<IJsonValueNode>, IReadOnlyList<BaseJsonValueNode>, IEquatable<JsonArrayNode>, ISerializable
+public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyList<IJsonValueNode>, IReadOnlyList<BaseJsonValueNode>, IEquatable<JsonArrayNode>, ISerializable, INotifyPropertyChanged, INotifyCollectionChanged
 {
     private IList<BaseJsonValueNode> store = new List<BaseJsonValueNode>();
 
@@ -96,11 +100,11 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
             {
                 Add(arr);
             }
-            else if (v is System.Text.Json.Nodes.JsonObject json2)
+            else if (v is JsonObject json2)
             {
                 Add(json2);
             }
-            else if (v is System.Text.Json.Nodes.JsonArray arr2)
+            else if (v is JsonArray arr2)
             {
                 Add(arr2);
             }
@@ -123,7 +127,26 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
         if (copy == null) return;
         foreach (var ele in copy)
         {
-            store.Add(ele);
+            AddItem(ele);
+        }
+    }
+
+    /// <summary>
+    /// Occurs when an item is added, removed, changed, moved, or the entire JSON array is refreshed.
+    /// </summary>
+    public event NotifyCollectionChangedEventHandler CollectionChanged;
+
+    private PropertyChangedEventHandler notifyPropertyChanged;
+    event PropertyChangedEventHandler INotifyPropertyChanged.PropertyChanged
+    {
+        add
+        {
+            notifyPropertyChanged += value;
+        }
+
+        remove
+        {
+            notifyPropertyChanged -= value;
         }
     }
 
@@ -2166,9 +2189,53 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
     /// Removes the element at the specific index.
     /// </summary>
     /// <param name="index">The zero-based index of the element to get.</param>
+    /// <param name="removedItem">The item removed.</param>
+    /// <returns>true if remove succeeded; otherwise, false.</returns>
+    public bool TryRemove(int index, out BaseJsonValueNode removedItem)
+    {
+        if (index < 0 || index >= Count)
+        {
+            removedItem = null;
+            return false;
+        }
+        try
+        {
+            removedItem = store[index];
+            store.RemoveAt(index);
+            OnPropertyChanged();
+            CollectionChanged?.Invoke(this, new(NotifyCollectionChangedAction.Remove, removedItem, index));
+            return true;
+        }
+        catch (ArgumentException)
+        {
+        }
+        catch (InvalidOperationException)
+        {
+        }
+
+        removedItem = null;
+        return false;
+    }
+
+    /// <summary>
+    /// Removes the element at the specific index.
+    /// </summary>
+    /// <param name="index">The zero-based index of the element to get.</param>
     /// <exception cref="ArgumentOutOfRangeException">The index is out of range.</exception>
     public void Remove(int index)
-        => store.RemoveAt(index);
+    {
+        if (CollectionChanged == null)
+        {
+            store.RemoveAt(index);
+            OnPropertyChanged();
+            return;
+        }
+
+        var removedItem = store[index] ?? JsonValues.Null;
+        store.RemoveAt(index);
+        OnPropertyChanged();
+        CollectionChanged?.Invoke(this, new(NotifyCollectionChangedAction.Remove, removedItem, index));
+    }
 
 #if !NETFRAMEWORK
     /// <summary>
@@ -2243,9 +2310,13 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
     /// <exception cref="ArgumentOutOfRangeException">The index is out of range.</exception>
     public void Remove(Index index)
     {
+        BaseJsonValueNode removedItem = null;
+        var i = -1;
         try
         {
-            store.RemoveAt(index.IsFromEnd ? store.Count - index.Value : index.Value);
+            if (CollectionChanged != null) removedItem = store[index] ?? JsonValues.Null;
+            i = index.IsFromEnd ? store.Count - index.Value : index.Value;
+            store.RemoveAt(i);
         }
         catch (ArgumentException)
         {
@@ -2253,6 +2324,9 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
         catch (InvalidOperationException)
         {
         }
+
+        OnPropertyChanged();
+        if (removedItem != null && i >= 0) CollectionChanged?.Invoke(this, new(NotifyCollectionChangedAction.Remove, removedItem, i));
     }
 #endif
 
@@ -2264,7 +2338,7 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
     public bool Remove(IJsonValueNode item)
     {
         if (item is not BaseJsonValueNode ele) return false;
-        return store.Remove(ele);
+        return RemoveItem(ele);
     }
 
     /// <summary>
@@ -2274,7 +2348,7 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
     public int RemoveNull()
     {
         var count = 0;
-        while (store.Remove(null)) count++;
+        while (RemoveItem(null)) count++;
         var list = new List<BaseJsonValueNode>();
         foreach (var ele in store)
         {
@@ -2283,7 +2357,7 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
 
         foreach (var ele in list)
         {
-            while (store.Remove(ele)) count++;
+            while (RemoveItem(ele)) count++;
         }
 
         return count;
@@ -2306,7 +2380,7 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
 
         foreach (var ele in list)
         {
-            while (store.Remove(ele)) count++;
+            while (RemoveItem(ele)) count++;
         }
 
         return count;
@@ -2330,7 +2404,7 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
 
         foreach (var ele in list)
         {
-            while (store.Remove(ele)) count++;
+            while (RemoveItem(ele)) count++;
         }
 
         return count;
@@ -2363,7 +2437,7 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
 
         foreach (var ele in list)
         {
-            while (store.Remove(ele)) count++;
+            while (RemoveItem(ele)) count++;
         }
 
         return count;
@@ -2396,7 +2470,7 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
 
         foreach (var ele in list)
         {
-            while (store.Remove(ele)) count++;
+            while (RemoveItem(ele)) count++;
         }
 
         return count;
@@ -2429,7 +2503,7 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
 
         foreach (var ele in list)
         {
-            while (store.Remove(ele)) count++;
+            while (RemoveItem(ele)) count++;
         }
 
         return count;
@@ -2451,7 +2525,7 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
 
         foreach (var ele in list)
         {
-            while (store.Remove(ele)) count++;
+            while (RemoveItem(ele)) count++;
         }
 
         return count;
@@ -2474,7 +2548,7 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
 
         foreach (var ele in list)
         {
-            while (store.Remove(ele)) count++;
+            while (RemoveItem(ele)) count++;
         }
 
         return count;
@@ -2497,7 +2571,7 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
 
         foreach (var ele in list)
         {
-            while (store.Remove(ele)) count++;
+            while (RemoveItem(ele)) count++;
         }
 
         return count;
@@ -2510,8 +2584,8 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
     /// <exception cref="ArgumentOutOfRangeException">The index is out of range.</exception>
     public void SetNullValue(int index)
     {
-        if (store.Count == index) store.Add(JsonValues.Null);
-        store[index] = JsonValues.Null;
+        if (store.Count == index) AddItem(JsonValues.Null);
+        SetItem(index, JsonValues.Null);
     }
 
     /// <summary>
@@ -2522,8 +2596,8 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
     /// <exception cref="ArgumentOutOfRangeException">The index is out of range.</exception>
     public void SetValue(int index, DBNull _)
     {
-        if (store.Count == index) store.Add(JsonValues.Null);
-        store[index] = JsonValues.Null;
+        if (store.Count == index) AddItem(JsonValues.Null);
+        SetItem(index, JsonValues.Null);
     }
 
     /// <summary>
@@ -2534,8 +2608,8 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
     /// <exception cref="ArgumentOutOfRangeException">The index is out of range.</exception>
     public void SetValue(int index, string value)
     {
-        if (store.Count == index) store.Add(JsonValues.Null);
-        store[index] = new JsonStringNode(value);
+        if (store.Count == index) AddItem(JsonValues.Null);
+        SetItem(index, value);
     }
 
     /// <summary>
@@ -2546,14 +2620,14 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
     /// <exception cref="ArgumentOutOfRangeException">The index is out of range.</exception>
     public void SetValue(int index, IJsonValueNode<string> value)
     {
-        if (store.Count == index) store.Add(JsonValues.Null);
+        if (store.Count == index) AddItem(JsonValues.Null);
         if (value == null)
         {
-            store[index] = JsonValues.Null;
+            SetItem(index, JsonValues.Null);
             return;
         }
 
-        store[index] = value is JsonStringNode s ? s : new JsonStringNode(value);
+        SetItem(index, value is JsonStringNode s ? s : new JsonStringNode(value));
     }
 
     /// <summary>
@@ -2565,8 +2639,8 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
     /// <exception cref="InvalidOperationException">The secure string is disposed.</exception>
     public void SetValue(int index, SecureString value)
     {
-        if (store.Count == index) store.Add(JsonValues.Null);
-        store[index] = new JsonStringNode(value);
+        if (store.Count == index) AddItem(JsonValues.Null);
+        SetItem(index, new JsonStringNode(value));
     }
 
     /// <summary>
@@ -2578,8 +2652,8 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
     /// <exception cref="ArgumentOutOfRangeException">The index is out of range.</exception>
     public void SetValueFormat(int index, string value, params object[] args)
     {
-        if (store.Count == index) store.Add(JsonValues.Null);
-        store[index] = new JsonStringNode(string.Format(value, args));
+        if (store.Count == index) AddItem(JsonValues.Null);
+        SetItem(index, string.Format(value, args));
     }
 
     /// <summary>
@@ -2591,8 +2665,8 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
     /// <exception cref="ArgumentOutOfRangeException">The index is out of range.</exception>
     public void SetBase64(int index, byte[] inArray, Base64FormattingOptions options = Base64FormattingOptions.None)
     {
-        if (store.Count == index) store.Add(JsonValues.Null);
-        store[index] = new JsonStringNode(Convert.ToBase64String(inArray, options));
+        if (store.Count == index) AddItem(JsonValues.Null);
+        SetItem(index, Convert.ToBase64String(inArray, options));
     }
 
     /// <summary>
@@ -2605,12 +2679,12 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
     /// <exception cref="ArgumentNullException">The bytes should not be null.</exception>
     public void SetBase64(int index, Span<byte> bytes, Base64FormattingOptions options = Base64FormattingOptions.None)
     {
-        if (store.Count == index) store.Add(JsonValues.Null);
+        if (store.Count == index) AddItem(JsonValues.Null);
 #if NETFRAMEWORK
         if (bytes == null) throw new ArgumentNullException(nameof(bytes), "bytes should not be null.");
-        store[index] = new JsonStringNode(Convert.ToBase64String(bytes.ToArray(), options));
+        SetItem(index, Convert.ToBase64String(bytes.ToArray(), options));
 #else
-        store[index] = new JsonStringNode(Convert.ToBase64String(bytes, options));
+        SetItem(index, Convert.ToBase64String(bytes, options));
 #endif
     }
 
@@ -2623,8 +2697,8 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
     /// <exception cref="ArgumentNullException">The bytes should not be null.</exception>
     public void SetValue(int index, Guid value)
     {
-        if (store.Count == index) store.Add(JsonValues.Null);
-        store[index] = new JsonStringNode(value);
+        if (store.Count == index) AddItem(JsonValues.Null);
+        SetItem(index, new JsonStringNode(value));
     }
 
     /// <summary>
@@ -2635,8 +2709,8 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
     /// <exception cref="ArgumentOutOfRangeException">The index is out of range.</exception>
     public void SetValue(int index, DateTime value)
     {
-        if (store.Count == index) store.Add(JsonValues.Null);
-        store[index] = new JsonStringNode(value);
+        if (store.Count == index) AddItem(JsonValues.Null);
+        SetItem(index, new JsonStringNode(value));
     }
 
     /// <summary>
@@ -2647,8 +2721,8 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
     /// <exception cref="ArgumentOutOfRangeException">The index is out of range.</exception>
     public void SetValue(int index, uint value)
     {
-        if (store.Count == index) store.Add(JsonValues.Null);
-        store[index] = new JsonIntegerNode(value);
+        if (store.Count == index) AddItem(JsonValues.Null);
+        SetItem(index, new JsonIntegerNode(value));
     }
 
     /// <summary>
@@ -2659,8 +2733,8 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
     /// <exception cref="ArgumentOutOfRangeException">The index is out of range.</exception>
     public void SetValue(int index, int value)
     {
-        if (store.Count == index) store.Add(JsonValues.Null);
-        store[index] = new JsonIntegerNode(value);
+        if (store.Count == index) AddItem(JsonValues.Null);
+        SetItem(index, new JsonIntegerNode(value));
     }
 
     /// <summary>
@@ -2671,8 +2745,8 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
     /// <exception cref="ArgumentOutOfRangeException">The index is out of range.</exception>
     public void SetValue(int index, long value)
     {
-        if (store.Count == index) store.Add(JsonValues.Null);
-        store[index] = new JsonIntegerNode(value);
+        if (store.Count == index) AddItem(JsonValues.Null);
+        SetItem(index, new JsonIntegerNode(value));
     }
 
     /// <summary>
@@ -2683,8 +2757,8 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
     /// <exception cref="ArgumentOutOfRangeException">The index is out of range.</exception>
     public void SetValue(int index, float value)
     {
-        if (store.Count == index) store.Add(JsonValues.Null);
-        store[index] = float.IsNaN(value) ? JsonValues.Null : new JsonDoubleNode(value);
+        if (store.Count == index) AddItem(JsonValues.Null);
+        SetItem(index, float.IsNaN(value) ? JsonValues.Null : new JsonDoubleNode(value));
     }
 
     /// <summary>
@@ -2695,8 +2769,8 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
     /// <exception cref="ArgumentOutOfRangeException">The index is out of range.</exception>
     public void SetValue(int index, double value)
     {
-        if (store.Count == index) store.Add(JsonValues.Null);
-        store[index] = double.IsNaN(value) ? JsonValues.Null : new JsonDoubleNode(value);
+        if (store.Count == index) AddItem(JsonValues.Null);
+        SetItem(index, double.IsNaN(value) ? JsonValues.Null : new JsonDoubleNode(value));
     }
 
     /// <summary>
@@ -2707,8 +2781,8 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
     /// <exception cref="ArgumentOutOfRangeException">The index is out of range.</exception>
     public void SetValue(int index, decimal value)
     {
-        if (store.Count == index) store.Add(JsonValues.Null);
-        store[index] = new JsonDecimalNode(value);
+        if (store.Count == index) AddItem(JsonValues.Null);
+        SetItem(index, new JsonDecimalNode(value));
     }
 
     /// <summary>
@@ -2719,8 +2793,8 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
     /// <exception cref="ArgumentOutOfRangeException">The index is out of range.</exception>
     public void SetValue(int index, bool value)
     {
-        if (store.Count == index) store.Add(JsonValues.Null);
-        store[index] = value ? JsonBooleanNode.True : JsonBooleanNode.False;
+        if (store.Count == index) AddItem(JsonValues.Null);
+        SetItem(index, value ? JsonBooleanNode.True : JsonBooleanNode.False);
     }
 
     /// <summary>
@@ -2731,8 +2805,8 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
     /// <exception cref="ArgumentOutOfRangeException">The index is out of range.</exception>
     public void SetValue(int index, bool? value)
     {
-        if (store.Count == index) store.Add(JsonValues.Null);
-        if (value.HasValue) store[index] = value.Value ? JsonBooleanNode.True : JsonBooleanNode.False;
+        if (store.Count == index) AddItem(JsonValues.Null);
+        if (value.HasValue) SetItem(index, value.Value ? JsonBooleanNode.True : JsonBooleanNode.False);
         else SetNullValue(index);
     }
 
@@ -2742,10 +2816,16 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
     /// <param name="index">The zero-based index of the element to get.</param>
     /// <param name="value">The value to set.</param>
     /// <exception cref="ArgumentOutOfRangeException">The index is out of range.</exception>
-    public void SetValue(int index, JsonBooleanNode value)
+    public void SetValue(int index, IJsonValueNode<bool> value)
     {
-        if (store.Count == index) store.Add(JsonValues.Null);
-        store[index] = value ?? JsonValues.Null;
+        if (store.Count == index) AddItem(JsonValues.Null);
+        if (value is null)
+        {
+            SetNullValue(index);
+            return;
+        }
+
+        SetItem(index, value.Value ? JsonBooleanNode.True : JsonBooleanNode.False);
     }
 
     /// <summary>
@@ -2756,9 +2836,9 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
     /// <exception cref="ArgumentOutOfRangeException">The index is out of range.</exception>
     public void SetValue(int index, JsonArrayNode value)
     {
-        if (store.Count == index) store.Add(JsonValues.Null);
-        if (value is null) store[index] = JsonValues.Null;
-        else store[index] = ReferenceEquals(value, this) ? value.Clone() : value;
+        if (store.Count == index) AddItem(JsonValues.Null);
+        if (value is null) SetItem(index, JsonValues.Null);
+        else SetItem(index, ReferenceEquals(value, this) ? value.Clone() : value);
     }
 
     /// <summary>
@@ -2769,8 +2849,8 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
     /// <exception cref="ArgumentOutOfRangeException">The index is out of range.</exception>
     public void SetValue(int index, JsonObjectNode value)
     {
-        if (store.Count == index) store.Add(JsonValues.Null);
-        store[index] = value ?? JsonValues.Null;
+        if (store.Count == index) AddItem(JsonValues.Null);
+        SetItem(index, value ?? JsonValues.Null);
     }
 
     /// <summary>
@@ -2781,8 +2861,8 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
     /// <exception cref="ArgumentOutOfRangeException">The index is out of range.</exception>
     public void SetValue(int index, IJsonObjectHost value)
     {
-        if (store.Count == index) store.Add(JsonValues.Null);
-        store[index] = value?.ToJson() ?? JsonValues.Null;
+        if (store.Count == index) AddItem(JsonValues.Null);
+        SetItem(index, value?.ToJson() ?? JsonValues.Null);
     }
 
     /// <summary>
@@ -2793,8 +2873,8 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
     /// <exception cref="ArgumentOutOfRangeException">The index is out of range.</exception>
     public void SetValue(int index, JsonElement value)
     {
-        if (store.Count == index) store.Add(JsonValues.Null);
-        store[index] = JsonValues.ToJsonValue(value) ?? JsonValues.Null;
+        if (store.Count == index) AddItem(JsonValues.Null);
+        SetItem(index, JsonValues.ToJsonValue(value) ?? JsonValues.Null);
     }
 
     /// <summary>
@@ -2803,10 +2883,10 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
     /// <param name="index">The zero-based index of the element to get.</param>
     /// <param name="value">The value to set.</param>
     /// <exception cref="ArgumentOutOfRangeException">The index is out of range.</exception>
-    public void SetValue(int index, System.Text.Json.Nodes.JsonNode value)
+    public void SetValue(int index, JsonNode value)
     {
-        if (store.Count == index) store.Add(JsonValues.Null);
-        store[index] = JsonValues.ToJsonValue(value) ?? JsonValues.Null;
+        if (store.Count == index) AddItem(JsonValues.Null);
+        SetItem(index, JsonValues.ToJsonValue(value) ?? JsonValues.Null);
     }
 
     /// <summary>
@@ -2817,8 +2897,8 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
     /// <exception cref="ArgumentOutOfRangeException">The index is out of range.</exception>
     public void SetDateTimeStringValue(int index, DateTime value)
     {
-        if (store.Count == index) store.Add(JsonValues.Null);
-        store[index] = new JsonStringNode(value);
+        if (store.Count == index) AddItem(JsonValues.Null);
+        SetItem(index, new JsonStringNode(value));
     }
 
     /// <summary>
@@ -2829,8 +2909,8 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
     /// <exception cref="ArgumentOutOfRangeException">The index is out of range.</exception>
     public void SetJavaScriptDateTicksValue(int index, DateTime value)
     {
-        if (store.Count == index) store.Add(JsonValues.Null);
-        store[index] = new JsonIntegerNode(Web.WebFormat.ParseDate(value));
+        if (store.Count == index) AddItem(JsonValues.Null);
+        SetItem(index, new JsonIntegerNode(WebFormat.ParseDate(value)));
     }
 
     /// <summary>
@@ -2841,8 +2921,8 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
     /// <exception cref="ArgumentOutOfRangeException">The index is out of range.</exception>
     public void SetUnixTimestampValue(int index, DateTime value)
     {
-        if (store.Count == index) store.Add(JsonValues.Null);
-        store[index] = new JsonIntegerNode(Web.WebFormat.ParseUnixTimestamp(value));
+        if (store.Count == index) AddItem(JsonValues.Null);
+        SetItem(index, new JsonIntegerNode(WebFormat.ParseUnixTimestamp(value)));
     }
 
     /// <summary>
@@ -2853,8 +2933,8 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
     /// <exception cref="ArgumentOutOfRangeException">The index is out of range.</exception>
     public void SetWindowsFileTimeUtcValue(int index, DateTime value)
     {
-        if (store.Count == index) store.Add(JsonValues.Null);
-        store[index] = new JsonIntegerNode(value.ToFileTimeUtc());
+        if (store.Count == index) AddItem(JsonValues.Null);
+        SetItem(index, new JsonIntegerNode(value.ToFileTimeUtc()));
     }
 
     /// <summary>
@@ -2944,7 +3024,7 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
         if (rest <= 0) return 0;
         for (var i = 0; i < rest; i++)
         {
-            store.Add(JsonValues.Null);
+            AddItem(JsonValues.Null);
         }
 
         return rest;
@@ -2954,28 +3034,28 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
     /// Add null.
     /// </summary>
     public void AddNull()
-        => store.Add(JsonValues.Null);
+        => AddItem(JsonValues.Null);
 
     /// <summary>
     /// Adds a value.
     /// </summary>
     /// <param name="_">The value to set.</param>
     public void Add(DBNull _)
-        => store.Add(JsonValues.Null);
+        => AddItem(JsonValues.Null);
 
     /// <summary>
     /// Adds a value.
     /// </summary>
     /// <param name="value">The value to set.</param>
     public void Add(string value)
-        => store.Add(new JsonStringNode(value));
+        => AddItem(new JsonStringNode(value));
 
     /// <summary>
     /// Adds a value.
     /// </summary>
     /// <param name="value">The value to set.</param>
     public void Add(IJsonValueNode<string> value)
-        => store.Add(value != null ? (value is JsonStringNode s ? s : new JsonStringNode(value)) : JsonValues.Null);
+        => AddItem(value != null ? (value is JsonStringNode s ? s : new JsonStringNode(value)) : JsonValues.Null);
 
     /// <summary>
     /// Adds a value.
@@ -2983,7 +3063,7 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
     /// <param name="value">The value to set.</param>
     /// <exception cref="InvalidOperationException">The secure string is disposed.</exception>
     public void Add(SecureString value)
-        => store.Add(new JsonStringNode(value));
+        => AddItem(new JsonStringNode(value));
 
     /// <summary>
     /// Adds a value.
@@ -2991,84 +3071,84 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
     /// <param name="value">The value to set.</param>
     /// <param name="args">An object array that contains zero or more objects to format.</param>
     public void AddFormat(string value, params object[] args)
-        => store.Add(new JsonStringNode(string.Format(value, args)));
+        => AddItem(new JsonStringNode(string.Format(value, args)));
 
     /// <summary>
     /// Adds a value.
     /// </summary>
     /// <param name="value">The value to set.</param>
     public void Add(Guid value)
-        => store.Add(new JsonStringNode(value));
+        => AddItem(new JsonStringNode(value));
 
     /// <summary>
     /// Adds a value.
     /// </summary>
     /// <param name="value">The value to set.</param>
     public void Add(DateTime value)
-        => store.Add(new JsonStringNode(value));
+        => AddItem(new JsonStringNode(value));
 
     /// <summary>
     /// Adds a value.
     /// </summary>
     /// <param name="value">The value to set.</param>
     public void Add(short value)
-        => store.Add(new JsonIntegerNode(value));
+        => AddItem(new JsonIntegerNode(value));
 
     /// <summary>
     /// Adds a value.
     /// </summary>
     /// <param name="value">The value to set.</param>
     public void Add(uint value)
-        => store.Add(new JsonIntegerNode(value));
+        => AddItem(new JsonIntegerNode(value));
 
     /// <summary>
     /// Adds a value.
     /// </summary>
     /// <param name="value">The value to set.</param>
     public void Add(int value)
-        => store.Add(new JsonIntegerNode(value));
+        => AddItem(new JsonIntegerNode(value));
 
     /// <summary>
     /// Adds a value.
     /// </summary>
     /// <param name="value">The value to set.</param>
     public void Add(long value)
-        => store.Add(new JsonIntegerNode(value));
+        => AddItem(new JsonIntegerNode(value));
 
     /// <summary>
     /// Adds a value.
     /// </summary>
     /// <param name="value">The value to set.</param>
     public void Add(float value)
-        => store.Add(float.IsNaN(value) ? JsonValues.Null : new JsonDoubleNode(value));
+        => AddItem(float.IsNaN(value) ? JsonValues.Null : new JsonDoubleNode(value));
 
     /// <summary>
     /// Adds a value.
     /// </summary>
     /// <param name="value">The value to set.</param>
     public void Add(double value)
-        => store.Add(double.IsNaN(value) ? JsonValues.Null : new JsonDoubleNode(value));
+        => AddItem(double.IsNaN(value) ? JsonValues.Null : new JsonDoubleNode(value));
 
     /// <summary>
     /// Adds a value.
     /// </summary>
     /// <param name="value">The value to set.</param>
     public void Add(decimal value)
-        => store.Add(new JsonDecimalNode(value));
+        => AddItem(new JsonDecimalNode(value));
 
     /// <summary>
     /// Adds a value.
     /// </summary>
     /// <param name="value">The value to set.</param>
     public void Add(bool value)
-        => store.Add(value ? JsonBooleanNode.True : JsonBooleanNode.False);
+        => AddItem(value ? JsonBooleanNode.True : JsonBooleanNode.False);
 
     /// <summary>
     /// Adds a value.
     /// </summary>
     /// <param name="value">The value to set.</param>
     public void Add(JsonBooleanNode value)
-        => store.Add(value ?? JsonValues.Null);
+        => AddItem(value ?? JsonValues.Null);
 
     /// <summary>
     /// Adds a value.
@@ -3076,8 +3156,8 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
     /// <param name="value">The value to set.</param>
     public void Add(JsonArrayNode value)
     {
-        if (value is null) store.Add(JsonValues.Null);
-        else store.Add(ReferenceEquals(value, this) ? value.Clone() : value);
+        if (value is null) AddItem(JsonValues.Null);
+        else AddItem(ReferenceEquals(value, this) ? value.Clone() : value);
     }
 
     /// <summary>
@@ -3085,35 +3165,35 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
     /// </summary>
     /// <param name="value">The value to set.</param>
     public void Add(JsonObjectNode value)
-        => store.Add(value ?? JsonValues.Null);
+        => AddItem(value ?? JsonValues.Null);
 
     /// <summary>
     /// Adds a value.
     /// </summary>
     /// <param name="value">The value to set.</param>
     public void Add(IJsonObjectHost value)
-        => store.Add(value?.ToJson() ?? JsonValues.Null);
+        => AddItem(value?.ToJson() ?? JsonValues.Null);
 
     /// <summary>
     /// Adds a value.
     /// </summary>
     /// <param name="value">The value to set.</param>
     public void Add(JsonDocument value)
-        => store.Add(JsonValues.ToJsonValue(value) ?? JsonValues.Null);
+        => AddItem(JsonValues.ToJsonValue(value) ?? JsonValues.Null);
 
     /// <summary>
     /// Adds a value.
     /// </summary>
     /// <param name="value">The value to set.</param>
     public void Add(JsonElement value)
-        => store.Add(JsonValues.ToJsonValue(value) ?? JsonValues.Null);
+        => AddItem(JsonValues.ToJsonValue(value) ?? JsonValues.Null);
 
     /// <summary>
     /// Adds a value.
     /// </summary>
     /// <param name="value">The value to set.</param>
     public void Add(System.Text.Json.Nodes.JsonNode value)
-        => store.Add(JsonValues.ToJsonValue(value) ?? JsonValues.Null);
+        => AddItem(JsonValues.ToJsonValue(value) ?? JsonValues.Null);
 
     /// <summary>
     /// Adds a value.
@@ -3122,7 +3202,7 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
     /// <param name="options">A formatting options.</param>
     /// <exception cref="ArgumentNullException">The bytes should not be null.</exception>
     public void AddBase64(byte[] inArray, Base64FormattingOptions options = Base64FormattingOptions.None)
-        => store.Add(new JsonStringNode(Convert.ToBase64String(inArray, options)));
+        => AddItem(new JsonStringNode(Convert.ToBase64String(inArray, options)));
 
     /// <summary>
     /// Adds a value.
@@ -3134,9 +3214,9 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
     {
 #if NETFRAMEWORK
         if (bytes == null) throw new ArgumentNullException(nameof(bytes), "bytes should not be null.");
-        store.Add(new JsonStringNode(Convert.ToBase64String(bytes.ToArray(), options)));
+        AddItem(new JsonStringNode(Convert.ToBase64String(bytes.ToArray(), options)));
 #else
-        store.Add(new JsonStringNode(Convert.ToBase64String(bytes, options)));
+        AddItem(new JsonStringNode(Convert.ToBase64String(bytes, options)));
 #endif
     }
 
@@ -3145,21 +3225,39 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
     /// </summary>
     /// <param name="value">The value to set.</param>
     public void AddDateTimeString(DateTime value)
-        => store.Add(new JsonStringNode(value));
+        => AddItem(new JsonStringNode(value));
 
     /// <summary>
     /// Adds a JavaScript date ticks.
     /// </summary>
     /// <param name="value">The value to set.</param>
     public void AddJavaScriptDateTicks(DateTime value)
-        => store.Add(new JsonIntegerNode(Web.WebFormat.ParseDate(value)));
+        => AddItem(new JsonIntegerNode(WebFormat.ParseDate(value)));
 
     /// <summary>
     /// Adds a Unix timestamp.
     /// </summary>
     /// <param name="value">The value to set.</param>
     public void AddUnixTimestamp(DateTime value)
-        => store.Add(new JsonIntegerNode(Web.WebFormat.ParseUnixTimestamp(value)));
+        => AddItem(new JsonIntegerNode(WebFormat.ParseUnixTimestamp(value)));
+
+    /// <summary>
+    /// Adds a collection of JSON value node.
+    /// </summary>
+    /// <param name="values">A collection to add.</param>
+    /// <returns>The count of item added.</returns>
+    public int AddRange(IEnumerable<BaseJsonValueNode> values)
+    {
+        var count = 0;
+        if (values == null) return count;
+        foreach (var item in values)
+        {
+            AddItem(JsonValues.ConvertValue(item, this));
+            count++;
+        }
+
+        return count;
+    }
 
     /// <summary>
     /// Adds a collection of string.
@@ -3172,7 +3270,7 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
         if (values == null) return count;
         foreach (var item in values)
         {
-            store.Add(new JsonStringNode(item));
+            AddItem(new JsonStringNode(item));
             count++;
         }
 
@@ -3190,7 +3288,7 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
         if (values == null) return count;
         foreach (var item in values)
         {
-            store.Add(new JsonIntegerNode(item));
+            AddItem(new JsonIntegerNode(item));
             count++;
         }
 
@@ -3208,7 +3306,7 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
         if (values == null) return count;
         foreach (var item in values)
         {
-            store.Add(new JsonIntegerNode(item));
+            AddItem(new JsonIntegerNode(item));
             count++;
         }
 
@@ -3226,7 +3324,7 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
         if (values == null) return count;
         foreach (var item in values)
         {
-            store.Add(new JsonDoubleNode(item));
+            AddItem(new JsonDoubleNode(item));
             count++;
         }
 
@@ -3244,7 +3342,7 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
         if (values == null) return count;
         foreach (var item in values)
         {
-            store.Add(new JsonDoubleNode(item));
+            AddItem(new JsonDoubleNode(item));
             count++;
         }
 
@@ -3262,7 +3360,7 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
         if (values == null) return count;
         foreach (var item in values)
         {
-            store.Add(new JsonDecimalNode(item));
+            AddItem(new JsonDecimalNode(item));
             count++;
         }
 
@@ -3280,7 +3378,7 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
         if (values == null) return count;
         foreach (var item in values)
         {
-            store.Add(item ? JsonBooleanNode.True : JsonBooleanNode.False);
+            AddItem(item ? JsonBooleanNode.True : JsonBooleanNode.False);
             count++;
         }
 
@@ -3298,7 +3396,7 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
         if (values == null) return count;
         foreach (var item in values)
         {
-            store.Add(item);
+            AddItem(item);
             count++;
         }
 
@@ -3317,7 +3415,7 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
         if (ReferenceEquals(json, this)) json = json.Clone();
         foreach (var props in json)
         {
-            store.Add(props);
+            AddItem(props);
             count++;
         }
 
@@ -3337,7 +3435,7 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
         if (json is null || propertyKeys == null) return count;
         foreach (var key in propertyKeys)
         {
-            store.Add(json.TryGetValue(key) ?? JsonValues.Undefined);
+            AddItem(json.TryGetValue(key) ?? JsonValues.Undefined);
             count++;
         }
 
@@ -3385,7 +3483,7 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
     /// <param name="index">The zero-based index of the element to get.</param>
     /// <exception cref="ArgumentOutOfRangeException">The index was out of range.</exception>
     public void InsertNull(int index)
-        => store.Insert(index, JsonValues.Null);
+        => InsertItem(index, JsonValues.Null);
 
     /// <summary>
     /// Inserts the value at the specific index.
@@ -3394,7 +3492,7 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
     /// <param name="_">The value to set.</param>
     /// <exception cref="ArgumentOutOfRangeException">The index was out of range.</exception>
     public void Insert(int index, DBNull _)
-        => store.Insert(index, JsonValues.Null);
+        => InsertItem(index, JsonValues.Null);
 
     /// <summary>
     /// Inserts the value at the specific index.
@@ -3403,7 +3501,7 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
     /// <param name="value">The value to set.</param>
     /// <exception cref="ArgumentOutOfRangeException">The index was out of range.</exception>
     public void Insert(int index, string value)
-        => store.Insert(index, new JsonStringNode(value));
+        => InsertItem(index, new JsonStringNode(value));
 
     /// <summary>
     /// Inserts the value at the specific index.
@@ -3412,7 +3510,7 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
     /// <param name="value">The value to set.</param>
     /// <exception cref="ArgumentOutOfRangeException">The index was out of range.</exception>
     public void Insert(int index, IJsonValueNode<string> value)
-        => store.Insert(index, value != null ? (value is JsonStringNode s ? s : new JsonStringNode(value)) : JsonValues.Null);
+        => InsertItem(index, value != null ? (value is JsonStringNode s ? s : new JsonStringNode(value)) : JsonValues.Null);
 
     /// <summary>
     /// Inserts the value at the specific index.
@@ -3422,7 +3520,7 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
     /// <exception cref="ArgumentOutOfRangeException">The index was out of range.</exception>
     /// <exception cref="InvalidOperationException">The secure string is disposed.</exception>
     public void Insert(int index, SecureString value)
-        => store.Insert(index, new JsonStringNode(value));
+        => InsertItem(index, new JsonStringNode(value));
 
     /// <summary>
     /// Inserts the value at the specific index.
@@ -3432,7 +3530,7 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
     /// <param name="args">An object array that contains zero or more objects to format.</param>
     /// <exception cref="ArgumentOutOfRangeException">The index was out of range.</exception>
     public void InsertFormat(int index, string value, params object[] args)
-        => store.Insert(index, new JsonStringNode(string.Format(value, args)));
+        => InsertItem(index, new JsonStringNode(string.Format(value, args)));
 
     /// <summary>
     /// Inserts the value at the specific index.
@@ -3441,7 +3539,7 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
     /// <param name="value">The value to set.</param>
     /// <exception cref="ArgumentOutOfRangeException">The index is out of range.</exception>
     public void Insert(int index, Guid value)
-        => store.Insert(index, new JsonStringNode(value));
+        => InsertItem(index, new JsonStringNode(value));
 
     /// <summary>
     /// Inserts the value at the specific index.
@@ -3450,7 +3548,7 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
     /// <param name="value">The value to set.</param>
     /// <exception cref="ArgumentOutOfRangeException">The index was out of range.</exception>
     public void Insert(int index, DateTime value)
-        => store.Insert(index, new JsonStringNode(value));
+        => InsertItem(index, new JsonStringNode(value));
 
     /// <summary>
     /// Inserts the value at the specific index.
@@ -3459,7 +3557,7 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
     /// <param name="value">The value to set.</param>
     /// <exception cref="ArgumentOutOfRangeException">The index was out of range.</exception>
     public void Insert(int index, uint value)
-        => store.Insert(index, new JsonIntegerNode(value));
+        => InsertItem(index, new JsonIntegerNode(value));
 
     /// <summary>
     /// Inserts the value at the specific index.
@@ -3468,7 +3566,7 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
     /// <param name="value">The value to set.</param>
     /// <exception cref="ArgumentOutOfRangeException">The index was out of range.</exception>
     public void Insert(int index, int value)
-        => store.Insert(index, new JsonIntegerNode(value));
+        => InsertItem(index, new JsonIntegerNode(value));
 
     /// <summary>
     /// Inserts the value at the specific index.
@@ -3477,7 +3575,7 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
     /// <param name="value">The value to set.</param>
     /// <exception cref="ArgumentOutOfRangeException">The index was out of range.</exception>
     public void Insert(int index, long value)
-        => store.Insert(index, new JsonIntegerNode(value));
+        => InsertItem(index, new JsonIntegerNode(value));
 
     /// <summary>
     /// Inserts the value at the specific index.
@@ -3486,7 +3584,7 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
     /// <param name="value">The value to set.</param>
     /// <exception cref="ArgumentOutOfRangeException">The index was out of range.</exception>
     public void Insert(int index, float value)
-        => store.Insert(index, float.IsNaN(value) ? JsonValues.Null : new JsonDoubleNode(value));
+        => InsertItem(index, float.IsNaN(value) ? JsonValues.Null : new JsonDoubleNode(value));
 
     /// <summary>
     /// Inserts the value at the specific index.
@@ -3495,7 +3593,7 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
     /// <param name="value">The value to set.</param>
     /// <exception cref="ArgumentOutOfRangeException">The index was out of range.</exception>
     public void Insert(int index, double value)
-        => store.Insert(index, double.IsNaN(value) ? JsonValues.Null : new JsonDoubleNode(value));
+        => InsertItem(index, double.IsNaN(value) ? JsonValues.Null : new JsonDoubleNode(value));
 
     /// <summary>
     /// Inserts the value at the specific index.
@@ -3504,7 +3602,7 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
     /// <param name="value">The value to set.</param>
     /// <exception cref="ArgumentOutOfRangeException">The index was out of range.</exception>
     public void Insert(int index, decimal value)
-        => store.Insert(index, new JsonDecimalNode(value));
+        => InsertItem(index, new JsonDecimalNode(value));
 
     /// <summary>
     /// Inserts the value at the specific index.
@@ -3513,7 +3611,7 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
     /// <param name="value">The value to set.</param>
     /// <exception cref="ArgumentOutOfRangeException">The index was out of range.</exception>
     public void Insert(int index, bool value)
-        => store.Insert(index, value ? JsonBooleanNode.True : JsonBooleanNode.False);
+        => InsertItem(index, value ? JsonBooleanNode.True : JsonBooleanNode.False);
 
     /// <summary>
     /// Inserts the value at the specific index.
@@ -3522,7 +3620,7 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
     /// <param name="value">The value to set.</param>
     /// <exception cref="ArgumentOutOfRangeException">The index was out of range.</exception>
     public void Insert(int index, JsonBooleanNode value)
-        => store.Insert(index, value ?? JsonValues.Null);
+        => InsertItem(index, value ?? JsonValues.Null);
 
     /// <summary>
     /// Inserts the value at the specific index.
@@ -3532,8 +3630,8 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
     /// <exception cref="ArgumentOutOfRangeException">The index was out of range.</exception>
     public void Insert(int index, JsonArrayNode value)
     {
-        if (value is null) store.Insert(index, JsonValues.Null);
-        else store.Insert(index, ReferenceEquals(value, this) ? value.Clone() : value);
+        if (value is null) InsertItem(index, JsonValues.Null);
+        else InsertItem(index, ReferenceEquals(value, this) ? value.Clone() : value);
     }
 
     /// <summary>
@@ -3543,7 +3641,7 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
     /// <param name="value">The value to set.</param>
     /// <exception cref="ArgumentOutOfRangeException">The index was out of range.</exception>
     public void Insert(int index, JsonObjectNode value)
-        => store.Insert(index, value ?? JsonValues.Null);
+        => InsertItem(index, value ?? JsonValues.Null);
 
     /// <summary>
     /// Inserts the value at the specific index.
@@ -3552,7 +3650,7 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
     /// <param name="value">The value to set.</param>
     /// <exception cref="ArgumentOutOfRangeException">The index was out of range.</exception>
     public void Insert(int index, IJsonObjectHost value)
-        => store.Insert(index, value?.ToJson() ?? JsonValues.Null);
+        => InsertItem(index, value?.ToJson() ?? JsonValues.Null);
 
     /// <summary>
     /// Inserts the value at the specific index.
@@ -3561,7 +3659,7 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
     /// <param name="value">The value to set.</param>
     /// <exception cref="ArgumentOutOfRangeException">The index was out of range.</exception>
     public void Insert(int index, JsonElement value)
-        => store.Insert(index, JsonValues.ToJsonValue(value) ?? JsonValues.Null);
+        => InsertItem(index, JsonValues.ToJsonValue(value) ?? JsonValues.Null);
 
     /// <summary>
     /// Inserts the value at the specific index.
@@ -3570,7 +3668,7 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
     /// <param name="value">The value to set.</param>
     /// <exception cref="ArgumentOutOfRangeException">The index was out of range.</exception>
     public void Insert(int index, System.Text.Json.Nodes.JsonNode value)
-        => store.Insert(index, JsonValues.ToJsonValue(value) ?? JsonValues.Null);
+        => InsertItem(index, JsonValues.ToJsonValue(value) ?? JsonValues.Null);
 
     /// <summary>
     /// Inserts the value at the specific index.
@@ -3581,7 +3679,7 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
     /// <exception cref="ArgumentOutOfRangeException">The index was out of range.</exception>
     /// <exception cref="ArgumentNullException">The bytes should not be null.</exception>
     public void InsertBase64(int index, byte[] inArray, Base64FormattingOptions options = Base64FormattingOptions.None)
-        => store.Insert(index, new JsonStringNode(Convert.ToBase64String(inArray, options)));
+        => InsertItem(index, new JsonStringNode(Convert.ToBase64String(inArray, options)));
 
     /// <summary>
     /// Inserts the value at the specific index.
@@ -3595,9 +3693,9 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
     {
 #if NETFRAMEWORK
         if (bytes == null) throw new ArgumentNullException(nameof(bytes), "bytes should not be null.");
-        store.Insert(index, new JsonStringNode(Convert.ToBase64String(bytes.ToArray(), options)));
+        InsertItem(index, new JsonStringNode(Convert.ToBase64String(bytes.ToArray(), options)));
 #else
-        store.Insert(index, new JsonStringNode(Convert.ToBase64String(bytes, options)));
+        InsertItem(index, new JsonStringNode(Convert.ToBase64String(bytes, options)));
 #endif
     }
 
@@ -3608,7 +3706,7 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
     /// <param name="value">The value to set.</param>
     /// <exception cref="ArgumentOutOfRangeException">The index was out of range.</exception>
     public void InsertDateTimeString(int index, DateTime value)
-        => store.Insert(index, new JsonStringNode(value));
+        => InsertItem(index, new JsonStringNode(value));
 
     /// <summary>
     /// Inserts the value at the specific index.
@@ -3617,7 +3715,7 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
     /// <param name="value">The value to set.</param>
     /// <exception cref="ArgumentOutOfRangeException">The index was out of range.</exception>
     public void InsertJavaScriptDateTicks(int index, DateTime value)
-        => store.Insert(index, new JsonIntegerNode(Web.WebFormat.ParseDate(value)));
+        => InsertItem(index, new JsonIntegerNode(Web.WebFormat.ParseDate(value)));
 
     /// <summary>
     /// Inserts the value at the specific index.
@@ -3626,7 +3724,27 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
     /// <param name="value">The value to set.</param>
     /// <exception cref="ArgumentOutOfRangeException">The index was out of range.</exception>
     public void InsertUnixTimestamp(int index, DateTime value)
-        => store.Insert(index, new JsonIntegerNode(Web.WebFormat.ParseUnixTimestamp(value)));
+        => InsertItem(index, new JsonIntegerNode(Web.WebFormat.ParseUnixTimestamp(value)));
+
+    /// <summary>
+    /// Adds a JSON array.
+    /// </summary>
+    /// <param name="index">The zero-based index of the element to get.</param>
+    /// <param name="values">A collection to add.</param>
+    /// <returns>The count of item added.</returns>
+    /// <exception cref="ArgumentOutOfRangeException">The index was out of range.</exception>
+    public int InsertRange(int index, IEnumerable<BaseJsonValueNode> values)
+    {
+        var count = 0;
+        if (values == null) return count;
+        foreach (var item in values)
+        {
+            InsertItem(index + count, JsonValues.ConvertValue(item, this));
+            count++;
+        }
+        
+        return count;
+    }
 
     /// <summary>
     /// Adds a JSON array.
@@ -3641,7 +3759,7 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
         if (values == null) return count;
         foreach (var item in values)
         {
-            store.Insert(index + count, new JsonStringNode(item));
+            InsertItem(index + count, new JsonStringNode(item));
             count++;
         }
 
@@ -3661,7 +3779,7 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
         if (values == null) return count;
         foreach (var item in values)
         {
-            store.Insert(index + count, new JsonIntegerNode(item));
+            InsertItem(index + count, new JsonIntegerNode(item));
             count++;
         }
 
@@ -3681,7 +3799,7 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
         if (values == null) return count;
         foreach (var item in values)
         {
-            store.Insert(index + count, new JsonIntegerNode(item));
+            InsertItem(index + count, new JsonIntegerNode(item));
             count++;
         }
 
@@ -3701,7 +3819,7 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
         if (values == null) return count;
         foreach (var item in values)
         {
-            store.Insert(index + count, new JsonDoubleNode(item));
+            InsertItem(index + count, new JsonDoubleNode(item));
             count++;
         }
 
@@ -3721,7 +3839,7 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
         if (values == null) return count;
         foreach (var item in values)
         {
-            store.Insert(index + count, new JsonDoubleNode(item));
+            InsertItem(index + count, new JsonDoubleNode(item));
             count++;
         }
 
@@ -3741,7 +3859,7 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
         if (values == null) return count;
         foreach (var item in values)
         {
-            store.Insert(index + count, new JsonDecimalNode(item));
+            InsertItem(index + count, new JsonDecimalNode(item));
             count++;
         }
 
@@ -3761,7 +3879,7 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
         if (values == null) return count;
         foreach (var item in values)
         {
-            store.Insert(index + count, item);
+            InsertItem(index + count, item);
             count++;
         }
 
@@ -3782,7 +3900,7 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
         if (ReferenceEquals(json, this)) json = json.Clone();
         foreach (var item in json)
         {
-            store.Insert(index + count, item);
+            InsertItem(index + count, item);
             count++;
         }
 
@@ -3803,7 +3921,7 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
         if (json is null || propertyKeys == null) return count;
         foreach (var key in propertyKeys)
         {
-            store.Insert(index + count, json.TryGetValue(key) ?? JsonValues.Null);
+            InsertItem(index + count, json.TryGetValue(key) ?? JsonValues.Null);
             count++;
         }
 
@@ -3816,6 +3934,8 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
     public void Clear()
     {
         store.Clear();
+        OnPropertyChanged();
+        CollectionChanged?.Invoke(this, new(NotifyCollectionChangedAction.Reset));
     }
 
     /// <summary>
@@ -4814,17 +4934,83 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
         return false;
     }
 
+    private void AddItem(BaseJsonValueNode item)
+    {
+        store.Add(item);
+        var index = Count - 1;
+        OnPropertyChanged();
+        CollectionChanged?.Invoke(this, new(NotifyCollectionChangedAction.Add, item, index));
+    }
+
+    private void InsertItem(int index, BaseJsonValueNode item)
+    {
+        store.Insert(index, item);
+        OnPropertyChanged();
+        CollectionChanged?.Invoke(this, new(NotifyCollectionChangedAction.Add, item, index));
+    }
+
+    private bool RemoveItem(BaseJsonValueNode item)
+    {
+        if (CollectionChanged == null)
+        {
+            var b = store.Remove(item);
+            if (b) OnPropertyChanged();
+            return b;
+        }
+
+        try
+        {
+            var i = store.IndexOf(item);
+            if (!store.Remove(item) || i < 0) return false;
+            OnPropertyChanged();
+            CollectionChanged?.Invoke(this, new(NotifyCollectionChangedAction.Remove, item, i));
+            return true;
+        }
+        catch (ArgumentException)
+        {
+        }
+        catch (InvalidOperationException)
+        {
+        }
+
+        return false;
+    }
+
+    private void SetItem(int index, BaseJsonValueNode item)
+    {
+        if (CollectionChanged == null)
+        {
+            store[index] = item;
+            OnPropertyChanged(true);
+            return;
+        }
+
+        var old = store[index];
+        store[index] = item;
+        OnPropertyChanged(true);
+        CollectionChanged?.Invoke(this, new(NotifyCollectionChangedAction.Replace, item, old, index));
+    }
+
+    private void SetItem(int index, string item)
+        => SetItem(index, item == null ? JsonValues.Null : new JsonStringNode(item));
+
+    private void OnPropertyChanged(bool onlyItemUpdate = false)
+    {
+        if (!onlyItemUpdate) notifyPropertyChanged?.Invoke(this, new(nameof(Count)));
+        notifyPropertyChanged?.Invoke(this, new("Item[]"));
+    }
+
     /// <inheritdoc />
-    public override System.Text.Json.Nodes.JsonNode ToJsonNode()
+    public override JsonNode ToJsonNode()
         => ToJsonArray();
 
     /// <summary>
     /// Converts to JSON node.
     /// </summary>
     /// <returns>An instance of JSON array.</returns>
-    public System.Text.Json.Nodes.JsonArray ToJsonArray()
+    public JsonArray ToJsonArray()
     {
-        var node = new System.Text.Json.Nodes.JsonArray();
+        var node = new JsonArray();
         foreach (var item in store)
         {
             var v = item.ToJsonNode();
@@ -4944,9 +5130,9 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
     /// <param name="json">The JSON value.</param>
     /// <returns>An instance of the JsonArrayNode class.</returns>
     /// <exception cref="JsonException">json does not represent a valid JSON array.</exception>
-    public static implicit operator JsonArrayNode(System.Text.Json.Nodes.JsonNode json)
+    public static implicit operator JsonArrayNode(JsonNode json)
     {
-        if (json is System.Text.Json.Nodes.JsonArray obj) return obj;
+        if (json is JsonArray obj) return obj;
         throw new JsonException("json is not a JSON array.");
     }
 
@@ -4959,9 +5145,7 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
     /// <exception cref="JsonException">json does not represent a valid single JSON array.</exception>
     /// <exception cref="ArgumentException">readerOptions contains unsupported options.</exception>
     public static JsonArrayNode Parse(string json, JsonDocumentOptions options = default)
-    {
-        return JsonDocument.Parse(json, options);
-    }
+        => JsonDocument.Parse(json, options);
 
     /// <summary>
     /// Parses JSON object.
@@ -4972,9 +5156,7 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
     /// <exception cref="JsonException">json does not represent a valid single JSON object.</exception>
     /// <exception cref="ArgumentException">options contains unsupported options.</exception>
     public static JsonArrayNode Parse(System.Buffers.ReadOnlySequence<byte> json, JsonDocumentOptions options = default)
-    {
-        return JsonDocument.Parse(json, options);
-    }
+        => JsonDocument.Parse(json, options);
 
     /// <summary>
     /// Parses JSON object.
@@ -4985,9 +5167,7 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
     /// <exception cref="JsonException">json does not represent a valid single JSON object.</exception>
     /// <exception cref="ArgumentException">options contains unsupported options.</exception>
     public static JsonArrayNode Parse(ReadOnlyMemory<byte> json, JsonDocumentOptions options = default)
-    {
-        return JsonDocument.Parse(json, options);
-    }
+        => JsonDocument.Parse(json, options);
 
     /// <summary>
     /// Parses JSON object.
@@ -4998,9 +5178,7 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
     /// <exception cref="JsonException">json does not represent a valid single JSON object.</exception>
     /// <exception cref="ArgumentException">options contains unsupported options.</exception>
     public static JsonArrayNode Parse(ReadOnlyMemory<char> json, JsonDocumentOptions options = default)
-    {
-        return JsonDocument.Parse(json, options);
-    }
+        => JsonDocument.Parse(json, options);
 
     /// <summary>
     /// Parses a stream as UTF-8-encoded data representing a JSON array.
@@ -5012,9 +5190,7 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
     /// <exception cref="JsonException">json does not represent a valid single JSON array.</exception>
     /// <exception cref="ArgumentException">readerOptions contains unsupported options.</exception>
     public static JsonArrayNode Parse(Stream utf8Json, JsonDocumentOptions options = default)
-    {
-        return JsonDocument.Parse(utf8Json, options);
-    }
+        => JsonDocument.Parse(utf8Json, options);
 
     /// <summary>
     /// Parses a stream as UTF-8-encoded data representing a JSON array.
@@ -5027,9 +5203,7 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
     /// <exception cref="JsonException">json does not represent a valid single JSON array.</exception>
     /// <exception cref="ArgumentException">readerOptions contains unsupported options.</exception>
     public static async Task<JsonArrayNode> ParseAsync(Stream utf8Json, JsonDocumentOptions options, CancellationToken cancellationToken = default)
-    {
-        return await JsonDocument.ParseAsync(utf8Json, options, cancellationToken);
-    }
+        => await JsonDocument.ParseAsync(utf8Json, options, cancellationToken);
 
     /// <summary>
     /// Parses a stream as UTF-8-encoded data representing a JSON array.
@@ -5041,9 +5215,7 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
     /// <exception cref="JsonException">json does not represent a valid single JSON array.</exception>
     /// <exception cref="ArgumentException">readerOptions contains unsupported options.</exception>
     public static async Task<JsonArrayNode> ParseAsync(Stream utf8Json, CancellationToken cancellationToken = default)
-    {
-        return await JsonDocument.ParseAsync(utf8Json, default, cancellationToken);
-    }
+        => await JsonDocument.ParseAsync(utf8Json, default, cancellationToken);
 
 #if !NETFRAMEWORK
     /// <summary>

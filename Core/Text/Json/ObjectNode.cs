@@ -28,7 +28,7 @@ namespace Trivial.Text;
 /// </summary>
 [Serializable]
 [JsonConverter(typeof(JsonObjectNodeConverter))]
-public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary<string, IJsonValueNode>, IDictionary<string, BaseJsonValueNode>, IReadOnlyDictionary<string, IJsonValueNode>, IReadOnlyDictionary<string, BaseJsonValueNode>, IEquatable<JsonObjectNode>, ISerializable
+public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary<string, IJsonValueNode>, IDictionary<string, BaseJsonValueNode>, IReadOnlyDictionary<string, IJsonValueNode>, IReadOnlyDictionary<string, BaseJsonValueNode>, IEquatable<JsonObjectNode>, ISerializable, INotifyPropertyChanged
 {
 #pragma warning disable IDE0056,IDE0057
     private IDictionary<string, BaseJsonValueNode> store = new Dictionary<string, BaseJsonValueNode>();
@@ -137,6 +137,20 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// Adds or removes the event handler raised on property changed.
     /// </summary>
     public event KeyValueEventHandler<string, BaseJsonValueNode> PropertyChanged;
+
+    private PropertyChangedEventHandler notifyPropertyChanged;
+    event PropertyChangedEventHandler INotifyPropertyChanged.PropertyChanged
+    {
+        add
+        {
+            notifyPropertyChanged += value;
+        }
+
+        remove
+        {
+            notifyPropertyChanged -= value;
+        }
+    }
 
     /// <summary>
     /// Gets the number of elements contained in the System.Collections.Generic.ICollection`1
@@ -3687,6 +3701,12 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
         SetProperty(key, JsonValues.Null);
     }
 
+    private void SetValue(string key, BaseJsonValueNode value)
+    {
+        AssertKey(key);
+        SetProperty(key, JsonValues.ConvertValue(value, this));
+    }
+
     /// <summary>
     /// Sets the value of the specific property.
     /// </summary>
@@ -5636,6 +5656,38 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// <param name="data">Key value pairs to set.</param>
     /// <param name="skipDuplicate">true if skip the duplicate properties; otherwise, false.</param>
     /// <returns>The count to set.</returns>
+    public int SetRange(IEnumerable<KeyValuePair<string, BaseJsonValueNode>> data, bool skipDuplicate = false)
+    {
+        var count = 0;
+        if (data == null) return count;
+        if (skipDuplicate)
+        {
+            foreach (var props in data)
+            {
+                if (string.IsNullOrWhiteSpace(props.Key) || store.ContainsKey(props.Key)) continue;
+                count++;
+                SetValue(props.Key, props.Value);
+            }
+        }
+        else
+        {
+            foreach (var props in data)
+            {
+                if (string.IsNullOrWhiteSpace(props.Key)) continue;
+                count++;
+                SetValue(props.Key, props.Value);
+            }
+        }
+
+        return count;
+    }
+
+    /// <summary>
+    /// Sets properties.
+    /// </summary>
+    /// <param name="data">Key value pairs to set.</param>
+    /// <param name="skipDuplicate">true if skip the duplicate properties; otherwise, false.</param>
+    /// <returns>The count to set.</returns>
     public int SetRange(IEnumerable<KeyValuePair<string, JsonArrayNode>> data, bool skipDuplicate = false)
     {
         var count = 0;
@@ -7125,10 +7177,20 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     {
         var keys = store.Keys.ToList();
         store.Clear();
-        if (PropertyChanged == null) return;
-        foreach (var key in keys)
+        if (PropertyChanged != null)
         {
-            PropertyChanged?.Invoke(this, new KeyValueEventArgs<string, BaseJsonValueNode>(key, JsonValues.Undefined));
+            foreach (var key in keys)
+            {
+                PropertyChanged?.Invoke(this, new(key, JsonValues.Undefined));
+            }
+        }
+
+        if (notifyPropertyChanged != null)
+        {
+            foreach (var key in keys)
+            {
+                notifyPropertyChanged?.Invoke(this, new(key));
+            }
         }
     }
 
@@ -7956,26 +8018,38 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     private void AddProperty(string key, BaseJsonValueNode value)
     {
         store.Add(key, value);
-        PropertyChanged?.Invoke(this, new KeyValueEventArgs<string, BaseJsonValueNode>(key, value));
+        PropertyChanged?.Invoke(this, new(key, value));
+        notifyPropertyChanged?.Invoke(this, new(key));
     }
 
     private void SetProperty(string key, BaseJsonValueNode value)
     {
         store[key] = value;
-        PropertyChanged?.Invoke(this, new KeyValueEventArgs<string, BaseJsonValueNode>(key, value));
+        PropertyChanged?.Invoke(this, new(key, value));
+        notifyPropertyChanged?.Invoke(this, new(key));
     }
 
     private bool RemoveProperty(string key)
     {
         var b = store.Remove(key);
-        if (b) PropertyChanged?.Invoke(this, new KeyValueEventArgs<string, BaseJsonValueNode>(key, JsonValues.Undefined));
+        if (b)
+        {
+            PropertyChanged?.Invoke(this, new(key, JsonValues.Undefined));
+            notifyPropertyChanged?.Invoke(this, new(key));
+        }
+
         return b;
     }
 
     private bool RemoveProperty(KeyValuePair<string, BaseJsonValueNode> kvp)
     {
         var b = store.Remove(kvp);
-        if (b) PropertyChanged?.Invoke(this, new KeyValueEventArgs<string, BaseJsonValueNode>(kvp.Key, JsonValues.Undefined));
+        if (b)
+        {
+            PropertyChanged?.Invoke(this, new(kvp.Key, JsonValues.Undefined));
+            notifyPropertyChanged?.Invoke(this, new(kvp.Key));
+        }
+
         return b;
     }
 

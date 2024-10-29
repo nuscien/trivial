@@ -29,11 +29,6 @@ public sealed partial class StyleConsole
     private readonly List<ConsoleText> col = new();
 
     /// <summary>
-    /// Gets or sets a value indicating whether need disable auto flush.
-    /// </summary>
-    public bool IsAutoFlushDisabled { get; set; }
-
-    /// <summary>
     /// Gets the collection of output cache.
     /// </summary>
     /// <returns></returns>
@@ -62,14 +57,14 @@ public sealed partial class StyleConsole
     /// <summary>
     /// Gets the last console text instance in output cache.
     /// </summary>
-    /// <returns></returns>
+    /// <returns>The console text found; or null, if empty.</returns>
     public ConsoleText LastOfOutputCache()
         => col.LastOrDefault();
 
     /// <summary>
     /// Gets the last console text instance in output cache if has, or create one.
     /// </summary>
-    /// <returns></returns>
+    /// <returns>The console text.</returns>
     public ConsoleText LastOrCreateOutputCache()
     {
         var item = col.LastOrDefault();
@@ -194,7 +189,6 @@ public sealed partial class StyleConsole
 
     private void OnAppend()
     {
-        if (!IsAutoFlushDisabled) Flush();
     }
 
     private int BackspaceOutputCache(int count)

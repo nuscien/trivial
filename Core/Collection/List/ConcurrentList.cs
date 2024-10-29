@@ -1,7 +1,11 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.Specialized;
+using System.ComponentModel;
 using System.Linq;
+using System.Reflection;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
 
@@ -13,7 +17,7 @@ namespace Trivial.Collection;
 /// Represents a thread-safe list of objects.
 /// </summary>
 /// <typeparam name="T">The type of the elements to be stored in the list.</typeparam>
-internal class ConcurrentList<T> : IList<T>, ICloneable
+internal class ConcurrentList<T> : IList<T>, ICloneable, INotifyPropertyChanged, INotifyCollectionChanged
 {
     private readonly List<T> list;
     private readonly object locker;
@@ -98,6 +102,25 @@ internal class ConcurrentList<T> : IList<T>, ICloneable
     }
 
     /// <summary>
+    /// Occurs when an item is added, removed, changed, moved, or the entire JSON array is refreshed.
+    /// </summary>
+    public event NotifyCollectionChangedEventHandler CollectionChanged;
+
+    private PropertyChangedEventHandler notifyPropertyChanged;
+    event PropertyChangedEventHandler INotifyPropertyChanged.PropertyChanged
+    {
+        add
+        {
+            notifyPropertyChanged += value;
+        }
+
+        remove
+        {
+            notifyPropertyChanged -= value;
+        }
+    }
+
+    /// <summary>
     /// Adds or removes the event handler raised on item is added or removed.
     /// </summary>
     public event ChangeEventHandler<T> Changed;
@@ -127,7 +150,9 @@ internal class ConcurrentList<T> : IList<T>, ICloneable
                 list[index] = value;
             }
 
-            Changed?.Invoke(this, new ChangeEventArgs<T>(old, value, ChangeMethods.Update, index));
+            OnPropertyChanged(true);
+            Changed?.Invoke(this, new(old, value, ChangeMethods.Update, index));
+            CollectionChanged?.Invoke(this, new(NotifyCollectionChangedAction.Remove, value, old, index));
         }
     }
 
@@ -159,7 +184,9 @@ internal class ConcurrentList<T> : IList<T>, ICloneable
                 list[i] = value;
             }
 
+            OnPropertyChanged(true);
             Changed?.Invoke(this, new ChangeEventArgs<T>(old, value, ChangeMethods.Update, i));
+            CollectionChanged?.Invoke(this, new(NotifyCollectionChangedAction.Remove, value, old, i));
         }
     }
 #endif
@@ -280,7 +307,9 @@ internal class ConcurrentList<T> : IList<T>, ICloneable
             list.Add(item);
         }
 
+        OnPropertyChanged();
         Changed?.Invoke(this, new ChangeEventArgs<T>(default, item, ChangeMethods.Add, count));
+        CollectionChanged?.Invoke(this, new(NotifyCollectionChangedAction.Add, item, count));
     }
 
     /// <summary>
@@ -290,13 +319,14 @@ internal class ConcurrentList<T> : IList<T>, ICloneable
     public void AddRange(IEnumerable<T> collection)
     {
         if (collection is null) return;
-        if (Changed == null)
+        if (Changed == null && CollectionChanged == null)
         {
             lock (locker)
             {
                 list.AddRange(collection);
             }
 
+            OnPropertyChanged();
             return;
         }
 
@@ -308,9 +338,12 @@ internal class ConcurrentList<T> : IList<T>, ICloneable
             list.AddRange(copied);
         }
 
+        OnPropertyChanged();
         for (var i = 0; i < copied.Count; i++)
         {
-            Changed?.Invoke(this, new ChangeEventArgs<T>(default, copied[i], ChangeMethods.Add, i + count));
+            var j = i + count;
+            Changed?.Invoke(this, new(default, copied[i], ChangeMethods.Add, j));
+            CollectionChanged?.Invoke(this, new(NotifyCollectionChangedAction.Add, copied[i], j));
         }
     }
 
@@ -324,10 +357,12 @@ internal class ConcurrentList<T> : IList<T>, ICloneable
             list.Clear();
         }
 
+        OnPropertyChanged();
+        CollectionChanged?.Invoke(this, new(NotifyCollectionChangedAction.Reset));
         if (copied == null || Changed == null) return;
         for (var i = 0; i < copied.Count; i++)
         {
-            Changed?.Invoke(this, new ChangeEventArgs<T>(copied[i], default, ChangeMethods.Remove, i));
+            Changed?.Invoke(this, new(copied[i], default, ChangeMethods.Remove, i));
         }
     }
 
@@ -453,7 +488,9 @@ internal class ConcurrentList<T> : IList<T>, ICloneable
             list.Insert(index, item);
         }
 
-        Changed?.Invoke(this, new ChangeEventArgs<T>(default, item, ChangeMethods.Add, index));
+        OnPropertyChanged();
+        Changed?.Invoke(this, new(default, item, ChangeMethods.Add, index));
+        CollectionChanged?.Invoke(this, new(NotifyCollectionChangedAction.Add, item, index));
     }
 
     /// <summary>
@@ -470,11 +507,13 @@ internal class ConcurrentList<T> : IList<T>, ICloneable
             list.InsertRange(index, collection);
         }
 
-        if (Changed == null) return;
+        OnPropertyChanged();
+        if (Changed == null && CollectionChanged == null) return;
         var copied = new List<T>(collection);
         foreach (var item in copied)
         {
-            Changed?.Invoke(this, new ChangeEventArgs<T>(default, item, ChangeMethods.Add, index));
+            Changed?.Invoke(this, new(default, item, ChangeMethods.Add, index));
+            CollectionChanged?.Invoke(this, new(NotifyCollectionChangedAction.Add, item, index));
         }
     }
 
@@ -484,24 +523,31 @@ internal class ConcurrentList<T> : IList<T>, ICloneable
         var i = -1;
         lock (locker)
         {
-            if (Changed != null) i = list.IndexOf(item);
+            if (Changed != null || CollectionChanged != null) i = list.IndexOf(item);
             if (!list.Remove(item)) return false;
         }
 
-        if (i >= 0) Changed?.Invoke(this, new ChangeEventArgs<T>(item, default, ChangeMethods.Remove, i));
+        OnPropertyChanged();
+        if (i >= 0)
+        {
+            Changed?.Invoke(this, new(item, default, ChangeMethods.Remove, i));
+            CollectionChanged?.Invoke(this, new(NotifyCollectionChangedAction.Remove, item, i));
+        }
+
         return true;
     }
 
     /// <inheritdoc />
     public void RemoveAt(int index)
     {
-        if (Changed == null)
+        if (Changed == null && CollectionChanged == null)
         {
             lock (locker)
             {
                 list.RemoveAt(index);
             }
 
+            OnPropertyChanged();
             return;
         }
 
@@ -512,7 +558,9 @@ internal class ConcurrentList<T> : IList<T>, ICloneable
             list.RemoveAt(index);
         }
 
-        Changed?.Invoke(this, new ChangeEventArgs<T>(item, default, ChangeMethods.Remove, index));
+        OnPropertyChanged();
+        Changed?.Invoke(this, new(item, default, ChangeMethods.Remove, index));
+        CollectionChanged?.Invoke(this, new(NotifyCollectionChangedAction.Remove, item, index));
     }
 
     /// <summary>
@@ -527,15 +575,17 @@ internal class ConcurrentList<T> : IList<T>, ICloneable
         var result = 0;
         lock (locker)
         {
-            if (Changed != null) copied = list.Where(ele => match(ele)).ToList();
+            if (Changed != null || CollectionChanged != null) copied = list.Where(ele => match(ele)).ToList();
             result = list.RemoveAll(match);
         }
 
-        if (Changed != null && copied != null)
+        OnPropertyChanged();
+        if ((Changed != null || CollectionChanged != null) && copied != null)
         {
             for (var i = 0; i < copied.Count; i++)
             {
-                Changed?.Invoke(this, new ChangeEventArgs<T>(copied[i], default, ChangeMethods.Remove, i));
+                Changed?.Invoke(this, new(copied[i], default, ChangeMethods.Remove, i));
+                CollectionChanged?.Invoke(this, new(NotifyCollectionChangedAction.Remove, copied[i], i));
             }
         }
 
@@ -563,11 +613,13 @@ internal class ConcurrentList<T> : IList<T>, ICloneable
             list.RemoveAll(match);
         }
 
+        OnPropertyChanged();
         itemsRemoved = copied;
-        if (Changed == null || copied == null)
+        if ((Changed == null && CollectionChanged == null) || copied == null) return;
         for (var i = 0; i < copied.Count; i++)
         {
             Changed?.Invoke(this, new ChangeEventArgs<T>(copied[i], default, ChangeMethods.Remove, i));
+            CollectionChanged?.Invoke(this, new(NotifyCollectionChangedAction.Remove, copied[i], i));
         }
     }
 
@@ -583,14 +635,16 @@ internal class ConcurrentList<T> : IList<T>, ICloneable
         List<T> copied = null;
         lock (locker)
         {
-            if (Changed != null) copied = list.Skip(index).Take(count).ToList();
+            if (Changed != null || CollectionChanged != null) copied = list.Skip(index).Take(count).ToList();
             list.RemoveRange(index, count);
         }
 
-        if (Changed == null || copied == null) return;
+        OnPropertyChanged();
+        if ((Changed == null && CollectionChanged == null) || copied == null) return;
         for (var i = 0; i < copied.Count; i++)
         {
             Changed?.Invoke(this, new ChangeEventArgs<T>(copied[i], default, ChangeMethods.Remove, i));
+            CollectionChanged?.Invoke(this, new(NotifyCollectionChangedAction.Remove, copied[i], i));
         }
     }
 
@@ -649,4 +703,10 @@ internal class ConcurrentList<T> : IList<T>, ICloneable
     /// <inheritdoc />
     object ICloneable.Clone()
         => Clone();
+
+    private void OnPropertyChanged(bool onlyItemUpdate = false)
+    {
+        if (!onlyItemUpdate) notifyPropertyChanged?.Invoke(this, new(nameof(Count)));
+        notifyPropertyChanged?.Invoke(this, new("Item[]"));
+    }
 }

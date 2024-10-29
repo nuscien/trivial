@@ -24,7 +24,7 @@ public interface IJsonNumberNode : IJsonValueNode, IEquatable<IJsonNumberNode>, 
 /// Represents a specific JSON integer number value.
 /// </summary>
 [System.Text.Json.Serialization.JsonConverter(typeof(JsonObjectNodeConverter))]
-public class JsonIntegerNode : BaseJsonValueNode<long>, IJsonNumberNode, IComparable<JsonIntegerNode>, IComparable<JsonDoubleNode>, IComparable<uint>, IComparable<int>, IComparable<long>, IComparable<double>, IComparable<float>, IEquatable<uint>, IEquatable<int>, IEquatable<float>, IEquatable<double>, IFormattable
+public sealed class JsonIntegerNode : BaseJsonValueNode<long>, IJsonNumberNode, IComparable<JsonIntegerNode>, IComparable<JsonDoubleNode>, IComparable<uint>, IComparable<int>, IComparable<long>, IComparable<double>, IComparable<float>, IEquatable<uint>, IEquatable<int>, IEquatable<float>, IEquatable<double>, IFormattable
 {
     /// <summary>
     /// Maximum safe integer in JavaScript and JSON.
@@ -1200,7 +1200,7 @@ public class JsonIntegerNode : BaseJsonValueNode<long>, IJsonNumberNode, ICompar
 /// Represents a specific JSON double float number value.
 /// </summary>
 [System.Text.Json.Serialization.JsonConverter(typeof(JsonObjectNodeConverter))]
-public class JsonDoubleNode : BaseJsonValueNode<double>, IJsonNumberNode, IComparable<JsonIntegerNode>, IComparable<JsonDoubleNode>, IComparable<JsonDecimalNode>, IComparable<uint>, IComparable<int>, IComparable<long>, IComparable<double>, IComparable<float>, IComparable<decimal>, IEquatable<uint>, IEquatable<int>, IEquatable<long>, IEquatable<float>, IEquatable<decimal>, IFormattable
+public sealed class JsonDoubleNode : BaseJsonValueNode<double>, IJsonNumberNode, IComparable<JsonIntegerNode>, IComparable<JsonDoubleNode>, IComparable<JsonDecimalNode>, IComparable<uint>, IComparable<int>, IComparable<long>, IComparable<double>, IComparable<float>, IComparable<decimal>, IEquatable<uint>, IEquatable<int>, IEquatable<long>, IEquatable<float>, IEquatable<decimal>, IFormattable
 {
     /// <summary>
     /// Initializes a new instance of the JsonDoubleNode class.
@@ -2548,7 +2548,7 @@ public class JsonDoubleNode : BaseJsonValueNode<double>, IJsonNumberNode, ICompa
 /// Represents a specific JSON decimal float number value.
 /// </summary>
 [System.Text.Json.Serialization.JsonConverter(typeof(JsonObjectNodeConverter))]
-public class JsonDecimalNode : BaseJsonValueNode<decimal>, IJsonNumberNode, IComparable<JsonIntegerNode>, IComparable<JsonDoubleNode>, IComparable<JsonDecimalNode>, IComparable<uint>, IComparable<int>, IComparable<long>, IComparable<double>, IComparable<float>, IComparable<decimal>, IEquatable<uint>, IEquatable<int>, IEquatable<long>, IEquatable<double>, IEquatable<float>, IFormattable
+public sealed class JsonDecimalNode : BaseJsonValueNode<decimal>, IJsonNumberNode, IComparable<JsonIntegerNode>, IComparable<JsonDoubleNode>, IComparable<JsonDecimalNode>, IComparable<uint>, IComparable<int>, IComparable<long>, IComparable<double>, IComparable<float>, IComparable<decimal>, IEquatable<uint>, IEquatable<int>, IEquatable<long>, IEquatable<double>, IEquatable<float>, IFormattable
 {
     /// <summary>
     /// Initializes a new instance of the JsonDecimalNode class.

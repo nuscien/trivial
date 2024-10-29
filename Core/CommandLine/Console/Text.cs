@@ -510,6 +510,42 @@ public class ConsoleText
     public int Length => Content.Length;
 
     /// <summary>
+    /// Clears the content.
+    /// </summary>
+    public void ClearContent()
+        => Content.Clear();
+
+    /// <summary>
+    /// Appends a copy of the specified string to this instance.
+    /// </summary>
+    /// <param name="s">The string to append.</param>
+    /// <exception cref="ArgumentOutOfRangeException">Enlarging the value of this instance would exceed System.Text.StringBuilder.MaxCapacity.</exception>
+    public void Append(string s)
+        => Content.Append(s);
+
+    /// <summary>
+    /// Appends a copy of the specified string to this instance.
+    /// </summary>
+    /// <param name="s">The string to append.</param>
+    /// <param name="start">The starting position of the substring within value.</param>
+    /// <param name="count">The number of characters in value to append.</param>
+    /// <exception cref="ArgumentNullException">value is null, and startIndex and count are not zero.</exception>
+    /// <exception cref="ArgumentOutOfRangeException">count less than zero. -or- startIndex less than zero. -or- startIndex + count is greater than the length of value. -or- Enlarging the value of this instance would exceed System.Text.StringBuilder.MaxCapacity.</exception>
+    public void Append(string s, int start, int count)
+        => Content.Append(s, start, count);
+
+    /// <summary>
+    /// Appends the string returned by processing a composite format string, which contains zero or more format items, to this instance. Each format item is replaced by the string representation of a corresponding argument in a parameter array.
+    /// </summary>
+    /// <param name="format">A composite format string.</param>
+    /// <param name="args">An array of objects to format.</param>
+    /// <exception cref="ArgumentNullException">format or args is null.</exception>
+    /// <exception cref="FormatException">format is invalid. -or- The index of a format item is less than 0 (zero), or greater than or equal to the length of the args array.</exception>
+    /// <exception cref="ArgumentOutOfRangeException">The length of the expanded string would exceed System.Text.StringBuilder.MaxCapacity.</exception>
+    public void AppendFormat(string format, params object[] args)
+        => Content.AppendFormat(format, args);
+
+    /// <summary>
     /// Returns a string with ANSI escape sequences that represents the content.
     /// </summary>
     /// <returns>A string that represents the content.</returns>

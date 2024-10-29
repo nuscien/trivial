@@ -164,6 +164,7 @@ public static partial class WebFormat
             "odm" => "application/vnd.oasis.opendocument.text-master",
             "ott" => "application/vnd.oasis.opendocument.text-template",
             "oth" => "application/vnd.oasis.opendocument.text-web",
+            "oxt" => "application/vnd.openofficeorg.extension",
 
             // Image
             "apng" => "image/apng",
@@ -210,6 +211,7 @@ public static partial class WebFormat
             "mka" => "audio/x-matroska",
             "m3u" => "audio/x-mpegurl",
             "wax" => "audio/x-ms-wax",
+            "mlp" => "application/vnd.dolby.mlp",
 
             // Video
             "mp4" or "mp4v" or "mpg4" => "video/mp4",
@@ -269,6 +271,7 @@ public static partial class WebFormat
             "etx" => "text/x-setext",
             "hdml" => "text/x-hdml",
             "uls" => "text/iuls",
+            "pml" => "application/vnd.ctc-posml",
 
             // Web
             "json" or "map" or "jsonc" => JsonMIME,
@@ -286,7 +289,7 @@ public static partial class WebFormat
             "htm" or "html" or "shtml" or "hta" or "hxt" => HtmlMIME,
             "htt" => "text/webviewhtml",
             "ink" or "inkml" => "application/inkml+xml",
-            "js" or "jsx" or "esm" => JavaScriptMIME,
+            "js" or "jsx" or "mjs" or "esm" => JavaScriptMIME,
             "uri" or "uris" or "urls" => "text/uri-list",
             "xaml" => "application/xaml+xml",
             "vbs" => "text/vbscript",
@@ -300,6 +303,8 @@ public static partial class WebFormat
             "ics" or "ifb" => "text/calendar",
             "me" => "application/x-troff-me",
             "mht" or "mhtml" or "nws" or "eml" => "message/rfc822",
+            "pcurl" => "application/vnd.curl.pcurl",
+            "car" => "application/vnd.curl.car",
 
             // Credential
             "pem" => "application/x-x509-ca-cert",
@@ -330,6 +335,7 @@ public static partial class WebFormat
             "pfa" or "pfb" or "pfm" or "afm" => "application/x-font-type1",
             "woff" => "font/woff",
             "woff2" => "font/woff2",
+            "ppd" => "application/vnd.cups-ppd",
 
             // Programming
             "java" => "text/x-java-source",
@@ -400,6 +406,7 @@ public static partial class WebFormat
             "wmd" => "application/x-ms-wmd",
             "xap" => "application/x-silverlight-app",
             "xbap" => "application/x-ms-xbap",
+            "mts" => "model/vnd.mts",
             _ => null
         };
     }

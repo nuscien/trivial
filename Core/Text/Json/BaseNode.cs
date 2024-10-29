@@ -81,6 +81,9 @@ public abstract class BaseJsonValueNode : IJsonValueNode, IEquatable<IJsonValueN
         catch (ArgumentException)
         {
         }
+        catch (FormatException)
+        {
+        }
         catch (ArithmeticException)
         {
         }
@@ -193,6 +196,9 @@ public abstract class BaseJsonValueNode : IJsonValueNode, IEquatable<IJsonValueN
         catch (ArgumentException)
         {
         }
+        catch (FormatException)
+        {
+        }
         catch (JsonException)
         {
         }
@@ -251,6 +257,10 @@ public abstract class BaseJsonValueNode : IJsonValueNode, IEquatable<IJsonValueN
         catch (NotImplementedException ex)
         {
             exception = new NotSupportedException("The type is not supported.", ex);
+        }
+        catch (FormatException ex)
+        {
+            exception = new InvalidOperationException(ex.Message, ex);
         }
         catch (AggregateException ex)
         {

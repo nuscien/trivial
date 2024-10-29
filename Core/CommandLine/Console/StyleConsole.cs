@@ -117,7 +117,7 @@ public sealed partial class StyleConsole
         if (count < 1)
         {
             if (count == -1 && !doNotRemoveOutput)
-                WriteImmediately(" \b ");
+                Write(" \b ");
             return;
         }
 
@@ -297,7 +297,7 @@ public sealed partial class StyleConsole
                     str.RemoveAt(str.Length - 1);
                     if (normalMode)
                     {
-                        Write(' ');
+                        Append(' ');
                         Backspace(replaceChar.HasValue ? 2 : 1);
                     }
 
@@ -317,7 +317,6 @@ public sealed partial class StyleConsole
                             Write(foreground.Value, replaceChar.Value);
                         else
                             Write(replaceChar.Value);
-                        Flush();
                     }
 
                     break;
@@ -364,7 +363,7 @@ public sealed partial class StyleConsole
                         if (y > 0)
                         {
                             Console.CursorTop = Math.Min(CursorTop + y, BufferHeight - 1);
-                            WriteImmediately(Environment.NewLine);
+                            Write(Environment.NewLine);
                         }
                         else
                         {
@@ -415,7 +414,7 @@ public sealed partial class StyleConsole
                     col.Add(new ConsoleText(Environment.NewLine));
                 break;
             default:
-                WriteImmediately(AnsiCodeGenerator.MoveCursorBy(x, y));
+                Write(AnsiCodeGenerator.MoveCursorBy(x, y));
                 break;
         }
 
@@ -457,7 +456,7 @@ public sealed partial class StyleConsole
                 catch (ArgumentOutOfRangeException)
                 {
                     Console.CursorTop = Math.Min(y, BufferHeight - 1);
-                    WriteImmediately(Environment.NewLine);
+                    Write(Environment.NewLine);
                 }
                 catch (ArgumentException)
                 {
@@ -501,7 +500,7 @@ public sealed partial class StyleConsole
             case Modes.Text:
                 break;
             default:
-                WriteImmediately(AnsiCodeGenerator.MoveCursorTo(x, y));
+                Write(AnsiCodeGenerator.MoveCursorTo(x, y));
                 break;
         }
 
@@ -541,7 +540,7 @@ public sealed partial class StyleConsole
                 {
                 }
 
-                WriteImmediately(AnsiCodeGenerator.Clear(area));
+                Write(AnsiCodeGenerator.Clear(area));
                 break;
             case Modes.Text:
                 switch (area)
@@ -553,13 +552,13 @@ public sealed partial class StyleConsole
                     case RelativeAreas.None:
                         break;
                     default:
-                        Write("\b \b");
+                        Append("\b \b");
                         break;
                 }
 
                 break;
             default:
-                WriteImmediately(AnsiCodeGenerator.Clear(area));
+                Write(AnsiCodeGenerator.Clear(area));
                 break;
         }
 
