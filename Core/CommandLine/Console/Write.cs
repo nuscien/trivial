@@ -284,6 +284,102 @@ public sealed partial class StyleConsole
     /// Note it may not flush immediately.
     /// </summary>
     /// <param name="number">A number to output.</param>
+    public void Append(short number)
+    {
+        col.Add(new ConsoleText(number.ToString("g")));
+        OnAppend();
+    }
+
+    /// <summary>
+    /// Writes the specified number to the standard output stream.
+    /// Note it may not flush immediately.
+    /// </summary>
+    /// <param name="style">The content style.</param>
+    /// <param name="number">A number to output.</param>
+    public void Append(ConsoleTextStyle style, short number)
+    {
+        col.Add(new ConsoleText(number.ToString("g"), style));
+        OnAppend();
+    }
+
+    /// <summary>
+    /// Writes the specified number to the standard output stream.
+    /// Note it may not flush immediately.
+    /// </summary>
+    /// <param name="foreground">The foreground color.</param>
+    /// <param name="number">A number to output.</param>
+    public void Append(ConsoleColor foreground, short number)
+    {
+        col.Add(new ConsoleText(number.ToString("g"), foreground));
+        OnAppend();
+    }
+
+    /// <summary>
+    /// Writes the specified number to the standard output stream.
+    /// Note it may not flush immediately.
+    /// </summary>
+    /// <param name="foreground">The foreground color.</param>
+    /// <param name="background">The background color.</param>
+    /// <param name="number">A number to output.</param>
+    public void Append(ConsoleColor? foreground, ConsoleColor? background, short number)
+    {
+        col.Add(new ConsoleText(number.ToString("g"), foreground, background));
+        OnAppend();
+    }
+
+    /// <summary>
+    /// Writes the specified number to the standard output stream.
+    /// Note it may not flush immediately.
+    /// </summary>
+    /// <param name="number">A number to output.</param>
+    public void Append(ushort number)
+    {
+        col.Add(new ConsoleText(number.ToString("g")));
+        OnAppend();
+    }
+
+    /// <summary>
+    /// Writes the specified number to the standard output stream.
+    /// Note it may not flush immediately.
+    /// </summary>
+    /// <param name="style">The content style.</param>
+    /// <param name="number">A number to output.</param>
+    public void Append(ConsoleTextStyle style, ushort number)
+    {
+        col.Add(new ConsoleText(number.ToString("g"), style));
+        OnAppend();
+    }
+
+    /// <summary>
+    /// Writes the specified number to the standard output stream.
+    /// Note it may not flush immediately.
+    /// </summary>
+    /// <param name="foreground">The foreground color.</param>
+    /// <param name="number">A number to output.</param>
+    public void Append(ConsoleColor foreground, ushort number)
+    {
+        col.Add(new ConsoleText(number.ToString("g"), foreground));
+        OnAppend();
+    }
+
+    /// <summary>
+    /// Writes the specified number to the standard output stream.
+    /// Note it may not flush immediately.
+    /// </summary>
+    /// <param name="foreground">The foreground color.</param>
+    /// <param name="background">The background color.</param>
+    /// <param name="number">A number to output.</param>
+    public void Append(ConsoleColor? foreground, ConsoleColor? background, ushort number)
+    {
+        col.Add(new ConsoleText(number.ToString("g"), foreground, background));
+        OnAppend();
+    }
+
+    /// <summary>
+    /// Writes the specified number to the standard output stream.
+    /// Note it may not flush immediately.
+    /// </summary>
+    /// <param name="number">A number to output.</param>
     public void Append(int number)
     {
         col.Add(new ConsoleText(number.ToString("g")));
@@ -389,9 +485,70 @@ public sealed partial class StyleConsole
     /// Note it may not flush immediately.
     /// </summary>
     /// <param name="number">A number to output.</param>
+    public void Append(uint number)
+    {
+        col.Add(new ConsoleText(number.ToString("g")));
+        OnAppend();
+    }
+
+    /// <summary>
+    /// Writes the specified number to the standard output stream.
+    /// Note it may not flush immediately.
+    /// </summary>
+    /// <param name="style">The content style.</param>
+    /// <param name="number">A number to output.</param>
+    public void Append(ConsoleTextStyle style, uint number)
+    {
+        col.Add(new ConsoleText(number.ToString("g"), style));
+        OnAppend();
+    }
+
+    /// <summary>
+    /// Writes the specified number to the standard output stream.
+    /// Note it may not flush immediately.
+    /// </summary>
+    /// <param name="foreground">The foreground color.</param>
+    /// <param name="number">A number to output.</param>
+    public void Append(ConsoleColor foreground, uint number)
+    {
+        col.Add(new ConsoleText(number.ToString("g"), foreground));
+        OnAppend();
+    }
+
+    /// <summary>
+    /// Writes the specified number to the standard output stream.
+    /// Note it may not flush immediately.
+    /// </summary>
+    /// <param name="foreground">The foreground color.</param>
+    /// <param name="background">The background color.</param>
+    /// <param name="number">A number to output.</param>
+    public void Append(ConsoleColor? foreground, ConsoleColor? background, uint number)
+    {
+        col.Add(new ConsoleText(number.ToString("g"), foreground, background));
+        OnAppend();
+    }
+
+    /// <summary>
+    /// Writes the specified number to the standard output stream.
+    /// Note it may not flush immediately.
+    /// </summary>
+    /// <param name="number">A number to output.</param>
     public void Append(long number)
     {
         col.Add(new ConsoleText(number.ToString("g")));
+        OnAppend();
+    }
+
+    /// <summary>
+    /// Writes the specified number to the standard output stream.
+    /// Note it may not flush immediately.
+    /// </summary>
+    /// <param name="number">A number to output.</param>
+    /// <param name="format">A standard or custom numeric format string.</param>
+    /// <exception cref="FormatException">format is invalid or not supported.</exception>
+    public void Append(long number, string format)
+    {
+        col.Add(new ConsoleText(number.ToString(format)));
         OnAppend();
     }
 
@@ -404,6 +561,20 @@ public sealed partial class StyleConsole
     public void Append(ConsoleTextStyle style, long number)
     {
         col.Add(new ConsoleText(number.ToString("g"), style));
+        OnAppend();
+    }
+
+    /// <summary>
+    /// Writes the specified number to the standard output stream.
+    /// Note it may not flush immediately.
+    /// </summary>
+    /// <param name="style">The content style.</param>
+    /// <param name="number">A number to output.</param>
+    /// <param name="format">A standard or custom numeric format string.</param>
+    /// <exception cref="FormatException">format is invalid or not supported.</exception>
+    public void Append(ConsoleTextStyle style, long number, string format)
+    {
+        col.Add(new ConsoleText(number.ToString(format), style));
         OnAppend();
     }
 
@@ -424,11 +595,40 @@ public sealed partial class StyleConsole
     /// Note it may not flush immediately.
     /// </summary>
     /// <param name="foreground">The foreground color.</param>
+    /// <param name="number">A number to output.</param>
+    /// <param name="format">A standard or custom numeric format string.</param>
+    /// <exception cref="FormatException">format is invalid or not supported.</exception>
+    public void Append(ConsoleColor foreground, long number, string format)
+    {
+        col.Add(new ConsoleText(number.ToString(format), foreground));
+        OnAppend();
+    }
+
+    /// <summary>
+    /// Writes the specified number to the standard output stream.
+    /// Note it may not flush immediately.
+    /// </summary>
+    /// <param name="foreground">The foreground color.</param>
     /// <param name="background">The background color.</param>
     /// <param name="number">A number to output.</param>
     public void Append(ConsoleColor? foreground, ConsoleColor? background, long number)
     {
         col.Add(new ConsoleText(number.ToString("g"), foreground, background));
+        OnAppend();
+    }
+
+    /// <summary>
+    /// Writes the specified number to the standard output stream.
+    /// Note it may not flush immediately.
+    /// </summary>
+    /// <param name="foreground">The foreground color.</param>
+    /// <param name="background">The background color.</param>
+    /// <param name="number">A number to output.</param>
+    /// <param name="format">A standard or custom numeric format string.</param>
+    /// <exception cref="FormatException">format is invalid or not supported.</exception>
+    public void Append(ConsoleColor? foreground, ConsoleColor? background, long number, string format)
+    {
+        col.Add(new ConsoleText(number.ToString(format), foreground, background));
         OnAppend();
     }
 
@@ -480,6 +680,104 @@ public sealed partial class StyleConsole
         OnAppend();
     }
 
+#if NET8_0_OR_GREATER
+    /// <summary>
+    /// Writes the specified number to the standard output stream.
+    /// Note it may not flush immediately.
+    /// </summary>
+    /// <param name="number">A number to output.</param>
+    public void Append(Int128 number)
+    {
+        col.Add(new ConsoleText(number.ToString("g")));
+        OnAppend();
+    }
+
+    /// <summary>
+    /// Writes the specified number to the standard output stream.
+    /// Note it may not flush immediately.
+    /// </summary>
+    /// <param name="style">The content style.</param>
+    /// <param name="number">A number to output.</param>
+    public void Append(ConsoleTextStyle style, Int128 number)
+    {
+        col.Add(new ConsoleText(number.ToString("g"), style));
+        OnAppend();
+    }
+
+    /// <summary>
+    /// Writes the specified number to the standard output stream.
+    /// Note it may not flush immediately.
+    /// </summary>
+    /// <param name="foreground">The foreground color.</param>
+    /// <param name="number">A number to output.</param>
+    public void Append(ConsoleColor foreground, Int128 number)
+    {
+        col.Add(new ConsoleText(number.ToString("g"), foreground));
+        OnAppend();
+    }
+
+    /// <summary>
+    /// Writes the specified number to the standard output stream.
+    /// Note it may not flush immediately.
+    /// </summary>
+    /// <param name="foreground">The foreground color.</param>
+    /// <param name="background">The background color.</param>
+    /// <param name="number">A number to output.</param>
+    public void Append(ConsoleColor? foreground, ConsoleColor? background, Int128 number)
+    {
+        col.Add(new ConsoleText(number.ToString("g"), foreground, background));
+        OnAppend();
+    }
+
+    /// <summary>
+    /// Writes the specified number to the standard output stream.
+    /// Note it may not flush immediately.
+    /// </summary>
+    /// <param name="number">A number to output.</param>
+    public void Append(UInt128 number)
+    {
+        col.Add(new ConsoleText(number.ToString("g")));
+        OnAppend();
+    }
+
+    /// <summary>
+    /// Writes the specified number to the standard output stream.
+    /// Note it may not flush immediately.
+    /// </summary>
+    /// <param name="style">The content style.</param>
+    /// <param name="number">A number to output.</param>
+    public void Append(ConsoleTextStyle style, UInt128 number)
+    {
+        col.Add(new ConsoleText(number.ToString("g"), style));
+        OnAppend();
+    }
+
+    /// <summary>
+    /// Writes the specified number to the standard output stream.
+    /// Note it may not flush immediately.
+    /// </summary>
+    /// <param name="foreground">The foreground color.</param>
+    /// <param name="number">A number to output.</param>
+    public void Append(ConsoleColor foreground, UInt128 number)
+    {
+        col.Add(new ConsoleText(number.ToString("g"), foreground));
+        OnAppend();
+    }
+
+    /// <summary>
+    /// Writes the specified number to the standard output stream.
+    /// Note it may not flush immediately.
+    /// </summary>
+    /// <param name="foreground">The foreground color.</param>
+    /// <param name="background">The background color.</param>
+    /// <param name="number">A number to output.</param>
+    public void Append(ConsoleColor? foreground, ConsoleColor? background, UInt128 number)
+    {
+        col.Add(new ConsoleText(number.ToString("g"), foreground, background));
+        OnAppend();
+    }
+#endif
+
     /// <summary>
     /// Writes the specified number to the standard output stream.
     /// Note it may not flush immediately.
@@ -495,11 +793,38 @@ public sealed partial class StyleConsole
     /// Writes the specified number to the standard output stream.
     /// Note it may not flush immediately.
     /// </summary>
+    /// <param name="number">A number to output.</param>
+    /// <param name="format">A standard or custom numeric format string.</param>
+    /// <exception cref="FormatException">format is invalid or not supported.</exception>
+    public void Append(float number, string format)
+    {
+        col.Add(new ConsoleText(number.ToString(format)));
+        OnAppend();
+    }
+
+    /// <summary>
+    /// Writes the specified number to the standard output stream.
+    /// Note it may not flush immediately.
+    /// </summary>
     /// <param name="style">The content style.</param>
     /// <param name="number">A number to output.</param>
     public void Append(ConsoleTextStyle style, float number)
     {
         col.Add(new ConsoleText(number.ToString("g"), style));
+        OnAppend();
+    }
+
+    /// <summary>
+    /// Writes the specified number to the standard output stream.
+    /// Note it may not flush immediately.
+    /// </summary>
+    /// <param name="style">The content style.</param>
+    /// <param name="number">A number to output.</param>
+    /// <param name="format">A standard or custom numeric format string.</param>
+    /// <exception cref="FormatException">format is invalid or not supported.</exception>
+    public void Append(ConsoleTextStyle style, float number, string format)
+    {
+        col.Add(new ConsoleText(number.ToString(format), style));
         OnAppend();
     }
 
@@ -520,11 +845,40 @@ public sealed partial class StyleConsole
     /// Note it may not flush immediately.
     /// </summary>
     /// <param name="foreground">The foreground color.</param>
+    /// <param name="number">A number to output.</param>
+    /// <param name="format">A standard or custom numeric format string.</param>
+    /// <exception cref="FormatException">format is invalid or not supported.</exception>
+    public void Append(ConsoleColor foreground, float number, string format)
+    {
+        col.Add(new ConsoleText(number.ToString(format), foreground));
+        OnAppend();
+    }
+
+    /// <summary>
+    /// Writes the specified number to the standard output stream.
+    /// Note it may not flush immediately.
+    /// </summary>
+    /// <param name="foreground">The foreground color.</param>
     /// <param name="background">The background color.</param>
     /// <param name="number">A number to output.</param>
     public void Append(ConsoleColor? foreground, ConsoleColor? background, float number)
     {
         col.Add(new ConsoleText(number.ToString("g"), foreground, background));
+        OnAppend();
+    }
+
+    /// <summary>
+    /// Writes the specified number to the standard output stream.
+    /// Note it may not flush immediately.
+    /// </summary>
+    /// <param name="foreground">The foreground color.</param>
+    /// <param name="background">The background color.</param>
+    /// <param name="number">A number to output.</param>
+    /// <param name="format">A standard or custom numeric format string.</param>
+    /// <exception cref="FormatException">format is invalid or not supported.</exception>
+    public void Append(ConsoleColor? foreground, ConsoleColor? background, float number, string format)
+    {
+        col.Add(new ConsoleText(number.ToString(format), foreground, background));
         OnAppend();
     }
 
@@ -543,11 +897,38 @@ public sealed partial class StyleConsole
     /// Writes the specified number to the standard output stream.
     /// Note it may not flush immediately.
     /// </summary>
+    /// <param name="number">A number to output.</param>
+    /// <param name="format">A standard or custom numeric format string.</param>
+    /// <exception cref="FormatException">format is invalid or not supported.</exception>
+    public void Append(decimal number, string format)
+    {
+        col.Add(new ConsoleText(number.ToString(format)));
+        OnAppend();
+    }
+
+    /// <summary>
+    /// Writes the specified number to the standard output stream.
+    /// Note it may not flush immediately.
+    /// </summary>
     /// <param name="style">The content style.</param>
     /// <param name="number">A number to output.</param>
     public void Append(ConsoleTextStyle style, decimal number)
     {
         col.Add(new ConsoleText(number.ToString("g"), style));
+        OnAppend();
+    }
+
+    /// <summary>
+    /// Writes the specified number to the standard output stream.
+    /// Note it may not flush immediately.
+    /// </summary>
+    /// <param name="style">The content style.</param>
+    /// <param name="number">A number to output.</param>
+    /// <param name="format">A standard or custom numeric format string.</param>
+    /// <exception cref="FormatException">format is invalid or not supported.</exception>
+    public void Append(ConsoleTextStyle style, decimal number, string format)
+    {
+        col.Add(new ConsoleText(number.ToString(format), style));
         OnAppend();
     }
 
@@ -568,11 +949,40 @@ public sealed partial class StyleConsole
     /// Note it may not flush immediately.
     /// </summary>
     /// <param name="foreground">The foreground color.</param>
+    /// <param name="number">A number to output.</param>
+    /// <param name="format">A standard or custom numeric format string.</param>
+    /// <exception cref="FormatException">format is invalid or not supported.</exception>
+    public void Append(ConsoleColor foreground, decimal number, string format)
+    {
+        col.Add(new ConsoleText(number.ToString(format), foreground));
+        OnAppend();
+    }
+
+    /// <summary>
+    /// Writes the specified number to the standard output stream.
+    /// Note it may not flush immediately.
+    /// </summary>
+    /// <param name="foreground">The foreground color.</param>
     /// <param name="background">The background color.</param>
     /// <param name="number">A number to output.</param>
     public void Append(ConsoleColor? foreground, ConsoleColor? background, decimal number)
     {
         col.Add(new ConsoleText(number.ToString("g"), foreground, background));
+        OnAppend();
+    }
+
+    /// <summary>
+    /// Writes the specified number to the standard output stream.
+    /// Note it may not flush immediately.
+    /// </summary>
+    /// <param name="foreground">The foreground color.</param>
+    /// <param name="background">The background color.</param>
+    /// <param name="number">A number to output.</param>
+    /// <param name="format">A standard or custom numeric format string.</param>
+    /// <exception cref="FormatException">format is invalid or not supported.</exception>
+    public void Append(ConsoleColor? foreground, ConsoleColor? background, decimal number, string format)
+    {
+        col.Add(new ConsoleText(number.ToString(format), foreground, background));
         OnAppend();
     }
 
@@ -989,6 +1399,37 @@ public sealed partial class StyleConsole
     /// Writes the specified string value to the standard output stream.
     /// It will flush immediately.
     /// </summary>
+    /// <param name="foreground">The foreground color.</param>
+    /// <param name="s">A composite format string to output.</param>
+    /// <param name="args">An object array that contains zero or more objects to format.</param>
+    /// <exception cref="FormatException">format is invalid. -or- The index of a format item is less than zero, or greater than or equal to the length of the args array.</exception>
+    public void Write(Color foreground, string s, params object[] args)
+    {
+        if (s == null) return;
+        col.Add(new ConsoleText(args == null || args.Length == 0 ? s : string.Format(s, args), foreground));
+        Flush();
+    }
+
+    /// <summary>
+    /// Writes the specified string value to the standard output stream.
+    /// It will flush immediately.
+    /// </summary>
+    /// <param name="foreground">The foreground color.</param>
+    /// <param name="background">The background color.</param>
+    /// <param name="s">A composite format string to output.</param>
+    /// <param name="args">An object array that contains zero or more objects to format.</param>
+    /// <exception cref="FormatException">format is invalid. -or- The index of a format item is less than zero, or greater than or equal to the length of the args array.</exception>
+    public void Write(Color foreground, Color background, string s, params object[] args)
+    {
+        if (s == null) return;
+        col.Add(new ConsoleText(args == null || args.Length == 0 ? s : string.Format(s, args), foreground, background));
+        Flush();
+    }
+
+    /// <summary>
+    /// Writes the specified string value to the standard output stream.
+    /// It will flush immediately.
+    /// </summary>
     /// <param name="style">The style.</param>
     /// <param name="s">A composite format string to output.</param>
     /// <param name="args">An object array that contains zero or more objects to format.</param>
@@ -1064,6 +1505,33 @@ public sealed partial class StyleConsole
     /// Writes the specified string value to the standard output stream.
     /// It will flush immediately.
     /// </summary>
+    /// <param name="foreground">The foreground color.</param>
+    /// <param name="s">A composite format string to output.</param>
+    public void Write(Color foreground, StringBuilder s)
+    {
+        if (s == null) return;
+        col.Add(new ConsoleText(s, foreground));
+        Flush();
+    }
+
+    /// <summary>
+    /// Writes the specified string value to the standard output stream.
+    /// It will flush immediately.
+    /// </summary>
+    /// <param name="foreground">The foreground color.</param>
+    /// <param name="background">The background color.</param>
+    /// <param name="s">A composite format string to output.</param>
+    public void Write(Color foreground, Color background, StringBuilder s)
+    {
+        if (s == null) return;
+        col.Add(new ConsoleText(s, foreground, background));
+        Flush();
+    }
+
+    /// <summary>
+    /// Writes the specified string value to the standard output stream.
+    /// It will flush immediately.
+    /// </summary>
     /// <param name="style">The style.</param>
     /// <param name="s">A composite format string to output.</param>
     public void Write(IConsoleTextPrettier style, StringBuilder s)
@@ -1082,6 +1550,102 @@ public sealed partial class StyleConsole
     }
 
     /// <summary>
+    /// Writes the specified number to the standard output stream.
+    /// It will flush immediately.
+    /// </summary>
+    /// <param name="number">A number to output.</param>
+    public void Write(short number)
+    {
+        col.Add(new ConsoleText(number.ToString("g")));
+        Flush();
+    }
+
+    /// <summary>
+    /// Writes the specified number to the standard output stream.
+    /// It will flush immediately.
+    /// </summary>
+    /// <param name="style">The content style.</param>
+    /// <param name="number">A number to output.</param>
+    public void Write(ConsoleTextStyle style, short number)
+    {
+        col.Add(new ConsoleText(number.ToString("g"), style));
+        Flush();
+    }
+
+    /// <summary>
+    /// Writes the specified number to the standard output stream.
+    /// It will flush immediately.
+    /// </summary>
+    /// <param name="foreground">The foreground color.</param>
+    /// <param name="number">A number to output.</param>
+    public void Write(ConsoleColor foreground, short number)
+    {
+        col.Add(new ConsoleText(number.ToString("g"), foreground));
+        Flush();
+    }
+
+    /// <summary>
+    /// Writes the specified number to the standard output stream.
+    /// It will flush immediately.
+    /// </summary>
+    /// <param name="foreground">The foreground color.</param>
+    /// <param name="background">The background color.</param>
+    /// <param name="number">A number to output.</param>
+    public void Write(ConsoleColor? foreground, ConsoleColor? background, short number)
+    {
+        col.Add(new ConsoleText(number.ToString("g"), foreground, background));
+        Flush();
+    }
+
+    /// <summary>
+    /// Writes the specified number to the standard output stream.
+    /// It will flush immediately.
+    /// </summary>
+    /// <param name="number">A number to output.</param>
+    public void Write(ushort number)
+    {
+        col.Add(new ConsoleText(number.ToString("g")));
+        Flush();
+    }
+
+    /// <summary>
+    /// Writes the specified number to the standard output stream.
+    /// It will flush immediately.
+    /// </summary>
+    /// <param name="style">The content style.</param>
+    /// <param name="number">A number to output.</param>
+    public void Write(ConsoleTextStyle style, ushort number)
+    {
+        col.Add(new ConsoleText(number.ToString("g"), style));
+        Flush();
+    }
+
+    /// <summary>
+    /// Writes the specified number to the standard output stream.
+    /// It will flush immediately.
+    /// </summary>
+    /// <param name="foreground">The foreground color.</param>
+    /// <param name="number">A number to output.</param>
+    public void Write(ConsoleColor foreground, ushort number)
+    {
+        col.Add(new ConsoleText(number.ToString("g"), foreground));
+        Flush();
+    }
+
+    /// <summary>
+    /// Writes the specified number to the standard output stream.
+    /// It will flush immediately.
+    /// </summary>
+    /// <param name="foreground">The foreground color.</param>
+    /// <param name="background">The background color.</param>
+    /// <param name="number">A number to output.</param>
+    public void Write(ConsoleColor? foreground, ConsoleColor? background, ushort number)
+    {
+        col.Add(new ConsoleText(number.ToString("g"), foreground, background));
+        Flush();
+    }
+
+    /// <summary>
     /// Writes the specified number, followed by the current line terminator, to the standard output stream.
     /// It will flush immediately.
     /// </summary>
@@ -1096,11 +1660,36 @@ public sealed partial class StyleConsole
     /// Writes the specified number, followed by the current line terminator, to the standard output stream.
     /// It will flush immediately.
     /// </summary>
+    /// <param name="number">A number to output.</param>
+    /// <param name="format">A standard or custom numeric format string.</param>
+    public void Write(int number, string format)
+    {
+        col.Add(new ConsoleText(number.ToString(format)));
+        Flush();
+    }
+
+    /// <summary>
+    /// Writes the specified number, followed by the current line terminator, to the standard output stream.
+    /// It will flush immediately.
+    /// </summary>
     /// <param name="style">The content style.</param>
     /// <param name="number">A number to output.</param>
     public void Write(ConsoleTextStyle style, int number)
     {
         col.Add(new ConsoleText(number.ToString("g"), style));
+        Flush();
+    }
+
+    /// <summary>
+    /// Writes the specified number, followed by the current line terminator, to the standard output stream.
+    /// It will flush immediately.
+    /// </summary>
+    /// <param name="style">The content style.</param>
+    /// <param name="number">A number to output.</param>
+    /// <param name="format">A standard or custom numeric format string.</param>
+    public void Write(ConsoleTextStyle style, int number, string format)
+    {
+        col.Add(new ConsoleText(number.ToString(format), style));
         Flush();
     }
 
@@ -1121,9 +1710,85 @@ public sealed partial class StyleConsole
     /// It will flush immediately.
     /// </summary>
     /// <param name="foreground">The foreground color.</param>
+    /// <param name="number">A number to output.</param>
+    /// <param name="format">A standard or custom numeric format string.</param>
+    /// <exception cref="FormatException">format is invalid or not supported.</exception>
+    public void Write(ConsoleColor foreground, int number, string format)
+    {
+        col.Add(new ConsoleText(number.ToString(format), foreground));
+        Flush();
+    }
+
+    /// <summary>
+    /// Writes the specified number, followed by the current line terminator, to the standard output stream.
+    /// It will flush immediately.
+    /// </summary>
+    /// <param name="foreground">The foreground color.</param>
     /// <param name="background">The background color.</param>
     /// <param name="number">A number to output.</param>
     public void Write(ConsoleColor? foreground, ConsoleColor? background, int number)
+    {
+        col.Add(new ConsoleText(number.ToString("g"), foreground, background));
+        Flush();
+    }
+
+    /// <summary>
+    /// Writes the specified number, followed by the current line terminator, to the standard output stream.
+    /// It will flush immediately.
+    /// </summary>
+    /// <param name="foreground">The foreground color.</param>
+    /// <param name="background">The background color.</param>
+    /// <param name="number">A number to output.</param>
+    /// <param name="format">A standard or custom numeric format string.</param>
+    public void Write(ConsoleColor? foreground, ConsoleColor? background, int number, string format)
+    {
+        col.Add(new ConsoleText(number.ToString(format), foreground, background));
+        Flush();
+    }
+
+    /// <summary>
+    /// Writes the specified number to the standard output stream.
+    /// It will flush immediately.
+    /// </summary>
+    /// <param name="number">A number to output.</param>
+    public void Write(uint number)
+    {
+        col.Add(new ConsoleText(number.ToString("g")));
+        Flush();
+    }
+
+    /// <summary>
+    /// Writes the specified number to the standard output stream.
+    /// It will flush immediately.
+    /// </summary>
+    /// <param name="style">The content style.</param>
+    /// <param name="number">A number to output.</param>
+    public void Write(ConsoleTextStyle style, uint number)
+    {
+        col.Add(new ConsoleText(number.ToString("g"), style));
+        Flush();
+    }
+
+    /// <summary>
+    /// Writes the specified number to the standard output stream.
+    /// It will flush immediately.
+    /// </summary>
+    /// <param name="foreground">The foreground color.</param>
+    /// <param name="number">A number to output.</param>
+    public void Write(ConsoleColor foreground, uint number)
+    {
+        col.Add(new ConsoleText(number.ToString("g"), foreground));
+        Flush();
+    }
+
+    /// <summary>
+    /// Writes the specified number to the standard output stream.
+    /// It will flush immediately.
+    /// </summary>
+    /// <param name="foreground">The foreground color.</param>
+    /// <param name="background">The background color.</param>
+    /// <param name="number">A number to output.</param>
+    public void Write(ConsoleColor? foreground, ConsoleColor? background, uint number)
     {
         col.Add(new ConsoleText(number.ToString("g"), foreground, background));
         Flush();
@@ -1144,11 +1809,38 @@ public sealed partial class StyleConsole
     /// Writes the specified number to the standard output stream.
     /// It will flush immediately.
     /// </summary>
+    /// <param name="number">A number to output.</param>
+    /// <param name="format">A standard or custom numeric format string.</param>
+    /// <exception cref="FormatException">format is invalid or not supported.</exception>
+    public void Write(long number, string format)
+    {
+        col.Add(new ConsoleText(number.ToString(format)));
+        Flush();
+    }
+
+    /// <summary>
+    /// Writes the specified number to the standard output stream.
+    /// It will flush immediately.
+    /// </summary>
     /// <param name="style">The content style.</param>
     /// <param name="number">A number to output.</param>
     public void Write(ConsoleTextStyle style, long number)
     {
         col.Add(new ConsoleText(number.ToString("g"), style));
+        Flush();
+    }
+
+    /// <summary>
+    /// Writes the specified number to the standard output stream.
+    /// It will flush immediately.
+    /// </summary>
+    /// <param name="style">The content style.</param>
+    /// <param name="number">A number to output.</param>
+    /// <param name="format">A standard or custom numeric format string.</param>
+    /// <exception cref="FormatException">format is invalid or not supported.</exception>
+    public void Write(ConsoleTextStyle style, long number, string format)
+    {
+        col.Add(new ConsoleText(number.ToString(format), style));
         Flush();
     }
 
@@ -1169,11 +1861,40 @@ public sealed partial class StyleConsole
     /// It will flush immediately.
     /// </summary>
     /// <param name="foreground">The foreground color.</param>
+    /// <param name="number">A number to output.</param>
+    /// <param name="format">A standard or custom numeric format string.</param>
+    /// <exception cref="FormatException">format is invalid or not supported.</exception>
+    public void Write(ConsoleColor foreground, long number, string format)
+    {
+        col.Add(new ConsoleText(number.ToString(format), foreground));
+        Flush();
+    }
+
+    /// <summary>
+    /// Writes the specified number to the standard output stream.
+    /// It will flush immediately.
+    /// </summary>
+    /// <param name="foreground">The foreground color.</param>
     /// <param name="background">The background color.</param>
     /// <param name="number">A number to output.</param>
     public void Write(ConsoleColor? foreground, ConsoleColor? background, long number)
     {
         col.Add(new ConsoleText(number.ToString("g"), foreground, background));
+        Flush();
+    }
+
+    /// <summary>
+    /// Writes the specified number to the standard output stream.
+    /// It will flush immediately.
+    /// </summary>
+    /// <param name="foreground">The foreground color.</param>
+    /// <param name="background">The background color.</param>
+    /// <param name="number">A number to output.</param>
+    /// <param name="format">A standard or custom numeric format string.</param>
+    /// <exception cref="FormatException">format is invalid or not supported.</exception>
+    public void Write(ConsoleColor? foreground, ConsoleColor? background, long number, string format)
+    {
+        col.Add(new ConsoleText(number.ToString(format), foreground, background));
         Flush();
     }
 
@@ -1225,6 +1946,104 @@ public sealed partial class StyleConsole
         Flush();
     }
 
+#if NET8_0_OR_GREATER
+    /// <summary>
+    /// Writes the specified number to the standard output stream.
+    /// It will flush immediately.
+    /// </summary>
+    /// <param name="number">A number to output.</param>
+    public void Write(Int128 number)
+    {
+        col.Add(new ConsoleText(number.ToString("g")));
+        Flush();
+    }
+
+    /// <summary>
+    /// Writes the specified number to the standard output stream.
+    /// It will flush immediately.
+    /// </summary>
+    /// <param name="style">The content style.</param>
+    /// <param name="number">A number to output.</param>
+    public void Write(ConsoleTextStyle style, Int128 number)
+    {
+        col.Add(new ConsoleText(number.ToString("g"), style));
+        Flush();
+    }
+
+    /// <summary>
+    /// Writes the specified number to the standard output stream.
+    /// It will flush immediately.
+    /// </summary>
+    /// <param name="foreground">The foreground color.</param>
+    /// <param name="number">A number to output.</param>
+    public void Write(ConsoleColor foreground, Int128 number)
+    {
+        col.Add(new ConsoleText(number.ToString("g"), foreground));
+        Flush();
+    }
+
+    /// <summary>
+    /// Writes the specified number to the standard output stream.
+    /// It will flush immediately.
+    /// </summary>
+    /// <param name="foreground">The foreground color.</param>
+    /// <param name="background">The background color.</param>
+    /// <param name="number">A number to output.</param>
+    public void Write(ConsoleColor? foreground, ConsoleColor? background, Int128 number)
+    {
+        col.Add(new ConsoleText(number.ToString("g"), foreground, background));
+        Flush();
+    }
+
+    /// <summary>
+    /// Writes the specified number to the standard output stream.
+    /// It will flush immediately.
+    /// </summary>
+    /// <param name="number">A number to output.</param>
+    public void Write(UInt128 number)
+    {
+        col.Add(new ConsoleText(number.ToString("g")));
+        Flush();
+    }
+
+    /// <summary>
+    /// Writes the specified number to the standard output stream.
+    /// It will flush immediately.
+    /// </summary>
+    /// <param name="style">The content style.</param>
+    /// <param name="number">A number to output.</param>
+    public void Write(ConsoleTextStyle style, UInt128 number)
+    {
+        col.Add(new ConsoleText(number.ToString("g"), style));
+        Flush();
+    }
+
+    /// <summary>
+    /// Writes the specified number to the standard output stream.
+    /// It will flush immediately.
+    /// </summary>
+    /// <param name="foreground">The foreground color.</param>
+    /// <param name="number">A number to output.</param>
+    public void Write(ConsoleColor foreground, UInt128 number)
+    {
+        col.Add(new ConsoleText(number.ToString("g"), foreground));
+        Flush();
+    }
+
+    /// <summary>
+    /// Writes the specified number to the standard output stream.
+    /// It will flush immediately.
+    /// </summary>
+    /// <param name="foreground">The foreground color.</param>
+    /// <param name="background">The background color.</param>
+    /// <param name="number">A number to output.</param>
+    public void Write(ConsoleColor? foreground, ConsoleColor? background, UInt128 number)
+    {
+        col.Add(new ConsoleText(number.ToString("g"), foreground, background));
+        Flush();
+    }
+#endif
+
     /// <summary>
     /// Writes the specified number to the standard output stream.
     /// It will flush immediately.
@@ -1240,11 +2059,38 @@ public sealed partial class StyleConsole
     /// Writes the specified number to the standard output stream.
     /// It will flush immediately.
     /// </summary>
+    /// <param name="number">A number to output.</param>
+    /// <param name="format">A standard or custom numeric format string.</param>
+    /// <exception cref="FormatException">format is invalid or not supported.</exception>
+    public void Write(float number, string format)
+    {
+        col.Add(new ConsoleText(number.ToString(format)));
+        Flush();
+    }
+
+    /// <summary>
+    /// Writes the specified number to the standard output stream.
+    /// It will flush immediately.
+    /// </summary>
     /// <param name="style">The content style.</param>
     /// <param name="number">A number to output.</param>
     public void Write(ConsoleTextStyle style, float number)
     {
         col.Add(new ConsoleText(number.ToString("g"), style));
+        Flush();
+    }
+
+    /// <summary>
+    /// Writes the specified number to the standard output stream.
+    /// It will flush immediately.
+    /// </summary>
+    /// <param name="style">The content style.</param>
+    /// <param name="number">A number to output.</param>
+    /// <param name="format">A standard or custom numeric format string.</param>
+    /// <exception cref="FormatException">format is invalid or not supported.</exception>
+    public void Write(ConsoleTextStyle style, float number, string format)
+    {
+        col.Add(new ConsoleText(number.ToString(format), style));
         Flush();
     }
 
@@ -1265,11 +2111,40 @@ public sealed partial class StyleConsole
     /// It will flush immediately.
     /// </summary>
     /// <param name="foreground">The foreground color.</param>
+    /// <param name="number">A number to output.</param>
+    /// <param name="format">A standard or custom numeric format string.</param>
+    /// <exception cref="FormatException">format is invalid or not supported.</exception>
+    public void Write(ConsoleColor foreground, float number, string format)
+    {
+        col.Add(new ConsoleText(number.ToString(format), foreground));
+        Flush();
+    }
+
+    /// <summary>
+    /// Writes the specified number to the standard output stream.
+    /// It will flush immediately.
+    /// </summary>
+    /// <param name="foreground">The foreground color.</param>
     /// <param name="background">The background color.</param>
     /// <param name="number">A number to output.</param>
     public void Write(ConsoleColor? foreground, ConsoleColor? background, float number)
     {
         col.Add(new ConsoleText(number.ToString("g"), foreground, background));
+        Flush();
+    }
+
+    /// <summary>
+    /// Writes the specified number to the standard output stream.
+    /// It will flush immediately.
+    /// </summary>
+    /// <param name="foreground">The foreground color.</param>
+    /// <param name="background">The background color.</param>
+    /// <param name="number">A number to output.</param>
+    /// <param name="format">A standard or custom numeric format string.</param>
+    /// <exception cref="FormatException">format is invalid or not supported.</exception>
+    public void Write(ConsoleColor? foreground, ConsoleColor? background, float number, string format)
+    {
+        col.Add(new ConsoleText(number.ToString(format), foreground, background));
         Flush();
     }
 
@@ -1288,11 +2163,38 @@ public sealed partial class StyleConsole
     /// Writes the specified number to the standard output stream.
     /// It will flush immediately.
     /// </summary>
+    /// <param name="number">A number to output.</param>
+    /// <param name="format">A standard or custom numeric format string.</param>
+    /// <exception cref="FormatException">format is invalid or not supported.</exception>
+    public void Write(decimal number, string format)
+    {
+        col.Add(new ConsoleText(number.ToString(format)));
+        Flush();
+    }
+
+    /// <summary>
+    /// Writes the specified number to the standard output stream.
+    /// It will flush immediately.
+    /// </summary>
     /// <param name="style">The content style.</param>
     /// <param name="number">A number to output.</param>
     public void Write(ConsoleTextStyle style, decimal number)
     {
         col.Add(new ConsoleText(number.ToString("g"), style));
+        Flush();
+    }
+
+    /// <summary>
+    /// Writes the specified number to the standard output stream.
+    /// It will flush immediately.
+    /// </summary>
+    /// <param name="style">The content style.</param>
+    /// <param name="number">A number to output.</param>
+    /// <param name="format">A standard or custom numeric format string.</param>
+    /// <exception cref="FormatException">format is invalid or not supported.</exception>
+    public void Write(ConsoleTextStyle style, decimal number, string format)
+    {
+        col.Add(new ConsoleText(number.ToString(format), style));
         Flush();
     }
 
@@ -1313,11 +2215,40 @@ public sealed partial class StyleConsole
     /// It will flush immediately.
     /// </summary>
     /// <param name="foreground">The foreground color.</param>
+    /// <param name="number">A number to output.</param>
+    /// <param name="format">A standard or custom numeric format string.</param>
+    /// <exception cref="FormatException">format is invalid or not supported.</exception>
+    public void Write(ConsoleColor foreground, decimal number, string format)
+    {
+        col.Add(new ConsoleText(number.ToString(format), foreground));
+        Flush();
+    }
+
+    /// <summary>
+    /// Writes the specified number to the standard output stream.
+    /// It will flush immediately.
+    /// </summary>
+    /// <param name="foreground">The foreground color.</param>
     /// <param name="background">The background color.</param>
     /// <param name="number">A number to output.</param>
     public void Write(ConsoleColor? foreground, ConsoleColor? background, decimal number)
     {
         col.Add(new ConsoleText(number.ToString("g"), foreground, background));
+        Flush();
+    }
+
+    /// <summary>
+    /// Writes the specified number to the standard output stream.
+    /// It will flush immediately.
+    /// </summary>
+    /// <param name="foreground">The foreground color.</param>
+    /// <param name="background">The background color.</param>
+    /// <param name="number">A number to output.</param>
+    /// <param name="format">A standard or custom numeric format string.</param>
+    /// <exception cref="FormatException">format is invalid or not supported.</exception>
+    public void Write(ConsoleColor? foreground, ConsoleColor? background, decimal number, string format)
+    {
+        col.Add(new ConsoleText(number.ToString(format), foreground, background));
         Flush();
     }
 
@@ -1336,11 +2267,36 @@ public sealed partial class StyleConsole
     /// Writes the specified number to the standard output stream.
     /// It will flush immediately.
     /// </summary>
+    /// <param name="number">A number to output.</param>
+    /// <param name="format">A standard or custom numeric format string.</param>
+    public void Write(double number, string format)
+    {
+        col.Add(new ConsoleText(number.ToString(format)));
+        Flush();
+    }
+
+    /// <summary>
+    /// Writes the specified number to the standard output stream.
+    /// It will flush immediately.
+    /// </summary>
     /// <param name="style">The content style.</param>
     /// <param name="number">A number to output.</param>
     public void Write(ConsoleTextStyle style, double number)
     {
         col.Add(new ConsoleText(number.ToString("g"), style));
+        Flush();
+    }
+
+    /// <summary>
+    /// Writes the specified number to the standard output stream.
+    /// It will flush immediately.
+    /// </summary>
+    /// <param name="style">The content style.</param>
+    /// <param name="number">A number to output.</param>
+    /// <param name="format">A standard or custom numeric format string.</param>
+    public void Write(ConsoleTextStyle style, double number, string format)
+    {
+        col.Add(new ConsoleText(number.ToString(format), style));
         Flush();
     }
 
@@ -1361,11 +2317,38 @@ public sealed partial class StyleConsole
     /// It will flush immediately.
     /// </summary>
     /// <param name="foreground">The foreground color.</param>
+    /// <param name="number">A number to output.</param>
+    /// <param name="format">A standard or custom numeric format string.</param>
+    public void Write(ConsoleColor foreground, double number, string format)
+    {
+        col.Add(new ConsoleText(number.ToString(format), foreground));
+        Flush();
+    }
+
+    /// <summary>
+    /// Writes the specified number to the standard output stream.
+    /// It will flush immediately.
+    /// </summary>
+    /// <param name="foreground">The foreground color.</param>
     /// <param name="background">The background color.</param>
     /// <param name="number">A number to output.</param>
     public void Write(ConsoleColor? foreground, ConsoleColor? background, double number)
     {
         col.Add(new ConsoleText(number.ToString("g"), foreground, background));
+        Flush();
+    }
+
+    /// <summary>
+    /// Writes the specified number to the standard output stream.
+    /// It will flush immediately.
+    /// </summary>
+    /// <param name="foreground">The foreground color.</param>
+    /// <param name="background">The background color.</param>
+    /// <param name="number">A number to output.</param>
+    /// <param name="format">A standard or custom numeric format string.</param>
+    public void Write(ConsoleColor? foreground, ConsoleColor? background, double number, string format)
+    {
+        col.Add(new ConsoleText(number.ToString(format), foreground, background));
         Flush();
     }
 
@@ -1429,6 +2412,28 @@ public sealed partial class StyleConsole
     /// Writes the specified characters to the standard output stream.
     /// It will flush immediately.
     /// </summary>
+    /// <param name="style">The style.</param>
+    /// <param name="value">The value to write.</param>
+    /// <param name="start">The starting position in value.</param>
+    /// <param name="count">The number of characters to write.</param>
+    public void Write(IConsoleTextPrettier style, char[] value, int start = 0, int? count = null)
+    {
+        if (style == null)
+        {
+            Write(value, start, count);
+            return;
+        }
+
+        var list = style.CreateTextCollection(StringExtensions.ToString(value, start, count));
+        if (list == null) return;
+        col.AddRange(list);
+        Flush();
+    }
+
+    /// <summary>
+    /// Writes the specified characters to the standard output stream.
+    /// It will flush immediately.
+    /// </summary>
     /// <param name="value">The value to write.</param>
     /// <param name="repeatCount">The number of times to append value.</param>
     public void Write(char value, int repeatCount = 1)
@@ -1474,6 +2479,27 @@ public sealed partial class StyleConsole
     public void Write(ConsoleColor? foreground, ConsoleColor? background, char value, int repeatCount = 1)
     {
         col.Add(new ConsoleText(value, repeatCount, new ConsoleTextStyle(foreground, background)));
+        Flush();
+    }
+
+    /// <summary>
+    /// Writes the specified characters to the standard output stream.
+    /// It will flush immediately.
+    /// </summary>
+    /// <param name="style">The style.</param>
+    /// <param name="value">The value to write.</param>
+    /// <param name="repeatCount">The number of times to append value.</param>
+    public void Write(IConsoleTextPrettier style, char value, int repeatCount = 1)
+    {
+        if (style == null || repeatCount < 1)
+        {
+            Write(value, repeatCount);
+            return;
+        }
+
+        var list = style.CreateTextCollection(new string(value, repeatCount));
+        if (list == null) return;
+        col.AddRange(list);
         Flush();
     }
 
@@ -1793,6 +2819,110 @@ public sealed partial class StyleConsole
     /// It will flush immediately.
     /// </summary>
     /// <param name="number">A number to output.</param>
+    public void WriteLine(short number)
+    {
+        col.Add(new ConsoleText(number.ToString("g")));
+        col.Add(new ConsoleText(Environment.NewLine));
+        Flush();
+    }
+
+    /// <summary>
+    /// Writes the specified number, followed by the current line terminator, to the standard output stream.
+    /// It will flush immediately.
+    /// </summary>
+    /// <param name="style">The content style.</param>
+    /// <param name="number">A number to output.</param>
+    public void WriteLine(ConsoleTextStyle style, short number)
+    {
+        col.Add(new ConsoleText(number.ToString("g"), style));
+        col.Add(new ConsoleText(Environment.NewLine));
+        Flush();
+    }
+
+    /// <summary>
+    /// Writes the specified number, followed by the current line terminator, to the standard output stream.
+    /// It will flush immediately.
+    /// </summary>
+    /// <param name="foreground">The foreground color.</param>
+    /// <param name="number">A number to output.</param>
+    public void WriteLine(ConsoleColor foreground, short number)
+    {
+        col.Add(new ConsoleText(number.ToString("g"), foreground));
+        col.Add(new ConsoleText(Environment.NewLine));
+        Flush();
+    }
+
+    /// <summary>
+    /// Writes the specified number, followed by the current line terminator, to the standard output stream.
+    /// It will flush immediately.
+    /// </summary>
+    /// <param name="foreground">The foreground color.</param>
+    /// <param name="background">The background color.</param>
+    /// <param name="number">A number to output.</param>
+    public void WriteLine(ConsoleColor? foreground, ConsoleColor? background, short number)
+    {
+        col.Add(new ConsoleText(number.ToString("g"), foreground, background));
+        col.Add(new ConsoleText(Environment.NewLine));
+        Flush();
+    }
+
+    /// <summary>
+    /// Writes the specified number, followed by the current line terminator, to the standard output stream.
+    /// It will flush immediately.
+    /// </summary>
+    /// <param name="number">A number to output.</param>
+    public void WriteLine(ushort number)
+    {
+        col.Add(new ConsoleText(number.ToString("g")));
+        col.Add(new ConsoleText(Environment.NewLine));
+        Flush();
+    }
+
+    /// <summary>
+    /// Writes the specified number, followed by the current line terminator, to the standard output stream.
+    /// It will flush immediately.
+    /// </summary>
+    /// <param name="style">The content style.</param>
+    /// <param name="number">A number to output.</param>
+    public void WriteLine(ConsoleTextStyle style, ushort number)
+    {
+        col.Add(new ConsoleText(number.ToString("g"), style));
+        col.Add(new ConsoleText(Environment.NewLine));
+        Flush();
+    }
+
+    /// <summary>
+    /// Writes the specified number, followed by the current line terminator, to the standard output stream.
+    /// It will flush immediately.
+    /// </summary>
+    /// <param name="foreground">The foreground color.</param>
+    /// <param name="number">A number to output.</param>
+    public void WriteLine(ConsoleColor foreground, ushort number)
+    {
+        col.Add(new ConsoleText(number.ToString("g"), foreground));
+        col.Add(new ConsoleText(Environment.NewLine));
+        Flush();
+    }
+
+    /// <summary>
+    /// Writes the specified number, followed by the current line terminator, to the standard output stream.
+    /// It will flush immediately.
+    /// </summary>
+    /// <param name="foreground">The foreground color.</param>
+    /// <param name="background">The background color.</param>
+    /// <param name="number">A number to output.</param>
+    public void WriteLine(ConsoleColor? foreground, ConsoleColor? background, ushort number)
+    {
+        col.Add(new ConsoleText(number.ToString("g"), foreground, background));
+        col.Add(new ConsoleText(Environment.NewLine));
+        Flush();
+    }
+
+    /// <summary>
+    /// Writes the specified number, followed by the current line terminator, to the standard output stream.
+    /// It will flush immediately.
+    /// </summary>
+    /// <param name="number">A number to output.</param>
     public void WriteLine(int number)
     {
         col.Add(new ConsoleText(number.ToString("g")));
@@ -1906,9 +3036,75 @@ public sealed partial class StyleConsole
     /// It will flush immediately.
     /// </summary>
     /// <param name="number">A number to output.</param>
+    public void WriteLine(uint number)
+    {
+        col.Add(new ConsoleText(number.ToString("g")));
+        col.Add(new ConsoleText(Environment.NewLine));
+        Flush();
+    }
+
+    /// <summary>
+    /// Writes the specified number, followed by the current line terminator, to the standard output stream.
+    /// It will flush immediately.
+    /// </summary>
+    /// <param name="style">The content style.</param>
+    /// <param name="number">A number to output.</param>
+    public void WriteLine(ConsoleTextStyle style, uint number)
+    {
+        col.Add(new ConsoleText(number.ToString("g"), style));
+        col.Add(new ConsoleText(Environment.NewLine));
+        Flush();
+    }
+
+    /// <summary>
+    /// Writes the specified number, followed by the current line terminator, to the standard output stream.
+    /// It will flush immediately.
+    /// </summary>
+    /// <param name="foreground">The foreground color.</param>
+    /// <param name="number">A number to output.</param>
+    public void WriteLine(ConsoleColor foreground, uint number)
+    {
+        col.Add(new ConsoleText(number.ToString("g"), foreground));
+        col.Add(new ConsoleText(Environment.NewLine));
+        Flush();
+    }
+
+    /// <summary>
+    /// Writes the specified number, followed by the current line terminator, to the standard output stream.
+    /// It will flush immediately.
+    /// </summary>
+    /// <param name="foreground">The foreground color.</param>
+    /// <param name="background">The background color.</param>
+    /// <param name="number">A number to output.</param>
+    public void WriteLine(ConsoleColor? foreground, ConsoleColor? background, uint number)
+    {
+        col.Add(new ConsoleText(number.ToString("g"), foreground, background));
+        col.Add(new ConsoleText(Environment.NewLine));
+        Flush();
+    }
+
+    /// <summary>
+    /// Writes the specified number, followed by the current line terminator, to the standard output stream.
+    /// It will flush immediately.
+    /// </summary>
+    /// <param name="number">A number to output.</param>
     public void WriteLine(long number)
     {
         col.Add(new ConsoleText(number.ToString("g")));
+        col.Add(new ConsoleText(Environment.NewLine));
+        Flush();
+    }
+
+    /// <summary>
+    /// Writes the specified number, followed by the current line terminator, to the standard output stream.
+    /// It will flush immediately.
+    /// </summary>
+    /// <param name="number">A number to output.</param>
+    /// <param name="format">A standard or custom numeric format string.</param>
+    /// <exception cref="FormatException">format is invalid or not supported.</exception>
+    public void WriteLine(long number, string format)
+    {
+        col.Add(new ConsoleText(number.ToString(format)));
         col.Add(new ConsoleText(Environment.NewLine));
         Flush();
     }
@@ -1922,6 +3118,21 @@ public sealed partial class StyleConsole
     public void WriteLine(ConsoleTextStyle style, long number)
     {
         col.Add(new ConsoleText(number.ToString("g"), style));
+        col.Add(new ConsoleText(Environment.NewLine));
+        Flush();
+    }
+
+    /// <summary>
+    /// Writes the specified number, followed by the current line terminator, to the standard output stream.
+    /// It will flush immediately.
+    /// </summary>
+    /// <param name="style">The content style.</param>
+    /// <param name="number">A number to output.</param>
+    /// <param name="format">A standard or custom numeric format string.</param>
+    /// <exception cref="FormatException">format is invalid or not supported.</exception>
+    public void WriteLine(ConsoleTextStyle style, long number, string format)
+    {
+        col.Add(new ConsoleText(number.ToString(format), style));
         col.Add(new ConsoleText(Environment.NewLine));
         Flush();
     }
@@ -1944,11 +3155,42 @@ public sealed partial class StyleConsole
     /// It will flush immediately.
     /// </summary>
     /// <param name="foreground">The foreground color.</param>
+    /// <param name="number">A number to output.</param>
+    /// <param name="format">A standard or custom numeric format string.</param>
+    /// <exception cref="FormatException">format is invalid or not supported.</exception>
+    public void WriteLine(ConsoleColor foreground, long number, string format)
+    {
+        col.Add(new ConsoleText(number.ToString(format), foreground));
+        col.Add(new ConsoleText(Environment.NewLine));
+        Flush();
+    }
+
+    /// <summary>
+    /// Writes the specified number, followed by the current line terminator, to the standard output stream.
+    /// It will flush immediately.
+    /// </summary>
+    /// <param name="foreground">The foreground color.</param>
     /// <param name="background">The background color.</param>
     /// <param name="number">A number to output.</param>
     public void WriteLine(ConsoleColor? foreground, ConsoleColor? background, long number)
     {
         col.Add(new ConsoleText(number.ToString("g"), foreground, background));
+        col.Add(new ConsoleText(Environment.NewLine));
+        Flush();
+    }
+
+    /// <summary>
+    /// Writes the specified number, followed by the current line terminator, to the standard output stream.
+    /// It will flush immediately.
+    /// </summary>
+    /// <param name="foreground">The foreground color.</param>
+    /// <param name="background">The background color.</param>
+    /// <param name="number">A number to output.</param>
+    /// <param name="format">A standard or custom numeric format string.</param>
+    /// <exception cref="FormatException">format is invalid or not supported.</exception>
+    public void WriteLine(ConsoleColor? foreground, ConsoleColor? background, long number, string format)
+    {
+        col.Add(new ConsoleText(number.ToString(format), foreground, background));
         col.Add(new ConsoleText(Environment.NewLine));
         Flush();
     }
@@ -2005,6 +3247,112 @@ public sealed partial class StyleConsole
         Flush();
     }
 
+#if NET8_0_OR_GREATER
+    /// <summary>
+    /// Writes the specified number, followed by the current line terminator, to the standard output stream.
+    /// It will flush immediately.
+    /// </summary>
+    /// <param name="number">A number to output.</param>
+    public void WriteLine(Int128 number)
+    {
+        col.Add(new ConsoleText(number.ToString("g")));
+        col.Add(new ConsoleText(Environment.NewLine));
+        Flush();
+    }
+
+    /// <summary>
+    /// Writes the specified number, followed by the current line terminator, to the standard output stream.
+    /// It will flush immediately.
+    /// </summary>
+    /// <param name="style">The content style.</param>
+    /// <param name="number">A number to output.</param>
+    public void WriteLine(ConsoleTextStyle style, Int128 number)
+    {
+        col.Add(new ConsoleText(number.ToString("g"), style));
+        col.Add(new ConsoleText(Environment.NewLine));
+        Flush();
+    }
+
+    /// <summary>
+    /// Writes the specified number, followed by the current line terminator, to the standard output stream.
+    /// It will flush immediately.
+    /// </summary>
+    /// <param name="foreground">The foreground color.</param>
+    /// <param name="number">A number to output.</param>
+    public void WriteLine(ConsoleColor foreground, Int128 number)
+    {
+        col.Add(new ConsoleText(number.ToString("g"), foreground));
+        col.Add(new ConsoleText(Environment.NewLine));
+        Flush();
+    }
+
+    /// <summary>
+    /// Writes the specified number, followed by the current line terminator, to the standard output stream.
+    /// It will flush immediately.
+    /// </summary>
+    /// <param name="foreground">The foreground color.</param>
+    /// <param name="background">The background color.</param>
+    /// <param name="number">A number to output.</param>
+    public void WriteLine(ConsoleColor? foreground, ConsoleColor? background, Int128 number)
+    {
+        col.Add(new ConsoleText(number.ToString("g"), foreground, background));
+        col.Add(new ConsoleText(Environment.NewLine));
+        Flush();
+    }
+
+    /// <summary>
+    /// Writes the specified number, followed by the current line terminator, to the standard output stream.
+    /// It will flush immediately.
+    /// </summary>
+    /// <param name="number">A number to output.</param>
+    public void WriteLine(UInt128 number)
+    {
+        col.Add(new ConsoleText(number.ToString("g")));
+        col.Add(new ConsoleText(Environment.NewLine));
+        Flush();
+    }
+
+    /// <summary>
+    /// Writes the specified number, followed by the current line terminator, to the standard output stream.
+    /// It will flush immediately.
+    /// </summary>
+    /// <param name="style">The content style.</param>
+    /// <param name="number">A number to output.</param>
+    public void WriteLine(ConsoleTextStyle style, UInt128 number)
+    {
+        col.Add(new ConsoleText(number.ToString("g"), style));
+        col.Add(new ConsoleText(Environment.NewLine));
+        Flush();
+    }
+
+    /// <summary>
+    /// Writes the specified number, followed by the current line terminator, to the standard output stream.
+    /// It will flush immediately.
+    /// </summary>
+    /// <param name="foreground">The foreground color.</param>
+    /// <param name="number">A number to output.</param>
+    public void WriteLine(ConsoleColor foreground, UInt128 number)
+    {
+        col.Add(new ConsoleText(number.ToString("g"), foreground));
+        col.Add(new ConsoleText(Environment.NewLine));
+        Flush();
+    }
+
+    /// <summary>
+    /// Writes the specified number, followed by the current line terminator, to the standard output stream.
+    /// It will flush immediately.
+    /// </summary>
+    /// <param name="foreground">The foreground color.</param>
+    /// <param name="background">The background color.</param>
+    /// <param name="number">A number to output.</param>
+    public void WriteLine(ConsoleColor? foreground, ConsoleColor? background, UInt128 number)
+    {
+        col.Add(new ConsoleText(number.ToString("g"), foreground, background));
+        col.Add(new ConsoleText(Environment.NewLine));
+        Flush();
+    }
+#endif
+
     /// <summary>
     /// Writes the specified number, followed by the current line terminator, to the standard output stream.
     /// It will flush immediately.
@@ -2021,11 +3369,40 @@ public sealed partial class StyleConsole
     /// Writes the specified number, followed by the current line terminator, to the standard output stream.
     /// It will flush immediately.
     /// </summary>
+    /// <param name="number">A number to output.</param>
+    /// <param name="format">A standard or custom numeric format string.</param>
+    /// <exception cref="FormatException">format is invalid or not supported.</exception>
+    public void WriteLine(float number, string format)
+    {
+        col.Add(new ConsoleText(number.ToString(format)));
+        col.Add(new ConsoleText(Environment.NewLine));
+        Flush();
+    }
+
+    /// <summary>
+    /// Writes the specified number, followed by the current line terminator, to the standard output stream.
+    /// It will flush immediately.
+    /// </summary>
     /// <param name="style">The content style.</param>
     /// <param name="number">A number to output.</param>
     public void WriteLine(ConsoleTextStyle style, float number)
     {
         col.Add(new ConsoleText(number.ToString("g"), style));
+        col.Add(new ConsoleText(Environment.NewLine));
+        Flush();
+    }
+
+    /// <summary>
+    /// Writes the specified number, followed by the current line terminator, to the standard output stream.
+    /// It will flush immediately.
+    /// </summary>
+    /// <param name="style">The content style.</param>
+    /// <param name="number">A number to output.</param>
+    /// <param name="format">A standard or custom numeric format string.</param>
+    /// <exception cref="FormatException">format is invalid or not supported.</exception>
+    public void WriteLine(ConsoleTextStyle style, float number, string format)
+    {
+        col.Add(new ConsoleText(number.ToString(format), style));
         col.Add(new ConsoleText(Environment.NewLine));
         Flush();
     }
@@ -2048,11 +3425,42 @@ public sealed partial class StyleConsole
     /// It will flush immediately.
     /// </summary>
     /// <param name="foreground">The foreground color.</param>
+    /// <param name="number">A number to output.</param>
+    /// <param name="format">A standard or custom numeric format string.</param>
+    /// <exception cref="FormatException">format is invalid or not supported.</exception>
+    public void WriteLine(ConsoleColor foreground, float number, string format)
+    {
+        col.Add(new ConsoleText(number.ToString(format), foreground));
+        col.Add(new ConsoleText(Environment.NewLine));
+        Flush();
+    }
+
+    /// <summary>
+    /// Writes the specified number, followed by the current line terminator, to the standard output stream.
+    /// It will flush immediately.
+    /// </summary>
+    /// <param name="foreground">The foreground color.</param>
     /// <param name="background">The background color.</param>
     /// <param name="number">A number to output.</param>
     public void WriteLine(ConsoleColor? foreground, ConsoleColor? background, float number)
     {
         col.Add(new ConsoleText(number.ToString("g"), foreground, background));
+        col.Add(new ConsoleText(Environment.NewLine));
+        Flush();
+    }
+
+    /// <summary>
+    /// Writes the specified number, followed by the current line terminator, to the standard output stream.
+    /// It will flush immediately.
+    /// </summary>
+    /// <param name="foreground">The foreground color.</param>
+    /// <param name="background">The background color.</param>
+    /// <param name="number">A number to output.</param>
+    /// <param name="format">A standard or custom numeric format string.</param>
+    /// <exception cref="FormatException">format is invalid or not supported.</exception>
+    public void WriteLine(ConsoleColor? foreground, ConsoleColor? background, float number, string format)
+    {
+        col.Add(new ConsoleText(number.ToString(format), foreground, background));
         col.Add(new ConsoleText(Environment.NewLine));
         Flush();
     }
@@ -2073,11 +3481,40 @@ public sealed partial class StyleConsole
     /// Writes the specified number, followed by the current line terminator, to the standard output stream.
     /// It will flush immediately.
     /// </summary>
+    /// <param name="number">A number to output.</param>
+    /// <param name="format">A standard or custom numeric format string.</param>
+    /// <exception cref="FormatException">format is invalid or not supported.</exception>
+    public void WriteLine(decimal number, string format)
+    {
+        col.Add(new ConsoleText(number.ToString(format)));
+        col.Add(new ConsoleText(Environment.NewLine));
+        Flush();
+    }
+
+    /// <summary>
+    /// Writes the specified number, followed by the current line terminator, to the standard output stream.
+    /// It will flush immediately.
+    /// </summary>
     /// <param name="style">The content style.</param>
     /// <param name="number">A number to output.</param>
     public void WriteLine(ConsoleTextStyle style, decimal number)
     {
         col.Add(new ConsoleText(number.ToString("g"), style));
+        col.Add(new ConsoleText(Environment.NewLine));
+        Flush();
+    }
+
+    /// <summary>
+    /// Writes the specified number, followed by the current line terminator, to the standard output stream.
+    /// It will flush immediately.
+    /// </summary>
+    /// <param name="style">The content style.</param>
+    /// <param name="number">A number to output.</param>
+    /// <param name="format">A standard or custom numeric format string.</param>
+    /// <exception cref="FormatException">format is invalid or not supported.</exception>
+    public void WriteLine(ConsoleTextStyle style, decimal number, string format)
+    {
+        col.Add(new ConsoleText(number.ToString(format), style));
         col.Add(new ConsoleText(Environment.NewLine));
         Flush();
     }
@@ -2100,11 +3537,42 @@ public sealed partial class StyleConsole
     /// It will flush immediately.
     /// </summary>
     /// <param name="foreground">The foreground color.</param>
+    /// <param name="number">A number to output.</param>
+    /// <param name="format">A standard or custom numeric format string.</param>
+    /// <exception cref="FormatException">format is invalid or not supported.</exception>
+    public void WriteLine(ConsoleColor foreground, decimal number, string format)
+    {
+        col.Add(new ConsoleText(number.ToString(format), foreground));
+        col.Add(new ConsoleText(Environment.NewLine));
+        Flush();
+    }
+
+    /// <summary>
+    /// Writes the specified number, followed by the current line terminator, to the standard output stream.
+    /// It will flush immediately.
+    /// </summary>
+    /// <param name="foreground">The foreground color.</param>
     /// <param name="background">The background color.</param>
     /// <param name="number">A number to output.</param>
     public void WriteLine(ConsoleColor? foreground, ConsoleColor? background, decimal number)
     {
         col.Add(new ConsoleText(number.ToString("g"), foreground, background));
+        col.Add(new ConsoleText(Environment.NewLine));
+        Flush();
+    }
+
+    /// <summary>
+    /// Writes the specified number, followed by the current line terminator, to the standard output stream.
+    /// It will flush immediately.
+    /// </summary>
+    /// <param name="foreground">The foreground color.</param>
+    /// <param name="background">The background color.</param>
+    /// <param name="number">A number to output.</param>
+    /// <param name="format">A standard or custom numeric format string.</param>
+    /// <exception cref="FormatException">format is invalid or not supported.</exception>
+    public void WriteLine(ConsoleColor? foreground, ConsoleColor? background, decimal number, string format)
+    {
+        col.Add(new ConsoleText(number.ToString(format), foreground, background));
         col.Add(new ConsoleText(Environment.NewLine));
         Flush();
     }

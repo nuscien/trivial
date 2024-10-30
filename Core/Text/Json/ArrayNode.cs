@@ -4321,6 +4321,66 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
     }
 
     /// <summary>
+    /// Converts a collection of JSON value node to a string collection.
+    /// </summary>
+    /// <param name="strict">true if enable strict mode what only its JSON value kind is string; otherwise, false.</param>
+    /// <param name="removeNotMatched">true if remove the ones not matched; otherwise, false.</param>
+    /// <returns>A string collection converted.</returns>
+    public IEnumerable<string> OfStringType(bool strict, bool removeNotMatched)
+    {
+        var col = new List<BaseJsonValueNode>(store);
+        return col.OfStringType(strict, removeNotMatched);
+    }
+
+    /// <summary>
+    /// Converts a collection of JSON value node to a string collection.
+    /// </summary>
+    /// <param name="predicate">A function to test each element for a condition.</param>
+    /// <returns>A string collection converted.</returns>
+    /// <exception cref="ArgumentNullException">predicate is null.</exception>
+    public IEnumerable<string> OfStringType(Func<string, int, bool, JsonValueKind, bool> predicate)
+    {
+        var col = new List<BaseJsonValueNode>(store);
+        return col.OfStringType(predicate);
+    }
+
+    /// <summary>
+    /// Converts a collection of JSON value node to a string collection.
+    /// </summary>
+    /// <param name="predicate">A function to test each element for a condition.</param>
+    /// <returns>A string collection converted.</returns>
+    /// <exception cref="ArgumentNullException">predicate is null.</exception>
+    public IEnumerable<string> OfStringType(Func<string, JsonValueKind, bool> predicate)
+    {
+        var col = new List<BaseJsonValueNode>(store);
+        return col.OfStringType(predicate);
+    }
+
+    /// <summary>
+    /// Converts a collection of JSON value node to a string collection.
+    /// </summary>
+    /// <param name="converter">A converter hanlder.</param>
+    /// <param name="skipNull">true if skip null; otherwise, false.</param>
+    /// <returns>A string collection converted.</returns>
+    public IEnumerable<string> OfStringType(Func<BaseJsonValueNode, string> converter, bool skipNull)
+    {
+        var col = new List<BaseJsonValueNode>(store);
+        return col.OfStringType(converter, skipNull);
+    }
+
+    /// <summary>
+    /// Converts a collection of JSON value node to a string collection.
+    /// </summary>
+    /// <param name="converter">A converter hanlder.</param>
+    /// <param name="skipNull">true if skip null; otherwise, false.</param>
+    /// <returns>A string collection converted.</returns>
+    public IEnumerable<string> OfStringType(Func<BaseJsonValueNode, int, string> converter, bool skipNull)
+    {
+        var col = new List<BaseJsonValueNode>(store);
+        return col.OfStringType(converter, skipNull);
+    }
+
+    /// <summary>
     /// Creates a list from this instance.
     /// </summary>
     /// <returns>A list that contains elements from this sequence.</returns>

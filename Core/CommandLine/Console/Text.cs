@@ -576,7 +576,7 @@ public class ConsoleText
         if (u) sb.Append(AnsiCodeGenerator.Underline(true));
         if (s) sb.Append(AnsiCodeGenerator.Strikeout(true));
         if (blink) sb.Append(AnsiCodeGenerator.Blink(true));
-        Text.StringExtensions.Append(sb, Content);
+        StringExtensions.Append(sb, Content);
         if (blink) sb.Append(AnsiCodeGenerator.Blink(false));
         if (s) sb.Append(AnsiCodeGenerator.Strikeout(false));
         if (u) sb.Append(AnsiCodeGenerator.Underline(false));
@@ -597,7 +597,7 @@ public class ConsoleText
     {
         if (rightValue is null) return leftValue;
         var sb = new StringBuilder();
-        Text.StringExtensions.Append(sb, leftValue?.Content);
+        StringExtensions.Append(sb, leftValue?.Content);
         sb.Append(rightValue);
         return new ConsoleText(sb, leftValue?.Style);
     }
@@ -614,7 +614,7 @@ public class ConsoleText
         if (leftValue is null) return rightValue;
         var sb = new StringBuilder();
         sb.Append(leftValue);
-        Text.StringExtensions.Append(sb, rightValue?.Content);
+        StringExtensions.Append(sb, rightValue?.Content);
         return new ConsoleText(sb, rightValue?.Style);
     }
 
@@ -629,8 +629,8 @@ public class ConsoleText
     {
         if (rightValue is null) return leftValue;
         var sb = new StringBuilder();
-        Text.StringExtensions.Append(sb, leftValue?.Content);
-        Text.StringExtensions.Append(sb, rightValue);
+        StringExtensions.Append(sb, leftValue?.Content);
+        StringExtensions.Append(sb, rightValue);
         return new ConsoleText(sb, leftValue?.Style);
     }
 
@@ -645,8 +645,8 @@ public class ConsoleText
     {
         if (leftValue is null) return rightValue;
         var sb = new StringBuilder();
-        Text.StringExtensions.Append(sb, leftValue);
-        Text.StringExtensions.Append(sb, rightValue?.Content);
+        StringExtensions.Append(sb, leftValue);
+        StringExtensions.Append(sb, rightValue?.Content);
         return new ConsoleText(sb, rightValue?.Style);
     }
 }

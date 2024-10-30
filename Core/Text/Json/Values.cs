@@ -961,6 +961,162 @@ public static class JsonValues
     }
 
     /// <summary>
+    /// Converts to JSON array.
+    /// </summary>
+    /// <param name="collection">The collection of the item to convert.</param>
+    /// <returns>A JSON array node converted.</returns>
+    public static JsonArrayNode ToJsonArrayNode(this IEnumerable<JsonObjectNode> collection)
+    {
+        if (collection == null) return null;
+        var arr = new JsonArrayNode();
+        arr.AddRange(collection);
+        return arr;
+    }
+
+    /// <summary>
+    /// Converts to JSON array.
+    /// </summary>
+    /// <param name="collection">The collection of the item to convert.</param>
+    /// <returns>A JSON array node converted.</returns>
+    public static JsonArrayNode ToJsonArrayNode(IEnumerable<string> collection)
+    {
+        if (collection == null) return null;
+        var arr = new JsonArrayNode();
+        arr.AddRange(collection);
+        return arr;
+    }
+
+    /// <summary>
+    /// Converts to JSON array.
+    /// </summary>
+    /// <param name="collection">The collection of the item to convert.</param>
+    /// <returns>A JSON array node converted.</returns>
+    public static JsonArrayNode ToJsonArrayNode(IEnumerable<int> collection)
+    {
+        if (collection == null) return null;
+        var arr = new JsonArrayNode();
+        arr.AddRange(collection);
+        return arr;
+    }
+
+    /// <summary>
+    /// Converts a collection of JSON value node to a string collection.
+    /// </summary>
+    /// <param name="collection">The source collection.</param>
+    /// <param name="strict">true if enable strict mode what only its JSON value kind is string; otherwise, false.</param>
+    /// <param name="removeNotMatched">true if remove the ones not matched; otherwise, false.</param>
+    /// <returns>A string collection converted.</returns>
+    public static IEnumerable<string> OfStringType<T>(this IEnumerable<T> collection, bool strict, bool removeNotMatched) where T : IJsonValueNode
+    {
+        if (collection == null) return null;
+        var col = collection.Select(ele => ele.TryConvert(strict, out string s) ? s : null);
+        if (removeNotMatched) col = col.Where(ele => ele != null);
+        return col;
+    }
+
+    /// <summary>
+    /// Converts a collection of JSON value node to a string collection.
+    /// </summary>
+    /// <param name="collection">The source collection.</param>
+    /// <param name="predicate">A function to test each element for a condition.</param>
+    /// <returns>A string collection converted.</returns>
+    /// <exception cref="ArgumentNullException">predicate is null.</exception>
+    public static IEnumerable<string> OfStringType<T>(this IEnumerable<T> collection, Func<string, int, bool, JsonValueKind, bool> predicate) where T : IJsonValueNode
+    {
+        if (predicate is null) throw new ArgumentNullException(nameof(predicate), "predicate should not be null.");
+        if (collection == null) yield break;
+        var i = -1;
+        foreach (var item in collection)
+        {
+            i++;
+            var b = item.TryConvert(false, out string s);
+            if (predicate(s, i, b, item.ValueKind)) yield return s;
+        }
+    }
+
+    /// <summary>
+    /// Converts a collection of JSON value node to a string collection.
+    /// </summary>
+    /// <param name="collection">The source collection.</param>
+    /// <param name="predicate">A function to test each element for a condition.</param>
+    /// <returns>A string collection converted.</returns>
+    /// <exception cref="ArgumentNullException">predicate is null.</exception>
+    public static IEnumerable<string> OfStringType<T>(this IEnumerable<T> collection, Func<string, JsonValueKind, bool> predicate) where T : IJsonValueNode
+    {
+        if (predicate is null) throw new ArgumentNullException(nameof(predicate), "predicate should not be null.");
+        if (collection == null) yield break;
+        var i = -1;
+        foreach (var item in collection)
+        {
+            i++;
+            if (!item.TryConvert(false, out string s)) s = null;
+            if (predicate(s, item.ValueKind)) yield return s;
+        }
+    }
+
+    /// <summary>
+    /// Converts a collection of JSON value node to a string collection.
+    /// </summary>
+    /// <param name="collection">The source collection.</param>
+    /// <param name="converter">A converter hanlder.</param>
+    /// <param name="skipNull">true if skip null; otherwise, false.</param>
+    /// <returns>A string collection converted.</returns>
+    public static IEnumerable<string> OfStringType<T>(this IEnumerable<T> collection, Func<T, string> converter, bool skipNull) where T : IJsonValueNode
+    {
+        if (collection == null) yield break;
+        var i = -1;
+        converter ??= node => node.TryConvert(false, out string s) ? s : null;
+        if (skipNull)
+        {
+            foreach (var item in collection)
+            {
+                i++;
+                var s = converter(item);
+                if (s != null) yield return s;
+            }
+        }
+        else
+        {
+            foreach (var item in collection)
+            {
+                i++;
+                yield return converter(item);
+            }
+        }
+    }
+
+    /// <summary>
+    /// Converts a collection of JSON value node to a string collection.
+    /// </summary>
+    /// <param name="collection">The source collection.</param>
+    /// <param name="converter">A converter hanlder.</param>
+    /// <param name="skipNull">true if skip null; otherwise, false.</param>
+    /// <returns>A string collection converted.</returns>
+    public static IEnumerable<string> OfStringType<T>(this IEnumerable<T> collection, Func<T, int, string> converter, bool skipNull) where T : IJsonValueNode
+    {
+        if (collection == null) yield break;
+        var i = -1;
+        converter ??= (node, i) => node.TryConvert(false, out string s) ? s : null;
+        if (skipNull)
+        {
+            foreach (var item in collection)
+            {
+                i++;
+                var s = converter(item, i);
+                if (s != null) yield return s;
+            }
+        }
+        else
+        {
+            foreach (var item in collection)
+            {
+                i++;
+                yield return converter(item, i);
+            }
+        }
+    }
+
+    /// <summary>
     /// Converts to string format.
     /// </summary>
     /// <param name="value">The JSON object.</param>

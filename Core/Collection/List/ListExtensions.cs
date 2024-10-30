@@ -1225,6 +1225,35 @@ public static partial class ListExtensions
     /// </summary>
     /// <param name="collection">The collection of the item to convert.</param>
     /// <returns>A JSON object node collection converted.</returns>
+    public static IEnumerable<JsonObjectNode> ToJsonObjectNodes(this IEnumerable<ConciseModel> collection)
+    {
+        if (collection == null) yield break;
+        foreach (var item in collection)
+        {
+            if (item == null) yield return null;
+            yield return item.ToJson();
+        }
+    }
+
+    /// <summary>
+    /// Converts to JSON array.
+    /// </summary>
+    /// <param name="collection">The collection of the item to convert.</param>
+    /// <returns>A JSON array node converted.</returns>
+    public static JsonArrayNode ToJsonArrayNode(this IEnumerable<ConciseModel> collection)
+    {
+        if (collection == null) return null;
+        var list = ToJsonObjectNodes(collection);
+        var arr = new JsonArrayNode();
+        arr.AddRange(list);
+        return arr;
+    }
+
+    /// <summary>
+    /// Converts to JSON object node collection.
+    /// </summary>
+    /// <param name="collection">The collection of the item to convert.</param>
+    /// <returns>A JSON object node collection converted.</returns>
     public static IEnumerable<JsonObjectNode> ToJsonObjectNodes(this IEnumerable<ServerSentEventInfo> collection)
     {
         if (collection == null) yield break;
@@ -1256,7 +1285,7 @@ public static partial class ListExtensions
     /// <param name="eventName">The event name.</param>
     /// <param name="callback">The callback on item matched.</param>
     /// <returns>The collection.</returns>
-    public static IEnumerable<ServerSentEventInfo> On(IEnumerable<ServerSentEventInfo> collection, string eventName, Action<ServerSentEventInfo> callback)
+    public static IEnumerable<ServerSentEventInfo> On(this IEnumerable<ServerSentEventInfo> collection, string eventName, Action<ServerSentEventInfo> callback)
     {
         if (collection == null || callback == null) yield break;
         foreach (var item in collection)
@@ -1274,7 +1303,7 @@ public static partial class ListExtensions
     /// <param name="eventName">The event name.</param>
     /// <param name="callback">The callback on item matched.</param>
     /// <returns>The collection.</returns>
-    public static IEnumerable<ServerSentEventInfo> On(IEnumerable<ServerSentEventInfo> collection, string eventName, Action<ServerSentEventInfo, int> callback)
+    public static IEnumerable<ServerSentEventInfo> On(this IEnumerable<ServerSentEventInfo> collection, string eventName, Action<ServerSentEventInfo, int> callback)
     {
         if (collection == null || callback == null) yield break;
         var i = -1;
