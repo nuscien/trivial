@@ -1002,6 +1002,65 @@ public static partial class ListExtensions
     /// <returns>A synchronized list.</returns>
     public static IList<T> ToSynchronizedList<T>(List<T> list, object syncRoot, bool useSource)
         => new ConcurrentList<T>(syncRoot, list, useSource);
+    /// <summary>
+    /// Determines whether it contains the property only with the specific key.
+    /// </summary>
+    /// <param name="col">The source collection.</param>
+    /// <param name="keys">The property keys to test.</param>
+    /// <param name="matched">The keys matched.</param>
+    /// <returns>true if it contains the property key only; otherwise, false.</returns>
+    /// <exception cref="ArgumentNullException">col is null.</exception>
+    public static bool ContainsOnly(this IEnumerable<string> col, IEnumerable<string> keys, out List<string> matched)
+    {
+        if (col == null) throw new ArgumentNullException(nameof(col), "col should not be null.");
+        matched = new();
+        if (keys == null) return !col.Any();
+        var b = true;
+        foreach (var item in col)
+        {
+            if (keys.Contains(item)) matched.Add(item);
+            else b = false;
+        }
+
+        return b;
+    }
+
+    /// <summary>
+    /// Determines whether it contains the property only with the specific key.
+    /// </summary>
+    /// <param name="col">The source collection.</param>
+    /// <param name="keys">The property keys to test.</param>
+    /// <param name="matched">The keys matched.</param>
+    /// <param name="rest">The rest property keys.</param>
+    /// <returns>true if it contains the property key only; otherwise, false.</returns>
+    /// <exception cref="ArgumentNullException">col is null.</exception>
+    public static bool ContainsOnly(this IEnumerable<string> col, IEnumerable<string> keys, out List<string> matched, out List<string> rest)
+    {
+        if (col == null) throw new ArgumentNullException(nameof(col), "col should not be null.");
+        matched = new();
+        if (keys == null)
+        {
+            rest = col.ToList();
+            return rest.Count == 0;
+        }
+
+        rest = new();
+        var b = true;
+        foreach (var item in col)
+        {
+            if (keys.Contains(item))
+            {
+                matched.Add(item);
+            }
+            else
+            {
+                b = false;
+                rest.Add(item);
+            }
+        }
+
+        return b;
+    }
 
     /// <summary>
     /// Tests if they are same.

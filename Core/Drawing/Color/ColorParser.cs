@@ -609,15 +609,15 @@ public static partial class ColorCalculator
 
     private static float TryGetSingleFromMulti(JsonObjectNode node, string keyA, string keyB, string keyC, string keyD, string keyE, float defaultValue)
     {
-        var v = node.TryGetSingleValue(keyA);
+        var v = node.TryGetSingleValue(keyA, false);
         if (!float.IsNaN(v)) return v;
-        v = node.TryGetSingleValue(keyB);
+        v = node.TryGetSingleValue(keyB, false);
         if (!float.IsNaN(v)) return v;
-        v = node.TryGetSingleValue(keyC);
+        v = node.TryGetSingleValue(keyC, false);
         if (!float.IsNaN(v)) return v;
-        v = node.TryGetSingleValue(keyD);
+        v = node.TryGetSingleValue(keyD, false);
         if (!float.IsNaN(v)) return v;
-        v = node.TryGetSingleValue(keyE);
+        v = node.TryGetSingleValue(keyE, false);
         if (!float.IsNaN(v)) return v;
         return defaultValue;
     }

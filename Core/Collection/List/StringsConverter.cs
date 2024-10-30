@@ -50,54 +50,6 @@ public static partial class ListExtensions
     }
 
     /// <summary>
-    /// Gets the JSON array format string of the value.
-    /// </summary>
-    /// <param name="col">The input collection.</param>
-    /// <returns>A JSON array format string.</returns>
-    public static string ToJsonArrayString(this IEnumerable<JsonObjectNode> col)
-    {
-        var arr = new JsonArrayNode();
-        arr.AddRange(col);
-        return arr.ToString();
-    }
-
-    /// <summary>
-    /// Gets the JSON array format string of the value.
-    /// </summary>
-    /// <param name="col">The input collection.</param>
-    /// <param name="indentStyle">The indent style.</param>
-    /// <returns>A JSON array format string.</returns>
-    public static string ToJsonArrayString(this IEnumerable<JsonObjectNode> col, IndentStyles indentStyle)
-    {
-        var arr = new JsonArrayNode();
-        arr.AddRange(col);
-        return arr.ToString(indentStyle);
-    }
-
-    /// <summary>
-    /// Gets the JSON lines format string of the value.
-    /// </summary>
-    /// <param name="col">The input collection.</param>
-    /// <returns>A JSON lines format string.</returns>
-    public static string ToJsonlString(this IEnumerable<JsonObjectNode> col)
-    {
-        if (col == null) return null;
-        var str = new StringBuilder();
-        foreach (var prop in col)
-        {
-            if (prop is null)
-            {
-                str.AppendLine("null");
-                continue;
-            }
-
-            str.AppendLine(prop.ToString());
-        }
-
-        return str.ToString();
-    }
-
-    /// <summary>
     /// Generates a string collection.
     /// </summary>
     /// <param name="count">The count.</param>

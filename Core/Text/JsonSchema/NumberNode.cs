@@ -66,13 +66,13 @@ public class JsonNumberSchemaDescription : JsonNodeSchemaDescription
         : base(json, true)
     {
         if (json == null) return;
-        DefaultValue = json.TryGetDoubleValue("default");
-        ConstantValue = json.TryGetDoubleValue("const");
-        MultipleOf = json.TryGetDoubleValue("multipleOf");
-        var exclusiveMin = json.TryGetDoubleValue("exclusiveMinimum");
-        var exclusiveMax = json.TryGetDoubleValue("exclusiveMaximum");
-        var min = json.TryGetDoubleValue("minimum");
-        var max = json.TryGetDoubleValue("maximum");
+        DefaultValue = json.TryGetDoubleValue("default", false);
+        ConstantValue = json.TryGetDoubleValue("const", false);
+        MultipleOf = json.TryGetDoubleValue("multipleOf", false);
+        var exclusiveMin = json.TryGetDoubleValue("exclusiveMinimum", false);
+        var exclusiveMax = json.TryGetDoubleValue("exclusiveMaximum", false);
+        var min = json.TryGetDoubleValue("minimum", false);
+        var max = json.TryGetDoubleValue("maximum", false);
         if (double.IsNaN(exclusiveMax))
         {
             Max = max;
@@ -233,10 +233,10 @@ public class JsonIntegerSchemaDescription : JsonNodeSchemaDescription
         DefaultValue = json.TryGetInt32Value("default");
         ConstantValue = json.TryGetInt32Value("const");
         MultipleOf = json.TryGetInt32Value("multipleOf");
-        var exclusiveMin = json.TryGetDoubleValue("exclusiveMinimum");
-        var exclusiveMax = json.TryGetDoubleValue("exclusiveMaximum");
-        var min = json.TryGetDoubleValue("minimum");
-        var max = json.TryGetDoubleValue("maximum");
+        var exclusiveMin = json.TryGetDoubleValue("exclusiveMinimum", false);
+        var exclusiveMax = json.TryGetDoubleValue("exclusiveMaximum", false);
+        var min = json.TryGetDoubleValue("minimum", false);
+        var max = json.TryGetDoubleValue("maximum", false);
         if (double.IsNaN(exclusiveMax))
         {
             Max = max;

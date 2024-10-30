@@ -1503,8 +1503,9 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
     /// Tries to get the value at the specific index.
     /// </summary>
     /// <param name="index">The zero-based index of the element to get.</param>
+    /// <param name="defaultIsZero">true if returns zero for default or getting failure; otherwise, false, to return NaN.</param>
     /// <returns>The value; or NaN if fail to resolve.</returns>
-    public float TryGetSingleValue(int index)
+    public float TryGetSingleValue(int index, bool defaultIsZero)
     {
         try
         {
@@ -1522,7 +1523,7 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
 
         if (TryGetJsonValue<JsonIntegerNode>(index, out var p3)) return (float)p3;
         var str = TryGetStringValue(index);
-        if (string.IsNullOrWhiteSpace(str) || !float.TryParse(str, out var p4)) return float.NaN;
+        if (string.IsNullOrWhiteSpace(str) || !float.TryParse(str, out var p4)) return defaultIsZero ? 0f : float.NaN;
         return p4;
     }
 
@@ -1531,9 +1532,9 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
     /// </summary>
     /// <param name="index">The zero-based index of the element to get.</param>
     /// <returns>The value; or null if fail to resolve.</returns>
-    public float? TryGetNullableSingleValue(int index)
+    public float? TryGetSingleValue(int index)
     {
-        var v = TryGetSingleValue(index);
+        var v = TryGetSingleValue(index, false);
         return float.IsNaN(v) ? null : v;
     }
 
@@ -1545,7 +1546,7 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
     /// <returns>true if has the index and the type is the one expected; otherwise, false.</returns>
     public bool TryGetSingleValue(int index, out float result)
     {
-        result = TryGetSingleValue(index);
+        result = TryGetSingleValue(index, false);
         return !float.IsNaN(result);
     }
 
@@ -1557,7 +1558,7 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
     /// <returns>The value; or the default value if fail to resolve.</returns>
     public float TryGetSingleValue(int index, float defaultValue)
     {
-        var v = TryGetSingleValue(index);
+        var v = TryGetSingleValue(index, false);
         return float.IsNaN(v) ? defaultValue : v;
     }
 
@@ -1565,14 +1566,15 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
     /// Tries to get the value at the specific index.
     /// </summary>
     /// <param name="index">The zero-based index of the element to get.</param>
+    /// <param name="defaultIsZero">true if returns zero for default or getting failure; otherwise, false, to return NaN.</param>
     /// <returns>The value; or NaN if fail to resolve.</returns>
-    public double TryGetDoubleValue(int index)
+    public double TryGetDoubleValue(int index, bool defaultIsZero)
     {
         if (TryGetJsonValue<JsonDoubleNode>(index, out var p1)) return p1.Value;
         if (TryGetJsonValue<JsonIntegerNode>(index, out var p2)) return (double)p2;
         if (TryGetJsonValue<JsonDecimalNode>(index, out var p3)) return (double)p3;
         var str = TryGetStringValue(index);
-        if (string.IsNullOrWhiteSpace(str) || !double.TryParse(str, out var p4)) return double.NaN;
+        if (string.IsNullOrWhiteSpace(str) || !double.TryParse(str, out var p4)) return defaultIsZero ? 0d : double.NaN;
         return p4;
     }
 
@@ -1581,9 +1583,9 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
     /// </summary>
     /// <param name="index">The zero-based index of the element to get.</param>
     /// <returns>The value; or null if fail to resolve.</returns>
-    public double? TryGetNullableDoubleValue(int index)
+    public double? TryGetDoubleValue(int index)
     {
-        var v = TryGetDoubleValue(index);
+        var v = TryGetDoubleValue(index, false);
         return double.IsNaN(v) ? null : v;
     }
 
@@ -1595,7 +1597,7 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
     /// <returns>The value; or the default value if fail to resolve.</returns>
     public double TryGetDoubleValue(int index, double defaultValue)
     {
-        var v = TryGetDoubleValue(index);
+        var v = TryGetDoubleValue(index, false);
         return double.IsNaN(v) ? defaultValue : v;
     }
 
@@ -1607,7 +1609,7 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
     /// <returns>true if has the index and the type is the one expected; otherwise, false.</returns>
     public bool TryGetDoubleValue(int index, out double result)
     {
-        result = TryGetDoubleValue(index);
+        result = TryGetDoubleValue(index, false);
         return !double.IsNaN(result);
     }
 
@@ -3192,7 +3194,7 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
     /// Adds a value.
     /// </summary>
     /// <param name="value">The value to set.</param>
-    public void Add(System.Text.Json.Nodes.JsonNode value)
+    public void Add(JsonNode value)
         => AddItem(JsonValues.ToJsonValue(value) ?? JsonValues.Null);
 
     /// <summary>
@@ -3667,7 +3669,7 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
     /// <param name="index">The zero-based index of the element to get.</param>
     /// <param name="value">The value to set.</param>
     /// <exception cref="ArgumentOutOfRangeException">The index was out of range.</exception>
-    public void Insert(int index, System.Text.Json.Nodes.JsonNode value)
+    public void Insert(int index, JsonNode value)
         => InsertItem(index, JsonValues.ToJsonValue(value) ?? JsonValues.Null);
 
     /// <summary>
@@ -4161,6 +4163,7 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
     /// </summary>
     /// <param name="predicate">A function to test each source element for a condition.</param>
     /// <returns>A collection that contains elements from the input sequence that satisfy the condition.</returns>
+    /// <exception cref="ArgumentNullException">predicate is null.</exception>
     public IEnumerable<BaseJsonValueNode> Where(Func<JsonValueKind, object, int, bool> predicate)
     {
         if (predicate == null) throw new ArgumentNullException(nameof(predicate), "predicate was null.");

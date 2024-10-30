@@ -19,11 +19,6 @@ using Trivial.Reflection;
 using Trivial.Tasks;
 using Trivial.Web;
 
-using SystemJsonObject = System.Text.Json.Nodes.JsonObject;
-using SystemJsonArray = System.Text.Json.Nodes.JsonArray;
-using SystemJsonValue = System.Text.Json.Nodes.JsonValue;
-using SystemJsonNode = System.Text.Json.Nodes.JsonNode;
-
 namespace Trivial.Text;
 
 /// <summary>
@@ -87,7 +82,7 @@ public static class JsonValues
     /// </summary>
     /// <param name="json">The JSON value.</param>
     /// <returns>The JSON value; or null, if failed.</returns>
-    public static BaseJsonValueNode ToJsonValue(SystemJsonNode json)
+    public static BaseJsonValueNode ToJsonValue(System.Text.Json.Nodes.JsonNode json)
     {
         try
         {
@@ -107,6 +102,73 @@ public static class JsonValues
         }
 
         return null;
+    }
+
+    /// <summary>
+    /// Gets the JSON array format string of the value.
+    /// </summary>
+    /// <param name="col">The input collection.</param>
+    /// <returns>A JSON array format string.</returns>
+    public static string ToJsonArrayString(this IEnumerable<JsonObjectNode> col)
+    {
+        var arr = new JsonArrayNode();
+        arr.AddRange(col);
+        return arr.ToString();
+    }
+
+    /// <summary>
+    /// Gets the JSON array format string of the value.
+    /// </summary>
+    /// <param name="col">The input collection.</param>
+    /// <param name="indentStyle">The indent style.</param>
+    /// <returns>A JSON array format string.</returns>
+    public static string ToJsonArrayString(this IEnumerable<JsonObjectNode> col, IndentStyles indentStyle)
+    {
+        var arr = new JsonArrayNode();
+        arr.AddRange(col);
+        return arr.ToString(indentStyle);
+    }
+
+    /// <summary>
+    /// Gets the JSON lines format string of the value.
+    /// </summary>
+    /// <param name="col">The input collection.</param>
+    /// <returns>A JSON lines format string.</returns>
+    public static string ToJsonlString(this IEnumerable<JsonObjectNode> col)
+    {
+        if (col == null) return null;
+        var str = new StringBuilder();
+        foreach (var prop in col)
+        {
+            if (prop is null)
+            {
+                str.AppendLine("null");
+                continue;
+            }
+
+            str.AppendLine(prop.ToString());
+        }
+
+        return str.ToString();
+    }
+
+    /// <summary>
+    /// Filters a sequence of values based on a predicate.
+    /// </summary>
+    /// <param name="source">The collection source.</param>
+    /// <param name="predicate">A function to test each source element for a condition.</param>
+    /// <returns>A collection that contains elements from the input sequence that satisfy the condition.</returns>
+    /// <exception cref="ArgumentNullException">source or predicate is null.</exception>
+    public static IEnumerable<BaseJsonValueNode> Where(this IEnumerable<BaseJsonValueNode> source, Func<JsonValueKind, object, int, bool> predicate)
+    {
+        if (source == null) throw new ArgumentNullException(nameof(source), "source was null.");
+        if (predicate == null) throw new ArgumentNullException(nameof(predicate), "predicate was null.");
+        var index = -1;
+        foreach (var value in source)
+        {
+            index++;
+            if (predicate(value.ValueKind, GetValue(value), index)) yield return value;
+        }
     }
 
     /// <summary>
