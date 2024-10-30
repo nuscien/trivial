@@ -1895,26 +1895,7 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// <param name="key">The property key.</param>
     /// <returns>The value; or null if fail to resolve.</returns>
     public ushort? TryGetUInt16Value(string key)
-    {
-        try
-        {
-            if (TryGetJsonValue<JsonIntegerNode>(key, out var p1)) return (ushort)p1;
-            if (TryGetJsonValue<JsonDoubleNode>(key, out var p2)) return (ushort)Math.Round(p2.Value);
-            if (TryGetJsonValue<JsonDecimalNode>(key, out var p3)) return (ushort)Math.Round(p3.Value);
-        }
-        catch (InvalidCastException)
-        {
-            return null;
-        }
-        catch (ArgumentOutOfRangeException)
-        {
-            return null;
-        }
-
-        var str = TryGetStringValue(key);
-        if (string.IsNullOrWhiteSpace(str) || !Numbers.TryParseToUInt16(str, 10, out var p4)) return null;
-        return p4;
-    }
+        => TryGetUInt16Value(key, out var result, out _) ? result : null;
 
     /// <summary>
     /// Tries to get the value of the specific property.
@@ -1923,11 +1904,17 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// <param name="result">The result.</param>
     /// <returns>true if has the property and the type is the one expected; otherwise, false.</returns>
     public bool TryGetUInt16Value(string key, out ushort result)
-    {
-        var v = TryGetUInt16Value(key);
-        result = v ?? default;
-        return v.HasValue;
-    }
+        => TryGetUInt16Value(key, out result, out _);
+
+    /// <summary>
+    /// Tries to get the value of the specific property.
+    /// </summary>
+    /// <param name="key">The property key.</param>
+    /// <param name="result">The result.</param>
+    /// <param name="kind">The JSON value kind.</param>
+    /// <returns>true if has the property and the type is the one expected; otherwise, false.</returns>
+    public bool TryGetUInt16Value(string key, out ushort result, out JsonValueKind kind)
+        => TryGetJsonValue(key, out result, out kind);
 
     /// <summary>
     /// Tries to get the value of the specific property.
@@ -1935,26 +1922,7 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// <param name="key">The property key.</param>
     /// <returns>The value; or null if fail to resolve.</returns>
     public uint? TryGetUInt32Value(string key)
-    {
-        try
-        {
-            if (TryGetJsonValue<JsonIntegerNode>(key, out var p1)) return (uint)p1;
-            if (TryGetJsonValue<JsonDoubleNode>(key, out var p2)) return (uint)Math.Round(p2.Value);
-            if (TryGetJsonValue<JsonDecimalNode>(key, out var p3)) return (uint)Math.Round(p3.Value);
-        }
-        catch (InvalidCastException)
-        {
-            return null;
-        }
-        catch (ArgumentOutOfRangeException)
-        {
-            return null;
-        }
-
-        var str = TryGetStringValue(key);
-        if (string.IsNullOrWhiteSpace(str) || !Numbers.TryParseToUInt32(str, 10, out var p4)) return null;
-        return p4;
-    }
+        => TryGetUInt32Value(key, out var result, out _) ? result : null;
 
     /// <summary>
     /// Tries to get the value of the specific property.
@@ -1963,11 +1931,17 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// <param name="result">The result.</param>
     /// <returns>true if has the property and the type is the one expected; otherwise, false.</returns>
     public bool TryGetUInt32Value(string key, out uint result)
-    {
-        var v = TryGetUInt32Value(key);
-        result = v ?? default;
-        return v.HasValue;
-    }
+        => TryGetUInt32Value(key, out result, out _);
+
+    /// <summary>
+    /// Tries to get the value of the specific property.
+    /// </summary>
+    /// <param name="key">The property key.</param>
+    /// <param name="result">The result.</param>
+    /// <param name="kind">The JSON value kind.</param>
+    /// <returns>true if has the property and the type is the one expected; otherwise, false.</returns>
+    public bool TryGetUInt32Value(string key, out uint result, out JsonValueKind kind)
+        => TryGetJsonValue(key, out result, out kind);
 
     /// <summary>
     /// Tries to get the value of the specific property.
@@ -1975,26 +1949,7 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// <param name="key">The property key.</param>
     /// <returns>The value; or null if fail to resolve.</returns>
     public short? TryGetInt16Value(string key)
-    {
-        try
-        {
-            if (TryGetJsonValue<JsonIntegerNode>(key, out var p1)) return (short)p1;
-            if (TryGetJsonValue<JsonDoubleNode>(key, out var p2)) return (short)Math.Round(p2.Value);
-            if (TryGetJsonValue<JsonDecimalNode>(key, out var p3)) return (short)Math.Round(p3.Value);
-        }
-        catch (InvalidCastException)
-        {
-            return null;
-        }
-        catch (ArgumentOutOfRangeException)
-        {
-            return null;
-        }
-
-        var str = TryGetStringValue(key);
-        if (string.IsNullOrWhiteSpace(str) || !Numbers.TryParseToInt16(str, 10, out var p4)) return null;
-        return p4;
-    }
+        => TryGetInt16Value(key, out var result, out _) ? result : null;
 
     /// <summary>
     /// Tries to get the value of the specific property.
@@ -2003,11 +1958,17 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// <param name="result">The result.</param>
     /// <returns>true if has the property and the type is the one expected; otherwise, false.</returns>
     public bool TryGetInt16Value(string key, out short result)
-    {
-        var v = TryGetInt16Value(key);
-        result = v ?? default;
-        return v.HasValue;
-    }
+        => TryGetInt16Value(key, out result, out _);
+
+    /// <summary>
+    /// Tries to get the value of the specific property.
+    /// </summary>
+    /// <param name="key">The property key.</param>
+    /// <param name="result">The result.</param>
+    /// <param name="kind">The JSON value kind.</param>
+    /// <returns>true if has the property and the type is the one expected; otherwise, false.</returns>
+    public bool TryGetInt16Value(string key, out short result, out JsonValueKind kind)
+        => TryGetJsonValue(key, out result, out kind);
 
     /// <summary>
     /// Tries to get the value of the specific property.
@@ -2015,26 +1976,7 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// <param name="key">The property key.</param>
     /// <returns>The value; or null if fail to resolve.</returns>
     public int? TryGetInt32Value(string key)
-    {
-        if (TryGetJsonValue<JsonIntegerNode>(key, out var p1)) return (int)p1;
-        try
-        {
-            if (TryGetJsonValue<JsonDoubleNode>(key, out var p2)) return (int)Math.Round(p2.Value);
-            if (TryGetJsonValue<JsonDecimalNode>(key, out var p3)) return (int)Math.Round(p3.Value);
-        }
-        catch (InvalidCastException)
-        {
-            return null;
-        }
-        catch (ArgumentOutOfRangeException)
-        {
-            return null;
-        }
-
-        var str = TryGetStringValue(key);
-        if (string.IsNullOrWhiteSpace(str) || !Numbers.TryParseToInt32(str, 10, out var p4)) return null;
-        return p4;
-    }
+        => TryGetInt32Value(key, out var result, out _) ? result : null;
 
     /// <summary>
     /// Tries to get the value of the specific property.
@@ -2043,11 +1985,17 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// <param name="result">The result.</param>
     /// <returns>true if has the property and the type is the one expected; otherwise, false.</returns>
     public bool TryGetInt32Value(string key, out int result)
-    {
-        var v = TryGetInt32Value(key);
-        result = v ?? default;
-        return v.HasValue;
-    }
+        => TryGetInt32Value(key, out result, out _);
+
+    /// <summary>
+    /// Tries to get the value of the specific property.
+    /// </summary>
+    /// <param name="key">The property key.</param>
+    /// <param name="result">The result.</param>
+    /// <param name="kind">The JSON value kind.</param>
+    /// <returns>true if has the property and the type is the one expected; otherwise, false.</returns>
+    public bool TryGetInt32Value(string key, out int result, out JsonValueKind kind)
+        => TryGetJsonValue(key, out result, out kind);
 
     /// <summary>
     /// Tries to get the value of the specific property.
@@ -2067,10 +2015,9 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// <returns>true if has the property and the type is the one expected; otherwise, false.</returns>
     public bool TryGetInt32Value(string key, IJsonPropertyResolver<int> converter, out int result)
     {
-        var v = TryGetInt32Value(key);
-        if (v.HasValue)
+        if (TryGetInt32Value(key, out var v, out _))
         {
-            result = v.Value;
+            result = v;
             return true;
         }
 
@@ -2119,26 +2066,7 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// <param name="key">The property key.</param>
     /// <returns>The value; or null if fail to resolve.</returns>
     public long? TryGetInt64Value(string key)
-    {
-        if (TryGetJsonValue<JsonIntegerNode>(key, out var p1)) return p1.Value;
-        try
-        {
-            if (TryGetJsonValue<JsonDoubleNode>(key, out var p2)) return (long)Math.Round(p2.Value);
-            if (TryGetJsonValue<JsonDecimalNode>(key, out var p3)) return (long)Math.Round(p3.Value);
-        }
-        catch (InvalidCastException)
-        {
-            return null;
-        }
-        catch (ArgumentException)
-        {
-            return null;
-        }
-
-        var str = TryGetStringValue(key);
-        if (string.IsNullOrWhiteSpace(str) || !Numbers.TryParseToInt64(str, 10, out var p4)) return null;
-        return p4;
-    }
+        => TryGetInt64Value(key, out var result, out _) ? result : null;
 
     /// <summary>
     /// Tries to get the value of the specific property.
@@ -2147,11 +2075,17 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// <param name="result">The result.</param>
     /// <returns>true if has the property and the type is the one expected; otherwise, false.</returns>
     public bool TryGetInt64Value(string key, out long result)
-    {
-        var v = TryGetInt64Value(key);
-        result = v ?? default;
-        return v.HasValue;
-    }
+        => TryGetInt64Value(key, out result, out _);
+
+    /// <summary>
+    /// Tries to get the value of the specific property.
+    /// </summary>
+    /// <param name="key">The property key.</param>
+    /// <param name="result">The result.</param>
+    /// <param name="kind">The JSON value kind.</param>
+    /// <returns>true if has the property and the type is the one expected; otherwise, false.</returns>
+    public bool TryGetInt64Value(string key, out long result, out JsonValueKind kind)
+        => TryGetJsonValue(key, out result, out kind);
 
     /// <summary>
     /// Tries to get the value of the specific property.
@@ -2171,10 +2105,9 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// <returns>true if has the property and the type is the one expected; otherwise, false.</returns>
     public bool TryGetInt64Value(string key, IJsonPropertyResolver<long> converter, out long result)
     {
-        var v = TryGetInt64Value(key);
-        if (v.HasValue)
+        if (TryGetInt64Value(key, out var v, out _))
         {
-            result = v.Value;
+            result = v;
             return true;
         }
 
@@ -2224,26 +2157,7 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// <param name="defaultIsZero">true if returns zero for default or getting failure; otherwise, false, to return NaN.</param>
     /// <returns>The value; or NaN if fail to resolve.</returns>
     public float TryGetSingleValue(string key, bool defaultIsZero)
-    {
-        try
-        {
-            if (TryGetJsonValue<JsonDoubleNode>(key, out var p1)) return (float)p1;
-            if (TryGetJsonValue<JsonDecimalNode>(key, out var p3)) return (float)p3;
-        }
-        catch (InvalidCastException)
-        {
-            return float.NaN;
-        }
-        catch (ArgumentException)
-        {
-            return float.NaN;
-        }
-
-        if (TryGetJsonValue<JsonIntegerNode>(key, out var p2)) return (float)p2;
-        var str = TryGetStringValue(key);
-        if (string.IsNullOrWhiteSpace(str) || !float.TryParse(str, out var p4)) return defaultIsZero ? 0f : float.NaN;
-        return p4;
-    }
+        => TryGetSingleValue(key, out var result, out _) ? result : (defaultIsZero ? 0f : float.NaN);
 
     /// <summary>
     /// Tries to get the value of the specific property.
@@ -2251,10 +2165,7 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// <param name="key">The property key.</param>
     /// <returns>The value; or null if fail to resolve.</returns>
     public float? TryGetSingleValue(string key)
-    {
-        var v = TryGetSingleValue(key, false);
-        return float.IsNaN(v) ? null : v;
-    }
+        => TryGetSingleValue(key, out var result, out _) ? result : null;
 
     /// <summary>
     /// Tries to get the value of the specific property.
@@ -2263,11 +2174,7 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// <param name="defaultValue">The default value.</param>
     /// <returns>The value; or the default value if fail to resolve.</returns>
     public float TryGetSingleValue(string key, float defaultValue)
-    {
-        var v = TryGetSingleValue(key, false);
-        if (!float.IsNaN(v)) return v;
-        return defaultValue;
-    }
+        => TryGetSingleValue(key, out var result, out _) ? result : defaultValue;
 
     /// <summary>
     /// Tries to get the value of the specific property.
@@ -2276,10 +2183,17 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// <param name="result">The result.</param>
     /// <returns>true if has the property and the type is the one expected; otherwise, false.</returns>
     public bool TryGetSingleValue(string key, out float result)
-    {
-        result = TryGetSingleValue(key, false);
-        return !float.IsNaN(result);
-    }
+        => TryGetSingleValue(key, out result, out _);
+
+    /// <summary>
+    /// Tries to get the value of the specific property.
+    /// </summary>
+    /// <param name="key">The property key.</param>
+    /// <param name="result">The result.</param>
+    /// <param name="kind">The JSON value kind.</param>
+    /// <returns>true if has the property and the type is the one expected; otherwise, false.</returns>
+    public bool TryGetSingleValue(string key, out float result, out JsonValueKind kind)
+        => TryGetJsonValue(key, out result, out kind);
 
     /// <summary>
     /// Tries to get the value of the specific property.
@@ -2290,8 +2204,7 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// <returns>true if has the property and the type is the one expected; otherwise, false.</returns>
     public bool TryGetSingleValue(string key, IJsonPropertyResolver<float> converter, out float result)
     {
-        var v = TryGetSingleValue(key, false);
-        if (!float.IsNaN(v))
+        if (TryGetSingleValue(key, out var v, out _))
         {
             result = v;
             return true;
@@ -2387,14 +2300,7 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// <param name="defaultIsZero">true if returns zero for default or getting failure; otherwise, false, to return NaN.</param>
     /// <returns>The value; or NaN if fail to resolve.</returns>
     public double TryGetDoubleValue(string key, bool defaultIsZero)
-    {
-        if (TryGetJsonValue<JsonDoubleNode>(key, out var p1)) return p1.Value;
-        if (TryGetJsonValue<JsonIntegerNode>(key, out var p2)) return (double)p2;
-        if (TryGetJsonValue<JsonDecimalNode>(key, out var p3)) return (double)p3;
-        var str = TryGetStringValue(key);
-        if (string.IsNullOrWhiteSpace(str) || !double.TryParse(str, out var p4)) return defaultIsZero ? 0d : double.NaN;
-        return p4;
-    }
+        => TryGetDoubleValue(key, out var result, out _) ? result : (defaultIsZero ? 0d : double.NaN);
 
     /// <summary>
     /// Tries to get the value of the specific property.
@@ -2402,10 +2308,7 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// <param name="key">The property key.</param>
     /// <returns>The value; or null if fail to resolve.</returns>
     public double? TryGetDoubleValue(string key)
-    {
-        var v = TryGetDoubleValue(key, false);
-        return double.IsNaN(v) ? null : v;
-    }
+        => TryGetDoubleValue(key, out var result, out _) ? result : null;
 
     /// <summary>
     /// Tries to get the value of the specific property.
@@ -2414,11 +2317,7 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// <param name="defaultValue">The default value.</param>
     /// <returns>The value; or the default value if fail to resolve.</returns>
     public double TryGetDoubleValue(string key, double defaultValue)
-    {
-        var v = TryGetDoubleValue(key, false);
-        if (!double.IsNaN(v)) return v;
-        return defaultValue;
-    }
+        => TryGetDoubleValue(key, out var result, out _) ? result : defaultValue;
 
     /// <summary>
     /// Tries to get the value of the specific property.
@@ -2427,10 +2326,17 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// <param name="result">The result.</param>
     /// <returns>true if has the property and the type is the one expected; otherwise, false.</returns>
     public bool TryGetDoubleValue(string key, out double result)
-    {
-        result = TryGetDoubleValue(key, false);
-        return !double.IsNaN(result);
-    }
+        => TryGetDoubleValue(key, out result, out _);
+
+    /// <summary>
+    /// Tries to get the value of the specific property.
+    /// </summary>
+    /// <param name="key">The property key.</param>
+    /// <param name="result">The result.</param>
+    /// <param name="kind">The JSON value kind.</param>
+    /// <returns>true if has the property and the type is the one expected; otherwise, false.</returns>
+    public bool TryGetDoubleValue(string key, out double result, out JsonValueKind kind)
+        => TryGetJsonValue(key, out result, out kind);
 
     /// <summary>
     /// Tries to get the value of the specific property.
@@ -2441,8 +2347,7 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// <returns>true if has the property and the type is the one expected; otherwise, false.</returns>
     public bool TryGetDoubleValue(string key, IJsonPropertyResolver<double> converter, out double result)
     {
-        var v = TryGetDoubleValue(key, false);
-        if (!double.IsNaN(v))
+        if (TryGetDoubleValue(key, out var v, out _))
         {
             result = v;
             return true;
@@ -2537,26 +2442,7 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// <param name="key">The property key.</param>
     /// <returns>The value; or null if fail to resolve.</returns>
     public decimal? TryGetDecimalValue(string key)
-    {
-        try
-        {
-            if (TryGetJsonValue<JsonDecimalNode>(key, out var p1)) return p1.Value;
-            if (TryGetJsonValue<JsonDoubleNode>(key, out var p2)) return (decimal)p2.Value;
-        }
-        catch (InvalidCastException)
-        {
-            return null;
-        }
-        catch (OverflowException)
-        {
-            return null;
-        }
-
-        if (TryGetJsonValue<JsonIntegerNode>(key, out var p3)) return (decimal)p3;
-        var str = TryGetStringValue(key);
-        if (string.IsNullOrWhiteSpace(str) || !decimal.TryParse(str, out var p4)) return null;
-        return p4;
-    }
+        => TryGetDecimalValue(key, out var result, out _) ? result : null;
 
     /// <summary>
     /// Tries to get the value of the specific property.
@@ -2565,11 +2451,17 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// <param name="result">The result.</param>
     /// <returns>true if has the property and the type is the one expected; otherwise, false.</returns>
     public bool TryGetDecimalValue(string key, out decimal result)
-    {
-        var v = TryGetDecimalValue(key);
-        result = v ?? default;
-        return v.HasValue;
-    }
+        => TryGetDecimalValue(key, out result, out _);
+
+    /// <summary>
+    /// Tries to get the value of the specific property.
+    /// </summary>
+    /// <param name="key">The property key.</param>
+    /// <param name="result">The result.</param>
+    /// <param name="kind">The JSON value kind.</param>
+    /// <returns>true if has the property and the type is the one expected; otherwise, false.</returns>
+    public bool TryGetDecimalValue(string key, out decimal result, out JsonValueKind kind)
+        => TryGetJsonValue(key, out result, out kind);
 
     /// <summary>
     /// Tries to get the value of the specific property.
@@ -2607,12 +2499,7 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// <param name="key">The property key.</param>
     /// <returns>The value; or null if fail to resolve.</returns>
     public bool? TryGetBooleanValue(string key)
-    {
-        if (TryGetJsonValue<JsonBooleanNode>(key, out var p)) return p.Value;
-        var str = TryGetStringValue(key);
-        if (string.IsNullOrWhiteSpace(str) || !bool.TryParse(str, out var p3)) return null;
-        return p3;
-    }
+        => TryGetBooleanValue(key, out var result, out _) ? result : null;
 
     /// <summary>
     /// Tries to get the value of the specific property.
@@ -2621,11 +2508,7 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// <param name="result">The result.</param>
     /// <returns>true if has the property and the type is the one expected; otherwise, false.</returns>
     public bool TryGetBooleanValue(string key, out bool result)
-    {
-        var v = TryGetBooleanValue(key);
-        result = v ?? default;
-        return v.HasValue;
-    }
+        => TryGetBooleanValue(key, out result, out _);
 
     /// <summary>
     /// Tries to get the value of the specific property.
@@ -2669,15 +2552,24 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// Tries to get the value of the specific property.
     /// </summary>
     /// <param name="key">The property key.</param>
+    /// <param name="result">The result.</param>
+    /// <param name="kind">The JSON value kind.</param>
+    /// <returns>true if has the property and the type is the one expected; otherwise, false.</returns>
+    public bool TryGetBooleanValue(string key, out bool result, out JsonValueKind kind)
+        => TryGetJsonValue(key, out result, out kind);
+
+    /// <summary>
+    /// Tries to get the value of the specific property.
+    /// </summary>
+    /// <param name="key">The property key.</param>
     /// <param name="converter">The converter.</param>
     /// <param name="result">The result.</param>
     /// <returns>true if has the property and the type is the one expected; otherwise, false.</returns>
     public bool TryGetBooleanValue(string key, IJsonPropertyResolver<bool> converter, out bool result)
     {
-        var v = TryGetBooleanValue(key);
-        if (v.HasValue)
+        if (TryGetBooleanValue(key, out var v, out _))
         {
-            result = v.Value;
+            result = v;
             return true;
         }
 
@@ -2970,6 +2862,25 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
         }
 
         return null;
+    }
+
+    /// <summary>
+    /// Tries to get the value of the specific property.
+    /// </summary>
+    /// <param name="key">The property key.</param>
+    /// <param name="result">The result.</param>
+    /// <param name="kind">The JSON value kind.</param>
+    /// <returns>true if has the property and the type is the one expected; otherwise, false.</returns>
+    public bool TryGetDateTimeValue(string key, out DateTime result, out JsonValueKind kind)
+    {
+        var node = TryGetJsonValue(key);
+        kind = node.ValueKind;
+        DateTime? v = null;
+        if (node is IJsonValueNode<string> s) v = WebFormat.ParseDate(s.Value);
+        else if (node is IJsonValueNode<long> num) v = WebFormat.ParseDate(num.Value);
+        else if (node is JsonObjectNode obj) v = JsonValues.TryGetDateTime(obj);
+        result = v ?? WebFormat.ZeroTick;
+        return v.HasValue;
     }
 
 #if !NETFRAMEWORK
@@ -8352,6 +8263,26 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
         throw new InvalidOperationException(valueKind.HasValue
             ? $"The value kind of property {key} should be {valueKind.Value.ToString().ToLowerInvariant()} but it is {data.ValueKind.ToString().ToLowerInvariant()}."
             : $"The value kind of property {key} is {data.ValueKind.ToString().ToLowerInvariant()}, not expected.");
+    }
+
+    private BaseJsonValueNode TryGetJsonValue(string key)
+    {
+        if (string.IsNullOrWhiteSpace(key) || !store.TryGetValue(key, out var data)) return null;
+        return data ?? JsonValues.Null;
+    }
+
+    private bool TryGetJsonValue<T>(string key, out T result, out JsonValueKind kind)
+    {
+        var node = TryGetJsonValue(key);
+        if (node is null)
+        {
+            kind = JsonValueKind.Undefined;
+            result = default;
+            return false;
+        }
+
+        kind = node.ValueKind;
+        return node.TryConvert(false, out result, out _);
     }
 
     private bool TryGetJsonValue<T>(string key, out T property) where T : IJsonValueNode

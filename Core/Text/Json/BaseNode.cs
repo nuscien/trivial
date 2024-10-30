@@ -177,49 +177,73 @@ public abstract class BaseJsonValueNode : IJsonValueNode, IEquatable<IJsonValueN
     /// </summary>
     /// <typeparam name="T">The type to convert.</typeparam>
     /// <param name="strict">true if enable strict mode that compare the value kind firstly; otherwise, false, to convert in compatible mode.</param>
-    /// <returns>The value converted.</returns>
-    public T TryConvert<T>(bool strict = false)
+    /// <param name="result">The result.</param>
+    /// <param name="exception">The exception thrown if failed.</param>
+    /// <returns>true if converts succeeded; otherwise, false.</returns>
+    internal bool TryConvert<T>(bool strict, out T result, out Exception exception)
     {
         try
         {
-            return (T)TryConvert(typeof(T), strict, out _, false);
+            result = (T)TryConvert(typeof(T), strict, out exception, false);
+            return exception is null;
         }
-        catch (InvalidOperationException)
+        catch (InvalidOperationException ex)
         {
+            exception = ex;
         }
-        catch (InvalidCastException)
+        catch (InvalidCastException ex)
         {
+            exception = ex;
         }
-        catch (OverflowException)
+        catch (OverflowException ex)
         {
+            exception = ex;
         }
-        catch (ArgumentException)
+        catch (ArgumentException ex)
         {
+            exception = ex;
         }
-        catch (FormatException)
+        catch (FormatException ex)
         {
+            exception = ex;
         }
-        catch (JsonException)
+        catch (JsonException ex)
         {
+            exception = ex;
         }
-        catch (ArithmeticException)
+        catch (ArithmeticException ex)
         {
+            exception = ex;
         }
-        catch (NotImplementedException)
+        catch (NotImplementedException ex)
         {
+            exception = ex;
         }
-        catch (NullReferenceException)
+        catch (NullReferenceException ex)
         {
+            exception = ex;
         }
-        catch (AggregateException)
+        catch (AggregateException ex)
         {
+            exception = ex;
         }
-        catch (ExternalException)
+        catch (ExternalException ex)
         {
+            exception = ex;
         }
 
-        return default;
+        result = default;
+        return false;
     }
+
+    /// <summary>
+    /// Converts to a specific type.
+    /// </summary>
+    /// <typeparam name="T">The type to convert.</typeparam>
+    /// <param name="strict">true if enable strict mode that compare the value kind firstly; otherwise, false, to convert in compatible mode.</param>
+    /// <returns>The value converted.</returns>
+    public T TryConvert<T>(bool strict = false)
+        => TryConvert<T>(strict, out var result, out _) ? result : default;
 
     /// <summary>
     /// Converts to a specific type.
@@ -363,7 +387,15 @@ public abstract class BaseJsonValueNode : IJsonValueNode, IEquatable<IJsonValueN
             if (type == typeof(double)) return TryConvert<double>(TryConvert, strict, out exception, throwException, JsonValueKind.Number);
             if (type == typeof(decimal)) return TryConvert<decimal>(TryConvert, strict, out exception, throwException, JsonValueKind.Number);
             if (type == typeof(byte)) return TryConvert<short>(TryConvert, strict, out exception, throwException, "an integer", true);
-            if (type == typeof(ushort)) return (ushort)TryConvert<int>(TryConvert, strict, out exception, throwException, "an integer", true);
+            if (type == typeof(ushort))
+            {
+                var i = TryConvert<int>(TryConvert, strict, out exception, throwException, "an integer", true);
+                if (i >= 0 && i < ushort.MaxValue) return (ushort)i;
+                exception = CreateInvalidOperationException("an interger", true);
+                if (throwException) throw exception;
+                return default;
+            }
+
             if (type == typeof(DateTime))
             {
                 if (TryConvert(out DateTime dt))
