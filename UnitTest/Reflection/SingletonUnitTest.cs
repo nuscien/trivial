@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -46,7 +47,7 @@ namespace Trivial.Reflection
         {
             var i = 0;
             var obs = new NameValueObservableModel<string>();
-            obs.PropertyChanged += (sender, obj) =>
+            (obs as INotifyPropertyChanged).PropertyChanged += (sender, obj) =>
             {
                 if (obj.PropertyName == "Value") i++;
             };

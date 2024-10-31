@@ -144,7 +144,7 @@ public class NameValueObservableModel<T> : BaseObservableProperties
 
     {
         get => GetCurrentProperty<string>();
-        set => SetCurrentProperty(value);
+        set => SetCurrentProperty(value, OnChange);
     }
 
     /// <summary>
@@ -156,7 +156,7 @@ public class NameValueObservableModel<T> : BaseObservableProperties
     public T Value
     {
         get => GetCurrentProperty<T>();
-        set => SetCurrentProperty(value);
+        set => SetCurrentProperty(value, OnChange);
     }
 
     /// <summary>

@@ -25,11 +25,6 @@ public static partial class WebFormat
     public const string XmlMIME = "application/xml";
 
     /// <summary>
-    /// Gets the MIME content type of JSON format text.
-    /// </summary>
-    public const string JsonMIME = "application/json";
-
-    /// <summary>
     /// Gets the MIME content type of JavaScript (ECMAScript) format text.
     /// </summary>
     public const string JavaScriptMIME = "application/javascript";
@@ -73,6 +68,21 @@ public static partial class WebFormat
     /// Gets the MIME content type of web assembly format text.
     /// </summary>
     public const string WebAssemblyMIME = "application/wasm";
+
+    /// <summary>
+    /// Gets the MIME content type of MPEG transport stream.
+    /// </summary>
+    public const string MpegTransportStream = "video/mp2t";
+
+    /// <summary>
+    /// Gets the MIME content type of extended M3U playlist.
+    /// </summary>
+    public const string ExtendedPlaylist = "application/x-mpegurl";
+
+    /// <summary>
+    /// Gets the MIME content type of Server-Sent Events response.
+    /// </summary>
+    public const string ServerSentEventsMIME = "text/event-stream";
 
     /// <summary>
     /// Gets the MIME content type of octet stream.
@@ -214,6 +224,7 @@ public static partial class WebFormat
             "mlp" => "application/vnd.dolby.mlp",
 
             // Video
+            "m3u8" => ExtendedPlaylist,
             "mp4" or "mp4v" or "mpg4" => "video/mp4",
             "webm" => "video/webm",
             "wmv" => "video/x-ms-wm",
@@ -274,8 +285,8 @@ public static partial class WebFormat
             "pml" => "application/vnd.ctc-posml",
 
             // Web
-            "json" or "map" or "jsonc" => JsonMIME,
-            "jsonl" => "application/jsonl",
+            "json" or "map" or "jsonc" => Text.JsonValues.JsonMIME,
+            "jsonl" => Text.JsonValues.JsonlMIME,
             "xml" or "xsl" or "xsf" or "xsd" or "config" or "xslt" or "mno" or "vml" or "wsdl" or "disco" => XmlMIME,
             "yaml" or "yml" => YamlMIME,
             "epub" => "application/epub+zip",

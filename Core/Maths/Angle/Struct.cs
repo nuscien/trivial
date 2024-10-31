@@ -9,6 +9,7 @@
 // --------------------------------------------------------------------------------------------------------------------
 
 using System;
+using System.Numerics;
 using System.Text.Json.Serialization;
 
 namespace Trivial.Maths;
@@ -18,6 +19,9 @@ namespace Trivial.Maths;
 /// </summary>
 [JsonConverter(typeof(JsonAngleConverter))]
 public partial struct Angle : IAngle, IComparable, IComparable<IAngle>, IEquatable<IAngle>, IComparable<double>, IEquatable<double>, IComparable<int>, IEquatable<int>, IAdvancedAdditionCapable<Angle>
+#if NET8_0_OR_GREATER
+, IAdditionOperators<Angle, IAngle, Angle>, ISubtractionOperators<Angle, IAngle, Angle>, IMultiplyOperators<Angle, int, Angle>, IMultiplyOperators<Angle, long, Angle>, IMultiplyOperators<Angle, float, Angle>, IMultiplyOperators<Angle, double, Angle>, IDivisionOperators<Angle, int, Angle>, IDivisionOperators<Angle, long, Angle>, IDivisionOperators<Angle, float, Angle>, IDivisionOperators<Angle, double, Angle>, IUnaryNegationOperators<Angle, Angle>
+#endif
 {
     /// <summary>
     /// Initializes a new instance of the Angle struct.
@@ -272,9 +276,7 @@ public partial struct Angle : IAngle, IComparable, IComparable<IAngle>, IEquatab
     /// <param name="value">A value to create mirror.</param>
     /// <returns>A result mirrored with the specific angle.</returns>
     public static Angle operator -(Angle value)
-    {
-        return new Angle(-value.Degrees);
-    }
+        => new(-value.Degrees);
 
     /// <summary>
     /// Pluses angle.
@@ -284,9 +286,7 @@ public partial struct Angle : IAngle, IComparable, IComparable<IAngle>, IEquatab
     /// <param name="rightValue">The right value for addition operator.</param>
     /// <returns>A result after addition.</returns>
     public static Angle operator +(Angle leftValue, IAngle rightValue)
-    {
-        return new Angle(leftValue.Degrees + rightValue.Degrees);
-    }
+        => new(leftValue.Degrees + rightValue.Degrees);
 
     /// <summary>
     /// Minuses angle.
@@ -296,9 +296,7 @@ public partial struct Angle : IAngle, IComparable, IComparable<IAngle>, IEquatab
     /// <param name="rightValue">The right value for subtration operator.</param>
     /// <returns>A result after subtration.</returns>
     public static Angle operator -(Angle leftValue, IAngle rightValue)
-    {
-        return new Angle(leftValue.Degrees - rightValue.Degrees);
-    }
+        => new(leftValue.Degrees - rightValue.Degrees);
 
     /// <summary>
     /// Multiplies.
@@ -308,9 +306,7 @@ public partial struct Angle : IAngle, IComparable, IComparable<IAngle>, IEquatab
     /// <param name="rightValue">The right value.</param>
     /// <returns>A result after multiply.</returns>
     public static Angle operator *(Angle leftValue, int rightValue)
-    {
-        return new Angle(leftValue.Degrees * rightValue);
-    }
+        => new(leftValue.Degrees * rightValue);
 
     /// <summary>
     /// Multiplies.
@@ -320,9 +316,17 @@ public partial struct Angle : IAngle, IComparable, IComparable<IAngle>, IEquatab
     /// <param name="rightValue">The right value.</param>
     /// <returns>A result after multiply.</returns>
     public static Angle operator *(Angle leftValue, long rightValue)
-    {
-        return new Angle(leftValue.Degrees * rightValue);
-    }
+        => new(leftValue.Degrees * rightValue);
+
+    /// <summary>
+    /// Multiplies.
+    /// leftValue * rightValue
+    /// </summary>
+    /// <param name="leftValue">The left value.</param>
+    /// <param name="rightValue">The right value.</param>
+    /// <returns>A result after multiply.</returns>
+    public static Angle operator *(Angle leftValue, float rightValue)
+        => new(leftValue.Degrees * rightValue);
 
     /// <summary>
     /// Multiplies.
@@ -332,9 +336,7 @@ public partial struct Angle : IAngle, IComparable, IComparable<IAngle>, IEquatab
     /// <param name="rightValue">The right value.</param>
     /// <returns>A result after multiply.</returns>
     public static Angle operator *(Angle leftValue, double rightValue)
-    {
-        return new Angle(leftValue.Degrees * rightValue);
-    }
+        => new(leftValue.Degrees * rightValue);
 
     /// <summary>
     /// Divides.
@@ -344,9 +346,7 @@ public partial struct Angle : IAngle, IComparable, IComparable<IAngle>, IEquatab
     /// <param name="rightValue">The right value.</param>
     /// <returns>A result after dividing.</returns>
     public static Angle operator /(Angle leftValue, int rightValue)
-    {
-        return new Angle(leftValue.Degrees / rightValue);
-    }
+        => new(leftValue.Degrees / rightValue);
 
     /// <summary>
     /// Divides.
@@ -356,9 +356,17 @@ public partial struct Angle : IAngle, IComparable, IComparable<IAngle>, IEquatab
     /// <param name="rightValue">The right value.</param>
     /// <returns>A result after dividing.</returns>
     public static Angle operator /(Angle leftValue, long rightValue)
-    {
-        return new Angle(leftValue.Degrees / rightValue);
-    }
+        => new(leftValue.Degrees / rightValue);
+
+    /// <summary>
+    /// Divides.
+    /// leftValue / rightValue
+    /// </summary>
+    /// <param name="leftValue">The left value.</param>
+    /// <param name="rightValue">The right value.</param>
+    /// <returns>A result after dividing.</returns>
+    public static Angle operator /(Angle leftValue, float rightValue)
+        => new(leftValue.Degrees / rightValue);
 
     /// <summary>
     /// Divides.
@@ -368,9 +376,7 @@ public partial struct Angle : IAngle, IComparable, IComparable<IAngle>, IEquatab
     /// <param name="rightValue">The right value.</param>
     /// <returns>A result after dividing.</returns>
     public static Angle operator /(Angle leftValue, double rightValue)
-    {
-        return new Angle(leftValue.Degrees / rightValue);
-    }
+        => new(leftValue.Degrees / rightValue);
 
     /// <summary>
     /// Compares two angles to indicate if they are same.

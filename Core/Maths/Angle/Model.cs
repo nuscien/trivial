@@ -9,6 +9,7 @@
 // --------------------------------------------------------------------------------------------------------------------
 
 using System;
+using System.Numerics;
 using System.Text.Json.Serialization;
 
 namespace Trivial.Maths;
@@ -23,6 +24,9 @@ public partial struct Angle
     /// </summary>
     [JsonConverter(typeof(JsonAngleModelConverter))]
     public class Model : IAngle, ICloneable, IComparable, IComparable<IAngle>, IEquatable<IAngle>, IComparable<double>, IEquatable<double>, IComparable<int>, IEquatable<int>, IAdvancedAdditionCapable<Model>
+#if NET8_0_OR_GREATER
+, IAdditionOperators<Model, IAngle, Model>, ISubtractionOperators<Model, IAngle, Model>, IMultiplyOperators<Model, int, Model>, IMultiplyOperators<Model, long, Model>, IMultiplyOperators<Model, float, Model>, IMultiplyOperators<Model, double, Model>, IDivisionOperators<Model, int, Model>, IDivisionOperators<Model, long, Model>, IDivisionOperators<Model, float, Model>, IDivisionOperators<Model, double, Model>, IUnaryNegationOperators<Model, Model>
+#endif
     {
         /// <summary>
         /// The total degrees value.
@@ -428,6 +432,19 @@ public partial struct Angle
         /// <param name="leftValue">The left value.</param>
         /// <param name="rightValue">The right value.</param>
         /// <returns>A result after multiply.</returns>
+        public static Model operator *(Model leftValue, float rightValue)
+        {
+            if (leftValue is null) return null;
+            return new Model(leftValue.Degrees * rightValue);
+        }
+
+        /// <summary>
+        /// Multiplies.
+        /// leftValue * rightValue
+        /// </summary>
+        /// <param name="leftValue">The left value.</param>
+        /// <param name="rightValue">The right value.</param>
+        /// <returns>A result after multiply.</returns>
         public static Model operator *(Model leftValue, double rightValue)
         {
             if (leftValue is null) return null;
@@ -455,6 +472,19 @@ public partial struct Angle
         /// <param name="rightValue">The right value.</param>
         /// <returns>A result after dividing.</returns>
         public static Model operator /(Model leftValue, long rightValue)
+        {
+            if (leftValue is null) return null;
+            return new Model(leftValue.Degrees / rightValue);
+        }
+
+        /// <summary>
+        /// Divides.
+        /// leftValue / rightValue
+        /// </summary>
+        /// <param name="leftValue">The left value.</param>
+        /// <param name="rightValue">The right value.</param>
+        /// <returns>A result after dividing.</returns>
+        public static Model operator /(Model leftValue, float rightValue)
         {
             if (leftValue is null) return null;
             return new Model(leftValue.Degrees / rightValue);

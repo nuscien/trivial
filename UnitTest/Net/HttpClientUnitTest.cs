@@ -28,7 +28,7 @@ namespace Trivial.Net
             using var content = HttpClientExtensions.CreateJsonContent((byte)0);
             Assert.IsNotNull(content);
             var mime = content.Headers.ContentType.ToString().YieldSplit(new List<string> { " " }).FirstOrDefault().YieldSplit(";", StringSplitOptions.RemoveEmptyEntries).FirstOrDefault();
-            Assert.AreEqual(Web.WebFormat.JsonMIME, mime);
+            Assert.AreEqual(JsonValues.JsonMIME, mime);
 
             var oauth = new OAuthClient("someone", "secret", null);
             oauth.Scope.Add("test");

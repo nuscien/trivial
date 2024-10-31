@@ -606,6 +606,7 @@ public static partial class ColorCalculator
     }
 
     #endregion
+    #region Helpers
 
     private static float TryGetSingleFromMulti(JsonObjectNode node, string keyA, string keyB, string keyC, string keyD, string keyE, float defaultValue)
     {
@@ -695,5 +696,7 @@ public static partial class ColorCalculator
             'F' or 'f' => 15,
             _ => -1
         };
+    
+    #endregion
 #pragma warning restore IDE0057, CA1846
 }

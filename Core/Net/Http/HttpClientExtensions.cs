@@ -567,7 +567,7 @@ public static class HttpClientExtensions
         if (value == null) return null;
         var json = StringExtensions.ToJson(value, options);
         if (json == null) return null;
-        return new StringContent(json, Encoding.UTF8, WebFormat.JsonMIME);
+        return new StringContent(json, Encoding.UTF8, JsonValues.JsonMIME);
     }
 
     /// <summary>
@@ -581,7 +581,7 @@ public static class HttpClientExtensions
         if (value == null) return null;
         var json = StringExtensions.ToJson(value, options);
         if (json == null) return null;
-        return new StringContent(json, Encoding.UTF8, WebFormat.JsonMIME);
+        return new StringContent(json, Encoding.UTF8, JsonValues.JsonMIME);
     }
 
     /// <summary>

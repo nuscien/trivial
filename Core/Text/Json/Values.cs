@@ -34,6 +34,16 @@ public static class JsonValues
     public const string NullString = "null";
 
     /// <summary>
+    /// Gets the MIME content type of JSON format text.
+    /// </summary>
+    public const string JsonMIME = "application/json";
+
+    /// <summary>
+    /// Gets the MIME content type of JSON lines format text.
+    /// </summary>
+    public const string JsonlMIME = "application/jsonl";
+
+    /// <summary>
     /// JSON null.
     /// </summary>
     public static readonly BaseJsonValueNode Null = new JsonNullNode(JsonValueKind.Null);

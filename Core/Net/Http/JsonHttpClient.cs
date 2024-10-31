@@ -556,7 +556,7 @@ public class JsonHttpClient<T>
     public async Task<T> SendJsonAsync(HttpMethod method, string requestUri, object content, DataContractJsonSerializerSettings options, CancellationToken cancellationToken = default)
     {
         var json = Text.StringExtensions.ToJson(content, options) ?? string.Empty;
-        using var str = new StringContent(json, Encoding.UTF8, WebFormat.JsonMIME);
+        using var str = new StringContent(json, Encoding.UTF8, Text.JsonValues.JsonMIME);
         return await SendAsync(new HttpRequestMessage(method ?? HttpMethod.Post, requestUri)
         {
             Content = str
@@ -579,7 +579,7 @@ public class JsonHttpClient<T>
     public async Task<T> SendJsonAsync(HttpMethod method, Uri requestUri, object content, DataContractJsonSerializerSettings options, CancellationToken cancellationToken = default)
     {
         var json = Text.StringExtensions.ToJson(content, options) ?? string.Empty;
-        using var str = new StringContent(json, Encoding.UTF8, WebFormat.JsonMIME);
+        using var str = new StringContent(json, Encoding.UTF8, Text.JsonValues.JsonMIME);
         return await SendAsync(new HttpRequestMessage(method ?? HttpMethod.Post, requestUri)
         {
             Content = str
@@ -633,7 +633,7 @@ public class JsonHttpClient<T>
     public Task<T> SendJsonAsync<TRequestBody>(HttpMethod method, string requestUri, TRequestBody content, Func<TRequestBody, string> deserializer, CancellationToken cancellationToken = default)
         => deserializer != null ? SendAsync(new HttpRequestMessage(method ?? HttpMethod.Post, requestUri)
         {
-            Content = new StringContent(deserializer(content), Encoding.UTF8, WebFormat.JsonMIME)
+            Content = new StringContent(deserializer(content), Encoding.UTF8, Text.JsonValues.JsonMIME)
         }, cancellationToken) : SendJsonAsync(method, requestUri, content, cancellationToken);
 
     /// <summary>
@@ -653,7 +653,7 @@ public class JsonHttpClient<T>
     public Task<T> SendJsonAsync<TRequestBody>(HttpMethod method, Uri requestUri, TRequestBody content, Func<TRequestBody, string> deserializer, CancellationToken cancellationToken = default)
         => deserializer != null ? SendAsync(new HttpRequestMessage(method ?? HttpMethod.Post, requestUri)
         {
-            Content = new StringContent(deserializer(content), Encoding.UTF8, WebFormat.JsonMIME)
+            Content = new StringContent(deserializer(content), Encoding.UTF8, Text.JsonValues.JsonMIME)
         }, cancellationToken) : SendJsonAsync(method, requestUri, content, cancellationToken);
 
     /// <summary>

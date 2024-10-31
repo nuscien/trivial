@@ -8,6 +8,7 @@ using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Xml.Linq;
+using Trivial.Data;
 using Trivial.Text;
 
 namespace Trivial.Reflection;
@@ -44,9 +45,23 @@ public abstract class BaseObservableProperties : INotifyPropertyChanged
     private readonly Dictionary<string, object> cache = new();
 
     /// <summary>
+    /// The property changed event handler field..
+    /// </summary>
+    private event PropertyChangedEventHandler propertyChanged;
+
+    /// <summary>
     /// Adds or removes the event handler raised on property changed.
     /// </summary>
-    public event PropertyChangedEventHandler PropertyChanged;
+    event PropertyChangedEventHandler INotifyPropertyChanged.PropertyChanged
+    {
+        add => propertyChanged += value;
+        remove => propertyChanged -= value;
+    }
+
+    /// <summary>
+    /// Adds or removes the event handler raised on property changed.
+    /// </summary>
+    public event ChangeEventHandler<object> PropertyChanged;
 
     /// <summary>
     /// Gets an enumerable collection that contains the keys in this instance.
@@ -122,11 +137,12 @@ public abstract class BaseObservableProperties : INotifyPropertyChanged
             return false;
         }
 
-        if (cache.TryGetValue(key, out var v) && v == value) return false;
+        var exist = cache.TryGetValue(key, out var v);
+        if (exist && v == value) return false;
         if (PropertiesSettingPolicy == PropertySettingPolicies.Allow)
         {
             if (!SetPropertyInternal(key, value)) return false;
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(key));
+            RaisePropertyChange(v, value, exist ? ChangeMethods.Update : ChangeMethods.Add, key);
             return true;
         }
 
@@ -156,7 +172,37 @@ public abstract class BaseObservableProperties : INotifyPropertyChanged
         {
             if (!SetPropertyInternal(key, value)) return false;
             notify?.Invoke(key, value, exist, v);
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(key));
+            RaisePropertyChange(v, value, exist ? ChangeMethods.Update : ChangeMethods.Add, key);
+            return true;
+        }
+
+        if (PropertiesSettingPolicy == PropertySettingPolicies.Skip) return false;
+        throw new InvalidOperationException("Forbid to set property.");
+    }
+
+    /// <summary>
+    /// Sets a property.
+    /// </summary>
+    /// <param name="value">The value.</param>
+    /// <param name="notify">The notification function.</param>
+    /// <param name="key">The additional key.</param>
+    /// <returns>true if set succeeded; otherwise, false.</returns>
+    protected bool SetCurrentProperty(object value, Action<object> notify, [CallerMemberName] string key = null)
+    {
+        if (string.IsNullOrWhiteSpace(key))
+        {
+            if (PropertiesSettingPolicy == PropertySettingPolicies.Forbidden)
+                throw new ArgumentNullException(nameof(key), "The property key should not be null, empty, or consists only of white-space characters.");
+            return false;
+        }
+
+        var exist = cache.TryGetValue(key, out var v);
+        if (exist && v == value) return false;
+        if (PropertiesSettingPolicy == PropertySettingPolicies.Allow)
+        {
+            if (!SetPropertyInternal(key, value)) return false;
+            notify?.Invoke(value);
+            RaisePropertyChange(v, value, exist ? ChangeMethods.Update : ChangeMethods.Add, key);
             return true;
         }
 
@@ -243,11 +289,12 @@ public abstract class BaseObservableProperties : INotifyPropertyChanged
             return false;
         }
 
-        if (cache.TryGetValue(key, out var v) && v == value) return false;
+        var exist = cache.TryGetValue(key, out var v);
+        if (exist && v == value) return false;
         if (PropertiesSettingPolicy == PropertySettingPolicies.Allow)
         {
             if (!SetPropertyInternal(key, value)) return false;
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(key));
+            RaisePropertyChange(v, value, exist ? ChangeMethods.Update : ChangeMethods.Add, key);
             return true;
         }
 
@@ -292,9 +339,28 @@ public abstract class BaseObservableProperties : INotifyPropertyChanged
 
         if (PropertiesSettingPolicy == PropertySettingPolicies.Allow)
         {
-            var result = cache.Remove(key);
-            if (result) PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(key));
-            return result;
+            if (PropertyChanged is null)
+            {
+                var result = cache.Remove(key);
+                if (result)
+                {
+                    propertyChanged?.Invoke(this, new(key));
+                }
+
+                return result;
+            }
+            else
+            {
+                var exist = cache.TryGetValue(key, out var v);
+                if (!exist) return false;
+                var result = cache.Remove(key);
+                if (result)
+                {
+                    RaisePropertyChange(v, null, ChangeMethods.Remove, key);
+                }
+
+                return result;
+            }
         }
 
         if (PropertiesSettingPolicy == PropertySettingPolicies.Skip) return false;
@@ -325,7 +391,13 @@ public abstract class BaseObservableProperties : INotifyPropertyChanged
     /// </summary>
     /// <param name="key">The property key.</param>
     protected void ForceNotify(string key)
-        => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(key));
+    {
+        propertyChanged?.Invoke(this, new(key));
+        if (PropertyChanged is null) return;
+        var exist = cache.TryGetValue(key, out var v);
+        if (!exist) return;
+        PropertyChanged?.Invoke(this, new(v, v, ChangeMethods.Same, key));
+    }
 
     /// <summary>
     /// Gets the property in JSON format string.
@@ -354,12 +426,19 @@ public abstract class BaseObservableProperties : INotifyPropertyChanged
             if (v is float f) return float.IsNaN(f) ? null : f.ToString("g");
             if (v is double d) return double.IsNaN(d) ? null : d.ToString("g");
             if (v is decimal d2) return d2.ToString("g");
+            if (v is short i2) return i2.ToString("g");
             if (v is Guid g) return g.ToString();
             if (v is DateTime dt) return JsonStringNode.ToJson(dt);
             if (v is DateTimeOffset dto) return JsonStringNode.ToJson(dto.UtcDateTime);
             if (v is JsonElement jEle) return jEle.ToString();
             if (v is uint ui) return ui.ToString("g");
             if (v is ulong ul) return ul.ToString("g");
+#if NET8_0_OR_GREATER
+            if (v is Int128 i3) return i3.ToString("g");
+            if (v is Half d3) return d3.ToString("g");
+            if (v is DateOnly dt2) return dt2.ToString("g");
+            if (v is TimeOnly dt3) return dt3.ToString("g");
+#endif
         }
 
         if (v is StringBuilder sb) return sb.ToString();
@@ -370,7 +449,8 @@ public abstract class BaseObservableProperties : INotifyPropertyChanged
     /// Writes this instance to the specified writer as a JSON value.
     /// </summary>
     /// <param name="writer">The writer to which to write this instance.</param>
-    protected void WriteTo(Utf8JsonWriter writer) => JsonObjectNode.ConvertFrom(this).WriteTo(writer);
+    protected void WriteTo(Utf8JsonWriter writer)
+        => JsonObjectNode.ConvertFrom(this).WriteTo(writer);
 
     /// <summary>
     /// Copies data from another instance.
@@ -405,7 +485,7 @@ public abstract class BaseObservableProperties : INotifyPropertyChanged
         if (cache.TryGetValue(key, out value)) return true;
         if (!FillNonExistProperty(key, out value)) return false;
         cache[key] = value;
-        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(key));
+        RaisePropertyChange(null, value, ChangeMethods.Add, key);
         return true;
     }
 
@@ -443,6 +523,12 @@ public abstract class BaseObservableProperties : INotifyPropertyChanged
         }
 
         return false;
+    }
+
+    private void RaisePropertyChange(object oldValue, object newValue, ChangeMethods method, string key)
+    {
+        propertyChanged?.Invoke(this, new(key));
+        PropertyChanged?.Invoke(this, new(oldValue, newValue, method, key));
     }
 }
 

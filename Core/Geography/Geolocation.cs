@@ -138,9 +138,7 @@ public struct Latitude : IEquatable<Latitude>
         /// </summary>
         /// <returns>A 32-bit signed integer that is the hash code for this instance.</returns>
         public override int GetHashCode()
-        {
-            return base.GetHashCode();
-        }
+            => base.GetHashCode();
 
         /// <summary>
         /// Returns the latitude string value of this instance.
@@ -157,18 +155,14 @@ public struct Latitude : IEquatable<Latitude>
         /// </summary>
         /// <returns>The object copied from this instance.</returns>
         public new Model Clone()
-        {
-            return new Model(Degree, Arcminute, Arcsecond);
-        }
+            => new(Degree, Arcminute, Arcsecond);
 
         /// <summary>
         /// Clones an object.
         /// </summary>
         /// <returns>The object copied from this instance.</returns>
         object ICloneable.Clone()
-        {
-            return Clone();
-        }
+            => Clone();
 
         /// <summary>
         /// Compares two latitudes to indicate if they are same.
@@ -178,9 +172,7 @@ public struct Latitude : IEquatable<Latitude>
         /// <param name="rightValue">The right value to compare.</param>
         /// <returns>true if they are same; otherwise, false.</returns>
         public static bool operator ==(Model leftValue, Latitude rightValue)
-        {
-            return !(leftValue is null) && leftValue.Equals(rightValue);
-        }
+            => leftValue is not null && leftValue.Equals(rightValue);
 
         /// <summary>
         /// Compares two latitudes to indicate if they are same.
@@ -192,7 +184,7 @@ public struct Latitude : IEquatable<Latitude>
         public static bool operator ==(Model leftValue, Model rightValue)
         {
             if (ReferenceEquals(leftValue, rightValue)) return true;
-            return !(leftValue is null) && leftValue.Equals(rightValue);
+            return leftValue is not null && leftValue.Equals(rightValue);
         }
 
         /// <summary>
@@ -203,9 +195,7 @@ public struct Latitude : IEquatable<Latitude>
         /// <param name="rightValue">The right value to compare.</param>
         /// <returns>true if they are different; otherwise, false.</returns>
         public static bool operator !=(Model leftValue, Latitude rightValue)
-        {
-            return leftValue is null || !leftValue.Equals(rightValue);
-        }
+            => leftValue is null || !leftValue.Equals(rightValue);
 
         /// <summary>
         /// Compares two latitudes to indicate if they are different.
@@ -225,15 +215,13 @@ public struct Latitude : IEquatable<Latitude>
         /// </summary>
         /// <param name="value">The instance.</param>
         public static implicit operator Model(Latitude value)
-        {
-            return new Model { Degrees = value.Value.Degrees };
-        }
+            => new() { Degrees = value.Value.Degrees };
     }
 
     /// <summary>
     /// The angle boundary of the latitude.
     /// </summary>
-    public static readonly Angle.BoundaryOptions BoundaryOptions = new Angle.BoundaryOptions(90, true, Angle.RectifyModes.Bounce);
+    public static readonly Angle.BoundaryOptions BoundaryOptions = new(90, true, Angle.RectifyModes.Bounce);
 
     /// <summary>
     /// Initializes a new instance of the Latitude struct.
@@ -345,9 +333,7 @@ public struct Latitude : IEquatable<Latitude>
     /// </summary>
     /// <returns>A 32-bit signed integer that is the hash code for this instance.</returns>
     public override int GetHashCode()
-    {
-        return Value.Degrees.GetHashCode();
-    }
+        => Value.Degrees.GetHashCode();
 
     /// <summary>
     /// Indicates whether the current object is equal to another object of the same type.
@@ -372,9 +358,7 @@ public struct Latitude : IEquatable<Latitude>
     /// </returns>
     /// <param name="other">An object to compare with this object.</param>
     public bool Equals(Latitude other)
-    {
-        return Value == other.Value;
-    }
+        => Value == other.Value;
 
     /// <summary>
     /// Returns the latitude string value of this instance.
@@ -394,9 +378,7 @@ public struct Latitude : IEquatable<Latitude>
     /// <param name="rightValue">The right value to compare.</param>
     /// <returns>true if they are same; otherwise, false.</returns>
     public static bool operator ==(Latitude leftValue, Latitude rightValue)
-    {
-        return leftValue.Value.Degrees == rightValue.Value.Degrees;
-    }
+        => leftValue.Value.Degrees == rightValue.Value.Degrees;
 
     /// <summary>
     /// Compares two latitudes to indicate if they are same.
@@ -406,9 +388,7 @@ public struct Latitude : IEquatable<Latitude>
     /// <param name="rightValue">The right value to compare.</param>
     /// <returns>true if they are same; otherwise, false.</returns>
     public static bool operator ==(Latitude leftValue, Model rightValue)
-    {
-        return !(rightValue is null) && leftValue.Value.Degrees == rightValue.Degrees;
-    }
+        => rightValue is not null && leftValue.Value.Degrees == rightValue.Degrees;
 
     /// <summary>
     /// Compares two latitudes to indicate if they are different.
@@ -418,9 +398,7 @@ public struct Latitude : IEquatable<Latitude>
     /// <param name="rightValue">The right value to compare.</param>
     /// <returns>true if they are different; otherwise, false.</returns>
     public static bool operator !=(Latitude leftValue, Latitude rightValue)
-    {
-        return leftValue.Value.Degrees != rightValue.Value.Degrees;
-    }
+        => leftValue.Value.Degrees != rightValue.Value.Degrees;
 
     /// <summary>
     /// Compares two latitudes to indicate if they are different.
@@ -430,9 +408,7 @@ public struct Latitude : IEquatable<Latitude>
     /// <param name="rightValue">The right value to compare.</param>
     /// <returns>true if they are different; otherwise, false.</returns>
     public static bool operator !=(Latitude leftValue, Model rightValue)
-    {
-        return rightValue is null || leftValue.Value.Degrees != rightValue.Degrees;
-    }
+        => rightValue is null || leftValue.Value.Degrees != rightValue.Degrees;
 
     /// <summary>
     /// Converts a number to latitude.
@@ -620,9 +596,7 @@ public struct Longitude : IEquatable<Longitude>
         /// </summary>
         /// <returns>A 32-bit signed integer that is the hash code for this instance.</returns>
         public override int GetHashCode()
-        {
-            return base.GetHashCode();
-        }
+            => base.GetHashCode();
 
         /// <summary>
         /// Returns the longitude string value of this instance.
@@ -642,18 +616,14 @@ public struct Longitude : IEquatable<Longitude>
         /// </summary>
         /// <returns>The object copied from this instance.</returns>
         public new Model Clone()
-        {
-            return new Model(IsCelestial, Degree, Arcminute, Arcsecond);
-        }
+            => new(IsCelestial, Degree, Arcminute, Arcsecond);
 
         /// <summary>
         /// Clones an object.
         /// </summary>
         /// <returns>The object copied from this instance.</returns>
         object ICloneable.Clone()
-        {
-            return Clone();
-        }
+            => Clone();
 
         /// <summary>
         /// Compares two longitudes to indicate if they are same.
@@ -663,9 +633,7 @@ public struct Longitude : IEquatable<Longitude>
         /// <param name="rightValue">The right value to compare.</param>
         /// <returns>true if they are same; otherwise, false.</returns>
         public static bool operator ==(Model leftValue, Longitude rightValue)
-        {
-            return !(leftValue is null) && leftValue.Equals(rightValue);
-        }
+            => leftValue is not null && leftValue.Equals(rightValue);
 
         /// <summary>
         /// Compares two longitudes to indicate if they are same.
@@ -677,7 +645,7 @@ public struct Longitude : IEquatable<Longitude>
         public static bool operator ==(Model leftValue, Model rightValue)
         {
             if (ReferenceEquals(leftValue, rightValue)) return true;
-            return !(leftValue is null) && leftValue.Equals(rightValue);
+            return leftValue is not null && leftValue.Equals(rightValue);
         }
 
         /// <summary>
@@ -688,9 +656,7 @@ public struct Longitude : IEquatable<Longitude>
         /// <param name="rightValue">The right value to compare.</param>
         /// <returns>true if they are different; otherwise, false.</returns>
         public static bool operator !=(Model leftValue, Longitude rightValue)
-        {
-            return leftValue is null || !leftValue.Equals(rightValue);
-        }
+            => leftValue is null || !leftValue.Equals(rightValue);
 
         /// <summary>
         /// Compares two longitudes to indicate if they are different.
@@ -710,20 +676,18 @@ public struct Longitude : IEquatable<Longitude>
         /// </summary>
         /// <param name="value">The instance.</param>
         public static implicit operator Model(Longitude value)
-        {
-            return new Model { Degrees = value.Value.Degrees };
-        }
+            => new() { Degrees = value.Value.Degrees };
     }
 
     /// <summary>
     /// The angle boundary of the longitude.
     /// </summary>
-    public static readonly Angle.BoundaryOptions BoundaryOptions = new Angle.BoundaryOptions(180, true, Angle.RectifyModes.Cycle);
+    public static readonly Angle.BoundaryOptions BoundaryOptions = new(180, true, Angle.RectifyModes.Cycle);
 
     /// <summary>
     /// The angle boundary of the celestial longitude.
     /// </summary>
-    public static readonly Angle.BoundaryOptions CelestialBoundaryOptions = new Angle.BoundaryOptions(360, false, Angle.RectifyModes.Cycle);
+    public static readonly Angle.BoundaryOptions CelestialBoundaryOptions = new(360, false, Angle.RectifyModes.Cycle);
 
     /// <summary>
     /// Initializes a new instance of the Longitude struct.
@@ -883,9 +847,7 @@ public struct Longitude : IEquatable<Longitude>
     /// </summary>
     /// <returns>A 32-bit signed integer that is the hash code for this instance.</returns>
     public override int GetHashCode()
-    {
-        return Value.Degrees.GetHashCode();
-    }
+        => Value.Degrees.GetHashCode();
 
     /// <summary>
     /// Indicates whether the current object is equal to another object of the same type.
@@ -910,9 +872,7 @@ public struct Longitude : IEquatable<Longitude>
     /// </returns>
     /// <param name="other">An object to compare with this object.</param>
     public bool Equals(Longitude other)
-    {
-        return Value == other.Value;
-    }
+        => Value == other.Value;
 
     /// <summary>
     /// Returns the latitude string value of this instance.
@@ -935,9 +895,7 @@ public struct Longitude : IEquatable<Longitude>
     /// <param name="rightValue">The right value to compare.</param>
     /// <returns>true if they are same; otherwise, false.</returns>
     public static bool operator ==(Longitude leftValue, Longitude rightValue)
-    {
-        return leftValue.Value.Degrees == rightValue.Value.Degrees;
-    }
+        => leftValue.Value.Degrees == rightValue.Value.Degrees;
 
     /// <summary>
     /// Compares two longitudes to indicate if they are same.
@@ -947,9 +905,7 @@ public struct Longitude : IEquatable<Longitude>
     /// <param name="rightValue">The right value to compare.</param>
     /// <returns>true if they are same; otherwise, false.</returns>
     public static bool operator ==(Longitude leftValue, Model rightValue)
-    {
-        return !(rightValue is null) && leftValue.Value.Degrees == rightValue.Degrees;
-    }
+        => rightValue is not null && leftValue.Value.Degrees == rightValue.Degrees;
 
     /// <summary>
     /// Compares two longitudes to indicate if they are different.
@@ -959,9 +915,7 @@ public struct Longitude : IEquatable<Longitude>
     /// <param name="rightValue">The right value to compare.</param>
     /// <returns>true if they are different; otherwise, false.</returns>
     public static bool operator !=(Longitude leftValue, Longitude rightValue)
-    {
-        return leftValue.Value.Degrees != rightValue.Value.Degrees;
-    }
+        => leftValue.Value.Degrees != rightValue.Value.Degrees;
 
     /// <summary>
     /// Compares two longitudes to indicate if they are different.
@@ -971,9 +925,7 @@ public struct Longitude : IEquatable<Longitude>
     /// <param name="rightValue">The right value to compare.</param>
     /// <returns>true if they are different; otherwise, false.</returns>
     public static bool operator !=(Longitude leftValue, Model rightValue)
-    {
-        return rightValue is null || leftValue.Value.Degrees != rightValue.Degrees;
-    }
+        => rightValue is null || leftValue.Value.Degrees != rightValue.Degrees;
 
     /// <summary>
     /// Converts a number to longitude.
@@ -1095,9 +1047,7 @@ public struct Geolocation : IEquatable<Geolocation>
         /// </summary>
         /// <returns>A 32-bit signed integer that is the hash code for this instance.</returns>
         public override int GetHashCode()
-        {
-            return string.Format(CultureInfo.InvariantCulture, "{0}; {1}; {2}. (r {3} & a {4})", Latitude, Longitude, Altitude, RadiusDeviation, AltitudeDeviation).GetHashCode();
-        }
+            => string.Format(CultureInfo.InvariantCulture, "{0}; {1}; {2}. (r {3} & a {4})", Latitude, Longitude, Altitude, RadiusDeviation, AltitudeDeviation).GetHashCode();
 
         /// <summary>
         /// Indicates whether the current object is equal to another object of the same type.
@@ -1107,9 +1057,7 @@ public struct Geolocation : IEquatable<Geolocation>
         /// </returns>
         /// <param name="other">An object to compare with this object.</param>
         public bool Equals(Geolocation other)
-        {
-            return Latitude == other.Latitude && Longitude == other.Longitude && Altitude == other.Altitude && RadiusDeviation == other.RadiusDeviation && AltitudeDeviation == other.AltitudeDeviation;
-        }
+            => Latitude == other.Latitude && Longitude == other.Longitude && Altitude == other.Altitude && RadiusDeviation == other.RadiusDeviation && AltitudeDeviation == other.AltitudeDeviation;
 
         /// <summary>
         /// Indicates whether the current object is equal to another object of the same type.
@@ -1119,9 +1067,7 @@ public struct Geolocation : IEquatable<Geolocation>
         /// </returns>
         /// <param name="other">An object to compare with this object.</param>
         public bool Equals(Model other)
-        {
-            return Latitude == other.Latitude && Longitude == other.Longitude && Altitude == other.Altitude && RadiusDeviation == other.RadiusDeviation && AltitudeDeviation == other.AltitudeDeviation;
-        }
+            => Latitude == other.Latitude && Longitude == other.Longitude && Altitude == other.Altitude && RadiusDeviation == other.RadiusDeviation && AltitudeDeviation == other.AltitudeDeviation;
 
         /// <summary>
         /// Indicates whether the current object is equal to another object of the same type.
@@ -1156,9 +1102,7 @@ public struct Geolocation : IEquatable<Geolocation>
         /// <param name="rightValue">The right value to compare.</param>
         /// <returns>true if they are same; otherwise, false.</returns>
         public static bool operator ==(Model leftValue, Geolocation rightValue)
-        {
-            return !(leftValue is null) && leftValue.Equals(rightValue);
-        }
+            => leftValue is not null && leftValue.Equals(rightValue);
 
         /// <summary>
         /// Compares two longitudes to indicate if they are same.
@@ -1170,7 +1114,7 @@ public struct Geolocation : IEquatable<Geolocation>
         public static bool operator ==(Model leftValue, Model rightValue)
         {
             if (ReferenceEquals(leftValue, rightValue)) return true;
-            return !(leftValue is null) && leftValue.Equals(rightValue);
+            return leftValue is not null && leftValue.Equals(rightValue);
         }
 
         /// <summary>
@@ -1181,9 +1125,7 @@ public struct Geolocation : IEquatable<Geolocation>
         /// <param name="rightValue">The right value to compare.</param>
         /// <returns>true if they are different; otherwise, false.</returns>
         public static bool operator !=(Model leftValue, Geolocation rightValue)
-        {
-            return leftValue is null || !leftValue.Equals(rightValue);
-        }
+            => leftValue is null || !leftValue.Equals(rightValue);
 
         /// <summary>
         /// Compares two longitudes to indicate if they are different.
@@ -1296,9 +1238,7 @@ public struct Geolocation : IEquatable<Geolocation>
     /// </summary>
     /// <returns>A 32-bit signed integer that is the hash code for this instance.</returns>
     public override int GetHashCode()
-    {
-        return string.Format(CultureInfo.InvariantCulture, "{0}; {1}; {2}. (r {3} & a {4})", Latitude, Longitude, Altitude, RadiusDeviation, AltitudeDeviation).GetHashCode();
-    }
+        => string.Format(CultureInfo.InvariantCulture, "{0}; {1}; {2}. (r {3} & a {4})", Latitude, Longitude, Altitude, RadiusDeviation, AltitudeDeviation).GetHashCode();
 
     /// <summary>
     /// Indicates whether the current object is equal to another object of the same type.
@@ -1308,9 +1248,7 @@ public struct Geolocation : IEquatable<Geolocation>
     /// </returns>
     /// <param name="other">An object to compare with this object.</param>
     public bool Equals(Geolocation other)
-    {
-        return Latitude == other.Latitude && Longitude == other.Longitude && Altitude == other.Altitude && RadiusDeviation == other.RadiusDeviation && AltitudeDeviation == other.AltitudeDeviation;
-    }
+        => Latitude == other.Latitude && Longitude == other.Longitude && Altitude == other.Altitude && RadiusDeviation == other.RadiusDeviation && AltitudeDeviation == other.AltitudeDeviation;
 
     /// <summary>
     /// Indicates whether the current object is equal to another object of the same type.
@@ -1320,9 +1258,7 @@ public struct Geolocation : IEquatable<Geolocation>
     /// </returns>
     /// <param name="other">An object to compare with this object.</param>
     public bool Equals(Model other)
-    {
-        return Latitude == other.Latitude && Longitude == other.Longitude && Altitude == other.Altitude && RadiusDeviation == other.RadiusDeviation && AltitudeDeviation == other.AltitudeDeviation;
-    }
+        => Latitude == other.Latitude && Longitude == other.Longitude && Altitude == other.Altitude && RadiusDeviation == other.RadiusDeviation && AltitudeDeviation == other.AltitudeDeviation;
 
     /// <summary>
     /// Indicates whether the current object is equal to another object of the same type.
@@ -1357,9 +1293,7 @@ public struct Geolocation : IEquatable<Geolocation>
     /// <param name="rightValue">The right value to compare.</param>
     /// <returns>true if they are same; otherwise, false.</returns>
     public static bool operator ==(Geolocation leftValue, Geolocation rightValue)
-    {
-        return leftValue.Equals(rightValue);
-    }
+        => leftValue.Equals(rightValue);
 
     /// <summary>
     /// Compares two longitudes to indicate if they are same.
@@ -1369,9 +1303,7 @@ public struct Geolocation : IEquatable<Geolocation>
     /// <param name="rightValue">The right value to compare.</param>
     /// <returns>true if they are same; otherwise, false.</returns>
     public static bool operator ==(Geolocation leftValue, Model rightValue)
-    {
-        return leftValue.Equals(rightValue);
-    }
+        => leftValue.Equals(rightValue);
 
     /// <summary>
     /// Compares two longitudes to indicate if they are different.
@@ -1381,9 +1313,7 @@ public struct Geolocation : IEquatable<Geolocation>
     /// <param name="rightValue">The right value to compare.</param>
     /// <returns>true if they are different; otherwise, false.</returns>
     public static bool operator !=(Geolocation leftValue, Geolocation rightValue)
-    {
-        return !leftValue.Equals(rightValue);
-    }
+        => !leftValue.Equals(rightValue);
 
     /// <summary>
     /// Compares two longitudes to indicate if they are different.
@@ -1393,7 +1323,5 @@ public struct Geolocation : IEquatable<Geolocation>
     /// <param name="rightValue">The right value to compare.</param>
     /// <returns>true if they are different; otherwise, false.</returns>
     public static bool operator !=(Geolocation leftValue, Model rightValue)
-    {
-        return !leftValue.Equals(rightValue);
-    }
+        => !leftValue.Equals(rightValue);
 }
