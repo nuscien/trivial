@@ -141,7 +141,7 @@ public sealed class JsonStringNode : BaseJsonValueNode<string>, IComparable<IJso
     /// </summary>
     /// <param name="value">The value.</param>
     public JsonStringNode(ReadOnlySpan<char> value)
-        : this(value != null ? value.ToString() : null)
+        : this(value?.ToString())
     {
     }
 
@@ -713,7 +713,7 @@ public sealed class JsonStringNode : BaseJsonValueNode<string>, IComparable<IJso
         if (Value == null) return this;
         var str = length.HasValue ? Value.Substring(startIndex, length.Value) : Value.Substring(startIndex);
         if (str != null && str.Length == Length) return this;
-        return new JsonStringNode(str);
+        return new(str);
     }
 
     /// <summary>
@@ -1526,9 +1526,7 @@ public sealed class JsonStringNode : BaseJsonValueNode<string>, IComparable<IJso
     /// <param name="value">The source value.</param>
     /// <returns>A JSON value.</returns>
     public static implicit operator JsonStringNode(ReadOnlySpan<char> value)
-    {
-        return new JsonStringNode(value);
-    }
+        => new(value);
 
     /// <summary>
     /// Converts to JSON value.
@@ -1536,9 +1534,7 @@ public sealed class JsonStringNode : BaseJsonValueNode<string>, IComparable<IJso
     /// <param name="value">The source value.</param>
     /// <returns>A JSON value.</returns>
     public static implicit operator JsonStringNode(char[] value)
-    {
-        return new JsonStringNode(value);
-    }
+        => new(value);
 
     /// <summary>
     /// Converts to JSON value.
@@ -1546,9 +1542,7 @@ public sealed class JsonStringNode : BaseJsonValueNode<string>, IComparable<IJso
     /// <param name="value">The source value.</param>
     /// <returns>A JSON value.</returns>
     public static implicit operator JsonStringNode(StringBuilder value)
-    {
-        return new JsonStringNode(value);
-    }
+        => new(value);
 
     /// <summary>
     /// Converts to JSON value.
@@ -1556,9 +1550,7 @@ public sealed class JsonStringNode : BaseJsonValueNode<string>, IComparable<IJso
     /// <param name="value">The source value.</param>
     /// <returns>A JSON value.</returns>
     public static implicit operator JsonStringNode(Guid value)
-    {
-        return new JsonStringNode(value);
-    }
+        => new(value);
 
     /// <summary>
     /// Converts to JSON value.
@@ -1590,9 +1582,7 @@ public sealed class JsonStringNode : BaseJsonValueNode<string>, IComparable<IJso
     /// <param name="json">The JSON value.</param>
     /// <returns>A string.</returns>
     public static explicit operator string(JsonStringNode json)
-    {
-        return json?.Value;
-    }
+        => json?.Value;
 
     /// <summary>
     /// Converts to JSON node.
@@ -1600,9 +1590,7 @@ public sealed class JsonStringNode : BaseJsonValueNode<string>, IComparable<IJso
     /// <param name="json">The JSON value.</param>
     /// <returns>An instance of the JsonNode class.</returns>
     public static explicit operator System.Text.Json.Nodes.JsonNode(JsonStringNode json)
-    {
-        return System.Text.Json.Nodes.JsonValue.Create(json.Value);
-    }
+        => System.Text.Json.Nodes.JsonValue.Create(json.Value);
 
     /// <summary>
     /// Converts to JSON node.
@@ -1610,9 +1598,7 @@ public sealed class JsonStringNode : BaseJsonValueNode<string>, IComparable<IJso
     /// <param name="json">The JSON value.</param>
     /// <returns>An instance of the JsonNode class.</returns>
     public static explicit operator System.Text.Json.Nodes.JsonValue(JsonStringNode json)
-    {
-        return System.Text.Json.Nodes.JsonValue.Create(json.Value);
-    }
+        => System.Text.Json.Nodes.JsonValue.Create(json.Value);
 
     /// <summary>
     /// Indicates whether the specified string is null or an empty string ("").
@@ -1620,9 +1606,7 @@ public sealed class JsonStringNode : BaseJsonValueNode<string>, IComparable<IJso
     /// <param name="value">A string JSON value to test</param>
     /// <returns>true if the source value is null or an empty string (""); otherwise, false.</returns>
     public static bool IsNullOrEmpty(IJsonValueNode<string> value)
-    {
-        return string.IsNullOrEmpty(value?.Value);
-    }
+        => string.IsNullOrEmpty(value?.Value);
 
     /// <summary>
     /// Indicates whether the specified string is null, empty, or consists only of white-space characters.
@@ -1630,9 +1614,7 @@ public sealed class JsonStringNode : BaseJsonValueNode<string>, IComparable<IJso
     /// <param name="value">A string JSON value to test</param>
     /// <returns>true if the source value is null or System.String.Empty, or if value consists exclusively of white-space characters; otherwise, false.</returns>
     public static bool IsNullOrWhiteSpace(IJsonValueNode<string> value)
-    {
-        return string.IsNullOrWhiteSpace(value?.Value);
-    }
+        => string.IsNullOrWhiteSpace(value?.Value);
 
     /// <summary>
     /// Converts a string to JSON format.
