@@ -717,6 +717,39 @@ public sealed class JsonStringNode : BaseJsonValueNode<string>, IComparable<IJso
     }
 
     /// <summary>
+    /// Converts to a JSON array.
+    /// </summary>
+    /// <param name="separator">A character array that delimits the substrings in the source string, an empty array that contains no delimiters, or null.</param>
+    /// <param name="options">System.StringSplitOptions.RemoveEmptyEntries to omit empty array elements from the array returned; or System.StringSplitOptions.None to include empty array elements in the array returned.</param>
+    /// <param name="trimEachItem">true if trim each item; otherwise, false.</param>
+    /// <returns>A JSON array node.</returns>
+    public JsonArrayNode ToJsonArray(char[] separator, StringSplitOptions options = StringSplitOptions.None, bool trimEachItem = false)
+    {
+        if (Value == null) return null;
+        var arr = new JsonArrayNode();
+        if (!trimEachItem)
+        {
+            arr.AddRange(Value.Split(separator, options));
+            return arr;
+        }
+
+        var col = StringExtensions.YieldSplit(Value, separator);
+        col = StringExtensions.TrimForEach(col, options == StringSplitOptions.RemoveEmptyEntries);
+        arr.AddRange(col);
+        return arr;
+    }
+
+    /// <summary>
+    /// Converts to a JSON array.
+    /// </summary>
+    /// <param name="separator">A character array that delimits the substrings in the source string, an empty array that contains no delimiters, or null.</param>
+    /// <param name="options">System.StringSplitOptions.RemoveEmptyEntries to omit empty array elements from the array returned; or System.StringSplitOptions.None to include empty array elements in the array returned.</param>
+    /// <param name="trimEachItem">true if trim each item; otherwise, false.</param>
+    /// <returns>A JSON array node.</returns>
+    public JsonArrayNode ToJsonArray(char separator, StringSplitOptions options = StringSplitOptions.None, bool trimEachItem = false)
+        => ToJsonArray([separator], options, trimEachItem);
+
+    /// <summary>
     /// Indicates whether this instance and a specified object are equal.
     /// </summary>
     /// <param name="other">The object to compare with the current instance.</param>

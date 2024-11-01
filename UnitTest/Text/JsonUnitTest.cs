@@ -5,9 +5,9 @@ using System.Linq;
 using System.Text;
 using System.Text.Json;
 
-using Trivial.Maths;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System.Threading.Tasks;
+using Trivial.Maths;
+using Trivial.Web;
 
 namespace Trivial.Text;
 
@@ -303,6 +303,11 @@ public class JsonUnitTest
 
         json.Clear();
         Assert.AreEqual(0, json.Count);
+        var numberChangedCount = 0;
+        json.PropertyChanged += (sender, e) =>
+        {
+            if (e.Key == "number") numberChangedCount++;
+        };
         json.SetRange(new Dictionary<string, int>
         {
             { "number", 100 }
@@ -331,13 +336,18 @@ public class JsonUnitTest
         Assert.AreEqual(4, json.Count);
         json.IncreaseValue("number");
         json.IncreaseValue("number", 7L);
+        Assert.AreEqual(3, numberChangedCount);
         Assert.AreEqual(108, json.GetValue<int>("number"));
+        Assert.AreEqual(108d, json.GetValue("number").As<double>());
+        Assert.AreEqual("108", json.GetValue("number").As<StringBuilder>().ToString());
+        Assert.AreEqual(WebFormat.ParseDate(108), (DateTime)json.GetValue("number"));
         json.DecreaseValue("number");
         json.DecreaseValue("number", 7L);
         Assert.AreEqual(100L, json.GetInt64Value("number"));
         json.IncreaseValue("number", 1.2);
         json.DecreaseValue("number", 0.3);
         Assert.IsTrue(json.GetDoubleValue("number") > 100);
+        Assert.AreEqual(7, numberChangedCount);
 
         var j1 = Serialize<System.Text.Json.Nodes.JsonObject>("{ \"a\": \"bcdefg\", \"h\": \"ijklmn\" }");
         Assert.AreEqual(2, j1.Count);
@@ -362,6 +372,14 @@ public class JsonUnitTest
         Assert.AreEqual("Test", json.GetObjectValue("host").TryGetStringTrimmedValue("n", true));
         hostService.SyncToParent();
         Assert.AreEqual("Right", json.GetObjectValue("host").TryGetStringTrimmedValue("n"));
+
+        var str = json.TryGetValue(["host", "n"]) as JsonStringNode;
+        Assert.IsNotNull(str);
+        Assert.AreEqual("Right", str.Value);
+        str = new("apple,banana, cherry,,");
+        jsonArray = str.ToJsonArray(',', StringSplitOptions.RemoveEmptyEntries, true);
+        Assert.AreEqual(3, jsonArray.Count);
+        Assert.AreEqual("cherry", jsonArray.LastOrDefault());
     }
 
     /// <summary>
