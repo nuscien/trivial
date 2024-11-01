@@ -12,6 +12,7 @@ including interceptor, retry policy, writable JSON DOM, PEM, JWT, stream combina
 
 [![NuGet package](https://img.shields.io/nuget/dt/Trivial?label=nuget+downloads)](https://www.nuget.org/packages/Trivial)
 
+![.NET 9](./docs/assets/badge_NET_9.svg)
 ![.NET 8](./docs/assets/badge_NET_8.svg)
 ![.NET 6](./docs/assets/badge_NET_6.svg)
 ![.NET Framework 4.8](./docs/assets/badge_NET_Fx_4_8.svg)
@@ -30,60 +31,12 @@ including interceptor, retry policy, writable JSON DOM, PEM, JWT, stream combina
 - [Geography](./docs/geo)
 - [Command line](./docs/cmdline/)
 
-## [Trivial.Chemistry](./Chemistry)
+## Other Trivial libraries repo
 
-Including the periodic table and basic chemistry models, e.g. chemical element, molecular formula and isotope.
-
-[![NuGet package](https://img.shields.io/nuget/dt/Trivial.Chemistry?label=nuget+downloads)](https://www.nuget.org/packages/Trivial.Chemistry)
-
-![.NET 8](./docs/assets/badge_NET_8.svg)
-![.NET 6](./docs/assets/badge_NET_6.svg)
-![.NET Framework 4.8](./docs/assets/badge_NET_Fx_4_8.svg)
-![.NET Framework 4.6.1](./docs/assets/badge_NET_Fx_4_6_1.svg)
-
-- [Chemistry](./docs/chemistry)
-
-## [Trivial.Mime](./Mime)
-
-The MIME constants and its mapping of file extension part.
-
-[![NuGet package](https://img.shields.io/nuget/dt/Trivial.Mime?label=nuget+downloads)](https://www.nuget.org/packages/Trivial.Mime)
-
-![.NET 8](./docs/assets/badge_NET_8.svg)
-![.NET 6](./docs/assets/badge_NET_6.svg)
-![.NET Framework 4.8](./docs/assets/badge_NET_Fx_4_8.svg)
-![.NET Framework 4.6.1](./docs/assets/badge_NET_Fx_4_6_1.svg)
-
-- [MIME constants](./docs/web/mime)
-- [EAN](./docs/data/ean)
-- [Code 128 and GS1-128](./docs/data/code128)
-
-## [Trivial.Web](./Web)
-
-The useful utilities for ASP.NET application.
-
-[![NuGet package](https://img.shields.io/nuget/dt/Trivial.Web?label=nuget+downloads)](https://www.nuget.org/packages/Trivial.Web)
-
-![ASP.NET Core 8.0](./docs/assets/badge_ASPNET_8_0.svg)
-![ASP.NET Core 6.0](./docs/assets/badge_ASPNET_6_0.svg)
-
-- [Controller extensions for ASP.NET Core](./docs/web/controller)
-
-## [Trivial.Messages](./Messages)
-
-The messages library.
-
-[![NuGet package](https://img.shields.io/nuget/dt/Trivial.Messages?label=nuget+downloads)](https://www.nuget.org/packages/Trivial.Messages)
-
-## [Trivial.Console](./Console)
-
-The rich UX CLI controls.
-
-[![NuGet package](https://img.shields.io/nuget/dt/Trivial.Console?label=nuget+downloads)](https://www.nuget.org/packages/Trivial.Console)
-
-![.NET 8](./docs/assets/badge_NET_8.svg)
-![.NET 6](./docs/assets/badge_NET_6.svg)
-![.NET Framework 4.8](./docs/assets/badge_NET_Fx_4_8.svg)
-![.NET Framework 4.6.1](./docs/assets/badge_NET_Fx_4_6_1.svg)
-
-- [Console utilities and components](./docs/console)
+- [Science](https://github.com/nuscien/science)
+  - Chemistry
+  - Maths
+  - Messages
+- [WinKit](https://github.com/nuscien/winkit)
+  - Windows Kit (&amp; Local Web App Platform)
+  - Console

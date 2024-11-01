@@ -141,7 +141,7 @@ public sealed class JsonStringNode : BaseJsonValueNode<string>, IComparable<IJso
     /// </summary>
     /// <param name="value">The value.</param>
     public JsonStringNode(ReadOnlySpan<char> value)
-        : this(value?.ToString())
+        : this(value.ToString())
     {
     }
 
