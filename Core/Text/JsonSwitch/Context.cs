@@ -103,8 +103,50 @@ public class JsonSwitchContext<TNode, TArgs> : IJsonSwitchContextInfo<TArgs>, IC
     /// Executes if all cases fail.
     /// </summary>
     /// <param name="block">The handler of code block.</param>
+    public JsonSwitchContext<TNode, TArgs> Default(Action block)
+        => Default(false, block);
+
+    /// <summary>
+    /// Executes if all cases fail.
+    /// </summary>
+    /// <param name="block">The handler of code block.</param>
+    public JsonSwitchContext<TNode, TArgs> Default(Action<TNode> block)
+        => Default(false, block);
+
+    /// <summary>
+    /// Executes if all cases fail.
+    /// </summary>
+    /// <param name="block">The handler of code block.</param>
     public JsonSwitchContext<TNode, TArgs> Default(Action<TNode, JsonSwitchContext<TNode, TArgs>> block)
         => Default(false, block);
+
+    /// <summary>
+    /// Executes if all cases fail.
+    /// </summary>
+    /// <param name="doNotMarkPassed">true if does NOT mark current state as passed; otherwise, false.</param>
+    /// <param name="block">The handler of code block.</param>
+    public JsonSwitchContext<TNode, TArgs> Default(bool doNotMarkPassed, Action block)
+    {
+        if (IsPassed) return this;
+        if (!doNotMarkPassed) IsPassed = true;
+        IncreaseCount();
+        block?.Invoke();
+        return this;
+    }
+
+    /// <summary>
+    /// Executes if all cases fail.
+    /// </summary>
+    /// <param name="doNotMarkPassed">true if does NOT mark current state as passed; otherwise, false.</param>
+    /// <param name="block">The handler of code block.</param>
+    public JsonSwitchContext<TNode, TArgs> Default(bool doNotMarkPassed, Action<TNode> block)
+    {
+        if (IsPassed) return this;
+        if (!doNotMarkPassed) IsPassed = true;
+        IncreaseCount();
+        block?.Invoke(Source);
+        return this;
+    }
 
     /// <summary>
     /// Executes if all cases fail.
@@ -114,8 +156,9 @@ public class JsonSwitchContext<TNode, TArgs> : IJsonSwitchContextInfo<TArgs>, IC
     public JsonSwitchContext<TNode, TArgs> Default(bool doNotMarkPassed, Action<TNode, JsonSwitchContext<TNode, TArgs>> block)
     {
         if (IsPassed) return this;
-        IsPassed = true;
-        if (!doNotMarkPassed) block?.Invoke(Source, this);
+        if (!doNotMarkPassed) IsPassed = true;
+        IncreaseCount();
+        block?.Invoke(Source, this);
         return this;
     }
 
@@ -123,8 +166,31 @@ public class JsonSwitchContext<TNode, TArgs> : IJsonSwitchContextInfo<TArgs>, IC
     /// Executes a handler of code block.
     /// </summary>
     /// <param name="block">The handler of code block.</param>
-    public void Finally(Action<TNode, JsonSwitchContext<TNode, TArgs>> block)
-        => block?.Invoke(Source, this);
+    public JsonSwitchContext<TNode, TArgs> Finally(Action block)
+    {
+        block?.Invoke();
+        return this;
+    }
+
+    /// <summary>
+    /// Executes a handler of code block.
+    /// </summary>
+    /// <param name="block">The handler of code block.</param>
+    public JsonSwitchContext<TNode, TArgs> Finally(Action<TNode> block)
+    {
+        block?.Invoke(Source);
+        return this;
+    }
+
+    /// <summary>
+    /// Executes a handler of code block.
+    /// </summary>
+    /// <param name="block">The handler of code block.</param>
+    public JsonSwitchContext<TNode, TArgs> Finally(Action<TNode, JsonSwitchContext<TNode, TArgs>> block)
+    {
+        block?.Invoke(Source, this);
+        return this;
+    }
 
     /// <summary>
     /// Executes the handler of code block if matches the testing.
@@ -199,6 +265,22 @@ public class JsonSwitchContext<TNode, TArgs> : IJsonSwitchContextInfo<TArgs>, IC
         router?.Process(IsPassed, this, AfterTest, null);
         if (otherRouters is null) return this;
         foreach (var item in otherRouters)
+        {
+            item?.Process(IsPassed, this, AfterTest, null);
+        }
+
+        return this;
+    }
+
+    /// <summary>
+    /// Executes the handler of code block if matches the testing.
+    /// </summary>
+    /// <param name="routers">The instance collection of the JSON switch-case router.</param>
+    /// <returns>The JSON switch context instance itself.</returns>
+    public JsonSwitchContext<TNode, TArgs> Case(IEnumerable<BaseJsonSwitchCase> routers)
+    {
+        if (routers is null) return this;
+        foreach (var item in routers)
         {
             item?.Process(IsPassed, this, AfterTest, null);
         }
@@ -1775,6 +1857,14 @@ public class JsonSwitchContext<TNode, TArgs> : IJsonSwitchContextInfo<TArgs>, IC
     }
 
     /// <summary>
+    /// Tests if the specific JSON switch-case instance is available currently now for this context.
+    /// </summary>
+    /// <param name="router">The JSON switch-case instance to test.</param>
+    /// <returns>true if it is availalbe; otherwise, false.</returns>
+    public bool IsAvailable(BaseJsonSwitchCase router)
+        => router is not null & router.IsAvailable && router.ForContextArgs<TArgs>();
+
+    /// <summary>
     /// Clones.
     /// </summary>
     /// <param name="id">The identifier of the new instance.</param>
@@ -1849,6 +1939,11 @@ public class JsonSwitchContext<TNode, TArgs> : IJsonSwitchContextInfo<TArgs>, IC
     {
         var pass = predicate is null || predicate(key, value);
         return AfterTest(pass);
+    }
+
+    private void IncreaseCount()
+    {
+        if (Count < int.MaxValue) Count++;
     }
 
     private bool AfterTest(bool pass)

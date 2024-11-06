@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.Json;
-
+using System.Text.Json.Serialization;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Trivial.Maths;
 using Trivial.Web;
@@ -541,6 +541,71 @@ public class JsonUnitTest
         Assert.IsTrue(model2.W.Arcminute > 0);
         str = JsonSerializer.Serialize(model2);
         Assert.IsNotNull(str);
+    }
+
+    [TestMethod]
+    public void TestJsonSwitch()
+    {
+        var json = new JsonObjectNode
+        {
+            { "str", "This is a text." },
+            { "num", 10000 },
+            { "t", true },
+            { "f", false },
+            { "arr", new List<string>
+            {
+                "One string",
+                "Another item"
+            } }
+        };
+        var sc = json.Switch()
+            .Case(100, json.Clear)
+            .Case<TestJsonSwitchCase>(() => { json.IncreaseValue("num"); })
+            .Default(json.Clear)
+            .Finally(() => { json.IncreaseValue("num", 9); });
+        Assert.IsTrue(sc?.Args is JsonObjectNode);
+        Assert.IsTrue(sc.IsPassed);
+        Assert.AreEqual(2, sc.Count);
+        Assert.AreEqual(5, json.Count);
+        Assert.AreEqual(10010, json.GetValue<int>("num"));
+        sc = json.Switch()
+            .PropertyCase("num", true, 10010, (key, b) =>
+            {
+                Assert.AreEqual("num", key);
+                Assert.AreEqual(10010, b);
+                var now = DateTime.Now;
+                var json2 = new JsonObjectNode
+                {
+                    { "name", "Test" },
+                    { "value", now },
+                };
+                json.SetValue("new", json2);
+                json2.SwitchValue("value").Case(dt => dt == json2.GetDateTimeValue("value"), () =>
+                {
+                    json.SetValue("time", now);
+                });
+            })
+            .Case(false, json.Clear);
+        Assert.IsTrue(sc.IsPassed);
+        Assert.AreEqual(1, sc.Count);
+        Assert.AreEqual(7, json.Count);
+        sc.Reset();
+        Assert.IsFalse(sc.IsPassed);
+        Assert.AreEqual(0, sc.Count);
+        sc = json.Switch()
+            .Case("str", json.Clear);
+        Assert.IsFalse(sc.IsPassed);
+        Assert.AreEqual(1, sc.Count);
+        sc.Default(token => { });
+        Assert.IsTrue(sc.IsPassed);
+        Assert.AreEqual(2, sc.Count);
+        var router = new TestJsonSwitchCase();
+        Assert.IsTrue(sc.IsAvailable(router));
+        var t = json.Switch("Initialized.")
+            .Case(router, router);
+        Assert.AreEqual("Hey!", t.Args);
+        Assert.IsFalse(sc.IsAvailable(router));
+        Assert.IsFalse(t.IsAvailable(router));
     }
 
     private static T Serialize<T>(string json) where T : System.Text.Json.Nodes.JsonNode

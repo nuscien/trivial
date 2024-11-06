@@ -166,3 +166,15 @@ class JsonHostTestModel : IJsonObjectHost
             { "v", Value }
         };
 }
+
+class TestJsonSwitchCase : BaseJsonSwitchCase
+{
+    protected override void OnProcess()
+        => TrySetArgs(Args is string s && s == "Hey!" ? "Hi!" : "Hey!");
+
+    protected override bool Test()
+    {
+        if (Source is not JsonObjectNode) return false;
+        return Source.Count > 1;
+    }
+}

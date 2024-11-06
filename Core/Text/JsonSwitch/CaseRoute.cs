@@ -239,26 +239,19 @@ public abstract class BaseJsonSwitchCase
 public abstract class BaseJsonSwitchCase<T> : BaseJsonSwitchCase
 {
     /// <summary>
-    /// Gets the context info bag.
-    /// </summary>
-    protected new IJsonSwitchContextInfo<T> ContextInfo { get; private set; }
-
-    /// <summary>
     /// Gets or sets the args.
     /// </summary>
     protected new T Args
     {
         get
         {
-            var context = ContextInfo;
-            return context is null ? default : context.Args;
+            return ContextInfo is IJsonSwitchContextInfo<T> context ? context.Args : default;
         }
 
         set
         {
-            var context = ContextInfo;
-            if (context is null) return;
-            ContextInfo.Args = value;
+            if (ContextInfo is not IJsonSwitchContextInfo<T> context) return;
+            context.Args = value;
         }
     }
 
@@ -266,6 +259,11 @@ public abstract class BaseJsonSwitchCase<T> : BaseJsonSwitchCase
     /// Gets a value indicating whether this execution is compatible the type of context args is not expected and the context args does not support to set.
     /// </summary>
     protected virtual bool IsArgsSetterCompatible => false;
+
+    /// <summary>
+    /// Gets a value indicating whether the type of context is the expected one.
+    /// </summary>
+    public bool IsExpectContextType => ContextInfo is IJsonSwitchContextInfo<T>;
 
     /// <summary>
     /// Gets the type of argument object expected.
@@ -276,10 +274,4 @@ public abstract class BaseJsonSwitchCase<T> : BaseJsonSwitchCase
 
     internal override bool ForContextArgs<TArgs>()
         => IsArgsSetterCompatible || typeof(TArgs) == typeof(T);
-
-    internal void Process(bool skip, IJsonSwitchContextInfo<T> info, Func<bool, bool> afterTest, Action block)
-    {
-        ContextInfo = info;
-        base.Process(skip, info, afterTest, block);
-    }
 }

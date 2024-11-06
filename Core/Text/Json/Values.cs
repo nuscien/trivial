@@ -685,7 +685,7 @@ public static class JsonValues
     /// <typeparam name="T">The type of the JSON node.</typeparam>
     /// <param name="source">The JSON node source.</param>
     /// <returns>A switch-case context for the JSON node.</returns>
-    public static JsonSwitchContext<T, JsonObjectNode> Switch<T>(T source) where T : IJsonValueNode
+    public static JsonSwitchContext<T, JsonObjectNode> Switch<T>(this T source) where T : IJsonValueNode
         => new(source, new());
 
     /// <summary>
@@ -696,7 +696,7 @@ public static class JsonValues
     /// <param name="source">The JSON node source.</param>
     /// <param name="args">The argument object.</param>
     /// <returns>A switch-case context for the JSON node.</returns>
-    public static JsonSwitchContext<TNode, TArgs> Switch<TNode, TArgs>(TNode source, TArgs args) where TNode : IJsonValueNode
+    public static JsonSwitchContext<TNode, TArgs> Switch<TNode, TArgs>(this TNode source, TArgs args) where TNode : IJsonValueNode
         => new(source, args);
 
     /// <summary>
