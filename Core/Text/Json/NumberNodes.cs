@@ -1,4 +1,5 @@
-﻿using System;
+﻿
+using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
@@ -24,7 +25,10 @@ public interface IJsonNumberNode : IJsonValueNode, IEquatable<IJsonNumberNode>, 
 /// Represents a specific JSON integer number value.
 /// </summary>
 [System.Text.Json.Serialization.JsonConverter(typeof(JsonObjectNodeConverter))]
-public sealed class JsonIntegerNode : BaseJsonValueNode<long>, IJsonNumberNode, IComparable<JsonIntegerNode>, IComparable<JsonDoubleNode>, IComparable<uint>, IComparable<int>, IComparable<long>, IComparable<double>, IComparable<float>, IEquatable<uint>, IEquatable<int>, IEquatable<float>, IEquatable<double>, IFormattable
+public sealed class JsonIntegerNode : BaseJsonValueNode<long>, IJsonNumberNode, IComparable<JsonIntegerNode>, IComparable<JsonDoubleNode>, IComparable<uint>, IComparable<int>, IComparable<long>, IComparable<double>, IComparable<float>, IEquatable<uint>, IEquatable<int>, IEquatable<float>, IEquatable<double>, IFormattable, IConvertible
+#if NET8_0_OR_GREATER
+    , IParsable<JsonIntegerNode>
+#endif
 {
     /// <summary>
     /// Maximum safe integer in JavaScript and JSON.
@@ -720,6 +724,67 @@ public sealed class JsonIntegerNode : BaseJsonValueNode<long>, IJsonNumberNode, 
         return !strict;
     }
 
+    long IConvertible.ToInt64(IFormatProvider provider)
+        => Value;
+
+    /// <summary>
+    /// Parses.
+    /// </summary>
+    /// <param name="s">The input string.</param>
+    /// <returns>The JSON value node parsed.</returns>
+    public static JsonIntegerNode Parse(string s)
+    {
+        var i = Maths.Numbers.ParseToInt64(s, 10);
+        return new(i);
+    }
+
+    /// <summary>
+    /// Tries to parse.
+    /// </summary>
+    /// <param name="s">The input string.</param>
+    /// <returns>The JSON value node parsed; or null, if failed to parse.</returns>
+    public static JsonIntegerNode TryParse(string s)
+        => Maths.Numbers.TryParseToInt64(s, 10, out var i) ? new(i) : default;
+
+    /// <summary>
+    /// Tries to parse.
+    /// </summary>
+    /// <param name="s">The input string.</param>
+    /// <param name="result">The JSON value node parsed.</param>
+    /// <returns>true if parse succeeded; otherwise, false..</returns>
+    public static bool TryParse(string s, out JsonIntegerNode result)
+    {
+        if (Maths.Numbers.TryParseToInt64(s, 10, out var i))
+        {
+            result = new(i);
+            return true;
+        }
+
+        result = default;
+        return false;
+    }
+
+#if NET8_0_OR_GREATER
+    /// <summary>
+    /// Parses.
+    /// </summary>
+    /// <param name="s">The input string.</param>
+    /// <param name="provider">An object that supplies culture-specific formatting information about s.</param>
+    /// <returns>The JSON value node.</returns>
+    static JsonIntegerNode IParsable<JsonIntegerNode>.Parse(string s, IFormatProvider provider)
+        => Parse(s);
+
+    /// <summary>
+    /// Tries to parse.
+    /// </summary>
+    /// <param name="s">The input string.</param>
+    /// <param name="provider">An object that supplies culture-specific formatting information about s.</param>
+    /// <param name="result">The JSON value node parsed.</param>
+    /// <returns>true if parse succeeded; otherwise, false..</returns>
+    static bool IParsable<JsonIntegerNode>.TryParse([NotNullWhen(true)] string s, IFormatProvider provider, [MaybeNullWhen(false)] out JsonIntegerNode result)
+        => TryParse(s, out result);
+#endif
+
     /// <summary>
     /// Converts to JSON value.
     /// </summary>
@@ -1200,7 +1265,10 @@ public sealed class JsonIntegerNode : BaseJsonValueNode<long>, IJsonNumberNode, 
 /// Represents a specific JSON double float number value.
 /// </summary>
 [System.Text.Json.Serialization.JsonConverter(typeof(JsonObjectNodeConverter))]
-public sealed class JsonDoubleNode : BaseJsonValueNode<double>, IJsonNumberNode, IComparable<JsonIntegerNode>, IComparable<JsonDoubleNode>, IComparable<JsonDecimalNode>, IComparable<uint>, IComparable<int>, IComparable<long>, IComparable<double>, IComparable<float>, IComparable<decimal>, IEquatable<uint>, IEquatable<int>, IEquatable<long>, IEquatable<float>, IEquatable<decimal>, IFormattable
+public sealed class JsonDoubleNode : BaseJsonValueNode<double>, IJsonNumberNode, IComparable<JsonIntegerNode>, IComparable<JsonDoubleNode>, IComparable<JsonDecimalNode>, IComparable<uint>, IComparable<int>, IComparable<long>, IComparable<double>, IComparable<float>, IComparable<decimal>, IEquatable<uint>, IEquatable<int>, IEquatable<long>, IEquatable<float>, IEquatable<decimal>, IFormattable, IConvertible
+#if NET8_0_OR_GREATER
+    , IParsable<JsonDoubleNode>
+#endif
 {
     /// <summary>
     /// Initializes a new instance of the JsonDoubleNode class.
@@ -2014,6 +2082,48 @@ public sealed class JsonDoubleNode : BaseJsonValueNode<double>, IJsonNumberNode,
     public override JsonValue ToJsonValue()
         => JsonValue.Create(Value);
 
+    double IConvertible.ToDouble(IFormatProvider provider)
+        => Value;
+
+    /// <summary>
+    /// Parses.
+    /// </summary>
+    /// <param name="s">The input string.</param>
+    /// <param name="provider">An object that supplies culture-specific formatting information about s.</param>
+    /// <returns>The JSON value node.</returns>
+    public static JsonDoubleNode Parse(string s, IFormatProvider provider = null)
+    {
+        var i = provider is null ? double.Parse(s) : double.Parse(s, provider);
+        return new(i);
+    }
+
+    /// <summary>
+    /// Tries to parse.
+    /// </summary>
+    /// <param name="s">The input string.</param>
+    /// <returns>The JSON value node parsed; or null, if failed to parse.</returns>
+    public static JsonDoubleNode TryParse(string s)
+        => double.TryParse(s, out var i) ? new(i) : default;
+
+    /// <summary>
+    /// Tries to parse.
+    /// </summary>
+    /// <param name="s">The input string.</param>
+    /// <param name="provider">An object that supplies culture-specific formatting information about s.</param>
+    /// <param name="result">The JSON value node parsed.</param>
+    /// <returns>true if parse succeeded; otherwise, false..</returns>
+    public static bool TryParse(string s, IFormatProvider provider, out JsonDoubleNode result)
+    {
+        if (provider is null ? double.TryParse(s, out var i) : double.TryParse(s, NumberStyles.Number, provider, out i))
+        {
+            result = new(i);
+            return true;
+        }
+
+        result = default;
+        return false;
+    }
+
     /// <summary>
     /// Converts to JSON value.
     /// </summary>
@@ -2548,7 +2658,10 @@ public sealed class JsonDoubleNode : BaseJsonValueNode<double>, IJsonNumberNode,
 /// Represents a specific JSON decimal float number value.
 /// </summary>
 [System.Text.Json.Serialization.JsonConverter(typeof(JsonObjectNodeConverter))]
-public sealed class JsonDecimalNode : BaseJsonValueNode<decimal>, IJsonNumberNode, IComparable<JsonIntegerNode>, IComparable<JsonDoubleNode>, IComparable<JsonDecimalNode>, IComparable<uint>, IComparable<int>, IComparable<long>, IComparable<double>, IComparable<float>, IComparable<decimal>, IEquatable<uint>, IEquatable<int>, IEquatable<long>, IEquatable<double>, IEquatable<float>, IFormattable
+public sealed class JsonDecimalNode : BaseJsonValueNode<decimal>, IJsonNumberNode, IComparable<JsonIntegerNode>, IComparable<JsonDoubleNode>, IComparable<JsonDecimalNode>, IComparable<uint>, IComparable<int>, IComparable<long>, IComparable<double>, IComparable<float>, IComparable<decimal>, IEquatable<uint>, IEquatable<int>, IEquatable<long>, IEquatable<double>, IEquatable<float>, IFormattable, IConvertible
+#if NET8_0_OR_GREATER
+    , IParsable<JsonDecimalNode>
+#endif
 {
     /// <summary>
     /// Initializes a new instance of the JsonDecimalNode class.
@@ -3360,6 +3473,48 @@ public sealed class JsonDecimalNode : BaseJsonValueNode<decimal>, IJsonNumberNod
     {
         result = ToString();
         return !strict;
+    }
+
+    decimal IConvertible.ToDecimal(IFormatProvider provider)
+        => Value;
+
+    /// <summary>
+    /// Parses.
+    /// </summary>
+    /// <param name="s">The input string.</param>
+    /// <param name="provider">An object that supplies culture-specific formatting information about s.</param>
+    /// <returns>The JSON value node.</returns>
+    public static JsonDecimalNode Parse(string s, IFormatProvider provider = null)
+    {
+        var i = provider is null ? decimal.Parse(s) : decimal.Parse(s, provider);
+        return new(i);
+    }
+
+    /// <summary>
+    /// Tries to parse.
+    /// </summary>
+    /// <param name="s">The input string.</param>
+    /// <returns>The JSON value node parsed; or null, if failed to parse.</returns>
+    public static JsonDecimalNode TryParse(string s)
+        => decimal.TryParse(s, out var i) ? new(i) : default;
+
+    /// <summary>
+    /// Tries to parse.
+    /// </summary>
+    /// <param name="s">The input string.</param>
+    /// <param name="provider">An object that supplies culture-specific formatting information about s.</param>
+    /// <param name="result">The JSON value node parsed.</param>
+    /// <returns>true if parse succeeded; otherwise, false..</returns>
+    public static bool TryParse(string s, IFormatProvider provider, out JsonDecimalNode result)
+    {
+        if (provider is null ? decimal.TryParse(s, out var i) : decimal.TryParse(s, NumberStyles.Number, provider, out i))
+        {
+            result = new(i);
+            return true;
+        }
+
+        result = default;
+        return false;
     }
 
     /// <summary>

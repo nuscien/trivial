@@ -25,7 +25,7 @@ public partial struct Angle
     [JsonConverter(typeof(JsonAngleModelConverter))]
     public class Model : IAngle, ICloneable, IComparable, IComparable<IAngle>, IEquatable<IAngle>, IComparable<double>, IEquatable<double>, IComparable<int>, IEquatable<int>, IAdvancedAdditionCapable<Model>
 #if NET8_0_OR_GREATER
-, IAdditionOperators<Model, IAngle, Model>, ISubtractionOperators<Model, IAngle, Model>, IMultiplyOperators<Model, int, Model>, IMultiplyOperators<Model, long, Model>, IMultiplyOperators<Model, float, Model>, IMultiplyOperators<Model, double, Model>, IDivisionOperators<Model, int, Model>, IDivisionOperators<Model, long, Model>, IDivisionOperators<Model, float, Model>, IDivisionOperators<Model, double, Model>, IUnaryNegationOperators<Model, Model>
+, IAdditionOperators<Model, IAngle, Model>, ISubtractionOperators<Model, IAngle, Model>, IMultiplyOperators<Model, int, Model>, IMultiplyOperators<Model, long, Model>, IMultiplyOperators<Model, float, Model>, IMultiplyOperators<Model, double, Model>, IDivisionOperators<Model, int, Model>, IDivisionOperators<Model, long, Model>, IDivisionOperators<Model, float, Model>, IDivisionOperators<Model, double, Model>, IUnaryNegationOperators<Model, Model>, IParsable<Model>
 #endif
     {
         /// <summary>
@@ -630,6 +630,41 @@ public partial struct Angle
 
             return new Model((positive ? 1 : -1) * int.Parse(split[0]), int.Parse(split[1]), split.Length > 2 ? float.Parse(split[2]) : 0);
         }
+
+#if NET8_0_OR_GREATER
+        static Model IParsable<Model>.Parse(string s, IFormatProvider provider)
+            => Parse(s);
+
+        static bool IParsable<Model>.TryParse(string s, IFormatProvider provider, out Model result)
+        {
+            try
+            {
+                result = Parse(s);
+                return true;
+            }
+            catch (FormatException)
+            {
+            }
+            catch (ArgumentException)
+            {
+            }
+            catch (InvalidCastException)
+            {
+            }
+            catch (InvalidOperationException)
+            {
+            }
+            catch (OverflowException)
+            {
+            }
+            catch (NullReferenceException)
+            {
+            }
+
+            result = default;
+            return false;
+        }
+#endif
 
         /// <summary>
         /// Compares the current object with another object of the same type.

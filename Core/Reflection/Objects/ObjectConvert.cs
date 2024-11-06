@@ -901,6 +901,13 @@ public static class ObjectConvert
         }
     }
 
+    internal static bool Equals<T>(T a, T b) where T : IEquatable<T>
+    {
+        if (ReferenceEquals(a, b)) return true;
+        if (a is null || b is null) return false;
+        return a.Equals(b);
+    }
+
     internal static T ParseEnum<T>(string s) where T : struct
     {
 #if NETFRAMEWORK

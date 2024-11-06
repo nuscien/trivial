@@ -1516,9 +1516,7 @@ public sealed class JsonStringNode : BaseJsonValueNode<string>, IComparable<IJso
     /// <param name="value">The source value.</param>
     /// <returns>A JSON value.</returns>
     public static implicit operator JsonStringNode(string value)
-    {
-        return new JsonStringNode(value);
-    }
+        => new(value);
 
     /// <summary>
     /// Converts to JSON value.

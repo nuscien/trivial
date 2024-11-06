@@ -596,6 +596,168 @@ public static class JsonValues
     }
 
     /// <summary>
+    /// Appends a copy of the specified string to this instance.
+    /// </summary>
+    /// <param name="sb">The string builder.</param>
+    /// <param name="value">The string to append.</param>
+    /// <returns>A reference to this instance after the append operation has completed.</returns>
+    /// <exception cref="ArgumentOutOfRangeException">Enlarging the value of this instance would exceed System.Text.StringBuilder.MaxCapacity.</exception>
+    public static StringBuilder Append(this StringBuilder sb, IJsonValueNode<int> value)
+    {
+        if (sb == null) return null;
+        sb.Append(value.Value);
+        return sb;
+    }
+
+    /// <summary>
+    /// Appends a copy of the specified string to this instance.
+    /// </summary>
+    /// <param name="sb">The string builder.</param>
+    /// <param name="value">The string to append.</param>
+    /// <returns>A reference to this instance after the append operation has completed.</returns>
+    /// <exception cref="ArgumentOutOfRangeException">Enlarging the value of this instance would exceed System.Text.StringBuilder.MaxCapacity.</exception>
+    public static StringBuilder Append(this StringBuilder sb, IJsonValueNode<long> value)
+    {
+        if (sb == null) return null;
+        sb.Append(value.Value);
+        return sb;
+    }
+
+    /// <summary>
+    /// Appends a copy of the specified string to this instance.
+    /// </summary>
+    /// <param name="sb">The string builder.</param>
+    /// <param name="value">The string to append.</param>
+    /// <returns>A reference to this instance after the append operation has completed.</returns>
+    /// <exception cref="ArgumentOutOfRangeException">Enlarging the value of this instance would exceed System.Text.StringBuilder.MaxCapacity.</exception>
+    public static StringBuilder Append(this StringBuilder sb, IJsonValueNode<float> value)
+    {
+        if (sb == null) return null;
+        sb.Append(value.Value);
+        return sb;
+    }
+
+    /// <summary>
+    /// Appends a copy of the specified string to this instance.
+    /// </summary>
+    /// <param name="sb">The string builder.</param>
+    /// <param name="value">The string to append.</param>
+    /// <returns>A reference to this instance after the append operation has completed.</returns>
+    /// <exception cref="ArgumentOutOfRangeException">Enlarging the value of this instance would exceed System.Text.StringBuilder.MaxCapacity.</exception>
+    public static StringBuilder Append(this StringBuilder sb, IJsonValueNode<double> value)
+    {
+        if (sb == null) return null;
+        sb.Append(value.Value);
+        return sb;
+    }
+
+    /// <summary>
+    /// Appends a copy of the specified string to this instance.
+    /// </summary>
+    /// <param name="sb">The string builder.</param>
+    /// <param name="value">The string to append.</param>
+    /// <returns>A reference to this instance after the append operation has completed.</returns>
+    /// <exception cref="ArgumentOutOfRangeException">Enlarging the value of this instance would exceed System.Text.StringBuilder.MaxCapacity.</exception>
+    public static StringBuilder Append(this StringBuilder sb, IJsonValueNode<decimal> value)
+    {
+        if (sb == null) return null;
+        sb.Append(value.Value);
+        return sb;
+    }
+
+    /// <summary>
+    /// Appends a copy of the specified string to this instance.
+    /// </summary>
+    /// <param name="sb">The string builder.</param>
+    /// <param name="value">The string to append.</param>
+    /// <returns>A reference to this instance after the append operation has completed.</returns>
+    /// <exception cref="ArgumentOutOfRangeException">Enlarging the value of this instance would exceed System.Text.StringBuilder.MaxCapacity.</exception>
+    public static StringBuilder Append(this StringBuilder sb, IJsonValueNode<bool> value)
+    {
+        if (sb == null) return null;
+        sb.Append(value.Value);
+        return sb;
+    }
+
+    /// <summary>
+    /// Switches.
+    /// </summary>
+    /// <typeparam name="T">The type of the JSON node.</typeparam>
+    /// <param name="source">The JSON node source.</param>
+    /// <returns>A switch-case context for the JSON node.</returns>
+    public static JsonSwitchContext<T, JsonObjectNode> Switch<T>(T source) where T : IJsonValueNode
+        => new(source, new());
+
+    /// <summary>
+    /// Switches.
+    /// </summary>
+    /// <typeparam name="TNode">The type of JSON node.</typeparam>
+    /// <typeparam name="TArgs">The type of args.</typeparam>
+    /// <param name="source">The JSON node source.</param>
+    /// <param name="args">The argument object.</param>
+    /// <returns>A switch-case context for the JSON node.</returns>
+    public static JsonSwitchContext<TNode, TArgs> Switch<TNode, TArgs>(TNode source, TArgs args) where TNode : IJsonValueNode
+        => new(source, args);
+
+    /// <summary>
+    /// Tests if the JSON node is a specific kind.
+    /// </summary>
+    /// <param name="value">The source JSON node.</param>
+    /// <param name="kind">The JSON value kind to test.</param>
+    /// <param name="callback">The optional callback handler.</param>
+    /// <param name="fallback">The optional fallback handler.</param>
+    /// <returns>true the value kind is the same; otherwise, false.</returns>
+    public static bool Is(IJsonValueNode value, JsonValueKind kind, Action<IJsonValueNode> callback = null, Action<IJsonValueNode> fallback = null)
+    {
+        value ??= Null;
+        if (value.ValueKind != kind)
+        {
+            fallback?.Invoke(value);
+            return false;
+        }
+
+        callback?.Invoke(value);
+        return true;
+    }
+
+    /// <summary>
+    /// Tests if the JSON node is a specific kind.
+    /// </summary>
+    /// <typeparam name="T">The type of args.</typeparam>
+    /// <param name="value">The source JSON node.</param>
+    /// <param name="args">The context args of callback handler.</param>
+    /// <param name="kind">The JSON value kind to test.</param>
+    /// <param name="callback">The optional callback handler.</param>
+    /// <param name="fallback">The optional fallback handler.</param>
+    /// <returns>true the value kind is the same; otherwise, false.</returns>
+    public static bool Is<T>(IJsonValueNode value, JsonValueKind kind, T args, Action<IJsonValueNode, T> callback, Action<IJsonValueNode, T> fallback = null)
+    {
+        value ??= Null;
+        if (value.ValueKind != kind)
+        {
+            fallback?.Invoke(value, args);
+            return false;
+        }
+
+        callback?.Invoke(value, args);
+        return true;
+    }
+
+    /// <summary>
+    /// Appends a copy of the specified string to this instance.
+    /// </summary>
+    /// <param name="sb">The string builder.</param>
+    /// <param name="value">The string to append.</param>
+    /// <returns>A reference to this instance after the append operation has completed.</returns>
+    /// <exception cref="ArgumentOutOfRangeException">Enlarging the value of this instance would exceed System.Text.StringBuilder.MaxCapacity.</exception>
+    public static StringBuilder AppendLine(this StringBuilder sb, IJsonValueNode<string> value)
+    {
+        if (sb == null) return null;
+        sb.AppendLine(value.Value);
+        return sb;
+    }
+
+    /// <summary>
     /// Filters a sequence of values based on a condition.
     /// </summary>
     /// <param name="source">A string collection to filter.</param>

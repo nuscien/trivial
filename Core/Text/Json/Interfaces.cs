@@ -415,3 +415,15 @@ public enum IndentStyles : byte
     /// </summary>
     Space = 6
 }
+
+/// <summary>
+/// The host for JSON object node.
+/// </summary>
+public interface IJsonObjectHost
+{
+    /// <summary>
+    /// Converts to JSON object node.
+    /// </summary>
+    /// <returns>The JSON object node about current instance.</returns>
+    JsonObjectNode ToJson();
+}

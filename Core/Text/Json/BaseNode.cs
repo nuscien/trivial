@@ -24,7 +24,7 @@ namespace Trivial.Text;
 /// <summary>
 /// The JSON value node base.
 /// </summary>
-public abstract class BaseJsonValueNode : IJsonValueNode, IEquatable<IJsonValueNode>
+public abstract class BaseJsonValueNode : IJsonValueNode, IEquatable<IJsonValueNode>, IConvertible
 {
     /// <summary>
     /// Initializes a new instance of the JsonNull class.
@@ -390,7 +390,16 @@ public abstract class BaseJsonValueNode : IJsonValueNode, IEquatable<IJsonValueN
             if (type == typeof(ushort))
             {
                 var i = TryConvert<int>(TryConvert, strict, out exception, throwException, "an integer", true);
-                if (i >= 0 && i < ushort.MaxValue) return (ushort)i;
+                if (i >= 0 && i <= ushort.MaxValue) return (ushort)i;
+                exception = CreateInvalidOperationException("an interger", true);
+                if (throwException) throw exception;
+                return default;
+            }
+
+            if (type == typeof(sbyte))
+            {
+                var i = TryConvert<short>(TryConvert, strict, out exception, throwException, "an integer", true);
+                if (i >= sbyte.MinValue && i <= sbyte.MaxValue) return (ushort)i;
                 exception = CreateInvalidOperationException("an interger", true);
                 if (throwException) throw exception;
                 return default;
@@ -441,6 +450,59 @@ public abstract class BaseJsonValueNode : IJsonValueNode, IEquatable<IJsonValueN
                     exception = ex;
                     if (throwException) throw;
                     return Array.Empty<byte>();
+                }
+            }
+
+            if (type == typeof(char))
+            {
+                if (this is IJsonValueNode<int> i1)
+                {
+                    exception = null;
+                    try
+                    {
+                        return (char)i1.Value;
+                    }
+                    catch (Exception ex)
+                    {
+                        exception = ex;
+                        if (throwException) throw exception;
+                        return default;
+                    }
+                }
+
+                if (this is IJsonValueNode<long> i2)
+                {
+                    exception = null;
+                    try
+                    {
+                        return (char)i2.Value;
+                    }
+                    catch (Exception ex)
+                    {
+                        exception = ex;
+                        if (throwException) throw exception;
+                        return default;
+                    }
+                }
+
+                if (this is IJsonValueNode<string> i3)
+                {
+                    var i4 = i3.Value;
+                    if (i4 == null || i4.Length != 1)
+                    {
+                        exception = CreateInvalidOperationException("a string with only one char");
+                        if (throwException) throw exception;
+                        return default;
+                    }
+
+                    exception = null;
+                    return i4[0];
+                }
+
+                if (this is IJsonValueNode<char> i5)
+                {
+                    exception = null;
+                    return i5.Value;
                 }
             }
 
@@ -1208,6 +1270,64 @@ public abstract class BaseJsonValueNode : IJsonValueNode, IEquatable<IJsonValueN
             JsonValueKind.Undefined => "undefined",
             _ => "an unknown value"
         };
+
+    TypeCode IConvertible.GetTypeCode()
+        => ValueKind switch
+        {
+            JsonValueKind.Null or JsonValueKind.Undefined => TypeCode.Empty,
+            JsonValueKind.Number => this is IJsonNumberNode i && i.IsInteger ? TypeCode.Int64 : TypeCode.Double,
+            JsonValueKind.String => TypeCode.String,
+            JsonValueKind.True or JsonValueKind.False => TypeCode.Boolean,
+            _ => TypeCode.Object
+        };
+
+    bool IConvertible.ToBoolean(IFormatProvider provider)
+        => As<bool>();
+
+    byte IConvertible.ToByte(IFormatProvider provider)
+        => As<byte>();
+
+    char IConvertible.ToChar(IFormatProvider provider)
+        => As<char>();
+
+    DateTime IConvertible.ToDateTime(IFormatProvider provider)
+        => As<DateTime>();
+
+    decimal IConvertible.ToDecimal(IFormatProvider provider)
+        => As<decimal>();
+
+    double IConvertible.ToDouble(IFormatProvider provider)
+        => As<double>();
+
+    short IConvertible.ToInt16(IFormatProvider provider)
+        => As<short>();
+
+    int IConvertible.ToInt32(IFormatProvider provider)
+        => As<int>();
+
+    long IConvertible.ToInt64(IFormatProvider provider)
+        => As<long>();
+
+    sbyte IConvertible.ToSByte(IFormatProvider provider)
+        => As<sbyte>();
+
+    float IConvertible.ToSingle(IFormatProvider provider)
+        => As<float>();
+
+    string IConvertible.ToString(IFormatProvider provider)
+        => As<string>();
+
+    object IConvertible.ToType(Type conversionType, IFormatProvider provider)
+        => As(conversionType);
+
+    ushort IConvertible.ToUInt16(IFormatProvider provider)
+        => As<ushort>();
+
+    uint IConvertible.ToUInt32(IFormatProvider provider)
+        => As<uint>();
+
+    ulong IConvertible.ToUInt64(IFormatProvider provider)
+        => As<ulong>();
 
     /// <summary>
     /// Converts to JSON value.

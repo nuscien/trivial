@@ -241,7 +241,7 @@ public class RSASecretExchange : ICloneable
     ~RSASecretExchange()
     {
         if (crypto != null && needDisposeCrypto) crypto.Dispose();
-        if (Secret != null) Secret.Dispose();
+        Secret?.Dispose();
         Secret = null;
         crypto = null;
     }
@@ -300,9 +300,7 @@ public class RSASecretExchange : ICloneable
     /// Creates a random new identifier.
     /// </summary>
     public void RenewId()
-    {
-        Id = Guid.NewGuid().ToString("n");
-    }
+        => Id = Guid.NewGuid().ToString("n");
 
     /// <summary>
     /// Sets a specific crypto service provider instance.
@@ -376,9 +374,7 @@ public class RSASecretExchange : ICloneable
     /// </summary>
     /// <param name="syncEncryptKey">true if set the secret encryption key from the crypto service provider; otherwise, false.</param>
     public void CreateCrypto(bool syncEncryptKey = false)
-    {
-        SetCrypto(RSA.Create(), syncEncryptKey, false);
-    }
+        => SetCrypto(RSA.Create(), syncEncryptKey, false);
 
     /// <summary>
     /// Exports the System.Security.Cryptography.RSAParameters.
@@ -399,7 +395,7 @@ public class RSASecretExchange : ICloneable
     /// <param name="padding">The optional padding mode for decryption.</param>
     public void DecryptSecret(string secretEncrypted, bool ignoreFormatIfNoCrypto, RSAEncryptionPadding padding = null)
     {
-        if (Secret != null) Secret.Dispose();
+        Secret?.Dispose();
         if (string.IsNullOrWhiteSpace(secretEncrypted))
         {
             Secret = null;
@@ -424,9 +420,7 @@ public class RSASecretExchange : ICloneable
     /// <param name="secretEncrypted">The new secret encrypted.</param>
     /// <param name="padding">The padding mode for decryption.</param>
     public void DecryptSecret(string secretEncrypted, RSAEncryptionPadding padding = null)
-    {
-        DecryptSecret(secretEncrypted, false, padding);
-    }
+        => DecryptSecret(secretEncrypted, false, padding);
 
     /// <summary>
     /// Decrypts the secret and fills into this secret exchange instance.
@@ -448,7 +442,7 @@ public class RSASecretExchange : ICloneable
     /// </summary>
     public void ClearSecret()
     {
-        if (Secret != null) Secret.Dispose();
+        Secret?.Dispose();
         Secret = null;
     }
 
@@ -458,7 +452,7 @@ public class RSASecretExchange : ICloneable
     /// <param name="secret">The new secret to set.</param>
     public void SetSecret(string secret)
     {
-        if (Secret != null) Secret.Dispose();
+        Secret?.Dispose();
         if (string.IsNullOrWhiteSpace(secret))
         {
             Secret = null;
@@ -483,18 +477,14 @@ public class RSASecretExchange : ICloneable
     /// </summary>
     /// <param name="token">The new token.</param>
     public void SetSecret(TokenInfo token)
-    {
-        SetSecret(token?.AccessToken);
-    }
+        => SetSecret(token?.AccessToken);
 
     /// <summary>
     /// Sets a new token from an access token.
     /// </summary>
     /// <param name="token">The new token.</param>
     public void SetSecret(TokenContainer token)
-    {
-        SetSecret(token?.AccessToken);
-    }
+        => SetSecret(token?.AccessToken);
 
     /// <summary>
     /// Gets the secret encrypted.
@@ -522,9 +512,7 @@ public class RSASecretExchange : ICloneable
     /// <param name="padding">The optional padding mode for decryption.</param>
     /// <returns>The Base64 string with secret encrypted.</returns>
     public string EncryptSecret(string key, RSAEncryptionPadding padding = null)
-    {
-        return EncryptSecret(RSAParametersConvert.Parse(key), padding);
-    }
+        => EncryptSecret(RSAParametersConvert.Parse(key), padding);
 
     /// <summary>
     /// Gets the secret encrypted.
@@ -532,9 +520,7 @@ public class RSASecretExchange : ICloneable
     /// <param name="padding">The optional padding mode for decryption.</param>
     /// <returns>The Base64 string with secret encrypted.</returns>
     public string EncryptSecret(RSAEncryptionPadding padding)
-    {
-        return EncryptSecret(null as string, padding);
-    }
+        => EncryptSecret(null as string, padding);
 
     /// <summary>
     /// Gets the encrypted text by private key.
@@ -563,9 +549,7 @@ public class RSASecretExchange : ICloneable
     /// <param name="padding">The optional padding mode for decryption.</param>
     /// <returns>The Base64 string with secret encrypted.</returns>
     public string EncryptText(SecureString text, bool ignoreFormatIfNoCrypto = false, RSAEncryptionPadding padding = null)
-    {
-        return EncryptText(SecureStringExtensions.ToUnsecureString(text), ignoreFormatIfNoCrypto, padding);
-    }
+        => EncryptText(SecureStringExtensions.ToUnsecureString(text), ignoreFormatIfNoCrypto, padding);
 
     /// <summary>
     /// Tests if the given identifier is as same as the identifier of this instance.
@@ -573,9 +557,7 @@ public class RSASecretExchange : ICloneable
     /// <param name="id">The identifier to test.</param>
     /// <returns>true if they are same; otherwise, false.</returns>
     public bool IsSameId(string id)
-    {
-        return id == Id || (string.IsNullOrWhiteSpace(id) && string.IsNullOrWhiteSpace(Id));
-    }
+        => id == Id || (string.IsNullOrWhiteSpace(id) && string.IsNullOrWhiteSpace(Id));
 
     /// <summary>
     /// Tests if the given identifier is as same as the related entity identifier of this instance.
@@ -583,9 +565,7 @@ public class RSASecretExchange : ICloneable
     /// <param name="entity">The entity identifier to test.</param>
     /// <returns>true if they are same; otherwise, false.</returns>
     public bool IsSameEntityId(string entity)
-    {
-        return entity == EntityId || (string.IsNullOrWhiteSpace(entity) && string.IsNullOrWhiteSpace(EntityId));
-    }
+        => entity == EntityId || (string.IsNullOrWhiteSpace(entity) && string.IsNullOrWhiteSpace(EntityId));
 
     /// <summary>
     /// Creates the payload for JSON web token.
@@ -599,7 +579,7 @@ public class RSASecretExchange : ICloneable
     {
         if (thisSide)
         {
-            return new JsonWebTokenPayload
+            return new()
             {
                 UserId = EntityId,
                 Value = Secret?.ToUnsecureString(),
@@ -609,7 +589,7 @@ public class RSASecretExchange : ICloneable
 
         if (string.IsNullOrWhiteSpace(EncryptKeyId))
         {
-            return new JsonWebTokenPayload
+            return new()
             {
                 UserId = EntityId,
                 Value = Secret?.ToUnsecureString(),
@@ -618,7 +598,7 @@ public class RSASecretExchange : ICloneable
             };
         }
 
-        return new JsonWebTokenPayload
+        return new()
         {
             CurrentEncryptId = EncryptKeyId,
             UserId = EntityId,
@@ -639,9 +619,7 @@ public class RSASecretExchange : ICloneable
     /// </param>
     /// <returns>A System.Net.Http.Headers.AuthenticationHeaderValue that represents the current RSA token exchange in JSON web token format.</returns>
     public AuthenticationHeaderValue ToJsonWebTokenAuthenticationHeaderValue(ISignatureProvider sign, bool thisSide = false)
-    {
-        return ToJsonWebTokenAuthenticationHeaderValue(sign, null, thisSide);
-    }
+        => ToJsonWebTokenAuthenticationHeaderValue(sign, null, thisSide);
 
     /// <summary>
     /// Returns a System.Net.Http.Headers.AuthenticationHeaderValue that represents the current RSA token exchange in JSON web token format.
@@ -670,9 +648,7 @@ public class RSASecretExchange : ICloneable
     /// </param>
     /// <returns>A System.Net.Http.Headers.AuthenticationHeaderValue that represents the current RSA token exchange in JSON web token format.</returns>
     public AuthenticationHeaderValue ToJsonWebTokenAuthenticationHeaderValue(ISignatureProvider sign, Func<JsonWebTokenPayload, object> converter, bool thisSide = false)
-    {
-        return ToJsonWebTokenAuthenticationHeaderValue(sign, converter, null, thisSide);
-    }
+        => ToJsonWebTokenAuthenticationHeaderValue(sign, converter, null, thisSide);
 
     /// <summary>
     /// Returns a System.Net.Http.Headers.AuthenticationHeaderValue that represents the current RSA token exchange in JSON web token format.
@@ -703,7 +679,7 @@ public class RSASecretExchange : ICloneable
     public RSASecretExchange Clone()
     {
         needDisposeCrypto = false;
-        return new RSASecretExchange
+        return new()
         {
             Id = Id,
             EntityId = EntityId,
@@ -722,7 +698,5 @@ public class RSASecretExchange : ICloneable
     /// </summary>
     /// <returns>A new object that is a copy of this instance.</returns>
     object ICloneable.Clone()
-    {
-        return Clone();
-    }
+        => Clone();
 }

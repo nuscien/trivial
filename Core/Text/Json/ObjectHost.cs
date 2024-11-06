@@ -14,18 +14,6 @@ using Trivial.IO;
 namespace Trivial.Text;
 
 /// <summary>
-/// The host for JSON object node.
-/// </summary>
-public interface IJsonObjectHost
-{
-    /// <summary>
-    /// Converts to JSON object node.
-    /// </summary>
-    /// <returns>The JSON object node about current instance.</returns>
-    JsonObjectNode ToJson();
-}
-
-/// <summary>
 /// The host service for JSON object node to provide a way to access its JSON properties.
 /// </summary>
 public class JsonObjectHostService : IJsonObjectHost, IReadOnlyDictionary<string, BaseJsonValueNode>

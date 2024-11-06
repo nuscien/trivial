@@ -6,11 +6,13 @@ using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
 using System.Security;
 using System.Text;
 using System.Text.Json;
+using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
@@ -29,6 +31,9 @@ namespace Trivial.Text;
 [Serializable]
 [JsonConverter(typeof(JsonObjectNodeConverter))]
 public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary<string, IJsonValueNode>, IDictionary<string, BaseJsonValueNode>, IReadOnlyDictionary<string, IJsonValueNode>, IReadOnlyDictionary<string, BaseJsonValueNode>, IEquatable<JsonObjectNode>, ISerializable, INotifyPropertyChanged
+#if NET8_0_OR_GREATER
+    , IParsable<JsonObjectNode>
+#endif
 {
 #pragma warning disable IDE0056,IDE0057
     private IDictionary<string, BaseJsonValueNode> store = new Dictionary<string, BaseJsonValueNode>();
@@ -3095,7 +3100,7 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// Tries to get the value of the specific property.
     /// </summary>
     /// <param name="key">The property key.</param>
-    /// <returns>The value.</returns>
+    /// <returns>The value; or null, if non-exists.</returns>
     public BaseJsonValueNode TryGetValue(string key)
         => TryGetValueOrNull(key);
 
@@ -3103,7 +3108,7 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// Tries to get the value of the specific property.
     /// </summary>
     /// <param name="key">The property key.</param>
-    /// <returns>The value.</returns>
+    /// <returns>The value; or null, if non-exists.</returns>
     public BaseJsonValueNode TryGetValue(ReadOnlySpan<char> key)
         => TryGetValueOrNull(key);
 
@@ -3111,7 +3116,7 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// Tries to get the value of the specific property.
     /// </summary>
     /// <param name="key">The property key.</param>
-    /// <returns>The value.</returns>
+    /// <returns>The value; or null, if non-exists.</returns>
     protected override BaseJsonValueNode TryGetValueOrNull(string key)
     {
         try
@@ -3132,7 +3137,7 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// Tries to get the value of the specific property.
     /// </summary>
     /// <param name="key">The property key.</param>
-    /// <returns>The value.</returns>
+    /// <returns>The value; or null, if non-exists.</returns>
     protected override BaseJsonValueNode TryGetValueOrNull(ReadOnlySpan<char> key)
         => TryGetValueOrNull(key.ToString());
 
@@ -7299,6 +7304,56 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     }
 
     /// <summary>
+    /// Determines whether the JSON object contains the specific properties.
+    /// </summary>
+    /// <param name="test">The value to compare.</param>
+    /// <returns>true if all properties are found and same; otherwise, false.</returns>
+    public bool Contains(JsonObjectNode test)
+    {
+        if (test is null) return false;
+        foreach (var prop in test)
+        {
+            var value = TryGetValue(prop.Key);
+            if (value is null || value.ValueKind == JsonValueKind.Undefined || value.ValueKind == JsonValueKind.Null)
+            {
+                if (prop.Value is null || prop.Value.ValueKind == JsonValueKind.Undefined || prop.Value.ValueKind == JsonValueKind.Null) continue;
+                return false;
+            }
+
+            if (value.Equals(prop.Value)) continue;
+            return false;
+        }
+
+        return true;
+    }
+
+    /// <summary>
+    /// Switches.
+    /// </summary>
+    /// <param name="key">The key of the property.</param>
+    /// <returns>A switch-case context for the JSON node; or null, if no such property.</returns>
+    public JsonSwitchContext<BaseJsonValueNode, string> SwitchValue(string key)
+    {
+        var prop = TryGetValue(key);
+        if (prop == null) return null;
+        return new(prop, key);
+    }
+
+    /// <summary>
+    /// Switches.
+    /// </summary>
+    /// <typeparam name="T">The type of the args.</typeparam>
+    /// <param name="key">The key of the property.</param>
+    /// <param name="args">The argument object.</param>
+    /// <returns>A switch-case context for the JSON node; or null, if no such property.</returns>
+    public JsonSwitchContext<BaseJsonValueNode, T> SwitchValue<T>(string key, T args)
+    {
+        var prop = TryGetValue(key);
+        if (prop == null) return null;
+        return new(prop, args);
+    }
+
+    /// <summary>
     /// Copies the elements of the JSON object to an array, starting at a particular System.Array index.
     /// </summary>
     /// <param name="array">The one-dimensional array that is the destination of the elements copied from JSON object. The System.Array must have zero-based indexing.</param>
@@ -8518,6 +8573,17 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
         return Parse(stream, options);
     }
 
+#if NET8_0_OR_GREATER
+    static JsonObjectNode IParsable<JsonObjectNode>.Parse(string s, IFormatProvider provider)
+        => Parse(s);
+
+    static bool IParsable<JsonObjectNode>.TryParse(string s, IFormatProvider provider, out JsonObjectNode result)
+    {
+        result = TryParse(s);
+        return result is not null;
+    }
+#endif
+
     /// <summary>
     /// Parses a stream as UTF-8-encoded data representing a JSON object.
     /// The stream is read to completion.
@@ -8885,5 +8951,5 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     {
         return true;
     }
-#pragma warning restore IDE0056,IDE0057
+#pragma warning restore IDE0056, IDE0057
 }

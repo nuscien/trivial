@@ -13,7 +13,10 @@ namespace Trivial.Text;
 /// Represents a specific JSON boolean value.
 /// </summary>
 [System.Text.Json.Serialization.JsonConverter(typeof(JsonObjectNodeConverter))]
-public sealed class JsonBooleanNode : BaseJsonValueNode<bool>
+public sealed class JsonBooleanNode : BaseJsonValueNode<bool>, IConvertible
+#if NET8_0_OR_GREATER
+    , IParsable<JsonBooleanNode>
+#endif
 {
     /// <summary>
     /// Represents the Boolean value true of JSON as a string.
@@ -54,6 +57,14 @@ public sealed class JsonBooleanNode : BaseJsonValueNode<bool>
     /// <returns>The JSON format string of the boolean.</returns>
     public override string ToString()
         => Value ? TrueString : FalseString;
+
+    /// <summary>
+    /// Converts the numeric value of this instance to its equivalent string representation.
+    /// </summary>
+    /// <param name="provider">An object that supplies culture-specific formatting information about this instance.</param>
+    /// <returns>The JSON format string of the integer.</returns>
+    public string ToString(IFormatProvider provider)
+        => Value.ToString(provider);
 
     /// <summary>
     /// Indicates whether this instance and a specified object are equal.
@@ -223,6 +234,9 @@ public sealed class JsonBooleanNode : BaseJsonValueNode<bool>
     /// <inheritdoc />
     public override JsonValue ToJsonValue()
         => JsonValue.Create(Value);
+
+    bool IConvertible.ToBoolean(IFormatProvider provider)
+        => Value;
 
     /// <summary>
     /// Converts to JSON value.
@@ -503,8 +517,7 @@ public sealed class JsonBooleanNode : BaseJsonValueNode<bool>
     {
         if (s == null) return null;
         var result = TryParse(s);
-        if (result is null) throw new FormatException("s is not in the correct format.");
-        return result;
+        return result is null ? throw new FormatException("s is not in the correct format.") : result;
     }
 
     /// <summary>
@@ -585,4 +598,37 @@ public sealed class JsonBooleanNode : BaseJsonValueNode<bool>
             _ => null
         };
     }
+
+    /// <summary>
+    /// Tries to parse a string to JSON boolean token.
+    /// </summary>
+    /// <param name="s">The specific string to parse.</param>
+    /// <param name="result">The JSON value node parsed.</param>
+    /// <returns>true if parse succeeded; otherwise, false..</returns>
+    public static bool TryParse(string s, out JsonBooleanNode result)
+    {
+        result = TryParse(s);
+        return result is not null;
+    }
+
+#if NET8_0_OR_GREATER
+    /// <summary>
+    /// Parses.
+    /// </summary>
+    /// <param name="s">The input string.</param>
+    /// <param name="provider">An object that supplies culture-specific formatting information about s.</param>
+    /// <returns>The JSON value node.</returns>
+    static JsonBooleanNode IParsable<JsonBooleanNode>.Parse(string s, IFormatProvider provider)
+        => Parse(s);
+
+    /// <summary>
+    /// Tries to parse.
+    /// </summary>
+    /// <param name="s">The input string.</param>
+    /// <param name="provider">An object that supplies culture-specific formatting information about s.</param>
+    /// <param name="result">The JSON value node parsed.</param>
+    /// <returns>true if parse succeeded; otherwise, false..</returns>
+    static bool IParsable<JsonBooleanNode>.TryParse([NotNullWhen(true)] string s, IFormatProvider provider, [MaybeNullWhen(false)] out JsonBooleanNode result)
+        => TryParse(s, out result);
+#endif
 }

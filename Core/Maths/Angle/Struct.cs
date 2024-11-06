@@ -20,7 +20,7 @@ namespace Trivial.Maths;
 [JsonConverter(typeof(JsonAngleConverter))]
 public partial struct Angle : IAngle, IComparable, IComparable<IAngle>, IEquatable<IAngle>, IComparable<double>, IEquatable<double>, IComparable<int>, IEquatable<int>, IAdvancedAdditionCapable<Angle>
 #if NET8_0_OR_GREATER
-, IAdditionOperators<Angle, IAngle, Angle>, ISubtractionOperators<Angle, IAngle, Angle>, IMultiplyOperators<Angle, int, Angle>, IMultiplyOperators<Angle, long, Angle>, IMultiplyOperators<Angle, float, Angle>, IMultiplyOperators<Angle, double, Angle>, IDivisionOperators<Angle, int, Angle>, IDivisionOperators<Angle, long, Angle>, IDivisionOperators<Angle, float, Angle>, IDivisionOperators<Angle, double, Angle>, IUnaryNegationOperators<Angle, Angle>
+, IAdditionOperators<Angle, IAngle, Angle>, ISubtractionOperators<Angle, IAngle, Angle>, IMultiplyOperators<Angle, int, Angle>, IMultiplyOperators<Angle, long, Angle>, IMultiplyOperators<Angle, float, Angle>, IMultiplyOperators<Angle, double, Angle>, IDivisionOperators<Angle, int, Angle>, IDivisionOperators<Angle, long, Angle>, IDivisionOperators<Angle, float, Angle>, IDivisionOperators<Angle, double, Angle>, IUnaryNegationOperators<Angle, Angle>, IParsable<Angle>
 #endif
 {
     /// <summary>
@@ -502,6 +502,41 @@ public partial struct Angle : IAngle, IComparable, IComparable<IAngle>, IEquatab
 
         return new(int.Parse(split[0]) * (positive ? 1 : -1), int.Parse(split[1]), split.Length > 2 ? float.Parse(split[2]) : 0);
     }
+
+#if NET8_0_OR_GREATER
+    static Angle IParsable<Angle>.Parse(string s, IFormatProvider provider)
+        => Parse(s);
+
+    static bool IParsable<Angle>.TryParse(string s, IFormatProvider provider, out Angle result)
+    {
+        try
+        {
+            result = Parse(s);
+            return true;
+        }
+        catch (FormatException)
+        {
+        }
+        catch (ArgumentException)
+        {
+        }
+        catch (InvalidCastException)
+        {
+        }
+        catch (InvalidOperationException)
+        {
+        }
+        catch (OverflowException)
+        {
+        }
+        catch (NullReferenceException)
+        {
+        }
+
+        result = default;
+        return false;
+    }
+#endif
 
     /// <summary>
     /// Converts from radian.

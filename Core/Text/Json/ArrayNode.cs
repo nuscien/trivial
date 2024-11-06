@@ -33,6 +33,9 @@ namespace Trivial.Text;
 [Serializable]
 [System.Text.Json.Serialization.JsonConverter(typeof(JsonObjectNodeConverter))]
 public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyList<IJsonValueNode>, IReadOnlyList<BaseJsonValueNode>, IEquatable<JsonArrayNode>, ISerializable, INotifyPropertyChanged, INotifyCollectionChanged
+#if NET8_0_OR_GREATER
+    , IParsable<JsonArrayNode>
+#endif
 {
     private IList<BaseJsonValueNode> store = new List<BaseJsonValueNode>();
 
@@ -484,6 +487,32 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
     /// <returns>true if there is no such index; otherwise, false.</returns>
     public bool Contains(int index)
         => index >= 0 && index < store.Count;
+
+    /// <summary>
+    /// Switches.
+    /// </summary>
+    /// <param name="index">The zero-based index of the element to get.</param>
+    /// <returns>A switch-case context for the JSON node; or null, if no such property.</returns>
+    public JsonSwitchContext<BaseJsonValueNode, int> SwitchValue(int index)
+    {
+        var prop = TryGetValue(index);
+        if (prop == null) return null;
+        return new(prop, index);
+    }
+
+    /// <summary>
+    /// Switches.
+    /// </summary>
+    /// <typeparam name="T">The type of the args.</typeparam>
+    /// <param name="index">The zero-based index of the element to get.</param>
+    /// <param name="args">The argument object.</param>
+    /// <returns>A switch-case context for the JSON node; or null, if no such property.</returns>
+    public JsonSwitchContext<BaseJsonValueNode, T> SwitchValue<T>(int index, T args)
+    {
+        var prop = TryGetValue(index);
+        if (prop == null) return null;
+        return new(prop, args);
+    }
 
     /// <summary>
     /// Gets the raw value of the specific value.
@@ -5229,6 +5258,17 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
     /// <exception cref="ArgumentException">readerOptions contains unsupported options.</exception>
     public static JsonArrayNode Parse(Stream utf8Json, JsonDocumentOptions options = default)
         => JsonDocument.Parse(utf8Json, options);
+
+#if NET8_0_OR_GREATER
+    static JsonArrayNode IParsable<JsonArrayNode>.Parse(string s, IFormatProvider provider)
+        => Parse(s);
+
+    static bool IParsable<JsonArrayNode>.TryParse(string s, IFormatProvider provider, out JsonArrayNode result)
+    {
+        result = TryParse(s);
+        return result is not null;
+    }
+#endif
 
     /// <summary>
     /// Parses a stream as UTF-8-encoded data representing a JSON array.

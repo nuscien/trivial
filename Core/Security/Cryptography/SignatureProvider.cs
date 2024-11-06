@@ -71,7 +71,7 @@ public class HashSignatureProvider : ISignatureProvider
     public static HashSignatureProvider CreateHS512(string secret)
     {
         var a = new HMACSHA512(Encoding.ASCII.GetBytes(secret ?? string.Empty));
-        return new HashSignatureProvider(a, "HS512", true);
+        return new(a, "HS512", true);
     }
 
     /// <summary>
@@ -82,7 +82,7 @@ public class HashSignatureProvider : ISignatureProvider
     public static HashSignatureProvider CreateHS512(byte[] secret)
     {
         var a = new HMACSHA512(secret);
-        return new HashSignatureProvider(a, "HS512", true);
+        return new(a, "HS512", true);
     }
 
     /// <summary>
@@ -93,7 +93,7 @@ public class HashSignatureProvider : ISignatureProvider
     public static HashSignatureProvider CreateHS384(string secret)
     {
         var a = new HMACSHA384(Encoding.ASCII.GetBytes(secret ?? string.Empty));
-        return new HashSignatureProvider(a, "HS384", true);
+        return new(a, "HS384", true);
     }
 
     /// <summary>
@@ -104,7 +104,7 @@ public class HashSignatureProvider : ISignatureProvider
     public static HashSignatureProvider CreateHS384(byte[] secret)
     {
         var a = new HMACSHA384(secret);
-        return new HashSignatureProvider(a, "HS384", true);
+        return new(a, "HS384", true);
     }
 
     /// <summary>
@@ -115,7 +115,7 @@ public class HashSignatureProvider : ISignatureProvider
     public static HashSignatureProvider CreateHS256(string secret)
     {
         var a = new HMACSHA256(Encoding.ASCII.GetBytes(secret ?? string.Empty));
-        return new HashSignatureProvider(a, "HS256", true);
+        return new(a, "HS256", true);
     }
 
     /// <summary>
@@ -126,7 +126,7 @@ public class HashSignatureProvider : ISignatureProvider
     public static HashSignatureProvider CreateHS256(byte[] secret)
     {
         var a = new HMACSHA256(secret);
-        return new HashSignatureProvider(a, "HS256", true);
+        return new(a, "HS256", true);
     }
 
     /// <summary>
@@ -135,9 +135,7 @@ public class HashSignatureProvider : ISignatureProvider
     /// <param name="shortName">true if use short name; otherwise, false.</param>
     /// <returns>A keyed hash signature provider.</returns>
     public static HashSignatureProvider CreateSHA512(bool shortName = false)
-    {
-        return new HashSignatureProvider(SHA512.Create(), shortName ? "S512" : "SHA512", true);
-    }
+        => new(SHA512.Create(), shortName ? "S512" : "SHA512", true);
 
     /// <summary>
     /// Creates a hash signature provider using SHA-384 hash algorithm of SHA-2 family.
@@ -145,9 +143,7 @@ public class HashSignatureProvider : ISignatureProvider
     /// <param name="shortName">true if use short name; otherwise, false.</param>
     /// <returns>A keyed hash signature provider.</returns>
     public static HashSignatureProvider CreateSHA384(bool shortName = false)
-    {
-        return new HashSignatureProvider(SHA384.Create(), shortName ? "S384" : "SHA384", true);
-    }
+        => new(SHA384.Create(), shortName ? "S384" : "SHA384", true);
 
     /// <summary>
     /// Creates a hash signature provider using SHA-256 hash algorithm of SHA-2 family.
@@ -155,9 +151,7 @@ public class HashSignatureProvider : ISignatureProvider
     /// <param name="shortName">true if use short name; otherwise, false.</param>
     /// <returns>A keyed hash signature provider.</returns>
     public static HashSignatureProvider CreateSHA256(bool shortName = false)
-    {
-        return new HashSignatureProvider(SHA256.Create(), shortName ? "S256" : "SHA256", true);
-    }
+        => new(SHA256.Create(), shortName ? "S256" : "SHA256", true);
 
     /// <summary>
     /// Creates a hash signature provider using SHA-3-512 hash algorithm.
@@ -165,9 +159,7 @@ public class HashSignatureProvider : ISignatureProvider
     /// <param name="shortName">true if use short name; otherwise, false.</param>
     /// <returns>A keyed hash signature provider.</returns>
     public static HashSignatureProvider CreateSHA3512(bool shortName = false)
-    {
-        return new HashSignatureProvider(SHA3Managed.Create512(), shortName ? "S3512" : "SHA3512", true);
-    }
+        => new(SHA3Managed.Create512(), shortName ? "S3512" : "SHA3512", true);
 
     /// <summary>
     /// Creates a hash signature provider using SHA-3-384 hash algorithm.
@@ -175,9 +167,7 @@ public class HashSignatureProvider : ISignatureProvider
     /// <param name="shortName">true if use short name; otherwise, false.</param>
     /// <returns>A keyed hash signature provider.</returns>
     public static HashSignatureProvider CreateSHA3384(bool shortName = false)
-    {
-        return new HashSignatureProvider(SHA3Managed.Create384(), shortName ? "S3384" : "SHA3384", true);
-    }
+        => new(SHA3Managed.Create384(), shortName ? "S3384" : "SHA3384", true);
 
     /// <summary>
     /// Creates a hash signature provider using SHA-3-256 hash algorithm.
@@ -185,9 +175,7 @@ public class HashSignatureProvider : ISignatureProvider
     /// <param name="shortName">true if use short name; otherwise, false.</param>
     /// <returns>A keyed hash signature provider.</returns>
     public static HashSignatureProvider CreateSHA3256(bool shortName = false)
-    {
-        return new HashSignatureProvider(SHA3Managed.Create256(), shortName ? "S3256" : "SHA3256", true);
-    }
+        => new(SHA3Managed.Create256(), shortName ? "S3256" : "SHA3256", true);
 
     /// <summary>
     /// Initializes a new instance of the HashSignatureProvider class.
@@ -273,9 +261,7 @@ public class RSASignatureProvider : ISignatureProvider
     /// <param name="secret">The RSA key.</param>
     /// <returns>An RSA hash signature provider instance.</returns>
     public static RSASignatureProvider CreateRS512(string secret)
-    {
-        return Create(secret, HashAlgorithmName.SHA512, "RS512");
-    }
+        => Create(secret, HashAlgorithmName.SHA512, "RS512");
 
     /// <summary>
     /// Creates an RSA hash signature provider using SHA-512 hash algorithm of SHA-2 family.
@@ -283,9 +269,7 @@ public class RSASignatureProvider : ISignatureProvider
     /// <param name="secret">The RSA parameters.</param>
     /// <returns>An RSA hash signature provider instance.</returns>
     public static RSASignatureProvider CreateRS512(RSAParameters secret)
-    {
-        return new RSASignatureProvider(secret, HashAlgorithmName.SHA512, "RS512");
-    }
+        => new(secret, HashAlgorithmName.SHA512, "RS512");
 
     /// <summary>
     /// Creates an RSA hash signature provider using SHA-512 hash algorithm of SHA-2 family.
@@ -295,9 +279,7 @@ public class RSASignatureProvider : ISignatureProvider
     /// <param name="needDisposeAlgorithmAutomatically">true if need dispose the given algorithm instance automatically when this object is disposed.</param>
     /// <returns>An RSA hash signature provider instance.</returns>
     public static RSASignatureProvider CreateRS512(RSA rsaInstance, bool hasPrivateKey = true, bool needDisposeAlgorithmAutomatically = false)
-    {
-        return new RSASignatureProvider(rsaInstance, hasPrivateKey, HashAlgorithmName.SHA512, "RS512", needDisposeAlgorithmAutomatically);
-    }
+        => new(rsaInstance, hasPrivateKey, HashAlgorithmName.SHA512, "RS512", needDisposeAlgorithmAutomatically);
 
     /// <summary>
     /// Creates an RSA hash signature provider using SHA-384 hash algorithm of SHA-2 family.
@@ -305,9 +287,7 @@ public class RSASignatureProvider : ISignatureProvider
     /// <param name="secret">The RSA key.</param>
     /// <returns>An RSA hash signature provider instance.</returns>
     public static RSASignatureProvider CreateRS384(string secret)
-    {
-        return Create(secret, HashAlgorithmName.SHA384, "RS384");
-    }
+        => Create(secret, HashAlgorithmName.SHA384, "RS384");
 
     /// <summary>
     /// Creates an RSA hash signature provider using SHA-384 hash algorithm of SHA-2 family.
@@ -315,9 +295,7 @@ public class RSASignatureProvider : ISignatureProvider
     /// <param name="secret">The RSA parameters.</param>
     /// <returns>An RSA hash signature provider instance.</returns>
     public static RSASignatureProvider CreateRS384(RSAParameters secret)
-    {
-        return new RSASignatureProvider(secret, HashAlgorithmName.SHA384, "RS384");
-    }
+        => new(secret, HashAlgorithmName.SHA384, "RS384");
 
     /// <summary>
     /// Creates an RSA hash signature provider using SHA-384 hash algorithm of SHA-2 family.
@@ -327,9 +305,7 @@ public class RSASignatureProvider : ISignatureProvider
     /// <param name="needDisposeAlgorithmAutomatically">true if need dispose the given algorithm instance automatically when this object is disposed.</param>
     /// <returns>An RSA hash signature provider instance.</returns>
     public static RSASignatureProvider CreateRS384(RSA rsaInstance, bool hasPrivateKey = true, bool needDisposeAlgorithmAutomatically = false)
-    {
-        return new RSASignatureProvider(rsaInstance, hasPrivateKey, HashAlgorithmName.SHA384, "RS384", needDisposeAlgorithmAutomatically);
-    }
+        => new(rsaInstance, hasPrivateKey, HashAlgorithmName.SHA384, "RS384", needDisposeAlgorithmAutomatically);
 
     /// <summary>
     /// Creates an RSA hash signature provider using SHA-256 hash algorithm of SHA-2 family.
@@ -337,9 +313,7 @@ public class RSASignatureProvider : ISignatureProvider
     /// <param name="secret">The RSA key.</param>
     /// <returns>An RSA hash signature provider instance.</returns>
     public static RSASignatureProvider CreateRS256(string secret)
-    {
-        return Create(secret, HashAlgorithmName.SHA256, "RS256");
-    }
+        => Create(secret, HashAlgorithmName.SHA256, "RS256");
 
     /// <summary>
     /// Creates an RSA hash signature provider using SHA-256 hash algorithm of SHA-2 family.
@@ -347,9 +321,7 @@ public class RSASignatureProvider : ISignatureProvider
     /// <param name="secret">The RSA parameters.</param>
     /// <returns>An RSA hash signature provider instance.</returns>
     public static RSASignatureProvider CreateRS256(RSAParameters secret)
-    {
-        return new RSASignatureProvider(secret, HashAlgorithmName.SHA256, "RS256");
-    }
+        => new(secret, HashAlgorithmName.SHA256, "RS256");
 
     /// <summary>
     /// Creates an RSA hash signature provider using SHA-256 hash algorithm of SHA-2 family.
@@ -359,9 +331,7 @@ public class RSASignatureProvider : ISignatureProvider
     /// <param name="needDisposeAlgorithmAutomatically">true if need dispose the given algorithm instance automatically when this object is disposed.</param>
     /// <returns>An RSA hash signature provider instance.</returns>
     public static RSASignatureProvider CreateRS256(RSA rsaInstance, bool hasPrivateKey = true, bool needDisposeAlgorithmAutomatically = false)
-    {
-        return new RSASignatureProvider(rsaInstance, hasPrivateKey, HashAlgorithmName.SHA256, "RS256", needDisposeAlgorithmAutomatically);
-    }
+        => new(rsaInstance, hasPrivateKey, HashAlgorithmName.SHA256, "RS256", needDisposeAlgorithmAutomatically);
 
     /// <summary>
     /// Creates an RSA hash signature provider.
@@ -375,9 +345,9 @@ public class RSASignatureProvider : ISignatureProvider
         if (string.IsNullOrWhiteSpace(secret))
             throw new ArgumentNullException(nameof(secret), "secret should not be null, empty or consists only of white-space characters.");
         var p = RSAParametersConvert.Parse(secret);
-        if (p == null)
-            throw new FormatException("secret is not a valid RSA key. A PEM string or XML string expected.");
-        return new RSASignatureProvider(p.Value, hashAlgorithmName, signAlgorithmName);
+        return p == null
+            ? throw new FormatException("secret is not a valid RSA key. A PEM string or XML string expected.")
+            : new(p.Value, hashAlgorithmName, signAlgorithmName);
     }
 
     /// <summary>
@@ -507,9 +477,7 @@ public class ECDsaSignatureProvider : ISignatureProvider
     /// <param name="secret">The ECDSA parameters.</param>
     /// <returns>An ECDSA hash signature provider instance.</returns>
     public static ECDsaSignatureProvider CreateES512(ECParameters secret)
-    {
-        return new ECDsaSignatureProvider(secret, HashAlgorithmName.SHA512, "ES512");
-    }
+        => new(secret, HashAlgorithmName.SHA512, "ES512");
 
     /// <summary>
     /// Creates an ECDSA hash signature provider using SHA-512 hash algorithm of SHA-2 family.
@@ -519,9 +487,7 @@ public class ECDsaSignatureProvider : ISignatureProvider
     /// <param name="needDisposeAlgorithmAutomatically">true if need dispose the given algorithm instance automatically when this object is disposed.</param>
     /// <returns>An ECDSA hash signature provider instance.</returns>
     public static ECDsaSignatureProvider CreateES512(ECDsa ecdsaInstance, bool hasPrivateKey = true, bool needDisposeAlgorithmAutomatically = false)
-    {
-        return new ECDsaSignatureProvider(ecdsaInstance, hasPrivateKey, HashAlgorithmName.SHA512, "ES512", needDisposeAlgorithmAutomatically);
-    }
+        => new(ecdsaInstance, hasPrivateKey, HashAlgorithmName.SHA512, "ES512", needDisposeAlgorithmAutomatically);
 
     /// <summary>
     /// Creates an ECDSA hash signature provider using SHA-384 hash algorithm of SHA-2 family.
@@ -529,9 +495,7 @@ public class ECDsaSignatureProvider : ISignatureProvider
     /// <param name="secret">The ECDSA parameters.</param>
     /// <returns>An ECDSA hash signature provider instance.</returns>
     public static ECDsaSignatureProvider CreateES384(ECParameters secret)
-    {
-        return new ECDsaSignatureProvider(secret, HashAlgorithmName.SHA384, "ES384");
-    }
+        => new(secret, HashAlgorithmName.SHA384, "ES384");
 
     /// <summary>
     /// Creates an ECDSA hash signature provider using SHA-384 hash algorithm of SHA-2 family.
@@ -541,9 +505,7 @@ public class ECDsaSignatureProvider : ISignatureProvider
     /// <param name="needDisposeAlgorithmAutomatically">true if need dispose the given algorithm instance automatically when this object is disposed.</param>
     /// <returns>An ECDSA hash signature provider instance.</returns>
     public static ECDsaSignatureProvider CreateES384(ECDsa ecdsaInstance, bool hasPrivateKey = true, bool needDisposeAlgorithmAutomatically = false)
-    {
-        return new ECDsaSignatureProvider(ecdsaInstance, hasPrivateKey, HashAlgorithmName.SHA384, "ES384", needDisposeAlgorithmAutomatically);
-    }
+        => new(ecdsaInstance, hasPrivateKey, HashAlgorithmName.SHA384, "ES384", needDisposeAlgorithmAutomatically);
 
     /// <summary>
     /// Creates an ECDSA hash signature provider using SHA-256 hash algorithm of SHA-2 family.
@@ -551,9 +513,7 @@ public class ECDsaSignatureProvider : ISignatureProvider
     /// <param name="secret">The ECDSA parameters.</param>
     /// <returns>An ECDSA hash signature provider instance.</returns>
     public static ECDsaSignatureProvider CreateES256(ECParameters secret)
-    {
-        return new ECDsaSignatureProvider(secret, HashAlgorithmName.SHA256, "ES256");
-    }
+        => new(secret, HashAlgorithmName.SHA256, "ES256");
 
     /// <summary>
     /// Creates an ECDSA hash signature provider using SHA-256 hash algorithm of SHA-2 family.
@@ -563,9 +523,7 @@ public class ECDsaSignatureProvider : ISignatureProvider
     /// <param name="needDisposeAlgorithmAutomatically">true if need dispose the given algorithm instance automatically when this object is disposed.</param>
     /// <returns>An ECDSA hash signature provider instance.</returns>
     public static ECDsaSignatureProvider CreateES256(ECDsa ecdsaInstance, bool hasPrivateKey = true, bool needDisposeAlgorithmAutomatically = false)
-    {
-        return new ECDsaSignatureProvider(ecdsaInstance, hasPrivateKey, HashAlgorithmName.SHA256, "ES256", needDisposeAlgorithmAutomatically);
-    }
+        => new(ecdsaInstance, hasPrivateKey, HashAlgorithmName.SHA256, "ES256", needDisposeAlgorithmAutomatically);
 
     /// <summary>
     /// Initializes a new instance of the ECDsaSignatureProvider class.

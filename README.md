@@ -38,5 +38,5 @@ including interceptor, retry policy, writable JSON DOM, PEM, JWT, stream combina
   - Maths
   - Messages
 - [WinKit](https://github.com/nuscien/winkit)
-  - Windows Kit (&amp; Local Web App Platform)
+  - Windows Kit (&amp; Local Web App framework)
   - Console

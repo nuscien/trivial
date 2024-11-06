@@ -20,7 +20,7 @@ namespace Trivial.Text;
 /// The JSON value node base.
 /// </summary>
 /// <typeparam name="T">The type of the value.</typeparam>
-public abstract class BaseJsonValueNode<T> : BaseJsonValueNode, IJsonValueNode<T>
+public abstract class BaseJsonValueNode<T> : BaseJsonValueNode, IJsonValueNode<T> where T : IEquatable<T>
 {
     /// <summary>
     /// Initializes a new instance of the JsonNull class.
