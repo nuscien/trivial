@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Dynamic;
 using System.Linq;
+using System.Runtime;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -91,25 +92,38 @@ public class JsonSwitchContext<TNode, TArgs> : IJsonSwitchContextInfo<TArgs>, IC
     public bool IsPassed { get; private set; }
 
     /// <summary>
-    /// Resets the state.
+    /// Keeps available.
     /// </summary>
-    public void Reset()
+    /// <returns>The JSON switch context instance itself.</returns>
+    public JsonSwitchContext<TNode, TArgs> KeepAvailable()
     {
         IsPassed = false;
-        Count = 0;
+        return this;
+    }
+
+    /// <summary>
+    /// Keeps available.
+    /// </summary>
+    /// <returns>The JSON switch context instance itself.</returns>
+    public JsonSwitchContext<TNode, TArgs> KeepAvailable(bool resetCount)
+    {
+        if (resetCount) Count = 0;
+        return KeepAvailable();
     }
 
     /// <summary>
     /// Executes if all cases fail.
     /// </summary>
     /// <param name="block">The handler of code block.</param>
-    public JsonSwitchContext<TNode, TArgs> Default(Action block)
+    /// <returns>The JSON switch context instance itself.</returns>
+    public JsonSwitchContext<TNode, TArgs> Default(Action block = null)
         => Default(false, block);
 
     /// <summary>
     /// Executes if all cases fail.
     /// </summary>
     /// <param name="block">The handler of code block.</param>
+    /// <returns>The JSON switch context instance itself.</returns>
     public JsonSwitchContext<TNode, TArgs> Default(Action<TNode> block)
         => Default(false, block);
 
@@ -117,6 +131,7 @@ public class JsonSwitchContext<TNode, TArgs> : IJsonSwitchContextInfo<TArgs>, IC
     /// Executes if all cases fail.
     /// </summary>
     /// <param name="block">The handler of code block.</param>
+    /// <returns>The JSON switch context instance itself.</returns>
     public JsonSwitchContext<TNode, TArgs> Default(Action<TNode, JsonSwitchContext<TNode, TArgs>> block)
         => Default(false, block);
 
@@ -125,6 +140,7 @@ public class JsonSwitchContext<TNode, TArgs> : IJsonSwitchContextInfo<TArgs>, IC
     /// </summary>
     /// <param name="doNotMarkPassed">true if does NOT mark current state as passed; otherwise, false.</param>
     /// <param name="block">The handler of code block.</param>
+    /// <returns>The JSON switch context instance itself.</returns>
     public JsonSwitchContext<TNode, TArgs> Default(bool doNotMarkPassed, Action block)
     {
         if (IsPassed) return this;
@@ -139,6 +155,7 @@ public class JsonSwitchContext<TNode, TArgs> : IJsonSwitchContextInfo<TArgs>, IC
     /// </summary>
     /// <param name="doNotMarkPassed">true if does NOT mark current state as passed; otherwise, false.</param>
     /// <param name="block">The handler of code block.</param>
+    /// <returns>The JSON switch context instance itself.</returns>
     public JsonSwitchContext<TNode, TArgs> Default(bool doNotMarkPassed, Action<TNode> block)
     {
         if (IsPassed) return this;
@@ -153,6 +170,7 @@ public class JsonSwitchContext<TNode, TArgs> : IJsonSwitchContextInfo<TArgs>, IC
     /// </summary>
     /// <param name="doNotMarkPassed">true if does NOT mark current state as passed; otherwise, false.</param>
     /// <param name="block">The handler of code block.</param>
+    /// <returns>The JSON switch context instance itself.</returns>
     public JsonSwitchContext<TNode, TArgs> Default(bool doNotMarkPassed, Action<TNode, JsonSwitchContext<TNode, TArgs>> block)
     {
         if (IsPassed) return this;
@@ -166,6 +184,7 @@ public class JsonSwitchContext<TNode, TArgs> : IJsonSwitchContextInfo<TArgs>, IC
     /// Executes a handler of code block.
     /// </summary>
     /// <param name="block">The handler of code block.</param>
+    /// <returns>The JSON switch context instance itself.</returns>
     public JsonSwitchContext<TNode, TArgs> Finally(Action block)
     {
         block?.Invoke();
@@ -176,6 +195,7 @@ public class JsonSwitchContext<TNode, TArgs> : IJsonSwitchContextInfo<TArgs>, IC
     /// Executes a handler of code block.
     /// </summary>
     /// <param name="block">The handler of code block.</param>
+    /// <returns>The JSON switch context instance itself.</returns>
     public JsonSwitchContext<TNode, TArgs> Finally(Action<TNode> block)
     {
         block?.Invoke(Source);
@@ -186,6 +206,7 @@ public class JsonSwitchContext<TNode, TArgs> : IJsonSwitchContextInfo<TArgs>, IC
     /// Executes a handler of code block.
     /// </summary>
     /// <param name="block">The handler of code block.</param>
+    /// <returns>The JSON switch context instance itself.</returns>
     public JsonSwitchContext<TNode, TArgs> Finally(Action<TNode, JsonSwitchContext<TNode, TArgs>> block)
     {
         block?.Invoke(Source, this);
@@ -196,41 +217,13 @@ public class JsonSwitchContext<TNode, TArgs> : IJsonSwitchContextInfo<TArgs>, IC
     /// Executes the handler of code block if matches the testing.
     /// </summary>
     /// <typeparam name="T">The type of the JSON switch-case router.</typeparam>
+    /// <param name="router">The instance of the JSON switch-case router.</param>
     /// <param name="block">The handler of code block.</param>
     /// <returns>The JSON switch context instance itself.</returns>
-    public JsonSwitchContext<TNode, TArgs> Case<T>(Action block = null) where T : BaseJsonSwitchCase
-        => Case<T>(null, block);
-
-    /// <summary>
-    /// Executes the handler of code block if matches the testing.
-    /// </summary>
-    /// <typeparam name="T">The type of the JSON switch-case router.</typeparam>
-    /// <param name="block">The handler of code block.</param>
-    /// <returns>The JSON switch context instance itself.</returns>
-    public JsonSwitchContext<TNode, TArgs> Case<T>(Action<TNode> block) where T : BaseJsonSwitchCase
-        => Case<T>(null, block);
-
-    /// <summary>
-    /// Executes the handler of code block if matches the testing.
-    /// </summary>
-    /// <typeparam name="T">The type of the JSON switch-case router.</typeparam>
-    /// <param name="block">The handler of code block.</param>
-    /// <returns>The JSON switch context instance itself.</returns>
-    public JsonSwitchContext<TNode, TArgs> Case<T>(Action<TNode, JsonSwitchContext<TNode, TArgs>> block) where T : BaseJsonSwitchCase
-        => Case<T>(null, block);
-
-    /// <summary>
-    /// Executes the handler of code block if matches the testing.
-    /// </summary>
-    /// <typeparam name="T">The type of the JSON switch-case router.</typeparam>
-    /// <param name="factory">The instance creator of JSON switch-case router.</param>
-    /// <param name="block">The handler of code block.</param>
-    /// <returns>The JSON switch context instance itself.</returns>
-    public JsonSwitchContext<TNode, TArgs> Case<T>(Func<T> factory, Action block = null) where T : BaseJsonSwitchCase
+    public JsonSwitchContext<TNode, TArgs> Case(BaseJsonSwitchCase router, Action block = null)
     {
-        var router = factory is null ? Activator.CreateInstance<T>() : factory();
-        if (router is null || !router.ForContextArgs<TArgs>()) return this;
-        router.Process(IsPassed, this, AfterTest, block);
+        if (router is null) return this;
+        router.Process(new(this), AfterTest, block);
         return this;
     }
 
@@ -238,21 +231,21 @@ public class JsonSwitchContext<TNode, TArgs> : IJsonSwitchContextInfo<TArgs>, IC
     /// Executes the handler of code block if matches the testing.
     /// </summary>
     /// <typeparam name="T">The type of the JSON switch-case router.</typeparam>
-    /// <param name="factory">The instance creator of JSON switch-case router.</param>
+    /// <param name="router">The instance of the JSON switch-case router.</param>
     /// <param name="block">The handler of code block.</param>
     /// <returns>The JSON switch context instance itself.</returns>
-    public JsonSwitchContext<TNode, TArgs> Case<T>(Func<T> factory, Action<TNode> block) where T : BaseJsonSwitchCase
-        => Case(factory, block is null ? null : () => block(Source));
+    public JsonSwitchContext<TNode, TArgs> Case(BaseJsonSwitchCase router, Action<TNode> block)
+        => Case(router, block is null ? null : () => block(Source));
 
     /// <summary>
     /// Executes the handler of code block if matches the testing.
     /// </summary>
     /// <typeparam name="T">The type of the JSON switch-case router.</typeparam>
-    /// <param name="factory">The instance creator of JSON switch-case router.</param>
+    /// <param name="router">The instance of the JSON switch-case router.</param>
     /// <param name="block">The handler of code block.</param>
     /// <returns>The JSON switch context instance itself.</returns>
-    public JsonSwitchContext<TNode, TArgs> Case<T>(Func<T> factory, Action<TNode, JsonSwitchContext<TNode, TArgs>> block) where T : BaseJsonSwitchCase
-        => Case(factory, block is null ? null : () => block(Source, this));
+    public JsonSwitchContext<TNode, TArgs> Case(BaseJsonSwitchCase router, Action<TNode, JsonSwitchContext<TNode, TArgs>> block)
+        => Case(router, block is null ? null : () => block(Source, this));
 
     /// <summary>
     /// Executes the handler of code block if matches the testing.
@@ -262,11 +255,11 @@ public class JsonSwitchContext<TNode, TArgs> : IJsonSwitchContextInfo<TArgs>, IC
     /// <returns>The JSON switch context instance itself.</returns>
     public JsonSwitchContext<TNode, TArgs> Case(BaseJsonSwitchCase router, params BaseJsonSwitchCase[] otherRouters)
     {
-        router?.Process(IsPassed, this, AfterTest, null);
+        router?.Process(new(this), AfterTest, null);
         if (otherRouters is null) return this;
         foreach (var item in otherRouters)
         {
-            item?.Process(IsPassed, this, AfterTest, null);
+            item?.Process(new(this), AfterTest, null);
         }
 
         return this;
@@ -282,7 +275,271 @@ public class JsonSwitchContext<TNode, TArgs> : IJsonSwitchContextInfo<TArgs>, IC
         if (routers is null) return this;
         foreach (var item in routers)
         {
-            item?.Process(IsPassed, this, AfterTest, null);
+            item?.Process(new(this), AfterTest, null);
+        }
+
+        return this;
+    }
+
+    /// <summary>
+    /// Executes the handler of code block if matches the testing.
+    /// </summary>
+    /// <typeparam name="T">The type of the JSON switch-case router.</typeparam>
+    /// <param name="router">The instance of the JSON switch-case router.</param>
+    /// <param name="block">The handler of code block.</param>
+    /// <returns>The JSON switch context instance itself.</returns>
+    public JsonSwitchContext<TNode, TArgs> Case(BaseJsonSwitchCase<TArgs> router, Action block = null)
+    {
+        if (router is null) return this;
+        router.Process(new(this), AfterTest, block);
+        return this;
+    }
+
+    /// <summary>
+    /// Executes the handler of code block if matches the testing.
+    /// </summary>
+    /// <typeparam name="T">The type of the JSON switch-case router.</typeparam>
+    /// <param name="router">The instance of the JSON switch-case router.</param>
+    /// <param name="block">The handler of code block.</param>
+    /// <returns>The JSON switch context instance itself.</returns>
+    public JsonSwitchContext<TNode, TArgs> Case(BaseJsonSwitchCase<TArgs> router, Action<TNode> block)
+        => Case(router, block is null ? null : () => block(Source));
+
+    /// <summary>
+    /// Executes the handler of code block if matches the testing.
+    /// </summary>
+    /// <typeparam name="T">The type of the JSON switch-case router.</typeparam>
+    /// <param name="router">The instance of the JSON switch-case router.</param>
+    /// <param name="block">The handler of code block.</param>
+    /// <returns>The JSON switch context instance itself.</returns>
+    public JsonSwitchContext<TNode, TArgs> Case(BaseJsonSwitchCase<TArgs> router, Action<TNode, JsonSwitchContext<TNode, TArgs>> block)
+        => Case(router, block is null ? null : () => block(Source, this));
+
+    /// <summary>
+    /// Executes the handler of code block if matches the testing.
+    /// </summary>
+    /// <param name="router">The instance of the JSON switch-case router.</param>
+    /// <param name="otherRouters">The other router instances.</param>
+    /// <returns>The JSON switch context instance itself.</returns>
+    public JsonSwitchContext<TNode, TArgs> Case(BaseJsonSwitchCase<TArgs> router, params BaseJsonSwitchCase<TArgs>[] otherRouters)
+    {
+        router?.Process(new(this), AfterTest, null);
+        if (otherRouters is null) return this;
+        foreach (var item in otherRouters)
+        {
+            item?.Process(new(this), AfterTest, null);
+        }
+
+        return this;
+    }
+
+    /// <summary>
+    /// Executes the handler of code block if matches the testing.
+    /// </summary>
+    /// <param name="routers">The instance collection of the JSON switch-case router.</param>
+    /// <returns>The JSON switch context instance itself.</returns>
+    public JsonSwitchContext<TNode, TArgs> Case(IEnumerable<BaseJsonSwitchCase<TArgs>> routers)
+    {
+        if (routers is null) return this;
+        foreach (var item in routers)
+        {
+            item?.Process(new(this), AfterTest, null);
+        }
+
+        return this;
+    }
+
+    /// <summary>
+    /// Executes the handler of code block if matches the testing.
+    /// </summary>
+    /// <typeparam name="T">The type of the JSON switch-case router.</typeparam>
+    /// <param name="predicate">A function to test the JSON node for a condition.</param>
+    /// <param name="block">The handler of code block.</param>
+    /// <returns>The JSON switch context instance itself.</returns>
+    public JsonSwitchContext<TNode, TArgs> Case<T>(JsonSwitchPredicate<T> predicate, Action<T> block)
+    {
+        if (predicate == null || IsPassed) return this;
+        if (predicate(Source, out var result))
+        {
+            AfterTest(true);
+            block?.Invoke(result);
+        }
+        else
+        {
+            AfterTest(false);
+        }
+
+        return this;
+    }
+
+    /// <summary>
+    /// Executes the handler of code block if matches the testing.
+    /// </summary>
+    /// <typeparam name="T">The type of the JSON switch-case router.</typeparam>
+    /// <param name="predicate">A function to test the JSON node for a condition.</param>
+    /// <param name="block">The handler of code block.</param>
+    /// <returns>The JSON switch context instance itself.</returns>
+    public JsonSwitchContext<TNode, TArgs> Case<T>(JsonSwitchPredicate<T> predicate, Action<T, JsonSwitchContext<TNode, TArgs>> block)
+    {
+        if (predicate == null || IsPassed) return this;
+        if (predicate(Source, out var result))
+        {
+            AfterTest(true);
+            block?.Invoke(result, this);
+        }
+        else
+        {
+            AfterTest(false);
+        }
+
+        return this;
+    }
+
+    /// <summary>
+    /// Executes the handler of code block if matches the testing.
+    /// </summary>
+    /// <typeparam name="TResult">The type of result.</typeparam>
+    /// <typeparam name="TInfo">The type of additional info to return.</typeparam>
+    /// <param name="predicate">A function to test the JSON node for a condition.</param>
+    /// <param name="block">The handler of code block.</param>
+    /// <returns>The JSON switch context instance itself.</returns>
+    public JsonSwitchContext<TNode, TArgs> Case<TResult, TInfo>(JsonSwitchPredicate<TResult, TInfo> predicate, Action<TResult, TInfo> block)
+    {
+        if (predicate == null || IsPassed) return this;
+        if (predicate(Source, out var result, out var info))
+        {
+            AfterTest(true);
+            block?.Invoke(result, info);
+        }
+        else
+        {
+            AfterTest(false);
+        }
+
+        return this;
+    }
+
+    /// <summary>
+    /// Executes the handler of code block if matches the testing.
+    /// </summary>
+    /// <typeparam name="TResult">The type of result.</typeparam>
+    /// <typeparam name="TInfo">The type of additional info to return.</typeparam>
+    /// <param name="predicate">A function to test the JSON node for a condition.</param>
+    /// <param name="block">The handler of code block.</param>
+    /// <returns>The JSON switch context instance itself.</returns>
+    public JsonSwitchContext<TNode, TArgs> Case<TResult, TInfo>(JsonSwitchPredicate<TResult, TInfo> predicate, Action<TResult, TInfo, JsonSwitchContext<TNode, TArgs>> block)
+    {
+        if (predicate == null || IsPassed) return this;
+        if (predicate(Source, out var result, out var info))
+        {
+            AfterTest(true);
+            block?.Invoke(result, info, this);
+        }
+        else
+        {
+            AfterTest(false);
+        }
+
+        return this;
+    }
+
+    /// <summary>
+    /// Executes the handler of code block if matches the testing.
+    /// </summary>
+    /// <typeparam name="TPredicateArgs">The type of args of the predicate handler.</typeparam>
+    /// <typeparam name="TResult">The type of result.</typeparam>
+    /// <param name="predicate">A function to test the JSON node for a condition.</param>
+    /// <param name="args">The args of the predicate handler.</param>
+    /// <param name="block">The handler of code block.</param>
+    /// <returns>The JSON switch context instance itself.</returns>
+    public JsonSwitchContext<TNode, TArgs> Case<TPredicateArgs, TResult>(JsonSwitchArgsPredicate<TPredicateArgs, TResult> predicate, TPredicateArgs args, Action<TResult> block)
+    {
+        if (predicate == null || IsPassed) return this;
+        if (predicate(Source, args, out var result))
+        {
+            AfterTest(true);
+            block?.Invoke(result);
+        }
+        else
+        {
+            AfterTest(false);
+        }
+
+        return this;
+    }
+
+    /// <summary>
+    /// Executes the handler of code block if matches the testing.
+    /// </summary>
+    /// <typeparam name="TPredicateArgs">The type of args of the predicate handler.</typeparam>
+    /// <typeparam name="TResult">The type of result.</typeparam>
+    /// <param name="predicate">A function to test the JSON node for a condition.</param>
+    /// <param name="args">The args of the predicate handler.</param>
+    /// <param name="block">The handler of code block.</param>
+    /// <returns>The JSON switch context instance itself.</returns>
+    public JsonSwitchContext<TNode, TArgs> Case<TPredicateArgs, TResult>(JsonSwitchArgsPredicate<TPredicateArgs, TResult> predicate, TPredicateArgs args, Action<TResult, JsonSwitchContext<TNode, TArgs>> block)
+    {
+        if (predicate == null || IsPassed) return this;
+        if (predicate(Source, args, out var result))
+        {
+            AfterTest(true);
+            block?.Invoke(result, this);
+        }
+        else
+        {
+            AfterTest(false);
+        }
+
+        return this;
+    }
+
+    /// <summary>
+    /// Executes the handler of code block if matches the testing.
+    /// </summary>
+    /// <typeparam name="TPredicateArgs">The type of args of the predicate handler.</typeparam>
+    /// <typeparam name="TResult">The type of result.</typeparam>
+    /// <typeparam name="TInfo">The type of additional info to return.</typeparam>
+    /// <param name="predicate">A function to test the JSON node for a condition.</param>
+    /// <param name="args">The args of the predicate handler.</param>
+    /// <param name="block">The handler of code block.</param>
+    /// <returns>The JSON switch context instance itself.</returns>
+    public JsonSwitchContext<TNode, TArgs> Case<TPredicateArgs, TResult, TInfo>(JsonSwitchArgsPredicate<TPredicateArgs, TResult, TInfo> predicate, TPredicateArgs args, Action<TResult, TInfo> block)
+    {
+        if (predicate == null || IsPassed) return this;
+        if (predicate(Source, args, out var result, out var info))
+        {
+            AfterTest(true);
+            block?.Invoke(result, info);
+        }
+        else
+        {
+            AfterTest(false);
+        }
+
+        return this;
+    }
+
+    /// <summary>
+    /// Executes the handler of code block if matches the testing.
+    /// </summary>
+    /// <typeparam name="TPredicateArgs">The type of args of the predicate handler.</typeparam>
+    /// <typeparam name="TResult">The type of result.</typeparam>
+    /// <typeparam name="TInfo">The type of additional info to return.</typeparam>
+    /// <param name="predicate">A function to test the JSON node for a condition.</param>
+    /// <param name="args">The args of the predicate handler.</param>
+    /// <param name="block">The handler of code block.</param>
+    /// <returns>The JSON switch context instance itself.</returns>
+    public JsonSwitchContext<TNode, TArgs> Case<TPredicateArgs, TResult, TInfo>(JsonSwitchArgsPredicate<TPredicateArgs, TResult, TInfo> predicate, TPredicateArgs args, Action<TResult, TInfo, JsonSwitchContext<TNode, TArgs>> block)
+    {
+        if (predicate == null || IsPassed) return this;
+        if (predicate(Source, args, out var result, out var info))
+        {
+            AfterTest(true);
+            block?.Invoke(result, info, this);
+        }
+        else
+        {
+            AfterTest(false);
         }
 
         return this;
@@ -1857,12 +2114,144 @@ public class JsonSwitchContext<TNode, TArgs> : IJsonSwitchContextInfo<TArgs>, IC
     }
 
     /// <summary>
-    /// Tests if the specific JSON switch-case instance is available currently now for this context.
+    /// Executes the specific handler.
     /// </summary>
-    /// <param name="router">The JSON switch-case instance to test.</param>
-    /// <returns>true if it is availalbe; otherwise, false.</returns>
-    public bool IsAvailable(BaseJsonSwitchCase router)
-        => router is not null & router.IsAvailable && router.ForContextArgs<TArgs>();
+    /// <param name="callback">The callback handler.</param>
+    /// <param name="fallback">The fallback handler.</param>
+    /// <returns>The JSON switch context instance itself.</returns>
+    public JsonSwitchContext<TNode, TArgs> Continue(Action<TNode> callback, Action<TNode> fallback = null)
+    {
+        if (IsPassed) callback?.Invoke(Source);
+        else fallback?.Invoke(Source);
+        return this;
+    }
+
+    /// <summary>
+    /// Executes the specific handler.
+    /// </summary>
+    /// <param name="callback">The callback handler.</param>
+    /// <param name="fallback">The fallback handler.</param>
+    /// <returns>The JSON switch context instance itself.</returns>
+    public JsonSwitchContext<TNode, TArgs> Continue(Action<TNode, JsonSwitchContext<TNode, TArgs>> callback, Action<TNode, JsonSwitchContext<TNode, TArgs>> fallback = null)
+    {
+        if (IsPassed) callback?.Invoke(Source, this);
+        else fallback?.Invoke(Source, this);
+        return this;
+    }
+
+    /// <summary>
+    /// Executes the specific handler.
+    /// </summary>
+    /// <param name="hasPassed">true if execute the handler if it has already passed; otherwise, false.</param>
+    /// <param name="block">The handler of code block.</param>
+    /// <returns>The JSON switch context instance itself.</returns>
+    public JsonSwitchContext<TNode, TArgs> Continue(bool hasPassed, Action<TNode> block = null)
+    {
+        if (IsPassed == hasPassed) block?.Invoke(Source);
+        return this;
+    }
+
+    /// <summary>
+    /// Executes the specific handler.
+    /// </summary>
+    /// <param name="hasPassed">true if execute the handler if it has already passed; otherwise, false.</param>
+    /// <param name="block">The handler of code block.</param>
+    /// <returns>The JSON switch context instance itself.</returns>
+    public JsonSwitchContext<TNode, TArgs> Continue(bool hasPassed, Action<TNode, JsonSwitchContext<TNode, TArgs>> block = null)
+    {
+        if (IsPassed == hasPassed) block?.Invoke(Source, this);
+        return this;
+    }
+
+    /// <summary>
+    /// Configurates the result of happy path route.
+    /// </summary>
+    /// <typeparam name="TResult">The type of result.</typeparam>
+    /// <param name="predicate">A function to test the JSON node for a condition.</param>
+    /// <returns>The happy path route.</returns>
+    public JsonSwitchThen<TNode, TArgs, TResult> Config<TResult>(JsonSwitchPredicate<TResult> predicate)
+    {
+        if (predicate is null) return new(this);
+        if (predicate(Source, out var result))
+        {
+            AfterTest(true);
+            return new(result, this);
+        }
+        else
+        {
+            AfterTest(false);
+            return new(this);
+        }
+    }
+
+    /// <summary>
+    /// Configurates the result of happy path route.
+    /// </summary>
+    /// <typeparam name="TPredicateArgs">The type of predicate args.</typeparam>
+    /// <typeparam name="TResult">The type of result.</typeparam>
+    /// <param name="predicate">A function to test the JSON node for a condition.</param>
+    /// <param name="args">The predicate args.</param>
+    /// <returns>The happy path route.</returns>
+    public JsonSwitchThen<TNode, TArgs, TResult> Config<TPredicateArgs, TResult>(JsonSwitchArgsPredicate<TPredicateArgs, TResult> predicate, TPredicateArgs args)
+    {
+        if (predicate is null) return new(this);
+        if (predicate(Source, args, out var result))
+        {
+            AfterTest(true);
+            return new JsonSwitchThen<TNode, TArgs, TResult>(result, this);
+        }
+        else
+        {
+            AfterTest(false);
+            return new(this);
+        }
+    }
+
+    /// <summary>
+    /// Configurates the result of happy path route.
+    /// </summary>
+    /// <typeparam name="TResult">The type of result.</typeparam>
+    /// <typeparam name="TInfo">The type of additional info to return.</typeparam>
+    /// <param name="predicate">A function to test the JSON node for a condition.</param>
+    /// <returns>The happy path route.</returns>
+    public JsonSwitchThen<TNode, TArgs, TResult, TInfo> Config<TResult, TInfo>(JsonSwitchPredicate<TResult, TInfo> predicate)
+    {
+        if (predicate is null) return new(this);
+        if (predicate(Source, out var result, out var info))
+        {
+            AfterTest(true);
+            return new(result, info, this);
+        }
+        else
+        {
+            AfterTest(false);
+            return new(this);
+        }
+    }
+
+    /// <summary>
+    /// Configurates the result of happy path route.
+    /// </summary>
+    /// <typeparam name="TPredicateArgs">The type of predicate args.</typeparam>
+    /// <typeparam name="TResult">The type of result.</typeparam>
+    /// <typeparam name="TInfo">The type of additional info to return.</typeparam>
+    /// <param name="predicate">A function to test the JSON node for a condition.</param>
+    /// <param name="args">The predicate args.</param>
+    /// <returns>The happy path route.</returns>
+    public JsonSwitchThen<TNode, TArgs, TResult, TInfo> Config<TPredicateArgs, TResult, TInfo>(JsonSwitchArgsPredicate<TPredicateArgs, TResult, TInfo> predicate, TPredicateArgs args)
+    {
+        if (predicate is null) return new(this);
+        if (predicate(Source, args, out var result, out var info))
+        {
+            AfterTest(true);
+            return new(result, info, this);
+        }
+        else
+        {
+            AfterTest(false);
+            return new(this);
+        }
+    }
 
     /// <summary>
     /// Clones.

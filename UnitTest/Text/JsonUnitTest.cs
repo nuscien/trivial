@@ -380,6 +380,13 @@ public class JsonUnitTest
         jsonArray = str.ToJsonArray(',', StringSplitOptions.RemoveEmptyEntries, true);
         Assert.AreEqual(3, jsonArray.Count);
         Assert.AreEqual("cherry", jsonArray.LastOrDefault());
+        Assert.IsNull(json.Id);
+        json.Id = Guid.NewGuid().ToString();
+        Assert.IsNotNull(json.Id);
+        Assert.IsTrue(json.ContainsKey("$id"));
+        json.Id = null;
+        Assert.IsNull(json.Id);
+        Assert.IsFalse(json.ContainsKey("$id"));
     }
 
     /// <summary>
@@ -543,6 +550,9 @@ public class JsonUnitTest
         Assert.IsNotNull(str);
     }
 
+    /// <summary>
+    /// Tests JSON switch-case.
+    /// </summary>
     [TestMethod]
     public void TestJsonSwitch()
     {
@@ -558,12 +568,13 @@ public class JsonUnitTest
                 "Another item"
             } }
         };
+        var router = new TestJsonSwitchCase();
         var sc = json.Switch()
             .Case(100, json.Clear)
-            .Case<TestJsonSwitchCase>(() => { json.IncreaseValue("num"); })
+            .Case(router, () => { json.IncreaseValue("num"); })
             .Default(json.Clear)
             .Finally(() => { json.IncreaseValue("num", 9); });
-        Assert.IsTrue(sc?.Args is JsonObjectNode);
+        Assert.IsInstanceOfType(sc.Args, typeof(JsonObjectNode));
         Assert.IsTrue(sc.IsPassed);
         Assert.AreEqual(2, sc.Count);
         Assert.AreEqual(5, json.Count);
@@ -589,9 +600,21 @@ public class JsonUnitTest
         Assert.IsTrue(sc.IsPassed);
         Assert.AreEqual(1, sc.Count);
         Assert.AreEqual(7, json.Count);
-        sc.Reset();
+        sc.KeepAvailable(true);
         Assert.IsFalse(sc.IsPassed);
         Assert.AreEqual(0, sc.Count);
+        sc.Case(new JsonObjectNode
+        {
+            { "t", true },
+            { "num", 10000 }
+        }, obj => json.SetValue("num", 0)).Case(new JsonObjectNode
+        {
+            { "t", true },
+            { "num", 10010 }
+        }, obj => json.DecreaseValue("num", 10));
+        Assert.IsTrue(sc.IsPassed);
+        Assert.AreEqual(2, sc.Count);
+        Assert.AreEqual(10000, json.GetValue("num").As<int>());
         sc = json.Switch()
             .Case("str", json.Clear);
         Assert.IsFalse(sc.IsPassed);
@@ -599,13 +622,29 @@ public class JsonUnitTest
         sc.Default(token => { });
         Assert.IsTrue(sc.IsPassed);
         Assert.AreEqual(2, sc.Count);
-        var router = new TestJsonSwitchCase();
-        Assert.IsTrue(sc.IsAvailable(router));
-        var t = json.Switch("Initialized.")
-            .Case(router, router);
-        Assert.AreEqual("Hey!", t.Args);
-        Assert.IsFalse(sc.IsAvailable(router));
-        Assert.IsFalse(t.IsAvailable(router));
+        Assert.AreEqual("Hey!", json.Switch("Initialized.").Case(router, router).Args);
+        sc = json.Switch().Config<string, int>(TestObject).Then((s, i) =>
+        {
+            Assert.AreEqual("This is a text.", s);
+            Assert.AreEqual(10000, i);
+        }).Default(Assert.Fail);
+        Assert.IsTrue(sc.IsPassed);
+        Assert.AreEqual(1, sc.Count);
+        Assert.IsFalse(json.GetValue("arr").Switch().Case<string, int>(TestObject, (s, i) => Assert.Fail()).IsPassed);
+    }
+
+    private static bool TestObject(IJsonValueNode node, out string a, out int b)
+    {
+        if (node is not JsonObjectNode json)
+        {
+            a = default;
+            b = default;
+            return false;
+        }
+
+        a = json.TryGetStringTrimmedValue("str");
+        b = json.TryGetInt32Value("num") ?? 0;
+        return true;
     }
 
     private static T Serialize<T>(string json) where T : System.Text.Json.Nodes.JsonNode
