@@ -104,7 +104,7 @@ public class QueryPredication<T>
     {
         Data = source;
         OriginalSource = source;
-        Q = q ?? new QueryData();
+        Q = q ?? new();
     }
 
     /// <summary>

@@ -29,13 +29,7 @@ public sealed class JsonJavaScriptTicksConverter : JsonConverter<DateTime>, IJso
 
         /// <inheritdoc />
         public override DateTime? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-        {
-            if (reader.TokenType == JsonTokenType.Null || reader.TokenType == JsonTokenType.False)
-                return null;
-            if (reader.TokenType == JsonTokenType.Number)
-                return WebFormat.ParseDate(reader.GetInt64());
-            return WebFormat.ParseDate(reader.GetString());
-        }
+            => WebFormat.ParseDate(ref reader);
 
         /// <inheritdoc />
         public override void Write(Utf8JsonWriter writer, DateTime? value, JsonSerializerOptions options)
@@ -56,13 +50,7 @@ public sealed class JsonJavaScriptTicksConverter : JsonConverter<DateTime>, IJso
     {
         /// <inheritdoc />
         public override DateTime? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-        {
-            if (reader.TokenType == JsonTokenType.Null || reader.TokenType == JsonTokenType.False)
-                return null;
-            if (reader.TokenType == JsonTokenType.String)
-                return WebFormat.ParseDate(reader.GetString());
-            return WebFormat.ParseDate(reader.GetInt64());
-        }
+            => WebFormat.ParseDate(ref reader);
 
         /// <inheritdoc />
         public override void Write(Utf8JsonWriter writer, DateTime? value, JsonSerializerOptions options)
@@ -85,16 +73,7 @@ public sealed class JsonJavaScriptTicksConverter : JsonConverter<DateTime>, IJso
     {
         /// <inheritdoc />
         public override DateTime Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-        {
-            if (reader.TokenType == JsonTokenType.String)
-            {
-                var v = WebFormat.ParseDate(reader.GetString());
-                if (v.HasValue) return v.Value;
-                throw new JsonException("The format is not correct.", new FormatException("The value should be a date time JSON token format."));
-            }
-
-            return WebFormat.ParseDate(reader.GetInt64());
-        }
+            => WebFormat.ParseDate(ref reader) ?? throw new JsonException("The format is not correct.", new FormatException("The value should be a date time format string."));
 
         /// <inheritdoc />
         public override void Write(Utf8JsonWriter writer, DateTime value, JsonSerializerOptions options)
@@ -109,13 +88,7 @@ public sealed class JsonJavaScriptTicksConverter : JsonConverter<DateTime>, IJso
 
     /// <inheritdoc />
     public override DateTime Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-    {
-        if (reader.TokenType == JsonTokenType.Number)
-            return WebFormat.ParseDate(reader.GetInt64());
-        var v = WebFormat.ParseDate(reader.GetString());
-        if (v.HasValue) return v.Value;
-        throw new JsonException("The format is not correct.", new FormatException("The value should be a date time JSON token format."));
-    }
+        => WebFormat.ParseDate(ref reader) ?? throw new JsonException("Expects a Unix timestamp value.", new FormatException("The value should be a Unix timestamp."));
 
     /// <inheritdoc />
     public override void Write(Utf8JsonWriter writer, DateTime value, JsonSerializerOptions options)
@@ -140,13 +113,7 @@ public sealed class JsonUnixTimestampConverter : JsonConverter<DateTime>, IJsonN
     {
         /// <inheritdoc />
         public override DateTime? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-        {
-            if (reader.TokenType == JsonTokenType.Null || reader.TokenType == JsonTokenType.False)
-                return null;
-            if (reader.TokenType == JsonTokenType.Number)
-                return WebFormat.ParseUnixTimestamp(reader.GetInt64());
-            return WebFormat.ParseDate(reader.GetString());
-        }
+            => WebFormat.ParseUnixTimestamp(ref reader);
 
         /// <inheritdoc />
         public override void Write(Utf8JsonWriter writer, DateTime? value, JsonSerializerOptions options)
@@ -167,13 +134,7 @@ public sealed class JsonUnixTimestampConverter : JsonConverter<DateTime>, IJsonN
     {
         /// <inheritdoc />
         public override DateTime? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-        {
-            if (reader.TokenType == JsonTokenType.Null || reader.TokenType == JsonTokenType.False)
-                return null;
-            if (reader.TokenType == JsonTokenType.String)
-                return WebFormat.ParseDate(reader.GetString());
-            return WebFormat.ParseUnixTimestamp(reader.GetInt64());
-        }
+            => WebFormat.ParseUnixTimestamp(ref reader);
 
         /// <inheritdoc />
         public override void Write(Utf8JsonWriter writer, DateTime? value, JsonSerializerOptions options)
@@ -196,16 +157,7 @@ public sealed class JsonUnixTimestampConverter : JsonConverter<DateTime>, IJsonN
     {
         /// <inheritdoc />
         public override DateTime Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-        {
-            if (reader.TokenType == JsonTokenType.String)
-            {
-                var v = WebFormat.ParseDate(reader.GetString());
-                if (v.HasValue) return v.Value;
-                throw new JsonException("The format is not correct.", new FormatException("The value should be a date time JSON token format."));
-            }
-
-            return WebFormat.ParseUnixTimestamp(reader.GetInt64());
-        }
+            => WebFormat.ParseUnixTimestamp(ref reader) ?? throw new JsonException("The format is not correct.", new FormatException("The value should be a date time format string."));
 
         /// <inheritdoc />
         public override void Write(Utf8JsonWriter writer, DateTime value, JsonSerializerOptions options)
@@ -220,13 +172,7 @@ public sealed class JsonUnixTimestampConverter : JsonConverter<DateTime>, IJsonN
 
     /// <inheritdoc />
     public override DateTime Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-    {
-        if (reader.TokenType == JsonTokenType.Number)
-            return WebFormat.ParseUnixTimestamp(reader.GetInt64());
-        var v = WebFormat.ParseDate(reader.GetString());
-        if (v.HasValue) return v.Value;
-        throw new JsonException("The format is not correct.", new FormatException("The value should be a date time JSON token format."));
-    }
+            => WebFormat.ParseUnixTimestamp(ref reader) ?? throw new JsonException("Expects a Unix timestamp value.", new FormatException("The value should be a Unix timestamp."));
 
     /// <inheritdoc />
     public override void Write(Utf8JsonWriter writer, DateTime value, JsonSerializerOptions options)
@@ -300,6 +246,7 @@ internal sealed class JsonTimeSpanSecondConverter : JsonConverter<TimeSpan>, IJs
 
     private static TimeSpan? ReadValue(ref Utf8JsonReader reader)
     {
+        JsonValues.SkipComments(ref reader);
         if (reader.TokenType == JsonTokenType.Null || reader.TokenType == JsonTokenType.False)
             return null;
         if (reader.TokenType == JsonTokenType.Number)

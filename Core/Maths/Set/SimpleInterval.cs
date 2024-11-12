@@ -11,6 +11,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
 using System.Text.Json.Serialization;
 
@@ -403,40 +404,44 @@ public abstract class SimpleInterval<T> : ISimpleInterval<T>
     public abstract bool EqualsMaxValue(T value);
 
     /// <summary>
+    /// Tests a value if is in the interval.
+    /// </summary>
+    /// <param name="value">The value to test.</param>
+    /// <returns>true if the test value is in the interval; otherwise, false.</returns>
+    public bool Contains(T value)
+    {
+        var compareLeft = LeftOpen ? IsGreaterThanMinValue(value) : IntervalUtility.IsGreaterThanOrEqualMinValue(this, value);
+        if (!compareLeft) return false;
+        return RightOpen ? IsLessThanMaxValue(value) : IntervalUtility.IsLessThanOrEqualMaxValue(this, value);
+    }
+
+    /// <summary>
     /// Converts the interval to a tuple, which includes MinValue and MaxValue.
     /// </summary>
     /// <returns>A tuple including MinValue and MaxValue.</returns>
     public Tuple<T, T> ToTuple()
-    {
-        return new Tuple<T, T>(MinValue, MaxValue);
-    }
+        => new(MinValue, MaxValue);
 
     /// <summary>
     /// Converts the interval to a tuple, which includes MinValue and MaxValue.
     /// </summary>
     /// <returns>A tuple including MinValue and MaxValue.</returns>
     public ValueTuple<T, T> ToValueTuple()
-    {
-        return new ValueTuple<T, T>(MinValue, MaxValue);
-    }
+        => new(MinValue, MaxValue);
 
     /// <summary>
     /// Converts the interval to a two elements object, which includes MinValue and MaxValue.
     /// </summary>
     /// <returns>A multiple elements object including MinValue and MaxValue.</returns>
     public TwoElements<T> ToTwoElements()
-    {
-        return new TwoElements<T>{ ItemA = MinValue, ItemB = MaxValue };
-    }
+        => new() { ItemA = MinValue, ItemB = MaxValue };
 
     /// <summary>
     /// Converts the interval to a list, which includes MinValue and MaxValue.
     /// </summary>
     /// <returns>A list including MinValue and MaxValue.</returns>
     public IList<T> ToList()
-    {
-        return new List<T> { MinValue, MaxValue };
-    }
+        => new List<T> { MinValue, MaxValue };
 
     /// <summary>
     /// Returns the interval string value of this instance.
@@ -1018,8 +1023,7 @@ public class VersionSimpleInterval : RefValueSimpleInterval<string>
     {
         get
         {
-            var v = minVer;
-            if (v == null) v = Reflection.VersionComparer.ToVersion(MinValue);
+            var v = minVer ?? Reflection.VersionComparer.ToVersion(MinValue);
             return minVer = v;
         }
     }
@@ -1032,8 +1036,7 @@ public class VersionSimpleInterval : RefValueSimpleInterval<string>
     {
         get
         {
-            var v = maxVer;
-            if (v == null) v = Reflection.VersionComparer.ToVersion(MaxValue);
+            var v = maxVer ?? Reflection.VersionComparer.ToVersion(MaxValue);
             return maxVer = v;
         }
     }
@@ -1043,7 +1046,7 @@ public class VersionSimpleInterval : RefValueSimpleInterval<string>
     /// </summary>
     /// <param name="value">A value to check.</param>
     /// <returns>true if the value is in the interval; otherwise, false.</returns>
-    public bool IsInInterval(Version value) => value != null && this.IsInInterval(value.ToString());
+    public bool IsInInterval(Version value) => value != null && Contains(value.ToString());
 
     /// <summary>
     /// Parses a version interval.

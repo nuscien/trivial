@@ -18,6 +18,9 @@ namespace Trivial.Text;
 /// </summary>
 [System.Text.Json.Serialization.JsonConverter(typeof(JsonObjectNodeConverter))]
 public sealed class JsonStringNode : BaseJsonValueNode<string>, IComparable<IJsonValueNode<string>>, IComparable<string>, IEquatable<string>, IEquatable<StringBuilder>, IEquatable<char>, IReadOnlyList<char>
+#if NET8_0_OR_GREATER
+    , IAdditionOperators<JsonStringNode, IJsonValueNode<string>, JsonStringNode>, IAdditionOperators<JsonStringNode, string, JsonStringNode>
+#endif
 {
     /// <summary>
     /// Initializes a new instance of the JsonString class.
@@ -1698,4 +1701,42 @@ public sealed class JsonStringNode : BaseJsonValueNode<string>, IComparable<IJso
     /// <returns>true if they are different; otherwise, false.</returns>
     public static bool operator !=(JsonStringNode leftValue, string rightValue)
         => leftValue is null || leftValue.Value != rightValue;
+
+    /// <summary>
+    /// Pluses.
+    /// </summary>
+    /// <param name="leftValue">The left value.</param>
+    /// <param name="rightValue">The right value.</param>
+    /// <returns>The result string node after computing.</returns>
+    public static JsonStringNode operator +(JsonStringNode leftValue, IJsonValueNode<string> rightValue)
+    {
+        var right = rightValue?.Value;
+        if (right == null) return leftValue;
+        if (leftValue?.Value == null) return rightValue is JsonStringNode rightNode ? rightNode : new(right);
+        if (string.IsNullOrEmpty(right)) return leftValue;
+        return new(leftValue.Value + right);
+    }
+
+    /// <summary>
+    /// Pluses.
+    /// </summary>
+    /// <param name="leftValue">The left value to plus.</param>
+    /// <param name="rightValue">The right value to plus.</param>
+    /// <returns>The result string node after adding.</returns>
+    public static JsonStringNode operator +(JsonStringNode leftValue, string rightValue)
+    {
+        if (rightValue == null) return leftValue;
+        if (leftValue?.Value == null) return new(rightValue);
+        if (string.IsNullOrEmpty(rightValue)) return leftValue;
+        return new(leftValue.Value + rightValue);
+    }
+
+    /// <summary>
+    /// Pluses.
+    /// </summary>
+    /// <param name="leftValue">The left value.</param>
+    /// <param name="rightValue">The right value.</param>
+    /// <returns>The result string node after adding.</returns>
+    public static JsonStringNode operator +(string leftValue, JsonStringNode rightValue)
+        => rightValue + leftValue;
 }

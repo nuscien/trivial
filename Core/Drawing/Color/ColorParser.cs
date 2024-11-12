@@ -206,6 +206,7 @@ public static partial class ColorCalculator
     {
         try
         {
+            JsonValues.SkipComments(ref reader);
             switch (reader.TokenType)
             {
                 case JsonTokenType.Null:

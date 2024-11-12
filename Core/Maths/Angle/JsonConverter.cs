@@ -18,6 +18,7 @@ sealed class JsonAngleConverter : JsonConverter<Angle>
     /// <inheritdoc />
     public override Angle Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
+        JsonValues.SkipComments(ref reader);
         return reader.TokenType switch
         {
             JsonTokenType.Number => reader.GetDouble(),
@@ -41,6 +42,7 @@ sealed class JsonAngleModelConverter : JsonConverter<Angle.Model>
     /// <inheritdoc />
     public override Angle.Model Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
+        JsonValues.SkipComments(ref reader);
         var num = reader.TokenType switch
         {
             JsonTokenType.Null => null,

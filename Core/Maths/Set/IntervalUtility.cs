@@ -139,19 +139,6 @@ public static class IntervalUtility
     }
 
     /// <summary>
-    /// Checks if a value is in the interval.
-    /// </summary>
-    /// <param name="interval">The interval to compare.</param>
-    /// <param name="value">A value to check.</param>
-    /// <returns>true if the value is in the interval; otherwise, false.</returns>
-    public static bool IsInInterval<T>(this ISimpleInterval<T> interval, T value)
-    {
-        var compareLeft = interval.LeftOpen ? interval.IsGreaterThanMinValue(value) : interval.IsGreaterThanOrEqualMinValue(value);
-        if (!compareLeft) return false;
-        return interval.RightOpen ? interval.IsLessThanMaxValue(value) : interval.IsLessThanOrEqualMaxValue(value);
-    }
-
-    /// <summary>
     /// Checks if the value is less than or equal MinValue.
     /// </summary>
     /// <param name="interval">The interval to compare.</param>

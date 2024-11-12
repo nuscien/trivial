@@ -138,11 +138,9 @@ public abstract class SimpleCondition : ISimpleCondition
     /// <param name="value">A simple interval instance.</param>
     /// <returns>A comparing operator.</returns>
     public static DbCompareOperator GetLeftOperator<T>(ISimpleInterval<T> value)
-    {
-        if (value == null)
-            throw new ArgumentNullException("value");
-        return value.LeftOpen ? DbCompareOperator.Greater : DbCompareOperator.GreaterOrEqual;
-    }
+        => value == null
+            ? throw new ArgumentNullException(nameof(value))
+            : (value.LeftOpen ? DbCompareOperator.Greater : DbCompareOperator.GreaterOrEqual);
 
     /// <summary>
     /// Gets a right comparing operator from a simple interval.
@@ -151,45 +149,38 @@ public abstract class SimpleCondition : ISimpleCondition
     /// <param name="value">A simple interval instance.</param>
     /// <returns>A comparing operator.</returns>
     public static DbCompareOperator GetRightOperator<T>(ISimpleInterval<T> value)
-    {
-        if (value == null)
-            throw new ArgumentNullException("value");
-        return value.RightOpen ? DbCompareOperator.Less : DbCompareOperator.LessOrEqual;
-    }
+        => value == null
+            ? throw new ArgumentNullException(nameof(value))
+            : (value.RightOpen ? DbCompareOperator.Less : DbCompareOperator.LessOrEqual);
 
     /// <summary>
     /// Gets the list about valid comparing operator for null or boolean value.
     /// </summary>
     public static ICollection<DbCompareOperator> GetBasicValidOperators()
-    {
-        return _validNullValueOp ?? (_validNullValueOp = new List<DbCompareOperator>
+        => _validNullValueOp ??= new List<DbCompareOperator>
                                            {
                                                DbCompareOperator.Equal,
                                                DbCompareOperator.NotEqual
-                                           });
-    }
+                                           };
 
     /// <summary>
     /// Gets the list about valid comparing operator for literal value.
     /// </summary>
     public static ICollection<DbCompareOperator> GetLiteralValidOperators()
-    {
-        return _validLiteralOp ?? (_validLiteralOp = new List<DbCompareOperator>
+        => _validLiteralOp ??= new List<DbCompareOperator>
                                            {
                                                DbCompareOperator.Equal,
                                                DbCompareOperator.NotEqual,
                                                DbCompareOperator.Contains,
                                                DbCompareOperator.EndsWith,
                                                DbCompareOperator.StartsWith
-                                           });
-    }
+                                           };
 
     /// <summary>
     /// Gets the list about valid comparing operator for comparable value.
     /// </summary>
     public static ICollection<DbCompareOperator> GetComparableValidOperators()
-    {
-        return _validComparableOp ?? (_validComparableOp = new List<DbCompareOperator>
+        => _validComparableOp ??= new List<DbCompareOperator>
                                            {
                                                DbCompareOperator.Equal,
                                                DbCompareOperator.NotEqual,
@@ -197,8 +188,7 @@ public abstract class SimpleCondition : ISimpleCondition
                                                DbCompareOperator.Less,
                                                DbCompareOperator.GreaterOrEqual,
                                                DbCompareOperator.LessOrEqual
-                                           });
-    }
+                                           };
 
     /// <summary>
     /// Converts operation string.
@@ -207,23 +197,16 @@ public abstract class SimpleCondition : ISimpleCondition
     /// <returns>A string that represents the operation.</returns>
     public static string ToString(DbCompareOperator op)
     {
-        switch (op)
+        return op switch
         {
-            case DbCompareOperator.Equal:
-                return BooleanSymbols.EqualSign;
-            case DbCompareOperator.Greater:
-                return BooleanSymbols.GreaterSign;
-            case DbCompareOperator.GreaterOrEqual:
-                return BooleanSymbols.GreaterOrEqualSign;
-            case DbCompareOperator.Less:
-                return BooleanSymbols.LessSign;
-            case DbCompareOperator.LessOrEqual:
-                return BooleanSymbols.LessOrEqualSign;
-            case DbCompareOperator.NotEqual:
-                return BooleanSymbols.NotEqualSign;
-            default:
-                return op.ToString();
-        }
+            DbCompareOperator.Equal => BooleanOperations.EqualSign,
+            DbCompareOperator.Greater => BooleanOperations.GreaterSign,
+            DbCompareOperator.GreaterOrEqual => BooleanOperations.GreaterOrEqualSign,
+            DbCompareOperator.Less => BooleanOperations.LessSign,
+            DbCompareOperator.LessOrEqual => BooleanOperations.LessOrEqualSign,
+            DbCompareOperator.NotEqual => BooleanOperations.NotEqualSign,
+            _ => op.ToString(),
+        };
     }
 
     /// <summary>
@@ -232,7 +215,7 @@ public abstract class SimpleCondition : ISimpleCondition
     /// <returns>A string that represents the current object.</returns>
     public override string ToString()
     {
-        return SimpleCondition.ToString(Operator) + " " + (Value != null ? Value.ToString() : "null");
+        return ToString(Operator) + " " + (Value != null ? Value.ToString() : "null");
     }
 }
 

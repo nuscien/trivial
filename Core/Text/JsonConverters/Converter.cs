@@ -138,6 +138,7 @@ public class JsonStringListConverter : JsonConverter<IEnumerable<string>>, IJson
     /// <inheritdoc />
     public override IEnumerable<string> Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
+        JsonValues.SkipComments(ref reader);
         var col = new List<string>();
         if (reader.TokenType == JsonTokenType.Null)
         {
@@ -314,6 +315,7 @@ public sealed class JsonObjectNodeConverter : JsonConverter<IJsonValueNode>
     /// <inheritdoc />
     public override IJsonValueNode Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
+        JsonValues.SkipComments(ref reader);
         switch (reader.TokenType)
         {
             case JsonTokenType.Null:
@@ -412,6 +414,7 @@ public sealed class JsonNodeSchemaConverter : JsonConverter<JsonNodeSchemaDescri
     /// <inheritdoc />
     public override JsonNodeSchemaDescription Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
+        JsonValues.SkipComments(ref reader);
         switch (reader.TokenType)
         {
             case JsonTokenType.Null:
@@ -450,6 +453,7 @@ public sealed class JsonObjectHostConverter : JsonConverter<IJsonObjectHost>
     /// <inheritdoc />
     public override IJsonObjectHost Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
+        JsonValues.SkipComments(ref reader);
         switch (reader.TokenType)
         {
             case JsonTokenType.Null:

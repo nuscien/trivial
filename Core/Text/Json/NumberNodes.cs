@@ -3,9 +3,11 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
+using System.Numerics;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Nodes;
+using Trivial.Maths;
 using Trivial.Web;
 
 namespace Trivial.Text;
@@ -25,9 +27,9 @@ public interface IJsonNumberNode : IJsonValueNode, IEquatable<IJsonNumberNode>, 
 /// Represents a specific JSON integer number value.
 /// </summary>
 [System.Text.Json.Serialization.JsonConverter(typeof(JsonObjectNodeConverter))]
-public sealed class JsonIntegerNode : BaseJsonValueNode<long>, IJsonNumberNode, IComparable<JsonIntegerNode>, IComparable<JsonDoubleNode>, IComparable<uint>, IComparable<int>, IComparable<long>, IComparable<double>, IComparable<float>, IEquatable<uint>, IEquatable<int>, IEquatable<float>, IEquatable<double>, IFormattable, IConvertible
+public sealed class JsonIntegerNode : BaseJsonValueNode<long>, IJsonNumberNode, IComparable<JsonIntegerNode>, IComparable<JsonDoubleNode>, IComparable<uint>, IComparable<int>, IComparable<long>, IComparable<double>, IComparable<float>, IEquatable<uint>, IEquatable<int>, IEquatable<float>, IEquatable<double>, IFormattable, IConvertible, IAdvancedAdditionCapable<JsonIntegerNode>
 #if NET8_0_OR_GREATER
-    , IParsable<JsonIntegerNode>
+    , IParsable<JsonIntegerNode>, IUnaryNegationOperators<JsonIntegerNode, JsonIntegerNode>, IAdditionOperators<JsonIntegerNode, IJsonValueNode<long>, JsonIntegerNode>, IAdditionOperators<JsonIntegerNode, IJsonValueNode<int>, JsonIntegerNode>, IAdditionOperators<JsonIntegerNode, long, JsonIntegerNode>, IAdditionOperators<JsonIntegerNode, int, JsonIntegerNode>, ISubtractionOperators<JsonIntegerNode, IJsonValueNode<long>, JsonIntegerNode>, ISubtractionOperators<JsonIntegerNode, IJsonValueNode<int>, JsonIntegerNode>, ISubtractionOperators<JsonIntegerNode, long, JsonIntegerNode>, ISubtractionOperators<JsonIntegerNode, int, JsonIntegerNode>
 #endif
 {
     /// <summary>
@@ -122,6 +124,16 @@ public sealed class JsonIntegerNode : BaseJsonValueNode<long>, IJsonNumberNode, 
     public bool IsSafe { get; }
 
     /// <summary>
+    /// Gets a value indicating whether the value is negative.
+    /// </summary>
+    public bool IsNegative => Value < 0;
+
+    /// <summary>
+    /// Gets a value indicating whether the current value is zero.
+    /// </summary>
+    bool IAdvancedAdditionCapable<JsonIntegerNode>.IsZero => Value == 0L;
+
+    /// <summary>
     /// Gets the JSON format string of the value.
     /// </summary>
     /// <returns>The JSON format string of the integer.</returns>
@@ -152,7 +164,7 @@ public sealed class JsonIntegerNode : BaseJsonValueNode<long>, IJsonNumberNode, 
     /// <returns>A string of the number in the specific positional notation.</returns>
     /// <exception cref="ArgumentOutOfRangeException">type should be in 2-36.</exception>
     public string ToPositionalNotationString(int type)
-        => Maths.Numbers.ToPositionalNotationString(Value, type);
+        => Numbers.ToPositionalNotationString(Value, type);
 
     /// <summary>
     /// Indicates whether this instance and a specified object are equal.
@@ -204,7 +216,7 @@ public sealed class JsonIntegerNode : BaseJsonValueNode<long>, IJsonNumberNode, 
         if (other is IJsonValueNode<Int128> i4) return Value.Equals(i4.Value);
         if (other is IJsonValueNode<UInt128> i9) return Value.Equals(i9.Value);
 #endif
-        if (other is IJsonValueNode<string> s) return !string.IsNullOrEmpty(s.Value) && Maths.Numbers.TryParseToInt64(s.Value, 10, out var intParsed) && intParsed == Value;
+        if (other is IJsonValueNode<string> s) return !string.IsNullOrEmpty(s.Value) && Numbers.TryParseToInt64(s.Value, 10, out var intParsed) && intParsed == Value;
         return false;
     }
 
@@ -728,13 +740,47 @@ public sealed class JsonIntegerNode : BaseJsonValueNode<long>, IJsonNumberNode, 
         => Value;
 
     /// <summary>
+    /// Creates an element descibed zero.
+    /// </summary>
+    /// <returns>An JSON number node about zero.</returns>
+    JsonIntegerNode IAdvancedAdditionCapable<JsonIntegerNode>.GetElementZero()
+        => Value == 0L ? this : new(0L);
+
+    /// <summary>
+    /// Pluses another value to return.
+    /// </summary>
+    /// <param name="value">A given value to be added.</param>
+    /// <returns>A result after addition.</returns>
+    public JsonIntegerNode Plus(JsonIntegerNode value)
+    {
+        if (value is null || value.Value == 0L) return this;
+        if (Value == 0L) return value;
+        return new(Value + value.Value);
+    }
+
+    /// <summary>
+    /// Minuses another value to return.
+    /// </summary>
+    /// <param name="value">A given value to be added.</param>
+    /// <returns>A result after subtraction.</returns>
+    public JsonIntegerNode Minus(JsonIntegerNode value)
+        => value is null || value.Value == 0L ? this : new(Value - value.Value);
+
+    /// <summary>
+    /// Negates the current value to return.
+    /// </summary>
+    /// <returns>A result after negation.</returns>
+    public JsonIntegerNode Negate()
+        => Value == 0L ? this : new(-Value);
+
+    /// <summary>
     /// Parses.
     /// </summary>
     /// <param name="s">The input string.</param>
     /// <returns>The JSON value node parsed.</returns>
     public static JsonIntegerNode Parse(string s)
     {
-        var i = Maths.Numbers.ParseToInt64(s, 10);
+        var i = Numbers.ParseToInt64(s, 10);
         return new(i);
     }
 
@@ -744,7 +790,7 @@ public sealed class JsonIntegerNode : BaseJsonValueNode<long>, IJsonNumberNode, 
     /// <param name="s">The input string.</param>
     /// <returns>The JSON value node parsed; or null, if failed to parse.</returns>
     public static JsonIntegerNode TryParse(string s)
-        => Maths.Numbers.TryParseToInt64(s, 10, out var i) ? new(i) : default;
+        => Numbers.TryParseToInt64(s, 10, out var i) ? new(i) : default;
 
     /// <summary>
     /// Tries to parse.
@@ -754,7 +800,7 @@ public sealed class JsonIntegerNode : BaseJsonValueNode<long>, IJsonNumberNode, 
     /// <returns>true if parse succeeded; otherwise, false..</returns>
     public static bool TryParse(string s, out JsonIntegerNode result)
     {
-        if (Maths.Numbers.TryParseToInt64(s, 10, out var i))
+        if (Numbers.TryParseToInt64(s, 10, out var i))
         {
             result = new(i);
             return true;
@@ -849,7 +895,7 @@ public sealed class JsonIntegerNode : BaseJsonValueNode<long>, IJsonNumberNode, 
     /// </summary>
     /// <param name="json">The JSON value.</param>
     /// <returns>A number.</returns>
-    public static explicit operator System.Numerics.BigInteger(JsonIntegerNode json)
+    public static explicit operator BigInteger(JsonIntegerNode json)
         => json.Value;
 
     /// <summary>
@@ -1259,15 +1305,144 @@ public sealed class JsonIntegerNode : BaseJsonValueNode<long>, IJsonNumberNode, 
     /// <returns>true if the left one is greater than or equals to the right one; otherwise, false.</returns>
     public static bool operator >=(JsonIntegerNode leftValue, float rightValue)
         => leftValue.Value >= rightValue;
+
+    /// <summary>
+    /// Negation.
+    /// </summary>
+    /// <param name="value">The left value.</param>
+    /// <returns>The result number node after computing.</returns>
+    public static JsonIntegerNode operator -(JsonIntegerNode value)
+        => value?.Negate() ?? new(0L);
+
+    /// <summary>
+    /// Pluses.
+    /// </summary>
+    /// <param name="leftValue">The left value.</param>
+    /// <param name="rightValue">The right value.</param>
+    /// <returns>The result number node after computing.</returns>
+    public static JsonIntegerNode operator +(JsonIntegerNode leftValue, IJsonValueNode<long> rightValue)
+    {
+        if (rightValue is null) return leftValue;
+        if (leftValue is null || leftValue.Value == 0L) return rightValue is JsonIntegerNode node ? node : new(rightValue.Value);
+        if (rightValue.Value == 0L) return leftValue;
+        return new(leftValue.Value + rightValue.Value);
+    }
+
+    /// <summary>
+    /// Minuses.
+    /// </summary>
+    /// <param name="leftValue">The left value.</param>
+    /// <param name="rightValue">The right value.</param>
+    /// <returns>The result number node after computing.</returns>
+    public static JsonIntegerNode operator -(JsonIntegerNode leftValue, IJsonValueNode<long> rightValue)
+        => rightValue is null || rightValue.Value == 0L ? leftValue : new((leftValue?.Value ?? 0L) - rightValue.Value);
+
+    /// <summary>
+    /// Pluses.
+    /// </summary>
+    /// <param name="leftValue">The left value.</param>
+    /// <param name="rightValue">The right value.</param>
+    /// <returns>The result number node after computing.</returns>
+    public static JsonIntegerNode operator +(JsonIntegerNode leftValue, IJsonValueNode<int> rightValue)
+        => rightValue is null ? leftValue : new((leftValue?.Value ?? 0L) + rightValue.Value);
+
+    /// <summary>
+    /// Minuses.
+    /// </summary>
+    /// <param name="leftValue">The left value.</param>
+    /// <param name="rightValue">The right value.</param>
+    /// <returns>The result number node after computing.</returns>
+    public static JsonIntegerNode operator -(JsonIntegerNode leftValue, IJsonValueNode<int> rightValue)
+        => (rightValue is null || rightValue.Value == 0) ? leftValue : new((leftValue?.Value ?? 0L) - rightValue.Value);
+
+    /// <summary>
+    /// Pluses.
+    /// </summary>
+    /// <param name="leftValue">The left value.</param>
+    /// <param name="rightValue">The right value.</param>
+    /// <returns>The result number node after computing.</returns>
+    public static JsonIntegerNode operator +(JsonIntegerNode leftValue, long rightValue)
+    {
+        if (leftValue is null) return new(rightValue);
+        if (rightValue == 0L) return leftValue;
+        return new(leftValue.Value + rightValue);
+    }
+
+    /// <summary>
+    /// Minuses.
+    /// </summary>
+    /// <param name="leftValue">The left value.</param>
+    /// <param name="rightValue">The right value.</param>
+    /// <returns>The result number node after computing.</returns>
+    public static JsonIntegerNode operator -(JsonIntegerNode leftValue, long rightValue)
+        => rightValue == 0L ? leftValue : new((leftValue?.Value ?? 0L) - rightValue);
+
+    /// <summary>
+    /// Pluses.
+    /// </summary>
+    /// <param name="leftValue">The left value.</param>
+    /// <param name="rightValue">The right value.</param>
+    /// <returns>The result number node after computing.</returns>
+    public static JsonIntegerNode operator +(long leftValue, JsonIntegerNode rightValue)
+        => rightValue + leftValue;
+
+    /// <summary>
+    /// Minuses.
+    /// </summary>
+    /// <param name="leftValue">The left value.</param>
+    /// <param name="rightValue">The right value.</param>
+    /// <returns>The result number node after computing.</returns>
+    public static JsonIntegerNode operator -(long leftValue, JsonIntegerNode rightValue)
+        => new(leftValue - (rightValue?.Value ?? 0L));
+
+    /// <summary>
+    /// Pluses.
+    /// </summary>
+    /// <param name="leftValue">The left value.</param>
+    /// <param name="rightValue">The right value.</param>
+    /// <returns>The result number node after computing.</returns>
+    public static JsonIntegerNode operator +(JsonIntegerNode leftValue, int rightValue)
+    {
+        if (leftValue is null) return new(rightValue);
+        if (rightValue == 0) return leftValue;
+        return new(leftValue.Value + rightValue);
+    }
+
+    /// <summary>
+    /// Minuses.
+    /// </summary>
+    /// <param name="leftValue">The left value.</param>
+    /// <param name="rightValue">The right value.</param>
+    /// <returns>The result number node after computing.</returns>
+    public static JsonIntegerNode operator -(JsonIntegerNode leftValue, int rightValue)
+        => rightValue == 0 ? leftValue : new((leftValue?.Value ?? 0L) - rightValue);
+
+    /// <summary>
+    /// Pluses.
+    /// </summary>
+    /// <param name="leftValue">The left value.</param>
+    /// <param name="rightValue">The right value.</param>
+    /// <returns>The result number node after computing.</returns>
+    public static JsonIntegerNode operator +(int leftValue, JsonIntegerNode rightValue)
+        => rightValue + leftValue;
+
+    /// <summary>
+    /// Minuses.
+    /// </summary>
+    /// <param name="leftValue">The left value.</param>
+    /// <param name="rightValue">The right value.</param>
+    /// <returns>The result number node after computing.</returns>
+    public static JsonIntegerNode operator -(int leftValue, JsonIntegerNode rightValue)
+        => new(leftValue - (rightValue?.Value ?? 0L));
 }
 
 /// <summary>
 /// Represents a specific JSON double float number value.
 /// </summary>
 [System.Text.Json.Serialization.JsonConverter(typeof(JsonObjectNodeConverter))]
-public sealed class JsonDoubleNode : BaseJsonValueNode<double>, IJsonNumberNode, IComparable<JsonIntegerNode>, IComparable<JsonDoubleNode>, IComparable<JsonDecimalNode>, IComparable<uint>, IComparable<int>, IComparable<long>, IComparable<double>, IComparable<float>, IComparable<decimal>, IEquatable<uint>, IEquatable<int>, IEquatable<long>, IEquatable<float>, IEquatable<decimal>, IFormattable, IConvertible
+public sealed class JsonDoubleNode : BaseJsonValueNode<double>, IJsonNumberNode, IComparable<JsonIntegerNode>, IComparable<JsonDoubleNode>, IComparable<JsonDecimalNode>, IComparable<uint>, IComparable<int>, IComparable<long>, IComparable<double>, IComparable<float>, IComparable<decimal>, IEquatable<uint>, IEquatable<int>, IEquatable<long>, IEquatable<float>, IEquatable<decimal>, IFormattable, IConvertible, IAdvancedAdditionCapable<JsonDoubleNode>
 #if NET8_0_OR_GREATER
-    , IParsable<JsonDoubleNode>
+    , IParsable<JsonDoubleNode>, IUnaryNegationOperators<JsonDoubleNode, JsonDoubleNode>, IAdditionOperators<JsonDoubleNode, IJsonValueNode<double>, JsonDoubleNode>, IAdditionOperators<JsonDoubleNode, IJsonValueNode<float>, JsonDoubleNode>, IAdditionOperators<JsonDoubleNode, double, JsonDoubleNode>, ISubtractionOperators<JsonDoubleNode, IJsonValueNode<double>, JsonDoubleNode>, ISubtractionOperators<JsonDoubleNode, IJsonValueNode<float>, JsonDoubleNode>, ISubtractionOperators<JsonDoubleNode, double, JsonDoubleNode>
 #endif
 {
     /// <summary>
@@ -1388,6 +1563,16 @@ public sealed class JsonDoubleNode : BaseJsonValueNode<double>, IJsonNumberNode,
     public bool IsInteger { get; }
 
     /// <summary>
+    /// Gets a value indicating whether the value is negative.
+    /// </summary>
+    public bool IsNegative => Value < 0d;
+
+    /// <summary>
+    /// Gets a value indicating whether the current value is zero.
+    /// </summary>
+    bool IAdvancedAdditionCapable<JsonDoubleNode>.IsZero => Value == 0d;
+
+    /// <summary>
     /// Gets the JSON format string of the value.
     /// </summary>
     /// <returns>The JSON format string of the float number.</returns>
@@ -1417,7 +1602,7 @@ public sealed class JsonDoubleNode : BaseJsonValueNode<double>, IJsonNumberNode,
     /// <param name="type">The positional notation.</param>
     /// <returns>A string of the number in the specific positional notation.</returns>
     public string ToPositionalNotationString(int type)
-        => Maths.Numbers.ToPositionalNotationString(Value, type);
+        => Numbers.ToPositionalNotationString(Value, type);
 
     /// <summary>
     /// Indicates whether this instance and a specified object are equal.
@@ -2086,16 +2271,47 @@ public sealed class JsonDoubleNode : BaseJsonValueNode<double>, IJsonNumberNode,
         => Value;
 
     /// <summary>
+    /// Creates an element descibed zero.
+    /// </summary>
+    /// <returns>An JSON number node about zero.</returns>
+    JsonDoubleNode IAdvancedAdditionCapable<JsonDoubleNode>.GetElementZero()
+        => Value == 0L ? this : new(0d);
+
+    /// <summary>
+    /// Pluses another value to return.
+    /// </summary>
+    /// <param name="value">A given value to be added.</param>
+    /// <returns>A result after addition.</returns>
+    public JsonDoubleNode Plus(JsonDoubleNode value)
+    {
+        if (value is null || value.Value == 0d) return this;
+        if (Value == 0d) return value;
+        return new(Value + value.Value);
+    }
+
+    /// <summary>
+    /// Minuses another value to return.
+    /// </summary>
+    /// <param name="value">A given value to be added.</param>
+    /// <returns>A result after subtraction.</returns>
+    public JsonDoubleNode Minus(JsonDoubleNode value)
+        => value is null || value.Value == 0d ? this : new(Value - value.Value);
+
+    /// <summary>
+    /// Negates the current value to return.
+    /// </summary>
+    /// <returns>A result after negation.</returns>
+    public JsonDoubleNode Negate()
+        => Value == 0d ? this : new(-Value);
+
+    /// <summary>
     /// Parses.
     /// </summary>
     /// <param name="s">The input string.</param>
     /// <param name="provider">An object that supplies culture-specific formatting information about s.</param>
     /// <returns>The JSON value node.</returns>
     public static JsonDoubleNode Parse(string s, IFormatProvider provider = null)
-    {
-        var i = provider is null ? double.Parse(s) : double.Parse(s, provider);
-        return new(i);
-    }
+        => new(provider is null ? double.Parse(s) : double.Parse(s, provider));
 
     /// <summary>
     /// Tries to parse.
@@ -2652,15 +2868,104 @@ public sealed class JsonDoubleNode : BaseJsonValueNode<double>, IJsonNumberNode,
     /// <returns>true if the left one is greater than or equals to the right one; otherwise, false.</returns>
     public static bool operator >=(JsonDoubleNode leftValue, uint rightValue)
         => leftValue.Value >= rightValue;
+
+    /// <summary>
+    /// Negation.
+    /// </summary>
+    /// <param name="value">The left value.</param>
+    /// <returns>The result number node after computing.</returns>
+    public static JsonDoubleNode operator -(JsonDoubleNode value)
+        => value?.Negate() ?? new(0d);
+
+    /// <summary>
+    /// Pluses.
+    /// </summary>
+    /// <param name="leftValue">The left value.</param>
+    /// <param name="rightValue">The right value.</param>
+    /// <returns>The result number node after computing.</returns>
+    public static JsonDoubleNode operator +(JsonDoubleNode leftValue, IJsonValueNode<double> rightValue)
+    {
+        if (rightValue is null) return leftValue;
+        if (leftValue is null || leftValue.Value == 0d) return rightValue is JsonDoubleNode node ? node : new(rightValue.Value);
+        if (rightValue.Value == 0d) return leftValue;
+        return new(leftValue.Value + rightValue.Value);
+    }
+
+    /// <summary>
+    /// Minuses.
+    /// </summary>
+    /// <param name="leftValue">The left value.</param>
+    /// <param name="rightValue">The right value.</param>
+    /// <returns>The result number node after computing.</returns>
+    public static JsonDoubleNode operator -(JsonDoubleNode leftValue, IJsonValueNode<double> rightValue)
+        => rightValue is null || rightValue.Value == 0d ? leftValue : new((leftValue?.Value ?? 0d) - rightValue.Value);
+
+    /// <summary>
+    /// Pluses.
+    /// </summary>
+    /// <param name="leftValue">The left value.</param>
+    /// <param name="rightValue">The right value.</param>
+    /// <returns>The result number node after computing.</returns>
+    public static JsonDoubleNode operator +(JsonDoubleNode leftValue, IJsonValueNode<float> rightValue)
+        => rightValue is null ? leftValue : new((leftValue?.Value ?? 0d) + rightValue.Value);
+
+    /// <summary>
+    /// Minuses.
+    /// </summary>
+    /// <param name="leftValue">The left value.</param>
+    /// <param name="rightValue">The right value.</param>
+    /// <returns>The result number node after computing.</returns>
+    public static JsonDoubleNode operator -(JsonDoubleNode leftValue, IJsonValueNode<float> rightValue)
+        => (rightValue is null || rightValue.Value == 0f) ? leftValue : new((leftValue?.Value ?? 0d) - rightValue.Value);
+
+    /// <summary>
+    /// Pluses.
+    /// </summary>
+    /// <param name="leftValue">The left value.</param>
+    /// <param name="rightValue">The right value.</param>
+    /// <returns>The result number node after computing.</returns>
+    public static JsonDoubleNode operator +(JsonDoubleNode leftValue, double rightValue)
+    {
+        if (leftValue is null) return new(rightValue);
+        if (rightValue == 0d) return leftValue;
+        return new(leftValue.Value + rightValue);
+    }
+
+    /// <summary>
+    /// Minuses.
+    /// </summary>
+    /// <param name="leftValue">The left value.</param>
+    /// <param name="rightValue">The right value.</param>
+    /// <returns>The result number node after computing.</returns>
+    public static JsonDoubleNode operator -(JsonDoubleNode leftValue, double rightValue)
+        => rightValue == 0d ? leftValue : new((leftValue?.Value ?? 0d) - rightValue);
+
+    /// <summary>
+    /// Pluses.
+    /// </summary>
+    /// <param name="leftValue">The left value.</param>
+    /// <param name="rightValue">The right value.</param>
+    /// <returns>The result number node after computing.</returns>
+    public static JsonDoubleNode operator +(double leftValue, JsonDoubleNode rightValue)
+        => rightValue + leftValue;
+
+    /// <summary>
+    /// Minuses.
+    /// </summary>
+    /// <param name="leftValue">The left value.</param>
+    /// <param name="rightValue">The right value.</param>
+    /// <returns>The result number node after computing.</returns>
+    public static JsonDoubleNode operator -(double leftValue, JsonDoubleNode rightValue)
+        => new(leftValue - (rightValue?.Value ?? 0d));
 }
 
 /// <summary>
 /// Represents a specific JSON decimal float number value.
 /// </summary>
 [System.Text.Json.Serialization.JsonConverter(typeof(JsonObjectNodeConverter))]
-public sealed class JsonDecimalNode : BaseJsonValueNode<decimal>, IJsonNumberNode, IComparable<JsonIntegerNode>, IComparable<JsonDoubleNode>, IComparable<JsonDecimalNode>, IComparable<uint>, IComparable<int>, IComparable<long>, IComparable<double>, IComparable<float>, IComparable<decimal>, IEquatable<uint>, IEquatable<int>, IEquatable<long>, IEquatable<double>, IEquatable<float>, IFormattable, IConvertible
+public sealed class JsonDecimalNode : BaseJsonValueNode<decimal>, IJsonNumberNode, IComparable<JsonIntegerNode>, IComparable<JsonDoubleNode>, IComparable<JsonDecimalNode>, IComparable<uint>, IComparable<int>, IComparable<long>, IComparable<double>, IComparable<float>, IComparable<decimal>, IEquatable<uint>, IEquatable<int>, IEquatable<long>, IEquatable<double>, IEquatable<float>, IFormattable, IConvertible, IAdvancedAdditionCapable<JsonDecimalNode>
 #if NET8_0_OR_GREATER
-    , IParsable<JsonDecimalNode>
+    , IParsable<JsonDecimalNode>, IUnaryNegationOperators<JsonDecimalNode, JsonDecimalNode>, IAdditionOperators<JsonDecimalNode, IJsonValueNode<decimal>, JsonDecimalNode>, IAdditionOperators<JsonDecimalNode, decimal, JsonDecimalNode>, ISubtractionOperators<JsonDecimalNode, IJsonValueNode<decimal>, JsonDecimalNode>, ISubtractionOperators<JsonDecimalNode, decimal, JsonDecimalNode>
 #endif
 {
     /// <summary>
@@ -2781,6 +3086,16 @@ public sealed class JsonDecimalNode : BaseJsonValueNode<decimal>, IJsonNumberNod
     public bool IsInteger { get; }
 
     /// <summary>
+    /// Gets a value indicating whether the value is negative.
+    /// </summary>
+    public bool IsNegative => Value < decimal.Zero;
+
+    /// <summary>
+    /// Gets a value indicating whether the current value is zero.
+    /// </summary>
+    bool IAdvancedAdditionCapable<JsonDecimalNode>.IsZero => Value == decimal.Zero;
+
+    /// <summary>
     /// Gets the JSON format string of the value.
     /// </summary>
     /// <returns>The JSON format string of the float number.</returns>
@@ -2810,7 +3125,7 @@ public sealed class JsonDecimalNode : BaseJsonValueNode<decimal>, IJsonNumberNod
     /// <param name="type">The positional notation.</param>
     /// <returns>A string of the number in the specific positional notation.</returns>
     public string ToPositionalNotationString(int type)
-        => Maths.Numbers.ToPositionalNotationString(Value, type);
+        => Numbers.ToPositionalNotationString(Value, type);
 
     /// <summary>
     /// Indicates whether this instance and a specified object are equal.
@@ -3477,6 +3792,40 @@ public sealed class JsonDecimalNode : BaseJsonValueNode<decimal>, IJsonNumberNod
 
     decimal IConvertible.ToDecimal(IFormatProvider provider)
         => Value;
+
+    /// <summary>
+    /// Creates an element descibed zero.
+    /// </summary>
+    /// <returns>An JSON number node about zero.</returns>
+    JsonDecimalNode IAdvancedAdditionCapable<JsonDecimalNode>.GetElementZero()
+        => Value == decimal.Zero ? this : new(decimal.Zero);
+
+    /// <summary>
+    /// Pluses another value to return.
+    /// </summary>
+    /// <param name="value">A given value to be added.</param>
+    /// <returns>A result after addition.</returns>
+    public JsonDecimalNode Plus(JsonDecimalNode value)
+    {
+        if (value is null || value.Value == decimal.Zero) return this;
+        if (Value == decimal.Zero) return value;
+        return new(Value + value.Value);
+    }
+
+    /// <summary>
+    /// Minuses another value to return.
+    /// </summary>
+    /// <param name="value">A given value to be added.</param>
+    /// <returns>A result after subtraction.</returns>
+    public JsonDecimalNode Minus(JsonDecimalNode value)
+        => value is null || value.Value == decimal.Zero ? this : new(Value - value.Value);
+
+    /// <summary>
+    /// Negates the current value to return.
+    /// </summary>
+    /// <returns>A result after negation.</returns>
+    public JsonDecimalNode Negate()
+        => Value == decimal.Zero ? this : new(-Value);
 
     /// <summary>
     /// Parses.
@@ -4173,4 +4522,75 @@ public sealed class JsonDecimalNode : BaseJsonValueNode<decimal>, IJsonNumberNod
     /// <returns>true if the left one is greater than or equals to the right one; otherwise, false.</returns>
     public static bool operator >=(JsonDecimalNode leftValue, uint rightValue)
         => leftValue.Value >= rightValue;
+
+    /// <summary>
+    /// Negation.
+    /// </summary>
+    /// <param name="value">The left value.</param>
+    /// <returns>The result number node after computing.</returns>
+    public static JsonDecimalNode operator -(JsonDecimalNode value)
+        => value?.Negate() ?? new(decimal.Zero);
+
+    /// <summary>
+    /// Pluses.
+    /// </summary>
+    /// <param name="leftValue">The left value.</param>
+    /// <param name="rightValue">The right value.</param>
+    /// <returns>The result number node after computing.</returns>
+    public static JsonDecimalNode operator +(JsonDecimalNode leftValue, IJsonValueNode<decimal> rightValue)
+    {
+        if (rightValue is null) return leftValue;
+        if (leftValue is null || leftValue.Value == decimal.Zero) return rightValue is JsonDecimalNode node ? node : new(rightValue.Value);
+        if (rightValue.Value == decimal.Zero) return leftValue;
+        return new(leftValue.Value + rightValue.Value);
+    }
+
+    /// <summary>
+    /// Minuses.
+    /// </summary>
+    /// <param name="leftValue">The left value.</param>
+    /// <param name="rightValue">The right value.</param>
+    /// <returns>The result number node after computing.</returns>
+    public static JsonDecimalNode operator -(JsonDecimalNode leftValue, IJsonValueNode<decimal> rightValue)
+        => rightValue is null || rightValue.Value == decimal.Zero ? leftValue : new((leftValue?.Value ?? decimal.Zero) - rightValue.Value);
+
+    /// <summary>
+    /// Pluses.
+    /// </summary>
+    /// <param name="leftValue">The left value.</param>
+    /// <param name="rightValue">The right value.</param>
+    /// <returns>The result number node after computing.</returns>
+    public static JsonDecimalNode operator +(JsonDecimalNode leftValue, decimal rightValue)
+    {
+        if (leftValue is null) return new(rightValue);
+        if (rightValue == decimal.Zero) return leftValue;
+        return new(leftValue.Value + rightValue);
+    }
+
+    /// <summary>
+    /// Minuses.
+    /// </summary>
+    /// <param name="leftValue">The left value.</param>
+    /// <param name="rightValue">The right value.</param>
+    /// <returns>The result number node after computing.</returns>
+    public static JsonDecimalNode operator -(JsonDecimalNode leftValue, decimal rightValue)
+        => rightValue == decimal.Zero ? leftValue : new((leftValue?.Value ?? decimal.Zero) - rightValue);
+
+    /// <summary>
+    /// Pluses.
+    /// </summary>
+    /// <param name="leftValue">The left value.</param>
+    /// <param name="rightValue">The right value.</param>
+    /// <returns>The result number node after computing.</returns>
+    public static JsonDecimalNode operator +(decimal leftValue, JsonDecimalNode rightValue)
+        => rightValue + leftValue;
+
+    /// <summary>
+    /// Minuses.
+    /// </summary>
+    /// <param name="leftValue">The left value.</param>
+    /// <param name="rightValue">The right value.</param>
+    /// <returns>The result number node after computing.</returns>
+    public static JsonDecimalNode operator -(decimal leftValue, JsonDecimalNode rightValue)
+        => new(leftValue - (rightValue?.Value ?? decimal.Zero));
 }

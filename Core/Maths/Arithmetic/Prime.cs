@@ -54,9 +54,7 @@ public static partial class Arithmetic
     /// </code>
     /// </example>
     public static bool IsPrime(int value)
-    {
-        return IsPrime((uint)Math.Abs(value));
-    }
+        => IsPrime((uint)Math.Abs(value));
 
     /// <summary>
     /// Gets a value indicating whether a number is a prime number.
@@ -124,9 +122,7 @@ public static partial class Arithmetic
     /// <param name="value">The value to test.</param>
     /// <returns>true if it is a prime number; otherwise, false.</returns>
     public static bool IsPrime(long value)
-    {
-        return IsPrime((ulong)Math.Abs(value));
-    }
+        => IsPrime((ulong)Math.Abs(value));
 
     /// <summary>
     /// Gets a value indicating whether a number is a prime number.
@@ -135,9 +131,53 @@ public static partial class Arithmetic
     /// <param name="cancellationToken">The additional cancellation token.</param>
     /// <returns>true if it is a prime number; otherwise, false.</returns>
     public static Task<bool> IsPrimeAsync(long value, CancellationToken cancellationToken = default)
+        => IsPrimeAsync((ulong)Math.Abs(value), cancellationToken);
+
+#if NET8_0_OR_GREATER
+    /// <summary>
+    /// Gets a value indicating whether a number is a prime number.
+    /// </summary>
+    /// <param name="value">The value to test.</param>
+    /// <param name="cancellationToken">The additional cancellation token.</param>
+    /// <returns>true if it is a prime number; otherwise, false.</returns>
+    public static async Task<bool> IsPrimeAsync(UInt128 value, CancellationToken cancellationToken = default)
     {
-        return IsPrimeAsync((ulong)Math.Abs(value), cancellationToken);
+        var sq = ulong.MaxValue;
+        if (value < sq) return await IsPrimeAsync((ulong)value, cancellationToken);
+        if (value < 2 || value % 2 == 0 || value % 3 == 0 || value % 5 == 0 || value % 7 == 0 || value % 11 == 0 || value % 13 == 0 || value % 17 == 0 || value % 19 == 0) return false;
+        if (value <= 370) return true;
+        for (ulong i = 23; i < sq;)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            var max = Math.Min(sq, i + 30000000L);
+            var isPrime = await Task.Run(() =>
+            {
+                while (i < max)
+                {
+                    if (value % i == 0) return false;
+                    i += 2;
+                    if (value % i == 0) return false;
+                    i += 4;
+                }
+
+                return true;
+            });
+
+            if (!isPrime) return false;
+        }
+
+        return true;
     }
+
+    /// <summary>
+    /// Gets a value indicating whether a number is a prime number.
+    /// </summary>
+    /// <param name="value">The value to test.</param>
+    /// <param name="cancellationToken">The additional cancellation token.</param>
+    /// <returns>true if it is a prime number; otherwise, false.</returns>
+    public static Task<bool> IsPrimeAsync(Int128 value, CancellationToken cancellationToken = default)
+        => IsPrimeAsync((UInt128)Int128.Abs(value), cancellationToken);
+#endif
 
     /// <summary>
     /// Gets the biggest prime number which is less than the specific one; or the smallest greater than, if the given one is negative.

@@ -2643,6 +2643,45 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// Tries to get the value of the specific property.
     /// </summary>
     /// <param name="key">The property key.</param>
+    /// <param name="policy">The property resolving policy.</param>
+    /// <returns>The value.</returns>
+    public JsonObjectNode TryGetObjectValue(ref string key, IJsonPropertyRoutePolicy policy)
+    {
+        if (policy is null) return TryGetObjectValue(key);
+        policy.TryGetObjectValue(this, key, out var result, out var k);
+        key = k;
+        return result;
+    }
+
+    /// <summary>
+    /// Tries to get the value of the specific property.
+    /// </summary>
+    /// <param name="key">The property key.</param>
+    /// <param name="policy">The property resolving policy.</param>
+    /// <returns>The value.</returns>
+    public JsonObjectNode TryGetObjectValue(string key, IJsonPropertyRoutePolicy policy)
+        => TryGetObjectValue(ref key, policy);
+
+    /// <summary>
+    /// Tries to get the value of the specific property.
+    /// </summary>
+    /// <param name="key">The property key.</param>
+    /// <param name="policy">The property resolving policy.</param>
+    /// <param name="value">THe JSON object value of the property.</param>
+    /// <param name="exactKey">The exact key to resolve the property.</param>
+    /// <returns>true if gets succeeded; otherwise, false, includes the scenarios that it does NOT exist or its type is not expected.</returns>
+    public bool TryGetObjectValue(string key, IJsonPropertyRoutePolicy policy, out JsonObjectNode value, out string exactKey)
+    {
+        if (policy is not null) return policy.TryGetObjectValue(this, key, out value, out exactKey);
+        value = TryGetObjectValue(key);
+        exactKey = key;
+        return value is not null;
+    }
+
+    /// <summary>
+    /// Tries to get the value of the specific property.
+    /// </summary>
+    /// <param name="key">The property key.</param>
     /// <param name="ignoreNotMatched">true if ignore any item which is not JSON object; otherwise, false.</param>
     /// <returns>The list; or null, if no such array property.</returns>
     public List<JsonObjectNode> TryGetObjectListValue(string key, bool ignoreNotMatched = false)
@@ -2830,19 +2869,7 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// <param name="useUnixTimestampsFallback">true if use Unix timestamp to convert if the value is a number; otherwise, false, to use JavaScript date ticks fallback.</param>
     /// <returns>The value.</returns>
     public DateTime? TryGetDateTimeValue(string key, bool useUnixTimestampsFallback = false)
-    {
-        AssertKey(key);
-        if (TryGetJsonValue<JsonStringNode>(key, out var s))
-        {
-            var date = WebFormat.ParseDate(s.Value);
-            return date;
-        }
-
-        if (TryGetJsonValue<JsonIntegerNode>(key, out var num))
-            return useUnixTimestampsFallback ? WebFormat.ParseUnixTimestamp(num.Value) : WebFormat.ParseDate(num.Value);
-        if (!TryGetJsonValue<JsonObjectNode>(key, out var obj)) return null;
-        return JsonValues.TryGetDateTime(obj);
-    }
+        => JsonValues.TryGetDateTime(TryGetJsonValue(key), useUnixTimestampsFallback);
 
     /// <summary>
     /// Tries to get the value of the specific property.
@@ -2852,21 +2879,22 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// <returns>The value.</returns>
     public DateTime? TryGetDateTimeValue(string key, Func<string, DateTime?> parser)
     {
-        AssertKey(key);
-        if (TryGetJsonValue<JsonStringNode>(key, out var s))
-        {
-            if (parser is not null) return parser(s.Value);
-            var date = WebFormat.ParseDate(s.Value);
-            return date;
-        }
+        var v = TryGetJsonValue(key);
+        if (v is IJsonValueNode<string> s && parser is not null) return parser(s.Value);
+        return JsonValues.TryGetDateTime(v, false);
+    }
 
-        if (TryGetJsonValue<JsonIntegerNode>(key, out var num))
-        {
-            if (parser is not null) return parser(num.ToString());
-            return WebFormat.ParseDate(num.Value);
-        }
-
-        return null;
+    /// <summary>
+    /// Tries to get the value of the specific property.
+    /// </summary>
+    /// <param name="key">The property key.</param>
+    /// <param name="resolver">The resolver.</param>
+    /// <returns>The value.</returns>
+    public DateTime? TryGetDateTimeValue(string key, IJsonPropertyResolver<DateTime> resolver)
+    {
+        var v = TryGetJsonValue(key);
+        if (v is JsonObjectNode json && resolver is not null && resolver.TryGetValue(json, out var r)) return r;
+        return JsonValues.TryGetDateTime(v, false);
     }
 
     /// <summary>
@@ -2880,13 +2908,19 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     {
         var node = TryGetJsonValue(key);
         kind = node.ValueKind;
-        DateTime? v = null;
-        if (node is IJsonValueNode<string> s) v = WebFormat.ParseDate(s.Value);
-        else if (node is IJsonValueNode<long> num) v = WebFormat.ParseDate(num.Value);
-        else if (node is JsonObjectNode obj) v = JsonValues.TryGetDateTime(obj);
+        var v = JsonValues.TryGetDateTime(node, false);
         result = v ?? WebFormat.ZeroTick;
         return v.HasValue;
     }
+
+    /// <summary>
+    /// Tries to get the value of the specific property.
+    /// </summary>
+    /// <param name="key">The property key.</param>
+    /// <param name="result">The result.</param>
+    /// <returns>true if has the property and the type is the one expected; otherwise, false.</returns>
+    public bool TryGetDateTimeValue(string key, out DateTime result)
+        => TryGetDateTimeValue(key, out result, out _);
 
 #if !NETFRAMEWORK
     /// <summary>
@@ -8142,6 +8176,52 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
         => new(store);
 
     /// <summary>
+    /// Creates a lookup from this JSON object according to a specified key selector function.
+    /// </summary>
+    /// <typeparam name="TKey">The type of the key returned by key selector.</typeparam>
+    /// <param name="keySelector">A function to extract a key from each element.</param>
+    /// <returns>A lookup that contains keys and values. The values within each group are in the same order as in source.</returns>
+    /// <exception cref="ArgumentNullException">keySelector is null.</exception>
+    public ILookup<TKey, KeyValuePair<string, BaseJsonValueNode>> ToLookup<TKey>(Func<KeyValuePair<string, BaseJsonValueNode>, TKey> keySelector)
+        => Enumerable.ToLookup(this, keySelector);
+
+    /// <summary>
+    /// Creates a lookup from this JSON object according to a specified key selector function.
+    /// </summary>
+    /// <typeparam name="TKey">The type of the key returned by key selector.</typeparam>
+    /// <param name="keySelector">A function to extract a key from each element.</param>
+    /// <param name="comparer">A handler to compare keys.</param>
+    /// <returns>A lookup that contains keys and values. The values within each group are in the same order as in source.</returns>
+    /// <exception cref="ArgumentNullException">keySelector is null.</exception>
+    public ILookup<TKey, KeyValuePair<string, BaseJsonValueNode>> ToLookup<TKey>(Func<KeyValuePair<string, BaseJsonValueNode>, TKey> keySelector, IEqualityComparer<TKey> comparer)
+        => Enumerable.ToLookup(this, keySelector, comparer);
+
+    /// <summary>
+    /// Creates a lookup from this JSON object according to a specified key selector function.
+    /// </summary>
+    /// <typeparam name="TKey">The type of the key returned by key selector.</typeparam>
+    /// <typeparam name="TElement">The type of the value returned by elementSelector.</typeparam>
+    /// <param name="keySelector">A function to extract a key from each element.</param>
+    /// <param name="elementSelector">A transform function to produce a result element value from each element.</param>
+    /// <returns>A lookup that contains keys and values. The values within each group are in the same order as in source.</returns>
+    /// <exception cref="ArgumentNullException">keySelector is null.</exception>
+    public ILookup<TKey, TElement> ToLookup<TKey, TElement>(Func<KeyValuePair<string, BaseJsonValueNode>, TKey> keySelector, Func<KeyValuePair<string, BaseJsonValueNode>, TElement> elementSelector)
+        => Enumerable.ToLookup(this, keySelector, elementSelector);
+
+    /// <summary>
+    /// Creates a lookup from this JSON object according to a specified key selector function.
+    /// </summary>
+    /// <typeparam name="TKey">The type of the key returned by key selector.</typeparam>
+    /// <typeparam name="TElement">The type of the value returned by elementSelector.</typeparam>
+    /// <param name="keySelector">A function to extract a key from each element.</param>
+    /// <param name="elementSelector">A transform function to produce a result element value from each element.</param>
+    /// <param name="comparer">A handler to compare keys.</param>
+    /// <returns>A lookup that contains keys and values. The values within each group are in the same order as in source.</returns>
+    /// <exception cref="ArgumentNullException">keySelector is null.</exception>
+    public ILookup<TKey, TElement> ToLookup<TKey, TElement>(Func<KeyValuePair<string, BaseJsonValueNode>, TKey> keySelector, Func<KeyValuePair<string, BaseJsonValueNode>, TElement> elementSelector, IEqualityComparer<TKey> comparer)
+        => Enumerable.ToLookup(this, keySelector, elementSelector, comparer);
+
+    /// <summary>
     /// Creates a new object that is a copy of the current instance.
     /// </summary>
     /// <returns>A new object that is a copy of this instance.</returns>
@@ -8197,7 +8277,7 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// <inheritdoc />
     protected override bool TryConvert(out DateTime result)
     {
-        var v = TryGetDateTime();
+        var v = JsonValues.TryGetDateTime(this);
         result = v ?? WebFormat.ZeroTick;
         return v.HasValue;
     }
@@ -8209,51 +8289,20 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
         return false;
     }
 
-    /// <summary>
-    /// Tries to get the value of the element as a date time.
-    /// </summary>
-    /// <returns>The result.</returns>
-    private DateTime? TryGetDateTime()
-    {
-        var year = TryGetInt32Value("year");
-        if (!year.HasValue) return null;
-        var month = TryGetInt32Value("month") ?? 0;
-        if (month < 1 || month > 12) return null;
-        var day = TryGetInt32Value("day") ?? 0;
-        if (day < 1 || day > 31) return null;
-        var hour = TryGetInt32Value("hour") ?? 0;
-        if (hour < 0 || hour > 23) return null;
-        var minute = TryGetInt32Value("minute") ?? 0;
-        if (minute < 0 || minute > 59) return null;
-        var second = TryGetInt32Value("second") ?? 0;
-        if (second < 0 || second > 59) return null;
-        var millisecond = TryGetInt32Value("millisecond") ?? 0;
-        if (millisecond < 0 || millisecond > 1000) return null;
-        var offset = TryGetStringTrimmedValue("offset")?.ToLowerInvariant() ?? string.Empty;
-        var kind = offset switch
-        {
-            "" or "utc" or "false" or "z" or "0" or "0:00" or "00:00" => DateTimeKind.Utc,
-            "local" => DateTimeKind.Local,
-            _ => DateTimeKind.Unspecified
-        };
-        if (kind == DateTimeKind.Unspecified) return null;
-        return new(year.Value, month, day, hour, minute, second, millisecond, kind);
-    }
-
     /// <inheritdoc />
-    public override System.Text.Json.Nodes.JsonNode ToJsonNode()
+    public override JsonNode ToJsonNode()
         => ToJsonObject();
 
     /// <summary>
     /// Converts to JSON object.
     /// </summary>
     /// <returns>An instance of the JSON object.</returns>
-    public System.Text.Json.Nodes.JsonObject ToJsonObject()
+    public JsonObject ToJsonObject()
     {
-        var node = new System.Text.Json.Nodes.JsonObject();
+        var node = new JsonObject();
         foreach (var prop in store)
         {
-            var v = (System.Text.Json.Nodes.JsonNode)prop.Value;
+            var v = (JsonNode)prop.Value;
             node[prop.Key] = v;
         }
 

@@ -42,6 +42,14 @@ public static partial class WebFormat
     /// </summary>
     /// <param name="ticks">The JavaScript date ticks.</param>
     /// <returns>A date and time.</returns>
+    public static DateTime ParseDate(Func<long> ticks)
+        => ParseDate(ticks());
+
+    /// <summary>
+    /// Parses JavaScript date tick to date and time.
+    /// </summary>
+    /// <param name="ticks">The JavaScript date ticks.</param>
+    /// <returns>A date and time.</returns>
     /// <example>
     /// var t = WebFormat.ParseDate(1594958400000);
     /// </example>
@@ -57,9 +65,7 @@ public static partial class WebFormat
     /// <param name="date">A date and time.</param>
     /// <returns>The JavaScript date ticks.</returns>
     public static long ParseDate(DateTime date)
-    {
-        return (date.ToUniversalTime().Ticks - ticksOffset) / 10000;
-    }
+        => (date.ToUniversalTime().Ticks - ticksOffset) / 10000;
 
     /// <summary>
     /// Parses JavaScript date ticks to date and time back.
@@ -67,9 +73,7 @@ public static partial class WebFormat
     /// <param name="date">A date and time.</param>
     /// <returns>The JavaScript date ticks.</returns>
     public static long ParseDate(DateTimeOffset date)
-    {
-        return (date.ToUniversalTime().Ticks - ticksOffset) / 10000;
-    }
+        => (date.ToUniversalTime().Ticks - ticksOffset) / 10000;
 
     /// <summary>
     /// Parses JavaScript date ticks to date and time back.
@@ -324,15 +328,33 @@ public static partial class WebFormat
         return t.AddSeconds(sec).AddMinutes(neg * rm).AddHours(neg * rh);
     }
 
+    internal static DateTime? ParseDate(ref Utf8JsonReader reader)
+    {
+        JsonValues.SkipComments(ref reader);
+        switch (reader.TokenType)
+        {
+            case JsonTokenType.Null:
+            case JsonTokenType.False:
+                return null;
+            case JsonTokenType.Number:
+                return ParseDate(reader.GetInt64());
+            case JsonTokenType.String:
+                return ParseDate(reader.GetString());
+            case JsonTokenType.StartObject:
+                var json = new JsonObjectNode(ref reader);
+                return JsonValues.TryGetDateTime(json);
+            default:
+                return null;
+        }
+    }
+
     /// <summary>
     /// Parses Unix timestamp to date and time back.
     /// </summary>
     /// <param name="date">A date and time.</param>
     /// <returns>The JavaScript date tick.</returns>
     internal static long ParseUnixTimestamp(DateTime date)
-    {
-        return ParseDate(date) / 1000;
-    }
+        => ParseDate(date) / 1000;
 
     /// <summary>
     /// Parses Unix timestamp to date and time back.
@@ -351,9 +373,15 @@ public static partial class WebFormat
     /// <param name="timestamp">The JavaScript date timestamp.</param>
     /// <returns>A date and time.</returns>
     internal static DateTime ParseUnixTimestamp(long timestamp)
-    {
-        return ParseDate(timestamp * 1000);
-    }
+        => ParseDate(timestamp * 1000);
+
+    /// <summary>
+    /// Parses Unix timestamp to date and time.
+    /// </summary>
+    /// <param name="timestamp">The JavaScript date timestamp.</param>
+    /// <returns>A date and time.</returns>
+    internal static DateTime ParseUnixTimestamp(Func<long> timestamp)
+        => ParseUnixTimestamp(timestamp());
 
     /// <summary>
     /// Parses Unix timestamp to date and time.
@@ -364,6 +392,26 @@ public static partial class WebFormat
     {
         if (!timestamp.HasValue) return null;
         return ParseUnixTimestamp(timestamp.Value);
+    }
+
+    internal static DateTime? ParseUnixTimestamp(ref Utf8JsonReader reader)
+    {
+        JsonValues.SkipComments(ref reader);
+        switch (reader.TokenType)
+        {
+            case JsonTokenType.Null:
+            case JsonTokenType.False:
+                return null;
+            case JsonTokenType.Number:
+                return ParseUnixTimestamp(reader.GetInt64());
+            case JsonTokenType.String:
+                return ParseDate(reader.GetString());
+            case JsonTokenType.StartObject:
+                var json = new JsonObjectNode(ref reader);
+                return JsonValues.TryGetDateTime(json, true);
+            default:
+                return null;
+        }
     }
 
     /// <summary>
@@ -593,8 +641,7 @@ public static partial class WebFormat
     }
 
     private static int GetMonth(string s, int startIndex)
-    {
-        return s.Substring(startIndex, 3) switch
+        => s.Substring(startIndex, 3) switch
         {
             "JAN" => 1,
             "FEB" => 2,
@@ -610,5 +657,4 @@ public static partial class WebFormat
             "DEC" => 12,
             _ => -1
         };
-    }
 }

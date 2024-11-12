@@ -39,6 +39,7 @@ public sealed class JsonNumberConverter : JsonConverterFactory, IJsonNodeSchemaC
         /// <inheritdoc />
         public override short Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
+            JsonValues.SkipComments(ref reader);
             return reader.TokenType switch
             {
                 JsonTokenType.Null => GetDefaultValue<short>(NeedThrowForNull),
@@ -76,6 +77,7 @@ public sealed class JsonNumberConverter : JsonConverterFactory, IJsonNodeSchemaC
         /// <inheritdoc />
         public override int Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
+            JsonValues.SkipComments(ref reader);
             return reader.TokenType switch
             {
                 JsonTokenType.Null => GetDefaultValue<int>(NeedThrowForNull),
@@ -113,6 +115,7 @@ public sealed class JsonNumberConverter : JsonConverterFactory, IJsonNodeSchemaC
         /// <inheritdoc />
         public override long Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
+            JsonValues.SkipComments(ref reader);
             return reader.TokenType switch
             {
                 JsonTokenType.Null => GetDefaultValue<long>(NeedThrowForNull),
@@ -149,6 +152,7 @@ public sealed class JsonNumberConverter : JsonConverterFactory, IJsonNodeSchemaC
         /// <inheritdoc />
         public override ushort Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
+            JsonValues.SkipComments(ref reader);
             return reader.TokenType switch
             {
                 JsonTokenType.Null => GetDefaultValue<ushort>(NeedThrowForNull),
@@ -186,6 +190,7 @@ public sealed class JsonNumberConverter : JsonConverterFactory, IJsonNodeSchemaC
         /// <inheritdoc />
         public override uint Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
+            JsonValues.SkipComments(ref reader);
             return reader.TokenType switch
             {
                 JsonTokenType.Null => GetDefaultValue<uint>(NeedThrowForNull),
@@ -223,6 +228,7 @@ public sealed class JsonNumberConverter : JsonConverterFactory, IJsonNodeSchemaC
         /// <inheritdoc />
         public override ulong Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
+            JsonValues.SkipComments(ref reader);
             return reader.TokenType switch
             {
                 JsonTokenType.Null => GetDefaultValue<ulong>(NeedThrowForNull),
@@ -273,6 +279,7 @@ public sealed class JsonNumberConverter : JsonConverterFactory, IJsonNodeSchemaC
         /// <inheritdoc />
         public override decimal Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
+            JsonValues.SkipComments(ref reader);
             return reader.TokenType switch
             {
                 JsonTokenType.Null => GetDefaultValue<decimal>(NeedThrowForNull),
@@ -310,6 +317,7 @@ public sealed class JsonNumberConverter : JsonConverterFactory, IJsonNodeSchemaC
         /// <inheritdoc />
         public override float Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
+            JsonValues.SkipComments(ref reader);
             return reader.TokenType switch
             {
                 JsonTokenType.Null => GetDefaultValue<float>(NeedThrowForNull),
@@ -347,6 +355,7 @@ public sealed class JsonNumberConverter : JsonConverterFactory, IJsonNodeSchemaC
         /// <inheritdoc />
         public override double Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
+            JsonValues.SkipComments(ref reader);
             return reader.TokenType switch
             {
                 JsonTokenType.Null => GetDefaultValue<double>(NeedThrowForNull),
@@ -379,6 +388,7 @@ public sealed class JsonNumberConverter : JsonConverterFactory, IJsonNodeSchemaC
         /// <inheritdoc />
         public override short? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
+            JsonValues.SkipComments(ref reader);
             return reader.TokenType switch
             {
                 JsonTokenType.Null => null,
@@ -412,6 +422,7 @@ public sealed class JsonNumberConverter : JsonConverterFactory, IJsonNodeSchemaC
         /// <inheritdoc />
         public override int? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
+            JsonValues.SkipComments(ref reader);
             return reader.TokenType switch
             {
                 JsonTokenType.Null => null,
@@ -445,6 +456,7 @@ public sealed class JsonNumberConverter : JsonConverterFactory, IJsonNodeSchemaC
         /// <inheritdoc />
         public override long? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
+            JsonValues.SkipComments(ref reader);
             return reader.TokenType switch
             {
                 JsonTokenType.Null => null,
@@ -477,6 +489,7 @@ public sealed class JsonNumberConverter : JsonConverterFactory, IJsonNodeSchemaC
         /// <inheritdoc />
         public override ushort? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
+            JsonValues.SkipComments(ref reader);
             return reader.TokenType switch
             {
                 JsonTokenType.Null => null,
@@ -510,6 +523,7 @@ public sealed class JsonNumberConverter : JsonConverterFactory, IJsonNodeSchemaC
         /// <inheritdoc />
         public override uint? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
+            JsonValues.SkipComments(ref reader);
             return reader.TokenType switch
             {
                 JsonTokenType.Null => null,
@@ -543,6 +557,7 @@ public sealed class JsonNumberConverter : JsonConverterFactory, IJsonNodeSchemaC
         /// <inheritdoc />
         public override ulong? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
+            JsonValues.SkipComments(ref reader);
             return reader.TokenType switch
             {
                 JsonTokenType.Null => null,
@@ -576,6 +591,7 @@ public sealed class JsonNumberConverter : JsonConverterFactory, IJsonNodeSchemaC
         /// <inheritdoc />
         public override decimal? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
+            JsonValues.SkipComments(ref reader);
             return reader.TokenType switch
             {
                 JsonTokenType.Null => null,
@@ -609,6 +625,7 @@ public sealed class JsonNumberConverter : JsonConverterFactory, IJsonNodeSchemaC
         /// <inheritdoc />
         public override float? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
+            JsonValues.SkipComments(ref reader);
             return reader.TokenType switch
             {
                 JsonTokenType.Null => null,
@@ -642,6 +659,7 @@ public sealed class JsonNumberConverter : JsonConverterFactory, IJsonNodeSchemaC
         /// <inheritdoc />
         public override double? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
+            JsonValues.SkipComments(ref reader);
             return reader.TokenType switch
             {
                 JsonTokenType.Null => null,
@@ -675,6 +693,7 @@ public sealed class JsonNumberConverter : JsonConverterFactory, IJsonNodeSchemaC
         /// <inheritdoc />
         public override string Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
+            JsonValues.SkipComments(ref reader);
             return reader.TokenType switch
             {
                 JsonTokenType.Null => null,
@@ -745,6 +764,7 @@ public sealed class JsonNumberConverter : JsonConverterFactory, IJsonNodeSchemaC
         /// <inheritdoc />
         public override IJsonNumberNode Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
+            JsonValues.SkipComments(ref reader);
             switch (reader.TokenType)
             {
                 case JsonTokenType.Null:
@@ -791,6 +811,7 @@ public sealed class JsonNumberConverter : JsonConverterFactory, IJsonNodeSchemaC
         /// <inheritdoc />
         public override JsonIntegerNode Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
+            JsonValues.SkipComments(ref reader);
             var num = reader.TokenType switch
             {
                 JsonTokenType.Null => null,
@@ -825,6 +846,7 @@ public sealed class JsonNumberConverter : JsonConverterFactory, IJsonNodeSchemaC
         /// <inheritdoc />
         public override JsonDoubleNode Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
+            JsonValues.SkipComments(ref reader);
             var num = reader.TokenType switch
             {
                 JsonTokenType.Null => null,
@@ -859,6 +881,7 @@ public sealed class JsonNumberConverter : JsonConverterFactory, IJsonNodeSchemaC
         /// <inheritdoc />
         public override JsonDecimalNode Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
+            JsonValues.SkipComments(ref reader);
             var num = reader.TokenType switch
             {
                 JsonTokenType.Null => null,
@@ -966,6 +989,7 @@ public sealed class JsonNumberConverter : JsonConverterFactory, IJsonNodeSchemaC
         /// <inheritdoc />
         public override StructValueSimpleInterval<int> Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
+            JsonValues.SkipComments(ref reader);
             return reader.TokenType switch
             {
                 JsonTokenType.Null => null,
@@ -1043,6 +1067,7 @@ public sealed class JsonNumberConverter : JsonConverterFactory, IJsonNodeSchemaC
         /// <inheritdoc />
         public override NullableValueSimpleInterval<int> Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
+            JsonValues.SkipComments(ref reader);
             return reader.TokenType switch
             {
                 JsonTokenType.Null => null,
@@ -1093,6 +1118,7 @@ public sealed class JsonNumberConverter : JsonConverterFactory, IJsonNodeSchemaC
         /// <inheritdoc />
         public override StructValueSimpleInterval<long> Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
+            JsonValues.SkipComments(ref reader);
             return reader.TokenType switch
             {
                 JsonTokenType.Null => null,
@@ -1144,6 +1170,7 @@ public sealed class JsonNumberConverter : JsonConverterFactory, IJsonNodeSchemaC
         /// <inheritdoc />
         public override NullableValueSimpleInterval<long> Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
+            JsonValues.SkipComments(ref reader);
             return reader.TokenType switch
             {
                 JsonTokenType.Null => null,
@@ -1195,6 +1222,7 @@ public sealed class JsonNumberConverter : JsonConverterFactory, IJsonNodeSchemaC
         /// <inheritdoc />
         public override StructValueSimpleInterval<double> Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
+            JsonValues.SkipComments(ref reader);
             return reader.TokenType switch
             {
                 JsonTokenType.Null => null,
@@ -1226,6 +1254,7 @@ public sealed class JsonNumberConverter : JsonConverterFactory, IJsonNodeSchemaC
         /// <inheritdoc />
         public override VersionSimpleInterval Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
+            JsonValues.SkipComments(ref reader);
             return reader.TokenType switch
             {
                 JsonTokenType.Null => null,
@@ -1238,9 +1267,7 @@ public sealed class JsonNumberConverter : JsonConverterFactory, IJsonNodeSchemaC
 
         /// <inheritdoc />
         public override void Write(Utf8JsonWriter writer, VersionSimpleInterval value, JsonSerializerOptions options)
-        {
-            writer.WriteStringValue(value.ToString());
-        }
+            => writer.WriteStringValue(value.ToString());
 
         private static VersionSimpleInterval FromString(ref Utf8JsonReader reader)
         {
@@ -1310,14 +1337,12 @@ public sealed class JsonNumberConverter : JsonConverterFactory, IJsonNodeSchemaC
             if (typeToConvert == typeof(VersionSimpleInterval)) return new VersionIntervalConverter();
             if (typeToConvert == typeof(System.Drawing.Color)) return new RgbaColorConverter();
             if (typeToConvert == typeof(System.Drawing.Color?)) return new NullableRgbaColorConverter();
-            throw new JsonException(typeToConvert.Name + " is not expected.");
+            throw new JsonException(string.Concat(typeToConvert.Name, " is not expected."));
         }
 
         /// <inheritdoc />
         public override bool CanConvert(Type typeToConvert)
-        {
-            return CanConvertType(typeToConvert);
-        }
+            => CanConvertType(typeToConvert);
     }
 
     /// <summary>
@@ -1363,14 +1388,12 @@ public sealed class JsonNumberConverter : JsonConverterFactory, IJsonNodeSchemaC
             if (typeToConvert == typeof(VersionSimpleInterval)) return new VersionIntervalConverter();
             if (typeToConvert == typeof(System.Drawing.Color)) return new HexColorConverter();
             if (typeToConvert == typeof(System.Drawing.Color?)) return new NullableHexColorConverter();
-            throw new JsonException(typeToConvert.Name + " is not expected.");
+            throw new JsonException(string.Concat(typeToConvert.Name, " is not expected."));
         }
 
         /// <inheritdoc />
         public override bool CanConvert(Type typeToConvert)
-        {
-            return CanConvertType(typeToConvert);
-        }
+            => CanConvertType(typeToConvert);
     }
 
     /// <inheritdoc />
@@ -1411,7 +1434,7 @@ public sealed class JsonNumberConverter : JsonConverterFactory, IJsonNodeSchemaC
         if (typeToConvert == typeof(VersionSimpleInterval)) return new VersionIntervalConverter();
         if (typeToConvert == typeof(System.Drawing.Color)) return new HexColorConverter();
         if (typeToConvert == typeof(System.Drawing.Color?)) return new NullableHexColorConverter();
-        throw new JsonException(typeToConvert.Name + " is not expected.");
+        throw new JsonException(string.Concat(typeToConvert.Name, " is not expected."));
     }
 
     /// <inheritdoc />

@@ -10,6 +10,7 @@ using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 using Trivial.Collection;
 using Trivial.Reflection;
 using Trivial.Text;
@@ -136,7 +137,7 @@ public class ConciseModel : BaseObservableProperties, IConciseModel
     /// <param name="copy">The model to copy.</param>
     public ConciseModel(IConciseModel copy)
     {
-        if (copy == null) return;
+        if (copy is null) return;
         Id = copy.Id;
         Title = copy.Title;
         Link = copy.Link;
@@ -145,7 +146,6 @@ public class ConciseModel : BaseObservableProperties, IConciseModel
         var keywords = copy.Keywords;
         if (keywords != null) Keywords = [.. keywords];
         if (copy is not ConciseModel model) return;
-        Raw = model.Raw;
         Tag = model.Tag;
     }
 
@@ -161,6 +161,12 @@ public class ConciseModel : BaseObservableProperties, IConciseModel
     }
 
     /// <summary>
+    /// Tests if the name is not null, empty nor consists only of white-space characters.
+    /// </summary>
+    [JsonIgnore]
+    public bool HasId => !string.IsNullOrWhiteSpace(Id);
+
+    /// <summary>
     /// Gets or sets the title.
     /// </summary>
     [JsonPropertyName("title")]
@@ -170,6 +176,12 @@ public class ConciseModel : BaseObservableProperties, IConciseModel
         get => GetCurrentProperty<string>();
         set => SetCurrentProperty(value);
     }
+
+    /// <summary>
+    /// Tests if the title is not null, empty nor consists only of white-space characters.
+    /// </summary>
+    [JsonIgnore]
+    public bool HasTitle => !string.IsNullOrWhiteSpace(Title);
 
     /// <summary>
     /// Gets or sets the description.
@@ -247,18 +259,6 @@ public class ConciseModel : BaseObservableProperties, IConciseModel
             var keywords = Keywords;
             return keywords == null ? 0 : keywords.Count;
         }
-    }
-
-    /// <summary>
-    /// Gets or sets the raw data.
-    /// </summary>
-    [JsonPropertyName("raw")]
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [Description("The source object.")]
-    public object Raw
-    {
-        get => GetCurrentProperty<object>();
-        set => SetCurrentProperty(value);
     }
 
     /// <summary>
@@ -376,5 +376,93 @@ public class ConciseModel : BaseObservableProperties, IConciseModel
         if (!string.IsNullOrWhiteSpace(Description)) col.Add(Description);
         if (!string.IsNullOrWhiteSpace(Link)) col.Add(Description);
         return col.Count < 1 ? (Id ?? string.Concat('(', GetType().Name, ')')) : string.Join(Environment.NewLine, col);
+    }
+}
+
+/// <summary>
+/// The concise model content.
+/// </summary>
+/// <typeparam name="T">The type of raw object.</typeparam>
+public class ConciseModel<T> : ConciseModel
+{
+    /// <summary>
+    /// Initializes a new instance of the ConciseModel class.
+    /// </summary>
+    public ConciseModel()
+        : base()
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the ConciseModel class.
+    /// </summary>
+    /// <param name="id">The identifier of the video.</param>
+    /// <param name="title">The title of the video.</param>
+    /// <param name="link">The URL of the video to play.</param>
+    /// <param name="description">The video description.</param>
+    /// <param name="keywords">The keywords of the video.</param>
+    public ConciseModel(string id, string title, string link = null, string description = null, IEnumerable<string> keywords = null)
+        : base(id, title, link, description, keywords)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the BaseConciseModel class.
+    /// </summary>
+    /// <param name="id">The identifier of the video.</param>
+    /// <param name="title">The title of the video.</param>
+    /// <param name="link">The URL of the video to play.</param>
+    /// <param name="description">The video description.</param>
+    /// <param name="keywords">The keywords of the video.</param>
+    public ConciseModel(Guid id, string title, string link = null, string description = null, IEnumerable<string> keywords = null)
+        : base(id, title, link, description, keywords)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the ConciseModel class.
+    /// </summary>
+    /// <param name="id">The identifier of the video.</param>
+    /// <param name="title">The title of the video.</param>
+    /// <param name="keywords">The keywords of the video.</param>
+    /// <param name="link">The URL of the video to play.</param>
+    public ConciseModel(string id, string title, IEnumerable<string> keywords, string link = null)
+        : base(id, title, keywords, link)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the ConciseModel class.
+    /// </summary>
+    /// <param name="id">The identifier of the video.</param>
+    /// <param name="title">The title of the video.</param>
+    /// <param name="keywords">The keywords of the video.</param>
+    /// <param name="link">The URL of the video to play.</param>
+    public ConciseModel(Guid id, string title, IEnumerable<string> keywords, string link = null)
+        : base(id, title, keywords, link)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the ConciseModel class.
+    /// </summary>
+    /// <param name="copy">The model to copy.</param>
+    public ConciseModel(IConciseModel copy)
+        : base(copy)
+    {
+        if (copy is not ConciseModel<T> model) return;
+        Tag = model.Tag;
+    }
+
+    /// <summary>
+    /// Gets or sets the raw data.
+    /// </summary>
+    [JsonPropertyName("raw")]
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    [Description("The source object.")]
+    public T Raw
+    {
+        get => GetCurrentProperty<T>();
+        set => SetCurrentProperty(value);
     }
 }

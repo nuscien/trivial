@@ -24,11 +24,19 @@ public class StatisticalTest
     {
         var col = new List<int> { 1, 2, 3, 9, 8, 7, 4, 6, 5 };
         var list = StatisticalMethod.Softmax(col);
-        Assert.AreEqual(3, StatisticalMethod.IndexOfMax(list));
-        Assert.AreEqual(0, StatisticalMethod.IndexOfMin(list));
+        var v = StatisticalMethod.Max(list, out var i);
+        Assert.AreEqual(list[3], v);
+        Assert.AreEqual(3, i);
+        v = StatisticalMethod.Min(list, out i);
+        Assert.AreEqual(list[0], v);
+        Assert.AreEqual(0, i);
         var arr = StatisticalMethod.Softmax(col.ToArray());
-        Assert.AreEqual(3, StatisticalMethod.IndexOfMax(arr));
-        Assert.AreEqual(0, StatisticalMethod.IndexOfMin(arr));
+        v = StatisticalMethod.Max(arr, out i);
+        Assert.AreEqual(arr[3], v);
+        Assert.AreEqual(3, i);
+        v = StatisticalMethod.Min(arr, out i);
+        Assert.AreEqual(arr[0], v);
+        Assert.AreEqual(0, i);
         list = StatisticalMethod.Hardmax(col, false);
         Assert.AreEqual(1, list[3]);
         Assert.AreEqual(0, list[8]);

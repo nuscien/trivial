@@ -7,6 +7,7 @@ using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Trivial.Collection;
 
 namespace Trivial.Maths;
 
@@ -27,7 +28,10 @@ public class ArithmeticTest
         Assert.IsFalse(Arithmetic.IsPrime(968455));
         Assert.IsFalse(Arithmetic.IsPrime(21474836477));
         Assert.IsFalse(await Arithmetic.IsPrimeAsync(21474836477));
-        Assert.IsTrue(await Arithmetic.IsPrimeAsync(2147483647));
+        Assert.IsTrue(await Arithmetic.IsPrimeAsync(2147483647L));
+#if NET8_0_OR_GREATER
+        Assert.IsTrue(await Arithmetic.IsPrimeAsync((Int128)2147483647));
+#endif
         Assert.AreEqual(17, await Arithmetic.PreviousPrimeAsync(19));
         Assert.IsTrue(await Arithmetic.PreviousPrimeAsync(968455) < 968455);
         Assert.IsTrue(await Arithmetic.NextPrimeAsync(968455) > 968455);
@@ -257,5 +261,45 @@ public class ArithmeticTest
         Assert.AreEqual(4, c.Count);
         Assert.AreEqual(-4, c[0]);
         Assert.AreEqual(4, c[3]);
+    }
+
+    /// <summary>
+    /// Tests boolean formular.
+    /// </summary>
+    [TestMethod]
+    public void TestFormula()
+    {
+        var f = new BooleanBinaryOperationFormula(false, BinaryBooleanOperator.And, true);
+        var s = JsonSerializer.Serialize(f);
+        f = JsonSerializer.Deserialize<BooleanBinaryOperationFormula>(s);
+        Assert.AreEqual(BinaryBooleanOperator.And, f.Operator);
+        Assert.IsTrue(f.IsValid);
+        Assert.IsFalse(f.Result);
+        f = new BooleanBinaryOperationFormula(f.LeftValue, BinaryBooleanOperator.Xor, f.RightValue);
+        s = JsonSerializer.Serialize(f);
+        f = JsonSerializer.Deserialize<BooleanBinaryOperationFormula>(s);
+        Assert.AreEqual(BinaryBooleanOperator.Xor, f.Operator);
+        Assert.IsTrue(f.IsValid);
+        Assert.IsTrue(f.Result);
+        s = BooleanOperations.ToString(new List<BooleanBinaryOperationFormula>()
+        {
+            f, f, f
+        });
+        Assert.IsTrue(s.Contains(Environment.NewLine));
+        Assert.IsTrue(s.Length > 20);
+
+        Assert.IsFalse(BooleanOperations.Calculate(true, BinaryBooleanOperator.Nand, false, BinaryBooleanOperator.Xnor, false));
+        var c = BooleanOperations.Calculate(BinaryBooleanOperator.Nor, [true, false, true, true], [false, false, false]).ToList();
+        Assert.AreEqual(4, c.Count);
+        Assert.IsFalse(c[0]);
+        Assert.IsTrue(c[1]);
+        Assert.IsFalse(c[2]);
+        Assert.IsTrue(c[3]);
+        c = BooleanOperations.Calculate(BinaryBooleanOperator.Nor, [true, false, true, true], [false, false, false], true).ToList();
+        Assert.AreEqual(4, c.Count);
+        Assert.IsFalse(c[0]);
+        Assert.IsTrue(c[1]);
+        Assert.IsFalse(c[2]);
+        Assert.IsFalse(c[3]);
     }
 }

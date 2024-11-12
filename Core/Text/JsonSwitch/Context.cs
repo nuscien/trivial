@@ -7,6 +7,7 @@ using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 using System.Xml.Linq;
+using Trivial.Maths;
 using Trivial.Reflection;
 
 namespace Trivial.Text;
@@ -67,6 +68,9 @@ public class JsonSwitchContext<TNode, TArgs> : IJsonSwitchContextInfo<TArgs>, IC
     /// </summary>
     public TArgs Args { get; set; }
 
+    /// <summary>
+    /// Gets the args.
+    /// </summary>
     object IJsonSwitchContextInfo.Args => Args;
 
     /// <summary>
@@ -74,6 +78,9 @@ public class JsonSwitchContext<TNode, TArgs> : IJsonSwitchContextInfo<TArgs>, IC
     /// </summary>
     public TNode Source { get; }
 
+    /// <summary>
+    /// Gets the JSON node source.
+    /// </summary>
     IJsonValueNode IJsonSwitchContextInfo.Source => Source;
 
     /// <summary>
@@ -216,7 +223,6 @@ public class JsonSwitchContext<TNode, TArgs> : IJsonSwitchContextInfo<TArgs>, IC
     /// <summary>
     /// Executes the handler of code block if matches the testing.
     /// </summary>
-    /// <typeparam name="T">The type of the JSON switch-case router.</typeparam>
     /// <param name="router">The instance of the JSON switch-case router.</param>
     /// <param name="block">The handler of code block.</param>
     /// <returns>The JSON switch context instance itself.</returns>
@@ -230,7 +236,6 @@ public class JsonSwitchContext<TNode, TArgs> : IJsonSwitchContextInfo<TArgs>, IC
     /// <summary>
     /// Executes the handler of code block if matches the testing.
     /// </summary>
-    /// <typeparam name="T">The type of the JSON switch-case router.</typeparam>
     /// <param name="router">The instance of the JSON switch-case router.</param>
     /// <param name="block">The handler of code block.</param>
     /// <returns>The JSON switch context instance itself.</returns>
@@ -240,7 +245,6 @@ public class JsonSwitchContext<TNode, TArgs> : IJsonSwitchContextInfo<TArgs>, IC
     /// <summary>
     /// Executes the handler of code block if matches the testing.
     /// </summary>
-    /// <typeparam name="T">The type of the JSON switch-case router.</typeparam>
     /// <param name="router">The instance of the JSON switch-case router.</param>
     /// <param name="block">The handler of code block.</param>
     /// <returns>The JSON switch context instance itself.</returns>
@@ -284,7 +288,6 @@ public class JsonSwitchContext<TNode, TArgs> : IJsonSwitchContextInfo<TArgs>, IC
     /// <summary>
     /// Executes the handler of code block if matches the testing.
     /// </summary>
-    /// <typeparam name="T">The type of the JSON switch-case router.</typeparam>
     /// <param name="router">The instance of the JSON switch-case router.</param>
     /// <param name="block">The handler of code block.</param>
     /// <returns>The JSON switch context instance itself.</returns>
@@ -298,7 +301,6 @@ public class JsonSwitchContext<TNode, TArgs> : IJsonSwitchContextInfo<TArgs>, IC
     /// <summary>
     /// Executes the handler of code block if matches the testing.
     /// </summary>
-    /// <typeparam name="T">The type of the JSON switch-case router.</typeparam>
     /// <param name="router">The instance of the JSON switch-case router.</param>
     /// <param name="block">The handler of code block.</param>
     /// <returns>The JSON switch context instance itself.</returns>
@@ -308,7 +310,6 @@ public class JsonSwitchContext<TNode, TArgs> : IJsonSwitchContextInfo<TArgs>, IC
     /// <summary>
     /// Executes the handler of code block if matches the testing.
     /// </summary>
-    /// <typeparam name="T">The type of the JSON switch-case router.</typeparam>
     /// <param name="router">The instance of the JSON switch-case router.</param>
     /// <param name="block">The handler of code block.</param>
     /// <returns>The JSON switch context instance itself.</returns>
@@ -859,6 +860,66 @@ public class JsonSwitchContext<TNode, TArgs> : IJsonSwitchContextInfo<TArgs>, IC
     /// <summary>
     /// Executes the handler of code block if matches the testing.
     /// </summary>
+    /// <param name="op">The operation.</param>
+    /// <param name="test">The value to compare if they are same.</param>
+    /// <param name="block">The handler of code block.</param>
+    /// <returns>The JSON switch context instance itself.</returns>
+    /// <exception cref="NotSupportedException">op is not valid.</exception>
+    public JsonSwitchContext<TNode, TArgs> Case(BasicCompareOperator op, int test, Action block)
+        => Case((int i) => Arithmetic.Compare(i, op, test), block);
+
+    /// <summary>
+    /// Executes the handler of code block if matches the testing.
+    /// </summary>
+    /// <param name="op">The operation.</param>
+    /// <param name="test">The value to compare if they are same.</param>
+    /// <param name="block">The handler of code block.</param>
+    /// <returns>The JSON switch context instance itself.</returns>
+    /// <exception cref="NotSupportedException">op is not valid.</exception>
+    public JsonSwitchContext<TNode, TArgs> Case(BasicCompareOperator op, int test, Action<int> block)
+        => Case((int i) => Arithmetic.Compare(i, op, test), block);
+
+    /// <summary>
+    /// Executes the handler of code block if matches the testing.
+    /// </summary>
+    /// <param name="op">The operation.</param>
+    /// <param name="test">The value to compare if they are same.</param>
+    /// <param name="block">The handler of code block.</param>
+    /// <returns>The JSON switch context instance itself.</returns>
+    /// <exception cref="NotSupportedException">op is not valid.</exception>
+    public JsonSwitchContext<TNode, TArgs> Case(BasicCompareOperator op, int test, Action<int, JsonSwitchContext<TNode, TArgs>> block)
+        => Case((int i) => Arithmetic.Compare(i, op, test), block);
+
+    /// <summary>
+    /// Executes the handler of code block if matches the testing.
+    /// </summary>
+    /// <param name="test">The value to compare if they are same.</param>
+    /// <param name="block">The handler of code block.</param>
+    /// <returns>The JSON switch context instance itself.</returns>
+    public JsonSwitchContext<TNode, TArgs> Case(StructValueSimpleInterval<int> test, Action block)
+        => test is null ? this : Case(test.Contains, block);
+
+    /// <summary>
+    /// Executes the handler of code block if matches the testing.
+    /// </summary>
+    /// <param name="test">The value to compare if they are same.</param>
+    /// <param name="block">The handler of code block.</param>
+    /// <returns>The JSON switch context instance itself.</returns>
+    public JsonSwitchContext<TNode, TArgs> Case(StructValueSimpleInterval<int> test, Action<int> block)
+        => test is null ? this : Case(test.Contains, block);
+
+    /// <summary>
+    /// Executes the handler of code block if matches the testing.
+    /// </summary>
+    /// <param name="test">The value to compare if they are same.</param>
+    /// <param name="block">The handler of code block.</param>
+    /// <returns>The JSON switch context instance itself.</returns>
+    public JsonSwitchContext<TNode, TArgs> Case(StructValueSimpleInterval<int> test, Action<int, JsonSwitchContext<TNode, TArgs>> block)
+        => test is null ? this : Case(test.Contains, block);
+
+    /// <summary>
+    /// Executes the handler of code block if matches the testing.
+    /// </summary>
     /// <param name="min">The minimum value to compare; or null, if no limit for minimum.</param>
     /// <param name="max">The maximum value to compare; or null, if no limit for maximum.</param>
     /// <param name="block">The handler of code block.</param>
@@ -1039,6 +1100,66 @@ public class JsonSwitchContext<TNode, TArgs> : IJsonSwitchContextInfo<TArgs>, IC
     /// <summary>
     /// Executes the handler of code block if matches the testing.
     /// </summary>
+    /// <param name="op">The operation.</param>
+    /// <param name="test">The value to compare if they are same.</param>
+    /// <param name="block">The handler of code block.</param>
+    /// <returns>The JSON switch context instance itself.</returns>
+    /// <exception cref="NotSupportedException">op is not valid.</exception>
+    public JsonSwitchContext<TNode, TArgs> Case(BasicCompareOperator op, long test, Action block)
+        => Case((long i) => Arithmetic.Compare(i, op, test), block);
+
+    /// <summary>
+    /// Executes the handler of code block if matches the testing.
+    /// </summary>
+    /// <param name="op">The operation.</param>
+    /// <param name="test">The value to compare if they are same.</param>
+    /// <param name="block">The handler of code block.</param>
+    /// <returns>The JSON switch context instance itself.</returns>
+    /// <exception cref="NotSupportedException">op is not valid.</exception>
+    public JsonSwitchContext<TNode, TArgs> Case(BasicCompareOperator op, long test, Action<long> block)
+        => Case((long i) => Arithmetic.Compare(i, op, test), block);
+
+    /// <summary>
+    /// Executes the handler of code block if matches the testing.
+    /// </summary>
+    /// <param name="op">The operation.</param>
+    /// <param name="test">The value to compare if they are same.</param>
+    /// <param name="block">The handler of code block.</param>
+    /// <returns>The JSON switch context instance itself.</returns>
+    /// <exception cref="NotSupportedException">op is not valid.</exception>
+    public JsonSwitchContext<TNode, TArgs> Case(BasicCompareOperator op, long test, Action<long, JsonSwitchContext<TNode, TArgs>> block)
+        => Case((long i) => Arithmetic.Compare(i, op, test), block);
+
+    /// <summary>
+    /// Executes the handler of code block if matches the testing.
+    /// </summary>
+    /// <param name="test">The value to compare if they are same.</param>
+    /// <param name="block">The handler of code block.</param>
+    /// <returns>The JSON switch context instance itself.</returns>
+    public JsonSwitchContext<TNode, TArgs> Case(StructValueSimpleInterval<long> test, Action block)
+        => test is null ? this : Case((long i) => test.Contains(i), block);
+
+    /// <summary>
+    /// Executes the handler of code block if matches the testing.
+    /// </summary>
+    /// <param name="test">The value to compare if they are same.</param>
+    /// <param name="block">The handler of code block.</param>
+    /// <returns>The JSON switch context instance itself.</returns>
+    public JsonSwitchContext<TNode, TArgs> Case(StructValueSimpleInterval<long> test, Action<long> block)
+        => test is null ? this : Case(test.Contains, block);
+
+    /// <summary>
+    /// Executes the handler of code block if matches the testing.
+    /// </summary>
+    /// <param name="test">The value to compare if they are same.</param>
+    /// <param name="block">The handler of code block.</param>
+    /// <returns>The JSON switch context instance itself.</returns>
+    public JsonSwitchContext<TNode, TArgs> Case(StructValueSimpleInterval<long> test, Action<long, JsonSwitchContext<TNode, TArgs>> block)
+        => test is null ? this : Case(test.Contains, block);
+
+    /// <summary>
+    /// Executes the handler of code block if matches the testing.
+    /// </summary>
     /// <param name="min">The minimum value to compare; or null, if no limit for minimum.</param>
     /// <param name="max">The maximum value to compare; or null, if no limit for maximum.</param>
     /// <param name="block">The handler of code block.</param>
@@ -1183,6 +1304,66 @@ public class JsonSwitchContext<TNode, TArgs> : IJsonSwitchContextInfo<TArgs>, IC
     /// <summary>
     /// Executes the handler of code block if matches the testing.
     /// </summary>
+    /// <param name="op">The operation.</param>
+    /// <param name="test">The value to compare if they are same.</param>
+    /// <param name="block">The handler of code block.</param>
+    /// <returns>The JSON switch context instance itself.</returns>
+    /// <exception cref="NotSupportedException">op is not valid.</exception>
+    public JsonSwitchContext<TNode, TArgs> Case(BasicCompareOperator op, float test, Action block)
+        => Case((float i) => Arithmetic.Compare(i, op, test), block);
+
+    /// <summary>
+    /// Executes the handler of code block if matches the testing.
+    /// </summary>
+    /// <param name="op">The operation.</param>
+    /// <param name="test">The value to compare if they are same.</param>
+    /// <param name="block">The handler of code block.</param>
+    /// <returns>The JSON switch context instance itself.</returns>
+    /// <exception cref="NotSupportedException">op is not valid.</exception>
+    public JsonSwitchContext<TNode, TArgs> Case(BasicCompareOperator op, float test, Action<float> block)
+        => Case((float i) => Arithmetic.Compare(i, op, test), block);
+
+    /// <summary>
+    /// Executes the handler of code block if matches the testing.
+    /// </summary>
+    /// <param name="op">The operation.</param>
+    /// <param name="test">The value to compare if they are same.</param>
+    /// <param name="block">The handler of code block.</param>
+    /// <returns>The JSON switch context instance itself.</returns>
+    /// <exception cref="NotSupportedException">op is not valid.</exception>
+    public JsonSwitchContext<TNode, TArgs> Case(BasicCompareOperator op, float test, Action<float, JsonSwitchContext<TNode, TArgs>> block)
+        => Case((float i) => Arithmetic.Compare(i, op, test), block);
+
+    /// <summary>
+    /// Executes the handler of code block if matches the testing.
+    /// </summary>
+    /// <param name="test">The value to compare if they are same.</param>
+    /// <param name="block">The handler of code block.</param>
+    /// <returns>The JSON switch context instance itself.</returns>
+    public JsonSwitchContext<TNode, TArgs> Case(StructValueSimpleInterval<float> test, Action block)
+        => test is null ? this : Case((float i) => test.Contains(i), block);
+
+    /// <summary>
+    /// Executes the handler of code block if matches the testing.
+    /// </summary>
+    /// <param name="test">The value to compare if they are same.</param>
+    /// <param name="block">The handler of code block.</param>
+    /// <returns>The JSON switch context instance itself.</returns>
+    public JsonSwitchContext<TNode, TArgs> Case(StructValueSimpleInterval<float> test, Action<float> block)
+        => test is null ? this : Case(test.Contains, block);
+
+    /// <summary>
+    /// Executes the handler of code block if matches the testing.
+    /// </summary>
+    /// <param name="test">The value to compare if they are same.</param>
+    /// <param name="block">The handler of code block.</param>
+    /// <returns>The JSON switch context instance itself.</returns>
+    public JsonSwitchContext<TNode, TArgs> Case(StructValueSimpleInterval<float> test, Action<float, JsonSwitchContext<TNode, TArgs>> block)
+        => test is null ? this : Case(test.Contains, block);
+
+    /// <summary>
+    /// Executes the handler of code block if matches the testing.
+    /// </summary>
     /// <param name="min">The minimum value to compare; or null, if no limit for minimum.</param>
     /// <param name="max">The maximum value to compare; or null, if no limit for maximum.</param>
     /// <param name="block">The handler of code block.</param>
@@ -1291,6 +1472,66 @@ public class JsonSwitchContext<TNode, TArgs> : IJsonSwitchContextInfo<TArgs>, IC
     /// <summary>
     /// Executes the handler of code block if matches the testing.
     /// </summary>
+    /// <param name="op">The operation.</param>
+    /// <param name="test">The value to compare if they are same.</param>
+    /// <param name="block">The handler of code block.</param>
+    /// <returns>The JSON switch context instance itself.</returns>
+    /// <exception cref="NotSupportedException">op is not valid.</exception>
+    public JsonSwitchContext<TNode, TArgs> Case(BasicCompareOperator op, double test, Action block)
+        => Case((double i) => Arithmetic.Compare(i, op, test), block);
+
+    /// <summary>
+    /// Executes the handler of code block if matches the testing.
+    /// </summary>
+    /// <param name="op">The operation.</param>
+    /// <param name="test">The value to compare if they are same.</param>
+    /// <param name="block">The handler of code block.</param>
+    /// <returns>The JSON switch context instance itself.</returns>
+    /// <exception cref="NotSupportedException">op is not valid.</exception>
+    public JsonSwitchContext<TNode, TArgs> Case(BasicCompareOperator op, double test, Action<double> block)
+        => Case((double i) => Arithmetic.Compare(i, op, test), block);
+
+    /// <summary>
+    /// Executes the handler of code block if matches the testing.
+    /// </summary>
+    /// <param name="op">The operation.</param>
+    /// <param name="test">The value to compare if they are same.</param>
+    /// <param name="block">The handler of code block.</param>
+    /// <returns>The JSON switch context instance itself.</returns>
+    /// <exception cref="NotSupportedException">op is not valid.</exception>
+    public JsonSwitchContext<TNode, TArgs> Case(BasicCompareOperator op, double test, Action<double, JsonSwitchContext<TNode, TArgs>> block)
+        => Case((double i) => Arithmetic.Compare(i, op, test), block);
+
+    /// <summary>
+    /// Executes the handler of code block if matches the testing.
+    /// </summary>
+    /// <param name="test">The value to compare if they are same.</param>
+    /// <param name="block">The handler of code block.</param>
+    /// <returns>The JSON switch context instance itself.</returns>
+    public JsonSwitchContext<TNode, TArgs> Case(StructValueSimpleInterval<double> test, Action block)
+        => test is null ? this : Case((double i) => test.Contains(i), block);
+
+    /// <summary>
+    /// Executes the handler of code block if matches the testing.
+    /// </summary>
+    /// <param name="test">The value to compare if they are same.</param>
+    /// <param name="block">The handler of code block.</param>
+    /// <returns>The JSON switch context instance itself.</returns>
+    public JsonSwitchContext<TNode, TArgs> Case(StructValueSimpleInterval<double> test, Action<double> block)
+        => test is null ? this : Case(test.Contains, block);
+
+    /// <summary>
+    /// Executes the handler of code block if matches the testing.
+    /// </summary>
+    /// <param name="test">The value to compare if they are same.</param>
+    /// <param name="block">The handler of code block.</param>
+    /// <returns>The JSON switch context instance itself.</returns>
+    public JsonSwitchContext<TNode, TArgs> Case(StructValueSimpleInterval<double> test, Action<double, JsonSwitchContext<TNode, TArgs>> block)
+        => test is null ? this : Case(test.Contains, block);
+
+    /// <summary>
+    /// Executes the handler of code block if matches the testing.
+    /// </summary>
     /// <param name="min">The minimum value to compare; or null, if no limit for minimum.</param>
     /// <param name="max">The maximum value to compare; or null, if no limit for maximum.</param>
     /// <param name="block">The handler of code block.</param>
@@ -1395,6 +1636,66 @@ public class JsonSwitchContext<TNode, TArgs> : IJsonSwitchContextInfo<TArgs>, IC
         if (b) block?.Invoke(i, this);
         return this;
     }
+
+    /// <summary>
+    /// Executes the handler of code block if matches the testing.
+    /// </summary>
+    /// <param name="op">The operation.</param>
+    /// <param name="test">The value to compare if they are same.</param>
+    /// <param name="block">The handler of code block.</param>
+    /// <returns>The JSON switch context instance itself.</returns>
+    /// <exception cref="NotSupportedException">op is not valid.</exception>
+    public JsonSwitchContext<TNode, TArgs> Case(BasicCompareOperator op, decimal test, Action block)
+        => Case((decimal i) => Arithmetic.Compare(i, op, test), block);
+
+    /// <summary>
+    /// Executes the handler of code block if matches the testing.
+    /// </summary>
+    /// <param name="op">The operation.</param>
+    /// <param name="test">The value to compare if they are same.</param>
+    /// <param name="block">The handler of code block.</param>
+    /// <returns>The JSON switch context instance itself.</returns>
+    /// <exception cref="NotSupportedException">op is not valid.</exception>
+    public JsonSwitchContext<TNode, TArgs> Case(BasicCompareOperator op, decimal test, Action<decimal> block)
+        => Case((decimal i) => Arithmetic.Compare(i, op, test), block);
+
+    /// <summary>
+    /// Executes the handler of code block if matches the testing.
+    /// </summary>
+    /// <param name="op">The operation.</param>
+    /// <param name="test">The value to compare if they are same.</param>
+    /// <param name="block">The handler of code block.</param>
+    /// <returns>The JSON switch context instance itself.</returns>
+    /// <exception cref="NotSupportedException">op is not valid.</exception>
+    public JsonSwitchContext<TNode, TArgs> Case(BasicCompareOperator op, decimal test, Action<decimal, JsonSwitchContext<TNode, TArgs>> block)
+        => Case((decimal i) => Arithmetic.Compare(i, op, test), block);
+
+    /// <summary>
+    /// Executes the handler of code block if matches the testing.
+    /// </summary>
+    /// <param name="test">The value to compare if they are same.</param>
+    /// <param name="block">The handler of code block.</param>
+    /// <returns>The JSON switch context instance itself.</returns>
+    public JsonSwitchContext<TNode, TArgs> Case(StructValueSimpleInterval<decimal> test, Action block)
+        => test is null ? this : Case((decimal i) => test.Contains(i), block);
+
+    /// <summary>
+    /// Executes the handler of code block if matches the testing.
+    /// </summary>
+    /// <param name="test">The value to compare if they are same.</param>
+    /// <param name="block">The handler of code block.</param>
+    /// <returns>The JSON switch context instance itself.</returns>
+    public JsonSwitchContext<TNode, TArgs> Case(StructValueSimpleInterval<decimal> test, Action<decimal> block)
+        => test is null ? this : Case(test.Contains, block);
+
+    /// <summary>
+    /// Executes the handler of code block if matches the testing.
+    /// </summary>
+    /// <param name="test">The value to compare if they are same.</param>
+    /// <param name="block">The handler of code block.</param>
+    /// <returns>The JSON switch context instance itself.</returns>
+    public JsonSwitchContext<TNode, TArgs> Case(StructValueSimpleInterval<decimal> test, Action<decimal, JsonSwitchContext<TNode, TArgs>> block)
+        => test is null ? this : Case(test.Contains, block);
 
     /// <summary>
     /// Executes the handler of code block if matches the testing.
@@ -1543,6 +1844,36 @@ public class JsonSwitchContext<TNode, TArgs> : IJsonSwitchContextInfo<TArgs>, IC
     /// <summary>
     /// Executes the handler of code block if matches the testing.
     /// </summary>
+    /// <param name="op">The operation.</param>
+    /// <param name="test">The value to compare if they are same.</param>
+    /// <param name="block">The handler of code block.</param>
+    /// <returns>The JSON switch context instance itself.</returns>
+    public JsonSwitchContext<TNode, TArgs> Case(BinaryBooleanOperator op, bool test, Action block)
+        => Case((bool i) => BooleanOperations.Calculate(i, op, test), block);
+
+    /// <summary>
+    /// Executes the handler of code block if matches the testing.
+    /// </summary>
+    /// <param name="op">The operation.</param>
+    /// <param name="test">The value to compare if they are same.</param>
+    /// <param name="block">The handler of code block.</param>
+    /// <returns>The JSON switch context instance itself.</returns>
+    public JsonSwitchContext<TNode, TArgs> Case(BinaryBooleanOperator op, bool test, Action<bool> block)
+        => Case((bool i) => BooleanOperations.Calculate(i, op, test), block);
+
+    /// <summary>
+    /// Executes the handler of code block if matches the testing.
+    /// </summary>
+    /// <param name="op">The operation.</param>
+    /// <param name="test">The value to compare if they are same.</param>
+    /// <param name="block">The handler of code block.</param>
+    /// <returns>The JSON switch context instance itself.</returns>
+    public JsonSwitchContext<TNode, TArgs> Case(BinaryBooleanOperator op, bool test, Action<bool, JsonSwitchContext<TNode, TArgs>> block)
+        => Case((bool i) => BooleanOperations.Calculate(i, op, test), block);
+
+    /// <summary>
+    /// Executes the handler of code block if matches the testing.
+    /// </summary>
     /// <param name="predicate">A function to test the JSON node for a condition.</param>
     /// <param name="block">The handler of code block.</param>
     /// <returns>The JSON switch context instance itself.</returns>
@@ -1606,6 +1937,66 @@ public class JsonSwitchContext<TNode, TArgs> : IJsonSwitchContextInfo<TArgs>, IC
         if (b) block?.Invoke(dt, this);
         return this;
     }
+
+    /// <summary>
+    /// Executes the handler of code block if matches the testing.
+    /// </summary>
+    /// <param name="op">The operation.</param>
+    /// <param name="test">The value to compare if they are same.</param>
+    /// <param name="block">The handler of code block.</param>
+    /// <returns>The JSON switch context instance itself.</returns>
+    /// <exception cref="NotSupportedException">op is not valid.</exception>
+    public JsonSwitchContext<TNode, TArgs> Case(BasicCompareOperator op, DateTime test, Action block)
+        => Case((DateTime i) => Arithmetic.Compare(i, op, test), block);
+
+    /// <summary>
+    /// Executes the handler of code block if matches the testing.
+    /// </summary>
+    /// <param name="op">The operation.</param>
+    /// <param name="test">The value to compare if they are same.</param>
+    /// <param name="block">The handler of code block.</param>
+    /// <returns>The JSON switch context instance itself.</returns>
+    /// <exception cref="NotSupportedException">op is not valid.</exception>
+    public JsonSwitchContext<TNode, TArgs> Case(BasicCompareOperator op, DateTime test, Action<DateTime> block)
+        => Case((DateTime i) => Arithmetic.Compare(i, op, test), block);
+
+    /// <summary>
+    /// Executes the handler of code block if matches the testing.
+    /// </summary>
+    /// <param name="op">The operation.</param>
+    /// <param name="test">The value to compare if they are same.</param>
+    /// <param name="block">The handler of code block.</param>
+    /// <returns>The JSON switch context instance itself.</returns>
+    /// <exception cref="NotSupportedException">op is not valid.</exception>
+    public JsonSwitchContext<TNode, TArgs> Case(BasicCompareOperator op, DateTime test, Action<DateTime, JsonSwitchContext<TNode, TArgs>> block)
+        => Case((DateTime i) => Arithmetic.Compare(i, op, test), block);
+
+    /// <summary>
+    /// Executes the handler of code block if matches the testing.
+    /// </summary>
+    /// <param name="test">The value to compare if they are same.</param>
+    /// <param name="block">The handler of code block.</param>
+    /// <returns>The JSON switch context instance itself.</returns>
+    public JsonSwitchContext<TNode, TArgs> Case(StructValueSimpleInterval<DateTime> test, Action block)
+        => test is null ? this : Case(test.Contains, block);
+
+    /// <summary>
+    /// Executes the handler of code block if matches the testing.
+    /// </summary>
+    /// <param name="test">The value to compare if they are same.</param>
+    /// <param name="block">The handler of code block.</param>
+    /// <returns>The JSON switch context instance itself.</returns>
+    public JsonSwitchContext<TNode, TArgs> Case(StructValueSimpleInterval<DateTime> test, Action<DateTime> block)
+        => test is null ? this : Case(test.Contains, block);
+
+    /// <summary>
+    /// Executes the handler of code block if matches the testing.
+    /// </summary>
+    /// <param name="test">The value to compare if they are same.</param>
+    /// <param name="block">The handler of code block.</param>
+    /// <returns>The JSON switch context instance itself.</returns>
+    public JsonSwitchContext<TNode, TArgs> Case(StructValueSimpleInterval<DateTime> test, Action<DateTime, JsonSwitchContext<TNode, TArgs>> block)
+        => test is null ? this : Case(test.Contains, block);
 
     /// <summary>
     /// Executes the handler of code block if matches the testing.
@@ -1983,7 +2374,7 @@ public class JsonSwitchContext<TNode, TArgs> : IJsonSwitchContextInfo<TArgs>, IC
     /// <param name="block">The handler of code block.</param>
     /// <returns>The JSON switch context instance itself.</returns>
     public JsonSwitchContext<TNode, TArgs> PropertyCase<T>(string key, bool strict, Action block)
-        => PropertyCase<T>(key, strict, null, block);
+        => PropertyCase<T>(key, strict, null as Func<string, T, bool>, block);
 
     /// <summary>
     /// Executes the handler of code block if matches the testing.
@@ -1993,7 +2384,7 @@ public class JsonSwitchContext<TNode, TArgs> : IJsonSwitchContextInfo<TArgs>, IC
     /// <param name="block">The handler of code block.</param>
     /// <returns>The JSON switch context instance itself.</returns>
     public JsonSwitchContext<TNode, TArgs> PropertyCase<T>(string key, bool strict, Action<string, T> block)
-        => PropertyCase(key, strict, null, block);
+        => PropertyCase(key, strict, null as Func<string, T, bool>, block);
 
     /// <summary>
     /// Executes the handler of code block if matches the testing.
@@ -2003,7 +2394,7 @@ public class JsonSwitchContext<TNode, TArgs> : IJsonSwitchContextInfo<TArgs>, IC
     /// <param name="block">The handler of code block.</param>
     /// <returns>The JSON switch context instance itself.</returns>
     public JsonSwitchContext<TNode, TArgs> PropertyCase<T>(string key, bool strict, Action<string, T, JsonSwitchContext<TNode, TArgs>> block)
-        => PropertyCase(key, strict, null, block);
+        => PropertyCase(key, strict, null as Func<string, T, bool>, block);
 
     /// <summary>
     /// Executes the handler of code block if matches the testing.
@@ -2070,6 +2461,81 @@ public class JsonSwitchContext<TNode, TArgs> : IJsonSwitchContextInfo<TArgs>, IC
     /// <returns>The JSON switch context instance itself.</returns>
     public JsonSwitchContext<TNode, TArgs> PropertyCase<T>(string key, bool strict, IEnumerable<T> test, Action<string, T, JsonSwitchContext<TNode, TArgs>> block) where T : IEquatable<T>
         => PropertyCase(key, strict, (key, v) => test is not null && test.Contains(v), block);
+
+    /// <summary>
+    /// Executes the handler of code block if matches the testing.
+    /// </summary>
+    /// <param name="key">The property key.</param>
+    /// <param name="strict">true if enable strict mode (check value kind); otherwise, false.</param>
+    /// <param name="test">The value to compare if contains.</param>
+    /// <param name="block">The handler of code block.</param>
+    /// <returns>The JSON switch context instance itself.</returns>
+    public JsonSwitchContext<TNode, TArgs> PropertyCase<T>(string key, bool strict, StructValueSimpleInterval<T> test, Action block) where T : struct, IEquatable<T>, IComparable<T>
+        => test is null ? this : PropertyCase<T>(key, strict, test.Contains, block);
+
+    /// <summary>
+    /// Executes the handler of code block if matches the testing.
+    /// </summary>
+    /// <param name="key">The property key.</param>
+    /// <param name="strict">true if enable strict mode (check value kind); otherwise, false.</param>
+    /// <param name="test">The value to compare if contains.</param>
+    /// <param name="block">The handler of code block.</param>
+    /// <returns>The JSON switch context instance itself.</returns>
+    public JsonSwitchContext<TNode, TArgs> PropertyCase<T>(string key, bool strict, StructValueSimpleInterval<T> test, Action<string, T> block) where T : struct, IEquatable<T>, IComparable<T>
+        => test is null ? this : PropertyCase(key, strict, test.Contains, block);
+
+    /// <summary>
+    /// Executes the handler of code block if matches the testing.
+    /// </summary>
+    /// <param name="key">The property key.</param>
+    /// <param name="strict">true if enable strict mode (check value kind); otherwise, false.</param>
+    /// <param name="test">The value to compare if contains.</param>
+    /// <param name="block">The handler of code block.</param>
+    /// <returns>The JSON switch context instance itself.</returns>
+    public JsonSwitchContext<TNode, TArgs> PropertyCase<T>(string key, bool strict, StructValueSimpleInterval<T> test, Action<string, T, JsonSwitchContext<TNode, TArgs>> block) where T : struct, IEquatable<T>, IComparable<T>
+        => test is null ? this : PropertyCase(key, strict, test.Contains, block);
+
+    /// <summary>
+    /// Executes the handler of code block if matches the testing.
+    /// </summary>
+    /// <param name="key">The property key.</param>
+    /// <param name="strict">true if enable strict mode (check value kind); otherwise, false.</param>
+    /// <param name="predicate">A function to test the JSON node for a condition.</param>
+    /// <param name="block">The handler of code block.</param>
+    /// <returns>The JSON switch context instance itself.</returns>
+    public JsonSwitchContext<TNode, TArgs> PropertyCase<T>(string key, bool strict, Func<T, bool> predicate, Action block)
+    {
+        if (TryGetValue(key, strict, predicate, out _)) block?.Invoke();
+        return this;
+    }
+
+    /// <summary>
+    /// Executes the handler of code block if matches the testing.
+    /// </summary>
+    /// <param name="key">The property key.</param>
+    /// <param name="strict">true if enable strict mode (check value kind); otherwise, false.</param>
+    /// <param name="predicate">A function to test the JSON node for a condition.</param>
+    /// <param name="block">The handler of code block.</param>
+    /// <returns>The JSON switch context instance itself.</returns>
+    public JsonSwitchContext<TNode, TArgs> PropertyCase<T>(string key, bool strict, Func<T, bool> predicate, Action<string, T> block)
+    {
+        if (TryGetValue(key, strict, predicate, out var result)) block?.Invoke(key, result);
+        return this;
+    }
+
+    /// <summary>
+    /// Executes the handler of code block if matches the testing.
+    /// </summary>
+    /// <param name="key">The property key.</param>
+    /// <param name="strict">true if enable strict mode (check value kind); otherwise, false.</param>
+    /// <param name="predicate">A function to test the JSON node for a condition.</param>
+    /// <param name="block">The handler of code block.</param>
+    /// <returns>The JSON switch context instance itself.</returns>
+    public JsonSwitchContext<TNode, TArgs> PropertyCase<T>(string key, bool strict, Func<T, bool> predicate, Action<string, T, JsonSwitchContext<TNode, TArgs>> block)
+    {
+        if (TryGetValue(key, strict, predicate, out var result)) block?.Invoke(key, result, this);
+        return this;
+    }
 
     /// <summary>
     /// Executes the handler of code block if matches the testing.
@@ -2379,6 +2845,21 @@ public class JsonSwitchContext<TNode, TArgs> : IJsonSwitchContextInfo<TArgs>, IC
         }
 
         var b = v.TryConvert(strict, out result, out _) && (predicate is null || predicate(key, result));
+        AfterTest(b);
+        if (!b) result = default;
+        return b;
+    }
+
+    private bool TryGetValue<T>(string key, bool strict, Func<T, bool> predicate, out T result)
+    {
+        var v = TryGetValue(key);
+        if (v is null)
+        {
+            result = default;
+            return false;
+        }
+
+        var b = v.TryConvert(strict, out result, out _) && (predicate is null || predicate(result));
         AfterTest(b);
         if (!b) result = default;
         return b;

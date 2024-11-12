@@ -684,6 +684,43 @@ public static partial class ListExtensions
     }
 
     /// <summary>
+    /// Returns the first element of a sequence, or a null if the sequence contains no elements.
+    /// </summary>
+    /// <typeparam name="T">The type of the elements of source.</typeparam>
+    /// <param name="col">The collection to return the first element of.</param>
+    /// <returns>The first element in source; or null, if empty.</returns>
+    public static T? FirstOrNull<T>(IEnumerable<T> col) where T : struct
+    {
+        if (col is null) return null;
+        foreach (var item in col)
+        {
+            return item;
+        }
+
+        return null;
+    }
+
+    /// <summary>
+    /// Returns the last element of a sequence, or a null if the sequence contains no elements.
+    /// </summary>
+    /// <typeparam name="T">The type of the elements of source.</typeparam>
+    /// <param name="col">The collection to return the last element of.</param>
+    /// <returns>The last element in source; or null, if empty.</returns>
+    public static T? LastOrNull<T>(IEnumerable<T> col) where T : struct
+    {
+        if (col is null) return null;
+        if (col is ICollection<T> col2) return col2.Count > 0 ? col2.Last() : null;
+        if (col is T[] col3) return col3.Length > 0 ? col3.Last() : null;
+        col = col.Reverse();
+        foreach (var item in col)
+        {
+            return item;
+        }
+
+        return null;
+    }
+
+    /// <summary>
     /// Searches for the specified object and returns the zero-based index array of the all occurrence within the entire key value pairs.
     /// </summary>
     /// <param name="list">The key value pairs.</param>
@@ -1313,6 +1350,42 @@ public static partial class ListExtensions
             if (item == null) continue;
             if (item.EventName == eventName) callback(item, i);
             yield return item;
+        }
+    }
+
+    internal static IEnumerable<TResult> Select<TItem, TResult>(IEnumerable<TItem> leftValue, IEnumerable<TItem> rightValue, TItem padding, Func<TItem, bool, TItem, bool, int, TResult> callback)
+    {
+        var a = leftValue.GetEnumerator();
+        var b = rightValue.GetEnumerator();
+        var hasA = true;
+        var hasB = true;
+        var i = -1;
+        while (true)
+        {
+            i++;
+            var vA = padding;
+            if (hasA)
+            {
+                hasA = a.MoveNext();
+                if (hasA) vA = a.Current;
+            }
+            else
+            {
+                if (!hasB) yield break;
+            }
+
+            var vB = padding;
+            if (hasB)
+            {
+                hasB = b.MoveNext();
+                if (hasB) vB = b.Current;
+            }
+            else
+            {
+                if (!hasA) yield break;
+            }
+
+            yield return callback(vA, hasA, vB, hasB, i);
         }
     }
 }

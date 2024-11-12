@@ -918,218 +918,128 @@ public static partial class StatisticalMethod
     }
 
     /// <summary>
-    /// Gets the first index of maximum number.
+    /// Gets the minimum number of the specific collection.
     /// </summary>
-    /// <param name="numbers">The input numbers.</param>
-    /// <param name="value">The maximum number output.</param>
-    /// <returns>The zero-based index.</returns>
-    public static int IndexOfMax(IEnumerable<int> numbers, out int value)
+    /// <typeparam name="T">The type of element.</typeparam>
+    /// <param name="col">The input numbers.</param>
+    /// <returns>The minimum number found.</returns>
+    /// <exception cref="ArgumentNullException">col is null.</exception>
+    /// <exception cref="InvalidOperationException">col has no element.</exception>
+    public static T Min<T>(IEnumerable<T> col) where T : IComparable
     {
-        var col = numbers?.ToList();
-        if (col == null || col.Count < 1)
-        {
-            value = default;
-            return -1;
-        }
-
-        value = col[0];
-        var i = 0;
-        for (var j = 1; j < col.Count; j++)
-        {
-            var number = col[j];
-            if (value >= number) continue;
-            value = number;
-            i = j;
-        }
-
-        return i;
+        if (col is null) throw new ArgumentNullException(nameof(col), "col was null.");
+        var result = Min(col, default, out var i);
+        if (i < 0) throw new InvalidOperationException("col should contain one or more elements but not empty.", new ArgumentException("col was empty.", nameof(col)));
+        return result;
     }
 
     /// <summary>
-    /// Gets the first index of maximum number.
+    /// Gets the minimum number of the specific collection.
     /// </summary>
-    /// <param name="numbers">The input numbers.</param>
-    /// <returns>The zero-based index.</returns>
-    public static int IndexOfMax(IEnumerable<int> numbers)
-        => IndexOfMax(numbers, out _);
+    /// <typeparam name="T">The type of element.</typeparam>
+    /// <param name="col">The input numbers.</param>
+    /// <param name="defaultValue">The default value.</param>
+    /// <returns>The maximum number found; or returns defaultValue, if col is null or empty..</returns>
+    public static T Min<T>(IEnumerable<T> col, T defaultValue) where T : struct, IComparable
+        => Min(col, defaultValue, out _);
 
     /// <summary>
-    /// Gets the first index of maximum number.
+    /// Gets the minimum number of the specific collection.
     /// </summary>
-    /// <param name="numbers">The input numbers.</param>
-    /// <param name="value">The maximum number output.</param>
-    /// <returns>The zero-based index.</returns>
-    public static int IndexOfMax(IEnumerable<double> numbers, out double value)
+    /// <typeparam name="T">The type of element.</typeparam>
+    /// <param name="col">The input numbers.</param>
+    /// <param name="index">The first index of the minimum number.</param>
+    /// <returns>The minimum number found.</returns>
+    public static T Min<T>(IEnumerable<T> col, out int index) where T : IComparable
+        => Min(col, default, out index);
+
+    /// <summary>
+    /// Gets the minimum number of the specific collection.
+    /// </summary>
+    /// <typeparam name="T">The type of element.</typeparam>
+    /// <param name="col">The input numbers.</param>
+    /// <param name="defaultValue">The default value.</param>
+    /// <param name="index">The first index of the minimum number.</param>
+    /// <returns>The minimum number found.</returns>
+    public static T Min<T>(IEnumerable<T> col, T defaultValue, out int index) where T : IComparable
     {
-        var col = numbers?.ToList();
-        if (col == null || col.Count < 1)
+        index = -1;
+        if (col is null) return defaultValue;
+        T min = default;
+        var has = false;
+        var i = -1;
+        foreach (var item in col)
         {
-            value = default;
-            return -1;
+            i++;
+            if (has && item.CompareTo(min) >= 0) continue;
+            has = true;
+            min = item;
+            index = i;
         }
 
-        value = col[0];
-        var i = 0;
-        for (var j = 1; j < col.Count; j++)
-        {
-            var number = col[j];
-            if (value >= number) continue;
-            value = number;
-            i = j;
-        }
-
-        return i;
+        return min ?? defaultValue;
     }
 
     /// <summary>
-    /// Gets the first index of maximum number.
+    /// Gets the maximum number of the specific collection.
     /// </summary>
-    /// <param name="numbers">The input numbers.</param>
-    /// <returns>The zero-based index.</returns>
-    public static int IndexOfMax(IEnumerable<double> numbers)
-        => IndexOfMax(numbers, out _);
-
-    /// <summary>
-    /// Gets the first index of maximum number.
-    /// </summary>
-    /// <param name="numbers">The input numbers.</param>
-    /// <param name="value">The maximum number output.</param>
-    /// <returns>The zero-based index.</returns>
-    public static int IndexOfMax(IEnumerable<float> numbers, out float value)
+    /// <typeparam name="T">The type of element.</typeparam>
+    /// <param name="col">The input numbers.</param>
+    /// <returns>The maximum number found.</returns>
+    /// <exception cref="ArgumentNullException">col is null.</exception>
+    /// <exception cref="InvalidOperationException">col has no element.</exception>
+    public static T Max<T>(IEnumerable<T> col) where T : IComparable
     {
-        var col = numbers?.ToList();
-        if (col == null || col.Count < 1)
-        {
-            value = default;
-            return -1;
-        }
-
-        value = col[0];
-        var i = 0;
-        for (var j = 1; j < col.Count; j++)
-        {
-            var number = col[j];
-            if (value >= number) continue;
-            value = number;
-            i = j;
-        }
-
-        return i;
+        if (col is null) throw new ArgumentNullException(nameof(col), "col was null.");
+        var result = Max(col, default, out var i);
+        if (i < 0) throw new InvalidOperationException("col should contain one or more elements but not empty.", new ArgumentException("col was empty.", nameof(col)));
+        return result;
     }
 
     /// <summary>
-    /// Gets the first index of maximum number.
+    /// Gets the maximum number of the specific collection.
     /// </summary>
-    /// <param name="numbers">The input numbers.</param>
-    /// <returns>The zero-based index.</returns>
-    public static int IndexOfMax(IEnumerable<float> numbers)
-        => IndexOfMax(numbers, out _);
+    /// <typeparam name="T">The type of element.</typeparam>
+    /// <param name="col">The input numbers.</param>
+    /// <param name="defaultValue">The default value.</param>
+    /// <returns>The maximum number found; or returns defaultValue, if col is null or empty..</returns>
+    public static T Max<T>(IEnumerable<T> col, T defaultValue) where T : IComparable
+        => Max(col, default, out _);
 
     /// <summary>
-    /// Gets the first index of minimum number.
+    /// Gets the maximum number of the specific collection.
     /// </summary>
-    /// <param name="numbers">The input numbers.</param>
-    /// <param name="value">The minimum number output.</param>
-    /// <returns>The zero-based index.</returns>
-    public static int IndexOfMin(IEnumerable<int> numbers, out int value)
+    /// <typeparam name="T">The type of element.</typeparam>
+    /// <param name="col">The input numbers.</param>
+    /// <param name="index">The first index of the maximum number.</param>
+    /// <returns>The maximum number found.</returns>
+    public static T Max<T>(IEnumerable<T> col, out int index) where T : IComparable
+        => Max(col, default, out index);
+
+    /// <summary>
+    /// Gets the maximum number of the specific collection.
+    /// </summary>
+    /// <typeparam name="T">The type of element.</typeparam>
+    /// <param name="col">The input numbers.</param>
+    /// <param name="defaultValue">The default value.</param>
+    /// <param name="index">The first index of the maximum number.</param>
+    /// <returns>The maximum number found.</returns>
+    public static T Max<T>(IEnumerable<T> col, T defaultValue, out int index) where T : IComparable
     {
-        var col = numbers?.ToList();
-        if (col == null || col.Count < 1)
+        index = -1;
+        if (col is null) return defaultValue;
+        T max = default;
+        var has = false;
+        var i = -1;
+        foreach (var item in col)
         {
-            value = default;
-            return -1;
+            i++;
+            if (has && item.CompareTo(max) <= 0) continue;
+            has = true;
+            max = item;
+            index = i;
         }
 
-        value = col[0];
-        var i = 0;
-        for (var j = 1; j < col.Count; j++)
-        {
-            var number = col[j];
-            if (value <= number) continue;
-            value = number;
-            i = j;
-        }
-
-        return i;
+        return max ?? defaultValue;
     }
-
-    /// <summary>
-    /// Gets the first index of minimum number.
-    /// </summary>
-    /// <param name="numbers">The input numbers.</param>
-    /// <returns>The zero-based index.</returns>
-    public static int IndexOfMin(IEnumerable<int> numbers)
-        => IndexOfMin(numbers, out _);
-
-    /// <summary>
-    /// Gets the first index of minimum number.
-    /// </summary>
-    /// <param name="numbers">The input numbers.</param>
-    /// <param name="value">The minimum number output.</param>
-    /// <returns>The zero-based index.</returns>
-    public static int IndexOfMin(IEnumerable<double> numbers, out double value)
-    {
-        var col = numbers?.ToList();
-        if (col == null || col.Count < 1)
-        {
-            value = default;
-            return -1;
-        }
-
-        value = col[0];
-        var i = 0;
-        for (var j = 1; j < col.Count; j++)
-        {
-            var number = col[j];
-            if (value <= number) continue;
-            value = number;
-            i = j;
-        }
-
-        return i;
-    }
-
-    /// <summary>
-    /// Gets the first index of minimum number.
-    /// </summary>
-    /// <param name="numbers">The input numbers.</param>
-    /// <returns>The zero-based index.</returns>
-    public static int IndexOfMin(IEnumerable<double> numbers)
-        => IndexOfMin(numbers, out _);
-
-    /// <summary>
-    /// Gets the first index of minimum number.
-    /// </summary>
-    /// <param name="numbers">The input numbers.</param>
-    /// <param name="value">The minimum number output.</param>
-    /// <returns>The zero-based index.</returns>
-    public static int IndexOfMin(IEnumerable<float> numbers, out float value)
-    {
-        var col = numbers?.ToList();
-        if (col == null || col.Count < 1)
-        {
-            value = default;
-            return -1;
-        }
-
-        value = col[0];
-        var i = 0;
-        for (var j = 1; j < col.Count; j++)
-        {
-            var number = col[j];
-            if (value <= number) continue;
-            value = number;
-            i = j;
-        }
-
-        return i;
-    }
-
-    /// <summary>
-    /// Gets the first index of minimum number.
-    /// </summary>
-    /// <param name="numbers">The input numbers.</param>
-    /// <returns>The zero-based index.</returns>
-    public static int IndexOfMin(IEnumerable<float> numbers)
-        => IndexOfMin(numbers, out _);
 }

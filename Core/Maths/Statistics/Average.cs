@@ -14,35 +14,57 @@ public static partial class StatisticalMethod
     /// Computes variance of a sequence of number.
     /// </summary>
     /// <param name="col">The input collection of number. Each number should not be less than 0.</param>
-    /// <returns>The variance.</returns>
+    /// <returns>The variance; or double.NaN, if invalid input.</returns>
     public static double Variance(IEnumerable<int> col)
     {
         if (col == null) return double.NaN;
-        var avg = col.Average();
-        var count = col.Count();
-        if (count < 1) return double.NaN;
-        return col.Sum(ele => Math.Pow(ele - avg, 2)) / count;
+        if (col is int[] arr)
+        {
+            var avg = arr.Average();
+            var count = arr.Length;
+            if (count < 1) return double.NaN;
+            return arr.Sum(ele => Math.Pow(ele - avg, 2)) / count;
+        }
+
+        if (col is not ICollection<int> list) list = col.ToList();
+        {
+            var avg = list.Average();
+            var count = list.Count;
+            if (count < 1) return double.NaN;
+            return list.Sum(ele => Math.Pow(ele - avg, 2)) / count;
+        }
     }
 
     /// <summary>
     /// Computes sample variance of a sequence of number.
     /// </summary>
     /// <param name="col">The input collection of number. Each number should not be less than 0.</param>
-    /// <returns>The sample variance.</returns>
+    /// <returns>The sample variance; or double.NaN, if invalid input.</returns>
     public static double SampleVariance(IEnumerable<int> col)
     {
         if (col == null) return double.NaN;
-        var avg = col.Average();
-        var count = col.Count() - 1;
-        if (count < 1) return double.NaN;
-        return col.Sum(ele => Math.Pow(ele - avg, 2)) / count;
+        if (col is int[] arr)
+        {
+            var avg = arr.Average();
+            var count = arr.Length - 1;
+            if (count < 1) return double.NaN;
+            return arr.Sum(ele => Math.Pow(ele - avg, 2)) / count;
+        }
+
+        if (col is not ICollection<int> list) list = col.ToList();
+        {
+            var avg = list.Average();
+            var count = list.Count - 1;
+            if (count < 1) return double.NaN;
+            return list.Sum(ele => Math.Pow(ele - avg, 2)) / count;
+        }
     }
 
     /// <summary>
     /// Gets standard deviation of a sequence of number.
     /// </summary>
     /// <param name="col">The input collection of number. Each number should not be less than 0.</param>
-    /// <returns>The standard deviation.</returns>
+    /// <returns>The standard deviation; or double.NaN, if invalid input.</returns>
     public static double StandardDeviation(IEnumerable<int> col)
     {
         var r = Variance(col);
@@ -54,7 +76,7 @@ public static partial class StatisticalMethod
     /// Gets sample deviation of a sequence of number.
     /// </summary>
     /// <param name="col">The input collection of number. Each number should not be less than 0.</param>
-    /// <returns>The sample deviation.</returns>
+    /// <returns>The sample deviation; or double.NaN, if invalid input.</returns>
     public static double SampleDeviation(IEnumerable<int> col)
     {
         var r = SampleVariance(col);
@@ -66,35 +88,57 @@ public static partial class StatisticalMethod
     /// Computes variance of a sequence of number.
     /// </summary>
     /// <param name="col">The input collection of number. Each number should not be less than 0.</param>
-    /// <returns>The variance.</returns>
+    /// <returns>The variance; or double.NaN, if invalid input.</returns>
     public static double Variance(IEnumerable<long> col)
     {
         if (col == null) return double.NaN;
-        var avg = col.Average();
-        var count = col.Count();
-        if (count < 1) return double.NaN;
-        return col.Sum(ele => Math.Pow(ele - avg, 2)) / count;
+        if (col is long[] arr)
+        {
+            var avg = arr.Average();
+            var count = arr.Length;
+            if (count < 1) return double.NaN;
+            return arr.Sum(ele => Math.Pow(ele - avg, 2)) / count;
+        }
+
+        if (col is not ICollection<long> list) list = col.ToList();
+        {
+            var avg = list.Average();
+            var count = list.Count;
+            if (count < 1) return double.NaN;
+            return list.Sum(ele => Math.Pow(ele - avg, 2)) / count;
+        }
     }
 
     /// <summary>
     /// Computes sample variance of a sequence of number.
     /// </summary>
     /// <param name="col">The input collection of number. Each number should not be less than 0.</param>
-    /// <returns>The sample variance.</returns>
+    /// <returns>The sample variance; or double.NaN, if invalid input.</returns>
     public static double SampleVariance(IEnumerable<long> col)
     {
         if (col == null) return double.NaN;
-        var avg = col.Average();
-        var count = col.Count() - 1;
-        if (count < 1) return double.NaN;
-        return col.Sum(ele => Math.Pow(ele - avg, 2)) / count;
+        if (col is long[] arr)
+        {
+            var avg = arr.Average();
+            var count = arr.Length - 1;
+            if (count < 1) return double.NaN;
+            return arr.Sum(ele => Math.Pow(ele - avg, 2)) / count;
+        }
+
+        if (col is not ICollection<long> list) list = col.ToList();
+        {
+            var avg = list.Average();
+            var count = list.Count - 1;
+            if (count < 1) return double.NaN;
+            return list.Sum(ele => Math.Pow(ele - avg, 2)) / count;
+        }
     }
 
     /// <summary>
     /// Gets standard deviation of a sequence of number.
     /// </summary>
     /// <param name="col">The input collection of number. Each number should not be less than 0.</param>
-    /// <returns>The standard deviation.</returns>
+    /// <returns>The standard deviation; or double.NaN, if invalid input.</returns>
     public static double StandardDeviation(IEnumerable<long> col)
     {
         var r = Variance(col);
@@ -106,7 +150,7 @@ public static partial class StatisticalMethod
     /// Gets sample deviation of a sequence of number.
     /// </summary>
     /// <param name="col">The input collection of number. Each number should not be less than 0.</param>
-    /// <returns>The sample deviation.</returns>
+    /// <returns>The sample deviation; or double.NaN, if invalid input.</returns>
     public static double SampleDeviation(IEnumerable<long> col)
     {
         var r = SampleVariance(col);
@@ -118,35 +162,57 @@ public static partial class StatisticalMethod
     /// Computes variance of a sequence of number.
     /// </summary>
     /// <param name="col">The input collection of number. Each number should not be less than 0.</param>
-    /// <returns>The variance.</returns>
+    /// <returns>The variance; or double.NaN, if invalid input.</returns>
     public static double Variance(IEnumerable<float> col)
     {
         if (col == null) return double.NaN;
-        var avg = col.Average();
-        var count = col.Count();
-        if (count < 1) return double.NaN;
-        return col.Sum(ele => Math.Pow(ele - avg, 2)) / count;
+        if (col is float[] arr)
+        {
+            var avg = arr.Average();
+            var count = arr.Length;
+            if (count < 1) return double.NaN;
+            return arr.Sum(ele => Math.Pow(ele - avg, 2)) / count;
+        }
+
+        if (col is not ICollection<float> list) list = col.ToList();
+        {
+            var avg = list.Average();
+            var count = list.Count;
+            if (count < 1) return double.NaN;
+            return list.Sum(ele => Math.Pow(ele - avg, 2)) / count;
+        }
     }
 
     /// <summary>
     /// Computes sample variance of a sequence of number.
     /// </summary>
     /// <param name="col">The input collection of number. Each number should not be less than 0.</param>
-    /// <returns>The sample variance.</returns>
+    /// <returns>The sample variance; or double.NaN, if invalid input.</returns>
     public static double SampleVariance(IEnumerable<float> col)
     {
         if (col == null) return double.NaN;
-        var avg = col.Average();
-        var count = col.Count() - 1;
-        if (count < 1) return double.NaN;
-        return col.Sum(ele => Math.Pow(ele - avg, 2)) / count;
+        if (col is float[] arr)
+        {
+            var avg = arr.Average();
+            var count = arr.Length - 1;
+            if (count < 1) return double.NaN;
+            return arr.Sum(ele => Math.Pow(ele - avg, 2)) / count;
+        }
+
+        if (col is not ICollection<float> list) list = col.ToList();
+        {
+            var avg = list.Average();
+            var count = list.Count - 1;
+            if (count < 1) return double.NaN;
+            return list.Sum(ele => Math.Pow(ele - avg, 2)) / count;
+        }
     }
 
     /// <summary>
     /// Gets standard deviation of a sequence of number.
     /// </summary>
     /// <param name="col">The input collection of number. Each number should not be less than 0.</param>
-    /// <returns>The standard deviation.</returns>
+    /// <returns>The standard deviation; or double.NaN, if invalid input.</returns>
     public static double StandardDeviation(IEnumerable<float> col)
     {
         var r = Variance(col);
@@ -158,7 +224,7 @@ public static partial class StatisticalMethod
     /// Gets sample deviation of a sequence of number.
     /// </summary>
     /// <param name="col">The input collection of number. Each number should not be less than 0.</param>
-    /// <returns>The sample deviation.</returns>
+    /// <returns>The sample deviation; or double.NaN, if invalid input.</returns>
     public static double SampleDeviation(IEnumerable<float> col)
     {
         var r = SampleVariance(col);
@@ -166,39 +232,137 @@ public static partial class StatisticalMethod
         return Math.Sqrt(r);
     }
 
+#if NET6_0_OR_GREATER
     /// <summary>
     /// Computes variance of a sequence of number.
     /// </summary>
     /// <param name="col">The input collection of number. Each number should not be less than 0.</param>
-    /// <returns>The variance.</returns>
-    public static double Variance(IEnumerable<double> col)
+    /// <returns>The variance; or float.NaN, if invalid input.</returns>
+    public static float VarianceF(IEnumerable<float> col)
     {
-        if (col == null) return double.NaN;
-        var avg = col.Average();
-        var count = col.Count();
-        if (count < 1) return double.NaN;
-        return col.Sum(ele => Math.Pow(ele - avg, 2)) / count;
+        if (col == null) return float.NaN;
+        if (col is float[] arr)
+        {
+            var avg = arr.Average();
+            var count = arr.Length;
+            if (count < 1) return float.NaN;
+            return arr.Sum(ele => MathF.Pow(ele - avg, 2)) / count;
+        }
+
+        if (col is not ICollection<float> list) list = col.ToList();
+        {
+            var avg = list.Average();
+            var count = list.Count;
+            if (count < 1) return float.NaN;
+            return list.Sum(ele => MathF.Pow(ele - avg, 2)) / count;
+        }
     }
 
     /// <summary>
     /// Computes sample variance of a sequence of number.
     /// </summary>
     /// <param name="col">The input collection of number. Each number should not be less than 0.</param>
-    /// <returns>The sample variance.</returns>
-    public static double SampleVariance(IEnumerable<double> col)
+    /// <returns>The sample variance; or float.NaN, if invalid input.</returns>
+    public static float SampleVarianceF(IEnumerable<float> col)
     {
-        if (col == null) return double.NaN;
-        var avg = col.Average();
-        var count = col.Count() - 1;
-        if (count < 1) return double.NaN;
-        return col.Sum(ele => Math.Pow(ele - avg, 2)) / count;
+        if (col == null) return float.NaN;
+        if (col is float[] arr)
+        {
+            var avg = arr.Average();
+            var count = arr.Length - 1;
+            if (count < 1) return float.NaN;
+            return arr.Sum(ele => MathF.Pow(ele - avg, 2)) / count;
+        }
+
+        if (col is not ICollection<float> list) list = col.ToList();
+        {
+            var avg = list.Average();
+            var count = list.Count - 1;
+            if (count < 1) return float.NaN;
+            return list.Sum(ele => MathF.Pow(ele - avg, 2)) / count;
+        }
     }
 
     /// <summary>
     /// Gets standard deviation of a sequence of number.
     /// </summary>
     /// <param name="col">The input collection of number. Each number should not be less than 0.</param>
-    /// <returns>The standard deviation.</returns>
+    /// <returns>The standard deviation; or float.NaN, if invalid input.</returns>
+    public static double StandardDeviationF(IEnumerable<float> col)
+    {
+        var r = VarianceF(col);
+        if (float.IsNaN(r)) return float.NaN;
+        return MathF.Sqrt(r);
+    }
+
+    /// <summary>
+    /// Gets sample deviation of a sequence of number.
+    /// </summary>
+    /// <param name="col">The input collection of number. Each number should not be less than 0.</param>
+    /// <returns>The sample deviation; or float.NaN, if invalid input.</returns>
+    public static float SampleDeviationF(IEnumerable<float> col)
+    {
+        var r = SampleVarianceF(col);
+        if (float.IsNaN(r)) return float.NaN;
+        return MathF.Sqrt(r);
+    }
+#endif
+
+    /// <summary>
+    /// Computes variance of a sequence of number.
+    /// </summary>
+    /// <param name="col">The input collection of number. Each number should not be less than 0.</param>
+    /// <returns>The variance; or double.NaN, if invalid input.</returns>
+    public static double Variance(IEnumerable<double> col)
+    {
+        if (col == null) return double.NaN;
+        if (col is double[] arr)
+        {
+            var avg = arr.Average();
+            var count = arr.Length;
+            if (count < 1) return double.NaN;
+            return arr.Sum(ele => Math.Pow(ele - avg, 2)) / count;
+        }
+
+        if (col is not ICollection<double> list) list = col.ToList();
+        {
+            var avg = list.Average();
+            var count = list.Count;
+            if (count < 1) return double.NaN;
+            return list.Sum(ele => Math.Pow(ele - avg, 2)) / count;
+        }
+    }
+
+    /// <summary>
+    /// Computes sample variance of a sequence of number.
+    /// </summary>
+    /// <param name="col">The input collection of number. Each number should not be less than 0.</param>
+    /// <returns>The sample variance; or double.NaN, if invalid input.</returns>
+    public static double SampleVariance(IEnumerable<double> col)
+    {
+        if (col == null) return double.NaN;
+        if (col is double[] arr)
+        {
+            var avg = arr.Average();
+            var count = arr.Length - 1;
+            if (count < 1) return double.NaN;
+            return arr.Sum(ele => Math.Pow(ele - avg, 2)) / count;
+        }
+
+        if (col is not ICollection<double> list) list = col.ToList();
+        {
+            var avg = list.Average();
+            var count = list.Count - 1;
+            if (count < 1) return double.NaN;
+            return list.Sum(ele => Math.Pow(ele - avg, 2)) / count;
+        }
+    }
+
+    /// <summary>
+    /// Gets standard deviation of a sequence of number.
+    /// </summary>
+    /// <param name="col">The input collection of number. Each number should not be less than 0.</param>
+    /// <returns>The standard deviation; or double.NaN, if invalid input.</returns>
     public static double StandardDeviation(IEnumerable<double> col)
     {
         var r = Variance(col);
@@ -210,7 +374,7 @@ public static partial class StatisticalMethod
     /// Gets sample deviation of a sequence of number.
     /// </summary>
     /// <param name="col">The input collection of number. Each number should not be less than 0.</param>
-    /// <returns>The sample deviation.</returns>
+    /// <returns>The sample deviation; or double.NaN, if invalid input.</returns>
     public static double SampleDeviation(IEnumerable<double> col)
     {
         var r = SampleVariance(col);
@@ -222,33 +386,91 @@ public static partial class StatisticalMethod
     /// Computes the mean of a sequence of number.
     /// </summary>
     /// <param name="col">The input collection of number.</param>
-    /// <returns>The mean of the sequence of number.</returns>
+    /// <returns>The mean of the sequence of number; or double.NaN, if input is empty.</returns>
     public static double Mean(IEnumerable<int> col)
-        => col.Average();
+    {
+        try
+        {
+            if (col is not null) return col.Average();
+        }
+        catch (InvalidOperationException)
+        {
+        }
+
+        return double.NaN;
+    }
 
     /// <summary>
     /// Computes the mean of a sequence of number.
     /// </summary>
     /// <param name="col">The input collection of number.</param>
-    /// <returns>The mean of the sequence of number.</returns>
+    /// <returns>The mean of the sequence of number; or double.NaN, if input is empty.</returns>
     public static double Mean(IEnumerable<long> col)
-        => col.Average();
+    {
+        try
+        {
+            if (col is not null) return col.Average();
+        }
+        catch (InvalidOperationException)
+        {
+        }
+
+        return double.NaN;
+    }
 
     /// <summary>
     /// Computes the mean of a sequence of number.
     /// </summary>
     /// <param name="col">The input collection of number.</param>
-    /// <returns>The mean of the sequence of number.</returns>
+    /// <returns>The mean of the sequence of number; or float.NaN, if input is empty.</returns>
     public static float Mean(IEnumerable<float> col)
-        => col.Average();
+    {
+        try
+        {
+            if (col is not null) return col.Average();
+        }
+        catch (InvalidOperationException)
+        {
+        }
+
+        return float.NaN;
+    }
 
     /// <summary>
     /// Computes the mean of a sequence of number.
     /// </summary>
     /// <param name="col">The input collection of number.</param>
-    /// <returns>The mean of the sequence of number.</returns>
+    /// <returns>The mean of the sequence of number; or double.NaN, if input is empty.</returns>
     public static double Mean(IEnumerable<double> col)
-        => col.Average();
+    {
+        try
+        {
+            if (col is not null) return col.Average();
+        }
+        catch (InvalidOperationException)
+        {
+        }
+
+        return double.NaN;
+    }
+
+    /// <summary>
+    /// Computes the mean of a sequence of number.
+    /// </summary>
+    /// <param name="col">The input collection of number.</param>
+    /// <returns>The mean of the sequence of number; or zero (0), if input is empty.</returns>
+    public static decimal Mean(IEnumerable<decimal> col)
+    {
+        try
+        {
+            if (col is not null) return col.Average();
+        }
+        catch (InvalidOperationException)
+        {
+        }
+
+        return decimal.Zero;
+    }
 
     /// <summary>
     /// Computes the mode of a sequence of number.

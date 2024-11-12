@@ -66,6 +66,7 @@ public class JsonIntegerEnumCompatibleConverter<T> : JsonConverter<T>, IJsonNode
 
     internal static T Read(ref Utf8JsonReader reader, Type typeToConvert)
     {
+        JsonValues.SkipComments(ref reader);
         switch (reader.TokenType)
         {
             case JsonTokenType.Null:

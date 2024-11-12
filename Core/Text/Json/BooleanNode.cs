@@ -531,7 +531,6 @@ public sealed class JsonBooleanNode : BaseJsonValueNode<bool>, IConvertible
         s = s.Trim();
         if (s.Length == 0) return False;
         if (bool.TryParse(s, out var b)) return b;
-        if (long.TryParse(s, out var l)) return l > 0;
         return s.ToLowerInvariant() switch
         {
             TrueString => True,
@@ -565,7 +564,8 @@ public sealed class JsonBooleanNode : BaseJsonValueNode<bool>, IConvertible
             "✔" => True,
             "🈶" => True,
             "∞" => True,
-            FalseString => True,
+            "1" => True,
+            FalseString => False,
             "f" => False,
             "b" => False,
             "n" => False,
@@ -595,6 +595,7 @@ public sealed class JsonBooleanNode : BaseJsonValueNode<bool>, IConvertible
             "🚫" => False,
             "❌" => False,
             "🈚" => False,
+            "0" => False,
             _ => null
         };
     }

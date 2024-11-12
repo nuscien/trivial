@@ -9,6 +9,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Numerics;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Runtime.Serialization;
@@ -34,7 +35,7 @@ namespace Trivial.Text;
 [System.Text.Json.Serialization.JsonConverter(typeof(JsonObjectNodeConverter))]
 public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyList<IJsonValueNode>, IReadOnlyList<BaseJsonValueNode>, IEquatable<JsonArrayNode>, ISerializable, INotifyPropertyChanged, INotifyCollectionChanged
 #if NET8_0_OR_GREATER
-    , IParsable<JsonArrayNode>
+    , IParsable<JsonArrayNode>, IAdditionOperators<JsonArrayNode, JsonArrayNode, JsonArrayNode>, IAdditionOperators<JsonArrayNode, IEnumerable<BaseJsonValueNode>, JsonArrayNode>, IAdditionOperators<JsonArrayNode, IEnumerable<IJsonValueNode>, JsonArrayNode>
 #endif
 {
     private IList<BaseJsonValueNode> store = new List<BaseJsonValueNode>();
@@ -1740,12 +1741,32 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
     /// <param name="useUnixTimestampsFallback">true if use Unix timestamp to convert if the value is a number; otherwise, false, to use JavaScript date ticks fallback.</param>
     /// <returns>The value.</returns>
     public DateTime? TryGetDateTimeValue(int index, bool useUnixTimestampsFallback = false)
+        => JsonValues.TryGetDateTime(TryGetJsonValue(index), useUnixTimestampsFallback);
+
+    /// <summary>
+    /// Tries to get the value of the specific index.
+    /// </summary>
+    /// <param name="index">The zero-based index of the element to get.</param>
+    /// <param name="parser">The parser.</param>
+    /// <returns>The value.</returns>
+    public DateTime? TryGetDateTimeValue(int index, Func<string, DateTime?> parser)
     {
-        var node = TryGetJsonValue(index);
-        if (node is IJsonValueNode<string> s) return WebFormat.ParseDate(s.Value);
-        if (node is IJsonValueNode<long> num) return useUnixTimestampsFallback ? WebFormat.ParseUnixTimestamp(num.Value) : WebFormat.ParseDate(num.Value);
-        if (node is JsonObjectNode obj) return JsonValues.TryGetDateTime(obj);
-        return null;
+        var v = TryGetJsonValue(index);
+        if (v is IJsonValueNode<string> s && parser is not null) return parser(s.Value);
+        return JsonValues.TryGetDateTime(v, false);
+    }
+
+    /// <summary>
+    /// Tries to get the value of the specific index.
+    /// </summary>
+    /// <param name="index">The zero-based index of the element to get.</param>
+    /// <param name="resolver">The resolver.</param>
+    /// <returns>The value.</returns>
+    public DateTime? TryGetDateTimeValue(int index, IJsonPropertyResolver<DateTime> resolver)
+    {
+        var v = TryGetJsonValue(index);
+        if (v is JsonObjectNode json && resolver is not null && resolver.TryGetValue(json, out var r)) return r;
+        return JsonValues.TryGetDateTime(v, false);
     }
 
     /// <summary>
@@ -1759,13 +1780,19 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
     {
         var node = TryGetJsonValue(index);
         kind = node.ValueKind;
-        DateTime? v = null;
-        if (node is IJsonValueNode<string> s) v = WebFormat.ParseDate(s.Value);
-        else if (node is IJsonValueNode<long> num) v = WebFormat.ParseDate(num.Value);
-        else if (node is JsonObjectNode obj) v = JsonValues.TryGetDateTime(obj);
+        var v = JsonValues.TryGetDateTime(node, false);
         result = v ?? WebFormat.ZeroTick;
         return v.HasValue;
     }
+
+    /// <summary>
+    /// Tries to get the value of the specific index.
+    /// </summary>
+    /// <param name="index">The zero-based index of the element to get.</param>
+    /// <param name="result">The result.</param>
+    /// <returns>true if has the property and the type is the one expected; otherwise, false.</returns>
+    public bool TryGetDateTimeValue(int index, out DateTime result)
+        => TryGetDateTimeValue(index, out result, out _);
 
 #if !NETFRAMEWORK
     /// <summary>
@@ -4474,6 +4501,69 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
     }
 
     /// <summary>
+    /// Creates a lookup from this JSON array according to a specified key selector function.
+    /// </summary>
+    /// <typeparam name="TKey">The type of the key returned by key selector.</typeparam>
+    /// <param name="keySelector">A function to extract a key from each element.</param>
+    /// <returns>A lookup that contains keys and values. The values within each group are in the same order as in source.</returns>
+    /// <exception cref="ArgumentNullException">keySelector is null.</exception>
+    public ILookup<TKey, BaseJsonValueNode> ToLookup<TKey>(Func<BaseJsonValueNode, TKey> keySelector)
+        => Enumerable.ToLookup(this, keySelector);
+
+    /// <summary>
+    /// Creates a lookup from this JSON array according to a specified key selector function.
+    /// </summary>
+    /// <typeparam name="TKey">The type of the key returned by key selector.</typeparam>
+    /// <param name="keySelector">A function to extract a key from each element.</param>
+    /// <param name="comparer">A handler to compare keys.</param>
+    /// <returns>A lookup that contains keys and values. The values within each group are in the same order as in source.</returns>
+    /// <exception cref="ArgumentNullException">keySelector is null.</exception>
+    public ILookup<TKey, BaseJsonValueNode> ToLookup<TKey>(Func<BaseJsonValueNode, TKey> keySelector, IEqualityComparer<TKey> comparer)
+        => Enumerable.ToLookup(this, keySelector, comparer);
+
+    /// <summary>
+    /// Creates a lookup from this JSON array according to a specified key selector function.
+    /// </summary>
+    /// <typeparam name="TKey">The type of the key returned by key selector.</typeparam>
+    /// <typeparam name="TElement">The type of the value returned by elementSelector.</typeparam>
+    /// <param name="keySelector">A function to extract a key from each element.</param>
+    /// <param name="elementSelector">A transform function to produce a result element value from each element.</param>
+    /// <returns>A lookup that contains keys and values. The values within each group are in the same order as in source.</returns>
+    /// <exception cref="ArgumentNullException">keySelector is null.</exception>
+    public ILookup<TKey, TElement> ToLookup<TKey, TElement>(Func<BaseJsonValueNode, TKey> keySelector, Func<BaseJsonValueNode, TElement> elementSelector)
+        => Enumerable.ToLookup(this, keySelector, elementSelector);
+
+    /// <summary>
+    /// Creates a lookup from this JSON array according to a specified key selector function.
+    /// </summary>
+    /// <typeparam name="TKey">The type of the key returned by key selector.</typeparam>
+    /// <typeparam name="TElement">The type of the value returned by elementSelector.</typeparam>
+    /// <param name="keySelector">A function to extract a key from each element.</param>
+    /// <param name="elementSelector">A transform function to produce a result element value from each element.</param>
+    /// <param name="comparer">A handler to compare keys.</param>
+    /// <returns>A lookup that contains keys and values. The values within each group are in the same order as in source.</returns>
+    /// <exception cref="ArgumentNullException">keySelector is null.</exception>
+    public ILookup<TKey, TElement> ToLookup<TKey, TElement>(Func<BaseJsonValueNode, TKey> keySelector, Func<BaseJsonValueNode, TElement> elementSelector, IEqualityComparer<TKey> comparer)
+        => Enumerable.ToLookup(this, keySelector, elementSelector, comparer);
+
+#if NET6_0_OR_GREATER
+    /// <summary>
+    /// Creates a hash set from this JSON array.
+    /// </summary>
+    /// <returns>A hash set that contains values from the JSON array.</returns>
+    public HashSet<BaseJsonValueNode> ToHashSet()
+        => Enumerable.ToHashSet<BaseJsonValueNode>(this);
+
+    /// <summary>
+    /// Creates a hash set from this JSON array.
+    /// </summary>
+    /// <param name="comparer">A handler to compare keys.</param>
+    /// <returns>A hash set that contains values from the JSON array.</returns>
+    public HashSet<BaseJsonValueNode> ToHashSet(IEqualityComparer<BaseJsonValueNode> comparer)
+        => Enumerable.ToHashSet<BaseJsonValueNode>(this, comparer);
+#endif
+
+    /// <summary>
     /// Indicates whether this instance and a specified object are equal.
     /// </summary>
     /// <param name="other">The object to compare with the current instance.</param>
@@ -4908,6 +4998,63 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
         if (ReferenceEquals(leftValue, rightValue)) return false;
         if (rightValue is null || leftValue is null) return true;
         return !leftValue.Equals(rightValue);
+    }
+
+    /// <summary>
+    /// Pluses two array.
+    /// </summary>
+    /// <param name="leftValue">The left value to merge.</param>
+    /// <param name="rightValue">The right value to merge.</param>
+    /// <returns>The array node after merging.</returns>
+    public static JsonArrayNode operator +(JsonArrayNode leftValue, JsonArrayNode rightValue)
+    {
+        if (rightValue is null) return leftValue;
+        if (leftValue is null) return rightValue;
+        var arr = leftValue?.Clone() ?? new();
+        foreach (var item in rightValue)
+        {
+            arr.store.Add(item);
+        }
+
+        return arr;
+    }
+
+    /// <summary>
+    /// Pluses two array.
+    /// </summary>
+    /// <param name="leftValue">The left value to merge.</param>
+    /// <param name="rightValue">The right value to merge.</param>
+    /// <returns>The array node after merging.</returns>
+    public static JsonArrayNode operator +(JsonArrayNode leftValue, IEnumerable<BaseJsonValueNode> rightValue)
+    {
+        if (rightValue is null) return leftValue;
+        if (leftValue is null && rightValue is JsonArrayNode arr2) return arr2;
+        var arr = leftValue?.Clone() ?? new();
+        foreach (var item in rightValue)
+        {
+            arr.store.Add(JsonValues.ConvertValue(item));
+        }
+
+        return arr;
+    }
+
+    /// <summary>
+    /// Pluses two array.
+    /// </summary>
+    /// <param name="leftValue">The left value to merge.</param>
+    /// <param name="rightValue">The right value to merge.</param>
+    /// <returns>The array node after merging.</returns>
+    public static JsonArrayNode operator +(JsonArrayNode leftValue, IEnumerable<IJsonValueNode> rightValue)
+    {
+        if (rightValue is null) return leftValue;
+        if (leftValue is null && rightValue is JsonArrayNode arr2) return arr2;
+        var arr = leftValue?.Clone() ?? new();
+        foreach (var item in rightValue)
+        {
+            arr.store.Add(JsonValues.ConvertValue(item));
+        }
+
+        return arr;
     }
 
     /// <summary>

@@ -1365,6 +1365,14 @@ public static class JsonValues
     public static JsonNodeSchemaDescription CreateSchema(Type type, string desc = null, IJsonNodeSchemaCreationHandler<Type> handler = null)
         => CreateSchema(type, 10, desc, handler);
 
+    internal static void SkipComments(ref Utf8JsonReader reader)
+    {
+        while (reader.TokenType == JsonTokenType.Comment)
+        {
+            reader.Skip();
+        }
+    }
+
     internal static JsonOperationDescription CreateDescriptionByAttribute(MemberInfo member)
     {
         var attr = member?.GetCustomAttributes<JsonOperationDescriptiveAttribute>()?.FirstOrDefault();
@@ -1759,36 +1767,56 @@ public static class JsonValues
         }
     }
 
-    internal static DateTime? TryGetDateTime(JsonObjectNode json)
+    internal static DateTime? TryGetDateTime(JsonObjectNode json, bool unixTimestamp = false)
     {
-        var jsTick = json.TryGetInt64Value("value");
-        if (jsTick.HasValue) return WebFormat.ParseDate(jsTick.Value);
-        var year = json.TryGetInt32Value("year");
-        var month = json.TryGetInt32Value("month");
-        var day = json.TryGetInt32Value("day");
-        if (!year.HasValue || !month.HasValue || !day.HasValue) return null;
+        var jsTickNode = json.TryGetValue("value");
+        if (jsTickNode is IJsonValueNode<long> jsTick) return unixTimestamp ? WebFormat.ParseUnixTimestamp(jsTick.Value) : WebFormat.ParseDate(jsTick.Value);
+        var year = json.TryGetInt32Value("year") ?? json.TryGetInt32Value("fullYear") ?? DateTime.Now.Year;
+        var month = json.TryGetInt32Value("month") ?? 0;
+        if (month < 1 || month > 12) return null;
+        var day = json.TryGetInt32Value("day") ?? 0;
+        if (day < 1 || day > 31) return null;
         var hour = json.TryGetInt32Value("hour") ?? 0;
+        if (hour < 0 || hour > 23) return null;
         var minute = json.TryGetInt32Value("minute") ?? 0;
+        if (minute < 0 || minute > 59) return null;
         var second = json.TryGetInt32Value("second") ?? 0;
+        if (second < 0 || second > 59) return null;
         var millisecond = json.TryGetInt32Value("millisecond") ?? 0;
+        if (millisecond < 0 || millisecond > 1000) return null;
         var kind = json.TryGetStringTrimmedValue("kind", true)?.ToLowerInvariant() ?? "utc";
-        if (kind == "utc" || kind == "z" || kind == "0" || kind == "0000" || kind == "+00:00" || kind == "+0000" || kind == "universal")
-            return new DateTime(year.Value, month.Value, day.Value, hour, minute, second, millisecond, DateTimeKind.Utc);
+        if (kind == "utc" || kind == "z" || kind == "0" || kind == "0000" || kind == "+00:00" || kind == "+0000" || kind == "universal" || kind == "false")
+            return new DateTime(year, month, day, hour, minute, second, millisecond, DateTimeKind.Utc);
         if (kind == "local" || kind == "server")
-            return new DateTime(year.Value, month.Value, day.Value, hour, minute, second, millisecond, DateTimeKind.Local);
+            return new DateTime(year, month, day, hour, minute, second, millisecond, DateTimeKind.Local);
+        if (kind.StartsWith("gmt")) kind = kind.Substring(3);
         if (kind.Length != 5)
         {
             if (kind.Length == 6 && kind[3] == ':') kind = kind.Replace(":", string.Empty);
             if (kind.Length != 5) return null;
         }
 
-        if ((kind.StartsWith('+') || kind.StartsWith('-')) && int.TryParse(kind, out var offset))
+        if ((kind.StartsWith('+') || kind.StartsWith('-')) && int.TryParse(kind, out var offset) && offset <= 3000 && offset >= -3000)
         {
             var span = new TimeSpan(offset / 100, Math.Abs(offset % 100), 0);
-            var dt = new DateTimeOffset(year.Value, month.Value, day.Value, hour, minute, second, millisecond, span);
+            var dt = new DateTimeOffset(year, month, day, hour, minute, second, millisecond, span);
             return dt.ToUniversalTime().DateTime;
         }
 
+        return null;
+    }
+
+    /// <summary>
+    /// Tries to get the value of the specific JSON node.
+    /// </summary>
+    /// <param name="node">The JSON node.</param>
+    /// <param name="useUnixTimestampsFallback">true if use Unix timestamp to convert if the value is a number; otherwise, false, to use JavaScript date ticks fallback.</param>
+    /// <returns>The value.</returns>
+    internal static DateTime? TryGetDateTime(BaseJsonValueNode node, bool useUnixTimestampsFallback)
+    {
+        if (node is IJsonValueNode<string> s) return WebFormat.ParseDate(s.Value);
+        if (node is IJsonValueNode<long> i) return useUnixTimestampsFallback ? WebFormat.ParseUnixTimestamp(i.Value) : WebFormat.ParseDate(i.Value);
+        if (node is JsonObjectNode json) return TryGetDateTime(json, useUnixTimestampsFallback);
         return null;
     }
 

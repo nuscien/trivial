@@ -102,7 +102,7 @@ class MathsVerb : CommandLine.BaseCommandVerb
 
         // Factorial.
         cli.WriteLine("20! = {0}.", Arithmetic.Factorial(20));
-        cli.WriteLine("100! {1} {0}.", Arithmetic.FactorialApproximate(100), BooleanSymbols.SimilarSign);
+        cli.WriteLine("100! {1} {0}.", Arithmetic.FactorialApproximate(100), BooleanOperations.SimilarSign);
         cli.WriteLine();
 
         // English numbers.
