@@ -5,6 +5,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Trivial.Reflection;
 
 namespace Trivial.Collection;
 
@@ -30,7 +31,7 @@ public class KeyedDataMapping<T> : IDictionary<string, T>
     {
         get
         {
-            if (key == null) throw new ArgumentNullException(nameof(key), "key should not be null.");
+            if (key == null) throw ObjectConvert.ArgumentNull(nameof(key));
             key = key.Trim().ToLowerInvariant();
             if (string.IsNullOrEmpty(key)) throw new ArgumentException("key should not be empty.", nameof(key));
             if (mapping.TryGetValue(key, out var r)) return r;
@@ -56,7 +57,7 @@ public class KeyedDataMapping<T> : IDictionary<string, T>
 
         set
         {
-            if (key == null) throw new ArgumentNullException(nameof(key), "key should not be null.");
+            if (key == null) throw ObjectConvert.ArgumentNull(nameof(key));
             key = key.Trim().ToLowerInvariant();
             if (string.IsNullOrEmpty(key) || value is null) return;
             try

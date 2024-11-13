@@ -901,6 +901,9 @@ public static class ObjectConvert
         }
     }
 
+    internal static ArgumentNullException ArgumentNull(string paramName)
+        => new(paramName, string.Concat(paramName, " should not be null."));
+
     internal static bool Equals<T>(T a, T b) where T : IEquatable<T>
     {
         if (ReferenceEquals(a, b)) return true;

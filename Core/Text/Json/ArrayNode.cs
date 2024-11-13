@@ -2674,7 +2674,7 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
     {
         if (store.Count == index) AddItem(JsonValues.Null);
 #if NETFRAMEWORK
-        if (bytes == null) throw new ArgumentNullException(nameof(bytes), "bytes should not be null.");
+        if (bytes == null) throw ObjectConvert.ArgumentNull(nameof(bytes));
         SetItem(index, Convert.ToBase64String(bytes.ToArray(), options));
 #else
         SetItem(index, Convert.ToBase64String(bytes, options));
@@ -2982,7 +2982,7 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
     /// <exception cref="ArgumentNullException"></exception>
     public IEnumerable<T> Select<T>(Func<JsonValueKind, object, int, T> selector)
     {
-        if (selector == null) throw new ArgumentNullException(nameof(selector), "selector was null.");
+        if (selector == null) throw ObjectConvert.ArgumentNull(nameof(selector));
         var index = -1;
         foreach (var value in store)
         {
@@ -3206,7 +3206,7 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
     public void AddBase64(Span<byte> bytes, Base64FormattingOptions options = Base64FormattingOptions.None)
     {
 #if NETFRAMEWORK
-        if (bytes == null) throw new ArgumentNullException(nameof(bytes), "bytes should not be null.");
+        if (bytes == null) throw ObjectConvert.ArgumentNull(nameof(bytes));
         AddItem(new JsonStringNode(Convert.ToBase64String(bytes.ToArray(), options)));
 #else
         AddItem(new JsonStringNode(Convert.ToBase64String(bytes, options)));
@@ -3685,7 +3685,7 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
     public void InsertBase64(int index, Span<byte> bytes, Base64FormattingOptions options = Base64FormattingOptions.None)
     {
 #if NETFRAMEWORK
-        if (bytes == null) throw new ArgumentNullException(nameof(bytes), "bytes should not be null.");
+        if (bytes == null) throw ObjectConvert.ArgumentNull(nameof(bytes));
         InsertItem(index, new JsonStringNode(Convert.ToBase64String(bytes.ToArray(), options)));
 #else
         InsertItem(index, new JsonStringNode(Convert.ToBase64String(bytes, options)));
@@ -4157,7 +4157,7 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
     /// <exception cref="ArgumentNullException">predicate is null.</exception>
     public IEnumerable<BaseJsonValueNode> Where(Func<JsonValueKind, object, int, bool> predicate)
     {
-        if (predicate == null) throw new ArgumentNullException(nameof(predicate), "predicate was null.");
+        if (predicate == null) throw ObjectConvert.ArgumentNull(nameof(predicate));
         var index = -1;
         foreach (var value in store)
         {

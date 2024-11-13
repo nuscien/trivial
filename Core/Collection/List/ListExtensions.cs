@@ -28,7 +28,7 @@ public static partial class ListExtensions
     /// <exception cref="ArgumentNullException">dict or key was null.</exception>
     public static bool TryGetNotEmptyValue(this IDictionary<string, string> dict, string key, out string value)
     {
-        if (dict == null) throw new ArgumentNullException(nameof(dict), "dict should not be null.");
+        if (dict == null) throw ObjectConvert.ArgumentNull(nameof(dict));
         value = dict.TryGetValue(key, out var v) && !string.IsNullOrEmpty(v) ? v : null;
         return v != null;
     }
@@ -42,7 +42,7 @@ public static partial class ListExtensions
     /// <exception cref="ArgumentNullException">dict or key was null.</exception>
     public static string TryGetNotEmptyValue(this IDictionary<string, string> dict, string key)
     {
-        if (dict == null) throw new ArgumentNullException(nameof(dict), "dict should not be null.");
+        if (dict == null) throw ObjectConvert.ArgumentNull(nameof(dict));
         return dict.TryGetValue(key, out var v) && !string.IsNullOrEmpty(v) ? v : null;
     }
 
@@ -55,7 +55,7 @@ public static partial class ListExtensions
     /// <param name="clearOthers">true if clear the others of the property before adding; otherwise, false.</param>
     public static void Add<TKey, TValue>(this List<KeyValuePair<TKey, TValue>> list, TKey key, TValue value, bool clearOthers = false)
     {
-        if (list == null) throw new ArgumentNullException(nameof(list), "list should not be null.");
+        if (list == null) throw ObjectConvert.ArgumentNull(nameof(list));
         if (clearOthers) list.Remove(key);
         list.Add(new KeyValuePair<TKey, TValue>(key, value));
     }
@@ -68,7 +68,7 @@ public static partial class ListExtensions
     /// <param name="style">The style.</param>
     public static void Add(this IList<ConsoleText> list, string s, ConsoleTextStyle style = null)
     {
-        if (list == null) throw new ArgumentNullException(nameof(list), "list should not be null.");
+        if (list == null) throw ObjectConvert.ArgumentNull(nameof(list));
         list.Add(new ConsoleText(s, style));
     }
 
@@ -80,7 +80,7 @@ public static partial class ListExtensions
     /// <param name="style">The style.</param>
     public static void Add(this IList<ConsoleText> list, StringBuilder s, ConsoleTextStyle style = null)
     {
-        if (list == null) throw new ArgumentNullException(nameof(list), "list should not be null.");
+        if (list == null) throw ObjectConvert.ArgumentNull(nameof(list));
         list.Add(new ConsoleText(s, style));
     }
 
@@ -93,7 +93,7 @@ public static partial class ListExtensions
     /// <param name="style">The style.</param>
     public static void Add(this IList<ConsoleText> list, char c, int repeatCount = 1, ConsoleTextStyle style = null)
     {
-        if (list == null) throw new ArgumentNullException(nameof(list), "list should not be null.");
+        if (list == null) throw ObjectConvert.ArgumentNull(nameof(list));
         list.Add(new ConsoleText(c, repeatCount, style));
     }
 
@@ -106,7 +106,7 @@ public static partial class ListExtensions
     /// <param name="value">The value.</param>
     public static void Insert<TKey, TValue>(this IList<KeyValuePair<TKey, TValue>> list, int index, TKey key, TValue value)
     {
-        if (list == null) throw new ArgumentNullException(nameof(list), "list should not be null.");
+        if (list == null) throw ObjectConvert.ArgumentNull(nameof(list));
         list.Insert(index, new KeyValuePair<TKey, TValue>(key, value));
     }
 
@@ -180,7 +180,7 @@ public static partial class ListExtensions
     /// <exception cref="ArgumentNullException">col is null.</exception>
     public static void PadBeginTo<T>(IList<T> col, int count, T value = default)
     {
-        if (col == null) throw new ArgumentNullException(nameof(col), "col should not be null.");
+        if (col == null) throw ObjectConvert.ArgumentNull(nameof(col));
         if (count < 0)
         {
             for (var i = 0; i < count; i++)
@@ -210,7 +210,7 @@ public static partial class ListExtensions
     /// <exception cref="ArgumentOutOfRangeException">count is less than 0.</exception>
     public static void PadEndTo<T>(ICollection<T> col, int count, T value = default)
     {
-        if (col == null) throw new ArgumentNullException(nameof(col), "col should not be null.");
+        if (col == null) throw ObjectConvert.ArgumentNull(nameof(col));
         if (count < 0)
         {
             if (col is not IList<T> list) throw new ArgumentOutOfRangeException(nameof(count), "count should be a natural number.");
@@ -298,7 +298,7 @@ public static partial class ListExtensions
     /// <returns>The keys.</returns>
     public static IEnumerable<TKey> Keys<TKey, TValue>(this IEnumerable<KeyValuePair<TKey, TValue>> list)
     {
-        if (list == null) throw new ArgumentNullException(nameof(list), "list should not be null.");
+        if (list == null) throw ObjectConvert.ArgumentNull(nameof(list));
         return list.Select(item => item.Key).Distinct();
     }
 
@@ -310,7 +310,7 @@ public static partial class ListExtensions
     /// <returns>The values.</returns>
     public static IEnumerable<TValue> GetValues<TKey, TValue>(this IEnumerable<KeyValuePair<TKey, TValue>> list, TKey key)
     {
-        if (list == null) throw new ArgumentNullException(nameof(list), "list should not be null.");
+        if (list == null) throw ObjectConvert.ArgumentNull(nameof(list));
         return key != null ? list.Where(item => key.Equals(item.Key)).Select(item => item.Value) : list.Where(item => item.Key == null).Select(item => item.Value);
     }
 
@@ -322,7 +322,7 @@ public static partial class ListExtensions
     /// <returns>The value items.</returns>
     public static IEnumerable<TValue> GetValueItems<TKey, TValue, TList>(this IEnumerable<KeyValuePair<TKey, TList>> list, TKey key) where TList : IEnumerable<TValue>
     {
-        if (list == null) throw new ArgumentNullException(nameof(list), "list should not be null.");
+        if (list == null) throw ObjectConvert.ArgumentNull(nameof(list));
         return key != null ? list.Where(item => key.Equals(item.Key)).SelectMany(item => item.Value) : list.Where(item => item.Key == null).SelectMany(item => item.Value);
     }
 
@@ -336,7 +336,7 @@ public static partial class ListExtensions
     /// <returns>true if has; otherwise, false.</returns>
     public static bool TryGetValue<TKey, TValue>(this IList<KeyValuePair<TKey, TValue>> list, TKey key, int index, out TValue value)
     {
-        if (list == null) throw new ArgumentNullException(nameof(list), "list should not be null.");
+        if (list == null) throw ObjectConvert.ArgumentNull(nameof(list));
         var col = list.GetValues(key).ToList();
         if (list.Count <= index)
         {
@@ -370,7 +370,7 @@ public static partial class ListExtensions
     /// <exception cref="IndexOutOfRangeException">index is less than 0, or is equals to or greater than the length of the values of the specific key.</exception>
     public static IGrouping<TKey, TValue> Get<TKey, TValue>(this IEnumerable<KeyValuePair<TKey, TValue>> list, TKey key)
     {
-        if (list == null) throw new ArgumentNullException(nameof(list), "list should not be null.");
+        if (list == null) throw ObjectConvert.ArgumentNull(nameof(list));
         list = key == null ? list.Where(item => item.Key == null) : list.Where(item => key.Equals(item.Key));
         return list.GroupBy(item => item.Key, item => item.Value).SingleOrDefault();
     }
@@ -383,7 +383,7 @@ public static partial class ListExtensions
     /// <returns>true if the instance contains an element with the specified key; otherwise, false.</returns>
     public static bool ContainsKey<TKey, TValue>(this IEnumerable<KeyValuePair<TKey, TValue>> list, TKey key)
     {
-        if (list == null) throw new ArgumentNullException(nameof(list), "list should not be null.");
+        if (list == null) throw ObjectConvert.ArgumentNull(nameof(list));
         if (key == null)
         {
             foreach (var item in list)
@@ -633,7 +633,7 @@ public static partial class ListExtensions
     /// <returns>The number of elements removed from the key value pairs.</returns>
     public static int Remove<TKey, TValue>(this List<KeyValuePair<TKey, TValue>> list, params TKey[] keys)
     {
-        if (list == null) throw new ArgumentNullException(nameof(list), "list should not be null.");
+        if (list == null) throw ObjectConvert.ArgumentNull(nameof(list));
         var count = 0;
         foreach (var key in keys)
         {
@@ -650,7 +650,7 @@ public static partial class ListExtensions
     /// <param name="key">The key.</param>
     public static int LastIndexOf<TKey, TValue>(this IEnumerable<KeyValuePair<TKey, TValue>> list, TKey key)
     {
-        if (list == null) throw new ArgumentNullException(nameof(list), "list should not be null.");
+        if (list == null) throw ObjectConvert.ArgumentNull(nameof(list));
         return IndexOf(list.Reverse(), key);
     }
 
@@ -661,7 +661,7 @@ public static partial class ListExtensions
     /// <param name="key">The key.</param>
     public static int IndexOf<TKey, TValue>(this IEnumerable<KeyValuePair<TKey, TValue>> list, TKey key)
     {
-        if (list == null) throw new ArgumentNullException(nameof(list), "list should not be null.");
+        if (list == null) throw ObjectConvert.ArgumentNull(nameof(list));
         var i = -1;
         if (key == null)
         {
@@ -701,6 +701,16 @@ public static partial class ListExtensions
     }
 
     /// <summary>
+    /// Returns the first element of a sequence, or a null if the sequence contains no elements.
+    /// </summary>
+    /// <typeparam name="T">The type of the elements of source.</typeparam>
+    /// <param name="col">The collection to return the first element of.</param>
+    /// <param name="defaultValue">The default value used when no element.</param>
+    /// <returns>The first element in source; or null, if empty.</returns>
+    public static T First<T>(IEnumerable<T> col, T defaultValue) where T : struct
+        => FirstOrNull(col) ?? defaultValue;
+
+    /// <summary>
     /// Returns the last element of a sequence, or a null if the sequence contains no elements.
     /// </summary>
     /// <typeparam name="T">The type of the elements of source.</typeparam>
@@ -721,6 +731,16 @@ public static partial class ListExtensions
     }
 
     /// <summary>
+    /// Returns the last element of a sequence, or a null if the sequence contains no elements.
+    /// </summary>
+    /// <typeparam name="T">The type of the elements of source.</typeparam>
+    /// <param name="col">The collection to return the last element of.</param>
+    /// <param name="defaultValue">The default value used when no element.</param>
+    /// <returns>The last element in source; or null, if empty.</returns>
+    public static T Last<T>(IEnumerable<T> col, T defaultValue) where T : struct
+        => LastOrNull(col) ?? defaultValue;
+
+    /// <summary>
     /// Searches for the specified object and returns the zero-based index array of the all occurrence within the entire key value pairs.
     /// </summary>
     /// <param name="list">The key value pairs.</param>
@@ -729,7 +749,7 @@ public static partial class ListExtensions
     /// <param name="count">The number of elements in the section to search.</param>
     public static IEnumerable<int> AllIndexesOf<T>(this IEnumerable<T> list, T test, int index = 0, int? count = null)
     {
-        if (list == null) throw new ArgumentNullException(nameof(list), "list should not be null.");
+        if (list == null) throw ObjectConvert.ArgumentNull(nameof(list));
         if (index > 0) list = list.Skip(index);
         if (count.HasValue) list = list.Take(count.Value);
         var i = -1;
@@ -760,8 +780,8 @@ public static partial class ListExtensions
     /// <param name="count">The number of elements in the section to search.</param>
     public static IEnumerable<int> AllIndexesOf<T>(this IEnumerable<T> list, Func<T, bool> test, int index = 0, int? count = null)
     {
-        if (list == null) throw new ArgumentNullException(nameof(list), "list should not be null.");
-        if (test == null) throw new ArgumentNullException(nameof(test), "test should be a function to test.");
+        if (list == null) throw ObjectConvert.ArgumentNull(nameof(list));
+        if (test == null) throw ObjectConvert.ArgumentNull(nameof(test));
         if (index > 0) list = list.Skip(index);
         if (count.HasValue) list = list.Take(count.Value);
         var i = -1;
@@ -779,7 +799,7 @@ public static partial class ListExtensions
     /// <param name="key">The key to test.</param>
     public static IEnumerable<int> AllIndexesOf<TKey, TValue>(this IEnumerable<KeyValuePair<TKey, TValue>> list, TKey key)
     {
-        if (list == null) throw new ArgumentNullException(nameof(list), "list should not be null.");
+        if (list == null) throw ObjectConvert.ArgumentNull(nameof(list));
         var i = -1;
         if (key == null)
         {
@@ -826,7 +846,7 @@ public static partial class ListExtensions
     /// <param name="insertAtLast">true if insert at last; otherwise, false.</param>
     public static void Set<TKey, TValue>(this List<KeyValuePair<TKey, TValue>> list, TKey key, TValue value, bool insertAtLast = false)
     {
-        if (list == null) throw new ArgumentNullException(nameof(list), "list should not be null.");
+        if (list == null) throw ObjectConvert.ArgumentNull(nameof(list));
         var i = insertAtLast ? -1 : list.IndexOf(key);
         if (i >= 0)
         {
@@ -1049,7 +1069,7 @@ public static partial class ListExtensions
     /// <exception cref="ArgumentNullException">col is null.</exception>
     public static bool ContainsOnly(this IEnumerable<string> col, IEnumerable<string> keys, out List<string> matched)
     {
-        if (col == null) throw new ArgumentNullException(nameof(col), "col should not be null.");
+        if (col == null) throw ObjectConvert.ArgumentNull(nameof(col));
         matched = new();
         if (keys == null) return !col.Any();
         var b = true;
@@ -1073,7 +1093,7 @@ public static partial class ListExtensions
     /// <exception cref="ArgumentNullException">col is null.</exception>
     public static bool ContainsOnly(this IEnumerable<string> col, IEnumerable<string> keys, out List<string> matched, out List<string> rest)
     {
-        if (col == null) throw new ArgumentNullException(nameof(col), "col should not be null.");
+        if (col == null) throw ObjectConvert.ArgumentNull(nameof(col));
         matched = new();
         if (keys == null)
         {
@@ -1364,27 +1384,37 @@ public static partial class ListExtensions
         {
             i++;
             var vA = padding;
+            var skip = true;
             if (hasA)
             {
                 hasA = a.MoveNext();
-                if (hasA) vA = a.Current;
-            }
-            else
-            {
-                if (!hasB) yield break;
+                if (hasA)
+                {
+                    skip = false;
+                    vA = a.Current;
+                }
+                else
+                {
+                    a.Dispose();
+                }
             }
 
             var vB = padding;
             if (hasB)
             {
                 hasB = b.MoveNext();
-                if (hasB) vB = b.Current;
-            }
-            else
-            {
-                if (!hasA) yield break;
+                if (hasB)
+                {
+                    skip = false;
+                    vB = b.Current;
+                }
+                else
+                {
+                    b.Dispose();
+                }
             }
 
+            if (skip) yield break;
             yield return callback(vA, hasA, vB, hasB, i);
         }
     }

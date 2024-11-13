@@ -4542,7 +4542,7 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     public void SetValue<T>(string key, IEnumerable<T> value, Func<T, JsonObjectNode> converter)
     {
         AssertKey(key);
-        if (converter == null) throw new ArgumentNullException(nameof(converter), "converter was null.");
+        if (converter == null) throw ObjectConvert.ArgumentNull(nameof(converter));
         var arr = new JsonArrayNode();
         foreach (var item in value)
         {
@@ -7579,7 +7579,7 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// <exception cref="UnauthorizedAccessException">Write failed because of unauthorized access exception.</exception>
     public void WriteTo(FileInfo file, IndentStyles style = IndentStyles.Minified)
     {
-        if (file == null) throw new ArgumentNullException(nameof(file), "file should not be null.");
+        if (file == null) throw ObjectConvert.ArgumentNull(nameof(file));
         File.WriteAllText(file.FullName, ToString(style) ?? "null");
         file.Refresh();
     }
@@ -8015,7 +8015,7 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// <exception cref="ArgumentNullException"></exception>
     public IEnumerable<T> Select<T>(Func<JsonValueKind, object, string, T> selector)
     {
-        if (selector == null) throw new ArgumentNullException(nameof(selector), "selector was null.");
+        if (selector == null) throw ObjectConvert.ArgumentNull(nameof(selector));
         foreach (var item in store)
         {
             var value = item.Value;
@@ -8031,7 +8031,7 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// <exception cref="ArgumentNullException"></exception>
     public JsonObjectNode Where(Func<JsonValueKind, object, string, int, bool> predicate)
     {
-        if (predicate == null) throw new ArgumentNullException(nameof(predicate), "predicate was null.");
+        if (predicate == null) throw ObjectConvert.ArgumentNull(nameof(predicate));
         var json = new JsonObjectNode();
         var i = -1;
         foreach (var item in store)

@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Trivial.Reflection;
 
 namespace Trivial.IO;
 
@@ -118,7 +119,7 @@ public class CharsReader : TextReader
     /// <exception cref="ObjectDisposedException">The current reader is closed.</exception>
     public override int Read(char[] buffer, int index, int count)
     {
-        if (buffer == null) throw new ArgumentNullException(nameof(buffer), "buffer should not be null");
+        if (buffer == null) throw ObjectConvert.ArgumentNull(nameof(buffer));
         if (index < 0) throw new ArgumentOutOfRangeException(nameof(index), "index should not be negative.");
         if (count < 0) throw new ArgumentOutOfRangeException(nameof(count), "count should not be negative.");
         if (count == 0) return 0;
@@ -402,7 +403,7 @@ public class CharsReader : TextReader
     /// <exception cref="ObjectDisposedException">The stream has disposed.</exception>
     public static IEnumerable<string> ReadLines(Stream stream, Encoding encoding, bool removeEmptyLine = false)
     {
-        if (stream == null) throw new ArgumentNullException(nameof(stream), "stream should not be null.");
+        if (stream == null) throw ObjectConvert.ArgumentNull(nameof(stream));
         var reader = new StreamReader(stream, encoding ?? Encoding.UTF8);
         var hasDisposed = false;
         return ReadLines(reader, isSucc =>
@@ -501,7 +502,7 @@ public class CharsReader : TextReader
     /// <exception cref="IOException">An I/O error occurs.</exception>
     public static IEnumerable<string> ReadLines(FileInfo file, Encoding encoding, bool removeEmptyLine = false)
     {
-        if (file == null) throw new ArgumentNullException(nameof(file), "file should not be null.");
+        if (file == null) throw ObjectConvert.ArgumentNull(nameof(file));
         var reader = new StreamReader(file.FullName, encoding);
         var hasDisposed = false;
         return ReadLines(reader, isSucc =>
@@ -525,7 +526,7 @@ public class CharsReader : TextReader
     /// <exception cref="NotSupportedException">Cannot read the file.</exception>
     public static IEnumerable<string> ReadLines(FileInfo file, bool detectEncodingFromByteOrderMarks, bool removeEmptyLine = false)
     {
-        if (file == null) throw new ArgumentNullException(nameof(file), "file should not be null.");
+        if (file == null) throw ObjectConvert.ArgumentNull(nameof(file));
         var reader = new StreamReader(file.FullName, detectEncodingFromByteOrderMarks);
         var hasDisposed = false;
         return ReadLines(reader, isSucc =>

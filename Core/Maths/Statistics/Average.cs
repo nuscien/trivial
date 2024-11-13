@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Trivial.Reflection;
 
 namespace Trivial.Maths;
 
@@ -476,12 +477,10 @@ public static partial class StatisticalMethod
     /// Computes the mode of a sequence of number.
     /// </summary>
     /// <param name="col">The input collection of number.</param>
-    /// <param name="count">The count of the mode.</param>
     /// <returns>The mode of the sequence of number.</returns>
-    /// <exception cref="ArgumentNullException">col was null.</exception>
-    public static IEnumerable<T> Mode<T>(IEnumerable<T> col, out int count)
+    public static IList<T> Mode<T>(IEnumerable<T> col)
     {
-        if (col is null) throw new ArgumentNullException(nameof(col), "col should not be null.");
+        if (col is null) return null;
         var dict = new Dictionary<T, int>();
         foreach (var item in col)
         {
@@ -490,13 +489,8 @@ public static partial class StatisticalMethod
         }
 
         var arr = new List<T>();
-        if (dict.Count < 0)
-        {
-            count = 0;
-            return arr;
-        }
-
-        count = dict.Max(ele => ele.Value);
+        if (dict.Count < 1) return arr;
+        var count = dict.Max(ele => ele.Value);
         foreach (var item in dict)
         {
             if (item.Value == count) arr.Add(item.Key);
@@ -506,24 +500,21 @@ public static partial class StatisticalMethod
     }
 
     /// <summary>
-    /// Computes the mode of a sequence of number.
-    /// </summary>
-    /// <param name="col">The input collection of number.</param>
-    /// <returns>The mode of the sequence of number.</returns>
-    public static IEnumerable<T> Mode<T>(IEnumerable<T> col)
-        => Mode(col, out _);
-
-    /// <summary>
     /// Computes the median of a sequence of number.
     /// </summary>
     /// <param name="col">The input collection of number.</param>
     /// <param name="keySelector">A function to extract a key from an element.</param>
+    /// <param name="defaultValue">The default value used when no element.</param>
     /// <param name="count">The count of the median numbers.</param>
-    /// <returns>The median of the sequence of number.</returns>
-    /// <exception cref="ArgumentNullException">col was null.</exception>
-    public static TSource Median<TSource, TKey>(IEnumerable<TSource> col, Func<TSource, TKey> keySelector, out int count)
+    /// <returns>The median of the sequence of number; or the defaultValue, if no element, in this case count is zero (0).</returns>
+    public static TSource Median<TSource, TKey>(IEnumerable<TSource> col, Func<TSource, TKey> keySelector, TSource defaultValue, out int count)
     {
-        if (col is null) throw new ArgumentNullException(nameof(col), "col should not be null.");
+        if (col is null)
+        {
+            count = 0;
+            return defaultValue;
+        }
+
         var list = col.Where(ele => ele is not null).OrderBy(keySelector).ToList();
         var i = 0;
         var j = list.Count - 1;
@@ -544,20 +535,33 @@ public static partial class StatisticalMethod
     /// </summary>
     /// <param name="col">The input collection of number.</param>
     /// <param name="keySelector">A function to extract a key from an element.</param>
+    /// <param name="count">The count of the median numbers.</param>
+    /// <returns>The median of the sequence of number; or the default value, if no element, in this case count is zero (0).</returns>
+    public static TSource Median<TSource, TKey>(IEnumerable<TSource> col, Func<TSource, TKey> keySelector, out int count)
+        => Median(col, keySelector, default, out count);
+
+    /// <summary>
+    /// Computes the median of a sequence of number.
+    /// </summary>
+    /// <param name="col">The input collection of number.</param>
+    /// <param name="keySelector">A function to extract a key from an element.</param>
     /// <returns>The median of the sequence of number.</returns>
     /// <exception cref="ArgumentNullException">col was null.</exception>
     public static TSource Median<TSource, TKey>(IEnumerable<TSource> col, Func<TSource, TKey> keySelector)
-        => Median(col, keySelector, out _);
+    {
+        var v = Median(col, keySelector, default, out var count);
+        if (count < 0) throw ObjectConvert.ArgumentNull(nameof(col));
+        return v;
+    }
 
     /// <summary>
     /// Computes the median of a sequence of number.
     /// </summary>
     /// <param name="col">The input collection of number.</param>
     /// <param name="count">The count of the median numbers.</param>
-    /// <returns>The median of the sequence of number.</returns>
-    /// <exception cref="ArgumentNullException">col was null.</exception>
+    /// <returns>The median of the sequence of number; or the default value, if no element, in this case count is zero (0).</returns>
     public static T Median<T>(IEnumerable<T> col, out int count)
-        => Median(col, ele => ele, out count);
+        => Median(col, ele => ele, default, out count);
 
     /// <summary>
     /// Computes the median of a sequence of number.
@@ -566,5 +570,5 @@ public static partial class StatisticalMethod
     /// <returns>The median of the sequence of number.</returns>
     /// <exception cref="ArgumentNullException">col was null.</exception>
     public static T Median<T>(IEnumerable<T> col)
-        => Median(col, ele => ele, out _);
+        => Median(col, ele => ele);
 }

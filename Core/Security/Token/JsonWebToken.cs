@@ -6,6 +6,7 @@ using System.Security;
 using System.Text;
 using System.Text.Json.Serialization;
 
+using Trivial.Reflection;
 using Trivial.Text;
 using Trivial.Web;
 
@@ -275,7 +276,7 @@ public class JsonWebToken<T>
     /// <exception cref="InvalidOperationException">Verify failure.</exception>
     public static JsonWebToken<T> Parse(string jwt, Func<T, string, ISignatureProvider> algorithmFactory, bool verify = true)
     {
-        if (string.IsNullOrWhiteSpace(jwt)) throw new ArgumentNullException(nameof(jwt), "jwt should not be null or empty.");
+        if (string.IsNullOrWhiteSpace(jwt)) throw ObjectConvert.ArgumentNull(nameof(jwt));
         var prefix = $"{TokenInfo.BearerTokenType} ";
         if (jwt.IndexOf(prefix) == 0)
         {
@@ -300,7 +301,7 @@ public class JsonWebToken<T>
             }
             else
             {
-                if (sign.Length > 0) throw new ArgumentNullException(nameof(algorithm), "algorithm should not be null.");
+                if (sign.Length > 0) throw ObjectConvert.ArgumentNull(nameof(algorithm));
             }
         }
 
@@ -327,7 +328,7 @@ public class JsonWebToken<T>
     /// <exception cref="InvalidOperationException">Verify failure.</exception>
     public static JsonWebToken<T> Parse(string jwt, ISignatureProvider algorithm, bool verify = true)
     {
-        if (string.IsNullOrWhiteSpace(jwt)) throw new ArgumentNullException(nameof(jwt), "jwt should not be null or empty.");
+        if (string.IsNullOrWhiteSpace(jwt)) throw ObjectConvert.ArgumentNull(nameof(jwt));
         var prefix = $"{TokenInfo.BearerTokenType} ";
         if (jwt.IndexOf(prefix) == 0)
         {
@@ -347,7 +348,7 @@ public class JsonWebToken<T>
             }
             else
             {
-                if (sign.Length > 0) throw new ArgumentNullException(nameof(algorithm), "algorithm should not be null.");
+                if (sign.Length > 0) throw ObjectConvert.ArgumentNull(nameof(algorithm));
             }
         }
 
@@ -378,7 +379,7 @@ public class JsonWebToken<T>
     /// <exception cref="InvalidOperationException">Verify failure.</exception>
     public static JsonWebToken<T> Parse(TokenInfo token, Func<T, string, ISignatureProvider> algorithmFactory, bool verify = true)
     {
-        if (token == null) throw new ArgumentNullException(nameof(token), "token should not be null.");
+        if (token == null) throw ObjectConvert.ArgumentNull(nameof(token));
         if (string.IsNullOrWhiteSpace(token.AccessToken)) throw new ArgumentException("The access token should not be null or empty.", nameof(token));
         if (!string.IsNullOrEmpty(token.TokenType) && token.TokenType != TokenInfo.BearerTokenType) throw new ArgumentException("The token type should be Bearer.", nameof(token));
         try
@@ -407,7 +408,7 @@ public class JsonWebToken<T>
     /// <exception cref="InvalidOperationException">Verify failure.</exception>
     public static JsonWebToken<T> Parse(TokenInfo token, ISignatureProvider algorithm, bool verify = true)
     {
-        if (token == null) throw new ArgumentNullException(nameof(token), "token should not be null.");
+        if (token == null) throw ObjectConvert.ArgumentNull(nameof(token));
         if (string.IsNullOrWhiteSpace(token.AccessToken)) throw new ArgumentException("The access token should not be null or empty.", nameof(token));
         if (!string.IsNullOrEmpty(token.TokenType) && token.TokenType != TokenInfo.BearerTokenType) throw new ArgumentException("The token type should be Bearer.", nameof(token));
         try

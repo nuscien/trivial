@@ -16,6 +16,7 @@ using System.Web;
 
 using Trivial.Data;
 using Trivial.Net;
+using Trivial.Reflection;
 using Trivial.Text;
 
 namespace Trivial.Security;
@@ -284,7 +285,7 @@ public class OAuthClient : TokenContainer, IJsonHttpClientMaker
     /// <exception cref="HttpRequestException">The request failed due to an underlying issue such as network connectivity, DNS failure, server certificate validation or timeout.</exception>
     public virtual Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken = default)
     {
-        if (request == null) throw new ArgumentNullException(nameof(request), "request should not be null");
+        if (request == null) throw ObjectConvert.ArgumentNull(nameof(request));
         var client = CreateHttpClient();
         WriteAuthenticationHeaderValue(request.Headers);
         Sending?.Invoke(this, new SendingEventArgs(request));
@@ -302,7 +303,7 @@ public class OAuthClient : TokenContainer, IJsonHttpClientMaker
     /// <exception cref="HttpRequestException">The request failed due to an underlying issue such as network connectivity, DNS failure, server certificate validation or timeout.</exception>
     public virtual Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, HttpCompletionOption completionOption, CancellationToken cancellationToken = default)
     {
-        if (request == null) throw new ArgumentNullException(nameof(request), "request should not be null");
+        if (request == null) throw ObjectConvert.ArgumentNull(nameof(request));
         var client = CreateHttpClient();
         WriteAuthenticationHeaderValue(request.Headers);
         Sending?.Invoke(this, new SendingEventArgs(request));
@@ -527,8 +528,8 @@ public class OAuthClient : TokenContainer, IJsonHttpClientMaker
     public Task<TokenInfo> ResolveTokenAsync(Uri requestUri, TokenRequestBody content, CancellationToken cancellationToken = default)
     {
         var uri = requestUri ?? TokenResolverUri;
-        if (uri == null) throw new ArgumentNullException(nameof(uri), "requestUri should not be null.");
-        if (content == null) throw new ArgumentNullException(nameof(content), "content should not be null.");
+        if (uri == null) throw ObjectConvert.ArgumentNull(nameof(uri));
+        if (content == null) throw ObjectConvert.ArgumentNull(nameof(content));
         var c = new TokenRequest<TokenRequestBody>(content, appInfo, Scope);
         var q = c.ToQueryData();
         if (TokenRequestInfoValidator != null && !TokenRequestInfoValidator(q)) throw new InvalidOperationException("Cannot pass the request because it is not valid.");
@@ -550,8 +551,8 @@ public class OAuthClient : TokenContainer, IJsonHttpClientMaker
     public Task<TokenInfo> ResolveTokenAsync(string requestUri, TokenRequestBody content, CancellationToken cancellationToken = default)
     {
         var uri = requestUri ?? TokenResolverUri?.OriginalString;
-        if (string.IsNullOrWhiteSpace(uri)) throw new ArgumentNullException(nameof(uri), "requestUri should not be null.");
-        if (content == null) throw new ArgumentNullException(nameof(content), "content should not be null.");
+        if (string.IsNullOrWhiteSpace(uri)) throw ObjectConvert.ArgumentNull(nameof(uri));
+        if (content == null) throw ObjectConvert.ArgumentNull(nameof(content));
         var c = new TokenRequest<TokenRequestBody>(content, appInfo, Scope);
         var q = c.ToQueryData();
         if (TokenRequestInfoValidator != null && !TokenRequestInfoValidator(q)) throw new InvalidOperationException("Cannot pass the request because it is not valid.");
@@ -574,8 +575,8 @@ public class OAuthClient : TokenContainer, IJsonHttpClientMaker
     public Task<T> ResolveTokenAsync<T>(Uri requestUri, TokenRequestBody content, CancellationToken cancellationToken = default) where T : TokenInfo
     {
         var uri = requestUri ?? TokenResolverUri;
-        if (uri == null) throw new ArgumentNullException(nameof(uri), "requestUri should not be null.");
-        if (content == null) throw new ArgumentNullException(nameof(content), "content should not be null.");
+        if (uri == null) throw ObjectConvert.ArgumentNull(nameof(uri));
+        if (content == null) throw ObjectConvert.ArgumentNull(nameof(content));
         var c = new TokenRequest(content, appInfo, Scope);
         var q = c.ToQueryData();
         if (TokenRequestInfoValidator != null && !TokenRequestInfoValidator(q)) throw new InvalidOperationException("Cannot pass the request because it is not valid.");
@@ -598,8 +599,8 @@ public class OAuthClient : TokenContainer, IJsonHttpClientMaker
     public Task<T> ResolveTokenAsync<T>(string requestUri, TokenRequestBody content, CancellationToken cancellationToken = default) where T : TokenInfo
     {
         var uri = requestUri ?? TokenResolverUri?.OriginalString;
-        if (string.IsNullOrWhiteSpace(uri)) throw new ArgumentNullException(nameof(uri), "requestUri should not be null.");
-        if (content == null) throw new ArgumentNullException(nameof(content), "content should not be null.");
+        if (string.IsNullOrWhiteSpace(uri)) throw ObjectConvert.ArgumentNull(nameof(uri));
+        if (content == null) throw ObjectConvert.ArgumentNull(nameof(content));
         var c = new TokenRequest(content, appInfo, Scope);
         var q = c.ToQueryData();
         if (TokenRequestInfoValidator != null && !TokenRequestInfoValidator(q)) throw new InvalidOperationException("Cannot pass the request because it is not valid.");

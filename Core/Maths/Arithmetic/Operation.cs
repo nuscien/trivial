@@ -12,6 +12,7 @@ using System;
 using System.Collections.Generic;
 using System.Net.Http.Headers;
 using System.Text;
+using Trivial.Reflection;
 
 namespace Trivial.Maths;
 
@@ -30,8 +31,8 @@ public static partial class Arithmetic
     /// <returns>A result after leftValue minus rightValue.</returns>
     public static T Minus<T>(IAdditionCapable<T> leftValue, INegationCapable<T> rightValue)
     {
-        if (leftValue is null) throw new ArgumentNullException(nameof(leftValue));
-        if (rightValue is null) throw new ArgumentNullException(nameof(rightValue));
+        if (leftValue is null) throw ObjectConvert.ArgumentNull(nameof(leftValue));
+        if (rightValue is null) throw ObjectConvert.ArgumentNull(nameof(rightValue));
         return leftValue.Plus(rightValue.Negate());
     }
 
@@ -45,8 +46,8 @@ public static partial class Arithmetic
     /// <returns>A result after leftValue minus rightValue.</returns>
     public static T Minus<T>(ISubtractionCapable<T> leftValue, T rightValue)
     {
-        if (leftValue is null) throw new ArgumentNullException(nameof(leftValue));
-        if (rightValue == null) throw new ArgumentNullException(nameof(rightValue));
+        if (leftValue is null) throw ObjectConvert.ArgumentNull(nameof(leftValue));
+        if (rightValue == null) throw ObjectConvert.ArgumentNull(nameof(rightValue));
         return leftValue.Minus(rightValue);
     }
 
@@ -60,8 +61,8 @@ public static partial class Arithmetic
     /// <returns>A result after leftValue plus rightValue.</returns>
     public static T Plus<T>(IAdditionCapable<T> leftValue, T rightValue)
     {
-        if (leftValue is null) throw new ArgumentNullException(nameof(leftValue));
-        if (rightValue == null) throw new ArgumentNullException(nameof(rightValue));
+        if (leftValue is null) throw ObjectConvert.ArgumentNull(nameof(leftValue));
+        if (rightValue == null) throw ObjectConvert.ArgumentNull(nameof(rightValue));
         return leftValue.Plus(rightValue);
     }
 

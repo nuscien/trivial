@@ -34,18 +34,77 @@ public static partial class ListExtensions
     /// Gets the server-sent event format string.
     /// </summary>
     /// <param name="col">The input collection.</param>
-    /// <param name="stream">The stream.</param>
+    /// <param name="newLineN">true if use \n instead of new line.</param>
     /// <returns>A server-sent event format string.</returns>
-    public static void ToResponseString(this IEnumerable<ServerSentEventInfo> col, Stream stream)
+    public static async Task<string> ToResponseStringAsync(this IAsyncEnumerable<ServerSentEventInfo> col, bool newLineN)
     {
-        if (col == null) return;
-        var writer = new StreamWriter(stream, Encoding.UTF8);
+        if (col == null) return null;
+        var sb = new StringBuilder();
+        await foreach (var item in col)
+        {
+            if (item == null) continue;
+            item.ToResponseString(sb, newLineN);
+        }
+
+        return sb.ToString();
+    }
+
+    /// <summary>
+    /// Gets the server-sent event format string.
+    /// </summary>
+    /// <param name="col">The input collection.</param>
+    /// <param name="stream">The stream.</param>
+    /// <param name="encoding">The encoding; or null, by default, if uses UTF-8.</param>
+    public static void WriteTo(this IEnumerable<ServerSentEventInfo> col, Stream stream, Encoding encoding = null)
+    {
+        if (col == null || stream == null) return;
+        var writer = new StreamWriter(stream, encoding ?? Encoding.UTF8);
         foreach (var item in col)
         {
             if (item == null) continue;
             writer.Write(item.ToResponseString(true));
             writer.Write('\n');
             writer.Flush();
+        }
+    }
+
+    /// <summary>
+    /// Gets the server-sent event format string.
+    /// </summary>
+    /// <param name="col">The input collection.</param>
+    /// <param name="stream">The stream.</param>
+    /// <param name="encoding">The encoding; or null, by default, if uses UTF-8.</param>
+    /// <returns>A task that represents the asynchronous write operation.</returns>
+    public static async Task WriteToAsync(this IEnumerable<ServerSentEventInfo> col, Stream stream, Encoding encoding = null)
+    {
+        if (col == null || stream == null) return;
+        var writer = new StreamWriter(stream, encoding ?? Encoding.UTF8);
+        foreach (var item in col)
+        {
+            if (item == null) continue;
+            await writer.WriteAsync(item.ToResponseString(true));
+            writer.Write('\n');
+            await writer.FlushAsync();
+        }
+    }
+
+    /// <summary>
+    /// Gets the server-sent event format string.
+    /// </summary>
+    /// <param name="col">The input collection.</param>
+    /// <param name="stream">The stream.</param>
+    /// <param name="encoding">The encoding; or null, by default, if uses UTF-8.</param>
+    /// <returns>A task that represents the asynchronous write operation.</returns>
+    public static async Task WriteToAsync(this IAsyncEnumerable<ServerSentEventInfo> col, Stream stream, Encoding encoding = null)
+    {
+        if (col == null || stream == null) return;
+        var writer = new StreamWriter(stream, encoding ?? Encoding.UTF8);
+        await foreach (var item in col)
+        {
+            if (item == null) continue;
+            await writer.WriteAsync(item.ToResponseString(true));
+            writer.Write('\n');
+            await writer.FlushAsync();
         }
     }
 

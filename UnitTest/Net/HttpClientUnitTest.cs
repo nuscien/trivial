@@ -82,7 +82,7 @@ namespace Trivial.Net
             sse = ServerSentEventInfo.Parse(s).ToList();
             Assert.AreEqual(3, sse.Count);
             using var stream = new MemoryStream();
-            sse.ToResponseString(stream);
+            sse.WriteTo(stream);
             stream.Seek(0, SeekOrigin.Begin);
             sse = ServerSentEventInfo.Parse(stream).ToList();
             Assert.AreEqual(3, sse.Count);

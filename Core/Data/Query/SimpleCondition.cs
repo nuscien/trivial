@@ -10,6 +10,7 @@
 using System;
 using System.Collections.Generic;
 using Trivial.Maths;
+using Trivial.Reflection;
 
 namespace Trivial.Data;
 
@@ -139,7 +140,7 @@ public abstract class SimpleCondition : ISimpleCondition
     /// <returns>A comparing operator.</returns>
     public static DbCompareOperator GetLeftOperator<T>(ISimpleInterval<T> value)
         => value == null
-            ? throw new ArgumentNullException(nameof(value))
+            ? throw ObjectConvert.ArgumentNull(nameof(value))
             : (value.LeftOpen ? DbCompareOperator.Greater : DbCompareOperator.GreaterOrEqual);
 
     /// <summary>
@@ -150,7 +151,7 @@ public abstract class SimpleCondition : ISimpleCondition
     /// <returns>A comparing operator.</returns>
     public static DbCompareOperator GetRightOperator<T>(ISimpleInterval<T> value)
         => value == null
-            ? throw new ArgumentNullException(nameof(value))
+            ? throw ObjectConvert.ArgumentNull(nameof(value))
             : (value.RightOpen ? DbCompareOperator.Less : DbCompareOperator.LessOrEqual);
 
     /// <summary>
@@ -572,7 +573,7 @@ public class Int32Condition : StructSimpleCondition<int>
     /// <returns>A condition from left bound of a specific simple interval.</returns>
     public static Int32Condition CreateFromLeft(StructValueSimpleInterval<int> value)
     {
-        if (value == null) throw new ArgumentNullException("value");
+        if (value == null) throw ObjectConvert.ArgumentNull(nameof(value));
         return new Int32Condition
         {
             Value = value.MinValue,
@@ -587,7 +588,7 @@ public class Int32Condition : StructSimpleCondition<int>
     /// <returns>A condition from right bound of a specific simple interval.</returns>
     public static Int32Condition CreateFromRight(StructValueSimpleInterval<int> value)
     {
-        if (value == null) throw new ArgumentNullException("value");
+        if (value == null) throw ObjectConvert.ArgumentNull(nameof(value));
         return new Int32Condition
         {
             Value = value.MaxValue,
@@ -602,7 +603,7 @@ public class Int32Condition : StructSimpleCondition<int>
     /// <returns>A condition from left bound of a specific simple interval.</returns>
     public static Int32Condition CreateFromLeft(NullableValueSimpleInterval<int> value)
     {
-        if (value == null) throw new ArgumentNullException("value");
+        if (value == null) throw ObjectConvert.ArgumentNull(nameof(value));
         if (!value.LeftBounded) return null;
         return new Int32Condition
         {
@@ -618,7 +619,7 @@ public class Int32Condition : StructSimpleCondition<int>
     /// <returns>A condition from right bound of a specific simple interval.</returns>
     public static Int32Condition CreateFromRight(NullableValueSimpleInterval<int> value)
     {
-        if (value == null) throw new ArgumentNullException("value");
+        if (value == null) throw ObjectConvert.ArgumentNull(nameof(value));
         if (!value.RightBounded) return null;
         return new Int32Condition
         {
@@ -733,7 +734,7 @@ public class Int64Condition : StructSimpleCondition<long>
     /// <returns>A condition from left bound of a specific simple interval.</returns>
     public static Int64Condition CreateFromLeft(StructValueSimpleInterval<long> value)
     {
-        if (value == null) throw new ArgumentNullException("value");
+        if (value == null) throw ObjectConvert.ArgumentNull(nameof(value));
         return new Int64Condition
         {
             Value = value.MinValue,
@@ -748,7 +749,7 @@ public class Int64Condition : StructSimpleCondition<long>
     /// <returns>A condition from right bound of a specific simple interval.</returns>
     public static Int64Condition CreateFromRight(StructValueSimpleInterval<long> value)
     {
-        if (value == null) throw new ArgumentNullException("value");
+        if (value == null) throw ObjectConvert.ArgumentNull(nameof(value));
         return new Int64Condition
         {
             Value = value.MaxValue,
@@ -763,7 +764,7 @@ public class Int64Condition : StructSimpleCondition<long>
     /// <returns>A condition from left bound of a specific simple interval.</returns>
     public static Int64Condition CreateFromLeft(NullableValueSimpleInterval<long> value)
     {
-        if (value == null) throw new ArgumentNullException("value");
+        if (value == null) throw ObjectConvert.ArgumentNull(nameof(value));
         if (!value.LeftBounded) return null;
         return new Int64Condition
         {
@@ -779,7 +780,7 @@ public class Int64Condition : StructSimpleCondition<long>
     /// <returns>A condition from right bound of a specific simple interval.</returns>
     public static Int64Condition CreateFromRight(NullableValueSimpleInterval<long> value)
     {
-        if (value == null) throw new ArgumentNullException("value");
+        if (value == null) throw ObjectConvert.ArgumentNull(nameof(value));
         if (!value.RightBounded) return null;
         return new Int64Condition
         {
@@ -894,7 +895,7 @@ public class SingleCondition : StructSimpleCondition<float>
     /// <returns>A condition from left bound of a specific simple interval.</returns>
     public static SingleCondition CreateFromLeft(StructValueSimpleInterval<float> value)
     {
-        if (value == null) throw new ArgumentNullException("value");
+        if (value == null) throw ObjectConvert.ArgumentNull(nameof(value));
         return new SingleCondition
         {
             Value = value.MinValue,
@@ -909,7 +910,7 @@ public class SingleCondition : StructSimpleCondition<float>
     /// <returns>A condition from right bound of a specific simple interval.</returns>
     public static SingleCondition CreateFromRight(StructValueSimpleInterval<float> value)
     {
-        if (value == null) throw new ArgumentNullException("value");
+        if (value == null) throw ObjectConvert.ArgumentNull(nameof(value));
         return new SingleCondition
         {
             Value = value.MaxValue,
@@ -924,7 +925,7 @@ public class SingleCondition : StructSimpleCondition<float>
     /// <returns>A condition from left bound of a specific simple interval.</returns>
     public static SingleCondition CreateFromLeft(NullableValueSimpleInterval<float> value)
     {
-        if (value == null) throw new ArgumentNullException("value");
+        if (value == null) throw ObjectConvert.ArgumentNull(nameof(value));
         if (!value.LeftBounded) return null;
         return new SingleCondition
         {
@@ -940,7 +941,7 @@ public class SingleCondition : StructSimpleCondition<float>
     /// <returns>A condition from right bound of a specific simple interval.</returns>
     public static SingleCondition CreateFromRight(NullableValueSimpleInterval<float> value)
     {
-        if (value == null) throw new ArgumentNullException("value");
+        if (value == null) throw ObjectConvert.ArgumentNull(nameof(value));
         if (!value.RightBounded) return null;
         return new SingleCondition
         {
@@ -1055,7 +1056,7 @@ public class DoubleCondition : StructSimpleCondition<double>
     /// <returns>A condition from left bound of a specific simple interval.</returns>
     public static DoubleCondition CreateFromLeft(StructValueSimpleInterval<double> value)
     {
-        if (value == null) throw new ArgumentNullException("value");
+        if (value == null) throw ObjectConvert.ArgumentNull(nameof(value));
         return new DoubleCondition
         {
             Value = value.MinValue,
@@ -1070,7 +1071,7 @@ public class DoubleCondition : StructSimpleCondition<double>
     /// <returns>A condition from right bound of a specific simple interval.</returns>
     public static DoubleCondition CreateFromRight(StructValueSimpleInterval<double> value)
     {
-        if (value == null) throw new ArgumentNullException("value");
+        if (value == null) throw ObjectConvert.ArgumentNull(nameof(value));
         return new DoubleCondition
         {
             Value = value.MaxValue,
@@ -1085,7 +1086,7 @@ public class DoubleCondition : StructSimpleCondition<double>
     /// <returns>A condition from left bound of a specific simple interval.</returns>
     public static DoubleCondition CreateFromLeft(NullableValueSimpleInterval<double> value)
     {
-        if (value == null) throw new ArgumentNullException("value");
+        if (value == null) throw ObjectConvert.ArgumentNull(nameof(value));
         if (!value.LeftBounded) return null;
         return new DoubleCondition
         {
@@ -1101,7 +1102,7 @@ public class DoubleCondition : StructSimpleCondition<double>
     /// <returns>A condition from right bound of a specific simple interval.</returns>
     public static DoubleCondition CreateFromRight(NullableValueSimpleInterval<double> value)
     {
-        if (value == null) throw new ArgumentNullException("value");
+        if (value == null) throw ObjectConvert.ArgumentNull(nameof(value));
         if (!value.RightBounded) return null;
         return new DoubleCondition
         {
@@ -1206,7 +1207,7 @@ public class DateTimeCondition : StructSimpleCondition<DateTime>
     /// <returns>A condition from left bound of a specific simple interval.</returns>
     public static DateTimeCondition CreateFromLeft(StructValueSimpleInterval<DateTime> value)
     {
-        if (value == null) throw new ArgumentNullException("value");
+        if (value == null) throw ObjectConvert.ArgumentNull(nameof(value));
         return new DateTimeCondition
         {
             Value = value.MinValue,
@@ -1221,7 +1222,7 @@ public class DateTimeCondition : StructSimpleCondition<DateTime>
     /// <returns>A condition from right bound of a specific simple interval.</returns>
     public static DateTimeCondition CreateFromRight(StructValueSimpleInterval<DateTime> value)
     {
-        if (value == null) throw new ArgumentNullException("value");
+        if (value == null) throw ObjectConvert.ArgumentNull(nameof(value));
         return new DateTimeCondition
         {
             Value = value.MaxValue,
@@ -1236,7 +1237,7 @@ public class DateTimeCondition : StructSimpleCondition<DateTime>
     /// <returns>A condition from left bound of a specific simple interval.</returns>
     public static DateTimeCondition CreateFromLeft(NullableValueSimpleInterval<DateTime> value)
     {
-        if (value == null) throw new ArgumentNullException("value");
+        if (value == null) throw ObjectConvert.ArgumentNull(nameof(value));
         if (!value.LeftBounded) return null;
         return new DateTimeCondition
         {
@@ -1252,7 +1253,7 @@ public class DateTimeCondition : StructSimpleCondition<DateTime>
     /// <returns>A condition from right bound of a specific simple interval.</returns>
     public static DateTimeCondition CreateFromRight(NullableValueSimpleInterval<DateTime> value)
     {
-        if (value == null) throw new ArgumentNullException("value");
+        if (value == null) throw ObjectConvert.ArgumentNull(nameof(value));
         if (!value.RightBounded) return null;
         return new DateTimeCondition
         {

@@ -7,6 +7,7 @@ using System.Security;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Trivial.Reflection;
 using Trivial.Text;
 
 namespace Trivial.IO;
@@ -548,7 +549,7 @@ public static class FileSystemInfoUtility
     public static FileInfo GetFileInfo(string fileName)
     {
         var path = GetLocalPath(fileName);
-        if (string.IsNullOrWhiteSpace(path)) throw new ArgumentNullException(nameof(fileName));
+        if (string.IsNullOrWhiteSpace(path)) throw ObjectConvert.ArgumentNull(nameof(fileName));
         path = Path.Combine(path, fileName);
         return new FileInfo(path);
     }
@@ -566,8 +567,8 @@ public static class FileSystemInfoUtility
     public static FileInfo GetFileInfo(string folder, string fileName)
     {
         var path = GetLocalPath(folder);
-        if (string.IsNullOrWhiteSpace(path)) throw new ArgumentNullException(nameof(folder));
-        if (string.IsNullOrWhiteSpace(fileName)) throw new ArgumentNullException(nameof(fileName));
+        if (string.IsNullOrWhiteSpace(path)) throw ObjectConvert.ArgumentNull(nameof(folder));
+        if (string.IsNullOrWhiteSpace(fileName)) throw ObjectConvert.ArgumentNull(nameof(fileName));
         path = Path.Combine(path, fileName);
         return new FileInfo(path);
     }

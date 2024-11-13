@@ -295,12 +295,17 @@ public class ArithmeticTest
         Assert.IsTrue(c[1]);
         Assert.IsFalse(c[2]);
         Assert.IsTrue(c[3]);
-        c = BooleanOperations.Calculate(BinaryBooleanOperator.Nor, [true, false, true, true], [false, false, false], true).ToList();
+        c = BooleanOperations.Calculate(BinaryBooleanOperator.Or, [false, false, false], [true, false, true, true], true).ToList();
         Assert.AreEqual(4, c.Count);
-        Assert.IsFalse(c[0]);
-        Assert.IsTrue(c[1]);
-        Assert.IsFalse(c[2]);
-        Assert.IsFalse(c[3]);
+        Assert.IsTrue(c[0]);
+        Assert.IsFalse(c[1]);
+        Assert.IsTrue(c[2]);
+        Assert.IsTrue(c[3]);
+        c = BooleanOperations.Calculate(BinaryBooleanOperator.Xor, [false], [true]).ToList();
+        Assert.AreEqual(1, c.Count);
+        Assert.IsTrue(c[0]);
+        c = BooleanOperations.Calculate(BinaryBooleanOperator.Xnor, [], []).ToList();
+        Assert.AreEqual(0, c.Count);
 
         var col = new List<bool>()
         {

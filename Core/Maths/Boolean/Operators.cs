@@ -1,14 +1,4 @@
-﻿// --------------------------------------------------------------------------------------------------------------------
-// <copyright file="BooleanOperators.cs" company="Nanchang Jinchen Software Co., Ltd.">
-//   Copyright (c) 2010 Nanchang Jinchen Software Co., Ltd. All rights reserved.
-// </copyright>
-// <summary>
-//   The boolean related operators.
-// </summary>
-// <author>Kingcean Tuan</author>
-// --------------------------------------------------------------------------------------------------------------------
-
-using System;
+﻿using System;
 
 namespace Trivial.Maths;
 
