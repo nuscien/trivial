@@ -14,7 +14,7 @@
     <IncludeSymbols>true</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
     <PackageReadmeFile>README.md</PackageReadmeFile>
-    <LangVersion>12.0</LangVersion>
+    <LangVersion>13.0</LangVersion>
     <SignAssembly>True</SignAssembly>
     <AssemblyOriginatorKeyFile>..\Trivial.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
