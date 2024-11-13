@@ -559,10 +559,7 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// <returns>true if it contains the property key; otherwise, false.</returns>
     /// <exception cref="ArgumentNullException">key was null, empty or consists only of white-space characters.</exception>
     public bool ContainsKey(ReadOnlySpan<char> key)
-    {
-        if (key == null) throw new ArgumentNullException(nameof(key), "key should not be null.");
-        return ContainsKey(key.ToString());
-    }
+        => ContainsKey(key.ToString());
 
     /// <summary>
     /// Determines whether it contains the property only with the specific key.
@@ -758,10 +755,7 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// <exception cref="ArgumentOutOfRangeException">The property does not exist.</exception>
     /// <exception cref="InvalidOperationException">The value kind is not the expected one.</exception>
     public string GetRawText(ReadOnlySpan<char> key)
-    {
-        if (key == null) throw new ArgumentNullException(nameof(key), "key should not be null.");
-        return GetRawText(key.ToString());
-    }
+        => GetRawText(key.ToString());
 
     /// <summary>
     /// Gets the value kind of the specific property.
@@ -847,10 +841,7 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
     /// <exception cref="ArgumentOutOfRangeException">The property does not exist.</exception>
     public JsonValueKind GetValueKind(ReadOnlySpan<char> key, bool strictMode = false)
-    {
-        if (key == null) throw new ArgumentNullException(nameof(key), "key should not be null.");
-        return GetValueKind(key.ToString(), strictMode);
-    }
+        => GetValueKind(key.ToString(), strictMode);
 
     /// <summary>
     /// Gets the value of the specific property.
@@ -1370,10 +1361,7 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
     /// <exception cref="ArgumentOutOfRangeException">The property does not exist.</exception>
     public BaseJsonValueNode GetValue(ReadOnlySpan<char> key)
-    {
-        if (key == null) throw new ArgumentNullException(nameof(key), "key should not be null.");
-        return GetValue(key.ToString());
-    }
+        => GetValue(key.ToString());
 
     /// <summary>
     /// Gets the value of the specific property.
@@ -1451,10 +1439,7 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// <exception cref="ArgumentOutOfRangeException">The property does not exist.</exception>
     /// <exception cref="InvalidOperationException">The type is not supported to convert.</exception>
     public T GetValue<T>(ReadOnlySpan<char> key)
-    {
-        if (key == null) throw new ArgumentNullException(nameof(key), "key should not be null.");
-        return (T)GetValue(typeof(T), key.ToString());
-    }
+        => (T)GetValue(typeof(T), key.ToString());
 
     /// <summary>
     /// Gets the value of the specific property.
@@ -3209,15 +3194,7 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// <param name="result">The result.</param>
     /// <returns>true if the kind is the one expected; otherwise, false.</returns>
     public bool TryGetValue(ReadOnlySpan<char> key, out BaseJsonValueNode result)
-    {
-        if (key == null)
-        {
-            result = default;
-            return false;
-        }
-
-        return TryGetValue(key.ToString(), out result);
-    }
+        => TryGetValue(key.ToString(), out result);
 
     /// <summary>
     /// Tries to get the value of the specific property.
@@ -3745,10 +3722,7 @@ public class JsonObjectNode : BaseJsonValueNode, IJsonContainerNode, IDictionary
     /// <returns>true if the element is successfully removed; otherwise, false. This method also returns false if key was not found.</returns>
     /// <exception cref="ArgumentNullException">The property key should not be null, empty, or consists only of white-space characters.</exception>
     public bool Remove(ReadOnlySpan<char> key)
-    {
-        if (key == null) throw new ArgumentNullException(nameof(key), "key was null.");
-        return RemoveProperty(key.ToString());
-    }
+        => RemoveProperty(key.ToString());
 
     /// <summary>
     /// Removes all properties of the specific key.

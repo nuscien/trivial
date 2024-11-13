@@ -301,5 +301,51 @@ public class ArithmeticTest
         Assert.IsTrue(c[1]);
         Assert.IsFalse(c[2]);
         Assert.IsFalse(c[3]);
+
+        var col = new List<bool>()
+        {
+            true, false, false, true, false, true, false, true, false
+        };
+        Assert.IsFalse(BooleanOperations.Calculate(SequenceBooleanOperator.And, col, true));
+        Assert.IsTrue(BooleanOperations.Calculate(SequenceBooleanOperator.Or, col));
+        Assert.IsTrue(BooleanOperations.Calculate(SequenceBooleanOperator.Nand, col));
+        Assert.IsFalse(BooleanOperations.Calculate(SequenceBooleanOperator.Nor, col));
+        Assert.IsTrue(BooleanOperations.Calculate(SequenceBooleanOperator.First, col));
+        Assert.IsFalse(BooleanOperations.Calculate(SequenceBooleanOperator.Last, col));
+        Assert.IsFalse(BooleanOperations.Calculate(SequenceBooleanOperator.Half, col));
+        Assert.IsTrue(BooleanOperations.Calculate(SequenceBooleanOperator.Nhalf, col, false));
+        Assert.IsFalse(BooleanOperations.Calculate(SequenceBooleanOperator.Most, col));
+        Assert.IsTrue(BooleanOperations.Calculate(SequenceBooleanOperator.Least, col));
+        Assert.IsFalse(BooleanOperations.Calculate(SequenceBooleanOperator.MostOrFirst, col));
+        Assert.IsFalse(BooleanOperations.Calculate(SequenceBooleanOperator.MostOrLast, col));
+        Assert.IsTrue(BooleanOperations.Calculate(SequenceBooleanOperator.LeastOrFirst, col));
+        Assert.IsTrue(BooleanOperations.Calculate(SequenceBooleanOperator.LeastOrLast, col));
+        Assert.IsFalse(BooleanOperations.Calculate(SequenceBooleanOperator.Positive, col));
+        Assert.IsTrue(BooleanOperations.Calculate(SequenceBooleanOperator.Negative, col));
+        col.Add(true);
+        Assert.IsFalse(BooleanOperations.Calculate(SequenceBooleanOperator.And, col));
+        Assert.IsTrue(BooleanOperations.Calculate(SequenceBooleanOperator.Or, col));
+        Assert.IsTrue(BooleanOperations.Calculate(SequenceBooleanOperator.Nand, col));
+        Assert.IsFalse(BooleanOperations.Calculate(SequenceBooleanOperator.Nor, col));
+        Assert.IsTrue(BooleanOperations.Calculate(SequenceBooleanOperator.First, col));
+        Assert.IsTrue(BooleanOperations.Calculate(SequenceBooleanOperator.Last, col));
+        Assert.IsTrue(BooleanOperations.Calculate(SequenceBooleanOperator.Half, col));
+        Assert.IsFalse(BooleanOperations.Calculate(SequenceBooleanOperator.Nhalf, col));
+        Assert.IsNull(BooleanOperations.Calculate(SequenceBooleanOperator.Most, col));
+        Assert.IsFalse(BooleanOperations.Calculate(SequenceBooleanOperator.Least, col, false));
+        Assert.IsTrue(BooleanOperations.Calculate(SequenceBooleanOperator.MostOrFirst, col));
+        Assert.IsTrue(BooleanOperations.Calculate(SequenceBooleanOperator.MostOrLast, col));
+        Assert.IsTrue(BooleanOperations.Calculate(SequenceBooleanOperator.LeastOrFirst, col));
+        Assert.IsTrue(BooleanOperations.Calculate(SequenceBooleanOperator.LeastOrLast, col));
+        Assert.IsTrue(BooleanOperations.Calculate(SequenceBooleanOperator.Positive, col));
+        Assert.IsTrue(BooleanOperations.Calculate(SequenceBooleanOperator.Negative, col));
+        col.Clear();
+        Assert.IsNull(BooleanOperations.Calculate(SequenceBooleanOperator.And, col));
+        Assert.IsTrue(BooleanOperations.Calculate(SequenceBooleanOperator.Or, col, true));
+        Assert.IsTrue(BooleanOperations.Calculate(SequenceBooleanOperator.Half, col));
+        Assert.IsFalse(BooleanOperations.Calculate(SequenceBooleanOperator.First, col, false));
+        Assert.IsNull(BooleanOperations.Calculate(SequenceBooleanOperator.First, null));
+        Assert.IsTrue(BooleanOperations.Calculate(SequenceBooleanOperator.True, col));
+        Assert.IsFalse(BooleanOperations.Calculate(SequenceBooleanOperator.False, col));
     }
 }

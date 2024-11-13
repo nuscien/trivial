@@ -2168,10 +2168,7 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
     /// <param name="key">The property key.</param>
     /// <returns>The value.</returns>
     public BaseJsonValueNode TryGetValue(ReadOnlySpan<char> key)
-    {
-        if (key == null) return null;
-        return TryGetValue(key.ToString());
-    }
+        => TryGetValue(key.ToString());
 
     /// <summary>
     /// Tries to get the value of the specific property.
@@ -2179,10 +2176,7 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
     /// <param name="key">The property key.</param>
     /// <returns>The value.</returns>
     protected override BaseJsonValueNode TryGetValueOrNull(ReadOnlySpan<char> key)
-    {
-        if (key == null) return null;
-        return TryGetValueOrNull(key.ToString());
-    }
+        => TryGetValueOrNull(key.ToString());
 
     /// <summary>
     /// Removes the element at the specific index.
@@ -4929,11 +4923,7 @@ public class JsonArrayNode : BaseJsonValueNode, IJsonContainerNode, IReadOnlyLis
     /// <param name="result">The result.</param>
     /// <returns>true if the kind is the one expected; otherwise, false.</returns>
     public bool TryGetValue(ReadOnlySpan<char> key, out BaseJsonValueNode result)
-    {
-        if (key != null) return TryGetValue(key.ToString(), out result);
-        result = default;
-        return false;
-    }
+        => TryGetValue(key.ToString(), out result);
 
     /// <summary>
     /// Gets all property keys.

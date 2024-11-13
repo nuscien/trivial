@@ -317,7 +317,7 @@ public static class BooleanOperations
     /// </summary>
     /// <param name="op">The operation.</param>
     /// <param name="col">The collection to calculate each other in the unary boolean operation.</param>
-    /// <returns>A boolean sequence after calculating.</returns>
+    /// <returns>A boolean sequence after calculating; or null, if the input is null, or the invalid to calculate.</returns>
     /// <exception cref="NotSupportedException">op is not valid.</exception>
     public static bool? Calculate(SequenceBooleanOperator op, IEnumerable<bool> col)
     {
